@@ -8,14 +8,15 @@ LIBS = librcl.a
 all: $(LIBS)
 
 OBJS = conftree.o csguess.o debuglog.o \
-     fstreewalk.o \
-     mimehandler.o mimetype.o pathut.o \
+     fstreewalk.o html.o htmlparse.o \
+     mimehandler.o mimeparse.o mimetype.o pathut.o \
      rclconfig.o rcldb.o readfile.o \
      textsplit.o transcode.o \
      unacpp.o unac.o
 SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
-     ../utils/fstreewalk.cpp \
-     ../common/mimehandler.cpp ../index/mimetype.cpp ../utils/pathut.cpp \
+     ../utils/fstreewalk.cpp ../common/html.cpp ../common/htmlparse.cpp \
+     ../common/mimehandler.cpp ../utils/mimeparse.cpp ../index/mimetype.cpp \
+     ../utils/pathut.cpp \
      ../common/rclconfig.cpp ../common/rcldb.cpp ../utils/readfile.cpp \
      ../common/textsplit.cpp ../utils/transcode.cpp \
      ../common/unacpp.cpp ../unac/unac.c
@@ -35,7 +36,13 @@ debuglog.o : ../utils/debuglog.cpp
 	$(CXX) $(CXXFLAGS) -c $<
 fstreewalk.o : ../utils/fstreewalk.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
+html.o : ../common/html.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+htmlparse.o : ../common/htmlparse.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
 mimehandler.o : ../common/mimehandler.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+mimeparse.o : ../utils/mimeparse.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 mimetype.o : ../index/mimetype.cpp 
 	$(CXX) $(CXXFLAGS) -c $<

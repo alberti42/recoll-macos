@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.7 2005-01-25 14:37:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.8 2005-01-26 11:47:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -201,6 +201,7 @@ bool dumb_string(const string &in, string &out)
 
 bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
 {
+    LOGDEB(("Rcl::Db::add: fn %s\n", fn.c_str()));
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
@@ -226,24 +227,29 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
 
     string noacc;
     if (!unac_cpp(doc.title, noacc)) {
+	LOGERR(("Rcl::Db::add: unac failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
 
+    LOGDEB(("Rcl::Db::add: doc split\n"));
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.text, noacc)) {
+	LOGERR(("Rcl::Db::add: dum_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
 
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.keywords, noacc)) {
+	LOGERR(("Rcl::Db::add: dum_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
 
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.abstract, noacc)) {
+	LOGERR(("Rcl::Db::add: dum_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
@@ -263,20 +269,20 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
 #if 0
 	    if (did < updated.size()) {
 		updated[did] = true;
-		LOGDEB1(("%s updated\n", fnc));
+		LOGDEB(("%s updated\n", fnc));
 	    } else {
-		LOGDEB1(("%s added\n", fnc));
+		LOGDEB(("%s added\n", fnc));
 	    }
 #endif
 	} catch (...) {
 	    // FIXME: is this ever actually needed?
 	    ndb->wdb.add_document(newdocument);
-	    LOGDEB1(("%s added (failed re-seek for duplicate).\n", fnc));
+	    LOGDEB(("%s added (failed re-seek for duplicate).\n", fnc));
 	}
     } else {
 	try {
 	    ndb->wdb.add_document(newdocument);
-	    LOGDEB1(("%s added\n", fnc));
+	    LOGDEB(("%s added\n", fnc));
 	} catch (...) {
 	    LOGERR(("%s : Got exception while adding doc\n", fnc));
 	    return false;

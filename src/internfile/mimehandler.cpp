@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.1 2005-01-25 14:37:57 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.2 2005-01-26 11:47:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -52,6 +52,7 @@ class IHandler_Init {
  public:
     IHandler_Init() {
 	ihandlers["text/plain"] = textPlainToDoc;
+	ihandlers["text/html"] = textHtmlToDoc;
 	// Add new associations here when needed
     }
 };

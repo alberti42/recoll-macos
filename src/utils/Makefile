@@ -3,7 +3,7 @@ CXXFLAGS = -I.
 
 BIGLIB = ../lib/librcl.a
 
-PROGS = trfstreewalk trpathut execmd transcode
+PROGS = trfstreewalk trpathut execmd transcode trmimeparse
 all: $(PROGS)
 
 FSTREEWALK_OBJS= trfstreewalk.o fstreewalk.o pathut.o
@@ -30,5 +30,13 @@ transcode : $(TRANSCODE_OBJS)
 trtranscode.o : ../utils/transcode.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_TRANSCODE -c -o trtranscode.o \
 	       transcode.cpp
+
+MIMEPARSE_OBJS= trmimeparse.o  $(BIGLIB) 
+mimeparse : $(MIMEPARSE_OBJS)
+	$(CXX) $(CXXFLAGS) -o mimeparse $(MIMEPARSE_OBJS) \
+	       -L/usr/local/lib -liconv
+trmimeparse.o : ../utils/mimeparse.cpp 
+	$(CXX) $(CXXFLAGS) -DTEST_MIMEPARSE -c -o trmimeparse.o \
+	       mimeparse.cpp
 clean: 
 	rm -f *.o $(PROGS)

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: qtry.cpp,v 1.2 2005-01-25 14:37:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: qtry.cpp,v 1.3 2005-01-26 11:47:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 // Tests with the query interface
@@ -62,20 +62,20 @@ int main(int argc, char **argv)
     if (argc < 1)
 	Usage();
 
-    RclConfig *config = new RclConfig;
+    RclConfig *rclconfig = new RclConfig;
 
-    if (!config->ok())
+    if (!rclconfig->ok())
 	cerr << "Config could not be built" << endl;
 
     string dbdir;
-    if (config->getConfParam(string("dbdir"), dbdir) == 0) {
+    if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
 	cerr << "No database directory in configuration" << endl;
 	exit(1);
     }
     
-    Rcl::Db *db = new Rcl::Db;
+    Rcl::Db *rcldb = new Rcl::Db;
 
-    if (!db->open(dbdir, Rcl::Db::DbRO)) {
+    if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
 	fprintf(stderr, "Could not open database\n");
 	exit(1);
     }
@@ -84,12 +84,12 @@ int main(int argc, char **argv)
     string query;
     while (argc--)
 	query += string(*argv++) + " " ;
-    db->setQuery(query);
+    rcldb->setQuery(query);
     int i = 0;
     Rcl::Doc doc;
     for (i=0;;i++) {
 	doc.erase();
-	if (!db->getDoc(i, doc))
+	if (!rcldb->getDoc(i, doc))
 	    break;
 
 	cout << "Url: " << doc.url << endl;
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 
 	// Look for appropriate handler
 	MimeHandlerFunc fun = getMimeHandler(doc.mimetype, 
-					     config->getMimeConf());
+					     rclconfig->getMimeConf());
 	if (!fun) {
 	    cout << "No mime handler !" << endl;
 	    continue;
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 	cout << "Filename: "  << fn << endl;
 
 	Rcl::Doc fdoc;
-	if (!fun(config, fn,  doc.mimetype, fdoc)) {
+	if (!fun(rclconfig, fn,  doc.mimetype, fdoc)) {
 	    cout << "Failed to convert/preview document!" << endl;
 	    continue;
 	}
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 	transcode(fdoc.text, printable, "UTF-8", outencoding);
 	cout << printable << endl;
     }
-    delete db;
+    delete rcldb;
     cerr << "Exiting" << endl;
     exit(0);
 }

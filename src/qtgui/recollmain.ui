@@ -8,106 +8,177 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>774</width>
-            <height>619</height>
+            <width>782</width>
+            <height>622</height>
         </rect>
+    </property>
+    <property name="sizePolicy">
+        <sizepolicy>
+            <hsizetype>7</hsizetype>
+            <vsizetype>7</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
     </property>
     <property name="caption">
         <string>recoll</string>
     </property>
-    <widget class="QLayoutWidget">
+    <hbox>
         <property name="name">
-            <cstring>layout7</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>11</y>
-                <width>752</width>
-                <height>41</height>
-            </rect>
-        </property>
-        <hbox>
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>unnamed</cstring>
+                <cstring>layout3</cstring>
             </property>
-            <widget class="QLineEdit">
+            <vbox>
                 <property name="name">
-                    <cstring>queryText</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <property name="frameShape">
-                    <enum>LineEditPanel</enum>
-                </property>
-                <property name="frameShadow">
-                    <enum>Sunken</enum>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>Search</cstring>
-                </property>
-                <property name="text">
-                    <string>pushButton1</string>
-                </property>
-            </widget>
-            <spacer>
-                <property name="name">
-                    <cstring>spacer1</cstring>
-                </property>
-                <property name="orientation">
-                    <enum>Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                    <enum>Expanding</enum>
-                </property>
-                <property name="sizeHint">
-                    <size>
-                        <width>40</width>
-                        <height>20</height>
-                    </size>
-                </property>
-            </spacer>
-        </hbox>
-    </widget>
-    <widget class="QSplitter">
-        <property name="name">
-            <cstring>splitter9</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>11</x>
-                <y>58</y>
-                <width>752</width>
-                <height>491</height>
-            </rect>
-        </property>
-        <property name="orientation">
-            <enum>Horizontal</enum>
-        </property>
-        <widget class="QTextEdit">
-            <property name="name">
-                <cstring>resTextEdit</cstring>
-            </property>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout2</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLineEdit">
+                            <property name="name">
+                                <cstring>queryText</cstring>
+                            </property>
+                            <property name="frameShape">
+                                <enum>LineEditPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                                <enum>Sunken</enum>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>Search</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Search</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer1</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>329</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </hbox>
+                </widget>
+                <widget class="QSplitter">
+                    <property name="name">
+                        <cstring>splitter9</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>7</vsizetype>
+                            <horstretch>1</horstretch>
+                            <verstretch>1</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>0</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <widget class="QTextEdit">
+                        <property name="name">
+                            <cstring>resTextEdit</cstring>
+                        </property>
+                        <property name="sizePolicy">
+                            <sizepolicy>
+                                <hsizetype>7</hsizetype>
+                                <vsizetype>7</vsizetype>
+                                <horstretch>2</horstretch>
+                                <verstretch>0</verstretch>
+                            </sizepolicy>
+                        </property>
+                        <property name="textFormat">
+                            <enum>RichText</enum>
+                        </property>
+                        <property name="readOnly">
+                            <bool>true</bool>
+                        </property>
+                    </widget>
+                    <widget class="QSplitter">
+                        <property name="name">
+                            <cstring>splitter8</cstring>
+                        </property>
+                        <property name="sizePolicy">
+                            <sizepolicy>
+                                <hsizetype>7</hsizetype>
+                                <vsizetype>7</vsizetype>
+                                <horstretch>3</horstretch>
+                                <verstretch>0</verstretch>
+                            </sizepolicy>
+                        </property>
+                        <property name="orientation">
+                            <enum>Vertical</enum>
+                        </property>
+                        <widget class="QTextEdit">
+                            <property name="name">
+                                <cstring>previewTextEdit</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>7</hsizetype>
+                                    <vsizetype>7</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>2</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="textFormat">
+                                <enum>RichText</enum>
+                            </property>
+                            <property name="readOnly">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                        <widget class="QTextEdit">
+                            <property name="name">
+                                <cstring>metaTextEdit</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>7</hsizetype>
+                                    <vsizetype>7</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>1</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="textFormat">
+                                <enum>RichText</enum>
+                            </property>
+                            <property name="readOnly">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                    </widget>
+                </widget>
+            </vbox>
         </widget>
-        <widget class="QSplitter">
-            <property name="name">
-                <cstring>splitter8</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
-            </property>
-            <widget class="QTextEdit">
-                <property name="name">
-                    <cstring>textEdit12</cstring>
-                </property>
-            </widget>
-            <widget class="QTextEdit">
-                <property name="name">
-                    <cstring>textEdit13</cstring>
-                </property>
-            </widget>
-        </widget>
-    </widget>
+    </hbox>
 </widget>
 <menubar>
     <property name="name">
@@ -217,16 +288,22 @@
         <slot>resTextEdit_clicked(int,int)</slot>
     </connection>
     <connection>
-        <sender>resTextEdit</sender>
-        <signal>returnPressed()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>resTextEdit_returnPressed()</slot>
-    </connection>
-    <connection>
         <sender>fileExitAction</sender>
         <signal>activated()</signal>
         <receiver>RecollMain</receiver>
         <slot>fileExit()</slot>
+    </connection>
+    <connection>
+        <sender>queryText</sender>
+        <signal>returnPressed()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>queryText_returnPressed()</slot>
+    </connection>
+    <connection>
+        <sender>Search</sender>
+        <signal>clicked()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>Search_clicked()</slot>
     </connection>
 </connections>
 <includes>
@@ -238,7 +315,8 @@
     <slot>helpContents()</slot>
     <slot>helpAbout()</slot>
     <slot>resTextEdit_clicked( int par, int car )</slot>
-    <slot>resTextEdit_returnPressed()</slot>
+    <slot>queryText_returnPressed()</slot>
+    <slot>Search_clicked()</slot>
 </slots>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
