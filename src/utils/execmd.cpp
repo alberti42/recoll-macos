@@ -1,0 +1,196 @@
+#ifndef lint
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.1 2004-12-12 08:58:12 dockes Exp $ (C) 2004 J.F.Dockes";
+#endif
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/select.h>
+#include <fcntl.h>
+
+#include <list>
+#include <string>
+#include <sstream>
+#include <iostream>
+
+#include "execmd.h"
+
+using namespace std;
+#define MAX(A,B) (A>B?A:B)
+
+int
+ExecCmd::doexec(const string &cmd, const list<string> args,
+		const string *input, string *output)
+{
+
+    int pipein[2]; // subproc input
+    int pipeout[2]; // subproc output
+    pipein[0] = pipein[1] = pipeout[0] = pipeout[1] = -1;
+
+    if (input && pipe(pipein) < 0) {
+	return -1;
+    }
+    if (output && pipe(pipeout) < 0) {
+	close(pipein[0]);
+	close(pipein[1]);
+	return -1;
+    }
+
+    pid_t pid = fork();
+    if (pid < 0) {
+	return -1;
+    }
+
+    if (pid) {
+	if (input) {
+	    close(pipein[0]);
+	    pipein[0] = -1;
+	}
+	if (output) {
+	    close(pipeout[1]);
+	    pipeout[1] = -1;
+	}
+	fd_set readfds, writefds;
+	if (input || output) {
+	    if (input)
+		fcntl(pipein[1], F_SETFL, O_NONBLOCK);
+	    if (output)	
+		fcntl(pipeout[0], F_SETFL, O_NONBLOCK);
+	    int nwritten = 0;
+	    int nfds = MAX(pipein[1], pipeout[0]) + 1;
+	    for(;nfds > 0;) {
+		FD_ZERO(&writefds);
+		FD_ZERO(&readfds);
+		if (pipein[1] >= 0)
+		    FD_SET(pipein[1], &writefds);
+		if (pipeout[0] >= 0)
+		    FD_SET(pipeout[0], &readfds);
+		nfds = MAX(pipein[1], pipeout[0]) + 1;
+		//struct timeval to; to.tv_sec = 1;to.tv_usec=0;
+		//cerr << "pipein[1] "<< pipein[1] << " pipeout[0] " << 
+		//pipeout[0] << " nfds " << nfds << endl;
+		if (select(nfds, &readfds, &writefds, 0, 0) <= 0) {
+		    perror("select");
+		    break;
+		}
+		if (pipein[1] >= 0 && FD_ISSET(pipein[1], &writefds)) {
+		    int n = write(pipein[1], input->c_str()+nwritten, 
+				  input->length() - nwritten);
+		    if (n < 0) {
+			goto out;
+		    }
+		    nwritten += n;
+		    if (nwritten == input->length()) {
+			// cerr << "Closing output" << endl;
+			close(pipein[1]);
+			pipein[1] = -1;
+		    }
+		}
+		if (pipeout[0] > 0 && FD_ISSET(pipeout[0], &readfds)) {
+		    char buf[1024];
+		    int n = read(pipeout[0], buf, 1024);
+		    if (n == 0) {
+			goto out;
+		    } else if (n < 0) {
+			perror("read");
+			goto out;
+		    } else if (n > 0) {
+			// cerr << "READ: " << n << endl;
+			output->append(buf, n);
+		    }
+		}
+	    }
+
+	}
+    out:
+	int status;
+	pid = waitpid(pid, &status, 0);
+	if (pipein[0] >= 0)
+	    close(pipein[0]);
+	if (pipein[1] >= 0)
+	    close(pipein[1]);
+	if (pipeout[0] >= 0)
+	    close(pipeout[0]);
+	if (pipeout[1] >= 0)
+	    close(pipeout[1]);
+	return status;
+    } else {
+	if (input) {
+	    close(pipein[1]);
+	    pipein[1] = -1;
+	    if (pipein[0] != 0) {
+		dup2(pipein[0], 0);
+		close(pipein[0]);
+		pipein[0] = -1;
+	    }
+	}
+	if (output) {
+	    close(pipeout[0]);
+	    pipeout[0] = -1;
+	    if (pipeout[1] != 1) {
+		if (dup2(pipeout[1], 1) < 0) {
+		    perror("dup2");
+		}
+		if (close(pipeout[1]) < 0) {
+		    perror("close");
+		}
+		pipeout[1] = -1;
+	    }
+	}
+
+	// Count args
+	list<string>::const_iterator it;
+	int i = 0;
+	for (it = args.begin(); it != args.end(); it++) i++;
+	// Allocate arg vector (2 more for arg0 + final 0)
+	typedef const char *Ccharp;
+	Ccharp *argv;
+	argv = (Ccharp *)malloc((i+2) * sizeof(char *));
+	if (argv == 0) {
+	    cerr << "Malloc error" << endl;
+	    exit(1);
+	}
+	
+	// Fill up argv
+	argv[0] = cmd.c_str();
+	i = 1;
+	for (it = args.begin(); it != args.end(); it++) {
+	    argv[i++] = it->c_str();
+	}
+	argv[i] = 0;
+
+#if 0
+	{int i = 0;cerr << "cmd: " << cmd << endl << "ARGS:" << endl; 
+	    while (argv[i]) cerr << argv[i++] << endl;}
+#endif
+
+	execvp(cmd.c_str(), (char *const*)argv);
+	// Hu ho
+	//cerr << "Exec failed" << endl;
+	exit(1);
+    }
+}
+
+const char *data = "Une ligne de donnees\n";
+
+int main(int argc, const char **argv)
+{
+    if (argc < 2) {
+	cerr << "Usage: execmd cmd arg1 arg2 ..." << endl;
+	exit(1);
+    }
+    const string cmd = argv[1];
+    list<string> l;
+    for (int i = 2; i < argc; i++) {
+	l.push_back(argv[i]);
+    }
+    ExecCmd mexec;
+    string input, output;
+    input = data;
+    string *ip = 0;
+    //ip = &input;
+    int status = mexec.doexec(cmd, l, ip, &output);
+    cout << "Status: " << status << endl;
+    cout << "Output:" << output << endl;
+    exit (status >> 8);
+}
