@@ -50,7 +50,8 @@ Recoll
 
      * A more sophisticated query interface: the current one has no boolean
        capabilities.
-     * A pretty GUI (see above)
+     * A better GUI. So many things are badly done or missing that I won't
+       try to list them here.
      * An interactive configuration tool. You need to edit files by hand for
        now.
      * Packages, rpm or other. It's all tar files currently.
@@ -100,7 +101,7 @@ Recoll
    interface is part of libc on Linux systems, you shouldn't need to do
    anything there.
 
-    Compiling and installing
+    Compiling, installing, using
 
    See the INSTALL file.
 
