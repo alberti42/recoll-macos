@@ -1,4 +1,4 @@
- @(#$Id: README,v 1.3 2005-02-08 14:55:09 dockes Exp $  (C) 2004 J.F.Dockes
+ @(#$Id: README,v 1.4 2005-02-08 15:03:52 dockes Exp $  (C) 2004 J.F.Dockes
 
 Hello.
 
@@ -29,10 +29,7 @@ What it has:
 What it doesn't have, but will have in the not too far future:
 
  - A more sophisticated query interface: the current one only does
-   probabilistic OR'ed terms. Not even phrases, no stemming (searching for
-   a plural won't find the singular). This is very high on the priority
-   list, and will come soon because I just have to steal code from xapian
-   omega. 
+   probabilistic OR'ed terms. Does phrases, has primitive optional stemming. 
  - A pretty GUI (see above)
  - Mail folder indexing. This would be quite easy to add for single message
    folders right now, more complicated for concatenated ones, I intend to
