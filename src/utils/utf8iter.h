@@ -1,6 +1,6 @@
 #ifndef _UTF8ITER_H_INCLUDED_
 #define _UTF8ITER_H_INCLUDED_
-/* @(#$Id: utf8iter.h,v 1.2 2005-02-11 11:20:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: utf8iter.h,v 1.3 2005-03-17 14:02:06 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * A small helper class to iterate over utf8 strings. This is not an
@@ -117,9 +117,10 @@ class Utf8Iter {
 	return (unsigned int)-1;
     }
 
+    /** Set current position before next utf-8 character */
     string::size_type operator++(int) {
 	if (bad || (!cl && compute_cl() < 0)) {
-	    return string::npos;
+	    return pos = string::npos;
 	}
 	pos += cl;
 	m_charpos++;

@@ -31,6 +31,7 @@ using std::pair;
 #include "internfile.h"
 #include "textsplit.h"
 #include "smallut.h"
+#include "utf8iter.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
@@ -49,7 +50,7 @@ void RecollMain::checkExit()
     if (indexingstatus) {
 	indexingstatus = false;
 	// Make sure we reopen the db to get the results.
-	fprintf(stderr, "Indexing done: closing query database\n");
+	LOGINFO(("Indexing done: closing query database\n"));
 	rcldb->close();
     }
     if (recollNeedsExit)
@@ -91,6 +92,7 @@ static string plaintorich(const string &in, const list<string>& terms,
     myTextSplitCB cb(terms);
     TextSplit splitter(&cb, true);
     splitter.text_to_words(in);
+    bool ateol = false;
     string out = "<qt><head><title></title></head><body><p>";
     list<pair<int, int> >::iterator it = cb.tboffs.begin();
     for (unsigned int i = 0; i < in.length(); i++) {
@@ -104,8 +106,11 @@ static string plaintorich(const string &in, const list<string>& terms,
 	    }
 	}
 	if (in[i] == '\n') {
-	    out += "<br>\n";
+	    if (!ateol)
+		out += "<br>";
+	    ateol = true;
 	} else {
+	    ateol = false;
 	    out += in[i];
 	}
     }
@@ -149,9 +154,9 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
 	    if (*it1 == '%')
 		ncmd += '%';
 	    if (*it1 == 'u')
-		ncmd += doc.url;
+		ncmd += "'" + doc.url + "'";
 	    if (*it1 == 'f')
-		ncmd += fn;
+		ncmd += "'" + fn + "'";
 	} else {
 	    ncmd += *it1;
 	}
@@ -168,10 +173,6 @@ void RecollMain::reslistTE_clicked(int par, int car)
 {
     LOGDEB(("RecollMain::reslistTE_clicked: par %d, char %d\n", par, car));
     if (reslist_winfirst == -1)
-	return;
-
-    // If same doc, don't bother redisplaying
-    if (reslist_current == par - 1)
 	return;
 
     Rcl::Doc doc;
@@ -217,13 +218,23 @@ void RecollMain::reslistTE_clicked(int par, int car)
     int para = 0, index = 1;
     if (!termoffsets.empty()) {
 	index = (termoffsets.begin())->first;
-	LOGDEB1(("Setting cursor position to para %d, index %d\n",para,index));
+	LOGDEB(("Byte index: %d\n", index));
+	// Translate byte to character offset
+	string::size_type pos = 0;
+	Utf8Iter it(rich);
+	for (; pos != string::npos && (int)pos < index; it++) {
+	    pos = it.getBpos();
+	}
+	index = pos == string::npos ? 0 : it.getCpos();
+	LOGDEB(("Setting cursor position to para %d, charindex %d\n",
+		para,index));
 	previewTextEdit->setCursorPosition(0, index);
     }
     previewTextEdit->ensureCursorVisible();
     previewTextEdit->getCursorPosition(&para, &index);
-    LOGDEB1(("PREVIEW Paragraphs: %d. Cpos: %d %d\n", 
-	    previewTextEdit->paragraphs(), para, index));
+    LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
+	    previewTextEdit->length(), previewTextEdit->paragraphs(), 
+	    para, index));
 }
 
 

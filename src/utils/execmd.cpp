@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.5 2005-02-10 15:21:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.6 2005-03-17 14:02:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_EXECMD
 #include <unistd.h>
@@ -22,7 +22,7 @@ using namespace std;
 #define MAX(A,B) (A>B?A:B)
 
 int
-ExecCmd::doexec(const string &cmd, const list<string> args,
+ExecCmd::doexec(const string &cmd, const list<string>& args,
 		const string *input, string *output)
 {
     {

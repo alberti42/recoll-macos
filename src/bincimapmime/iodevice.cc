@@ -25,7 +25,7 @@
  */
 #include "iodevice.h"
 #include "convert.h" // BincStream
-#include "session.h" // getEnv/hasEnv
+//#include "session.h" // getEnv/hasEnv
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -306,6 +306,7 @@ unsigned int IODevice::getWriteCount(void) const
 //------------------------------------------------------------------------
 void IODevice::enableProtocolDumping(void)
 {
+#if 0
   BincStream ss;
   ss << "/tmp/bincimap-dump-" << (int) time(0) << "-" 
      << Session::getInstance().getIP() << "-XXXXXX";
@@ -314,4 +315,5 @@ void IODevice::enableProtocolDumping(void)
   if (dumpfd == -1)
     dumpfd = 0;
   delete safename;
+#endif
 }

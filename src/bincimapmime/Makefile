@@ -1,7 +1,9 @@
 include ../mk/sysconf
 
 LIBS = libmime.a
-all: $(LIBS)
+PROGS = trbinc
+
+all: $(LIBS) $(PROGS)
 
 SRCS = mime-getpart.cc mime-parsefull.cc mime-parseonlyheader.cc \
      mime-printbody.cc mime-printdoc.cc mime-printheader.cc mime.cc \
@@ -18,6 +20,9 @@ libmime.a : $(OBJS)
 .cc .o : 
 	$(CXX) $(CXXFLAGS) -c $<
 
+TRBINCOBJS = trbinc.o
+trbinc: trbinc.o
+	$(CXX) -o trbinc trbinc.o libmime.a 
 
 clean: 
 	rm -f *.o $(LIBS)

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.6 2005-02-10 15:21:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.7 2005-03-17 14:02:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -139,7 +139,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 
     // Set up common fields:
     char ascdate[20];
-    sprintf(ascdate, "%ld", long(stp->st_mtime));
+    sprintf(ascdate, "%ld", long(stp->st_ctime));
     doc.mtime = ascdate;
 
     // Do database-specific work to update document data

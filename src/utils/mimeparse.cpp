@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.1 2005-01-26 11:45:55 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.2 2005-03-17 14:02:06 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMEPARSE
@@ -36,7 +36,7 @@ MimeHeaderValue parseMimeHeaderValue(const string &ein)
 {
     string in = ein;
     MimeHeaderValue out;
-    string::size_type pos, pos1;
+    string::size_type pos;
 
     pos = in.find_first_not_of(WHITE);
     if (pos == string::npos)
