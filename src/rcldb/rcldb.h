@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.11 2005-02-08 14:45:54 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.12 2005-02-10 15:21:12 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -72,6 +72,7 @@ class Db {
     bool add(const string &filename, const Doc &doc);
     bool needUpdate(const string &filename, const struct stat *stp);
     bool purge();
+    bool createStemDb(const string &lang);
 
     // Query-related functions
 

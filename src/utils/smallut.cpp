@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.3 2005-02-09 12:07:30 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.4 2005-02-10 15:21:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_SMALLUT
 #include <string>
@@ -47,6 +47,17 @@ bool maketmpdir(string& tdir)
     }
     return true;
 }
+
+string stringlistdisp(const list<string>& sl)
+{
+    string s;
+    for (list<string>::const_iterator it = sl.begin(); it!= sl.end(); it++)
+	s += "[" + *it + "] ";
+    if (!s.empty())
+	s.erase(s.length()-1);
+    return s;
+}
+	    
 
 int stringicmp(const string & s1, const string& s2) 
 {

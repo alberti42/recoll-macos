@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.23 2005-02-08 14:45:54 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.24 2005-02-10 15:21:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -16,8 +16,11 @@ using namespace std;
 #include "unacpp.h"
 #include "conftree.h"
 #include "debuglog.h"
+#include "pathut.h"
+#include "smallut.h"
 
 #include "xapian.h"
+#include <xapian/stem.h>
 
 // Data for a xapian database. There could actually be 2 different
 // ones for indexing or query as there is not much in common.
@@ -25,6 +28,8 @@ class Native {
  public:
     bool isopen;
     bool iswritable;
+    string basedir;
+
     // Indexing
     Xapian::WritableDatabase wdb;
     vector<bool> updated;
@@ -102,9 +107,6 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
 	    ndb->iswritable = true;
 	    break;
 	case DbTrunc:
-	    ndb->wdb = 
-		Xapian::WritableDatabase(dir, Xapian::DB_CREATE_OR_OVERWRITE);
-	    ndb->iswritable = true;
 	    break;
 	case DbRO:
 	default:
@@ -113,6 +115,7 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
 	    break;
 	}
 	ndb->isopen = true;
+	ndb->basedir = dir;
 	return true;
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg();
@@ -399,17 +402,152 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
     return true;
 }
 
+/// Compute name of stem db for given base database and language
+static string stemdbname(const string& basename, string lang)
+{
+    string nm = basename;
+    path_cat(nm, string("stem_") + lang);
+    return nm;
+}
+
+// Is char non-lowercase ascii ?
+inline static bool
+p_notlowerorutf(unsigned int c)
+{
+    if (c < 'a' || (c > 'z' && c < 128))
+	return true;
+    return false;
+}
+
+/**
+ * Create database of stem to parents associations for a given language.
+ * We walk the list of all terms, stem them, and create another Xapian db
+ * with documents indexed by a single term (the stem), and with the list of
+ * parent terms in the document data.
+ */
+bool Rcl::Db::createStemDb(const string& lang)
+{
+    LOGDEB(("Rcl::Db::createStemDb(%s)\n", lang.c_str()));
+    if (pdata == 0)
+	return false;
+    Native *ndb = (Native *)pdata;
+    if (ndb->isopen == false || ndb->iswritable == false)
+	return false;
+
+    // First build the in-memory stem database:
+    // We walk the list of all terms, and stem each. 
+    //   If the stem is identical to the term, no need to create an entry
+    // Else, we add an entry to the multimap.
+    // At the end, we only save stem-terms associations with several terms, the
+    // others are not useful
+    multimap<string, string> assocs;
+    // Statistics
+    int nostem=0; // Dont even try: not-alphanum (incomplete for now)
+    int stemconst=0; // Stem == term
+    int stemdiff=0;  // Count of all different stems
+    int stemmultiple = 0; // Count of stems with multiple derivatives
+    try {
+	Xapian::Stem stemmer(lang);
+	Xapian::TermIterator it;
+	for (it = ndb->wdb.allterms_begin(); 
+	     it != ndb->wdb.allterms_end(); it++) {
+	    // If it has any non-lowercase 7bit char, cant be stemmable
+	    string::iterator sit = (*it).begin(), eit = sit + (*it).length();
+	    if ((sit = find_if(sit, eit, p_notlowerorutf)) != eit) {
+		++nostem;
+		// LOGDEB(("stemskipped: '%s', because of 0x%x\n", 
+		// (*it).c_str(), *sit));
+		continue;
+	    }
+	    string stem = stemmer.stem_word(*it);
+	    //cerr << "word " << *it << " stem " << stem << endl;
+	    if (stem == *it) {
+		++stemconst;
+		continue;
+	    }
+	    assocs.insert(pair<string,string>(stem, *it));
+	}
+    } catch (...) {
+	LOGERR(("Stem database build failed: no stemmer for %s ? \n", 
+		lang.c_str()));
+	return false;
+    }
+
+    // Create xapian database for stem relations
+    string stemdbdir = stemdbname(ndb->basedir, lang);
+    string ermsg = "NOERROR";
+    Xapian::WritableDatabase sdb;
+    try {
+	sdb = Xapian::WritableDatabase(stemdbdir, 
+				       Xapian::DB_CREATE_OR_OVERWRITE);
+    } catch (const Xapian::Error &e) {
+	ermsg = e.get_msg();
+    } catch (const string &s) {
+	ermsg = s;
+    } catch (const char *s) {
+	ermsg = s;
+    } catch (...) {
+	ermsg = "Caught unknown exception";
+    }
+    if (ermsg != "NOERROR") {
+	LOGERR(("Rcl::Db::createstemdb: exception while opening '%s': %s\n", 
+		stemdbdir.c_str(), ermsg.c_str()));
+	return false;
+    }
+
+    // Enter pseud-docs in db. Walk the multimap, only enter
+    // associations where there are several parent terms
+    string stem;
+    list<string> derivs;
+    for (multimap<string,string>::const_iterator it = assocs.begin();
+	 it != assocs.end(); it++) {
+	if (stem == it->first) {
+	    // Staying with same stem
+	    derivs.push_back(it->second);
+	    // cerr << " " << it->second << endl;
+	} else {
+	    // Changing stems 
+	    ++stemdiff;
+	    if (derivs.size() > 1) {
+		// Previous stem has multiple derivatives. Enter in db
+		++stemmultiple;
+		Xapian::Document newdocument;
+		newdocument.add_term(stem);
+		// The doc data is just parents=blank-separated-list
+		string record = "parents=";
+		for (list<string>::const_iterator it = derivs.begin(); 
+		     it != derivs.end(); it++) {
+		    record += *it + " ";
+		}
+		record += "\n";
+		LOGDEB1(("stemdocument data: %s\n", record.c_str()));
+		newdocument.set_data(record);
+		try {
+		    sdb.replace_document(stem, newdocument);
+		} catch (...) {
+		    LOGERR(("Rcl::Db::createstemdb: replace failed\n"));
+		    return false;
+		}
+	    }
+	    derivs.clear();
+	    stem = it->first;
+	    derivs.push_back(it->second);
+	    //	    cerr << "\n" << stem << " " << it->second;
+	}
+    }
+    LOGDEB(("Stem map size: %d stems %d mult %d no %d const %d\n", 
+	    assocs.size(), stemdiff, stemmultiple, nostem, stemconst));
+    return true;
+}
+
+/**
+ * This is called at the end of an indexing session, to delete the
+ *  documents for files that are no longer there. We also build the
+ *  stem database while we are at it.
+ */
 bool Rcl::Db::purge()
 {
     LOGDEB(("Rcl::Db::purge\n"));
-    // There seems to be problems with the document delete code, when
-    // we do this, the database is not actually updated. Especially,
-    // if we delete a bunch of docs, so that there is a hole in the
-    // docids at the beginning, we can't add anything (appears to work
-    // and does nothing). Maybe related to the exceptions below when
-    // trying to delete an unexistant document ?
-    // Flushing before trying the deletes seeems to work around the problem
-
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
@@ -418,6 +556,13 @@ bool Rcl::Db::purge()
     if (ndb->isopen == false || ndb->iswritable == false)
 	return false;
 
+    // There seems to be problems with the document delete code, when
+    // we do this, the database is not actually updated. Especially,
+    // if we delete a bunch of docs, so that there is a hole in the
+    // docids at the beginning, we can't add anything (appears to work
+    // and does nothing). Maybe related to the exceptions below when
+    // trying to delete an unexistant document ?
+    // Flushing before trying the deletes seeems to work around the problem
     ndb->wdb.flush();
     for (Xapian::docid did = 1; did < ndb->updated.size(); ++did) {
 	if (!ndb->updated[did]) {
@@ -429,6 +574,7 @@ bool Rcl::Db::purge()
 	    }
 	}
     }
+    ndb->wdb.flush();
     return true;
 }
 
@@ -446,46 +592,57 @@ class wsQData : public TextSplitCB {
 	return s;
     }
     bool takeword(const std::string &term, int , int, int) {
-	LOGDEB(("Takeword: %s\n", term.c_str()));
+	LOGDEB1(("wsQData::takeword: %s\n", term.c_str()));
 	terms.push_back(term);
 	return true;
     }
 };
 
-#include <xapian/stem.h>
 
-// Expand term to list of all terms which expand to the same term.
-// This is currently awfully inefficient as we actually stem the whole
-// db term list ! Need to build an efficient structure when finishing
-// indexing, but good enough for testing
+// Expand term to list of all terms which stem to the same term.
 static list<string> stemexpand(Native *ndb, string term, const string& lang)
 {
     list<string> explist;
     try {
 	Xapian::Stem stemmer(lang);
 	string stem = stemmer.stem_word(term);
-	LOGDEB(("stemexpand: term '%s' stem '%s'\n", 
-		term.c_str(), stem.c_str()));
-	Xapian::TermIterator it;
-	for (it = ndb->db.allterms_begin(); 
-	     it != ndb->db.allterms_end(); it++) {
-	    string stem1 = stemmer.stem_word(*it);
-	    if (stem == stem1)
-		explist.push_back(*it);
-	}
-	if (explist.size() == 0)
+	LOGDEB(("stemexpand: '%s' -> '%s'\n", term.c_str(), stem.c_str()));
+	// Try to fetch the doc from the stem db
+	string stemdbdir = stemdbname(ndb->basedir, lang);
+	Xapian::Database sdb(stemdbdir);
+	LOGDEB1(("Rcl::Db::stemexpand: %s lastdocid: %d\n", 
+		stemdbdir.c_str(), sdb.get_lastdocid()));
+	if (!sdb.term_exists(stem)) {
+	    LOGDEB1(("Rcl::Db::stemexpand: no term for %s\n", stem.c_str()));
 	    explist.push_back(term);
-	if (1) {
-	    string expanded;
-	    for (list<string>::const_iterator it = explist.begin(); 
-		 it != explist.end(); it++) {
-		expanded += *it + " ";
-	    }
-	    LOGDEB(("stemexpand: expanded list: %s\n", expanded.c_str()));
+	    return explist;
 	}
+	Xapian::PostingIterator did = sdb.postlist_begin(stem);
+	if (did == sdb.postlist_end(stem)) {
+	    LOGDEB1(("Rcl::Db::stemexpand: no term(1) for %s\n",stem.c_str()));
+	    explist.push_back(term);
+	    return explist;
+	}
+	Xapian::Document doc = sdb.get_document(*did);
+	string data = doc.get_data();
+	// No need for a conftree, but we need to massage the data a little
+	string::size_type pos = data.find_first_of("=");
+	++pos;
+	string::size_type pos1 = data.find_last_of("\n");
+	if (pos == string::npos || pos1 == string::npos ||pos1 <= pos) { // ??
+	    explist.push_back(term);
+	    return explist;
+	}	    
+	ConfTree::stringToStrings(data.substr(pos, pos1-pos), explist);
+	if (find(explist.begin(), explist.end(), term) == explist.end()) {
+	    explist.push_back(term);
+	}
+	LOGDEB(("Rcl::Db::stemexpand: %s ->  %s\n", stem.c_str(),
+		stringlistdisp(explist).c_str()));
     } catch (...) {
-	LOGERR(("Stemming failed: no stemmer for %s ? \n", lang.c_str()));
+	LOGERR(("stemexpand: error accessing stem db\n"));
 	explist.push_back(term);
+	return explist;
     }
     return explist;
 }
@@ -519,7 +676,8 @@ bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts,
 	wsQData splitData;
 	TextSplit splitter(&splitData, true);
 	splitter.text_to_words(*it);
-	LOGDEB(("Splitter term count: %d\n", splitData.terms.size()));
+	LOGDEB1(("Rcl::Db::setquery: splitter term count: %d\n", 
+		splitData.terms.size()));
 	switch(splitData.terms.size()) {
 	case 0: continue;// ??
 	case 1: {
@@ -578,7 +736,7 @@ int Rcl::Db::getResCnt()
 
 bool Rcl::Db::getDoc(int i, Doc &doc, int *percent)
 {
-    LOGDEB(("Rcl::Db::getDoc: %d\n", i));
+    LOGDEB1(("Rcl::Db::getDoc: %d\n", i));
     Native *ndb = (Native *)pdata;
     if (!ndb || !ndb->enquire) {
 	LOGERR(("Rcl::Db::getDoc: no query opened\n"));

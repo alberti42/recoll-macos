@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.5 2005-02-09 12:07:30 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.6 2005-02-10 15:21:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -34,7 +34,7 @@ using namespace std;
 /**
  * Bunch holder for data used while indexing a directory tree
  */
-class DbIndexer {
+class DbIndexer : public FsTreeWalkerCB {
     FsTreeWalker walker;
     RclConfig *config;
     string dbdir;
@@ -46,7 +46,7 @@ class DbIndexer {
 	: config(cnf), dbdir(dbd), topdirs(top)
     { }
 
-    ~DbIndexer() {
+    virtual ~DbIndexer() {
 	if (tmpdir.length()) {
 	    wipedir(tmpdir);
 	    if (rmdir(tmpdir.c_str()) < 0) {
@@ -55,9 +55,9 @@ class DbIndexer {
 	    }
 	}
     }
-    friend FsTreeWalker::Status 
-      indexfile(void *, const std::string &, const struct stat *, 
-		FsTreeWalker::CbFlag);
+
+    FsTreeWalker::Status 
+    processone(const std::string &, const struct stat *, FsTreeWalker::CbFlag);
 
     bool index();
 };
@@ -79,7 +79,7 @@ bool DbIndexer::index()
 	 it != topdirs->end(); it++) {
 	LOGDEB(("DbIndexer::index: Indexing %s into %s\n", it->c_str(), 
 		dbdir.c_str()));
-	if (walker.walk(*it, indexfile, this) != FsTreeWalker::FtwOk) {
+	if (walker.walk(*it, *this) != FsTreeWalker::FtwOk) {
 	    LOGERR(("DbIndexer::index: error while indexing %s\n", 
 		    it->c_str()));
 	    db.close();
@@ -87,6 +87,18 @@ bool DbIndexer::index()
 	}
     }
     db.purge();
+
+    // Create stemming databases
+    string slangs;
+    if (config->getConfParam("indexstemminglanguages", slangs)) {
+	list<string> langs;
+	ConfTree::stringToStrings(slangs, langs);
+	for (list<string>::const_iterator it = langs.begin(); 
+	     it != langs.end(); it++) {
+	    db.createStemDb(*it);
+	}
+    }
+
     if (!db.close()) {
 	LOGERR(("DbIndexer::index: error closing database in %s\n", 
 		dbdir.c_str()));
@@ -105,26 +117,24 @@ bool DbIndexer::index()
  * the actual indexing work.
  */
 FsTreeWalker::Status 
-indexfile(void *cdata, const std::string &fn, const struct stat *stp, 
-	  FsTreeWalker::CbFlag flg)
+DbIndexer::processone(const std::string &fn, const struct stat *stp, 
+		   FsTreeWalker::CbFlag flg)
 {
-    DbIndexer *me = (DbIndexer *)cdata;
-
     // If we're changing directories, possibly adjust parameters.
     if (flg == FsTreeWalker::FtwDirEnter || 
 	flg == FsTreeWalker::FtwDirReturn) {
-	me->config->setKeyDir(fn);
+	config->setKeyDir(fn);
 	return FsTreeWalker::FtwOk;
     }
 
     // Check db up to date ?
-    if (!me->db.needUpdate(fn, stp)) {
+    if (!db.needUpdate(fn, stp)) {
 	LOGDEB(("indexfile: up to date: %s\n", fn.c_str()));
 	return FsTreeWalker::FtwOk;
     }
 
     Rcl::Doc doc;
-    if (!internfile(fn, me->config, doc, me->tmpdir))
+    if (!internfile(fn, config, doc, tmpdir))
 	return FsTreeWalker::FtwOk;
 
     // Set up common fields:
@@ -133,7 +143,7 @@ indexfile(void *cdata, const std::string &fn, const struct stat *stp,
     doc.mtime = ascdate;
 
     // Do database-specific work to update document data
-    if (!me->db.add(fn, doc)) 
+    if (!db.add(fn, doc)) 
 	return FsTreeWalker::FtwError;
 
     return FsTreeWalker::FtwOk;

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.4 2005-02-08 09:34:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.5 2005-02-10 15:21:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_EXECMD
 #include <unistd.h>
@@ -131,7 +131,7 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 	    close(pipeout[0]);
 	if (pipeout[1] >= 0)
 	    close(pipeout[1]);
-	LOGDEB(("ExecCmd::doexec: father got status 0x%x\n", status));
+	LOGDEB1(("ExecCmd::doexec: father got status 0x%x\n", status));
 	return status;
     } else {
 	if (input) {

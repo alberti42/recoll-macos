@@ -86,11 +86,7 @@ class myTextSplitCB : public TextSplitCB {
 static string plaintorich(const string &in, const list<string>& terms,
 			  list<pair<int, int> >&termoffsets)
 {
-    {string t;
-	for (list<string>::const_iterator it = terms.begin();
-	     it != terms.end();it++) t += "'" + *it + "' ";
-	LOGDEB(("plaintorich: terms: %s\n", t.c_str()));
-    }
+    LOGDEB(("plaintorich: terms: %s\n", stringlistdisp(terms).c_str()));
 
     myTextSplitCB cb(terms);
     TextSplit splitter(&cb, true);

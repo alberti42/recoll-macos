@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.2 2004-12-12 08:58:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.3 2005-02-10 15:21:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_FSTREEWALK
@@ -53,8 +53,8 @@ int FsTreeWalker::getErrCnt()
     return data->errors;
 }
 
-FsTreeWalker::Status FsTreeWalker::walk(const string &top, CbType fun, 
-					void *cdata)
+FsTreeWalker::Status FsTreeWalker::walk(const string &top, 
+					FsTreeWalkerCB& cb)
 {
     Status status = FtwOk;
     struct stat st;
@@ -68,12 +68,12 @@ FsTreeWalker::Status FsTreeWalker::walk(const string &top, CbType fun,
 	return FtwError;
     }
     if (S_ISDIR(st.st_mode)) {
-	if ((status = fun(cdata, top, &st, FtwDirEnter)) & 
+	if ((status = cb.processone(top, &st, FtwDirEnter)) & 
 	    (FtwStop|FtwError)) {
 	    return status;
 	}
     } else if (S_ISREG(st.st_mode)) {
-	return fun(cdata, top, &st, FtwRegular);
+	return cb.processone(top, &st, FtwRegular);
     } else {
 	return status;
     }
@@ -110,17 +110,17 @@ FsTreeWalker::Status FsTreeWalker::walk(const string &top, CbType fun,
 	}
 	if (S_ISDIR(st.st_mode)) {
 	    if (data->options & FtwNoRecurse) {
-		status = fun(cdata, fn, &st, FtwDirEnter);
+		status = cb.processone(fn, &st, FtwDirEnter);
 	    } else {
-		status=walk(fn, fun, cdata);
+		status=walk(fn, cb);
 	    }
 	    if (status & (FtwStop|FtwError))
 		goto out;
-	    if ((status = fun(cdata, top, &st, FtwDirReturn)) 
+	    if ((status = cb.processone(top, &st, FtwDirReturn)) 
 		& (FtwStop|FtwError))
 		goto out;
 	} else if (S_ISREG(st.st_mode)) {
-	    if ((status = fun(cdata, fn, &st, FtwRegular)) & 
+	    if ((status = cb.processone(fn, &st, FtwRegular)) & 
 		(FtwStop|FtwError)) {
 		goto out;
 	    }
@@ -143,17 +143,22 @@ FsTreeWalker::Status FsTreeWalker::walk(const string &top, CbType fun,
 
 using namespace std;
 
-FsTreeWalker::Status walkfunc(void *, const string &path, 
-			      const struct stat *st,
-			      FsTreeWalker::CbFlag flg)
-{
-    if (flg == FsTreeWalker::FtwDirEnter) {
-	cout << "[Entering " << path << "]" << endl;
-    } else if (flg == FsTreeWalker::FtwRegular) {
-	cout << path << endl;
+class myCB : public FsTreeWalkerCB {
+ public:
+    FsTreeWalker::Status processone(const string &path, 
+				 const struct stat *st,
+				 FsTreeWalker::CbFlag flg)
+    {
+	if (flg == FsTreeWalker::FtwDirEnter) {
+	    cout << "[Entering " << path << "]" << endl;
+	} else if (flg == FsTreeWalker::FtwDirReturn) {
+	    cout << "[Returning to " << path << "]" << endl;
+	} else if (flg == FsTreeWalker::FtwRegular) {
+	    cout << path << endl;
+	}
+	return FsTreeWalker::FtwOk;
     }
-    return FsTreeWalker::FtwOk;
-}
+};
 
 int main(int argc, const char **argv)
 {
@@ -162,7 +167,8 @@ int main(int argc, const char **argv)
 	exit(1);
     }
     FsTreeWalker walker;
-    walker.walk(argv[1], walkfunc, 0);
+    myCB cb;
+    walker.walk(argv[1], cb);
     if (walker.getErrCnt() > 0)
 	cout << walker.getReason();
 }

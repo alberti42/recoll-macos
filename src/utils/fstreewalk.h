@@ -1,9 +1,14 @@
 #ifndef _FSTREEWALK_H_INCLUDED_
 #define _FSTREEWALK_H_INCLUDED_
-/* @(#$Id: fstreewalk.h,v 1.1 2004-12-10 18:13:13 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: fstreewalk.h,v 1.2 2005-02-10 15:21:12 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
+#ifndef NO_NAMESPACES
+using std::string;
+#endif
+
+class FsTreeWalkerCB;
 
 class FsTreeWalker {
  public:
@@ -12,12 +17,9 @@ class FsTreeWalker {
 		 FtwStatAll = FtwError|FtwStop};
     enum Options {FtwOptNone = 0, FtwNoRecurse = 1, FtwFollow = 2};
 
-    typedef Status (*CbType)(void *cdata, 
-			     const std::string &, const struct stat *, CbFlag);
-
     FsTreeWalker(Options opts = FtwOptNone);
     ~FsTreeWalker();
-    Status walk(const std::string &dir, CbType fun, void *cdata);
+    Status walk(const std::string &dir, FsTreeWalkerCB& cb);
     std::string getReason();
     int getErrCnt();
  private:
@@ -25,4 +27,11 @@ class FsTreeWalker {
     Internal *data;
 };
 
+class FsTreeWalkerCB {
+ public:
+    virtual ~FsTreeWalkerCB() {}
+    virtual FsTreeWalker::Status 
+	processone(const string &, const struct stat *, FsTreeWalker::CbFlag) 
+	= 0;
+};
 #endif /* _FSTREEWALK_H_INCLUDED_ */
