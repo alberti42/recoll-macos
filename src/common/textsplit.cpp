@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.3 2004-12-15 15:00:36 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.4 2004-12-17 13:01:01 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -57,8 +57,11 @@ static void setcharclasses()
     init = 1;
 }
 
-void TextSplit::emitterm(string &w, int pos, bool doerase = true)
+bool TextSplit::emitterm(string &w, int pos, bool doerase = true)
 {
+    if (!termsink)
+	return false;
+
     // Maybe trim end of word. These are chars that we would keep inside 
     // a word or span, but not at the end
     while (w.length() > 0) {
@@ -73,12 +76,13 @@ void TextSplit::emitterm(string &w, int pos, bool doerase = true)
 	}
     }
  breakloop:
-    if (w.length()) {
-	if (termsink)
-	    termsink(cdata, w, pos);
+    if (w.length() > 0 && w.length() < (unsigned)maxWordLength) {
+	bool ret = termsink(cdata, w, pos);
+	if (doerase)
+	    w.erase();
+	return ret;
     }
-    if (doerase)
-	w.erase();
+    return true;
 }
 
 /* 
@@ -86,7 +90,7 @@ void TextSplit::emitterm(string &w, int pos, bool doerase = true)
  * handled specially so that special cases, ie, c++ and dockes@okyz.com etc, 
  * are handled properly,
  */
-void TextSplit::text_to_words(const string &in)
+bool TextSplit::text_to_words(const string &in)
 {
     setcharclasses();
     string span;
@@ -103,9 +107,11 @@ void TextSplit::text_to_words(const string &in)
 	SPACE:
 	    if (word.length()) {
 		if (span.length() != word.length()) {
-		    emitterm(span, spanpos);
+		    if (!emitterm(span, spanpos)) 
+			return false;
 		}
-		emitterm(word, wordpos++);
+		if (!emitterm(word, wordpos++))
+		    return false;
 		number = false;
 	    }
 	    spanpos = wordpos;
@@ -121,9 +127,11 @@ void TextSplit::text_to_words(const string &in)
 		}
 	    } else {
 		if (span.length() != word.length()) {
-		    emitterm(span, spanpos, false);
+		    if (!emitterm(span, spanpos, false))
+			return false;
 		}
-		emitterm(word, wordpos++);
+		if (!emitterm(word, wordpos++))
+		    return false;
 		number = false;
 		span += c;
 	    }
@@ -132,9 +140,11 @@ void TextSplit::text_to_words(const string &in)
 	case '@':
 	    if (word.length()) {
 		if (span.length() != word.length()) {
-		    emitterm(span, spanpos, false);
+		    if (!emitterm(span, spanpos, false))
+			return false;
 		}
-		emitterm(word, wordpos++);
+		if (!emitterm(word, wordpos++))
+		    return false;
 		number = false;
 	    } else
 		word += c;
@@ -145,7 +155,8 @@ void TextSplit::text_to_words(const string &in)
 		word += c;
 	    } else {
 		if (word.length()) {
-		    emitterm(word, wordpos++);
+		    if (!emitterm(word, wordpos++))
+			return false;
 		    number = false;
 		} else 
 		    word += c;
@@ -155,7 +166,8 @@ void TextSplit::text_to_words(const string &in)
 	case '#': 
 	    // Keep it only at end of word...
 	    if (word.length() > 0 && 
-		(i == in.length() -1 || charclasses[int(in[i+1])] == SPACE)) {
+		(i == in.length() -1 || charclasses[int(in[i+1])] == SPACE ||
+		 in[i+1] == '\n' || in[i+1] == '\r')) {
 		word += c;
 		span += c;
 	    }
@@ -190,9 +202,11 @@ void TextSplit::text_to_words(const string &in)
     }
     if (word.length()) {
 	if (span.length() != word.length())
-	    emitterm(span, spanpos);
-	emitterm(word, wordpos);
+	    if (!emitterm(span, spanpos))
+		return false;
+	return emitterm(word, wordpos);
     }
+    return true;
 }
 
 #else  // TEST driver ->
@@ -208,10 +222,10 @@ void TextSplit::text_to_words(const string &in)
 
 using namespace std;
 
-int termsink(void *, const string &term, int pos)
+bool termsink(void *, const string &term, int pos)
 {
     cout << pos << " " << term << endl;
-    return 0;
+    return true;
 }
 
 

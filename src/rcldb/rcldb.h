@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.2 2004-12-15 15:00:36 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.3 2004-12-17 13:01:01 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -13,11 +13,13 @@ namespace Rcl {
  */
 class Doc {
  public:
+    string mimetype;
+    string mtime;       // Modification time as decimal ascii
     string origcharset;
     string title;
-    string abstract;
-    string keywords;
     string text;
+    string keywords;
+    string abstract;
 };
 
 /**

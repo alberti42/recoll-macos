@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.3 2004-12-15 15:00:37 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.4 2004-12-17 13:01:01 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -29,20 +29,31 @@ bool textPlainToDoc(RclConfig *conf, const string &fn,
     if (!file_to_string(fn, otext))
 	return false;
 	
-    // Try to guess charset, then convert to utf-8, and fill document fields
+    // Try to guess charset, then convert to utf-8, and fill document
+    // fields The charset guesser really doesnt work well in general
+    // and should be avoided (especially for short documents)
     string charset;
     if (conf->guesscharset) {
 	charset = csguess(otext, conf->defcharset);
     } else
 	charset = conf->defcharset;
     string utf8;
-    if (transcode(otext, charset, utf8, "UTF-8"))
+    cerr << "textPlainToDoc: transcod from " << charset << " to  UTF-8" 
+	 << endl;
+
+    if (!transcode(otext, utf8, charset, "UTF-8")) {
+	cerr << "textPlainToDoc: transcode failed: charset '" << charset
+	     << "' to UTF-8: "<< utf8 << endl;
+	otext.erase();
 	return 0;
+    }
 
     Rcl::Doc out;
     out.origcharset = charset;
     out.text = utf8;
+    //out.text = otext;
     docout = out;
+    cerr << utf8 << endl;
     return true;
 }
 
@@ -182,6 +193,12 @@ indexfile(void *cdata, const std::string &fn, const struct stat *stp,
     Rcl::Doc doc;
     if (!fun(me->config, fn,  mime, doc))
 	return FsTreeWalker::FtwOk;
+
+    // Set up common fields:
+    doc.mimetype = mime;
+    char ascdate[20];
+    sprintf(ascdate, "%ld", long(stp->st_mtime));
+    doc.mtime = ascdate;
 
     // Set up xapian document, add postings and misc fields, 
     // add to or update database.

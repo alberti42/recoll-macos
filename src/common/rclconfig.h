@@ -1,6 +1,6 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.2 2004-12-15 15:00:36 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.3 2004-12-17 13:01:01 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "conftree.h"
 
@@ -30,7 +30,7 @@ class RclConfig {
 	conf->get("defaultcharset", defcharset, keydir);
 	conf->get("defaultlanguage", deflang, keydir);
 	string str;
-	conf->get("guesscharset", deflang, str);
+	conf->get("guesscharset", str, keydir);
 	guesscharset = ConfTree::stringToBool(str);
     }
     bool getConfParam(const string &name, string &value) 
