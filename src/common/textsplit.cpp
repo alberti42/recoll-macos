@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.2 2004-12-14 17:49:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.3 2004-12-15 15:00:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -35,24 +35,24 @@ static void setcharclasses()
     static int init = 0;
     if (init)
 	return;
-    int i;
+    unsigned int i;
     memset(charclasses, LETTER, sizeof(charclasses));
 
     char digits[] = "0123456789";
     for (i = 0; i  < sizeof(digits); i++)
-	charclasses[digits[i]] = DIGIT;
+	charclasses[int(digits[i])] = DIGIT;
 
     char blankspace[] = "\t\v\f ";
     for (i = 0; i < sizeof(blankspace); i++)
-	charclasses[blankspace[i]] = SPACE;
+	charclasses[int(blankspace[i])] = SPACE;
 
     char seps[] = "!\"$%&()/<=>[\\]^{|}~:;,*";
     for (i = 0; i  < sizeof(seps); i++)
-	charclasses[seps[i]] = SPACE;
+	charclasses[int(seps[i])] = SPACE;
 
     char special[] = ".@+-,#'\n\r";
     for (i = 0; i  < sizeof(special); i++)
-	charclasses[special[i]] = special[i];
+	charclasses[int(special[i])] = special[i];
 
     init = 1;
 }
@@ -95,7 +95,7 @@ void TextSplit::text_to_words(const string &in)
     int wordpos = 0;
     int spanpos = 0;
 
-    for (int i = 0; i < in.length(); i++) {
+    for (unsigned int i = 0; i < in.length(); i++) {
 	int c = in[i];
 	int cc = charclasses[c]; 
 	switch (cc) {
@@ -114,7 +114,7 @@ void TextSplit::text_to_words(const string &in)
 	case '-':
 	case '+':
 	    if (word.length() == 0) {
-		if (i < in.length() || charclasses[in[i+1]] == DIGIT) {
+		if (i < in.length() || charclasses[int(in[i+1])] == DIGIT) {
 		    number = true;
 		    word += c;
 		    span += c;
@@ -155,7 +155,7 @@ void TextSplit::text_to_words(const string &in)
 	case '#': 
 	    // Keep it only at end of word...
 	    if (word.length() > 0 && 
-		(i == in.length() -1 || charclasses[in[i+1]] == SPACE)) {
+		(i == in.length() -1 || charclasses[int(in[i+1])] == SPACE)) {
 		word += c;
 		span += c;
 	    }

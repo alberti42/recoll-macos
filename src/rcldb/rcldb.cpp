@@ -1,6 +1,8 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.1 2004-12-14 17:50:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.2 2004-12-15 15:00:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
+
+#include <sys/stat.h>
 
 #include <iostream>
 #include <string>
@@ -27,7 +29,7 @@ class Native {
 
 Rcl::Db::Db() 
 {
-    pdata = new Native;
+    //    pdata = new Native;
 }
 
 Rcl::Db::~Db()
@@ -56,6 +58,7 @@ Rcl::Db::~Db()
 
 bool Rcl::Db::open(const string& dir, OpenMode mode)
 {
+    return true;
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
@@ -89,8 +92,10 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
     }
     return false;
 }
+
 bool Rcl::Db::close()
 {
+    return true;
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
@@ -119,3 +124,21 @@ bool Rcl::Db::close()
 	return true;
     return false;
 }
+
+bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
+{
+    return true;
+}
+
+
+bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
+{
+    return true;
+    // TOBEDONE: Check if file has already been indexed, and has changed since
+    // - Make path term, 
+    // - query db: postlist_begin->docid
+    // - fetch doc (get_document(docid)
+    // - check date field, maybe skip
+}
+
+

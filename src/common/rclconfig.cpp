@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.1 2004-12-14 17:50:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.2 2004-12-15 15:00:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -9,10 +9,6 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.1 2004-12-14 17:50:28 dockes Ex
 #include "conftree.h"
 
 using namespace std;
-
-ConfTree *getConfig()
-{
-}
 
 RclConfig::RclConfig()
     : m_ok(false), conf(0), mimemap(0), mimeconf(0)

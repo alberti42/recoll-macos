@@ -1,18 +1,41 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: csguess.cpp,v 1.1 2004-12-15 08:21:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: csguess.cpp,v 1.2 2004-12-15 15:00:37 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
-// This code was converted from estraier / qdbm / myconf.c
+
+#ifndef TEST_CSGUESS
+
+// This code was converted from estraier / qdbm / myconf.c:
+
+/**************************************************************************
+ * Copyright (C) 2000-2004 Mikio Hirabayashi
+ * 
+ * This file is part of QDBM, Quick Database Manager.  
+ * 
+ * QDBM is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License or any later
+ * version.  QDBM is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+ * License for more details.  You should have received a copy of the GNU
+ * Lesser General Public License along with QDBM; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ * 02111-1307 USA.
+ * *********************************************************/
+
 #include <errno.h>
 
-#include <iconv.h>
-#include "csguess.h"
-
 #include <string>
+#include <iostream>
 using std::string;
 
+#include <iconv.h>
+
+#include "csguess.h"
+
 // The values from estraier were 32768, 256, 0.001
-const int ICONVCHECKSIZ = 4000;
-const int ICONVMISSMAX  = 10;
+const int ICONVCHECKSIZ = 32768;
+const int ICONVMISSMAX  = 256;
 const double ICONVALLWRAT = 0.001;
 
 // Try to transcode and count errors (for charset guessing)
@@ -20,17 +43,18 @@ static int transcodeErrCnt(const char *ptr, int size,
 			   const char *icode, const char *ocode)
 {
     iconv_t ic;
-    char obuf[ICONVCHECKSIZ], *wp, *rp;
+    char obuf[2*ICONVCHECKSIZ], *wp, *rp;
     size_t isiz, osiz;
     int miss;
     isiz = size;
-    if((ic = iconv_open(ocode, icode)) == (iconv_t)-1) return ICONVMISSMAX;
+    if((ic = iconv_open(ocode, icode)) == (iconv_t)-1) 
+	return size;
     miss = 0;
     rp = (char *)ptr;
     while(isiz > 0){
-	osiz = ICONVCHECKSIZ;
+	osiz = 2*ICONVCHECKSIZ;
 	wp = obuf;
-	if(iconv(ic, (const char **)&rp, &isiz, &wp, &osiz) == -1){
+	if(iconv(ic, (const char **)&rp, &isiz, &wp, &osiz) == (size_t)-1){
 	    if(errno == EILSEQ || errno == EINVAL){
 		rp++;
 		isiz--;
@@ -38,17 +62,20 @@ static int transcodeErrCnt(const char *ptr, int size,
 		if(miss >= ICONVMISSMAX) 
 		    break;
 	    } else {
+		miss = size;
 		break;
 	    }
 	}
     }
     if(iconv_close(ic) == -1) 
-	return ICONVMISSMAX;
+	return size;
     return miss;
 }
 
-
-string csguess(const string &in)
+// Try to guess character encoding. This could be optimized quite a
+// lot by avoiding the multiple passes on the document, to be done
+// after usefulness is demonstrated...
+string csguess(const string &in, const string &dflt)
 {
     const char     *hypo;
     int		i, miss;
@@ -74,9 +101,10 @@ string csguess(const string &in)
 	    return "UTF-16LE";
     }
 
-    // Look for iso-2022 specific escape sequences. As iso-2022 begins
-    // in ascii, these succeed fast for a japanese text, but are quite
-    // expensive for any other
+    // Look for iso-2022 (rfc1468) specific escape sequences. As
+    // iso-2022 begins in ascii, and typically soon escapes, these
+    // succeed fast for a japanese text, but are quite expensive for
+    // any other
     for (i = 0; i < size - 3; i++) {
 	if (text[i] == 0x1b) {
 	    i++;
@@ -89,7 +117,7 @@ string csguess(const string &in)
 
     // Try conversions from ascii and utf-8. These are unlikely to succeed
     // by mistake.
-    if (transcodeErrCnt(text, size, "US-ASCII", "UTF-16BE") < 1)
+    if (transcodeErrCnt(text, size, "US-ASCII", "UTF-16BE") < 1) 
 	return "US-ASCII";
 
     if (transcodeErrCnt(text, size, "UTF-8", "UTF-16BE") < 1)
@@ -131,5 +159,35 @@ string csguess(const string &in)
     if (!hypo && miss / (double)size <= ICONVALLWRAT)
 	hypo = "CP932";
 
-    return hypo ? hypo : "ISO-8859-1";
+    return hypo ? hypo : dflt;
 }
+
+#else
+
+#include <errno.h>
+
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+#include "readfile.h"
+#include "csguess.h"
+
+int main(int argc, char **argv)
+{
+    if (argc != 2) {
+	cerr << "Usage: trcsguess <filename> <default>" << endl;
+	exit(1);
+    }
+    const string filename = argv[1];
+    const string dflt = argv[2];
+    string text;
+    if (!file_to_string(filename, text)) {
+	cerr << "Couldnt read file, errno " << errno << endl;
+	exit(1);
+    }
+    cout << csguess(text, dflt) << endl;
+    exit(0);
+}
+#endif

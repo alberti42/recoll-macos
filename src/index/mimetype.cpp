@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.2 2004-12-14 17:54:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.3 2004-12-15 15:00:37 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <ctype.h>
@@ -18,7 +18,7 @@ string mimetype(const string &filename, ConfTree *mtypes)
     string::size_type dot = filename.find_last_of(".");
     if (dot != string::npos) {
 	string suff = filename.substr(dot);
-	for (int i = 0; i < suff.length(); i++)
+	for (unsigned int i = 0; i < suff.length(); i++)
 	    suff[i] = tolower(suff[i]);
 
 	string mtype;

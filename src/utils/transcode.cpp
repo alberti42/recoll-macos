@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.1 2004-12-15 09:43:48 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.2 2004-12-15 15:00:37 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_TRANSCODE
@@ -22,6 +22,7 @@ bool transcode(const string &in, string &out, const string &icode,
     bool ret = false;
     const int OBSIZ = 8192;
     char obuf[OBSIZ], *op;
+    bool icopen = false;
 
     out.erase();
     size_t isiz = in.length();
@@ -33,12 +34,13 @@ bool transcode(const string &in, string &out, const string &icode,
 	    + " -> " + ocode;
 	goto error;
     }
-    
+    icopen = true;
+
     while (isiz > 0) {
 	size_t osiz;
 	op = obuf;
 	osiz = OBSIZ;
-	if(iconv(ic, &ip, &isiz, &op, &osiz) == -1 && errno != E2BIG){
+	if(iconv(ic, &ip, &isiz, &op, &osiz) == (size_t)-1 && errno != E2BIG){
 	    out.erase();
 	    out = string("iconv failed for ") + icode + " -> " + ocode +
 		" : " + strerror(errno);
@@ -53,8 +55,11 @@ bool transcode(const string &in, string &out, const string &icode,
 	    + " -> " + ocode;
 	goto error;
     }
+    icopen = false;
     ret = true;
  error:
+    if (icopen)
+	iconv_close(ic);
     return ret;
 }
 
@@ -100,7 +105,7 @@ int main(int argc, char **argv)
 	perror("Open/create output");
 	exit(1);
     }
-    if (write(fd, out.c_str(), out.length()) != out.length()) {
+    if (write(fd, out.c_str(), out.length()) != (int)out.length()) {
 	perror("write");
 	exit(1);
     }
