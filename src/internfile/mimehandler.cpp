@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.3 2005-01-26 13:03:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.4 2005-01-29 15:41:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -11,6 +11,7 @@ using namespace std;
 #include "csguess.h"
 #include "transcode.h"
 #include "debuglog.h"
+#include "smallut.h"
 
 bool textPlainToDoc(RclConfig *conf, const string &fn, 
 			 const string &mtype, Rcl::Doc &docout)
@@ -66,8 +67,10 @@ MimeHandlerFunc getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
 {
     // Return handler definition for mime type
     string hs;
-    if (!mhandlers->get(mtype, hs, "")) 
+    if (!mhandlers->get(mtype, hs, "index")) {
+	LOGDEB(("getMimeHandler: no handler for %s\n", mtype.c_str()));
 	return 0;
+    }
 
     // Break definition into type and name 
     vector<string> toks;
@@ -78,7 +81,7 @@ MimeHandlerFunc getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
     }
 
     // Retrieve handler function according to type
-    if (!strcasecmp(toks[0].c_str(), "internal")) {
+    if (!stringlowercmp("internal", toks[0])) {
 	map<string, MimeHandlerFunc>::const_iterator it = 
 	    ihandlers.find(mtype);
 	if (it == ihandlers.end()) {
@@ -87,15 +90,25 @@ MimeHandlerFunc getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
 	    return 0;
 	}
 	return it->second;
-    } else if (!strcasecmp(toks[0].c_str(), "dll")) {
+    } else if (!stringlowercmp("dll", toks[0])) {
 	if (toks.size() != 2)
 	    return 0;
 	return 0;
-    } else if (!strcasecmp(toks[0].c_str(), "exec")) {
+    } else if (!stringlowercmp("exec", toks[0])) {
 	if (toks.size() != 2)
 	    return 0;
 	return 0;
     } else {
 	return 0;
     }
+}
+
+/**
+ * Return external viewer exec string for given mime type
+ */
+string getMimeViewer(const std::string &mtype, ConfTree *mhandlers)
+{
+    string hs;
+    mhandlers->get(mtype, hs, "view");
+    return hs;
 }

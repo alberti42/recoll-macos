@@ -106,7 +106,7 @@
                     </property>
                     <widget class="QTextEdit">
                         <property name="name">
-                            <cstring>resTextEdit</cstring>
+                            <cstring>reslistTE</cstring>
                         </property>
                         <property name="sizePolicy">
                             <sizepolicy>
@@ -221,12 +221,6 @@
         <slot>fileExit()</slot>
     </connection>
     <connection>
-        <sender>resTextEdit</sender>
-        <signal>clicked(int,int)</signal>
-        <receiver>RecollMain</receiver>
-        <slot>resTextEdit_clicked(int,int)</slot>
-    </connection>
-    <connection>
         <sender>fileExitAction</sender>
         <signal>activated()</signal>
         <receiver>RecollMain</receiver>
@@ -256,6 +250,18 @@
         <receiver>RecollMain</receiver>
         <slot>listNextPB_clicked()</slot>
     </connection>
+    <connection>
+        <sender>reslistTE</sender>
+        <signal>doubleClicked(int,int)</signal>
+        <receiver>RecollMain</receiver>
+        <slot>reslistTE_doubleClicked(int,int)</slot>
+    </connection>
+    <connection>
+        <sender>reslistTE</sender>
+        <signal>clicked(int,int)</signal>
+        <receiver>RecollMain</receiver>
+        <slot>reslistTE_clicked(int,int)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
@@ -266,7 +272,8 @@
 </variables>
 <slots>
     <slot>fileExit()</slot>
-    <slot>resTextEdit_clicked( int par, int car )</slot>
+    <slot>reslistTE_doubleClicked( int par, int car )</slot>
+    <slot>reslistTE_clicked( int par, int car )</slot>
     <slot>queryText_returnPressed()</slot>
     <slot>Search_clicked()</slot>
     <slot>listPrevPB_clicked()</slot>

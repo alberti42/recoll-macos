@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.12 2005-01-28 15:25:40 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.13 2005-01-29 15:41:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -263,7 +263,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     // - sample
     // - caption (title limited to 100 chars)
     // - mime type 
-    string record = "url=file:/" + fn;
+    string record = "url=file://" + fn;
     record += "\nmtype=" + doc.mimetype;
     record += "\nmtime=" + doc.mtime;
     record += "\norigcharset=" + doc.origcharset;
@@ -277,18 +277,14 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     // If this document has already been indexed, update the existing
     // entry.
     try {
-#if 0
 	Xapian::docid did = 
-#endif
 	    ndb->wdb.replace_document(pathterm, newdocument);
-#if 0
 	if (did < ndb->updated.size()) {
 	    ndb->updated[did] = true;
 	    LOGDEB(("%s updated\n", fnc));
 	} else {
 	    LOGDEB(("%s added\n", fnc));
 	}
-#endif
     } catch (...) {
 	// FIXME: is this ever actually needed?
 	ndb->wdb.add_document(newdocument);
@@ -313,9 +309,8 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 	if (did == ndb->wdb.postlist_end(pathterm))
 	    return true;
 	Xapian::Document doc = ndb->wdb.get_document(*did);
-#if 0
-	ndb->updated[*did] = true;
-#endif
+	if (*did < ndb->updated.size())
+	    ndb->updated[*did] = true;
 	string data = doc.get_data();
 	//cerr << "DOCUMENT EXISTS " << data << endl;
 	const char *cp = strstr(data.c_str(), "mtime=");
@@ -331,6 +326,27 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 
     return true;
 }
+
+bool Rcl::Db::purge()
+{
+    if (pdata == 0)
+	return false;
+    Native *ndb = (Native *)pdata;
+    if (ndb->isopen == false || ndb->iswritable == false)
+	return false;
+
+    for (Xapian::docid did = 1; did < ndb->updated.size(); ++did) {
+	if (!ndb->updated[did]) {
+	    try {
+		ndb->wdb.delete_document(did);
+		LOGDEB(("Rcl::Db::purge: deleted document #%d\n", did));
+	    } catch (const Xapian::DocNotFoundError &) {
+	    }
+	}
+    }
+    return true;
+}
+
 
 #include <vector>
 
@@ -369,6 +385,7 @@ bool Rcl::Db::setQuery(const std::string &querystring)
     ndb->mset = Xapian::MSet();
     return true;
 }
+
 int Rcl::Db::getResCnt()
 {
     Native *ndb = (Native *)pdata;

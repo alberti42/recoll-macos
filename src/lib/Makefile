@@ -10,7 +10,7 @@ all: $(LIBS)
 OBJS = conftree.o csguess.o debuglog.o \
      fstreewalk.o html.o htmlparse.o \
      mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathut.o \
-     rclconfig.o rcldb.o readfile.o \
+     rclconfig.o rcldb.o readfile.o smallut.o \
      textsplit.o transcode.o \
      unacpp.o unac.o
 SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
@@ -18,6 +18,7 @@ SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
      ../common/mimehandler.cpp ../utils/mimeparse.cpp ../index/mimetype.cpp \
      ../common/myhtmlparse.cpp ../utils/pathut.cpp \
      ../common/rclconfig.cpp ../common/rcldb.cpp ../utils/readfile.cpp \
+     ../utils/smallut.cpp \
      ../common/textsplit.cpp ../utils/transcode.cpp \
      ../common/unacpp.cpp ../unac/unac.c
 
@@ -55,6 +56,8 @@ rclconfig.o : ../common/rclconfig.cpp
 rcldb.o : ../common/rcldb.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 readfile.o : ../utils/readfile.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+smallut.o : ../utils/smallut.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 textsplit.o : ../common/textsplit.cpp 
 	$(CXX) $(CXXFLAGS) -c $<

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.6 2005-01-26 13:03:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.7 2005-01-29 15:41:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -7,6 +7,8 @@ static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.6 2005-01-26 13:03:02 dockes 
 #include <strings.h>
 
 #include <iostream>
+#include <list>
+#include <map>
 
 #include "pathut.h"
 #include "conftree.h"
@@ -30,39 +32,51 @@ using namespace std;
 class DirIndexer {
     FsTreeWalker walker;
     RclConfig *config;
-    string topdir;
+    list<string> *topdirs;
     string dbdir;
     Rcl::Db db;
  public:
-    DirIndexer(RclConfig *cnf, const string &dbd, const string &top) 
-	: config(cnf), topdir(top), dbdir(dbd)
+    DirIndexer(RclConfig *cnf, const string &dbd, list<string> *top) 
+	: config(cnf), topdirs(top), dbdir(dbd)
     { }
 
     friend FsTreeWalker::Status 
       indexfile(void *, const std::string &, const struct stat *, 
 		FsTreeWalker::CbFlag);
 
-    void index();
+    bool index();
 };
 
-void DirIndexer::index()
+bool DirIndexer::index()
 {
     if (!db.open(dbdir, Rcl::Db::DbUpd)) {
-	cerr << "Error opening database in " << dbdir << " for " <<
-	    topdir << endl;
-	return;
+	LOGERR(("DirIndexer::index: error opening database in %s\n", 
+		dbdir.c_str()));
+	return false;
     }
-    walker.walk(topdir, indexfile, this);
+    for (list<string>::const_iterator it = topdirs->begin();
+	 it != topdirs->end(); it++) {
+	LOGDEB(("DirIndexer::index: Indexing %s into %s\n", it->c_str(), 
+		dbdir.c_str()));
+	if (walker.walk(*it, indexfile, this) != FsTreeWalker::FtwOk) {
+	    LOGERR(("DirIndexer::index: error while indexing %s\n", 
+		    it->c_str()));
+	    db.close();
+	    return false;
+	}
+    }
+    db.purge();
     if (!db.close()) {
-	cerr << "Error closing database in " << dbdir << " for " <<
-	    topdir << endl;
-	return;
+	LOGERR(("DirIndexer::index: error closing database in %s\n", 
+		dbdir.c_str()));
+	return false;
     }
+    return true;
 }
 
 /** 
  * This function gets called for every file and directory found by the
- * tree walker. It checks with the db is the file has changed and needs to
+ * tree walker. It checks with the db if the file has changed and needs to
  * be reindexed. If so, it calls an appropriate handler depending on the mime
  * type, which is responsible for populating an Rcl::Doc.
  * Accent and majuscule handling are performed by the db module when doing
@@ -119,34 +133,89 @@ indexfile(void *cdata, const std::string &fn, const struct stat *stp,
     return FsTreeWalker::FtwOk;
 }
 
+DirIndexer *indexer;
+
+static void cleanup()
+{
+    delete indexer;
+    indexer = 0;
+}
+
+static void sigcleanup(int sig)
+{
+    fprintf(stderr, "sigcleanup\n");
+    cleanup();
+    exit(1);
+}
 
 int main(int argc, const char **argv)
 {
-    RclConfig *config = new RclConfig;
+    atexit(cleanup);
+    if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
+	signal(SIGHUP, sigcleanup);
+    if (signal(SIGINT, SIG_IGN) != SIG_IGN)
+	signal(SIGINT, sigcleanup);
+    if (signal(SIGQUIT, SIG_IGN) != SIG_IGN)
+	signal(SIGQUIT, sigcleanup);
+    if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
+	signal(SIGTERM, sigcleanup);
 
-    if (!config->ok())
+    RclConfig config;
+    if (!config.ok())
 	cerr << "Config could not be built" << endl;
 
-    ConfTree *conf = config->getConfig();
-    
+    ConfTree *conf = config.getConfig();
+
+    // Retrieve the list of directories to be indexed.
     string topdirs;
     if (conf->get("topdirs", topdirs, "") == 0) {
 	cerr << "No top directories in configuration" << endl;
 	exit(1);
     }
-    vector<string> tdl;
-    if (ConfTree::stringToStrings(topdirs, tdl)) {
-	for (unsigned int i = 0; i < tdl.size(); i++) {
-	    string topdir = tdl[i];
-	    cout << topdir << endl;
-	    string dbdir;
-	    if (conf->get("dbdir", dbdir, topdir) == 0) {
-		cerr << "No database directory in configuration for " 
-		     << topdir << endl;
-		exit(1);
-	    }
-	    DirIndexer indexer(config, dbdir, topdir);
-	    indexer.index();
+
+    // Group the directories by database: it is important that all
+    // directories for a database be indexed at once so that deleted
+    // file cleanup works 
+    vector<string> tdl; // List of directories to be indexed
+    if (!ConfTree::stringToStrings(topdirs, tdl)) {
+	cerr << "Parse error for directory list" << endl;
+	exit(1);
+    }
+
+    vector<string>::iterator dirit;
+    map<string, list<string> > dbmap;
+    map<string, list<string> >::iterator dbit;
+    for (dirit = tdl.begin(); dirit != tdl.end(); dirit++) {
+	string db;
+	if (conf->get("dbdir", db, *dirit) == 0) {
+	    cerr << "No database directory in configuration for " 
+		 << *dirit << endl;
+	    exit(1);
 	}
+	dbit = dbmap.find(db);
+	if (dbit == dbmap.end()) {
+	    list<string> l;
+	    l.push_back(*dirit);
+	    dbmap[db] = l;
+	} else {
+	    dbit->second.push_back(*dirit);
+	}
+    }
+
+    for (dbit = dbmap.begin(); dbit != dbmap.end(); dbit++) {
+	cout << dbit->first << " -> ";
+	list<string>::const_iterator dit;
+	for (dit = dbit->second.begin(); dit != dbit->second.end(); dit++) {
+	    cout << *dit << " ";
+	}
+	cout << endl;
+	indexer = new DirIndexer(&config, dbit->first, &dbit->second);
+	if (!indexer->index()) {
+	    delete indexer;
+	    indexer = 0;
+	    exit(1);
+	}
+	delete indexer;
+	indexer = 0;
     }
 }

@@ -10,21 +10,29 @@
 ** destructor.
 *****************************************************************************/
 
-void RecollMain::fileExit()
-{
-    exit(0);
-}
-
+#include <regex.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include <qmessagebox.h>
+#include <qcstring.h>
 
 #include "rcldb.h"
 #include "rclconfig.h"
 #include "debuglog.h"
 #include "mimehandler.h"
+#include "pathut.h"
 
 extern RclConfig *rclconfig;
 extern Rcl::Db *rcldb;
+
+
+void RecollMain::fileExit()
+{
+    exit(0);
+}
+
 
 static string plaintorich(const string &in)
 {
@@ -35,95 +43,144 @@ static string plaintorich(const string &in)
 	} else {
 	    out += in[i];
 	}
-	if (i == 10) {
-	    out += "<mytag>";
-	}
-	if (i == 20) {
-	    out += "</mytag>";
-	}	    
-
     }
     return out;
 }
 
-// Click in the result list window: display preview for selected document, 
-// and highlight entry. The paragraph number is doc number in window + 1
-void RecollMain::resTextEdit_clicked(int par, int car)
+static string urltolocalpath(string url)
 {
-    LOGDEB(("RecollMain::resTextEdi_clicked: par %d, char %d\n", par, car));
+    return url.substr(7, string::npos);
+}
+
+// Use external viewer to display file
+void RecollMain::reslistTE_doubleClicked(int par, int car)
+{
+    //    restlistTE_clicked(par, car);
+    Rcl::Doc doc;
+    int reldocnum =  par - 1;
+    if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0))
+	return;
+    
+    // Look for appropriate viewer
+    string cmd = getMimeViewer(doc.mimetype, rclconfig->getMimeConf());
+    if (cmd.length() == 0) {
+	QMessageBox::warning(0, "Recoll", QString("No viewer for mime type ") +
+			     doc.mimetype.c_str());
+	return;
+    }
+
+    string fn = urltolocalpath(doc.url);
+    // substitute 
+    string ncmd;
+    string::const_iterator it1;
+    for (it1 = cmd.begin(); it1 != cmd.end();it1++) {
+	if (*it1 == '%') {
+	    if (++it1 == cmd.end()) {
+		ncmd += '%';
+		break;
+	    }
+	    if (*it1 == '%')
+		ncmd += '%';
+	    if (*it1 == 'u')
+		ncmd += doc.url;
+	    if (*it1 == 'f')
+		ncmd += fn;
+	} else {
+	    ncmd += *it1;
+	}
+    }
+
+    ncmd += " &";
+    LOGDEB(("Executing: '%s'\n", ncmd.c_str()));
+    system(ncmd.c_str());
+}
+
+// Display preview for the selected document, and highlight entry. The
+// paragraph number is doc number in window + 1
+void RecollMain::reslistTE_clicked(int par, int car)
+{
+    LOGDEB(("RecollMain::reslistTE_clicked: par %d, char %d\n", par, car));
     if (reslist_winfirst == -1)
 	return;
+
+    // If same doc, don't bother redisplaying
+    if (reslist_current == par - 1)
+	return;
+
     Rcl::Doc doc;
-    doc.erase();
     if (reslist_current != -1) {
 	QColor color("white");
-	resTextEdit->setParagraphBackgroundColor(reslist_current+1, color);
+	reslistTE->setParagraphBackgroundColor(reslist_current+1, color);
     }
     QColor color("lightblue");
-    resTextEdit->setParagraphBackgroundColor(par, color);
+    reslistTE->setParagraphBackgroundColor(par, color);
 
-    int reldocnum = par-1;
+    int reldocnum = par - 1;
     reslist_current = reldocnum;
     previewTextEdit->clear();
 
-    if (rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0)) {
+    if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0)) {
+	QMessageBox::warning(0, "Recoll",
+			     QString("Can't retrieve document from database"));
+	return;
+    }
 	
-	// Go to the file system to retrieve / convert the document text
-	// for preview:
+    // Go to the file system to retrieve / convert the document text
+    // for preview:
 
-	// Look for appropriate handler
-	MimeHandlerFunc fun = 
-	    getMimeHandler(doc.mimetype, rclconfig->getMimeConf());
-	if (!fun) {
-	    QMessageBox::warning(0, "Recoll",
-				 QString("No mime handler for mime type ") +
-				 doc.mimetype.c_str());
-	    return;
-	}
+    // Look for appropriate handler
+    MimeHandlerFunc fun = 
+	getMimeHandler(doc.mimetype, rclconfig->getMimeConf());
+    if (!fun) {
+	QMessageBox::warning(0, "Recoll",
+			     QString("No mime handler for mime type ") +
+			     doc.mimetype.c_str());
+	return;
+    }
 
-	string fn = doc.url.substr(6, string::npos);
-	Rcl::Doc fdoc;
-	if (!fun(rclconfig, fn,  doc.mimetype, fdoc)) {
-	    QMessageBox::warning(0, "Recoll",
-			 QString("Failed to convert document for preview!\n") +
-				 fn.c_str() + " mimetype " + 
-				 doc.mimetype.c_str());
-	    return;
-	}
+    string fn = urltolocalpath(doc.url);
+    Rcl::Doc fdoc;
+    if (!fun(rclconfig, fn,  doc.mimetype, fdoc)) {
+	QMessageBox::warning(0, "Recoll",
+			     QString("Failed to convert document for preview!\n") +
+			     fn.c_str() + " mimetype " + 
+			     doc.mimetype.c_str());
+	return;
+    }
 
-	string rich = plaintorich(fdoc.text);
+    string rich = plaintorich(fdoc.text);
 
 #if 0
-	//Highlighting; pass a list of (search term, style name) to plaintorich
-	// and create the corresponding styles with different colors here
-	// We need to :
-	//  - Break the query into terms : wait for the query analyzer
-	//  - Break the text into words. This should use a version of 
-	//    textsplit with an option to keep the punctuation (see how to do
-	//    this). We do want the same splitter code to be used here and 
-	//    when indexing.
-	QStyleSheetItem *item = 
-	    new QStyleSheetItem( previewTextEdit->styleSheet(), "mytag" );
-	item->setColor("red");
-	item->setFontWeight(QFont::Bold);
+    //Highlighting; pass a list of (search term, style name) to plaintorich
+    // and create the corresponding styles with different colors here
+    // We need to :
+    //  - Break the query into terms : wait for the query analyzer
+    //  - Break the text into words. This should use a version of 
+    //    textsplit with an option to keep the punctuation (see how to do
+    //    this). We do want the same splitter code to be used here and 
+    //    when indexing.
+    QStyleSheetItem *item = 
+	new QStyleSheetItem( previewTextEdit->styleSheet(), "mytag" );
+    item->setColor("red");
+    item->setFontWeight(QFont::Bold);
 #endif
 
-	QString str = QString::fromUtf8(rich.c_str(), rich.length());
-	previewTextEdit->setTextFormat(RichText);
-	previewTextEdit->setText(str);
-    }
+    QString str = QString::fromUtf8(rich.c_str(), rich.length());
+    previewTextEdit->setTextFormat(RichText);
+    previewTextEdit->setText(str);
 }
 
-#include "pathut.h"
 
+// User asked to start query
 void RecollMain::queryText_returnPressed()
 {
     LOGDEB(("RecollMain::queryText_returnPressed()\n"));
     reslist_current = -1;
     reslist_winfirst = -1;
 
-    string rawq =  queryText->text();
-    rcldb->setQuery(rawq);
+    QCString u8 =  queryText->text().utf8();
+    
+    rcldb->setQuery(string((const char *)u8));
     listNextPB_clicked();
 }
 
@@ -145,6 +202,7 @@ void RecollMain::listPrevPB_clicked()
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
 
+// Fill up result list window with next screen of hits
 void RecollMain::listNextPB_clicked()
 {
     LOGDEB(("listNextPB_clicked: winfirst %d\n", reslist_winfirst));
@@ -165,34 +223,22 @@ void RecollMain::listNextPB_clicked()
 	int resCnt = rcldb->getResCnt();
 	int last = MIN(resCnt, reslist_winfirst+respagesize);
 	if (i == 0) {
-	    resTextEdit->clear();
+	    reslistTE->clear();
 	    previewTextEdit->clear();
-	    resTextEdit->append("<qt><head></head><body><p>");
+	    reslistTE->append("<qt><head></head><body><p>");
 	    char line[80];
 	    sprintf(line, "<p><b>Displaying results %d-%d out of %d</b><br>",
 		    reslist_winfirst+1, last, resCnt);
-	    resTextEdit->append(line);
+	    reslistTE->append(line);
 	}
 	    
 	gotone = true;
 
-	LOGDEB1(("Url: %s\n", doc.url.c_str()));
-	LOGDEB1(("Mimetype: %s\n", doc.mimetype.c_str()));
-	LOGDEB1(("Mtime: %s\n", doc.mtime.c_str()));
-	LOGDEB1(("Origcharset: %s\n", doc.origcharset.c_str()));
-	LOGDEB1(("Title: %s\n", doc.title.c_str()));
-	LOGDEB1(("Text: %s\n", doc.text.c_str()));
-	LOGDEB1(("Keywords: %s\n", doc.keywords.c_str()));
-	LOGDEB1(("Abstract: %s\n", doc.abstract.c_str()));
-	
-	// Result list display. Standard Omega includes:
-	//  - title or simple file name or url
-	//  - abstract and keywords
-	//  - url 
-	//  - relevancy percentage + keywords matched
-	//  - date de modification
-	//  - langue
-        //  - taille 
+	// Result list display: TOBEDONE
+	//  - move abstract/keywords to  Detail window ?
+	//  - keywords matched
+	//  - language
+        //  - size
 	char perbuf[10];
 	sprintf(perbuf, "%3d%%", percent);
 	if (doc.title.empty()) 
@@ -202,27 +248,27 @@ void RecollMain::listNextPB_clicked()
 	if (!doc.mtime.empty()) {
 	    time_t mtime = atol(doc.mtime.c_str());
 	    struct tm *tm = localtime(&mtime);
-	    strftime(datebuf, 99, "<i>Modified:</i> %F %T", tm);
+	    strftime(datebuf, 99, "<i>Modified:</i>&nbsp;%F&nbsp;%T", tm);
 	}
-	    
 	string result = "<p>" + 
 	    string(perbuf) + " <b>" + doc.title + "</b><br>" +
+	    doc.mimetype + "&nbsp;" +
 	    (!doc.mtime.empty() ? string(datebuf) + "<br>" : string("")) +
 	    (!doc.abstract.empty() ? doc.abstract + "<br>" : string("")) +
 	    (!doc.keywords.empty() ? doc.keywords + "<br>" : string("")) +
 	    "<i>" + doc.url + +"</i><br>" +
 	    "</p>";
-	QString str = QString::fromUtf8(result.c_str(), result.length());
 
-	resTextEdit->append(str);
+	QString str = QString::fromUtf8(result.c_str(), result.length());
+	reslistTE->append(str);
     }
 
     if (gotone) {
-	resTextEdit->append("</body></qt>");
-	resTextEdit->setCursorPosition(0,0);
-	resTextEdit->ensureCursorVisible();
+	reslistTE->append("</body></qt>");
+	reslistTE->setCursorPosition(0,0);
+	reslistTE->ensureCursorVisible();
 	// Display preview for 1st doc in list
-	resTextEdit_clicked(1, 0);
+	reslistTE_clicked(1, 0);
     } else {
 	// Restore first in win parameter that we shouln't have incremented
 	reslist_winfirst -= respagesize;

@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.6 2005-01-28 15:25:40 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.7 2005-01-29 15:41:11 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -65,6 +65,7 @@ class Db {
     // Update-related functions
     bool add(const std::string &filename, const Doc &doc);
     bool needUpdate(const std::string &filename, const struct stat *stp);
+    bool purge();
 
     // Query-related functions
 

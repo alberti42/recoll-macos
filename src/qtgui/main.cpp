@@ -29,6 +29,17 @@ int main( int argc, char ** argv )
     w.show();
     a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
 
+    atexit(cleanup);
+    if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
+	signal(SIGHUP, sigcleanup);
+    if (signal(SIGINT, SIG_IGN) != SIG_IGN)
+	signal(SIGINT, sigcleanup);
+    if (signal(SIGQUIT, SIG_IGN) != SIG_IGN)
+	signal(SIGQUIT, sigcleanup);
+    if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
+	signal(SIGTERM, sigcleanup);
+
+
     rclconfig = new RclConfig;
     if (!rclconfig || !rclconfig->ok()) {
 	QMessageBox::critical(0, "Recoll",
@@ -52,17 +63,5 @@ int main( int argc, char ** argv )
 			      QString(dbdir));
 	exit(1);
     }
-    atexit(cleanup);
-    if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
-	signal(SIGHUP, sigcleanup);
-    if (signal(SIGINT, SIG_IGN) != SIG_IGN)
-	signal(SIGINT, sigcleanup);
-    if (signal(SIGQUIT, SIG_IGN) != SIG_IGN)
-	signal(SIGQUIT, sigcleanup);
-    if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
-	signal(SIGTERM, sigcleanup);
-
-
-
     return a.exec();
 }
