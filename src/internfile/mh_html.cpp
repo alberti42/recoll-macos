@@ -63,11 +63,11 @@ MimeHandlerHtml::worker1(RclConfig *conf, const string &,
     string charset;
     if (!charsethint.empty()) {
 	charset = charsethint;
-	if (conf->getGuessCharset()) {
-	    charset = csguess(htext, conf->getDefCharset());
-	} else
-	    charset = conf->getDefCharset();
-    }
+    } else if (conf->getGuessCharset()) {
+	charset = csguess(htext, conf->getDefCharset());
+    } else
+	charset = conf->getDefCharset();
+
 
     // - We first try to convert from the default configured charset
     //   (which may depend of the current directory) to utf-8. If this
@@ -75,7 +75,7 @@ MimeHandlerHtml::worker1(RclConfig *conf, const string &,
     // - During parsing, if we find a charset parameter, and it differs from
     //   what we started with, we abort and restart with the parameter value
     //   instead of the configuration one.
-    LOGDEB(("textHtmlToDoc: charset before parsing: %s\n", charset.c_str()));
+    LOGDEB(("textHtmlToDoc: charset before parsing: [%s]\n", charset.c_str()));
 
     MyHtmlParser pres;
     for (int pass = 0; pass < 2; pass++) {

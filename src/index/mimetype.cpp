@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.6 2005-03-25 09:40:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.7 2005-04-04 13:18:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <ctype.h>
@@ -82,8 +82,12 @@ string mimetype(const string &fn, ConfTree *mtypes)
 	    return mtype;
     }
 
-    // Look at file data ? Only when no suffix
-    if (suff.empty())
+    // Look at file data ? Only when no suffix or always
+    // Also 'file' is not that great for us. For exemple it will 
+    // mistake mail folders for simple text files if there is no 'Received' 
+    // header, which would be the case, for exemple in a 'Sent' folder. Also
+    // I'm not sure that file -i exists on all systems
+    //if (suff.empty())
 	return mimetypefromdata(fn);
     return "";
 }

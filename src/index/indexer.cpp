@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.9 2005-03-25 09:40:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.10 2005-04-04 13:18:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -89,6 +89,22 @@ bool DbIndexer::index()
 	 it != topdirs->end(); it++) {
 	LOGDEB(("DbIndexer::index: Indexing %s into %s\n", it->c_str(), 
 		dbdir.c_str()));
+	config->setKeyDir(*it);
+
+	// Set up skipped patterns for this subtree
+	{
+	    walker.clearSkippedNames();
+	    string skipped; 
+	    if (config->getConfParam("skippedNames", skipped)) {
+		list<string> skpl;
+		ConfTree::stringToStrings(skipped, skpl);
+		list<string>::const_iterator it;
+		for (it = skpl.begin(); it != skpl.end(); it++) {
+		    walker.addSkippedName(*it);
+		}
+	    }
+	}
+
 	if (walker.walk(*it, *this) != FsTreeWalker::FtwOk) {
 	    LOGERR(("DbIndexer::index: error while indexing %s\n", 
 		    it->c_str()));

@@ -1,6 +1,6 @@
 #ifndef _FSTREEWALK_H_INCLUDED_
 #define _FSTREEWALK_H_INCLUDED_
-/* @(#$Id: fstreewalk.h,v 1.2 2005-02-10 15:21:12 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: fstreewalk.h,v 1.3 2005-04-04 13:18:47 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -22,6 +22,14 @@ class FsTreeWalker {
     Status walk(const std::string &dir, FsTreeWalkerCB& cb);
     std::string getReason();
     int getErrCnt();
+    bool addSkippedName(const std::string &pattern); // Add a pattern
+						     // for directory
+						     // entries (file
+						     // or dir) to be
+						     // ignored (ie:
+						     // #* , *~)
+    void clearSkippedNames(); // Clear all patterns
+
  private:
     class Internal;
     Internal *data;

@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.5 2005-03-25 09:40:28 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.6 2005-04-04 13:18:47 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -49,7 +49,8 @@ application/vnd.sun.xml.writer.template = exec rclsoff
 # External viewers, launched when you double-click a result entry
 [view]
 text/plain = xemacs %f
-text/html = firefox -remote "openFile(%u)"
+#text/html = firefox -remote "openFile(%u)"
+text/html = firefox %u
 application/pdf  = xpdf %f
 application/postscript = gv %f
 application/msword = openoffice-1.1.3-swriter %f

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.2 2005-03-31 10:04:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.3 2005-04-04 13:18:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -46,7 +46,7 @@ MimeHandler::Status
 MimeHandlerMail::worker(RclConfig *cnf, const string &fn, 
 			const string &mtype, Rcl::Doc &docout, string& ipath)
 {
-    LOGDEB(("MimeHandlerMail::worker: %s [%s]\n", mtype.c_str(), fn.c_str()));
+    LOGDEB2(("MimeHandlerMail::worker: %s [%s]\n", mtype.c_str(), fn.c_str()));
     conf = cnf;
 
     if (!stringlowercmp("message/rfc822", mtype)) {
@@ -75,7 +75,7 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
     if (ipath != "") {
 	sscanf(ipath.c_str(), "%d", &mtarg);
     }
-    LOGDEB(("MimeHandlerMail::processmbox: fn %s, mtarg %d\n", fn.c_str(),
+    LOGDEB2(("MimeHandlerMail::processmbox: fn %s, mtarg %d\n", fn.c_str(),
 	    mtarg));
 
     FILE *fp;
@@ -125,7 +125,6 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 	    }
 	}
 	msgnum++;
-	LOGDEB(("MimeHandlerMail::processmbox: got msg %d\n", msgnum));
 	fseek(fp, end, SEEK_SET);
     } while (mtarg > 0 && msgnum < mtarg);
 
@@ -173,25 +172,37 @@ MimeHandlerMail::processone(const string &fn, Binc::MimeDocument& doc,
     }
 
     // Handle some headers. We should process rfc2047 encoding here
+    // Also there should be no 8bit chars, but there sometimes are. So
+    // we transcode as if from iso-8859-1, which is better than
+    // getting utf8 conversion errors later on
     Binc::HeaderItem hi;
+    string transcoded;
     if (doc.h.getFirstHeader("Subject", hi)) {
-	docout.title = hi.getValue();
+	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	docout.title = transcoded;
     }
     if (doc.h.getFirstHeader("From", hi)) {
-	docout.text += string("From: ") + hi.getValue() + string("\n");
+	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	docout.text += string("From: ") + transcoded + string("\n");
     }
     if (doc.h.getFirstHeader("To", hi)) {
-	docout.text += string("To: ") + hi.getValue() + string("\n");
+	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	docout.text += string("To: ") + transcoded + string("\n");
     }
     if (doc.h.getFirstHeader("Date", hi)) {
-	docout.text += string("Date: ") + hi.getValue() + string("\n");
+	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	docout.text += string("Date: ") + transcoded + string("\n");
+    }
+    if (doc.h.getFirstHeader("Subject", hi)) {
+	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	docout.text += string("Subject: ") + transcoded + string("\n");
     }
 
-    LOGDEB(("MimeHandlerMail::processone: ismultipart %d mime subtype '%s'\n", 
+    LOGDEB2(("MimeHandlerMail::processone: ismultipart %d mime subtype '%s'\n",
 	    doc.isMultipart(), doc.getSubType().c_str()));
     walkmime(conf, docout.text, doc, 0);
 
-    LOGDEB(("MimeHandlerMail::processone: text: '%s'\n", docout.text.c_str()));
+    //LOGDEB(("MimeHandlerMail::processone: text: '%s'\n", docout.text.c_str()));
     return MimeHandler::MHDone;
 }
 
@@ -206,13 +217,14 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
     }
 
     if (doc.isMultipart()) {
-	LOGDEB(("walkmime: ismultipart %d subtype '%s'\n", 
+	LOGDEB2(("walkmime: ismultipart %d subtype '%s'\n", 
 		doc.isMultipart(), doc.getSubType().c_str()));
-	// We only handle alternative and mixed for now. For
+	// We only handle alternative, related and mixed for now. For
 	// alternative, we look for a text/plain part, else html and
-	// process it For mixed, we process each part.
+	// process it For mixed and related, we process each part.
 	std::vector<Binc::MimePart>::iterator it;
-	if (!stringicmp("mixed", doc.getSubType())) {
+	if (!stringicmp("mixed", doc.getSubType()) || 
+	    !stringicmp("related", doc.getSubType())) {
 	    for (it = doc.members.begin(); it != doc.members.end();it++) {
 		walkmime(cnf, out, *it, depth+1);
 	    }
@@ -247,19 +259,33 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	if (doc.h.getFirstHeader("Content-Type", hi)) {
 	    ctt = hi.getValue();
 	}
-	LOGDEB(("walkmime:content-type: %s\n", ctt.c_str()));
+	LOGDEB2(("walkmime:content-type: %s\n", ctt.c_str()));
 	MimeHeaderValue content_type;
 	parseMimeHeaderValue(ctt, content_type);
 	if (stringlowercmp("text/plain", content_type.value) && 
 	    stringlowercmp("text/html", content_type.value)) {
 	    return;
 	}
-	string charset = "us-ascii";
+
+	// Normally the default charset is us-ascii. But it happens that
+	// 8 bit chars exist in a message that is stated as us-ascii. Ie the 
+	// mailer used by yahoo support ('KANA') does this. We could convert 
+	// to iso-8859 only if the transfer-encoding is 8 bit, or test for
+	// actual 8 bit chars, but what the heck, le'ts use 8859-1 as default
+	string charset = "iso-8859-1";
 	map<string,string>::const_iterator it;
 	it = content_type.params.find(string("charset"));
 	if (it != content_type.params.end())
 	    charset = it->second;
-
+	if (charset.empty() || 
+	    !stringlowercmp("us-ascii", charset) || 
+	    !stringlowercmp("default", charset) || 
+	    !stringlowercmp("x-user-defined", charset) || 
+	    !stringlowercmp("x-unknown", charset) || 
+	    !stringlowercmp("unknown", charset) ) {
+	    charset = "iso-8859-1";
+	}
+	    
 	// Content disposition
 	string ctd = "inline";
 	if (doc.h.getFirstHeader("Content-Disposition", hi)) {
@@ -277,8 +303,8 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	    cte = hi.getValue();
 	} 
 
-	LOGDEB(("walkmime: final: body start offset %d, length %d\n", 
-		doc.getBodyStartOffset(), doc.getBodyLength()));
+	LOGDEB2(("walkmime: final: body start offset %d, length %d\n", 
+		 doc.getBodyStartOffset(), doc.getBodyLength()));
 	string body;
 	doc.getBody(body, 0, doc.bodylength);
 

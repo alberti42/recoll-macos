@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.25 2005-03-31 10:04:07 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.26 2005-04-04 13:18:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -216,7 +216,8 @@ bool Rcl::dumb_string(const string &in, string &out)
 	return true;
     if (!unac_cpp(in, inter)) {
 	LOGERR(("dumb_string: unac_cpp failed for %s\n", in.c_str()));
-	return false;
+	// Ok, no need to stop the whole show
+	inter = "";
     }
     out.reserve(inter.length());
     for (unsigned int i = 0; i < inter.length(); i++) {
@@ -268,7 +269,7 @@ truncate_to_word(string & input, string::size_type maxlen)
 
 bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 {
-    LOGDEB(("Rcl::Db::add: fn %s\n", fn.c_str()));
+    LOGDEB1(("Rcl::Db::add: fn %s\n", fn.c_str()));
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
@@ -288,7 +289,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     TextSplit splitter(&splitData);
 
     string noacc;
-    if (!unac_cpp(doc.title, noacc)) {
+    if (!dumb_string(doc.title, noacc)) {
 	LOGERR(("Rcl::Db::add: unac failed\n"));
 	return false;
     }

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.3 2005-02-10 15:21:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.4 2005-04-04 13:18:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_FSTREEWALK
@@ -7,8 +7,10 @@ static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.3 2005-02-10 15:21:12 dockes E
 #include <dirent.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <fnmatch.h>
 
 #include <sstream>
+#include <list>
 
 #include "debuglog.h"
 #include "pathut.h"
@@ -19,6 +21,7 @@ using namespace std;
 class FsTreeWalker::Internal {
     Options options;
     stringstream reason;
+    list<string> skippedNames;
     int errors;
     void logsyserr(const char *call, const string &param) 
     {
@@ -52,6 +55,18 @@ int FsTreeWalker::getErrCnt()
 {
     return data->errors;
 }
+
+bool FsTreeWalker::addSkippedName(const string& pattern)
+{
+    data->skippedNames.push_back(pattern);
+    return true;
+}
+
+void FsTreeWalker::clearSkippedNames()
+{
+    data->skippedNames.clear();
+}
+
 
 FsTreeWalker::Status FsTreeWalker::walk(const string &top, 
 					FsTreeWalkerCB& cb)
@@ -94,37 +109,54 @@ FsTreeWalker::Status FsTreeWalker::walk(const string &top,
 
     struct dirent *ent;
     while ((ent = readdir(d)) != 0) {
-	// We do process hidden files for now
+	// We do process hidden files for now, only skip . and ..
 	if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) 
 	    continue;
 
-	string fn = top;
-	path_cat(fn, ent->d_name);
+	if (!data->skippedNames.empty()) {
+	    list<string>::const_iterator it;
+	    for (it = data->skippedNames.begin(); 
+		 it != data->skippedNames.end(); it++) {
+		if (fnmatch(it->c_str(), ent->d_name, 0) == 0) {
+		    //fprintf(stderr, 
+		    //"Skipping [%s] because of pattern match\n", ent->d_name);
+		    goto skip;
+		}
+	    }
+	}
 
-	struct stat st;
-	int statret = (data->options & FtwFollow) ? stat(fn.c_str(), &st) :
-	    lstat(fn.c_str(), &st);
-	if (statret == -1) {
-	    data->logsyserr("stat", fn);
-	    continue;
-	}
-	if (S_ISDIR(st.st_mode)) {
-	    if (data->options & FtwNoRecurse) {
-		status = cb.processone(fn, &st, FtwDirEnter);
-	    } else {
-		status=walk(fn, cb);
+	{
+	    string fn = top;
+	    path_cat(fn, ent->d_name);
+
+	    struct stat st;
+	    int statret = (data->options & FtwFollow) ? stat(fn.c_str(), &st) :
+		lstat(fn.c_str(), &st);
+	    if (statret == -1) {
+		data->logsyserr("stat", fn);
+		continue;
 	    }
-	    if (status & (FtwStop|FtwError))
-		goto out;
-	    if ((status = cb.processone(top, &st, FtwDirReturn)) 
-		& (FtwStop|FtwError))
-		goto out;
-	} else if (S_ISREG(st.st_mode)) {
-	    if ((status = cb.processone(fn, &st, FtwRegular)) & 
-		(FtwStop|FtwError)) {
-		goto out;
+	    if (S_ISDIR(st.st_mode)) {
+		if (data->options & FtwNoRecurse) {
+		    status = cb.processone(fn, &st, FtwDirEnter);
+		} else {
+		    status=walk(fn, cb);
+		}
+		if (status & (FtwStop|FtwError))
+		    goto out;
+		if ((status = cb.processone(top, &st, FtwDirReturn)) 
+		    & (FtwStop|FtwError))
+		    goto out;
+	    } else if (S_ISREG(st.st_mode)) {
+		if ((status = cb.processone(fn, &st, FtwRegular)) & 
+		    (FtwStop|FtwError)) {
+		    goto out;
+		}
 	    }
 	}
+
+    skip: ;
+
 	// We skip other file types (devices etc...)
     }
 
