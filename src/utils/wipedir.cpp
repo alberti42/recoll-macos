@@ -1,8 +1,10 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wipedir.cpp,v 1.1 2005-02-09 12:07:30 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wipedir.cpp,v 1.2 2005-04-06 10:20:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_WIPEDIR
+#include <unistd.h>
+#include <fcntl.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <errno.h>

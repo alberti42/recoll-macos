@@ -33,7 +33,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <istream>
+#include <iostream>
 
 namespace Binc {
 
@@ -189,7 +189,7 @@ namespace Binc {
     // Why can't streams tell how many characters were actually read
     // when hitting eof ?
     std::streampos st = s.tellg();
-    s.seekg(0, ios_base::end);
+    s.seekg(0, ios::end);
     std::streampos lst = s.tellg();
     s.seekg(st);
     size_t nbytes = lst - st;

@@ -23,8 +23,10 @@ have, a precompiled version of iconv, and maybe qt.
     - libiconv (http://www.gnu.org/software/libiconv/). Currently using
       1.9, on Linux it's part of the libc, you should have nothing special
       to do.
-The main trouble you'll have will probably be resolving the myriad
-dependancies for qt
+The main trouble you'll have will probably be resolving the dependencies
+dependancies for qt, but, hopefully, your package manager will take care of
+the matter.
+
 
 Building:
 --------
@@ -50,7 +52,7 @@ Installation:
  - Copy all files from sampleconf/* to ~/.recoll
  - Copy all files from filters/* to ~/.recoll.
  - Copy qtgui/recoll to a place in your PATH (if you want. You can also
-   execute it from there).
+   execute it from its build directory).
 
 Configuration
 =============
@@ -66,7 +68,12 @@ There is a sample in the 'sampleconf' src/ subdirectory, you copied it to
 Then start 'recoll', and select the "file->start indexing" menu
 entry. When it's done, you can play with the search
 
-Usage: see README
+Usage
+=====
+The very simple Gui should be easy enough to use. Clicking on a search
+result entry in the left column will display it in the left
+part. Double-clicking will start an external viewer (look at the
+~/.recoll/mimeconf file to see how these are configured).
 
 
 
@@ -75,8 +82,8 @@ Future from here on, there are currently no binary packages ...
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Installing a binary package:
 ----------------------------
-The binary packages are statically linked and should install real easy
-(hopefully). There are no rpm or other managed packages for now.
+
+There are no rpm or other managed packages for now.
 
  - Unpack the tar file. Will create a recoll-x.y directory
  - Arrange to have the recoll-x.y/bin directory in your PATH, or copy/link the

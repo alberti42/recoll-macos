@@ -27,7 +27,7 @@ else
 fi
 
 chmod +w README
-links -dump ~/projets/pagepers/index.html > toto && mv toto README
+links -dump ~/projets/pagepers/recoll/index.html > toto && mv toto README
 cvs commit -m '' README
 
 # Clean up this dir and copy the dist-specific files 

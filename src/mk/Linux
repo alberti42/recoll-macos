@@ -1,5 +1,7 @@
 CXXFLAGS = -Wall -g -I. -I../index -I../utils -I../common \
-	 -I../unac -I/usr/local/include
+	 -I../unac -I../bincimapmime -I/usr/local/include \
+	 \
+	 -DHAVE_VASPRINTF=1 -D_GNU_SOURCE
 
 LIBXAPIAN = -L/usr/local/lib -lxapian
 LIBICONV =  

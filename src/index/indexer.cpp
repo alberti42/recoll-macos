@@ -1,8 +1,9 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.10 2005-04-04 13:18:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.11 2005-04-06 10:20:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <strings.h>
 

@@ -1,4 +1,6 @@
-#include <signal.h>
+
+#include <unistd.h>
+
 #include <qapplication.h>
 #include <qthread.h>
 #include <qtimer.h>
