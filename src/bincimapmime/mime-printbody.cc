@@ -72,3 +72,27 @@ void Binc::MimePart::printBody(int fd, IODevice &output,
     output << (char)c;
   }
 }
+
+void Binc::MimePart::getBody(int fd, string &s,
+			     unsigned int startoffset,
+			     unsigned int length) const
+{
+  if (!mimeSource || mimeSource->getFileDescriptor() != fd) {
+    delete mimeSource;
+    mimeSource = new MimeInputSource(fd);
+  }
+
+  mimeSource->reset();
+  mimeSource->seek(bodystartoffsetcrlf + startoffset);
+
+  if (startoffset + length > bodylength)
+    length = bodylength - startoffset;
+
+  char c = '\0';
+  for (unsigned int i = 0; i < length; ++i) {
+    if (!mimeSource->getChar(&c))
+      break;
+
+    s += (char)c;
+  }
+}

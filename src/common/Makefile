@@ -1,7 +1,6 @@
 include ../mk/sysconf
 BIGLIB = ../lib/librcl.a
 
-
 PROGS = unacpp textsplit
 all: $(PROGS)
 

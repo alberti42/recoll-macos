@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.12 2005-02-10 15:21:12 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.13 2005-03-25 09:40:27 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -31,8 +31,9 @@ namespace Rcl {
  */
 class Doc {
  public:
-    // This fields potentially go into the document data record
+    // These fields potentially go into the document data record
     string url;
+    string ipath;
     string mimetype;
     string mtime;       // Modification time as decimal ascii
     string origcharset;
@@ -41,8 +42,10 @@ class Doc {
     string abstract;
 
     string text;
+
     void erase() {
 	url.erase();
+	ipath.erase();
 	mimetype.erase();
 	mtime.erase();
 	origcharset.erase();

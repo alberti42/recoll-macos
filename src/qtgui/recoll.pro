@@ -23,7 +23,7 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  LIBS += ../lib/librcl.a -L/usr/local/lib -lxapian -liconv
+  LIBS += ../lib/librcl.a ../bincimapmime/libmime.a -L/usr/local/lib -lxapian -liconv
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
 }
 

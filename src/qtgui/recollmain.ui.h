@@ -197,7 +197,8 @@ void RecollMain::reslistTE_clicked(int par, int car)
     // for preview:
     string fn = urltolocalpath(doc.url);
     Rcl::Doc fdoc;
-    if (!internfile(fn, rclconfig, fdoc, tmpdir)) {
+    FileInterner interner(fn, rclconfig, tmpdir);
+    if (interner.internfile(fdoc, doc.ipath) != FileInterner::FIDone) {
 	QMessageBox::warning(0, "Recoll",
 			     QString("Can't turn doc into internal rep ") +
 			     doc.mimetype.c_str());

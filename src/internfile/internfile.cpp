@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.3 2005-03-17 15:35:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.4 2005-03-25 09:40:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -70,30 +70,27 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     return true;
 }
 
-static void tmpcleanup(const string& tdir, const string& tfile)
+void FileInterner::tmpcleanup()
 {
     if (tdir.empty() || tfile.empty())
 	return;
     if (unlink(tfile.c_str()) < 0) {
-	LOGERR(("tmpcleanup: unlink(%s) errno %d\n", tfile.c_str(), 
-		errno));
+	LOGERR(("FileInterner::tmpcleanup: unlink(%s) errno %d\n", 
+		tfile.c_str(), errno));
 	return;
     }
 }
 
-bool internfile(const std::string &ifn, RclConfig *config, Rcl::Doc& doc,
-		const string& tdir)
+// Handler==0 on return says we're in error
+FileInterner::FileInterner(const std::string &f, RclConfig *cnf, 
+			   const string& td)
+    : fn(f), config(cnf), tdir(td), handler(0) 
 {
-    string fn = ifn;
-    string tfile;
-    MimeHandler *handler = 0;
-    bool ret = false;
-
-    string mime = mimetype(fn, config->getMimeMap());
+    mime = mimetype(fn, config->getMimeMap());
     if (mime.empty()) {
 	// No mime type: not listed in our map.
-	LOGDEB(("internfile: (no mime) [%s]\n", fn.c_str()));
-	return false;
+	LOGDEB(("FileInterner::FileInterner: (no mime) [%s]\n", fn.c_str()));
+	return;
     }
 
     // First check for a compressed file. If so, create a temporary
@@ -101,8 +98,9 @@ bool internfile(const std::string &ifn, RclConfig *config, Rcl::Doc& doc,
     // rest with the temp file.
     list<string>ucmd;
     if (getUncompressor(mime, config->getMimeConf(), ucmd)) {
-	if (!uncompressfile(config, fn, ucmd, tdir, tfile)) 
-	    return false;
+	if (!uncompressfile(config, fn, ucmd, tdir, tfile)) {
+	    return;
+	}
 	LOGDEB(("internfile: after ucomp: tdir %s, tfile %s\n", 
 		tdir.c_str(), tfile.c_str()));
 	fn = tfile;
@@ -110,33 +108,43 @@ bool internfile(const std::string &ifn, RclConfig *config, Rcl::Doc& doc,
 	if (mime.empty()) {
 	    // No mime type ?? pass on.
 	    LOGDEB(("internfile: (no mime) [%s]\n", fn.c_str()));
-	    goto out;
+	    return;
 	}
-
     }
-    
 
     // Look for appropriate handler
     handler = getMimeHandler(mime, config->getMimeConf());
     if (!handler) {
 	// No handler for this type, for now :(
-	LOGDEB(("internfile: %s : no handler\n", mime.c_str()));
-	goto out;
+	LOGDEB(("FileInterner::FileInterner: %s: no handler\n", mime.c_str()));
+	return;
     }
 
-    LOGDEB(("internfile: %s [%s]\n", mime.c_str(), fn.c_str()));
+    LOGDEB(("FileInterner::FileInterner: %s [%s]\n",mime.c_str(), fn.c_str()));
+}
+
+FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
+{
+    if (!handler)
+	return FIError;
 
     // Turn file into a document. The document has fields for title, body 
     // etc.,  all text converted to utf8
-    if (!handler->worker(config, fn,  mime, doc)) {
-	goto out;
+    MimeHandler::Status mhs = handler->worker(config, fn,  mime, doc, ipath);
+    FileInterner::Status ret = FIError;
+    switch (mhs) {
+    case MimeHandler::MHError: break;
+    case MimeHandler::MHDone: ret = FIDone;break;
+    case MimeHandler::MHAgain: ret = FIAgain;break;
     }
-    doc.mimetype = mime;
 
-    // Clean up. We delete the temp file and its father directory
-    ret = true;
- out:
-    delete handler;
-    tmpcleanup(tdir, tfile);
+    doc.mimetype = mime;
     return ret;
+}
+
+FileInterner::~FileInterner()
+{
+    delete handler; 
+    handler = 0;
+    tmpcleanup();
 }

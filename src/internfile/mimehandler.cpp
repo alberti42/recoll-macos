@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.8 2005-02-04 14:21:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.9 2005-03-25 09:40:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -13,23 +13,24 @@ using namespace std;
 #include "debuglog.h"
 #include "smallut.h"
 #include "html.h"
+#include "mail.h"
 #include "execmd.h"
 #include "pathut.h"
 
 class MimeHandlerText : public MimeHandler {
  public:
-    bool worker(RclConfig *conf, const string &fn, 
-		const string &mtype, Rcl::Doc &docout);
+    MimeHandler::Status worker(RclConfig *conf, const string &fn, 
+		const string &mtype, Rcl::Doc &docout, string&);
     
 };
 
 // Process a plain text file
-bool MimeHandlerText::worker(RclConfig *conf, const string &fn, 
-			     const string &mtype, Rcl::Doc &docout)
+MimeHandler::Status MimeHandlerText::worker(RclConfig *conf, const string &fn, 
+			     const string &mtype, Rcl::Doc &docout, string&)
 {
     string otext;
     if (!file_to_string(fn, otext))
-	return false;
+	return MimeHandler::MHError;
 	
     // Try to guess charset, then convert to utf-8, and fill document
     // fields The charset guesser really doesnt work well in general
@@ -46,36 +47,38 @@ bool MimeHandlerText::worker(RclConfig *conf, const string &fn,
 	cerr << "textPlainToDoc: transcode failed: charset '" << charset
 	     << "' to UTF-8: "<< utf8 << endl;
 	otext.erase();
-	return 0;
+	return MimeHandler::MHError;
     }
 
     Rcl::Doc out;
     out.origcharset = charset;
     out.text = utf8;
     docout = out;
-    return true;
+    return MimeHandler::MHDone;
 }
 
 class MimeHandlerExec : public MimeHandler {
  public:
     list<string> params;
     virtual ~MimeHandlerExec() {}
-    virtual bool worker(RclConfig *conf, const string &fn, 
-			const string &mtype, Rcl::Doc &docout);
+    virtual MimeHandler::Status worker(RclConfig *conf, const string &fn, 
+				       const string &mtype, Rcl::Doc &docout, 
+				       string&);
 
 };
 
     
 // Execute an external program to translate a file from its native format
 // to html. Then call the html parser to do the actual indexing
-bool MimeHandlerExec::worker(RclConfig *conf, const string &fn, 
-			     const string &mtype, Rcl::Doc &docout)
+MimeHandler::Status 
+MimeHandlerExec::worker(RclConfig *conf, const string &fn, 
+			const string &mtype, Rcl::Doc &docout, string&)
 {
     if (params.empty()) {
 	// Hu ho
 	LOGERR(("MimeHandlerExec::worker: empty params for mime %s\n",
 		mtype.c_str()));
-	return false;
+	return MimeHandler::MHError;
     }
     // Command name
     string cmd = find_filter(conf, params.front());
@@ -92,7 +95,7 @@ bool MimeHandlerExec::worker(RclConfig *conf, const string &fn,
     if (status) {
 	LOGERR(("MimeHandlerExec: command status 0x%x: %s\n", 
 		status, cmd.c_str()));
-	return false;
+	return MimeHandler::MHError;
     }
 
     // Process/index  the html
@@ -106,6 +109,10 @@ static MimeHandler *mhfact(const string &mime)
 	return new MimeHandlerText;
     else if (!stringlowercmp("text/html", mime))
 	return new MimeHandlerHtml;
+    else if (!stringlowercmp("text/x-mail", mime))
+	return new MimeHandlerMail;
+    else if (!stringlowercmp("message/rfc822", mime))
+	return new MimeHandlerMail;
     return 0;
 }
 
@@ -117,7 +124,7 @@ MimeHandler *getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
     // Return handler definition for mime type
     string hs;
     if (!mhandlers->get(mtype, hs, "index")) {
-	LOGDEB(("getMimeHandler: no handler for %s\n", mtype.c_str()));
+	LOGDEB(("getMimeHandler: no handler for '%s'\n", mtype.c_str()));
 	return 0;
     }
 

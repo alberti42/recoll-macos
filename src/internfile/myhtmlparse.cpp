@@ -150,7 +150,8 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 			lowercase_term(hequiv);
 			if (hequiv == "content-type") {
 			    string value = i->second;
-			    MimeHeaderValue p = parseMimeHeaderValue(value);
+			    MimeHeaderValue p;
+			    parseMimeHeaderValue(value, p);
 			    map<string, string>::const_iterator k;
 			    if ((k = p.params.find("charset")) != 
 				p.params.end()) {

@@ -38,21 +38,23 @@
 using namespace std;
 
 
-bool MimeHandlerHtml::worker(RclConfig *conf, const string &fn, 
-			     const string &mtype, Rcl::Doc &docout)
+MimeHandler::Status 
+MimeHandlerHtml::worker(RclConfig *conf, const string &fn, 
+			const string &mtype, Rcl::Doc &docout, string&)
 {
     LOGDEB(("textHtmlToDoc: %s\n", fn.c_str()));
     string otext;
     if (!file_to_string(fn, otext)) {
 	LOGINFO(("textHtmlToDoc: cant read: %s\n", fn.c_str()));
-	return false;
+	return MimeHandler::MHError;
     }
     return worker1(conf, fn, otext, mtype, docout);
 }
 
-bool MimeHandlerHtml::worker1(RclConfig *conf, const string &, 
-			     const string& htext,
-			     const string &mtype, Rcl::Doc &docout)
+MimeHandler::Status 
+MimeHandlerHtml::worker1(RclConfig *conf, const string &, 
+			 const string& htext,
+			 const string &mtype, Rcl::Doc &docout)
 {
     // Character set handling:
 
@@ -111,5 +113,5 @@ bool MimeHandlerHtml::worker1(RclConfig *conf, const string &,
     out.keywords = pres.keywords;
     out.abstract = pres.sample;
     docout = out;
-    return true;
+    return MimeHandler::MHDone;
 }

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.8 2005-03-17 15:35:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.9 2005-03-25 09:40:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -146,18 +146,25 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	return FsTreeWalker::FtwOk;
     }
 
-    Rcl::Doc doc;
-    if (!internfile(fn, config, doc, tmpdir))
-	return FsTreeWalker::FtwOk;
+    FileInterner interner(fn, config, tmpdir);
+    FileInterner::Status fis = FileInterner::FIAgain;
+    while (fis == FileInterner::FIAgain) {
+	Rcl::Doc doc;
+	string ipath;
+	fis = interner.internfile(doc, ipath);
+	if (fis == FileInterner::FIError)
+	    break;
 
-    // Set up common fields:
-    char ascdate[20];
-    sprintf(ascdate, "%ld", long(stp->st_ctime));
-    doc.mtime = ascdate;
+	// Set up common fields:
+	char ascdate[20];
+	sprintf(ascdate, "%ld", long(stp->st_ctime));
+	doc.mtime = ascdate;
+	doc.ipath = ipath;
 
-    // Do database-specific work to update document data
-    if (!db.add(fn, doc)) 
-	return FsTreeWalker::FtwError;
+	// Do database-specific work to update document data
+	if (!db.add(fn, doc)) 
+	    return FsTreeWalker::FtwError;
+    }
 
     return FsTreeWalker::FtwOk;
 }

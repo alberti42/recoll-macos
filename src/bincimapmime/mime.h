@@ -107,6 +107,7 @@ namespace Binc {
     inline unsigned int getBodyStartOffset(void) const { return bodystartoffsetcrlf; }
 
     void printBody(int fd, Binc::IODevice &output, unsigned int startoffset, unsigned int length) const;
+      void getBody(int fd, std::string& s, unsigned int startoffset, unsigned int length) const;
     void printHeader(int fd, Binc::IODevice &output, std::vector<std::string> headers, bool includeheaders, unsigned int startoffset, unsigned int length, std::string &storage) const;
     void printDoc(int fd, Binc::IODevice &output, unsigned int startoffset, unsigned int length) const;
     virtual void clear(void) const;

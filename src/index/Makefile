@@ -1,11 +1,12 @@
 include ../mk/sysconf
 
 BIGLIB = ../lib/librcl.a
+MIMELIB = ../bincimapmime/libmime.a
 
 PROGS = recollindex csguess
 all: $(PROGS)
 
-RECOLLINDEX_OBJS= recollindex.o $(BIGLIB)
+RECOLLINDEX_OBJS= recollindex.o $(BIGLIB) $(MIMELIB)
 recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
 		$(LIBXAPIAN) $(LIBICONV) $(LIBSYS)
