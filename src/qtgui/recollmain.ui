@@ -202,6 +202,7 @@
     </item>
     <item text="&amp;Help" name="helpMenu">
         <separator/>
+        <action name="helpQuick_startAction"/>
     </item>
 </menubar>
 <toolbars>
@@ -230,6 +231,17 @@
         </property>
         <property name="menuText">
             <string>Start Indexing</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>helpQuick_startAction</cstring>
+        </property>
+        <property name="text">
+            <string>Quick start</string>
+        </property>
+        <property name="menuText">
+            <string>Quick start</string>
         </property>
     </action>
 </actions>
@@ -288,6 +300,12 @@
         <receiver>RecollMain</receiver>
         <slot>clearqPB_clicked()</slot>
     </connection>
+    <connection>
+        <sender>helpQuick_startAction</sender>
+        <signal>activated()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>helpQuick_startAction_activated()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
@@ -307,6 +325,7 @@
     <slot>clearqPB_clicked()</slot>
     <slot>listPrevPB_clicked()</slot>
     <slot>listNextPB_clicked()</slot>
+    <slot>helpQuick_startAction_activated()</slot>
 </slots>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>

@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.2 2004-12-15 15:00:37 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.3 2005-02-04 14:21:18 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_TRANSCODE
@@ -40,7 +40,13 @@ bool transcode(const string &in, string &out, const string &icode,
 	size_t osiz;
 	op = obuf;
 	osiz = OBSIZ;
-	if(iconv(ic, &ip, &isiz, &op, &osiz) == (size_t)-1 && errno != E2BIG){
+	if(iconv(ic, 
+#if defined(_LIBICONV_VERSION)
+		 &ip, 
+#else
+		 (char **)&ip, 
+#endif
+		 &isiz, &op, &osiz) == (size_t)-1 && errno != E2BIG){
 	    out.erase();
 	    out = string("iconv failed for ") + icode + " -> " + ocode +
 		" : " + strerror(errno);

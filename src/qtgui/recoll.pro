@@ -1,7 +1,7 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on release
+CONFIG	+= qt warn_on thread release
 
 SOURCES	+= main.cpp \
 	idxthread.cpp
@@ -27,5 +27,7 @@ unix {
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
 }
 
-
-
+UNAME = $$system(uname -s)
+contains( UNAME, [lL]inux ) {
+	  LIBS -= -liconv
+}

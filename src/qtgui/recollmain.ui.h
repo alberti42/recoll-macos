@@ -313,3 +313,9 @@ void RecollMain::listNextPB_clicked()
 }
 
 
+
+
+void RecollMain::helpQuick_startAction_activated()
+{
+
+}

@@ -1,8 +1,9 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.2 2005-01-24 13:17:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.3 2005-02-04 14:21:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_UNACPP
+#include <stdio.h>
 
 #include <errno.h>
 

@@ -1,4 +1,4 @@
-include ../mk/FreeBSD
+include ../mk/sysconf
 BIGLIB = ../lib/librcl.a
 
 
@@ -8,7 +8,7 @@ all: $(PROGS)
 UNACPP_OBJS= trunacpp.o $(BIGLIB)
 unacpp : $(UNACPP_OBJS)
 	$(CXX) $(CXXFLAGS) -o unacpp $(UNACPP_OBJS) \
-	       -L/usr/local/lib -liconv
+	       $(LIBICONV)
 trunacpp.o : unacpp.cpp unacpp.h
 	$(CXX) $(CXXFLAGS) -DTEST_UNACPP -c -o trunacpp.o unacpp.cpp
 

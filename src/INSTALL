@@ -1,0 +1,52 @@
+Installation instructions:
+
+Installing a binary package:
+----------------------------
+The binary packages are statically linked and should install real easy
+(hopefully). There are no rpm or other managed packages for now.
+
+ - Unpack the tar file. Will create a recoll-x.y directory
+ - Arrange to have the recoll-x.y/bin directory in your PATH, or copy/link the
+   'recoll' executable where it will be found.
+
+ - Copy the files from the sampleconf directory somewhere. The default
+   location is $HOME/.recoll/ If you choose another location, you will have
+   to set the RECOLL_CONFDIR environment variable.
+
+ - Possibly adjust the recoll.conf file. The default should be fine for
+   trying in most cases.
+ - Possibly adjust the mimeconf file, especially the external viewer
+   section, depending on what you are using (ie acrobat vs xpdf, etc...)
+
+ - Start the 'recoll' program. After displaying a dialog, it will normally
+   begin to index the directories specified in recoll.conf.
+
+Building from source
+--------------------
+
+Prerequisites:
+
+To build from source, you need the following packages. Except if you're
+using a really strange system, you can probably easily find, or already
+have, a precompiled version of iconv, and maybe qt.
+
+    - qt and qt-devel (www.trolltech.com). Currently using 3.3.3
+    - xapian-core  (www.xapian.org). Currently using 0.8.5
+    - libiconv (http://www.gnu.org/software/libiconv/). Currently using 1.9,
+
+Building:
+ 
+There is no autoconf for now. You need to chose a file in the mk directory,
+and link it into a file named 'sysconf' there. If your system is not
+supported by the supplied files, it should be easy enough to build a new
+one from the examples (then send it to me please).
+
+You also need to adjust the recoll.pro file inside the qtgui directory to
+fix the "-L/usr/local/lib -lxapian -liconv" piece, depending on where your
+libs are installed.
+
+Then cd to the top directory, and type make.
+
+
+
+  

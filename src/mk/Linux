@@ -1,0 +1,7 @@
+CXXFLAGS = -Wall -g -I. -I../index -I../utils -I../common \
+	 -I../unac -I/usr/local/include
+
+LIBXAPIAN = -L/usr/local/lib -lxapian
+LIBICONV =  
+
+LIBSYS = -lpthread

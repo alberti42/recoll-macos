@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: csguess.cpp,v 1.2 2004-12-15 15:00:37 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: csguess.cpp,v 1.3 2005-02-04 14:21:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_CSGUESS
@@ -54,7 +54,13 @@ static int transcodeErrCnt(const char *ptr, int size,
     while(isiz > 0){
 	osiz = 2*ICONVCHECKSIZ;
 	wp = obuf;
-	if(iconv(ic, (const char **)&rp, &isiz, &wp, &osiz) == (size_t)-1){
+	if(iconv(ic, 
+#if defined(_LIBICONV_VERSION)
+		 (const char **)&rp, 
+#else
+		 (char **)&rp, 
+#endif
+		 &isiz, &wp, &osiz) == (size_t)-1){
 	    if(errno == EILSEQ || errno == EINVAL){
 		rp++;
 		isiz--;

@@ -1,9 +1,9 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.3 2005-01-31 14:31:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.4 2005-02-04 14:21:18 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_PATHUT
-
+#include <unistd.h>
 #include <pwd.h>
 #include <iostream>
 

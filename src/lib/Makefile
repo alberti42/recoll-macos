@@ -1,4 +1,4 @@
-include ../mk/FreeBSD
+include ../mk/sysconf
 
 UNACCFLAGS = -g -I. -I../unac -I/usr/local/include -DUNAC_VERSION=\"1.0.7\"
 

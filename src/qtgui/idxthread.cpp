@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <unistd.h>
+
+
 #include <qthread.h>
 
 #include "indexer.h"

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.7 2005-02-04 09:39:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.8 2005-02-04 14:21:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -71,6 +71,12 @@ class MimeHandlerExec : public MimeHandler {
 bool MimeHandlerExec::worker(RclConfig *conf, const string &fn, 
 			     const string &mtype, Rcl::Doc &docout)
 {
+    if (params.empty()) {
+	// Hu ho
+	LOGERR(("MimeHandlerExec::worker: empty params for mime %s\n",
+		mtype.c_str()));
+	return false;
+    }
     // Command name
     string cmd = find_filter(conf, params.front());
     
@@ -163,8 +169,14 @@ bool getUncompressor(const std::string &mtype, ConfTree *mhandlers,
     string hs;
 
     mhandlers->get(mtype, hs, "");
+    if (hs.empty())
+	return false;
     list<string> tokens;
     ConfTree::stringToStrings(hs, tokens);
+    if (tokens.empty()) {
+	LOGERR(("getUncompressor: empty spec for mtype %s\n", mtype.c_str()));
+	return false;
+    }
     if (stringlowercmp("uncompress", tokens.front())) 
 	return false;
     list<string>::iterator it = tokens.begin();

@@ -1,4 +1,4 @@
-include ../mk/FreeBSD
+include ../mk/sysconf
 
 BIGLIB = ../lib/librcl.a
 
@@ -26,24 +26,21 @@ trexecmd.o : execmd.cpp execmd.h
 
 TRANSCODE_OBJS= trtranscode.o  $(BIGLIB) 
 transcode : $(TRANSCODE_OBJS)
-	$(CXX) $(CXXFLAGS) -o transcode $(TRANSCODE_OBJS) \
-	       -L/usr/local/lib -liconv
+	$(CXX) $(CXXFLAGS) -o transcode $(TRANSCODE_OBJS) $(LIBICONV)
 trtranscode.o : ../utils/transcode.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_TRANSCODE -c -o trtranscode.o \
 	       transcode.cpp
 
 MIMEPARSE_OBJS= trmimeparse.o  $(BIGLIB) 
 trmimeparse : $(MIMEPARSE_OBJS)
-	$(CXX) $(CXXFLAGS) -o mimeparse $(MIMEPARSE_OBJS) \
-	       -L/usr/local/lib -liconv
+	$(CXX) $(CXXFLAGS) -o mimeparse $(MIMEPARSE_OBJS) $(LIBICONV)
 trmimeparse.o : mimeparse.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_MIMEPARSE -c -o trmimeparse.o \
 	       mimeparse.cpp
 
 SMALLUT_OBJS= trsmallut.o  $(BIGLIB) 
 smallut : $(SMALLUT_OBJS)
-	$(CXX) $(CXXFLAGS) -o smallut $(SMALLUT_OBJS) \
-	       -L/usr/local/lib -liconv
+	$(CXX) $(CXXFLAGS) -o smallut $(SMALLUT_OBJS) $(LIBICONV)
 trsmallut.o : ../utils/smallut.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_SMALLUT -c -o trsmallut.o \
 	       smallut.cpp
