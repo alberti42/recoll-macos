@@ -1,15 +1,17 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.2 2004-12-14 17:54:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.3 2005-01-31 14:31:10 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_PATHUT
 
 #include <pwd.h>
+#include <iostream>
 
 #include "pathut.h"
+using std::string;
 
-std::string path_getfather(const std::string &s) {
-    std::string father = s;
+string path_getfather(const string &s) {
+    string father = s;
 
     // ??
     if (father.empty())
@@ -22,8 +24,8 @@ std::string path_getfather(const std::string &s) {
 	father.erase(father.length()-1);
     }
 
-    std::string::size_type slp = father.rfind('/');
-    if (slp == std::string::npos)
+    string::size_type slp = father.rfind('/');
+    if (slp == string::npos)
 	return "./";
 
     father.erase(slp);
@@ -31,31 +33,55 @@ std::string path_getfather(const std::string &s) {
     return father;
 }
 
-std::string path_getsimple(const std::string &s) {
-    std::string simple = s;
+string path_getsimple(const string &s) {
+    string simple = s;
 
     if (simple.empty())
 	return simple;
 
-    std::string::size_type slp = simple.rfind('/');
-    if (slp == std::string::npos)
+    string::size_type slp = simple.rfind('/');
+    if (slp == string::npos)
 	return simple;
 
     simple.erase(0, slp+1);
     return simple;
 }
 
-std::string path_home()
+string path_home()
 {
     uid_t uid = getuid();
 
     struct passwd *entry = getpwuid(uid);
-    if (entry == 0)
+    if (entry == 0) {
+	const char *cp = getenv("HOME");
+	if (cp)
+	    return cp;
+	else 
 	return "/";
+    }
 
-    std::string homedir = entry->pw_dir;
+    string homedir = entry->pw_dir;
     path_catslash(homedir);
     return homedir;
+}
+
+extern string path_tildexpand(const string &s) 
+{
+    if (s.empty() || s[0] != '~')
+	return s;
+    string o = s;
+    if (s.length() == 1) {
+	o.replace(0, 1, path_home());
+    } else if  (s[1] == '/') {
+	o.replace(0, 2, path_home());
+    } else {
+	string::size_type pos = s.find('/');
+	int l = (pos == string::npos) ? s.length() - 1 : pos - 1;
+	struct passwd *entry = getpwnam(s.substr(1, l).c_str());
+	if (entry)
+	    o.replace(0, l+1, entry->pw_dir);
+    }
+    return o;
 }
 
 #else // TEST_PATHUT
@@ -71,15 +97,29 @@ const char *tstvec[] = {"", "/", "/dir", "/dir/", "/dir1/dir2",
 			"/dir/.c",
 };
 
+const string ttvec[] = {"/dir", "", "~", "~/sub", "~root", "~root/sub",
+		 "~nosuch", "~nosuch/sub"};
+int nttvec = sizeof(ttvec) / sizeof(string);
+
 int main(int argc, const char **argv)
 {
-
+#if 0
     for (int i = 0;i < sizeof(tstvec) / sizeof(char *); i++) {
 	cout << tstvec[i] << " FATHER " << path_getfather(tstvec[i]) << endl;
     }
     for (int i = 0;i < sizeof(tstvec) / sizeof(char *); i++) {
 	cout << tstvec[i] << " SIMPLE " << path_getsimple(tstvec[i]) << endl;
     }
+#endif
+    string s;
+
+    for (int i = 0; i < nttvec; i++) {
+	cout << "tildexp: '" << ttvec[i] << "' -> '" << 
+	    path_tildexpand(ttvec[i]) << "'" << endl;
+    }
+    
+
+
     return 0;
 }
 

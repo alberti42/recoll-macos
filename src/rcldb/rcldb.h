@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.7 2005-01-29 15:41:11 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.8 2005-01-31 14:31:09 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -61,6 +61,7 @@ class Db {
     enum OpenMode {DbRO, DbUpd, DbTrunc};
     bool open(const std::string &dbdir, OpenMode mode);
     bool close();
+    bool isopen();
 
     // Update-related functions
     bool add(const std::string &filename, const Doc &doc);

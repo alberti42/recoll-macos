@@ -27,12 +27,19 @@
 extern RclConfig *rclconfig;
 extern Rcl::Db *rcldb;
 
-
+extern void recollCleanup();
 void RecollMain::fileExit()
 {
+    LOGDEB(("RecollMain: fileExit\n"));
     exit(0);
 }
 
+extern int recollNeedsExit;
+void RecollMain::checkExit()
+{
+    if (recollNeedsExit)
+	fileExit();
+}
 
 static string plaintorich(const string &in)
 {
@@ -175,12 +182,30 @@ void RecollMain::reslistTE_clicked(int par, int car)
 void RecollMain::queryText_returnPressed()
 {
     LOGDEB(("RecollMain::queryText_returnPressed()\n"));
+    if (!rcldb->isopen()) {
+	string dbdir;
+	if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
+	    QMessageBox::critical(0, "Recoll",
+				  QString("No db directory in configuration"));
+	    exit(1);
+	}
+	dbdir = path_tildexpand(dbdir);
+	if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
+	    QMessageBox::information(0, "Recoll",
+				     QString("Could not open database in ") + 
+				     QString(dbdir) + " wait for indexing " +
+				     "to complete?");
+	    return;
+	}
+
+    }
     reslist_current = -1;
     reslist_winfirst = -1;
 
     QCString u8 =  queryText->text().utf8();
-    
-    rcldb->setQuery(string((const char *)u8));
+
+    if (!rcldb->setQuery(string((const char *)u8)))
+	return;
     listNextPB_clicked();
 }
 
@@ -218,13 +243,18 @@ void RecollMain::listNextPB_clicked()
 	Rcl::Doc doc;
 	doc.erase();
 	int percent;
-	if (!rcldb->getDoc(reslist_winfirst + i, doc, &percent))
-	    break;
-	int resCnt = rcldb->getResCnt();
-	int last = MIN(resCnt, reslist_winfirst+respagesize);
 	if (i == 0) {
 	    reslistTE->clear();
 	    previewTextEdit->clear();
+	}
+	if (!rcldb->getDoc(reslist_winfirst + i, doc, &percent)) {
+	    if (i == 0) 
+		reslist_winfirst = -1;
+	    break;
+	}
+	int resCnt = rcldb->getResCnt();
+	int last = MIN(resCnt, reslist_winfirst+respagesize);
+	if (i == 0) {
 	    reslistTE->append("<qt><head></head><body><p>");
 	    char line[80];
 	    sprintf(line, "<p><b>Displaying results %d-%d out of %d</b><br>",
@@ -276,3 +306,4 @@ void RecollMain::listNextPB_clicked()
 	    reslist_winfirst = 0;
     }
 }
+

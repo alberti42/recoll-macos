@@ -221,12 +221,6 @@
         <slot>fileExit()</slot>
     </connection>
     <connection>
-        <sender>fileExitAction</sender>
-        <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>fileExit()</slot>
-    </connection>
-    <connection>
         <sender>queryText</sender>
         <signal>returnPressed()</signal>
         <receiver>RecollMain</receiver>
@@ -272,6 +266,7 @@
 </variables>
 <slots>
     <slot>fileExit()</slot>
+    <slot>checkExit()</slot>
     <slot>reslistTE_doubleClicked( int par, int car )</slot>
     <slot>reslistTE_clicked( int par, int car )</slot>
     <slot>queryText_returnPressed()</slot>

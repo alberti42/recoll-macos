@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.13 2005-01-29 15:41:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.14 2005-01-31 14:31:09 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -87,7 +87,7 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
 	LOGERR(("Rcl::Db::open: already open\n"));
 	return false;
     }
-
+    string ermsg;
     try {
 	switch (mode) {
 	case DbUpd:
@@ -110,15 +110,16 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
 	ndb->isopen = true;
 	return true;
     } catch (const Xapian::Error &e) {
-	cerr << "Exception: " << e.get_msg() << endl;
+	ermsg = e.get_msg();
     } catch (const string &s) {
-	cerr << "Exception: " << s << endl;
+	ermsg = s;
     } catch (const char *s) {
-	cerr << "Exception: " << s << endl;
+	ermsg = s;
     } catch (...) {
-	cerr << "Caught unknown exception" << endl;
+	ermsg = "Caught unknown exception";
     }
-    LOGERR(("Rcl::Db::open: got exception\n"));
+    LOGERR(("Rcl::Db::open: exception while opening '%s': %s\n", 
+	    dir.c_str(), ermsg.c_str()));
     return false;
 }
 
@@ -154,6 +155,14 @@ bool Rcl::Db::close()
     if (pdata)
 	return true;
     return false;
+}
+
+bool Rcl::Db::isopen()
+{
+    if (pdata == 0)
+	return false;
+    Native *ndb = (Native *)pdata;
+    return ndb->isopen;
 }
 
 // A small class to hold state while splitting text
@@ -366,6 +375,10 @@ static bool splitQCb(void *cdata, const std::string &term, int )
 bool Rcl::Db::setQuery(const std::string &querystring)
 {
     LOGDEB(("Rcl::Db::setQuery: %s\n", querystring.c_str()));
+    Native *ndb = (Native *)pdata;
+    if (!ndb)
+	return false;
+
     wsQData splitData;
     TextSplit splitter(splitQCb, &splitData);
 
@@ -375,7 +388,6 @@ bool Rcl::Db::setQuery(const std::string &querystring)
     }
     splitter.text_to_words(noacc);
 
-    Native *ndb = (Native *)pdata;
 
     ndb->query = Xapian::Query(Xapian::Query::OP_OR, splitData.terms.begin(), 
 			       splitData.terms.end());

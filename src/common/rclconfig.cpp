@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.4 2005-01-25 14:37:20 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.5 2005-01-31 14:31:09 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -9,22 +9,18 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.4 2005-01-25 14:37:20 dockes Ex
 #include "conftree.h"
 #include "debuglog.h"
 
-static DebugLog debuglog;
-DebugLog *dbl = &debuglog;
-class loginitializer {
- public:
-    loginitializer() {
-	dbl->setlogfilename("stderr");
-	dbl->setloglevel(10);
-    }
-};
-static loginitializer lgntlzr;
-
 using namespace std;
 
 RclConfig::RclConfig()
     : m_ok(false), conf(0), mimemap(0), mimeconf(0)
 {
+    static int loginit = 0;
+    if (!loginit) {
+	DebugLog::setfilename("stderr");
+	DebugLog::getdbl()->setloglevel(10);
+	loginit = 1;
+    }
+
     const char *cp = getenv("RECOLL_CONFDIR");
     if (cp) {
 	confdir = cp;

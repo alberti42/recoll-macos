@@ -1,5 +1,5 @@
 
-CXXFLAGS = -I.
+CXXFLAGS = -I. -g
 
 BIGLIB = ../lib/librcl.a
 
@@ -15,7 +15,7 @@ trfstreewalk.o : fstreewalk.cpp fstreewalk.h
 
 PATHUT_OBJS= trpathut.o pathut.o 
 trpathut : $(PATHUT_OBJS)
-	$(CXX) -o trpathut $(PATHUT_OBJS)
+	$(CXX) $(CXXFLAGS) -o trpathut $(PATHUT_OBJS)
 trpathut.o : pathut.cpp pathut.h
 	$(CXX) -o trpathut.o -c $(CXXFLAGS) \
 	       -DTEST_PATHUT pathut.cpp

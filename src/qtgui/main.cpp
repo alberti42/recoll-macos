@@ -1,35 +1,54 @@
 #include <signal.h>
 #include <qapplication.h>
+#include <qthread.h>
+#include <qtimer.h>
+
 #include <qmessagebox.h>
 
 #include "recollmain.h"
 #include "rcldb.h"
 #include "rclconfig.h"
+#include "pathut.h"
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
 
-static void cleanup()
+extern void start_idxthread(RclConfig *cnf);
+extern void stop_idxthread();
+extern int startindexing;
+
+void recollCleanup()
 {
+    stop_idxthread();
     delete rcldb;
     rcldb = 0;
     delete rclconfig;
     rclconfig = 0;
 }
+
+int recollNeedsExit;
+
 static void sigcleanup(int sig)
 {
     fprintf(stderr, "sigcleanup\n");
-    cleanup();
-    exit(1);
+    // Cant call exit from here, because the atexit cleanup does some
+    // thread stuff that we can't do from signal context.
+    // Just set a flag and let the watchdog timer do the work
+    recollNeedsExit = 1;
 }
+
+
 int main( int argc, char ** argv )
 {
-    QApplication a( argc, argv );
+    QApplication a(argc, argv);
     RecollMain w;
     w.show();
-    a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
+    a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
+    QTimer *timer = new QTimer(&a);
+    w.connect(timer, SIGNAL(timeout()), &w, SLOT(checkExit()));
+    timer->start(100);
 
-    atexit(cleanup);
+    atexit(recollCleanup);
     if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
 	signal(SIGHUP, sigcleanup);
     if (signal(SIGINT, SIG_IGN) != SIG_IGN)
@@ -54,14 +73,19 @@ int main( int argc, char ** argv )
 			      QString("No db directory in configuration"));
 	exit(1);
     }
-    
+    dbdir = path_tildexpand(dbdir);
+
     rcldb = new Rcl::Db;
 
     if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
-	QMessageBox::critical(0, "Recoll",
-			      QString("Could not open database in ") + 
-			      QString(dbdir));
-	exit(1);
+	startindexing = 1;
+	QMessageBox::information(0, "Recoll",
+				 QString("Could not open database in ") + 
+				 QString(dbdir) + ". Starting indexation");
+	startindexing = 1;
     }
+
+    start_idxthread(rclconfig);
+
     return a.exec();
 }

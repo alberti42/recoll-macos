@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: qtry.cpp,v 1.3 2005-01-26 11:47:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: qtry.cpp,v 1.4 2005-01-31 14:31:10 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 // Tests with the query interface
@@ -15,6 +15,7 @@ static char rcsid[] = "@(#$Id: qtry.cpp,v 1.3 2005-01-26 11:47:27 dockes Exp $ (
 #include "rcldb.h"
 #include "transcode.h"
 #include "mimehandler.h"
+#include "pathut.h"
 
 using namespace std;
 
@@ -72,7 +73,7 @@ int main(int argc, char **argv)
 	cerr << "No database directory in configuration" << endl;
 	exit(1);
     }
-    
+    dbdir = path_tildexpand(dbdir);
     Rcl::Db *rcldb = new Rcl::Db;
 
     if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
