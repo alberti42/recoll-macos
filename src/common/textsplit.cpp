@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.4 2004-12-17 13:01:01 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.5 2005-02-07 13:17:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -7,6 +7,7 @@ static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.4 2004-12-17 13:01:01 dockes Ex
 #include <string>
 
 #include "textsplit.h"
+#include "debuglog.h"
 
 using namespace std;
 
@@ -57,9 +58,12 @@ static void setcharclasses()
     init = 1;
 }
 
-bool TextSplit::emitterm(string &w, int pos, bool doerase = true)
+bool TextSplit::emitterm(string &w, int pos, bool doerase,
+			 int btstart, int btend)
 {
-    if (!termsink)
+    LOGDEB2(("TextSplit::emitterm: '%s' pos %d\n", w.c_str(), pos));
+    
+    if (!cb)
 	return false;
 
     // Maybe trim end of word. These are chars that we would keep inside 
@@ -77,7 +81,7 @@ bool TextSplit::emitterm(string &w, int pos, bool doerase = true)
     }
  breakloop:
     if (w.length() > 0 && w.length() < (unsigned)maxWordLength) {
-	bool ret = termsink(cdata, w, pos);
+	bool ret = cb->takeword(w, pos, btstart, btend);
 	if (doerase)
 	    w.erase();
 	return ret;
@@ -92,14 +96,16 @@ bool TextSplit::emitterm(string &w, int pos, bool doerase = true)
  */
 bool TextSplit::text_to_words(const string &in)
 {
+    LOGDEB2(("TextSplit::text_to_words: cb %p\n", cb));
     setcharclasses();
     string span;
     string word;
     bool number = false;
     int wordpos = 0;
     int spanpos = 0;
+    unsigned int i;
 
-    for (unsigned int i = 0; i < in.length(); i++) {
+    for (i = 0; i < in.length(); i++) {
 	int c = in[i];
 	int cc = charclasses[c]; 
 	switch (cc) {
@@ -107,10 +113,10 @@ bool TextSplit::text_to_words(const string &in)
 	SPACE:
 	    if (word.length()) {
 		if (span.length() != word.length()) {
-		    if (!emitterm(span, spanpos)) 
+		    if (!emitterm(span, spanpos, true, i-span.length(), i)) 
 			return false;
 		}
-		if (!emitterm(word, wordpos++))
+		if (!emitterm(word, wordpos++, true, i-word.length(), i))
 		    return false;
 		number = false;
 	    }
@@ -127,10 +133,10 @@ bool TextSplit::text_to_words(const string &in)
 		}
 	    } else {
 		if (span.length() != word.length()) {
-		    if (!emitterm(span, spanpos, false))
+		    if (!emitterm(span, spanpos, false, i-span.length(), i))
 			return false;
 		}
-		if (!emitterm(word, wordpos++))
+		if (!emitterm(word, wordpos++, true, i-word.length(), i))
 		    return false;
 		number = false;
 		span += c;
@@ -140,10 +146,10 @@ bool TextSplit::text_to_words(const string &in)
 	case '@':
 	    if (word.length()) {
 		if (span.length() != word.length()) {
-		    if (!emitterm(span, spanpos, false))
+		    if (!emitterm(span, spanpos, false, i-span.length(), i))
 			return false;
 		}
-		if (!emitterm(word, wordpos++))
+		if (!emitterm(word, wordpos++, true, i-word.length(), i))
 		    return false;
 		number = false;
 	    } else
@@ -155,7 +161,7 @@ bool TextSplit::text_to_words(const string &in)
 		word += c;
 	    } else {
 		if (word.length()) {
-		    if (!emitterm(word, wordpos++))
+		    if (!emitterm(word, wordpos++, true, i-word.length(), i))
 			return false;
 		    number = false;
 		} else 
@@ -202,9 +208,9 @@ bool TextSplit::text_to_words(const string &in)
     }
     if (word.length()) {
 	if (span.length() != word.length())
-	    if (!emitterm(span, spanpos))
+	    if (!emitterm(span, spanpos, true, i-span.length(), i))
 		return false;
-	return emitterm(word, wordpos);
+	return emitterm(word, wordpos, true, i-word.length(), i);
     }
     return true;
 }
@@ -222,12 +228,14 @@ bool TextSplit::text_to_words(const string &in)
 
 using namespace std;
 
-bool termsink(void *, const string &term, int pos)
-{
-    cout << pos << " " << term << endl;
-    return true;
-}
-
+// A small class to hold state while splitting text
+class mySplitterCB : public TextSplitCB {
+ public:
+    bool takeword(const std::string &term, int pos, int bs, int be) {
+	cout << pos << " " << term << " bs " << bs << " be " << be << endl;
+	return true;
+    }
+};
 
 static string teststring = 
     "jfd@okyz.com "
@@ -241,7 +249,8 @@ static string teststring =
 
 int main(int argc, char **argv)
 {
-    TextSplit splitter(termsink, 0);
+    mySplitterCB cb;
+    TextSplit splitter(&cb);
     if (argc == 2) {
 	string data;
 	if (!file_to_string(argv[1], data)) 

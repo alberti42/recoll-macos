@@ -1,8 +1,9 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.8 2005-01-31 14:31:09 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.9 2005-02-07 13:17:47 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+#include <list>
 
 // rcldb defines an interface for a 'real' text database. The current 
 // implementation uses xapian only, and xapian-related code is in rcldb.cpp
@@ -72,6 +73,7 @@ class Db {
 
     // Parse query string and initialize query
     bool setQuery(const std::string &q);
+    bool getQueryTerms(std::list<std::string>& terms);
 
     // Get document at rank i. This is probably vastly inferior to the type
     // of interface in Xapian, but we have to start with something simple

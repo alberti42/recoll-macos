@@ -1,8 +1,19 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.3 2005-01-24 13:17:58 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.4 2005-02-07 13:17:47 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+
+// Function class whose called for every detected word
+class TextSplitCB {
+ public:
+    virtual ~TextSplitCB() {}
+    virtual bool takeword(const std::string& term, 
+			  int pos,  // term pos
+			  int bts,      // byte offset of first char in term
+			  int bte      // byte offset of first char after term
+			  ) = 0; 
+};
 
 /** 
  * Split text into words. 
@@ -11,19 +22,14 @@
  * but 'ts much simpler this way...
  */
 class TextSplit {
- public:
-    typedef bool (*TermSink)(void *cdata, const std::string & term, int pos);
- private:
-    TermSink termsink;
-    void *cdata;
+    TextSplitCB *cb;
     int maxWordLength;
-    bool emitterm(std::string &term, int pos, bool doerase);
+    bool emitterm(std::string &term, int pos, bool doerase, int, int);
  public:
     /**
      * Constructor: just store callback and client data
      */
-    TextSplit(TermSink t, void *c) : termsink(t), cdata(c), maxWordLength(40)
-    {}
+    TextSplit(TextSplitCB *t) : cb(t), maxWordLength(40) {}
     /**
      * Split text, emit words and positions.
      */

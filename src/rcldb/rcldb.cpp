@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.18 2005-02-04 14:21:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.19 2005-02-07 13:17:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -171,20 +171,19 @@ bool Rcl::Db::isopen()
 }
 
 // A small class to hold state while splitting text
-class wsData {
+class mySplitterCB : public TextSplitCB {
  public:
     Xapian::Document &doc;
     Xapian::termpos basepos; // Base for document section
     Xapian::termpos curpos;  // Last position sent to callback
-    wsData(Xapian::Document &d) : doc(d), basepos(1), curpos(0)
+    mySplitterCB(Xapian::Document &d) : doc(d), basepos(1), curpos(0)
     {}
+    bool takeword(const std::string &term, int pos, int, int);
 };
 
 // Callback for the document to word splitting class during indexation
-static bool splitCb(void *cdata, const std::string &term, int pos)
+bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 {
-    wsData *data = (wsData*)cdata;
-
     // cerr << "splitCb: term " << term << endl;
     //string printable;
     //transcode(term, printable, "UTF-8", "ISO8859-1");
@@ -193,8 +192,8 @@ static bool splitCb(void *cdata, const std::string &term, int pos)
     try {
 	// 1 is the value for wdfinc in index_text when called from omindex
 	// TOBEDONE: check what this is used for
-	data->curpos = pos;
-	data->doc.add_posting(term, data->basepos + data->curpos, 1);
+	curpos = pos;
+	doc.add_posting(term, basepos + curpos, 1);
     } catch (...) {
 	LOGERR(("Rcl::Db: Error occurred during xapian add_posting\n"));
 	return false;
@@ -281,9 +280,9 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 
     Xapian::Document newdocument;
 
-    wsData splitData(newdocument);
+    mySplitterCB splitData(newdocument);
 
-    TextSplit splitter(splitCb, &splitData);
+    TextSplit splitter(&splitData);
 
     string noacc;
     if (!unac_cpp(doc.title, noacc)) {
@@ -436,18 +435,16 @@ bool Rcl::Db::purge()
 
 #include <vector>
 
-class wsQData {
+class wsQData : public TextSplitCB {
  public:
     vector<string> terms;
+
+    bool takeword(const std::string &term, int , int, int) {
+	terms.push_back(term);
+	return true;
+    }
 };
 
-// Callback for the query-to-words splitting
-static bool splitQCb(void *cdata, const std::string &term, int )
-{
-    wsQData *data = (wsQData*)cdata;
-    data->terms.push_back(term);
-    return true;
-}
 
 bool Rcl::Db::setQuery(const std::string &querystring)
 {
@@ -457,7 +454,7 @@ bool Rcl::Db::setQuery(const std::string &querystring)
 	return false;
 
     wsQData splitData;
-    TextSplit splitter(splitQCb, &splitData);
+    TextSplit splitter(&splitData);
 
     string noacc;
     if (!dumb_string(querystring, noacc)) {
@@ -472,6 +469,21 @@ bool Rcl::Db::setQuery(const std::string &querystring)
     ndb->enquire = new Xapian::Enquire(ndb->db);
     ndb->enquire->set_query(ndb->query);
     ndb->mset = Xapian::MSet();
+    return true;
+}
+
+bool Rcl::Db::getQueryTerms(list<string>& terms)
+{
+    Native *ndb = (Native *)pdata;
+    if (!ndb)
+	return false;
+
+    terms.clear();
+    Xapian::TermIterator it;
+    for (it = ndb->query.get_terms_begin(); it != ndb->query.get_terms_end();
+	 it++) {
+	terms.push_back(*it);
+    }
     return true;
 }
 

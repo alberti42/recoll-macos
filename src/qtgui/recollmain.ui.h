@@ -15,8 +15,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include <utility>
+using std::pair;
+
 #include <qmessagebox.h>
 #include <qcstring.h>
+
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -25,10 +29,12 @@
 #include "pathut.h"
 #include "recoll.h"
 #include "internfile.h"
+#include "textsplit.h"
+#include "smallut.h"
 
 void RecollMain::fileExit()
 {
-    LOGDEB(("RecollMain: fileExit\n"));
+    LOGDEB1(("RecollMain: fileExit\n"));
     exit(0);
 }
 
@@ -52,17 +58,66 @@ void RecollMain::fileStart_IndexingAction_activated()
 	startindexing = 1;
 }
 
-static string plaintorich(const string &in)
+// Text splitter callback used to take note of the query terms byte offsets 
+// inside the text. This is then used to post highlight tags. 
+class myTextSplitCB : public TextSplitCB {
+ public:
+    list<pair<int, int> > tboffs;
+    const list<string> *terms;
+    myTextSplitCB(const list<string>& terms) : terms(&terms) {}
+    virtual bool takeword(const std::string& term, int, int bts,  int bte) {
+	for (list<string>::const_iterator it = terms->begin(); 
+	     it != terms->end(); it++) {
+	    if (!stringlowercmp(*it, term)) {
+		tboffs.push_back(pair<int, int>(bts, bte));
+		break;
+	    }
+	}
+	return true;
+    }
+};
+
+static string plaintorich(const string &in, const list<string>& terms,
+			  list<pair<int, int> >&termoffsets)
 {
+#if 0
+    {string t;
+	for (list<string>::const_iterator it = terms.begin();it != terms.end();it++) 
+	    t += "'" + *it + "' ";
+	LOGDEB(("plaintorich: term: %s\n", t.c_str()));
+    }
+#endif
+    myTextSplitCB cb(terms);
+    TextSplit splitter(&cb);
+    splitter.text_to_words(in);
+    string out1;
+    if (cb.tboffs.empty()) {
+	out1 = in;
+    } else { 
+	list<pair<int, int> >::iterator it = cb.tboffs.begin();
+	for (unsigned int i = 0; i < in.length() ; i++) {
+	    if (it != cb.tboffs.end()) {
+		if (i == (unsigned int)it->first) {
+		    out1 += "<termtag>";
+		} else if (i == (unsigned int)it->second) {
+		    if (it != cb.tboffs.end())
+			it++;
+		    out1 += "</termtag>";
+		}
+	    }
+	    out1 += in[i];
+	}
+    }
     string out = "<qt><head><title></title></head><body><p>";
-    for (unsigned int i = 0; i < in.length() ; i++) {
-	if (in[i] == '\n') {
+    for (string::const_iterator it = out1.begin();it != out1.end(); it++) {
+	if (*it == '\n') {
 	    out += "<br>";
 	    //	    out += '\n';
 	} else {
-	    out += in[i];
+	    out += *it;
 	}
     }
+    termoffsets = cb.tboffs;
     return out;
 }
 
@@ -137,7 +192,7 @@ void RecollMain::reslistTE_clicked(int par, int car)
     int reldocnum = par - 1;
     reslist_current = reldocnum;
     previewTextEdit->clear();
-    LOGDEB(("Cleared preview\n"));
+
     if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0)) {
 	QMessageBox::warning(0, "Recoll",
 			     QString("Can't retrieve document from database"));
@@ -154,26 +209,28 @@ void RecollMain::reslistTE_clicked(int par, int car)
 			     doc.mimetype.c_str());
 	return;
     }
+    list<string> terms;
+    rcldb->getQueryTerms(terms);
+    list<pair<int, int> > termoffsets;
+    string rich = plaintorich(fdoc.text, terms, termoffsets);
 
-    string rich = plaintorich(fdoc.text);
-
-#if 0
-    //Highlighting; pass a list of (search term, style name) to plaintorich
-    // and create the corresponding styles with different colors here
-    // We need to :
-    //  - Break the query into terms : wait for the query analyzer
-    //  - Break the text into words. This should use a version of 
-    //    textsplit with an option to keep the punctuation (see how to do
-    //    this). We do want the same splitter code to be used here and 
-    //    when indexing.
     QStyleSheetItem *item = 
-	new QStyleSheetItem( previewTextEdit->styleSheet(), "mytag" );
-    item->setColor("red");
+	new QStyleSheetItem( previewTextEdit->styleSheet(), "termtag" );
+    item->setColor("blue");
     item->setFontWeight(QFont::Bold);
-#endif
 
     QString str = QString::fromUtf8(rich.c_str(), rich.length());
     previewTextEdit->setText(str);
+    int para = 0, index = 1;
+    if (!termoffsets.empty()) {
+	index = (termoffsets.begin())->first;
+	LOGDEB1(("Setting cursor position to para %d, index %d\n",para,index));
+	previewTextEdit->setCursorPosition(0, index);
+    }
+    previewTextEdit->ensureCursorVisible();
+    previewTextEdit->getCursorPosition(&para, &index);
+    LOGDEB1(("PREVIEW Paragraphs: %d. Cpos: %d %d\n", 
+	    previewTextEdit->paragraphs(), para, index));
 }
 
 
@@ -181,7 +238,7 @@ void RecollMain::reslistTE_clicked(int par, int car)
 // first page of results
 void RecollMain::queryText_returnPressed()
 {
-    LOGDEB(("RecollMain::queryText_returnPressed()\n"));
+    LOGDEB1(("RecollMain::queryText_returnPressed()\n"));
     if (!rcldb->isopen()) {
 	string dbdir;
 	if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
@@ -206,6 +263,7 @@ void RecollMain::queryText_returnPressed()
 
     if (!rcldb->setQuery(string((const char *)u8)))
 	return;
+    list<string> terms;
     listNextPB_clicked();
 }
 
@@ -234,7 +292,7 @@ void RecollMain::listPrevPB_clicked()
 // Fill up result list window with next screen of hits
 void RecollMain::listNextPB_clicked()
 {
-    LOGDEB(("listNextPB_clicked: winfirst %d\n", reslist_winfirst));
+    LOGDEB1(("listNextPB_clicked: winfirst %d\n", reslist_winfirst));
 
     if (reslist_winfirst < 0)
 	reslist_winfirst = 0;
@@ -284,7 +342,7 @@ void RecollMain::listNextPB_clicked()
 	    struct tm *tm = localtime(&mtime);
 	    strftime(datebuf, 99, "<i>Modified:</i>&nbsp;%F&nbsp;%T", tm);
 	}
-	LOGDEB(("Abstract: %s\n", doc.abstract.c_str()));
+	LOGDEB1(("Abstract: %s\n", doc.abstract.c_str()));
 	string result = "<p>" + 
 	    string(perbuf) + " <b>" + doc.title + "</b><br>" +
 	    doc.mimetype + "&nbsp;" +
