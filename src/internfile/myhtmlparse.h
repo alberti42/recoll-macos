@@ -1,4 +1,3 @@
-=======
 /* myhtmlparse.h: subclass of HtmlParser for extracting text
  *
  * ----START-LICENCE----
@@ -35,6 +34,9 @@ class MyHtmlParser : public HtmlParser {
 	bool in_style_tag;
 	bool pending_space;
     	string title, sample, keywords, dump;
+        string ocharset; // This is the charset our user thinks the doc was
+        string charset; // This is the charset it was supposedly converted to
+        string doccharset; // Set this to value of charset parameter in header
 	bool indexing_allowed;
 	void process_text(const string &text);
 	void opening_tag(const string &tag, const map<string,string> &p);

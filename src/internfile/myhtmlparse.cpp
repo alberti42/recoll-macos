@@ -25,6 +25,8 @@
 
 #include "indextext.h" // for lowercase_term()
 
+#include "mimeparse.h"
+
 void
 MyHtmlParser::process_text(const string &text)
 {
@@ -50,12 +52,11 @@ void
 MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 {
 #if 0
-    cout << "<" << tag;
+    cout << "TAG: " << tag << ": " << endl;
     map<string, string>::const_iterator x;
     for (x = p.begin(); x != p.end(); x++) {
-	cout << " " << x->first << "=\"" << x->second << "\"";
+	cout << "  " << x->first << " -> '" << x->second << "'" << endl;
     }
-    cout << ">\n";
 #endif
     if (tag.empty()) return;
     switch (tag[0]) {
@@ -67,7 +68,10 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 		dump = "";
 		break;
 	    }
-	    if (tag == "blockquote" || tag == "br") pending_space = true;
+	    if (tag == "blockquote" || tag == "br") {
+		dump += '\n';
+		pending_space = true;
+	    }
 	    break;
 	case 'c':
 	    if (tag == "center") pending_space = true;
@@ -84,8 +88,10 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	    break;
 	case 'h':
 	    // hr, and h1, ..., h6
-	    if (tag.length() == 2 && strchr("r123456", tag[1]))
+	    if (tag.length() == 2 && strchr("r123456", tag[1])) {
+		dump += '\n';
 		pending_space = true;
+	    }
 	    break;
 	case 'i':
 	    if (tag == "iframe" || tag == "img" || tag == "isindex" ||
@@ -95,11 +101,14 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	    if (tag == "keygen") pending_space = true;
 	    break;
 	case 'l':
-	    if (tag == "legend" || tag == "li" || tag == "listing")
+	    if (tag == "legend" || tag == "li" || tag == "listing") {
+		dump += '\n';
 		pending_space = true;
+	    }
 	    break;
 	case 'm':
 	    if (tag == "meta") {
+		    LOGDEB(("Found META\n"));
 		map<string, string>::const_iterator i, j;
 		if ((i = p.find("content")) != p.end()) {
 		    if ((j = p.find("name")) != p.end()) {
@@ -125,6 +134,26 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 				throw true;
 			    }
 			}
+		    } else if ((j = p.find("http-equiv")) != p.end()) {
+			LOGDEB(("Found http-equiv\n"));
+			string hequiv = j->second;
+			lowercase_term(hequiv);
+			if (hequiv == "content-type") {
+			    string value = i->second;
+			    MimeHeaderValue p = parseMimeHeaderValue(value);
+			    map<string, string>::const_iterator k;
+			    if ((k = p.params.find("charset")) != 
+				p.params.end()) {
+				doccharset = k->second;
+				if (doccharset != ocharset) {
+				    LOGDEB1(("Doc specified charset '%s' "
+					     "differs from announced '%s'\n",
+					     doccharset.c_str(), 
+					     ocharset.c_str()));
+				    throw true;
+				}
+			    }
+			}
 		    }
 		}
 		break;
@@ -136,8 +165,10 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	    if (tag == "ol" || tag == "option") pending_space = true;
 	    break;
 	case 'p':
-	    if (tag == "p" || tag == "pre" || tag == "plaintext")
+	    if (tag == "p" || tag == "pre" || tag == "plaintext") {
+		dump += '\n';
 		pending_space = true;
+	    }
 	    break;
 	case 'q':
 	    if (tag == "q") pending_space = true;

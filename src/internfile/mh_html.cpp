@@ -24,143 +24,18 @@
 
 // This file has code from omindex + an adaptor function for recoll at the end
 
-#include "htmlparse.h"
 #include "mimehandler.h"
 #include "debuglog.h"
 #include "csguess.h"
 #include "readfile.h"
 #include "transcode.h"
 #include "mimeparse.h"
-
-class MyHtmlParser : public HtmlParser {
- public:
-    bool in_script_tag;
-    bool in_style_tag;
-    string title, sample, keywords, dump;
-    string ocharset; // This is the charset our user thinks the doc was
-    string charset; // This is the charset it was supposedly converted to
-    string doccharset; // Set this to value of charset parameter in header
-    bool indexing_allowed;
-    void process_text(const string &text);
-    void opening_tag(const string &tag, const map<string,string> &p);
-    void closing_tag(const string &tag);
-    MyHtmlParser() :
-	in_script_tag(false),
-	in_style_tag(false),
-	indexing_allowed(true) { }
-};
-
-void
-MyHtmlParser::process_text(const string &text)
-{
-    // some tags are meaningful mid-word so this is simplistic at best...
-
-    if (!in_script_tag && !in_style_tag) {
-	string::size_type firstchar = text.find_first_not_of(" \t\n\r");
-	if (firstchar != string::npos) {
-	    dump += text.substr(firstchar);
-	    dump += " ";
-	}
-    }
-}
-
-// lets hope that the charset includes ascii values...
-static inline void
-lowercase_term(string &term)
-{
-    string::iterator i = term.begin();
-    while (i != term.end()) {
-	if (*i >= 'A' && *i <= 'Z')
-	    *i = *i + 'a' - 'A';
-        i++;
-    }
-}
+#include "myhtmlparse.h"
+#include "indextext.h"
 
 #include <iostream>
 using namespace std;
 
-
-void
-MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
-{
-#if 0
-    cout << "TAG: " << tag << ": " << endl;
-    map<string, string>::const_iterator x;
-    for (x = p.begin(); x != p.end(); x++) {
-	cout << "  " << x->first << " -> '" << x->second << "'" << endl;
-    }
-#endif
-    
-    if (tag == "meta") {
-	map<string, string>::const_iterator i, j;
-	if ((i = p.find("content")) != p.end()) {
-	    if ((j = p.find("name")) != p.end()) {
-		string name = j->second;
-		lowercase_term(name);
-		if (name == "description") {
-		    if (sample.empty()) {
-			sample = i->second;
-			decode_entities(sample);
-		    }
-		} else if (name == "keywords") {
-		    if (!keywords.empty()) keywords += ' ';
-		    string tmp = i->second;
-		    decode_entities(tmp);
-		    keywords += tmp;
-		} else if (name == "robots") {
-		    string val = i->second;
-		    decode_entities(val);
-		    lowercase_term(val);
-		    if (val.find("none") != string::npos ||
-			val.find("noindex") != string::npos) {
-			indexing_allowed = false;
-			throw true;
-		    }
-		}
-	    } else if ((j = p.find("http-equiv")) != p.end()) {
-		string hequiv = j->second;
-		lowercase_term(hequiv);
-		if (hequiv == "content-type") {
-		    string value = i->second;
-		    MimeHeaderValue p = parseMimeHeaderValue(value);
-		    map<string, string>::const_iterator k;
-		    if ((k = p.params.find("charset")) != p.params.end()) {
-			doccharset = k->second;
-			if (doccharset != ocharset) {
-			    LOGDEB1(("Doc specified charset '%s' "
-				     "differs from announced '%s'\n",
-				     doccharset.c_str(), ocharset.c_str()));
-			    throw true;
-			}
-		    }
-		}
-	    }
-	}
-    } else if (tag == "p" || tag == "br" || tag == "li") {
-	dump += "\n";
-    } else if (tag == "script") {
-	in_script_tag = true;
-    } else if (tag == "style") {
-	in_style_tag = true;
-    } else if (tag == "body") {
-	dump = "";
-    }
-}
-
-void
-MyHtmlParser::closing_tag(const string &tag)
-{
-    if (tag == "title") {
-	title = dump;
-	dump = "";
-    } else if (tag == "script") {
-	in_script_tag = false;
-    } else if (tag == "style") {
-	in_style_tag = false;
-    } else if (tag == "body") {
-	throw true;
-    }
-}
 
 bool textHtmlToDoc(RclConfig *conf, const string &fn, 
 			 const string &mtype, Rcl::Doc &docout)

@@ -9,14 +9,14 @@ all: $(LIBS)
 
 OBJS = conftree.o csguess.o debuglog.o \
      fstreewalk.o html.o htmlparse.o \
-     mimehandler.o mimeparse.o mimetype.o pathut.o \
+     mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathut.o \
      rclconfig.o rcldb.o readfile.o \
      textsplit.o transcode.o \
      unacpp.o unac.o
 SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
      ../utils/fstreewalk.cpp ../common/html.cpp ../common/htmlparse.cpp \
      ../common/mimehandler.cpp ../utils/mimeparse.cpp ../index/mimetype.cpp \
-     ../utils/pathut.cpp \
+     ../common/myhtmlparse.cpp ../utils/pathut.cpp \
      ../common/rclconfig.cpp ../common/rcldb.cpp ../utils/readfile.cpp \
      ../common/textsplit.cpp ../utils/transcode.cpp \
      ../common/unacpp.cpp ../unac/unac.c
@@ -45,6 +45,8 @@ mimehandler.o : ../common/mimehandler.cpp
 mimeparse.o : ../utils/mimeparse.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 mimetype.o : ../index/mimetype.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+myhtmlparse.o : ../common/myhtmlparse.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 pathut.o : ../utils/pathut.cpp 
 	$(CXX) $(CXXFLAGS) -c $<

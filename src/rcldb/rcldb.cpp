@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.10 2005-01-28 08:41:40 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.11 2005-01-28 09:37:37 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -85,18 +85,20 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
     try {
 	switch (mode) {
 	case DbUpd:
-	    ndb->wdb = Xapian::Auto::open(dir, Xapian::DB_CREATE_OR_OPEN);
+	    ndb->wdb = 
+		Xapian::WritableDatabase(dir, Xapian::DB_CREATE_OR_OPEN);
 	    ndb->updated.resize(ndb->wdb.get_lastdocid() + 1);
 	    ndb->iswritable = true;
 	    break;
 	case DbTrunc:
-	    ndb->wdb = Xapian::Auto::open(dir, Xapian::DB_CREATE_OR_OVERWRITE);
+	    ndb->wdb = 
+		Xapian::WritableDatabase(dir, Xapian::DB_CREATE_OR_OVERWRITE);
 	    ndb->iswritable = true;
 	    break;
 	case DbRO:
 	default:
 	    ndb->iswritable = false;
-	    ndb->db = Xapian::Auto::open(dir, Xapian::DB_OPEN);
+	    ndb->db = Xapian::Database(dir);
 	    break;
 	}
 	ndb->isopen = true;
