@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.24 2005-02-10 15:21:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.25 2005-03-31 10:04:07 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -316,7 +316,8 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     splitter.text_to_words(noacc);
 
     newdocument.add_term("T" + doc.mimetype);
-    string pathterm  = "P" + fn;
+    string pathterm  = doc.ipath.empty() ? 
+	"P" + fn : "P" + fn + "|" + doc.ipath;
     newdocument.add_term(pathterm);
     const char *fnc = fn.c_str();
     
@@ -332,6 +333,10 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     record += "\ncaption=" + doc.title;
     record += "\nkeywords=" + doc.keywords;
     record += "\nabstract=" + doc.abstract;
+    if (!doc.ipath.empty()) {
+	record += "\nipath=" + doc.ipath;
+    }
+
     record += "\n";
     LOGDEB1(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);
@@ -357,9 +362,11 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 	    ndb->wdb.replace_document(pathterm, newdocument);
 	if (did < ndb->updated.size()) {
 	    ndb->updated[did] = true;
-	    LOGDEB(("Rcl::Db::add: docid %d updated [%s]\n", did, fnc));
+	    LOGDEB(("Rcl::Db::add: docid %d updated [%s , %s]\n", did, fnc,
+		    doc.ipath.c_str()));
 	} else {
-	    LOGDEB(("Rcl::Db::add: docid %d added [%s]\n", did, fnc));
+	    LOGDEB(("Rcl::Db::add: docid %d added [%s , %s]\n", did, fnc, 
+		    doc.ipath.c_str()));
 	}
     } catch (...) {
 	// FIXME: is this ever actually needed?
@@ -378,8 +385,12 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
     Native *ndb = (Native *)pdata;
 
     string pathterm  = "P" + filename;
-    if (!ndb->wdb.term_exists(pathterm))
-	return true;
+    if (!ndb->wdb.term_exists(pathterm)) {
+	pathterm += string("|") + "1";
+	if (!ndb->wdb.term_exists(pathterm)) {
+	    return true;
+	}
+    }
     Xapian::PostingIterator doc;
     try {
 	Xapian::PostingIterator did = ndb->wdb.postlist_begin(pathterm);
@@ -775,5 +786,6 @@ bool Rcl::Db::getDoc(int i, Doc &doc, int *percent)
     parms.get(string("caption"), doc.title);
     parms.get(string("keywords"), doc.keywords);
     parms.get(string("abstract"), doc.abstract);
+    parms.get(string("ipath"), doc.ipath);
     return true;
 }

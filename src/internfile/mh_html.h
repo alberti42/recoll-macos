@@ -1,7 +1,8 @@
 #ifndef _HTML_H_INCLUDED_
 #define _HTML_H_INCLUDED_
-/* @(#$Id: mh_html.h,v 1.3 2005-03-25 09:40:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_html.h,v 1.4 2005-03-31 10:04:07 dockes Exp $  (C) 2004 J.F.Dockes */
 #include "mimehandler.h"
+#include <string>
 
 // Code to turn an html document into an internal one. There are 2
 // interfaces, depending if we're working on a file, or on a
@@ -11,6 +12,7 @@
 // carry titles, abstracts, whatever)
 class MimeHandlerHtml : public MimeHandler {
  public:
+    std::string charsethint;
     virtual MimeHandler::Status worker(RclConfig *conf, const string &fn, 
 			const string &mtype, Rcl::Doc &docout, string&);
     virtual MimeHandler::Status worker1(RclConfig *conf, const string &fn, 

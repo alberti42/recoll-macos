@@ -80,6 +80,35 @@ void Binc::MimeDocument::parseFull(int fd) const
   size = mimeSource->getOffset();
 }
 
+void Binc::MimeDocument::parseFull(istream& s) const
+{
+  if (allIsParsed)
+    return;
+
+  allIsParsed = true;
+
+  delete mimeSource;
+  mimeSource = new MimeInputSourceStream(s);
+
+  headerstartoffsetcrlf = 0;
+  headerlength = 0;
+  bodystartoffsetcrlf = 0;
+  bodylength = 0;
+  size = 0;
+  messagerfc822 = false;
+  multipart = false;
+
+  int bsize = 0;
+  string bound;
+  MimePart::parseFull(bound, bsize);
+
+  // eat any trailing junk to get the correct size
+  char c;
+  while (mimeSource->getChar(&c));
+
+  size = mimeSource->getOffset();
+}
+
 //------------------------------------------------------------------------
 static bool parseOneHeaderLine(Binc::Header *header, unsigned int *nlines)
 {

@@ -1,5 +1,5 @@
 #ifndef 	lint
-static char rcsid [] = "@(#$Id: trbinc.cc,v 1.1 2005-03-25 09:40:27 dockes Exp $  (C) 1994 CDKIT";
+static char rcsid [] = "@(#$Id: trbinc.cc,v 1.2 2005-03-31 10:04:07 dockes Exp $  (C) 1994 CDKIT";
 #endif
 
 #include <stdio.h>
@@ -8,6 +8,10 @@ static char rcsid [] = "@(#$Id: trbinc.cc,v 1.1 2005-03-25 09:40:27 dockes Exp $
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
+
+#include <sstream>
+
+using namespace std;
 
 #include "mime.h"
 
@@ -68,7 +72,27 @@ int main(int argc, char **argv)
 	exit(1);
     }
     Binc::MimeDocument doc;
+
+#if 0
     doc.parseFull(fd);
+#else
+    char *cp;
+    int size = lseek(fd, 0, SEEK_END);
+    lseek(fd, 0, 0);
+    fprintf(stderr, "Size: %d\n", size);
+    cp = (char *)malloc(size);
+    if (cp==0) {
+	fprintf(stderr, "Malloc %d failed\n", size);
+	exit(1);
+    }
+    int n;
+    if ((n=read(fd, cp, size)) != size) {
+	fprintf(stderr, "Read failed: requested %d, got %d\n", size, n);
+	exit(1);
+    }
+    std::stringstream s(string(cp, size), ios::in);
+    doc.parseFull(s);
+#endif
 
     if (!doc.isHeaderParsed() && !doc.isAllParsed()) {
 	fprintf(stderr, "Parse error\n");

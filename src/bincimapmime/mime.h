@@ -108,6 +108,7 @@ namespace Binc {
 
     void printBody(int fd, Binc::IODevice &output, unsigned int startoffset, unsigned int length) const;
       void getBody(int fd, std::string& s, unsigned int startoffset, unsigned int length) const;
+      void getBody(std::string& s, unsigned int startoffset, unsigned int length) const;
     void printHeader(int fd, Binc::IODevice &output, std::vector<std::string> headers, bool includeheaders, unsigned int startoffset, unsigned int length, std::string &storage) const;
     void printDoc(int fd, Binc::IODevice &output, unsigned int startoffset, unsigned int length) const;
     virtual void clear(void) const;
@@ -129,6 +130,8 @@ namespace Binc {
   public:
     void parseOnlyHeader(int fd) const;
     void parseFull(int fd) const;
+    void parseOnlyHeader(std::istream& s) const;
+    void parseFull(std::istream& s) const;
     void clear(void) const;
     
     inline bool isHeaderParsed(void) { return headerIsParsed; }

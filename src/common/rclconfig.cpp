@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.6 2005-02-04 09:39:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.7 2005-03-31 10:04:07 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 
@@ -51,20 +51,23 @@ RclConfig::RclConfig()
 	cerr << "No mime map file" << endl;
 	return;
     }
+    // mimemap->list();
+
     string mimeconffile;
     if (!conf->get("mimeconffile", mimeconffile, "")) {
 	mimeconffile = "mimeconf";
     }
     mpath = confdir;
-
     path_cat(mpath, mimeconffile);
     mimeconf = new ConfTree(mpath.c_str());
     if (mimeconf == 0) {
 	cerr << "No mime conf file" << endl;
 	return;
     }
+    //    mimeconf->list();
+
     setKeyDir(string(""));
-    // mimeconf->list();
+
     m_ok = true;
     return;
 }

@@ -56,7 +56,18 @@ MimeHandlerHtml::worker1(RclConfig *conf, const string &,
 			 const string& htext,
 			 const string &mtype, Rcl::Doc &docout)
 {
-    // Character set handling:
+    //LOGDEB(("textHtmlToDoc: htext: %s\n", htext.c_str()));
+    // Character set handling: the initial guessed charset depends on
+    // external factors: possible hint (ie mime charset in a mail
+    // message), charset guessing, or default configured charset.
+    string charset;
+    if (!charsethint.empty()) {
+	charset = charsethint;
+	if (conf->getGuessCharset()) {
+	    charset = csguess(htext, conf->getDefCharset());
+	} else
+	    charset = conf->getDefCharset();
+    }
 
     // - We first try to convert from the default configured charset
     //   (which may depend of the current directory) to utf-8. If this
@@ -64,12 +75,6 @@ MimeHandlerHtml::worker1(RclConfig *conf, const string &,
     // - During parsing, if we find a charset parameter, and it differs from
     //   what we started with, we abort and restart with the parameter value
     //   instead of the configuration one.
-    string charset;
-    if (conf->getGuessCharset()) {
-	charset = csguess(htext, conf->getDefCharset());
-    } else
-	charset = conf->getDefCharset();
-
     LOGDEB(("textHtmlToDoc: charset before parsing: %s\n", charset.c_str()));
 
     MyHtmlParser pres;
@@ -108,7 +113,7 @@ MimeHandlerHtml::worker1(RclConfig *conf, const string &,
     Rcl::Doc out;
     out.origcharset = charset;
     out.text = pres.dump;
-    //    LOGDEB(("textHtmlToDoc: dump : %s\n", pres.dump.c_str()));
+    // LOGDEB(("textHtmlToDoc: dump : %s\n", pres.dump.c_str()));
     out.title = pres.title;
     out.keywords = pres.keywords;
     out.abstract = pres.sample;

@@ -77,11 +77,18 @@ void Binc::MimePart::getBody(int fd, string &s,
 			     unsigned int startoffset,
 			     unsigned int length) const
 {
+
   if (!mimeSource || mimeSource->getFileDescriptor() != fd) {
     delete mimeSource;
     mimeSource = new MimeInputSource(fd);
   }
+  getBody(s, startoffset, length);
+}
 
+void Binc::MimePart::getBody(string &s,
+			     unsigned int startoffset,
+			     unsigned int length) const
+{
   mimeSource->reset();
   mimeSource->seek(bodystartoffsetcrlf + startoffset);
 

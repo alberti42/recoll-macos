@@ -73,6 +73,29 @@ void Binc::MimeDocument::parseOnlyHeader(int fd) const
   MimePart::parseOnlyHeader("");
 }
 
+void Binc::MimeDocument::parseOnlyHeader(istream& s) const
+{
+  if (allIsParsed || headerIsParsed)
+    return;
+  
+  headerIsParsed = true;
+
+  delete mimeSource;
+  mimeSource = new MimeInputSourceStream(s);
+
+  headerstartoffsetcrlf = 0;
+  headerlength = 0;
+  bodystartoffsetcrlf = 0;
+  bodylength = 0;
+  messagerfc822 = false;
+  multipart = false;
+
+  nlines = 0;
+  nbodylines = 0;
+
+  MimePart::parseOnlyHeader("");
+}
+
 //------------------------------------------------------------------------
 int Binc::MimePart::parseOnlyHeader(const string &toboundary) const
 {

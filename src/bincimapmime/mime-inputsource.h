@@ -33,6 +33,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <istream>
+
 namespace Binc {
 
   class MimeInputSource {
@@ -40,9 +42,10 @@ namespace Binc {
     inline MimeInputSource(int fd, unsigned int start = 0);
     virtual inline ~MimeInputSource(void);
 
-    virtual inline bool fillInputBuffer(void);
+    virtual inline size_t fillRaw(char *raw, size_t nbytes);
     virtual inline void reset(void);
 
+    virtual inline bool fillInputBuffer(void);
     inline void seek(unsigned int offset);
     inline bool getChar(char *c);
     inline void ungetChar(void);
@@ -77,10 +80,15 @@ namespace Binc {
   {
   }
 
+  inline size_t MimeInputSource::fillRaw(char *raw, size_t nbytes)
+  {
+      return read(fd, raw, nbytes);
+  }
+
   inline bool MimeInputSource::fillInputBuffer(void)
   {
     char raw[4096];
-    ssize_t nbytes = read(fd, raw, sizeof(raw));
+    ssize_t nbytes = fillRaw(raw, 4096);
     if (nbytes <= 0) {
       // FIXME: If ferror(crlffile) we should log this.
       return false;
@@ -159,8 +167,53 @@ namespace Binc {
   {
     return offset;
   }
+
+    ///////////////////////////////////
+    class MimeInputSourceStream : public MimeInputSource {
+  public:
+    inline MimeInputSourceStream(istream& s, unsigned int start = 0);
+    virtual inline size_t fillRaw(char *raw, size_t nb);
+    virtual inline void reset(void);
+  private:
+      istream& s;
+  };
+
+  inline MimeInputSourceStream::MimeInputSourceStream(istream& si, 
+						      unsigned int start)
+      : MimeInputSource(-1, start), s(si)
+  {
+  }
+
+  inline size_t MimeInputSourceStream::fillRaw(char *raw, size_t nb)
+  {
+    // Why can't streams tell how many characters were actually read
+    // when hitting eof ?
+    std::streampos st = s.tellg();
+    s.seekg(0, ios_base::end);
+    std::streampos lst = s.tellg();
+    s.seekg(st);
+    size_t nbytes = lst - st;
+    if (nbytes > nb) {
+	nbytes = nb;
+    }
+    if (nbytes <= 0) {
+	return (size_t)-1;
+    }
+
+    s.read(raw, nbytes);
+    return nbytes;
+  }
+
+  inline void MimeInputSourceStream::reset(void)
+  {
+      MimeInputSource::reset();
+      s.seekg(0);
+  }
+
 }
 
+
+ 
 extern Binc::MimeInputSource *mimeSource;
 
 #endif
