@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.7 2005-03-17 14:02:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.8 2005-03-17 15:35:49 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -32,7 +32,9 @@ using namespace std;
 #endif
 
 /**
- * Bunch holder for data used while indexing a directory tree
+ * Bunch holder for data used while indexing a directory tree. This also the
+ * tree walker callback object (the processone method gets called for every 
+ * file or directory).
  */
 class DbIndexer : public FsTreeWalkerCB {
     FsTreeWalker walker;
@@ -47,6 +49,7 @@ class DbIndexer : public FsTreeWalkerCB {
     { }
 
     virtual ~DbIndexer() {
+	// Maybe clean up temporary directory
 	if (tmpdir.length()) {
 	    wipedir(tmpdir);
 	    if (rmdir(tmpdir.c_str()) < 0) {
@@ -59,9 +62,16 @@ class DbIndexer : public FsTreeWalkerCB {
     FsTreeWalker::Status 
     processone(const std::string &, const struct stat *, FsTreeWalker::CbFlag);
 
+    // The top level entry point. 
     bool index();
 };
 
+
+// Top level file system tree index method for updating a given database.
+//
+// We create the temporary directory, open the database, then call a
+// file system walk for each top-level directory.
+// When walking is done, we create the stem databases and close the main db.
 bool DbIndexer::index()
 {
     string tdir;
@@ -111,10 +121,13 @@ bool DbIndexer::index()
 /** 
  * This function gets called for every file and directory found by the
  * tree walker. It checks with the db if the file has changed and needs to
- * be reindexed. If so, it calls an appropriate handler depending on the mime
- * type, which is responsible for populating an Rcl::Doc.
+ * be reindexed. If so, it calls internfile() which will identify the
+ * file type and call an appropriate handler to create documents in
+ * internal form, which we then add to the database.
+ *
  * Accent and majuscule handling are performed by the db module when doing
- * the actual indexing work.
+ * the actual indexing work. The Rcl::Doc created by internfile()
+   contains pretty raw utf8 data.
  */
 FsTreeWalker::Status 
 DbIndexer::processone(const std::string &fn, const struct stat *stp, 
@@ -164,16 +177,16 @@ bool ConfIndexer::index()
 	LOGERR(("ConfIndexer::index: no top directories in configuration\n"));
 	return false;
     }
-
-    // Group the directories by database: it is important that all
-    // directories for a database be indexed at once so that deleted
-    // file cleanup works 
     list<string> tdl; // List of directories to be indexed
     if (!ConfTree::stringToStrings(topdirs, tdl)) {
 	LOGERR(("ConfIndexer::index: parse error for directory list\n"));
 	return false;
     }
 
+    // Each top level directory to be indexed can be associated with a
+    // different database. We first group the directories by database:
+    // it is important that all directories for a database be indexed
+    // at once so that deleted file cleanup works
     list<string>::iterator dirit;
     map<string, list<string> > dbmap;
     map<string, list<string> >::iterator dbit;
@@ -196,6 +209,7 @@ bool ConfIndexer::index()
 	}
     }
 
+    // Index each directory group in turn
     for (dbit = dbmap.begin(); dbit != dbmap.end(); dbit++) {
 	//cout << dbit->first << " -> ";
 	//list<string>::const_iterator dit;

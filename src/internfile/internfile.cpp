@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.2 2005-02-09 12:07:29 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.3 2005-03-17 15:35:49 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -18,6 +18,7 @@ using namespace std;
 #include "pathut.h"
 #include "wipedir.h"
 
+// Execute the command to uncompress a file into a temporary one.
 static bool uncompressfile(RclConfig *conf, const string& ifn, 
 			   const list<string>& cmdv, const string& tdir, 
 			   string& tfile)
@@ -95,7 +96,9 @@ bool internfile(const std::string &ifn, RclConfig *config, Rcl::Doc& doc,
 	return false;
     }
 
-    // First check for a compressed file
+    // First check for a compressed file. If so, create a temporary
+    // uncompressed file, and rerun the mime type identification, then do the
+    // rest with the temp file.
     list<string>ucmd;
     if (getUncompressor(mime, config->getMimeConf(), ucmd)) {
 	if (!uncompressfile(config, fn, ucmd, tdir, tfile)) 
@@ -112,6 +115,7 @@ bool internfile(const std::string &ifn, RclConfig *config, Rcl::Doc& doc,
 
     }
     
+
     // Look for appropriate handler
     handler = getMimeHandler(mime, config->getMimeConf());
     if (!handler) {
