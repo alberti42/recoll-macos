@@ -2,7 +2,9 @@ include ../mk/sysconf
 
 BIGLIB = ../lib/librcl.a
 
-PROGS = wipedir smallut trfstreewalk trpathut transcode trmimeparse trexecmd
+PROGS = wipedir smallut trfstreewalk trpathut transcode trmimeparse \
+      trexecmd utf8iter
+
 all: $(PROGS)
 
 FSTREEWALK_OBJS= trfstreewalk.o fstreewalk.o pathut.o
@@ -51,5 +53,12 @@ wipedir : $(WIPEDIR_OBJS)
 trwipedir.o : ../utils/wipedir.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_WIPEDIR -c -o trwipedir.o \
 	       wipedir.cpp
+
+UTF8ITER_OBJS= trutf8iter.o  $(BIGLIB)
+utf8iter : $(UTF8ITER_OBJS)
+	$(CXX) $(CXXFLAGS) -o utf8iter $(UTF8ITER_OBJS) $(LIBICONV)
+trutf8iter.o : ../utils/utf8iter.cpp utf8iter.h
+	$(CXX) $(CXXFLAGS) -DTEST_UTF8ITER -c -o trutf8iter.o \
+	       utf8iter.cpp
 clean: 
 	rm -f *.o $(PROGS)

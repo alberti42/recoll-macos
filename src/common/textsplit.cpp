@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.8 2005-02-08 11:59:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.9 2005-02-10 19:52:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -22,6 +22,12 @@ using namespace std;
  * of a 256 slot array).
  *
  * We are also not using capitalization information.
+ *
+ * How to fix: use some kind of utf-8 aware iterator, or convert to UCS4 first.
+ * Then specialcase all 'real' utf chars, by checking for the few
+   punctuation ones we're interested in (put them in a map). Then
+   classify all other non-ascii as letter, and use the current method
+   for chars < 127.
  */
 
 // Character classes: we have three main groups, and then some chars
@@ -117,6 +123,9 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
     return true;
 }
 
+// A routine called from different places in text_to_words(), to adjust
+// the current state and call the word handler. This is purely for
+// factoring common code from different places text_to_words()
 bool TextSplit::doemit(string &word, int &wordpos, string &span, int spanpos,
 		       bool spanerase, int bp)
 {
@@ -126,19 +135,25 @@ bool TextSplit::doemit(string &word, int &wordpos, string &span, int spanpos,
 	word.erase();
 	return true;
     }
+
+    // Emit span or both word and span if they are different
     if (!emitterm(true, span, spanpos, bp-span.length(), bp))
 	return false;
     if (word.length() != span.length() && !fq)
 	if (!emitterm(false, word, wordpos, bp-word.length(), bp))
 	    return false;
+
+    // Adjust state
     wordpos++;
     if (spanerase)
 	span.erase();
     word.erase();
+
     return true;
 }
 
-/* 
+/** 
+ * Splitting a text into terms to be indexed.
  * We basically emit a word every time we see a separator, but some chars are
  * handled specially so that special cases, ie, c++ and dockes@okyz.com etc, 
  * are handled properly,
