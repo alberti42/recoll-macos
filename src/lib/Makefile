@@ -1,5 +1,4 @@
-CXXFLAGS = -Wall -g -I. -I../index -I../utils -I../common \
-	 -I../unac -I/usr/local/include
+include ../mk/FreeBSD
 
 UNACCFLAGS = -g -I. -I../unac -I/usr/local/include -DUNAC_VERSION=\"1.0.7\"
 

@@ -9,13 +9,12 @@
 #include "rcldb.h"
 #include "rclconfig.h"
 #include "pathut.h"
+#include "recoll.h"
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
+int recollNeedsExit;
 
-extern void start_idxthread(RclConfig *cnf);
-extern void stop_idxthread();
-extern int startindexing;
 
 void recollCleanup()
 {
@@ -26,7 +25,6 @@ void recollCleanup()
     rclconfig = 0;
 }
 
-int recollNeedsExit;
 
 static void sigcleanup(int sig)
 {

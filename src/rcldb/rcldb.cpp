@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.14 2005-01-31 14:31:09 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.15 2005-02-01 08:42:55 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -57,6 +57,7 @@ Rcl::Db::~Db()
 	    ndb->iswritable));
     if (ndb->isopen == false)
 	return;
+    string ermsg;
     try {
 	LOGDEB(("Rcl::Db::~Db: deleting native database\n"));
 	if (ndb->iswritable == true)
@@ -64,15 +65,15 @@ Rcl::Db::~Db()
 	delete ndb;
 	return;
     } catch (const Xapian::Error &e) {
-	cerr << "Exception: " << e.get_msg() << endl;
+	ermsg = e.get_msg();
     } catch (const string &s) {
-	cerr << "Exception: " << s << endl;
+	ermsg = s;
     } catch (const char *s) {
-	cerr << "Exception: " << s << endl;
+	ermsg = s;
     } catch (...) {
-	cerr << "Caught unknown exception" << endl;
+	ermsg = "Caught unknown exception";
     }
-    LOGERR(("Rcl::Db::~Db: got exception\n"));
+    LOGERR(("Rcl::Db::~Db: got exception: %s\n", ermsg.c_str()));
 }
 
 bool Rcl::Db::open(const string& dir, OpenMode mode)
@@ -93,7 +94,11 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
 	case DbUpd:
 	    ndb->wdb = 
 		Xapian::WritableDatabase(dir, Xapian::DB_CREATE_OR_OPEN);
+	    LOGDEB(("Rcl::Db::open: lastdocid: %d\n", 
+		    ndb->wdb.get_lastdocid()));
 	    ndb->updated.resize(ndb->wdb.get_lastdocid() + 1);
+	    for (unsigned int i = 0; i < ndb->updated.size(); i++)
+		ndb->updated[i] = false;
 	    ndb->iswritable = true;
 	    break;
 	case DbTrunc:
@@ -133,27 +138,27 @@ bool Rcl::Db::close()
 	    ndb->iswritable));
     if (ndb->isopen == false)
 	return true;
+    string ermsg;
     try {
-	if (ndb->iswritable == true)
+	if (ndb->iswritable == true) {
 	    ndb->wdb.flush();
+	    LOGDEB(("Called xapian flush\n"));
+	}
 	delete ndb;
+	pdata = new Native;
+	if (pdata)
+	    return true;
     } catch (const Xapian::Error &e) {
-	cerr << "Exception: " << e.get_msg() << endl;
-	return false;
+	ermsg = e.get_msg();
     } catch (const string &s) {
-	cerr << "Exception: " << s << endl;
-	return false;
+	ermsg = s;
     } catch (const char *s) {
-	cerr << "Exception: " << s << endl;
-	return false;
+	ermsg = s;
     } catch (...) {
-	cerr << "Caught unknown exception" << endl;
-	return false;
+	ermsg = "Caught unknown exception";
     }
-
-    pdata = new Native;
-    if (pdata)
-	return true;
+    LOGERR(("Rcl::Db:close: exception while deleting db: %s\n", 
+	    ermsg.c_str()));
     return false;
 }
 
@@ -290,9 +295,9 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
 	    ndb->wdb.replace_document(pathterm, newdocument);
 	if (did < ndb->updated.size()) {
 	    ndb->updated[did] = true;
-	    LOGDEB(("%s updated\n", fnc));
+	    LOGDEB(("docid %d updated [%s]\n", did, fnc));
 	} else {
-	    LOGDEB(("%s added\n", fnc));
+	    LOGDEB(("docid %d added [%s]\n", did, fnc));
 	}
     } catch (...) {
 	// FIXME: is this ever actually needed?
@@ -318,15 +323,13 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 	if (did == ndb->wdb.postlist_end(pathterm))
 	    return true;
 	Xapian::Document doc = ndb->wdb.get_document(*did);
-	if (*did < ndb->updated.size())
-	    ndb->updated[*did] = true;
 	string data = doc.get_data();
-	//cerr << "DOCUMENT EXISTS " << data << endl;
 	const char *cp = strstr(data.c_str(), "mtime=");
 	cp += 6;
 	long mtime = atol(cp);
 	if (mtime >= stp->st_mtime) {
-	    // cerr << "DOCUMENT UP TO DATE" << endl;
+	    if (*did < ndb->updated.size())
+		ndb->updated[*did] = true;
 	    return false;
 	} 
     } catch (...) {
@@ -338,18 +341,31 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 
 bool Rcl::Db::purge()
 {
+    LOGDEB(("Rcl::Db::purge\n"));
+    // There seems to be problems with the document delete code, when
+    // we do this, the database is not actually updated. Especially,
+    // if we delete a bunch of docs, so that there is a hole in the
+    // docids at the beginning, we can't add anything (appears to work
+    // and does nothing). Maybe related to the exceptions below when
+    // trying to delete an unexistant document ?
+    // Flushing before trying the deletes seeems to work around the problem
+
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
+    LOGDEB(("Rcl::Db::purge: isopen %d iswritable %d\n", ndb->isopen, 
+	    ndb->iswritable));
     if (ndb->isopen == false || ndb->iswritable == false)
 	return false;
 
+    ndb->wdb.flush();
     for (Xapian::docid did = 1; did < ndb->updated.size(); ++did) {
 	if (!ndb->updated[did]) {
 	    try {
 		ndb->wdb.delete_document(did);
 		LOGDEB(("Rcl::Db::purge: deleted document #%d\n", did));
 	    } catch (const Xapian::DocNotFoundError &) {
+		LOGDEB(("Rcl::Db::purge: document #%d not found\n", did));
 	    }
 	}
     }

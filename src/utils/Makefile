@@ -1,5 +1,4 @@
-
-CXXFLAGS = -I. -g
+include ../mk/FreeBSD
 
 BIGLIB = ../lib/librcl.a
 

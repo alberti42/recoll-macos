@@ -1,5 +1,5 @@
+include ../mk/FreeBSD
 BIGLIB = ../lib/librcl.a
-CXXFLAGS = -Wall -g -I. -I../unac -I../utils  -I/usr/local/include
 
 
 PROGS = unacpp textsplit

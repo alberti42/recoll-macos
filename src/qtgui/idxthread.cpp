@@ -3,6 +3,7 @@
 
 #include "indexer.h"
 #include "debuglog.h"
+#include "idxthread.h"
 
 class IdxThread : public QThread {
     virtual void run();
@@ -11,9 +12,10 @@ class IdxThread : public QThread {
 };
 
 int startindexing;
-int indexingdone;
-bool indexingstatus;
-int stopidxthread;
+int indexingdone = 1;
+bool indexingstatus = false;
+
+static int stopidxthread;
 
 void IdxThread::run()
 {
@@ -24,9 +26,10 @@ void IdxThread::run()
 	    return;
 	}
 	if (startindexing) {
-	    indexingdone = indexingstatus = startindexing = 0;
+	    indexingdone = indexingstatus = 0;
 	    fprintf(stderr, "Index thread :start index\n");
 	    indexingstatus = indexer->index();
+	    startindexing = 0;
 	    indexingdone = 1;
 	} 
 	msleep(100);

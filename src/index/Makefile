@@ -1,5 +1,5 @@
 
-CXXFLAGS = -Wall -g -I. -I../utils -I../common -I/usr/local/include
+include ../mk/FreeBSD
 
 BIGLIB = ../lib/librcl.a
 

@@ -23,22 +23,32 @@
 #include "debuglog.h"
 #include "mimehandler.h"
 #include "pathut.h"
+#include "recoll.h"
 
-extern RclConfig *rclconfig;
-extern Rcl::Db *rcldb;
-
-extern void recollCleanup();
 void RecollMain::fileExit()
 {
     LOGDEB(("RecollMain: fileExit\n"));
     exit(0);
 }
 
-extern int recollNeedsExit;
+// Misnomer. This is called on a 100ms timer and actually checks for different 
+// things apart from a need to exit
 void RecollMain::checkExit()
 {
+    if (indexingstatus) {
+	indexingstatus = false;
+	// Make sure we reopen the db to get the results.
+	fprintf(stderr, "Indexing done: closing query database\n");
+	rcldb->close();
+    }
     if (recollNeedsExit)
 	fileExit();
+}
+
+void RecollMain::fileStart_IndexingAction_activated()
+{
+    if (indexingdone == 1)
+	startindexing = 1;
 }
 
 static string plaintorich(const string &in)
@@ -60,7 +70,7 @@ static string urltolocalpath(string url)
 }
 
 // Use external viewer to display file
-void RecollMain::reslistTE_doubleClicked(int par, int car)
+void RecollMain::reslistTE_doubleClicked(int par, int)
 {
     //    restlistTE_clicked(par, car);
     Rcl::Doc doc;
@@ -215,6 +225,10 @@ void RecollMain::Search_clicked()
     queryText_returnPressed();
 }
 
+void RecollMain::clearqPB_clicked()
+{
+    queryText->clear();
+}
 
 static const int respagesize = 10;
 void RecollMain::listPrevPB_clicked()
@@ -306,4 +320,5 @@ void RecollMain::listNextPB_clicked()
 	    reslist_winfirst = 0;
     }
 }
+
 

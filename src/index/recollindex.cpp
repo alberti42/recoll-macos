@@ -1,10 +1,11 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.8 2005-01-31 14:31:09 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.9 2005-02-01 08:42:56 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <stdio.h>
 #include <signal.h>
 
+#include "debuglog.h"
 #include "indexer.h"
 
 ConfIndexer *indexer;
@@ -34,6 +35,8 @@ int main(int argc, const char **argv)
     if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
 	signal(SIGTERM, sigcleanup);
 
+    DebugLog::getdbl()->setloglevel(DEBDEB1);
+    DebugLog::setfilename("stderr");
     RclConfig config;
     if (!config.ok()) {
 	fprintf(stderr, "Config could not be built\n");
