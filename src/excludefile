@@ -1,0 +1,14 @@
+CVS
+*/CVS
+Changelog
+./autom4*
+aux/CVS
+config.cache
+config.log
+config.status
+excludefile
+makedist.sh
+.#*
+*/*.#*
+mk/sysconf
+qtgui/Makefile
