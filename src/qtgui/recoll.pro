@@ -23,8 +23,10 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  LIBS += ../lib/librcl.a -L/usr/local/lib -lxapian -liconv
+  LIBS += ../lib/librcl.a -L/usr/local/lib -lxapian -liconv \
+       -lfontconfig -lfreetype -lexpat -lz
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
+  #QMAKE_LFLAGS_SHAPP += -static
 }
 
 UNAME = $$system(uname -s)

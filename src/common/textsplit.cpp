@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.5 2005-02-07 13:17:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.6 2005-02-08 09:34:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -26,7 +26,7 @@ using namespace std;
 
 // Character classes: we have three main groups, and then some chars
 // are their own class because they want special handling.
-// We have an array with 256 slots where we keep the character states. 
+// We have an array with 256 slots where we keep the character types. 
 // The array could be fully static, but we use a small function to fill it 
 // once.
 enum CharClass {LETTER=256, SPACE=257, DIGIT=258};
@@ -37,32 +37,40 @@ static void setcharclasses()
     if (init)
 	return;
     unsigned int i;
-    memset(charclasses, LETTER, sizeof(charclasses));
+    for (i = 0 ; i < 256 ; i ++)
+	charclasses[i] = LETTER;
+
+    for (i = 0; i < ' ';i++)
+	charclasses[i] = SPACE;
 
     char digits[] = "0123456789";
-    for (i = 0; i  < sizeof(digits); i++)
+    for (i = 0; i  < strlen(digits); i++)
 	charclasses[int(digits[i])] = DIGIT;
 
     char blankspace[] = "\t\v\f ";
-    for (i = 0; i < sizeof(blankspace); i++)
+    for (i = 0; i < strlen(blankspace); i++)
 	charclasses[int(blankspace[i])] = SPACE;
 
-    char seps[] = "!\"$%&()/<=>[\\]^{|}~:;,*";
-    for (i = 0; i  < sizeof(seps); i++)
+    char seps[] = "!\"$%&()/<=>[\\]^{|}~:;,*`?";
+    for (i = 0; i  < strlen(seps); i++)
 	charclasses[int(seps[i])] = SPACE;
 
     char special[] = ".@+-,#'\n\r";
-    for (i = 0; i  < sizeof(special); i++)
+    for (i = 0; i  < strlen(special); i++)
 	charclasses[int(special[i])] = special[i];
 
     init = 1;
+    //for (i=0;i<256;i++)cerr<<i<<" -> "<<charclasses[i]<<endl;
 }
 
-bool TextSplit::emitterm(string &w, int pos, bool doerase,
+// Do some cleanup (the kind which is simpler to do here than in the main loop,
+// then send term to our client.
+bool TextSplit::emitterm(bool isspan, string &w, int pos, bool doerase,
 			 int btstart, int btend)
 {
     LOGDEB2(("TextSplit::emitterm: '%s' pos %d\n", w.c_str(), pos));
-    
+    if (fq && !isspan)
+	return true;
     if (!cb)
 	return false;
 
@@ -73,13 +81,36 @@ bool TextSplit::emitterm(string &w, int pos, bool doerase,
 	case '.':
 	case ',':
 	case '@':
+	case '\'':
 	    w.erase(w.length()-1);
 	    break;
 	default:
-	    goto breakloop;
+	    goto breakloop1;
 	}
     }
- breakloop:
+ breakloop1:
+
+    // In addition, it doesn't make sense currently to keep ' at the beginning
+    while (w.length() > 0) {
+	switch (w[0]) {
+	case ',':
+	case '\'':
+	    w.erase(w.length()-1);
+	    break;
+	default:
+	    goto breakloop2;
+	}
+    }
+ breakloop2:
+
+    // 1 char word: we index single letters, but nothing else
+    if (w.length() == 1) {
+	int c = (int)w[0];
+	if (charclasses[c] != LETTER && charclasses[c] != DIGIT) {
+	    //cerr << "ERASING single letter term " << c << endl;
+	    w.erase();
+	}
+    }
     if (w.length() > 0 && w.length() < (unsigned)maxWordLength) {
 	bool ret = cb->takeword(w, pos, btstart, btend);
 	if (doerase)
@@ -113,10 +144,10 @@ bool TextSplit::text_to_words(const string &in)
 	SPACE:
 	    if (word.length()) {
 		if (span.length() != word.length()) {
-		    if (!emitterm(span, spanpos, true, i-span.length(), i)) 
+		    if (!emitterm(true, span, spanpos, true, i-span.length(), i)) 
 			return false;
 		}
-		if (!emitterm(word, wordpos++, true, i-word.length(), i))
+		if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
 		    return false;
 		number = false;
 	    }
@@ -126,42 +157,53 @@ bool TextSplit::text_to_words(const string &in)
 	case '-':
 	case '+':
 	    if (word.length() == 0) {
-		if (i < in.length() || charclasses[int(in[i+1])] == DIGIT) {
+		if (i < in.length() && charclasses[int(in[i+1])] == DIGIT) {
 		    number = true;
 		    word += c;
 		    span += c;
 		}
 	    } else {
 		if (span.length() != word.length()) {
-		    if (!emitterm(span, spanpos, false, i-span.length(), i))
+		    if (!emitterm(true, span, spanpos, false, i-span.length(), i))
 			return false;
 		}
-		if (!emitterm(word, wordpos++, true, i-word.length(), i))
+		if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
 		    return false;
 		number = false;
 		span += c;
 	    }
 	    break;
-	case '\'':
 	case '@':
 	    if (word.length()) {
 		if (span.length() != word.length()) {
-		    if (!emitterm(span, spanpos, false, i-span.length(), i))
+		    if (!emitterm(true, span, spanpos, false, i-span.length(), i))
 			return false;
 		}
-		if (!emitterm(word, wordpos++, true, i-word.length(), i))
+		if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
 		    return false;
 		number = false;
 	    } else
 		word += c;
 	    span += c;
 	    break;
+	case '\'':
+	    if (word.length()) {
+		if (span.length() != word.length()) {
+		    if (!emitterm(true, span, spanpos, false, i-span.length(), i))
+			return false;
+		}
+		if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
+		    return false;
+		number = false;
+		span += c;
+	    }
+	    break;
 	case '.':
 	    if (number) {
 		word += c;
 	    } else {
 		if (word.length()) {
-		    if (!emitterm(word, wordpos++, true, i-word.length(), i))
+		    if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
 			return false;
 		    number = false;
 		} else 
@@ -208,9 +250,9 @@ bool TextSplit::text_to_words(const string &in)
     }
     if (word.length()) {
 	if (span.length() != word.length())
-	    if (!emitterm(span, spanpos, true, i-span.length(), i))
+	    if (!emitterm(true, span, spanpos, true, i-span.length(), i))
 		return false;
-	return emitterm(word, wordpos, true, i-word.length(), i);
+	return emitterm(false, word, wordpos, true, i-word.length(), i);
     }
     return true;
 }
@@ -220,11 +262,13 @@ bool TextSplit::text_to_words(const string &in)
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
 
 #include <iostream>
 
 #include "textsplit.h"
 #include "readfile.h"
+#include "debuglog.h"
 
 using namespace std;
 
@@ -232,7 +276,7 @@ using namespace std;
 class mySplitterCB : public TextSplitCB {
  public:
     bool takeword(const std::string &term, int pos, int bs, int be) {
-	cout << pos << " " << term << " bs " << bs << " be " << be << endl;
+	printf("%3d %-20s %d %d\n", pos, term.c_str(), bs, be);
 	return true;
     }
 };
@@ -240,15 +284,18 @@ class mySplitterCB : public TextSplitCB {
 static string teststring = 
     "jfd@okyz.com "
     "Ceci. Est;Oui 1.24 n@d @net .net t@v@c c# c++ -10 o'brien l'ami "
-    "a 134 +134 -14 -1.5 +1.5 1.54e10 a"
-    "@^#$(#$(*)"
-    "one\n\rtwo\nthree-\nfour"
-    "[olala][ululu]"
-
+    "a 134 +134 -14 -1.5 +1.5 1.54e10 a "
+    "@^#$(#$(*) "
+    "one\n\rtwo\nthree-\nfour "
+    "[olala][ululu] "
+    "'o'brien' "						
+    "\n"							      
 ;
 
 int main(int argc, char **argv)
 {
+    DebugLog::getdbl()->setloglevel(DEBDEB1);
+    DebugLog::setfilename("stderr");
     mySplitterCB cb;
     TextSplit splitter(&cb);
     if (argc == 2) {

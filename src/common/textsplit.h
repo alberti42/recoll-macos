@@ -1,6 +1,6 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.4 2005-02-07 13:17:47 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.5 2005-02-08 09:34:46 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -22,14 +22,17 @@ class TextSplitCB {
  * but 'ts much simpler this way...
  */
 class TextSplit {
+    bool fq;        // Are we splitting for query or index ?
     TextSplitCB *cb;
     int maxWordLength;
-    bool emitterm(std::string &term, int pos, bool doerase, int, int);
+    bool emitterm(bool isspan, std::string &term, int pos, bool doerase, 
+		  int bs, int be);
  public:
     /**
      * Constructor: just store callback and client data
      */
-    TextSplit(TextSplitCB *t) : cb(t), maxWordLength(40) {}
+    TextSplit(TextSplitCB *t, bool forquery = false) 
+	: fq(forquery), cb(t), maxWordLength(40) {}
     /**
      * Split text, emit words and positions.
      */

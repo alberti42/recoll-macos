@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.3 2005-01-25 14:37:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.4 2005-02-08 09:34:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <strings.h>
@@ -45,11 +45,23 @@ static int        op_flags;
 #define OPT_F     0x80
 #define OPT_E     0x100
 
-Xapian::Database db;
+Xapian::Database *db;
+
+static void cleanup()
+{
+    delete db;
+}
+
+static void sigcleanup(int sig)
+{
+    fprintf(stderr, "sigcleanup\n");
+    cleanup();
+    exit(1);
+}
 
 int main(int argc, char **argv)
 {
-    string dbdir = "/home/dockes/tmp/xapiandb";
+    string dbdir = "/home/dockes/.recoll/xapiandb";
     string outencoding = "ISO8859-1";
     int docid = 1;
     string aterm;
@@ -92,46 +104,57 @@ int main(int argc, char **argv)
 
     if (argc != 0)
 	Usage();
+    atexit(cleanup);
+    if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
+	signal(SIGHUP, sigcleanup);
+    if (signal(SIGINT, SIG_IGN) != SIG_IGN)
+	signal(SIGINT, sigcleanup);
+    if (signal(SIGQUIT, SIG_IGN) != SIG_IGN)
+	signal(SIGQUIT, sigcleanup);
+    if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
+	signal(SIGTERM, sigcleanup);
 
     try {
-	db = Xapian::Auto::open(dbdir, Xapian::DB_OPEN);
+	db = new Xapian::Database(dbdir);
 
-	cout << "DB: ndocs " << db.get_doccount() << " lastdocid " <<
-	    db.get_lastdocid() << " avglength " << db.get_avlength() << endl;
+	cout << "DB: ndocs " << db->get_doccount() << " lastdocid " <<
+	    db->get_lastdocid() << " avglength " << db->get_avlength() << endl;
 	    
 	if (op_flags & OPT_T) {
 	    Xapian::TermIterator term;
 	    string printable;
 	    if (op_flags & OPT_i) {
-		for (term = db.termlist_begin(docid);
-		     term != db.termlist_end(docid);term++) {
+		for (term = db->termlist_begin(docid);
+		     term != db->termlist_end(docid);term++) {
 		    transcode(*term, printable, "UTF-8", outencoding);
-		    cout << printable << endl;
+		    cout << "[" << printable << "]" << endl;
 		}
 	    } else {
-		for (term = db.allterms_begin(); 
-		     term != db.allterms_end();term++) {
-		    transcode(*term, printable, "UTF-8", outencoding);
-		    cout << printable << endl;
+		for (term = db->allterms_begin(); 
+		     term != db->allterms_end();term++) {
+		    if (transcode(*term, printable, "UTF-8", outencoding))
+			cout << "[" << printable << "]" << endl;
+		    else
+			cout << "utf8[" << *term << "]" << endl;
 		}
 	    }
 	} else if (op_flags & OPT_D) {
-	    Xapian::Document doc = db.get_document(docid);
+	    Xapian::Document doc = db->get_document(docid);
 	    string data = doc.get_data();
 	    cout << data << endl;
 	} else if (op_flags & OPT_P) {
 	    Xapian::PostingIterator doc;
-	    for (doc = db.postlist_begin(aterm);
-		 doc != db.postlist_end(aterm);doc++) {
+	    for (doc = db->postlist_begin(aterm);
+		 doc != db->postlist_end(aterm);doc++) {
 		cout << *doc << endl;
 	    }
 		
 	} else if (op_flags & OPT_F) {
 	    cout << "FreqFor " << aterm << " : " <<
-		db.get_termfreq(aterm) << endl;
+		db->get_termfreq(aterm) << endl;
 	} else if (op_flags & OPT_E) {
 	    cout << "Exists " << aterm << " : " <<
-		db.term_exists(aterm) << endl;
+		db->term_exists(aterm) << endl;
 	} 
 
 

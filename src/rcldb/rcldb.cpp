@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.19 2005-02-07 13:17:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.20 2005-02-08 09:34:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -454,7 +454,7 @@ bool Rcl::Db::setQuery(const std::string &querystring)
 	return false;
 
     wsQData splitData;
-    TextSplit splitter(&splitData);
+    TextSplit splitter(&splitData, true);
 
     string noacc;
     if (!dumb_string(querystring, noacc)) {
