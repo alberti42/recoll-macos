@@ -7,14 +7,14 @@ LIBS = librcl.a
 all: $(LIBS)
 
 OBJS = conftree.o csguess.o debuglog.o \
-     execmd.o \
+     execmd.o wipedir.o \
      fstreewalk.o html.o htmlparse.o indexer.o internfile.o \
      mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathut.o \
      rclconfig.o rcldb.o readfile.o smallut.o \
      textsplit.o transcode.o \
      unacpp.o unac.o
 SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
-     ../utils/execmd.cpp \
+     ../utils/execmd.cpp ../utils/wipedir.cpp \
      ../utils/fstreewalk.cpp ../common/html.cpp ../common/htmlparse.cpp \
      ../index/indexer.cpp ../common/internfile.cpp \
      ../common/mimehandler.cpp ../utils/mimeparse.cpp ../index/mimetype.cpp \
@@ -38,6 +38,8 @@ csguess.o : ../index/csguess.cpp
 debuglog.o : ../utils/debuglog.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 execmd.o : ../utils/execmd.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+wipedir.o : ../utils/wipedir.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 fstreewalk.o : ../utils/fstreewalk.cpp 
 	$(CXX) $(CXXFLAGS) -c $<

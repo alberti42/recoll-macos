@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.1 2005-02-04 14:21:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.2 2005-02-09 12:07:29 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -16,38 +16,17 @@ using namespace std;
 #include "mimehandler.h"
 #include "execmd.h"
 #include "pathut.h"
+#include "wipedir.h"
 
 static bool uncompressfile(RclConfig *conf, const string& ifn, 
-			   const list<string>& cmdv, string& tdir, 
+			   const list<string>& cmdv, const string& tdir, 
 			   string& tfile)
 {
-    const char *tmpdir = getenv("RECOLL_TMPDIR");
-    if (!tmpdir)
-	tmpdir = getenv("TMPDIR");
-    if (!tmpdir)
-	tmpdir = "/tmp";
-    tdir = tmpdir;
-    path_cat(tdir, "rcltmpXXXXXX");
-    {
-	char *cp = strdup(tdir.c_str());
-	if (!cp) {
-	    LOGERR(("uncompressfile: out of memory (for file name !)\n"));
-	    return false;
-	}	
-	if (!mktemp(cp)) {
-	    free(cp);
-	    LOGERR(("uncompressfile: mktemp failed\n"));
-	    return false;
-	}	
-	tdir = cp;
-	free(cp);
-    }
-
-    if (mkdir(tdir.c_str(), 0700) < 0) {
-	LOGERR(("uncompressfile: mkdir %s failed\n", tdir.c_str()));
+    // Make sure tmp dir is empty. we guarantee this to filters
+    if (wipedir(tdir) != 0) {
+	LOGERR(("uncompressfile: can't clear temp dir %s\n", tdir.c_str()));
 	return false;
     }
-
     string cmd = find_filter(conf, cmdv.front());
 
     // Substitute file name and temp dir in command elements
@@ -92,32 +71,26 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
 
 static void tmpcleanup(const string& tdir, const string& tfile)
 {
-    if (tdir.empty())
+    if (tdir.empty() || tfile.empty())
 	return;
-    if (!tfile.empty()) {
-	if (unlink(tfile.c_str()) < 0) {
-	    LOGERR(("tmpcleanup: unlink(%s) errno %d\n", tfile.c_str(), 
-		    errno));
-	    return;
-	}
-    }
-    if (rmdir(tdir.c_str()) < 0) {
-	LOGERR(("tmpcleanup: rmdir(%s) errno %d\n", tdir.c_str(), errno));
+    if (unlink(tfile.c_str()) < 0) {
+	LOGERR(("tmpcleanup: unlink(%s) errno %d\n", tfile.c_str(), 
+		errno));
 	return;
     }
 }
 
-bool internfile(const std::string &ifn, RclConfig *config, Rcl::Doc& doc)
+bool internfile(const std::string &ifn, RclConfig *config, Rcl::Doc& doc,
+		const string& tdir)
 {
     string fn = ifn;
-    string tdir;
     string tfile;
     MimeHandler *handler = 0;
     bool ret = false;
 
     string mime = mimetype(fn, config->getMimeMap());
     if (mime.empty()) {
-	// No mime type ?? pass on.
+	// No mime type: not listed in our map.
 	LOGDEB(("internfile: (no mime) [%s]\n", fn.c_str()));
 	return false;
     }

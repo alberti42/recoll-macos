@@ -27,10 +27,15 @@
 
 #include "mimeparse.h"
 
+// The original version for this compresses whitespace and suppresses newlines
+// I can see no good reason to do this, and it actually helps preview to keep
+// whitespace, especially if the html comes from a filter that generated it 
+// from text (ie: inside '<pre> tags)
 void
 MyHtmlParser::process_text(const string &text)
 {
     if (!in_script_tag && !in_style_tag) {
+#if 0
 	string::size_type b = 0;
 	while ((b = text.find_first_not_of(WHITESPACE, b)) != string::npos) {
 	    if (pending_space || b != 0)
@@ -45,6 +50,11 @@ MyHtmlParser::process_text(const string &text)
 	    dump += text.substr(b, e - b);
 	    b = e + 1;
 	}
+#else
+	if (pending_space)
+	    dump += ' ';
+	dump += text;
+#endif
     }
 }
 

@@ -95,33 +95,25 @@ static string plaintorich(const string &in, const list<string>& terms,
     myTextSplitCB cb(terms);
     TextSplit splitter(&cb, true);
     splitter.text_to_words(in);
-    string out1;
-    if (cb.tboffs.empty()) {
-	out1 = in;
-    } else { 
-	list<pair<int, int> >::iterator it = cb.tboffs.begin();
-	for (unsigned int i = 0; i < in.length() ; i++) {
-	    if (it != cb.tboffs.end()) {
-		if (i == (unsigned int)it->first) {
-		    out1 += "<termtag>";
-		} else if (i == (unsigned int)it->second) {
-		    if (it != cb.tboffs.end())
-			it++;
-		    out1 += "</termtag>";
-		}
-	    }
-	    out1 += in[i];
-	}
-    }
     string out = "<qt><head><title></title></head><body><p>";
-    for (string::const_iterator it = out1.begin();it != out1.end(); it++) {
-	if (*it == '\n') {
-	    out += "<br>";
-	    //	    out += '\n';
+    list<pair<int, int> >::iterator it = cb.tboffs.begin();
+    for (unsigned int i = 0; i < in.length(); i++) {
+	if (it != cb.tboffs.end()) {
+	    if (i == (unsigned int)it->first) {
+		out += "<termtag>";
+	    } else if (i == (unsigned int)it->second) {
+		if (it != cb.tboffs.end())
+		    it++;
+		out += "</termtag>";
+	    }
+	}
+	if (in[i] == '\n') {
+	    out += "<br>\n";
 	} else {
-	    out += *it;
+	    out += in[i];
 	}
     }
+
     termoffsets = cb.tboffs;
     return out;
 }
@@ -208,7 +200,7 @@ void RecollMain::reslistTE_clicked(int par, int car)
     // for preview:
     string fn = urltolocalpath(doc.url);
     Rcl::Doc fdoc;
-    if (!internfile(fn, rclconfig, fdoc)) {
+    if (!internfile(fn, rclconfig, fdoc, tmpdir)) {
 	QMessageBox::warning(0, "Recoll",
 			     QString("Can't turn doc into internal rep ") +
 			     doc.mimetype.c_str());

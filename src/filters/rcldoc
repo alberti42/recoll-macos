@@ -1,0 +1,74 @@
+#!/bin/sh
+# @(#$Id: rcldoc,v 1.1 2005-02-09 12:07:30 dockes Exp $  (C) 2004 J.F.Dockes
+# Parts taken from Estraier:
+#================================================================
+# Estraier: a personal full-text search system
+# Copyright (C) 2003-2004 Mikio Hirabayashi
+#================================================================
+#================================================================
+# rcldoc
+# Extract text from an msword file by executing either antiword 
+#  (or wvware maybe if we need it one day)
+#
+# The default is to use antiword, the code would need modifications to
+# work with wvWare
+#
+#================================================================
+
+
+# set variables
+LANG=C ; export LANG
+LC_ALL=C ; export LC_ALL
+progname="rcldoc"
+decoder="antiword -i -1 -m UTF-8"
+# Not ready to use this for now (it outputs html, so the code below has to
+# be simplified.)
+#decoder="wvWare -1 -c UTF-8"
+
+# show help message
+if test $# -ne 1 -o "$1" = "--help" 
+then
+  printf 'Convert a word file to unformatted HTML text.\n'
+  printf 'Usage: %s [infile]\n' "$progname"
+  exit 1
+fi
+
+infile="$1"
+
+# check the input file existence
+if test ! -f "$infile"
+then
+  printf '%s: %s: no such file\n' "$progname" "$infile"
+  exit 1
+fi
+
+# output the result
+$decoder "$infile" |
+awk '
+BEGIN {
+  printf("<html><head><title></title>\n")
+  printf("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n")
+  printf("</head>\n<body><p>");
+  esc = 1
+}
+{
+  if ($0 ~ /-$/) {
+    sub(/-$/, "", $0)
+    printf("%s", $0);
+  } else if($0 == "\f") {
+    printf("</p>\n<hr>\n<p>")
+  } else {
+    if(esc > 0) {
+      gsub(/&/, "\\&amp;", $0)
+      gsub(/</, "\\&lt;", $0)
+      gsub(/>/, "\\&gt;", $0)
+    }
+    print $0
+  }
+}
+END {
+    printf("</p></body></html>\n");
+}' | iconv -f UTF-8 -t UTF-8 -c -s 
+
+# exit normally
+exit 0

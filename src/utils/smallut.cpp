@@ -1,13 +1,52 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.2 2005-02-04 09:39:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.3 2005-02-09 12:07:30 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_SMALLUT
 #include <string>
 #include <ctype.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "smallut.h"
+#include "debuglog.h"
+#include "pathut.h"
 
 #define MIN(A,B) ((A)<(B)?(A):(B))
+
+bool maketmpdir(string& tdir)
+{
+    const char *tmpdir = getenv("RECOLL_TMPDIR");
+    if (!tmpdir)
+	tmpdir = getenv("TMPDIR");
+    if (!tmpdir)
+	tmpdir = "/tmp";
+    tdir = tmpdir;
+    path_cat(tdir, "rcltmpXXXXXX");
+    {
+	char *cp = strdup(tdir.c_str());
+	if (!cp) {
+	    LOGERR(("maketmpdir: out of memory (for file name !)\n"));
+	    tdir.erase();
+	    return false;
+	}	
+	if (!mktemp(cp)) {
+	    free(cp);
+	    LOGERR(("maketmpdir: mktemp failed\n"));
+	    tdir.erase();
+	    return false;
+	}	
+	tdir = cp;
+	free(cp);
+    }
+
+    if (mkdir(tdir.c_str(), 0700) < 0) {
+	LOGERR(("maketmpdir: mkdir %s failed\n", tdir.c_str()));
+	tdir.erase();
+	return false;
+    }
+    return true;
+}
 
 int stringicmp(const string & s1, const string& s2) 
 {

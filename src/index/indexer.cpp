@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.4 2005-02-04 14:21:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.5 2005-02-09 12:07:30 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -22,6 +22,8 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.4 2005-02-04 14:21:17 dockes Exp 
 #include "transcode.h"
 #include "debuglog.h"
 #include "internfile.h"
+#include "smallut.h"
+#include "wipedir.h"
 
 using namespace std;
 
@@ -38,11 +40,21 @@ class DbIndexer {
     string dbdir;
     list<string> *topdirs;
     Rcl::Db db;
+    string tmpdir;
  public:
     DbIndexer(RclConfig *cnf, const string &dbd, list<string> *top) 
 	: config(cnf), dbdir(dbd), topdirs(top)
     { }
 
+    ~DbIndexer() {
+	if (tmpdir.length()) {
+	    wipedir(tmpdir);
+	    if (rmdir(tmpdir.c_str()) < 0) {
+		LOGERR(("DbIndexer::~DbIndexer: cant clear temp dir %s\n",
+			tmpdir.c_str()));
+	    }
+	}
+    }
     friend FsTreeWalker::Status 
       indexfile(void *, const std::string &, const struct stat *, 
 		FsTreeWalker::CbFlag);
@@ -52,6 +64,12 @@ class DbIndexer {
 
 bool DbIndexer::index()
 {
+    string tdir;
+
+    if (!maketmpdir(tmpdir)) {
+	LOGERR(("DbIndexer: cant create temp directory\n"));
+	return false;
+    }
     if (!db.open(dbdir, Rcl::Db::DbUpd)) {
 	LOGERR(("DbIndexer::index: error opening database in %s\n", 
 		dbdir.c_str()));
@@ -106,7 +124,7 @@ indexfile(void *cdata, const std::string &fn, const struct stat *stp,
     }
 
     Rcl::Doc doc;
-    if (!internfile(fn, me->config, doc))
+    if (!internfile(fn, me->config, doc, me->tmpdir))
 	return FsTreeWalker::FtwOk;
 
     // Set up common fields:

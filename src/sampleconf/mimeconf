@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.2 2005-02-04 09:30:44 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.3 2005-02-09 12:07:30 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -29,6 +29,18 @@ text/plain = internal
 text/html  = internal 
 application/pdf = exec rclpdf
 application/postscript = exec rclps
+application/msword = exec rcldoc
+
+application/vnd.sun.xml.calc = exec rclsoff
+application/vnd.sun.xml.calc.template = exec rclsoff
+application/vnd.sun.xml.draw = exec rclsoff
+application/vnd.sun.xml.draw.template = exec rclsoff
+application/vnd.sun.xml.impress = exec rclsoff
+application/vnd.sun.xml.impress.template = exec rclsoff
+application/vnd.sun.xml.math = exec rclsoff
+application/vnd.sun.xml.writer = exec rclsoff
+application/vnd.sun.xml.writer.global = exec rclsoff
+application/vnd.sun.xml.writer.template = exec rclsoff
 
 ## 
 # External viewers, launched when you double-click a result entry
@@ -37,3 +49,15 @@ text/plain = xemacs %f
 text/html = firefox -a firefox -remote "openFile(%u)"
 application/pdf  = xpdf %f
 application/postscript = gv %f
+application/msword = openoffice-1.1.3-swriter
+
+application/vnd.sun.xml.calc = openoffice-1.1.3 %f
+application/vnd.sun.xml.calc.template = openoffice-1.1.3 %f
+application/vnd.sun.xml.draw = openoffice-1.1.3 %f
+application/vnd.sun.xml.draw.template = openoffice-1.1.3 %f
+application/vnd.sun.xml.impress = openoffice-1.1.3 %f
+application/vnd.sun.xml.impress.template = openoffice-1.1.3 %f
+application/vnd.sun.xml.math = openoffice-1.1.3 %f
+application/vnd.sun.xml.writer = openoffice-1.1.3 %f
+application/vnd.sun.xml.writer.global = openoffice-1.1.3 %f
+application/vnd.sun.xml.writer.template = openoffice-1.1.3 %f

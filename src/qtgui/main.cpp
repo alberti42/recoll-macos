@@ -10,10 +10,13 @@
 #include "rclconfig.h"
 #include "pathut.h"
 #include "recoll.h"
+#include "smallut.h"
+#include "wipedir.h"
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
 int recollNeedsExit;
+string tmpdir;
 
 
 void recollCleanup()
@@ -23,10 +26,15 @@ void recollCleanup()
     rcldb = 0;
     delete rclconfig;
     rclconfig = 0;
+    if (tmpdir.length()) {
+	wipedir(tmpdir);
+	rmdir(tmpdir.c_str());
+	tmpdir.erase();
+    }
 }
 
 
-static void sigcleanup(int sig)
+static void sigcleanup(int)
 {
     fprintf(stderr, "sigcleanup\n");
     // Cant call exit from here, because the atexit cleanup does some
@@ -71,6 +79,13 @@ int main( int argc, char ** argv )
 			      QString("No db directory in configuration"));
 	exit(1);
     }
+
+    if (!maketmpdir(tmpdir)) {
+	QMessageBox::critical(0, "Recoll",
+			      QString("Cannot create temporary directory"));
+	exit(1);
+    }
+	
     dbdir = path_tildexpand(dbdir);
 
     rcldb = new Rcl::Db;

@@ -1,0 +1,125 @@
+#!/bin/sh
+# @(#$Id: rclsoff,v 1.1 2005-02-09 12:07:30 dockes Exp $  (C) 2004 J.F.Dockes
+# Parts taken from Estraier:
+#================================================================
+# Estraier: a personal full-text search system
+# Copyright (C) 2003-2004 Mikio Hirabayashi
+#================================================================
+#================================================================
+# rclsoff
+# Extract text from an openoffice/soffice file
+#
+#================================================================
+
+
+# set variables
+LANG=C ; export LANG
+LC_ALL=C ; export LC_ALL
+progname="rclsoff"
+
+
+# show help message
+if test $# -ne 1 -o "$1" = "--help" 
+then
+  printf 'Convert an openoffice file to unformatted HTML text.\n'
+  printf 'Usage: %s [infile]\n' "$progname"
+  exit 1
+fi
+
+infile="$1"
+
+# check the input file existence
+if test ! -f "$infile"
+then
+  printf '%s: %s: no such file\n' "$progname" "$infile"
+  exit 1
+fi
+
+# We need a temporary directory
+if test z"$RECOLL_TMPDIR" != z; then
+   ttdir=$RECOLL_TMPDIR
+elif test z"$TMPDIR" != z ; then
+   ttdir=$TMPDIR
+else
+   ttdir=/tmp
+fi
+tmpdir=$ttdir/rclsoff_tmp$$
+mkdir $tmpdir || exit 1
+mkdir $tmpdir/rclsofftmp || exit 1
+
+cleanup()
+{
+    # Note that we're using a constant part (rclsofftmp), that hopefully
+    # guarantees that we can't do big mistakes here.
+    rm -rf $tmpdir/rclsofftmp
+    rmdir $tmpdir
+}
+    
+trap cleanup EXIT SIGHUP SIGQUIT SIGINT SIGTERM
+
+# Unzip the input file and change to the unzipped directory
+unzip -q -d $tmpdir/rclsofftmp $infile
+cd $tmpdir/rclsofftmp
+
+# Note: there can be newlines inside the description field, we don't want
+# them...
+descsedprog='/<dc:description>/,/<\/dc:description>/{
+s!.*<dc:description>!!
+s!</dc:description>.*!!
+p
+}
+'
+description=`sed -n -e "$descsedprog" < meta.xml | tr '\n' ' '`
+
+subject=`sed -e "s/\"/'/" -e 's/.*<dc:subject>\([^<]*\).*/\1/p;d' < meta.xml`
+
+title=`sed -e "s/\"/'/" -e 's/.*<dc:title>\([^<]*\).*/\1/p;d' < meta.xml`
+
+keywords=`sed -e "s/\"/'/" -e 's/.*<meta:keyword>\([^<]*\).*/\1/p;d' \
+	      < meta.xml`
+
+# Note: next expr inserts a newline at each end of paragraph (for preview)
+content="`sed -e 's!</text:p>!\\
+!g' -e 's/<[^>]*>/ /g' < content.xml`"
+
+#echo description "$description"
+#echo subject "$subject"
+#echo title "$title"
+#echo keywords "$keywords"
+#echo content "$content"
+
+# output the result
+echo '<html><head>'
+echo '<title>' "$title" '</title>'
+echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
+echo '<meta name="description" content="' "$description $subject" '">'
+echo '<meta name="keywords" content="' "$keywords" '">'
+echo '</head><body><p>'
+
+echo "$content" | sed -e "s/&apos;/'/g" -e 's/&quot;/"/g' |\
+awk '
+BEGIN {
+  esc = 1
+}
+{
+  if ($0 ~ /-$/) {
+    sub(/-$/, "", $0)
+    printf("%s", $0);
+  } else if($0 == "\f") {
+    printf("</p>\n<hr>\n<p>")
+  } else {
+    if(esc > 0) {
+      gsub(/&/, "\\&amp;", $0)
+      gsub(/</, "\\&lt;", $0)
+      gsub(/>/, "\\&gt;", $0)
+    }
+    printf("%s<br>", $0)
+  }
+}
+END {
+    printf("</p></body></html>\n");
+}' | iconv -f UTF-8 -t UTF-8 -c -s 
+
+cd /
+# exit normally
+exit 0

@@ -2,7 +2,7 @@ include ../mk/sysconf
 
 BIGLIB = ../lib/librcl.a
 
-PROGS = smallut trfstreewalk trpathut transcode trmimeparse trexecmd
+PROGS = wipedir smallut trfstreewalk trpathut transcode trmimeparse trexecmd
 all: $(PROGS)
 
 FSTREEWALK_OBJS= trfstreewalk.o fstreewalk.o pathut.o
@@ -44,5 +44,12 @@ smallut : $(SMALLUT_OBJS)
 trsmallut.o : ../utils/smallut.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_SMALLUT -c -o trsmallut.o \
 	       smallut.cpp
+
+WIPEDIR_OBJS= trwipedir.o  $(BIGLIB) 
+wipedir : $(WIPEDIR_OBJS)
+	$(CXX) $(CXXFLAGS) -o wipedir $(WIPEDIR_OBJS) $(LIBICONV)
+trwipedir.o : ../utils/wipedir.cpp 
+	$(CXX) $(CXXFLAGS) -DTEST_WIPEDIR -c -o trwipedir.o \
+	       wipedir.cpp
 clean: 
 	rm -f *.o $(PROGS)
