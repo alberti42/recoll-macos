@@ -1,29 +1,41 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.3 2004-12-17 13:01:01 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.4 2005-02-04 09:39:44 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "conftree.h"
 
 class RclConfig {
     int m_ok;
-    string confdir; // Directory where the files are stored
-    ConfTree *conf; // Parsed main configuration
-    string keydir;  // Current directory used for parameter fetches.
-    // Note: this will have to change if/when we support per directory maps
-    ConfTree *mimemap;
-    ConfTree *mimeconf;
+    string   confdir; // Directory where the files are stored
+    ConfTree *conf;   // Parsed main configuration
+    string keydir;    // Current directory used for parameter fetches.
+    
+    ConfTree *mimemap;  // These are independant of current keydir. We might
+    ConfTree *mimeconf; // want to change it one day.
+
+    // Parameters auto-fetched on setkeydir
+    string defcharset;   // These are stored locally to avoid 
+    string deflang;      // a config lookup each time.
+    bool   guesscharset; // They are fetched initially or on setKeydir()
+
  public:
-    // Let some parameters be accessed directly
-    string defcharset; // These are stored locally to avoid a config lookup
-    string deflang;    // each time.
-    bool   guesscharset;
 
     RclConfig();
     ~RclConfig() {delete conf;delete mimemap;delete mimeconf;}
+
     bool ok() {return m_ok;}
+
+    string getConfDir() {return confdir;}
     ConfTree *getConfig() {return m_ok ? conf : 0;}
-    ConfTree *getMimeMap() {return m_ok ? mimemap : 0;}
-    ConfTree *getMimeConf() {return m_ok ? mimeconf : 0;}
+
+    /// Get generic configuration parameter according to current keydir
+    bool getConfParam(const string &name, string &value) 
+    {
+	if (conf == 0)
+	    return false;
+	return conf->get(name, value, keydir);
+    }
+    /// Set current directory reference, and fetch automatic parameters.
     void setKeyDir(const string &dir) 
     {
 	keydir = dir;
@@ -33,19 +45,13 @@ class RclConfig {
 	conf->get("guesscharset", str, keydir);
 	guesscharset = ConfTree::stringToBool(str);
     }
-    bool getConfParam(const string &name, string &value) 
-    {
-	if (conf == 0)
-	    return false;
-	return conf->get(name, value, keydir);
-    }
-    const string &getDefCharset() {
-	return defcharset;
-    }
-    const string &getDefLang() {
-	return deflang;
-    }
+    ConfTree *getMimeMap() {return m_ok ? mimemap : 0;}
+    ConfTree *getMimeConf() {return m_ok ? mimeconf : 0;}
+    const string &getDefCharset() {return defcharset;}
+    const string &getDefLang() {return deflang;}
+    bool getGuessCharset() {return guesscharset;}
 };
 
+std::string find_filter(RclConfig *conf, const string& cmd);
 
 #endif /* _RCLCONFIG_H_INCLUDED_ */

@@ -1,12 +1,11 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.1 2005-01-31 14:31:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.2 2005-02-04 09:39:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
-
 #ifndef TEST_SMALLUT
 #include <string>
-#include "smallut.h"
-
 #include <ctype.h>
+
+#include "smallut.h"
 
 #define MIN(A,B) ((A)<(B)?(A):(B))
 

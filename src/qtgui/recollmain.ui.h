@@ -24,6 +24,7 @@
 #include "mimehandler.h"
 #include "pathut.h"
 #include "recoll.h"
+#include "internfile.h"
 
 void RecollMain::fileExit()
 {
@@ -145,28 +146,14 @@ void RecollMain::reslistTE_clicked(int par, int car)
 	
     // Go to the file system to retrieve / convert the document text
     // for preview:
-
-    // Look for appropriate handler
-    MimeHandler *handler = 
-	getMimeHandler(doc.mimetype, rclconfig->getMimeConf());
-    if (!handler) {
-	QMessageBox::warning(0, "Recoll",
-			     QString("No mime handler for mime type ") +
-			     doc.mimetype.c_str());
-	return;
-    }
-
     string fn = urltolocalpath(doc.url);
     Rcl::Doc fdoc;
-    if (!handler->worker(rclconfig, fn,  doc.mimetype, fdoc)) {
+    if (!internfile(fn, rclconfig, fdoc)) {
 	QMessageBox::warning(0, "Recoll",
-			     QString("Failed to convert document for preview!\n") +
-			     fn.c_str() + " mimetype " + 
+			     QString("Can't turn doc into internal rep ") +
 			     doc.mimetype.c_str());
-	delete handler;
 	return;
     }
-    delete handler;
 
     string rich = plaintorich(fdoc.text);
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.2 2005-02-01 17:20:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.3 2005-02-04 09:39:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <sys/stat.h>
 
@@ -19,8 +19,8 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.2 2005-02-01 17:20:05 dockes Exp 
 #include "indexer.h"
 #include "csguess.h"
 #include "transcode.h"
-#include "mimehandler.h"
 #include "debuglog.h"
+#include "internfile.h"
 
 using namespace std;
 
@@ -76,6 +76,7 @@ bool DbIndexer::index()
     return true;
 }
 
+
 /** 
  * This function gets called for every file and directory found by the
  * tree walker. It checks with the db if the file has changed and needs to
@@ -97,40 +98,17 @@ indexfile(void *cdata, const std::string &fn, const struct stat *stp,
 	return FsTreeWalker::FtwOk;
     }
 
-    string mime = mimetype(fn, me->config->getMimeMap());
-    if (mime.empty()) {
-	// No mime type ?? pass on.
-	LOGDEB(("indexfile: (no mime) [%s]\n", fn.c_str()));
-	return FsTreeWalker::FtwOk;
-    }
-
-    // Look for appropriate handler
-    MimeHandler *handler = getMimeHandler(mime, me->config->getMimeConf());
-    if (!handler) {
-	// No handler for this type, for now :(
-	LOGDEB(("indexfile: %s : no handler\n", mime.c_str()));
-	return FsTreeWalker::FtwOk;
-    }
-
-    LOGDEB(("indexfile: %s [%s]\n", mime.c_str(), fn.c_str()));
-
     // Check db up to date ?
     if (!me->db.needUpdate(fn, stp)) {
-	delete handler;
+	LOGDEB(("indexfile: up to date: %s\n", fn.c_str()));
 	return FsTreeWalker::FtwOk;
     }
 
-    // Turn file into a document. The document has fields for title, body 
-    // etc.,  all text converted to utf8
     Rcl::Doc doc;
-    if (!handler->worker(me->config, fn,  mime, doc)) {
-	delete handler;
+    if (!internfile(fn, me->config, doc))
 	return FsTreeWalker::FtwOk;
-    }
-    delete handler;
 
     // Set up common fields:
-    doc.mimetype = mime;
     char ascdate[20];
     sprintf(ascdate, "%ld", long(stp->st_mtime));
     doc.mtime = ascdate;
@@ -161,13 +139,13 @@ bool ConfIndexer::index()
     // Group the directories by database: it is important that all
     // directories for a database be indexed at once so that deleted
     // file cleanup works 
-    vector<string> tdl; // List of directories to be indexed
+    list<string> tdl; // List of directories to be indexed
     if (!ConfTree::stringToStrings(topdirs, tdl)) {
 	LOGERR(("ConfIndexer::index: parse error for directory list\n"));
 	return false;
     }
 
-    vector<string>::iterator dirit;
+    list<string>::iterator dirit;
     map<string, list<string> > dbmap;
     map<string, list<string> >::iterator dbit;
     for (dirit = tdl.begin(); dirit != tdl.end(); dirit++) {

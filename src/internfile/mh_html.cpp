@@ -50,7 +50,7 @@ bool MimeHandlerHtml::worker(RclConfig *conf, const string &fn,
     return worker1(conf, fn, otext, mtype, docout);
 }
 
-bool MimeHandlerHtml::worker1(RclConfig *conf, const string &fn, 
+bool MimeHandlerHtml::worker1(RclConfig *conf, const string &, 
 			     const string& htext,
 			     const string &mtype, Rcl::Doc &docout)
 {
@@ -63,10 +63,10 @@ bool MimeHandlerHtml::worker1(RclConfig *conf, const string &fn,
     //   what we started with, we abort and restart with the parameter value
     //   instead of the configuration one.
     string charset;
-    if (conf->guesscharset) {
-	charset = csguess(htext, conf->defcharset);
+    if (conf->getGuessCharset()) {
+	charset = csguess(htext, conf->getDefCharset());
     } else
-	charset = conf->defcharset;
+	charset = conf->getDefCharset();
 
     LOGDEB(("textHtmlToDoc: charset before parsing: %s\n", charset.c_str()));
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.6 2005-02-01 17:52:06 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.7 2005-02-04 09:39:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -14,6 +14,7 @@ using namespace std;
 #include "smallut.h"
 #include "html.h"
 #include "execmd.h"
+#include "pathut.h"
 
 class MimeHandlerText : public MimeHandler {
  public:
@@ -34,10 +35,10 @@ bool MimeHandlerText::worker(RclConfig *conf, const string &fn,
     // fields The charset guesser really doesnt work well in general
     // and should be avoided (especially for short documents)
     string charset;
-    if (conf->guesscharset) {
-	charset = csguess(otext, conf->defcharset);
+    if (conf->getGuessCharset()) {
+	charset = csguess(otext, conf->getDefCharset());
     } else
-	charset = conf->defcharset;
+	charset = conf->getDefCharset();
     string utf8;
     LOGDEB1(("textPlainToDoc: transcod from %s to %s\n", charset, "UTF-8"));
 
@@ -70,11 +71,15 @@ class MimeHandlerExec : public MimeHandler {
 bool MimeHandlerExec::worker(RclConfig *conf, const string &fn, 
 			     const string &mtype, Rcl::Doc &docout)
 {
-    string cmd = params.front();
+    // Command name
+    string cmd = find_filter(conf, params.front());
+    
+    // Build parameter list: delete cmd name and add the file name
     list<string>::iterator it = params.begin();
     list<string>myparams(++it, params.end());
     myparams.push_back(fn);
 
+    // Execute command and store the result text, which is supposedly html
     string html;
     ExecCmd exec;
     int status = exec.doexec(cmd, myparams, 0, &html);
@@ -83,6 +88,8 @@ bool MimeHandlerExec::worker(RclConfig *conf, const string &fn,
 		status, cmd.c_str()));
 	return false;
     }
+
+    // Process/index  the html
     MimeHandlerHtml hh;
     return hh.worker1(conf, fn, html, mtype, docout);
 }
@@ -109,26 +116,26 @@ MimeHandler *getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
     }
 
     // Break definition into type and name 
-    vector<string> toks;
+    list<string> toks;
     ConfTree::stringToStrings(hs, toks);
-    if (toks.size() < 1) {
+    if (toks.empty()) {
 	LOGERR(("getMimeHandler: bad mimeconf line for %s\n", mtype.c_str()));
 	return 0;
     }
 
     // Retrieve handler function according to type
-    if (!stringlowercmp("internal", toks[0])) {
+    if (!stringlowercmp("internal", toks.front())) {
 	return mhfact(mtype);
-    } else if (!stringlowercmp("dll", toks[0])) {
+    } else if (!stringlowercmp("dll", toks.front())) {
 	return 0;
-    } else if (!stringlowercmp("exec", toks[0])) {
+    } else if (!stringlowercmp("exec", toks.front())) {
 	if (toks.size() < 2) {
 	    LOGERR(("getMimeHandler: bad line for %s: %s\n", mtype.c_str(),
 		    hs.c_str()));
 	    return 0;
 	}
 	MimeHandlerExec *h = new MimeHandlerExec;
-	vector<string>::const_iterator it1 = toks.begin();
+	list<string>::const_iterator it1 = toks.begin();
 	it1++;
 	for (;it1 != toks.end();it1++)
 	    h->params.push_back(*it1);
@@ -145,4 +152,22 @@ string getMimeViewer(const std::string &mtype, ConfTree *mhandlers)
     string hs;
     mhandlers->get(mtype, hs, "view");
     return hs;
+}
+
+/** 
+ * Return decompression command line for given mime type
+ */
+bool getUncompressor(const std::string &mtype, ConfTree *mhandlers, 
+		     list<string>& cmd)
+{
+    string hs;
+
+    mhandlers->get(mtype, hs, "");
+    list<string> tokens;
+    ConfTree::stringToStrings(hs, tokens);
+    if (stringlowercmp("uncompress", tokens.front())) 
+	return false;
+    list<string>::iterator it = tokens.begin();
+    cmd.assign(++it, tokens.end());
+    return true;
 }

@@ -1,6 +1,7 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.5 2005-01-31 14:31:09 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.6 2005-02-04 09:39:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
+#include <unistd.h>
 
 #include <iostream>
 
@@ -66,4 +67,29 @@ RclConfig::RclConfig()
     // mimeconf->list();
     m_ok = true;
     return;
+}
+
+// Look up an executable filter.
+// We look in RECOLL_BINDIR, RECOLL_CONFDIR, then let the system use
+// the PATH
+string find_filter(RclConfig *conf, const string &icmd)
+{
+    // If the path is absolute, this is it
+    if (icmd[0] == '/')
+	return icmd;
+
+    string cmd;
+    const char *cp;
+    if (cp = getenv("RECOLL_BINDIR")) {
+	cmd = cp;
+	path_cat(cmd, icmd);
+	if (access(cmd.c_str(), X_OK) == 0)
+	    return cmd;
+    } else {
+	cmd = conf->getConfDir();
+	path_cat(cmd, icmd);
+	if (access(cmd.c_str(), X_OK) == 0)
+	    return cmd;
+    }
+    return icmd;
 }
