@@ -32,6 +32,10 @@ using std::pair;
 #include "textsplit.h"
 #include "smallut.h"
 
+#ifndef MIN
+#define MIN(A,B) ((A) < (B) ? (A) : (B))
+#endif
+
 void RecollMain::fileExit()
 {
     LOGDEB1(("RecollMain: fileExit\n"));
@@ -68,7 +72,9 @@ class myTextSplitCB : public TextSplitCB {
     virtual bool takeword(const std::string& term, int, int bts,  int bte) {
 	for (list<string>::const_iterator it = terms->begin(); 
 	     it != terms->end(); it++) {
-	    if (!stringlowercmp(*it, term)) {
+	    string dumb = term;
+	    Rcl::dumb_string(term, dumb);
+	    if (!stringlowercmp(*it, dumb)) {
 		tboffs.push_back(pair<int, int>(bts, bte));
 		break;
 	    }
@@ -280,46 +286,53 @@ void RecollMain::clearqPB_clicked()
 static const int respagesize = 10;
 void RecollMain::listPrevPB_clicked()
 {
+    if (reslist_winfirst <= 0)
+	return;
     reslist_winfirst -= 2*respagesize;
     listNextPB_clicked();
 }
 
-#ifndef MIN
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#endif
 
 // Fill up result list window with next screen of hits
 void RecollMain::listNextPB_clicked()
 {
-    LOGDEB1(("listNextPB_clicked: winfirst %d\n", reslist_winfirst));
+    if (!rcldb)
+	return;
+    int percent;
+    Rcl::Doc doc;
+    rcldb->getDoc(0, doc, &percent);
+    int resCnt = rcldb->getResCnt();
+    LOGDEB(("listNextPB_clicked: rescnt %d, winfirst %d\n", resCnt,
+	    reslist_winfirst));
+
+    // If we are already on the last page, nothing to do:
+    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize > resCnt))
+	return;
 
     if (reslist_winfirst < 0)
 	reslist_winfirst = 0;
     else
 	reslist_winfirst += respagesize;
 
-    // Insert results if any in result list window 
     bool gotone = false;
-    for (int i = 0; i < respagesize; i++) {
-	Rcl::Doc doc;
+    reslistTE->clear();
+    previewTextEdit->clear();
+    int last = MIN(resCnt-reslist_winfirst, respagesize);
+
+    // Insert results if any in result list window 
+    for (int i = 0; i < last; i++) {
 	doc.erase();
-	int percent;
-	if (i == 0) {
-	    reslistTE->clear();
-	    previewTextEdit->clear();
-	}
+
 	if (!rcldb->getDoc(reslist_winfirst + i, doc, &percent)) {
 	    if (i == 0) 
 		reslist_winfirst = -1;
 	    break;
 	}
-	int resCnt = rcldb->getResCnt();
-	int last = MIN(resCnt, reslist_winfirst+respagesize);
 	if (i == 0) {
 	    reslistTE->append("<qt><head></head><body><p>");
 	    char line[80];
 	    sprintf(line, "<p><b>Displaying results %d-%d out of %d</b><br>",
-		    reslist_winfirst+1, last, resCnt);
+		    reslist_winfirst+1, reslist_winfirst+last, resCnt);
 	    reslistTE->append(line);
 	}
 	    
@@ -365,7 +378,7 @@ void RecollMain::listNextPB_clicked()
 	// Restore first in win parameter that we shouln't have incremented
 	reslist_winfirst -= respagesize;
 	if (reslist_winfirst < 0)
-	    reslist_winfirst = 0;
+	    reslist_winfirst = -1;
     }
 }
 

@@ -1,9 +1,13 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.9 2005-02-07 13:17:47 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.10 2005-02-08 11:59:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
+
+#ifndef NO_NAMESPACES
+using std::string;
+#endif
 
 // rcldb defines an interface for a 'real' text database. The current 
 // implementation uses xapian only, and xapian-related code is in rcldb.cpp
@@ -28,15 +32,15 @@ namespace Rcl {
 class Doc {
  public:
     // This fields potentially go into the document data record
-    std::string url;
-    std::string mimetype;
-    std::string mtime;       // Modification time as decimal ascii
-    std::string origcharset;
-    std::string title;
-    std::string keywords;
-    std::string abstract;
+    string url;
+    string mimetype;
+    string mtime;       // Modification time as decimal ascii
+    string origcharset;
+    string title;
+    string keywords;
+    string abstract;
 
-    std::string text;
+    string text;
     void erase() {
 	url.erase();
 	mimetype.erase();
@@ -60,20 +64,20 @@ class Db {
     Db();
     ~Db();
     enum OpenMode {DbRO, DbUpd, DbTrunc};
-    bool open(const std::string &dbdir, OpenMode mode);
+    bool open(const string &dbdir, OpenMode mode);
     bool close();
     bool isopen();
 
     // Update-related functions
-    bool add(const std::string &filename, const Doc &doc);
-    bool needUpdate(const std::string &filename, const struct stat *stp);
+    bool add(const string &filename, const Doc &doc);
+    bool needUpdate(const string &filename, const struct stat *stp);
     bool purge();
 
     // Query-related functions
 
     // Parse query string and initialize query
-    bool setQuery(const std::string &q);
-    bool getQueryTerms(std::list<std::string>& terms);
+    bool setQuery(const string &q);
+    bool getQueryTerms(std::list<string>& terms);
 
     // Get document at rank i. This is probably vastly inferior to the type
     // of interface in Xapian, but we have to start with something simple
@@ -83,6 +87,8 @@ class Db {
     int getResCnt();
 };
 
+// Unaccent and lowercase data.
+extern bool dumb_string(const string &in, string &out);
 
 }
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.21 2005-02-08 10:56:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.22 2005-02-08 11:59:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -205,7 +205,7 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 // for accents, and do it by hand for upper / lower. Note lowercasing is
 // only for ascii letters anyway, so it's just A-Z -> a-z
 // Removing crlfs is so that we can use the text in the document data fields.
-bool dumb_string(const string &in, string &out)
+bool Rcl::dumb_string(const string &in, string &out)
 {
     string inter;
     out.erase();

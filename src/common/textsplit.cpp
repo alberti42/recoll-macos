@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.7 2005-02-08 10:56:13 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.8 2005-02-08 11:59:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -295,13 +295,46 @@ static string teststring =
     "\n"							      
 ;
 
+static string thisprog;
+
+static string usage =
+    " textsplit [opts] [filename]\n"
+    "   -q: query mode\n"
+    "  \n\n"
+    ;
+
+static void
+Usage(void)
+{
+    cerr << thisprog  << ": usage:\n" << usage;
+    exit(1);
+}
+
+static int        op_flags;
+#define OPT_q	  0x1 
+
 int main(int argc, char **argv)
 {
+    thisprog = argv[0];
+    argc--; argv++;
+
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    /* Cas du "adb - core" */
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 'q':	op_flags |= OPT_q; break;
+	    default: Usage();	break;
+	    }
+	argc--; argv++;
+    }
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     mySplitterCB cb;
-    TextSplit splitter(&cb, true);
-    if (argc == 2) {
+    TextSplit splitter(&cb, (op_flags&OPT_q) ? true: false);
+    if (argc == 1) {
 	string data;
 	if (!file_to_string(argv[1], data)) 
 	    exit(1);
