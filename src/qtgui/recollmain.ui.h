@@ -57,6 +57,7 @@ static string plaintorich(const string &in)
     for (unsigned int i = 0; i < in.length() ; i++) {
 	if (in[i] == '\n') {
 	    out += "<br>";
+	    //	    out += '\n';
 	} else {
 	    out += in[i];
 	}
@@ -135,7 +136,7 @@ void RecollMain::reslistTE_clicked(int par, int car)
     int reldocnum = par - 1;
     reslist_current = reldocnum;
     previewTextEdit->clear();
-
+    LOGDEB(("Cleared preview\n"));
     if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0)) {
 	QMessageBox::warning(0, "Recoll",
 			     QString("Can't retrieve document from database"));
@@ -185,7 +186,6 @@ void RecollMain::reslistTE_clicked(int par, int car)
 #endif
 
     QString str = QString::fromUtf8(rich.c_str(), rich.length());
-    previewTextEdit->setTextFormat(RichText);
     previewTextEdit->setText(str);
 }
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.5 2005-02-01 17:20:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.6 2005-02-01 17:52:06 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -79,7 +79,7 @@ bool MimeHandlerExec::worker(RclConfig *conf, const string &fn,
     ExecCmd exec;
     int status = exec.doexec(cmd, myparams, 0, &html);
     if (status) {
-	LOGDEB(("MimeHandlerExec: command status 0x%x: %s\n", 
+	LOGERR(("MimeHandlerExec: command status 0x%x: %s\n", 
 		status, cmd.c_str()));
 	return false;
     }

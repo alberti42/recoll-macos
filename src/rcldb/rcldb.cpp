@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.16 2005-02-01 17:20:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.17 2005-02-01 17:52:06 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -49,7 +49,7 @@ Rcl::Db::Db()
 
 Rcl::Db::~Db()
 {
-    LOGDEB(("Rcl::Db::~Db\n"));
+    LOGDEB1(("Rcl::Db::~Db\n"));
     if (pdata == 0)
 	return;
     Native *ndb = (Native *)pdata;
@@ -142,7 +142,7 @@ bool Rcl::Db::close()
     try {
 	if (ndb->iswritable == true) {
 	    ndb->wdb.flush();
-	    LOGDEB(("Called xapian flush\n"));
+	    LOGDEB(("Rcl:Db: Called xapian flush\n"));
 	}
 	delete ndb;
 	pdata = new Native;
@@ -196,7 +196,7 @@ static bool splitCb(void *cdata, const std::string &term, int pos)
 	data->curpos = pos;
 	data->doc.add_posting(term, data->basepos + data->curpos, 1);
     } catch (...) {
-	LOGERR(("Error occurred during add_posting\n"));
+	LOGERR(("Rcl::Db: Error occurred during xapian add_posting\n"));
 	return false;
     }
     return true;
@@ -213,7 +213,7 @@ bool dumb_string(const string &in, string &out)
     if (in.empty())
 	return true;
     if (!unac_cpp(in, inter)) {
-	LOGERR(("unac_cpp failed for %s\n", in.c_str()));
+	LOGERR(("dumb_string: unac_cpp failed for %s\n", in.c_str()));
 	return false;
     }
     out.reserve(inter.length());
@@ -266,7 +266,7 @@ truncate_to_word(string & input, string::size_type maxlen)
 
 bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 {
-    LOGDEB(("Rcl::Db::add: fn %s %s\n", fn.c_str(), idoc.text.c_str()));
+    LOGDEB(("Rcl::Db::add: fn %s\n", fn.c_str()));
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
@@ -331,7 +331,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     record += "\nkeywords=" + doc.keywords;
     record += "\nabstract=" + doc.abstract;
     record += "\n";
-    LOGDEB(("Newdocument data: %s\n", record.c_str()));
+    LOGDEB1(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);
 
 
@@ -355,14 +355,15 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 	    ndb->wdb.replace_document(pathterm, newdocument);
 	if (did < ndb->updated.size()) {
 	    ndb->updated[did] = true;
-	    LOGDEB(("docid %d updated [%s]\n", did, fnc));
+	    LOGDEB(("Rcl::Db::add: docid %d updated [%s]\n", did, fnc));
 	} else {
-	    LOGDEB(("docid %d added [%s]\n", did, fnc));
+	    LOGDEB(("Rcl::Db::add: docid %d added [%s]\n", did, fnc));
 	}
     } catch (...) {
 	// FIXME: is this ever actually needed?
 	ndb->wdb.add_document(newdocument);
-	LOGDEB(("%s added (failed re-seek for duplicate).\n", fnc));
+	LOGDEB(("Rcl::Db::add: %s added (failed re-seek for duplicate)\n", 
+		fnc));
     }
     return true;
 }

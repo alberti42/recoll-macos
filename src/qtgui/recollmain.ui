@@ -125,6 +125,9 @@
                 <property name="readOnly">
                     <bool>true</bool>
                 </property>
+                <property name="undoRedoEnabled">
+                    <bool>false</bool>
+                </property>
             </widget>
             <widget class="QSplitter">
                 <property name="name">
@@ -158,6 +161,9 @@
                     </property>
                     <property name="readOnly">
                         <bool>true</bool>
+                    </property>
+                    <property name="undoRedoEnabled">
+                        <bool>false</bool>
                     </property>
                 </widget>
                 <widget class="QTextEdit">
