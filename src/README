@@ -1,91 +1,106 @@
- @(#$Id: README,v 1.5 2005-02-08 15:08:11 dockes Exp $  (C) 2004 J.F.Dockes
+   Back to top
 
-Hello.
+    
 
-This is Recoll, a personal full text indexing system.
+     * Screenshots
+     * Downloads
+     * Credits
+     * User guide
+     * Installation
+   [IMG]
 
-Recoll is free and copyrighted under the GPL license, see COPYING
+Recoll
 
-Recoll is still in infancy, but it is based on a very strong backend, and
-it can actually be useful right now, which is why I release it so early.
+  Introduction
 
-See INSTALL for compiling and installing (very much by hand for now)
+   This is Recoll, a personal full text indexing system.
 
-It will become much better in the near future.
+   Recoll is free and copyrighted under the GPL license, see COPYING inside
+   the distribution. A lot of the code is imported from other packages, see
+   the Credits.
 
-What it has:
+   Recoll is still in infancy, but it is based on a very strong backend
+   (Xapian), and it can actually be useful right now, which is why I release
+   it so early.
 
- - Easy installation. No db, web server or exotic language necessary. 
-   The idea is that EVERYBODY should index their files because it
-   makes life easier.
- - Indexes text, pdf, html, postscript. Deals with compressed versions of
-   same. 
- - Support for multiple charsets. Internal processing and storage uses
-   Unicode UTF-8.
- - An ugly GUI, qt-based, written with qt Designer.
- - An indexer which runs either as a thread inside the GUI or as an
-   external, cron'able program.
+   See INSTALL inside the distribution for compiling and installing, very
+   much by hand for now, I hope it will become better in the near future.
 
-What it doesn't have, but will have in the not too far future:
+  Features:
 
- - A more sophisticated query interface: the current one has no boolean
-   capabilities, and performance problems with stemming
- - A pretty GUI (see above)
- - Mail folder indexing. This would be quite easy to add for single message
-   folders right now, more complicated for concatenated ones, I intend to
-   do it.
- - An interactive configuration tool. You need to edit files by hand for now.
- - Packages, rpm or other. It' all tar files currently.
- - Documentation and help. 
- - A build system, autoconf et al.
- - etc. etc.
+     * Easy installation. No database daemon, web server or exotic language
+       necessary. The idea is that EVERYBODY should index their files because
+       it makes life easier.
+     * Indexes text, pdf, html, postscript. Deals with compressed versions of
+       same.
+     * Support for multiple charsets. Internal processing and storage uses
+       Unicode UTF-8.
+     * An ugly GUI, qt-based, written with qt Designer.
+     * An indexer which runs either as a thread inside the GUI or as an
+       external, cron'able program.
 
-USING:
+  Things lacking, coming in the not too far future:
 
- - Enter search terms, click <Search> or type <CR>
- - A result list should appear in the left pane. You can use the Next/Prev
-   buttons to paginate.
- - Clicking on an entry in the list will display a preview in the right
-   pane -- This can take some time for big postscript or pdf files, as the
-   file is converted on the fly for preview --
- - Double-clicking on an entry should launch an external viewer, as
-   specified in the mimeconf file (see INSTALL). This doesn't work for
-   compressed files for now.
- - Use File->Index to rebuild the database.
+     * A more sophisticated query interface: the current one has no boolean
+       capabilities, and performance problems with stemming.
+     * A pretty GUI (see above)
+     * Mail folder indexing. It would be quite easy to add for single message
+       folders right now, more complicated for concatenated ones, I intend to
+       do it.
+     * An interactive configuration tool. You need to edit files by hand for
+       now.
+     * Packages, rpm or other. It's all tar files currently.
+     * A build system, autoconf et al.
+     * Documentation and help.
+     * More filters for other file types (MS, openoffice), this is coming
+       too, this is not hard as it will rely on external packages like the
+       existing filters.
 
-I very much welcome suggestions or (gasp) code:
-  jean-francois.dockes@wanadoo.fr
+  Using recoll
 
-Cheers,
-Jean-Francois
+     * Use File->Index to build/rebuild the database.
+     * Enter search terms in the upper left text field. There is no query
+       language right now, the search only understand probabilistic terms
+       (just words...), and double-quote enclosed phrases. Click Search or
+       type CR
+     * A result list should appear in the left pane. You can use the
+       Next/Prev buttons to paginate.
+     * Clicking on an entry in the list will display a preview in the right
+       pane -- This can take some time for big postscript or pdf files, as
+       the file is converted on the fly for preview --
+     * Double-clicking on an entry should launch an external viewer, as
+       specified in the mimeconf file (see INSTALL). This doesn't work for
+       compressed files for now.
 
+   I very much welcome suggestions or (gasp) code
 
-DOWNLOAD:
-   <a href="recoll-0.5.tar.gz">Version 0.5 (tar.gz)</a>
+   In hope that this can be useful to somebody, it already is for me.
 
-INSTALLATION
-See the INSTALL file.
+  Downloads
 
+   Version 0.5 (tar.gz)
 
-CREDITS:
+  Installation
 
-Recoll is mainly a little glue code, and most of the intelligent work uses
-code from external projects (xapian, estraier, unac, iconv). 
+   See the INSTALL file.
 
-Recoll borrows (steals?) heavily from the following projects. I tried to
-include the relevant copyright attributions with the code. Any omission
-is unintentional and will be fixed as soon as notified.
+  Credits
 
- - Xapian (http://www.xapian.org). The database module (core) is used
-   unmodified, and quite a lot of code has been borrowed from Omega, the
-   web-based search application (ie: the html parser, plus miscellaneous
-   bits and ideas).
- - Estraier (http://estraier.sourceforge.net/). Miscellaneous bits of codes
-   and ideas, especially for charset handling, and code from external
-   filters.
- - Unac (http://www.senga.org/) for accent removal. This is a relatively small
-   package, not that easy to find, it has been integrated almost unmodified
-   in the Recoll package.
- - Iconv (http://www.gnu.org/software/libiconv/), for character set
-   conversion.
+   Recoll is mainly a little glue code, and most of the intelligent work uses
+   code from external projects (xapian, estraier, unac, iconv).
 
+   Recoll borrows (steals?) heavily from the following projects. I tried to
+   include the relevant copyright attributions with the code. Any omission is
+   unintentional and will be fixed as soon as notified.
+
+     * Xapian: The database module (core) is used unmodified, and quite a lot
+       of code has been borrowed from Omega, the web-based search application
+       (ie: the html parser, plus miscellaneous bits and ideas).
+     * Estraier: Miscellaneous bits of codes and ideas, especially for
+       charset handling, and code from external filters.
+     * Unac: for accent removal. This is a relatively small package, not that
+       easy to find, it has been integrated almost unmodified in the Recoll
+       package.
+     * Iconv, for character set conversion.
+
+    jean-francois.dockes@wanadoo.fr

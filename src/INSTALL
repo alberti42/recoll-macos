@@ -47,8 +47,8 @@ hardship-repelling invocations.
 
 Installation:
 ------------
- - Copy all files in src/sampleconf to ~/.recoll
- - Copy all files in src/filters to ~/.recoll.
+ - Copy all files from sampleconf/* to ~/.recoll
+ - Copy all files from filters/* to ~/.recoll.
  - Copy qtgui/recoll to a place in your PATH (if you want. You can also
    execute it from there).
 
@@ -63,24 +63,10 @@ By default, the configuration file should be named ~/.recoll/recoll.conf
 There is a sample in the 'sampleconf' src/ subdirectory, you copied it to
 ~/.recoll at the step before, take a look and possibly edit it.
 
-- Then start 'recoll', and select the "file->start indexing" menu
-  entry. When it's done, you can play with the search
+Then start 'recoll', and select the "file->start indexing" menu
+entry. When it's done, you can play with the search
 
-Usage: 
-======
- - I think you will guess that query terms are to be entered in the text
-   field up left... There is no query language right now, the search only
-   understand probabilistic terms (just words...), and double-quote
-   enclosed phrases.
- - You can turn stemming on (this only affects querying) in the
-   configuration file. There is quite a huge performance impact for this
-   right now, but it might be ok if your db is small.
- - Clicking on an entry in the result list displays a preview in the right
-   window. 
- - Double-clicking will try to launch an external viewer. These are
-   configured inside the $HOME/.recoll/mimeconf file, please adjust to
-   taste.
-
+Usage: see README
 
 
 
