@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.4 2005-01-29 15:41:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.5 2005-02-01 17:20:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -12,9 +12,19 @@ using namespace std;
 #include "transcode.h"
 #include "debuglog.h"
 #include "smallut.h"
+#include "html.h"
+#include "execmd.h"
 
-bool textPlainToDoc(RclConfig *conf, const string &fn, 
-			 const string &mtype, Rcl::Doc &docout)
+class MimeHandlerText : public MimeHandler {
+ public:
+    bool worker(RclConfig *conf, const string &fn, 
+		const string &mtype, Rcl::Doc &docout);
+    
+};
+
+// Process a plain text file
+bool MimeHandlerText::worker(RclConfig *conf, const string &fn, 
+			     const string &mtype, Rcl::Doc &docout)
 {
     string otext;
     if (!file_to_string(fn, otext))
@@ -45,25 +55,51 @@ bool textPlainToDoc(RclConfig *conf, const string &fn,
     return true;
 }
 
-// Map of mime types to internal interner functions. This could just as well 
-// be an if else if suite inside getMimeHandler(), but this is prettier ?
-static map<string, MimeHandlerFunc> ihandlers;
-// Static object to get the map to be initialized at program start.
-class IHandler_Init {
+class MimeHandlerExec : public MimeHandler {
  public:
-    IHandler_Init() {
-	ihandlers["text/plain"] = textPlainToDoc;
-	ihandlers["text/html"] = textHtmlToDoc;
-	// Add new associations here when needed
-    }
-};
-static IHandler_Init ihandleriniter;
+    list<string> params;
+    virtual ~MimeHandlerExec() {}
+    virtual bool worker(RclConfig *conf, const string &fn, 
+			const string &mtype, Rcl::Doc &docout);
 
+};
+
+    
+// Execute an external program to translate a file from its native format
+// to html. Then call the html parser to do the actual indexing
+bool MimeHandlerExec::worker(RclConfig *conf, const string &fn, 
+			     const string &mtype, Rcl::Doc &docout)
+{
+    string cmd = params.front();
+    list<string>::iterator it = params.begin();
+    list<string>myparams(++it, params.end());
+    myparams.push_back(fn);
+
+    string html;
+    ExecCmd exec;
+    int status = exec.doexec(cmd, myparams, 0, &html);
+    if (status) {
+	LOGDEB(("MimeHandlerExec: command status 0x%x: %s\n", 
+		status, cmd.c_str()));
+	return false;
+    }
+    MimeHandlerHtml hh;
+    return hh.worker1(conf, fn, html, mtype, docout);
+}
+
+static MimeHandler *mhfact(const string &mime)
+{
+    if (!stringlowercmp("text/plain", mime))
+	return new MimeHandlerText;
+    else if (!stringlowercmp("text/html", mime))
+	return new MimeHandlerHtml;
+    return 0;
+}
 
 /**
  * Return handler function for given mime type
  */
-MimeHandlerFunc getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
+MimeHandler *getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
 {
     // Return handler definition for mime type
     string hs;
@@ -82,25 +118,23 @@ MimeHandlerFunc getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
 
     // Retrieve handler function according to type
     if (!stringlowercmp("internal", toks[0])) {
-	map<string, MimeHandlerFunc>::const_iterator it = 
-	    ihandlers.find(mtype);
-	if (it == ihandlers.end()) {
-	    LOGERR(("getMimeHandler: internal handler not found for %s\n",
-		    mtype.c_str()));
-	    return 0;
-	}
-	return it->second;
+	return mhfact(mtype);
     } else if (!stringlowercmp("dll", toks[0])) {
-	if (toks.size() != 2)
-	    return 0;
 	return 0;
     } else if (!stringlowercmp("exec", toks[0])) {
-	if (toks.size() != 2)
+	if (toks.size() < 2) {
+	    LOGERR(("getMimeHandler: bad line for %s: %s\n", mtype.c_str(),
+		    hs.c_str()));
 	    return 0;
-	return 0;
-    } else {
-	return 0;
+	}
+	MimeHandlerExec *h = new MimeHandlerExec;
+	vector<string>::const_iterator it1 = toks.begin();
+	it1++;
+	for (;it1 != toks.end();it1++)
+	    h->params.push_back(*it1);
+	return h;
     }
+    return 0;
 }
 
 /**

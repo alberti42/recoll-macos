@@ -2,7 +2,7 @@ include ../mk/FreeBSD
 
 BIGLIB = ../lib/librcl.a
 
-PROGS = smallut trfstreewalk trpathut execmd transcode trmimeparse
+PROGS = smallut trfstreewalk trpathut transcode trmimeparse trexecmd
 all: $(PROGS)
 
 FSTREEWALK_OBJS= trfstreewalk.o fstreewalk.o pathut.o
@@ -16,11 +16,13 @@ PATHUT_OBJS= trpathut.o pathut.o
 trpathut : $(PATHUT_OBJS)
 	$(CXX) $(CXXFLAGS) -o trpathut $(PATHUT_OBJS)
 trpathut.o : pathut.cpp pathut.h
-	$(CXX) -o trpathut.o -c $(CXXFLAGS) \
-	       -DTEST_PATHUT pathut.cpp
+	$(CXX) -o trpathut.o -c $(CXXFLAGS) -DTEST_PATHUT pathut.cpp
 
-execmd: pathut.o
-	$(CXX) -o execmd $(CXXFLAGS) execmd.cpp pathut.o
+EXECMD_OBJS= trexecmd.o $(BIGLIB)
+trexecmd : $(EXECMD_OBJS)
+	$(CXX) $(CXXFLAGS) -o trexecmd $(EXECMD_OBJS)
+trexecmd.o : execmd.cpp execmd.h
+	$(CXX) -o trexecmd.o -c $(CXXFLAGS) -DTEST_EXECMD execmd.cpp
 
 TRANSCODE_OBJS= trtranscode.o  $(BIGLIB) 
 transcode : $(TRANSCODE_OBJS)
@@ -31,12 +33,13 @@ trtranscode.o : ../utils/transcode.cpp
 	       transcode.cpp
 
 MIMEPARSE_OBJS= trmimeparse.o  $(BIGLIB) 
-mimeparse : $(MIMEPARSE_OBJS)
+trmimeparse : $(MIMEPARSE_OBJS)
 	$(CXX) $(CXXFLAGS) -o mimeparse $(MIMEPARSE_OBJS) \
 	       -L/usr/local/lib -liconv
-trmimeparse.o : ../utils/mimeparse.cpp 
+trmimeparse.o : mimeparse.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_MIMEPARSE -c -o trmimeparse.o \
 	       mimeparse.cpp
+
 SMALLUT_OBJS= trsmallut.o  $(BIGLIB) 
 smallut : $(SMALLUT_OBJS)
 	$(CXX) $(CXXFLAGS) -o smallut $(SMALLUT_OBJS) \

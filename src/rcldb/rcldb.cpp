@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.15 2005-02-01 08:42:55 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.16 2005-02-01 17:20:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -210,8 +210,12 @@ bool dumb_string(const string &in, string &out)
 {
     string inter;
     out.erase();
-    if (!unac_cpp(in, inter))
+    if (in.empty())
+	return true;
+    if (!unac_cpp(in, inter)) {
+	LOGERR(("unac_cpp failed for %s\n", in.c_str()));
 	return false;
+    }
     out.reserve(inter.length());
     for (unsigned int i = 0; i < inter.length(); i++) {
 	if (inter[i] >= 'A' && inter[i] <= 'Z') {
@@ -226,12 +230,54 @@ bool dumb_string(const string &in, string &out)
     return true;
 }
 
-bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
+/* omindex direct */
+/* Truncate a string to a given maxlength, avoiding cutting off midword
+ * if reasonably possible. */
+string
+truncate_to_word(string & input, string::size_type maxlen)
 {
-    LOGDEB(("Rcl::Db::add: fn %s\n", fn.c_str()));
+    string output;
+    if (input.length() <= maxlen) {
+	output = input;
+    } else {
+	output = input.substr(0, maxlen);
+	const char *SEPAR = " \t\n\r-:.;,/[]{}";
+	string::size_type space = output.find_last_of(SEPAR);
+	// Original version only truncated at space if space was found after
+	// maxlen/2. But we HAVE to truncate at space, else we'd need to do
+	// utf8 stuff to avoid truncating at multibyte char. In any case,
+	// not finding space means that the text probably has no value.
+	// Except probably for Asian languages, so we may want to fix this 
+	// one day
+	if (space == string::npos) {
+	    output.erase();
+	} else {
+	    output.erase(space);
+	}
+
+	output += " ...";
+    }
+
+    // replace newlines with spaces
+    size_t i = 0;    
+    while ((i = output.find('\n', i)) != string::npos) output[i] = ' ';
+    return output;
+}
+
+bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
+{
+    LOGDEB(("Rcl::Db::add: fn %s %s\n", fn.c_str(), idoc.text.c_str()));
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
+
+    Rcl::Doc doc = idoc;
+    if (doc.abstract.empty()) 
+	doc.abstract = truncate_to_word(doc.text, 100);
+    else 
+	doc.abstract = truncate_to_word(doc.abstract, 100);
+    doc.title = truncate_to_word(doc.title, 100);
+    doc.keywords = truncate_to_word(doc.keywords, 300);
 
     Xapian::Document newdocument;
 
@@ -248,21 +294,21 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
 
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.text, noacc)) {
-	LOGERR(("Rcl::Db::add: dum_string failed\n"));
+	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
 
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.keywords, noacc)) {
-	LOGERR(("Rcl::Db::add: dum_string failed\n"));
+	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
 
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.abstract, noacc)) {
-	LOGERR(("Rcl::Db::add: dum_string failed\n"));
+	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
@@ -271,7 +317,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     string pathterm  = "P" + fn;
     newdocument.add_term(pathterm);
     const char *fnc = fn.c_str();
-
+    
     // Document data record. omindex has the following nl separated fields:
     // - url
     // - sample
@@ -287,6 +333,20 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     record += "\n";
     LOGDEB(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);
+
+
+    time_t mtime = atol(doc.mtime.c_str());
+    struct tm *tm = localtime(&mtime);
+    char buf[9];
+    sprintf(buf, "%04d%02d%02d",tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
+    newdocument.add_term("D" + string(buf)); // Date (YYYYMMDD)
+    buf[7] = '\0';
+    if (buf[6] == '3') buf[6] = '2';
+    newdocument.add_term("W" + string(buf)); // "Weak" - 10ish day interval
+    buf[6] = '\0';
+    newdocument.add_term("M" + string(buf)); // Month (YYYYMM)
+    buf[4] = '\0';
+    newdocument.add_term("Y" + string(buf)); // Year (YYYY)
 
     // If this document has already been indexed, update the existing
     // entry.

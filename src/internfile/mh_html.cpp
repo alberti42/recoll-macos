@@ -32,13 +32,14 @@
 #include "mimeparse.h"
 #include "myhtmlparse.h"
 #include "indextext.h"
+#include "html.h"
 
 #include <iostream>
 using namespace std;
 
 
-bool textHtmlToDoc(RclConfig *conf, const string &fn, 
-			 const string &mtype, Rcl::Doc &docout)
+bool MimeHandlerHtml::worker(RclConfig *conf, const string &fn, 
+			     const string &mtype, Rcl::Doc &docout)
 {
     LOGDEB(("textHtmlToDoc: %s\n", fn.c_str()));
     string otext;
@@ -46,7 +47,13 @@ bool textHtmlToDoc(RclConfig *conf, const string &fn,
 	LOGINFO(("textHtmlToDoc: cant read: %s\n", fn.c_str()));
 	return false;
     }
-    
+    return worker1(conf, fn, otext, mtype, docout);
+}
+
+bool MimeHandlerHtml::worker1(RclConfig *conf, const string &fn, 
+			     const string& htext,
+			     const string &mtype, Rcl::Doc &docout)
+{
     // Character set handling:
 
     // - We first try to convert from the default configured charset
@@ -57,7 +64,7 @@ bool textHtmlToDoc(RclConfig *conf, const string &fn,
     //   instead of the configuration one.
     string charset;
     if (conf->guesscharset) {
-	charset = csguess(otext, conf->defcharset);
+	charset = csguess(htext, conf->defcharset);
     } else
 	charset = conf->defcharset;
 
@@ -69,10 +76,10 @@ bool textHtmlToDoc(RclConfig *conf, const string &fn,
 
 	MyHtmlParser p;
 	// Try transcoding. If it fails, use original text.
-	if (!transcode(otext, transcoded, charset, "UTF-8")) {
+	if (!transcode(htext, transcoded, charset, "UTF-8")) {
 	    LOGERR(("textHtmlToDoc: transcode failed from cs '%s' to UTF-8\n",
 		    charset.c_str()));
-	    transcoded = otext;
+	    transcoded = htext;
 	    // We don't know the charset, at all
 	    p.ocharset = p.charset = charset = "";
 	} else {

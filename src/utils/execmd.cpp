@@ -1,12 +1,13 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.2 2004-12-14 17:54:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.3 2005-02-01 17:20:06 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
-
+#ifndef TEST_EXECMD
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/select.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #include <list>
 #include <string>
@@ -15,6 +16,7 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.2 2004-12-14 17:54:16 dockes Exp $
 
 #include "execmd.h"
 #include "pathut.h"
+#include "debuglog.h"
 
 using namespace std;
 #define MAX(A,B) (A>B?A:B)
@@ -23,15 +25,25 @@ int
 ExecCmd::doexec(const string &cmd, const list<string> args,
 		const string *input, string *output)
 {
+    {
+	string command = cmd + " ";
+	for (list<string>::const_iterator it = args.begin();it != args.end();
+	     it++) {
+	    command += "{" + *it + "} ";
+	}
+	LOGDEB(("ExecCmd::doexec: %s\n", command.c_str()));
+    }
 
     int pipein[2]; // subproc input
     int pipeout[2]; // subproc output
     pipein[0] = pipein[1] = pipeout[0] = pipeout[1] = -1;
 
     if (input && pipe(pipein) < 0) {
+	LOGERR(("ExecCmd::doexec: pipe(2) failed. errno %d\n", errno));
 	return -1;
     }
     if (output && pipe(pipeout) < 0) {
+	LOGERR(("ExecCmd::doexec: pipe(2) failed. errno %d\n", errno));
 	close(pipein[0]);
 	close(pipein[1]);
 	return -1;
@@ -39,6 +51,7 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 
     pid_t pid = fork();
     if (pid < 0) {
+	LOGERR(("ExecCmd::doexec: fork(2) failed. errno %d\n", errno));
 	return -1;
     }
 
@@ -71,17 +84,20 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 		//cerr << "pipein[1] "<< pipein[1] << " pipeout[0] " << 
 		//pipeout[0] << " nfds " << nfds << endl;
 		if (select(nfds, &readfds, &writefds, 0, 0) <= 0) {
-		    perror("select");
+		    LOGERR(("ExecCmd::doexec: select(2) failed. errno %d\n", 
+			    errno));
 		    break;
 		}
 		if (pipein[1] >= 0 && FD_ISSET(pipein[1], &writefds)) {
 		    int n = write(pipein[1], input->c_str()+nwritten, 
 				  input->length() - nwritten);
 		    if (n < 0) {
+			LOGERR(("ExecCmd::doexec: write(2) failed. errno %d\n",
+				errno));
 			goto out;
 		    }
 		    nwritten += n;
-		    if (nwritten == input->length()) {
+		    if (nwritten == (int)input->length()) {
 			// cerr << "Closing output" << endl;
 			close(pipein[1]);
 			pipein[1] = -1;
@@ -93,7 +109,8 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 		    if (n == 0) {
 			goto out;
 		    } else if (n < 0) {
-			perror("read");
+			LOGERR(("ExecCmd::doexec: read(2) failed. errno %d\n",
+				errno));
 			goto out;
 		    } else if (n > 0) {
 			// cerr << "READ: " << n << endl;
@@ -114,6 +131,7 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 	    close(pipeout[0]);
 	if (pipeout[1] >= 0)
 	    close(pipeout[1]);
+	LOGDEB(("ExecCmd::doexec: father got status 0x%x\n", status));
 	return status;
     } else {
 	if (input) {
@@ -130,10 +148,12 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 	    pipeout[0] = -1;
 	    if (pipeout[1] != 1) {
 		if (dup2(pipeout[1], 1) < 0) {
-		    perror("dup2");
+		    LOGERR(("ExecCmd::doexec: dup2(2) failed. errno %d\n",
+			    errno));
 		}
 		if (close(pipeout[1]) < 0) {
-		    perror("close");
+		    LOGERR(("ExecCmd::doexec: close(2) failed. errno %d\n",
+			    errno));
 		}
 		pipeout[1] = -1;
 	    }
@@ -148,7 +168,8 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 	Ccharp *argv;
 	argv = (Ccharp *)malloc((i+2) * sizeof(char *));
 	if (argv == 0) {
-	    cerr << "Malloc error" << endl;
+	    LOGERR(("ExecCmd::doexec: malloc() failed. errno %d\n",
+		    errno));
 	    exit(1);
 	}
 	
@@ -165,17 +186,31 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 	    while (argv[i]) cerr << argv[i++] << endl;}
 #endif
 
+	LOGDEB(("ExecCmd::doexec: execvp(%s)\n", cmd.c_str()));
 	execvp(cmd.c_str(), (char *const*)argv);
 	// Hu ho
-	//cerr << "Exec failed" << endl;
-	exit(1);
+	LOGERR(("ExecCmd::doexec: execvp(%s) failed. errno %d\n", cmd.c_str(),
+		errno));
+	exit(128);
     }
 }
+
+#else // TEST
+#include <stdio.h>
+#include <string>
+#include <iostream>
+#include <list>
+#include "debuglog.h"
+using namespace std;
+
+#include "execmd.h"
 
 const char *data = "Une ligne de donnees\n";
 
 int main(int argc, const char **argv)
 {
+    DebugLog::getdbl()->setloglevel(DEBDEB1);
+    DebugLog::setfilename("stderr");
     if (argc < 2) {
 	cerr << "Usage: execmd cmd arg1 arg2 ..." << endl;
 	exit(1);
@@ -191,7 +226,8 @@ int main(int argc, const char **argv)
     string *ip = 0;
     //ip = &input;
     int status = mexec.doexec(cmd, l, ip, &output);
-    cout << "Status: " << status << endl;
+    fprintf(stderr, "Status: 0x%x\n", status);
     cout << "Output:" << output << endl;
     exit (status >> 8);
 }
+#endif // TEST

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.1 2005-01-31 14:31:09 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.2 2005-02-01 17:20:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <sys/stat.h>
 
@@ -105,8 +105,8 @@ indexfile(void *cdata, const std::string &fn, const struct stat *stp,
     }
 
     // Look for appropriate handler
-    MimeHandlerFunc fun = getMimeHandler(mime, me->config->getMimeConf());
-    if (!fun) {
+    MimeHandler *handler = getMimeHandler(mime, me->config->getMimeConf());
+    if (!handler) {
 	// No handler for this type, for now :(
 	LOGDEB(("indexfile: %s : no handler\n", mime.c_str()));
 	return FsTreeWalker::FtwOk;
@@ -115,14 +115,19 @@ indexfile(void *cdata, const std::string &fn, const struct stat *stp,
     LOGDEB(("indexfile: %s [%s]\n", mime.c_str(), fn.c_str()));
 
     // Check db up to date ?
-    if (!me->db.needUpdate(fn, stp))
+    if (!me->db.needUpdate(fn, stp)) {
+	delete handler;
 	return FsTreeWalker::FtwOk;
+    }
 
     // Turn file into a document. The document has fields for title, body 
     // etc.,  all text converted to utf8
     Rcl::Doc doc;
-    if (!fun(me->config, fn,  mime, doc))
+    if (!handler->worker(me->config, fn,  mime, doc)) {
+	delete handler;
 	return FsTreeWalker::FtwOk;
+    }
+    delete handler;
 
     // Set up common fields:
     doc.mimetype = mime;
@@ -131,7 +136,7 @@ indexfile(void *cdata, const std::string &fn, const struct stat *stp,
     doc.mtime = ascdate;
 
     // Do database-specific work to update document data
-    if (!me->db.add(fn, doc))
+    if (!me->db.add(fn, doc)) 
 	return FsTreeWalker::FtwError;
 
     return FsTreeWalker::FtwOk;

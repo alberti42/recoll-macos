@@ -146,9 +146,9 @@ void RecollMain::reslistTE_clicked(int par, int car)
     // for preview:
 
     // Look for appropriate handler
-    MimeHandlerFunc fun = 
+    MimeHandler *handler = 
 	getMimeHandler(doc.mimetype, rclconfig->getMimeConf());
-    if (!fun) {
+    if (!handler) {
 	QMessageBox::warning(0, "Recoll",
 			     QString("No mime handler for mime type ") +
 			     doc.mimetype.c_str());
@@ -157,13 +157,15 @@ void RecollMain::reslistTE_clicked(int par, int car)
 
     string fn = urltolocalpath(doc.url);
     Rcl::Doc fdoc;
-    if (!fun(rclconfig, fn,  doc.mimetype, fdoc)) {
+    if (!handler->worker(rclconfig, fn,  doc.mimetype, fdoc)) {
 	QMessageBox::warning(0, "Recoll",
 			     QString("Failed to convert document for preview!\n") +
 			     fn.c_str() + " mimetype " + 
 			     doc.mimetype.c_str());
+	delete handler;
 	return;
     }
+    delete handler;
 
     string rich = plaintorich(fdoc.text);
 
@@ -188,7 +190,8 @@ void RecollMain::reslistTE_clicked(int par, int car)
 }
 
 
-// User asked to start query
+// User asked to start query. Run it and call listNextPB_clicked to display
+// first page of results
 void RecollMain::queryText_returnPressed()
 {
     LOGDEB(("RecollMain::queryText_returnPressed()\n"));
@@ -294,6 +297,7 @@ void RecollMain::listNextPB_clicked()
 	    struct tm *tm = localtime(&mtime);
 	    strftime(datebuf, 99, "<i>Modified:</i>&nbsp;%F&nbsp;%T", tm);
 	}
+	LOGDEB(("Abstract: %s\n", doc.abstract.c_str()));
 	string result = "<p>" + 
 	    string(perbuf) + " <b>" + doc.title + "</b><br>" +
 	    doc.mimetype + "&nbsp;" +

@@ -1,29 +1,34 @@
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-/* @(#$Id: mimehandler.h,v 1.3 2005-01-29 15:41:11 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimehandler.h,v 1.4 2005-02-01 17:20:05 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
 #include "rclconfig.h"
 #include "rcldb.h"
 
-/* Definition for document interner functions */
-typedef bool (*MimeHandlerFunc)(RclConfig *, const std::string &, 
-				const std::string &, Rcl::Doc&);
 
 /**
- * Return indexing handler function for given mime type
+ * Document interner class. We sometimes have data to pass to an interner
  */
-extern MimeHandlerFunc getMimeHandler(const std::string &mtype, 
-				      ConfTree *mhandlers);
+class MimeHandler {
+ public:
+    virtual ~MimeHandler() {}
+    virtual bool worker(RclConfig *, const std::string &filename, 
+			const std::string &mimetype, Rcl::Doc& outdoc) = 0;
+};
+
+/**
+ * Return indexing handler class for given mime type
+ * returned pointer should be deleted by caller
+ */
+extern MimeHandler *getMimeHandler(const std::string &mtype, 
+				   ConfTree *mhandlers);
 
 /**
  * Return external viewer exec string for given mime type
  */
 extern string getMimeViewer(const std::string &mtype, 
 			    ConfTree *mhandlers);
-
-extern bool textHtmlToDoc(RclConfig *conf, const string &fn, 
-			  const string &mtype, Rcl::Doc &docout);
 
 #endif /* _MIMEHANDLER_H_INCLUDED_ */
