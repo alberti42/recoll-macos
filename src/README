@@ -1,4 +1,4 @@
- @(#$Id: README,v 1.1 2005-02-04 14:21:17 dockes Exp $  (C) 2004 J.F.Dockes
+ @(#$Id: README,v 1.2 2005-02-08 14:54:38 dockes Exp $  (C) 2004 J.F.Dockes
 
 Hello.
 
@@ -13,9 +13,8 @@ It will become much better in the near future.
 
 What it has:
 
- - Easy installation. No db, web server or exotic language necessary. The
-   binary packages are statically linked and should run almost as soon as
-   unpacked. The idea is that EVERYBODY should index their files because it
+ - Easy installation. No db, web server or exotic language necessary. 
+   The idea is that EVERYBODY should index their files because it
    makes life easier.
  - Indexes text, pdf, html, postscript. Deals with compressed versions of
    same. 

@@ -259,14 +259,24 @@ void RecollMain::queryText_returnPressed()
 				     "to complete?");
 	    return;
 	}
-
     }
+    if (stemlang.empty()) {
+	string param;
+	if (rclconfig->getConfParam("querystemming", param))
+	    dostem = ConfTree::stringToBool(param);
+	else
+	    dostem = false;
+	if (!rclconfig->getConfParam("querystemminglanguage", stemlang))
+	    stemlang = "english";
+    }
+
     reslist_current = -1;
     reslist_winfirst = -1;
 
     QCString u8 =  queryText->text().utf8();
 
-    if (!rcldb->setQuery(string((const char *)u8)))
+    if (!rcldb->setQuery(string((const char *)u8), dostem ? 
+			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, stemlang))
 	return;
     list<string> terms;
     listNextPB_clicked();

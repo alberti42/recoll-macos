@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.10 2005-02-08 11:59:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.11 2005-02-08 14:45:54 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -76,7 +76,9 @@ class Db {
     // Query-related functions
 
     // Parse query string and initialize query
-    bool setQuery(const string &q);
+    enum QueryOpts {QO_NONE=0, QO_STEM = 1};
+    bool setQuery(const string &q, QueryOpts opts = QO_NONE, 
+		  const string& stemlang = "english");
     bool getQueryTerms(std::list<string>& terms);
 
     // Get document at rank i. This is probably vastly inferior to the type

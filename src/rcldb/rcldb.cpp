@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.22 2005-02-08 11:59:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.23 2005-02-08 14:45:54 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -452,10 +452,49 @@ class wsQData : public TextSplitCB {
     }
 };
 
+#include <xapian/stem.h>
 
-bool Rcl::Db::setQuery(const std::string &iqstring)
+// Expand term to list of all terms which expand to the same term.
+// This is currently awfully inefficient as we actually stem the whole
+// db term list ! Need to build an efficient structure when finishing
+// indexing, but good enough for testing
+static list<string> stemexpand(Native *ndb, string term, const string& lang)
 {
-    LOGDEB(("Rcl::Db::setQuery: %s\n", iqstring.c_str()));
+    list<string> explist;
+    try {
+	Xapian::Stem stemmer(lang);
+	string stem = stemmer.stem_word(term);
+	LOGDEB(("stemexpand: term '%s' stem '%s'\n", 
+		term.c_str(), stem.c_str()));
+	Xapian::TermIterator it;
+	for (it = ndb->db.allterms_begin(); 
+	     it != ndb->db.allterms_end(); it++) {
+	    string stem1 = stemmer.stem_word(*it);
+	    if (stem == stem1)
+		explist.push_back(*it);
+	}
+	if (explist.size() == 0)
+	    explist.push_back(term);
+	if (1) {
+	    string expanded;
+	    for (list<string>::const_iterator it = explist.begin(); 
+		 it != explist.end(); it++) {
+		expanded += *it + " ";
+	    }
+	    LOGDEB(("stemexpand: expanded list: %s\n", expanded.c_str()));
+	}
+    } catch (...) {
+	LOGERR(("Stemming failed: no stemmer for %s ? \n", lang.c_str()));
+	explist.push_back(term);
+    }
+    return explist;
+}
+
+bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts, 
+		       const string& stemlang)
+{
+    LOGDEB(("Rcl::Db::setQuery: q: '%s', opts 0x%x, stemlang %s\n", 
+	    iqstring.c_str(), (unsigned int)opts, stemlang.c_str()));
     Native *ndb = (Native *)pdata;
     if (!ndb)
 	return false;
@@ -465,13 +504,14 @@ bool Rcl::Db::setQuery(const std::string &iqstring)
 	return false;
     }
 
-    // First extract phrases:
+    // First split into (possibly single word) phrases ("this is a phrase"):
     list<string> phrases;
     ConfTree::stringToStrings(qstring, phrases);
     for (list<string>::const_iterator i=phrases.begin();
 	 i != phrases.end();i++) {
 	LOGDEB(("Rcl::Db::setQuery: phrase: '%s'\n", i->c_str()));
     }
+
     list<Xapian::Query> pqueries;
     for (list<string>::const_iterator it = phrases.begin(); 
 	 it != phrases.end(); it++) {
@@ -482,8 +522,16 @@ bool Rcl::Db::setQuery(const std::string &iqstring)
 	LOGDEB(("Splitter term count: %d\n", splitData.terms.size()));
 	switch(splitData.terms.size()) {
 	case 0: continue;// ??
-	case 1:
-	    pqueries.push_back(Xapian::Query(splitData.terms.front()));
+	case 1: {
+	    list<string> exp;  
+	    if (opts & QO_STEM) 
+		exp = stemexpand(ndb, splitData.terms.front(), stemlang);
+	    else
+		exp.push_back(splitData.terms.front());
+	    pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
+					     exp.begin(), 
+					     exp.end()));
+	}
 	    break;
 	default:
 	    LOGDEB(("Pushing phrase: %s\n", splitData.catterms().c_str()));

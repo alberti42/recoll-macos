@@ -311,6 +311,8 @@
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
 </includes>
 <variables>
+    <variable>std::string stemlang;</variable>
+    <variable>bool dostem;</variable>
     <variable>int reslist_current;</variable>
     <variable>int reslist_winfirst;</variable>
 </variables>

@@ -1,7 +1,7 @@
 all:
 	cd lib;make
 	cd index;make
-	cd qtgui;rm -f recoll;make
+	cd qtgui;qmake recoll.pro ; rm -f recoll;make
 clean:
 	cd common;make clean
 	cd index;make clean
