@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.3 2004-12-17 13:01:01 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.4 2004-12-17 15:36:13 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -144,15 +144,17 @@ class wsData {
 bool splitCb(void *cdata, const std::string &term, int pos)
 {
     wsData *data = (wsData*)cdata;
-    cerr << "splitCb: term " << term << endl;
+
+    // cerr << "splitCb: term " << term << endl;
+    //string printable;
+    //transcode(term, printable, "UTF-8", "ISO8859-1");
+    //cerr << "Adding " << printable << endl;
+
     try {
 	// 1 is the value for wdfinc in index_text when called from omindex
 	// TOBEDONE: check what this is used for
 	data->curpos = pos;
 	data->doc.add_posting(term, data->basepos + data->curpos, 1);
-	string printable;
-	transcode(term, printable, "UTF-8", "ISO8859-1");
-	cerr << "Adding " << printable << endl;
     } catch (...) {
 	cerr << "Error occurred during add_posting" << endl;
 	return false;
@@ -202,41 +204,68 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     splitter.text_to_words(doc.abstract);
 
     newdocument.add_term("T" + doc.mimetype);
-    newdocument.add_term("P" + fn);
+    string pathterm  = "P" + fn;
+    newdocument.add_term(pathterm);
 
-#if 0    
-    if (dupes == DUPE_replace) {
+    if (1 /*dupes == DUPE_replace*/) {
 	// If this document has already been indexed, update the existing
 	// entry.
 	try {
-	    Xapian::docid did = db.replace_document(urlterm, newdocument);
+	    Xapian::docid did = ndb->wdb.replace_document(pathterm, 
+							  newdocument);
+#if 0
 	    if (did < updated.size()) {
 		updated[did] = true;
-		cout << "updated." << endl;
+		//cout << "updated." << endl;
 	    } else {
-		cout << "added." << endl;
+		//cout << "added." << endl;
 	    }
+#endif
 	} catch (...) {
 	    // FIXME: is this ever actually needed?
-	    db.add_document(newdocument);
-	    cout << "added (failed re-seek for duplicate)." << endl;
+	    ndb->wdb.add_document(newdocument);
+	    //cout << "added (failed re-seek for duplicate)." << endl;
 	}
-    } else 
-#endif
-	{
+    } else {
+	try {
 	    ndb->wdb.add_document(newdocument);
 	    // cout << "added." << endl;
+	} catch (...) {
+	    cerr << "Got exception while adding doc" << endl;
+	    return false;
 	}
+    }
   return true;
 }
 
 
 bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 {
+    if (pdata == 0)
+	return false;
+    Native *ndb = (Native *)pdata;
+
+    string pathterm  = "P" + filename;
+    if (!ndb->wdb.term_exists(pathterm))
+	return true;
+    Xapian::PostingIterator doc;
+    try {
+	Xapian::PostingIterator did = ndb->wdb.postlist_begin(pathterm);
+	if (did == ndb->wdb.postlist_end(pathterm))
+	    return true;
+	Xapian::Document doc = ndb->wdb.get_document(*did);
+	string data = doc.get_data();
+	//cout << "DOCUMENT EXISTS " << data << endl;
+	const char *cp = strstr(data.c_str(), "mtime=");
+	cp += 6;
+	long mtime = atol(cp);
+	if (mtime >= stp->st_mtime) {
+	    // cerr << "DOCUMENT UP TO DATE" << endl;
+	    return false;
+	} 
+    } catch (...) {
+	return true;
+    }
+
     return true;
-    // TOBEDONE: Check if file has already been indexed, and has changed since
-    // - Make path term, 
-    // - query db: postlist_begin->docid
-    // - fetch doc (get_document(docid)
-    // - check date field, maybe skip
 }
