@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.8 2005-01-26 11:47:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.9 2005-01-26 13:03:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -232,7 +232,6 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     }
     splitter.text_to_words(noacc);
 
-    LOGDEB(("Rcl::Db::add: doc split\n"));
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.text, noacc)) {
 	LOGERR(("Rcl::Db::add: dum_string failed\n"));

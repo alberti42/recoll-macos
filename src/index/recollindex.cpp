@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.5 2005-01-25 14:37:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.6 2005-01-26 13:03:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.5 2005-01-25 14:37:21 dockes 
 #include "csguess.h"
 #include "transcode.h"
 #include "mimehandler.h"
+#include "debuglog.h"
 
 using namespace std;
 
@@ -76,21 +77,17 @@ indexfile(void *cdata, const std::string &fn, const struct stat *stp,
     if (flg == FsTreeWalker::FtwDirEnter || 
 	flg == FsTreeWalker::FtwDirReturn) {
 	me->config->setKeyDir(fn);
-	cout << "indexfile: [" << fn << "]" << endl;
-	cout << "   defcharset: " << me->config->getDefCharset()
-	     << " deflang: " << me->config->getDefLang() << endl;
-
 	return FsTreeWalker::FtwOk;
     }
 
     string mime = mimetype(fn, me->config->getMimeMap());
     if (mime.length() == 0) {
-	cout << "indexfile: " << "(no mime)" << " " << fn << endl;
+	LOGDEB(("indexfile: (no mime) [%s]\n", fn.c_str()));
 	// No mime type ?? pass on.
 	return FsTreeWalker::FtwOk;
     }
 
-    cout << "indexfile: " << mime << " " << fn << endl;
+    LOGDEB(("indexfile: %s [%s]\n", mime.c_str(), fn.c_str()));
 
     // Look for appropriate handler
     MimeHandlerFunc fun = getMimeHandler(mime, me->config->getMimeConf());

@@ -37,7 +37,8 @@ class MyHtmlParser : public HtmlParser {
     bool in_script_tag;
     bool in_style_tag;
     string title, sample, keywords, dump;
-    string charset; // This is the charset our user thinks the doc is in
+    string ocharset; // This is the charset our user thinks the doc was
+    string charset; // This is the charset it was supposedly converted to
     string doccharset; // Set this to value of charset parameter in header
     bool indexing_allowed;
     void process_text(const string &text);
@@ -125,12 +126,18 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 		    map<string, string>::const_iterator k;
 		    if ((k = p.params.find("charset")) != p.params.end()) {
 			doccharset = k->second;
-			if (doccharset != charset)
+			if (doccharset != ocharset) {
+			    LOGDEB1(("Doc specified charset '%s' "
+				     "differs from announced '%s'\n",
+				     doccharset.c_str(), ocharset.c_str()));
 			    throw true;
+			}
 		    }
 		}
 	    }
 	}
+    } else if (tag == "p" || tag == "br") {
+	dump += "\n";
     } else if (tag == "script") {
 	in_script_tag = true;
     } else if (tag == "style") {
@@ -179,14 +186,11 @@ bool textHtmlToDoc(RclConfig *conf, const string &fn,
     } else
 	charset = conf->defcharset;
 
-    LOGDEB(("textHtmlToDoc: charset before parsing: %s\n", 
-	    charset.c_str()));
+    LOGDEB(("textHtmlToDoc: charset before parsing: %s\n", charset.c_str()));
 
     MyHtmlParser pres;
     for (int pass = 0; pass < 2; pass++) {
 	string transcoded;
-	LOGDEB(("textHtmlToDoc: transcode from %s to %s\n", 
-		charset.c_str(), "UTF-8"));
 
 	MyHtmlParser p;
 	// Try transcoding. If it fails, use original text.
@@ -195,10 +199,11 @@ bool textHtmlToDoc(RclConfig *conf, const string &fn,
 		    charset.c_str()));
 	    transcoded = otext;
 	    // We don't know the charset, at all
-	    p.charset = charset = "";
+	    p.ocharset = p.charset = charset = "";
 	} else {
-	    // charset has the putative source charset, transcoded is now
+	    // ocharset has the putative source charset, transcoded is now
 	    // in utf-8
+	    p.ocharset = charset;
 	    p.charset = "utf-8";
 	}
 
@@ -206,10 +211,10 @@ bool textHtmlToDoc(RclConfig *conf, const string &fn,
 	    p.parse_html(transcoded);
 	} catch (bool) {
 	    pres = p;
-	    if (!pres.doccharset.empty() && pres.doccharset != charset) {
+	    if (!pres.doccharset.empty() && 
+		pres.doccharset != pres.ocharset) {
 		LOGDEB(("textHtmlToDoc: charset '%s' doc charset '%s',"
-			"reparse\n", charset.c_str(), 
-			pres.doccharset.c_str()));
+			"reparse\n", charset.c_str(),pres.doccharset.c_str()));
 		charset = pres.doccharset;
 	    } else
 		break;
@@ -219,6 +224,7 @@ bool textHtmlToDoc(RclConfig *conf, const string &fn,
     Rcl::Doc out;
     out.origcharset = charset;
     out.text = pres.dump;
+    //    LOGDEB(("textHtmlToDoc: dump : %s\n", pres.dump.c_str()));
     out.title = pres.title;
     out.keywords = pres.keywords;
     out.abstract = pres.sample;

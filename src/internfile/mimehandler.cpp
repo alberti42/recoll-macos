@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.2 2005-01-26 11:47:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.3 2005-01-26 13:03:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -79,7 +79,6 @@ MimeHandlerFunc getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
 
     // Retrieve handler function according to type
     if (!strcasecmp(toks[0].c_str(), "internal")) {
-	cerr << "Internal Handler" << endl;
 	map<string, MimeHandlerFunc>::const_iterator it = 
 	    ihandlers.find(mtype);
 	if (it == ihandlers.end()) {
