@@ -22,7 +22,11 @@
  * -----END-LICENCE-----
  */
 
-#include <config.h>
+#ifndef lint
+static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.2 2005-01-28 08:50:17 dockes Exp $ ";
+#endif
+
+//#include <config.h>
 
 #include <algorithm>
 using std::find;
@@ -31,7 +35,9 @@ using std::find_if;
 #include <stdio.h>
 #include <ctype.h>
 
-map<string, unsigned int> HtmlParser::named_ents;
+#include "transcode.h"
+
+map<string, string> HtmlParser::named_ents;
 
 inline static bool
 p_alpha(char c)
@@ -81,118 +87,116 @@ p_whitespaceeqgt(char c)
     return isspace(c) || c == '=' || c == '>';
 }
 
+/*
+ * The following array was taken from Estraier. Estraier was
+ * written by Mikio Hirabayashi. 
+ *                Copyright (C) 2003-2004 Mikio Hirabayashi
+ * The version where this comes from 
+ * is covered by the GNU licence, as this file.*/
+static const char *epairs[] = {
+    /* basic symbols */
+    "amp", "", "lt", "<", "gt", ">", "quot", "\"", "apos", "'",
+    /* ISO-8859-1 */
+    "nbsp", "\xc2\xa0", "iexcl", "\xc2\xa1", "cent", "\xc2\xa2",
+    "pound", "\xc2\xa3", "curren", "\xc2\xa4", "yen", "\xc2\xa5",
+    "brvbar", "\xc2\xa6", "sect", "\xc2\xa7", "uml", "\xc2\xa8",
+    "copy", "\xc2\xa9", "ordf", "\xc2\xaa", "laquo", "\xc2\xab",
+    "not", "\xc2\xac", "shy", "\xc2\xad", "reg", "\xc2\xae",
+    "macr", "\xc2\xaf", "deg", "\xc2\xb0", "plusmn", "\xc2\xb1",
+    "sup2", "\xc2\xb2", "sup3", "\xc2\xb3", "acute", "\xc2\xb4",
+    "micro", "\xc2\xb5", "para", "\xc2\xb6", "middot", "\xc2\xb7",
+    "cedil", "\xc2\xb8", "sup1", "\xc2\xb9", "ordm", "\xc2\xba",
+    "raquo", "\xc2\xbb", "frac14", "\xc2\xbc", "frac12", "\xc2\xbd",
+    "frac34", "\xc2\xbe", "iquest", "\xc2\xbf", "Agrave", "\xc3\x80",
+    "Aacute", "\xc3\x81", "Acirc", "\xc3\x82", "Atilde", "\xc3\x83",
+    "Auml", "\xc3\x84", "Aring", "\xc3\x85", "AElig", "\xc3\x86",
+    "Ccedil", "\xc3\x87", "Egrave", "\xc3\x88", "Eacute", "\xc3\x89",
+    "Ecirc", "\xc3\x8a", "Euml", "\xc3\x8b", "Igrave", "\xc3\x8c",
+    "Iacute", "\xc3\x8d", "Icirc", "\xc3\x8e", "Iuml", "\xc3\x8f",
+    "ETH", "\xc3\x90", "Ntilde", "\xc3\x91", "Ograve", "\xc3\x92",
+    "Oacute", "\xc3\x93", "Ocirc", "\xc3\x94", "Otilde", "\xc3\x95",
+    "Ouml", "\xc3\x96", "times", "\xc3\x97", "Oslash", "\xc3\x98",
+    "Ugrave", "\xc3\x99", "Uacute", "\xc3\x9a", "Ucirc", "\xc3\x9b",
+    "Uuml", "\xc3\x9c", "Yacute", "\xc3\x9d", "THORN", "\xc3\x9e",
+    "szlig", "\xc3\x9f", "agrave", "\xc3\xa0", "aacute", "\xc3\xa1",
+    "acirc", "\xc3\xa2", "atilde", "\xc3\xa3", "auml", "\xc3\xa4",
+    "aring", "\xc3\xa5", "aelig", "\xc3\xa6", "ccedil", "\xc3\xa7",
+    "egrave", "\xc3\xa8", "eacute", "\xc3\xa9", "ecirc", "\xc3\xaa",
+    "euml", "\xc3\xab", "igrave", "\xc3\xac", "iacute", "\xc3\xad",
+    "icirc", "\xc3\xae", "iuml", "\xc3\xaf", "eth", "\xc3\xb0",
+    "ntilde", "\xc3\xb1", "ograve", "\xc3\xb2", "oacute", "\xc3\xb3",
+    "ocirc", "\xc3\xb4", "otilde", "\xc3\xb5", "ouml", "\xc3\xb6",
+    "divide", "\xc3\xb7", "oslash", "\xc3\xb8", "ugrave", "\xc3\xb9",
+    "uacute", "\xc3\xba", "ucirc", "\xc3\xbb", "uuml", "\xc3\xbc",
+    "yacute", "\xc3\xbd", "thorn", "\xc3\xbe", "yuml", "\xc3\xbf",
+    /* ISO-10646 */
+    "fnof", "\xc6\x92", "Alpha", "\xce\x91", "Beta", "\xce\x92",
+    "Gamma", "\xce\x93", "Delta", "\xce\x94", "Epsilon", "\xce\x95",
+    "Zeta", "\xce\x96", "Eta", "\xce\x97", "Theta", "\xce\x98",
+    "Iota", "\xce\x99", "Kappa", "\xce\x9a", "Lambda", "\xce\x9b",
+    "Mu", "\xce\x9c", "Nu", "\xce\x9d", "Xi", "\xce\x9e",
+    "Omicron", "\xce\x9f", "Pi", "\xce\xa0", "Rho", "\xce\xa1",
+    "Sigma", "\xce\xa3", "Tau", "\xce\xa4", "Upsilon", "\xce\xa5",
+    "Phi", "\xce\xa6", "Chi", "\xce\xa7", "Psi", "\xce\xa8",
+    "Omega", "\xce\xa9", "alpha", "\xce\xb1", "beta", "\xce\xb2",
+    "gamma", "\xce\xb3", "delta", "\xce\xb4", "epsilon", "\xce\xb5",
+    "zeta", "\xce\xb6", "eta", "\xce\xb7", "theta", "\xce\xb8",
+    "iota", "\xce\xb9", "kappa", "\xce\xba", "lambda", "\xce\xbb",
+    "mu", "\xce\xbc", "nu", "\xce\xbd", "xi", "\xce\xbe",
+    "omicron", "\xce\xbf", "pi", "\xcf\x80", "rho", "\xcf\x81",
+    "sigmaf", "\xcf\x82", "sigma", "\xcf\x83", "tau", "\xcf\x84",
+    "upsilon", "\xcf\x85", "phi", "\xcf\x86", "chi", "\xcf\x87",
+    "psi", "\xcf\x88", "omega", "\xcf\x89", "thetasym", "\xcf\x91",
+    "upsih", "\xcf\x92", "piv", "\xcf\x96", "bull", "\xe2\x80\xa2",
+    "hellip", "\xe2\x80\xa6", "prime", "\xe2\x80\xb2", "Prime", "\xe2\x80\xb3",
+    "oline", "\xe2\x80\xbe", "frasl", "\xe2\x81\x84", "weierp", "\xe2\x84\x98",
+    "image", "\xe2\x84\x91", "real", "\xe2\x84\x9c", "trade", "\xe2\x84\xa2",
+    "alefsym", "\xe2\x84\xb5", "larr", "\xe2\x86\x90", "uarr", "\xe2\x86\x91",
+    "rarr", "\xe2\x86\x92", "darr", "\xe2\x86\x93", "harr", "\xe2\x86\x94",
+    "crarr", "\xe2\x86\xb5", "lArr", "\xe2\x87\x90", "uArr", "\xe2\x87\x91",
+    "rArr", "\xe2\x87\x92", "dArr", "\xe2\x87\x93", "hArr", "\xe2\x87\x94",
+    "forall", "\xe2\x88\x80", "part", "\xe2\x88\x82", "exist", "\xe2\x88\x83",
+    "empty", "\xe2\x88\x85", "nabla", "\xe2\x88\x87", "isin", "\xe2\x88\x88",
+    "notin", "\xe2\x88\x89", "ni", "\xe2\x88\x8b", "prod", "\xe2\x88\x8f",
+    "sum", "\xe2\x88\x91", "minus", "\xe2\x88\x92", "lowast", "\xe2\x88\x97",
+    "radic", "\xe2\x88\x9a", "prop", "\xe2\x88\x9d", "infin", "\xe2\x88\x9e",
+    "ang", "\xe2\x88\xa0", "and", "\xe2\x88\xa7", "or", "\xe2\x88\xa8",
+    "cap", "\xe2\x88\xa9", "cup", "\xe2\x88\xaa", "int", "\xe2\x88\xab",
+    "there4", "\xe2\x88\xb4", "sim", "\xe2\x88\xbc", "cong", "\xe2\x89\x85",
+    "asymp", "\xe2\x89\x88", "ne", "\xe2\x89\xa0", "equiv", "\xe2\x89\xa1",
+    "le", "\xe2\x89\xa4", "ge", "\xe2\x89\xa5", "sub", "\xe2\x8a\x82",
+    "sup", "\xe2\x8a\x83", "nsub", "\xe2\x8a\x84", "sube", "\xe2\x8a\x86",
+    "supe", "\xe2\x8a\x87", "oplus", "\xe2\x8a\x95", "otimes", "\xe2\x8a\x97",
+    "perp", "\xe2\x8a\xa5", "sdot", "\xe2\x8b\x85", "lceil", "\xe2\x8c\x88",
+    "rceil", "\xe2\x8c\x89", "lfloor", "\xe2\x8c\x8a", "rfloor", "\xe2\x8c\x8b",
+    "lang", "\xe2\x8c\xa9", "rang", "\xe2\x8c\xaa", "loz", "\xe2\x97\x8a",
+    "spades", "\xe2\x99\xa0", "clubs", "\xe2\x99\xa3", "hearts", "\xe2\x99\xa5",
+    "diams", "\xe2\x99\xa6", "OElig", "\xc5\x92", "oelig", "\xc5\x93",
+    "Scaron", "\xc5\xa0", "scaron", "\xc5\xa1", "Yuml", "\xc5\xb8",
+    "circ", "\xcb\x86", "tilde", "\xcb\x9c", "ensp", "\xe2\x80\x82",
+    "emsp", "\xe2\x80\x83", "thinsp", "\xe2\x80\x89", "zwnj", "\xe2\x80\x8c",
+    "zwj", "\xe2\x80\x8d", "lrm", "\xe2\x80\x8e", "rlm", "\xe2\x80\x8f",
+    "ndash", "\xe2\x80\x93", "mdash", "\xe2\x80\x94", "lsquo", "\xe2\x80\x98",
+    "rsquo", "\xe2\x80\x99", "sbquo", "\xe2\x80\x9a", "ldquo", "\xe2\x80\x9c",
+    "rdquo", "\xe2\x80\x9d", "bdquo", "\xe2\x80\x9e", "dagger", "\xe2\x80\xa0",
+    "Dagger", "\xe2\x80\xa1", "permil", "\xe2\x80\xb0", "lsaquo", "\xe2\x80\xb9",
+    "rsaquo", "\xe2\x80\xba", "euro", "\xe2\x82\xac",
+    NULL, NULL
+};
+
 HtmlParser::HtmlParser()
 {
-    static struct ent { const char *n; unsigned int v; } ents[] = {
-	{ "quot", 34 },
-	{ "amp", 38 },
-	{ "lt", 60 },
-	{ "gt", 62 },
-	{ "AElig", 198 },
-	{ "Aacute", 193 },
-	{ "Acirc", 194 },
-	{ "Agrave", 192 },
-	{ "Aring", 197 },
-	{ "Atilde", 195 },
-	{ "Auml", 196 },
-	{ "Ccedil", 199 },
-	{ "ETH", 208 },
-	{ "Eacute", 201 },
-	{ "Ecirc", 202 },
-	{ "Egrave", 200 },
-	{ "Euml", 203 },
-	{ "Iacute", 205 },
-	{ "Icirc", 206 },
-	{ "Igrave", 204 },
-	{ "Iuml", 207 },
-	{ "Ntilde", 209 },
-	{ "Oacute", 211 },
-	{ "Ocirc", 212 },
-	{ "Ograve", 210 },
-	{ "Oslash", 216 },
-	{ "Otilde", 213 },
-	{ "Ouml", 214 },
-	{ "THORN", 222 },
-	{ "Uacute", 218 },
-	{ "Ucirc", 219 },
-	{ "Ugrave", 217 },
-	{ "Uuml", 220 },
-	{ "Yacute", 221 },
-	{ "aacute", 225 },
-	{ "acirc", 226 },
-	{ "acute", 180 },
-	{ "aelig", 230 },
-	{ "agrave", 224 },
-	{ "aring", 229 },
-	{ "atilde", 227 },
-	{ "auml", 228 },
-	{ "brvbar", 166 },
-	{ "ccedil", 231 },
-	{ "cedil", 184 },
-	{ "cent", 162 },
-	{ "copy", 169 },
-	{ "curren", 164 },
-	{ "deg", 176 },
-	{ "divide", 247 },
-	{ "eacute", 233 },
-	{ "ecirc", 234 },
-	{ "egrave", 232 },
-	{ "eth", 240 },
-	{ "euml", 235 },
-	{ "frac12", 189 },
-	{ "frac14", 188 },
-	{ "frac34", 190 },
-	{ "iacute", 237 },
-	{ "icirc", 238 },
-	{ "iexcl", 161 },
-	{ "igrave", 236 },
-	{ "iquest", 191 },
-	{ "iuml", 239 },
-	{ "laquo", 171 },
-	{ "macr", 175 },
-	{ "micro", 181 },
-	{ "middot", 183 },
-	{ "nbsp", 160 },
-	{ "not", 172 },
-	{ "ntilde", 241 },
-	{ "oacute", 243 },
-	{ "ocirc", 244 },
-	{ "ograve", 242 },
-	{ "ordf", 170 },
-	{ "ordm", 186 },
-	{ "oslash", 248 },
-	{ "otilde", 245 },
-	{ "ouml", 246 },
-	{ "para", 182 },
-	{ "plusmn", 177 },
-	{ "pound", 163 },
-	{ "raquo", 187 },
-	{ "reg", 174 },
-	{ "sect", 167 },
-	{ "shy", 173 },
-	{ "sup1", 185 },
-	{ "sup2", 178 },
-	{ "sup3", 179 },
-	{ "szlig", 223 },
-	{ "thorn", 254 },
-	{ "times", 215 },
-	{ "uacute", 250 },
-	{ "ucirc", 251 },
-	{ "ugrave", 249 },
-	{ "uml", 168 },
-	{ "uuml", 252 },
-	{ "yacute", 253 },
-	{ "yen", 165 },
-	{ "yuml", 255 },
-// iso8859-1 only for now	{ "OElig", 338 },
-// ditto			{ "oelig", 339 },
-	{ NULL, 0 }
-    };
     if (named_ents.empty()) {
-	struct ent *i = ents;
-	while (i->n) {
-	    named_ents[string(i->n)] = i->v;
-	    ++i;
+	for (int i = 0;;) {
+	    const char *ent;
+	    const char *val;
+	    ent = epairs[i++];
+	    if (ent == 0) 
+		break;
+	    val = epairs[i++];
+	    if (val == 0) 
+		break;
+	    named_ents[string(ent)] = val;
 	}
     }
 }
@@ -200,12 +204,19 @@ HtmlParser::HtmlParser()
 void
 HtmlParser::decode_entities(string &s)
 {
+    // This has no meaning whatsoever if the character encoding is unknown,
+    // so don't do it. If charset known, caller has converted text to utf-8, 
+    // and this is also how we translate entities
+    //    if (charset != "utf-8")
+    //    	return;
+
     // We need a const_iterator version of s.end() - otherwise the
     // find() and find_if() templates don't work...
     string::const_iterator amp = s.begin(), s_end = s.end();
     while ((amp = find(amp, s_end, '&')) != s_end) {
 	unsigned int val = 0;
 	string::const_iterator end, p = amp + 1;
+	string subs;
 	if (p != s_end && *p == '#') {
 	    p++;
 	    if (p != s_end && tolower(*p) == 'x') {
@@ -221,18 +232,31 @@ HtmlParser::decode_entities(string &s)
 	} else {
 	    end = find_if(p, s_end, p_notalnum);
 	    string code = s.substr(p - s.begin(), end - p);
-	    map<string, unsigned int>::const_iterator i;
+	    map<string, string>::const_iterator i;
 	    i = named_ents.find(code);
-	    if (i != named_ents.end()) val = i->second;
+	    if (i != named_ents.end()) 
+		subs = i->second;
 	}
-	if (end < s_end && *end == ';') end++;
+
+	if (end < s_end && *end == ';') 
+	    end++;
+	
 	if (val) {
+	    // The code is the code position for a unicode char. We need
+	    // to translate it to an utf-8 string.
+	    string utf16be;
+	    utf16be += char(val / 256);
+	    utf16be += char(val % 256);
+	    transcode(utf16be, subs, "UTF-16BE", "UTF-8");
+	} 
+
+	if (subs.length() > 0) {
 	    string::size_type amp_pos = amp - s.begin();
-	    s.replace(amp_pos, end - amp, 1u, char(val));
+	    s.replace(amp_pos, end - amp, subs);
 	    s_end = s.end();
 	    // We've modified the string, so the iterators are no longer
 	    // valid...
-	    amp = s.begin() + amp_pos + 1;
+	    amp = s.begin() + amp_pos + subs.length();
 	} else {
 	    amp = end;
 	}

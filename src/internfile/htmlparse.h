@@ -30,7 +30,7 @@ using std::map;
 class HtmlParser {
     protected:
 	void decode_entities(string &s);
-	static map<string, unsigned int> named_ents;
+	static map<string, string> named_ents;
     public:
 	virtual void process_text(const string &/*text*/) { }
 	virtual void opening_tag(const string &/*tag*/,
