@@ -1,0 +1,166 @@
+/* -*- Mode: c++; -*- */
+/*  --------------------------------------------------------------------
+ *  Filename:
+ *    src/mime-inputsource.h
+ *  
+ *  Description:
+ *    The base class of the MIME input source
+ *  --------------------------------------------------------------------
+ *  Copyright 2002-2004 Andreas Aardal Hanssen
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Street #330, Boston, MA 02111-1307, USA.
+ *  --------------------------------------------------------------------
+ */
+#ifndef mime_inputsource_h_included
+#define mime_inputsource_h_included
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <string.h>
+#include <unistd.h>
+
+namespace Binc {
+
+  class MimeInputSource {
+  public:
+    inline MimeInputSource(int fd, unsigned int start = 0);
+    virtual inline ~MimeInputSource(void);
+
+    virtual inline bool fillInputBuffer(void);
+    virtual inline void reset(void);
+
+    inline void seek(unsigned int offset);
+    inline bool getChar(char *c);
+    inline void ungetChar(void);
+    inline int getFileDescriptor(void) const;
+
+    inline unsigned int getOffset(void) const;
+
+  private:
+    int fd;
+    char data[16384];
+    unsigned int offset;
+    unsigned int tail;
+    unsigned int head;
+    unsigned int start;
+    char lastChar;
+  };
+
+  inline MimeInputSource::MimeInputSource(int fd, unsigned int start)
+  {
+    this->fd = fd;
+    this->start = start;
+    offset = 0;
+    tail = 0;
+    head = 0;
+    lastChar = '\0';
+    memset(data, '\0', sizeof(data));
+
+    seek(start);
+  }
+
+  inline MimeInputSource::~MimeInputSource(void)
+  {
+  }
+
+  inline bool MimeInputSource::fillInputBuffer(void)
+  {
+    char raw[4096];
+    ssize_t nbytes = read(fd, raw, sizeof(raw));
+    if (nbytes <= 0) {
+      // FIXME: If ferror(crlffile) we should log this.
+      return false;
+    }
+
+    for (ssize_t i = 0; i < nbytes; ++i) {
+      const char c = raw[i];
+      if (c == '\r') {
+	if (lastChar == '\r') {
+	  data[tail++ & (0x4000-1)] = '\r';
+	  data[tail++ & (0x4000-1)] = '\n';
+	}
+      } else if (c == '\n') {
+	data[tail++ & (0x4000-1)] = '\r';
+	data[tail++ & (0x4000-1)] = '\n';
+      } else {
+	if (lastChar == '\r') {
+	  data[tail++ & (0x4000-1)] = '\r';
+	  data[tail++ & (0x4000-1)] = '\n';
+	}
+
+	data[tail++ & (0x4000-1)] = c;
+      }
+      
+      lastChar = c;
+    }
+
+    return true;
+  }
+
+  inline void MimeInputSource::reset(void)
+  {
+    offset = head = tail = 0;
+    lastChar = '\0';
+
+    if (fd != -1)
+      lseek(fd, 0, SEEK_SET);
+  }
+
+  inline void MimeInputSource::seek(unsigned int seekToOffset)
+  {
+    if (offset > seekToOffset)
+      reset();
+   
+    char c;
+    int n = 0;
+    while (seekToOffset > offset) {
+      if (!getChar(&c))
+	break;
+      ++n;
+    }
+  }
+
+  inline bool MimeInputSource::getChar(char *c)
+  {
+    if (head == tail && !fillInputBuffer())
+      return false;
+
+    *c = data[head++ & (0x4000-1)];
+    ++offset;
+    return true;
+  }
+
+  inline void MimeInputSource::ungetChar()
+  {
+    --head;
+    --offset;
+  }
+
+  inline int MimeInputSource::getFileDescriptor(void) const
+  {
+    return fd;
+  }
+
+  inline unsigned int MimeInputSource::getOffset(void) const
+  {
+    return offset;
+  }
+}
+
+extern Binc::MimeInputSource *mimeSource;
+
+#endif
