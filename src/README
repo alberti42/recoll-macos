@@ -21,7 +21,10 @@ Recoll
 
    Recoll is still in infancy, but it is based on a very strong backend
    (Xapian), and it can actually be useful right now, which is why I release
-   it so early.
+   it so early. You might be interested in using Recoll to index your home
+   directory instead of xapian's Omega, for example, if you do not want to
+   run a web server, or your data is not iso-8859-1. But the query features
+   are very, very, much weaker.
 
    See INSTALL inside the distribution for compiling and installing, very
    much by hand for now, I hope it will become better in the near future.
@@ -31,34 +34,36 @@ Recoll
      * Easy installation. No database daemon, web server or exotic language
        necessary. The idea is that EVERYBODY should index their files because
        it makes life easier.
-     * Indexes text, pdf, html, postscript. Deals with compressed versions of
-       same.
+     * Indexes text, html, pdf (with xpdf's pdftotext),postscript (with
+       ghostscript's pstotext), msword (with antiword), and openoffice files.
+       Deals with compressed versions of same.
      * Support for multiple charsets. Internal processing and storage uses
        Unicode UTF-8.
+     * Stemming performed at query time (can switch stemming language after
+       indexing)
      * An ugly GUI, qt-based, written with qt Designer.
      * An indexer which runs either as a thread inside the GUI or as an
        external, cron'able program.
 
   Things lacking, coming in the not too far future:
 
-     * A more sophisticated query interface: the current one has no boolean
-       capabilities, and performance problems with stemming.
-     * A pretty GUI (see above)
      * Mail folder indexing. It would be quite easy to add for single message
-       folders right now, more complicated for concatenated ones, I intend to
-       do it.
+       folders right now, more complicated for concatenated ones. This is
+       first priority.
+     * A more sophisticated query interface: the current one has no boolean
+       capabilities.
+     * A pretty GUI (see above)
      * An interactive configuration tool. You need to edit files by hand for
        now.
      * Packages, rpm or other. It's all tar files currently.
      * A build system, autoconf et al.
      * Documentation and help.
-     * More filters for other file types (MS, openoffice), this is coming
-       too, this is not hard as it will rely on external packages like the
-       existing filters.
+     * A few more filters for less common file types.
 
   Using recoll
 
-     * Use File->Index to build/rebuild the database.
+     * Use File->Index to build/rebuild the database (what to index is
+       defined in the configuration file, see the install doc).
      * Enter search terms in the upper left text field. There is no query
        language right now, the search only understand probabilistic terms
        (just words...), and double-quote enclosed phrases. Click Search or
@@ -78,7 +83,9 @@ Recoll
 
   Downloads
 
-   Version 0.5 (tar.gz)
+   Current version: 0.6 (tar.gz)
+
+   Older: 0.5
 
   Installation
 
