@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.5 2005-01-25 14:37:21 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.6 2005-01-28 15:25:40 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -26,23 +26,26 @@ namespace Rcl {
  */
 class Doc {
  public:
+    // This fields potentially go into the document data record
     std::string url;
     std::string mimetype;
     std::string mtime;       // Modification time as decimal ascii
     std::string origcharset;
     std::string title;
-    std::string text;
     std::string keywords;
     std::string abstract;
+
+    std::string text;
     void erase() {
 	url.erase();
 	mimetype.erase();
 	mtime.erase();
 	origcharset.erase();
 	title.erase();
-	text.erase();
 	keywords.erase();
 	abstract.erase();
+
+	text.erase();
     }
 };
 
@@ -71,7 +74,9 @@ class Db {
     // Get document at rank i. This is probably vastly inferior to the type
     // of interface in Xapian, but we have to start with something simple
     // to experiment with the GUI
-    bool getDoc(int i, Doc &doc);
+    bool getDoc(int i, Doc &doc, int *percent = 0);
+    // Get results count
+    int getResCnt();
 };
 
 

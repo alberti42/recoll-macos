@@ -23,13 +23,13 @@
     <property name="caption">
         <string>recoll</string>
     </property>
-    <hbox>
+    <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout3</cstring>
+                <cstring>layout10</cstring>
             </property>
             <vbox>
                 <property name="name">
@@ -37,7 +37,7 @@
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout2</cstring>
+                        <cstring>layout8</cstring>
                     </property>
                     <hbox>
                         <property name="name">
@@ -62,6 +62,22 @@
                                 <string>Search</string>
                             </property>
                         </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>listPrevPb</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Previous page</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>listNextPB</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Next page</string>
+                            </property>
+                        </widget>
                         <spacer>
                             <property name="name">
                                 <cstring>spacer1</cstring>
@@ -74,7 +90,7 @@
                             </property>
                             <property name="sizeHint">
                                 <size>
-                                    <width>329</width>
+                                    <width>346</width>
                                     <height>20</height>
                                 </size>
                             </property>
@@ -83,21 +99,7 @@
                 </widget>
                 <widget class="QSplitter">
                     <property name="name">
-                        <cstring>splitter9</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>7</hsizetype>
-                            <vsizetype>7</vsizetype>
-                            <horstretch>1</horstretch>
-                            <verstretch>1</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>0</width>
-                            <height>0</height>
-                        </size>
+                        <cstring>splitter6</cstring>
                     </property>
                     <property name="orientation">
                         <enum>Horizontal</enum>
@@ -108,8 +110,8 @@
                         </property>
                         <property name="sizePolicy">
                             <sizepolicy>
-                                <hsizetype>7</hsizetype>
-                                <vsizetype>7</vsizetype>
+                                <hsizetype>5</hsizetype>
+                                <vsizetype>5</vsizetype>
                                 <horstretch>2</horstretch>
                                 <verstretch>0</verstretch>
                             </sizepolicy>
@@ -123,13 +125,13 @@
                     </widget>
                     <widget class="QSplitter">
                         <property name="name">
-                            <cstring>splitter8</cstring>
+                            <cstring>splitter5</cstring>
                         </property>
                         <property name="sizePolicy">
                             <sizepolicy>
-                                <hsizetype>7</hsizetype>
-                                <vsizetype>7</vsizetype>
-                                <horstretch>3</horstretch>
+                                <hsizetype>5</hsizetype>
+                                <vsizetype>5</vsizetype>
+                                <horstretch>5</horstretch>
                                 <verstretch>0</verstretch>
                             </sizepolicy>
                         </property>
@@ -145,7 +147,7 @@
                                     <hsizetype>7</hsizetype>
                                     <vsizetype>7</vsizetype>
                                     <horstretch>0</horstretch>
-                                    <verstretch>2</verstretch>
+                                    <verstretch>4</verstretch>
                                 </sizepolicy>
                             </property>
                             <property name="textFormat">
@@ -178,7 +180,7 @@
                 </widget>
             </vbox>
         </widget>
-    </hbox>
+    </vbox>
 </widget>
 <menubar>
     <property name="name">
@@ -190,10 +192,7 @@
         <action name="fileExitAction"/>
     </item>
     <item text="&amp;Help" name="helpMenu">
-        <action name="helpContentsAction"/>
-        <action name="helpIndexAction"/>
         <separator/>
-        <action name="helpAboutAction"/>
     </item>
 </menubar>
 <toolbars>
@@ -213,48 +212,6 @@
             <string></string>
         </property>
     </action>
-    <action>
-        <property name="name">
-            <cstring>helpContentsAction</cstring>
-        </property>
-        <property name="text">
-            <string>Contents</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Contents...</string>
-        </property>
-        <property name="accel">
-            <string></string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>helpIndexAction</cstring>
-        </property>
-        <property name="text">
-            <string>Index</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;Index...</string>
-        </property>
-        <property name="accel">
-            <string></string>
-        </property>
-    </action>
-    <action>
-        <property name="name">
-            <cstring>helpAboutAction</cstring>
-        </property>
-        <property name="text">
-            <string>About</string>
-        </property>
-        <property name="menuText">
-            <string>&amp;About</string>
-        </property>
-        <property name="accel">
-            <string></string>
-        </property>
-    </action>
 </actions>
 <connections>
     <connection>
@@ -262,24 +219,6 @@
         <signal>activated()</signal>
         <receiver>RecollMain</receiver>
         <slot>fileExit()</slot>
-    </connection>
-    <connection>
-        <sender>helpIndexAction</sender>
-        <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>helpIndex()</slot>
-    </connection>
-    <connection>
-        <sender>helpContentsAction</sender>
-        <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>helpContents()</slot>
-    </connection>
-    <connection>
-        <sender>helpAboutAction</sender>
-        <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>helpAbout()</slot>
     </connection>
     <connection>
         <sender>resTextEdit</sender>
@@ -305,18 +244,33 @@
         <receiver>RecollMain</receiver>
         <slot>Search_clicked()</slot>
     </connection>
+    <connection>
+        <sender>listPrevPb</sender>
+        <signal>clicked()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>listPrevPB_clicked()</slot>
+    </connection>
+    <connection>
+        <sender>listNextPB</sender>
+        <signal>clicked()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>listNextPB_clicked()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
 </includes>
+<variables>
+    <variable>int reslist_current;</variable>
+    <variable>int reslist_winfirst;</variable>
+</variables>
 <slots>
     <slot>fileExit()</slot>
-    <slot>helpIndex()</slot>
-    <slot>helpContents()</slot>
-    <slot>helpAbout()</slot>
     <slot>resTextEdit_clicked( int par, int car )</slot>
     <slot>queryText_returnPressed()</slot>
     <slot>Search_clicked()</slot>
+    <slot>listPrevPB_clicked()</slot>
+    <slot>listNextPB_clicked()</slot>
 </slots>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>

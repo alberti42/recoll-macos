@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.11 2005-01-28 09:37:37 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.12 2005-01-28 15:25:40 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -32,8 +32,14 @@ class Native {
     // Querying
     Xapian::Database db;
     Xapian::Query query;
-    Native() : isopen(false), iswritable(false) {}
+    Xapian::Enquire *enquire;
+    Xapian::MSet mset;
 
+    Native() : isopen(false), iswritable(false), enquire(0) {
+    }
+    ~Native() {
+	delete enquire;
+    }
 };
 
 Rcl::Db::Db() 
@@ -185,6 +191,7 @@ static bool splitCb(void *cdata, const std::string &term, int pos)
 // Unaccent and lowercase data: use unac 
 // for accents, and do it by hand for upper / lower. Note lowercasing is
 // only for ascii letters anyway, so it's just A-Z -> a-z
+// Removing crlfs is so that we can use the text in the document data fields.
 bool dumb_string(const string &in, string &out)
 {
     string inter;
@@ -193,10 +200,14 @@ bool dumb_string(const string &in, string &out)
 	return false;
     out.reserve(inter.length());
     for (unsigned int i = 0; i < inter.length(); i++) {
-	if (inter[i] >= 'A' && inter[i] <= 'Z')
+	if (inter[i] >= 'A' && inter[i] <= 'Z') {
 	    out += inter[i] + 'a' - 'A';
-	else
-	    out += inter[i];
+	} else {
+	    if (inter[i] == '\n' || inter[i] == '\r')
+		out += ' ';
+	    else
+		out += inter[i];
+	}
     }
     return true;
 }
@@ -209,19 +220,6 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     Native *ndb = (Native *)pdata;
 
     Xapian::Document newdocument;
-
-    // Document data record. omindex has the following nl separated fields:
-    // - url
-    // - sample
-    // - caption (title limited to 100 chars)
-    // - mime type 
-    string record = "url=file:/" + fn;
-    record += "\nmtime=" + doc.mtime;
-    record += "\nsample=";
-    record += "\ncaption=" + doc.title;
-    record += "\nmtype=" + doc.mimetype;
-    record += "\n";
-    newdocument.set_data(record);
 
     wsData splitData(newdocument);
 
@@ -260,6 +258,22 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     newdocument.add_term(pathterm);
     const char *fnc = fn.c_str();
 
+    // Document data record. omindex has the following nl separated fields:
+    // - url
+    // - sample
+    // - caption (title limited to 100 chars)
+    // - mime type 
+    string record = "url=file:/" + fn;
+    record += "\nmtype=" + doc.mimetype;
+    record += "\nmtime=" + doc.mtime;
+    record += "\norigcharset=" + doc.origcharset;
+    record += "\ncaption=" + doc.title;
+    record += "\nkeywords=" + doc.keywords;
+    record += "\nabstract=" + doc.abstract;
+    record += "\n";
+    LOGDEB(("Newdocument data: %s\n", record.c_str()));
+    newdocument.set_data(record);
+
     // If this document has already been indexed, update the existing
     // entry.
     try {
@@ -268,8 +282,8 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
 #endif
 	    ndb->wdb.replace_document(pathterm, newdocument);
 #if 0
-	if (did < updated.size()) {
-	    updated[did] = true;
+	if (did < ndb->updated.size()) {
+	    ndb->updated[did] = true;
 	    LOGDEB(("%s updated\n", fnc));
 	} else {
 	    LOGDEB(("%s added\n", fnc));
@@ -299,6 +313,9 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 	if (did == ndb->wdb.postlist_end(pathterm))
 	    return true;
 	Xapian::Document doc = ndb->wdb.get_document(*did);
+#if 0
+	ndb->updated[*did] = true;
+#endif
 	string data = doc.get_data();
 	//cerr << "DOCUMENT EXISTS " << data << endl;
 	const char *cp = strstr(data.c_str(), "mtime=");
@@ -332,6 +349,7 @@ static bool splitQCb(void *cdata, const std::string &term, int )
 
 bool Rcl::Db::setQuery(const std::string &querystring)
 {
+    LOGDEB(("Rcl::Db::setQuery: %s\n", querystring.c_str()));
     wsQData splitData;
     TextSplit splitter(splitQCb, &splitData);
 
@@ -345,32 +363,64 @@ bool Rcl::Db::setQuery(const std::string &querystring)
 
     ndb->query = Xapian::Query(Xapian::Query::OP_OR, splitData.terms.begin(), 
 			       splitData.terms.end());
-
+    delete ndb->enquire;
+    ndb->enquire = new Xapian::Enquire(ndb->db);
+    ndb->enquire->set_query(ndb->query);
+    ndb->mset = Xapian::MSet();
     return true;
 }
-
-bool Rcl::Db::getDoc(int i, Doc &doc)
+int Rcl::Db::getResCnt()
 {
-    LOGDEB1(("Rcl::Db::getDoc: %d\n", i));
     Native *ndb = (Native *)pdata;
+    if (!ndb || !ndb->enquire) {
+	LOGERR(("Rcl::Db::getResCnt: no query opened\n"));
+	return -1;
+    }
+    if (ndb->mset.size() <= 0)
+	return -1;
+    return ndb->mset.get_matches_lower_bound();
+}
 
-    Xapian::Enquire enquire(ndb->db);
-    enquire.set_query(ndb->query);
-    Xapian::MSet matches = enquire.get_mset(i, 1);
-
-    LOGDEB1(("Rcl::Db::getDoc: Query '%s' Estimated results: %d\n",
-	     ndb->query.get_description(), matches.get_matches_lower_bound()));
-
-    if (matches.empty())
+bool Rcl::Db::getDoc(int i, Doc &doc, int *percent)
+{
+    LOGDEB(("Rcl::Db::getDoc: %d\n", i));
+    Native *ndb = (Native *)pdata;
+    if (!ndb || !ndb->enquire) {
+	LOGERR(("Rcl::Db::getDoc: no query opened\n"));
 	return false;
+    }
 
-    Xapian::Document xdoc = matches.begin().get_document();
+    int first = ndb->mset.get_firstitem();
+    int last = first + ndb->mset.size() -1;
+
+    if (!(i >= first && i <= last)) {
+	LOGDEB1(("Fetching for first %d, count 10\n", i));
+	ndb->mset = ndb->enquire->get_mset(i, 10);
+	if (ndb->mset.empty())
+	    return false;
+	first = ndb->mset.get_firstitem();
+	last = first + ndb->mset.size() -1;
+    }
+
+    LOGDEB1(("Rcl::Db::getDoc: Qry '%s' win [%d-%d] Estimated results: %d",
+	     ndb->query.get_description().c_str(), 
+	     first, last,
+	     ndb->mset.get_matches_lower_bound()));
+
+    Xapian::Document xdoc = ndb->mset[i-first].get_document();
+    if (percent)
+	*percent = ndb->mset.convert_to_percent(ndb->mset[i-first]);
 
     // Parse xapian document's data and populate doc fields
     string data = xdoc.get_data();
+    LOGDEB1(("Rcl::Db::getDoc: data: %s\n", data.c_str()));
     ConfSimple parms(&data);
+    parms.get(string("url"), doc.url);
     parms.get(string("mtype"), doc.mimetype);
     parms.get(string("mtime"), doc.mtime);
-    parms.get(string("url"), doc.url);
+    parms.get(string("origcharset"), doc.origcharset);
+    parms.get(string("caption"), doc.title);
+    parms.get(string("keywords"), doc.keywords);
+    parms.get(string("abstract"), doc.abstract);
     return true;
 }

@@ -108,7 +108,6 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	    break;
 	case 'm':
 	    if (tag == "meta") {
-		    LOGDEB(("Found META\n"));
 		map<string, string>::const_iterator i, j;
 		if ((i = p.find("content")) != p.end()) {
 		    if ((j = p.find("name")) != p.end()) {
@@ -135,7 +134,6 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 			    }
 			}
 		    } else if ((j = p.find("http-equiv")) != p.end()) {
-			LOGDEB(("Found http-equiv\n"));
 			string hequiv = j->second;
 			lowercase_term(hequiv);
 			if (hequiv == "content-type") {
