@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.1 2004-12-17 15:36:13 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.2 2005-01-24 13:17:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_UNACPP
@@ -26,6 +26,7 @@ bool unac_cpp(const std::string &in, std::string &out, const char *encoding)
 	return false;
     }
     out.assign(cout, out_len);
+    free(cout);
     return true;
 }
 

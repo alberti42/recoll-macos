@@ -1,13 +1,13 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.2 2004-12-17 13:01:01 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.3 2005-01-24 13:17:58 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
 /** 
  * Split text into words. 
  * See comments at top of .cpp for more explanations.
- * This used a callback function. It could be done with an iterator instead,
+ * This uses a callback function. It could be done with an iterator instead,
  * but 'ts much simpler this way...
  */
 class TextSplit {

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.5 2004-12-17 15:50:48 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.6 2005-01-24 13:17:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -14,18 +14,23 @@ using namespace std;
 #include "textsplit.h"
 #include "transcode.h"
 #include "unacpp.h"
+#include "conftree.h"
 
 #include "xapian.h"
 
-// Data for a xapian database
+// Data for a xapian database. There could actually be 2 different ones for
+// indexing or query as there is not much in common.
 class Native {
  public:
     bool isopen;
     bool iswritable;
-    class Xapian::Database db;
-    class Xapian::WritableDatabase wdb;
+    // Indexing
+    Xapian::WritableDatabase wdb;
     vector<bool> updated;
 
+    // Querying
+    Xapian::Database db;
+    Xapian::Query query;
     Native() : isopen(false), iswritable(false) {}
 
 };
@@ -37,6 +42,7 @@ Rcl::Db::Db()
 
 Rcl::Db::~Db()
 {
+    cerr << "Rcl::Db::~Db" << endl;
     if (pdata == 0)
 	return;
     Native *ndb = (Native *)pdata;
@@ -45,6 +51,7 @@ Rcl::Db::~Db()
     try {
 	// There is nothing to do for an ro db.
 	if (ndb->isopen == false || ndb->iswritable == false) {
+	    cerr << "Deleting native database" << endl;
 	    delete ndb;
 	    return;
 	}
@@ -82,8 +89,8 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
 	case DbRO:
 	default:
 	    ndb->iswritable = false;
-	    cerr << "Not ready to open RO yet" << endl;
-	    exit(1);
+	    ndb->db = Xapian::Auto::open(dir, Xapian::DB_OPEN);
+	    break;
 	}
 	ndb->isopen = true;
 	return true;
@@ -142,7 +149,8 @@ class wsData {
     {}
 };
 
-bool splitCb(void *cdata, const std::string &term, int pos)
+// Callback for the document to word splitting class during indexation
+static bool splitCb(void *cdata, const std::string &term, int pos)
 {
     wsData *data = (wsData*)cdata;
 
@@ -172,7 +180,7 @@ bool dumb_string(const string &in, string &out)
     out.erase();
     if (!unac_cpp(in, inter))
 	return false;
-    out.resize(inter.length());
+    out.reserve(inter.length());
     for (unsigned int i = 0; i < inter.length(); i++) {
 	if (inter[i] >= 'A' && inter[i] <= 'Z')
 	    out += inter[i] + 'a' - 'A';
@@ -239,8 +247,10 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
 	// If this document has already been indexed, update the existing
 	// entry.
 	try {
-	    Xapian::docid did = ndb->wdb.replace_document(pathterm, 
-							  newdocument);
+#if 0
+	    Xapian::docid did = 
+#endif
+		ndb->wdb.replace_document(pathterm, newdocument);
 #if 0
 	    if (did < updated.size()) {
 		updated[did] = true;
@@ -295,5 +305,75 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 	return true;
     }
 
+    return true;
+}
+
+#include <vector>
+
+class wsQData {
+ public:
+    vector<string> terms;
+};
+
+// Callback for the document to word splitting class during indexation
+static bool splitQCb(void *cdata, const std::string &term, int )
+{
+    wsQData *data = (wsQData*)cdata;
+
+    cerr << "splitQCb: term '" << term << "'" << endl;
+    cerr << "splitQCb: term length: " << term.length() <<  endl;
+    //string printable;
+    //transcode(term, printable, "UTF-8", "ISO8859-1");
+    //cerr << "Adding " << printable << endl;
+
+    data->terms.push_back(term);
+    return true;
+}
+
+bool Rcl::Db::setQuery(const std::string &querystring)
+{
+    wsQData splitData;
+    TextSplit splitter(splitQCb, &splitData);
+
+    string noacc;
+    if (!dumb_string(querystring, noacc)) {
+	return false;
+    }
+    //    noacc = querystring;
+    splitter.text_to_words(noacc);
+
+    Native *ndb = (Native *)pdata;
+
+    //        splitData.terms.resize(0);
+    //        splitData.terms.push_back(string("le"));
+    ndb->query = Xapian::Query(Xapian::Query::OP_OR, splitData.terms.begin(), 
+			       splitData.terms.end());
+
+    return true;
+}
+
+bool Rcl::Db::getDoc(int i, Doc &doc)
+{
+    // cerr << "Rcl::Db::getDoc: " << i << endl;
+    Native *ndb = (Native *)pdata;
+
+    Xapian::Enquire enquire(ndb->db);
+    enquire.set_query(ndb->query);
+    Xapian::MSet matches = enquire.get_mset(i, 1);
+
+    // cerr << "Query `" << ndb->query.get_description() << "'" <<
+    // "Estimated results: " << matches.get_matches_lower_bound() << endl;
+
+    if (matches.empty())
+	return false;
+
+    Xapian::Document xdoc = matches.begin().get_document();
+
+    // Parse xapian document's data and populate doc fields
+    string data = xdoc.get_data();
+    ConfSimple parms(&data);
+    parms.get(string("mtype"), doc.mimetype);
+    parms.get(string("mtime"), doc.mtime);
+    parms.get(string("url"), doc.url);
     return true;
 }

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.2 2004-12-15 15:00:36 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.3 2005-01-24 13:17:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -54,7 +54,7 @@ RclConfig::RclConfig()
 	cerr << "No mime conf file" << endl;
 	return;
     }
-    mimeconf->list();
+    // mimeconf->list();
     m_ok = true;
     return;
 }

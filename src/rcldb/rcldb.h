@@ -1,8 +1,21 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.3 2004-12-17 13:01:01 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.4 2005-01-24 13:17:58 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+
+// rcldb defines an interface for a 'real' text database. The current 
+// implementation uses xapian only, and xapian-related code is in rcldb.cpp
+// If support was added for other backend, the xapian code would be moved in 
+// rclxapian.cpp, another file would be created for the new backend, and the
+// configuration/compile/link code would be adjusted to allow choosing. There 
+// is no plan for supporting multiple different backends.
+// 
+// In no case does this try to implement a useful virtualized text-db interface
+// The main goal is simplicity and good matching to usage inside the recoll
+// user interface. In other words, this is not exhaustive or well-designed or 
+// reusable.
+
 
 struct stat;
 
@@ -13,6 +26,7 @@ namespace Rcl {
  */
 class Doc {
  public:
+    string url;
     string mimetype;
     string mtime;       // Modification time as decimal ascii
     string origcharset;
@@ -20,6 +34,16 @@ class Doc {
     string text;
     string keywords;
     string abstract;
+    void erase() {
+	url.erase();
+	mimetype.erase();
+	mtime.erase();
+	origcharset.erase();
+	title.erase();
+	text.erase();
+	keywords.erase();
+	abstract.erase();
+    }
 };
 
 /**
@@ -27,14 +51,27 @@ class Doc {
  */
 class Db {
     void *pdata;
+    Doc curdoc;
  public:
     Db();
     ~Db();
     enum OpenMode {DbRO, DbUpd, DbTrunc};
     bool open(const std::string &dbdir, OpenMode mode);
     bool close();
+
+    // Update-related functions
     bool add(const string &filename, const Doc &doc);
     bool needUpdate(const string &filename, const struct stat *stp);
+
+    // Query-related functions
+
+    // Parse query string and initialize query
+    bool setQuery(const std::string &q);
+
+    // Get document at rank i. This is probably vastly inferior to the type
+    // of interface in Xapian, but we have to start with something simple
+    // to experiment with the GUI
+    bool getDoc(int i, Doc &doc);
 };
 
 
