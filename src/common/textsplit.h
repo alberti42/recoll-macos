@@ -1,8 +1,11 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.5 2005-02-08 09:34:46 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.6 2005-02-08 10:56:13 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+#ifndef NO_NAMESPACES
+using std::string;
+#endif
 
 // Function class whose called for every detected word
 class TextSplitCB {
@@ -25,8 +28,9 @@ class TextSplit {
     bool fq;        // Are we splitting for query or index ?
     TextSplitCB *cb;
     int maxWordLength;
-    bool emitterm(bool isspan, std::string &term, int pos, bool doerase, 
-		  int bs, int be);
+    bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
+    bool doemit(string &word, int &wordpos, string &span, int spanpos,
+		bool spanerase, int bp);
  public:
     /**
      * Constructor: just store callback and client data

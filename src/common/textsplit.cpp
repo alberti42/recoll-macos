@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.6 2005-02-08 09:34:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.7 2005-02-08 10:56:13 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -65,12 +65,11 @@ static void setcharclasses()
 
 // Do some cleanup (the kind which is simpler to do here than in the main loop,
 // then send term to our client.
-bool TextSplit::emitterm(bool isspan, string &w, int pos, bool doerase,
+bool TextSplit::emitterm(bool isspan, string &w, int pos, 
 			 int btstart, int btend)
 {
     LOGDEB2(("TextSplit::emitterm: '%s' pos %d\n", w.c_str(), pos));
-    if (fq && !isspan)
-	return true;
+
     if (!cb)
 	return false;
 
@@ -113,10 +112,29 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos, bool doerase,
     }
     if (w.length() > 0 && w.length() < (unsigned)maxWordLength) {
 	bool ret = cb->takeword(w, pos, btstart, btend);
-	if (doerase)
-	    w.erase();
 	return ret;
     }
+    return true;
+}
+
+bool TextSplit::doemit(string &word, int &wordpos, string &span, int spanpos,
+		       bool spanerase, int bp)
+{
+    // When splitting for query, we only emit final spans
+    if (fq && !spanerase) {
+	wordpos++;
+	word.erase();
+	return true;
+    }
+    if (!emitterm(true, span, spanpos, bp-span.length(), bp))
+	return false;
+    if (word.length() != span.length() && !fq)
+	if (!emitterm(false, word, wordpos, bp-word.length(), bp))
+	    return false;
+    wordpos++;
+    if (spanerase)
+	span.erase();
+    word.erase();
     return true;
 }
 
@@ -143,11 +161,7 @@ bool TextSplit::text_to_words(const string &in)
 	case SPACE:
 	SPACE:
 	    if (word.length()) {
-		if (span.length() != word.length()) {
-		    if (!emitterm(true, span, spanpos, true, i-span.length(), i)) 
-			return false;
-		}
-		if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
+		if (!doemit(word, wordpos, span, spanpos, true, i))
 		    return false;
 		number = false;
 	    }
@@ -163,11 +177,7 @@ bool TextSplit::text_to_words(const string &in)
 		    span += c;
 		}
 	    } else {
-		if (span.length() != word.length()) {
-		    if (!emitterm(true, span, spanpos, false, i-span.length(), i))
-			return false;
-		}
-		if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
+		if (!doemit(word, wordpos, span, spanpos, false, i))
 		    return false;
 		number = false;
 		span += c;
@@ -175,11 +185,7 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 	case '@':
 	    if (word.length()) {
-		if (span.length() != word.length()) {
-		    if (!emitterm(true, span, spanpos, false, i-span.length(), i))
-			return false;
-		}
-		if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
+		if (!doemit(word, wordpos, span, spanpos, false, i))
 		    return false;
 		number = false;
 	    } else
@@ -188,11 +194,7 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 	case '\'':
 	    if (word.length()) {
-		if (span.length() != word.length()) {
-		    if (!emitterm(true, span, spanpos, false, i-span.length(), i))
-			return false;
-		}
-		if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
+		if (!doemit(word, wordpos, span, spanpos, false, i))
 		    return false;
 		number = false;
 		span += c;
@@ -202,8 +204,9 @@ bool TextSplit::text_to_words(const string &in)
 	    if (number) {
 		word += c;
 	    } else {
+		//cerr<<"Got . span: '"<<span<<"' word: '"<<word<<"'"<<endl;
 		if (word.length()) {
-		    if (!emitterm(false, word, wordpos++, true, i-word.length(), i))
+		    if (!doemit(word, wordpos, span, spanpos, false, i))
 			return false;
 		    number = false;
 		} else 
@@ -249,10 +252,8 @@ bool TextSplit::text_to_words(const string &in)
 	}
     }
     if (word.length()) {
-	if (span.length() != word.length())
-	    if (!emitterm(true, span, spanpos, true, i-span.length(), i))
-		return false;
-	return emitterm(false, word, wordpos, true, i-word.length(), i);
+	if (!doemit(word, wordpos, span, spanpos, true, i))
+	    return false;
     }
     return true;
 }
@@ -282,10 +283,12 @@ class mySplitterCB : public TextSplitCB {
 };
 
 static string teststring = 
+    "le ta " 
     "jfd@okyz.com "
     "Ceci. Est;Oui 1.24 n@d @net .net t@v@c c# c++ -10 o'brien l'ami "
     "a 134 +134 -14 -1.5 +1.5 1.54e10 a "
     "@^#$(#$(*) "
+    "192.168.4.1 "
     "one\n\rtwo\nthree-\nfour "
     "[olala][ululu] "
     "'o'brien' "						
@@ -297,14 +300,14 @@ int main(int argc, char **argv)
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     mySplitterCB cb;
-    TextSplit splitter(&cb);
+    TextSplit splitter(&cb, true);
     if (argc == 2) {
 	string data;
 	if (!file_to_string(argv[1], data)) 
 	    exit(1);
 	splitter.text_to_words(data);
     } else {
-	cout << teststring << endl;  
+	cout << endl << teststring << endl << endl;  
 	splitter.text_to_words(teststring);
     }
     

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.20 2005-02-08 09:34:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.21 2005-02-08 10:56:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -438,33 +438,62 @@ bool Rcl::Db::purge()
 class wsQData : public TextSplitCB {
  public:
     vector<string> terms;
-
+    string catterms() {
+	string s;
+	for (unsigned int i=0;i<terms.size();i++) {
+	    s += "[" + terms[i] + "] ";
+	}
+	return s;
+    }
     bool takeword(const std::string &term, int , int, int) {
+	LOGDEB(("Takeword: %s\n", term.c_str()));
 	terms.push_back(term);
 	return true;
     }
 };
 
 
-bool Rcl::Db::setQuery(const std::string &querystring)
+bool Rcl::Db::setQuery(const std::string &iqstring)
 {
-    LOGDEB(("Rcl::Db::setQuery: %s\n", querystring.c_str()));
+    LOGDEB(("Rcl::Db::setQuery: %s\n", iqstring.c_str()));
     Native *ndb = (Native *)pdata;
     if (!ndb)
 	return false;
 
-    wsQData splitData;
-    TextSplit splitter(&splitData, true);
-
-    string noacc;
-    if (!dumb_string(querystring, noacc)) {
+    string qstring;;
+    if (!dumb_string(iqstring, qstring)) {
 	return false;
     }
-    splitter.text_to_words(noacc);
 
+    // First extract phrases:
+    list<string> phrases;
+    ConfTree::stringToStrings(qstring, phrases);
+    for (list<string>::const_iterator i=phrases.begin();
+	 i != phrases.end();i++) {
+	LOGDEB(("Rcl::Db::setQuery: phrase: '%s'\n", i->c_str()));
+    }
+    list<Xapian::Query> pqueries;
+    for (list<string>::const_iterator it = phrases.begin(); 
+	 it != phrases.end(); it++) {
 
-    ndb->query = Xapian::Query(Xapian::Query::OP_OR, splitData.terms.begin(), 
-			       splitData.terms.end());
+	wsQData splitData;
+	TextSplit splitter(&splitData, true);
+	splitter.text_to_words(*it);
+	LOGDEB(("Splitter term count: %d\n", splitData.terms.size()));
+	switch(splitData.terms.size()) {
+	case 0: continue;// ??
+	case 1:
+	    pqueries.push_back(Xapian::Query(splitData.terms.front()));
+	    break;
+	default:
+	    LOGDEB(("Pushing phrase: %s\n", splitData.catterms().c_str()));
+	    pqueries.push_back(Xapian::Query(Xapian::Query::OP_PHRASE,
+					     splitData.terms.begin(),
+					     splitData.terms.end()));
+	}
+    }
+    ndb->query = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(), 
+			       pqueries.end());
     delete ndb->enquire;
     ndb->enquire = new Xapian::Enquire(ndb->db);
     ndb->enquire->set_query(ndb->query);
