@@ -1,24 +1,37 @@
-# Processing for the different mime types. There are different sections for
-# decompression, 'interning' for indexing and preview, and external viewers
+# @(#$Id: mimeconf,v 1.2 2005-02-04 09:30:44 dockes Exp $  (C) 2004 J.F.Dockes
 
-## These types need a first pass to create a temp file to work with. We use
-# a script because uncompress utilities usually work in place, which is not
-# suitable. The %t parameter will be changed to the name of a temporary
-# directory by recoll. %f is the input file. rcluncomp will output the new
-# file name on stdout, and you should do the same if you write another
-# script (have a look at rcluncomp then).
+# Recoll : associations of mime types to processing filters.
+# There are different sections for decompression, 'interning' for indexing
+# and preview, and external viewers
+
+## 
+# Decompression: these types need a first pass to create a temp file to
+# work with. We use a script because uncompress utilities usually work in
+# place, which is not suitable. 
+#
+# The %t parameter will be substituted to the name of a temporary directory
+# by recoll. This directory is guaranteed empty when calling the filter
+#
+# The %f parameter will be substituted with the input file. 
+#
+# The script (ie: rcluncomp) must output the uncompressed file name on
+# stdout. 
 application/x-gzip  =  uncompress rcluncomp gunzip %f %t
 application/x-gzip  =  uncompress rcluncomp gunzip %f %t
 application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 
-## Indexing and internal preview
+## 
+# Filters for indexing and internal preview.
+# The external (exec) filters  output the document in simple html format,
+# have a look at the scripts.
 [index]
 text/plain = internal 
 text/html  = internal 
 application/pdf = exec rclpdf
 application/postscript = exec rclps
 
-## External viewers
+## 
+# External viewers, launched when you double-click a result entry
 [view]
 text/plain = xemacs %f
 text/html = firefox -a firefox -remote "openFile(%u)"

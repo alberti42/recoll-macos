@@ -1,4 +1,6 @@
+# @(#$Id: mimemap,v 1.2 2005-02-04 09:30:44 dockes Exp $  (C) 2004 J.F.Dockes
 
+# Recoll: associations of file name extensions to mime types
 .txt = text/plain
 .text = text/plain
 .d    = text/plain
@@ -19,3 +21,4 @@
 .bz2 = application/x-bzip2
 
 [FILE]
+# This section for future non suffix-based extension (ie detect mail folders)
