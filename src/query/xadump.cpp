@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.2 2004-12-17 15:50:48 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.3 2005-01-25 14:37:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <strings.h>
@@ -17,7 +17,13 @@ using namespace std;
 static string thisprog;
 
 static string usage =
-    " -d <dbdir> -e <output encoding>"
+    " -d <dbdir> -e <output encoding>\n"
+    " -i docid -D : get document data for docid\n"
+    " -t term -E  : term existence test\n"
+    " -t term -F  : retrieve term frequency data\n"
+    " -t term -P  : retrieve postings for term\n"
+    " -i docid -T : term list for doc docid\n"
+    " -T          : list all terms\n"
     "  \n\n"
     ;
 
@@ -127,7 +133,6 @@ int main(int argc, char **argv)
 	    cout << "Exists " << aterm << " : " <<
 		db.term_exists(aterm) << endl;
 	} 
-
 
 
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: qtry.cpp,v 1.1 2005-01-24 13:17:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: qtry.cpp,v 1.2 2005-01-25 14:37:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 // Tests with the query interface
@@ -14,6 +14,7 @@ static char rcsid[] = "@(#$Id: qtry.cpp,v 1.1 2005-01-24 13:17:58 dockes Exp $ (
 #include "rclconfig.h"
 #include "rcldb.h"
 #include "transcode.h"
+#include "mimehandler.h"
 
 using namespace std;
 
@@ -86,7 +87,11 @@ int main(int argc, char **argv)
     db->setQuery(query);
     int i = 0;
     Rcl::Doc doc;
-    while (db->getDoc(i++, doc)) {
+    for (i=0;;i++) {
+	doc.erase();
+	if (!db->getDoc(i, doc))
+	    break;
+
 	cout << "Url: " << doc.url << endl;
 	cout << "Mimetype: " << doc.mimetype << endl;
 	cout << "Mtime: " << doc.mtime << endl;
@@ -96,8 +101,29 @@ int main(int argc, char **argv)
 	cout << "Keywords: " << doc.keywords << endl;
 	cout << "Abstract: " << doc.abstract << endl;
 	cout << endl;
-	
-	doc.erase();
+
+	// Go to the file system to retrieve / convert the document text
+	// for preview:
+
+	// Look for appropriate handler
+	MimeHandlerFunc fun = getMimeHandler(doc.mimetype, 
+					     config->getMimeConf());
+	if (!fun) {
+	    cout << "No mime handler !" << endl;
+	    continue;
+	}
+	string fn = doc.url.substr(6, string::npos);
+	cout << "Filename: "  << fn << endl;
+
+	Rcl::Doc fdoc;
+	if (!fun(config, fn,  doc.mimetype, fdoc)) {
+	    cout << "Failed to convert/preview document!" << endl;
+	    continue;
+	}
+	string outencoding = "iso8859-1";
+	string printable;
+	transcode(fdoc.text, printable, "UTF-8", outencoding);
+	cout << printable << endl;
     }
     delete db;
     cerr << "Exiting" << endl;

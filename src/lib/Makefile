@@ -1,0 +1,65 @@
+CXXFLAGS = -Wall -g -I. -I../index -I../utils -I../common \
+	 -I../unac -I/usr/local/include
+
+UNACCFLAGS = -g -I. -I../unac -I/usr/local/include -DUNAC_VERSION=\"1.0.7\"
+
+
+LIBS = librcl.a
+all: $(LIBS)
+
+OBJS = conftree.o csguess.o debuglog.o \
+     fstreewalk.o \
+     mimehandler.o mimetype.o pathut.o \
+     rclconfig.o rcldb.o readfile.o \
+     textsplit.o transcode.o \
+     unacpp.o unac.o
+SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
+     ../utils/fstreewalk.cpp \
+     ../common/mimehandler.cpp ../index/mimetype.cpp ../utils/pathut.cpp \
+     ../common/rclconfig.cpp ../common/rcldb.cpp ../utils/readfile.cpp \
+     ../common/textsplit.cpp ../utils/transcode.cpp \
+     ../common/unacpp.cpp ../unac/unac.c
+
+librcl.a : $(OBJS)
+	 ar ru librcl.a $(OBJS)
+
+unac.o : ../unac/unac.c ../unac/unac.h
+	$(CC) $(UNACCFLAGS) -c $<
+
+#	$(CXX) $(CXXFLAGS) -c $<
+conftree.o : ../utils/conftree.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+csguess.o : ../index/csguess.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+debuglog.o : ../utils/debuglog.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+fstreewalk.o : ../utils/fstreewalk.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+mimehandler.o : ../common/mimehandler.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+mimetype.o : ../index/mimetype.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+pathut.o : ../utils/pathut.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+rclconfig.o : ../common/rclconfig.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+rcldb.o : ../common/rcldb.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+readfile.o : ../utils/readfile.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+textsplit.o : ../common/textsplit.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+transcode.o : ../utils/transcode.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+unacpp.o : ../common/unacpp.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+
+
+clean: 
+	rm -f *.o $(LIBS)
+
+alldeps:depend
+depend:
+	$(CXX) $(CXXFLAGS) -M $(SRCS) > alldeps
+include alldeps
+

@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.4 2005-01-24 13:17:58 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.5 2005-01-25 14:37:21 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -22,18 +22,18 @@ struct stat;
 namespace Rcl {
 
 /**
- * Holder for document attributes and data
+ * Dumb bunch holder for document attributes and data
  */
 class Doc {
  public:
-    string url;
-    string mimetype;
-    string mtime;       // Modification time as decimal ascii
-    string origcharset;
-    string title;
-    string text;
-    string keywords;
-    string abstract;
+    std::string url;
+    std::string mimetype;
+    std::string mtime;       // Modification time as decimal ascii
+    std::string origcharset;
+    std::string title;
+    std::string text;
+    std::string keywords;
+    std::string abstract;
     void erase() {
 	url.erase();
 	mimetype.erase();
@@ -60,8 +60,8 @@ class Db {
     bool close();
 
     // Update-related functions
-    bool add(const string &filename, const Doc &doc);
-    bool needUpdate(const string &filename, const struct stat *stp);
+    bool add(const std::string &filename, const Doc &doc);
+    bool needUpdate(const std::string &filename, const struct stat *stp);
 
     // Query-related functions
 

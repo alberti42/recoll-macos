@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.3 2005-01-24 13:17:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.4 2005-01-25 14:37:20 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -7,6 +7,18 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.3 2005-01-24 13:17:58 dockes Ex
 #include "rclconfig.h"
 #include "pathut.h"
 #include "conftree.h"
+#include "debuglog.h"
+
+static DebugLog debuglog;
+DebugLog *dbl = &debuglog;
+class loginitializer {
+ public:
+    loginitializer() {
+	dbl->setlogfilename("stderr");
+	dbl->setloglevel(10);
+    }
+};
+static loginitializer lgntlzr;
 
 using namespace std;
 
@@ -54,6 +66,7 @@ RclConfig::RclConfig()
 	cerr << "No mime conf file" << endl;
 	return;
     }
+    setKeyDir(string(""));
     // mimeconf->list();
     m_ok = true;
     return;

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.6 2005-01-24 13:17:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.7 2005-01-25 14:37:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -15,11 +15,12 @@ using namespace std;
 #include "transcode.h"
 #include "unacpp.h"
 #include "conftree.h"
+#include "debuglog.h"
 
 #include "xapian.h"
 
-// Data for a xapian database. There could actually be 2 different ones for
-// indexing or query as there is not much in common.
+// Data for a xapian database. There could actually be 2 different
+// ones for indexing or query as there is not much in common.
 class Native {
  public:
     bool isopen;
@@ -42,30 +43,30 @@ Rcl::Db::Db()
 
 Rcl::Db::~Db()
 {
-    cerr << "Rcl::Db::~Db" << endl;
+    LOGDEB(("Rcl::Db::~Db\n"));
     if (pdata == 0)
 	return;
     Native *ndb = (Native *)pdata;
-    cerr << "Db::~Db: isopen " << ndb->isopen << " iswritable " <<
-	ndb->iswritable << endl;
+    LOGDEB(("Db::~Db: isopen %d iswritable %d\n", ndb->isopen, 
+	    ndb->iswritable));
+    if (ndb->isopen == false)
+	return;
     try {
-	// There is nothing to do for an ro db.
-	if (ndb->isopen == false || ndb->iswritable == false) {
-	    cerr << "Deleting native database" << endl;
-	    delete ndb;
-	    return;
-	}
-	ndb->wdb.flush();
+	LOGDEB(("Rcl::Db::~Db: deleting native database\n"));
+	if (ndb->iswritable == true)
+	    ndb->wdb.flush();
 	delete ndb;
+	return;
     } catch (const Xapian::Error &e) {
-	cout << "Exception: " << e.get_msg() << endl;
+	cerr << "Exception: " << e.get_msg() << endl;
     } catch (const string &s) {
-	cout << "Exception: " << s << endl;
+	cerr << "Exception: " << s << endl;
     } catch (const char *s) {
-	cout << "Exception: " << s << endl;
+	cerr << "Exception: " << s << endl;
     } catch (...) {
-	cout << "Caught unknown exception" << endl;
+	cerr << "Caught unknown exception" << endl;
     }
+    LOGERR(("Rcl::Db::~Db: got exception\n"));
 }
 
 bool Rcl::Db::open(const string& dir, OpenMode mode)
@@ -73,8 +74,14 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
-    cerr << "Db::open: isopen " << ndb->isopen << " iswritable " <<
-	ndb->iswritable << endl;
+    LOGDEB(("Db::open: isopen %d iswritable %d\n", ndb->isopen, 
+	    ndb->iswritable));
+
+    if (ndb->isopen) {
+	LOGERR(("Rcl::Db::open: already open\n"));
+	return false;
+    }
+
     try {
 	switch (mode) {
 	case DbUpd:
@@ -95,44 +102,46 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
 	ndb->isopen = true;
 	return true;
     } catch (const Xapian::Error &e) {
-	cout << "Exception: " << e.get_msg() << endl;
+	cerr << "Exception: " << e.get_msg() << endl;
     } catch (const string &s) {
-	cout << "Exception: " << s << endl;
+	cerr << "Exception: " << s << endl;
     } catch (const char *s) {
-	cout << "Exception: " << s << endl;
+	cerr << "Exception: " << s << endl;
     } catch (...) {
-	cout << "Caught unknown exception" << endl;
+	cerr << "Caught unknown exception" << endl;
     }
+    LOGERR(("Rcl::Db::open: got exception\n"));
     return false;
 }
 
+// Note: xapian has no close call, we delete and recreate the db
 bool Rcl::Db::close()
 {
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
-    cerr << "Db::open: isopen " << ndb->isopen << " iswritable " <<
-	ndb->iswritable << endl;
+    LOGDEB(("Db::close(): isopen %d iswritable %d\n", ndb->isopen, 
+	    ndb->iswritable));
     if (ndb->isopen == false)
 	return true;
     try {
-	if (ndb->isopen == true && ndb->iswritable == true) {
+	if (ndb->iswritable == true)
 	    ndb->wdb.flush();
-	}
 	delete ndb;
     } catch (const Xapian::Error &e) {
-	cout << "Exception: " << e.get_msg() << endl;
+	cerr << "Exception: " << e.get_msg() << endl;
 	return false;
     } catch (const string &s) {
-	cout << "Exception: " << s << endl;
+	cerr << "Exception: " << s << endl;
 	return false;
     } catch (const char *s) {
-	cout << "Exception: " << s << endl;
+	cerr << "Exception: " << s << endl;
 	return false;
     } catch (...) {
-	cout << "Caught unknown exception" << endl;
+	cerr << "Caught unknown exception" << endl;
 	return false;
     }
+
     pdata = new Native;
     if (pdata)
 	return true;
@@ -165,7 +174,7 @@ static bool splitCb(void *cdata, const std::string &term, int pos)
 	data->curpos = pos;
 	data->doc.add_posting(term, data->basepos + data->curpos, 1);
     } catch (...) {
-	cerr << "Error occurred during add_posting" << endl;
+	LOGERR(("Error occurred during add_posting\n"));
 	return false;
     }
     return true;
@@ -242,7 +251,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     newdocument.add_term("T" + doc.mimetype);
     string pathterm  = "P" + fn;
     newdocument.add_term(pathterm);
-
+    const char *fnc = fn.c_str();
     if (1 /*dupes == DUPE_replace*/) {
 	// If this document has already been indexed, update the existing
 	// entry.
@@ -254,22 +263,22 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
 #if 0
 	    if (did < updated.size()) {
 		updated[did] = true;
-		//cout << "updated." << endl;
+		LOGDEB1(("%s updated\n", fnc));
 	    } else {
-		//cout << "added." << endl;
+		LOGDEB1(("%s added\n", fnc));
 	    }
 #endif
 	} catch (...) {
 	    // FIXME: is this ever actually needed?
 	    ndb->wdb.add_document(newdocument);
-	    //cout << "added (failed re-seek for duplicate)." << endl;
+	    LOGDEB1(("%s added (failed re-seek for duplicate).\n", fnc));
 	}
     } else {
 	try {
 	    ndb->wdb.add_document(newdocument);
-	    // cout << "added." << endl;
+	    LOGDEB1(("%s added\n", fnc));
 	} catch (...) {
-	    cerr << "Got exception while adding doc" << endl;
+	    LOGERR(("%s : Got exception while adding doc\n", fnc));
 	    return false;
 	}
     }
@@ -293,7 +302,7 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 	    return true;
 	Xapian::Document doc = ndb->wdb.get_document(*did);
 	string data = doc.get_data();
-	//cout << "DOCUMENT EXISTS " << data << endl;
+	//cerr << "DOCUMENT EXISTS " << data << endl;
 	const char *cp = strstr(data.c_str(), "mtime=");
 	cp += 6;
 	long mtime = atol(cp);
@@ -315,17 +324,10 @@ class wsQData {
     vector<string> terms;
 };
 
-// Callback for the document to word splitting class during indexation
+// Callback for the query-to-words splitting
 static bool splitQCb(void *cdata, const std::string &term, int )
 {
     wsQData *data = (wsQData*)cdata;
-
-    cerr << "splitQCb: term '" << term << "'" << endl;
-    cerr << "splitQCb: term length: " << term.length() <<  endl;
-    //string printable;
-    //transcode(term, printable, "UTF-8", "ISO8859-1");
-    //cerr << "Adding " << printable << endl;
-
     data->terms.push_back(term);
     return true;
 }
@@ -339,13 +341,10 @@ bool Rcl::Db::setQuery(const std::string &querystring)
     if (!dumb_string(querystring, noacc)) {
 	return false;
     }
-    //    noacc = querystring;
     splitter.text_to_words(noacc);
 
     Native *ndb = (Native *)pdata;
 
-    //        splitData.terms.resize(0);
-    //        splitData.terms.push_back(string("le"));
     ndb->query = Xapian::Query(Xapian::Query::OP_OR, splitData.terms.begin(), 
 			       splitData.terms.end());
 
@@ -354,15 +353,15 @@ bool Rcl::Db::setQuery(const std::string &querystring)
 
 bool Rcl::Db::getDoc(int i, Doc &doc)
 {
-    // cerr << "Rcl::Db::getDoc: " << i << endl;
+    LOGDEB1(("Rcl::Db::getDoc: %d\n", i));
     Native *ndb = (Native *)pdata;
 
     Xapian::Enquire enquire(ndb->db);
     enquire.set_query(ndb->query);
     Xapian::MSet matches = enquire.get_mset(i, 1);
 
-    // cerr << "Query `" << ndb->query.get_description() << "'" <<
-    // "Estimated results: " << matches.get_matches_lower_bound() << endl;
+    LOGDEB1(("Rcl::Db::getDoc: Query '%s' Estimated results: %d\n",
+	     ndb->query.get_description(), matches.get_matches_lower_bound()));
 
     if (matches.empty())
 	return false;
