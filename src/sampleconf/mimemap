@@ -1,0 +1,21 @@
+
+.txt = text/plain
+.text = text/plain
+.d    = text/plain
+
+.html = text/html
+.htm = text/html
+.shtml = text/html
+.php = text/html
+
+.pdf = application/pdf
+
+.ps = application/postscript
+.eps = application/postscript
+.ai = application/postscript
+
+.gz = application/x-gzip
+.Z = application/x-gzip
+.bz2 = application/x-bzip2
+
+[FILE]

@@ -1,0 +1,26 @@
+# Processing for the different mime types. There are different sections for
+# decompression, 'interning' for indexing and preview, and external viewers
+
+## These types need a first pass to create a temp file to work with. We use
+# a script because uncompress utilities usually work in place, which is not
+# suitable. The %t parameter will be changed to the name of a temporary
+# directory by recoll. %f is the input file. rcluncomp will output the new
+# file name on stdout, and you should do the same if you write another
+# script (have a look at rcluncomp then).
+application/x-gzip  =  uncompress rcluncomp gunzip %f %t
+application/x-gzip  =  uncompress rcluncomp gunzip %f %t
+application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
+
+## Indexing and internal preview
+[index]
+text/plain = internal 
+text/html  = internal 
+application/pdf = exec rclpdf
+application/postscript = exec rclps
+
+## External viewers
+[view]
+text/plain = xemacs %f
+text/html = firefox -a firefox -remote "openFile(%u)"
+application/pdf  = xpdf %f
+application/postscript = gv %f
