@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.1 2004-12-12 08:58:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.2 2004-12-14 17:54:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -14,6 +14,7 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.1 2004-12-12 08:58:12 dockes Exp $
 #include <iostream>
 
 #include "execmd.h"
+#include "pathut.h"
 
 using namespace std;
 #define MAX(A,B) (A>B?A:B)
@@ -152,7 +153,7 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 	}
 	
 	// Fill up argv
-	argv[0] = cmd.c_str();
+	argv[0] = path_getsimple(cmd).c_str();
 	i = 1;
 	for (it = args.begin(); it != args.end(); it++) {
 	    argv[i++] = it->c_str();
@@ -160,7 +161,7 @@ ExecCmd::doexec(const string &cmd, const list<string> args,
 	argv[i] = 0;
 
 #if 0
-	{int i = 0;cerr << "cmd: " << cmd << endl << "ARGS:" << endl; 
+	{int i = 0;cerr << "cmd: " << cmd << endl << "ARGS: " << endl; 
 	    while (argv[i]) cerr << argv[i++] << endl;}
 #endif
 

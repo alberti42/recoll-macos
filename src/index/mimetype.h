@@ -1,6 +1,6 @@
 #ifndef _MIMETYPE_H_INCLUDED_
 #define _MIMETYPE_H_INCLUDED_
-/* @(#$Id: mimetype.h,v 1.1 2004-12-13 15:42:16 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimetype.h,v 1.2 2004-12-14 17:54:16 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include "conftree.h"
@@ -12,5 +12,6 @@
  * to actually access file data.
  */
 string mimetype(const std::string &filename, ConfTree *mtypes);
+
 
 #endif /* _MIMETYPE_H_INCLUDED_ */

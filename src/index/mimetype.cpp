@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.1 2004-12-13 15:42:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.2 2004-12-14 17:54:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <ctype.h>
@@ -11,6 +11,9 @@ using std::string;
 
 string mimetype(const string &filename, ConfTree *mtypes)
 {
+    if (mtypes == 0)
+	return "";
+
     // If filename has a suffix and we find it in the map, we're done
     string::size_type dot = filename.find_last_of(".");
     if (dot != string::npos) {
@@ -25,6 +28,8 @@ string mimetype(const string &filename, ConfTree *mtypes)
     // Look at file data
     return "";
 }
+
+
 
 #ifdef _TEST_MIMETYPE_
 #include <iostream>

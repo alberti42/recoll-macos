@@ -1,14 +1,33 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.1 2004-12-13 15:42:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.2 2004-12-14 17:49:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
+#ifndef TEST_TEXTSPLIT
 
 #include <iostream>
 #include <string>
 
+#include "textsplit.h"
+
 using namespace std;
+
+/**
+ * Splitting a text into words. The code in this file will work with any 
+ * charset where the basic separators (.,- etc.) have their ascii values 
+ * (ok for UTF-8, ascii, iso8859* and quite a few others).
+ *
+ * We work in a way which would make it quite difficult to handle non-ascii
+ * separator chars (en-dash,etc.). We would then need to actually parse the 
+ * utf-8 stream, and use a different way to classify the characters (instead 
+ * of a 256 slot array).
+ *
+ * We are also not using capitalization information.
+ */
 
 // Character classes: we have three main groups, and then some chars
 // are their own class because they want special handling.
+// We have an array with 256 slots where we keep the character states. 
+// The array could be fully static, but we use a small function to fill it 
+// once.
 enum CharClass {LETTER=256, SPACE=257, DIGIT=258};
 static int charclasses[256];
 static void setcharclasses()
@@ -38,7 +57,7 @@ static void setcharclasses()
     init = 1;
 }
 
-static void emitterm(string &w, int *posp, bool doerase = true)
+void TextSplit::emitterm(string &w, int pos, bool doerase = true)
 {
     // Maybe trim end of word. These are chars that we would keep inside 
     // a word or span, but not at the end
@@ -55,22 +74,27 @@ static void emitterm(string &w, int *posp, bool doerase = true)
     }
  breakloop:
     if (w.length()) {
-	if (posp)
-	    *posp++;
-	cout << w << endl;
+	if (termsink)
+	    termsink(cdata, w, pos);
     }
     if (doerase)
 	w.erase();
 }
 
-void text_to_words(const string &in)
+/* 
+ * We basically emit a word every time we see a separator, but some chars are
+ * handled specially so that special cases, ie, c++ and dockes@okyz.com etc, 
+ * are handled properly,
+ */
+void TextSplit::text_to_words(const string &in)
 {
     setcharclasses();
     string span;
     string word;
     bool number = false;
-    int pos = 0;
+    int wordpos = 0;
     int spanpos = 0;
+
     for (int i = 0; i < in.length(); i++) {
 	int c = in[i];
 	int cc = charclasses[c]; 
@@ -78,11 +102,13 @@ void text_to_words(const string &in)
 	case SPACE:
 	SPACE:
 	    if (word.length()) {
-		if (span.length() != word.length())
-		    emitterm(span, &spanpos);
-		emitterm(word, &pos);
+		if (span.length() != word.length()) {
+		    emitterm(span, spanpos);
+		}
+		emitterm(word, wordpos++);
 		number = false;
 	    }
+	    spanpos = wordpos;
 	    span.erase();
 	    break;
 	case '-':
@@ -94,9 +120,10 @@ void text_to_words(const string &in)
 		    span += c;
 		}
 	    } else {
-		if (span.length() != word.length())
-		    emitterm(span, &spanpos, false);
-		emitterm(word, &pos);
+		if (span.length() != word.length()) {
+		    emitterm(span, spanpos, false);
+		}
+		emitterm(word, wordpos++);
 		number = false;
 		span += c;
 	    }
@@ -104,9 +131,10 @@ void text_to_words(const string &in)
 	case '\'':
 	case '@':
 	    if (word.length()) {
-		if (span.length() != word.length())
-		    emitterm(span, &spanpos, false);
-		emitterm(word, &pos);
+		if (span.length() != word.length()) {
+		    emitterm(span, spanpos, false);
+		}
+		emitterm(word, wordpos++);
 		number = false;
 	    } else
 		word += c;
@@ -117,7 +145,7 @@ void text_to_words(const string &in)
 		word += c;
 	    } else {
 		if (word.length()) {
-		    emitterm(word, &pos);
+		    emitterm(word, wordpos++);
 		    number = false;
 		} else 
 		    word += c;
@@ -139,8 +167,8 @@ void text_to_words(const string &in)
 		// if '-' is the last char before end of line, just
 		// ignore the line change. This is the right thing to
 		// do almost always. We'd then need a way to check if
-		// the - was added as part of the sleep or was really there, 
-		// but this would need a dictionary.
+		// the - was added as part of the word hyphenation, or was 
+		// there in the first place, but this would need a dictionary.
 	    } else {
 		// Handle like a normal separator
 		goto SPACE;
@@ -162,42 +190,35 @@ void text_to_words(const string &in)
     }
     if (word.length()) {
 	if (span.length() != word.length())
-	    emitterm(span, &spanpos);
-	emitterm(word, &pos);
+	    emitterm(span, spanpos);
+	emitterm(word, wordpos);
     }
 }
 
-#if 1 || TEST_TEXTSPLIT
+#else  // TEST driver ->
+
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-int
-file_to_string(const string &fn, string &data)
+
+#include <iostream>
+
+#include "textsplit.h"
+#include "readfile.h"
+
+using namespace std;
+
+int termsink(void *, const string &term, int pos)
 {
-    int fd = open(fn.c_str(), 0);
-    if (fd < 0) {
-	perror("open");
-	return -1;
-    }
-    char buf[4096];
-    for (;;) {
-	int n = read(fd, buf, 4096);
-	if (n < 0) {
-	    perror("read");
-	    close(fd);
-	    return -1;
-	}
-	if (n == 0)
-	    break;
-	data.append(buf, n);
-    }
-    close(fd);
+    cout << pos << " " << term << endl;
     return 0;
 }
+
 
 static string teststring = 
     "jfd@okyz.com "
     "Ceci. Est;Oui 1.24 n@d @net .net t@v@c c# c++ -10 o'brien l'ami "
+    "a 134 +134 -14 -1.5 +1.5 1.54e10 a"
     "@^#$(#$(*)"
     "one\n\rtwo\nthree-\nfour"
     "[olala][ululu]"
@@ -206,15 +227,16 @@ static string teststring =
 
 int main(int argc, char **argv)
 {
+    TextSplit splitter(termsink, 0);
     if (argc == 2) {
 	string data;
-	if (file_to_string(argv[1], data) < 0) 
+	if (!file_to_string(argv[1], data)) 
 	    exit(1);
-	text_to_words(data);
+	splitter.text_to_words(data);
     } else {
-	cout << teststring << endl;  text_to_words(teststring);
+	cout << teststring << endl;  
+	splitter.text_to_words(teststring);
     }
     
 }
 #endif // TEST
-
