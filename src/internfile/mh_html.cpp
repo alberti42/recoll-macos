@@ -136,7 +136,7 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 		}
 	    }
 	}
-    } else if (tag == "p" || tag == "br") {
+    } else if (tag == "p" || tag == "br" || tag == "li") {
 	dump += "\n";
     } else if (tag == "script") {
 	in_script_tag = true;

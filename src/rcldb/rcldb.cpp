@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.9 2005-01-26 13:03:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.10 2005-01-28 08:41:40 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -257,37 +257,28 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     string pathterm  = "P" + fn;
     newdocument.add_term(pathterm);
     const char *fnc = fn.c_str();
-    if (1 /*dupes == DUPE_replace*/) {
-	// If this document has already been indexed, update the existing
-	// entry.
-	try {
+
+    // If this document has already been indexed, update the existing
+    // entry.
+    try {
 #if 0
-	    Xapian::docid did = 
+	Xapian::docid did = 
 #endif
-		ndb->wdb.replace_document(pathterm, newdocument);
+	    ndb->wdb.replace_document(pathterm, newdocument);
 #if 0
-	    if (did < updated.size()) {
-		updated[did] = true;
-		LOGDEB(("%s updated\n", fnc));
-	    } else {
-		LOGDEB(("%s added\n", fnc));
-	    }
-#endif
-	} catch (...) {
-	    // FIXME: is this ever actually needed?
-	    ndb->wdb.add_document(newdocument);
-	    LOGDEB(("%s added (failed re-seek for duplicate).\n", fnc));
-	}
-    } else {
-	try {
-	    ndb->wdb.add_document(newdocument);
+	if (did < updated.size()) {
+	    updated[did] = true;
+	    LOGDEB(("%s updated\n", fnc));
+	} else {
 	    LOGDEB(("%s added\n", fnc));
-	} catch (...) {
-	    LOGERR(("%s : Got exception while adding doc\n", fnc));
-	    return false;
 	}
+#endif
+    } catch (...) {
+	// FIXME: is this ever actually needed?
+	ndb->wdb.add_document(newdocument);
+	LOGDEB(("%s added (failed re-seek for duplicate).\n", fnc));
     }
-  return true;
+    return true;
 }
 
 
