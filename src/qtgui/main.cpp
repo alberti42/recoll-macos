@@ -12,6 +12,7 @@
 #include "recoll.h"
 #include "smallut.h"
 #include "wipedir.h"
+#include "rclinit.h"
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
@@ -33,10 +34,9 @@ void recollCleanup()
     }
 }
 
-
 static void sigcleanup(int)
 {
-    fprintf(stderr, "sigcleanup\n");
+    // fprintf(stderr, "sigcleanup\n");
     // Cant call exit from here, because the atexit cleanup does some
     // thread stuff that we can't do from signal context.
     // Just set a flag and let the watchdog timer do the work
@@ -54,23 +54,14 @@ int main( int argc, char ** argv )
     w.connect(timer, SIGNAL(timeout()), &w, SLOT(checkExit()));
     timer->start(100);
 
-    atexit(recollCleanup);
-    if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
-	signal(SIGHUP, sigcleanup);
-    if (signal(SIGINT, SIG_IGN) != SIG_IGN)
-	signal(SIGINT, sigcleanup);
-    if (signal(SIGQUIT, SIG_IGN) != SIG_IGN)
-	signal(SIGQUIT, sigcleanup);
-    if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
-	signal(SIGTERM, sigcleanup);
+    rclconfig = recollinit(recollCleanup, sigcleanup);
 
-
-    rclconfig = new RclConfig;
     if (!rclconfig || !rclconfig->ok()) {
 	QMessageBox::critical(0, "Recoll",
 			      QString("Could not find configuration"));
 	exit(1);
     }
+
     string dbdir;
     if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
 	// Note: this will have to be replaced by a call to a

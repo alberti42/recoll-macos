@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.26 2005-04-04 13:18:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.27 2005-04-05 09:35:35 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -317,9 +317,17 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     splitter.text_to_words(noacc);
 
     newdocument.add_term("T" + doc.mimetype);
-    string pathterm  = doc.ipath.empty() ? 
-	"P" + fn : "P" + fn + "|" + doc.ipath;
+
+    string pathterm  = "P" + fn;
     newdocument.add_term(pathterm);
+
+    string uniterm;
+    if (!doc.ipath.empty()) {
+	uniterm  = "Q" + fn + "|" + doc.ipath;
+	newdocument.add_term(uniterm);
+    }
+
+
     const char *fnc = fn.c_str();
     
     // Document data record. omindex has the following nl separated fields:
@@ -342,7 +350,6 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     LOGDEB1(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);
 
-
     time_t mtime = atol(doc.mtime.c_str());
     struct tm *tm = localtime(&mtime);
     char buf[9];
@@ -360,7 +367,8 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     // entry.
     try {
 	Xapian::docid did = 
-	    ndb->wdb.replace_document(pathterm, newdocument);
+	    ndb->wdb.replace_document(uniterm.empty() ? pathterm : uniterm, 
+				      newdocument);
 	if (did < ndb->updated.size()) {
 	    ndb->updated[did] = true;
 	    LOGDEB(("Rcl::Db::add: docid %d updated [%s , %s]\n", did, fnc,
@@ -385,33 +393,44 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 	return false;
     Native *ndb = (Native *)pdata;
 
+    // If no document exist with this path, we do need update
     string pathterm  = "P" + filename;
     if (!ndb->wdb.term_exists(pathterm)) {
-	pathterm += string("|") + "1";
-	if (!ndb->wdb.term_exists(pathterm)) {
-	    return true;
-	}
+	return true;
     }
+
+    // Look for all documents with this path. Check the update time (once). 
+    // If the db is up to date, set the update flags for all documents
     Xapian::PostingIterator doc;
     try {
-	Xapian::PostingIterator did = ndb->wdb.postlist_begin(pathterm);
-	if (did == ndb->wdb.postlist_end(pathterm))
-	    return true;
-	Xapian::Document doc = ndb->wdb.get_document(*did);
-	string data = doc.get_data();
-	const char *cp = strstr(data.c_str(), "mtime=");
-	cp += 6;
-	long mtime = atol(cp);
-	if (mtime >= stp->st_mtime) {
+	Xapian::PostingIterator did0 = ndb->wdb.postlist_begin(pathterm);
+	for (Xapian::PostingIterator did = did0;
+	     did != ndb->wdb.postlist_end(pathterm); did++) {
+
+	    Xapian::Document doc = ndb->wdb.get_document(*did);
+
+	    // Check the date once. no need to look at the others if the
+	    // db needs updating.
+	    if (did == did0) {
+		string data = doc.get_data();
+		const char *cp = strstr(data.c_str(), "mtime=");
+		cp += 6;
+		long mtime = atol(cp);
+		if (mtime < stp->st_mtime) {
+		    // Db is not up to date. Let's index the file
+		    return true;
+		} 
+	    }
+
+	    // Db is up to date. Make a note that this document exists.
 	    if (*did < ndb->updated.size())
 		ndb->updated[*did] = true;
-	    return false;
-	} 
+	}
     } catch (...) {
 	return true;
     }
 
-    return true;
+    return false;
 }
 
 /// Compute name of stem db for given base database and language
@@ -582,7 +601,7 @@ bool Rcl::Db::purge()
 		ndb->wdb.delete_document(did);
 		LOGDEB(("Rcl::Db::purge: deleted document #%d\n", did));
 	    } catch (const Xapian::DocNotFoundError &) {
-		LOGDEB(("Rcl::Db::purge: document #%d not found\n", did));
+		LOGDEB2(("Rcl::Db::purge: document #%d not found\n", did));
 	    }
 	}
     }

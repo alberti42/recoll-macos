@@ -10,7 +10,7 @@ OBJS = conftree.o csguess.o debuglog.o \
      execmd.o wipedir.o \
      fstreewalk.o html.o mail.o htmlparse.o indexer.o internfile.o \
      mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathut.o \
-     rclconfig.o rcldb.o readfile.o smallut.o \
+     rclconfig.o rcldb.o rclinit.o readfile.o smallut.o \
      textsplit.o transcode.o \
      unacpp.o unac.o
 SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
@@ -20,8 +20,8 @@ SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
      ../index/indexer.cpp ../common/internfile.cpp \
      ../common/mimehandler.cpp ../utils/mimeparse.cpp ../index/mimetype.cpp \
      ../common/myhtmlparse.cpp ../utils/pathut.cpp \
-     ../common/rclconfig.cpp ../common/rcldb.cpp ../utils/readfile.cpp \
-     ../utils/smallut.cpp \
+     ../common/rclconfig.cpp ../common/rcldb.cpp ../common/rclinit.cpp \
+     ../utils/readfile.cpp ../utils/smallut.cpp \
      ../common/textsplit.cpp ../utils/transcode.cpp \
      ../common/unacpp.cpp ../unac/unac.c
 
@@ -65,6 +65,8 @@ myhtmlparse.o : ../common/myhtmlparse.cpp
 pathut.o : ../utils/pathut.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 rclconfig.o : ../common/rclconfig.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+rclinit.o : ../common/rclinit.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 rcldb.o : ../common/rcldb.cpp 
 	$(CXX) $(CXXFLAGS) -c $<

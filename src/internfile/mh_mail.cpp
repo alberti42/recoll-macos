@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.3 2005-04-04 13:18:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.4 2005-04-05 09:35:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -202,7 +202,7 @@ MimeHandlerMail::processone(const string &fn, Binc::MimeDocument& doc,
 	    doc.isMultipart(), doc.getSubType().c_str()));
     walkmime(conf, docout.text, doc, 0);
 
-    //LOGDEB(("MimeHandlerMail::processone: text: '%s'\n", docout.text.c_str()));
+    // LOGDEB(("MimeHandlerMail::processone: text: '%s'\n", docout.text.c_str()));
     return MimeHandler::MHDone;
 }
 
@@ -231,21 +231,27 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	} else if (!stringicmp("alternative", doc.getSubType())) {
 	    std::vector<Binc::MimePart>::iterator ittxt, ithtml;
 	    ittxt = ithtml = doc.members.end();
-	    for (it = doc.members.begin(); it != doc.members.end();it++) {
+	    int i = 1;
+	    for (it = doc.members.begin(); it != doc.members.end();it++, i++) {
 		// Get and parse content-type header
 		Binc::HeaderItem hi;
-		if (!doc.h.getFirstHeader("Content-Type", hi)) 
+		if (!it->h.getFirstHeader("Content-Type", hi)) {
+		    LOGDEB(("No content-type header for part %d\n", i));
 		    continue;
+		}
 		MimeHeaderValue content_type;
 		parseMimeHeaderValue(hi.getValue(), content_type);
+		LOGDEB2(("walkmime: C-type: %s\n",content_type.value.c_str()));
 		if (!stringlowercmp("text/plain", content_type.value))
 		    ittxt = it;
 		else if (!stringlowercmp("text/html", content_type.value)) 
 		    ithtml = it;
 	    }
 	    if (ittxt != doc.members.end()) {
+		LOGDEB2(("walkmime: alternative: chose text/plain part\n"))
 		walkmime(cnf, out, *ittxt, depth+1);
 	    } else if (ithtml != doc.members.end()) {
+		LOGDEB2(("walkmime: alternative: chose text/html part\n"))
 		walkmime(cnf, out, *ithtml, depth+1);
 	    }
 	}
@@ -337,5 +343,6 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	}
 
 	out += string("\r\n") + transcoded;
+	LOGDEB2(("walkmime: out now: [%s]\n", out.c_str()));
     }
 }

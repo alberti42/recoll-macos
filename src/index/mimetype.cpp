@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.7 2005-04-04 13:18:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.8 2005-04-05 09:35:35 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <ctype.h>
@@ -13,6 +13,7 @@ using std::list;
 #include "debuglog.h"
 #include "execmd.h"
 #include "conftree.h"
+#include "smallut.h"
 
 static string mimetypefromdata(const string &fn)
 {
@@ -61,8 +62,9 @@ string mimetype(const string &fn, ConfTree *mtypes)
 	     it != stoplist.end(); it++) {
 	    if (it->length() > fn.length())
 		continue;
-	    if (!fn.compare(fn.length() - it->length(), string::npos, *it)) {
-		LOGDEB1(("mimetype: fn %s in stoplist (%s)\n", fn.c_str(), 
+	    if (!stringicmp(fn.substr(fn.length() - it->length(),string::npos),
+			    *it)) {
+		LOGINFO(("mimetype: fn %s in stoplist (%s)\n", fn.c_str(), 
 			 it->c_str()));
 		return "";
 	    }
@@ -82,13 +84,16 @@ string mimetype(const string &fn, ConfTree *mtypes)
 	    return mtype;
     }
 
-    // Look at file data ? Only when no suffix or always
+    // Look at file data ? Only when no suffix or always ?
     // Also 'file' is not that great for us. For exemple it will 
     // mistake mail folders for simple text files if there is no 'Received' 
     // header, which would be the case, for exemple in a 'Sent' folder. Also
     // I'm not sure that file -i exists on all systems
-    //if (suff.empty())
-	return mimetypefromdata(fn);
+
+    //if (suff.empty()) // causes problems with shifted files, like
+		      // messages.1, messages.2 etc...
+    return mimetypefromdata(fn);
+
     return "";
 }
 

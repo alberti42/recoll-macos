@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.3 2005-02-09 12:07:30 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.4 2005-04-05 09:35:35 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll: associations of file name extensions to mime types
 .txt = text/plain
@@ -37,8 +37,12 @@
 .rtf = text/rtf
 
 
-# A list of stuff that we don't want to touch at all
-recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz
+# A list of stuff that we don't want to touch at all (for now). Having the
+# suffixes listed in there speeds up things quite a lot by avoiding
+# unneeded decompression or 'file' calls
+recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz \
+	       .c .h .cpp .m4 .tcl .js .sh .pl .awk \
+	       .o .lib .dll .a \
+	       .dat .bak .rdf .log  .db .ini .gnm .gnumeric \
+	       .jpg .gif .bmp .xpm
 
-[FILE]
-# This section for future non suffix-based extension (ie detect mail folders)

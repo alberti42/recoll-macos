@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.4 2005-03-25 09:40:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.5 2005-04-05 09:35:35 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -88,7 +88,7 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 {
     mime = mimetype(fn, config->getMimeMap());
     if (mime.empty()) {
-	// No mime type: not listed in our map.
+	// No mime type: not listed in our map, or present in stop list
 	LOGDEB(("FileInterner::FileInterner: (no mime) [%s]\n", fn.c_str()));
 	return;
     }
