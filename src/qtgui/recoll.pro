@@ -26,10 +26,10 @@ unix {
   LIBS += ../lib/librcl.a -L/usr/local/lib -lxapian -liconv \
        -lfontconfig -lfreetype -lexpat -lz
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
-  #QMAKE_LFLAGS_SHAPP += -static
 }
 
 UNAME = $$system(uname -s)
 contains( UNAME, [lL]inux ) {
 	  LIBS -= -liconv
 }
+

@@ -1,5 +1,92 @@
 Installation instructions:
+=========================
 
+Recoll is a very young package, and installation will probably more painful
+than necessary, please excuse me for this until I have time to work on
+it. I should probably not release this at all, except that I would like
+feedback.
+
+If you have problems, please don't renounce, ask me instead
+(jean-francois.dockes@wanadoo.fr) 
+
+Building from source
+===================
+
+Prerequisites:
+-------------
+To build from source, you need the following packages. Except if you're
+using a really strange system, you can probably easily find, or already
+have, a precompiled version of iconv, and maybe qt.
+
+    - qt and qt-devel (www.trolltech.com). Currently using 3.3.3
+    - xapian-core  (www.xapian.org). Currently using 0.8.5
+    - libiconv (http://www.gnu.org/software/libiconv/). Currently using
+      1.9, on Linux it's part of the libc, you should have nothing special
+      to do.
+The main trouble you'll have will probably be resolving the myriad
+dependancies for qt
+
+Building:
+--------
+
+I have only built on Linux (redhat7.3) and FreeBSD for now, if you build on
+another system, I would very much welcome comments and patches
+(jean-francois.dockes@wanadoo.fr).
+ 
+There is no autoconf for now. You need to chose a file in the mk directory,
+and link it into a file named 'sysconf' there. If your system is not
+supported by the supplied files, it should be easy enough to build a new
+one from the examples (then send it to me please).
+
+You also need to adjust the recoll.pro file inside the qtgui directory to
+fix the "-L/usr/local/lib -lxapian -liconv" piece, depending on where your
+libs are installed. Then run 'qmake recoll.pro' in there.
+
+Then cd to the top directory, type make, and practise your usual
+hardship-repelling invocations. 
+
+Installation:
+------------
+ - Copy all files in src/sampleconf to ~/.recoll
+ - Copy all files in src/filters to ~/.recoll.
+ - Copy qtgui/recoll to a place in your PATH (if you want. You can also
+   execute it from there).
+
+Configuration
+=============
+
+Recoll uses a text configuration file. There will be dialogs to build it
+from the GUI in the future, but you'll have to edit it by hand for now.
+
+By default, the configuration file should be named ~/.recoll/recoll.conf
+
+There is a sample in the 'sampleconf' src/ subdirectory, you copied it to
+~/.recoll at the step before, take a look and possibly edit it.
+
+- Then start 'recoll', and select the "file->start indexing" menu
+  entry. When it's done, you can play with the search
+
+Usage: 
+======
+ - I think you will guess that query terms are to be entered in the text
+   field up left... There is no query language right now, the search only
+   understand probabilistic terms (just words...), and double-quote
+   enclosed phrases.
+ - You can turn stemming on (this only affects querying) in the
+   configuration file. There is quite a huge performance impact for this
+   right now, but it might be ok if your db is small.
+ - Clicking on an entry in the result list displays a preview in the right
+   window. 
+ - Double-clicking will try to launch an external viewer. These are
+   configured inside the $HOME/.recoll/mimeconf file, please adjust to
+   taste.
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Future from here on, there are currently no binary packages ...
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Installing a binary package:
 ----------------------------
 The binary packages are statically linked and should install real easy
@@ -20,33 +107,6 @@ The binary packages are statically linked and should install real easy
 
  - Start the 'recoll' program. After displaying a dialog, it will normally
    begin to index the directories specified in recoll.conf.
-
-Building from source
---------------------
-
-Prerequisites:
-
-To build from source, you need the following packages. Except if you're
-using a really strange system, you can probably easily find, or already
-have, a precompiled version of iconv, and maybe qt.
-
-    - qt and qt-devel (www.trolltech.com). Currently using 3.3.3
-    - xapian-core  (www.xapian.org). Currently using 0.8.5
-    - libiconv (http://www.gnu.org/software/libiconv/). Currently using 1.9,
-
-Building:
- 
-There is no autoconf for now. You need to chose a file in the mk directory,
-and link it into a file named 'sysconf' there. If your system is not
-supported by the supplied files, it should be easy enough to build a new
-one from the examples (then send it to me please).
-
-You also need to adjust the recoll.pro file inside the qtgui directory to
-fix the "-L/usr/local/lib -lxapian -liconv" piece, depending on where your
-libs are installed.
-
-Then cd to the top directory, and type make.
-
 
 
   

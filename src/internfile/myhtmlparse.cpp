@@ -79,6 +79,8 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	case 'd':
 	    if (tag == "dd" || tag == "dir" || tag == "div" || tag == "dl" ||
 		tag == "dt") pending_space = true;
+	    if (tag == "dt")
+		dump += '\n';
 	    break;
 	case 'e':
 	    if (tag == "embed") pending_space = true;
