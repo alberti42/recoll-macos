@@ -35,7 +35,7 @@ trtranscode.o : ../utils/transcode.cpp
 
 MIMEPARSE_OBJS= trmimeparse.o  $(BIGLIB) 
 trmimeparse : $(MIMEPARSE_OBJS)
-	$(CXX) $(CXXFLAGS) -o mimeparse $(MIMEPARSE_OBJS) $(LIBICONV)
+	$(CXX) $(CXXFLAGS) -o trmimeparse $(MIMEPARSE_OBJS) $(LIBICONV)
 trmimeparse.o : mimeparse.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_MIMEPARSE -c -o trmimeparse.o \
 	       mimeparse.cpp

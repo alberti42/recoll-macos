@@ -1,13 +1,15 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.9 2005-02-10 19:52:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.10 2005-02-11 11:20:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
 #include <iostream>
 #include <string>
-
+#include <set>
 #include "textsplit.h"
 #include "debuglog.h"
+#include "utf8iter.h"
+#include "uproplist.h"
 
 using namespace std;
 
@@ -37,6 +39,8 @@ using namespace std;
 // once.
 enum CharClass {LETTER=256, SPACE=257, DIGIT=258};
 static int charclasses[256];
+
+static set<unsigned int> unicign;
 static void setcharclasses()
 {
     static int init = 0;
@@ -67,6 +71,8 @@ static void setcharclasses()
 
     init = 1;
     //for (i=0;i<256;i++)cerr<<i<<" -> "<<charclasses[i]<<endl;
+    for (i = 0; i < sizeof(uniign); i++) 
+	unicign.insert(uniign[i]);
 }
 
 // Do some cleanup (the kind which is simpler to do here than in the main loop,
@@ -152,6 +158,22 @@ bool TextSplit::doemit(string &word, int &wordpos, string &span, int spanpos,
     return true;
 }
 
+static inline int whatcc(unsigned int c)
+{
+    int cc;
+    if (c <= 127) {
+	cc = charclasses[c]; 
+    } else {
+	if (c == (unsigned int)-1)
+	    cc = SPACE;
+	else if (unicign.find(c) != unicign.end())
+	    cc = SPACE;
+	else
+	    cc = LETTER;
+    }
+    return cc;
+}
+
 /** 
  * Splitting a text into terms to be indexed.
  * We basically emit a word every time we see a separator, but some chars are
@@ -167,16 +189,21 @@ bool TextSplit::text_to_words(const string &in)
     bool number = false;
     int wordpos = 0;
     int spanpos = 0;
-    unsigned int i;
+    int charpos = 0;
+    Utf8Iter it(in);
 
-    for (i = 0; i < in.length(); i++) {
-	int c = in[i];
-	int cc = charclasses[c]; 
+    for (; !it.eof(); it++, charpos++) {
+	unsigned int c = *it;
+	if (c == (unsigned int)-1) {
+	    LOGERR(("Textsplit: error occured while scanning UTF-8 string\n"));
+	    return false;
+	}
+	int cc = whatcc(c);
 	switch (cc) {
 	case SPACE:
 	SPACE:
 	    if (word.length()) {
-		if (!doemit(word, wordpos, span, spanpos, true, i))
+		if (!doemit(word, wordpos, span, spanpos, true, it.getBpos()))
 		    return false;
 		number = false;
 	    }
@@ -186,56 +213,57 @@ bool TextSplit::text_to_words(const string &in)
 	case '-':
 	case '+':
 	    if (word.length() == 0) {
-		if (i < in.length() && charclasses[int(in[i+1])] == DIGIT) {
+		if (whatcc(it[charpos+1]) == DIGIT) {
 		    number = true;
-		    word += c;
-		    span += c;
+		    word += it;
+		    span += it;
 		}
 	    } else {
-		if (!doemit(word, wordpos, span, spanpos, false, i))
+		if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
 		    return false;
 		number = false;
-		span += c;
+		span += it;
 	    }
 	    break;
 	case '@':
 	    if (word.length()) {
-		if (!doemit(word, wordpos, span, spanpos, false, i))
+		if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
 		    return false;
 		number = false;
 	    } else
-		word += c;
-	    span += c;
+		word += it;
+	    span += it;
 	    break;
 	case '\'':
 	    if (word.length()) {
-		if (!doemit(word, wordpos, span, spanpos, false, i))
+		if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
 		    return false;
 		number = false;
-		span += c;
+		span += it;
 	    }
 	    break;
 	case '.':
 	    if (number) {
-		word += c;
+		word += it;
 	    } else {
 		//cerr<<"Got . span: '"<<span<<"' word: '"<<word<<"'"<<endl;
 		if (word.length()) {
-		    if (!doemit(word, wordpos, span, spanpos, false, i))
+		    if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
 			return false;
 		    number = false;
 		} else 
-		    word += c;
+		    word += it;
 	    }
-	    span += c;
+	    span += it;
 	    break;
 	case '#': 
 	    // Keep it only at end of word...
 	    if (word.length() > 0 && 
-		(i == in.length() -1 || charclasses[int(in[i+1])] == SPACE ||
-		 in[i+1] == '\n' || in[i+1] == '\r')) {
-		word += c;
-		span += c;
+		(whatcc(it[charpos+1]) == SPACE ||
+		 whatcc(it[charpos+1]) == '\n' || 
+		 whatcc(it[charpos+1]) == '\r')) {
+		word += it;
+		span += it;
 	    }
 		
 	    break;
@@ -261,13 +289,13 @@ bool TextSplit::text_to_words(const string &in)
 		else
 		    number = false;
 	    }
-	    word += (char)c;
-	    span += (char)c;
+	    word += it;
+	    span += it;
 	    break;
 	}
     }
-    if (word.length()) {
-	if (!doemit(word, wordpos, span, spanpos, true, i))
+    if (span.length()) {
+	if (!doemit(word, wordpos, span, spanpos, true, it.getBpos()))
 	    return false;
     }
     return true;
@@ -306,7 +334,8 @@ static string teststring =
     "192.168.4.1 "
     "one\n\rtwo\nthree-\nfour "
     "[olala][ululu] "
-    "'o'brien' "						
+    "'o'brien' "
+    "utf-8 ucs-4©"
     "\n"							      
 ;
 
