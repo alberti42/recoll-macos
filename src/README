@@ -1,45 +1,127 @@
-   English spoken here
+   Back to jf's home page
 
-   Je m'appelle Jean-Franc,ois Dockes et je suis ingenieur informaticien.
+    
 
-   Je travaille principalement en independant, sur des projets de
-   developpement au forfait.
+     * Screenshots
+     * Downloads
+     * Credits
+     * User guide
+     * Installation
+   [IMG]
 
-   Comme vous pouvez le constater, je ne suis pas concepteur de pages
-   HTML..., mais j'ai d'autres talents, principalement autour du systeme
-   UNIX.
+Recoll
 
-   Curriculum vitae: ici en Franc,ais or here in English.
+  Introduction
 
-   Vous pouvez me joindre par messagerie: jean-francois.dockes@wanadoo.fr
+   This is Recoll, a personal full text indexing system.
 
-   Si vous faites partie d'une association qui a plus de besoins
-   informatiques que de moyens, vous pouvez aussi me contacter (que ce soit
-   pour un site web ou d'autres besoins internes).
+   Recoll is free and copyrighted under the GPL license, see COPYING inside
+   the distribution. A lot of the code is imported from other packages, see
+   the Credits.
 
-   Il m'arrive aussi de faire de l'informatique pour m'amuser:
+   Recoll is still in infancy, but it is based on a very strong backend
+   (Xapian), and it can actually be useful right now, which is why I release
+   it so early. You might be interested in using Recoll to index your home
+   directory instead of xapian's Omega, for example, if you do not want to
+   run a web server, or your data is not iso-8859-1. But the query features
+   are very, very, much weaker.
 
-     * Recoll est un systeme de recherche textuelle personnel (desktop
-       search) pour Unix et Linux
-     * Sqlscreens est un generateur d'ecrans pour bases de donnees ecrit en
-       TCL/TK, gratuit et d'usage libre.
-     * Writemime est un module C++ qui facilite l'envoi de message MIME (avec
-       par exemple des fichiers attaches) `a partir d'un programme
-     * lesbonscomptes vous aide `a faire vos comptes quand vous partez en
-       vacances avec des amis
-     * psxtcl peut vous interesser si vous etes bricoleur et que vous aimez
-       bien interfacer des elements du vrai monde avec votre PC
-     * J'ai porte l'agenda TCL/TK ical de Sanjay Ghemawat sous WINDOWS. Cel`a
-       peut vous interesser si vous avez, comme moi, une famille multi-OS, et
-       que vous souhaitez tout de meme partager votre planning avec votre
-       moitie.
-     * Quand j'ai compris quelque chose (c'est rare), j'aime bien
-       rentabiliser l'evenement en faisant gagner du temps `a d'autres. Il
-       m'arrive d'ecrire un peu de documentation (pages en anglais):
-          * FreeBSD diskless operation.
-          * FreeBSD kernel sound subsystem.
-     * J'ai aussi mis en place le site de l'association Nautique Sevres
-       (activites nautiques et construction/restauration de bateaux `a Sevres
-       (92)). L`a c'est encore plus evident que j'aurais besoin de l'aide
-       d'un bon graphiste. Des volontaires ? Mais en fait, mon activite
-       principale `a Nautique Sevres, c'est de construire un bateau.
+   See INSTALL inside the distribution for compiling and installing, very
+   much by hand for now, I hope it will become better in the near future.
+
+  Features:
+
+     * Easy installation. No database daemon, web server or exotic language
+       necessary. The idea is that EVERYBODY should index their files because
+       it makes life easier.
+     * Indexes text, html, pdf (with xpdf's pdftotext), postscript (with
+       ghostscript's pstotext), msword (with antiword), openoffice files,
+       maildir and mailbox mail folders (mozilla and thunderbird mail ok).
+       Deals with compressed versions of same.
+     * Support for multiple charsets. Internal processing and storage uses
+       Unicode UTF-8.
+     * Stemming performed at query time (can switch stemming language after
+       indexing)
+     * An ugly GUI, qt-based, written with qt Designer.
+     * An indexer which runs either as a thread inside the GUI or as an
+       external, cron'able program.
+
+  Things lacking, coming in the not too far future:
+
+     * A more sophisticated query interface: the current one has no boolean
+       capabilities.
+     * A pretty GUI (see above)
+     * An interactive configuration tool. You need to edit files by hand for
+       now.
+     * Packages, rpm or other. It's all tar files currently.
+     * A build system, autoconf et al.
+     * Documentation and help.
+     * A few more filters for less common file types.
+
+  Using recoll
+
+     * Use File->Index to build/rebuild the database (what to index is
+       defined in the configuration file, see the install doc).
+     * Enter search terms in the upper left text field. There is no query
+       language right now, the search only understand probabilistic terms
+       (just words...), and double-quote enclosed phrases. Click Search or
+       type CR
+     * A result list should appear in the left pane. You can use the
+       Next/Prev buttons to paginate.
+     * Clicking on an entry in the list will display a preview in the right
+       pane -- This can take some time for big postscript or pdf files, as
+       the file is converted on the fly for preview --
+     * Double-clicking on an entry should launch an external viewer, as
+       specified in the mimeconf file (see INSTALL). This doesn't work for
+       compressed files for now.
+
+   I very much welcome suggestions or (gasp) code
+
+   In hope that this can be useful to somebody, it already is for me.
+
+  Downloads
+
+   Current version: 0.6 (tar.gz)
+
+   Older: 0.5
+
+  Installation
+
+    Prerequisites
+
+   At the very least, you will need to download and install the xapian core
+   package (I am currently using xapian version 0.8.5), and the qt runtime
+   and development packages (I am currently using qt 3.3.3).
+
+   You will most probably be able to find a binary package for qt for your
+   system. You may have to compile xapian, but this is not difficult.
+
+   You also need libiconv. I am currently using version 1.9. The iconv
+   interface is part of libc on Linux systems, you shouldn't need to do
+   anything there.
+
+    Compiling and installing
+
+   See the INSTALL file.
+
+  Credits
+
+   Recoll is mainly glue code, and most of the intelligent work uses code
+   from external projects.
+
+   Recoll borrows (steals?) heavily from the following projects. I tried to
+   include the relevant copyright attributions with the code. Any omission is
+   unintentional and will be fixed as soon as notified.
+
+     * Xapian: The database module (core) is used unmodified, and quite a lot
+       of code has been borrowed from Omega, the web-based search application
+       (ie: the html parser, plus miscellaneous bits and ideas).
+     * Estraier: Miscellaneous pieces of code and ideas, especially for
+       charset handling, and code from external filters.
+     * Unac: for accent removal. This is a relatively small package, not that
+       easy to find, it has been integrated almost unmodified in the Recoll
+       package.
+     * Iconv, for character set conversion.
+     * Binc IMAP for mail MIME MIME parsing code.
+
+    jean-francois.dockes@wanadoo.fr
