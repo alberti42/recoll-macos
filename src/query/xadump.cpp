@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.1 2004-12-17 13:01:01 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.2 2004-12-17 15:50:48 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <strings.h>
@@ -34,12 +34,19 @@ static int        op_flags;
 #define OPT_i     0x4
 #define OPT_T     0x8
 #define OPT_D     0x10
+#define OPT_t     0x20
+#define OPT_P     0x40
+#define OPT_F     0x80
+#define OPT_E     0x100
+
+Xapian::Database db;
 
 int main(int argc, char **argv)
 {
     string dbdir = "/home/dockes/tmp/xapiandb";
     string outencoding = "ISO8859-1";
     int docid = 1;
+    string aterm;
 
     thisprog = argv[0];
     argc--; argv++;
@@ -51,8 +58,11 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'T':	op_flags |= OPT_T; break;
 	    case 'D':	op_flags |= OPT_D; break;
+	    case 'E':	op_flags |= OPT_E; break;
+	    case 'F':   op_flags |= OPT_F; break;
+	    case 'P':	op_flags |= OPT_P; break;
+	    case 'T':	op_flags |= OPT_T; break;
 	    case 'd':	op_flags |= OPT_d; if (argc < 2)  Usage();
 		dbdir = *(++argv);
 		argc--; 
@@ -65,6 +75,10 @@ int main(int argc, char **argv)
 		if (sscanf(*(++argv), "%d", &docid) != 1) Usage();
 		argc--; 
 		goto b1;
+	    case 't':	op_flags |= OPT_t; if (argc < 2)  Usage();
+		aterm = *(++argv);
+		argc--; 
+		goto b1;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
@@ -73,11 +87,12 @@ int main(int argc, char **argv)
     if (argc != 0)
 	Usage();
 
-    Xapian::Database db;
-
     try {
 	db = Xapian::Auto::open(dbdir, Xapian::DB_OPEN);
 
+	cout << "DB: ndocs " << db.get_doccount() << " lastdocid " <<
+	    db.get_lastdocid() << " avglength " << db.get_avlength() << endl;
+	    
 	if (op_flags & OPT_T) {
 	    Xapian::TermIterator term;
 	    string printable;
@@ -98,8 +113,20 @@ int main(int argc, char **argv)
 	    Xapian::Document doc = db.get_document(docid);
 	    string data = doc.get_data();
 	    cout << data << endl;
-	}
-
+	} else if (op_flags & OPT_P) {
+	    Xapian::PostingIterator doc;
+	    for (doc = db.postlist_begin(aterm);
+		 doc != db.postlist_end(aterm);doc++) {
+		cout << *doc << endl;
+	    }
+		
+	} else if (op_flags & OPT_F) {
+	    cout << "FreqFor " << aterm << " : " <<
+		db.get_termfreq(aterm) << endl;
+	} else if (op_flags & OPT_E) {
+	    cout << "Exists " << aterm << " : " <<
+		db.term_exists(aterm) << endl;
+	} 
 
 
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.4 2004-12-17 15:36:13 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.5 2004-12-17 15:50:48 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <sys/stat.h>
@@ -13,6 +13,7 @@ using namespace std;
 #include "rcldb.h"
 #include "textsplit.h"
 #include "transcode.h"
+#include "unacpp.h"
 
 #include "xapian.h"
 
@@ -162,6 +163,25 @@ bool splitCb(void *cdata, const std::string &term, int pos)
     return true;
 }
 
+// Unaccent and lowercase data: use unac 
+// for accents, and do it by hand for upper / lower. Note lowercasing is
+// only for ascii letters anyway, so it's just A-Z -> a-z
+bool dumb_string(const string &in, string &out)
+{
+    string inter;
+    out.erase();
+    if (!unac_cpp(in, inter))
+	return false;
+    out.resize(inter.length());
+    for (unsigned int i = 0; i < inter.length(); i++) {
+	if (inter[i] >= 'A' && inter[i] <= 'Z')
+	    out += inter[i] + 'a' - 'A';
+	else
+	    out += inter[i];
+    }
+    return true;
+}
+
 bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
 {
     if (pdata == 0)
@@ -183,25 +203,33 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &doc)
     record += "\n";
     newdocument.set_data(record);
 
-    // TOBEDONE:
-    // Need to add stuff here to unaccent and lowercase the data: use unac 
-    // for accents, and do it by hand for upper / lower. Note lowercasing is
-    // only for ascii letters anyway, so it's just A-Z -> a-z
-
     wsData splitData(newdocument);
 
     TextSplit splitter(splitCb, &splitData);
 
-    splitter.text_to_words(doc.title);
+    string noacc;
+    if (!unac_cpp(doc.title, noacc)) {
+	return false;
+    }
+    splitter.text_to_words(noacc);
 
     splitData.basepos += splitData.curpos + 100;
-    splitter.text_to_words(doc.text);
+    if (!dumb_string(doc.text, noacc)) {
+	return false;
+    }
+    splitter.text_to_words(noacc);
 
     splitData.basepos += splitData.curpos + 100;
-    splitter.text_to_words(doc.keywords);
+    if (!dumb_string(doc.keywords, noacc)) {
+	return false;
+    }
+    splitter.text_to_words(noacc);
 
     splitData.basepos += splitData.curpos + 100;
-    splitter.text_to_words(doc.abstract);
+    if (!dumb_string(doc.abstract, noacc)) {
+	return false;
+    }
+    splitter.text_to_words(noacc);
 
     newdocument.add_term("T" + doc.mimetype);
     string pathterm  = "P" + fn;
