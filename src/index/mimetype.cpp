@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.4 2005-02-09 12:07:30 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.5 2005-02-09 13:34:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <ctype.h>
@@ -8,6 +8,7 @@ static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.4 2005-02-09 12:07:30 dockes Exp
 using std::string;
 
 #include "mimetype.h"
+#include "debuglog.h"
 
 string mimetype(const string &fn, ConfTree *mtypes)
 {
@@ -27,9 +28,11 @@ string mimetype(const string &fn, ConfTree *mtypes)
 	     it != stoplist.end(); it++) {
 	    if (it->length() > fn.length())
 		continue;
-	    if (!fn.compare(fn.length() - it->length(), string::npos,
-			    *it))
+	    if (!fn.compare(fn.length() - it->length(), string::npos, *it)) {
+		LOGDEB1(("mimetype: fn %s in stoplist (%s)\n", fn.c_str(), 
+			 it->c_str()));
 		return "";
+	    }
 	}
     }
 

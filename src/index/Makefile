@@ -2,13 +2,15 @@ include ../mk/sysconf
 
 BIGLIB = ../lib/librcl.a
 
-PROGS = idxdriver csguess
+PROGS = recollindex csguess
 all: $(PROGS)
 
-IDXDRIVER_OBJS= idxdriver.o $(BIGLIB)
-idxdriver : $(IDXDRIVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o idxdriver $(IDXDRIVER_OBJS) \
+RECOLLINDEX_OBJS= recollindex.o $(BIGLIB)
+recollindex : $(RECOLLINDEX_OBJS)
+	$(CXX) $(CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
 		$(LIBXAPIAN) $(LIBICONV) $(LIBSYS)
+recollindex.o : idxdriver.cpp
+	$(CXX) $(CXXFLAGS) -c -o recollindex.o idxdriver.cpp
 
 CSGUESS_OBJS= trcsguess.o  $(BIGLIB) 
 csguess : $(CSGUESS_OBJS)
