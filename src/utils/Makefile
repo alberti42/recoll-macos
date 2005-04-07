@@ -33,6 +33,13 @@ trtranscode.o : ../utils/transcode.cpp
 	$(CXX) $(CXXFLAGS) -DTEST_TRANSCODE -c -o trtranscode.o \
 	       transcode.cpp
 
+IDFILE_OBJS= tridfile.o  $(BIGLIB) 
+idfile : $(IDFILE_OBJS)
+	$(CXX) $(CXXFLAGS) -o idfile $(IDFILE_OBJS) $(LIBICONV)
+tridfile.o : ../utils/idfile.cpp 
+	$(CXX) $(CXXFLAGS) -DTEST_IDFILE -c -o tridfile.o \
+	       idfile.cpp
+
 MIMEPARSE_OBJS= trmimeparse.o  $(BIGLIB) 
 trmimeparse : $(MIMEPARSE_OBJS)
 	$(CXX) $(CXXFLAGS) -o trmimeparse $(MIMEPARSE_OBJS) $(LIBICONV)

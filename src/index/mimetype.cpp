@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.8 2005-04-05 09:35:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.9 2005-04-07 09:05:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <ctype.h>
@@ -14,9 +14,16 @@ using std::list;
 #include "execmd.h"
 #include "conftree.h"
 #include "smallut.h"
+#include "idfile.h"
 
+// The system 'file' utility is not that great for us. For exemple it
+// will mistake mail folders for simple text files if there is no
+// 'Received' header, which would be the case, for exemple in a 'Sent'
+// folder. Also "file -i" does not exist on all systems
 static string mimetypefromdata(const string &fn)
 {
+    string mime;
+#ifdef USE_SYSTEM_FILE_UTILITY
     list<string> args;
 
     args.push_back("-i");
@@ -36,11 +43,13 @@ static string mimetypefromdata(const string &fn)
 	return "";
     list<string>::iterator it = res.begin();
     it++;
-    string mime = *it;
+    mime = *it;
 
     if (mime.length() > 0 && !isalpha(mime[mime.length() - 1]))
 	mime.erase(mime.length() -1);
-
+#else 
+    mime = idFile(fn.c_str());
+#endif
     return mime;
 }
 
@@ -64,8 +73,8 @@ string mimetype(const string &fn, ConfTree *mtypes)
 		continue;
 	    if (!stringicmp(fn.substr(fn.length() - it->length(),string::npos),
 			    *it)) {
-		LOGINFO(("mimetype: fn %s in stoplist (%s)\n", fn.c_str(), 
-			 it->c_str()));
+		LOGDEB(("mimetype: fn %s in stoplist (%s)\n", fn.c_str(), 
+			it->c_str()));
 		return "";
 	    }
 	}
@@ -85,11 +94,6 @@ string mimetype(const string &fn, ConfTree *mtypes)
     }
 
     // Look at file data ? Only when no suffix or always ?
-    // Also 'file' is not that great for us. For exemple it will 
-    // mistake mail folders for simple text files if there is no 'Received' 
-    // header, which would be the case, for exemple in a 'Sent' folder. Also
-    // I'm not sure that file -i exists on all systems
-
     //if (suff.empty()) // causes problems with shifted files, like
 		      // messages.1, messages.2 etc...
     return mimetypefromdata(fn);

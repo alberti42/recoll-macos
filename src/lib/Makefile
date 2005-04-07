@@ -8,13 +8,13 @@ all: $(LIBS)
 
 OBJS = conftree.o csguess.o debuglog.o \
      execmd.o wipedir.o \
-     fstreewalk.o html.o mail.o htmlparse.o indexer.o internfile.o \
+     fstreewalk.o html.o mail.o htmlparse.o idfile.o indexer.o internfile.o \
      mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathut.o \
      rclconfig.o rcldb.o rclinit.o readfile.o smallut.o \
      textsplit.o transcode.o \
      unacpp.o unac.o
 SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
-     ../utils/execmd.cpp ../utils/wipedir.cpp \
+     ../utils/execmd.cpp ../utils/idfile.cpp ../utils/wipedir.cpp \
      ../utils/fstreewalk.cpp ../common/html.cpp ../common/mail.cpp \
      ../common/htmlparse.cpp \
      ../index/indexer.cpp ../common/internfile.cpp \
@@ -47,6 +47,8 @@ fstreewalk.o : ../utils/fstreewalk.cpp
 html.o : ../common/html.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 htmlparse.o : ../common/htmlparse.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+idfile.o : ../utils/idfile.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 indexer.o : ../index/indexer.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
