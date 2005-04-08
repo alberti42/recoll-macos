@@ -1,0 +1,9 @@
+CXXFLAGS = -Wall -g -I. -I../index -I../utils -I../common \
+	 -I../unac -I../bincimapmime -I/usr/local/include 
+CC=gcc
+CXX=g++
+
+LIBXAPIAN = -L/usr/local/lib -lxapian
+LIBICONV =  -L/usr/local/lib -liconv
+
+LIBSYS = -lpthread

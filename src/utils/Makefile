@@ -3,7 +3,7 @@ include ../mk/sysconf
 BIGLIB = ../lib/librcl.a
 
 PROGS = wipedir smallut trfstreewalk trpathut transcode trmimeparse \
-      trexecmd utf8iter
+      trexecmd utf8iter idfile
 
 all: $(PROGS)
 
