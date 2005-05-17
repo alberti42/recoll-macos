@@ -6,7 +6,8 @@ CONFIG	+= qt warn_on thread release
 SOURCES	+= main.cpp \
 	idxthread.cpp
 
-FORMS	= recollmain.ui
+FORMS	= recollmain.ui \
+	advsearch.ui
 
 IMAGES	= images/filenew \
 	images/fileopen \
@@ -23,12 +24,9 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  LIBS += ../lib/librcl.a ../bincimapmime/libmime.a -L/usr/local/lib -lxapian -liconv
-  INCLUDEPATH += ../common ../index ../query ../unac ../utils 
-}
+    }
 
 UNAME = $$system(uname -s)
 contains( UNAME, [lL]inux ) {
-	  LIBS -= -liconv
-}
+	  }
 
