@@ -31,9 +31,6 @@ Recoll
 
   Features:
 
-     * Easy installation. No database daemon, web server or exotic language
-       necessary. The idea is that EVERYBODY should index their files because
-       it makes life easier.
      * Indexes text, html, pdf (with xpdf's pdftotext), postscript (with
        ghostscript's pstotext), msword (with antiword), openoffice files,
        maildir and mailbox mail folders (mozilla and thunderbird mail ok).
@@ -42,9 +39,16 @@ Recoll
        Unicode UTF-8.
      * Stemming performed at query time (can switch stemming language after
        indexing)
+     * Easy installation. No database daemon, web server or exotic language
+       necessary. The idea is that EVERYBODY should index their files because
+       it makes life easier.
      * An ugly GUI, qt-based, written with qt Designer.
      * An indexer which runs either as a thread inside the GUI or as an
        external, cron'able program.
+
+   recoll has been compiled and tested on FreeBSD, Linux and Solaris
+   (versions FreeBSD 5.3, red hat 7.3, Solaris 8, but other not too distant
+   releases should be ok too).
 
   Things lacking, coming in the not too far future:
 
