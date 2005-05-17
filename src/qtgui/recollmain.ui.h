@@ -111,11 +111,15 @@ static string plaintorich(const string &in, const list<string>& terms,
 	    ateol = true;
 	} else {
 	    ateol = false;
-	    out += in[i];
+	    if (in[i] == '<') {
+		out += "&lt;";
+	    } else 
+		out += in[i];
 	}
     }
 
     termoffsets = cb.tboffs;
+    LOGDEB(("plaintorich: text:\n%s\n", out.c_str()));
     return out;
 }
 
