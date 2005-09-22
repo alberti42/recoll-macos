@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.10 2005-02-11 11:20:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.11 2005-09-22 11:10:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -19,7 +19,7 @@ using namespace std;
  * (ok for UTF-8, ascii, iso8859* and quite a few others).
  *
  * We work in a way which would make it quite difficult to handle non-ascii
- * separator chars (en-dash,etc.). We would then need to actually parse the 
+ * separator chars (en-dash, etc.). We would then need to actually parse the 
  * utf-8 stream, and use a different way to classify the characters (instead 
  * of a 256 slot array).
  *
@@ -27,9 +27,9 @@ using namespace std;
  *
  * How to fix: use some kind of utf-8 aware iterator, or convert to UCS4 first.
  * Then specialcase all 'real' utf chars, by checking for the few
-   punctuation ones we're interested in (put them in a map). Then
-   classify all other non-ascii as letter, and use the current method
-   for chars < 127.
+ * punctuation ones we're interested in (put them in a map). Then
+ * classify all other non-ascii as letter, and use the current method
+ * for chars < 127.
  */
 
 // Character classes: we have three main groups, and then some chars
@@ -75,12 +75,17 @@ static void setcharclasses()
 	unicign.insert(uniign[i]);
 }
 
-// Do some cleanup (the kind which is simpler to do here than in the main loop,
-// then send term to our client.
+// Do some cleanup (the kind which is simpler to do here than in the
+// main loop, then send term to our client.
 bool TextSplit::emitterm(bool isspan, string &w, int pos, 
 			 int btstart, int btend)
 {
     LOGDEB2(("TextSplit::emitterm: '%s' pos %d\n", w.c_str(), pos));
+
+    // It may happen that our cleanup would result in emitting the
+    // same term twice. We try to avoid this
+    static string prevterm;
+    static int prevpos = -1;
 
     if (!cb)
 	return false;
@@ -123,8 +128,12 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	}
     }
     if (w.length() > 0 && w.length() < (unsigned)maxWordLength) {
-	bool ret = cb->takeword(w, pos, btstart, btend);
-	return ret;
+	if (w != prevterm || pos != prevpos) {
+	    bool ret = cb->takeword(w, pos, btstart, btend);
+	    prevterm = w;
+	    prevpos = pos;
+	    return ret;
+	}
     }
     return true;
 }
@@ -135,6 +144,12 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
 bool TextSplit::doemit(string &word, int &wordpos, string &span, int spanpos,
 		       bool spanerase, int bp)
 {
+#if 0
+    cerr << "doemit: " << "w: '" << word << "' wp: "<< wordpos << " s: '" <<
+	span << "' sp: " << spanpos << " spe: " << spanerase << " bp: " << bp 
+	 << endl;
+#endif
+
     // When splitting for query, we only emit final spans
     if (fq && !spanerase) {
 	wordpos++;
@@ -183,13 +198,16 @@ static inline int whatcc(unsigned int c)
 bool TextSplit::text_to_words(const string &in)
 {
     LOGDEB2(("TextSplit::text_to_words: cb %p\n", cb));
+
     setcharclasses();
-    string span;
-    string word;
+
+    string span; // Current span. Might be jf.dockes@wanadoo.f
+    string word; // Current word: no punctuation at all in there
     bool number = false;
-    int wordpos = 0;
-    int spanpos = 0;
-    int charpos = 0;
+    int wordpos = 0; // Term position of current word
+    int spanpos = 0; // Term position of current span
+    int charpos = 0; // Character position
+
     Utf8Iter it(in);
 
     for (; !it.eof(); it++, charpos++) {
@@ -202,7 +220,7 @@ bool TextSplit::text_to_words(const string &in)
 	switch (cc) {
 	case SPACE:
 	SPACE:
-	    if (word.length()) {
+	    if (word.length() || span.length()) {
 		if (!doemit(word, wordpos, span, spanpos, true, it.getBpos()))
 		    return false;
 		number = false;
@@ -217,7 +235,8 @@ bool TextSplit::text_to_words(const string &in)
 		    number = true;
 		    word += it;
 		    span += it;
-		}
+		} else
+		    span += it;
 	    } else {
 		if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
 		    return false;
@@ -248,7 +267,8 @@ bool TextSplit::text_to_words(const string &in)
 	    } else {
 		//cerr<<"Got . span: '"<<span<<"' word: '"<<word<<"'"<<endl;
 		if (word.length()) {
-		    if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
+		    if (!doemit(word, wordpos, span, spanpos, false, 
+				it.getBpos()))
 			return false;
 		    number = false;
 		} else 
@@ -294,7 +314,7 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 	}
     }
-    if (span.length()) {
+    if (word.length() || span.length()) {
 	if (!doemit(word, wordpos, span, spanpos, true, it.getBpos()))
 	    return false;
     }
@@ -318,15 +338,23 @@ using namespace std;
 
 // A small class to hold state while splitting text
 class mySplitterCB : public TextSplitCB {
+    int first;
  public:
+    mySplitterCB() : first(0) {}
+
     bool takeword(const std::string &term, int pos, int bs, int be) {
-	printf("%3d %-20s %d %d\n", pos, term.c_str(), bs, be);
+	if (first) {
+	    printf("%3s %-20s %4s %4s\n", "pos", "Term", "bs", "be");
+	    first = 0;
+	}
+	printf("%3d %-20s %4d %4d\n", pos, term.c_str(), bs, be);
 	return true;
     }
 };
 
 static string teststring = 
-    "le ta " 
+    "Un bout de texte \n" 
+    "normal. "
     "jfd@okyz.com "
     "Ceci. Est;Oui 1.24 n@d @net .net t@v@c c# c++ -10 o'brien l'ami "
     "a 134 +134 -14 -1.5 +1.5 1.54e10 a "
@@ -338,6 +366,7 @@ static string teststring =
     "utf-8 ucs-4©"
     "\n"							      
 ;
+static string teststring1 = "c++ ";
 
 static string thisprog;
 
@@ -380,8 +409,9 @@ int main(int argc, char **argv)
     TextSplit splitter(&cb, (op_flags&OPT_q) ? true: false);
     if (argc == 1) {
 	string data;
-	if (!file_to_string(argv[1], data)) 
+	if (!file_to_string(*argv++, data)) 
 	    exit(1);
+	argc--;
 	splitter.text_to_words(data);
     } else {
 	cout << endl << teststring << endl << endl;  
