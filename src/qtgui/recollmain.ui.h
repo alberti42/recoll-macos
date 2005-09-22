@@ -1,14 +1,14 @@
 /****************************************************************************
-** ui.h extension file, included from the uic-generated form implementation.
-**
-** If you want to add, delete, or rename functions or slots, use
-** Qt Designer to update this file, preserving your code.
-**
-** You should not define a constructor or destructor in this file.
-** Instead, write your code in functions called init() and destroy().
-** These will automatically be called by the form's constructor and
-** destructor.
-*****************************************************************************/
+ ** ui.h extension file, included from the uic-generated form implementation.
+ **
+ ** If you want to add, delete, or rename functions or slots, use
+ ** Qt Designer to update this file, preserving your code.
+ **
+ ** You should not define a constructor or destructor in this file.
+ ** Instead, write your code in functions called init() and destroy().
+ ** These will automatically be called by the form's constructor and
+ ** destructor.
+ *****************************************************************************/
 
 #include <regex.h>
 #include <stdlib.h>
@@ -32,7 +32,9 @@ using std::pair;
 #include "textsplit.h"
 #include "smallut.h"
 #include "utf8iter.h"
+#include "transcode.h"
 
+#include "unacpp.h"
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
@@ -63,63 +65,110 @@ void RecollMain::fileStart_IndexingAction_activated()
 	startindexing = 1;
 }
 
-// Text splitter callback used to take note of the query terms byte offsets 
-// inside the text. This is then used to post highlight tags. 
+// Text splitter callback used to take note of the position of query terms 
+// inside the result text. This is then used to post highlight tags. 
 class myTextSplitCB : public TextSplitCB {
  public:
-    list<pair<int, int> > tboffs;
-    const list<string> *terms;
-    myTextSplitCB(const list<string>& terms) : terms(&terms) {}
-    virtual bool takeword(const std::string& term, int, int bts,  int bte) {
+    const list<string>    *terms;  // in: query terms
+    list<pair<int, int> > tboffs;  // out: begin and end positions of
+                                   // query terms in text
+
+    myTextSplitCB(const list<string>& terms) 
+	: terms(&terms) {
+    }
+
+    // Callback called by the text-to-words breaker for each word
+    virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
+	string dumb;
+	Rcl::dumb_string(term, dumb);
+	//LOGDEB(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
+	// pos, bts, bte));
 	for (list<string>::const_iterator it = terms->begin(); 
 	     it != terms->end(); it++) {
-	    string dumb = term;
-	    Rcl::dumb_string(term, dumb);
 	    if (!stringlowercmp(*it, dumb)) {
 		tboffs.push_back(pair<int, int>(bts, bte));
 		break;
 	    }
 	}
+	     
 	return true;
     }
 };
 
+// Fix result text for display inside the gui text window
 static string plaintorich(const string &in, const list<string>& terms,
 			  list<pair<int, int> >&termoffsets)
 {
-    LOGDEB(("plaintorich: terms: %s\n", stringlistdisp(terms).c_str()));
+    LOGDEB(("plaintorich: terms: %s\n", 
+	    stringlistdisp(terms).c_str()));
+
+    termoffsets.erase(termoffsets.begin(), termoffsets.end());
 
     myTextSplitCB cb(terms);
     TextSplit splitter(&cb, true);
     splitter.text_to_words(in);
-    bool ateol = false;
+
+    for (list<pair<int, int> >::iterator li = cb.tboffs.begin(); 
+	 li != cb.tboffs.end(); li++) {
+    }
+
+    // State variable used to limitate the number of consecutive empty lines
+    int ateol = 0;
+
+    // Rich text output
     string out = "<qt><head><title></title></head><body><p>";
+
+    // Iterator for the list of input term positions. We use it to
+    // output highlight tags and to compute term positions in the
+    // output text
     list<pair<int, int> >::iterator it = cb.tboffs.begin();
-    for (unsigned int i = 0; i < in.length(); i++) {
+
+    // Storage for the current term position in output.
+    pair<int, int> opos;
+    int outbytepos; // This is the current position in output, excluding tags
+    for (unsigned int ibyteidx = 0; ibyteidx < in.length(); ibyteidx++) {
 	if (it != cb.tboffs.end()) {
-	    if (i == (unsigned int)it->first) {
+	    if (ibyteidx == (unsigned int)it->first) {
 		out += "<termtag>";
-	    } else if (i == (unsigned int)it->second) {
+		opos.first = outbytepos;
+	    } else if (ibyteidx == (unsigned int)it->second) {
 		if (it != cb.tboffs.end())
 		    it++;
+		opos.second = outbytepos;
+		termoffsets.push_back(opos);
 		out += "</termtag>";
 	    }
 	}
-	if (in[i] == '\n') {
-	    if (!ateol)
-		out += "<br>";
-	    ateol = true;
-	} else {
-	    ateol = false;
-	    if (in[i] == '<') {
-		out += "&lt;";
-	    } else 
-		out += in[i];
+	switch(in[ibyteidx]) {
+	case '\n':
+	    if (ateol < 2)
+		out += "<br>\n";
+	    ateol++;
+	    outbytepos++;
+	    break;
+	case '\r': break;
+	case '<':
+	    ateol = 0;
+	    out += "&lt;";
+	    outbytepos++;
+	    break;
+	default:
+	    ateol = 0;
+	    out += in[ibyteidx];
+	    outbytepos++;
 	}
     }
 
-    termoffsets = cb.tboffs;
-    LOGDEB(("plaintorich: text:\n%s\n", out.c_str()));
+    {
+	FILE *fp = fopen("/tmp/termsdeb", "w");
+	string unaced, ascii;
+	fprintf(fp, "plaintorich: text:\n%s\n", out.c_str());
+	unac_cpp(out, unaced);
+	fprintf(fp, "plaintorich: text:\n%s\n", unaced.c_str());
+	transcode(unaced, ascii, "UTF-8", "ASCII");
+	fprintf(fp, "plaintorich: text:\n%s\n", ascii.c_str());
+	fclose(fp);
+    }
     return out;
 }
 
@@ -140,13 +189,15 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
     // Look for appropriate viewer
     string cmd = getMimeViewer(doc.mimetype, rclconfig->getMimeConf());
     if (cmd.length() == 0) {
-	QMessageBox::warning(0, "Recoll", QString("No viewer for mime type ") +
+	QMessageBox::warning(0, "Recoll", 
+			     QString("No external viewer configured for mime"
+				     " type ") +
 			     doc.mimetype.c_str());
 	return;
     }
 
     string fn = urltolocalpath(doc.url);
-    // substitute 
+    // Substitute %u (url) and %f (file name) inside prototype command
     string ncmd;
     string::const_iterator it1;
     for (it1 = cmd.begin(); it1 != cmd.end();it1++) {
@@ -223,7 +274,7 @@ void RecollMain::reslistTE_clicked(int par, int car)
     int para = 0, index = 1;
     if (!termoffsets.empty()) {
 	index = (termoffsets.begin())->first;
-	LOGDEB(("Byte index: %d\n", index));
+	LOGDEB(("Preview: Byte index for first term: %d\n", index));
 	// Translate byte to character offset
 	string::size_type pos = 0;
 	Utf8Iter it(rich);
@@ -231,7 +282,7 @@ void RecollMain::reslistTE_clicked(int par, int car)
 	    pos = it.getBpos();
 	}
 	index = pos == string::npos ? 0 : it.getCpos();
-	LOGDEB(("Setting cursor position to para %d, charindex %d\n",
+	LOGDEB(("Set cursor position: para %d, character index %d\n",
 		para,index));
 	previewTextEdit->setCursorPosition(0, index);
     }
@@ -402,4 +453,23 @@ void RecollMain::listNextPB_clicked()
 void RecollMain::helpQuick_startAction_activated()
 {
 
+}
+
+
+#include "advsearch.h"
+
+advsearch *asearchform;
+
+void RecollMain::advSearchPB_clicked()
+{
+    if (asearchform == 0) {
+	// Couldn't find way to have a normal wm frame
+	asearchform = new advsearch(this, "Advanced search", FALSE,
+				    WStyle_Customize | WStyle_NormalBorder | 
+				    WStyle_Title | WStyle_SysMenu);
+	asearchform->setSizeGripEnabled(FALSE);
+	asearchform->show();
+    } else {
+	asearchform->show();
+    }
 }
