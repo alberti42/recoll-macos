@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.11 2005-09-22 11:10:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.12 2005-09-22 14:09:04 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -99,6 +99,7 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	case '@':
 	case '\'':
 	    w.erase(w.length()-1);
+	    btend--; if (btend < 0) btend=0;
 	    break;
 	default:
 	    goto breakloop1;
@@ -112,6 +113,7 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	case ',':
 	case '\'':
 	    w.erase(w.length()-1);
+	    btstart++;
 	    break;
 	default:
 	    goto breakloop2;
