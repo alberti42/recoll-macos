@@ -4,10 +4,12 @@ LANGUAGE	= C++
 CONFIG	+= qt warn_on thread release
 
 SOURCES	+= main.cpp \
-	idxthread.cpp
+	idxthread.cpp \
+	plaintorich.cpp
 
 FORMS	= recollmain.ui \
-	advsearch.ui
+	advsearch.ui \
+	preview/preview.ui
 
 IMAGES	= images/filenew \
 	images/fileopen \
