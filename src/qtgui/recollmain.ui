@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>160</width>
+            <width>549</width>
             <height>750</height>
         </rect>
     </property>
@@ -22,8 +22,8 @@
     </property>
     <property name="minimumSize">
         <size>
-            <width>0</width>
-            <height>0</height>
+            <width>549</width>
+            <height>160</height>
         </size>
     </property>
     <property name="caption">
@@ -307,6 +307,7 @@
 </slots>
 <functions>
     <function access="private">init()</function>
+    <function access="private" returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
 </functions>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>

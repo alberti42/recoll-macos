@@ -47,6 +47,17 @@ void RecollMain::init()
     curPreview = 0;
 }
 
+bool RecollMain::eventFilter( QObject * target, QEvent * event )
+{
+    if (event->type() == QEvent::KeyPress) {
+	QKeyEvent *keyEvent = (QKeyEvent *)event;
+	if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
+	    recollNeedsExit = 1;
+	}
+    }
+    return QWidget::eventFilter(target, event);
+}
+
 void RecollMain::fileExit()
 {
     LOGDEB1(("RecollMain: fileExit\n"));
@@ -124,6 +135,7 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
     LOGDEB(("Executing: '%s'\n", ncmd.c_str()));
     system(ncmd.c_str());
 }
+
 
 // Display preview for the selected document, and highlight entry. The
 // paragraph number is doc number in window + 1
@@ -222,7 +234,7 @@ void RecollMain::reslistTE_clicked(int par, int car)
 // first page of results
 void RecollMain::queryText_returnPressed()
 {
-    LOGDEB1(("RecollMain::queryText_returnPressed()\n"));
+    LOGDEB(("RecollMain::queryText_returnPressed()\n"));
     if (!rcldb->isopen()) {
 	string dbdir;
 	if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
@@ -344,12 +356,13 @@ void RecollMain::listNextPB_clicked()
 	    struct tm *tm = localtime(&mtime);
 	    strftime(datebuf, 99, "<i>Modified:</i>&nbsp;%F&nbsp;%T", tm);
 	}
-	LOGDEB1(("Abstract: %s\n", doc.abstract.c_str()));
+	string abst = stripMarkup(doc.abstract);
+	LOGDEB(("Abstract: {%s}\n", abst.c_str()));
 	string result = "<p>" + 
 	    string(perbuf) + " <b>" + doc.title + "</b><br>" +
 	    doc.mimetype + "&nbsp;" +
-	    (!doc.mtime.empty() ? string(datebuf) + "<br>" : string("")) +
-	    (!doc.abstract.empty() ? doc.abstract + "<br>" : string("")) +
+	    (!doc.mtime.empty() ? string(datebuf) + "<br>" : string("<br>")) +
+	    (!abst.empty() ? abst + "<br>" : string("")) +
 	    (!doc.keywords.empty() ? doc.keywords + "<br>" : string("")) +
 	    "<i>" + doc.url + +"</i><br>" +
 	    "</p>";
@@ -357,6 +370,8 @@ void RecollMain::listNextPB_clicked()
 	QString str = QString::fromUtf8(result.c_str(), result.length());
 	reslistTE->append(str);
     }
+
+    reslist_current = -1;
 
     if (gotone) {
 	reslistTE->append("</body></qt>");
@@ -366,6 +381,7 @@ void RecollMain::listNextPB_clicked()
 	// reslistTE_clicked(1, 0);
     } else {
 	// Restore first in win parameter that we shouln't have incremented
+	reslistTE->append("<p><b>No results found</b><br>");
 	reslist_winfirst -= respagesize;
 	if (reslist_winfirst < 0)
 	    reslist_winfirst = -1;
@@ -398,5 +414,7 @@ void RecollMain::advSearchPB_clicked()
 	asearchform->show();
     }
 }
+
+
 
 

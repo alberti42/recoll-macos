@@ -10,6 +10,8 @@
 ** destructor.
 *****************************************************************************/
 
+#include "debuglog.h"
+
 void Preview::init()
 {
     connect(pvTab, SIGNAL(currentChanged(QWidget *)), 
@@ -19,14 +21,18 @@ void Preview::init()
     canBeep = true;
 }
 
+extern int recollNeedsExit;
+
 bool Preview::eventFilter(QObject *target, QEvent *event)
 {
     if (event->type() != QEvent::KeyPress) 
 	return QWidget::eventFilter(target, event);
     
-    fprintf(stderr, "Preview::eventFilter: keyEvent\n");
+    LOGDEB(("Preview::eventFilter: keyEvent\n"));
     QKeyEvent *keyEvent = (QKeyEvent *)event;
-    if (dynSearchActive) {
+    if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
+	recollNeedsExit = 1;
+    } else if (dynSearchActive) {
 	if (keyEvent->key() == Key_F3) {
 	    doSearch(true, false);
 	    return true;
@@ -38,7 +44,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	QWidget *e = 0;
 	if (tw)
 	    e = (QTextEdit *)tw->child("pvEdit");
-	fprintf(stderr, "Widget: %p, edit %p, target %p\n", tw, e, target);
+	LOGDEB(("Widget: %p, edit %p, target %p\n", tw, e, target));
 	if (e && target == tw && keyEvent->key() == Key_Slash) {
 	    dynSearchActive = true;
 	    return true;
@@ -50,7 +56,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 
 void Preview::searchTextLine_textChanged(const QString & text)
 {
-    fprintf(stderr, "search line text changed. text: '%s'\n", text.ascii());
+    LOGDEB(("search line text changed. text: '%s'\n", text.ascii()));
     if (text.isEmpty()) {
 	dynSearchActive = false;
     } else {
@@ -66,8 +72,8 @@ void Preview::searchTextLine_textChanged(const QString & text)
 // starting from the current position
 void Preview::doSearch(bool next, bool reverse)
 {
-    //fprintf(stderr, "Preview::doSearch: next %d rev %d\n",
-    // int(next), int(reverse));
+    //LOGDEB(("Preview::doSearch: next %d rev %d\n",
+    // int(next), int(reverse)));
     QWidget *tw = pvTab->currentPage();
     QTextEdit *edit = 0;
     if (tw) {
@@ -97,7 +103,7 @@ void Preview::doSearch(bool next, bool reverse)
 	    int bogus;
 	    mspara = mepara;
 	    msindex = meindex;
-	    //fprintf(stderr, "New para: %d index %d\n", mspara, msindex);
+	    //LOGDEB(("New para: %d index %d\n", mspara, msindex));
 	}
     }
 
@@ -139,14 +145,14 @@ void Preview::prevPressed()
 
 void Preview::currentChanged(QWidget * tw)
 {
-    QObject *o;
-    o = tw->child("pvEdit");
-    fprintf(stderr, "Preview::currentChanged(). Edit %p\n", o);
+    QObject *o = tw->child("pvEdit");
+    LOGDEB(("Preview::currentChanged(). Edit %p\n", o));
     
     if (o == 0) {
-	fprintf(stderr, "Editor child not found\n");
+	LOGDEB(("Editor child not found\n"));
     } else {
 	tw->installEventFilter(this);
 	o->installEventFilter(this);
+	((QWidget*)o)->setFocus();
     }
 }

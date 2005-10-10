@@ -44,6 +44,24 @@ class myTextSplitCB : public TextSplitCB {
     }
 };
 
+// Just strip/escape things that would look like markup
+string stripMarkup(const string &in)
+{
+    string out;
+    for (string::size_type pos = 0; pos < in.length(); pos++) {
+	switch(in.at(pos)) {
+	case '<':
+	    out += "&lt;";
+	    break;
+	case '&':
+	    out += "&amp;";
+	    break;
+	default:
+	    out += in.at(pos);
+	}
+    }
+    return out;
+}
 
 // Fix result text for display inside the gui text window.
 //
@@ -115,6 +133,11 @@ string plaintorich(const string &in,  const list<string>& terms,
 	case '<':
 	    ateol = 0;
 	    out += "&lt;";
+	    outcpos++;
+	    break;
+	case '&':
+	    ateol = 0;
+	    out += "&amp;";
 	    outcpos++;
 	    break;
 	default:
