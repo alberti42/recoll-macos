@@ -1,3 +1,6 @@
+#ifndef lint
+static char rcsid[] = "@(#$Id: main.cpp,v 1.9 2005-10-10 12:29:42 dockes Exp $ (C) 2005 J.F.Dockes";
+#endif
 
 #include <unistd.h>
 

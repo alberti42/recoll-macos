@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pvmain.cpp,v 1.1 2005-09-27 06:20:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pvmain.cpp,v 1.2 2005-10-10 12:29:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -14,6 +14,8 @@ using std::pair;
 #include <qapplication.h>
 #include <qobject.h>
 #include <qtextedit.h>
+#include <qtabwidget.h>
+#include <qlayout.h>
 
 #include "preview.h"
 #include "../plaintorich.h"
@@ -25,7 +27,6 @@ int main( int argc, char ** argv )
 {
     QApplication a(argc, argv);
     Preview w;
-    w.show();
 
     string text;
     if (!file_to_string(filename, text)) {
@@ -38,5 +39,18 @@ int main( int argc, char ** argv )
     QString str = QString::fromUtf8(rich.c_str(), rich.length());
     w.pvEdit->setText(str);
 
+    //    QVBoxLayout *unnamedLayout = 
+    //	new QVBoxLayout(0, 11, 6, "unnamedLayout"); 
+    QWidget *anon = new QWidget(w.pvTab);
+    QVBoxLayout *anonLayout = new QVBoxLayout(anon, 11, 6, "unnamedLayout"); 
+    QTextEdit *newEd = new QTextEdit(anon, "pvEdit");
+    anonLayout->addWidget(newEd);
+    fprintf(stderr, "pvEdit %p newEd: %p\n", w.pvEdit, newEd);
+    newEd->setReadOnly( TRUE );
+    newEd->setUndoRedoEnabled( FALSE );
+    newEd->setText(str);
+
+    w.pvTab->addTab(anon, "Tab 2");
+    w.show();
     return a.exec();
 }

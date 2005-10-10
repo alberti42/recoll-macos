@@ -1,21 +1,21 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>Preview</class>
-<widget class="QDialog">
+<widget class="QWidget">
     <property name="name">
         <cstring>Preview</cstring>
     </property>
     <property name="geometry">
         <rect>
-            <x>159</x>
-            <y>362</y>
-            <width>469</width>
-            <height>174</height>
+            <x>0</x>
+            <y>0</y>
+            <width>751</width>
+            <height>727</height>
         </rect>
     </property>
     <property name="sizePolicy">
         <sizepolicy>
-            <hsizetype>0</hsizetype>
-            <vsizetype>0</vsizetype>
+            <hsizetype>5</hsizetype>
+            <vsizetype>5</vsizetype>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
@@ -35,26 +35,44 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout5</cstring>
+                <cstring>layout9</cstring>
             </property>
             <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QTextEdit">
+                <widget class="QTabWidget">
                     <property name="name">
-                        <cstring>pvEdit</cstring>
+                        <cstring>pvTab</cstring>
                     </property>
-                    <property name="readOnly">
-                        <bool>true</bool>
-                    </property>
-                    <property name="undoRedoEnabled">
-                        <bool>false</bool>
-                    </property>
+                    <widget class="QWidget">
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <attribute name="title">
+                            <string>Preview 1</string>
+                        </attribute>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QTextEdit">
+                                <property name="name">
+                                    <cstring>pvEdit</cstring>
+                                </property>
+                                <property name="readOnly">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="undoRedoEnabled">
+                                    <bool>false</bool>
+                                </property>
+                            </widget>
+                        </vbox>
+                    </widget>
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout4</cstring>
+                        <cstring>layout7</cstring>
                     </property>
                     <hbox>
                         <property name="name">
@@ -156,6 +174,7 @@
     <slot>doSearch( bool next, bool reverse )</slot>
     <slot>nextPressed()</slot>
     <slot>prevPressed()</slot>
+    <slot>currentChanged( QWidget * tw )</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">init()</function>

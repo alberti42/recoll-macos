@@ -20,7 +20,7 @@ using std::pair;
 
 #include <qmessagebox.h>
 #include <qcstring.h>
-
+#include <qtabwidget.h>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -29,15 +29,23 @@ using std::pair;
 #include "pathut.h"
 #include "recoll.h"
 #include "internfile.h"
-#include "textsplit.h"
 #include "smallut.h"
-#include "utf8iter.h"
-#include "transcode.h"
+#include "plaintorich.h"
+
 
 #include "unacpp.h"
+
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
+
+static const int respagesize = 8;
+
+
+void RecollMain::init()
+{
+    curPreview = 0;
+}
 
 void RecollMain::fileExit()
 {
@@ -65,112 +73,6 @@ void RecollMain::fileStart_IndexingAction_activated()
 	startindexing = 1;
 }
 
-// Text splitter callback used to take note of the position of query terms 
-// inside the result text. This is then used to post highlight tags. 
-class myTextSplitCB : public TextSplitCB {
- public:
-    const list<string>    *terms;  // in: query terms
-    list<pair<int, int> > tboffs;  // out: begin and end positions of
-                                   // query terms in text
-
-    myTextSplitCB(const list<string>& terms) 
-	: terms(&terms) {
-    }
-
-    // Callback called by the text-to-words breaker for each word
-    virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
-	string dumb;
-	Rcl::dumb_string(term, dumb);
-	//LOGDEB(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
-	// pos, bts, bte));
-	for (list<string>::const_iterator it = terms->begin(); 
-	     it != terms->end(); it++) {
-	    if (!stringlowercmp(*it, dumb)) {
-		tboffs.push_back(pair<int, int>(bts, bte));
-		break;
-	    }
-	}
-	     
-	return true;
-    }
-};
-
-// Fix result text for display inside the gui text window
-static string plaintorich(const string &in, const list<string>& terms,
-			  list<pair<int, int> >&termoffsets)
-{
-    LOGDEB(("plaintorich: terms: %s\n", 
-	    stringlistdisp(terms).c_str()));
-
-    termoffsets.erase(termoffsets.begin(), termoffsets.end());
-
-    myTextSplitCB cb(terms);
-    TextSplit splitter(&cb, true);
-    splitter.text_to_words(in);
-
-    for (list<pair<int, int> >::iterator li = cb.tboffs.begin(); 
-	 li != cb.tboffs.end(); li++) {
-    }
-
-    // State variable used to limitate the number of consecutive empty lines
-    int ateol = 0;
-
-    // Rich text output
-    string out = "<qt><head><title></title></head><body><p>";
-
-    // Iterator for the list of input term positions. We use it to
-    // output highlight tags and to compute term positions in the
-    // output text
-    list<pair<int, int> >::iterator it = cb.tboffs.begin();
-
-    // Storage for the current term position in output.
-    pair<int, int> opos;
-    int outbytepos; // This is the current position in output, excluding tags
-    for (unsigned int ibyteidx = 0; ibyteidx < in.length(); ibyteidx++) {
-	if (it != cb.tboffs.end()) {
-	    if (ibyteidx == (unsigned int)it->first) {
-		out += "<termtag>";
-		opos.first = outbytepos;
-	    } else if (ibyteidx == (unsigned int)it->second) {
-		if (it != cb.tboffs.end())
-		    it++;
-		opos.second = outbytepos;
-		termoffsets.push_back(opos);
-		out += "</termtag>";
-	    }
-	}
-	switch(in[ibyteidx]) {
-	case '\n':
-	    if (ateol < 2)
-		out += "<br>\n";
-	    ateol++;
-	    outbytepos++;
-	    break;
-	case '\r': break;
-	case '<':
-	    ateol = 0;
-	    out += "&lt;";
-	    outbytepos++;
-	    break;
-	default:
-	    ateol = 0;
-	    out += in[ibyteidx];
-	    outbytepos++;
-	}
-    }
-
-    {
-	FILE *fp = fopen("/tmp/termsdeb", "w");
-	string unaced, ascii;
-	fprintf(fp, "plaintorich: text:\n%s\n", out.c_str());
-	unac_cpp(out, unaced);
-	fprintf(fp, "plaintorich: text:\n%s\n", unaced.c_str());
-	transcode(unaced, ascii, "UTF-8", "ASCII");
-	fprintf(fp, "plaintorich: text:\n%s\n", ascii.c_str());
-	fclose(fp);
-    }
-    return out;
-}
 
 static string urltolocalpath(string url)
 {
@@ -180,7 +82,8 @@ static string urltolocalpath(string url)
 // Use external viewer to display file
 void RecollMain::reslistTE_doubleClicked(int par, int)
 {
-    //    restlistTE_clicked(par, car);
+    LOGDEB(("RecollMain::reslistTE_doubleClicked: par %d\n", par));
+
     Rcl::Doc doc;
     int reldocnum =  par - 1;
     if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0))
@@ -239,8 +142,10 @@ void RecollMain::reslistTE_clicked(int par, int car)
     reslistTE->setParagraphBackgroundColor(par, color);
 
     int reldocnum = par - 1;
+    if (reslist_current == reldocnum)
+	return;
+
     reslist_current = reldocnum;
-    previewTextEdit->clear();
 
     if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0)) {
 	QMessageBox::warning(0, "Recoll",
@@ -264,33 +169,52 @@ void RecollMain::reslistTE_clicked(int par, int car)
     list<pair<int, int> > termoffsets;
     string rich = plaintorich(fdoc.text, terms, termoffsets);
 
+    QTextEdit *editor;
+    if (curPreview == 0) {
+	curPreview = new Preview(0, "Preview");
+	curPreview->setCaption(queryText->text());
+	if (curPreview == 0) {
+	    QMessageBox::warning(0, "Warning", 
+				 "Can't create preview window",  
+				 QMessageBox::Ok, 
+				 QMessageBox::NoButton);
+	    return;
+	}
+	curPreview->show();
+	editor = curPreview->pvEdit;
+    } else {
+	QWidget *anon = new QWidget((QWidget *)curPreview->pvTab);
+	QVBoxLayout *anonLayout = new QVBoxLayout(anon, 1, 1, "anonLayout"); 
+	editor = new QTextEdit(anon, "pvEdit");
+	editor->setReadOnly( TRUE );
+	editor->setUndoRedoEnabled( FALSE );
+	anonLayout->addWidget(editor);
+	curPreview->pvTab->addTab(anon, "Tab");
+	curPreview->pvTab->showPage(anon);
+    }
+    curPreview->pvTab->changeTab(curPreview->pvTab->currentPage(), 
+				 QString::fromUtf8(doc.title.c_str(), 
+						   doc.title.length()));
+
     QStyleSheetItem *item = 
-	new QStyleSheetItem( previewTextEdit->styleSheet(), "termtag" );
+	new QStyleSheetItem(editor->styleSheet(), 
+			    "termtag" );
     item->setColor("blue");
     item->setFontWeight(QFont::Bold);
 
     QString str = QString::fromUtf8(rich.c_str(), rich.length());
-    previewTextEdit->setText(str);
+    editor->setText(str);
     int para = 0, index = 1;
     if (!termoffsets.empty()) {
 	index = (termoffsets.begin())->first;
-	LOGDEB(("Preview: Byte index for first term: %d\n", index));
-	// Translate byte to character offset
-	string::size_type pos = 0;
-	Utf8Iter it(rich);
-	for (; pos != string::npos && (int)pos < index; it++) {
-	    pos = it.getBpos();
-	}
-	index = pos == string::npos ? 0 : it.getCpos();
 	LOGDEB(("Set cursor position: para %d, character index %d\n",
 		para,index));
-	previewTextEdit->setCursorPosition(0, index);
+	editor->setCursorPosition(0, index);
     }
-    previewTextEdit->ensureCursorVisible();
-    previewTextEdit->getCursorPosition(&para, &index);
+    editor->ensureCursorVisible();
+    editor->getCursorPosition(&para, &index);
     LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
-	    previewTextEdit->length(), previewTextEdit->paragraphs(), 
-	    para, index));
+	    editor->length(), editor->paragraphs(),  para, index));
 }
 
 
@@ -333,7 +257,7 @@ void RecollMain::queryText_returnPressed()
     if (!rcldb->setQuery(string((const char *)u8), dostem ? 
 			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, stemlang))
 	return;
-    list<string> terms;
+    curPreview = 0;
     listNextPB_clicked();
 }
 
@@ -348,7 +272,6 @@ void RecollMain::clearqPB_clicked()
     queryText->clear();
 }
 
-static const int respagesize = 10;
 void RecollMain::listPrevPB_clicked()
 {
     if (reslist_winfirst <= 0)
@@ -361,12 +284,14 @@ void RecollMain::listPrevPB_clicked()
 // Fill up result list window with next screen of hits
 void RecollMain::listNextPB_clicked()
 {
+    fprintf(stderr, "listNextPB_clicked\n");
     if (!rcldb)
 	return;
     int percent;
     Rcl::Doc doc;
     rcldb->getDoc(0, doc, &percent);
     int resCnt = rcldb->getResCnt();
+    fprintf(stderr, "listNextPB_clicked rescnt\n");
     LOGDEB(("listNextPB_clicked: rescnt %d, winfirst %d\n", resCnt,
 	    reslist_winfirst));
 
@@ -381,7 +306,7 @@ void RecollMain::listNextPB_clicked()
 
     bool gotone = false;
     reslistTE->clear();
-    previewTextEdit->clear();
+
     int last = MIN(resCnt-reslist_winfirst, respagesize);
 
     // Insert results if any in result list window 
@@ -438,7 +363,7 @@ void RecollMain::listNextPB_clicked()
 	reslistTE->setCursorPosition(0,0);
 	reslistTE->ensureCursorVisible();
 	// Display preview for 1st doc in list
-	reslistTE_clicked(1, 0);
+	// reslistTE_clicked(1, 0);
     } else {
 	// Restore first in win parameter that we shouln't have incremented
 	reslist_winfirst -= respagesize;
@@ -473,3 +398,5 @@ void RecollMain::advSearchPB_clicked()
 	asearchform->show();
     }
 }
+
+
