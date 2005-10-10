@@ -1,20 +1,22 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.6 2005-02-08 10:56:13 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.7 2005-10-10 13:25:23 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
 using std::string;
 #endif
 
-// Function class whose called for every detected word
+/**
+ * Function class whose takeword method is called for every detected word while * splitting text.
+ */
 class TextSplitCB {
  public:
     virtual ~TextSplitCB() {}
     virtual bool takeword(const std::string& term, 
 			  int pos,  // term pos
-			  int bts,      // byte offset of first char in term
-			  int bte      // byte offset of first char after term
+			  int bts,  // byte offset of first char in term
+			  int bte   // byte offset of first char after term
 			  ) = 0; 
 };
 
@@ -25,7 +27,7 @@ class TextSplitCB {
  * but 'ts much simpler this way...
  */
 class TextSplit {
-    bool fq;        // Are we splitting for query or index ?
+    bool fq;        // for query:  Are we splitting for query or index ?
     TextSplitCB *cb;
     int maxWordLength;
     bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
@@ -33,7 +35,7 @@ class TextSplit {
 		bool spanerase, int bp);
  public:
     /**
-     * Constructor: just store callback and client data
+     * Constructor: just store callback object
      */
     TextSplit(TextSplitCB *t, bool forquery = false) 
 	: fq(forquery), cb(t), maxWordLength(40) {}
