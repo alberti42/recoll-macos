@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.5 2005-04-06 10:20:11 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.6 2005-10-15 12:18:04 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -172,30 +172,42 @@ MimeHandlerMail::processone(const string &fn, Binc::MimeDocument& doc,
 	return MimeHandler::MHError;
     }
 
-    // Handle some headers. We should process rfc2047 encoding here
-    // Also there should be no 8bit chars, but there sometimes are. So
-    // we transcode as if from iso-8859-1, which is better than
-    // getting utf8 conversion errors later on
+    // Handle some headers. 
     Binc::HeaderItem hi;
     string transcoded;
     if (doc.h.getFirstHeader("Subject", hi)) {
-	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	rfc2047_decode(hi.getValue(), transcoded);
 	docout.title = transcoded;
     }
     if (doc.h.getFirstHeader("From", hi)) {
-	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	rfc2047_decode(hi.getValue(), transcoded);
 	docout.text += string("From: ") + transcoded + string("\n");
     }
     if (doc.h.getFirstHeader("To", hi)) {
-	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	rfc2047_decode(hi.getValue(), transcoded);
 	docout.text += string("To: ") + transcoded + string("\n");
     }
     if (doc.h.getFirstHeader("Date", hi)) {
-	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	rfc2047_decode(hi.getValue(), transcoded);
+	// Try to set the mtime from the date field.
+	string date = transcoded;
+	string::size_type pos;
+	// Possibly get rid of the day
+	if ((pos = date.find(",")) != string::npos)
+	    date = date.substr(pos+1);
+	struct tm tm;
+	if (strptime(date.c_str(), " %d %b %Y %H:%M:%S %z ", &tm)) {
+	    char ascuxtime[100];
+	    sprintf(ascuxtime, "%ld", (long)mktime(&tm));
+	    docout.mtime = ascuxtime;
+	} else {
+	    LOGDEB(("strptime failed for [%s]\n", date.c_str()));
+	}
+
 	docout.text += string("Date: ") + transcoded + string("\n");
     }
     if (doc.h.getFirstHeader("Subject", hi)) {
-	transcode(hi.getValue(), transcoded, "iso-8859-1", "UTF-8");
+	rfc2047_decode(hi.getValue(), transcoded);
 	docout.text += string("Subject: ") + transcoded + string("\n");
     }
 

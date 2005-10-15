@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.3 2005-03-25 09:40:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.4 2005-10-15 12:18:04 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMEPARSE
@@ -348,6 +348,148 @@ bool base64_decode(const string& in, string& out)
     return true;
 }
 
+#include "transcode.h"
+#include "smallut.h"
+
+// Decode a parsed encoded word
+static bool rfc2047_decodeParsed(const std::string& charset, 
+				 const std::string& encoding, 
+				 const std::string& value, 
+				 std::string &utf8)
+{
+    //    fprintf(stderr, "DecodeParsed: charset [%s] enc [%s] val [%s]\n",
+    //	    charset.c_str(), encoding.c_str(), value.c_str());
+    utf8 = "";
+
+    string decoded;
+    if (!stringlowercmp("b", encoding)) {
+	if (!base64_decode(value, decoded))
+	    return false;
+	//	fprintf(stderr, "FromB64: [%s]\n", decoded.c_str());
+    } else if (!stringlowercmp("q", encoding)) {
+	if (!qp_decode(value, decoded))
+	    return false;
+	// Need to translate _ to ' ' here
+	string temp;
+	for (string::size_type pos = 0; pos < decoded.length(); pos++)
+	    if (decoded[pos] == '_')
+		temp += ' ';
+	    else 
+		temp += decoded[pos];
+	decoded = temp;
+	//	fprintf(stderr, "FromQP: [%s]\n", decoded.c_str());
+    } else {
+	//	fprintf(stderr, "Bad encoding [%s]\n", encoding.c_str());
+	return false;
+    }
+
+    if (!transcode(decoded, utf8, charset, "UTF-8")) {
+	//	fprintf(stderr, "Transcode failed\n");
+	return false;
+    }
+    return true;
+}
+
+// Parse a mail header encoded value
+typedef enum  {rfc2047base, rfc2047open_eq, rfc2047charset, rfc2047encoding, 
+	       rfc2047value, rfc2047close_q} Rfc2047States;
+
+bool rfc2047_decode(const std::string& in, std::string &out) 
+{
+    Rfc2047States state = rfc2047base;
+    string encoding, charset, value, utf8;
+
+    out = "";
+
+    for (unsigned int ii = 0; ii < in.length(); ii++) {
+	char ch = in[ii];
+	switch (state) {
+	case rfc2047base: 
+	    {
+		switch (ch) {
+		case '=': state = rfc2047open_eq; break;
+		default: value += ch;
+		}
+	    }
+	    break;
+	case rfc2047open_eq: 
+	    {
+		switch (ch) {
+		case '?': 
+		    {
+			// Transcode current (unencoded part) value:
+			// we sometimes find 8-bit chars in
+			// there. Interpret as Iso8859.
+			if (value.length() > 0) {
+			    transcode(value, utf8, "ISO8859-1", "UTF-8");
+			    out += utf8;
+			    value = "";
+			}
+			state = rfc2047charset; 
+		    }
+		    break;
+		default: state = rfc2047base; out += '='; out += ch;break;
+		}
+	    } 
+	    break;
+	case rfc2047charset: 
+	    {
+		switch (ch) {
+		case '?': state = rfc2047encoding; break;
+		default: charset += ch; break;
+		}
+	    } 
+	    break;
+	case rfc2047encoding: 
+	    {
+		switch (ch) {
+		case '?': state = rfc2047value; break;
+		default: encoding += ch; break;
+		}
+	    }
+	    break;
+	case rfc2047value: 
+	    {
+		switch (ch) {
+		case '?': state = rfc2047close_q; break;
+		default: value += ch;break;
+		}
+	    }
+	    break;
+	case rfc2047close_q: 
+	    {
+		switch (ch) {
+		case '=': 
+		    {
+			string utf8;
+			state = rfc2047base; 
+			if (!rfc2047_decodeParsed(charset, encoding, value, 
+						  utf8)) {
+			    return false;
+			}
+			out += utf8;
+			charset = encoding = value = "";
+		    }
+		    break;
+		default: state = rfc2047value; value += '?';value += ch;break;
+		}
+	    }
+	    break;
+	default: // ??
+	    return false;
+	}
+    }
+
+    if (value.length() > 0) {
+	transcode(value, utf8, "ISO8859-1", "UTF-8");
+	out += utf8;
+	value = "";
+    }
+    if (state != rfc2047base) 
+	return false;
+    return true;
+}
+
 #else 
 
 #include <string>
@@ -382,7 +524,7 @@ main(int argc, const char **argv)
 	fprintf(stderr, "qp_decode returned error\n");
     }
     printf("Decoded: '%s'\n", out.c_str());
-#else
+#elif 0
     //'C'est à boire qu'il nous faut éviter l'excès.'
     //'Deuxième ligne'
     //'Troisième ligne'
@@ -396,6 +538,18 @@ main(int argc, const char **argv)
 	fprintf(stderr, "base64_decode returned error\n");
     }
     printf("Decoded: '%s'\n", out.c_str());
+#elif 1
+    char line [1024];
+    string out;
+    while (fgets(line, 1023, stdin)) {
+	int l = strlen(line);
+	if (l == 0)
+	    continue;
+	line[l-1] = 0;
+	fprintf(stderr, "Line: [%s]\n", line);
+	rfc2047_decode(line, out);
+	fprintf(stderr, "Out:  [%s]\n", out.c_str());
+    }
 #endif
 }
 
