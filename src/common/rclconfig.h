@@ -1,6 +1,8 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.4 2005-02-04 09:39:44 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.5 2005-10-17 13:36:53 dockes Exp $  (C) 2004 J.F.Dockes */
+
+#include <list>
 
 #include "conftree.h"
 
@@ -50,6 +52,7 @@ class RclConfig {
     const string &getDefCharset() {return defcharset;}
     const string &getDefLang() {return deflang;}
     bool getGuessCharset() {return guesscharset;}
+    std::list<string> getAllMimeTypes();
 };
 
 std::string find_filter(RclConfig *conf, const string& cmd);

@@ -21,6 +21,12 @@ void Preview::init()
     canBeep = true;
 }
 
+void Preview::closeEvent(QCloseEvent *e)
+{
+    emit previewClosed(this);
+    QWidget::closeEvent(e);
+}
+
 extern int recollNeedsExit;
 
 bool Preview::eventFilter(QObject *target, QEvent *event)

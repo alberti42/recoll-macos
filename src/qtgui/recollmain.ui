@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>549</width>
-            <height>750</height>
+            <width>590</width>
+            <height>810</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -22,7 +22,7 @@
     </property>
     <property name="minimumSize">
         <size>
-            <width>549</width>
+            <width>590</width>
             <height>160</height>
         </size>
     </property>
@@ -35,7 +35,7 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout8</cstring>
+                <cstring>layout30</cstring>
             </property>
             <vbox>
                 <property name="name">
@@ -43,7 +43,7 @@
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout9</cstring>
+                        <cstring>layout29</cstring>
                     </property>
                     <hbox>
                         <property name="name">
@@ -109,14 +109,6 @@
                                 <string>Next page</string>
                             </property>
                         </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>advSearchPB</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Adv. search</string>
-                            </property>
-                        </widget>
                         <spacer>
                             <property name="name">
                                 <cstring>spacer1</cstring>
@@ -129,11 +121,33 @@
                             </property>
                             <property name="sizeHint">
                                 <size>
-                                    <width>346</width>
+                                    <width>42</width>
                                     <height>20</height>
                                 </size>
                             </property>
                         </spacer>
+                        <widget class="Line">
+                            <property name="name">
+                                <cstring>line4</cstring>
+                            </property>
+                            <property name="frameShape">
+                                <enum>VLine</enum>
+                            </property>
+                            <property name="frameShadow">
+                                <enum>Sunken</enum>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>advSearchPB</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Advanced search</string>
+                            </property>
+                        </widget>
                     </hbox>
                 </widget>
                 <widget class="QTextEdit">
@@ -173,10 +187,6 @@
         <separator/>
         <action name="fileExitAction"/>
     </item>
-    <item text="&amp;Help" name="helpMenu">
-        <separator/>
-        <action name="helpQuick_startAction"/>
-    </item>
 </menubar>
 <toolbars>
 </toolbars>
@@ -206,17 +216,6 @@
             <string>Start Indexing</string>
         </property>
     </action>
-    <action>
-        <property name="name">
-            <cstring>helpQuick_startAction</cstring>
-        </property>
-        <property name="text">
-            <string>Quick start</string>
-        </property>
-        <property name="menuText">
-            <string>Quick start</string>
-        </property>
-    </action>
 </actions>
 <connections>
     <connection>
@@ -230,12 +229,6 @@
         <signal>activated()</signal>
         <receiver>RecollMain</receiver>
         <slot>fileStart_IndexingAction_activated()</slot>
-    </connection>
-    <connection>
-        <sender>helpQuick_startAction</sender>
-        <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>helpQuick_startAction_activated()</slot>
     </connection>
     <connection>
         <sender>Search</sender>
@@ -279,9 +272,16 @@
         <receiver>RecollMain</receiver>
         <slot>clearqPB_clicked()</slot>
     </connection>
+    <connection>
+        <sender>advSearchPB</sender>
+        <signal>clicked()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>advSearchPB_clicked()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in declaration">preview/.ui/preview.h</include>
+    <include location="local" impldecl="in declaration">recoll.h</include>
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
 </includes>
 <variables>
@@ -302,8 +302,9 @@
     <slot>clearqPB_clicked()</slot>
     <slot>listPrevPB_clicked()</slot>
     <slot>listNextPB_clicked()</slot>
-    <slot>helpQuick_startAction_activated()</slot>
     <slot>advSearchPB_clicked()</slot>
+    <slot>previewClosed( Preview * w )</slot>
+    <slot>startAdvSearch( AdvSearchData sdata )</slot>
 </slots>
 <functions>
     <function access="private">init()</function>

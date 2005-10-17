@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pvmain.cpp,v 1.2 2005-10-10 12:29:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pvmain.cpp,v 1.3 2005-10-17 13:36:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -22,7 +22,7 @@ using std::pair;
 #include "readfile.h"
 
 const char *filename = "/home/dockes/tmp/tstpv-utf8.txt";
-
+int recollNeedsExit;
 int main( int argc, char ** argv )
 {
     QApplication a(argc, argv);

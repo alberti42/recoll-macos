@@ -2,8 +2,8 @@ include ../mk/sysconf
 
 BIGLIB = ../lib/librcl.a
 
-PROGS = wipedir smallut trfstreewalk trpathut transcode trmimeparse \
-      trexecmd utf8iter idfile
+PROGS = trconftree wipedir smallut trfstreewalk trpathut transcode \
+      trmimeparse trexecmd utf8iter idfile
 
 all: $(PROGS)
 
@@ -67,5 +67,17 @@ utf8iter : $(UTF8ITER_OBJS)
 trutf8iter.o : ../utils/utf8iter.cpp utf8iter.h
 	$(CXX) $(CXXFLAGS) -DTEST_UTF8ITER -c -o trutf8iter.o \
 	       utf8iter.cpp
+
+
+
+CONFTREE_OBJS= trconftree.o  $(BIGLIB) 
+trconftree : $(CONFTREE_OBJS)
+	$(CXX) $(CXXFLAGS) -o trconftree $(CONFTREE_OBJS)
+trconftree.o : ../utils/conftree.cpp 
+	$(CXX) $(CXXFLAGS) -DTEST_CONFTREE -c -o trconftree.o \
+	       conftree.cpp
+
+
+
 clean: 
 	rm -f *.o $(PROGS)

@@ -31,14 +31,14 @@ using std::pair;
 #include "internfile.h"
 #include "smallut.h"
 #include "plaintorich.h"
-
-
 #include "unacpp.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
 
+// Number of abstracts in a result page. This will avoid scrollbars
+// with the default window size and font, most of the time.
 static const int respagesize = 8;
 
 
@@ -47,6 +47,7 @@ void RecollMain::init()
     curPreview = 0;
 }
 
+// We want to catch ^Q everywhere to mean quit.
 bool RecollMain::eventFilter( QObject * target, QEvent * event )
 {
     if (event->type() == QEvent::KeyPress) {
@@ -68,6 +69,7 @@ void RecollMain::fileExit()
 // things apart from a need to exit
 void RecollMain::checkExit()
 {
+    // Check if indexing thread done
     if (indexingstatus) {
 	indexingstatus = false;
 	// Make sure we reopen the db to get the results.
@@ -84,13 +86,13 @@ void RecollMain::fileStart_IndexingAction_activated()
 	startindexing = 1;
 }
 
-
+// Note that all our 'urls' are like : file://...
 static string urltolocalpath(string url)
 {
     return url.substr(7, string::npos);
 }
 
-// Use external viewer to display file
+// Double click in result list: use external viewer to display file
 void RecollMain::reslistTE_doubleClicked(int par, int)
 {
     LOGDEB(("RecollMain::reslistTE_doubleClicked: par %d\n", par));
@@ -154,7 +156,7 @@ void RecollMain::reslistTE_clicked(int par, int car)
     reslistTE->setParagraphBackgroundColor(par, color);
 
     int reldocnum = par - 1;
-    if (reslist_current == reldocnum)
+    if (curPreview && reslist_current == reldocnum)
 	return;
 
     reslist_current = reldocnum;
@@ -185,6 +187,8 @@ void RecollMain::reslistTE_clicked(int par, int car)
     if (curPreview == 0) {
 	curPreview = new Preview(0, "Preview");
 	curPreview->setCaption(queryText->text());
+	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
+		this, SLOT(previewClosed(Preview *)));
 	if (curPreview == 0) {
 	    QMessageBox::warning(0, "Warning", 
 				 "Can't create preview window",  
@@ -204,13 +208,40 @@ void RecollMain::reslistTE_clicked(int par, int car)
 	curPreview->pvTab->addTab(anon, "Tab");
 	curPreview->pvTab->showPage(anon);
     }
+    string tabname;
+    if (!doc.title.empty()) {
+	tabname = doc.title;
+    } else {
+	tabname = path_getsimple(doc.url);
+    }
+    if (tabname.length() > 20) {
+	tabname = tabname.substr(0, 10) + "..." + 
+	    tabname.substr(tabname.length()-10);
+    }
     curPreview->pvTab->changeTab(curPreview->pvTab->currentPage(), 
-				 QString::fromUtf8(doc.title.c_str(), 
-						   doc.title.length()));
+				 QString::fromUtf8(tabname.c_str(), 
+						   tabname.length()));
+
+    if (doc.title.empty()) 
+	doc.title = path_getsimple(doc.url);
+    char datebuf[100];
+    datebuf[0] = 0;
+    if (!doc.mtime.empty()) {
+	time_t mtime = atol(doc.mtime.c_str());
+	struct tm *tm = localtime(&mtime);
+	strftime(datebuf, 99, "%F %T", tm);
+    }
+    string tiptxt = doc.url + string("\n");
+    tiptxt += doc.mimetype + " " 
+	+ (doc.mtime.empty() ? "\n" : string(datebuf) + "\n");
+    if (!doc.title.empty())
+	tiptxt += doc.title + "\n";
+    curPreview->pvTab->setTabToolTip(curPreview->pvTab->currentPage(),
+				     QString::fromUtf8(tiptxt.c_str(),
+						       tiptxt.length()));
 
     QStyleSheetItem *item = 
-	new QStyleSheetItem(editor->styleSheet(), 
-			    "termtag" );
+	new QStyleSheetItem(editor->styleSheet(), "termtag" );
     item->setColor("blue");
     item->setFontWeight(QFont::Bold);
 
@@ -388,13 +419,20 @@ void RecollMain::listNextPB_clicked()
     }
 }
 
-
-
-
-void RecollMain::helpQuick_startAction_activated()
+// If a preview (toplevel) window gets closed by the user, we need to
+// clean up because there is no way to reopen it. And check the case
+// where the current one is closed
+void RecollMain::previewClosed(Preview *w)
 {
-
+    if (w == curPreview) {
+	LOGDEB(("Active preview closed\n"));
+	curPreview = 0;
+    } else {
+	LOGDEB(("Old preview closed\n"));
+    }
+    delete w;
 }
+
 
 
 #include "advsearch.h"
@@ -409,12 +447,32 @@ void RecollMain::advSearchPB_clicked()
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
 	asearchform->setSizeGripEnabled(FALSE);
+	connect(asearchform, SIGNAL(startSearch(AdvSearchData)), 
+		this, SLOT(startAdvSearch(AdvSearchData)));
 	asearchform->show();
     } else {
 	asearchform->show();
     }
 }
 
+void RecollMain::startAdvSearch(AdvSearchData sdata)
+{
+    LOGDEB(("RecollMain::startAdvSearch\n"));
+    LOGDEB((" allwords: %s\n", sdata.allwords.c_str()));
+    LOGDEB((" phrase: %s\n", sdata.phrase.c_str()));
+    LOGDEB((" orwords: %s\n", sdata.orwords.c_str()));
+    LOGDEB((" nowords: %s\n", sdata.nowords.c_str()));
+    string ft;
+    for (list<string>::iterator it = sdata.filetypes.begin(); 
+	 it != sdata.filetypes.end(); it++) {
+	ft += *it + " ";
+    }
+    if (!ft.empty()) 
+	LOGDEB(("Searched file types: %s\n", ft.c_str()));
+    if (!sdata.topdir.empty())
+	LOGDEB(("Restricted to: %s\n", sdata.topdir.c_str()));
+
+}
 
 
 

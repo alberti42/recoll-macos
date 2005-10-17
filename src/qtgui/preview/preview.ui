@@ -172,6 +172,9 @@
     <variable>bool dynSearchActive;</variable>
     <variable>bool canBeep;</variable>
 </variables>
+<signals>
+    <signal>previewClosed(Preview *)</signal>
+</signals>
 <slots>
     <slot>searchTextLine_textChanged( const QString &amp; text )</slot>
     <slot>doSearch( bool next, bool reverse )</slot>
@@ -181,6 +184,7 @@
 </slots>
 <functions>
     <function access="private" specifier="non virtual">init()</function>
+    <function returnType="void">closeEvent( QCloseEvent * e)</function>
     <function returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
 </functions>
 <layoutdefaults spacing="6" margin="11"/>

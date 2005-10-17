@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>600</width>
-            <height>480</height>
+            <width>563</width>
+            <height>560</height>
         </rect>
     </property>
     <property name="caption">
@@ -18,332 +18,357 @@
     <property name="sizeGripEnabled">
         <bool>true</bool>
     </property>
-    <widget class="QLabel">
+    <vbox>
         <property name="name">
-            <cstring>textLabel1_3</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>120</x>
-                <y>20</y>
-                <width>110</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Complex search</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>searchPB</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>380</x>
-                <y>20</y>
-                <width>90</width>
-                <height>30</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Search</string>
-        </property>
-    </widget>
-    <widget class="Line">
-        <property name="name">
-            <cstring>line1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>22</x>
-                <y>58</y>
-                <width>550</width>
-                <height>16</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>HLine</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
-        </property>
-        <property name="orientation">
-            <enum>Horizontal</enum>
-        </property>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>layout6</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>100</x>
-                <y>100</y>
-                <width>470</width>
-                <height>112</height>
-            </rect>
-        </property>
-        <vbox>
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>unnamed</cstring>
+                <cstring>layout28</cstring>
             </property>
-            <widget class="QLayoutWidget">
+            <vbox>
                 <property name="name">
-                    <cstring>layout2</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <hbox>
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>layout15</cstring>
                     </property>
-                    <widget class="QLabel">
+                    <hbox>
                         <property name="name">
-                            <cstring>andWordsTL</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                        <property name="frameShape">
-                            <enum>NoFrame</enum>
+                        <property name="margin">
+                            <number>10</number>
                         </property>
-                        <property name="frameShadow">
-                            <enum>Plain</enum>
+                        <property name="spacing">
+                            <number>10</number>
                         </property>
-                        <property name="text">
-                            <string>All these words</string>
-                        </property>
-                    </widget>
-                    <widget class="QLineEdit">
-                        <property name="name">
-                            <cstring>andWordsLE</cstring>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout2_2</cstring>
-                </property>
-                <hbox>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Search For</string>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout14</cstring>
+                            </property>
+                            <grid>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel" row="0" column="0">
+                                    <property name="name">
+                                        <cstring>andWordsTL</cstring>
+                                    </property>
+                                    <property name="frameShape">
+                                        <enum>NoFrame</enum>
+                                    </property>
+                                    <property name="frameShadow">
+                                        <enum>Plain</enum>
+                                    </property>
+                                    <property name="text">
+                                        <string>All these words</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLineEdit" row="0" column="1" rowspan="1" colspan="3">
+                                    <property name="name">
+                                        <cstring>andWordsLE</cstring>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>250</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel" row="1" column="0" rowspan="1" colspan="2">
+                                    <property name="name">
+                                        <cstring>phraseTL</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>This exact phrase</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLineEdit" row="1" column="2" rowspan="1" colspan="2">
+                                    <property name="name">
+                                        <cstring>phraseLE</cstring>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
+                                    <property name="name">
+                                        <cstring>orWordsTL</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Any of these words</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLineEdit" row="2" column="2" rowspan="1" colspan="2">
+                                    <property name="name">
+                                        <cstring>orWordsLE</cstring>
+                                    </property>
+                                </widget>
+                                <widget class="QLabel" row="3" column="0" rowspan="1" colspan="3">
+                                    <property name="name">
+                                        <cstring>noWordsTL</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>None of these words</string>
+                                    </property>
+                                </widget>
+                                <widget class="QLineEdit" row="3" column="3">
+                                    <property name="name">
+                                        <cstring>noWordsLE</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string></string>
+                                    </property>
+                                </widget>
+                            </grid>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="Line">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>line2</cstring>
                     </property>
-                    <widget class="QLabel">
-                        <property name="name">
-                            <cstring>phraseTL</cstring>
-                        </property>
-                        <property name="text">
-                            <string>This exact phrase</string>
-                        </property>
-                    </widget>
-                    <widget class="QLineEdit">
-                        <property name="name">
-                            <cstring>phraseLE</cstring>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout4</cstring>
-                </property>
-                <hbox>
+                    <property name="frameShape">
+                        <enum>HLine</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Sunken</enum>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>layout19</cstring>
                     </property>
-                    <widget class="QLabel">
+                    <vbox>
                         <property name="name">
-                            <cstring>orWordsTL</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                        <property name="text">
-                            <string>Any of these words</string>
-                        </property>
-                    </widget>
-                    <widget class="QLineEdit">
-                        <property name="name">
-                            <cstring>orWordsLE</cstring>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout5</cstring>
-                </property>
-                <hbox>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>restrictFtCB</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Restrict file types</string>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout11</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout9</cstring>
+                                    </property>
+                                    <vbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>textLabel2_2</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Searched file types</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QListBox">
+                                            <property name="name">
+                                                <cstring>yesFiltypsLB</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
+                                            <property name="minimumSize">
+                                                <size>
+                                                    <width>200</width>
+                                                    <height>100</height>
+                                                </size>
+                                            </property>
+                                            <property name="selectionMode">
+                                                <enum>Extended</enum>
+                                            </property>
+                                        </widget>
+                                    </vbox>
+                                </widget>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout11</cstring>
+                                    </property>
+                                    <vbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QPushButton">
+                                            <property name="name">
+                                                <cstring>delFiltypPB</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
+                                            <property name="text">
+                                                <string>--------&gt;</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QPushButton">
+                                            <property name="name">
+                                                <cstring>addFiltypPB</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
+                                            <property name="text">
+                                                <string>&lt;---------</string>
+                                            </property>
+                                        </widget>
+                                    </vbox>
+                                </widget>
+                                <widget class="QLayoutWidget">
+                                    <property name="name">
+                                        <cstring>layout10</cstring>
+                                    </property>
+                                    <vbox>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <widget class="QLabel">
+                                            <property name="name">
+                                                <cstring>textLabel3</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Ignored file types</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QListBox">
+                                            <property name="name">
+                                                <cstring>noFiltypsLB</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
+                                            <property name="minimumSize">
+                                                <size>
+                                                    <width>200</width>
+                                                    <height>100</height>
+                                                </size>
+                                            </property>
+                                            <property name="selectionMode">
+                                                <enum>Extended</enum>
+                                            </property>
+                                        </widget>
+                                    </vbox>
+                                </widget>
+                            </hbox>
+                        </widget>
+                    </vbox>
+                </widget>
+                <widget class="Line">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>line3</cstring>
                     </property>
-                    <widget class="QLabel">
+                    <property name="frameShape">
+                        <enum>HLine</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Sunken</enum>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout18</cstring>
+                    </property>
+                    <grid>
                         <property name="name">
-                            <cstring>noWordsTL</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                        <property name="text">
-                            <string>None of these words</string>
-                        </property>
-                    </widget>
-                    <widget class="QLineEdit">
+                        <widget class="QLineEdit" row="1" column="0">
+                            <property name="name">
+                                <cstring>subtreeLE</cstring>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>300</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton" row="1" column="1">
+                            <property name="name">
+                                <cstring>browsePB</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Browse</string>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>textLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Restrict results to files in subtree:</string>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+                <widget class="Line">
+                    <property name="name">
+                        <cstring>line1</cstring>
+                    </property>
+                    <property name="frameShape">
+                        <enum>HLine</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Sunken</enum>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout25</cstring>
+                    </property>
+                    <hbox>
                         <property name="name">
-                            <cstring>noWordsLE</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                    </widget>
-                </hbox>
-            </widget>
-        </vbox>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>textLabel2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>100</y>
-                <width>64</width>
-                <height>112</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Search For</string>
-        </property>
-    </widget>
-    <widget class="Line">
-        <property name="name">
-            <cstring>line2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>220</y>
-                <width>560</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="frameShape">
-            <enum>HLine</enum>
-        </property>
-        <property name="frameShadow">
-            <enum>Sunken</enum>
-        </property>
-        <property name="orientation">
-            <enum>Horizontal</enum>
-        </property>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>layout10</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>440</x>
-                <y>250</y>
-                <width>102</width>
-                <height>170</height>
-            </rect>
-        </property>
-        <vbox>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <widget class="QLabel">
-                <property name="name">
-                    <cstring>textLabel3</cstring>
-                </property>
-                <property name="text">
-                    <string>Ignored file types</string>
-                </property>
-            </widget>
-            <widget class="QListBox">
-                <item>
-                    <property name="text">
-                        <string>New Item</string>
-                    </property>
-                </item>
-                <property name="name">
-                    <cstring>noFiltypsLB</cstring>
-                </property>
-                <property name="enabled">
-                    <bool>false</bool>
-                </property>
-            </widget>
-        </vbox>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>layout9</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>100</x>
-                <y>250</y>
-                <width>111</width>
-                <height>170</height>
-            </rect>
-        </property>
-        <vbox>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <widget class="QLabel">
-                <property name="name">
-                    <cstring>textLabel2_2</cstring>
-                </property>
-                <property name="text">
-                    <string>Searched file types</string>
-                </property>
-            </widget>
-            <widget class="QListBox">
-                <item>
-                    <property name="text">
-                        <string>New Item</string>
-                    </property>
-                </item>
-                <property name="name">
-                    <cstring>yesFiltypsLB</cstring>
-                </property>
-                <property name="enabled">
-                    <bool>false</bool>
-                </property>
-            </widget>
-        </vbox>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>layout11</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>270</x>
-                <y>300</y>
-                <width>82</width>
-                <height>68</height>
-            </rect>
-        </property>
-        <vbox>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>delFiltypPB</cstring>
-                </property>
-                <property name="enabled">
-                    <bool>false</bool>
-                </property>
-                <property name="text">
-                    <string>--------&gt;</string>
-                </property>
-            </widget>
-            <widget class="QPushButton">
-                <property name="name">
-                    <cstring>addFiltypPB</cstring>
-                </property>
-                <property name="enabled">
-                    <bool>false</bool>
-                </property>
-                <property name="text">
-                    <string>&lt;---------</string>
-                </property>
-            </widget>
-        </vbox>
-    </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>searchPB</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Start Search</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>dismissPB</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Dismiss</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
+    </vbox>
 </widget>
 <connections>
     <connection>
@@ -353,25 +378,52 @@
         <slot>delFiltypPB_clicked()</slot>
     </connection>
     <connection>
-        <sender>addFiltypPB</sender>
-        <signal>clicked()</signal>
-        <receiver>advsearch</receiver>
-        <slot>addFiltypPB_clicked()</slot>
-    </connection>
-    <connection>
         <sender>searchPB</sender>
         <signal>clicked()</signal>
         <receiver>advsearch</receiver>
         <slot>searchPB_clicked()</slot>
     </connection>
+    <connection>
+        <sender>restrictFtCB</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>advsearch</receiver>
+        <slot>restrictFtCB_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>dismissPB</sender>
+        <signal>clicked()</signal>
+        <receiver>advsearch</receiver>
+        <slot>close()</slot>
+    </connection>
+    <connection>
+        <sender>browsePB</sender>
+        <signal>clicked()</signal>
+        <receiver>advsearch</receiver>
+        <slot>browsePB_clicked()</slot>
+    </connection>
+    <connection>
+        <sender>addFiltypPB</sender>
+        <signal>clicked()</signal>
+        <receiver>advsearch</receiver>
+        <slot>addFiltypPB_clicked()</slot>
+    </connection>
 </connections>
 <includes>
+    <include location="local" impldecl="in declaration">recoll.h</include>
     <include location="local" impldecl="in implementation">advsearch.ui.h</include>
 </includes>
+<signals>
+    <signal>startSearch(AdvSearchData)</signal>
+</signals>
 <slots>
     <slot>delFiltypPB_clicked()</slot>
     <slot>addFiltypPB_clicked()</slot>
+    <slot>restrictFtCB_toggled( bool on )</slot>
     <slot>searchPB_clicked()</slot>
+    <slot>browsePB_clicked()</slot>
 </slots>
+<functions>
+    <function access="private">init()</function>
+</functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

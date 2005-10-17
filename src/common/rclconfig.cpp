@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.7 2005-03-31 10:04:07 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.8 2005-10-17 13:36:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 
@@ -72,6 +72,26 @@ RclConfig::RclConfig()
     return;
 }
 
+static ConfSimple::WalkerCode mtypesWalker(void *l, 
+					   const char *nm, const char *value)
+{
+    std::list<string> *lst = (std::list<string> *)l;
+    if (nm && nm[0] == '.')
+	lst->push_back(value);
+    return ConfSimple::WALK_CONTINUE;
+}
+
+std::list<string> RclConfig::getAllMimeTypes()
+{
+    std::list <string> lst;
+    if (mimemap == 0)
+	return lst;
+    mimemap->sortwalk(mtypesWalker, &lst);
+    lst.sort();
+    lst.unique();
+    return lst;
+}
+
 // Look up an executable filter.
 // We look in RECOLL_BINDIR, RECOLL_CONFDIR, then let the system use
 // the PATH
@@ -96,3 +116,4 @@ string find_filter(RclConfig *conf, const string &icmd)
     }
     return icmd;
 }
+
