@@ -21,12 +21,8 @@ have, a precompiled version of iconv, and maybe qt.
     - qt and qt-devel (www.trolltech.com). Currently using 3.3.3
     - xapian-core  (www.xapian.org). Currently using 0.8.5
     - libiconv (http://www.gnu.org/software/libiconv/). Currently using
-      1.9, on Linux it's part of the libc, you should have nothing special
-      to do.
-The main trouble you'll have will probably be resolving the dependencies
-dependancies for qt, but, hopefully, your package manager will take care of
-the matter.
-
+      1.9. On Linux it's part of the libc, you should have nothing special
+      to install.
 
 Building:
 --------
