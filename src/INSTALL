@@ -27,9 +27,9 @@ have, a precompiled version of iconv, and maybe qt.
 Building:
 --------
 
-I have only built on Linux (redhat7.3) and FreeBSD for now, if you build on
-another system, I would very much welcome comments and patches
-(jean-francois.dockes@wanadoo.fr).
+I have only built on Linux (redhat7.3, mandriva 2005), FreeBSD and Solaris8
+for now, if you build on another system, I would very much welcome
+comments and patches (jean-francois.dockes@wanadoo.fr).
  
 There is no autoconf for now. You need to chose a file in the mk directory,
 and link it into a file named 'sysconf' there. If your system is not

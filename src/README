@@ -81,9 +81,9 @@ Recoll
 
   Downloads
 
-   Current version: 0.7 (tar.gz)
+   Current version: 1.0 (tar.gz)
 
-   Older: 0.6
+   Older: 0.7
 
   Installation
 
@@ -99,6 +99,14 @@ Recoll
    You also need libiconv. I am currently using version 1.9. The iconv
    interface is part of libc on Linux systems, you shouldn't need to do
    anything there.
+
+   External file types: recoll uses external applications to index some file
+   types. You need to install them for the file types that you wish to have
+   indexed:
+
+     * MS Word documents: antiword.
+     * PDF files: pdftotext is part of the Xpdf package.
+     * Postscript files: pstotext.
 
     Compiling, installing, using
 
