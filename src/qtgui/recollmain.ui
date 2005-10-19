@@ -280,7 +280,7 @@
     </connection>
 </connections>
 <includes>
-    <include location="local" impldecl="in declaration">preview/.ui/preview.h</include>
+    <include location="local" impldecl="in declaration">preview.h</include>
     <include location="local" impldecl="in declaration">recoll.h</include>
     <include location="local" impldecl="in declaration">advsearch.h</include>
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
