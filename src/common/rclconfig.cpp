@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.8 2005-10-17 13:36:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.9 2005-10-19 14:14:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 
@@ -81,12 +81,15 @@ static ConfSimple::WalkerCode mtypesWalker(void *l,
     return ConfSimple::WALK_CONTINUE;
 }
 
+#include "idfile.h"
 std::list<string> RclConfig::getAllMimeTypes()
 {
-    std::list <string> lst;
+    std::list<string> lst;
     if (mimemap == 0)
 	return lst;
     mimemap->sortwalk(mtypesWalker, &lst);
+    std::list<string> l1 = idFileAllTypes(); 
+    lst.insert(lst.end(), l1.begin(), l1.end());
     lst.sort();
     lst.unique();
     return lst;

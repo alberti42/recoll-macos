@@ -50,6 +50,16 @@ void RecollMain::init()
     asearchform = 0;
 }
 
+// We also want to get rid of the advanced search form when we exit
+// (it's not our children so that it's not systematically created over
+// the main form).
+bool RecollMain::close( bool alsoDelete )
+{
+    if (asearchform)
+	delete asearchform;
+    return QWidget::close(alsoDelete);
+}
+
 // We want to catch ^Q everywhere to mean quit.
 bool RecollMain::eventFilter( QObject * target, QEvent * event )
 {
@@ -65,6 +75,8 @@ bool RecollMain::eventFilter( QObject * target, QEvent * event )
 void RecollMain::fileExit()
 {
     LOGDEB1(("RecollMain: fileExit\n"));
+    if (asearchform)
+	delete asearchform;
     exit(0);
 }
 
@@ -349,8 +361,8 @@ void RecollMain::listNextPB_clicked()
 	if (i == 0) {
 	    reslistTE->append("<qt><head></head><body><p>");
 	    char line[80];
-	    sprintf(line, "<p><b>Displaying results %d-%d out of %d</b><br>",
-		    reslist_winfirst+1, reslist_winfirst+last, resCnt);
+	    sprintf(line, "<p><b>Displaying results starting at index %d (maximum set size %d)</b><br>",
+		    reslist_winfirst+1, resCnt);
 	    reslistTE->append(line);
 	}
 	    
@@ -422,7 +434,7 @@ void RecollMain::previewClosed(Preview *w)
 void RecollMain::advSearchPB_clicked()
 {
     if (asearchform == 0) {
-	asearchform = new advsearch(this, "Advanced search", FALSE,
+	asearchform = new advsearch(0, "Advanced search", FALSE,
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
 	asearchform->setSizeGripEnabled(FALSE);
@@ -455,3 +467,5 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
     curPreview = 0;
     listNextPB_clicked();
 }
+
+

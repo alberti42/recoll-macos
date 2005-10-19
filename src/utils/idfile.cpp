@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: idfile.cpp,v 1.1 2005-04-07 09:05:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: idfile.cpp,v 1.2 2005-10-19 14:14:17 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 #ifndef TEST_IDFILE
 #include <unistd.h> // for access(2)
@@ -8,10 +8,18 @@ static char rcsid[] = "@(#$Id: idfile.cpp,v 1.1 2005-04-07 09:05:39 dockes Exp $
 #include <fstream>
 #include <sstream>
 
+#include "idfile.h"
 #include "debuglog.h"
 
 using namespace std;
 
+std::list<string> idFileAllTypes()
+{
+    std::list<string> lst;
+    lst.push_back("text/x-mail");
+    lst.push_back("message/rfc822");
+    return lst;
+}
 
 // Mail headers we compare to:
 static const char *mailhs[] = {"From: ", "Received: ", "Message-Id: ", "To: ", 

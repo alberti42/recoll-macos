@@ -1,13 +1,14 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.14 2005-10-19 10:21:47 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.15 2005-10-19 14:14:17 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
-
+#include <vector>
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
+using std::vector;
 #endif
 
 // rcldb defines an interface for a 'real' text database. The current 
@@ -71,14 +72,24 @@ class AdvSearchData {
     string nowords;
     list<string> filetypes; // restrict to types. Empty if inactive
     string topdir; // restrict to subtree. Empty if inactive
+
+    void erase() {
+	allwords.erase();phrase.erase();orwords.erase();nowords.erase();
+	filetypes.clear(); topdir.erase();
+    }
 };
+ 
+ class DbPops;
 
 /**
  * Wrapper class for the native database.
  */
 class Db {
-    void *pdata;
-    Doc curdoc;
+    AdvSearchData asdata;
+    vector<int> dbindices; // In case there is a postq filter: sequence of 
+                           // db indices that match
+    void *pdata; // Pointer to private data. We don't want db(ie
+                // xapian)-specific defs to show in here
  public:
     Db();
     ~Db();
@@ -104,10 +115,16 @@ class Db {
 
     // Get document at rank i. This is probably vastly inferior to the type
     // of interface in Xapian, but we have to start with something simple
-    // to experiment with the GUI
+    // to experiment with the GUI. i is sequential from 0 to some value
     bool getDoc(int i, Doc &doc, int *percent = 0);
     // Get results count
     int getResCnt();
+
+    friend class Rcl::DbPops;
+    private:
+    /* Copyconst and assignemt private and forbidden */
+    Db(const Db &) {}
+    Db & operator=(const Db &) {return *this;};
 };
 
 // Unaccent and lowercase data.

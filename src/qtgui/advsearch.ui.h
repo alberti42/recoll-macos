@@ -22,13 +22,13 @@ using std::string;
 #include "rclconfig.h"
 #include "debuglog.h"
 
-
 extern RclConfig *rclconfig;
 
 // Constructor/initialization
 void advsearch::init()
 {
     list<string> types = rclconfig->getAllMimeTypes();
+
     QStringList ql;
     for (list<string>::iterator it = types.begin(); it != types.end(); it++) {
 	ql.append(it->c_str());

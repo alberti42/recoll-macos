@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.29 2005-10-19 10:21:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.30 2005-10-19 14:14:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -42,8 +42,7 @@ class Native {
     Xapian::Enquire *enquire;
     Xapian::MSet     mset;
 
-    Native() : isopen(false), iswritable(false), enquire(0) {
-    }
+    Native() : isopen(false), iswritable(false), enquire(0) { }
     ~Native() {
 	delete enquire;
     }
@@ -388,7 +387,6 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     return true;
 }
 
-
 bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 {
     if (pdata == 0)
@@ -611,35 +609,9 @@ bool Rcl::Db::purge()
     return true;
 }
 
-
-#include <vector>
-
-class wsQData : public TextSplitCB {
- public:
-    vector<string> terms;
-    string catterms() {
-	string s;
-	for (unsigned int i=0;i<terms.size();i++) {
-	    s += "[" + terms[i] + "] ";
-	}
-	return s;
-    }
-    bool takeword(const std::string &term, int , int, int) {
-	LOGDEB1(("wsQData::takeword: %s\n", term.c_str()));
-	terms.push_back(term);
-	return true;
-    }
-    void dumball() {
-	for (vector<string>::iterator it=terms.begin(); it !=terms.end();it++){
-	    string dumb;
-	    Rcl::dumb_string(*it, dumb);
-	    *it = dumb;
-	}
-    }
-};
-
-
-// Expand term to list of all terms which stem to the same term.
+/**
+ * Expand term to list of all terms which stem to the same term.
+ */
 static list<string> stemexpand(Native *ndb, string term, const string& lang)
 {
     list<string> explist;
@@ -687,10 +659,38 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
     return explist;
 }
 
+
+class wsQData : public TextSplitCB {
+ public:
+    vector<string> terms;
+    string catterms() {
+	string s;
+	for (unsigned int i=0;i<terms.size();i++) {
+	    s += "[" + terms[i] + "] ";
+	}
+	return s;
+    }
+    bool takeword(const std::string &term, int , int, int) {
+	LOGDEB1(("wsQData::takeword: %s\n", term.c_str()));
+	terms.push_back(term);
+	return true;
+    }
+    void dumball() {
+	for (vector<string>::iterator it=terms.begin(); it !=terms.end();it++){
+	    string dumb;
+	    Rcl::dumb_string(*it, dumb);
+	    *it = dumb;
+	}
+    }
+};
+
+
+///
 // Turn string into possibly complex xapian query. There is little
 // interpretation done on the string (no +term -term or filename:term
 // stuff). We just separate words and phrases, and interpret
 // capitalized terms as wanting no stem expansion
+//
 static void stringToXapianQueries(const string &iq,
 				  const string& stemlang,
 				  Native *ndb,
@@ -762,6 +762,7 @@ static void stringToXapianQueries(const string &iq,
     }
 }
 
+// Prepare query out of simple query string 
 bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts, 
 		       const string& stemlang)
 {
@@ -771,6 +772,8 @@ bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts,
     if (!ndb)
 	return false;
 
+    asdata.erase();
+    dbindices.clear();
     list<Xapian::Query> pqueries;
     stringToXapianQueries(iqstring, stemlang, ndb, pqueries, opts);
     ndb->query = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(), 
@@ -782,6 +785,7 @@ bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts,
     return true;
 }
 
+// Prepare query out of "advanced search" data
 bool Rcl::Db::setQuery(AdvSearchData &sdata, const string& stemlang)
 {
     LOGDEB(("Rcl::Db::setQuery: adv:\n"));
@@ -797,10 +801,12 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, const string& stemlang)
     if (!sdata.topdir.empty())
 	LOGDEB((" restricted to: %s\n", sdata.topdir.c_str()));
 
+    asdata = sdata;
+    dbindices.clear();
+
     Native *ndb = (Native *)pdata;
     if (!ndb)
 	return false;
-
     list<Xapian::Query> pqueries;
     Xapian::Query xq;
     
@@ -896,25 +902,91 @@ int Rcl::Db::getResCnt()
     return ndb->mset.get_matches_lower_bound();
 }
 
+// This class (friend to RclDb) exists so that we can have functions that 
+// access private RclDb data and have Xapian-specific parameters (so that we 
+// don't want them to appear in the public rcldb.h).
+class Rcl::DbPops {
+ public:
+    static bool filterMatch(Rcl::Db *rdb, Xapian::Document &xdoc) {
+	// Parse xapian document's data and populate doc fields
+	string data = xdoc.get_data();
+	ConfSimple parms(&data);
+
+	// The only filtering for now is on file path (subtree)
+	string url;
+	parms.get(string("url"), url);
+	url = url.substr(7);
+	if (url.find(rdb->asdata.topdir) == 0) 
+	    return true;
+	return false;
+    }
+};
+
 // Get document at rank i in query (i is the index in the whole result
 // set, as in the enquire class. We check if the current mset has the
 // doc, else ask for an other one. We use msets of 10 documents. Don't
 // know if the whole thing makes sense at all but it seems to work.
-bool Rcl::Db::getDoc(int i, Doc &doc, int *percent)
+//
+// If there is a postquery filter (ie: file names), we have to
+// maintain a correspondance from the sequential external index
+// sequence to the internal Xapian hole-y one (the holes being the documents 
+// that dont match the filter).
+bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 {
-    LOGDEB1(("Rcl::Db::getDoc: %d\n", i));
+    const int qquantum = 30;
+    LOGDEB1(("Rcl::Db::getDoc: exti %d\n", exti));
     Native *ndb = (Native *)pdata;
     if (!ndb || !ndb->enquire) {
 	LOGERR(("Rcl::Db::getDoc: no query opened\n"));
 	return false;
     }
 
+    // For now the only post-query filter is on dir subtree
+    bool postqfilter = !asdata.topdir.empty();
+    LOGDEB1(("Topdir %s postqflt %d\n", asdata.topdir.c_str(), postqfilter));
+
+    int xapi;
+    if (postqfilter) {
+	// There is a postquery filter, does this fall in already known area ?
+	if (exti >= (int)dbindices.size()) {
+	    // Have to fetch xapian docs and filter until we get
+	    // enough or fail
+	    dbindices.reserve(exti+1);
+	    // First xapian doc we fetch is the one after last stored 
+	    int first = dbindices.size() > 0 ? dbindices.back() + 1 : 0;
+	    // Loop until we get enough docs
+	    while (exti >= (int)dbindices.size()) {
+		LOGDEB(("Rcl::Db::getDoc: fetching %d starting at %d\n",
+			qquantum, first));
+		ndb->mset = ndb->enquire->get_mset(first, qquantum);
+		if (ndb->mset.empty()) {
+		    LOGDEB(("Rcl::Db::getDoc: got empty mset\n"));
+		    return false;
+		}
+		first = ndb->mset.get_firstitem();
+		for (unsigned int i = 0; i < ndb->mset.size() ; i++) {
+		    LOGDEB(("Rcl::Db::getDoc: [%d]\n", i));
+		    Xapian::Document xdoc = ndb->mset[i].get_document();
+		    if (Rcl::DbPops::filterMatch(this, xdoc)) {
+			dbindices.push_back(first + i);
+		    }
+		}
+		first = first + ndb->mset.size();
+	    }
+	}
+	xapi = dbindices[exti];
+    } else {
+	xapi = exti;
+    }
+
+
+    // From there on, we work with a xapian enquire item number. Fetch it
     int first = ndb->mset.get_firstitem();
     int last = first + ndb->mset.size() -1;
 
-    if (!(i >= first && i <= last)) {
-	LOGDEB1(("Fetching for first %d, count 10\n", i));
-	ndb->mset = ndb->enquire->get_mset(i, 10);
+    if (!(xapi >= first && xapi <= last)) {
+	LOGDEB(("Fetching for first %d, count %d\n", xapi, qquantum));
+	ndb->mset = ndb->enquire->get_mset(xapi, qquantum);
 	if (ndb->mset.empty())
 	    return false;
 	first = ndb->mset.get_firstitem();
@@ -926,9 +998,9 @@ bool Rcl::Db::getDoc(int i, Doc &doc, int *percent)
 	     first, last,
 	     ndb->mset.get_matches_lower_bound()));
 
-    Xapian::Document xdoc = ndb->mset[i-first].get_document();
+    Xapian::Document xdoc = ndb->mset[xapi-first].get_document();
     if (percent)
-	*percent = ndb->mset.convert_to_percent(ndb->mset[i-first]);
+	*percent = ndb->mset.convert_to_percent(ndb->mset[xapi-first]);
 
     // Parse xapian document's data and populate doc fields
     string data = xdoc.get_data();
