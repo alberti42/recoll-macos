@@ -1,7 +1,3 @@
-   Back to jf's home page
-
-    
-
      * Screenshots
      * Downloads
      * Credits
@@ -20,21 +16,22 @@ Recoll
    the Credits.
 
    Recoll is still in infancy, but it is based on a very strong backend
-   (Xapian), and it can actually be useful right now, which is why I release
-   it so early. You might be interested in using Recoll to index your home
-   directory instead of xapian's Omega, for example, if you do not want to
-   run a web server, or your data is not iso-8859-1. But the query features
-   are very, very, much weaker.
+   (Xapian), and I find it quite useful right now. You might be interested in
+   using Recoll to index your home directory instead of using xapian's Omega,
+   for example, if you do not want to run a web server, or your data is not
+   iso-8859-1. But the query features are much less sophisticated yet.
 
    See INSTALL inside the distribution for compiling and installing, very
-   much by hand for now, I hope it will become better in the near future.
+   much by hand for now, I hope things will get better in the near future.
 
   Features:
 
-     * Indexes text, html, pdf (with xpdf's pdftotext), postscript (with
-       ghostscript's pstotext), msword (with antiword), openoffice files,
-       maildir and mailbox mail folders (mozilla and thunderbird mail ok).
-       Deals with compressed versions of same.
+     * Supports the following document types: text, html, pdf (with xpdf's
+       pdftotext), postscript (with ghostscript's pstotext), msword (with
+       antiword), openoffice files, maildir and mailbox mail folders (mozilla
+       and thunderbird mail ok). Deals with compressed versions of same.
+     * Relatively powerful query facilities, with boolean searches, phrases,
+       filter on file types and directory tree.
      * Support for multiple charsets. Internal processing and storage uses
        Unicode UTF-8.
      * Stemming performed at query time (can switch stemming language after
@@ -52,8 +49,6 @@ Recoll
 
   Things lacking, coming in the not too far future:
 
-     * A more sophisticated query interface: the current one has no boolean
-       capabilities.
      * A better GUI. So many things are badly done or missing that I won't
        try to list them here.
      * An interactive configuration tool. You need to edit files by hand for
@@ -111,7 +106,7 @@ Recoll
 
   Credits
 
-   Recoll is mainly glue code, and most of the intelligent work uses code
+   Recoll is mainly glue code, and most of the intelligent parts use code
    from external projects.
 
    Recoll borrows (steals?) heavily from the following projects. I tried to
@@ -127,6 +122,6 @@ Recoll
        easy to find, it has been integrated almost unmodified in the Recoll
        package.
      * Iconv, for character set conversion.
-     * Binc IMAP for mail MIME MIME parsing code.
+     * Binc IMAP for MIME parsing code.
 
     jean-francois.dockes@wanadoo.fr
