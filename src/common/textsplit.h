@@ -1,6 +1,6 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.7 2005-10-10 13:25:23 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.8 2005-10-19 10:21:48 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -28,6 +28,10 @@ class TextSplitCB {
  */
 class TextSplit {
     bool fq;        // for query:  Are we splitting for query or index ?
+    // It may happen that our cleanup would result in emitting the
+    // same term twice. We try to avoid this
+    string prevterm;
+    int prevpos;
     TextSplitCB *cb;
     int maxWordLength;
     bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
@@ -38,7 +42,7 @@ class TextSplit {
      * Constructor: just store callback object
      */
     TextSplit(TextSplitCB *t, bool forquery = false) 
-	: fq(forquery), cb(t), maxWordLength(40) {}
+	: fq(forquery), prevpos(-1), cb(t), maxWordLength(40) {}
     /**
      * Split text, emit words and positions.
      */

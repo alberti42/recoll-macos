@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.12 2005-09-22 14:09:04 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.13 2005-10-19 10:21:48 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -81,11 +81,6 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
 			 int btstart, int btend)
 {
     LOGDEB2(("TextSplit::emitterm: '%s' pos %d\n", w.c_str(), pos));
-
-    // It may happen that our cleanup would result in emitting the
-    // same term twice. We try to avoid this
-    static string prevterm;
-    static int prevpos = -1;
 
     if (!cb)
 	return false;

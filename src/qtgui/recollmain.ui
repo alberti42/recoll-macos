@@ -282,6 +282,7 @@
 <includes>
     <include location="local" impldecl="in declaration">preview/.ui/preview.h</include>
     <include location="local" impldecl="in declaration">recoll.h</include>
+    <include location="local" impldecl="in declaration">advsearch.h</include>
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
 </includes>
 <variables>
@@ -290,6 +291,7 @@
     <variable>bool dostem;</variable>
     <variable>std::string stemlang;</variable>
     <variable>Preview *curPreview;</variable>
+    <variable>advsearch *asearchform;</variable>
 </variables>
 <slots>
     <slot>fileExit()</slot>
@@ -304,7 +306,7 @@
     <slot>listNextPB_clicked()</slot>
     <slot>advSearchPB_clicked()</slot>
     <slot>previewClosed( Preview * w )</slot>
-    <slot>startAdvSearch( AdvSearchData sdata )</slot>
+    <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
 </slots>
 <functions>
     <function access="private">init()</function>

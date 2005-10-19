@@ -413,7 +413,7 @@
     <include location="local" impldecl="in implementation">advsearch.ui.h</include>
 </includes>
 <signals>
-    <signal>startSearch(AdvSearchData)</signal>
+    <signal>startSearch(Rcl::AdvSearchData)</signal>
 </signals>
 <slots>
     <slot>delFiltypPB_clicked()</slot>

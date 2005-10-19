@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.9 2005-10-10 12:29:42 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.10 2005-10-19 10:21:48 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -10,8 +10,9 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.9 2005-10-10 12:29:42 dockes Exp $ (
 
 #include <qmessagebox.h>
 
-#include "recollmain.h"
 #include "rcldb.h"
+using Rcl::AdvSearchData;
+
 #include "rclconfig.h"
 #include "pathut.h"
 #include "recoll.h"
@@ -19,11 +20,43 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.9 2005-10-10 12:29:42 dockes Exp $ (
 #include "wipedir.h"
 #include "rclinit.h"
 
+#include "recollmain.h"
+
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
 int recollNeedsExit;
 string tmpdir;
 
+void getQueryStemming(bool &dostem, std::string &stemlang)
+{
+    string param;
+    if (rclconfig->getConfParam("querystemming", param))
+	dostem = ConfTree::stringToBool(param);
+    else
+	dostem = false;
+    if (!rclconfig->getConfParam("querystemminglanguage", stemlang))
+	stemlang = "english";
+}
+
+bool maybeOpenDb(string &reason)
+{
+    if (!rcldb)
+	return false;
+    if (!rcldb->isopen()) {
+	string dbdir;
+	if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
+	    reason = "No db directory in configuration";
+	    return false;
+	}
+	dbdir = path_tildexpand(dbdir);
+	if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
+	    reason = "Could not open database in " + 
+		dbdir + " wait for indexing to complete?";
+	    return false;
+	}
+    }
+    return true;
+}
 
 void recollCleanup()
 {
@@ -86,7 +119,7 @@ int main( int argc, char ** argv )
 
     rcldb = new Rcl::Db;
 
-    if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
+    if (!rcldb || !rcldb->open(dbdir, Rcl::Db::DbRO)) {
 	startindexing = 1;
 	QMessageBox::information(0, "Recoll",
 				 QString("Could not open database in ") + 

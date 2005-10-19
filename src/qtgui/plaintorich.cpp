@@ -1,3 +1,6 @@
+#ifndef lint
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.3 2005-10-19 10:21:48 dockes Exp $ (C) 2005 J.F.Dockes";
+#endif
 
 
 #include <string>

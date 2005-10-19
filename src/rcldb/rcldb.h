@@ -1,12 +1,13 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.13 2005-03-25 09:40:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.14 2005-10-19 10:21:47 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
 
 #ifndef NO_NAMESPACES
 using std::string;
+using std::list;
 #endif
 
 // rcldb defines an interface for a 'real' text database. The current 
@@ -24,7 +25,9 @@ using std::string;
 
 struct stat;
 
+#ifndef NO_NAMESPACES
 namespace Rcl {
+#endif
 
 /**
  * Dumb bunch holder for document attributes and data
@@ -58,6 +61,19 @@ class Doc {
 };
 
 /**
+ * Holder for the advanced query data 
+ */
+class AdvSearchData {
+    public:
+    string allwords;
+    string phrase;
+    string orwords;
+    string nowords;
+    list<string> filetypes; // restrict to types. Empty if inactive
+    string topdir; // restrict to subtree. Empty if inactive
+};
+
+/**
  * Wrapper class for the native database.
  */
 class Db {
@@ -83,7 +99,8 @@ class Db {
     enum QueryOpts {QO_NONE=0, QO_STEM = 1};
     bool setQuery(const string &q, QueryOpts opts = QO_NONE, 
 		  const string& stemlang = "english");
-    bool getQueryTerms(std::list<string>& terms);
+    bool setQuery(AdvSearchData &q, const string& stemlang = "english");
+    bool getQueryTerms(list<string>& terms);
 
     // Get document at rank i. This is probably vastly inferior to the type
     // of interface in Xapian, but we have to start with something simple
@@ -96,6 +113,9 @@ class Db {
 // Unaccent and lowercase data.
 extern bool dumb_string(const string &in, string &out);
 
+#ifndef NO_NAMESPACES
 }
+#endif // NO_NAMESPACES
+
 
 #endif /* _DB_H_INCLUDED_ */

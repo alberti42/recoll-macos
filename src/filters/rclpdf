@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclpdf,v 1.1 2005-02-01 17:20:05 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclpdf,v 1.2 2005-10-19 10:21:48 dockes Exp $  (C) 2004 J.F.Dockes
 # This is copied almost verbatim from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -32,6 +32,31 @@ then
   printf '%s: %s: no such file\n' "$progname" "$infile"
   exit 1
 fi
+
+iscmd()
+{
+    cmd=$1
+    case $cmd in
+    */*)
+	if test -x $cmd ; then return 0; else return 1; fi ;;
+    *)
+      IFS=: ; set -- $PATH; unset IFS
+      for d in $* ; do test -x $d/$cmd && return 0; done
+      return 1 ;;
+    esac
+}
+checkcmds()
+{
+    for cmd in $*;do
+      if iscmd $cmd 
+      then 
+      else 
+        echo $cmd not found 1>&2 
+	exit 1
+      fi
+    done
+}
+checkcmds pdftotext iconv awk
 
 # output the result
 pdftotext -raw -htmlmeta -enc UTF-8 -eol unix -q "$infile" - |
@@ -80,5 +105,3 @@ BEGIN {
 # didn't really understand its use as iconv -c is supposed to fix the
 # encoding anyway
 
-# exit normally
-exit 0

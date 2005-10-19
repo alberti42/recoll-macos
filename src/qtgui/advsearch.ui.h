@@ -91,14 +91,14 @@ void advsearch::restrictFtCB_toggled(bool on)
 
 void advsearch::searchPB_clicked()
 {
-    AdvSearchData mydata;
+    Rcl::AdvSearchData mydata;
     mydata.allwords = string((const char*)(andWordsLE->text().utf8()));
     mydata.phrase  = string((const char*)(phraseLE->text().utf8()));
     mydata.orwords = string((const char*)(orWordsLE->text().utf8()));
     mydata.nowords = string((const char*)(noWordsLE->text().utf8()));
     if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
 	for (unsigned int i = 0; i < yesFiltypsLB->count(); i++) {
-	    QCString ctext = noFiltypsLB->item(i)->text().utf8();
+	    QCString ctext = yesFiltypsLB->item(i)->text().utf8();
 	    mydata.filetypes.push_back(string((const char *)ctext));
 	}
     }

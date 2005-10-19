@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.28 2005-04-06 10:20:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.29 2005-10-19 10:21:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -37,9 +37,10 @@ class Native {
 
     // Querying
     Xapian::Database db;
-    Xapian::Query query;
+    Xapian::Query    query; // query descriptor: terms and subqueries
+			    // joined by operators (or/and etc...)
     Xapian::Enquire *enquire;
-    Xapian::MSet mset;
+    Xapian::MSet     mset;
 
     Native() : isopen(false), iswritable(false), enquire(0) {
     }
@@ -206,8 +207,8 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 }
 
 // Unaccent and lowercase data: use unac 
-// for accents, and do it by hand for upper / lower. Note lowercasing is
-// only for ascii letters anyway, so it's just A-Z -> a-z
+// for accents, and do it by hand for upper / lower. 
+// TOBEDONE: lowercasing is done only for ascii letters, just A-Z -> a-z 
 // Removing crlfs is so that we can use the text in the document data fields.
 bool Rcl::dumb_string(const string &in, string &out)
 {
@@ -404,15 +405,15 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
     // If the db is up to date, set the update flags for all documents
     Xapian::PostingIterator doc;
     try {
-	Xapian::PostingIterator did0 = ndb->wdb.postlist_begin(pathterm);
-	for (Xapian::PostingIterator did = did0;
-	     did != ndb->wdb.postlist_end(pathterm); did++) {
+	Xapian::PostingIterator docid0 = ndb->wdb.postlist_begin(pathterm);
+	for (Xapian::PostingIterator docid = docid0;
+	     docid != ndb->wdb.postlist_end(pathterm); docid++) {
 
-	    Xapian::Document doc = ndb->wdb.get_document(*did);
+	    Xapian::Document doc = ndb->wdb.get_document(*docid);
 
 	    // Check the date once. no need to look at the others if the
 	    // db needs updating.
-	    if (did == did0) {
+	    if (docid == docid0) {
 		string data = doc.get_data();
 		const char *cp = strstr(data.c_str(), "mtime=");
 		cp += 6;
@@ -424,8 +425,8 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 	    }
 
 	    // Db is up to date. Make a note that this document exists.
-	    if (*did < ndb->updated.size())
-		ndb->updated[*did] = true;
+	    if (*docid < ndb->updated.size())
+		ndb->updated[*docid] = true;
 	}
     } catch (...) {
 	return true;
@@ -596,13 +597,13 @@ bool Rcl::Db::purge()
     // trying to delete an unexistant document ?
     // Flushing before trying the deletes seeems to work around the problem
     ndb->wdb.flush();
-    for (Xapian::docid did = 1; did < ndb->updated.size(); ++did) {
-	if (!ndb->updated[did]) {
+    for (Xapian::docid docid = 1; docid < ndb->updated.size(); ++docid) {
+	if (!ndb->updated[docid]) {
 	    try {
-		ndb->wdb.delete_document(did);
-		LOGDEB(("Rcl::Db::purge: deleted document #%d\n", did));
+		ndb->wdb.delete_document(docid);
+		LOGDEB(("Rcl::Db::purge: deleted document #%d\n", docid));
 	    } catch (const Xapian::DocNotFoundError &) {
-		LOGDEB2(("Rcl::Db::purge: document #%d not found\n", did));
+		LOGDEB2(("Rcl::Db::purge: document #%d not found\n", docid));
 	    }
 	}
     }
@@ -628,6 +629,13 @@ class wsQData : public TextSplitCB {
 	terms.push_back(term);
 	return true;
     }
+    void dumball() {
+	for (vector<string>::iterator it=terms.begin(); it !=terms.end();it++){
+	    string dumb;
+	    Rcl::dumb_string(*it, dumb);
+	    *it = dumb;
+	}
+    }
 };
 
 
@@ -638,11 +646,11 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
     try {
 	Xapian::Stem stemmer(lang);
 	string stem = stemmer.stem_word(term);
-	LOGDEB(("stemexpand: '%s' -> '%s'\n", term.c_str(), stem.c_str()));
+	LOGDEB(("stemexpand: '%s' stem-> '%s'\n", term.c_str(), stem.c_str()));
 	// Try to fetch the doc from the stem db
 	string stemdbdir = stemdbname(ndb->basedir, lang);
 	Xapian::Database sdb(stemdbdir);
-	LOGDEB1(("Rcl::Db::stemexpand: %s lastdocid: %d\n", 
+	LOGDEB1(("stemexpand: %s lastdocid: %d\n", 
 		stemdbdir.c_str(), sdb.get_lastdocid()));
 	if (!sdb.term_exists(stem)) {
 	    LOGDEB1(("Rcl::Db::stemexpand: no term for %s\n", stem.c_str()));
@@ -651,7 +659,7 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
 	}
 	Xapian::PostingIterator did = sdb.postlist_begin(stem);
 	if (did == sdb.postlist_end(stem)) {
-	    LOGDEB1(("Rcl::Db::stemexpand: no term(1) for %s\n",stem.c_str()));
+	    LOGDEB1(("stemexpand: no term(1) for %s\n",stem.c_str()));
 	    explist.push_back(term);
 	    return explist;
 	}
@@ -669,7 +677,7 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
 	if (find(explist.begin(), explist.end(), term) == explist.end()) {
 	    explist.push_back(term);
 	}
-	LOGDEB(("Rcl::Db::stemexpand: %s ->  %s\n", stem.c_str(),
+	LOGDEB(("stemexpand: %s ->  %s\n", stem.c_str(),
 		stringlistdisp(explist).c_str()));
     } catch (...) {
 	LOGERR(("stemexpand: error accessing stem db\n"));
@@ -677,6 +685,81 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
 	return explist;
     }
     return explist;
+}
+
+// Turn string into possibly complex xapian query. There is little
+// interpretation done on the string (no +term -term or filename:term
+// stuff). We just separate words and phrases, and interpret
+// capitalized terms as wanting no stem expansion
+static void stringToXapianQueries(const string &iq,
+				  const string& stemlang,
+				  Native *ndb,
+				  list<Xapian::Query> &pqueries,
+				  Rcl::Db::QueryOpts opts = Rcl::Db::QO_NONE)
+{
+    string qstring = iq;
+#if 0
+    // Unaccent and lowerterm. Note that lowerterming here may not be
+    // such a good idea because it forbids using capitalized words to
+    // indicate that a term should not use stem expansion, for
+    // example.
+    if (!Rcl::dumb_string(iqstring, qstring))
+	return false;
+#endif
+
+    // Split into (possibly single word) phrases ("this is a phrase"):
+    list<string> phrases;
+    ConfTree::stringToStrings(qstring, phrases);
+
+    // Then process each phrase: split into terms and transform into
+    // appropriate Xapian Query
+
+    for (list<string>::iterator it=phrases.begin(); it !=phrases.end(); it++) {
+	LOGDEB(("strToXapianQ: phrase or word: [%s]\n", it->c_str()));
+
+	wsQData splitData;
+	TextSplit splitter(&splitData, true);
+	splitter.text_to_words(*it);
+	LOGDEB(("strToXapianQ: splitter term count: %d\n", 
+		splitData.terms.size()));
+	switch(splitData.terms.size()) {
+	case 0: continue;// ??
+	case 1: // Not a real phrase: one term
+	    {
+		string term = splitData.terms.front();
+		bool nostemexp = false;
+		// Yes this doesnt work with accented or non-european
+		// majuscules. TOBEDONE: something :)
+		if (term.length() > 0 && term[0] >= 'A' && term[0] <= 'Z')
+		    nostemexp = true;
+
+		LOGDEB(("Term: %s\n", term.c_str()));
+
+		// Possibly perform stem compression/expansion
+		list<string> exp;  
+		string term1;
+		Rcl::dumb_string(term, term1);
+		if (!nostemexp && (opts & Rcl::Db::QO_STEM)) {
+		    exp = stemexpand(ndb, term1, stemlang);
+		} else {
+		    exp.push_back(term1);
+		}
+
+		// Push either term or stem-expanded set
+		pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
+						 exp.begin(), exp.end()));
+	    }
+	    break;
+
+	default:
+	    // Phrase: no stem expansion
+	    splitData.dumball();
+	    LOGDEB(("Pushing phrase: [%s]\n", splitData.catterms().c_str()));
+	    pqueries.push_back(Xapian::Query(Xapian::Query::OP_PHRASE,
+					     splitData.terms.begin(),
+					     splitData.terms.end()));
+	}
+    }
 }
 
 bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts, 
@@ -688,50 +771,97 @@ bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts,
     if (!ndb)
 	return false;
 
-    string qstring;;
-    if (!dumb_string(iqstring, qstring)) {
-	return false;
-    }
-
-    // First split into (possibly single word) phrases ("this is a phrase"):
-    list<string> phrases;
-    ConfTree::stringToStrings(qstring, phrases);
-    for (list<string>::const_iterator i=phrases.begin();
-	 i != phrases.end();i++) {
-	LOGDEB(("Rcl::Db::setQuery: phrase: '%s'\n", i->c_str()));
-    }
-
     list<Xapian::Query> pqueries;
-    for (list<string>::const_iterator it = phrases.begin(); 
-	 it != phrases.end(); it++) {
-
-	wsQData splitData;
-	TextSplit splitter(&splitData, true);
-	splitter.text_to_words(*it);
-	LOGDEB1(("Rcl::Db::setquery: splitter term count: %d\n", 
-		splitData.terms.size()));
-	switch(splitData.terms.size()) {
-	case 0: continue;// ??
-	case 1: {
-	    list<string> exp;  
-	    if (opts & QO_STEM) 
-		exp = stemexpand(ndb, splitData.terms.front(), stemlang);
-	    else
-		exp.push_back(splitData.terms.front());
-	    pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
-					     exp.begin(), 
-					     exp.end()));
-	}
-	    break;
-	default:
-	    LOGDEB(("Pushing phrase: %s\n", splitData.catterms().c_str()));
-	    pqueries.push_back(Xapian::Query(Xapian::Query::OP_PHRASE,
-					     splitData.terms.begin(),
-					     splitData.terms.end()));
-	}
-    }
+    stringToXapianQueries(iqstring, stemlang, ndb, pqueries, opts);
     ndb->query = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(), 
 			       pqueries.end());
+    delete ndb->enquire;
+    ndb->enquire = new Xapian::Enquire(ndb->db);
+    ndb->enquire->set_query(ndb->query);
+    ndb->mset = Xapian::MSet();
+    return true;
+}
+
+bool Rcl::Db::setQuery(AdvSearchData &sdata, const string& stemlang)
+{
+    LOGDEB(("Rcl::Db::setQuery: adv:\n"));
+    LOGDEB((" allwords: %s\n", sdata.allwords.c_str()));
+    LOGDEB((" phrase:   %s\n", sdata.phrase.c_str()));
+    LOGDEB((" orwords:  %s\n", sdata.orwords.c_str()));
+    LOGDEB((" nowords:  %s\n", sdata.nowords.c_str()));
+    string ft;
+    for (list<string>::iterator it = sdata.filetypes.begin(); 
+    	 it != sdata.filetypes.end(); it++) {ft += *it + " ";}
+    if (!ft.empty()) 
+	LOGDEB((" searched file types: %s\n", ft.c_str()));
+    if (!sdata.topdir.empty())
+	LOGDEB((" restricted to: %s\n", sdata.topdir.c_str()));
+
+    Native *ndb = (Native *)pdata;
+    if (!ndb)
+	return false;
+
+    list<Xapian::Query> pqueries;
+    Xapian::Query xq;
+    
+    if (!sdata.allwords.empty()) {
+	stringToXapianQueries(sdata.allwords, stemlang, ndb, pqueries);
+	if (!pqueries.empty()) {
+	    xq = Xapian::Query(Xapian::Query::OP_AND, pqueries.begin(), 
+			       pqueries.end());
+	    pqueries.clear();
+	}
+    }
+
+    if (!sdata.orwords.empty()) {
+	stringToXapianQueries(sdata.orwords, stemlang, ndb, pqueries);
+	if (!pqueries.empty()) {
+	    Xapian::Query nq;
+	    nq = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
+			       pqueries.end());
+	    xq = xq.empty() ? nq :
+		Xapian::Query(Xapian::Query::OP_AND, xq, nq);
+	    pqueries.clear();
+	}
+    }
+
+    if (!sdata.nowords.empty()) {
+	stringToXapianQueries(sdata.nowords, stemlang, ndb, pqueries);
+	if (!pqueries.empty()) {
+	    Xapian::Query nq;
+	    nq = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
+			       pqueries.end());
+	    xq = xq.empty() ? nq :
+		Xapian::Query(Xapian::Query::OP_AND_NOT, xq, nq);
+	    pqueries.clear();
+	}
+    }
+
+    if (!sdata.phrase.empty()) {
+	Xapian::Query nq;
+	string s = string("\"") + sdata.phrase + string("\"");
+	stringToXapianQueries(s, stemlang, ndb, pqueries);
+	if (!pqueries.empty()) {
+	    // There should be a single list element phrase query.
+	    xq = xq.empty() ? *pqueries.begin() : 
+		Xapian::Query(Xapian::Query::OP_AND, xq, *pqueries.begin());
+	    pqueries.clear();
+	}
+    }
+
+    if (!sdata.filetypes.empty()) {
+	Xapian::Query tq;
+	for (list<string>::iterator it = sdata.filetypes.begin(); 
+	     it != sdata.filetypes.end(); it++) {
+	    string term = "T" + *it;
+	    LOGDEB(("Adding file type term: [%s]\n", term.c_str()));
+	    tq = tq.empty() ? Xapian::Query(term) : 
+		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
+	}
+	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_AND, xq, tq);
+    }
+
+    ndb->query = xq;
     delete ndb->enquire;
     ndb->enquire = new Xapian::Enquire(ndb->db);
     ndb->enquire->set_query(ndb->query);
@@ -766,6 +896,10 @@ int Rcl::Db::getResCnt()
     return ndb->mset.get_matches_lower_bound();
 }
 
+// Get document at rank i in query (i is the index in the whole result
+// set, as in the enquire class. We check if the current mset has the
+// doc, else ask for an other one. We use msets of 10 documents. Don't
+// know if the whole thing makes sense at all but it seems to work.
 bool Rcl::Db::getDoc(int i, Doc &doc, int *percent)
 {
     LOGDEB1(("Rcl::Db::getDoc: %d\n", i));

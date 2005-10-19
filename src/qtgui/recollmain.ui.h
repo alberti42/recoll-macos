@@ -32,6 +32,8 @@ using std::pair;
 #include "smallut.h"
 #include "plaintorich.h"
 #include "unacpp.h"
+#include "advsearch.h"
+
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
@@ -45,6 +47,7 @@ static const int respagesize = 8;
 void RecollMain::init()
 {
     curPreview = 0;
+    asearchform = 0;
 }
 
 // We want to catch ^Q everywhere to mean quit.
@@ -266,31 +269,13 @@ void RecollMain::reslistTE_clicked(int par, int car)
 void RecollMain::queryText_returnPressed()
 {
     LOGDEB(("RecollMain::queryText_returnPressed()\n"));
-    if (!rcldb->isopen()) {
-	string dbdir;
-	if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
-	    QMessageBox::critical(0, "Recoll",
-				  QString("No db directory in configuration"));
-	    exit(1);
-	}
-	dbdir = path_tildexpand(dbdir);
-	if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
-	    QMessageBox::information(0, "Recoll",
-				     QString("Could not open database in ") + 
-				     QString(dbdir) + " wait for indexing " +
-				     "to complete?");
-	    return;
-	}
+    string reason;
+    if (!maybeOpenDb(reason)) {
+	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+	return;
     }
-    if (stemlang.empty()) {
-	string param;
-	if (rclconfig->getConfParam("querystemming", param))
-	    dostem = ConfTree::stringToBool(param);
-	else
-	    dostem = false;
-	if (!rclconfig->getConfParam("querystemminglanguage", stemlang))
-	    stemlang = "english";
-    }
+    if (stemlang.empty())
+	getQueryStemming(dostem, stemlang);
 
     reslist_current = -1;
     reslist_winfirst = -1;
@@ -388,7 +373,7 @@ void RecollMain::listNextPB_clicked()
 	    strftime(datebuf, 99, "<i>Modified:</i>&nbsp;%F&nbsp;%T", tm);
 	}
 	string abst = stripMarkup(doc.abstract);
-	LOGDEB(("Abstract: {%s}\n", abst.c_str()));
+	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
 	string result = "<p>" + 
 	    string(perbuf) + " <b>" + doc.title + "</b><br>" +
 	    doc.mimetype + "&nbsp;" +
@@ -433,46 +418,40 @@ void RecollMain::previewClosed(Preview *w)
     delete w;
 }
 
-
-
-#include "advsearch.h"
-
-advsearch *asearchform;
-
+// Open advanced search dialog.
 void RecollMain::advSearchPB_clicked()
 {
     if (asearchform == 0) {
-	// Couldn't find way to have a normal wm frame
 	asearchform = new advsearch(this, "Advanced search", FALSE,
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
 	asearchform->setSizeGripEnabled(FALSE);
-	connect(asearchform, SIGNAL(startSearch(AdvSearchData)), 
-		this, SLOT(startAdvSearch(AdvSearchData)));
+	connect(asearchform, SIGNAL(startSearch(Rcl::AdvSearchData)), 
+		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
 	asearchform->show();
     } else {
 	asearchform->show();
     }
 }
 
-void RecollMain::startAdvSearch(AdvSearchData sdata)
+// Execute and advanced search query
+void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
 {
     LOGDEB(("RecollMain::startAdvSearch\n"));
-    LOGDEB((" allwords: %s\n", sdata.allwords.c_str()));
-    LOGDEB((" phrase: %s\n", sdata.phrase.c_str()));
-    LOGDEB((" orwords: %s\n", sdata.orwords.c_str()));
-    LOGDEB((" nowords: %s\n", sdata.nowords.c_str()));
-    string ft;
-    for (list<string>::iterator it = sdata.filetypes.begin(); 
-	 it != sdata.filetypes.end(); it++) {
-	ft += *it + " ";
+    string reason;
+    if (!maybeOpenDb(reason)) {
+	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+	return;
     }
-    if (!ft.empty()) 
-	LOGDEB(("Searched file types: %s\n", ft.c_str()));
-    if (!sdata.topdir.empty())
-	LOGDEB(("Restricted to: %s\n", sdata.topdir.c_str()));
 
+    if (stemlang.empty())
+	getQueryStemming(dostem, stemlang);
+
+    reslist_current = -1;
+    reslist_winfirst = -1;
+
+    if (!rcldb->setQuery(sdata,  stemlang))
+	return;
+    curPreview = 0;
+    listNextPB_clicked();
 }
-
-
-
