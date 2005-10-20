@@ -1,0 +1,55 @@
+#!/bin/sh
+
+fatal()
+{
+    echo $*
+    exit 1
+}
+usage()
+{
+    fatal 'installrecoll <targetdir>, ie: installrecoll /usr/local'
+}
+install()
+{
+    src=$1
+    dst=$2
+    if test -d $dst; then dst=$2/`basename $1`;fi
+    if test -f $dst; then
+       bak=$dst.prev 
+       #echo "Preserving $dst as $bak" 
+       (install $dst $bak)
+    fi
+    echo $src '->' $dst
+    cp $src $dst
+}
+
+if test $# != 1 ; then
+   usage
+fi
+targetdir=$1
+
+echo "Installing to $targetdir"
+
+test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
+     " You need to build first."
+
+install qtgui/recoll $targetdir/bin/recoll
+install index/recollindex $targetdir/bin/recollindex
+
+if test -d $HOME/.recoll ; then 
+   cat <<EOF
+
+   $HOME/.recoll already exists, no modification done.
+   You should check for new filters in the filters/ directory, and
+   for modifications to files in the sampleconf/ directory (ie new 
+   mime types in mimemap).
+EOF
+  exit 0
+fi
+
+mkdir $HOME/.recoll || exit 1
+cp filters/rcl* $HOME/.recoll
+chmod a+x $HOME/.recoll/rcl*
+cd sampleconf
+cp  mimeconf mimemap recoll.conf $HOME/.recoll
+

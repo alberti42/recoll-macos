@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.30 2005-10-19 14:14:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.31 2005-10-20 11:33:49 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -958,7 +958,17 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 	    while (exti >= (int)dbindices.size()) {
 		LOGDEB(("Rcl::Db::getDoc: fetching %d starting at %d\n",
 			qquantum, first));
-		ndb->mset = ndb->enquire->get_mset(first, qquantum);
+		try {
+		    ndb->mset = ndb->enquire->get_mset(first, qquantum);
+		} catch (const Xapian::DatabaseModifiedError &error) {
+		    ndb->db.reopen();
+		    ndb->mset = ndb->enquire->get_mset(first, qquantum);
+		} catch (const Xapian::Error & error) {
+		  LOGERR(("enquire->get_mset: exception: %s\n", 
+			  error.get_msg().c_str()));
+		  abort();
+		}
+
 		if (ndb->mset.empty()) {
 		    LOGDEB(("Rcl::Db::getDoc: got empty mset\n"));
 		    return false;
@@ -986,7 +996,16 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 
     if (!(xapi >= first && xapi <= last)) {
 	LOGDEB(("Fetching for first %d, count %d\n", xapi, qquantum));
-	ndb->mset = ndb->enquire->get_mset(xapi, qquantum);
+	try {
+	  ndb->mset = ndb->enquire->get_mset(xapi, qquantum);
+	} catch (const Xapian::DatabaseModifiedError &error) {
+	    ndb->db.reopen();
+	    ndb->mset = ndb->enquire->get_mset(xapi, qquantum);
+	} catch (const Xapian::Error & error) {
+	  LOGERR(("enquire->get_mset: exception: %s\n", 
+		  error.get_msg().c_str()));
+	  abort();
+	}
 	if (ndb->mset.empty())
 	    return false;
 	first = ndb->mset.get_firstitem();

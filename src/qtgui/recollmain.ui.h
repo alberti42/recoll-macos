@@ -50,14 +50,13 @@ void RecollMain::init()
     asearchform = 0;
 }
 
-// We also want to get rid of the advanced search form when we exit
-// (it's not our children so that it's not systematically created over
-// the main form).
-bool RecollMain::close( bool alsoDelete )
+// We also want to get rid of the advanced search form and previews
+// when we exit (not our children so that it's not systematically
+// created over the main form). 
+bool RecollMain::close(bool)
 {
-    if (asearchform)
-	delete asearchform;
-    return QWidget::close(alsoDelete);
+    fileExit();
+    return false;
 }
 
 // We want to catch ^Q everywhere to mean quit.

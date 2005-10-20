@@ -34,7 +34,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     if (event->type() != QEvent::KeyPress) 
 	return QWidget::eventFilter(target, event);
     
-    LOGDEB(("Preview::eventFilter: keyEvent\n"));
+    LOGDEB1(("Preview::eventFilter: keyEvent\n"));
     QKeyEvent *keyEvent = (QKeyEvent *)event;
     if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
 	recollNeedsExit = 1;
@@ -50,7 +50,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	QWidget *e = 0;
 	if (tw)
 	    e = (QTextEdit *)tw->child("pvEdit");
-	LOGDEB(("Widget: %p, edit %p, target %p\n", tw, e, target));
+	LOGDEB1(("Widget: %p, edit %p, target %p\n", tw, e, target));
 	if (e && target == tw && keyEvent->key() == Key_Slash) {
 	    dynSearchActive = true;
 	    return true;
@@ -62,7 +62,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 
 void Preview::searchTextLine_textChanged(const QString & text)
 {
-    LOGDEB(("search line text changed. text: '%s'\n", text.ascii()));
+    LOGDEB1(("search line text changed. text: '%s'\n", text.ascii()));
     if (text.isEmpty()) {
 	dynSearchActive = false;
     } else {
@@ -78,8 +78,7 @@ void Preview::searchTextLine_textChanged(const QString & text)
 // starting from the current position
 void Preview::doSearch(bool next, bool reverse)
 {
-    //LOGDEB(("Preview::doSearch: next %d rev %d\n",
-    // int(next), int(reverse)));
+    LOGDEB1(("Preview::doSearch: next %d rev %d\n", int(next), int(reverse)));
     QWidget *tw = pvTab->currentPage();
     QTextEdit *edit = 0;
     if (tw) {
@@ -108,7 +107,7 @@ void Preview::doSearch(bool next, bool reverse)
 	    // Forward search: start from end of selection
 	    mspara = mepara;
 	    msindex = meindex;
-	    //LOGDEB(("New para: %d index %d\n", mspara, msindex));
+	    LOGDEB1(("New para: %d index %d\n", mspara, msindex));
 	}
     }
 
@@ -151,10 +150,10 @@ void Preview::prevPressed()
 void Preview::currentChanged(QWidget * tw)
 {
     QObject *o = tw->child("pvEdit");
-    LOGDEB(("Preview::currentChanged(). Edit %p\n", o));
+    LOGDEB1(("Preview::currentChanged(). Edit %p\n", o));
     
     if (o == 0) {
-	LOGDEB(("Editor child not found\n"));
+	LOGERR(("Editor child not found\n"));
     } else {
 	tw->installEventFilter(this);
 	o->installEventFilter(this);

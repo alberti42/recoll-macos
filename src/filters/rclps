@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclps,v 1.2 2005-10-19 10:21:48 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclps,v 1.3 2005-10-20 11:33:49 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -51,6 +51,7 @@ checkcmds()
     for cmd in $*;do
       if iscmd $cmd 
       then 
+        a=1
       else 
         echo $cmd not found 1>&2 
 	exit 1

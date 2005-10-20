@@ -3,7 +3,7 @@ include ../mk/sysconf
 LIBS = libmime.a
 PROGS = trbinc
 
-all: $(LIBS) $(PROGS)
+all: $(LIBS) 
 
 SRCS = mime-getpart.cc mime-parsefull.cc mime-parseonlyheader.cc \
      mime-printbody.cc mime-printdoc.cc mime-printheader.cc mime.cc \
