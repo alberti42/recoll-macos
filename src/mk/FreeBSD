@@ -1,4 +1,5 @@
-CXXFLAGS = -pthread -Wall -g -I. -I../index -I../utils -I../common \
+CXXFLAGS = -pthread -Wall -Wno-unused-variable -g \
+	 -I. -I../index -I../utils -I../common \
 	 -I../unac -I../bincimapmime -I/usr/local/include  \
 	 \
 	 -DHAVE_VASPRINTF=1

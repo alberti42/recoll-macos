@@ -1,14 +1,16 @@
 all:
-	cd lib;make
-	cd bincimapmime;make
-	cd index;make
-	cd qtgui;qmake recoll.pro ; rm -f recoll;make
+	test -f mk/sysconf || ./configure
+	cd lib; $(MAKE)
+	cd bincimapmime; $(MAKE)
+	cd index; $(MAKE)
+	cd qtgui; qmake recoll.pro; rm -f recoll; $(MAKE)
+
 clean:
-	cd common;make clean
-	cd index;make clean
-	cd lib;make clean
-	cd bincimapmime;make clean
-	cd qtgui;rm -f recoll;make clean
-	cd query;make clean
-	cd utils;make clean
+	cd common; $(MAKE) clean
+	cd index; $(MAKE) clean
+	cd lib; $(MAKE) clean
+	cd bincimapmime; $(MAKE) clean
+	cd qtgui; rm -f recoll; $(MAKE) clean
+	cd query; $(MAKE) clean
+	cd utils; $(MAKE) clean
 

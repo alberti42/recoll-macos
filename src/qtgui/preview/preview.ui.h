@@ -106,7 +106,6 @@ void Preview::doSearch(bool next, bool reverse)
 	    }
 	} else {
 	    // Forward search: start from end of selection
-	    int bogus;
 	    mspara = mepara;
 	    msindex = meindex;
 	    //LOGDEB(("New para: %d index %d\n", mspara, msindex));

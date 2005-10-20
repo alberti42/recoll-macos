@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.3 2005-10-19 10:21:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.4 2005-10-20 08:34:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 
@@ -30,7 +30,7 @@ class myTextSplitCB : public TextSplitCB {
     }
 
     // Callback called by the text-to-words breaker for each word
-    virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
+    virtual bool takeword(const std::string& term, int, int bts, int bte) {
 	string dumb;
 	Rcl::dumb_string(term, dumb);
 	//LOGDEB(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 

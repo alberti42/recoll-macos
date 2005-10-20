@@ -26,14 +26,15 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  LIBS += ../lib/librcl.a ../bincimapmime/libmime.a -L/usr/local/lib -lxapian -liconv \
-       -lfontconfig -lfreetype -lexpat -lz
+  LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
+          -L/usr/local/lib -lxapian -liconv \
+           -lz
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
 
-    }
+}
 
 UNAME = $$system(uname -s)
 contains( UNAME, [lL]inux ) {
           LIBS -= -liconv
-	  }
+}
 

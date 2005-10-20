@@ -87,8 +87,10 @@ unacpp.o : ../common/unacpp.cpp
 clean: 
 	rm -f *.o $(LIBS)
 
-alldeps:depend
-depend:
+depend: alldeps
+
+alldeps: $(SRCS)
 	$(CXX) $(CXXFLAGS) -M $(SRCS) > alldeps
+
 include alldeps
 

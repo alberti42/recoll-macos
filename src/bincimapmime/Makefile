@@ -27,8 +27,7 @@ trbinc: trbinc.o
 clean: 
 	rm -f *.o $(LIBS)
 
-alldeps:depend
-depend:
+depend: alldeps
+alldeps: $(SRCS)
 	$(CXX) $(CXXFLAGS) -M $(SRCS) > alldeps
 include alldeps
-
