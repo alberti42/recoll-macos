@@ -1,101 +1,89 @@
-Installation instructions:
-=========================
+     * Home
+     * Screenshots
+     * Downloads
+     * Credits
+     * User manual
+     * Installation
+   [IMG]
 
-Recoll is a very young package, and installation will probably more painful
-than necessary, please excuse me for this until I have time to work on
-it. I should probably not release this at all, except that I would like
-feedback.
+Installing Recoll
 
-If you have problems, please don't renounce, ask me instead
-(jean-francois.dockes@wanadoo.fr) 
+   There are currently no binary packages, so you will need to build Recoll
+   from source before installing it.
 
-Building from source
-===================
+  Prerequisites
 
-Prerequisites:
--------------
-To build from source, you need the following packages. Except if you're
-using a really strange system, you can probably easily find, or already
-have, a precompiled version of iconv, and maybe qt.
+   At the very least, you will need to download and install the xapian core
+   package (I am currently using xapian version 0.8.5), and the qt runtime
+   and development packages (I am currently using qt 3.3.3).
 
-    - qt and qt-devel (www.trolltech.com). Currently using 3.3.3
-    - xapian-core  (www.xapian.org). Currently using 0.8.5
-    - libiconv (http://www.gnu.org/software/libiconv/). Currently using
-      1.9. On Linux it's part of the libc, you should have nothing special
-      to install.
+   You will most probably be able to find a binary package for qt for your
+   system. You may have to compile Xapian, but this is not difficult.
 
-Building:
---------
+   You also need libiconv. I am currently using version 1.9. The iconv
+   interface is part of libc on Linux systems, you shouldn't need to do
+   anything there.
 
-I have only built on Linux (redhat7.3, mandriva 2005), FreeBSD and Solaris8
-for now, if you build on another system, I would very much welcome
-comments and patches (jean-francois.dockes@wanadoo.fr).
- 
-There is no autoconf for now. You need to chose a file in the mk directory,
-and link it into a file named 'sysconf' there. If your system is not
-supported by the supplied files, it should be easy enough to build a new
-one from the examples (then send it to me please).
+   External file types: recoll uses external applications to index some file
+   types. You need to install them for the file types that you wish to have
+   indexed:
 
-You also need to adjust the recoll.pro file inside the qtgui directory to
-fix the "-L/usr/local/lib -lxapian -liconv" piece, depending on where your
-libs are installed. Then run 'qmake recoll.pro' in there.
+     * MS Word documents: antiword.
+     * PDF files: pdftotext is part of the Xpdf package.
+     * Postscript files: pstotext.
 
-Then cd to the top directory, type make, and practise your usual
-hardship-repelling invocations. 
+  Building
 
-Installation:
-------------
- - Copy all files from sampleconf/* to ~/.recoll
- - Copy all files from filters/* to ~/.recoll.
- - Copy qtgui/recoll to a place in your PATH (if you want. You can also
-   execute it from its build directory).
+   Recoll has been built on Linux (redhat7.3, mandriva 2005), FreeBSD and
+   Solaris 8. If you build on another system, I would very much welcome
+   comments and patches.
 
-Configuration
-=============
+   Normal procedure:
 
-Recoll uses a text configuration file. There will be dialogs to build it
-from the GUI in the future, but you'll have to edit it by hand for now.
+     * cd recoll-xxx
+     * configure
+     * make
+     * (practise your usual hardship-repelling invocations).
 
-By default, the configuration file should be named ~/.recoll/recoll.conf
+   There is no real autoconfiguration. The configure script will just link
+   one of the system-specific files in the mk directory to mk/sysconf. If
+   your system is known yet, it will tell you as much, and you may want to
+   manually copy and modify one of the existing files (the new file name
+   should be the output of uname -s).
 
-There is a sample in the 'sampleconf' src/ subdirectory, you copied it to
-~/.recoll at the step before, take a look and possibly edit it.
+   You may also need to adjust the recoll.pro file inside the qtgui directory
+   to fix the "-L/usr/local/lib -lxapian -liconv" piece, depending on where
+   your libs are installed. Then run 'qmake recoll.pro' in there.
 
-Then start 'recoll', and select the "file->start indexing" menu
-entry. When it's done, you can play with the search
+  Installation
 
-Usage
-=====
-The very simple Gui should be easy enough to use. Clicking on a search
-result entry in the left column will display it in the left
-part. Double-clicking will start an external viewer (look at the
-~/.recoll/mimeconf file to see how these are configured).
+   Execute installrecoll targetdir, in the root of the source tree. This
+   will:
 
+     * Copy qtgui/recoll and index/recollindex to targetdir/bin (but you
+       could also execute them from their build directories).
+     * Check if ~/.recoll exists, and if it does not:
+          * Copy all files from sampleconf/* to ~/.recoll
+          * Copy all files from filters/* to ~/.recoll.
 
+  Configuration
 
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Future from here on, there are currently no binary packages ...
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Installing a binary package:
-----------------------------
+   Recoll uses text configuration files. You will have to edit them by hand
+   for now (all hope is not lost that there will be dialogs to build them
+   from the GUI in the future).
 
-There are no rpm or other managed packages for now.
+   The main configuration file is named ~/.recoll/recoll.conf.
 
- - Unpack the tar file. Will create a recoll-x.y directory
- - Arrange to have the recoll-x.y/bin directory in your PATH, or copy/link the
-   'recoll' executable where it will be found.
+   There is a commented sample in the sampleconf subdirectory, it was copied
+   to ~/.recoll at the previous step, take a look and possibly edit it. By
+   default, it will index your home directory.
 
- - Copy the files from the sampleconf directory somewhere. The default
-   location is $HOME/.recoll/ If you choose another location, you will have
-   to set the RECOLL_CONFDIR environment variable.
+   Then start recollindex, and wait for indexing to complete (this may take
+   some time). When it's done, you can start recoll and try a search
 
- - Possibly adjust the recoll.conf file. The default should be fine for
-   trying in most cases.
- - Possibly adjust the mimeconf file, especially the external viewer
-   section, depending on what you are using (ie acrobat vs xpdf, etc...)
+   Depending on what is installed on your system, you may also want to adjust
+   the external viewers defined in ~/.recoll/mimeconf (ie: html is either
+   previewed internally or displayed using firefox, but you may prefer
+   mozilla...). Look for the [view] section.
 
- - Start the 'recoll' program. After displaying a dialog, it will normally
-   begin to index the directories specified in recoll.conf.
-
-
-  
+    jean-francois.dockes@wanadoo.fr
