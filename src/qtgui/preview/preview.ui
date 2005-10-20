@@ -181,10 +181,11 @@
     <slot>nextPressed()</slot>
     <slot>prevPressed()</slot>
     <slot>currentChanged( QWidget * tw )</slot>
+    <slot>closeCurrentTab()</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">init()</function>
-    <function returnType="void">closeEvent( QCloseEvent * e)</function>
+    <function>closeEvent( QCloseEvent * e )</function>
     <function returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
 </functions>
 <layoutdefaults spacing="6" margin="11"/>

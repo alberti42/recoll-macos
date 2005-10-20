@@ -38,6 +38,11 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     QKeyEvent *keyEvent = (QKeyEvent *)event;
     if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
 	recollNeedsExit = 1;
+	return true;
+    } else if (keyEvent->key() ==Key_W &&(keyEvent->state() & ControlButton)) {
+	// LOGDEB(("Preview::eventFilter: got ^W\n"));
+	closeCurrentTab();
+	return true;
     } else if (dynSearchActive) {
 	if (keyEvent->key() == Key_F3) {
 	    doSearch(true, false);
@@ -158,5 +163,17 @@ void Preview::currentChanged(QWidget * tw)
 	tw->installEventFilter(this);
 	o->installEventFilter(this);
 	((QWidget*)o)->setFocus();
+    }
+}
+
+
+void Preview::closeCurrentTab()
+{
+    if (pvTab->count() > 1) {
+	QWidget *tw = pvTab->currentPage();
+	if (tw) 
+	    pvTab->removePage(tw);
+    } else {
+	close();
     }
 }
