@@ -6,4 +6,4 @@ CXX=g++
 LIBXAPIAN = -L/usr/local/lib -lxapian
 LIBICONV =  -L/usr/local/lib -liconv
 
-LIBSYS = -lpthread
+LIBSYS = -lpthread -lnsl -lsocket

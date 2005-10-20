@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclsoff,v 1.3 2005-10-20 11:33:49 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclsoff,v 1.4 2005-10-20 15:42:29 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -35,8 +35,8 @@ iscmd()
     */*)
 	if test -x $cmd ; then return 0; else return 1; fi ;;
     *)
-      IFS=: ; set -- $PATH; unset IFS
-      for d in $* ; do test -x $d/$cmd && return 0; done
+      oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
+      for d in $*;do test -x $d/$cmd && return 0;done
       return 1 ;;
     esac
 }
