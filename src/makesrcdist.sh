@@ -26,9 +26,24 @@ else
     fi
 fi
 
-chmod +w README
-links -dump ~/projets/pagepers/recoll/index.html > toto && mv toto README
-cvs commit -m '' README
+chmod +w README INSTALL
+cat <<EOF > README
+
+A more complete version of this document can be found at http://www.recoll.org
+
+
+EOF
+cat <<EOF > INSTALL
+
+A more complete version of this document can be found at http://www.recoll.org
+
+
+EOF
+
+links -dump ~/projets/pagepers/recoll/index.html >> README
+links -dump ~/projets/pagepers/recoll/usermanual.html >> README
+links -dump ~/projets/pagepers/recoll/installation.html >> INSTALL
+cvs commit -m '' README INSTALL
 
 # Clean up this dir and copy the dist-specific files 
 make clean
