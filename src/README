@@ -7,8 +7,6 @@
 
 Recoll
 
-  Introduction
-
    This is Recoll, a personal full text indexing system.
 
    Recoll is free and copyrighted under the GPL license, see COPYING inside
@@ -19,7 +17,7 @@ Recoll
    (Xapian), and I find it quite useful right now. You might be interested in
    using Recoll to index your home directory instead of using xapian's Omega,
    for example, if you do not want to run a web server, or your data is not
-   iso-8859-1. But the query features are much less sophisticated yet.
+   iso-8859-1. But the query features are much less sophisticated for now.
 
    See INSTALL inside the distribution for compiling and installing, very
    much by hand for now, I hope things will get better in the near future.

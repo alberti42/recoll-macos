@@ -1,0 +1,13 @@
+#!/bin/sh
+# A real one will come in time ...
+
+sys=`uname`
+if [ -f mk/$sys ]; then
+    (cd mk; test -f sysconf || ln -s $sys sysconf)
+else
+   cat <<EOF
+    No system configuration file found in mk/ for '$sys'. Maybe you
+    could try to write one, starting from one of the existing files, they
+    are really simple.
+EOF
+fi
