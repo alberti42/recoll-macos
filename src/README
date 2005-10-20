@@ -77,3 +77,51 @@ Recoll
      * Binc IMAP for MIME parsing code.
 
     jean-francois.dockes@wanadoo.fr
+     * Home
+     * Screenshots
+     * Downloads
+     * Credits
+     * User manual
+     * Installation
+   [IMG]
+
+Using Recoll
+
+  Simple search
+
+   Enter search term(s) in the text field at the top left. Clicking the
+   Search button or hitting the Enter key will start a search. By default,
+   this will look for documents with any of the terms (the ones with more
+   terms will get better scores). Use the Advanced search dialog for other
+   kinds of searches
+
+   A list of results will be displayed in the main list window. Clicking on
+   an entry will open an internal preview window for the document.
+   Double-clicking will attempt to start an external viewer (have a look at
+   the ~/.recoll/mimeconf file to see how these are configured).
+
+  Search tips
+
+   Entering a capitalized word in any search field will prevent stem
+   expansion (example: won't look for gardening if you enter Garden instead
+   of garden).
+
+   A phrase can be looked for by enclosing it in double quotes. Example:
+   "user manual".
+
+  Complex/advanced search
+
+   The advanced search dialog has fields that will allow a more refined
+   search, looking for documents with all given words, a given exact phrase,
+   or none of the given words (all fields may be combined by a default AND
+   clause).
+
+   It will let you search for documents of specific mime types (ie: only
+   text/plain, or text/html or application/pdf etc...)
+
+   It will let you restrict the search results to a subtree of the indexed
+   area.
+
+   In other respects, it works as the simple search.
+
+    jean-francois.dockes@wanadoo.fr
