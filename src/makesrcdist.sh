@@ -41,6 +41,7 @@ A more complete version of this document can be found at http://www.recoll.org
 EOF
 
 links -dump ~/projets/pagepers/recoll/index.html >> README
+links -dump ~/projets/pagepers/recoll/credits.html >> README
 links -dump ~/projets/pagepers/recoll/usermanual.html >> README
 links -dump ~/projets/pagepers/recoll/installation.html >> INSTALL
 cvs commit -m '' README INSTALL

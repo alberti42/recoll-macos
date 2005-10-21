@@ -1,9 +1,17 @@
-all:
-	test -f mk/sysconf || ./configure
+
+all: mk/sysconf
 	cd lib; $(MAKE)
 	cd bincimapmime; $(MAKE)
 	cd index; $(MAKE)
 	cd qtgui; qmake recoll.pro; rm -f recoll; $(MAKE)
+
+mk/sysconf:
+	./configure
+
+static:
+	rm -f index/recollindex qtgui/recoll
+	cd index; $(MAKE) BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic
+	cd qtgui; $(MAKE) BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic
 
 clean:
 	cd common; $(MAKE) clean

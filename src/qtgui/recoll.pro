@@ -27,7 +27,7 @@ unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
   LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
-          -L/usr/local/lib -lxapian -liconv \
+            $(BSTATIC) -L/usr/local/lib -lxapian -liconv $(BDYNAMIC) \
            -lz
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
 

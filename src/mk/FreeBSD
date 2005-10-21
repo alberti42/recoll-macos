@@ -1,9 +1,8 @@
-CXXFLAGS = -pthread -Wall -Wno-unused-variable -g \
-	 -I. -I../index -I../utils -I../common \
-	 -I../unac -I../bincimapmime -I/usr/local/include  \
-	 \
+include ../mk/commondefs
+
+CXXFLAGS = $(COMMONCXXFLAGS) -pthread  \
 	 -DHAVE_VASPRINTF=1 \
 	 -DHAVE_MKDTEMP=1
 
-LIBXAPIAN = -L/usr/local/lib -lxapian
 LIBICONV =  -L/usr/local/lib -liconv
+LIBSYS = 

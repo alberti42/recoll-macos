@@ -1,9 +1,10 @@
-CXXFLAGS = -Wall -g -I. -I../index -I../utils -I../common \
-	 -I../unac -I../bincimapmime -I/usr/local/include 
+include ../mk/commondefs
+
+CXXFLAGS = $(COMMONCXXFLAGS)
+
 CC=gcc
 CXX=g++
 
-LIBXAPIAN = -L/usr/local/lib -lxapian
 LIBICONV =  -L/usr/local/lib -liconv
 
 LIBSYS = -lpthread -lnsl -lsocket

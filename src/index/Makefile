@@ -9,7 +9,7 @@ all: $(PROGS)
 RECOLLINDEX_OBJS= recollindex.o $(BIGLIB) $(MIMELIB)
 recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
-		$(LIBXAPIAN) $(LIBICONV) $(LIBSYS)
+	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) $(LIBSYS)
 recollindex.o : idxdriver.cpp
 	$(CXX) $(CXXFLAGS) -c -o recollindex.o idxdriver.cpp
 
