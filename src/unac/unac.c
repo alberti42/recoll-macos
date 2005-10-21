@@ -12731,7 +12731,7 @@ static int convert(const char* from, const char* to,
     return -1;
   }
   do {
-    if(iconv(cd, (ICONV_CONST char **) &in, &in_length, &out, &out_remain) == (size_t)-1) {
+    if(iconv(cd, &in, &in_length, &out, &out_remain) == (size_t)-1) {
       switch(errno) {
       case EILSEQ:
 	/*
@@ -12756,7 +12756,7 @@ static int convert(const char* from, const char* to,
 	if(from_utf16) {
 	  const char* tmp = space;
 	  size_t tmp_length = 2;
-	  if(iconv(cd, (ICONV_CONST char **) &tmp, &tmp_length, &out, &out_remain) == (size_t)-1) {
+	  if(iconv(cd, &tmp, &tmp_length, &out, &out_remain) == (size_t)-1) {
 	    if(errno == E2BIG)
 	      /* fall thru to the E2BIG case below */;
 	    else
