@@ -2,7 +2,7 @@
 #set -x
 # A shell-script to make a recoll static binary distribution:
 
-TAR=/usr/bin/tar
+TAR=tar
  
 targetdir=${targetdir-/tmp}
 

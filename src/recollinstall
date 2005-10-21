@@ -28,28 +28,45 @@ if test $# != 1 ; then
 fi
 targetdir=$1
 
-echo "Installing to $targetdir"
+echo "Installing binaries to $targetdir"
 
 test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
      " You need to build first."
 
-install qtgui/recoll $targetdir/bin/recoll
-install index/recollindex $targetdir/bin/recollindex
-
-if test -d $HOME/.recoll ; then 
-   cat <<EOF
-
-   $HOME/.recoll already exists, no modification done.
-   You should check for new filters in the filters/ directory, and
-   for modifications to files in the sampleconf/ directory (ie new 
-   mime types in mimemap).
-EOF
-  exit 0
+if test -d $targetdir/bin -a -w $targetdir/bin ; then
+   install qtgui/recoll $targetdir/bin/recoll
+   install index/recollindex $targetdir/bin/recollindex
+else
+   echo "Not installing binary executables to $targetdir/bin which is not writable"
+   echo "Going on with personal install"
 fi
 
-mkdir $HOME/.recoll || exit 1
-cp filters/rcl* $HOME/.recoll
-chmod a+x $HOME/.recoll/rcl*
-cd sampleconf
-cp  mimeconf mimemap recoll.conf $HOME/.recoll
+me=`whoami`
+if test "$me" != root ; then
+  if test -d $HOME/.recoll ; then 
+     cat <<EOF
+     
+     $HOME/.recoll already exists, no modification done.
+     You should check for new filters in the filters/ directory, and
+     for modifications to files in the sampleconf/ directory (ie new 
+     mime types in mimemap).
+EOF
+     exit 0
+  fi
+
+  mkdir $HOME/.recoll || exit 1
+  cp filters/rcl* $HOME/.recoll
+  chmod a+x $HOME/.recoll/rcl*
+  cd sampleconf
+  cp mimeconf mimemap recoll.conf $HOME/.recoll
+  chmod +w $HOME/.recoll/recoll.conf
+  chmod +w $HOME/.recoll/mimeconf
+
+  echo You should now take a look at $HOME/.recoll/recoll.conf
+ 
+else
+
+  echo "Not installing personal configuration for root user"
+
+fi
 
