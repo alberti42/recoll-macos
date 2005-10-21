@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.5 2005-03-17 14:02:06 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.6 2005-10-21 08:14:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_SMALLUT
 #include <string>
@@ -33,8 +33,12 @@ bool maketmpdir(string& tdir)
 	    LOGERR(("maketmpdir: out of memory (for file name !)\n"));
 	    tdir.erase();
 	    return false;
-	}	
+	}
+#ifdef HAVE_MKDTEMP
+	if (!mkdtemp(cp)) {
+#else
 	if (!mktemp(cp)) {
+#endif // HAVE_MKDTEMP
 	    free(cp);
 	    LOGERR(("maketmpdir: mktemp failed\n"));
 	    tdir.erase();
@@ -43,12 +47,13 @@ bool maketmpdir(string& tdir)
 	tdir = cp;
 	free(cp);
     }
-
+#ifndef HAVE_MKDTEMP
     if (mkdir(tdir.c_str(), 0700) < 0) {
 	LOGERR(("maketmpdir: mkdir %s failed\n", tdir.c_str()));
 	tdir.erase();
 	return false;
     }
+#endif
     return true;
 }
 

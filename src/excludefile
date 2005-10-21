@@ -19,3 +19,6 @@ excludefile
 makedist.sh
 mk/sysconf
 qtgui/Makefile
+qtgui/preview/Makefile
+qtgui/preview/preview.pro
+qtgui/preview/pvmain.cpp

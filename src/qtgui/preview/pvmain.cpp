@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pvmain.cpp,v 1.3 2005-10-17 13:36:53 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pvmain.cpp,v 1.4 2005-10-21 08:14:42 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -51,6 +51,9 @@ int main( int argc, char ** argv )
     newEd->setText(str);
 
     w.pvTab->addTab(anon, "Tab 2");
+#if QT_VERSION < 0x040000
+    a.setMainWidget(&w);
+#endif
     w.show();
     return a.exec();
 }

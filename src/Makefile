@@ -13,4 +13,4 @@ clean:
 	cd qtgui; rm -f recoll; $(MAKE) clean
 	cd query; $(MAKE) clean
 	cd utils; $(MAKE) clean
-
+	rm -rf qtgui/Makefile qtgui/preview/Makefile
