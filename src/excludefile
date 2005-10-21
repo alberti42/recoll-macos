@@ -13,8 +13,6 @@ TAGS
 config.cache
 config.log
 config.status
-excludefile
-makedist.sh
 sysconf
 qtgui/Makefile
 qtgui/preview/Makefile
