@@ -4,11 +4,10 @@ A more complete version of this document can be found at http://www.recoll.org
 
      * Home
      * Screenshots
-     * Downloads
      * Credits
-     * User manual
+     * Downloads
      * Installation
-   [IMG]
+     * User manual
 
 Installing Recoll
 
@@ -89,5 +88,3 @@ Installing Recoll
    the external viewers defined in ~/.recoll/mimeconf (ie: html is either
    previewed internally or displayed using firefox, but you may prefer
    mozilla...). Look for the [view] section.
-
-    jean-francois.dockes@wanadoo.fr

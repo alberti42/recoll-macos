@@ -4,35 +4,30 @@ A more complete version of this document can be found at http://www.recoll.org
 
      * Home
      * Screenshots
-     * Downloads
      * Credits
-     * User manual
+     * Downloads
      * Installation
+     * User manual
    [IMG]
 
 Recoll
 
-   This is Recoll, a personal full text indexing system.
+   Recoll is a personal full text indexing package for Linux and other Unix
+   systems.
+
+   Recoll is based on a very strong backend (Xapian), for which it provides
+   an easy to use, feature-rich, zero-administration interface.
 
    Recoll is free and copyrighted under the GPL license, see COPYING inside
    the distribution. A lot of the code is imported from other packages, see
    the Credits.
 
-   Recoll is still in infancy, but it is based on a very strong backend
-   (Xapian), and I find it quite useful right now. You might be interested in
-   using Recoll to index your home directory instead of using xapian's Omega,
-   for example, if you do not want to run a web server, or your data is not
-   iso-8859-1. But the query features are much less sophisticated for now.
-
-   See INSTALL inside the distribution for compiling and installing, very
-   much by hand for now, I hope things will get better in the near future.
-
   Features:
 
-     * Document types: text, html, pdf (with xpdf's pdftotext), postscript
-       (with ghostscript's pstotext), msword (with antiword), openoffice
-       files, maildir and mailbox mail folders (mozilla and thunderbird mail
-       ok). Deals with compressed versions of same.
+     * Document types: text, html, pdf (with pdftotext), postscript (with
+       ghostscript's pstotext), msword (with antiword), openoffice files,
+       maildir and mailbox mail folders (Mozilla and thunderbird mail ok).
+       Deals with compressed versions of same.
      * Relatively powerful query facilities, with boolean searches, phrases,
        filter on file types and directory tree.
      * Support for multiple charsets. Internal processing and storage uses
@@ -40,28 +35,34 @@ Recoll
      * Stemming performed at query time (can switch stemming language after
        indexing)
      * Easy installation. No database daemon, web server or exotic language
-       necessary. The idea is that EVERYBODY should index their files because
+       necessary. The idea is that everybody should index their files because
        it makes life easier.
-     * An ugly GUI, qt-based, written with qt Designer.
+     * GUI based on qt, written with qt Designer.
      * An indexer which runs either as a thread inside the GUI or as an
        external, cron'able program.
 
-   recoll has been compiled and tested on FreeBSD, Linux and Solaris
+   Recoll has been compiled and tested on FreeBSD, Linux and Solaris
    (versions FreeBSD 5.3, red hat 7.3, Solaris 8, but other not too distant
-   releases should be ok too).
+   releases should be ok too). You can download the source code here.
 
   Things lacking, coming in the not too far future:
 
      * An interactive configuration tool. You need to edit files by hand for
        now.
      * Packages, rpm or other. It's all tar files currently.
-     * A build system, autoconf et al.
      * Documentation and help.
+     * Translations for the user interface.
      * A few more filters for less common file types.
 
-   I very much welcome suggestions or (gasp) code
+   I very much welcome suggestions or (gasp) code.
 
    In hope that this can be useful to somebody, it already is for me.
+     * Home
+     * Screenshots
+     * Credits
+     * Downloads
+     * Installation
+     * User manual
 
   Credits
 
@@ -79,17 +80,25 @@ Recoll
        package.
      * Iconv, for character set conversion.
      * Binc IMAP for MIME parsing code.
-
-    jean-francois.dockes@wanadoo.fr
+     * I fear the rest of the bugs to be mostly mine:
+       jean-francois.dockes@wanadoo.fr
      * Home
      * Screenshots
-     * Downloads
      * Credits
-     * User manual
+     * Downloads
      * Installation
-   [IMG]
+     * User manual
 
 Using Recoll
+
+  Indexation
+
+   By default, Recoll will index your home directory. If you want to change
+   this, you need to edit the configuration file ($HOME/.recoll/recoll.conf).
+   Follow the comments in the file to adjust the parameters.
+
+   Indexing is performed either by starting the recollindex program, or by
+   the indexing thread inside the recoll program (use the File menu).
 
   Simple search
 
@@ -104,14 +113,20 @@ Using Recoll
    Double-clicking will attempt to start an external viewer (have a look at
    the ~/.recoll/mimeconf file to see how these are configured).
 
-  Search tips
+  Search tips, shortcuts
 
    Entering a capitalized word in any search field will prevent stem
-   expansion (example: won't look for gardening if you enter Garden instead
-   of garden).
+   expansion (example: Recoll will not look for gardening if you enter Garden
+   instead of garden).
 
    A phrase can be looked for by enclosing it in double quotes. Example:
-   "user manual".
+   "user manual" will look only for occurrences of user immediately followed
+   by manual.
+
+   Entering ^Q almost anywhere will close the application.
+
+   Entering ^W in a preview tab will close it (and, for the last tab, close
+   the preview window).
 
   Complex/advanced search
 
@@ -127,5 +142,3 @@ Using Recoll
    area.
 
    In other respects, it works as the simple search.
-
-    jean-francois.dockes@wanadoo.fr
