@@ -10,8 +10,10 @@ mk/sysconf:
 
 static:
 	rm -f index/recollindex qtgui/recoll
+	cd lib; $(MAKE)
+	cd bincimapmime; $(MAKE)
 	cd index; $(MAKE) BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic
-	cd qtgui; $(MAKE) BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic
+	cd qtgui; qmake recoll.pro; $(MAKE) BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic
 
 clean:
 	cd common; $(MAKE) clean
