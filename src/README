@@ -42,7 +42,7 @@ Recoll
        external, cron'able program.
 
    Recoll has been compiled and tested on FreeBSD, Linux and Solaris
-   (versions FreeBSD 5.3, red hat 7.3, Solaris 8, but other not too distant
+   (versions FreeBSD 5.3, Redhat 7.3, Solaris 8, but other not too distant
    releases should be ok too). You can download the source code here.
 
   Things lacking, coming in the not too far future:
