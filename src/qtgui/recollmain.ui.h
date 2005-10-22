@@ -21,6 +21,7 @@ using std::pair;
 #include <qmessagebox.h>
 #include <qcstring.h>
 #include <qtabwidget.h>
+#include <qtimer.h>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -46,8 +47,15 @@ static const int respagesize = 8;
 
 void RecollMain::init()
 {
+    reslist_current = -1;
+    reslist_winfirst = -1;
     curPreview = 0;
     asearchform = 0;
+    reslist_mouseDrag = false;
+    reslist_mouseDown = false;
+    reslistTE_waitingdbl = false;
+    reslistTE_dblclck = false;
+    reslistTE->viewport()->installEventFilter(this);
 }
 
 // We also want to get rid of the advanced search form and previews
@@ -59,15 +67,121 @@ bool RecollMain::close(bool)
     return false;
 }
 
+#if 0
+static const char *eventTypeToStr(int tp)
+{
+    switch (tp) {
+    case 0: return "None";
+    case 1: return "Timer";
+    case 2: return "MouseButtonPress";
+    case 3: return "MouseButtonRelease";
+    case 4: return "MouseButtonDblClick";
+    case 5: return "MouseMove";
+    case 6: return "KeyPress";
+    case 7: return "KeyRelease";
+    case 8: return "FocusIn";
+    case 9: return "FocusOut";
+    case 10: return "Enter";
+    case 11: return "Leave";
+    case 12: return "Paint";
+    case 13: return "Move";
+    case 14: return "Resize";
+    case 15: return "Create";
+    case 16: return "Destroy";
+    case 17: return "Show";
+    case 18: return "Hide";
+    case 19: return "Close";
+    case 20: return "Quit";
+    case 21: return "Reparent";
+    case 22: return "ShowMinimized";
+    case 23: return "ShowNormal";
+    case 24: return "WindowActivate";
+    case 25: return "WindowDeactivate";
+    case 26: return "ShowToParent";
+    case 27: return "HideToParent";
+    case 28: return "ShowMaximized";
+    case 29: return "ShowFullScreen";
+    case 30: return "Accel";
+    case 31: return "Wheel";
+    case 32: return "AccelAvailable";
+    case 33: return "CaptionChange";
+    case 34: return "IconChange";
+    case 35: return "ParentFontChange";
+    case 36: return "ApplicationFontChange";
+    case 37: return "ParentPaletteChange";
+    case 38: return "ApplicationPaletteChange";
+    case 39: return "PaletteChange";
+    case 40: return "Clipboard";
+    case 42: return "Speech";
+    case 50: return "SockAct";
+    case 51: return "AccelOverride";
+    case 52: return "DeferredDelete";
+    case 60: return "DragEnter";
+    case 61: return "DragMove";
+    case 62: return "DragLeave";
+    case 63: return "Drop";
+    case 64: return "DragResponse";
+    case 70: return "ChildInserted";
+    case 71: return "ChildRemoved";
+    case 72: return "LayoutHint";
+    case 73: return "ShowWindowRequest";
+    case 74: return "WindowBlocked";
+    case 75: return "WindowUnblocked";
+    case 80: return "ActivateControl";
+    case 81: return "DeactivateControl";
+    case 82: return "ContextMenu";
+    case 83: return "IMStart";
+    case 84: return "IMCompose";
+    case 85: return "IMEnd";
+    case 86: return "Accessibility";
+    case 87: return "TabletMove";
+    case 88: return "LocaleChange";
+    case 89: return "LanguageChange";
+    case 90: return "LayoutDirectionChange";
+    case 91: return "Style";
+    case 92: return "TabletPress";
+    case 93: return "TabletRelease";
+    case 94: return "OkRequest";
+    case 95: return "HelpRequest";
+    case 96: return "WindowStateChange";
+    case 97: return "IconDrag";
+    case 1000: return "User";
+    case 65535: return "MaxUser";
+    default: return "Unknown";
+    }
+}
+#endif
+
 // We want to catch ^Q everywhere to mean quit.
 bool RecollMain::eventFilter( QObject * target, QEvent * event )
 {
+    //    LOGDEB(("RecollMain::eventFilter target %p, event %s\n", target,
+    //	    eventTypeToStr(int(event->type()))));
     if (event->type() == QEvent::KeyPress) {
 	QKeyEvent *keyEvent = (QKeyEvent *)event;
 	if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
 	    recollNeedsExit = 1;
 	}
+    } else if (target == reslistTE->viewport()) { 
+	// We don't want btdown+drag+btup to be a click ! So monitor
+	// mouse events
+	if (event->type() == QEvent::MouseMove) {
+	    LOGDEB1(("reslistTE: MouseMove\n"));
+	    if (reslist_mouseDown)
+		reslist_mouseDrag = true;
+	} else if (event->type() == QEvent::MouseButtonPress) {
+	    LOGDEB1(("reslistTE: MouseButtonPress\n"));
+	    reslist_mouseDown = true;
+	    reslist_mouseDrag = false;
+	} else if (event->type() == QEvent::MouseButtonRelease) {
+	    LOGDEB1(("reslistTE: MouseButtonRelease\n"));
+	    reslist_mouseDown = false;
+	} else if (event->type() == QEvent::MouseButtonDblClick) {
+	    LOGDEB1(("reslistTE: MouseButtonDblClick\n"));
+	    reslist_mouseDown = false;
+	}
     }
+
     return QWidget::eventFilter(target, event);
 }
 
@@ -110,6 +224,7 @@ static string urltolocalpath(string url)
 void RecollMain::reslistTE_doubleClicked(int par, int)
 {
     LOGDEB(("RecollMain::reslistTE_doubleClicked: par %d\n", par));
+    reslistTE_dblclck = true;
 
     Rcl::Doc doc;
     int reldocnum =  par - 1;
@@ -157,121 +272,21 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
 // paragraph number is doc number in window + 1
 void RecollMain::reslistTE_clicked(int par, int car)
 {
-    LOGDEB(("RecollMain::reslistTE_clicked: par %d, char %d\n", par, car));
-    if (reslist_winfirst == -1)
+    if (reslistTE_waitingdbl)
+	return;
+    LOGDEB(("RecollMain::reslistTE_clckd:winfirst %d par %d char %d drg %d\n", 
+	    reslist_winfirst, par, car, reslist_mouseDrag));
+    if (reslist_winfirst == -1 || reslist_mouseDrag)
 	return;
 
-    Rcl::Doc doc;
-    if (reslist_current != -1) {
-	QColor color("white");
-	reslistTE->setParagraphBackgroundColor(reslist_current+1, color);
-    }
-    QColor color("lightblue");
-    reslistTE->setParagraphBackgroundColor(par, color);
+    // remember par and car
+    reslistTE_par = par;
+    reslistTE_car = car;
+    reslistTE_waitingdbl = true;
+    reslistTE_dblclck = false;
+    // Wait to see if there's going to be a dblclck
+    QTimer::singleShot(100, this, SLOT(reslistTE_delayedclick()) );
 
-    int reldocnum = par - 1;
-    if (curPreview && reslist_current == reldocnum)
-	return;
-
-    reslist_current = reldocnum;
-
-    if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0)) {
-	QMessageBox::warning(0, "Recoll",
-			     QString("Can't retrieve document from database"));
-	return;
-    }
-	
-    // Go to the file system to retrieve / convert the document text
-    // for preview:
-    string fn = urltolocalpath(doc.url);
-    Rcl::Doc fdoc;
-    FileInterner interner(fn, rclconfig, tmpdir);
-    if (interner.internfile(fdoc, doc.ipath) != FileInterner::FIDone) {
-	QMessageBox::warning(0, "Recoll",
-			     QString("Can't turn doc into internal rep ") +
-			     doc.mimetype.c_str());
-	return;
-    }
-    list<string> terms;
-    rcldb->getQueryTerms(terms);
-    list<pair<int, int> > termoffsets;
-    string rich = plaintorich(fdoc.text, terms, termoffsets);
-
-    QTextEdit *editor;
-    if (curPreview == 0) {
-	curPreview = new Preview(0, "Preview");
-	curPreview->setCaption(queryText->text());
-	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
-		this, SLOT(previewClosed(Preview *)));
-	if (curPreview == 0) {
-	    QMessageBox::warning(0, "Warning", 
-				 "Can't create preview window",  
-				 QMessageBox::Ok, 
-				 QMessageBox::NoButton);
-	    return;
-	}
-	curPreview->show();
-	editor = curPreview->pvEdit;
-    } else {
-	QWidget *anon = new QWidget((QWidget *)curPreview->pvTab);
-	QVBoxLayout *anonLayout = new QVBoxLayout(anon, 1, 1, "anonLayout"); 
-	editor = new QTextEdit(anon, "pvEdit");
-	editor->setReadOnly( TRUE );
-	editor->setUndoRedoEnabled( FALSE );
-	anonLayout->addWidget(editor);
-	curPreview->pvTab->addTab(anon, "Tab");
-	curPreview->pvTab->showPage(anon);
-    }
-    string tabname;
-    if (!doc.title.empty()) {
-	tabname = doc.title;
-    } else {
-	tabname = path_getsimple(doc.url);
-    }
-    if (tabname.length() > 20) {
-	tabname = tabname.substr(0, 10) + "..." + 
-	    tabname.substr(tabname.length()-10);
-    }
-    curPreview->pvTab->changeTab(curPreview->pvTab->currentPage(), 
-				 QString::fromUtf8(tabname.c_str(), 
-						   tabname.length()));
-
-    if (doc.title.empty()) 
-	doc.title = path_getsimple(doc.url);
-    char datebuf[100];
-    datebuf[0] = 0;
-    if (!doc.mtime.empty()) {
-	time_t mtime = atol(doc.mtime.c_str());
-	struct tm *tm = localtime(&mtime);
-	strftime(datebuf, 99, "%F %T", tm);
-    }
-    string tiptxt = doc.url + string("\n");
-    tiptxt += doc.mimetype + " " 
-	+ (doc.mtime.empty() ? "\n" : string(datebuf) + "\n");
-    if (!doc.title.empty())
-	tiptxt += doc.title + "\n";
-    curPreview->pvTab->setTabToolTip(curPreview->pvTab->currentPage(),
-				     QString::fromUtf8(tiptxt.c_str(),
-						       tiptxt.length()));
-
-    QStyleSheetItem *item = 
-	new QStyleSheetItem(editor->styleSheet(), "termtag" );
-    item->setColor("blue");
-    item->setFontWeight(QFont::Bold);
-
-    QString str = QString::fromUtf8(rich.c_str(), rich.length());
-    editor->setText(str);
-    int para = 0, index = 1;
-    if (!termoffsets.empty()) {
-	index = (termoffsets.begin())->first;
-	LOGDEB(("Set cursor position: para %d, character index %d\n",
-		para,index));
-	editor->setCursorPosition(0, index);
-    }
-    editor->ensureCursorVisible();
-    editor->getCursorPosition(&para, &index);
-    LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
-	    editor->length(), editor->paragraphs(),  para, index));
 }
 
 
@@ -404,8 +419,6 @@ void RecollMain::listNextPB_clicked()
 	reslistTE->append("</body></qt>");
 	reslistTE->setCursorPosition(0,0);
 	reslistTE->ensureCursorVisible();
-	// Display preview for 1st doc in list
-	// reslistTE_clicked(1, 0);
     } else {
 	// Restore first in win parameter that we shouln't have incremented
 	reslistTE->append("<p><b>No results found</b><br>");
@@ -468,3 +481,129 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
 }
 
 
+
+// This gets called by a timer 100mS after a single click in the
+// result list. We don't want to start a preview if the user has
+// requested a native viewer by double-clicking
+void RecollMain::reslistTE_delayedclick()
+{
+    reslistTE_waitingdbl = false;
+    if (reslistTE_dblclck) {
+	reslistTE_dblclck = false;
+	return;
+    }
+
+    int par = reslistTE_par;
+
+    Rcl::Doc doc;
+    if (reslist_current != -1) {
+	QColor color("white");
+	reslistTE->setParagraphBackgroundColor(reslist_current+1, color);
+    }
+    QColor color("lightblue");
+    reslistTE->setParagraphBackgroundColor(par, color);
+
+    int reldocnum = par - 1;
+    if (curPreview && reslist_current == reldocnum)
+	return;
+
+    reslist_current = reldocnum;
+
+    if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0)) {
+	QMessageBox::warning(0, "Recoll",
+			     QString("Can't retrieve document from database"));
+	return;
+    }
+	
+    // Go to the file system to retrieve / convert the document text
+    // for preview:
+    string fn = urltolocalpath(doc.url);
+    Rcl::Doc fdoc;
+    FileInterner interner(fn, rclconfig, tmpdir);
+    if (interner.internfile(fdoc, doc.ipath) != FileInterner::FIDone) {
+	QMessageBox::warning(0, "Recoll",
+			     QString("Can't turn doc into internal rep ") +
+			     doc.mimetype.c_str());
+	return;
+    }
+    list<string> terms;
+    rcldb->getQueryTerms(terms);
+    list<pair<int, int> > termoffsets;
+    string rich = plaintorich(fdoc.text, terms, termoffsets);
+
+    QTextEdit *editor;
+    if (curPreview == 0) {
+	curPreview = new Preview(0, "Preview");
+	curPreview->setCaption(queryText->text());
+	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
+		this, SLOT(previewClosed(Preview *)));
+	if (curPreview == 0) {
+	    QMessageBox::warning(0, "Warning", 
+				 "Can't create preview window",  
+				 QMessageBox::Ok, 
+				 QMessageBox::NoButton);
+	    return;
+	}
+	curPreview->show();
+	editor = curPreview->pvEdit;
+    } else {
+	QWidget *anon = new QWidget((QWidget *)curPreview->pvTab);
+	QVBoxLayout *anonLayout = new QVBoxLayout(anon, 1, 1, "anonLayout"); 
+	editor = new QTextEdit(anon, "pvEdit");
+	editor->setReadOnly( TRUE );
+	editor->setUndoRedoEnabled( FALSE );
+	anonLayout->addWidget(editor);
+	curPreview->pvTab->addTab(anon, "Tab");
+	curPreview->pvTab->showPage(anon);
+    }
+    string tabname;
+    if (!doc.title.empty()) {
+	tabname = doc.title;
+    } else {
+	tabname = path_getsimple(doc.url);
+    }
+    if (tabname.length() > 20) {
+	tabname = tabname.substr(0, 10) + "..." + 
+	    tabname.substr(tabname.length()-10);
+    }
+    curPreview->pvTab->changeTab(curPreview->pvTab->currentPage(), 
+				 QString::fromUtf8(tabname.c_str(), 
+						   tabname.length()));
+
+    if (doc.title.empty()) 
+	doc.title = path_getsimple(doc.url);
+    char datebuf[100];
+    datebuf[0] = 0;
+    if (!doc.mtime.empty()) {
+	time_t mtime = atol(doc.mtime.c_str());
+	struct tm *tm = localtime(&mtime);
+	strftime(datebuf, 99, "%F %T", tm);
+    }
+    string tiptxt = doc.url + string("\n");
+    tiptxt += doc.mimetype + " " 
+	+ (doc.mtime.empty() ? "\n" : string(datebuf) + "\n");
+    if (!doc.title.empty())
+	tiptxt += doc.title + "\n";
+    curPreview->pvTab->setTabToolTip(curPreview->pvTab->currentPage(),
+				     QString::fromUtf8(tiptxt.c_str(),
+						       tiptxt.length()));
+
+    QStyleSheetItem *item = 
+	new QStyleSheetItem(editor->styleSheet(), "termtag" );
+    item->setColor("blue");
+    item->setFontWeight(QFont::Bold);
+
+    QString str = QString::fromUtf8(rich.c_str(), rich.length());
+    editor->setText(str);
+    int para = 0, index = 1;
+    if (!termoffsets.empty()) {
+	index = (termoffsets.begin())->first;
+	LOGDEB(("Set cursor position: para %d, character index %d\n",
+		para,index));
+	editor->setCursorPosition(0, index);
+    }
+    editor->ensureCursorVisible();
+    editor->getCursorPosition(&para, &index);
+    LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
+	    editor->length(), editor->paragraphs(),  para, index));
+}

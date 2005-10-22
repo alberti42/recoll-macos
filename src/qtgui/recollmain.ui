@@ -288,6 +288,12 @@
 <variables>
     <variable>int reslist_winfirst;</variable>
     <variable>int reslist_current;</variable>
+    <variable>bool reslist_mouseDrag;</variable>
+    <variable>bool reslist_mouseDown;</variable>
+    <variable>int reslistTE_par;</variable>
+    <variable>int reslistTE_car;</variable>
+    <variable>bool reslistTE_waitingdbl;</variable>
+    <variable>bool reslistTE_dblclck;</variable>
     <variable>bool dostem;</variable>
     <variable>std::string stemlang;</variable>
     <variable>Preview *curPreview;</variable>
@@ -307,11 +313,12 @@
     <slot>previewClosed( Preview * w )</slot>
     <slot>advSearchPB_clicked()</slot>
     <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
+    <slot>reslistTE_delayedclick()</slot>
 </slots>
 <functions>
     <function access="private">init()</function>
-    <function access="private" returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
     <function returnType="bool">close( bool alsoDelete )</function>
+    <function access="private" returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
 </functions>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
