@@ -38,3 +38,4 @@ contains( UNAME, [lL]inux ) {
           LIBS -= -liconv
 }
 
+TRANSLATIONS = recoll_fr.ts

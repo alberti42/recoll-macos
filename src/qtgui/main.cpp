@@ -1,10 +1,14 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.10 2005-10-19 10:21:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.11 2005-10-22 05:35:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
 
 #include <qapplication.h>
+
+#include <qtranslator.h>
+#include <qtextcodec.h> 
+
 #include <qthread.h>
 #include <qtimer.h>
 
@@ -81,10 +85,15 @@ static void sigcleanup(int)
     recollNeedsExit = 1;
 }
 
-
 int main( int argc, char ** argv )
 {
     QApplication a(argc, argv);
+
+    QTranslator translator( 0 );
+    // QTextCodec::locale() return $LANG
+    translator.load( QString("recoll_") + QTextCodec::locale(), "." );
+    a.installTranslator( &translator );
+    
     RecollMain w;
     w.show();
     a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
