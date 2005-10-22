@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
 #include <utility>
 using std::pair;
@@ -22,6 +23,8 @@ using std::pair;
 #include <qcstring.h>
 #include <qtabwidget.h>
 #include <qtimer.h>
+#include <qstatusbar.h>
+#include <qwindowdefs.h>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -35,6 +38,7 @@ using std::pair;
 #include "unacpp.h"
 #include "advsearch.h"
 
+extern "C" int XFlush(void *);
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
@@ -263,13 +267,21 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
     }
 
     ncmd += " &";
-    LOGDEB(("Executing: '%s'\n", ncmd.c_str()));
+    QStatusBar *stb = statusBar();
+    if (stb) {
+	string msg = string("Executing: [") + ncmd.c_str() + "]";
+	stb->message(msg.c_str(), 5000);
+	stb->repaint(false);
+	XFlush(qt_xdisplay());
+    }
     system(ncmd.c_str());
 }
 
 
 // Display preview for the selected document, and highlight entry. The
 // paragraph number is doc number in window + 1
+// We don't actually do anything but start a timer because we want to
+// check first if this might be a double click
 void RecollMain::reslistTE_clicked(int par, int car)
 {
     if (reslistTE_waitingdbl)
@@ -285,13 +297,12 @@ void RecollMain::reslistTE_clicked(int par, int car)
     reslistTE_waitingdbl = true;
     reslistTE_dblclck = false;
     // Wait to see if there's going to be a dblclck
-    QTimer::singleShot(100, this, SLOT(reslistTE_delayedclick()) );
-
+    QTimer::singleShot(150, this, SLOT(reslistTE_delayedclick()) );
 }
 
 
-// User asked to start query. Run it and call listNextPB_clicked to display
-// first page of results
+// User asked to start query. Send it to the db aand call
+// listNextPB_clicked to fetch and display the first page of results
 void RecollMain::queryText_returnPressed()
 {
     LOGDEB(("RecollMain::queryText_returnPressed()\n"));
@@ -338,14 +349,16 @@ void RecollMain::listPrevPB_clicked()
 // Fill up result list window with next screen of hits
 void RecollMain::listNextPB_clicked()
 {
-    fprintf(stderr, "listNextPB_clicked\n");
     if (!rcldb)
 	return;
+
     int percent;
     Rcl::Doc doc;
+
+    // Need to fetch one document before we can get the result count 
     rcldb->getDoc(0, doc, &percent);
     int resCnt = rcldb->getResCnt();
-    fprintf(stderr, "listNextPB_clicked rescnt\n");
+
     LOGDEB(("listNextPB_clicked: rescnt %d, winfirst %d\n", resCnt,
 	    reslist_winfirst));
 
@@ -375,7 +388,8 @@ void RecollMain::listNextPB_clicked()
 	if (i == 0) {
 	    reslistTE->append("<qt><head></head><body><p>");
 	    char line[80];
-	    sprintf(line, "<p><b>Displaying results starting at index %d (maximum set size %d)</b><br>",
+	    sprintf(line, "<p><b>Displaying results starting at index"
+		    " %d (maximum set size %d)</b><br>",
 		    reslist_winfirst+1, resCnt);
 	    reslistTE->append(line);
 	}
@@ -458,7 +472,8 @@ void RecollMain::advSearchPB_clicked()
     }
 }
 
-// Execute and advanced search query
+// Execute an advanced search query. The parameters normally come from
+// the advanced search dialog
 void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
 {
     LOGDEB(("RecollMain::startAdvSearch\n"));
@@ -495,7 +510,6 @@ void RecollMain::reslistTE_delayedclick()
 
     int par = reslistTE_par;
 
-    Rcl::Doc doc;
     if (reslist_current != -1) {
 	QColor color("white");
 	reslistTE->setParagraphBackgroundColor(reslist_current+1, color);
@@ -508,16 +522,44 @@ void RecollMain::reslistTE_delayedclick()
 	return;
 
     reslist_current = reldocnum;
+    startPreview(reslist_winfirst + reldocnum);
+}
 
-    if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0)) {
+
+// Open a preview window for a given document
+// docnum is a db query index
+void RecollMain::startPreview(int docnum)
+{
+    Rcl::Doc doc;
+    if (!rcldb->getDoc(docnum, doc, 0)) {
 	QMessageBox::warning(0, "Recoll",
-			     QString("Can't retrieve document from database"));
+			     QString("Cannot retrieve document info" 
+				     " from database"));
 	return;
     }
 	
     // Go to the file system to retrieve / convert the document text
     // for preview:
     string fn = urltolocalpath(doc.url);
+    struct stat st;
+    if (stat(fn.c_str(), &st) < 0) {
+	QMessageBox::warning(0, "Recoll",
+			     QString("Cannot access document file: ") +
+			     fn.c_str());
+	return;
+    }
+
+    QStatusBar *stb = statusBar();
+    if (stb) {
+	char csz[20];
+	sprintf(csz, "%lu", (unsigned long)st.st_size);
+	string msg = string("Loading: ") + fn + " (size " + csz
+	    + " bytes)";
+	stb->message(msg.c_str());
+	stb->repaint(false);
+	XFlush(qt_xdisplay());
+    }
+
     Rcl::Doc fdoc;
     FileInterner interner(fn, rclconfig, tmpdir);
     if (interner.internfile(fdoc, doc.ipath) != FileInterner::FIDone) {
@@ -526,6 +568,10 @@ void RecollMain::reslistTE_delayedclick()
 			     doc.mimetype.c_str());
 	return;
     }
+
+    if (stb) 
+	stb->clear();
+
     list<string> terms;
     rcldb->getQueryTerms(terms);
     list<pair<int, int> > termoffsets;

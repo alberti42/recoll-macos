@@ -319,6 +319,7 @@
     <function access="private">init()</function>
     <function returnType="bool">close( bool alsoDelete )</function>
     <function access="private" returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
+    <function access="private">startPreview( int docnum )</function>
 </functions>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
