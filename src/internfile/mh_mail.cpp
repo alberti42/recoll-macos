@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.6 2005-10-15 12:18:04 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.7 2005-10-31 08:59:05 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -330,14 +330,26 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	// Decode content transfer encoding
 	if (!stringlowercmp("quoted-printable", cte)) {
 	    string decoded;
-	    qp_decode(body, decoded);
+	    if (!qp_decode(body, decoded)) {
+		LOGERR(("walkmime: quoted-printable decoding failed !\n"));
+		return;
+	    }
 	    body = decoded;
 	} else if (!stringlowercmp("base64", cte)) {
 	    string decoded;
-	    base64_decode(body, decoded);
+	    if (!base64_decode(body, decoded)) {
+		LOGERR(("walkmime: base64 decoding failed !\n"));
+#if 0
+		FILE *fp = fopen("/tmp/recoll_decodefail", "w");
+		if (fp) {
+		    fprintf(fp, "%s", body.c_str());
+		    fclose(fp);
+		}
+#endif
+		return;
+	    }
 	    body = decoded;
 	}
-
 
 	string transcoded;
 	if (!stringlowercmp("text/html", content_type.value)) {

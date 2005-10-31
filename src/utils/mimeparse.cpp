@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.4 2005-10-15 12:18:04 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.5 2005-10-31 08:59:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMEPARSE
@@ -10,6 +10,13 @@ static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.4 2005-10-15 12:18:04 dockes Ex
 #include <ctype.h>
 
 #include "mimeparse.h"
+
+//#define DEBUG_MIMEPARSE 
+#ifdef DEBUG_MIMEPARSE
+#define DPRINT(X) fprintf X
+#else
+#define DPRINT(X)
+#endif
 
 using namespace std;
 
@@ -264,23 +271,27 @@ bool base64_decode(const string& in, string& out)
 	    break;
 
 	pos = strchr(Base64, ch);
-	if (pos == 0) 		/* A non-base64 character. */
+	if (pos == 0) {
+	    /* A non-base64 character. */
+	    DPRINT((stderr, "base64_dec: non-base64 char at pos %d\n", ii));
 	    return false;
+	}
+
 
 	switch (state) {
 	case 0:
-	    out[io] = (pos - Base64) << 2;
+	    out += (pos - Base64) << 2;
 	    state = 1;
 	    break;
 	case 1:
 	    out[io]   |=  (pos - Base64) >> 4;
-	    out[io+1]  = ((pos - Base64) & 0x0f) << 4 ;
+	    out += ((pos - Base64) & 0x0f) << 4 ;
 	    io++;
 	    state = 2;
 	    break;
 	case 2:
 	    out[io]   |=  (pos - Base64) >> 2;
-	    out[io+1]  = ((pos - Base64) & 0x03) << 6;
+	    out += ((pos - Base64) & 0x03) << 6;
 	    io++;
 	    state = 3;
 	    break;
@@ -290,6 +301,7 @@ bool base64_decode(const string& in, string& out)
 	    state = 0;
 	    break;
 	default:
+	    DPRINT((stderr, "base64_dec: internal!bad state!\n"));
 	    return false;
 	}
     }
@@ -304,6 +316,7 @@ bool base64_decode(const string& in, string& out)
 	switch (state) {
 	case 0:		/* Invalid = in first position */
 	case 1:		/* Invalid = in second position */
+	    DPRINT((stderr, "base64_dec: pad char in state 0/1\n"));
 	    return false;
 
 	case 2:		/* Valid, means one byte of info */
@@ -312,20 +325,27 @@ bool base64_decode(const string& in, string& out)
 		if (!isspace((unsigned char)ch))
 		    break;
 	    /* Make sure there is another trailing = sign. */
-	    if (ch != Pad64)
-		return false;
+	    if (ch != Pad64) {
+		DPRINT((stderr, "base64_dec: missing pad char!\n"));
+		// Well, there are bad encoders out there. Let it pass
+		// return false;
+	    }
 	    ch = in[ii++];		/* Skip the = */
 	    /* Fall through to "single trailing =" case. */
 	    /* FALLTHROUGH */
 
-	case 3:		/* Valid, means two bytes of info */
-			/*
-			 * We know this char is an =.  Is there anything but
-			 * whitespace after it?
-			 */
+	case 3:	    /* Valid, means two bytes of info */
+	    /*
+	     * We know this char is an =.  Is there anything but
+	     * whitespace after it?
+	     */
 	    for ((void)NULL; ii < in.length(); ch = in[ii++])
-		if (!isspace((unsigned char)ch))
-		    return false;
+		if (!isspace((unsigned char)ch)) {
+		    DPRINT((stderr, "base64_dec: non-white at eod: 0x%x\n", 
+			    (unsigned int)ch));
+		    // Well, there are bad encoders out there. Let it pass
+		    //return false;
+		}
 
 	    /*
 	     * Now make sure for cases 2 and 3 that the "extra"
@@ -333,18 +353,26 @@ bool base64_decode(const string& in, string& out)
 	     * zeros.  If we don't check them, they become a
 	     * subliminal channel.
 	     */
-	    if (out[io] != 0)
-		return false;
+	    if (out[io] != 0) {
+		DPRINT((stderr, "base64_dec: bad extra bits!\n"));
+		// Well, there are bad encoders out there. Let it pass
+		out[io] = 0;
+		// return false;
+	    }
 	}
     } else {
 	/*
 	 * We ended by seeing the end of the string.  Make sure we
 	 * have no partial bytes lying around.
 	 */
-	if (state != 0)
+	if (state != 0) {
+	    DPRINT((stderr, "base64_dec: bad final state\n"));
 	    return false;
+	}
     }
 
+    DPRINT((stderr, "base64_dec: ret ok, io %d sz %d len %d value [%s]\n", 
+	    io, out.size(), out.length(), out.c_str()));
     return true;
 }
 
@@ -494,6 +522,9 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 
 #include <string>
 #include "mimeparse.h"
+#include "readfile.h"
+
+
 using namespace std;
 int
 main(int argc, const char **argv)
@@ -536,9 +567,10 @@ main(int argc, const char **argv)
     string out;
     if (!base64_decode(string(b64), out)) {
 	fprintf(stderr, "base64_decode returned error\n");
+	exit(1);
     }
     printf("Decoded: '%s'\n", out.c_str());
-#elif 1
+#elif 0
     char line [1024];
     string out;
     while (fgets(line, 1023, stdin)) {
@@ -550,6 +582,20 @@ main(int argc, const char **argv)
 	rfc2047_decode(line, out);
 	fprintf(stderr, "Out:  [%s]\n", out.c_str());
     }
+#elif 1
+    string coded, decoded;
+    const char *fname = "/tmp/recoll_decodefail";
+    if (!file_to_string(fname, coded)) {
+	fprintf(stderr, "Cant read %s\n", fname);
+	exit(1);
+    }
+    
+    if (!base64_decode(coded, decoded)) {
+	fprintf(stderr, "base64_decode returned error\n");
+	exit(1);
+    }
+    printf("Decoded: [%s]\n", decoded.c_str());
+    
 #endif
 }
 
