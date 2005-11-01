@@ -1,0 +1,10 @@
+include ../mk/commondefs
+
+CXXFLAGS = $(COMMONCXXFLAGS) \
+	 -DHAVE_VASPRINTF=1 \
+	 -DHAVE_MKDTEMP=1
+
+RANLIB = ranlib
+
+LIBICONV =  -L/usr/local/lib -liconv
+LIBSYS = 
