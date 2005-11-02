@@ -10,3 +10,4 @@ LIBXAPIANSTATIC = /usr/local/lib/libxapian.a
 
 BIGLIB = ../lib/librcl.a
 MIMELIB = ../bincimapmime/libmime.a
+RANLIB = test -f

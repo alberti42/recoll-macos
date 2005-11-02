@@ -26,7 +26,8 @@ SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
      ../common/unacpp.cpp ../unac/unac.c
 
 librcl.a : $(OBJS)
-	 ar ru librcl.a $(OBJS)
+	ar ru librcl.a $(OBJS)
+	$(RANLIB) librcl.a
 
 unac.o : ../unac/unac.c ../unac/unac.h
 	$(CC) $(UNACCFLAGS) -c $<
