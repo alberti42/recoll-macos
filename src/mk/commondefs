@@ -5,9 +5,8 @@ COMMONCXXFLAGS = -Wall -Wno-unused -g -I. -I../index -I../utils -I../common \
 	 -I../unac -I../bincimapmime -I/usr/local/include
 
 LIBXAPIAN = -L/usr/local/lib -lxapian
-LIBXAPIANSTATIC = /usr/local/lib/libxapian.a
-
 
 BIGLIB = ../lib/librcl.a
 MIMELIB = ../bincimapmime/libmime.a
 RANLIB = test -f
+
