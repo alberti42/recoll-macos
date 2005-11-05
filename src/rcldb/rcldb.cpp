@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.32 2005-11-05 14:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.33 2005-11-05 15:29:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -65,7 +65,7 @@ Rcl::Db::~Db()
 	return;
     string ermsg;
     try {
-	LOGDEB(("Rcl::Db::~Db: deleting native database\n"));
+	LOGDEB(("Rcl::Db::~Db: closing native database\n"));
 	if (ndb->iswritable == true)
 	    ndb->wdb.flush();
 	delete ndb;
