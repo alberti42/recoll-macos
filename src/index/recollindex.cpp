@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.10 2005-04-05 09:35:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.11 2005-11-05 14:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -26,8 +26,15 @@ static void sigcleanup(int sig)
 
 int main(int argc, const char **argv)
 {
-    RclConfig *config = recollinit(cleanup, sigcleanup);
+    string reason;
+    RclConfig *config = recollinit(cleanup, sigcleanup, reason);
 
+    if (config == 0 || !config->ok()) {
+	string str = "Configuration problem: ";
+	str += reason;
+	fprintf(stderr, "%s\n", str.c_str());
+	exit(1);
+    }
     indexer = new ConfIndexer(config);
   
     exit(!indexer->index());

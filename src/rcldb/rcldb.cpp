@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.31 2005-10-20 11:33:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.32 2005-11-05 14:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -338,7 +338,9 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     // - mime type 
     string record = "url=file://" + fn;
     record += "\nmtype=" + doc.mimetype;
-    record += "\nmtime=" + doc.mtime;
+    record += "\nfmtime=" + doc.fmtime;
+    if (!doc.dmtime.empty())
+	record += "\ndmtime=" + doc.dmtime;
     record += "\norigcharset=" + doc.origcharset;
     record += "\ncaption=" + doc.title;
     record += "\nkeywords=" + doc.keywords;
@@ -351,7 +353,8 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     LOGDEB1(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);
 
-    time_t mtime = atol(doc.mtime.c_str());
+    time_t mtime = atol(doc.dmtime.empty() ? doc.fmtime.c_str() : 
+			doc.dmtime.c_str());
     struct tm *tm = localtime(&mtime);
     char buf[9];
     sprintf(buf, "%04d%02d%02d",tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
@@ -399,8 +402,9 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 	return true;
     }
 
-    // Look for all documents with this path. Check the update time (once). 
-    // If the db is up to date, set the update flags for all documents
+    // Look for all documents with this path. We need to look at all
+    // to set their existence flag.
+    // We check the update time on the spe
     Xapian::PostingIterator doc;
     try {
 	Xapian::PostingIterator docid0 = ndb->wdb.postlist_begin(pathterm);
@@ -409,14 +413,23 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 
 	    Xapian::Document doc = ndb->wdb.get_document(*docid);
 
-	    // Check the date once. no need to look at the others if the
-	    // db needs updating.
+	    // Check the date once. no need to look at the others if
+	    // the db needs updating. Note that the fmtime used to be
+	    // called mtime, and we're keeping compat
 	    if (docid == docid0) {
 		string data = doc.get_data();
-		const char *cp = strstr(data.c_str(), "mtime=");
-		cp += 6;
-		long mtime = atol(cp);
+		const char *cp = strstr(data.c_str(), "fmtime=");
+		if (cp) {
+		    cp += 7;
+		} else {
+		    cp = strstr(data.c_str(), "mtime=");
+		    if (cp)
+			cp+= 6;
+		}
+		long mtime = cp ? atol(cp) : 0;
 		if (mtime < stp->st_mtime) {
+		    LOGDEB2(("Need update: Db Doc mtime %ld file mtime %ld\n", 
+			     (long)mtime, (long)stp->st_mtime));
 		    // Db is not up to date. Let's index the file
 		    return true;
 		} 
@@ -1027,7 +1040,8 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
     ConfSimple parms(&data);
     parms.get(string("url"), doc.url);
     parms.get(string("mtype"), doc.mimetype);
-    parms.get(string("mtime"), doc.mtime);
+    parms.get(string("fmtime"), doc.fmtime);
+    parms.get(string("dmtime"), doc.dmtime);
     parms.get(string("origcharset"), doc.origcharset);
     parms.get(string("caption"), doc.title);
     parms.get(string("keywords"), doc.keywords);

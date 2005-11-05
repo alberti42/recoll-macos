@@ -5,6 +5,9 @@ CXXFLAGS = $(COMMONCXXFLAGS)
 CC=gcc
 CXX=g++
 
-LIBICONV =  -L/usr/local/lib -liconv
+# Note that we use a static libiconv only to ease installation of binary
+# packages
+#LIBICONV =  -L/usr/local/lib -liconv
+LIBICONV =  /usr/local/lib/libiconv.a
 
 LIBSYS = -lpthread -lnsl -lsocket

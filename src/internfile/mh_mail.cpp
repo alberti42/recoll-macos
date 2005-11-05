@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.7 2005-10-31 08:59:05 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.8 2005-11-05 14:40:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -199,7 +199,7 @@ MimeHandlerMail::processone(const string &fn, Binc::MimeDocument& doc,
 	if (strptime(date.c_str(), " %d %b %Y %H:%M:%S %z ", &tm)) {
 	    char ascuxtime[100];
 	    sprintf(ascuxtime, "%ld", (long)mktime(&tm));
-	    docout.mtime = ascuxtime;
+	    docout.dmtime = ascuxtime;
 	} else {
 	    LOGDEB(("strptime failed for [%s]\n", date.c_str()));
 	}

@@ -407,8 +407,9 @@ void RecollMain::listNextPB_clicked()
 	    doc.title = path_getsimple(doc.url);
 	char datebuf[100];
 	datebuf[0] = 0;
-	if (!doc.mtime.empty()) {
-	    time_t mtime = atol(doc.mtime.c_str());
+	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
+	    time_t mtime = doc.dmtime.empty() ?
+		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	    struct tm *tm = localtime(&mtime);
 	    strftime(datebuf, 99, "<i>Modified:</i>&nbsp;%F&nbsp;%T", tm);
 	}
@@ -417,7 +418,7 @@ void RecollMain::listNextPB_clicked()
 	string result = "<p>" + 
 	    string(perbuf) + " <b>" + doc.title + "</b><br>" +
 	    doc.mimetype + "&nbsp;" +
-	    (!doc.mtime.empty() ? string(datebuf) + "<br>" : string("<br>")) +
+	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>")) +
 	    (!abst.empty() ? abst + "<br>" : string("")) +
 	    (!doc.keywords.empty() ? doc.keywords + "<br>" : string("")) +
 	    "<i>" + doc.url + +"</i><br>" +
@@ -620,14 +621,14 @@ void RecollMain::startPreview(int docnum)
 	doc.title = path_getsimple(doc.url);
     char datebuf[100];
     datebuf[0] = 0;
-    if (!doc.mtime.empty()) {
-	time_t mtime = atol(doc.mtime.c_str());
+    if (!doc.fmtime.empty() || !doc.dmtime.empty()) {
+	time_t mtime = doc.dmtime.empty() ? 
+	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
 	strftime(datebuf, 99, "%F %T", tm);
     }
     string tiptxt = doc.url + string("\n");
-    tiptxt += doc.mimetype + " " 
-	+ (doc.mtime.empty() ? "\n" : string(datebuf) + "\n");
+    tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
     if (!doc.title.empty())
 	tiptxt += doc.title + "\n";
     curPreview->pvTab->setTabToolTip(curPreview->pvTab->currentPage(),

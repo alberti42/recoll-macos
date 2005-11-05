@@ -1,6 +1,6 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.5 2005-10-17 13:36:53 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.6 2005-11-05 14:40:50 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -8,6 +8,7 @@
 
 class RclConfig {
     int m_ok;
+    string reason;    // Explanation for bad state
     string   confdir; // Directory where the files are stored
     ConfTree *conf;   // Parsed main configuration
     string keydir;    // Current directory used for parameter fetches.
@@ -26,7 +27,7 @@ class RclConfig {
     ~RclConfig() {delete conf;delete mimemap;delete mimeconf;}
 
     bool ok() {return m_ok;}
-
+    const string &getReason() {return reason;}
     string getConfDir() {return confdir;}
     ConfTree *getConfig() {return m_ok ? conf : 0;}
 

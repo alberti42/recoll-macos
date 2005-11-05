@@ -57,6 +57,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	    e = (QTextEdit *)tw->child("pvEdit");
 	LOGDEB1(("Widget: %p, edit %p, target %p\n", tw, e, target));
 	if (e && target == tw && keyEvent->key() == Key_Slash) {
+	    searchTextLine->setFocus();
 	    dynSearchActive = true;
 	    return true;
 	}
@@ -70,8 +71,14 @@ void Preview::searchTextLine_textChanged(const QString & text)
     LOGDEB1(("search line text changed. text: '%s'\n", text.ascii()));
     if (text.isEmpty()) {
 	dynSearchActive = false;
+	nextButton->setEnabled(false);
+	prevButton->setEnabled(false);
+	clearPB->setEnabled(false);
     } else {
 	dynSearchActive = true;
+	nextButton->setEnabled(true);
+	prevButton->setEnabled(true);
+	clearPB->setEnabled(true);
 	doSearch(false, false);
     }
 }

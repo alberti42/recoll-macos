@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.11 2005-10-22 05:35:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.12 2005-11-05 14:40:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -101,11 +101,14 @@ int main( int argc, char ** argv )
     w.connect(timer, SIGNAL(timeout()), &w, SLOT(checkExit()));
     timer->start(100);
 
-    rclconfig = recollinit(recollCleanup, sigcleanup);
+    string reason;
+    rclconfig = recollinit(recollCleanup, sigcleanup, reason);
 
     if (!rclconfig || !rclconfig->ok()) {
+	string msg = "Configuration problem: ";
+	msg += reason;
 	QMessageBox::critical(0, "Recoll",
-			      QString("Could not find configuration"));
+			      QString(msg.c_str()));
 	exit(1);
     }
 

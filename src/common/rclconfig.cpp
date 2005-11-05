@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.9 2005-10-19 14:14:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.10 2005-11-05 14:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 
@@ -32,11 +32,13 @@ RclConfig::RclConfig()
     string cfilename = confdir;
     path_cat(cfilename, "recoll.conf");
 
-    // Maybe we should try to open readonly here as, else, this will 
-    // casually create a configuration file
-    conf = new ConfTree(cfilename.c_str(), 0);
-    if (conf == 0) {
-	cerr << "No configuration" << endl;
+    // Open readonly here so as not to casually create a config file
+    conf = new ConfTree(cfilename.c_str(), true);
+    if (conf == 0 || 
+	(conf->getStatus() != ConfSimple::STATUS_RO && 
+	 conf->getStatus() != ConfSimple::STATUS_RW)) {
+	reason = string("No main configuration file: ") + cfilename + 
+	    " does not exist or cannot be parsed";
 	return;
     }
 
@@ -46,9 +48,12 @@ RclConfig::RclConfig()
     }
     string mpath  = confdir;
     path_cat(mpath, mimemapfile);
-    mimemap = new ConfTree(mpath.c_str());
-    if (mimemap == 0) {
-	cerr << "No mime map file" << endl;
+    mimemap = new ConfTree(mpath.c_str(), true);
+    if (mimemap == 0 ||
+	(mimemap->getStatus() != ConfSimple::STATUS_RO && 
+	 mimemap->getStatus() != ConfSimple::STATUS_RW)) {
+	reason = string("No mime map configuration file: ") + mpath + 
+	    " does not exist or cannot be parsed";
 	return;
     }
     // mimemap->list();
@@ -59,9 +64,12 @@ RclConfig::RclConfig()
     }
     mpath = confdir;
     path_cat(mpath, mimeconffile);
-    mimeconf = new ConfTree(mpath.c_str());
-    if (mimeconf == 0) {
-	cerr << "No mime conf file" << endl;
+    mimeconf = new ConfTree(mpath.c_str(), true);
+    if (mimeconf == 0 ||
+	(mimeconf->getStatus() != ConfSimple::STATUS_RO && 
+	 mimeconf->getStatus() != ConfSimple::STATUS_RW)) {
+	reason = string("No mime configuration file: ") + mpath + 
+	    " does not exist or cannot be parsed";
 	return;
     }
     //    mimeconf->list();

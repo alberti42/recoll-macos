@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.15 2005-10-19 14:14:17 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.16 2005-11-05 14:40:50 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -39,7 +39,8 @@ class Doc {
     string url;
     string ipath;
     string mimetype;
-    string mtime;       // Modification time as decimal ascii
+    string fmtime;       // File modification time as decimal ascii unix time
+    string dmtime;       // Data reference date (same format). Ie: mail date
     string origcharset;
     string title;
     string keywords;
@@ -51,7 +52,8 @@ class Doc {
 	url.erase();
 	ipath.erase();
 	mimetype.erase();
-	mtime.erase();
+	fmtime.erase();
+	dmtime.erase();
 	origcharset.erase();
 	title.erase();
 	keywords.erase();

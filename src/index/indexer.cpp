@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.12 2005-10-15 12:18:04 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.13 2005-11-05 14:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -173,11 +173,10 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	    break;
 
 	// Set the date if this was not done in the document handler
-	// (ie: date from Date: mail header).
-	if (doc.mtime.empty()) {
+	if (doc.fmtime.empty()) {
 	    char ascdate[20];
 	    sprintf(ascdate, "%ld", long(stp->st_ctime));
-	    doc.mtime = ascdate;
+	    doc.fmtime = ascdate;
 	}
 	// Internal access path for multi-document files
 	doc.ipath = ipath;

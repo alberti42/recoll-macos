@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.1 2005-04-05 09:35:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.2 2005-11-05 14:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -7,8 +7,10 @@ static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.1 2005-04-05 09:35:35 dockes Exp 
 
 #include "debuglog.h"
 #include "rclconfig.h"
+#include "rclinit.h"
 
-RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int))
+RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int), 
+		      string &reason)
 {
     atexit(cleanup);
     if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
@@ -24,8 +26,12 @@ RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int))
     DebugLog::setfilename("stderr");
     RclConfig *config = new RclConfig;
     if (!config || !config->ok()) {
-	fprintf(stderr, "Config could not be built\n");
-	exit(1);
+	reason = "Configuration could not be built:\n";
+	if (config)
+	    reason += config->getReason();
+	else
+	    reason += "Out of memory ?";
+	return 0;
     }
 
     string logfilename, loglevel;
