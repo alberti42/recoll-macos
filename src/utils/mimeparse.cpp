@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.5 2005-10-31 08:59:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.6 2005-11-06 11:16:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMEPARSE
@@ -10,13 +10,7 @@ static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.5 2005-10-31 08:59:05 dockes Ex
 #include <ctype.h>
 
 #include "mimeparse.h"
-
-//#define DEBUG_MIMEPARSE 
-#ifdef DEBUG_MIMEPARSE
-#define DPRINT(X) fprintf X
-#else
-#define DPRINT(X)
-#endif
+#include "base64.h"
 
 using namespace std;
 
@@ -250,131 +244,6 @@ bool qp_decode(const string& in, string &out)
     return true;
 }
 
-
-// This is adapted from FreeBSD's code.
-static const char Base64[] =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static const char Pad64 = '=';
-bool base64_decode(const string& in, string& out)
-{
-    int io = 0, state = 0, ch;
-    char *pos;
-    unsigned int ii = 0;
-    out.reserve(in.length());
-
-    for (ii = 0; ii < in.length(); ii++) {
-	ch = in[ii];
-	if (isspace((unsigned char)ch))        /* Skip whitespace anywhere. */
-	    continue;
-
-	if (ch == Pad64)
-	    break;
-
-	pos = strchr(Base64, ch);
-	if (pos == 0) {
-	    /* A non-base64 character. */
-	    DPRINT((stderr, "base64_dec: non-base64 char at pos %d\n", ii));
-	    return false;
-	}
-
-
-	switch (state) {
-	case 0:
-	    out += (pos - Base64) << 2;
-	    state = 1;
-	    break;
-	case 1:
-	    out[io]   |=  (pos - Base64) >> 4;
-	    out += ((pos - Base64) & 0x0f) << 4 ;
-	    io++;
-	    state = 2;
-	    break;
-	case 2:
-	    out[io]   |=  (pos - Base64) >> 2;
-	    out += ((pos - Base64) & 0x03) << 6;
-	    io++;
-	    state = 3;
-	    break;
-	case 3:
-	    out[io] |= (pos - Base64);
-	    io++;
-	    state = 0;
-	    break;
-	default:
-	    DPRINT((stderr, "base64_dec: internal!bad state!\n"));
-	    return false;
-	}
-    }
-
-    /*
-     * We are done decoding Base-64 chars.  Let's see if we ended
-     * on a byte boundary, and/or with erroneous trailing characters.
-     */
-
-    if (ch == Pad64) {		/* We got a pad char. */
-	ch = in[ii++];		/* Skip it, get next. */
-	switch (state) {
-	case 0:		/* Invalid = in first position */
-	case 1:		/* Invalid = in second position */
-	    DPRINT((stderr, "base64_dec: pad char in state 0/1\n"));
-	    return false;
-
-	case 2:		/* Valid, means one byte of info */
-			/* Skip any number of spaces. */
-	    for (; ii < in.length(); ch = in[ii++])
-		if (!isspace((unsigned char)ch))
-		    break;
-	    /* Make sure there is another trailing = sign. */
-	    if (ch != Pad64) {
-		DPRINT((stderr, "base64_dec: missing pad char!\n"));
-		// Well, there are bad encoders out there. Let it pass
-		// return false;
-	    }
-	    ch = in[ii++];		/* Skip the = */
-	    /* Fall through to "single trailing =" case. */
-	    /* FALLTHROUGH */
-
-	case 3:	    /* Valid, means two bytes of info */
-	    /*
-	     * We know this char is an =.  Is there anything but
-	     * whitespace after it?
-	     */
-	    for ((void)NULL; ii < in.length(); ch = in[ii++])
-		if (!isspace((unsigned char)ch)) {
-		    DPRINT((stderr, "base64_dec: non-white at eod: 0x%x\n", 
-			    (unsigned int)ch));
-		    // Well, there are bad encoders out there. Let it pass
-		    //return false;
-		}
-
-	    /*
-	     * Now make sure for cases 2 and 3 that the "extra"
-	     * bits that slopped past the last full byte were
-	     * zeros.  If we don't check them, they become a
-	     * subliminal channel.
-	     */
-	    if (out[io] != 0) {
-		DPRINT((stderr, "base64_dec: bad extra bits!\n"));
-		// Well, there are bad encoders out there. Let it pass
-		out[io] = 0;
-		// return false;
-	    }
-	}
-    } else {
-	/*
-	 * We ended by seeing the end of the string.  Make sure we
-	 * have no partial bytes lying around.
-	 */
-	if (state != 0) {
-	    DPRINT((stderr, "base64_dec: bad final state\n"));
-	    return false;
-	}
-    }
-
-    DPRINT((stderr, "base64_dec: ret ok, io %d sz %d len %d value [%s]\n", 
-	    io, out.size(), out.length(), out.c_str()));
-    return true;
-}
 
 #include "transcode.h"
 #include "smallut.h"

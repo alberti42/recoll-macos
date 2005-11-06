@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.33 2005-11-05 15:29:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.34 2005-11-06 11:16:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -19,6 +19,7 @@ using namespace std;
 #include "debuglog.h"
 #include "pathut.h"
 #include "smallut.h"
+#include "pathhash.h"
 
 #include "xapian.h"
 #include <xapian/stem.h>
@@ -268,6 +269,16 @@ truncate_to_word(string & input, string::size_type maxlen)
     return output;
 }
 
+// Truncate longer path and uniquize with hash . The goad for this is
+// to avoid xapian max term length limitations, not to gain space (we
+// gain very little even with very short maxlens like 30)
+#define HASHPATH
+#define PATHHASHLEN 150
+
+// Add document in internal form to the database: index the terms in
+// the title abstract and body and add special terms for file name,
+// date, mime type ... , create the document data record (more
+// metadata), and update database
 bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 {
     LOGDEB1(("Rcl::Db::add: fn %s\n", fn.c_str()));
@@ -275,6 +286,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 	return false;
     Native *ndb = (Native *)pdata;
 
+    // Truncate abstract, title and keywords to reasonable lengths
     Rcl::Doc doc = idoc;
     if (doc.abstract.empty()) 
 	doc.abstract = truncate_to_word(doc.text, 100);
@@ -289,6 +301,9 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 
     TextSplit splitter(&splitData);
 
+    ///////// Split and index terms in document body and auxiliary fields
+
+    // Split title and index terms
     string noacc;
     if (!dumb_string(doc.title, noacc)) {
 	LOGERR(("Rcl::Db::add: unac failed\n"));
@@ -296,6 +311,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     }
     splitter.text_to_words(noacc);
 
+    // Split body and index terms
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.text, noacc)) {
 	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
@@ -303,6 +319,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     }
     splitter.text_to_words(noacc);
 
+    // Split keywords and index terms
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.keywords, noacc)) {
 	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
@@ -310,6 +327,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     }
     splitter.text_to_words(noacc);
 
+    // Split abstract and index terms
     splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.abstract, noacc)) {
 	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
@@ -317,20 +335,45 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     }
     splitter.text_to_words(noacc);
 
+    ////// Special terms for metadata
+    // Mime type
     newdocument.add_term("T" + doc.mimetype);
 
-    string pathterm  = "P" + fn;
+    // Path name
+    string hash;
+#ifdef HASHPATH
+    pathHash(fn, hash, PATHHASHLEN);
+#else
+    hash = fn;
+#endif
+    LOGDEB(("Rcl::Db::add: pathhash [%s]\n", hash.c_str()));
+
+    string pathterm  = "P" + hash;
     newdocument.add_term(pathterm);
 
+    // File path + internal path: document unique identifier for
+    // documents inside multidocument files.
     string uniterm;
     if (!doc.ipath.empty()) {
-	uniterm  = "Q" + fn + "|" + doc.ipath;
+	uniterm  = "Q" + hash + "|" + doc.ipath;
 	newdocument.add_term(uniterm);
     }
 
+    // Dates etc...
+    time_t mtime = atol(doc.dmtime.empty() ? doc.fmtime.c_str() : 
+			doc.dmtime.c_str());
+    struct tm *tm = localtime(&mtime);
+    char buf[9];
+    sprintf(buf, "%04d%02d%02d",tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
+    newdocument.add_term("D" + string(buf)); // Date (YYYYMMDD)
+    buf[7] = '\0';
+    if (buf[6] == '3') buf[6] = '2';
+    newdocument.add_term("W" + string(buf)); // "Weak" - 10ish day interval
+    buf[6] = '\0';
+    newdocument.add_term("M" + string(buf)); // Month (YYYYMM)
+    buf[4] = '\0';
+    newdocument.add_term("Y" + string(buf)); // Year (YYYY)
 
-    const char *fnc = fn.c_str();
-    
     // Document data record. omindex has the following nl separated fields:
     // - url
     // - sample
@@ -348,27 +391,14 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     if (!doc.ipath.empty()) {
 	record += "\nipath=" + doc.ipath;
     }
-
     record += "\n";
+
     LOGDEB1(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);
 
-    time_t mtime = atol(doc.dmtime.empty() ? doc.fmtime.c_str() : 
-			doc.dmtime.c_str());
-    struct tm *tm = localtime(&mtime);
-    char buf[9];
-    sprintf(buf, "%04d%02d%02d",tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
-    newdocument.add_term("D" + string(buf)); // Date (YYYYMMDD)
-    buf[7] = '\0';
-    if (buf[6] == '3') buf[6] = '2';
-    newdocument.add_term("W" + string(buf)); // "Weak" - 10ish day interval
-    buf[6] = '\0';
-    newdocument.add_term("M" + string(buf)); // Month (YYYYMM)
-    buf[4] = '\0';
-    newdocument.add_term("Y" + string(buf)); // Year (YYYY)
-
-    // If this document has already been indexed, update the existing
-    // entry.
+    const char *fnc = fn.c_str();
+   
+    // Add db entry or update existing entry:
     try {
 	Xapian::docid did = 
 	    ndb->wdb.replace_document(uniterm.empty() ? pathterm : uniterm, 
@@ -397,14 +427,23 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
     Native *ndb = (Native *)pdata;
 
     // If no document exist with this path, we do need update
-    string pathterm  = "P" + filename;
+    string hash;
+#ifdef HASHPATH
+    pathHash(filename, hash, PATHHASHLEN);
+#else
+    hash = filename;
+#endif
+
+    string pathterm  = "P" + hash;
     if (!ndb->wdb.term_exists(pathterm)) {
 	return true;
     }
 
     // Look for all documents with this path. We need to look at all
-    // to set their existence flag.
-    // We check the update time on the spe
+    // to set their existence flag.  We check the update time on the
+    // fmtime field which will be identical for all docs inside a
+    // multi-document file (we currently always reindex all if the
+    // file changed)
     Xapian::PostingIterator doc;
     try {
 	Xapian::PostingIterator docid0 = ndb->wdb.postlist_begin(pathterm);
