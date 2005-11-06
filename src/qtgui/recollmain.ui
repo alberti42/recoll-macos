@@ -301,7 +301,7 @@
 </variables>
 <slots>
     <slot>fileExit()</slot>
-    <slot>checkExit()</slot>
+    <slot>periodic100()</slot>
     <slot>fileStart_IndexingAction_activated()</slot>
     <slot>reslistTE_doubleClicked( int par, int )</slot>
     <slot>reslistTE_clicked( int par, int car )</slot>

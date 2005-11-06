@@ -51,6 +51,7 @@ void start_idxthread(RclConfig *cnf)
 void stop_idxthread()
 {
     stopidxthread = 1;
-    while (idxthread.running())
-	sleep(1);
+    idxthread.wait();
 }
+
+

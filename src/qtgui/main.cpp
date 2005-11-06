@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.12 2005-11-05 14:40:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.13 2005-11-06 15:07:09 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -93,12 +93,12 @@ int main( int argc, char ** argv )
     // QTextCodec::locale() return $LANG
     translator.load( QString("recoll_") + QTextCodec::locale(), "." );
     a.installTranslator( &translator );
-    
+
     RecollMain w;
     w.show();
     a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
     QTimer *timer = new QTimer(&a);
-    w.connect(timer, SIGNAL(timeout()), &w, SLOT(checkExit()));
+    w.connect(timer, SIGNAL(timeout()), &w, SLOT(periodic100()));
     timer->start(100);
 
     string reason;
@@ -136,7 +136,6 @@ int main( int argc, char ** argv )
 	QMessageBox::information(0, "Recoll",
 				 QString("Could not open database in ") + 
 				 QString(dbdir) + ". Starting indexation");
-	startindexing = 1;
     }
 
     start_idxthread(rclconfig);

@@ -25,6 +25,7 @@ using std::pair;
 #include <qtimer.h>
 #include <qstatusbar.h>
 #include <qwindowdefs.h>
+#include <qapplication.h>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -197,16 +198,27 @@ void RecollMain::fileExit()
     exit(0);
 }
 
-// Misnomer. This is called on a 100ms timer and actually checks for different 
-// things apart from a need to exit
-void RecollMain::checkExit()
+// This is called on a 100ms timer checks the status of the indexing
+// thread and a possible need to exit
+void RecollMain::periodic100()
 {
+    static int toggle;
     // Check if indexing thread done
     if (indexingstatus) {
+	statusBar()->message("");
 	indexingstatus = false;
 	// Make sure we reopen the db to get the results.
 	LOGINFO(("Indexing done: closing query database\n"));
 	rcldb->close();
+    } else if (indexingdone == 0) {
+	if (toggle < 9) {
+	    statusBar()->message("Indexing in progress");
+	} else {
+	    statusBar()->message("");
+	}
+	if (toggle >= 10)
+	    toggle = 0;
+	toggle++;
     }
     if (recollNeedsExit)
 	fileExit();
@@ -551,15 +563,11 @@ void RecollMain::startPreview(int docnum)
     }
 
     QStatusBar *stb = statusBar();
-    if (stb) {
-	char csz[20];
-	sprintf(csz, "%lu", (unsigned long)st.st_size);
-	string msg = string("Loading: ") + fn + " (size " + csz
-	    + " bytes)";
-	stb->message(msg.c_str());
-	stb->repaint(false);
-	XFlush(qt_xdisplay());
-    }
+    char csz[20];
+    sprintf(csz, "%lu", (unsigned long)st.st_size);
+    string msg = string("Loading: ") + fn + " (size " + csz + " bytes)";
+    stb->message(msg.c_str());
+    qApp->processEvents();
 
     Rcl::Doc fdoc;
     FileInterner interner(fn, rclconfig, tmpdir);
@@ -570,14 +578,16 @@ void RecollMain::startPreview(int docnum)
 	return;
     }
 
-    if (stb) 
-	stb->clear();
+    stb->message("Creating preview text");
+    qApp->processEvents();
 
     list<string> terms;
     rcldb->getQueryTerms(terms);
     list<pair<int, int> > termoffsets;
     string rich = plaintorich(fdoc.text, terms, termoffsets);
 
+    stb->message("Creating preview window");
+    qApp->processEvents();
     QTextEdit *editor;
     if (curPreview == 0) {
 	curPreview = new Preview(0, "Preview");
@@ -641,6 +651,9 @@ void RecollMain::startPreview(int docnum)
     item->setFontWeight(QFont::Bold);
 
     QString str = QString::fromUtf8(rich.c_str(), rich.length());
+    stb->message("Loading preview text");
+    qApp->processEvents();
+
     editor->setText(str);
     int para = 0, index = 1;
     if (!termoffsets.empty()) {
@@ -653,4 +666,5 @@ void RecollMain::startPreview(int docnum)
     editor->getCursorPosition(&para, &index);
     LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
 	    editor->length(), editor->paragraphs(),  para, index));
+    stb->clear();
 }

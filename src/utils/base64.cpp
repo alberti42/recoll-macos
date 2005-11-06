@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: base64.cpp,v 1.1 2005-11-06 11:16:53 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: base64.cpp,v 1.2 2005-11-06 15:07:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <sys/types.h>
@@ -176,7 +176,7 @@ void base64_encode(const string &in, string &out)
     if (0 != srclength) {
 	/* Get what's left. */
 	input[0] = input[1] = input[2] = '\0';
-	for (unsigned int i = 0; i < srclength; i++)
+	for (int i = 0; i < srclength; i++)
 	    input[i] = in[sidx++];
 	
 	output[0] = input[0] >> 2;

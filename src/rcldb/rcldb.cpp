@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.34 2005-11-06 11:16:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.35 2005-11-06 15:07:09 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -346,7 +346,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 #else
     hash = fn;
 #endif
-    LOGDEB(("Rcl::Db::add: pathhash [%s]\n", hash.c_str()));
+    LOGDEB2(("Rcl::Db::add: pathhash [%s]\n", hash.c_str()));
 
     string pathterm  = "P" + hash;
     newdocument.add_term(pathterm);
