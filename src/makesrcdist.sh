@@ -40,16 +40,19 @@ A more complete version of this document can be found at http://www.recoll.org
 
 EOF
 
-links -dump ~/projets/pagepers/recoll/index.html >> README
-links -dump ~/projets/pagepers/recoll/credits.html >> README
-links -dump ~/projets/pagepers/recoll/usermanual.html >> README
-links -dump ~/projets/pagepers/recoll/installation.html >> INSTALL
+echo "Dumping html documentation to text files"
+RECOLLDOC=${RECOLLDOC:=$HOME/projets/lesbonscomptes/recoll}
+
+links -dump ${RECOLLDOC}/index.html >> README
+links -dump ${RECOLLDOC}/credits.html >> README
+links -dump ${RECOLLDOC}/usermanual.html >> README
+links -dump ${RECOLLDOC}/installation.html >> INSTALL
 cvs commit -m '' README INSTALL
 
 # Clean up this dir and copy the dist-specific files 
 make clean
 yes | clean.O
-$TAR chfX - excludefile .  | (cd $topdir;$TAR xvf -)
+$TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
 
 CVSTAG="RECOLL-$versionforcvs"
 [ $dotag = "yes" ] && cvs tag -F $CVSTAG .

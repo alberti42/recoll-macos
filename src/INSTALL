@@ -16,7 +16,7 @@ Installing Recoll
     Prerequisites
 
    At the very least, you will need to download and install the xapian core
-   package (I am currently using xapian version 0.8.5), and the qt runtime
+   package (I am currently using xapian version 0.9.2), and the qt runtime
    and development packages (I am currently using qt 3.3.3).
 
    You will most probably be able to find a binary package for qt for your
@@ -72,19 +72,17 @@ Installing Recoll
 
   Installation
 
-   Execute installrecoll targetdir, in the root of the source tree. This
-   will:
+    Commands and common files
 
-     * Only if you have write access on targetdir/bin, copy qtgui/recoll and
-       index/recollindex to targetdir/bin (but you could also execute them
-       from their build directories).
-     * Only if you are not root check if ~/.recoll exists, and if it does
-       not:
-          * Copy all files from sampleconf/* to ~/.recoll
-          * Copy all files from filters/* to ~/.recoll.
+   Either type make install or execute recollinstall targetdir, in the root
+   of the source tree. This will copy the commands to $targetdir/bin and the
+   sample configuration files to $targetdir/share/examples/recoll
 
-   Typically, you would execute the script once as root to install the
-   programs to /usr/local, and once as yourself to create the configuration.
+    Personal configuration
+
+   Either type make installme in the root of the source tree, or execute
+   recollinstall. This will copy the configuration files to the .recoll
+   directory in your home.
 
   Configuration
 
@@ -94,12 +92,12 @@ Installing Recoll
 
    The main configuration file is named ~/.recoll/recoll.conf.
 
-   There is a commented sample in the sampleconf subdirectory, it was copied
-   to ~/.recoll at the previous step, take a look and possibly edit it. By
+   A commented sample was copied to ~/.recoll by the installation. By
    default, it will index your home directory.
 
    Then start recollindex, and wait for indexing to complete (this may take
-   some time). When it's done, you can start recoll and try a search.
+   some time). When it's done, you can start recoll and try a search. See the
+   user manual for a little more details
 
    Depending on what is installed on your system, you may also want to adjust
    the external viewers defined in ~/.recoll/mimeconf (ie: html is either

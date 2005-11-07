@@ -13,6 +13,7 @@ TAGS
 config.cache
 config.log
 config.status
+makesrcdist.sh
 sysconf
 qtgui/Makefile
 qtgui/preview/Makefile

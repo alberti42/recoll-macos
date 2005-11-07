@@ -50,7 +50,7 @@ Recoll
      * An interactive configuration tool. You need to edit files by hand for
        now.
      * Packages, rpm or other. It's all tar files currently.
-     * Documentation and help.
+     * More documentation and help.
      * Translations for the user interface.
      * A few more filters for less common file types.
 

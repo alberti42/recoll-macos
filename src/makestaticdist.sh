@@ -35,7 +35,7 @@ rm -f index/recollindex qtgui/recoll
 make static || exit 1
 strip index/recollindex qtgui/recoll
 
-files='COPYING README INSTALL installrecoll
+files='COPYING README INSTALL recollinstall
 filters sampleconf 
 index/recollindex qtgui/recoll'
 

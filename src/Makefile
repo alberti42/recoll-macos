@@ -22,10 +22,10 @@ clean:
 	cd index; ${MAKE} clean
 	cd lib; ${MAKE} clean
 	cd bincimapmime; ${MAKE} clean
-	cd qtgui; rm -f recoll; ${MAKE} clean
 	cd query; ${MAKE} clean
 	cd utils; ${MAKE} clean
-	rm -f qtgui/Makefile qtgui/preview/Makefile
+	@-cd qtgui; ${MAKE} clean
+	rm -f qtgui/Makefile qtgui/preview/Makefile qtgui/recoll
 
 install: all
 	./recollinstall ${PREFIX}
