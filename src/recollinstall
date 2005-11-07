@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Install recoll files. This has 2 modes, for installing the binaries or
+# the personal configuration files
+
 fatal()
 {
     echo $*
@@ -7,66 +10,65 @@ fatal()
 }
 usage()
 {
-    fatal 'installrecoll <targetdir>, ie: installrecoll /usr/local'
-}
-install()
-{
-    src=$1
-    dst=$2
-    if test -d $dst; then dst=$2/`basename $1`;fi
-    if test -f $dst; then
-       bak=$dst.prev 
-       #echo "Preserving $dst as $bak" 
-       (install $dst $bak)
-    fi
-    echo $src '->' $dst
-    cp $src $dst
+    echo 'Usage (binaries): installrecoll <dir>, ie: installrecoll /usr/local'
+    fatal 'Usage (personal config): installrecoll'
 }
 
-if test $# != 1 ; then
-   usage
-fi
-targetdir=$1
+INSTALL=${INSTALL:=install}
 
-echo "Installing binaries to $targetdir"
+if test $# = 1 ; then
+   # Install commands and example config to target directory
+   PREFIX=$1
 
-test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
-     " You need to build first."
+   echo "Installing to $PREFIX"
 
-if test -d $targetdir/bin -a -w $targetdir/bin ; then
-   install qtgui/recoll $targetdir/bin/recoll
-   install index/recollindex $targetdir/bin/recollindex
+   test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
+        " You need to build first."
+
+   test -d ${PREFIX}/bin || mkdir ${PREFIX}/bin || exit 1
+   ${INSTALL} qtgui/recoll index/recollindex recollinstall $PREFIX/bin \
+	      || exit 1
+   test -d ${PREFIX}/share || mkdir ${PREFIX}/share
+   test -d ${PREFIX}/share/examples || mkdir ${PREFIX}/share/examples
+   test -d ${PREFIX}/share/examples/recoll || \
+	mkdir ${PREFIX}/share/examples/recoll
+   ${INSTALL} filters/rcl* ${PREFIX}/share/examples/recoll || exit 1
+   ${INSTALL} sampleconf/recoll.conf sampleconf/mimeconf sampleconf/mimemap \
+	      ${PREFIX}/share/examples/recoll || exit 1
+
+   exit 0
+
 else
-   echo "Not installing binary executables to $targetdir/bin which is not writable"
-   echo "Going on with personal install"
-fi
 
-me=`whoami`
-if test "$me" != root ; then
+  # Install configuration files to home directory
+  PREFIX=${PREFIX:=/usr/local}
+
+  me=`whoami`
+  if test "$me" = root ; then
+    fatal "Cowardly refusing to install personal config in root's" \
+	    "home directory"
+  fi
+  if test ! -d ${PREFIX}/share/examples/recoll ; then
+     fatal "Global install should be performed first"
+  fi
+
   if test -d $HOME/.recoll ; then 
-     cat <<EOF
+    cat <<EOF
      
      $HOME/.recoll already exists, no modification done.
-     You should check for new filters in the filters/ directory, and
-     for modifications to files in the sampleconf/ directory (ie new 
-     mime types in mimemap).
+     You should check for new filters or updated files in 
+     ${PREFIX}/share/examples/recoll.
 EOF
      exit 0
   fi
 
   mkdir $HOME/.recoll || exit 1
-  cp filters/rcl* $HOME/.recoll
+  cp ${PREFIX}/share/examples/recoll/* $HOME/.recoll
   chmod a+x $HOME/.recoll/rcl*
-  cd sampleconf
-  cp mimeconf mimemap recoll.conf $HOME/.recoll
   chmod +w $HOME/.recoll/recoll.conf
   chmod +w $HOME/.recoll/mimeconf
 
+  echo Copied configuration files and filters to $HOME/.recoll/
   echo You should now take a look at $HOME/.recoll/recoll.conf
- 
-else
-
-  echo "Not installing personal configuration for root user"
-
+  exit 0
 fi
-

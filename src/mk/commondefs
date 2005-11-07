@@ -10,3 +10,4 @@ BIGLIB = ../lib/librcl.a
 MIMELIB = ../bincimapmime/libmime.a
 RANLIB = test -f
 
+INSTALL = install -c
