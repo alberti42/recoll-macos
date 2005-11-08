@@ -1,0 +1,12 @@
+bin/recoll
+bin/recollindex
+bin/recollinstall
+share/examples/recoll/rcldoc
+share/examples/recoll/rclpdf
+share/examples/recoll/rclps
+share/examples/recoll/rclsoff
+share/examples/recoll/rcluncomp
+share/examples/recoll/recoll.conf
+share/examples/recoll/mimeconf
+share/examples/recoll/mimemap
+@dirrm share/examples/recoll

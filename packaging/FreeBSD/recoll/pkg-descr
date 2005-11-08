@@ -1,0 +1,26 @@
+Recoll is a personal full text search tool for Linux, FreeBSD and other Unix
+systems.
+
+Recoll is based on a very strong backend (Xapian), for which it provides an
+easy to use, feature-rich, zero-administration interface.
+
+Recoll is free and copyrighted under the GPL license, see COPYING inside
+the distribution. A lot of the code is imported from other packages, see
+the Credits.  Features:
+
+    * Document types: text, html, pdf (with pdftotext), postscript (with
+      ghostscript's pstotext), msword (with antiword), openoffice files,
+      maildir and mailbox mail folders (Mozilla and thunderbird mail
+      ok). Deals with compressed versions of same. 
+    * Relatively powerful query facilities, with boolean searches, phrases,
+      filter on file types and directory tree. 
+    * Support for multiple charsets. Internal processing and storage uses
+      Unicode UTF-8. 
+    * Stemming performed at query time (can switch stemming language after
+      indexing) 
+    * Easy installation. No database daemon, web server or exotic language
+      necessary. The idea is that everybody should index their files
+      because it makes life easier. 
+    * GUI based on qt, written with qt Designer.
+    * An indexer which runs either as a thread inside the GUI or as an
+      external, cron'able program. 
