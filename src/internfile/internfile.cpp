@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.5 2005-04-05 09:35:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.6 2005-11-08 21:02:55 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -130,7 +130,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 
     // Turn file into a document. The document has fields for title, body 
     // etc.,  all text converted to utf8
-    MimeHandler::Status mhs = handler->worker(config, fn,  mime, doc, ipath);
+    MimeHandler::Status mhs = handler->mkDoc(config, fn,  mime, doc, ipath);
     FileInterner::Status ret = FIError;
     switch (mhs) {
     case MimeHandler::MHError: break;

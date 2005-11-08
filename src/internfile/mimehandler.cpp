@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.9 2005-03-25 09:40:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.10 2005-11-08 21:02:55 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -19,13 +19,13 @@ using namespace std;
 
 class MimeHandlerText : public MimeHandler {
  public:
-    MimeHandler::Status worker(RclConfig *conf, const string &fn, 
+    MimeHandler::Status mkDoc(RclConfig *conf, const string &fn, 
 		const string &mtype, Rcl::Doc &docout, string&);
     
 };
 
 // Process a plain text file
-MimeHandler::Status MimeHandlerText::worker(RclConfig *conf, const string &fn, 
+MimeHandler::Status MimeHandlerText::mkDoc(RclConfig *conf, const string &fn, 
 			     const string &mtype, Rcl::Doc &docout, string&)
 {
     string otext;
@@ -61,7 +61,7 @@ class MimeHandlerExec : public MimeHandler {
  public:
     list<string> params;
     virtual ~MimeHandlerExec() {}
-    virtual MimeHandler::Status worker(RclConfig *conf, const string &fn, 
+    virtual MimeHandler::Status mkDoc(RclConfig *conf, const string &fn, 
 				       const string &mtype, Rcl::Doc &docout, 
 				       string&);
 
@@ -71,12 +71,12 @@ class MimeHandlerExec : public MimeHandler {
 // Execute an external program to translate a file from its native format
 // to html. Then call the html parser to do the actual indexing
 MimeHandler::Status 
-MimeHandlerExec::worker(RclConfig *conf, const string &fn, 
+MimeHandlerExec::mkDoc(RclConfig *conf, const string &fn, 
 			const string &mtype, Rcl::Doc &docout, string&)
 {
     if (params.empty()) {
 	// Hu ho
-	LOGERR(("MimeHandlerExec::worker: empty params for mime %s\n",
+	LOGERR(("MimeHandlerExec::mkDoc: empty params for mime %s\n",
 		mtype.c_str()));
 	return MimeHandler::MHError;
     }
@@ -100,7 +100,7 @@ MimeHandlerExec::worker(RclConfig *conf, const string &fn,
 
     // Process/index  the html
     MimeHandlerHtml hh;
-    return hh.worker1(conf, fn, html, mtype, docout);
+    return hh.mkDoc(conf, fn, html, mtype, docout);
 }
 
 static MimeHandler *mhfact(const string &mime)

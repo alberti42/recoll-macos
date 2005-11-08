@@ -1,6 +1,6 @@
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-/* @(#$Id: mimehandler.h,v 1.6 2005-03-25 09:40:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimehandler.h,v 1.7 2005-11-08 21:02:55 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -16,6 +16,8 @@ class MimeHandler {
  public:
     virtual ~MimeHandler() {}
 
+    /// Status from mkDoc method.
+    enum Status {MHError, MHDone, MHAgain};
     /**
      * Transform external data into internal utf8 document
      *
@@ -31,17 +33,18 @@ class MimeHandler {
      *              If this is empty (during indexation), it will be filled-up
      *              by the function, and all the file's documents will be 
      *              returned by successive calls.
-     * @return the return value indicates if there are more documents to be 
+     * @return The return value indicates if there are more documents to be 
      *         fetched from the same file.
      */
-    enum Status {MHError, MHDone, MHAgain};
-    virtual Status worker(RclConfig * conf, const std::string &filename, 
-			  const std::string &mimetype, Rcl::Doc& outdoc,
-			  string& ipath) = 0;
+    virtual MimeHandler::Status mkDoc(RclConfig * conf, 
+				      const std::string &filename, 
+				      const std::string &mimetype, 
+				      Rcl::Doc& outdoc,
+				      string& ipath) = 0;
 };
 
 /**
- * Return indexing handler class for given mime type
+ * Return indexing handler object for the given mime type
  * returned pointer should be deleted by caller
  */
 extern MimeHandler *getMimeHandler(const std::string &mtyp, ConfTree *mhdlers);

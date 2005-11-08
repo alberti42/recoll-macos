@@ -39,7 +39,7 @@ using namespace std;
 
 
 MimeHandler::Status 
-MimeHandlerHtml::worker(RclConfig *conf, const string &fn, 
+MimeHandlerHtml::mkDoc(RclConfig *conf, const string &fn, 
 			const string &mtype, Rcl::Doc &docout, string&)
 {
     LOGDEB(("textHtmlToDoc: %s\n", fn.c_str()));
@@ -48,11 +48,11 @@ MimeHandlerHtml::worker(RclConfig *conf, const string &fn,
 	LOGINFO(("textHtmlToDoc: cant read: %s\n", fn.c_str()));
 	return MimeHandler::MHError;
     }
-    return worker1(conf, fn, otext, mtype, docout);
+    return mkDoc(conf, fn, otext, mtype, docout);
 }
 
 MimeHandler::Status 
-MimeHandlerHtml::worker1(RclConfig *conf, const string &, 
+MimeHandlerHtml::mkDoc(RclConfig *conf, const string &, 
 			 const string& htext,
 			 const string &mtype, Rcl::Doc &docout)
 {

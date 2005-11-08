@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.8 2005-11-05 14:40:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.9 2005-11-08 21:02:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -44,17 +44,17 @@ MimeHandlerMail::~MimeHandlerMail()
 // We are called for two different file types: mbox-type folders
 // holding multiple messages, and maildir-type files with one message
 MimeHandler::Status 
-MimeHandlerMail::worker(RclConfig *cnf, const string &fn, 
+MimeHandlerMail::mkDoc(RclConfig *cnf, const string &fn, 
 			const string &mtype, Rcl::Doc &docout, string& ipath)
 {
-    LOGDEB2(("MimeHandlerMail::worker: %s [%s]\n", mtype.c_str(), fn.c_str()));
+    LOGDEB2(("MimeHandlerMail::mkDoc: %s [%s]\n", mtype.c_str(), fn.c_str()));
     conf = cnf;
 
     if (!stringlowercmp("message/rfc822", mtype)) {
 	ipath = "";
 	int fd;
 	if ((fd = open(fn.c_str(), 0)) < 0) {
-	    LOGERR(("MimeHandlerMail::worker: open(%s) errno %d\n",
+	    LOGERR(("MimeHandlerMail::mkDoc: open(%s) errno %d\n",
 		    fn.c_str(), errno));
 	    return MimeHandler::MHError;
 	}
@@ -356,7 +356,7 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	    MimeHandlerHtml mh;
 	    Rcl::Doc hdoc;
 	    mh.charsethint = charset;
-	    mh.worker1(cnf, "", body, content_type.value,  hdoc);
+	    mh.mkDoc(cnf, "", body, content_type.value,  hdoc);
 	    transcoded = hdoc.text;
 	} else {
 	    // Transcode to utf-8 
