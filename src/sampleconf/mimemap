@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.5 2005-04-07 09:05:39 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.6 2005-11-09 21:40:02 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll: associations of file name extensions to mime types
 .txt = text/plain
@@ -32,6 +32,7 @@
 .sxw = application/vnd.sun.xml.writer
 .sxg = application/vnd.sun.xml.writer.global
 .stw = application/vnd.sun.xml.writer.template
+.odt = application/vnd.sun.xml.writer
 
 .wpd = application/vnd.wordperfect
 .rtf = text/rtf
@@ -40,9 +41,11 @@
 # A list of stuff that we don't want to touch at all (for now). Having the
 # suffixes listed in there speeds up things quite a lot by avoiding
 # unneeded decompression or 'file' calls
-recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz \
-       .c .h .cpp .m4 .tcl .js .sh .pl .awk \
+recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .md5 .map \
+       .c .h .cpp .m4 .tcl .js .sh .pl .awk .php .php3 \
        .o .lib .dll .a \
-       .dat .bak .rdf .log .db .ini .gnm .gnumeric .msf \
-       .jpg .gif .bmp .xpm
+       .dat .bak .rdf .log .db .ini .msf \
+       .gnm .gnumeric .tex \
+       .jpg .gif .bmp .xpm .png \
+       ,v
 
