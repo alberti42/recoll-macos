@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.2 2005-11-05 14:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.3 2005-11-09 21:39:04 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -12,16 +12,18 @@ static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.2 2005-11-05 14:40:50 dockes Exp 
 RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int), 
 		      string &reason)
 {
-    atexit(cleanup);
-    if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
-	signal(SIGHUP, sigcleanup);
-    if (signal(SIGINT, SIG_IGN) != SIG_IGN)
-	signal(SIGINT, sigcleanup);
-    if (signal(SIGQUIT, SIG_IGN) != SIG_IGN)
-	signal(SIGQUIT, sigcleanup);
-    if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
-	signal(SIGTERM, sigcleanup);
-
+    if (cleanup)
+	atexit(cleanup);
+    if (sigcleanup) {
+	if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
+	    signal(SIGHUP, sigcleanup);
+	if (signal(SIGINT, SIG_IGN) != SIG_IGN)
+	    signal(SIGINT, sigcleanup);
+	if (signal(SIGQUIT, SIG_IGN) != SIG_IGN)
+	    signal(SIGQUIT, sigcleanup);
+	if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
+	    signal(SIGTERM, sigcleanup);
+    }
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     RclConfig *config = new RclConfig;
