@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.6 2005-04-04 13:18:47 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.7 2005-11-10 08:46:15 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -17,7 +17,7 @@
 # The script (ie: rcluncomp) must output the uncompressed file name on
 # stdout. 
 application/x-gzip  =  uncompress rcluncomp gunzip %f %t
-application/x-gzip  =  uncompress rcluncomp gunzip %f %t
+application/x-compress = uncompress rcluncomp gunzip %f %t
 application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 
 ## 

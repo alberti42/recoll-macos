@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.6 2005-11-09 21:40:02 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.7 2005-11-10 08:46:14 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll: associations of file name extensions to mime types
 .txt = text/plain
@@ -19,6 +19,7 @@
 .gz = application/x-gzip
 .Z = application/x-gzip
 .bz2 = application/x-bzip2
+.Z  = application/x-compress
 
 .doc = application/msword
 
@@ -41,7 +42,7 @@
 # A list of stuff that we don't want to touch at all (for now). Having the
 # suffixes listed in there speeds up things quite a lot by avoiding
 # unneeded decompression or 'file' calls
-recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .md5 .map \
+recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
        .c .h .cpp .m4 .tcl .js .sh .pl .awk .php .php3 \
        .o .lib .dll .a \
        .dat .bak .rdf .log .db .ini .msf \
