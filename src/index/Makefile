@@ -3,7 +3,7 @@ include ../mk/sysconf
 BIGLIB = ../lib/librcl.a
 MIMELIB = ../bincimapmime/libmime.a
 
-PROGS = recollindex csguess
+PROGS = recollindex csguess mimetype
 all: $(PROGS)
 
 RECOLLINDEX_OBJS= recollindex.o $(BIGLIB) $(MIMELIB)
@@ -20,6 +20,14 @@ csguess : $(CSGUESS_OBJS)
 trcsguess.o : csguess.cpp
 	$(CXX) $(CXXFLAGS) -DTEST_CSGUESS -c -o trcsguess.o \
 	       csguess.cpp
+
+MIMETYPE_OBJS= trmimetype.o  $(BIGLIB) 
+mimetype : $(MIMETYPE_OBJS)
+	$(CXX) $(CXXFLAGS) -o mimetype $(MIMETYPE_OBJS) \
+	       $(LIBICONV)
+trmimetype.o : mimetype.cpp
+	$(CXX) $(CXXFLAGS) -DTEST_MIMETYPE -c -o trmimetype.o \
+	       mimetype.cpp
 
 clean: 
 	rm -f *.o $(PROGS)

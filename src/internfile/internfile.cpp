@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.6 2005-11-08 21:02:55 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.7 2005-11-10 08:47:49 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -86,7 +86,18 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 			   const string& td)
     : fn(f), config(cnf), tdir(td), handler(0) 
 {
-    mime = mimetype(fn, config->getMimeMap());
+    // Note that we are actually going to access the file, so that it's ok 
+    // to check this config variable at every call even if it can only change
+    // when we change directories 
+    string usfc;
+    int usfci;
+    if (!cnf->getConfParam("usesystemfilecommand", usfc)) 
+	usfci = 0;
+    else 
+	usfci = atoi(usfc.c_str()) ? 1 : 0;
+    LOGDEB1(("FileInterner::FileInterner: usfci now %d\n", usfci));
+
+    mime = mimetype(fn, config->getMimeMap(), usfci);
     if (mime.empty()) {
 	// No mime type: not listed in our map, or present in stop list
 	LOGDEB(("FileInterner::FileInterner: (no mime) [%s]\n", fn.c_str()));
@@ -104,7 +115,7 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 	LOGDEB(("internfile: after ucomp: tdir %s, tfile %s\n", 
 		tdir.c_str(), tfile.c_str()));
 	fn = tfile;
-	mime = mimetype(fn, config->getMimeMap());
+	mime = mimetype(fn, config->getMimeMap(), usfci);
 	if (mime.empty()) {
 	    // No mime type ?? pass on.
 	    LOGDEB(("internfile: (no mime) [%s]\n", fn.c_str()));
