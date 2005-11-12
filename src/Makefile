@@ -1,4 +1,4 @@
-# @(#$Id: Makefile,v 1.13 2005-11-12 14:23:36 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.14 2005-11-12 14:31:39 dockes Exp $  (C) 2005 J.F.Dockes
 
 # Default values. These can be overridden on the command line ie: 
 # make PREFIX=/usr
@@ -14,8 +14,6 @@ all: mk/sysconf
 	       ${MAKE} -f -
 
 mk/sysconf:
-	for d in bincimapmime index lib query;do \
-	    cp -f /dev/null $$d/alldeps;done
 	./configure
 
 static:

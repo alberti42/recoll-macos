@@ -1990,7 +1990,7 @@ if test $ac_cv_lib_c_iconv_open = yes; then
   LIBICONV=NONE;INCICONV=-I/usr/include
 fi
 
-if test A$LIBICONV = A ; then
+if test A"$LIBICONV" = A ; then
   dir=/usr/local/lib
   LDFLAGS="$S_LDFLAGS -L$dir"
   unset ac_cv_lib_iconv_iconv_open
@@ -2053,7 +2053,7 @@ if test $ac_cv_lib_iconv_iconv_open = yes; then
   LIBICONV="-L$dir -liconv";INCICONV=-I/usr/local/include
 fi
 
-  if test A$LIBICONV = A; then
+  if test A"$LIBICONV" = A; then
     dir=/usr/local/lib
     LDFLAGS="$S_LDFLAGS -L$dir"
     unset ac_cv_lib_iconv_iconv_open
@@ -2119,17 +2119,17 @@ fi
   fi
 fi
 LDFLAGS=$S_LDFLAGS
-if test A$LIBICONV = A ; then
+if test A"$LIBICONV" = A ; then
    { { echo "$as_me:$LINENO: error: Cannot find iconv_open anywhere. Please install iconv" >&5
 echo "$as_me: error: Cannot find iconv_open anywhere. Please install iconv" >&2;}
    { (exit 1); exit 1; }; }
    exit 1
 fi
-if test A$LIBICONV = ANONE ; then
+if test A"$LIBICONV" = ANONE ; then
    LIBICONV=""
 fi
-echo LIBICONV $LIBICONV
-echo INCICONV $INCICONV
+#echo LIBICONV $LIBICONV
+#echo INCICONV $INCICONV
 
 #### Look for Xapian
 # Extract the first word of "xapian-config", so it can be a program name with args.
@@ -2182,15 +2182,24 @@ xapian-core installed ?" >&2;}
 fi
 LIBXAPIAN=`$XAPIAN_CONFIG --libs`
 XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
-echo XAPIAN_CONFIG $XAPIAN_CONFIG
-echo LIBXAPIAN $LIBXAPIAN
-echo XAPIANCXXFLAGS $XAPIANCXXFLAGS
+
+#echo XAPIAN_CONFIG $XAPIAN_CONFIG
+#echo LIBXAPIAN $LIBXAPIAN
+#echo XAPIANCXXFLAGS $XAPIANCXXFLAGS
+
 
 
 
 
 
 ac_config_files="$ac_config_files mk/localdefs"
+
+
+for d in bincimapmime index lib query
+do
+    rm -f $d/alldeps.stamp
+    cp -f /dev/null $d/alldeps
+done
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure

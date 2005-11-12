@@ -21,13 +21,13 @@ S_LDFLAGS=$LDFLAGS
 dir=/usr/lib
 LDFLAGS="$S_LDFLAGS -L$dir"
 AC_CHECK_LIB(c, iconv_open, LIBICONV=NONE;INCICONV=-I/usr/include)
-if test A$LIBICONV = A ; then
+if test A"$LIBICONV" = A ; then
   dir=/usr/local/lib
   LDFLAGS="$S_LDFLAGS -L$dir"
   unset ac_cv_lib_iconv_iconv_open
   AC_CHECK_LIB(iconv, iconv_open, 
 		      LIBICONV="-L$dir -liconv";INCICONV=-I/usr/local/include)
-  if test A$LIBICONV = A; then
+  if test A"$LIBICONV" = A; then
     dir=/usr/local/lib
     LDFLAGS="$S_LDFLAGS -L$dir"
     unset ac_cv_lib_iconv_iconv_open
@@ -35,15 +35,15 @@ if test A$LIBICONV = A ; then
   fi
 fi
 LDFLAGS=$S_LDFLAGS
-if test A$LIBICONV = A ; then
+if test A"$LIBICONV" = A ; then
    AC_MSG_ERROR([Cannot find iconv_open anywhere. Please install iconv])
    exit 1
 fi
-if test A$LIBICONV = ANONE ; then
+if test A"$LIBICONV" = ANONE ; then
    LIBICONV=""
 fi
-echo LIBICONV $LIBICONV
-echo INCICONV $INCICONV
+#echo LIBICONV $LIBICONV
+#echo INCICONV $INCICONV
 
 #### Look for Xapian
 AC_PATH_PROG(XAPIAN_CONFIG, xapian-config, no)
@@ -65,5 +65,11 @@ AC_SUBST(LIBICONV)
 AC_SUBST(INCICONV)
 
 AC_CONFIG_FILES(mk/localdefs)
+
+for d in bincimapmime index lib query
+do 
+    rm -f $d/alldeps.stamp
+    cp -f /dev/null $d/alldeps
+done
 
 AC_OUTPUT
