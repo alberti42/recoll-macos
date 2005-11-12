@@ -1,4 +1,5 @@
 include ../mk/commondefs
+include ../mk/localdefs
 
 CXXFLAGS = $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
 	 -D_GNU_SOURCE \
