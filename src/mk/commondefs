@@ -1,15 +1,9 @@
-#
 # Definitions mostly common to all systems, can be overridden by
 # sys-specific include
 
 
 COMMONCXXFLAGS = -Wall -Wno-unused -g -I. -I../index -I../utils -I../common \
 	 -I../unac -I../bincimapmime -I/usr/local/include
-
-LIBXAPIAN = -L/usr/local/lib -lxapian
-
-LIBICONV  = -L/usr/local/lib -liconv
-INCICONV = -I/usr/local/include
 
 BIGLIB = ../lib/librcl.a
 MIMELIB = ../bincimapmime/libmime.a
@@ -19,4 +13,3 @@ AR=ar
 INSTALL = install -c
 
 #QTDIR = /usr
-

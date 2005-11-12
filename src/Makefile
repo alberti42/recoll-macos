@@ -1,4 +1,4 @@
-# @(#$Id: Makefile,v 1.11 2005-11-12 11:26:09 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.12 2005-11-12 14:19:28 dockes Exp $  (C) 2005 J.F.Dockes
 
 # Default values. These can be overridden on the command line ie: 
 # make PREFIX=/usr
@@ -10,7 +10,8 @@ all: mk/sysconf
 	cd bincimapmime; ${MAKE}
 	cd index; rm -f recollindex; ${MAKE} recollindex
 	cd qtgui; qmake recoll.pro; rm -f recoll; \
-	   cat ../mk/commondefs ../mk/sysconf Makefile | ${MAKE} -f -
+	   cat ../mk/sysconf Makefile | \
+	       ${MAKE} -f -
 
 mk/sysconf:
 	./configure
@@ -21,7 +22,7 @@ static:
 	cd index; rm -f recollindex; \
 	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic
 	cd qtgui; qmake recoll.pro; rm -f recoll \
-	   cat ../mk/commondefs ../mk/sysconf Makefile | ${MAKE} -f - \
+	   cat ../mk/sysconf Makefile | ${MAKE} -f - \
 	       BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic
 
 clean:

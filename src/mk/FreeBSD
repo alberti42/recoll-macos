@@ -1,8 +1,8 @@
 include ../mk/commondefs
+include ../mk/localdefs
 
-CXXFLAGS = $(COMMONCXXFLAGS) -pthread  \
+CXXFLAGS = $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
+	 -pthread  \
 	 -DHAVE_VASPRINTF=1 \
 	 -DHAVE_MKDTEMP=1
-
-LIBICONV =  -L/usr/local/lib -liconv
 LIBSYS = 
