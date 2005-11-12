@@ -1,7 +1,7 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on thread release
+CONFIG	+= qt warn_on thread release #debug
 
 SOURCES	+= main.cpp \
 	idxthread.cpp \
@@ -27,7 +27,7 @@ unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
   LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
-            $(BSTATIC) -L/usr/local/lib -lxapian -liconv $(BDYNAMIC) \
+            $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
            -lz
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
 

@@ -1,9 +1,8 @@
-include ../mk/sysconf
 
 LIBS = libmime.a
 PROGS = trbinc
 
-all: $(LIBS) 
+all: depend $(LIBS) 
 
 SRCS = mime-getpart.cc mime-parsefull.cc mime-parseonlyheader.cc \
      mime-printbody.cc mime-printdoc.cc mime-printheader.cc mime.cc \
@@ -14,9 +13,8 @@ OBJS = mime-getpart.o mime-parsefull.o mime-parseonlyheader.o \
      convert.o iodevice.o iofactory.o
 
 libmime.a : $(OBJS)
-	 ar ru libmime.a $(OBJS)
+	 $(AR) ru libmime.a $(OBJS)
 
-#	$(CXX) $(CXXFLAGS) -c $<
 .cc .o : 
 	$(CXX) $(CXXFLAGS) -c $<
 
@@ -24,10 +22,15 @@ TRBINCOBJS = trbinc.o
 trbinc: trbinc.o
 	$(CXX) -o trbinc trbinc.o libmime.a 
 
-clean: 
-	rm -f *.o $(LIBS)
+depend: alldeps.stamp
+alldeps.stamp : $(SRCS)
+	$(CXX) -M $(CXXFLAGS) $(SRCS) > alldeps
+	touch alldeps.stamp
 
-depend: alldeps
-alldeps: $(SRCS)
-	$(CXX) $(CXXFLAGS) -M $(SRCS) > alldeps
+clean:
+	cp /dev/null alldeps
+	rm -f alldeps.stamp
+	rm -f ${LIBS} ${PROGS} ${OBJS}
+
+include ../mk/sysconf
 include alldeps

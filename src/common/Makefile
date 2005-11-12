@@ -1,8 +1,11 @@
-include ../mk/sysconf
-BIGLIB = ../lib/librcl.a
 
+# Only test progs in there
 PROGS = unacpp textsplit
-all: $(PROGS)
+
+all: $(BIGLIB) $(PROGS) 
+
+$(BIGLIB):
+	cd ../lib;$(MAKE)
 
 UNACPP_OBJS= trunacpp.o $(BIGLIB)
 unacpp : $(UNACPP_OBJS)
@@ -17,5 +20,9 @@ textsplit : $(TEXTSPLIT_OBJS)
 trtextsplit.o : textsplit.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_TEXTSPLIT -c -o trtextsplit.o \
 	       textsplit.cpp
-clean: 
+
+clean::
 	rm -f *.o $(PROGS)
+
+include ../mk/sysconf
+

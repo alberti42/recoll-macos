@@ -1,6 +1,3 @@
-include ../mk/sysconf
-
-BIGLIB=../lib/librcl.a
 
 PROGS = qtry qxtry xadump
 all: $(PROGS)
@@ -23,10 +20,15 @@ qtry : $(QTRY_OBJS)
 $(BIGLIB):
 	cd ../lib;make
    
-clean: 
-	rm -f *.o $(PROGS)
-alldeps:depend
-depend:
-	$(CXX) $(CXXFLAGS) -M *.cpp > alldeps
-include alldeps
+depend: alldeps.stamp
+alldeps.stamp : $(SRCS)
+	$(CXX) -M $(CXXFLAGS) $(SRCS) > alldeps
+	touch alldeps.stamp
 
+clean:
+	cp /dev/null alldeps
+	rm -f alldeps.stamp
+	rm -f *.o $(PROGS)
+
+include ../mk/sysconf
+include alldeps

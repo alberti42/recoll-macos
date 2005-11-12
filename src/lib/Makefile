@@ -1,10 +1,9 @@
-include ../mk/sysconf
 
-UNACCFLAGS = -g -I. -I../unac -I/usr/local/include -DUNAC_VERSION=\"1.0.7\"
-
+UNACCFLAGS = -g -I. -I../unac $(INCICONV) -DUNAC_VERSION=\"1.0.7\"
 
 LIBS = librcl.a
-all: $(LIBS)
+
+all: depend $(LIBS)
 
 OBJS = base64.o conftree.o csguess.o debuglog.o \
      execmd.o wipedir.o \
@@ -92,14 +91,15 @@ md5.o : ../utils/md5.cpp
 unacpp.o : ../common/unacpp.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 
+depend: alldeps.stamp
+alldeps.stamp : $(SRCS)
+	$(CXX) -M $(CXXFLAGS) $(SRCS) > alldeps
+	touch alldeps.stamp
 
-clean: 
-	rm -f *.o $(LIBS)
-
-depend: alldeps
-
-alldeps: $(SRCS)
-	$(CXX) $(CXXFLAGS) -M $(SRCS) > alldeps
+clean:
+	cp /dev/null alldeps
+	rm -f alldeps.stamp
+	rm -f $(OBJS) $(LIBS)
 
 include alldeps
-
+include ../mk/sysconf

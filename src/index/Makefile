@@ -1,17 +1,14 @@
-include ../mk/sysconf
-
-BIGLIB = ../lib/librcl.a
-MIMELIB = ../bincimapmime/libmime.a
-
 PROGS = recollindex csguess mimetype
+SRCS = recollindex.cpp
+
 all: $(PROGS)
 
 RECOLLINDEX_OBJS= recollindex.o $(BIGLIB) $(MIMELIB)
 recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
 	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) $(LIBSYS)
-recollindex.o : idxdriver.cpp
-	$(CXX) $(CXXFLAGS) -c -o recollindex.o idxdriver.cpp
+recollindex.o : recollindex.cpp
+	$(CXX) $(CXXFLAGS) -c -o recollindex.o $<
 
 CSGUESS_OBJS= trcsguess.o  $(BIGLIB) 
 csguess : $(CSGUESS_OBJS)
@@ -29,11 +26,20 @@ trmimetype.o : mimetype.cpp
 	$(CXX) $(CXXFLAGS) -DTEST_MIMETYPE -c -o trmimetype.o \
 	       mimetype.cpp
 
-clean: 
+$(BIGLIB): 
+	cd ../lib;$(MAKE)
+$(MIMELIB): 
+	cd ../bincimapmime;$(MAKE)
+
+depend: alldeps.stamp
+alldeps.stamp : $(SRCS)
+	$(CXX) -M $(CXXFLAGS) $(SRCS) > alldeps
+	touch alldeps.stamp
+
+clean:
+	cp /dev/null alldeps
+	rm -f alldeps.stamp
 	rm -f *.o $(PROGS)
 
-alldeps:depend
-depend:
-	$(CXX) $(CXXFLAGS) -M *.cpp > alldeps
 include alldeps
-
+include ../mk/sysconf

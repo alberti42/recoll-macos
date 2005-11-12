@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.7 2005-11-10 08:46:14 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.8 2005-11-12 11:26:10 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll: associations of file name extensions to mime types
 .txt = text/plain
@@ -23,17 +23,22 @@
 
 .doc = application/msword
 
+# OpenOffice / opendocument. We handle opendocument as old openoffice files
+# for now
 .sxc = application/vnd.sun.xml.calc
+.ods = application/vnd.sun.xml.calc
 .stc = application/vnd.sun.xml.calc.template
 .sxd = application/vnd.sun.xml.draw
 .std = application/vnd.sun.xml.draw.template
 .sxi = application/vnd.sun.xml.impress
+.odp = application/vnd.sun.xml.impress
 .sti = application/vnd.sun.xml.impress.template
 .sxm = application/vnd.sun.xml.math
 .sxw = application/vnd.sun.xml.writer
+.odt = application/vnd.sun.xml.writer
 .sxg = application/vnd.sun.xml.writer.global
 .stw = application/vnd.sun.xml.writer.template
-.odt = application/vnd.sun.xml.writer
+
 
 .wpd = application/vnd.wordperfect
 .rtf = text/rtf
