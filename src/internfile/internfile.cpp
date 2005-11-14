@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.7 2005-11-10 08:47:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.8 2005-11-14 09:59:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -83,7 +83,7 @@ void FileInterner::tmpcleanup()
 
 // Handler==0 on return says we're in error
 FileInterner::FileInterner(const std::string &f, RclConfig *cnf, 
-			   const string& td)
+			   const string& td, const string *imime)
     : fn(f), config(cnf), tdir(td), handler(0) 
 {
     // Note that we are actually going to access the file, so that it's ok 
@@ -97,7 +97,14 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 	usfci = atoi(usfc.c_str()) ? 1 : 0;
     LOGDEB1(("FileInterner::FileInterner: usfci now %d\n", usfci));
 
+    // We need to run mime type identification in any case to check
+    // for a compressed file.
     mime = mimetype(fn, config->getMimeMap(), usfci);
+
+    // If identification fails, try to use the input parameter. Note that this 
+    // is normally not a compressed type (it's the mime type from the db)
+    if (mime.empty() && imime)
+	mime = *imime;
     if (mime.empty()) {
 	// No mime type: not listed in our map, or present in stop list
 	LOGDEB(("FileInterner::FileInterner: (no mime) [%s]\n", fn.c_str()));
@@ -116,6 +123,8 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 		tdir.c_str(), tfile.c_str()));
 	fn = tfile;
 	mime = mimetype(fn, config->getMimeMap(), usfci);
+	if (mime.empty() && imime)
+	    mime = *imime;
 	if (mime.empty()) {
 	    // No mime type ?? pass on.
 	    LOGDEB(("internfile: (no mime) [%s]\n", fn.c_str()));

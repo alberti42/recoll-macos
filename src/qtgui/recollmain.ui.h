@@ -502,7 +502,8 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
     reslist_current = -1;
     reslist_winfirst = -1;
 
-    if (!rcldb->setQuery(sdata,  stemlang))
+    if (!rcldb->setQuery(sdata, dostem ? 
+			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, stemlang))
 	return;
     curPreview = 0;
     listNextPB_clicked();
@@ -570,10 +571,10 @@ void RecollMain::startPreview(int docnum)
     qApp->processEvents();
 
     Rcl::Doc fdoc;
-    FileInterner interner(fn, rclconfig, tmpdir);
+    FileInterner interner(fn, rclconfig, tmpdir, &doc.mimetype);
     if (interner.internfile(fdoc, doc.ipath) != FileInterner::FIDone) {
 	QMessageBox::warning(0, "Recoll",
-			     QString("Can't turn doc into internal rep ") +
+			     QString("Can't turn doc into internal rep for ") +
 			     doc.mimetype.c_str());
 	return;
     }
