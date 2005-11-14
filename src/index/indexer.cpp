@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.14 2005-11-10 08:47:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.15 2005-11-14 09:57:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -168,7 +168,11 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	return FsTreeWalker::FtwOk;
     }
 
-    // Check db up to date ?
+    // Check db up to date ? Doing this before file type
+    // identification means that, if usesystemfilecommand is switched
+    // from on to off it may happen that some files which are now
+    // without mime type will not be purged from the db, resulting
+    // into possible 'cannot intern file' messages at query time...
     if (!db.needUpdate(fn, stp)) {
 	LOGDEB(("indexfile: up to date: %s\n", fn.c_str()));
 	return FsTreeWalker::FtwOk;
