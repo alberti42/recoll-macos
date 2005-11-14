@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.16 2005-11-05 14:40:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.17 2005-11-14 09:56:49 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -112,7 +112,8 @@ class Db {
     enum QueryOpts {QO_NONE=0, QO_STEM = 1};
     bool setQuery(const string &q, QueryOpts opts = QO_NONE, 
 		  const string& stemlang = "english");
-    bool setQuery(AdvSearchData &q, const string& stemlang = "english");
+    bool setQuery(AdvSearchData &q, QueryOpts opts = QO_NONE,
+		  const string& stemlang = "english");
     bool getQueryTerms(list<string>& terms);
 
     // Get document at rank i. This is probably vastly inferior to the type

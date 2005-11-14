@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.35 2005-11-06 15:07:09 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.36 2005-11-14 09:56:49 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -737,12 +737,13 @@ class wsQData : public TextSplitCB {
 };
 
 
-///
-// Turn string into possibly complex xapian query. There is little
+//
+// Turn string into list of xapian queries. There is little
 // interpretation done on the string (no +term -term or filename:term
 // stuff). We just separate words and phrases, and interpret
-// capitalized terms as wanting no stem expansion
-//
+// capitalized terms as wanting no stem expansion. Elements of the
+// list corresponding to a stem-expanded part are an OR query of the
+// expanded elements
 static void stringToXapianQueries(const string &iq,
 				  const string& stemlang,
 				  Native *ndb,
@@ -797,7 +798,7 @@ static void stringToXapianQueries(const string &iq,
 		    exp.push_back(term1);
 		}
 
-		// Push either term or stem-expanded set
+		// Push either term or OR of stem-expanded set
 		pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 						 exp.begin(), exp.end()));
 	    }
@@ -838,7 +839,8 @@ bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts,
 }
 
 // Prepare query out of "advanced search" data
-bool Rcl::Db::setQuery(AdvSearchData &sdata, const string& stemlang)
+bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts, 
+		       const string& stemlang)
 {
     LOGDEB(("Rcl::Db::setQuery: adv:\n"));
     LOGDEB((" allwords: %s\n", sdata.allwords.c_str()));
@@ -863,7 +865,7 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, const string& stemlang)
     Xapian::Query xq;
     
     if (!sdata.allwords.empty()) {
-	stringToXapianQueries(sdata.allwords, stemlang, ndb, pqueries);
+	stringToXapianQueries(sdata.allwords, stemlang, ndb, pqueries, opts);
 	if (!pqueries.empty()) {
 	    xq = Xapian::Query(Xapian::Query::OP_AND, pqueries.begin(), 
 			       pqueries.end());
@@ -872,7 +874,7 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, const string& stemlang)
     }
 
     if (!sdata.orwords.empty()) {
-	stringToXapianQueries(sdata.orwords, stemlang, ndb, pqueries);
+	stringToXapianQueries(sdata.orwords, stemlang, ndb, pqueries, opts);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq;
 	    nq = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
@@ -883,6 +885,7 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, const string& stemlang)
 	}
     }
 
+    // We do no stem expansion on 'No' words. Should we ?
     if (!sdata.nowords.empty()) {
 	stringToXapianQueries(sdata.nowords, stemlang, ndb, pqueries);
 	if (!pqueries.empty()) {
