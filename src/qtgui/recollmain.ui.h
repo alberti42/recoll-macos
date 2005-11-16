@@ -415,7 +415,7 @@ void RecollMain::listNextPB_clicked()
 		iconname = "document";
 	    string imgfile = iconsdir + "/" + iconname + ".png";
 
-	    LOGDEB(("Img file; %s\n", imgfile.c_str()));
+	    LOGDEB1(("Img file; %s\n", imgfile.c_str()));
 	    QImage image(imgfile.c_str());
 	    if (!image.isNull()) {
 		img_name = string("img_") + iconname;
