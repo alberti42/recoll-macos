@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.4 2005-10-20 08:34:51 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.5 2005-11-16 11:22:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 
@@ -87,6 +87,7 @@ string plaintorich(const string &in,  const list<string>& terms,
     // character offset
     splitter.text_to_words(in);
 
+    LOGDEB(("Split done\n"));
 
 
     // Rich text output

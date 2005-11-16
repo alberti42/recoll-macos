@@ -9,8 +9,20 @@
 ** These will automatically be called by the form's constructor and
 ** destructor.
 *****************************************************************************/
+#include <unistd.h>
+
+#include <utility>
+using std::pair;
+
+#include <qmessagebox.h>
+#include <qprogressdialog.h>
+#include <qthread.h>
 
 #include "debuglog.h"
+#include "pathut.h"
+#include "internfile.h"
+#include "recoll.h"
+#include "plaintorich.h"
 
 void Preview::init()
 {
@@ -83,6 +95,15 @@ void Preview::searchTextLine_textChanged(const QString & text)
     }
 }
 
+QTextEdit * Preview::getCurrentEditor()
+{
+    QWidget *tw = pvTab->currentPage();
+    QTextEdit *edit = 0;
+    if (tw) {
+	edit = (QTextEdit*)tw->child("pvEdit");
+    }
+    return edit;
+}
 
 // Perform text search. If next is true, we look for the next match of the
 // current search, trying to advance and possibly wrapping around. If next is
@@ -91,13 +112,10 @@ void Preview::searchTextLine_textChanged(const QString & text)
 void Preview::doSearch(bool next, bool reverse)
 {
     LOGDEB1(("Preview::doSearch: next %d rev %d\n", int(next), int(reverse)));
-    QWidget *tw = pvTab->currentPage();
-    QTextEdit *edit = 0;
-    if (tw) {
-	if ((edit = (QTextEdit*)tw->child("pvEdit")) == 0) {
-	    // ??
-	    return;
-	}
+    QTextEdit *edit = getCurrentEditor();
+    if (edit == 0) {
+	// ??
+	return;
     }
     bool matchCase = matchCheck->isChecked();
     int mspara, msindex, mepara, meindex;
@@ -199,8 +217,6 @@ QTextEdit * Preview::addEditorTab()
     return editor;
 }
 
-using std::string;
-
 void Preview::setCurTabProps(const Rcl::Doc &doc)
 {
     QString title = QString::fromUtf8(doc.title.c_str(), 
@@ -224,4 +240,167 @@ void Preview::setCurTabProps(const Rcl::Doc &doc)
 	tiptxt += doc.title + "\n";
     pvTab->setTabToolTip(pvTab->currentPage(),
 			 QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
+}
+
+/*
+  Code for loading a file into an editor window. The operations that
+  we call have no provision to indicate progression, and it would be
+  complicated or impossible to modify them to do so (Ie: for external 
+  format converters).
+
+  We implement a complicated and ugly mechanism based on threads to indicate 
+  to the user that the app is doing things: lengthy operations are done in 
+  threads and we update a progress indicator while they proceed (but we have 
+  no estimate of their total duration).
+  
+  An auxiliary thread object is used for short waits. Another option would be 
+  to use signals/slots and return to the event-loop instead, but this would
+  be even more complicated, and we probably don't want the user to click on
+  things during this time anyway.
+
+  No cancel button is implemented, but this could conceivably be done
+*/
+
+/* A thread to to the file reading / format conversion */
+class LoadThread : public QThread {
+    int *statusp;
+    Rcl::Doc *out;
+    string filename;
+    string ipath;
+    string *mtype;
+
+ public: 
+    LoadThread(int *stp, Rcl::Doc *odoc, string fn, string ip, string *mt) 
+	: statusp(stp), out(odoc), filename(fn), ipath(ip), mtype(mt) 
+    {}
+   virtual void run() 
+   {
+       FileInterner interner(filename, rclconfig, tmpdir, mtype);
+       if (interner.internfile(*out, ipath) != FileInterner::FIDone) {
+	   *statusp = -1;
+       } else {
+	   *statusp = 0;
+       }
+   }
+};
+
+/* A thread to convert to rich text (mark search terms) */
+class ToRichThread : public QThread {
+    string &in;
+    list<string> &terms;
+    list<pair<int, int> > &termoffsets;
+    QString &out;
+ public:
+    ToRichThread(string &i, list<string> &trms, 
+		 list<pair<int, int> > &toffs, QString &o) 
+	: in(i), terms(trms), termoffsets(toffs), out(o)
+    {}
+    virtual void run()
+    {
+	string rich = plaintorich(in, terms, termoffsets);
+	out = QString::fromUtf8(rich.c_str(), rich.length());
+    }
+};
+
+/* A thread to implement short waiting. There must be a better way ! */
+class WaiterThread : public QThread {
+    int ms;
+ public:
+    WaiterThread(int millis) : ms(millis) {}
+    virtual void run() {
+	msleep(ms);
+    }
+};
+
+void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
+{
+    Rcl::Doc doc = idoc;
+
+    if (doc.title.empty()) 
+	doc.title = path_getsimple(doc.url);
+
+    setCurTabProps(doc);
+
+    char csz[20];
+    sprintf(csz, "%lu", (unsigned long)sz);
+    QString msg = QString("Loading: %1 (size %2 bytes)")
+	.arg(fn)
+	.arg(csz);
+
+    // Create progress dialog and aux objects
+    const int nsteps = 10;
+    QProgressDialog progress( msg, "", nsteps, this, "Loading", TRUE );
+    QPushButton *pb = new QPushButton("", this);
+    pb->setEnabled(false);
+    progress.setCancelButton(pb);
+    progress.setMinimumDuration(1000);
+    WaiterThread waiter(100);
+
+    // Load and convert file
+    Rcl::Doc fdoc;
+    int status = 1;
+    LoadThread lthr(&status, &fdoc, fn, doc.ipath, &doc.mimetype);
+    lthr.start();
+    int i;
+    for (i = 1;;i++) {
+	waiter.start();
+	waiter.wait();
+	if (lthr.finished())
+	    break;
+	progress.setProgress(i , i <= nsteps-1 ? nsteps : i+1);
+	qApp->processEvents();
+	if (i >= 5)
+	    sleep(1);
+    }
+    if (status != 0) {
+	QMessageBox::warning(0, "Recoll",
+			     tr("Can't turn doc into internal rep for ") +
+			     doc.mimetype.c_str());
+	return;
+    }
+    LOGDEB(("Load file done\n"));
+
+    // Highlight search terms:
+    progress.setLabelText(tr("Creating preview text"));
+    list<string> terms;
+    rcldb->getQueryTerms(terms);
+    list<pair<int, int> > termoffsets;
+    QString str;
+    ToRichThread rthr(fdoc.text, terms, termoffsets, str);
+    rthr.start();
+
+    for (;;i++) {
+	waiter.start();
+	waiter.wait();
+	if (rthr.finished())
+	    break;
+	progress.setProgress(i , i <= nsteps-1 ? nsteps : i+1);
+	qApp->processEvents();
+	if (i >= 5)
+	    sleep(1);
+    }
+    LOGDEB(("Plaintorich done\n"));
+
+    // Load into editor
+    QTextEdit *editor = getCurrentEditor();
+    QStyleSheetItem *item = 
+	new QStyleSheetItem(editor->styleSheet(), "termtag" );
+    item->setColor("blue");
+    item->setFontWeight(QFont::Bold);
+
+    progress.setLabelText(tr("Loading preview text into editor"));
+    qApp->processEvents();
+    editor->setText(str);
+    int para = 0, index = 1;
+    if (!termoffsets.empty()) {
+	index = (termoffsets.begin())->first;
+	LOGDEB(("Set cursor position: para %d, character index %d\n",
+		para,index));
+	editor->setCursorPosition(0, index);
+    }
+    editor->ensureCursorVisible();
+    editor->getCursorPosition(&para, &index);
+
+    LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
+	    editor->length(), editor->paragraphs(),  para, index));
 }

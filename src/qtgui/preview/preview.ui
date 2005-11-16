@@ -22,7 +22,7 @@
     </property>
     <property name="minimumSize">
         <size>
-            <width>150</width>
+            <width>130</width>
             <height>30</height>
         </size>
     </property>
@@ -207,11 +207,13 @@
     <slot>currentChanged( QWidget * tw )</slot>
     <slot>closeCurrentTab()</slot>
     <slot>setCurTabProps( const Rcl::Doc &amp; doc )</slot>
+    <slot>loadFileInCurrentTab( string fn, size_t sz, const Rcl::Doc &amp; idoc )</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">init()</function>
     <function>closeEvent( QCloseEvent * e )</function>
     <function returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
+    <function returnType="QTextEdit *">getCurrentEditor()</function>
     <function returnType="QTextEdit *">addEditorTab()</function>
 </functions>
 <layoutdefaults spacing="6" margin="11"/>

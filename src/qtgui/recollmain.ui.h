@@ -566,16 +566,8 @@ void RecollMain::startPreview(int docnum)
 	return;
     }
 
-    QStatusBar *stb = statusBar();
-
-    stb->message(tr("Creating preview window"));
-    qApp->processEvents();
-    QTextEdit *editor;
     if (curPreview == 0) {
 	curPreview = new Preview(0, tr("Preview"));
-	curPreview->setCaption(queryText->text());
-	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
-		this, SLOT(previewClosed(Preview *)));
 	if (curPreview == 0) {
 	    QMessageBox::warning(0, tr("Warning"), 
 				 tr("Can't create preview window"),
@@ -583,64 +575,16 @@ void RecollMain::startPreview(int docnum)
 				 QMessageBox::NoButton);
 	    return;
 	}
-	editor = curPreview->pvEdit;
+
+	curPreview->setCaption(queryText->text());
+	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
+		this, SLOT(previewClosed(Preview *)));
 	curPreview->show();
     } else {
-	editor = curPreview->addEditorTab();
+	(void)curPreview->addEditorTab();
     }
 
-    if (doc.title.empty()) 
-	doc.title = path_getsimple(doc.url);
-
-    curPreview->setCurTabProps(doc);
-
-    char csz[20];
-    sprintf(csz, "%lu", (unsigned long)st.st_size);
-    QString msg = QString("Loading: %1 (size %2 bytes)")
-	.arg(fn)
-	.arg(csz);
-    stb->message(msg);
-    qApp->processEvents();
-
-    Rcl::Doc fdoc;
-    FileInterner interner(fn, rclconfig, tmpdir, &doc.mimetype);
-    if (interner.internfile(fdoc, doc.ipath) != FileInterner::FIDone) {
-	QMessageBox::warning(0, "Recoll",
-			     tr("Can't turn doc into internal rep for ") +
-			     doc.mimetype.c_str());
-	return;
-    }
-
-    stb->message(tr("Creating preview text"));
-    qApp->processEvents();
-
-    list<string> terms;
-    rcldb->getQueryTerms(terms);
-    list<pair<int, int> > termoffsets;
-    string rich = plaintorich(fdoc.text, terms, termoffsets);
-
-    QStyleSheetItem *item = 
-	new QStyleSheetItem(editor->styleSheet(), "termtag" );
-    item->setColor("blue");
-    item->setFontWeight(QFont::Bold);
-
-    QString str = QString::fromUtf8(rich.c_str(), rich.length());
-    stb->message(tr("Loading preview text"));
-    qApp->processEvents();
-
-    editor->setText(str);
-    int para = 0, index = 1;
-    if (!termoffsets.empty()) {
-	index = (termoffsets.begin())->first;
-	LOGDEB(("Set cursor position: para %d, character index %d\n",
-		para,index));
-	editor->setCursorPosition(0, index);
-    }
-    editor->ensureCursorVisible();
-    editor->getCursorPosition(&para, &index);
-    LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
-	    editor->length(), editor->paragraphs(),  para, index));
-    stb->clear();
+    curPreview->loadFileInCurrentTab(fn, st.st_size, doc);
 }
 
 
