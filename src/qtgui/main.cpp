@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.14 2005-11-16 08:17:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.15 2005-11-16 15:07:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -29,6 +29,8 @@ RclConfig *rclconfig;
 Rcl::Db *rcldb;
 int recollNeedsExit;
 string tmpdir;
+bool showicons;
+string iconsdir;
 
 void getQueryStemming(bool &dostem, std::string &stemlang)
 {
@@ -157,6 +159,17 @@ int main( int argc, char ** argv )
 					  "No db directory in configuration"));
 	exit(1);
     }
+
+    string tmp;
+    rclconfig->getConfParam("showicons", tmp);
+    if (tmp.empty())
+	tmp = "0";
+    showicons = atoi(tmp.c_str()) ? true : false;
+    rclconfig->getConfParam("iconsdir", iconsdir);
+    if (iconsdir.empty())
+	iconsdir = "/usr/local/share/recoll/images";
+    else
+	iconsdir = path_tildexpand(iconsdir);
 
     if (!maketmpdir(tmpdir)) {
 	QMessageBox::critical(0, "Recoll",

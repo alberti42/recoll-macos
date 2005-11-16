@@ -11,6 +11,7 @@
 *****************************************************************************/
 #include <unistd.h>
 
+#include <list>
 #include <utility>
 using std::pair;
 
@@ -24,6 +25,16 @@ using std::pair;
 #include "recoll.h"
 #include "plaintorich.h"
 
+// We keep a list of data associated to each tab
+class TabData {
+ public:
+    string fn; // filename for this tab
+    QWidget *w; // widget for setCurrent
+    TabData(const string &str, QWidget *wi) : fn(str), w(wi) {}
+};
+
+#define TABDATA ((list<TabData> *)tabData)
+
 void Preview::init()
 {
     connect(pvTab, SIGNAL(currentChanged(QWidget *)), 
@@ -31,6 +42,12 @@ void Preview::init()
     searchTextLine->installEventFilter(this);
     dynSearchActive = false;
     canBeep = true;
+    tabData = new list<TabData>;
+    TABDATA->push_back(TabData(string(""), pvTab->currentPage()));
+}
+void Preview::destroy()
+{
+    delete TABDATA;
 }
 
 void Preview::closeEvent(QCloseEvent *e)
@@ -196,8 +213,19 @@ void Preview::closeCurrentTab()
 {
     if (pvTab->count() > 1) {
 	QWidget *tw = pvTab->currentPage();
-	if (tw) 
-	    pvTab->removePage(tw);
+	if (!tw) 
+	    return;
+	pvTab->removePage(tw);
+	// Have to remove from tab data list
+	if (tabData == 0)
+	    return;
+	for (list<TabData>::iterator it = TABDATA->begin(); 
+	     it != TABDATA->end(); it++) {
+	    if (it->w == tw) {
+		TABDATA->erase(it);
+		return;
+	    }
+	}
     } else {
 	close();
     }
@@ -214,17 +242,20 @@ QTextEdit * Preview::addEditorTab()
     anonLayout->addWidget(editor);
     pvTab->addTab(anon, "Tab");
     pvTab->showPage(anon);
+    if (tabData)
+	TABDATA->push_back(TabData(string(""), anon));
     return editor;
 }
 
-void Preview::setCurTabProps(const Rcl::Doc &doc)
+void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc)
 {
     QString title = QString::fromUtf8(doc.title.c_str(), 
 				      doc.title.length());
     if (title.length() > 20) {
 	title = title.left(10) + "..." + title.right(10);
     }
-    pvTab->changeTab(pvTab->currentPage(), title);
+    QWidget *w = pvTab->currentPage();
+    pvTab->changeTab(w, title);
 
     char datebuf[100];
     datebuf[0] = 0;
@@ -238,8 +269,30 @@ void Preview::setCurTabProps(const Rcl::Doc &doc)
     tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
     if (!doc.title.empty())
 	tiptxt += doc.title + "\n";
-    pvTab->setTabToolTip(pvTab->currentPage(),
-			 QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
+    pvTab->setTabToolTip(w,QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
+
+    for (list<TabData>::iterator it = TABDATA->begin(); 
+	 it != TABDATA->end(); it++) {
+	if (it->w == w) {
+	    it->fn = fn;
+	    break;
+	}
+    }
+}
+
+bool Preview::makeFileCurrent(const string &fn)
+{
+    LOGDEB(("Preview::makeFileCurrent: %s\n", fn.c_str()));
+    for (list<TabData>::iterator it = TABDATA->begin(); 
+	 it != TABDATA->end(); it++) {
+	LOGDEB2(("Preview::makeFileCurrent: compare to w %p, file %s\n", 
+		 it->w, it->fn.c_str()));
+	if (!it->fn.compare(fn)) {
+	    pvTab->showPage(it->w);
+	    return true;
+	}
+    }
+    return false;
 }
 
 /*
@@ -319,7 +372,7 @@ void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     if (doc.title.empty()) 
 	doc.title = path_getsimple(doc.url);
 
-    setCurTabProps(doc);
+    setCurTabProps(fn, doc);
 
     char csz[20];
     sprintf(csz, "%lu", (unsigned long)sz);
@@ -404,3 +457,5 @@ void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
 	    editor->length(), editor->paragraphs(),  para, index));
 }
+
+

@@ -195,6 +195,7 @@
     <variable>int matchPara;</variable>
     <variable>bool dynSearchActive;</variable>
     <variable>bool canBeep;</variable>
+    <variable>void *tabData;</variable>
 </variables>
 <signals>
     <signal>previewClosed(Preview *)</signal>
@@ -206,15 +207,17 @@
     <slot>prevPressed()</slot>
     <slot>currentChanged( QWidget * tw )</slot>
     <slot>closeCurrentTab()</slot>
-    <slot>setCurTabProps( const Rcl::Doc &amp; doc )</slot>
+    <slot>setCurTabProps( const string &amp; fn, const Rcl::Doc &amp; doc )</slot>
     <slot>loadFileInCurrentTab( string fn, size_t sz, const Rcl::Doc &amp; idoc )</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">init()</function>
     <function>closeEvent( QCloseEvent * e )</function>
     <function returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
+    <function returnType="bool">makeFileCurrent( const string &amp; fn )</function>
     <function returnType="QTextEdit *">getCurrentEditor()</function>
     <function returnType="QTextEdit *">addEditorTab()</function>
+    <function access="private">destroy()</function>
 </functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

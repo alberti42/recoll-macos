@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.10 2005-11-08 21:02:55 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.11 2005-11-16 15:07:20 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -164,6 +164,16 @@ string getMimeViewer(const std::string &mtype, ConfTree *mhandlers)
 {
     string hs;
     mhandlers->get(mtype, hs, "view");
+    return hs;
+}
+
+/**
+ * Return icon name
+ */
+string getMimeIconName(const std::string &mtype, ConfTree *mhandlers)
+{
+    string hs;
+    mhandlers->get(mtype, hs, "icons");
     return hs;
 }
 

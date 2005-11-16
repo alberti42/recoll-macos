@@ -1,6 +1,6 @@
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-/* @(#$Id: mimehandler.h,v 1.7 2005-11-08 21:02:55 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimehandler.h,v 1.8 2005-11-16 15:07:20 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -53,6 +53,12 @@ extern MimeHandler *getMimeHandler(const std::string &mtyp, ConfTree *mhdlers);
  * Return external viewer exec string for given mime type
  */
 extern std::string getMimeViewer(const std::string &mtyp, ConfTree *mhandlers);
+
+/**
+ * Return icon name
+ */
+extern std::string getMimeIconName(const std::string &mtyp, ConfTree *mhandlers);
+
 
 /** 
  * Return command to uncompress the given type. The returned command has

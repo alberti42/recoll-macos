@@ -407,6 +407,23 @@ void RecollMain::listNextPB_clicked()
 	    
 	gotone = true;
 
+	string img_name;
+	if (showicons) {
+	    string iconname = getMimeIconName(doc.mimetype, 
+					      rclconfig->getMimeConf());
+	    if (iconname.empty())
+		iconname = "document";
+	    string imgfile = iconsdir + "/" + iconname + ".png";
+
+	    LOGDEB(("Img file; %s\n", imgfile.c_str()));
+	    QImage image(imgfile.c_str());
+	    if (!image.isNull()) {
+		img_name = string("img_") + iconname;
+		QMimeSourceFactory::defaultFactory()->
+		    setImage(img_name.c_str(),image);
+	    }
+	}
+
 	// Result list display: TOBEDONE
 	//  - move abstract/keywords to  Detail window ?
 	//  - keywords matched
@@ -426,8 +443,11 @@ void RecollMain::listNextPB_clicked()
 	}
 	string abst = stripMarkup(doc.abstract);
 	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
-	string result = "<p>" + 
-	    string(perbuf) + " <b>" + doc.title + "</b><br>" +
+	string result = string("<p>");
+	if (!img_name.empty()) {
+	    result += "<img source=\"" + img_name + "\" align=\"left\">";
+	}
+	result += string(perbuf) + " <b>" + doc.title + "</b><br>" +
 	    doc.mimetype + "&nbsp;" +
 	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>")) +
 	    (!abst.empty() ? abst + "<br>" : string("")) +
@@ -447,7 +467,10 @@ void RecollMain::listNextPB_clicked()
 	reslistTE->ensureCursorVisible();
     } else {
 	// Restore first in win parameter that we shouln't have incremented
-	reslistTE->append(tr("<p><b>No results found</b><br>"));
+	reslistTE->append(tr("<p>"
+			     /*"<img align=\"left\" source=\"myimage\">"*/
+			     "<b>No results found</b>"
+			     "<br>"));
 	reslist_winfirst -= respagesize;
 	if (reslist_winfirst < 0)
 	    reslist_winfirst = -1;
@@ -555,8 +578,7 @@ void RecollMain::startPreview(int docnum)
 	return;
     }
 	
-    // Go to the file system to retrieve / convert the document text
-    // for preview:
+    // Check file exists in file system
     string fn = urltolocalpath(doc.url);
     struct stat st;
     if (stat(fn.c_str(), &st) < 0) {
@@ -581,6 +603,10 @@ void RecollMain::startPreview(int docnum)
 		this, SLOT(previewClosed(Preview *)));
 	curPreview->show();
     } else {
+	if (curPreview->makeFileCurrent(fn)) {
+	    // Already there
+	    return;
+	}
 	(void)curPreview->addEditorTab();
     }
 
