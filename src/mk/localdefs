@@ -5,5 +5,5 @@ XAPIANCXXFLAGS=-I/usr/local/include
 LIBICONV=-L/usr/local/lib -liconv
 INCICONV=-I/usr/local/include
 
-LOCALCXXFLAGS = $(INCICONV) $(CXXFLAGSXAPIAN)
+LOCALCXXFLAGS = $(INCICONV) $(XAPIANCXXFLAGS)
 
