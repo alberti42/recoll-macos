@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>590</width>
-            <height>810</height>
+            <width>631</width>
+            <height>212</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -182,10 +182,14 @@
     </property>
     <item text="&amp;File" name="fileMenu">
         <separator/>
-        <separator/>
         <action name="fileStart_IndexingAction"/>
         <separator/>
         <action name="fileExitAction"/>
+    </item>
+    <separator/>
+    <item text="&amp;Help" name="Help">
+        <separator/>
+        <action name="helpAbout_RecollAction"/>
     </item>
 </menubar>
 <toolbars>
@@ -214,6 +218,17 @@
         </property>
         <property name="menuText">
             <string>Start Indexing</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>helpAbout_RecollAction</cstring>
+        </property>
+        <property name="text">
+            <string>About Recoll</string>
+        </property>
+        <property name="menuText">
+            <string>About Recoll</string>
         </property>
     </action>
 </actions>
@@ -278,6 +293,12 @@
         <receiver>RecollMain</receiver>
         <slot>advSearchPB_clicked()</slot>
     </connection>
+    <connection>
+        <sender>helpAbout_RecollAction</sender>
+        <signal>activated()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>showAboutDialog()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in declaration">preview.h</include>
@@ -314,6 +335,7 @@
     <slot>advSearchPB_clicked()</slot>
     <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
     <slot>reslistTE_delayedclick()</slot>
+    <slot>showAboutDialog()</slot>
 </slots>
 <functions>
     <function access="private">init()</function>

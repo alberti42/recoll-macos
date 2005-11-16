@@ -1,5 +1,12 @@
 <!DOCTYPE TS><TS>
 <context>
+    <name>Main</name>
+    <message>
+        <source>Configuration problem: </source>
+        <translation>Problème de configuration: </translation>
+    </message>
+</context>
+<context>
     <name>Preview</name>
     <message>
         <source>Preview</source>
@@ -39,7 +46,11 @@
     </message>
     <message>
         <source>Close Tab</source>
-        <translation>Fermer la tabulation</translation>
+        <translation type="obsolete">Fermer la tabulation</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Effacer</translation>
     </message>
 </context>
 <context>
@@ -87,6 +98,14 @@
     <message>
         <source>Start Indexing</source>
         <translation>Commencer l&apos;indexation</translation>
+    </message>
+    <message>
+        <source>Help</source>
+        <translation>Aide</translation>
+    </message>
+    <message>
+        <source>About Recoll</source>
+        <translation>À propos de Recoll</translation>
     </message>
 </context>
 <context>

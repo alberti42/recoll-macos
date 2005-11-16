@@ -184,3 +184,44 @@ void Preview::closeCurrentTab()
 	close();
     }
 }
+
+
+QTextEdit * Preview::addEditorTab()
+{
+    QWidget *anon = new QWidget((QWidget *)pvTab);
+    QVBoxLayout *anonLayout = new QVBoxLayout(anon, 1, 1, "anonLayout"); 
+    QTextEdit *editor = new QTextEdit(anon, "pvEdit");
+    editor->setReadOnly( TRUE );
+    editor->setUndoRedoEnabled( FALSE );
+    anonLayout->addWidget(editor);
+    pvTab->addTab(anon, "Tab");
+    pvTab->showPage(anon);
+    return editor;
+}
+
+using std::string;
+
+void Preview::setCurTabProps(const Rcl::Doc &doc)
+{
+    QString title = QString::fromUtf8(doc.title.c_str(), 
+				      doc.title.length());
+    if (title.length() > 20) {
+	title = title.left(10) + "..." + title.right(10);
+    }
+    pvTab->changeTab(pvTab->currentPage(), title);
+
+    char datebuf[100];
+    datebuf[0] = 0;
+    if (!doc.fmtime.empty() || !doc.dmtime.empty()) {
+	time_t mtime = doc.dmtime.empty() ? 
+	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
+	struct tm *tm = localtime(&mtime);
+	strftime(datebuf, 99, "%F %T", tm);
+    }
+    string tiptxt = doc.url + string("\n");
+    tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
+    if (!doc.title.empty())
+	tiptxt += doc.title + "\n";
+    pvTab->setTabToolTip(pvTab->currentPage(),
+			 QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
+}

@@ -1,11 +1,11 @@
-# @(#$Id: Makefile,v 1.14 2005-11-12 14:31:39 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.15 2005-11-16 08:17:10 dockes Exp $  (C) 2005 J.F.Dockes
 
 # Default values. These can be overridden on the command line ie: 
 # make PREFIX=/usr
 PREFIX=/usr/local
 INSTALL = install -c
 
-all: mk/sysconf
+all: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
 	cd bincimapmime; ${MAKE}
 	cd index; rm -f recollindex; ${MAKE} recollindex
@@ -15,6 +15,11 @@ all: mk/sysconf
 
 mk/sysconf:
 	./configure
+
+common/rclversion.h: VERSION
+	(echo -n "static const char *rclversion= \"" && \
+	 echo -n `cat VERSION` && \
+	 echo "\";") > common/rclversion.h
 
 static:
 	cd lib; ${MAKE}

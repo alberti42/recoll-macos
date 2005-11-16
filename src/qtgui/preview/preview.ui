@@ -187,6 +187,7 @@
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">qapplication.h</include>
+    <include location="local" impldecl="in declaration">rcldb.h</include>
     <include location="local" impldecl="in implementation">preview.ui.h</include>
 </includes>
 <variables>
@@ -205,11 +206,13 @@
     <slot>prevPressed()</slot>
     <slot>currentChanged( QWidget * tw )</slot>
     <slot>closeCurrentTab()</slot>
+    <slot>setCurTabProps( const Rcl::Doc &amp; doc )</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">init()</function>
     <function>closeEvent( QCloseEvent * e )</function>
     <function returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
+    <function returnType="QTextEdit *">addEditorTab()</function>
 </functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

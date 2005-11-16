@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.13 2005-11-06 15:07:09 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.14 2005-11-16 08:17:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -8,15 +8,14 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.13 2005-11-06 15:07:09 dockes Exp $ 
 
 #include <qtranslator.h>
 #include <qtextcodec.h> 
-
 #include <qthread.h>
 #include <qtimer.h>
-
 #include <qmessagebox.h>
+#include <qsettings.h>
+
 
 #include "rcldb.h"
 using Rcl::AdvSearchData;
-
 #include "rclconfig.h"
 #include "pathut.h"
 #include "recoll.h"
@@ -62,8 +61,19 @@ bool maybeOpenDb(string &reason)
     return true;
 }
 
+RecollMain *mainWindow;
+
 void recollCleanup()
 {
+    QSettings settings;
+    if (mainWindow) {
+	int width = mainWindow->width();
+	int height = mainWindow->height();
+	settings.setPath("Recoll.org", "Recoll");
+	settings.writeEntry( "/Recoll/geometry/width", width);
+	settings.writeEntry("/Recoll/geometry/height", height);
+    }
+
     stop_idxthread();
     delete rcldb;
     rcldb = 0;
@@ -85,17 +95,44 @@ static void sigcleanup(int)
     recollNeedsExit = 1;
 }
 
+
 int main( int argc, char ** argv )
 {
     QApplication a(argc, argv);
 
+    // translation file for Qt
+    QTranslator qt( 0 );
+    qt.load( QString( "qt_" ) + QTextCodec::locale(), "." );
+    a.installTranslator( &qt );
+
+    // Translations for Recoll
     QTranslator translator( 0 );
-    // QTextCodec::locale() return $LANG
+    // QTextCodec::locale() returns $LANG
     translator.load( QString("recoll_") + QTextCodec::locale(), "." );
     a.installTranslator( &translator );
 
+    // Restore some settings from previous session
+    QSettings settings;
+    settings.setPath("Recoll.org", "Recoll");
+    int width = settings.readNumEntry( "/Recoll/geometry/width", 590);
+    int height = settings.readNumEntry( "/Recoll/geometry/height", 810);
+    QSize s(width, height);
+
+    // Create main window and set its size to previous session's
     RecollMain w;
-    w.show();
+    mainWindow = &w;
+    w.resize(s);
+
+    
+#if 0    
+    // Once tried to set a lighter background but this doesn;t seem to work
+    // (no inheritance from buttons and popups)
+    QPalette palette = w.palette();
+    palette.setColor(QColorGroup::Background, QColor(239,239,239));
+    w.setPalette(palette);
+#endif
+
+    // Connect exit handlers etc..
     a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
     QTimer *timer = new QTimer(&a);
     w.connect(timer, SIGNAL(timeout()), &w, SLOT(periodic100()));
@@ -105,10 +142,9 @@ int main( int argc, char ** argv )
     rclconfig = recollinit(recollCleanup, sigcleanup, reason);
 
     if (!rclconfig || !rclconfig->ok()) {
-	string msg = "Configuration problem: ";
+	QString msg = a.translate("Main", "Configuration problem: ");
 	msg += reason;
-	QMessageBox::critical(0, "Recoll",
-			      QString(msg.c_str()));
+	QMessageBox::critical(0, "Recoll",  msg);
 	exit(1);
     }
 
@@ -117,13 +153,15 @@ int main( int argc, char ** argv )
 	// Note: this will have to be replaced by a call to a
 	// configuration buildin dialog for initial configuration
 	QMessageBox::critical(0, "Recoll",
-			      QString("No db directory in configuration"));
+			      a.translate("Main", 
+					  "No db directory in configuration"));
 	exit(1);
     }
 
     if (!maketmpdir(tmpdir)) {
 	QMessageBox::critical(0, "Recoll",
-			      QString("Cannot create temporary directory"));
+			      a.translate("Main", 
+					 "Cannot create temporary directory"));
 	exit(1);
     }
 	
@@ -134,11 +172,16 @@ int main( int argc, char ** argv )
     if (!rcldb || !rcldb->open(dbdir, Rcl::Db::DbRO)) {
 	startindexing = 1;
 	QMessageBox::information(0, "Recoll",
-				 QString("Could not open database in ") + 
-				 QString(dbdir) + ". Starting indexation");
+				 a.translate("Main", 
+					     "Could not open database in ") + 
+				 QString(dbdir) + 
+				 a.translate("Main",
+					     ". Starting indexation"));
     }
 
     start_idxthread(rclconfig);
 
+    // Let's go
+    w.show();
     return a.exec();
 }

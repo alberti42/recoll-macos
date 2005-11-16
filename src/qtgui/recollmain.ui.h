@@ -38,6 +38,7 @@ using std::pair;
 #include "plaintorich.h"
 #include "unacpp.h"
 #include "advsearch.h"
+#include "rclversion.h"
 
 extern "C" int XFlush(void *);
 
@@ -48,7 +49,6 @@ extern "C" int XFlush(void *);
 // Number of abstracts in a result page. This will avoid scrollbars
 // with the default window size and font, most of the time.
 static const int respagesize = 8;
-
 
 void RecollMain::init()
 {
@@ -212,7 +212,7 @@ void RecollMain::periodic100()
 	rcldb->close();
     } else if (indexingdone == 0) {
 	if (toggle < 9) {
-	    statusBar()->message("Indexing in progress");
+	    statusBar()->message(tr("Indexing in progress"));
 	} else {
 	    statusBar()->message("");
 	}
@@ -251,9 +251,8 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
     string cmd = getMimeViewer(doc.mimetype, rclconfig->getMimeConf());
     if (cmd.length() == 0) {
 	QMessageBox::warning(0, "Recoll", 
-			     QString("No external viewer configured for mime"
-				     " type ") +
-			     doc.mimetype.c_str());
+			     tr("No external viewer configured for mime type ")
+			     + doc.mimetype.c_str());
 	return;
     }
 
@@ -281,8 +280,8 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
     ncmd += " &";
     QStatusBar *stb = statusBar();
     if (stb) {
-	string msg = string("Executing: [") + ncmd.c_str() + "]";
-	stb->message(msg.c_str(), 5000);
+	QString msg = tr("Executing: [") + ncmd.c_str() + "]";
+	stb->message(msg, 5000);
 	stb->repaint(false);
 	XFlush(qt_xdisplay());
     }
@@ -399,10 +398,10 @@ void RecollMain::listNextPB_clicked()
 	}
 	if (i == 0) {
 	    reslistTE->append("<qt><head></head><body><p>");
-	    char line[80];
-	    sprintf(line, "<p><b>Displaying results starting at index"
-		    " %d (maximum set size %d)</b><br>",
-		    reslist_winfirst+1, resCnt);
+	    QString line = tr("<p><b>Displaying results starting at index"
+			      " %1 (maximum set size %2)</b><br>")
+		.arg(reslist_winfirst+1)
+		.arg(resCnt);
 	    reslistTE->append(line);
 	}
 	    
@@ -448,7 +447,7 @@ void RecollMain::listNextPB_clicked()
 	reslistTE->ensureCursorVisible();
     } else {
 	// Restore first in win parameter that we shouln't have incremented
-	reslistTE->append("<p><b>No results found</b><br>");
+	reslistTE->append(tr("<p><b>No results found</b><br>"));
 	reslist_winfirst -= respagesize;
 	if (reslist_winfirst < 0)
 	    reslist_winfirst = -1;
@@ -473,7 +472,7 @@ void RecollMain::previewClosed(Preview *w)
 void RecollMain::advSearchPB_clicked()
 {
     if (asearchform == 0) {
-	asearchform = new advsearch(0, "Advanced search", FALSE,
+	asearchform = new advsearch(0, tr("Advanced search"), FALSE,
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
 	asearchform->setSizeGripEnabled(FALSE);
@@ -540,14 +539,18 @@ void RecollMain::reslistTE_delayedclick()
 }
 
 
-// Open a preview window for a given document
-// docnum is a db query index
+/** 
+ * Open a preview window for a given document, or load it into new tab of 
+ * existing window.
+ *
+ * @param docnum db query index
+ */
 void RecollMain::startPreview(int docnum)
 {
     Rcl::Doc doc;
     if (!rcldb->getDoc(docnum, doc, 0)) {
 	QMessageBox::warning(0, "Recoll",
-			     QString("Cannot retrieve document info" 
+			     tr("Cannot retrieve document info" 
 				     " from database"));
 	return;
     }
@@ -558,28 +561,57 @@ void RecollMain::startPreview(int docnum)
     struct stat st;
     if (stat(fn.c_str(), &st) < 0) {
 	QMessageBox::warning(0, "Recoll",
-			     QString("Cannot access document file: ") +
+			     tr("Cannot access document file: ") +
 			     fn.c_str());
 	return;
     }
 
     QStatusBar *stb = statusBar();
+
+    stb->message(tr("Creating preview window"));
+    qApp->processEvents();
+    QTextEdit *editor;
+    if (curPreview == 0) {
+	curPreview = new Preview(0, tr("Preview"));
+	curPreview->setCaption(queryText->text());
+	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
+		this, SLOT(previewClosed(Preview *)));
+	if (curPreview == 0) {
+	    QMessageBox::warning(0, tr("Warning"), 
+				 tr("Can't create preview window"),
+				 QMessageBox::Ok, 
+				 QMessageBox::NoButton);
+	    return;
+	}
+	editor = curPreview->pvEdit;
+	curPreview->show();
+    } else {
+	editor = curPreview->addEditorTab();
+    }
+
+    if (doc.title.empty()) 
+	doc.title = path_getsimple(doc.url);
+
+    curPreview->setCurTabProps(doc);
+
     char csz[20];
     sprintf(csz, "%lu", (unsigned long)st.st_size);
-    string msg = string("Loading: ") + fn + " (size " + csz + " bytes)";
-    stb->message(msg.c_str());
+    QString msg = QString("Loading: %1 (size %2 bytes)")
+	.arg(fn)
+	.arg(csz);
+    stb->message(msg);
     qApp->processEvents();
 
     Rcl::Doc fdoc;
     FileInterner interner(fn, rclconfig, tmpdir, &doc.mimetype);
     if (interner.internfile(fdoc, doc.ipath) != FileInterner::FIDone) {
 	QMessageBox::warning(0, "Recoll",
-			     QString("Can't turn doc into internal rep for ") +
+			     tr("Can't turn doc into internal rep for ") +
 			     doc.mimetype.c_str());
 	return;
     }
 
-    stb->message("Creating preview text");
+    stb->message(tr("Creating preview text"));
     qApp->processEvents();
 
     list<string> terms;
@@ -587,72 +619,13 @@ void RecollMain::startPreview(int docnum)
     list<pair<int, int> > termoffsets;
     string rich = plaintorich(fdoc.text, terms, termoffsets);
 
-    stb->message("Creating preview window");
-    qApp->processEvents();
-    QTextEdit *editor;
-    if (curPreview == 0) {
-	curPreview = new Preview(0, "Preview");
-	curPreview->setCaption(queryText->text());
-	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
-		this, SLOT(previewClosed(Preview *)));
-	if (curPreview == 0) {
-	    QMessageBox::warning(0, "Warning", 
-				 "Can't create preview window",  
-				 QMessageBox::Ok, 
-				 QMessageBox::NoButton);
-	    return;
-	}
-	curPreview->show();
-	editor = curPreview->pvEdit;
-    } else {
-	QWidget *anon = new QWidget((QWidget *)curPreview->pvTab);
-	QVBoxLayout *anonLayout = new QVBoxLayout(anon, 1, 1, "anonLayout"); 
-	editor = new QTextEdit(anon, "pvEdit");
-	editor->setReadOnly( TRUE );
-	editor->setUndoRedoEnabled( FALSE );
-	anonLayout->addWidget(editor);
-	curPreview->pvTab->addTab(anon, "Tab");
-	curPreview->pvTab->showPage(anon);
-    }
-    string tabname;
-    if (!doc.title.empty()) {
-	tabname = doc.title;
-    } else {
-	tabname = path_getsimple(doc.url);
-    }
-    if (tabname.length() > 20) {
-	tabname = tabname.substr(0, 10) + "..." + 
-	    tabname.substr(tabname.length()-10);
-    }
-    curPreview->pvTab->changeTab(curPreview->pvTab->currentPage(), 
-				 QString::fromUtf8(tabname.c_str(), 
-						   tabname.length()));
-
-    if (doc.title.empty()) 
-	doc.title = path_getsimple(doc.url);
-    char datebuf[100];
-    datebuf[0] = 0;
-    if (!doc.fmtime.empty() || !doc.dmtime.empty()) {
-	time_t mtime = doc.dmtime.empty() ? 
-	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
-	struct tm *tm = localtime(&mtime);
-	strftime(datebuf, 99, "%F %T", tm);
-    }
-    string tiptxt = doc.url + string("\n");
-    tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
-    if (!doc.title.empty())
-	tiptxt += doc.title + "\n";
-    curPreview->pvTab->setTabToolTip(curPreview->pvTab->currentPage(),
-				     QString::fromUtf8(tiptxt.c_str(),
-						       tiptxt.length()));
-
     QStyleSheetItem *item = 
 	new QStyleSheetItem(editor->styleSheet(), "termtag" );
     item->setColor("blue");
     item->setFontWeight(QFont::Bold);
 
     QString str = QString::fromUtf8(rich.c_str(), rich.length());
-    stb->message("Loading preview text");
+    stb->message(tr("Loading preview text"));
     qApp->processEvents();
 
     editor->setText(str);
@@ -668,4 +641,12 @@ void RecollMain::startPreview(int docnum)
     LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
 	    editor->length(), editor->paragraphs(),  para, index));
     stb->clear();
+}
+
+
+void RecollMain::showAboutDialog()
+{
+    string vstring = string("Recoll ") + rclversion + 
+	"<br>" + "http://www.recoll.org";
+    QMessageBox::information(this, tr("About Recoll"), vstring.c_str());
 }
