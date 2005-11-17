@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.1 2005-11-12 14:24:33 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.2 2005-11-17 12:47:03 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -14,6 +14,7 @@ static char rcsid [] = "@(#$Id: conftree.cpp,v 1.1 2005-11-12 14:24:33 dockes Ex
 #include <sstream>
 
 #include "conftree.h"
+#include "pathut.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -48,11 +49,10 @@ void ConfSimple::parseinput(istream &input)
 
     for (;;) {
 	input.getline(cline, LL-1);
-	//fprintf(stderr, "Line: '%s'\n", cline);
+	// fprintf(stderr, "Line: '%s' status %d\n", cline, int(status));
 	if (!input.good()) {
 	    if (input.bad()) {
 		status = STATUS_ERROR;
-		//fprintf(stderr, "ConfSimple:parseinput: fatal error\n");
 		return;
 	    }
 	    // Must be eof ?
@@ -84,7 +84,10 @@ void ConfSimple::parseinput(istream &input)
 
 	if (line[0] == '[') {
 	    trimstring(line, "[]");
-	    submapkey = line;
+	    if (dotildexpand)
+		submapkey = path_tildexpand(line);
+	    else 
+		submapkey = line;
 	    continue;
 	}
 
@@ -118,25 +121,28 @@ void ConfSimple::parseinput(istream &input)
     }
 }
 
-ConfSimple::ConfSimple(string *d, int readonly)
+
+ConfSimple::ConfSimple(string *d, int readonly, bool tildexp)
 {
-    filename = "";
     data = d;
+    dotildexpand = tildexp;
     status = readonly ? STATUS_RO : STATUS_RW;
 
     stringstream input(*d, ios::in);
     parseinput(input);
 }
 
-ConfSimple::ConfSimple(const char *fname, int readonly)
+
+ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp)
 {
-    filename = string(fname);
     data = 0;
+    filename = string(fname);
+    dotildexpand = tildexp;
+    status = readonly ? STATUS_RO : STATUS_RW;
 
     ifstream input;
     if (readonly) {
 	input.open(fname, ios::in);
-	status = STATUS_RO;
     } else {
 	ios::openmode mode = ios::in|ios::out;
 	// It seems that there is no separate 'create if not exists' 
@@ -329,11 +335,6 @@ list<string> ConfSimple::getKeys()
     std::list<string> mylist;
     sortwalk(lwalker, &mylist);
     return mylist;
-}
-
-static inline void path_catslash(std::string &s) {
-    if (s.empty() || s[s.length() - 1] != '/')
-	s += '/';
 }
 
 int ConfTree::get(const std::string &name, string &value, const string &sk)
@@ -653,7 +654,7 @@ int main(int argc, char **argv)
 	    }
 	     
 	} else {
-	    ConfSimple parms(filename, 1);
+	    ConfTree parms(filename, 1);
 	    if (parms.getStatus() == ConfSimple::STATUS_ERROR) {
 		fprintf(stderr, "Open failed\n");
 		exit(1);

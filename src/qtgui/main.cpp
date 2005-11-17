@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.15 2005-11-16 15:07:20 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.16 2005-11-17 12:47:03 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -160,11 +160,8 @@ int main( int argc, char ** argv )
 	exit(1);
     }
 
-    string tmp;
-    rclconfig->getConfParam("showicons", tmp);
-    if (tmp.empty())
-	tmp = "0";
-    showicons = atoi(tmp.c_str()) ? true : false;
+    showicons = false;
+    rclconfig->getConfParam("showicons", &showicons);
     rclconfig->getConfParam("iconsdir", iconsdir);
     if (iconsdir.empty())
 	iconsdir = "/usr/local/share/recoll/images";

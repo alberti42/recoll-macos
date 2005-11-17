@@ -37,23 +37,22 @@ using std::map;
 class ConfSimple {
  public:
     enum StatusCode {STATUS_ERROR=0, STATUS_RO=1, STATUS_RW=2};
- private:
-    string filename; // set if we're working with a file
-    string *data;    // set if we're working with an in-memory string
-    map<string, map<string, string> > submaps;
-    StatusCode status;
-    void parseinput(std::istream &input);
 
- public:
     /**
      * Build the object by reading content from file.
+     * @param filename file to open
+     * @param readonly if true open readonly, else rw
+     * @param tildexp  try tilde (home dir) expansion for subkey values
      */
-    ConfSimple(const char *fname, int readonly = 0);
+    ConfSimple(const char *fname, int readonly = 0, bool tildexp = false);
 
     /**
      * Build the object by reading content from a string
+     * @param data points to the data to parse
+     * @param readonly if true open readonly, else rw
+     * @param tildexp  try tilde (home dir) expansion for subsection names
      */
-    ConfSimple(string *data, int readonly = 0);
+    ConfSimple(string *data, int readonly = 0, bool tildexp = false);
 
     virtual ~ConfSimple() {};
 
@@ -98,6 +97,15 @@ class ConfSimple {
      * Return all key names:
      */
     std::list<string> getKeys();
+
+ protected:
+    bool dotildexpand;
+ private:
+    string filename; // set if we're working with a file
+    string *data;    // set if we're working with an in-memory string
+    map<string, map<string, string> > submaps;
+    StatusCode status;
+    void parseinput(std::istream &input);
 };
 
 /**
@@ -124,7 +132,7 @@ class ConfTree : public ConfSimple {
      * Build the object by reading content from file.
      */
     ConfTree(const char *fname, int readonly = 0)
-	: ConfSimple(fname, readonly) {}
+	: ConfSimple(fname, readonly, true) {}
     virtual ~ConfTree() {};
 
     /** 
@@ -146,6 +154,5 @@ class ConfTree : public ConfSimple {
     static bool stringToStrings(const string &s, std::list<string> &tokens);
     static bool stringToBool(const string &s);
 };
-
 
 #endif /*_CONFTREE_H_ */

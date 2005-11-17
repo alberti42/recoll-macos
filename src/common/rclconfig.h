@@ -1,6 +1,6 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.6 2005-11-05 14:40:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.7 2005-11-17 12:47:03 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -38,6 +38,13 @@ class RclConfig {
 	    return false;
 	return conf->get(name, value, keydir);
     }
+
+    /* 
+     * Variants with autoconversion
+     */
+    bool getConfParam(const std::string &name, int *value);
+    bool getConfParam(const std::string &name, bool *value);
+
     /// Set current directory reference, and fetch automatic parameters.
     void setKeyDir(const string &dir) 
     {

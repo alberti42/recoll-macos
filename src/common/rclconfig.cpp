@@ -1,7 +1,8 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.10 2005-11-05 14:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.11 2005-11-17 12:47:03 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
+#include <errno.h>
 
 #include <iostream>
 
@@ -78,6 +79,29 @@ RclConfig::RclConfig()
 
     m_ok = true;
     return;
+}
+
+bool RclConfig::getConfParam(const std::string &name, int *ivp)
+{
+    string value;
+    if (!getConfParam(name, value))
+	return false;
+    errno = 0;
+    long lval = strtol(value.c_str(), 0, 0);
+    if (lval == 0 && errno)
+	return 0;
+    if (ivp)
+	*ivp = int(lval);
+    return true;
+}
+bool RclConfig::getConfParam(const std::string &name, bool *value)
+{
+    int ival;
+    if (!getConfParam(name, &ival))
+	return false;
+    if (*value)
+	*value = ival ? true : false;
+    return true;
 }
 
 static ConfSimple::WalkerCode mtypesWalker(void *l, 
