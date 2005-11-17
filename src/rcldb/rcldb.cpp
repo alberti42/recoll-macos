@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.37 2005-11-16 17:29:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.38 2005-11-17 17:36:06 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -919,7 +919,7 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	    tq = tq.empty() ? Xapian::Query(term) : 
 		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
 	}
-	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_AND, xq, tq);
+	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_FILTER, xq, tq);
     }
 
     ndb->query = xq;
