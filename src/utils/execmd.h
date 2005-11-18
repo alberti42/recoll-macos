@@ -1,6 +1,6 @@
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-/* @(#$Id: execmd.h,v 1.3 2005-11-18 13:52:48 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: execmd.h,v 1.4 2005-11-18 15:19:14 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -28,7 +28,8 @@ class ExecCmd {
 	       std::string *output = 0);
     /** 
      * Add/replace environment variable before executing command. This should 
-     * be called before doexec of course.
+     * be called before doexec of course (possibly multiple times for several
+     * variables).
      * @param envassign an environment assignment string (name=value)
      */
     void putenv(const std::string &envassign);

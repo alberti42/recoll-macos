@@ -1,6 +1,6 @@
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-/* @(#$Id: mimehandler.h,v 1.8 2005-11-16 15:07:20 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimehandler.h,v 1.9 2005-11-18 15:19:14 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -14,6 +14,7 @@
  */
 class MimeHandler {
  public:
+    MimeHandler() : m_forPreview(false) {}
     virtual ~MimeHandler() {}
 
     /// Status from mkDoc method.
@@ -41,6 +42,11 @@ class MimeHandler {
 				      const std::string &mimetype, 
 				      Rcl::Doc& outdoc,
 				      string& ipath) = 0;
+
+    virtual void setForPreview(bool onoff) {m_forPreview = onoff;};
+
+ protected:
+    bool m_forPreview;
 };
 
 /**

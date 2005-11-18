@@ -1,6 +1,6 @@
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.4 2005-11-14 09:59:17 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.5 2005-11-18 15:19:14 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -12,24 +12,20 @@ class MimeHandler;
 /// Turn external file into internal representation, according to mime
 /// type etc
 class FileInterner {
-    string fn;
-    RclConfig *config;
-    const string &tdir;
-    MimeHandler *handler;
-    string tfile;
-    string mime;
-
-    void tmpcleanup();
-
  public:
     /**
-     * Identify and possibly decompress file, create adequate handler
+     * Identify and possibly decompress file, create adequate
+     * handler. The mtype parameter is only set when the object is
+     * created for previewing a file. Filter output may be
+     * different for previewing and indexing.
+     *
      * @param fn file name 
      * @param cnf Recoll configuration
-     * @param td  temporary directory to use as working space for possible 
-     *           decompression
-     * @param mimetype mime type if known. For a compressed file this is the 
-     *   mime type for the uncompressed version.
+     * @param td  temporary directory to use as working space if 
+     *            decompression needed.
+     * @param mtype mime type if known. For a compressed file this is the 
+     *   mime type for the uncompressed version. This currently doubles up 
+     *   to indicate that this object is for previewing (not indexing).
      */
     FileInterner(const std::string &fn, RclConfig *cnf, const string& td,
 		 const std::string *mtype = 0);
@@ -53,6 +49,17 @@ class FileInterner {
      * should be called again to get the following one(s).
      */
     Status internfile(Rcl::Doc& doc, string &ipath);
+
+ private:
+    string m_fn;
+    RclConfig *m_cfg;
+    const string &m_tdir;
+    MimeHandler *m_handler;
+
+    string m_tfile;
+    string m_mime;
+
+    void tmpcleanup();
 };
 
 #endif /* _INTERNFILE_H_INCLUDED_ */

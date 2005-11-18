@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.1 2005-11-18 13:23:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.2 2005-11-18 15:19:14 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include "execmd.h"
@@ -32,6 +32,8 @@ MimeHandlerExec::mkDoc(RclConfig *conf, const string &fn,
     // Execute command and store the result text, which is supposedly html
     string html;
     ExecCmd exec;
+    exec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
+		"RECOLL_FILTER_FORPREVIEW=no");
     int status = exec.doexec(cmd, myparams, 0, &html);
     if (status) {
 	LOGERR(("MimeHandlerExec: command status 0x%x: %s\n", 
