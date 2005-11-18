@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.6 2005-03-17 14:02:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.7 2005-11-18 13:52:48 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_EXECMD
 #include <unistd.h>
@@ -21,11 +21,15 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.6 2005-03-17 14:02:05 dockes Exp $
 using namespace std;
 #define MAX(A,B) (A>B?A:B)
 
-int
-ExecCmd::doexec(const string &cmd, const list<string>& args,
+void  ExecCmd::putenv(const string &ea)
+{
+    env.push_back(ea);
+}
+
+int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		const string *input, string *output)
 {
-    {
+    { // Debug and logging
 	string command = cmd + " ";
 	for (list<string>::const_iterator it = args.begin();it != args.end();
 	     it++) {
@@ -186,6 +190,10 @@ ExecCmd::doexec(const string &cmd, const list<string>& args,
 	    while (argv[i]) cerr << argv[i++] << endl;}
 #endif
 
+	for (it = env.begin(); it != env.end(); it++) {
+	    ::putenv(it->c_str());
+	}
+	
 	execvp(cmd.c_str(), (char *const*)argv);
 	// Hu ho
 	LOGERR(("ExecCmd::doexec: execvp(%s) failed. errno %d\n", cmd.c_str(),
@@ -224,7 +232,12 @@ int main(int argc, const char **argv)
     input = data;
     string *ip = 0;
     //ip = &input;
+    mexec.putenv("TESTVARIABLE1=TESTVALUE1");
+    mexec.putenv("TESTVARIABLE2=TESTVALUE2");
+    mexec.putenv("TESTVARIABLE3=TESTVALUE3");
+
     int status = mexec.doexec(cmd, l, ip, &output);
+
     fprintf(stderr, "Status: 0x%x\n", status);
     cout << "Output:" << output << endl;
     exit (status >> 8);
