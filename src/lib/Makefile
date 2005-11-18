@@ -7,17 +7,17 @@ all: depend $(LIBS)
 
 OBJS = base64.o conftree.o csguess.o debuglog.o \
      execmd.o wipedir.o \
-     fstreewalk.o html.o mail.o htmlparse.o idfile.o indexer.o \
-     internfile.o md5.o \
+     fstreewalk.o mh_html.o mh_mail.o mh_exec.o mh_text.o htmlparse.o \
+     idfile.o indexer.o internfile.o md5.o \
      mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathhash.o pathut.o \
      rclconfig.o rcldb.o rclinit.o readfile.o smallut.o \
      textsplit.o transcode.o \
      unacpp.o unac.o
 SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
      ../utils/execmd.cpp ../utils/idfile.cpp ../utils/md5.cpp \
-     ../utils/wipedir.cpp \
-     ../utils/fstreewalk.cpp ../common/html.cpp ../common/mail.cpp \
-     ../common/htmlparse.cpp \
+     ../utils/wipedir.cpp ../utils/fstreewalk.cpp \
+     ../common/mh_html.cpp ../common/mh_mail.cpp ../common/mh_exec.cpp \
+     ../common/mh_text.cpp ../common/htmlparse.cpp \
      ../index/indexer.cpp ../common/internfile.cpp \
      ../common/mimehandler.cpp ../utils/mimeparse.cpp ../index/mimetype.cpp \
      ../common/myhtmlparse.cpp ../common/pathhash.cpp ../utils/pathut.cpp \
@@ -46,7 +46,13 @@ wipedir.o : ../utils/wipedir.cpp
 	$(CXX) $(CXXFLAGS) -c $<
 fstreewalk.o : ../utils/fstreewalk.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
-html.o : ../common/html.cpp 
+mh_html.o : ../common/mh_html.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+mh_exec.o : ../common/mh_exec.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+mh_text.o : ../common/mh_text.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+mh_html.o : ../common/mh_html.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 htmlparse.o : ../common/htmlparse.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
@@ -56,7 +62,7 @@ indexer.o : ../index/indexer.cpp
 	$(CXX) $(CXXFLAGS) -c $<
 internfile.o : ../common/internfile.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
-mail.o : ../common/mail.cpp 
+mh_mail.o : ../common/mh_mail.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 mimehandler.o : ../common/mimehandler.cpp 
 	$(CXX) $(CXXFLAGS) -c $<

@@ -32,7 +32,7 @@
 #include "mimeparse.h"
 #include "myhtmlparse.h"
 #include "indextext.h"
-#include "html.h"
+#include "mh_html.h"
 
 #include <iostream>
 using namespace std;

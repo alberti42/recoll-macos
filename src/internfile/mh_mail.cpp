@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.9 2005-11-08 21:02:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.10 2005-11-18 13:23:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -19,11 +19,11 @@ using std::map;
 #include "transcode.h"
 #include "mimeparse.h"
 #include "indextext.h"
-#include "mail.h"
+#include "mh_mail.h"
 #include "debuglog.h"
 #include "smallut.h"
 #include "mimeparse.h"
-#include "html.h"
+#include "mh_html.h"
 
 // binc imap mime definitions
 #include "mime.h"

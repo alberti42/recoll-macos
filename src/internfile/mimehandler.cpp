@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.11 2005-11-16 15:07:20 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.12 2005-11-18 13:23:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -7,103 +7,15 @@ static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.11 2005-11-16 15:07:20 dockes
 using namespace std;
 
 #include "mimehandler.h"
-#include "readfile.h"
-#include "csguess.h"
-#include "transcode.h"
 #include "debuglog.h"
 #include "smallut.h"
-#include "html.h"
-#include "mail.h"
-#include "execmd.h"
-#include "pathut.h"
-
-class MimeHandlerText : public MimeHandler {
- public:
-    MimeHandler::Status mkDoc(RclConfig *conf, const string &fn, 
-		const string &mtype, Rcl::Doc &docout, string&);
-    
-};
-
-// Process a plain text file
-MimeHandler::Status MimeHandlerText::mkDoc(RclConfig *conf, const string &fn, 
-			     const string &mtype, Rcl::Doc &docout, string&)
-{
-    string otext;
-    if (!file_to_string(fn, otext))
-	return MimeHandler::MHError;
-	
-    // Try to guess charset, then convert to utf-8, and fill document
-    // fields The charset guesser really doesnt work well in general
-    // and should be avoided (especially for short documents)
-    string charset;
-    if (conf->getGuessCharset()) {
-	charset = csguess(otext, conf->getDefCharset());
-    } else
-	charset = conf->getDefCharset();
-    string utf8;
-    LOGDEB1(("textPlainToDoc: transcod from %s to %s\n", charset, "UTF-8"));
-
-    if (!transcode(otext, utf8, charset, "UTF-8")) {
-	cerr << "textPlainToDoc: transcode failed: charset '" << charset
-	     << "' to UTF-8: "<< utf8 << endl;
-	otext.erase();
-	return MimeHandler::MHError;
-    }
-
-    Rcl::Doc out;
-    out.origcharset = charset;
-    out.text = utf8;
-    docout = out;
-    return MimeHandler::MHDone;
-}
-
-class MimeHandlerExec : public MimeHandler {
- public:
-    list<string> params;
-    virtual ~MimeHandlerExec() {}
-    virtual MimeHandler::Status mkDoc(RclConfig *conf, const string &fn, 
-				       const string &mtype, Rcl::Doc &docout, 
-				       string&);
-
-};
-
-    
-// Execute an external program to translate a file from its native format
-// to html. Then call the html parser to do the actual indexing
-MimeHandler::Status 
-MimeHandlerExec::mkDoc(RclConfig *conf, const string &fn, 
-			const string &mtype, Rcl::Doc &docout, string&)
-{
-    if (params.empty()) {
-	// Hu ho
-	LOGERR(("MimeHandlerExec::mkDoc: empty params for mime %s\n",
-		mtype.c_str()));
-	return MimeHandler::MHError;
-    }
-    // Command name
-    string cmd = find_filter(conf, params.front());
-    
-    // Build parameter list: delete cmd name and add the file name
-    list<string>::iterator it = params.begin();
-    list<string>myparams(++it, params.end());
-    myparams.push_back(fn);
-
-    // Execute command and store the result text, which is supposedly html
-    string html;
-    ExecCmd exec;
-    int status = exec.doexec(cmd, myparams, 0, &html);
-    if (status) {
-	LOGERR(("MimeHandlerExec: command status 0x%x: %s\n", 
-		status, cmd.c_str()));
-	return MimeHandler::MHError;
-    }
-
-    // Process/index  the html
-    MimeHandlerHtml hh;
-    return hh.mkDoc(conf, fn, html, mtype, docout);
-}
-
-static MimeHandler *mhfact(const string &mime)
+#include "mh_html.h"
+#include "mh_mail.h"
+#include "mh_text.h"
+#include "mh_exec.h"
+  
+/** Create internal handler object appropriate for given mime type */
+static MimeHandler *mhFactory(const string &mime)
 {
     if (!stringlowercmp("text/plain", mime))
 	return new MimeHandlerText;
@@ -117,9 +29,9 @@ static MimeHandler *mhfact(const string &mime)
 }
 
 /**
- * Return handler function for given mime type
+ * Return handler object for given mime type:
  */
-MimeHandler *getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
+MimeHandler *getMimeHandler(const string &mtype, ConfTree *mhandlers)
 {
     // Return handler definition for mime type
     string hs;
@@ -138,7 +50,7 @@ MimeHandler *getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
 
     // Retrieve handler function according to type
     if (!stringlowercmp("internal", toks.front())) {
-	return mhfact(mtype);
+	return mhFactory(mtype);
     } else if (!stringlowercmp("dll", toks.front())) {
 	return 0;
     } else if (!stringlowercmp("exec", toks.front())) {
@@ -160,7 +72,7 @@ MimeHandler *getMimeHandler(const std::string &mtype, ConfTree *mhandlers)
 /**
  * Return external viewer exec string for given mime type
  */
-string getMimeViewer(const std::string &mtype, ConfTree *mhandlers)
+string getMimeViewer(const string &mtype, ConfTree *mhandlers)
 {
     string hs;
     mhandlers->get(mtype, hs, "view");
@@ -170,7 +82,7 @@ string getMimeViewer(const std::string &mtype, ConfTree *mhandlers)
 /**
  * Return icon name
  */
-string getMimeIconName(const std::string &mtype, ConfTree *mhandlers)
+string getMimeIconName(const string &mtype, ConfTree *mhandlers)
 {
     string hs;
     mhandlers->get(mtype, hs, "icons");
@@ -180,7 +92,7 @@ string getMimeIconName(const std::string &mtype, ConfTree *mhandlers)
 /** 
  * Return decompression command line for given mime type
  */
-bool getUncompressor(const std::string &mtype, ConfTree *mhandlers, 
+bool getUncompressor(const string &mtype, ConfTree *mhandlers, 
 		     list<string>& cmd)
 {
     string hs;
