@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclgaim,v 1.1 2005-11-18 17:03:12 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclgaim,v 1.2 2005-11-21 14:32:53 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -54,7 +54,7 @@ checkcmds()
     done
 }
 
-checkcmds awk iconv unzip
+checkcmds awk iconv 
 
 # check the input file existence
 if test ! -f "$infile"
