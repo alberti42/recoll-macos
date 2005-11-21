@@ -14,24 +14,25 @@ EOF
    exit 1
 fi
 
-##### Look for iconv in libc (Linux), or libiconv in /usr/local/lib:/usr/lib
+##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
+##    then in libc (Linux, solaris)
 AC_LANG(C)
 LIBICONV=""
 S_LDFLAGS=$LDFLAGS
-dir=/usr/lib
+dir=/usr/local/lib
 LDFLAGS="$S_LDFLAGS -L$dir"
-AC_CHECK_LIB(c, iconv_open, LIBICONV=NONE;INCICONV=-I/usr/include)
+unset ac_cv_lib_iconv_iconv_open
+AC_CHECK_LIB(iconv, iconv_open, LIBICONV="-L$dir -liconv";INCICONV=-I/usr/local/include)
 if test A"$LIBICONV" = A ; then
-  dir=/usr/local/lib
+  dir=/usr/lib
   LDFLAGS="$S_LDFLAGS -L$dir"
   unset ac_cv_lib_iconv_iconv_open
-  AC_CHECK_LIB(iconv, iconv_open, 
-		      LIBICONV="-L$dir -liconv";INCICONV=-I/usr/local/include)
+  AC_CHECK_LIB(iconv, iconv_open, LIBICONV="-L$dir -liconv";INCICONV=-I/usr/include)
   if test A"$LIBICONV" = A; then
-    dir=/usr/local/lib
+    dir=/usr/lib
     LDFLAGS="$S_LDFLAGS -L$dir"
     unset ac_cv_lib_iconv_iconv_open
-    AC_CHECK_LIB(iconv, iconv_open, LIBICONV="-L$dir -liconv";INCICONV=-I/usr/include)
+    AC_CHECK_LIB(c, iconv_open, LIBICONV=NONE;INCICONV=-I/usr/include)
   fi
 fi
 LDFLAGS=$S_LDFLAGS

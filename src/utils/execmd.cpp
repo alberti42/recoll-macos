@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.7 2005-11-18 13:52:48 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.8 2005-11-21 17:18:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_EXECMD
 #include <unistd.h>
@@ -8,7 +8,9 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.7 2005-11-18 13:52:48 dockes Exp $
 #include <sys/select.h>
 #include <fcntl.h>
 #include <errno.h>
-
+#ifdef PUTENV_ARG_NOT_CONST
+#include <string.h>
+#endif
 #include <list>
 #include <string>
 #include <sstream>
@@ -191,7 +193,11 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 #endif
 
 	for (it = env.begin(); it != env.end(); it++) {
+#ifdef PUTENV_ARG_NOT_CONST
+	    ::putenv(strdup(it->c_str()));
+#else
 	    ::putenv(it->c_str());
+#endif
 	}
 	
 	execvp(cmd.c_str(), (char *const*)argv);

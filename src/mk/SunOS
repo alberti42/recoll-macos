@@ -1,7 +1,8 @@
 include ../mk/commondefs
 include ../mk/localdefs
 
-CXXFLAGS = $(COMMONCXXFLAGS) $(LOCALCXXFLAGS)
+CXXFLAGS = $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
+         -DPUTENV_ARG_NOT_CONST 
 
 CC=gcc
 CXX=g++

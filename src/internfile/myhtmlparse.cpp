@@ -21,6 +21,7 @@
  * -----END-LICENCE-----
  */
 #include <time.h>
+#include <stdio.h>
 
 #include "myhtmlparse.h"
 

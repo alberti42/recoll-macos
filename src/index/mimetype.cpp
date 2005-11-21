@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.11 2005-11-21 14:31:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.12 2005-11-21 17:18:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMETYPE
@@ -17,7 +17,10 @@ using std::list;
 #include "smallut.h"
 #include "idfile.h"
 
+// Solaris8's 'file' command doesnt understand -i
+#ifndef sun
 #define USE_SYSTEM_FILE_COMMAND
+#endif
 
 /// Identification of file from contents. This is called for files with
 /// unrecognized extensions (none, or not known either for indexing or
