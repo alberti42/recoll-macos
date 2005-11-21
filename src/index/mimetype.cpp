@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.10 2005-11-10 08:47:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.11 2005-11-21 14:31:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMETYPE
@@ -13,7 +13,7 @@ using std::list;
 #include "mimetype.h"
 #include "debuglog.h"
 #include "execmd.h"
-#include "conftree.h"
+#include "rclconfig.h"
 #include "smallut.h"
 #include "idfile.h"
 
@@ -82,26 +82,20 @@ static string mimetypefromdata(const string &fn, bool usfc)
 /// Guess mime type, first from suffix, then from file data. We also
 /// have a list of suffixes that we don't touch at all (ie: .jpg,
 /// etc...)
-string mimetype(const string &fn, ConfTree *mtypes, bool usfc)
+string mimetype(const string &fn, RclConfig *cfg, bool usfc)
 {
-    if (mtypes == 0)
+    if (cfg == 0)
 	return "";
 
-    static list<string> stoplist;
-    if (stoplist.empty()) {
-	string stp;
-	if (mtypes->get(string("recoll_noindex"), stp, "")) {
-	    ConfTree::stringToStrings(stp, stoplist);
-	}
-    }
-
+    list<string> stoplist;
+    cfg->getStopSuffixes(stoplist);
     if (!stoplist.empty()) {
 	for (list<string>::const_iterator it = stoplist.begin();
 	     it != stoplist.end(); it++) {
 	    if (it->length() > fn.length())
 		continue;
-	    if (!stringicmp(fn.substr(fn.length() - it->length(),string::npos),
-			    *it)) {
+	    if (!stringicmp(fn.substr(fn.length() - it->length(),
+				      string::npos), *it)) {
 		LOGDEB(("mimetype: fn %s in stoplist (%s)\n", fn.c_str(), 
 			it->c_str()));
 		return "";
@@ -109,7 +103,7 @@ string mimetype(const string &fn, ConfTree *mtypes, bool usfc)
 	}
     }
 
-    // If the file name has a suffix and we find it in the map, we're done
+    // Look for suffix in mimetype map
     string::size_type dot = fn.find_last_of(".");
     string suff;
     if (dot != string::npos) {
@@ -117,18 +111,12 @@ string mimetype(const string &fn, ConfTree *mtypes, bool usfc)
 	for (unsigned int i = 0; i < suff.length(); i++)
 	    suff[i] = tolower(suff[i]);
 
-	string mtype;
-	if (mtypes->get(suff, mtype, ""))
+	string mtype = cfg->getMimeTypeFromSuffix(suff);
+	if (!mtype.empty())
 	    return mtype;
     }
 
-    // Look at file data ? Only when no suffix or always ?
-#if 0
-    // Don't do this only for empty suffixes: would cause problems
-    // with shifted files, like messages.1, messages.2 etc... And others too
-    if (suff.empty()) 
-#endif
-	return mimetypefromdata(fn, usfc);
+    return mimetypefromdata(fn, usfc);
 }
 
 
@@ -158,7 +146,7 @@ int main(int argc, const char **argv)
     while (--argc > 0) {
 	string filename = *++argv;
 	cout << filename << " -> " << 
-	    mimetype(filename, config->getMimeMap(), true) << endl;
+	    mimetype(filename, config, true) << endl;
 
     }
     return 0;

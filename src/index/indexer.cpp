@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.15 2005-11-14 09:57:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.16 2005-11-21 14:31:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -215,11 +215,9 @@ ConfIndexer::~ConfIndexer()
 
 bool ConfIndexer::index()
 {
-    ConfTree *conf = config->getConfig();
-
     // Retrieve the list of directories to be indexed.
     string topdirs;
-    if (conf->get("topdirs", topdirs, "") == 0) {
+    if (!config->getConfParam("topdirs", topdirs)) {
 	LOGERR(("ConfIndexer::index: no top directories in configuration\n"));
 	return false;
     }
@@ -239,7 +237,8 @@ bool ConfIndexer::index()
     for (dirit = tdl.begin(); dirit != tdl.end(); dirit++) {
 	string db;
 	string dir = path_tildexpand(*dirit);
-	if (conf->get("dbdir", db, dir) == 0) {
+	config->setKeyDir(dir);
+	if (!config->getConfParam("dbdir", db)) {
 	    LOGERR(("ConfIndexer::index: no database directory in "
 		    "configuration for %s\n", dir.c_str()));
 	    return false;
@@ -254,6 +253,7 @@ bool ConfIndexer::index()
 	    dbit->second.push_back(dir);
 	}
     }
+    config->setKeyDir("");
 
     // Index each directory group in turn
     for (dbit = dbmap.begin(); dbit != dbmap.end(); dbit++) {

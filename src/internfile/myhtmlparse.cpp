@@ -20,6 +20,7 @@
  * USA
  * -----END-LICENCE-----
  */
+#include <time.h>
 
 #include "myhtmlparse.h"
 
@@ -135,6 +136,19 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 			    string tmp = i->second;
 			    decode_entities(tmp);
 			    keywords += tmp;
+			} else if (name == "date") {
+			    // Yes this doesnt exist. It's output by filters
+			    // And the format isn't even standard http/html
+			    // FIXME
+			    string tmp = i->second;
+			    decode_entities(tmp);
+			    struct tm tm;
+			    if (strptime(tmp.c_str(), 
+					 " %Y-%m-%d %H:%M:%S ", &tm)) {
+				char ascuxtime[100];
+				sprintf(ascuxtime, "%ld", (long)mktime(&tm));
+				dmtime = ascuxtime;
+			    }
 			} else if (name == "robots") {
 			    string val = i->second;
 			    decode_entities(val);

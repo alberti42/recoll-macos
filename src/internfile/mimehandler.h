@@ -1,6 +1,6 @@
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-/* @(#$Id: mimehandler.h,v 1.9 2005-11-18 15:19:14 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimehandler.h,v 1.10 2005-11-21 14:31:24 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -53,25 +53,6 @@ class MimeHandler {
  * Return indexing handler object for the given mime type
  * returned pointer should be deleted by caller
  */
-extern MimeHandler *getMimeHandler(const std::string &mtyp, ConfTree *mhdlers);
-
-/**
- * Return external viewer exec string for given mime type
- */
-extern std::string getMimeViewer(const std::string &mtyp, ConfTree *mhandlers);
-
-/**
- * Return icon name
- */
-extern std::string getMimeIconName(const std::string &mtyp, ConfTree *mhandlers);
-
-
-/** 
- * Return command to uncompress the given type. The returned command has
- * substitutable places for input file name and temp dir name, and will
- * return output name
- */
-bool getUncompressor(const std::string &mtype, ConfTree *mhandlers,
-		     std::list<std::string>& cmd);
+extern MimeHandler *getMimeHandler(const std::string &mtyp, RclConfig *cfg);
 
 #endif /* _MIMEHANDLER_H_INCLUDED_ */

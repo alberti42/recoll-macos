@@ -110,13 +110,12 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
 	}
     }
 
-    Rcl::Doc out;
-    out.origcharset = charset;
-    out.text = pres.dump;
+    docout.origcharset = charset;
+    docout.text = pres.dump;
     // LOGDEB(("textHtmlToDoc: dump : %s\n", pres.dump.c_str()));
-    out.title = pres.title;
-    out.keywords = pres.keywords;
-    out.abstract = pres.sample;
-    docout = out;
+    docout.title = pres.title;
+    docout.keywords = pres.keywords;
+    docout.abstract = pres.sample;
+    docout.dmtime = pres.dmtime;
     return MimeHandler::MHDone;
 }

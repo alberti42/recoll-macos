@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.8 2005-11-12 11:26:10 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.9 2005-11-21 14:31:24 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll: associations of file name extensions to mime types
 .txt = text/plain
@@ -55,3 +55,5 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
        .jpg .gif .bmp .xpm .png \
        ,v
 
+[~/.gaim]
+.txt = text/x-gaim-log

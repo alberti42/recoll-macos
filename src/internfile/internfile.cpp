@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.9 2005-11-18 15:19:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.10 2005-11-21 14:31:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -102,7 +102,7 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 
     // We need to run mime type identification in any case to check
     // for a compressed file.
-    m_mime = mimetype(m_fn, m_cfg->getMimeMap(), usfci);
+    m_mime = mimetype(m_fn, m_cfg, usfci);
 
     // If identification fails, try to use the input parameter. Note that this 
     // is normally not a compressed type (it's the mime type from the db)
@@ -118,14 +118,14 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
     // uncompressed file, and rerun the mime type identification, then do the
     // rest with the temp file.
     list<string>ucmd;
-    if (getUncompressor(m_mime, m_cfg->getMimeConf(), ucmd)) {
+    if (m_cfg->getUncompressor(m_mime, ucmd)) {
 	if (!uncompressfile(m_cfg, m_fn, ucmd, m_tdir, m_tfile)) {
 	    return;
 	}
 	LOGDEB(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
 		m_tdir.c_str(), m_tfile.c_str()));
 	m_fn = m_tfile;
-	m_mime = mimetype(m_fn, m_cfg->getMimeMap(), usfci);
+	m_mime = mimetype(m_fn, m_cfg, usfci);
 	if (m_mime.empty() && imime)
 	    m_mime = *imime;
 	if (m_mime.empty()) {
@@ -136,7 +136,7 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
     }
 
     // Look for appropriate handler
-    m_handler = getMimeHandler(m_mime, m_cfg->getMimeConf());
+    m_handler = getMimeHandler(m_mime, m_cfg);
     if (!m_handler) {
 	// No handler for this type, for now :(
 	LOGDEB(("FileInterner::FileInterner: %s: no handler\n", 

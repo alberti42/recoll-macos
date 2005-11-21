@@ -52,8 +52,6 @@ mh_exec.o : ../common/mh_exec.cpp
 	$(CXX) $(CXXFLAGS) -c $<
 mh_text.o : ../common/mh_text.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
-mh_html.o : ../common/mh_html.cpp 
-	$(CXX) $(CXXFLAGS) -c $<
 htmlparse.o : ../common/htmlparse.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 idfile.o : ../utils/idfile.cpp 

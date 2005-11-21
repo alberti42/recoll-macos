@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.8 2005-11-16 15:07:20 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.9 2005-11-21 14:31:24 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -44,6 +44,8 @@ application/vnd.sun.xml.math = exec rclsoff
 application/vnd.sun.xml.writer = exec rclsoff
 application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
+
+text/x-gaim-log = exec rclgaim
 
 ## 
 # External viewers, launched when you double-click a result entry

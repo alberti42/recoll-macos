@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.12 2005-11-18 13:23:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.13 2005-11-21 14:31:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -31,14 +31,12 @@ static MimeHandler *mhFactory(const string &mime)
 /**
  * Return handler object for given mime type:
  */
-MimeHandler *getMimeHandler(const string &mtype, ConfTree *mhandlers)
+MimeHandler *getMimeHandler(const string &mtype, RclConfig *cfg)
 {
-    // Return handler definition for mime type
-    string hs;
-    if (!mhandlers->get(mtype, hs, "index")) {
-	LOGDEB(("getMimeHandler: no handler for '%s'\n", mtype.c_str()));
+    // Get handler definition for mime type
+    string hs = cfg->getMimeHandlerDef(mtype);
+    if (hs.empty())
 	return 0;
-    }
 
     // Break definition into type and name 
     list<string> toks;
@@ -67,48 +65,4 @@ MimeHandler *getMimeHandler(const string &mtype, ConfTree *mhandlers)
 	return h;
     }
     return 0;
-}
-
-/**
- * Return external viewer exec string for given mime type
- */
-string getMimeViewer(const string &mtype, ConfTree *mhandlers)
-{
-    string hs;
-    mhandlers->get(mtype, hs, "view");
-    return hs;
-}
-
-/**
- * Return icon name
- */
-string getMimeIconName(const string &mtype, ConfTree *mhandlers)
-{
-    string hs;
-    mhandlers->get(mtype, hs, "icons");
-    return hs;
-}
-
-/** 
- * Return decompression command line for given mime type
- */
-bool getUncompressor(const string &mtype, ConfTree *mhandlers, 
-		     list<string>& cmd)
-{
-    string hs;
-
-    mhandlers->get(mtype, hs, "");
-    if (hs.empty())
-	return false;
-    list<string> tokens;
-    ConfTree::stringToStrings(hs, tokens);
-    if (tokens.empty()) {
-	LOGERR(("getUncompressor: empty spec for mtype %s\n", mtype.c_str()));
-	return false;
-    }
-    if (stringlowercmp("uncompress", tokens.front())) 
-	return false;
-    list<string>::iterator it = tokens.begin();
-    cmd.assign(++it, tokens.end());
-    return true;
 }

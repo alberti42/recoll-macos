@@ -248,7 +248,7 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
 	return;
     
     // Look for appropriate viewer
-    string cmd = getMimeViewer(doc.mimetype, rclconfig->getMimeConf());
+    string cmd = rclconfig->getMimeViewerDef(doc.mimetype);
     if (cmd.length() == 0) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("No external viewer configured for mime type ")
@@ -409,8 +409,7 @@ void RecollMain::listNextPB_clicked()
 
 	string img_name;
 	if (showicons) {
-	    string iconname = getMimeIconName(doc.mimetype, 
-					      rclconfig->getMimeConf());
+	    string iconname = rclconfig->getMimeIconName(doc.mimetype);
 	    if (iconname.empty())
 		iconname = "document";
 	    string imgfile = iconsdir + "/" + iconname + ".png";

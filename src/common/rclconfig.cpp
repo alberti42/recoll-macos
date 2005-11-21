@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.11 2005-11-17 12:47:03 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.12 2005-11-21 14:31:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <errno.h>
@@ -10,11 +10,13 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.11 2005-11-17 12:47:03 dockes E
 #include "pathut.h"
 #include "conftree.h"
 #include "debuglog.h"
+#include "smallut.h"
 
 using namespace std;
 
 RclConfig::RclConfig()
-    : m_ok(false), conf(0), mimemap(0), mimeconf(0)
+    : m_ok(false), conf(0), mimemap(0), mimeconf(0), stopsuffixes(0)
+
 {
     static int loginit = 0;
     if (!loginit) {
@@ -94,13 +96,21 @@ bool RclConfig::getConfParam(const std::string &name, int *ivp)
 	*ivp = int(lval);
     return true;
 }
-bool RclConfig::getConfParam(const std::string &name, bool *value)
+
+bool RclConfig::getConfParam(const std::string &name, bool *bvp)
 {
-    int ival;
-    if (!getConfParam(name, &ival))
+    *bvp = false;
+    string s;
+    if (!getConfParam(name, s))
 	return false;
-    if (*value)
-	*value = ival ? true : false;
+    if (s.empty())
+	return true;
+    if (isdigit(s[0])) {
+	int val = atoi(s.c_str());
+	*bvp = val ? true : false;
+    } else if (strchr("yYoOtT", s[0])) {
+	*bvp = true;
+    }
     return true;
 }
 
@@ -125,6 +135,55 @@ std::list<string> RclConfig::getAllMimeTypes()
     lst.sort();
     lst.unique();
     return lst;
+}
+
+bool RclConfig::getStopSuffixes(list<string>& sufflist)
+{
+    if (stopsuffixes == 0 && (stopsuffixes = new list<string>) != 0) {
+	string stp;
+	if (mimemap->get("recoll_noindex", stp, keydir)) {
+	    ConfTree::stringToStrings(stp, *stopsuffixes);
+	}
+    }
+
+    if (stopsuffixes) {
+	sufflist = *stopsuffixes;
+	return true;
+    }
+    return false;
+}
+
+string RclConfig::getMimeTypeFromSuffix(const string &suff)
+{
+    string mtype;
+    mimemap->get(suff, mtype, keydir);
+    return mtype;
+}
+
+string RclConfig::getMimeHandlerDef(const std::string &mtype)
+{
+    string hs;
+    if (!mimeconf->get(mtype, hs, "index")) {
+	LOGDEB(("getMimeHandler: no handler for '%s'\n", mtype.c_str()));
+    }
+    return hs;
+}
+
+string RclConfig::getMimeViewerDef(const string &mtype)
+{
+    string hs;
+    mimeconf->get(mtype, hs, "view");
+    return hs;
+}
+
+/**
+ * Return icon name
+ */
+string RclConfig::getMimeIconName(const string &mtype)
+{
+    string hs;
+    mimeconf->get(mtype, hs, "icons");
+    return hs;
 }
 
 // Look up an executable filter.
@@ -152,3 +211,25 @@ string find_filter(RclConfig *conf, const string &icmd)
     return icmd;
 }
 
+/** 
+ * Return decompression command line for given mime type
+ */
+bool RclConfig::getUncompressor(const string &mtype, list<string>& cmd)
+{
+    string hs;
+
+    mimeconf->get(mtype, hs, "");
+    if (hs.empty())
+	return false;
+    list<string> tokens;
+    ConfTree::stringToStrings(hs, tokens);
+    if (tokens.empty()) {
+	LOGERR(("getUncompressor: empty spec for mtype %s\n", mtype.c_str()));
+	return false;
+    }
+    if (stringlowercmp("uncompress", tokens.front())) 
+	return false;
+    list<string>::iterator it = tokens.begin();
+    cmd.assign(++it, tokens.end());
+    return true;
+}
