@@ -10,8 +10,8 @@ fatal()
 }
 usage()
 {
-    echo 'Usage (binaries): installrecoll <dir>, ie: installrecoll /usr/local'
-    fatal 'Usage (personal config): installrecoll'
+    echo 'Usage (common files): recollinstall <dir>, ie: recollinstall /usr/local'
+    fatal 'Usage (personal config): recollinstall'
 }
 
 INSTALL=${INSTALL:=install}
@@ -23,18 +23,28 @@ if test $# = 1 ; then
    echo "Installing to $PREFIX"
 
    test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
-        " You need to build first."
+        " You need to build first (type 'make')."
 
-   test -d ${PREFIX}/bin || mkdir ${PREFIX}/bin || exit 1
+   for d in ${PREFIX} \
+	    ${PREFIX}/bin \
+	    ${PREFIX}/share \
+	    ${PREFIX}/share/recoll \
+	    ${PREFIX}/share/recoll/examples \
+	    ${PREFIX}/share/recoll/images 
+   do
+     test -d $d || mkdir $d || exit 1
+   done
+
+
    ${INSTALL} qtgui/recoll index/recollindex recollinstall $PREFIX/bin \
 	      || exit 1
-   test -d ${PREFIX}/share || mkdir ${PREFIX}/share
-   test -d ${PREFIX}/share/examples || mkdir ${PREFIX}/share/examples
-   test -d ${PREFIX}/share/examples/recoll || \
-	mkdir ${PREFIX}/share/examples/recoll
-   ${INSTALL} filters/rcl* ${PREFIX}/share/examples/recoll || exit 1
+
+   ${INSTALL} filters/rcl* ${PREFIX}/share/recoll/examples/ || exit 1
+
    ${INSTALL} sampleconf/recoll.conf sampleconf/mimeconf sampleconf/mimemap \
-	      ${PREFIX}/share/examples/recoll || exit 1
+		    ${PREFIX}/share/recoll/examples/ || exit 1
+
+   ${INSTALL} qtgui/mtpics/*.png ${PREFIX}/share/recoll/images || exit 1
 
    exit 0
 
