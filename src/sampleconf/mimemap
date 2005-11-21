@@ -1,9 +1,11 @@
-# @(#$Id: mimemap,v 1.9 2005-11-21 14:31:24 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.10 2005-11-21 16:05:07 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll: associations of file name extensions to mime types
 .txt = text/plain
 .text = text/plain
 .d    = text/plain
+
+.rtf  = text/rtf
 
 .html = text/html
 .htm = text/html
