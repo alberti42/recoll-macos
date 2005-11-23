@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.9 2005-11-23 10:17:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.10 2005-11-23 11:11:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_EXECMD
 #include <unistd.h>
@@ -204,7 +204,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	// Hu ho
 	LOGERR(("ExecCmd::doexec: execvp(%s) failed. errno %d\n", cmd.c_str(),
 		errno));
-	_Exit(128);
+	_exit(128);
     }
 }
 
