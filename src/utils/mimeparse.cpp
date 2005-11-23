@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.6 2005-11-06 11:16:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.7 2005-11-23 10:17:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMEPARSE
@@ -318,7 +318,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 			// we sometimes find 8-bit chars in
 			// there. Interpret as Iso8859.
 			if (value.length() > 0) {
-			    transcode(value, utf8, "ISO8859-1", "UTF-8");
+			    transcode(value, utf8, "ISO-8859-1", "UTF-8");
 			    out += utf8;
 			    value = "";
 			}
@@ -378,7 +378,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
     }
 
     if (value.length() > 0) {
-	transcode(value, utf8, "ISO8859-1", "UTF-8");
+	transcode(value, utf8, "ISO-8859-1", "UTF-8");
 	out += utf8;
 	value = "";
     }

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.12 2005-11-21 17:18:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.13 2005-11-23 10:19:00 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMETYPE
@@ -125,7 +125,7 @@ string mimetype(const string &fn, RclConfig *cfg, bool usfc)
 
 
 #else // TEST->
-
+#include <stdio.h>
 #include <iostream>
 
 #include "debuglog.h"

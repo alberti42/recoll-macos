@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclrtf,v 1.1 2005-11-21 16:05:07 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclrtf,v 1.2 2005-11-23 10:17:53 dockes Exp $  (C) 2004 J.F.Dockes
 # Some inspiration from estraier
 #================================================================
 # rclrtf
@@ -64,7 +64,7 @@ BEGIN {
 }
 /<\/head>/{
     if (gothead == 0) {
-        printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO8859-1\">\n")
+        printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n")
 	gothead = 1
     }
 }

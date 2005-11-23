@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: debuglog.cpp,v 1.1 2005-11-12 14:24:33 dockes Exp $  (C) 2002 OKYZ";
+static char rcsid [] = "@(#$Id: debuglog.cpp,v 1.2 2005-11-23 10:15:18 dockes Exp $  (C) 2002 OKYZ";
 #endif
 #ifndef TEST_DEBUGLOG
 
@@ -173,7 +173,11 @@ DebugLog::prolog(int lev, const char *f, int line)
     char buf[100];
     sprintf(buf, ":%d:", lev);
     writer->put(buf);
-#if DEBUGLOG_USE_THREADS
+#if DEBUGLOG_SHOW_PID
+    sprintf(buf, "%d:", getpid());
+    writer->put(buf);
+#endif
+#if DEBUGLOG_SHOW_THREAD
     sprintf(buf, "%lx:", (unsigned long)pthread_self());
     writer->put(buf);
 #endif

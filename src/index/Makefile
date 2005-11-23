@@ -21,7 +21,7 @@ trcsguess.o : csguess.cpp
 MIMETYPE_OBJS= trmimetype.o  $(BIGLIB) 
 mimetype : $(MIMETYPE_OBJS)
 	$(CXX) $(CXXFLAGS) -o mimetype $(MIMETYPE_OBJS) \
-	       $(LIBICONV)
+	       $(LIBICONV) $(LIBSYS)
 trmimetype.o : mimetype.cpp
 	$(CXX) $(CXXFLAGS) -DTEST_MIMETYPE -c -o trmimetype.o \
 	       mimetype.cpp
