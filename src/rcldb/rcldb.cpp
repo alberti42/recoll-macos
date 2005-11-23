@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.38 2005-11-17 17:36:06 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.39 2005-11-23 10:59:33 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -191,7 +191,7 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 {
     // cerr << "splitCb: term " << term << endl;
     //string printable;
-    //transcode(term, printable, "UTF-8", "ISO8859-1");
+    //transcode(term, printable, "UTF-8", "ISO-8859-1");
     //cerr << "Adding " << printable << endl;
 
     try {
@@ -436,6 +436,7 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 
     string pathterm  = "P" + hash;
     if (!ndb->wdb.term_exists(pathterm)) {
+	LOGDEB2(("Db::needUpdate: path inexistant: %s\n", filename.c_str()));
 	return true;
     }
 
@@ -467,8 +468,8 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 		}
 		long mtime = cp ? atol(cp) : 0;
 		if (mtime < stp->st_mtime) {
-		    LOGDEB2(("Need update: Db Doc mtime %ld file mtime %ld\n", 
-			     (long)mtime, (long)stp->st_mtime));
+		    LOGDEB2(("Db::needUpdate: yes: mtime: Db %ld file %ld\n", 
+			    (long)mtime, (long)stp->st_mtime));
 		    // Db is not up to date. Let's index the file
 		    return true;
 		} 
@@ -653,7 +654,7 @@ bool Rcl::Db::purge()
 		ndb->wdb.delete_document(docid);
 		LOGDEB(("Rcl::Db::purge: deleted document #%d\n", docid));
 	    } catch (const Xapian::DocNotFoundError &) {
-		LOGDEB2(("Rcl::Db::purge: document #%d not found\n", docid));
+		LOGDEB(("Rcl::Db::purge: document #%d not found\n", docid));
 	    }
 	}
     }

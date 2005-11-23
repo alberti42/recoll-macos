@@ -111,8 +111,8 @@ Using Recoll
    this, you need to edit the configuration file ($HOME/.recoll/recoll.conf).
    Follow the comments in the file to adjust the parameters.
 
-   Indexing is performed either by starting the recollindex program, or by
-   the indexing thread inside the recoll program (use the File menu).
+   Indexing is performed either by the recollindex program, or by the
+   indexing thread inside the recoll program (use the File menu).
 
   Simple search
 

@@ -33,6 +33,7 @@ Installing Recoll
      * MS Word documents: antiword.
      * PDF files: pdftotext is part of the Xpdf package.
      * Postscript files: pstotext.
+     * RTF files: the filter uses unrtf
 
     Building
 
