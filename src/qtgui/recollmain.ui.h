@@ -33,7 +33,6 @@ using std::pair;
 #include "mimehandler.h"
 #include "pathut.h"
 #include "recoll.h"
-#include "internfile.h"
 #include "smallut.h"
 #include "plaintorich.h"
 #include "unacpp.h"
@@ -602,7 +601,7 @@ void RecollMain::startPreview(int docnum)
 		this, SLOT(previewClosed(Preview *)));
 	curPreview->show();
     } else {
-	if (curPreview->makeFileCurrent(fn)) {
+	if (curPreview->makeDocCurrent(fn, doc)) {
 	    // Already there
 	    return;
 	}

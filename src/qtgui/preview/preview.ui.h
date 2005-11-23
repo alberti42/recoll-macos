@@ -25,12 +25,15 @@ using std::pair;
 #include "recoll.h"
 #include "plaintorich.h"
 
+extern int recollNeedsExit;
+
 // We keep a list of data associated to each tab
 class TabData {
  public:
     string fn; // filename for this tab
+    string ipath; // Internal doc path inside file
     QWidget *w; // widget for setCurrent
-    TabData(const string &str, QWidget *wi) : fn(str), w(wi) {}
+    TabData(QWidget *wi) : w(wi) {}
 };
 
 #define TABDATA ((list<TabData> *)tabData)
@@ -43,8 +46,9 @@ void Preview::init()
     dynSearchActive = false;
     canBeep = true;
     tabData = new list<TabData>;
-    TABDATA->push_back(TabData(string(""), pvTab->currentPage()));
+    TABDATA->push_back(TabData(pvTab->currentPage()));
 }
+
 void Preview::destroy()
 {
     delete TABDATA;
@@ -55,8 +59,6 @@ void Preview::closeEvent(QCloseEvent *e)
     emit previewClosed(this);
     QWidget::closeEvent(e);
 }
-
-extern int recollNeedsExit;
 
 bool Preview::eventFilter(QObject *target, QEvent *event)
 {
@@ -243,7 +245,7 @@ QTextEdit * Preview::addEditorTab()
     pvTab->addTab(anon, "Tab");
     pvTab->showPage(anon);
     if (tabData)
-	TABDATA->push_back(TabData(string(""), anon));
+	TABDATA->push_back(TabData(anon));
     return editor;
 }
 
@@ -275,19 +277,20 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc)
 	 it != TABDATA->end(); it++) {
 	if (it->w == w) {
 	    it->fn = fn;
+	    it->ipath = doc.ipath;
 	    break;
 	}
     }
 }
 
-bool Preview::makeFileCurrent(const string &fn)
+bool Preview::makeDocCurrent(const string &fn, const Rcl::Doc &doc)
 {
     LOGDEB(("Preview::makeFileCurrent: %s\n", fn.c_str()));
     for (list<TabData>::iterator it = TABDATA->begin(); 
 	 it != TABDATA->end(); it++) {
 	LOGDEB2(("Preview::makeFileCurrent: compare to w %p, file %s\n", 
 		 it->w, it->fn.c_str()));
-	if (!it->fn.compare(fn)) {
+	if (!it->fn.compare(fn) && !it->ipath.compare(doc.ipath)) {
 	    pvTab->showPage(it->w);
 	    return true;
 	}

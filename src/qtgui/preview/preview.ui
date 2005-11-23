@@ -214,7 +214,7 @@
     <function access="private" specifier="non virtual">init()</function>
     <function>closeEvent( QCloseEvent * e )</function>
     <function returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
-    <function returnType="bool">makeFileCurrent( const string &amp; fn )</function>
+    <function returnType="bool">makeDocCurrent( const string &amp; fn, const Rcl::Doc &amp; doc )</function>
     <function returnType="QTextEdit *">getCurrentEditor()</function>
     <function returnType="QTextEdit *">addEditorTab()</function>
     <function access="private">destroy()</function>
