@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.6 2005-10-21 08:14:42 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.7 2005-11-23 10:16:28 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_SMALLUT
 #include <string>
@@ -154,6 +154,24 @@ int stringuppercmp(const string & s1, const string& s2)
 	}
 	return size1 == size2 ? 0 : -1;
     }
+}
+
+// Compare charset names, removing the more common spelling variations
+bool samecharset(const string &cs1, const string &cs2)
+{
+    string mcs1, mcs2;
+    // Remove all - and _, turn to lowecase
+    for (int i = 0; i < cs1.length();i++) {
+	if (cs1[i] != '_' && cs1[i] != '-') {
+	    mcs1 += ::tolower(cs1[i]);
+	}
+    }
+    for (int i = 0; i < cs2.length();i++) {
+	if (cs2[i] != '_' && cs2[i] != '-') {
+	    mcs2 += ::tolower(cs2[i]);
+	}
+    }
+    return mcs1 == mcs2;
 }
 
 #else

@@ -33,6 +33,7 @@
 #include "myhtmlparse.h"
 #include "indextext.h"
 #include "mh_html.h"
+#include "smallut.h"
 
 #include <iostream>
 using namespace std;
@@ -101,7 +102,7 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
 	} catch (bool) {
 	    pres = p;
 	    if (!pres.doccharset.empty() && 
-		pres.doccharset != pres.ocharset) {
+		!samecharset(pres.doccharset, pres.ocharset)) {
 		LOGDEB(("textHtmlToDoc: charset '%s' doc charset '%s',"
 			"reparse\n", charset.c_str(),pres.doccharset.c_str()));
 		charset = pres.doccharset;
