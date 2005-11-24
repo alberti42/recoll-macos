@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.13 2005-11-23 10:19:00 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.14 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMETYPE
@@ -7,8 +7,9 @@ static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.13 2005-11-23 10:19:00 dockes Ex
 #include <string>
 #include <list>
 
-using std::string;
-using std::list;
+#ifndef NO_NAMESPACES
+using namespace std;
+#endif /* NO_NAMESPACES */
 
 #include "mimetype.h"
 #include "debuglog.h"

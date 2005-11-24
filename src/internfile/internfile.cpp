@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.10 2005-11-21 14:31:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.11 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -8,7 +8,9 @@ static char rcsid[] = "@(#$Id: internfile.cpp,v 1.10 2005-11-21 14:31:24 dockes 
 
 #include <string>
 #include <iostream>
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 #include "internfile.h"
 #include "mimetype.h"

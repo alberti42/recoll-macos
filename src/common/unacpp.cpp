@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.3 2005-02-04 14:21:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.4 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_UNACPP
@@ -9,7 +9,9 @@ static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.3 2005-02-04 14:21:17 dockes Exp $
 
 #include <string>
 
+#ifndef NO_NAMESPACES
 using std::string;
+#endif /* NO_NAMESPACES */
 
 #include "unacpp.h"
 #include "unac.h"

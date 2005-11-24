@@ -36,7 +36,9 @@
 #include "smallut.h"
 
 #include <iostream>
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 
 MimeHandler::Status 

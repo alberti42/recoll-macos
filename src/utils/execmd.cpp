@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.10 2005-11-23 11:11:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.11 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_EXECMD
 #include <unistd.h>
@@ -20,7 +20,9 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.10 2005-11-23 11:11:50 dockes Exp 
 #include "pathut.h"
 #include "debuglog.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 #define MAX(A,B) (A>B?A:B)
 
 void  ExecCmd::putenv(const string &ea)

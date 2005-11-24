@@ -23,14 +23,17 @@
  */
 
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.2 2005-01-28 08:50:17 dockes Exp $ ";
+static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.3 2005-11-24 07:16:15 dockes Exp $ ";
 #endif
 
 //#include <config.h>
 
 #include <algorithm>
-using std::find;
-using std::find_if;
+#ifndef NO_NAMESPACES
+using namespace std;
+//using std::find;
+//using std::find_if;
+#endif /* NO_NAMESPACES */
 #include "htmlparse.h"
 #include <stdio.h>
 #include <ctype.h>

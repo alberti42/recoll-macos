@@ -46,7 +46,9 @@
 #include <stdio.h>
 #include <errno.h>
 
+#ifndef NO_NAMESPACES
 using namespace ::std;
+#endif /* NO_NAMESPACES */
 
 //------------------------------------------------------------------------
 void Binc::MimePart::printBody(int fd, IODevice &output,

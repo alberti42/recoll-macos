@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wipedir.cpp,v 1.2 2005-04-06 10:20:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wipedir.cpp,v 1.3 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_WIPEDIR
@@ -10,7 +10,9 @@ static char rcsid[] = "@(#$Id: wipedir.cpp,v 1.2 2005-04-06 10:20:11 dockes Exp 
 #include <errno.h>
 
 #include <string>
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 #include "debuglog.h"
 #include "pathut.h"

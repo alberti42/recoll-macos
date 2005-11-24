@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.10 2005-11-18 13:23:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.11 2005-11-24 07:16:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -9,8 +9,6 @@ static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.10 2005-11-18 13:23:46 dockes Exp
 
 #include <map>
 #include <sstream>
-using std::stringstream;
-using std::map;
 
 #include "mimehandler.h"
 #include "debuglog.h"
@@ -28,10 +26,12 @@ using std::map;
 // binc imap mime definitions
 #include "mime.h"
 
+#ifndef NO_NAMESPACES
+using namespace std;
+#endif /* NO_NAMESPACES */
+
 static void 
 walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc, int depth);
-
-using namespace std;
 
 MimeHandlerMail::~MimeHandlerMail()
 {

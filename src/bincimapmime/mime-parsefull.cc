@@ -44,7 +44,9 @@
 
 Binc::MimeInputSource *mimeSource = 0;
 
+#ifndef NO_NAMESPACES
 using namespace ::std;
+#endif /* NO_NAMESPACES */
 
 //------------------------------------------------------------------------
 void Binc::MimeDocument::parseFull(int fd) const

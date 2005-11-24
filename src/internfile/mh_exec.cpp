@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.2 2005-11-18 15:19:14 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.3 2005-11-24 07:16:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include "execmd.h"
@@ -7,7 +7,9 @@ static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.2 2005-11-18 15:19:14 dockes Exp 
 #include "mh_html.h"
 #include "debuglog.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 // Execute an external program to translate a file from its native format
 // to html. Then call the html parser to do the actual indexing

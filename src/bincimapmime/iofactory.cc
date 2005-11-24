@@ -26,8 +26,10 @@
 #include "iofactory.h"
 #include "iodevice.h"
 
+#ifndef NO_NAMESPACES
 using namespace ::Binc;
 using namespace ::std;
+#endif /* NO_NAMESPACES */
 
 //------------------------------------------------------------------------
 IOFactory::IOFactory(void)

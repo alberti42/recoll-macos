@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: readfile.cpp,v 1.1 2004-12-14 17:54:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: readfile.cpp,v 1.2 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -10,7 +10,9 @@ static char rcsid[] = "@(#$Id: readfile.cpp,v 1.1 2004-12-14 17:54:16 dockes Exp
 #include <errno.h>
 
 #include <string>
+#ifndef NO_NAMESPACES
 using std::string;
+#endif /* NO_NAMESPACES */
 
 #include "readfile.h"
 

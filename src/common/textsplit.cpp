@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.13 2005-10-19 10:21:48 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.14 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -11,7 +11,9 @@ static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.13 2005-10-19 10:21:48 dockes E
 #include "utf8iter.h"
 #include "uproplist.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 /**
  * Splitting a text into words. The code in this file will work with any 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: qtry.cpp,v 1.4 2005-01-31 14:31:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: qtry.cpp,v 1.5 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 // Tests with the query interface
@@ -17,7 +17,9 @@ static char rcsid[] = "@(#$Id: qtry.cpp,v 1.4 2005-01-31 14:31:10 dockes Exp $ (
 #include "mimehandler.h"
 #include "pathut.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 #include "rcldb.h"
 

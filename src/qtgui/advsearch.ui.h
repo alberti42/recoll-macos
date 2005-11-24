@@ -15,8 +15,10 @@
 #include <list>
 #include <string>
 
+#ifndef NO_NAMESPACES
 using std::list;
 using std::string;
+#endif /* NO_NAMESPACES */
 
 #include "recoll.h"
 #include "rclconfig.h"

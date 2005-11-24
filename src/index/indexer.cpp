@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.16 2005-11-21 14:31:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.17 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -25,7 +25,9 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.16 2005-11-21 14:31:24 dockes Exp
 #include "smallut.h"
 #include "wipedir.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 #ifndef deleteZ
 #define deleteZ(X) {delete X;X = 0;}

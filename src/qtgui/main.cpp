@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.16 2005-11-17 12:47:03 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.17 2005-11-24 07:16:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -15,7 +15,9 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.16 2005-11-17 12:47:03 dockes Exp $ 
 
 
 #include "rcldb.h"
+#ifndef NO_NAMESPACES
 using Rcl::AdvSearchData;
+#endif /* NO_NAMESPACES */
 #include "rclconfig.h"
 #include "pathut.h"
 #include "recoll.h"

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.12 2005-11-21 14:31:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.13 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <errno.h>
@@ -12,7 +12,9 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.12 2005-11-21 14:31:24 dockes E
 #include "debuglog.h"
 #include "smallut.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 RclConfig::RclConfig()
     : m_ok(false), conf(0), mimemap(0), mimeconf(0), stopsuffixes(0)

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.7 2005-11-23 10:17:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.8 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMEPARSE
@@ -12,7 +12,9 @@ static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.7 2005-11-23 10:17:15 dockes Ex
 #include "mimeparse.h"
 #include "base64.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 // Parsing a header value. Only content-type has parameters, but
 // others are compatible with content-type syntax, only, parameters

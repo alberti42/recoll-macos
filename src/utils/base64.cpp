@@ -1,11 +1,13 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: base64.cpp,v 1.2 2005-11-06 15:07:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: base64.cpp,v 1.3 2005-11-24 07:16:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <sys/types.h>
 
 #include <string>
+#ifndef NO_NAMESPACES
 using std::string;
+#endif /* NO_NAMESPACES */
 
 //#define DEBUG_BASE64 
 #ifdef DEBUG_BASE64

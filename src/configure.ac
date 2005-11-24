@@ -66,6 +66,8 @@ AC_SUBST(LIBICONV)
 AC_SUBST(INCICONV)
 
 AC_CONFIG_FILES(mk/localdefs)
+AC_CONFIG_FILES(recollinstall)
+AC_CONFIG_FILES(sampleconf/recoll.conf)
 
 for d in bincimapmime index lib query
 do 

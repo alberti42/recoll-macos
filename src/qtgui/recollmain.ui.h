@@ -17,7 +17,9 @@
 #include <sys/stat.h>
 
 #include <utility>
+#ifndef NO_NAMESPACES
 using std::pair;
+#endif /* NO_NAMESPACES */
 
 #include <qmessagebox.h>
 #include <qcstring.h>

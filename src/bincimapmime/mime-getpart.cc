@@ -40,7 +40,9 @@
 #include <stdio.h>
 #include <errno.h>
 
+#ifndef NO_NAMESPACES
 using namespace ::std;
+#endif /* NO_NAMESPACES */
 
 //------------------------------------------------------------------------
 const Binc::MimePart *Binc::MimePart::getPart(const string &findpart,

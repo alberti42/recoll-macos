@@ -1,13 +1,15 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.5 2005-11-16 11:22:51 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.6 2005-11-24 07:16:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 
 #include <string>
 #include <utility>
 #include <list>
+#ifndef NO_NAMESPACES
 using std::list;
 using std::pair;
+#endif /* NO_NAMESPACES */
 
 #include "rcldb.h"
 #include "rclconfig.h"

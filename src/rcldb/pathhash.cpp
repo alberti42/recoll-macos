@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathhash.cpp,v 1.1 2005-11-06 11:16:52 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathhash.cpp,v 1.2 2005-11-24 07:16:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -8,7 +8,9 @@ static char rcsid[] = "@(#$Id: pathhash.cpp,v 1.1 2005-11-06 11:16:52 dockes Exp
 #include "md5.h"
 #include "base64.h"
 
+#ifndef NO_NAMESPACES
 using std::string;
+#endif /* NO_NAMESPACES */
 
 #ifdef PATHHASH_HEX
 static void md5hexprint(const unsigned char hash[16], string &out)

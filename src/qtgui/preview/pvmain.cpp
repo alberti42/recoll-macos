@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pvmain.cpp,v 1.4 2005-10-21 08:14:42 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pvmain.cpp,v 1.5 2005-11-24 07:16:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -7,9 +7,12 @@ static char rcsid[] = "@(#$Id: pvmain.cpp,v 1.4 2005-10-21 08:14:42 dockes Exp $
 
 #include <string>
 #include <list>
+
+#ifndef NO_NAMESPACES
 using std::string;
 using std::list;
 using std::pair;
+#endif /* NO_NAMESPACES */
 
 #include <qapplication.h>
 #include <qobject.h>

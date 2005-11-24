@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: idfile.cpp,v 1.2 2005-10-19 14:14:17 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: idfile.cpp,v 1.3 2005-11-24 07:16:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 #ifndef TEST_IDFILE
 #include <unistd.h> // for access(2)
@@ -11,7 +11,9 @@ static char rcsid[] = "@(#$Id: idfile.cpp,v 1.2 2005-10-19 14:14:17 dockes Exp $
 #include "idfile.h"
 #include "debuglog.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 std::list<string> idFileAllTypes()
 {

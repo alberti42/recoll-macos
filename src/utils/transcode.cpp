@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.3 2005-02-04 14:21:18 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.4 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_TRANSCODE
@@ -8,7 +8,9 @@ static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.3 2005-02-04 14:21:18 dockes Ex
 
 #include <string>
 #include <iostream>
+#ifndef NO_NAMESPACES
 using std::string;
+#endif /* NO_NAMESPACES */
 
 #include <iconv.h>
 

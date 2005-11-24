@@ -30,8 +30,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#ifndef NO_NAMESPACES
 using namespace ::std;
 using namespace ::Binc;
+#endif /* NO_NAMESPACES */
 
 //------------------------------------------------------------------------
 IODevice::IODevice(int f) : flags(f | IsEnabled),

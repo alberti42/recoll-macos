@@ -31,8 +31,10 @@
 #include "convert.h"
 #include <string>
 
+#ifndef NO_NAMESPACES
 using namespace ::std;
 using namespace Binc;
+#endif /* NO_NAMESPACES */
 
 //------------------------------------------------------------------------
 Address::Address(const string &name, const string &addr)

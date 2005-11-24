@@ -35,7 +35,9 @@
 #include <stdio.h>
 #include <errno.h>
 
+#ifndef NO_NAMESPACES
 using namespace ::std;
+#endif /* NO_NAMESPACES */
 
 inline bool compareStringToQueue(const char *s_in, char *bqueue,
 				 int pos, int size)

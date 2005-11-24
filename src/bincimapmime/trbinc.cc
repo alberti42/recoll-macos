@@ -1,5 +1,5 @@
 #ifndef 	lint
-static char rcsid [] = "@(#$Id: trbinc.cc,v 1.2 2005-03-31 10:04:07 dockes Exp $  (C) 1994 CDKIT";
+static char rcsid [] = "@(#$Id: trbinc.cc,v 1.3 2005-11-24 07:16:15 dockes Exp $  (C) 1994 CDKIT";
 #endif
 
 #include <stdio.h>
@@ -11,7 +11,9 @@ static char rcsid [] = "@(#$Id: trbinc.cc,v 1.2 2005-03-31 10:04:07 dockes Exp $
 
 #include <sstream>
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 #include "mime.h"
 

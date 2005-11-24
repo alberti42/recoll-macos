@@ -1,10 +1,12 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_text.cpp,v 1.1 2005-11-18 13:23:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_text.cpp,v 1.2 2005-11-24 07:16:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <iostream>
 #include <string>
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 #include "mh_text.h"
 #include "csguess.h"

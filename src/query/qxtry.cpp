@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: qxtry.cpp,v 1.1 2005-01-24 13:17:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: qxtry.cpp,v 1.2 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 // Tests with direct xapian questions
 
@@ -11,7 +11,9 @@ static char rcsid[] = "@(#$Id: qxtry.cpp,v 1.1 2005-01-24 13:17:58 dockes Exp $ 
 
 #include "transcode.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 #include "xapian.h"
 

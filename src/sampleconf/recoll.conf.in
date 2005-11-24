@@ -1,0 +1,58 @@
+# @(#$Id: recoll.conf.in,v 1.1 2005-11-24 07:16:16 dockes Exp $  (C) 2004 J.F.Dockes
+
+# Recoll default configuration file. This should be copied to
+# ~/.recoll/recoll.conf 
+
+# Space-separated list of directories to index. Next line indexes $HOME
+topdirs = ~
+
+# Wildcard expressions for names of files and directories that we should
+# ignore:
+skippedNames = *~ #* .* bin CVS  Cache caughtspam  tmp
+
+# Debug messages
+loglevel = 4
+logfilename = stderr
+
+# Languages for which to build stemming databases at the end of
+# indexing. Stemmer names can be found on the xapian site
+indexstemminglanguages = english french
+
+# Use stemming of query terms or not (ie: expand search for floors to
+# floor, flooring, etc... )
+querystemming = 1
+querystemminglanguage = english
+
+# Name of file suffix to mime-type map file. 
+mimemapfile = mimemap
+# Name of mime-type to filter type/name map file. 
+mimeconffile = mimeconf
+
+# Decide if we do show icons in the result list. This looks a bit more
+# beaglish, but I'm not quite sure it's useful. If you wish to have them, 
+# you will have to copy the pngs from the distribution to wherever you want
+# to store them (the associations are decided in mimeconf)
+showicons = 1
+iconsdir = @prefix@/share/recoll/images
+
+# Where to store the database.
+dbdir = ~/.recoll/xapiandb
+
+# Default character set. Values found inside files, ie content tag in html
+# documents, will override this. It can be specified per directory (see
+# below). Used when converting to utf-8 (internal storage format).
+defaultcharset = iso-8859-1
+defaultlanguage = english
+
+# Guessing charsets usually does not work well
+guesscharset = 0
+
+# Should we use the system's 'file -i' command as a final step in file type
+# identification ? This may be useful, but will usually cause the
+# indexation of many bogus 'text' files
+usesystemfilecommand = 1
+
+# You could specify different parameters for a subdirectory like this. 
+#[~/englishdocs/plain]
+#defaultcharset = iso-8859-2
+

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.4 2005-04-04 13:18:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.5 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_FSTREEWALK
@@ -16,7 +16,9 @@ static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.4 2005-04-04 13:18:47 dockes E
 #include "pathut.h"
 #include "fstreewalk.h"
 
+#ifndef NO_NAMESPACES
 using namespace std;
+#endif /* NO_NAMESPACES */
 
 class FsTreeWalker::Internal {
     Options options;

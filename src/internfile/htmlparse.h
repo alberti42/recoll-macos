@@ -24,8 +24,10 @@
 #include <string>
 #include <map>
 
+#ifndef NO_NAMESPACES
 using std::string;
 using std::map;
+#endif /* NO_NAMESPACES */
 
 class HtmlParser {
     protected:
