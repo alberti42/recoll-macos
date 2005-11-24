@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.5 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.6 2005-11-24 18:21:55 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <strings.h>
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 	    cout << "FreqFor " << aterm << " : " <<
 		db->get_termfreq(aterm) << endl;
 	} else if (op_flags & OPT_E) {
-	    cout << "Exists " << aterm << " : " <<
+	    cout << "Exists [" << aterm << "] : " <<
 		db->term_exists(aterm) << endl;
 	} 
 

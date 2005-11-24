@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: qtry.cpp,v 1.5 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: qtry.cpp,v 1.6 2005-11-24 18:21:55 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 // Tests with the query interface
@@ -97,7 +97,8 @@ int main(int argc, char **argv)
 
 	cout << "Url: " << doc.url << endl;
 	cout << "Mimetype: " << doc.mimetype << endl;
-	cout << "Mtime: " << doc.mtime << endl;
+	cout << "fmtime: " << doc.fmtime << endl;
+	cout << "dmtime: " << doc.dmtime << endl;
 	cout << "Origcharset: " << doc.origcharset << endl;
 	cout << "Title: " << doc.title << endl;
 	cout << "Text: " << doc.text << endl;
@@ -109,8 +110,7 @@ int main(int argc, char **argv)
 	// for preview:
 
 	// Look for appropriate handler
-	MimeHandlerFunc fun = getMimeHandler(doc.mimetype, 
-					     rclconfig->getMimeConf());
+	MimeHandler *fun = getMimeHandler(doc.mimetype, rclconfig);
 	if (!fun) {
 	    cout << "No mime handler !" << endl;
 	    continue;
@@ -119,7 +119,8 @@ int main(int argc, char **argv)
 	cout << "Filename: "  << fn << endl;
 
 	Rcl::Doc fdoc;
-	if (!fun(rclconfig, fn,  doc.mimetype, fdoc)) {
+	if (fun->mkDoc(rclconfig, fn,  doc.mimetype, fdoc, doc.ipath) ==
+	    MimeHandler::MHError) {
 	    cout << "Failed to convert/preview document!" << endl;
 	    continue;
 	}
