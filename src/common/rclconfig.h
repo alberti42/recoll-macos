@@ -1,10 +1,11 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.8 2005-11-21 14:31:24 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.9 2005-11-25 09:13:07 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
 #include "conftree.h"
+#include "smallut.h"
 
 class RclConfig {
  public:
@@ -39,7 +40,7 @@ class RclConfig {
 	conf->get("defaultlanguage", deflang, keydir);
 	string str;
 	conf->get("guesscharset", str, keydir);
-	guesscharset = ConfTree::stringToBool(str);
+	guesscharset = stringToBool(str);
     }
 
     /** 

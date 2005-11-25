@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.13 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.14 2005-11-25 09:13:06 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <errno.h>
@@ -101,39 +101,27 @@ bool RclConfig::getConfParam(const std::string &name, int *ivp)
 
 bool RclConfig::getConfParam(const std::string &name, bool *bvp)
 {
+    if (!bvp) 
+	return false;
+
     *bvp = false;
     string s;
     if (!getConfParam(name, s))
 	return false;
-    if (s.empty())
-	return true;
-    if (isdigit(s[0])) {
-	int val = atoi(s.c_str());
-	*bvp = val ? true : false;
-    } else if (strchr("yYoOtT", s[0])) {
-	*bvp = true;
-    }
+    *bvp = stringToBool(s);
     return true;
 }
 
-static ConfSimple::WalkerCode mtypesWalker(void *l, 
-					   const char *nm, const char *value)
-{
-    std::list<string> *lst = (std::list<string> *)l;
-    if (nm && nm[0] == '.')
-	lst->push_back(value);
-    return ConfSimple::WALK_CONTINUE;
-}
-
-#include "idfile.h"
+// Get all known document mime values. We get them from the mimeconf
+// 'index' submap: values not in there (ie from mimemap or idfile) can't
+// possibly belong to documents in the database.
 std::list<string> RclConfig::getAllMimeTypes()
 {
     std::list<string> lst;
-    if (mimemap == 0)
+    if (mimeconf == 0)
 	return lst;
-    mimemap->sortwalk(mtypesWalker, &lst);
-    std::list<string> l1 = idFileAllTypes(); 
-    lst.insert(lst.end(), l1.begin(), l1.end());
+    //    mimeconf->sortwalk(mtypesWalker, &lst);
+    lst = mimeconf->getNames("index");
     lst.sort();
     lst.unique();
     return lst;
@@ -144,7 +132,7 @@ bool RclConfig::getStopSuffixes(list<string>& sufflist)
     if (stopsuffixes == 0 && (stopsuffixes = new list<string>) != 0) {
 	string stp;
 	if (mimemap->get("recoll_noindex", stp, keydir)) {
-	    ConfTree::stringToStrings(stp, *stopsuffixes);
+	    stringToStrings(stp, *stopsuffixes);
 	}
     }
 
@@ -224,7 +212,7 @@ bool RclConfig::getUncompressor(const string &mtype, list<string>& cmd)
     if (hs.empty())
 	return false;
     list<string> tokens;
-    ConfTree::stringToStrings(hs, tokens);
+    stringToStrings(hs, tokens);
     if (tokens.empty()) {
 	LOGERR(("getUncompressor: empty spec for mtype %s\n", mtype.c_str()));
 	return false;
