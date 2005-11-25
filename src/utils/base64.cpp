@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: base64.cpp,v 1.3 2005-11-24 07:16:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: base64.cpp,v 1.4 2005-11-25 08:49:31 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <sys/types.h>
@@ -25,6 +25,7 @@ bool base64_decode(const string& in, string& out)
     int io = 0, state = 0, ch;
     char *pos;
     unsigned int ii = 0;
+    out.erase();
     out.reserve(in.length());
 
     for (ii = 0; ii < in.length(); ii++) {
@@ -124,6 +125,8 @@ bool base64_decode(const string& in, string& out)
 		out[io] = 0;
 		// return false;
 	    }
+	    // We've appended an extra 0.
+	    out.resize(io);
 	}
     } else {
 	/*
@@ -150,6 +153,8 @@ void base64_encode(const string &in, string &out)
     unsigned char input[3];
     unsigned char output[4];
     size_t i;
+
+    out.erase();
 
     int srclength = in.length();
     int sidx = 0;
@@ -201,11 +206,40 @@ void base64_encode(const string &in, string &out)
 
 #ifdef TEST_BASE64
 #include <stdio.h>
-int main(int agrc, char **argv)
+const char *values[] = {"", "1", "12", "123", "1234", "12345", "123456"};
+int nvalues = sizeof(values) / sizeof(char *);
+int main(int argc, char **argv)
 {
-    string in = "12345";
-    string out;
+    string in, out, back;
+    int err = 0;
+    for (int i = 0; i < nvalues; i++) {
+	in = values[i];
+	base64_encode(in, out);
+	base64_decode(out, back);
+	if (in != back) {
+	    fprintf(stderr, "In [%s] %d != back [%s] %d (out [%s] %d\n", 
+		    in.c_str(),in.length(), 
+		    back.c_str(), back.length(),
+		    out.c_str(), out.length()
+		    );
+	    err++;
+	}
+    }
+    in.erase();
+    in += char(0);
+    in += char(0);
+    in += char(0);
+    in += char(0);
     base64_encode(in, out);
-    printf("in %s out %s\n", in.c_str(), out.c_str());
+    base64_decode(out, back);
+    if (in != back) {
+	fprintf(stderr, "In [%s] %d != back [%s] %d (out [%s] %d\n", 
+		in.c_str(),in.length(), 
+		back.c_str(), back.length(),
+		out.c_str(), out.length()
+		);
+	err++;
+    }
+    exit(!(err == 0));
 }
 #endif
