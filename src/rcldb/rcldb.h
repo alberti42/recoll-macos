@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.18 2005-11-25 08:53:13 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.19 2005-11-25 09:12:26 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -137,6 +137,7 @@ private:
     /* Copyconst and assignemt private and forbidden */
     Db(const Db &) {}
     Db & operator=(const Db &) {return *this;};
+    bool dbDataToRclDoc(std::string &data, Doc &doc);
 };
 
 // Unaccent and lowercase data.

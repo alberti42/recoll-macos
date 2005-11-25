@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.40 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.41 2005-11-25 09:12:25 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -435,10 +435,9 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 #else
     hash = filename;
 #endif
-
     string pathterm  = "P" + hash;
     if (!ndb->wdb.term_exists(pathterm)) {
-	LOGDEB2(("Db::needUpdate: path inexistant: %s\n", filename.c_str()));
+	LOGDEB1(("Db::needUpdate: path inexistant: %s\n", pathterm.c_str()));
 	return true;
     }
 
@@ -700,7 +699,7 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
 	    explist.push_back(term);
 	    return explist;
 	}	    
-	ConfTree::stringToStrings(data.substr(pos, pos1-pos), explist);
+	stringToStrings(data.substr(pos, pos1-pos), explist);
 	if (find(explist.begin(), explist.end(), term) == explist.end()) {
 	    explist.push_back(term);
 	}
@@ -765,7 +764,7 @@ static void stringToXapianQueries(const string &iq,
 
     // Split into (possibly single word) phrases ("this is a phrase"):
     list<string> phrases;
-    ConfTree::stringToStrings(qstring, phrases);
+    stringToStrings(qstring, phrases);
 
     // Then process each phrase: split into terms and transform into
     // appropriate Xapian Query
@@ -980,6 +979,24 @@ class Rcl::DbPops {
     }
 };
 
+bool Rcl::Db::dbDataToRclDoc(std::string &data, Doc &doc)
+{
+    LOGDEB1(("Rcl::Db::dbDataToRclDoc: data: %s\n", data.c_str()));
+    ConfSimple parms(&data);
+    if (!parms.ok())
+	return false;
+    parms.get(string("url"), doc.url);
+    parms.get(string("mtype"), doc.mimetype);
+    parms.get(string("fmtime"), doc.fmtime);
+    parms.get(string("dmtime"), doc.dmtime);
+    parms.get(string("origcharset"), doc.origcharset);
+    parms.get(string("caption"), doc.title);
+    parms.get(string("keywords"), doc.keywords);
+    parms.get(string("abstract"), doc.abstract);
+    parms.get(string("ipath"), doc.ipath);
+    return true;
+}
+
 // Get document at rank i in query (i is the index in the whole result
 // set, as in the enquire class. We check if the current mset has the
 // doc, else ask for an other one. We use msets of 10 documents. Don't
@@ -1081,16 +1098,47 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 
     // Parse xapian document's data and populate doc fields
     string data = xdoc.get_data();
-    LOGDEB1(("Rcl::Db::getDoc: data: %s\n", data.c_str()));
-    ConfSimple parms(&data);
-    parms.get(string("url"), doc.url);
-    parms.get(string("mtype"), doc.mimetype);
-    parms.get(string("fmtime"), doc.fmtime);
-    parms.get(string("dmtime"), doc.dmtime);
-    parms.get(string("origcharset"), doc.origcharset);
-    parms.get(string("caption"), doc.title);
-    parms.get(string("keywords"), doc.keywords);
-    parms.get(string("abstract"), doc.abstract);
-    parms.get(string("ipath"), doc.ipath);
-    return true;
+    return dbDataToRclDoc(data, doc);
+}
+
+// Retrieve document defined by file name and internal path. Very inefficient,
+// used only for history display. We'd need to enter path+ipath terms in the
+// db if we wanted to make this more efficient.
+bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
+{
+    LOGDEB(("Rcl::Db:getDoc: [%s] (%d) [%s]\n", fn.c_str(), fn.length(),
+	    ipath.c_str()));
+    if (pdata == 0)
+	return false;
+    Native *ndb = (Native *)pdata;
+
+    string hash;
+#ifdef HASHPATH
+    pathHash(fn, hash, PATHHASHLEN);
+#else
+    hash = fn;
+#endif
+    string pathterm  = "P" + hash;
+    if (!ndb->db.term_exists(pathterm)) {
+	LOGDEB(("Db::getDoc: path inexistant: [%s] len %d\n", 
+		 pathterm.c_str(), pathterm.length()));
+	return false;
+    }
+
+    // Look for all documents with this path, searching for the one
+    // with the appropriate ipath. This is very inefficient.
+    try {
+	for (Xapian::PostingIterator docid = 
+		 ndb->db.postlist_begin(pathterm);
+	     docid != ndb->db.postlist_end(pathterm); docid++) {
+
+	    Xapian::Document xdoc = ndb->db.get_document(*docid);
+	    string data = xdoc.get_data();
+	    if (dbDataToRclDoc(data, doc) && doc.ipath == ipath)
+		return true;
+	}
+    } catch (...) {
+	return false;
+    }
+    return false;
 }
