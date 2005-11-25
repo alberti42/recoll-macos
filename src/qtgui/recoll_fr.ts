@@ -5,6 +5,22 @@
         <source>Configuration problem: </source>
         <translation>Problème de configuration: </translation>
     </message>
+    <message>
+        <source>No db directory in configuration</source>
+        <translation>Répertoire de la base de données non défini dans la configuration</translation>
+    </message>
+    <message>
+        <source>Cannot create temporary directory</source>
+        <translation>Impossible de créer le répertoire temporaire</translation>
+    </message>
+    <message>
+        <source>Could not open database in </source>
+        <translation>Impossible d&apos;ouvrir la base dans</translation>
+    </message>
+    <message>
+        <source>. Starting indexation</source>
+        <translation>. Démarrage de l&apos;indexation</translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
@@ -51,6 +67,18 @@
     <message>
         <source>Clear</source>
         <translation>Effacer</translation>
+    </message>
+    <message>
+        <source>Can&apos;t turn doc into internal rep for </source>
+        <translation>Impossible de créer une représentation interne pour </translation>
+    </message>
+    <message>
+        <source>Creating preview text</source>
+        <translation>Création du texte pour la prévisualisation</translation>
+    </message>
+    <message>
+        <source>Loading preview text into editor</source>
+        <translation>Chargement du texte de la prévisualisation</translation>
     </message>
 </context>
 <context>
@@ -101,11 +129,63 @@
     </message>
     <message>
         <source>Help</source>
-        <translation>Aide</translation>
+        <translation type="obsolete">Aide</translation>
     </message>
     <message>
         <source>About Recoll</source>
         <translation>À propos de Recoll</translation>
+    </message>
+    <message>
+        <source>&amp;Tools</source>
+        <translation>&amp;Outils</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation>&amp;Aide</translation>
+    </message>
+    <message>
+        <source>Ctrl+Q</source>
+        <translation>Ctrl+Q</translation>
+    </message>
+    <message>
+        <source>Doc History</source>
+        <translation>Historique documents</translation>
+    </message>
+    <message>
+        <source>Indexing in progress</source>
+        <translation>Indexation en cours</translation>
+    </message>
+    <message>
+        <source>No external viewer configured for mime type </source>
+        <translation>Pas de visualiseur défini pour le type mime </translation>
+    </message>
+    <message>
+        <source>Executing: [</source>
+        <translation>Exécution de: [</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;</source>
+        <translation>&lt;b&gt;Affichage des résultats à partir de l&apos;indice %1 (taille maximum estimée %2)&lt;/b&gt;&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>Cannot retrieve document info from database</source>
+        <translation>Impossible d&apos;accéder au document dans la base</translation>
+    </message>
+    <message>
+        <source>Cannot access document file: </source>
+        <translation>Impossible d&apos;accéder au fichier du document: </translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation>Previsualisation</translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation>Attention</translation>
+    </message>
+    <message>
+        <source>Can&apos;t create preview window</source>
+        <translation>Impossible de créer la fenetre de visualisation</translation>
     </message>
 </context>
 <context>

@@ -30,7 +30,8 @@ if test $# = 1 ; then
 	    ${PREFIX}/share \
 	    ${PREFIX}/share/recoll \
 	    ${PREFIX}/share/recoll/examples \
-	    ${PREFIX}/share/recoll/images 
+	    ${PREFIX}/share/recoll/images \
+	    ${PREFIX}/share/recoll/translations
    do
      test -d $d || mkdir $d || exit 1
    done
@@ -45,6 +46,7 @@ if test $# = 1 ; then
 		    ${PREFIX}/share/recoll/examples/ || exit 1
 
    ${INSTALL} qtgui/mtpics/*.png ${PREFIX}/share/recoll/images || exit 1
+   ${INSTALL} qtgui/recoll*.qm ${PREFIX}/share/recoll/translations || exit 1
 
    exit 0
 
