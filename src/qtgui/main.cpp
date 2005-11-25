@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.17 2005-11-24 07:16:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.18 2005-11-25 10:02:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -24,6 +24,7 @@ using Rcl::AdvSearchData;
 #include "smallut.h"
 #include "wipedir.h"
 #include "rclinit.h"
+#include "history.h"
 
 #include "recollmain.h"
 
@@ -33,12 +34,13 @@ int recollNeedsExit;
 string tmpdir;
 bool showicons;
 string iconsdir;
+RclQHistory *history;
 
 void getQueryStemming(bool &dostem, std::string &stemlang)
 {
     string param;
     if (rclconfig->getConfParam("querystemming", param))
-	dostem = ConfTree::stringToBool(param);
+	dostem = stringToBool(param);
     else
 	dostem = false;
     if (!rclconfig->getConfParam("querystemminglanguage", stemlang))
@@ -121,30 +123,15 @@ int main( int argc, char ** argv )
     int width = settings.readNumEntry( "/Recoll/geometry/width", 590);
     int height = settings.readNumEntry( "/Recoll/geometry/height", 810);
     QSize s(width, height);
-
+    
     // Create main window and set its size to previous session's
     RecollMain w;
     mainWindow = &w;
     w.resize(s);
 
     
-#if 0    
-    // Once tried to set a lighter background but this doesn;t seem to work
-    // (no inheritance from buttons and popups)
-    QPalette palette = w.palette();
-    palette.setColor(QColorGroup::Background, QColor(239,239,239));
-    w.setPalette(palette);
-#endif
-
-    // Connect exit handlers etc..
-    a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
-    QTimer *timer = new QTimer(&a);
-    w.connect(timer, SIGNAL(timeout()), &w, SLOT(periodic100()));
-    timer->start(100);
-
     string reason;
     rclconfig = recollinit(recollCleanup, sigcleanup, reason);
-
     if (!rclconfig || !rclconfig->ok()) {
 	QString msg = a.translate("Main", "Configuration problem: ");
 	msg += reason;
@@ -176,10 +163,20 @@ int main( int argc, char ** argv )
 					 "Cannot create temporary directory"));
 	exit(1);
     }
-	
+
+    string historyfile = rclconfig->getConfDir();
+    path_cat(historyfile, "history");
+    history = new RclQHistory(historyfile);
+
     dbdir = path_tildexpand(dbdir);
 
     rcldb = new Rcl::Db;
+
+    // Connect exit handlers etc..
+    a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
+    QTimer *timer = new QTimer(&a);
+    w.connect(timer, SIGNAL(timeout()), &w, SLOT(periodic100()));
+    timer->start(100);
 
     if (!rcldb || !rcldb->open(dbdir, Rcl::Db::DbRO)) {
 	startindexing = 1;

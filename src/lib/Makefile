@@ -7,12 +7,13 @@ all: depend $(LIBS)
 
 OBJS = base64.o conftree.o csguess.o debuglog.o \
      execmd.o wipedir.o \
-     fstreewalk.o mh_html.o mh_mail.o mh_exec.o mh_text.o htmlparse.o \
+     fstreewalk.o mh_html.o mh_mail.o mh_exec.o mh_text.o history.o \
+     htmlparse.o \
      idfile.o indexer.o internfile.o md5.o \
      mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathhash.o pathut.o \
      rclconfig.o rcldb.o rclinit.o readfile.o smallut.o \
      textsplit.o transcode.o \
-     unacpp.o unac.o
+     unacpp.o unac.o docseq.o
 SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
      ../utils/execmd.cpp ../utils/idfile.cpp ../utils/md5.cpp \
      ../utils/wipedir.cpp ../utils/fstreewalk.cpp \
@@ -24,7 +25,8 @@ SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
      ../common/rclconfig.cpp ../common/rcldb.cpp ../common/rclinit.cpp \
      ../utils/base64.cpp ../utils/readfile.cpp ../utils/smallut.cpp \
      ../common/textsplit.cpp ../utils/transcode.cpp \
-     ../common/unacpp.cpp ../unac/unac.c
+     ../common/unacpp.cpp ../unac/unac.c ../query/history.cpp \
+     ../query/docseq.cpp
 
 librcl.a : $(OBJS)
 	ar ru librcl.a $(OBJS)
@@ -45,6 +47,10 @@ execmd.o : ../utils/execmd.cpp
 wipedir.o : ../utils/wipedir.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 fstreewalk.o : ../utils/fstreewalk.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+history.o : ../query/history.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+docseq.o : ../query/docseq.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 mh_html.o : ../common/mh_html.cpp 
 	$(CXX) $(CXXFLAGS) -c $<

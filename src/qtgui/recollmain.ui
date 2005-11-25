@@ -186,6 +186,9 @@
         <separator/>
         <action name="fileExitAction"/>
     </item>
+    <item text="&amp;Tools" name="Tools">
+        <action name="toolsDoc_HistoryAction"/>
+    </item>
     <separator/>
     <item text="&amp;Help" name="Help">
         <separator/>
@@ -229,6 +232,17 @@
         </property>
         <property name="menuText">
             <string>About Recoll</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>toolsDoc_HistoryAction</cstring>
+        </property>
+        <property name="text">
+            <string>Doc History</string>
+        </property>
+        <property name="menuText">
+            <string>Doc History</string>
         </property>
     </action>
 </actions>
@@ -299,6 +313,12 @@
         <receiver>RecollMain</receiver>
         <slot>showAboutDialog()</slot>
     </connection>
+    <connection>
+        <sender>toolsDoc_HistoryAction</sender>
+        <signal>activated()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>showDocHistory()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in declaration">preview.h</include>
@@ -311,14 +331,15 @@
     <variable>int reslist_current;</variable>
     <variable>bool reslist_mouseDrag;</variable>
     <variable>bool reslist_mouseDown;</variable>
-    <variable>int reslistTE_par;</variable>
-    <variable>int reslistTE_car;</variable>
-    <variable>bool reslistTE_waitingdbl;</variable>
-    <variable>bool reslistTE_dblclck;</variable>
+    <variable>int reslist_par;</variable>
+    <variable>int reslist_car;</variable>
+    <variable>bool reslist_waitingdbl;</variable>
+    <variable>bool reslist_dblclck;</variable>
     <variable>bool dostem;</variable>
     <variable>std::string stemlang;</variable>
     <variable>Preview *curPreview;</variable>
     <variable>advsearch *asearchform;</variable>
+    <variable>DocSequence *docsource;</variable>
 </variables>
 <slots>
     <slot>fileExit()</slot>
@@ -326,6 +347,7 @@
     <slot>fileStart_IndexingAction_activated()</slot>
     <slot>reslistTE_doubleClicked( int par, int )</slot>
     <slot>reslistTE_clicked( int par, int car )</slot>
+    <slot>reslistTE_delayedclick()</slot>
     <slot>queryText_returnPressed()</slot>
     <slot>Search_clicked()</slot>
     <slot>clearqPB_clicked()</slot>
@@ -334,8 +356,8 @@
     <slot>previewClosed( Preview * w )</slot>
     <slot>advSearchPB_clicked()</slot>
     <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
-    <slot>reslistTE_delayedclick()</slot>
     <slot>showAboutDialog()</slot>
+    <slot>showDocHistory()</slot>
 </slots>
 <functions>
     <function access="private">init()</function>

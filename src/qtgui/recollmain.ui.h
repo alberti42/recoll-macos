@@ -29,15 +29,12 @@ using std::pair;
 #include <qwindowdefs.h>
 #include <qapplication.h>
 
-#include "rcldb.h"
-#include "rclconfig.h"
+#include "recoll.h"
 #include "debuglog.h"
 #include "mimehandler.h"
 #include "pathut.h"
-#include "recoll.h"
 #include "smallut.h"
 #include "plaintorich.h"
-#include "unacpp.h"
 #include "advsearch.h"
 #include "rclversion.h"
 
@@ -53,14 +50,18 @@ static const int respagesize = 8;
 
 void RecollMain::init()
 {
-    reslist_current = -1;
     reslist_winfirst = -1;
-    curPreview = 0;
-    asearchform = 0;
+    reslist_current = -1;
     reslist_mouseDrag = false;
     reslist_mouseDown = false;
-    reslistTE_waitingdbl = false;
-    reslistTE_dblclck = false;
+    reslist_par = -1;
+    reslist_car = -1;
+    reslist_waitingdbl = false;
+    reslist_dblclck = false;
+    dostem = false;
+    curPreview = 0;
+    asearchform = 0;
+    docsource = 0;
     reslistTE->viewport()->installEventFilter(this);
 }
 
@@ -158,7 +159,8 @@ static const char *eventTypeToStr(int tp)
 }
 #endif
 
-// We want to catch ^Q everywhere to mean quit.
+// There are a number of events that we want to process. Not sure the
+// ^Q thing is necessary (we have an action for this)?
 bool RecollMain::eventFilter( QObject * target, QEvent * event )
 {
     //    LOGDEB(("RecollMain::eventFilter target %p, event %s\n", target,
@@ -196,6 +198,7 @@ void RecollMain::fileExit()
     LOGDEB1(("RecollMain: fileExit\n"));
     if (asearchform)
 	delete asearchform;
+    // Let the exit handler clean up things
     exit(0);
 }
 
@@ -241,11 +244,11 @@ static string urltolocalpath(string url)
 void RecollMain::reslistTE_doubleClicked(int par, int)
 {
     LOGDEB(("RecollMain::reslistTE_doubleClicked: par %d\n", par));
-    reslistTE_dblclck = true;
+    reslist_dblclck = true;
 
     Rcl::Doc doc;
     int reldocnum =  par - 1;
-    if (!rcldb->getDoc(reslist_winfirst + reldocnum, doc, 0))
+    if (!docsource->getDoc(reslist_winfirst + reldocnum, doc, 0))
 	return;
     
     // Look for appropriate viewer
@@ -258,6 +261,7 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
     }
 
     string fn = urltolocalpath(doc.url);
+
     // Substitute %u (url) and %f (file name) inside prototype command
     string ncmd;
     string::const_iterator it1;
@@ -286,6 +290,7 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
 	stb->repaint(false);
 	XFlush(qt_xdisplay());
     }
+    history->enterDocument(fn, doc.ipath);
     system(ncmd.c_str());
 }
 
@@ -296,7 +301,7 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
 // check first if this might be a double click
 void RecollMain::reslistTE_clicked(int par, int car)
 {
-    if (reslistTE_waitingdbl)
+    if (reslist_waitingdbl)
 	return;
     LOGDEB(("RecollMain::reslistTE_clckd:winfirst %d par %d char %d drg %d\n", 
 	    reslist_winfirst, par, car, reslist_mouseDrag));
@@ -304,24 +309,52 @@ void RecollMain::reslistTE_clicked(int par, int car)
 	return;
 
     // remember par and car
-    reslistTE_par = par;
-    reslistTE_car = car;
-    reslistTE_waitingdbl = true;
-    reslistTE_dblclck = false;
+    reslist_par = par;
+    reslist_car = car;
+    reslist_waitingdbl = true;
+    reslist_dblclck = false;
     // Wait to see if there's going to be a dblclck
     QTimer::singleShot(150, this, SLOT(reslistTE_delayedclick()) );
 }
 
+// This gets called by a timer 100mS after a single click in the
+// result list. We don't want to start a preview if the user has
+// requested a native viewer by double-clicking
+void RecollMain::reslistTE_delayedclick()
+{
+    reslist_waitingdbl = false;
+    if (reslist_dblclck) {
+	reslist_dblclck = false;
+	return;
+    }
+
+    int par = reslist_par;
+
+    if (reslist_current != -1) {
+	QColor color("white");
+	reslistTE->setParagraphBackgroundColor(reslist_current+1, color);
+    }
+    QColor color("lightblue");
+    reslistTE->setParagraphBackgroundColor(par, color);
+
+    int reldocnum = par - 1;
+    if (curPreview && reslist_current == reldocnum)
+	return;
+
+    reslist_current = reldocnum;
+    startPreview(reslist_winfirst + reldocnum);
+}
 
 // User asked to start query. Send it to the db aand call
 // listNextPB_clicked to fetch and display the first page of results
 void RecollMain::queryText_returnPressed()
 {
     LOGDEB(("RecollMain::queryText_returnPressed()\n"));
+    // The db may have been closed at the end of indexing
     string reason;
     if (!maybeOpenDb(reason)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	return;
+	exit(1);
     }
     if (stemlang.empty())
 	getQueryStemming(dostem, stemlang);
@@ -335,6 +368,10 @@ void RecollMain::queryText_returnPressed()
 			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, stemlang))
 	return;
     curPreview = 0;
+
+    if (docsource)
+	delete docsource;
+    docsource = new DocSequenceDb(rcldb);
     listNextPB_clicked();
 }
 
@@ -361,15 +398,13 @@ void RecollMain::listPrevPB_clicked()
 // Fill up result list window with next screen of hits
 void RecollMain::listNextPB_clicked()
 {
-    if (!rcldb)
+    if (!docsource)
 	return;
 
     int percent;
     Rcl::Doc doc;
 
-    // Need to fetch one document before we can get the result count 
-    rcldb->getDoc(0, doc, &percent);
-    int resCnt = rcldb->getResCnt();
+    int resCnt = docsource->getResCnt();
 
     LOGDEB(("listNextPB_clicked: rescnt %d, winfirst %d\n", resCnt,
 	    reslist_winfirst));
@@ -392,15 +427,21 @@ void RecollMain::listNextPB_clicked()
     for (int i = 0; i < last; i++) {
 	doc.erase();
 
-	if (!rcldb->getDoc(reslist_winfirst + i, doc, &percent)) {
+	if (!docsource->getDoc(reslist_winfirst + i, doc, &percent)) {
 	    if (i == 0) 
 		reslist_winfirst = -1;
 	    break;
 	}
 	if (i == 0) {
-	    reslistTE->append("<qt><head></head><body><p>");
-	    QString line = tr("<p><b>Displaying results starting at index"
-			      " %1 (maximum set size %2)</b><br>")
+	    // We could use a <title> but the textedit doesnt display
+	    // it prominently
+	    reslistTE->append("<qt><head></head><body>");
+	    QString line = "<p><font size=+1><b>";
+	    line += docsource->title().c_str();
+	    line += "</b></font><br>";
+	    reslistTE->append(line);
+	    line = tr("<b>Displaying results starting at index"
+		      " %1 (maximum set size %2)</b></p>")
 		.arg(reslist_winfirst+1)
 		.arg(resCnt);
 	    reslistTE->append(line);
@@ -512,12 +553,12 @@ void RecollMain::advSearchPB_clicked()
 void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
 {
     LOGDEB(("RecollMain::startAdvSearch\n"));
+    // The db may have been closed at the end of indexing
     string reason;
     if (!maybeOpenDb(reason)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	return;
+	exit(1);
     }
-
     if (stemlang.empty())
 	getQueryStemming(dostem, stemlang);
 
@@ -528,37 +569,10 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
 			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, stemlang))
 	return;
     curPreview = 0;
+    if (docsource)
+	delete docsource;
+    docsource = new DocSequenceDb(rcldb);
     listNextPB_clicked();
-}
-
-
-
-// This gets called by a timer 100mS after a single click in the
-// result list. We don't want to start a preview if the user has
-// requested a native viewer by double-clicking
-void RecollMain::reslistTE_delayedclick()
-{
-    reslistTE_waitingdbl = false;
-    if (reslistTE_dblclck) {
-	reslistTE_dblclck = false;
-	return;
-    }
-
-    int par = reslistTE_par;
-
-    if (reslist_current != -1) {
-	QColor color("white");
-	reslistTE->setParagraphBackgroundColor(reslist_current+1, color);
-    }
-    QColor color("lightblue");
-    reslistTE->setParagraphBackgroundColor(par, color);
-
-    int reldocnum = par - 1;
-    if (curPreview && reslist_current == reldocnum)
-	return;
-
-    reslist_current = reldocnum;
-    startPreview(reslist_winfirst + reldocnum);
 }
 
 
@@ -571,7 +585,7 @@ void RecollMain::reslistTE_delayedclick()
 void RecollMain::startPreview(int docnum)
 {
     Rcl::Doc doc;
-    if (!rcldb->getDoc(docnum, doc, 0)) {
+    if (!docsource->getDoc(docnum, doc, 0)) {
 	QMessageBox::warning(0, "Recoll",
 			     tr("Cannot retrieve document info" 
 				     " from database"));
@@ -609,7 +623,7 @@ void RecollMain::startPreview(int docnum)
 	}
 	(void)curPreview->addEditorTab();
     }
-
+    history->enterDocument(fn, doc.ipath);
     curPreview->loadFileInCurrentTab(fn, st.st_size, doc);
 }
 
@@ -619,4 +633,18 @@ void RecollMain::showAboutDialog()
     string vstring = string("Recoll ") + rclversion + 
 	"<br>" + "http://www.recoll.org";
     QMessageBox::information(this, tr("About Recoll"), vstring.c_str());
+}
+
+
+void RecollMain::showDocHistory()
+{
+    LOGDEB(("RecollMain::showDocHistory\n"));
+    reslist_current = -1;
+    reslist_winfirst = -1;
+    curPreview = 0;
+
+    if (docsource)
+	delete docsource;
+    docsource = new DocSequenceHistory(rcldb, history);
+    listNextPB_clicked();
 }
