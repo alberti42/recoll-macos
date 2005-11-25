@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.2 2005-11-17 12:47:03 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.3 2005-11-25 08:50:39 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -25,6 +25,8 @@ using std::list;
 #define MIN(A,B) ((A)<(B) ? (A) : (B))
 #endif
 
+/** Remove instances of characters belonging to set (default {space,
+    tab}) at beginning and end of input string */
 static void trimstring(string &s, const char *ws = " \t")
 {
     string::size_type pos = s.find_first_not_of(ws);
@@ -71,7 +73,7 @@ void ConfSimple::parseinput(istream &input)
 	    line = cline;
 
 	// Note that we trim whitespace before checking for backslash-eol
-	// This avoids invisible problems
+	// This avoids invisible problems.
 	trimstring(line);
 	if (line.empty())
 	    continue;
@@ -183,7 +185,7 @@ ConfSimple::StatusCode ConfSimple::getStatus()
 
 int ConfSimple::get(const string &nm, string &value, const string &sk)
 {
-    if (status == STATUS_ERROR)
+    if (!ok())
 	return 0;
 
     // Find submap
@@ -217,14 +219,28 @@ const char *ConfSimple::get(const char *nm, const char *sk)
     return (s->second).c_str();
 }
 
-static ConfSimple::WalkerCode swalker(void *f, const char *nm, 
-				      const char *value)
+static ConfSimple::WalkerCode swalker(void *f, const string &nm, 
+				      const string &value)
 {
     ostream *output = (ostream *)f;
-    if (!nm || !strcmp(nm, ""))
+    if (nm.empty())
 	*output << "\n[" << value << "]\n";
-    else
-	*output << nm << " = " << value << "\n";
+    else {
+	string value1;
+	if (value.length() < 60) {
+	    value1 = value;
+	} else {
+	    string::size_type pos = 0;
+	    while (pos < value.length()) {
+		string::size_type len = MIN(60, value.length() - pos);
+		value1 += value.substr(pos, len);
+		pos += len;
+		if (pos < value.length())
+		    value1 += "\\\n";
+	    }
+	}
+	*output << nm << " = " << value1 << "\n";
+    }
     return ConfSimple::WALK_CONTINUE;
 }
 
@@ -240,28 +256,14 @@ int ConfSimple::set(const std::string &nm, const std::string &value,
 	return 0;
     }
 
-    string value1;
-    string::size_type pos = 0;
-    if (value.length() < 60) {
-	value1 = value;
-    } else {
-	while (pos < value.length()) {
-	    string::size_type len = MIN(60, value.length() - pos);
-	    value1 += value.substr(pos, len);
-	    pos += len;
-	    if (pos < value.length())
-		value1 += "\\\n";
-	}
-    }
-
     map<string, map<string, string> >::iterator ss;
     if ((ss = submaps.find(sk)) == submaps.end()) {
 	map<string, string> submap;
-	submap[nm] = value1;
+	submap[nm] = value;
 	submaps[sk] = submap;
 
     } else {
-	ss->second[nm] = value1;
+	ss->second[nm] = value;
     }
   
     if (filename.length()) {
@@ -284,7 +286,39 @@ int ConfSimple::set(const std::string &nm, const std::string &value,
     }
 }
 
-// Add parameter to file
+int ConfSimple::erase(const string &nm, const string &sk)
+{
+    if (status  != STATUS_RW)
+	return 0;
+
+    map<string, map<string, string> >::iterator ss;
+    if ((ss = submaps.find(sk)) == submaps.end()) {
+	return 0;
+
+    }
+    
+    ss->second.erase(nm);
+  
+    if (filename.length()) {
+	ofstream output(filename.c_str(), ios::out|ios::trunc);
+	if (!output.is_open())
+	    return 0;
+	if (sortwalk(swalker, &output) != WALK_CONTINUE) {
+	    return 0;
+	}
+	return 1;
+    } else if (data) {
+	ostringstream output(*data, ios::out | ios::trunc);
+	if (sortwalk(swalker, &output) != WALK_CONTINUE) {
+	    return 0;
+	}
+	return 1;
+    } else {
+	// ??
+	return 0;
+    }
+}
+
 int ConfSimple::set(const char *nm, const char *value, const char *sk)
 {
     string ssk = (sk == 0) ? string("") : string(sk);
@@ -292,9 +326,11 @@ int ConfSimple::set(const char *nm, const char *value, const char *sk)
 }
 
 ConfSimple::WalkerCode 
-ConfSimple::sortwalk(WalkerCode (*walker)(void *,const char *,const char *),
+ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
 		     void *clidata)
 {
+    if (!ok())
+	return WALK_STOP;
     // For all submaps:
     for (map<string, map<string, string> >::iterator sit = submaps.begin();
 	 sit != submaps.end(); sit++) {
@@ -308,8 +344,7 @@ ConfSimple::sortwalk(WalkerCode (*walker)(void *,const char *,const char *),
 	map<string, string> &sm = sit->second;
 	for (map<string, string>::iterator it = sm.begin();it != sm.end();
 	     it++) {
-	    if (walker(clidata, it->first.c_str(), it->second.c_str()) 
-		== WALK_STOP)
+	    if (walker(clidata, it->first, it->second) == WALK_STOP)
 		return WALK_STOP;
 	}
     }
@@ -319,23 +354,30 @@ ConfSimple::sortwalk(WalkerCode (*walker)(void *,const char *,const char *),
 #include <iostream>
 void ConfSimple::list()
 {
+    if (!ok())
+	return;
     sortwalk(swalker, &std::cout);
 }
 
-static ConfSimple::WalkerCode lwalker(void *l, const char *nm, const char *)
-{
-    list<string> *lst = (list<string> *)l;
-    if (nm && *nm)
-	lst->push_back(nm);
-    return ConfSimple::WALK_CONTINUE;
-}
-
-list<string> ConfSimple::getKeys()
+list<string> ConfSimple::getNames(const string &sk)
 {
     std::list<string> mylist;
-    sortwalk(lwalker, &mylist);
+    if (!ok())
+	return mylist;
+    map<string, map<string, string> >::iterator ss;
+    if ((ss = submaps.find(sk)) == submaps.end()) {
+	return mylist;
+    }
+    map<string, string>::const_iterator it;
+    for (it = ss->second.begin();it != ss->second.end();it++) {
+	mylist.push_back(it->first);
+    }
     return mylist;
 }
+
+// //////////////////////////////////////////////////////////////////////////
+// ConfTree Methods: conftree interpret keys like a hierarchical file tree
+// //////////////////////////////////////////////////////////////////////////
 
 int ConfTree::get(const std::string &name, string &value, const string &sk)
 {
@@ -366,106 +408,6 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
     return 0;
 }
 
-bool ConfTree::stringToStrings(const string &s, std::list<string> &tokens)
-{
-    string current;
-    tokens.clear();
-    enum states {SPACE, TOKEN, INQUOTE, ESCAPE};
-    states state = SPACE;
-    for (unsigned int i = 0; i < s.length(); i++) {
-	switch (s[i]) {
-	    case '"': 
-	    switch(state) {
-	      case SPACE: 
-		state=INQUOTE; continue;
-	      case TOKEN: 
-	        current += '"';
-		continue;
-	      case INQUOTE: 
-		tokens.push_back(current);
-		current = "";
-		state = SPACE;
-		continue;
-	      case ESCAPE:
-	        current += '"';
-	        state = INQUOTE;
-	      continue;
-	    }
-	    break;
-	    case '\\': 
-	    switch(state) {
-	      case SPACE: 
-	      case TOKEN: 
-		  current += '\\';
-		  state=TOKEN; 
-		  continue;
-	      case INQUOTE: 
-		  state = ESCAPE;
-		  continue;
-	      case ESCAPE:
-		  current += '\\';
-		  state = INQUOTE;
-		  continue;
-	    }
-	    break;
-
-	    case ' ': 
-	    case '\t': 
-	    switch(state) {
-	      case SPACE: 
-		  continue;
-	      case TOKEN: 
-		tokens.push_back(current);
-		current = "";
-		state = SPACE;
-		continue;
-	      case INQUOTE: 
-	      case ESCAPE:
-		  current += s[i];
-		  continue;
-	    }
-	    break;
-
-	    default:
-	    switch(state) {
-	      case ESCAPE:
-		  state = INQUOTE;
-		  break;
-	      case SPACE: 
-		  state = TOKEN;
-		  break;
-	      case TOKEN: 
-	      case INQUOTE: 
-		  break;
-	    }
-	    current += s[i];
-	}
-    }
-    switch(state) {
-    case SPACE: 
-	break;
-    case TOKEN: 
-	tokens.push_back(current);
-	break;
-    case INQUOTE: 
-    case ESCAPE:
-	return false;
-    }
-    return true;
-}
-
-bool ConfTree::stringToBool(const string &s)
-{
-    if (isdigit(s[0])) {
-	int val = atoi(s.c_str());
-	return val ? true : false;
-    }
-    if (strchr("yYoOtT", s[0]))
-	return true;
-    return false;
-}
-
-
 #else // TEST_CONFTREE
 
 #include <stdio.h>
@@ -476,17 +418,18 @@ bool ConfTree::stringToBool(const string &s)
 #include <list>
 
 #include "conftree.h"
+#include "smallut.h"
 
 using namespace std;
 
 static char *thisprog;
 
-ConfSimple::WalkerCode mywalker(void *, const char *nm, const char *value)
+ConfSimple::WalkerCode mywalker(void *, const string &nm, const string &value)
 {
-    if (!nm || nm[0] == 0)
-	printf("\n[%s]\n", value);
+    if (nm.empty())
+	printf("\n[%s]\n", value.c_str());
     else 
-	printf("'%s' -> '%s'\n", nm, value);
+	printf("'%s' -> '%s'\n", nm.c_str(), value.c_str());
     return ConfSimple::WALK_CONTINUE;
 }
 
@@ -527,6 +470,7 @@ static char usage [] =
     "[-w]  : read/write test.\n"
     "[-s]  : string parsing test. Filename must hold parm 'strings'\n"
     "[-q] nm sect : subsection test: look for nm in 'sect' which can be ''\n"
+    "[-d] nm sect : delete nm in 'sect' which can be ''\n"
     "[-S] : string io test. No filename in this case\n"
     ;
 
@@ -540,6 +484,7 @@ static int     op_flags;
 #define OPT_q     0x4
 #define OPT_s     0x8
 #define OPT_S     0x10
+#define OPT_d     0x20
 
 int main(int argc, char **argv)
 {
@@ -559,6 +504,13 @@ int main(int argc, char **argv)
 	    case 'w':	op_flags |= OPT_w; break;
 	    case 's':   op_flags |= OPT_s; break;
 	    case 'S':   op_flags |= OPT_S; break;
+	    case 'd':   
+		op_flags |= OPT_d;
+		if (argc < 3)  
+		    Usage();
+		nm = *(++argv);argc--;
+		sub = *(++argv);argc--;		  
+		goto b1;
 	    case 'q':
 		op_flags |= OPT_q;
 		if (argc < 3)  
@@ -629,6 +581,18 @@ int main(int argc, char **argv)
 	    }
 	    printf("%s : '%s' = '%s'\n", sub, nm, value.c_str());
 	    exit(0);
+	} else if (op_flags & OPT_d) {
+	    ConfTree parms(filename, 0);
+	    if (parms.getStatus() != ConfSimple::STATUS_RW) {
+		fprintf(stderr, "Error opening or parsing file\n");
+		exit(1);
+	    }
+	    if (!parms.erase(nm, sub)) {
+		fprintf(stderr, "delete name '%s' in '%s' failed\n", nm, sub);
+		exit(1);
+	    }
+	    printf("OK\n");
+	    exit(0);
 	} else if (op_flags & OPT_s) {
 	    ConfSimple parms(filename, 1);
 	    if (parms.getStatus() == ConfSimple::STATUS_ERROR) {
@@ -643,7 +607,7 @@ int main(int argc, char **argv)
 	    }
 	    cout << "source: [" << source << "]" << endl;
 	    list<string> strings;
-	    if (!ConfTree::stringToStrings(source, strings)) {
+	    if (!stringToStrings(source, strings)) {
 		cerr << "parse failed" << endl;
 		exit(1);
 	    }
@@ -659,12 +623,15 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Open failed\n");
 		exit(1);
 	    }
-	    printf("LIST\n");parms.list();
-	    printf("KEYS\n");
-	    list<string> keys = parms.getKeys();
-	    for (list<string>::iterator it = keys.begin();it!=keys.end();it++) 
-		printf("%s\n", (*it).c_str());
+	    printf("LIST\n");
+	    parms.list();
 	    //printf("WALK\n");parms.sortwalk(mywalker, 0);
+	    printf("\nNAMES in global space:\n");
+	    list<string> names = parms.getNames("");
+	    for (list<string>::iterator it = names.begin();it!=names.end();
+		 it++) 
+		printf("%s\n", (*it).c_str());
+
 	}
     }
 }

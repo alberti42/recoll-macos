@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.8 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.9 2005-11-25 08:50:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_SMALLUT
 #include <string>
@@ -163,17 +163,119 @@ bool samecharset(const string &cs1, const string &cs2)
 {
     string mcs1, mcs2;
     // Remove all - and _, turn to lowecase
-    for (int i = 0; i < cs1.length();i++) {
+    for (unsigned int i = 0; i < cs1.length();i++) {
 	if (cs1[i] != '_' && cs1[i] != '-') {
 	    mcs1 += ::tolower(cs1[i]);
 	}
     }
-    for (int i = 0; i < cs2.length();i++) {
+    for (unsigned int i = 0; i < cs2.length();i++) {
 	if (cs2[i] != '_' && cs2[i] != '-') {
 	    mcs2 += ::tolower(cs2[i]);
 	}
     }
     return mcs1 == mcs2;
+}
+
+
+bool stringToStrings(const string &s, std::list<string> &tokens)
+{
+    string current;
+    tokens.clear();
+    enum states {SPACE, TOKEN, INQUOTE, ESCAPE};
+    states state = SPACE;
+    for (unsigned int i = 0; i < s.length(); i++) {
+	switch (s[i]) {
+	    case '"': 
+	    switch(state) {
+	      case SPACE: 
+		state=INQUOTE; continue;
+	      case TOKEN: 
+	        current += '"';
+		continue;
+	      case INQUOTE: 
+		tokens.push_back(current);
+		current = "";
+		state = SPACE;
+		continue;
+	      case ESCAPE:
+	        current += '"';
+	        state = INQUOTE;
+	      continue;
+	    }
+	    break;
+	    case '\\': 
+	    switch(state) {
+	      case SPACE: 
+	      case TOKEN: 
+		  current += '\\';
+		  state=TOKEN; 
+		  continue;
+	      case INQUOTE: 
+		  state = ESCAPE;
+		  continue;
+	      case ESCAPE:
+		  current += '\\';
+		  state = INQUOTE;
+		  continue;
+	    }
+	    break;
+
+	    case ' ': 
+	    case '\t': 
+	    switch(state) {
+	      case SPACE: 
+		  continue;
+	      case TOKEN: 
+		tokens.push_back(current);
+		current = "";
+		state = SPACE;
+		continue;
+	      case INQUOTE: 
+	      case ESCAPE:
+		  current += s[i];
+		  continue;
+	    }
+	    break;
+
+	    default:
+	    switch(state) {
+	      case ESCAPE:
+		  state = INQUOTE;
+		  break;
+	      case SPACE: 
+		  state = TOKEN;
+		  break;
+	      case TOKEN: 
+	      case INQUOTE: 
+		  break;
+	    }
+	    current += s[i];
+	}
+    }
+    switch(state) {
+    case SPACE: 
+	break;
+    case TOKEN: 
+	tokens.push_back(current);
+	break;
+    case INQUOTE: 
+    case ESCAPE:
+	return false;
+    }
+    return true;
+}
+
+bool stringToBool(const string &s)
+{
+    if (s.empty())
+	return false;
+    if (isdigit(s[0])) {
+	int val = atoi(s.c_str());
+	return val ? true : false;
+    }
+    if (strchr("yYoOtT", s[0]))
+	return true;
+    return false;
 }
 
 #else

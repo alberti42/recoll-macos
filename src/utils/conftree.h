@@ -65,7 +65,7 @@ class ConfSimple {
     virtual int get(const std::string &name, string &value) {
 	return get(name, value, string(""));
     }
-    /**
+    /*
      * See comments for std::string variant
      * @return 0 if name not found, const C string else
      */
@@ -75,10 +75,17 @@ class ConfSimple {
      * Set value for named parameter in specified subsection (or global)
      * @return 0 for error, 1 else
      */
-    int set(const std::string &nm, const std::string &val, const string &sk);
-    int set(const char *name, const char *value, const char *sk = 0);
+    virtual int set(const std::string &nm, const std::string &val, 
+	    const std::string &sk);
+    virtual int set(const char *name, const char *value, const char *sk = 0);
+
+    /**
+     * Remove name and value from config
+     */
+    virtual int erase(const std::string &name, const std::string &sk);
 
     virtual StatusCode getStatus(); 
+    virtual bool ok() {return getStatus() != STATUS_ERROR;}
 
     /** 
      * Walk the configuration values, calling function for each.
@@ -89,14 +96,17 @@ class ConfSimple {
      */
     enum WalkerCode {WALK_STOP, WALK_CONTINUE};
     virtual WalkerCode sortwalk(WalkerCode 
-				(*wlkr)(void *cldata, const char *nm, 
-					const char *val),
+				(*wlkr)(void *cldata, const std::string &nm, 
+					const std::string &val),
 				void *clidata);
-    void list();
+    virtual void list();
+
     /**
-     * Return all key names:
+     * Return all names in given submap
      */
-    std::list<string> getKeys();
+    virtual std::list<string> getNames(const string &sk);
+
+    virtual std::string getFilename() {return filename;}
 
  protected:
     bool dotildexpand;
@@ -145,14 +155,6 @@ class ConfTree : public ConfSimple {
     virtual int get(const char *name, string &value, const char *sk) {
 	return get(string(name), value, sk ? string(sk) : string(""));
     }
-    /**
-     * Parse input stream into vector of strings. 
-     *
-     * Token delimiter is " \t" except inside dquotes. dquote inside
-     * dquotes can be escaped with \ etc...
-     */
-    static bool stringToStrings(const string &s, std::list<string> &tokens);
-    static bool stringToBool(const string &s);
 };
 
 #endif /*_CONFTREE_H_ */
