@@ -239,6 +239,18 @@ static string urltolocalpath(string url)
 {
     return url.substr(7, string::npos);
 }
+// Translate paragraph number in list window to doc number. This depends on 
+// how we format the title etc..
+static int reldocnumfromparnum(int par)
+{
+    return par - 2;
+}
+// Translate paragraph number in list window to doc number. This depends on 
+// how we format the title etc..
+static int parnumfromreldocnum(int docnum)
+{
+    return docnum + 2;
+}
 
 // Double click in result list: use external viewer to display file
 void RecollMain::reslistTE_doubleClicked(int par, int)
@@ -247,7 +259,7 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
     reslist_dblclck = true;
 
     Rcl::Doc doc;
-    int reldocnum =  par - 1;
+    int reldocnum =  reldocnumfromparnum(par);
     if (!docsource->getDoc(reslist_winfirst + reldocnum, doc, 0))
 	return;
     
@@ -332,12 +344,14 @@ void RecollMain::reslistTE_delayedclick()
 
     if (reslist_current != -1) {
 	QColor color("white");
-	reslistTE->setParagraphBackgroundColor(reslist_current+1, color);
+	reslistTE->
+	    setParagraphBackgroundColor(parnumfromreldocnum(reslist_current), 
+					color);
     }
     QColor color("lightblue");
     reslistTE->setParagraphBackgroundColor(par, color);
 
-    int reldocnum = par - 1;
+    int reldocnum = reldocnumfromparnum(par);
     if (curPreview && reslist_current == reldocnum)
 	return;
 

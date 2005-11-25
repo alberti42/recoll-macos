@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.3 2005-11-25 08:50:39 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.4 2005-11-25 14:36:45 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -15,6 +15,7 @@ static char rcsid [] = "@(#$Id: conftree.cpp,v 1.3 2005-11-25 08:50:39 dockes Ex
 
 #include "conftree.h"
 #include "pathut.h"
+#include "smallut.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -25,21 +26,6 @@ using std::list;
 #define MIN(A,B) ((A)<(B) ? (A) : (B))
 #endif
 
-/** Remove instances of characters belonging to set (default {space,
-    tab}) at beginning and end of input string */
-static void trimstring(string &s, const char *ws = " \t")
-{
-    string::size_type pos = s.find_first_not_of(ws);
-    if (pos == string::npos) {
-	s = "";
-	return;
-    }
-    s.replace(0, pos, "");
-
-    pos = s.find_last_not_of(ws);
-    if (pos != string::npos && pos != s.length()-1)
-	s.replace(pos+1, string::npos, "");
-}
 
 #define LL 1024
 void ConfSimple::parseinput(istream &input)

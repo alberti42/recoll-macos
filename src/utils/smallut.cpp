@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.9 2005-11-25 08:50:39 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.10 2005-11-25 14:36:45 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_SMALLUT
 #include <string>
@@ -276,6 +276,20 @@ bool stringToBool(const string &s)
     if (strchr("yYoOtT", s[0]))
 	return true;
     return false;
+}
+
+void trimstring(string &s, const char *ws)
+{
+    string::size_type pos = s.find_first_not_of(ws);
+    if (pos == string::npos) {
+	s = "";
+	return;
+    }
+    s.replace(0, pos, "");
+
+    pos = s.find_last_not_of(ws);
+    if (pos != string::npos && pos != s.length()-1)
+	s.replace(pos+1, string::npos, "");
 }
 
 #else

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: history.cpp,v 1.1 2005-11-24 18:21:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: history.cpp,v 1.2 2005-11-25 14:36:45 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #ifndef TEST_HISTORY
@@ -24,29 +24,59 @@ bool RclQHistory::enterDocument(const string fn, const string ipath)
 {
     LOGDEB(("RclQHistory::enterDocument: [%s] [%s] into %s\n", 
 	    fn.c_str(), ipath.c_str(), m_data.getFilename().c_str()));
-    // How many do we have
-    list<string> names = m_data.getNames(docSubkey);
-    list<string>::const_iterator it = names.begin();
-    if (names.size() >= m_mlen) {
-	// Need to erase entries until we're back to size. Note that
-	// we don't ever erase anything. Problems will arise when
-	// history is 2 billion entries old
-	for (unsigned int i = 0; i < names.size() - m_mlen + 1; i++, it++) {
-	    m_data.erase(*it, docSubkey);
-	    it++;
-	}
-    }
-
-    // Increment highest number
-    int hi = names.empty() ? 0 : atoi(names.back().c_str());
-    hi++;
-    char nname[20];
-    sprintf(nname, "%010d", hi);
-
+    //Encode value part: 2 base64 of fn and ipath separated by a space
     string bfn, bipath;
     base64_encode(fn, bfn);
     base64_encode(ipath, bipath);
     string value = bfn + " " + bipath;
+
+    // We trim whitespace from the value (if there is no ipath it now
+    // ends with a space), else the value later returned by conftree
+    // will be different because conftree does trim white space, and
+    // this breaks the comparisons below
+    trimstring(value);
+
+    LOGDEB1(("Encoded value [%s] (%d)\n", value.c_str(), value.size()));
+    // Is this doc already in history ? If it is we remove the old entry
+    list<string> names = m_data.getNames(docSubkey);
+    list<string>::const_iterator it;
+    bool changed = false;
+    for (it = names.begin();it != names.end(); it++) {
+	string oval;
+	if (!m_data.get(*it, oval, docSubkey)) {
+	    LOGDEB(("No data for %s\n", (*it).c_str()));
+	    continue;
+	}
+	LOGDEB1(("Look at %s [%s] (%d)\n", 
+		(*it).c_str(), oval.c_str(), oval.length()));
+	if (oval == value) {
+	    LOGDEB1(("Erasing old entry\n"));
+	    m_data.erase(*it, docSubkey);
+	    changed = true;
+	}
+    }
+    // Maybe reget list
+    if (changed)
+	names = m_data.getNames(docSubkey);
+
+    // How many do we have
+    if (names.size() >= m_mlen) {
+	// Need to erase entries until we're back to size. Note that
+	// we don't ever reset numbers. Problems will arise when
+	// history is 4 billion entries old
+	it = names.begin();
+	for (unsigned int i = 0; i < names.size() - m_mlen + 1; i++, it++) {
+	    m_data.erase(*it, docSubkey);
+	}
+    }
+
+    // Increment highest number
+    unsigned int hi = names.empty() ? 0 : 
+	(unsigned int)atoi(names.back().c_str());
+    hi++;
+    char nname[20];
+    sprintf(nname, "%010u", hi);
+
     if (!m_data.set(string(nname), value, docSubkey)) {
 	LOGERR(("RclQHistory::enterDocument: set failed\n"));
 	return false;
@@ -73,7 +103,7 @@ list< pair<string, string> > RclQHistory::getDocHistory()
 	    LOGDEB(("RclQHistory::getDocHistory:fn: %s\n", fn.c_str()));
 	    if (vall.size() == 2)
 		base64_decode(*it1, ipath);
-	    mlist.push_back(pair<string, string>(fn, ipath));
+	    mlist.push_front(pair<string, string>(fn, ipath));
 	}
     }
     return mlist;
