@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.14 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.15 2005-11-25 09:13:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMETYPE
@@ -68,7 +68,7 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	// Now looks like ": text/plain; charset=us-ascii"
 	// Split it, and take second field
 	list<string> res;
-	ConfTree::stringToStrings(result, res);
+	stringToStrings(result, res);
 	if (res.size() <= 1) 
 	    return "";
 	list<string>::iterator it = res.begin();

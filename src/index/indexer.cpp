@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.17 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.18 2005-11-25 09:13:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -106,7 +106,7 @@ bool DbIndexer::index()
 	    string skipped; 
 	    if (config->getConfParam("skippedNames", skipped)) {
 		list<string> skpl;
-		ConfTree::stringToStrings(skipped, skpl);
+		stringToStrings(skipped, skpl);
 		list<string>::const_iterator it;
 		for (it = skpl.begin(); it != skpl.end(); it++) {
 		    walker.addSkippedName(*it);
@@ -131,7 +131,7 @@ bool DbIndexer::index()
     string slangs;
     if (config->getConfParam("indexstemminglanguages", slangs)) {
 	list<string> langs;
-	ConfTree::stringToStrings(slangs, langs);
+	stringToStrings(slangs, langs);
 	for (list<string>::const_iterator it = langs.begin(); 
 	     it != langs.end(); it++) {
 	    db.createStemDb(*it);
@@ -224,7 +224,7 @@ bool ConfIndexer::index()
 	return false;
     }
     list<string> tdl; // List of directories to be indexed
-    if (!ConfTree::stringToStrings(topdirs, tdl)) {
+    if (!stringToStrings(topdirs, tdl)) {
 	LOGERR(("ConfIndexer::index: parse error for directory list\n"));
 	return false;
     }

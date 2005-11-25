@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.10 2005-11-21 16:05:07 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.11 2005-11-25 09:14:14 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -25,15 +25,9 @@ application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 # The external (exec) filters  output the document in simple html format,
 # have a look at the scripts.
 [index]
-text/plain = internal 
-text/html  = internal 
-text/x-mail = internal
-message/rfc822 = internal
-
+application/msword = exec rcldoc
 application/pdf = exec rclpdf
 application/postscript = exec rclps
-application/msword = exec rcldoc
-
 application/vnd.sun.xml.calc = exec rclsoff
 application/vnd.sun.xml.calc.template = exec rclsoff
 application/vnd.sun.xml.draw = exec rclsoff
@@ -45,9 +39,13 @@ application/vnd.sun.xml.writer = exec rclsoff
 application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
 
-text/x-gaim-log = exec rclgaim
+message/rfc822 = internal
 
+text/html  = internal 
+text/plain = internal 
 text/rtf = exec rclrtf
+text/x-gaim-log = exec rclgaim
+text/x-mail = internal
 
 ## 
 # External viewers, launched when you double-click a result entry
