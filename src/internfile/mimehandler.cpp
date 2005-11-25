@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.14 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.15 2005-11-25 08:52:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -42,7 +42,7 @@ MimeHandler *getMimeHandler(const string &mtype, RclConfig *cfg)
 
     // Break definition into type and name 
     list<string> toks;
-    ConfTree::stringToStrings(hs, toks);
+    stringToStrings(hs, toks);
     if (toks.empty()) {
 	LOGERR(("getMimeHandler: bad mimeconf line for %s\n", mtype.c_str()));
 	return 0;

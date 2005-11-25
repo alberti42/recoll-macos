@@ -1,4 +1,4 @@
-# @(#$Id: Makefile,v 1.18 2005-11-23 10:57:23 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.19 2005-11-25 08:51:47 dockes Exp $  (C) 2005 J.F.Dockes
 
 # Default values. These can be overridden on the command line ie: 
 # make prefix=/usr
@@ -41,10 +41,12 @@ clean:
 	rm -f qtgui/Makefile qtgui/preview/Makefile qtgui/recoll
 
 distclean: clean
-	rm -f mk/sysconf 
+	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf recollinstall
 
 install: all
 	./recollinstall ${prefix}
 
 installme:
 	./recollinstall
+
+.PHONY: all static clean distclean install installme

@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.17 2005-11-14 09:56:49 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.18 2005-11-25 08:53:13 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -87,12 +87,7 @@ class AdvSearchData {
  * Wrapper class for the native database.
  */
 class Db {
-    AdvSearchData asdata;
-    vector<int> dbindices; // In case there is a postq filter: sequence of 
-                           // db indices that match
-    void *pdata; // Pointer to private data. We don't want db(ie
-                // xapian)-specific defs to show in here
- public:
+public:
     Db();
     ~Db();
     enum OpenMode {DbRO, DbUpd, DbTrunc};
@@ -116,15 +111,29 @@ class Db {
 		  const string& stemlang = "english");
     bool getQueryTerms(list<string>& terms);
 
-    // Get document at rank i. This is probably vastly inferior to the type
-    // of interface in Xapian, but we have to start with something simple
-    // to experiment with the GUI. i is sequential from 0 to some value
+    /** Get document at rank i in current query. 
+
+	This is probably vastly inferior to the type of interface in
+	Xapian, but we have to start with something simple to
+	experiment with the GUI. i is sequential from 0 to some value.
+    */
     bool getDoc(int i, Doc &doc, int *percent = 0);
-    // Get results count
+
+    /** Get document for given filename and ipath */
+    bool getDoc(const string &fn, const string &ipath, Doc &doc);
+
+    /** Get results count for current query */
     int getResCnt();
 
     friend class Rcl::DbPops;
-    private:
+
+private:
+
+    AdvSearchData asdata;
+    vector<int> dbindices; // In case there is a postq filter: sequence of 
+                           // db indices that match
+    void *pdata; // Pointer to private data. We don't want db(ie
+                 // xapian)-specific defs to show in here
     /* Copyconst and assignemt private and forbidden */
     Db(const Db &) {}
     Db & operator=(const Db &) {return *this;};
