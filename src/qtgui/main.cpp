@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.19 2005-11-25 10:26:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.20 2005-11-28 15:31:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -36,7 +36,7 @@ int recollNeedsExit;
 string tmpdir;
 bool showicons;
 string iconsdir;
-RclQHistory *history;
+RclDHistory *history;
 
 void getQueryStemming(bool &dostem, std::string &stemlang)
 {
@@ -172,7 +172,7 @@ int main( int argc, char ** argv )
 
     string historyfile = rclconfig->getConfDir();
     path_cat(historyfile, "history");
-    history = new RclQHistory(historyfile);
+    history = new RclDHistory(historyfile);
 
     dbdir = path_tildexpand(dbdir);
 

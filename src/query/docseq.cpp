@@ -1,10 +1,13 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseq.cpp,v 1.1 2005-11-25 10:02:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseq.cpp,v 1.2 2005-11-28 15:31:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
+#include <math.h>
+
 #include "docseq.h"
 
-bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, int *percent) 
+bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, int *percent, string *sh)
 {
+    if (sh) sh->erase();
     return db ? db->getDoc(num, doc, percent) : false;
 }
 
@@ -20,7 +23,8 @@ int DocSequenceDb::getResCnt()
 }
 
 
-bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent) {
+bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent, 
+				string *sh) {
     // Retrieve history list
     if (!hist)
 	return false;
@@ -41,7 +45,15 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent) {
 	it++;
     if (percent)
 	*percent = 100;
-    return db->getDoc((*it).first, (*it).second, doc);
+    if (sh) {
+	if (prevtime < 0 || abs(prevtime - (*it).unixtime) > 86400) {
+	    prevtime = it->unixtime;
+	    time_t t = (time_t)(it->unixtime);
+	    *sh = string(ctime(&t));
+	} else
+	    sh->erase();
+    }
+    return db->getDoc((*it).fn, (*it).ipath, doc);
 }
 
 int DocSequenceHistory::getResCnt()

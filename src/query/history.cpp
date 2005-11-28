@@ -1,9 +1,10 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: history.cpp,v 1.2 2005-11-25 14:36:45 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: history.cpp,v 1.3 2005-11-28 15:31:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #ifndef TEST_HISTORY
 #include <time.h>
+
 #include "history.h"
 #include "base64.h"
 #include "smallut.h"
@@ -13,48 +14,65 @@ static char rcsid[] = "@(#$Id: history.cpp,v 1.2 2005-11-25 14:36:45 dockes Exp 
 using namespace std;
 #endif
 
-RclQHistory::RclQHistory(const string &fn, unsigned int mxs)
+static const char *docSubkey = "docs";
+
+RclDHistory::RclDHistory(const string &fn, unsigned int mxs)
     : m_mlen(mxs), m_data(fn.c_str())
 {
-    
 }
-const char *docSubkey = "docs";
 
-bool RclQHistory::enterDocument(const string fn, const string ipath)
+bool RclDHistory::decodeValue(const string &value, RclDHistoryEntry *e)
 {
-    LOGDEB(("RclQHistory::enterDocument: [%s] [%s] into %s\n", 
+    list<string> vall;
+    stringToStrings(value, vall);
+    list<string>::const_iterator it1 = vall.begin();
+    if (vall.size() < 2)
+	return false;
+    e->unixtime = atol((*it1++).c_str());
+    base64_decode(*it1++, e->fn);
+    if (vall.size() == 3)
+	base64_decode(*it1, e->ipath);
+    else
+	e->ipath.erase();
+    return true;
+}
+
+bool RclDHistory::enterDocument(const string fn, const string ipath)
+{
+    LOGDEB(("RclDHistory::enterDocument: [%s] [%s] into %s\n", 
 	    fn.c_str(), ipath.c_str(), m_data.getFilename().c_str()));
-    //Encode value part: 2 base64 of fn and ipath separated by a space
+    // Encode value part: Unix time + base64 of fn + base64 of ipath
+    // separated by a space. If ipath is not set, there are only 2 parts
+    char chartime[20];
+    time_t now = time(0);
+    sprintf(chartime, "%ld", (long)now);
     string bfn, bipath;
     base64_encode(fn, bfn);
     base64_encode(ipath, bipath);
-    string value = bfn + " " + bipath;
+    string value = string(chartime) + " " + bfn + " " + bipath;
 
-    // We trim whitespace from the value (if there is no ipath it now
-    // ends with a space), else the value later returned by conftree
-    // will be different because conftree does trim white space, and
-    // this breaks the comparisons below
-    trimstring(value);
 
     LOGDEB1(("Encoded value [%s] (%d)\n", value.c_str(), value.size()));
     // Is this doc already in history ? If it is we remove the old entry
     list<string> names = m_data.getNames(docSubkey);
     list<string>::const_iterator it;
     bool changed = false;
-    for (it = names.begin();it != names.end(); it++) {
+    for (it = names.begin(); it != names.end(); it++) {
 	string oval;
 	if (!m_data.get(*it, oval, docSubkey)) {
 	    LOGDEB(("No data for %s\n", (*it).c_str()));
 	    continue;
 	}
-	LOGDEB1(("Look at %s [%s] (%d)\n", 
-		(*it).c_str(), oval.c_str(), oval.length()));
-	if (oval == value) {
-	    LOGDEB1(("Erasing old entry\n"));
+	RclDHistoryEntry entry;
+	decodeValue(oval, &entry);
+
+	if (entry.fn == fn && entry.ipath == ipath) {
+	    LOGDEB(("Erasing old entry\n"));
 	    m_data.erase(*it, docSubkey);
 	    changed = true;
 	}
     }
+
     // Maybe reget list
     if (changed)
 	names = m_data.getNames(docSubkey);
@@ -78,32 +96,24 @@ bool RclQHistory::enterDocument(const string fn, const string ipath)
     sprintf(nname, "%010u", hi);
 
     if (!m_data.set(string(nname), value, docSubkey)) {
-	LOGERR(("RclQHistory::enterDocument: set failed\n"));
+	LOGERR(("RclDHistory::enterDocument: set failed\n"));
 	return false;
     }
     return true;
 }
 
-list< pair<string, string> > RclQHistory::getDocHistory()
+list<RclDHistoryEntry> RclDHistory::getDocHistory()
 {
-    list< pair<string, string> > mlist;
+    list<RclDHistoryEntry> mlist;
+    RclDHistoryEntry entry;
     list<string> names = m_data.getNames(docSubkey);
-    for (list<string>::const_iterator it = names.begin(); it != names.end();
-	 it++) {
+    for (list<string>::const_iterator it = names.begin(); 
+	 it != names.end(); it++) {
 	string value;
 	if (m_data.get(*it, value, docSubkey)) {
-	    list<string> vall;
-	    stringToStrings(value, vall);
-	    list<string>::const_iterator it1 = vall.begin();
-	    if (vall.size() < 1) 
+	    if (!decodeValue(value, &entry))
 		continue;
-	    string fn, ipath;
-	    LOGDEB(("RclQHistory::getDocHistory:b64: %s\n", (*it1).c_str()));
-	    base64_decode(*it1++, fn);
-	    LOGDEB(("RclQHistory::getDocHistory:fn: %s\n", fn.c_str()));
-	    if (vall.size() == 2)
-		base64_decode(*it1, ipath);
-	    mlist.push_front(pair<string, string>(fn, ipath));
+	    mlist.push_front(entry);
 	}
     }
     return mlist;
@@ -122,7 +132,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    RclQHistory hist("toto", 5);
+    RclDHistory hist("toto", 5);
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
 

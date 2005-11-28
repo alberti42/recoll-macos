@@ -260,7 +260,7 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
 
     Rcl::Doc doc;
     int reldocnum =  reldocnumfromparnum(par);
-    if (!docsource->getDoc(reslist_winfirst + reldocnum, doc, 0))
+    if (!docsource->getDoc(reslist_winfirst + reldocnum, doc, 0, 0))
 	return;
     
     // Look for appropriate viewer
@@ -439,9 +439,10 @@ void RecollMain::listNextPB_clicked()
 
     // Insert results if any in result list window 
     for (int i = 0; i < last; i++) {
+	string sh;
 	doc.erase();
 
-	if (!docsource->getDoc(reslist_winfirst + i, doc, &percent)) {
+	if (!docsource->getDoc(reslist_winfirst + i, doc, &percent, &sh)) {
 	    if (i == 0) 
 		reslist_winfirst = -1;
 	    break;
@@ -498,7 +499,10 @@ void RecollMain::listNextPB_clicked()
 	}
 	string abst = stripMarkup(doc.abstract);
 	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
-	string result = string("<p>");
+	string result;
+	if (!sh.empty())
+	    result += string("<br><b>") + sh + "</b><br><br>\n";
+	result += string("<p>");
 	if (!img_name.empty()) {
 	    result += "<img source=\"" + img_name + "\" align=\"left\">";
 	}
