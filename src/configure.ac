@@ -76,3 +76,4 @@ do
 done
 
 AC_OUTPUT
+chmod a+x recollinstall
