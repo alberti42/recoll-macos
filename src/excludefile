@@ -25,3 +25,4 @@ qtgui/preview/preview.pro
 qtgui/preview/pvmain.cpp
 lib/librcl.a
 sampleconf/recoll.conf
+wxgui
