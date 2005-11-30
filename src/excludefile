@@ -15,6 +15,7 @@ TAGS
 config.cache
 config.log
 config.status
+excludefile
 makesrcdist.sh
 recollinstall
 sysconf
