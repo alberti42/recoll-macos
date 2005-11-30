@@ -15,9 +15,11 @@ config.cache
 config.log
 config.status
 makesrcdist.sh
+recollinstall
 sysconf
 qtgui/Makefile
 qtgui/preview/Makefile
 qtgui/preview/preview.pro
 qtgui/preview/pvmain.cpp
 lib/librcl.a
+sampleconf/recoll.conf
