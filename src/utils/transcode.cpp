@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.4 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.5 2005-11-30 17:58:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_TRANSCODE
@@ -15,7 +15,13 @@ using std::string;
 #include <iconv.h>
 
 #include "transcode.h"
+#include "debuglog.h"
 
+#if !defined(_LIBICONV_VERSION)
+#define CHARPP (char **)
+#else
+#define CHARPP
+#endif
 
 bool transcode(const string &in, string &out, const string &icode,
 	       const string &ocode)
@@ -42,18 +48,27 @@ bool transcode(const string &in, string &out, const string &icode,
 	size_t osiz;
 	op = obuf;
 	osiz = OBSIZ;
-	if(iconv(ic, 
-#if defined(_LIBICONV_VERSION)
-		 &ip, 
-#else
-		 (char **)&ip, 
-#endif
-		 &isiz, &op, &osiz) == (size_t)-1 && errno != E2BIG){
+	int isiz0=isiz;
+
+	if(iconv(ic, CHARPP&ip, &isiz, &op, &osiz) == (size_t)-1 && 
+	   errno != E2BIG) {
+#if 0
 	    out.erase();
 	    out = string("iconv failed for ") + icode + " -> " + ocode +
 		" : " + strerror(errno);
+#endif
+	    if (errno == EILSEQ) {
+		LOGDEB(("transcode:iconv: bad input seq.: shift, retry\n"));
+		LOGDEB1((" Input consumed %d output produced %d\n",
+			 ip - in.c_str(), out.length() + OBSIZ - osiz));
+		out.append(obuf, OBSIZ - osiz);
+		out += "?";
+		ip++;isiz--;
+		continue;
+	    }
 	    goto error;
 	}
+
 	out.append(obuf, OBSIZ - osiz);
     }
 
@@ -68,6 +83,7 @@ bool transcode(const string &in, string &out, const string &icode,
  error:
     if (icopen)
 	iconv_close(ic);
+    //fprintf(stderr, "TRANSCODE OUT:\n%s\n", out.c_str());
     return ret;
 }
 
