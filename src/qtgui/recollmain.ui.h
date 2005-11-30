@@ -390,7 +390,7 @@ void RecollMain::queryText_returnPressed()
 }
 
 
-void RecollMain::Search_clicked()
+void RecollMain::searchPB_clicked()
 {
     queryText_returnPressed();
 }
@@ -424,13 +424,18 @@ void RecollMain::listNextPB_clicked()
 	    reslist_winfirst));
 
     // If we are already on the last page, nothing to do:
-    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize > resCnt))
+    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize > resCnt)) {
+	listNextPB->setEnabled(false);
 	return;
+    }
 
-    if (reslist_winfirst < 0)
+    if (reslist_winfirst < 0) {
 	reslist_winfirst = 0;
-    else
+	listPrevPB->setEnabled(false);
+    } else {
+	listPrevPB->setEnabled(true);
 	reslist_winfirst += respagesize;
+    }
 
     bool gotone = false;
     reslistTE->clear();
@@ -533,6 +538,12 @@ void RecollMain::listNextPB_clicked()
 	reslist_winfirst -= respagesize;
 	if (reslist_winfirst < 0)
 	    reslist_winfirst = -1;
+    }
+
+    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize >= resCnt)) {
+	listNextPB->setEnabled(false);
+    } else {
+	listNextPB->setEnabled(true);
     }
 }
 
@@ -665,4 +676,17 @@ void RecollMain::showDocHistory()
 	delete docsource;
     docsource = new DocSequenceHistory(rcldb, history);
     listNextPB_clicked();
+}
+
+
+void RecollMain::searchTextChanged(const QString & text)
+{
+    if (text.isEmpty()) {
+	searchPB->setEnabled(false);
+	clearqPB->setEnabled(false);
+    } else {
+	searchPB->setEnabled(true);
+	clearqPB->setEnabled(true);
+    }
+
 }

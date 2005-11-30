@@ -76,7 +76,10 @@
                         </widget>
                         <widget class="QPushButton">
                             <property name="name">
-                                <cstring>Search</cstring>
+                                <cstring>searchPB</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
                             </property>
                             <property name="text">
                                 <string>Search</string>
@@ -85,6 +88,9 @@
                         <widget class="QPushButton">
                             <property name="name">
                                 <cstring>clearqPB</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
                             </property>
                             <property name="text">
                                 <string>Clear</string>
@@ -95,7 +101,10 @@
                         </widget>
                         <widget class="QPushButton">
                             <property name="name">
-                                <cstring>listPrevPb</cstring>
+                                <cstring>listPrevPB</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
                             </property>
                             <property name="text">
                                 <string>Previous page</string>
@@ -104,6 +113,9 @@
                         <widget class="QPushButton">
                             <property name="name">
                                 <cstring>listNextPB</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
                             </property>
                             <property name="text">
                                 <string>Next page</string>
@@ -260,10 +272,10 @@
         <slot>fileStart_IndexingAction_activated()</slot>
     </connection>
     <connection>
-        <sender>Search</sender>
+        <sender>searchPB</sender>
         <signal>clicked()</signal>
         <receiver>RecollMain</receiver>
-        <slot>Search_clicked()</slot>
+        <slot>queryText_returnPressed()</slot>
     </connection>
     <connection>
         <sender>queryText</sender>
@@ -272,7 +284,7 @@
         <slot>queryText_returnPressed()</slot>
     </connection>
     <connection>
-        <sender>listPrevPb</sender>
+        <sender>listPrevPB</sender>
         <signal>clicked()</signal>
         <receiver>RecollMain</receiver>
         <slot>listPrevPB_clicked()</slot>
@@ -319,6 +331,18 @@
         <receiver>RecollMain</receiver>
         <slot>showDocHistory()</slot>
     </connection>
+    <connection>
+        <sender>queryText</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>RecollMain</receiver>
+        <slot>searchTextChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>clearqPB</sender>
+        <signal>clicked()</signal>
+        <receiver>queryText</receiver>
+        <slot>clear()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in declaration">preview.h</include>
@@ -349,7 +373,7 @@
     <slot>reslistTE_clicked( int par, int car )</slot>
     <slot>reslistTE_delayedclick()</slot>
     <slot>queryText_returnPressed()</slot>
-    <slot>Search_clicked()</slot>
+    <slot>searchPB_clicked()</slot>
     <slot>clearqPB_clicked()</slot>
     <slot>listPrevPB_clicked()</slot>
     <slot>listNextPB_clicked()</slot>
@@ -358,10 +382,11 @@
     <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
     <slot>showAboutDialog()</slot>
     <slot>showDocHistory()</slot>
+    <slot>searchTextChanged( const QString &amp; text )</slot>
 </slots>
 <functions>
     <function access="private">init()</function>
-    <function returnType="bool">close( bool alsoDelete )</function>
+    <function returnType="bool">close( bool )</function>
     <function access="private" returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
     <function access="private">startPreview( int docnum )</function>
 </functions>
