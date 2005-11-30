@@ -59,6 +59,13 @@ void advsearch::delFiltypPB_clicked()
     noFiltypsLB->sort();
 }
 
+void advsearch::delAFiltypPB_clicked()
+{
+    for (unsigned int i = 0; i < yesFiltypsLB->count();i++) {
+	yesFiltypsLB->setSelected(i, true);
+    }
+    delFiltypPB_clicked();
+}
 
 // Move selected file types from the ignored to the searched box
 void advsearch::addFiltypPB_clicked()
@@ -81,6 +88,14 @@ void advsearch::addFiltypPB_clicked()
     noFiltypsLB->sort();
 }
 
+void advsearch::addAFiltypPB_clicked()
+{
+    for (unsigned int i = 0; i < noFiltypsLB->count();i++) {
+	noFiltypsLB->setSelected(i, true);
+    }
+    addFiltypPB_clicked();
+}
+
 
 // Activate file type selection
 void advsearch::restrictFtCB_toggled(bool on)
@@ -88,6 +103,8 @@ void advsearch::restrictFtCB_toggled(bool on)
     yesFiltypsLB->setEnabled(on);
     delFiltypPB->setEnabled(on);
     addFiltypPB->setEnabled(on);
+    delAFiltypPB->setEnabled(on);
+    addAFiltypPB->setEnabled(on);
     noFiltypsLB->setEnabled(on);
 }
 
@@ -116,3 +133,4 @@ void advsearch::browsePB_clicked()
     QString dir = QFileDialog::getExistingDirectory();
     subtreeLE->setText(dir);
 }
+
