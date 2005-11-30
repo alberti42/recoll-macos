@@ -232,7 +232,7 @@
             <string>Start Indexing</string>
         </property>
         <property name="menuText">
-            <string>Start Indexing</string>
+            <string>Start &amp;Indexing</string>
         </property>
     </action>
     <action>
@@ -243,7 +243,7 @@
             <string>About Recoll</string>
         </property>
         <property name="menuText">
-            <string>About Recoll</string>
+            <string>&amp;About Recoll</string>
         </property>
     </action>
     <action>
@@ -254,7 +254,7 @@
             <string>Doc History</string>
         </property>
         <property name="menuText">
-            <string>Doc History</string>
+            <string>Doc &amp;History</string>
         </property>
     </action>
 </actions>

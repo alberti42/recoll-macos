@@ -58,14 +58,12 @@ Recoll
    help):
 
      * Support for the more advanced Xapian concepts like relevance feedback.
-     * An interactive configuration tool. You need to edit files by hand for
-       now.
-     * Packages, rpm or other. It's all tar files currently.
+     * An interactive configuration tool.
+     * Rpms or other kinds of packages.
      * A more polished user interface with online help and better
        documentation.
-     * Translations for the user interface.
+     * More translations for the user interface.
      * A few more filters for less common file types.
-     * An history tool for queries and documents.
      * Integration with the KDE desktop.
 
    I very much welcome suggestions or (gasp) code.
@@ -103,6 +101,30 @@ Recoll
      * Installation
      * User manual
 
+Introduction: full text search.
+
+   A full text search program will let you search for data by specifying the
+   terms that you think appear in the content you are looking for.
+
+   You do not need to remember in what file or email message you stored a
+   given piece of information. You just ask for related terms, and the tool
+   will return a list of documents where those terms are prominent.
+
+   In addition, the tool will automatically expand your search to terms
+   related to the ones you specified. Ie: a search for floor will also look
+   for floors, flooring etc. With Recoll you can disable this expansion when
+   entering the query.
+
+   Recoll, like most such search tools, works by remembering where terms
+   appear in your document files. The acquisition process is called
+   indexation. The resulting database can be big (roughly the size of the
+   original documents in practise). This used to be a big issue, but it is
+   probably not any more, now that text documents are tiny blots among the
+   sea of multimedia data, especially for a personal system.
+
+   Recoll is not a document archive. It can only display data from files that
+   still exist where they lived when they were indexed.
+
 Using Recoll
 
   Indexation
@@ -111,27 +133,38 @@ Using Recoll
    this, you need to edit the configuration file ($HOME/.recoll/recoll.conf).
    Follow the comments in the file to adjust the parameters.
 
-   Indexing is performed either by the recollindex program, or by the
+   Indexation is performed either by starting the recollindex program, or the
    indexing thread inside the recoll program (use the File menu).
+
+   It is best to avoid interrupting the indexation process, as this can leave
+   the database in a bad state. This is not a serious problem, as you then
+   just need to clear everything and restart the indexation. The database
+   files are stored in the $RECOLL_CONFDIR/xapiandb directory, which you can
+   just delete when needed.
 
   Simple search
 
-   Enter search term(s) in the text field at the top left. Clicking the
-   Search button or hitting the Enter key will start a search. By default,
-   this will look for documents with any of the terms (the ones with more
-   terms will get better scores). Use the Advanced search dialog for other
-   kinds of searches
+   Start the recoll program, then enter search term(s) in the text field at
+   the top left of the window. Clicking the Search button or hitting the
+   Enter key will start a search. By default, this will look for documents
+   with any of the terms (the ones with more terms will get better scores).
+   Use the Advanced search dialog for other kinds of searches
 
    A list of results will be displayed in the main list window. Clicking on
    an entry will open an internal preview window for the document.
    Double-clicking will attempt to start an external viewer (have a look at
    the ~/.recoll/mimeconf file to see how these are configured).
 
+   Documents that you actually view (with the internal preview or an external
+   tool) are entered into the document history, which is remembered. You can
+   display the history list by using the Tools / Doc History menu entry.
+
   Search tips, shortcuts
 
    Entering a capitalized word in any search field will prevent stem
    expansion (example: Recoll will not look for gardening if you enter Garden
-   instead of garden).
+   instead of garden). This is the only case where character case will make a
+   difference for a Recoll search.
 
    A phrase can be looked for by enclosing it in double quotes. Example:
    "user manual" will look only for occurrences of user immediately followed
