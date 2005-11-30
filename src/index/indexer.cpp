@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.18 2005-11-25 09:13:39 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.19 2005-11-30 09:46:25 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -63,7 +63,7 @@ class DbIndexer : public FsTreeWalkerCB {
     }
 
     /// Start indexing.
-    bool index();
+    bool index(bool resetbefore);
 
     /// Tree walker callback method
     FsTreeWalker::Status 
@@ -77,7 +77,7 @@ class DbIndexer : public FsTreeWalkerCB {
 /// file system walk for each top-level directory.
 /// When walking is done, we create the stem databases and close the
 /// main db.
-bool DbIndexer::index()
+bool DbIndexer::index(bool resetbefore)
 {
     string tdir;
 
@@ -85,7 +85,7 @@ bool DbIndexer::index()
 	LOGERR(("DbIndexer: cant create temp directory\n"));
 	return false;
     }
-    if (!db.open(dbdir, Rcl::Db::DbUpd)) {
+    if (!db.open(dbdir, resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd)) {
 	LOGERR(("DbIndexer::index: error opening database in %s\n", 
 		dbdir.c_str()));
 	return false;
@@ -215,7 +215,7 @@ ConfIndexer::~ConfIndexer()
      deleteZ(dbindexer);
 }
 
-bool ConfIndexer::index()
+bool ConfIndexer::index(bool resetbefore)
 {
     // Retrieve the list of directories to be indexed.
     string topdirs;
@@ -237,22 +237,22 @@ bool ConfIndexer::index()
     map<string, list<string> > dbmap;
     map<string, list<string> >::iterator dbit;
     for (dirit = tdl.begin(); dirit != tdl.end(); dirit++) {
-	string db;
-	string dir = path_tildexpand(*dirit);
-	config->setKeyDir(dir);
-	if (!config->getConfParam("dbdir", db)) {
+	string dbdir;
+	string doctopdir = path_tildexpand(*dirit);
+	config->setKeyDir(doctopdir);
+	if (!config->getConfParam("dbdir", dbdir)) {
 	    LOGERR(("ConfIndexer::index: no database directory in "
-		    "configuration for %s\n", dir.c_str()));
+		    "configuration for %s\n", doctopdir.c_str()));
 	    return false;
 	}
-	db = path_tildexpand(db);
-	dbit = dbmap.find(db);
+	dbdir = path_tildexpand(dbdir);
+	dbit = dbmap.find(dbdir);
 	if (dbit == dbmap.end()) {
 	    list<string> l;
-	    l.push_back(dir);
-	    dbmap[db] = l;
+	    l.push_back(doctopdir);
+	    dbmap[dbdir] = l;
 	} else {
-	    dbit->second.push_back(dir);
+	    dbit->second.push_back(doctopdir);
 	}
     }
     config->setKeyDir("");
@@ -265,9 +265,8 @@ bool ConfIndexer::index()
 	//    cout << *dit << " ";
 	//}
 	//cout << endl;
-
 	dbindexer = new DbIndexer(config, dbit->first, &dbit->second);
-	if (!dbindexer->index()) {
+	if (!dbindexer->index(resetbefore)) {
 	    deleteZ(dbindexer);
 	    return false;
 	}

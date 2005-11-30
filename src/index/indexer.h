@@ -1,6 +1,6 @@
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.6 2005-11-10 08:47:49 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.7 2005-11-30 09:46:25 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "rclconfig.h"
 
@@ -26,7 +26,7 @@ class ConfIndexer {
     ConfIndexer(RclConfig *cnf) : config(cnf), dbindexer(0) {}
     virtual ~ConfIndexer();
     /** Worker function: doe the actual indexing */
-    bool index();
+    bool index(bool resetbefore = false);
 };
 
 #endif /* _INDEXER_H_INCLUDED_ */

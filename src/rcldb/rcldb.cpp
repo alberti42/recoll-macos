@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.41 2005-11-25 09:12:25 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.42 2005-11-30 09:46:25 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -101,16 +101,18 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
     try {
 	switch (mode) {
 	case DbUpd:
-	    ndb->wdb = 
-		Xapian::WritableDatabase(dir, Xapian::DB_CREATE_OR_OPEN);
-	    LOGDEB(("Rcl::Db::open: lastdocid: %d\n", 
-		    ndb->wdb.get_lastdocid()));
-	    ndb->updated.resize(ndb->wdb.get_lastdocid() + 1);
-	    for (unsigned int i = 0; i < ndb->updated.size(); i++)
-		ndb->updated[i] = false;
-	    ndb->iswritable = true;
-	    break;
-	case DbTrunc:
+	case DbTrunc: 
+	    {
+		int action = (mode == DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
+		    Xapian::DB_CREATE_OR_OVERWRITE;
+		ndb->wdb = Xapian::WritableDatabase(dir, action);
+		LOGDEB(("Rcl::Db::open: lastdocid: %d\n", 
+			ndb->wdb.get_lastdocid()));
+		ndb->updated.resize(ndb->wdb.get_lastdocid() + 1);
+		for (unsigned int i = 0; i < ndb->updated.size(); i++)
+		    ndb->updated[i] = false;
+		ndb->iswritable = true;
+	    }
 	    break;
 	case DbRO:
 	default:
