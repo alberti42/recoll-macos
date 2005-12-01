@@ -9,7 +9,8 @@ SOURCES	+= main.cpp \
 
 FORMS	= recollmain.ui \
 	advsearch.ui \
-	preview/preview.ui
+	preview/preview.ui \
+	sort.ui
 
 IMAGES	= images/filenew \
 	images/fileopen \

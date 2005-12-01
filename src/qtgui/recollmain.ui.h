@@ -37,6 +37,7 @@ using std::pair;
 #include "plaintorich.h"
 #include "advsearch.h"
 #include "rclversion.h"
+#include "sortseq.h"
 
 extern "C" int XFlush(void *);
 
@@ -385,7 +386,14 @@ void RecollMain::queryText_returnPressed()
 
     if (docsource)
 	delete docsource;
+#if TRYSORT
+    DocSequenceDb myseq(rcldb);
+    RclSortSpec ss;
+    ss.addCrit(RclSortSpec::RCLFLD_MTIME, false);
+    docsource = new DocSeqSorted(myseq, 10000, ss);
+#else
     docsource = new DocSequenceDb(rcldb);
+#endif
     listNextPB_clicked();
 }
 
@@ -600,7 +608,14 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
     curPreview = 0;
     if (docsource)
 	delete docsource;
+#if TRYSORT
+    DocSequenceDb myseq(rcldb);
+    RclSortSpec ss;
+    ss.addCrit(RclSortSpec::RCLFLD_MTIME, true);
+    docsource = new DocSeqSorted(myseq, 10000, ss);
+#else
     docsource = new DocSequenceDb(rcldb);
+#endif
     listNextPB_clicked();
 }
 
