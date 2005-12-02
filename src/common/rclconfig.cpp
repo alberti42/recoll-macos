@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.14 2005-11-25 09:13:06 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.15 2005-12-02 16:17:29 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <errno.h>
@@ -176,9 +176,9 @@ string RclConfig::getMimeIconName(const string &mtype)
     return hs;
 }
 
-// Look up an executable filter.
-// We look in RECOLL_BINDIR, RECOLL_CONFDIR, then let the system use
-// the PATH
+// Look up an executable filter.  
+// We look in RECOLL_FILTERSDIR, filtersdir param, RECOLL_CONFDIR, then
+// let the system use the PATH
 string find_filter(RclConfig *conf, const string &icmd)
 {
     // If the path is absolute, this is it
@@ -187,8 +187,13 @@ string find_filter(RclConfig *conf, const string &icmd)
 
     string cmd;
     const char *cp;
-    if (cp = getenv("RECOLL_BINDIR")) {
+
+    if (cp = getenv("RECOLL_FILTERSDIR")) {
 	cmd = cp;
+	path_cat(cmd, icmd);
+	if (access(cmd.c_str(), X_OK) == 0)
+	    return cmd;
+    } else if (conf->getConfParam(string("filtersdir"), cmd)) {
 	path_cat(cmd, icmd);
 	if (access(cmd.c_str(), X_OK) == 0)
 	    return cmd;

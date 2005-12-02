@@ -30,6 +30,7 @@ if test $# = 1 ; then
 	    ${PREFIX}/share \
 	    ${PREFIX}/share/recoll \
 	    ${PREFIX}/share/recoll/examples \
+	    ${PREFIX}/share/recoll/filters \
 	    ${PREFIX}/share/recoll/images \
 	    ${PREFIX}/share/recoll/translations
    do
@@ -40,10 +41,14 @@ if test $# = 1 ; then
    ${INSTALL} qtgui/recoll index/recollindex recollinstall $PREFIX/bin \
 	      || exit 1
 
-   ${INSTALL} filters/rcl* ${PREFIX}/share/recoll/examples/ || exit 1
+   ${INSTALL} filters/rcl* ${PREFIX}/share/recoll/filters/ || exit 1
+   chmod a+x ${PREFIX}/share/recoll/filters/rcl* || exit 1
+   # Clean up possible old filters in examples
+   rm -f ${PREFIX}/share/recoll/examples/rcl*
 
    ${INSTALL} sampleconf/recoll.conf sampleconf/mimeconf sampleconf/mimemap \
 		    ${PREFIX}/share/recoll/examples/ || exit 1
+
 
    ${INSTALL} qtgui/mtpics/*.png ${PREFIX}/share/recoll/images || exit 1
    ${INSTALL} qtgui/recoll*.qm ${PREFIX}/share/recoll/translations || exit 1
@@ -75,7 +80,6 @@ EOF
 
   mkdir $HOME/.recoll || exit 1
   cp ${PREFIX}/share/recoll/examples/* $HOME/.recoll
-  chmod a+x $HOME/.recoll/rcl*
   chmod +w $HOME/.recoll/recoll.conf
   chmod +w $HOME/.recoll/mimeconf
 
