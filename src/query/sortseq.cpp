@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.1 2005-12-01 16:23:09 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.2 2005-12-02 14:18:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 #include <algorithm>
 
@@ -13,49 +13,49 @@ class CompareDocs {
 public: 
     CompareDocs(const RclSortSpec &sortspec) : ss(sortspec) {}
 
-    int operator()(const Rcl::Doc &x, const Rcl::Doc &y) { 
+    int operator()(const Rcl::Doc &x, const Rcl::Doc &y) 
+    { 
+	LOGDEB(("Comparing .. \n"));
 	for (unsigned int i = 0; i < ss.crits.size(); i++) {
 	    switch (ss.crits[i]) {
 	    case RclSortSpec::RCLFLD_MTIME:
 		{
+		    LOGDEB((" MTIME\n"));
 		    long xmtime = x.dmtime.empty() ? atol(x.fmtime.c_str()) :
 			atol(x.dmtime.c_str());
 		    long ymtime = y.dmtime.empty() ? atol(y.fmtime.c_str()) :
 			atol(y.dmtime.c_str());
-		    if (ss.dirs[i])
-			return xmtime > ymtime;
-		    else
-			return xmtime < ymtime;
+		    
+		    if (ss.dirs[i] ? xmtime > ymtime : xmtime < ymtime)
+			return 1;
 		}
-		continue;
+		break;
 	    case RclSortSpec::RCLFLD_URL:
-		if (ss.dirs[i])
-		    return x.url > y.url;
-		else
-		    return x.url < y.url;
-		continue;
+		LOGDEB((" URL\n"));
+		if (ss.dirs[i] ? x.url > y.url :  x.url < y.url)
+		    return 1;
+		break;
 	    case RclSortSpec::RCLFLD_IPATH: 
-		if (ss.dirs[i])
-		    return x.ipath > y.ipath;
-		else
-		    return x.ipath < y.ipath;
-		continue;
+		LOGDEB((" IPATH\n"));
+		if (ss.dirs[i] ? x.ipath > y.ipath : x.ipath < y.ipath)
+		    return 1;
+		break;
 	    case RclSortSpec::RCLFLD_MIMETYPE:
-		if (ss.dirs[i])
-		    return x.mimetype > y.mimetype;
-		else
-		    return x.mimetype < y.mimetype;
-		continue;
+		LOGDEB((" MIMETYPE\n"));
+		if (ss.dirs[i] ? x.mimetype > y.mimetype : 
+		    x.mimetype < y.mimetype)
+		    return 1;
+		break;
 	    }
 	}
-	// Did all comparisons: must be equal
+	// Did all comparisons
 	return 0;
     } 
 };
 
 DocSeqSorted::DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec)
 {
-    LOGDEB1(("DocSeqSorted:: input cnt %d\n", cnt));
+    LOGDEB(("DocSeqSorted:: count %d\n", cnt));
     
     m_docs.resize(cnt);
     m_pcs.resize(cnt);
@@ -67,7 +67,7 @@ DocSeqSorted::DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec)
 	}
     }
     m_count = i;
-    LOGDEB1(("DocSeqSorted:: m_count %d\n", m_count));
+    LOGDEB(("DocSeqSorted:: m_count %d\n", m_count));
     m_docs.resize(m_count);
     m_pcs.resize(m_count);
     m_title = string("Sorted ") + iseq.title();
