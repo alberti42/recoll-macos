@@ -1,197 +1,227 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>sort</class>
+<class>SortForm</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>sort</cstring>
+        <cstring>SortForm</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>360</width>
-            <height>163</height>
+            <width>351</width>
+            <height>154</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Form1</string>
+        <string>Sort Criteria</string>
     </property>
-    <widget class="QLayoutWidget">
+    <vbox>
         <property name="name">
-            <cstring>layout2</cstring>
+            <cstring>unnamed</cstring>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>12</x>
-                <y>12</y>
-                <width>336</width>
-                <height>23</height>
-            </rect>
-        </property>
-        <hbox>
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>unnamed</cstring>
+                <cstring>layout10</cstring>
             </property>
-            <widget class="QLabel">
+            <vbox>
                 <property name="name">
-                    <cstring>textLabel1</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <property name="frameShape">
-                    <enum>NoFrame</enum>
-                </property>
-                <property name="frameShadow">
-                    <enum>Plain</enum>
-                </property>
-                <property name="text">
-                    <string>Sort at most the </string>
-                </property>
-            </widget>
-            <widget class="QSpinBox">
-                <property name="name">
-                    <cstring>mcntSB</cstring>
-                </property>
-                <property name="maxValue">
-                    <number>10000</number>
-                </property>
-                <property name="value">
-                    <number>100</number>
-                </property>
-            </widget>
-            <widget class="QLabel">
-                <property name="name">
-                    <cstring>textLabel2</cstring>
-                </property>
-                <property name="text">
-                    <string>most relevant results by:</string>
-                </property>
-            </widget>
-        </hbox>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>layout3</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>12</x>
-                <y>41</y>
-                <width>336</width>
-                <height>23</height>
-            </rect>
-        </property>
-        <hbox>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <widget class="QComboBox">
-                <property name="name">
-                    <cstring>fldCMB1</cstring>
-                </property>
-            </widget>
-            <widget class="QCheckBox">
-                <property name="name">
-                    <cstring>descCB1</cstring>
-                </property>
-                <property name="text">
-                    <string>Descending</string>
-                </property>
-            </widget>
-        </hbox>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>layout6</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>12</x>
-                <y>70</y>
-                <width>336</width>
-                <height>23</height>
-            </rect>
-        </property>
-        <hbox>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <widget class="QComboBox">
-                <property name="name">
-                    <cstring>fldCMB2</cstring>
-                </property>
-            </widget>
-            <widget class="QCheckBox">
-                <property name="name">
-                    <cstring>descCB2</cstring>
-                </property>
-                <property name="text">
-                    <string>Descending</string>
-                </property>
-            </widget>
-        </hbox>
-    </widget>
-    <widget class="QLayoutWidget">
-        <property name="name">
-            <cstring>layout10</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>12</x>
-                <y>99</y>
-                <width>336</width>
-                <height>23</height>
-            </rect>
-        </property>
-        <hbox>
-            <property name="name">
-                <cstring>unnamed</cstring>
-            </property>
-            <widget class="QComboBox">
-                <property name="name">
-                    <cstring>fldCMB3</cstring>
-                </property>
-            </widget>
-            <widget class="QCheckBox">
-                <property name="name">
-                    <cstring>descCB3</cstring>
-                </property>
-                <property name="text">
-                    <string>Descending</string>
-                </property>
-            </widget>
-        </hbox>
-    </widget>
-    <widget class="QCheckBox">
-        <property name="name">
-            <cstring>descCB4</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>183</x>
-                <y>130</y>
-                <width>164</width>
-                <height>18</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Descending</string>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <property name="name">
-            <cstring>fldCMB4</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>13</x>
-                <y>129</y>
-                <width>164</width>
-                <height>21</height>
-            </rect>
-        </property>
-    </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout9</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>sortCB</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Sort the</string>
+                            </property>
+                        </widget>
+                        <widget class="QSpinBox">
+                            <property name="name">
+                                <cstring>mcntSB</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                            <property name="maxValue">
+                                <number>10000</number>
+                            </property>
+                            <property name="value">
+                                <number>100</number>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>most relevant results by:</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout3</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QComboBox">
+                            <property name="name">
+                                <cstring>fldCMB1</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>descCB1</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                            <property name="text">
+                                <string>Descending</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout6</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QComboBox">
+                            <property name="name">
+                                <cstring>fldCMB2</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>descCB2</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                            <property name="text">
+                                <string>Descending</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout7</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>resetPB</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="text">
+                                <string>Reset</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>closePB</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="text">
+                                <string>Close</string>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
+    </vbox>
 </widget>
+<connections>
+    <connection>
+        <sender>resetPB</sender>
+        <signal>clicked()</signal>
+        <receiver>SortForm</receiver>
+        <slot>reset()</slot>
+    </connection>
+    <connection>
+        <sender>closePB</sender>
+        <signal>clicked()</signal>
+        <receiver>SortForm</receiver>
+        <slot>close()</slot>
+    </connection>
+    <connection>
+        <sender>mcntSB</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>SortForm</receiver>
+        <slot>setData()</slot>
+    </connection>
+    <connection>
+        <sender>fldCMB1</sender>
+        <signal>activated(const QString&amp;)</signal>
+        <receiver>SortForm</receiver>
+        <slot>setData()</slot>
+    </connection>
+    <connection>
+        <sender>fldCMB2</sender>
+        <signal>activated(const QString&amp;)</signal>
+        <receiver>SortForm</receiver>
+        <slot>setData()</slot>
+    </connection>
+    <connection>
+        <sender>descCB1</sender>
+        <signal>stateChanged(int)</signal>
+        <receiver>SortForm</receiver>
+        <slot>setData()</slot>
+    </connection>
+    <connection>
+        <sender>descCB2</sender>
+        <signal>stateChanged(int)</signal>
+        <receiver>SortForm</receiver>
+        <slot>setData()</slot>
+    </connection>
+    <connection>
+        <sender>sortCB</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>SortForm</receiver>
+        <slot>setData()</slot>
+    </connection>
+</connections>
 <includes>
+    <include location="local" impldecl="in declaration">sortseq.h</include>
     <include location="local" impldecl="in implementation">sort.ui.h</include>
 </includes>
+<signals>
+    <signal>sortDataChanged(int, RclSortSpec)</signal>
+</signals>
+<slots>
+    <slot>reset()</slot>
+    <slot>setData()</slot>
+</slots>
 <functions>
     <function>init()</function>
 </functions>

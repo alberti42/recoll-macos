@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.19 2005-11-25 09:12:26 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.20 2005-12-02 16:18:20 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -47,6 +47,8 @@ class Doc {
     string abstract;
 
     string text;
+
+    int pc; // used by sortseq, convenience
 
     void erase() {
 	url.erase();

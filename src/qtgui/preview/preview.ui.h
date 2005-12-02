@@ -333,6 +333,7 @@ class LoadThread : public QThread {
     {}
    virtual void run() 
    {
+       DebugLog::getdbl()->setloglevel(DEBDEB1);
        FileInterner interner(filename, rclconfig, tmpdir, mtype);
        if (interner.internfile(*out, ipath) != FileInterner::FIDone) {
 	   *statusp = -1;
@@ -355,6 +356,7 @@ class ToRichThread : public QThread {
     {}
     virtual void run()
     {
+	DebugLog::getdbl()->setloglevel(DEBDEB1);
 	string rich = plaintorich(in, terms, termoffsets);
 	out = QString::fromUtf8(rich.c_str(), rich.length());
     }
@@ -416,7 +418,6 @@ void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 			     doc.mimetype.c_str());
 	return;
     }
-    LOGDEB(("Load file done\n"));
 
     // Highlight search terms:
     progress.setLabelText(tr("Creating preview text"));

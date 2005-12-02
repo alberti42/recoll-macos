@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>631</width>
+            <width>678</width>
             <height>212</height>
         </rect>
     </property>
@@ -22,7 +22,7 @@
     </property>
     <property name="minimumSize">
         <size>
-            <width>590</width>
+            <width>678</width>
             <height>160</height>
         </size>
     </property>
@@ -99,6 +99,20 @@
                                 <string>Ctrl+S</string>
                             </property>
                         </widget>
+                        <widget class="Line">
+                            <property name="name">
+                                <cstring>line4</cstring>
+                            </property>
+                            <property name="frameShape">
+                                <enum>VLine</enum>
+                            </property>
+                            <property name="frameShadow">
+                                <enum>Sunken</enum>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                        </widget>
                         <widget class="QPushButton">
                             <property name="name">
                                 <cstring>listPrevPB</cstring>
@@ -119,6 +133,17 @@
                             </property>
                             <property name="text">
                                 <string>Next page</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>sortPB</cstring>
+                            </property>
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="text">
+                                <string>Sorting</string>
                             </property>
                         </widget>
                         <spacer>
@@ -317,7 +342,7 @@
         <sender>advSearchPB</sender>
         <signal>clicked()</signal>
         <receiver>RecollMain</receiver>
-        <slot>advSearchPB_clicked()</slot>
+        <slot>showAdvSearchDialog()</slot>
     </connection>
     <connection>
         <sender>helpAbout_RecollAction</sender>
@@ -343,11 +368,19 @@
         <receiver>queryText</receiver>
         <slot>clear()</slot>
     </connection>
+    <connection>
+        <sender>sortPB</sender>
+        <signal>clicked()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>showSortDialog()</slot>
+    </connection>
 </connections>
 <includes>
+    <include location="local" impldecl="in declaration">sortseq.h</include>
     <include location="local" impldecl="in declaration">preview.h</include>
     <include location="local" impldecl="in declaration">recoll.h</include>
     <include location="local" impldecl="in declaration">advsearch.h</include>
+    <include location="local" impldecl="in declaration">sort.h</include>
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
 </includes>
 <variables>
@@ -363,6 +396,9 @@
     <variable>std::string stemlang;</variable>
     <variable>Preview *curPreview;</variable>
     <variable>advsearch *asearchform;</variable>
+    <variable>SortForm *sortform;</variable>
+    <variable>int sortwidth;</variable>
+    <variable>RclSortSpec sortspecs;</variable>
     <variable>DocSequence *docsource;</variable>
 </variables>
 <slots>
@@ -378,11 +414,13 @@
     <slot>listPrevPB_clicked()</slot>
     <slot>listNextPB_clicked()</slot>
     <slot>previewClosed( Preview * w )</slot>
-    <slot>advSearchPB_clicked()</slot>
+    <slot>showAdvSearchDialog()</slot>
+    <slot>showSortDialog()</slot>
     <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
     <slot>showAboutDialog()</slot>
     <slot>showDocHistory()</slot>
     <slot>searchTextChanged( const QString &amp; text )</slot>
+    <slot>sortDataChanged(int cnt, RclSortSpec spec)</slot>
 </slots>
 <functions>
     <function access="private">init()</function>

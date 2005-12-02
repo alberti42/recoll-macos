@@ -1,6 +1,6 @@
 #ifndef _SORTSEQ_H_INCLUDED_
 #define _SORTSEQ_H_INCLUDED_
-/* @(#$Id: sortseq.h,v 1.1 2005-12-01 16:23:09 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: sortseq.h,v 1.2 2005-12-02 16:18:20 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <vector>
 #include <string>
@@ -33,7 +33,7 @@ class DocSeqSorted : public DocSequence {
     std::string m_title;
     int m_count;
     std::vector<Rcl::Doc> m_docs;
-    std::vector<int> m_pcs;
+    std::vector<Rcl::Doc *> m_docsp;
 };
 
 #endif /* _SORTSEQ_H_INCLUDED_ */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.2 2005-12-02 14:18:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.3 2005-12-02 16:18:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 #include <algorithm>
 
@@ -13,38 +13,51 @@ class CompareDocs {
 public: 
     CompareDocs(const RclSortSpec &sortspec) : ss(sortspec) {}
 
-    int operator()(const Rcl::Doc &x, const Rcl::Doc &y) 
+    // It's not too clear in the std::sort doc what this should do. This 
+    // behaves as operator< 
+    int operator()(const Rcl::Doc *x, const Rcl::Doc *y) 
     { 
-	LOGDEB(("Comparing .. \n"));
+	LOGDEB1(("Comparing .. \n"));
+
+	// Compare using each criterion in term. Further comparisons must only 
+	// be made if previous order ones are equal.
 	for (unsigned int i = 0; i < ss.crits.size(); i++) {
 	    switch (ss.crits[i]) {
 	    case RclSortSpec::RCLFLD_MTIME:
 		{
-		    LOGDEB((" MTIME\n"));
-		    long xmtime = x.dmtime.empty() ? atol(x.fmtime.c_str()) :
-			atol(x.dmtime.c_str());
-		    long ymtime = y.dmtime.empty() ? atol(y.fmtime.c_str()) :
-			atol(y.dmtime.c_str());
+		    long xmtime = x->dmtime.empty() ? atol(x->fmtime.c_str()) :
+			atol(x->dmtime.c_str());
+		    long ymtime = y->dmtime.empty() ? atol(y->fmtime.c_str()) :
+			atol(y->dmtime.c_str());
 		    
+		    LOGDEB1((" MTIME %ld %ld\n", xmtime, ymtime));
 		    if (ss.dirs[i] ? xmtime > ymtime : xmtime < ymtime)
 			return 1;
+		    else if (xmtime != ymtime)
+			return 0;
 		}
 		break;
 	    case RclSortSpec::RCLFLD_URL:
-		LOGDEB((" URL\n"));
-		if (ss.dirs[i] ? x.url > y.url :  x.url < y.url)
+		LOGDEB1((" URL\n"));
+		if (ss.dirs[i] ? x->url > y->url :  x->url < y->url)
 		    return 1;
+		else if (x->url != y->url)
+		    return 0;
 		break;
 	    case RclSortSpec::RCLFLD_IPATH: 
-		LOGDEB((" IPATH\n"));
-		if (ss.dirs[i] ? x.ipath > y.ipath : x.ipath < y.ipath)
+		LOGDEB1((" IPATH\n"));
+		if (ss.dirs[i] ? x->ipath > y->ipath : x->ipath < y->ipath)
 		    return 1;
+		else if (x->ipath != y->ipath)
+		    return 0;
 		break;
 	    case RclSortSpec::RCLFLD_MIMETYPE:
-		LOGDEB((" MIMETYPE\n"));
-		if (ss.dirs[i] ? x.mimetype > y.mimetype : 
-		    x.mimetype < y.mimetype)
+		LOGDEB1((" MIMETYPE\n"));
+		if (ss.dirs[i] ? x->mimetype > y->mimetype : 
+		    x->mimetype < y->mimetype)
 		    return 1;
+		else if (x->mimetype != y->mimetype)
+		    return 0;
 		break;
 	    }
 	}
@@ -58,21 +71,25 @@ DocSeqSorted::DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec)
     LOGDEB(("DocSeqSorted:: count %d\n", cnt));
     
     m_docs.resize(cnt);
-    m_pcs.resize(cnt);
     int i;
     for (i = 0; i < cnt; i++) {
-	if (!iseq.getDoc(i, m_docs[i], &m_pcs[i])) {
+	int percent;
+	if (!iseq.getDoc(i, m_docs[i], &percent)) {
 	    LOGERR(("DocSeqSorted: getDoc failed for doc %d\n", i));
 	    break;
 	}
+	m_docs[i].pc = percent;
     }
     m_count = i;
     LOGDEB(("DocSeqSorted:: m_count %d\n", m_count));
     m_docs.resize(m_count);
-    m_pcs.resize(m_count);
+    m_docsp.resize(m_count);
+    for (i = 0; i < m_count; i++)
+	m_docsp[i] = &m_docs[i];
+
     m_title = string("Sorted ") + iseq.title();
     CompareDocs cmp(sortspec);
-    sort(m_docs.begin(), m_docs.end(), cmp);
+    sort(m_docsp.begin(), m_docsp.end(), cmp);
 }
 
 bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, int *percent, string *)
@@ -82,7 +99,7 @@ bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, int *percent, string *)
     if (num >= m_count)
 	return false;
     if (percent)
-	*percent = m_pcs[num];
-    doc = m_docs[num];
+	*percent = (*m_docsp[num]).pc;
+    doc = *m_docsp[num];
     return true;
 }

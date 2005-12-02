@@ -62,7 +62,9 @@ void RecollMain::init()
     dostem = false;
     curPreview = 0;
     asearchform = 0;
+    sortform = 0;
     docsource = 0;
+    sortwidth = 0;
     reslistTE->viewport()->installEventFilter(this);
 }
 
@@ -386,14 +388,13 @@ void RecollMain::queryText_returnPressed()
 
     if (docsource)
 	delete docsource;
-#if TRYSORT
-    DocSequenceDb myseq(rcldb);
-    RclSortSpec ss;
-    ss.addCrit(RclSortSpec::RCLFLD_MTIME, false);
-    docsource = new DocSeqSorted(myseq, 10000, ss);
-#else
-    docsource = new DocSequenceDb(rcldb);
-#endif
+
+    if (sortwidth > 0) {
+	DocSequenceDb myseq(rcldb);
+	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs);
+    } else {
+	docsource = new DocSequenceDb(rcldb);
+    }
     listNextPB_clicked();
 }
 
@@ -570,7 +571,7 @@ void RecollMain::previewClosed(Preview *w)
 }
 
 // Open advanced search dialog.
-void RecollMain::advSearchPB_clicked()
+void RecollMain::showAdvSearchDialog()
 {
     if (asearchform == 0) {
 	asearchform = new advsearch(0, tr("Advanced search"), FALSE,
@@ -583,6 +584,22 @@ void RecollMain::advSearchPB_clicked()
     } else {
 	asearchform->show();
     }
+}
+
+void RecollMain::showSortDialog()
+{
+    if (sortform == 0) {
+	sortform = new SortForm(0, tr("Sort criteria"), FALSE,
+				    WStyle_Customize | WStyle_NormalBorder | 
+				    WStyle_Title | WStyle_SysMenu);
+	sortform->setSizeGripEnabled(FALSE);
+	connect(sortform, SIGNAL(sortDataChanged(int, RclSortSpec)), 
+		this, SLOT(sortDataChanged(int, RclSortSpec)));
+	sortform->show();
+    } else {
+        sortform->show();
+    }
+
 }
 
 // Execute an advanced search query. The parameters normally come from
@@ -608,14 +625,14 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
     curPreview = 0;
     if (docsource)
 	delete docsource;
-#if TRYSORT
-    DocSequenceDb myseq(rcldb);
-    RclSortSpec ss;
-    ss.addCrit(RclSortSpec::RCLFLD_MTIME, true);
-    docsource = new DocSeqSorted(myseq, 10000, ss);
-#else
-    docsource = new DocSequenceDb(rcldb);
-#endif
+
+    if (sortwidth > 0) {
+	DocSequenceDb myseq(rcldb);
+	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs);
+    } else {
+	docsource = new DocSequenceDb(rcldb);
+    }
+
     listNextPB_clicked();
 }
 
@@ -704,4 +721,11 @@ void RecollMain::searchTextChanged(const QString & text)
 	clearqPB->setEnabled(true);
     }
 
+}
+
+void RecollMain::sortDataChanged(int cnt, RclSortSpec spec)
+{
+    LOGDEB(("RecollMain::sortDataChanged\n"));
+    sortwidth = cnt;
+    sortspecs = spec;
 }
