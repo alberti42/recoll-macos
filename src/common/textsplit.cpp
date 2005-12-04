@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.14 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.15 2005-12-04 17:10:22 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_TEXTSPLIT
 
@@ -372,6 +372,7 @@ static string thisprog;
 static string usage =
     " textsplit [opts] [filename]\n"
     "   -q: query mode\n"
+    " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
     ;
 
@@ -408,9 +409,15 @@ int main(int argc, char **argv)
     TextSplit splitter(&cb, (op_flags&OPT_q) ? true: false);
     if (argc == 1) {
 	string data;
-	if (!file_to_string(*argv++, data)) 
+	const char *filename = *argv++;	argc--;
+	if (!strcmp(filename, "stdin")) {
+	    char buf[1024];
+	    int nread;
+	    while ((nread = read(0, buf, 1024)) > 0) {
+		data.append(buf, nread);
+	    }
+	} else if (!file_to_string(filename, data)) 
 	    exit(1);
-	argc--;
 	splitter.text_to_words(data);
     } else {
 	cout << endl << teststring << endl << endl;  
