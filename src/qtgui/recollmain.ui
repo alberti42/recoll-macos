@@ -22,12 +22,12 @@
     </property>
     <property name="minimumSize">
         <size>
-            <width>678</width>
-            <height>160</height>
+            <width>466</width>
+            <height>190</height>
         </size>
     </property>
     <property name="caption">
-        <string>recoll</string>
+        <string>Recoll</string>
     </property>
     <vbox>
         <property name="name">
@@ -113,78 +113,6 @@
                                 <enum>Vertical</enum>
                             </property>
                         </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>listPrevPB</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>Previous page</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>listNextPB</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>Next page</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>sortPB</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>true</bool>
-                            </property>
-                            <property name="text">
-                                <string>Sorting</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer1</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>42</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="Line">
-                            <property name="name">
-                                <cstring>line4</cstring>
-                            </property>
-                            <property name="frameShape">
-                                <enum>VLine</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>Sunken</enum>
-                            </property>
-                            <property name="orientation">
-                                <enum>Vertical</enum>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>advSearchPB</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Advanced search</string>
-                            </property>
-                        </widget>
                     </hbox>
                 </widget>
                 <widget class="QTextEdit">
@@ -225,6 +153,8 @@
     </item>
     <item text="&amp;Tools" name="Tools">
         <action name="toolsDoc_HistoryAction"/>
+        <action name="toolsAdvanced_SearchAction"/>
+        <action name="toolsSort_parametersAction"/>
     </item>
     <separator/>
     <item text="&amp;Help" name="Help">
@@ -233,6 +163,19 @@
     </item>
 </menubar>
 <toolbars>
+    <toolbar dock="2">
+        <property name="name">
+            <cstring>Toolbar</cstring>
+        </property>
+        <property name="label">
+            <string>Toolbar</string>
+        </property>
+        <action name="toolsAdvanced_SearchAction"/>
+        <action name="toolsSort_parametersAction"/>
+        <action name="toolsDoc_HistoryAction"/>
+        <action name="prevPageAction"/>
+        <action name="nextPageAction"/>
+    </toolbar>
 </toolbars>
 <actions>
     <action>
@@ -244,9 +187,6 @@
         </property>
         <property name="menuText">
             <string>E&amp;xit</string>
-        </property>
-        <property name="accel">
-            <string>Ctrl+Q</string>
         </property>
     </action>
     <action>
@@ -275,11 +215,70 @@
         <property name="name">
             <cstring>toolsDoc_HistoryAction</cstring>
         </property>
+        <property name="iconSet">
+            <iconset>history</iconset>
+        </property>
         <property name="text">
             <string>Doc History</string>
         </property>
         <property name="menuText">
             <string>Doc &amp;History</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>toolsAdvanced_SearchAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>asearch</iconset>
+        </property>
+        <property name="text">
+            <string>Advanced Search</string>
+        </property>
+        <property name="menuText">
+            <string>Advanced Search</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>toolsSort_parametersAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>sortparms</iconset>
+        </property>
+        <property name="text">
+            <string>Sort parameters</string>
+        </property>
+        <property name="menuText">
+            <string>Sort parameters</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>nextPageAction</cstring>
+        </property>
+	<property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>nextpage</iconset>
+        </property>
+        <property name="text">
+            <string>Next page</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>prevPageAction</cstring>
+        </property>
+	<property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="iconSet">
+            <iconset>prevpage</iconset>
+        </property>
+        <property name="text">
+            <string>Previous page</string>
         </property>
     </action>
 </actions>
@@ -300,25 +299,13 @@
         <sender>searchPB</sender>
         <signal>clicked()</signal>
         <receiver>RecollMain</receiver>
-        <slot>queryText_returnPressed()</slot>
+        <slot>startSimpleSearch()</slot>
     </connection>
     <connection>
         <sender>queryText</sender>
         <signal>returnPressed()</signal>
         <receiver>RecollMain</receiver>
-        <slot>queryText_returnPressed()</slot>
-    </connection>
-    <connection>
-        <sender>listPrevPB</sender>
-        <signal>clicked()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>listPrevPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>listNextPB</sender>
-        <signal>clicked()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>listNextPB_clicked()</slot>
+        <slot>startSimpleSearch()</slot>
     </connection>
     <connection>
         <sender>reslistTE</sender>
@@ -331,18 +318,6 @@
         <signal>clicked(int,int)</signal>
         <receiver>RecollMain</receiver>
         <slot>reslistTE_clicked(int,int)</slot>
-    </connection>
-    <connection>
-        <sender>clearqPB</sender>
-        <signal>clicked()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>clearqPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>advSearchPB</sender>
-        <signal>clicked()</signal>
-        <receiver>RecollMain</receiver>
-        <slot>showAdvSearchDialog()</slot>
     </connection>
     <connection>
         <sender>helpAbout_RecollAction</sender>
@@ -369,10 +344,28 @@
         <slot>clear()</slot>
     </connection>
     <connection>
-        <sender>sortPB</sender>
-        <signal>clicked()</signal>
+        <sender>toolsAdvanced_SearchAction</sender>
+        <signal>activated()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>showAdvSearchDialog()</slot>
+    </connection>
+    <connection>
+        <sender>toolsSort_parametersAction</sender>
+        <signal>activated()</signal>
         <receiver>RecollMain</receiver>
         <slot>showSortDialog()</slot>
+    </connection>
+    <connection>
+        <sender>prevPageAction</sender>
+        <signal>activated()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>resultPageBack()</slot>
+    </connection>
+    <connection>
+        <sender>nextPageAction</sender>
+        <signal>activated()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>showResultPage()</slot>
     </connection>
 </connections>
 <includes>
@@ -408,19 +401,17 @@
     <slot>reslistTE_doubleClicked( int par, int )</slot>
     <slot>reslistTE_clicked( int par, int car )</slot>
     <slot>reslistTE_delayedclick()</slot>
-    <slot>queryText_returnPressed()</slot>
-    <slot>searchPB_clicked()</slot>
-    <slot>clearqPB_clicked()</slot>
-    <slot>listPrevPB_clicked()</slot>
-    <slot>listNextPB_clicked()</slot>
+    <slot>startSimpleSearch()</slot>
+    <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
+    <slot>resultPageBack()</slot>
+    <slot>showResultPage()</slot>
     <slot>previewClosed( Preview * w )</slot>
     <slot>showAdvSearchDialog()</slot>
     <slot>showSortDialog()</slot>
-    <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
     <slot>showAboutDialog()</slot>
     <slot>showDocHistory()</slot>
     <slot>searchTextChanged( const QString &amp; text )</slot>
-    <slot>sortDataChanged(int cnt, RclSortSpec spec)</slot>
+    <slot>sortDataChanged( int cnt, RclSortSpec spec )</slot>
 </slots>
 <functions>
     <function access="private">init()</function>
