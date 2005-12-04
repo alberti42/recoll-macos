@@ -1,7 +1,7 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on thread release #debug
+CONFIG	+= qt warn_on thread release debug
 
 SOURCES	+= main.cpp \
 	idxthread.cpp \
@@ -21,7 +21,12 @@ IMAGES	= images/filenew \
 	images/editcut \
 	images/editcopy \
 	images/editpaste \
-	images/searchfind
+	images/searchfind \
+	images/asearch \
+	images/history \
+	images/nextpage \
+	images/prevpage \
+	images/sortparms
 
 unix {
   UI_DIR = .ui
