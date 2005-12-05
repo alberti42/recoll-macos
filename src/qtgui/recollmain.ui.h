@@ -527,7 +527,8 @@ void RecollMain::showResultPage()
 	    time_t mtime = doc.dmtime.empty() ?
 		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	    struct tm *tm = localtime(&mtime);
-	    strftime(datebuf, 99, "<i>Modified:</i>&nbsp;%F&nbsp;%T", tm);
+	    strftime(datebuf, 99, 
+		     "<i>Modified:</i>&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
 	}
 	string abst = stripMarkup(doc.abstract);
 	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
