@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.42 2005-11-30 09:46:25 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.43 2005-12-05 10:39:20 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -305,39 +305,48 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 
     TextSplit splitter(&splitData);
 
-    ///////// Split and index terms in document body and auxiliary fields
-
-    // Split title and index terms
+    // /////// Split and index terms in document body and auxiliary fields
     string noacc;
+
+    // Split and index file name. This supposes that it's either ascii
+    // or utf-8. If this fails, we just go on. We need a config
+    // parameter for file name charset
+    if (dumb_string(fn, noacc)) {
+	splitter.text_to_words(noacc);
+	splitData.basepos += splitData.curpos + 100;
+    }
+
+    // Split and index title
     if (!dumb_string(doc.title, noacc)) {
 	LOGERR(("Rcl::Db::add: unac failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
+    splitData.basepos += splitData.curpos + 100;
 
     // Split body and index terms
-    splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.text, noacc)) {
 	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
+    splitData.basepos += splitData.curpos + 100;
 
     // Split keywords and index terms
-    splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.keywords, noacc)) {
 	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
+    splitData.basepos += splitData.curpos + 100;
 
     // Split abstract and index terms
-    splitData.basepos += splitData.curpos + 100;
     if (!dumb_string(doc.abstract, noacc)) {
 	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
+    splitData.basepos += splitData.curpos + 100;
 
     ////// Special terms for metadata
     // Mime type
