@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.3 2005-12-02 16:18:20 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.4 2005-12-05 12:02:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 #include <algorithm>
 
@@ -87,7 +87,7 @@ DocSeqSorted::DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec)
     for (i = 0; i < m_count; i++)
 	m_docsp[i] = &m_docs[i];
 
-    m_title = string("Sorted ") + iseq.title();
+    m_title = iseq.title() + " (sorted)";
     CompareDocs cmp(sortspec);
     sort(m_docsp.begin(), m_docsp.end(), cmp);
 }

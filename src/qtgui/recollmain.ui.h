@@ -242,17 +242,20 @@ static string urltolocalpath(string url)
 {
     return url.substr(7, string::npos);
 }
+
 // Translate paragraph number in list window to doc number. This depends on 
 // how we format the title etc..
-static int reldocnumfromparnum(int par)
+int RecollMain::reldocnumfromparnum(int par)
 {
-    return par - 2;
-}
-// Translate paragraph number in list window to doc number. This depends on 
-// how we format the title etc..
-static int parnumfromreldocnum(int docnum)
-{
-    return docnum + 2;
+    std::map<int,int>::iterator it = pageParaToReldocnums.find(par);
+    int rdn;
+    if (it != pageParaToReldocnums.end()) {
+	rdn = it->second;
+    } else {
+	rdn = -1;
+    }
+    LOGDEB1(("reldocnumfromparnum: par %d reldoc %d\n", par, rdn));
+    return rdn;
 }
 
 // Double click in result list: use external viewer to display file
@@ -345,12 +348,12 @@ void RecollMain::reslistTE_delayedclick()
 
     int par = reslist_par;
 
-    if (reslist_current != -1) {
+    {
 	QColor color("white");
-	reslistTE->
-	    setParagraphBackgroundColor(parnumfromreldocnum(reslist_current), 
-					color);
+	for (int i = 1; i < reslistTE->paragraphs(); i++)
+	    reslistTE->setParagraphBackgroundColor(i, color);
     }
+
     QColor color("lightblue");
     reslistTE->setParagraphBackgroundColor(par, color);
 
@@ -364,242 +367,15 @@ void RecollMain::reslistTE_delayedclick()
 
 // User asked to start query. Send it to the db aand call
 // listNextPB_clicked to fetch and display the first page of results
-void RecollMain::queryText_returnPressed()
+void RecollMain::startSimpleSearch()
 {
     LOGDEB(("RecollMain::queryText_returnPressed()\n"));
     // The db may have been closed at the end of indexing
-    string reason;
-    if (!maybeOpenDb(reason)) {
-	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	exit(1);
-    }
-    if (stemlang.empty())
-	getQueryStemming(dostem, stemlang);
-
-    reslist_current = -1;
-    reslist_winfirst = -1;
+    Rcl::AdvSearchData sdata;
 
     QCString u8 =  queryText->text().utf8();
-
-    if (!rcldb->setQuery(string((const char *)u8), dostem ? 
-			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, stemlang))
-	return;
-    curPreview = 0;
-
-    if (docsource)
-	delete docsource;
-
-    if (sortwidth > 0) {
-	DocSequenceDb myseq(rcldb);
-	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs);
-    } else {
-	docsource = new DocSequenceDb(rcldb);
-    }
-    listNextPB_clicked();
-}
-
-
-void RecollMain::searchPB_clicked()
-{
-    queryText_returnPressed();
-}
-
-void RecollMain::clearqPB_clicked()
-{
-    queryText->clear();
-}
-
-void RecollMain::listPrevPB_clicked()
-{
-    if (reslist_winfirst <= 0)
-	return;
-    reslist_winfirst -= 2*respagesize;
-    listNextPB_clicked();
-}
-
-
-// Fill up result list window with next screen of hits
-void RecollMain::listNextPB_clicked()
-{
-    if (!docsource)
-	return;
-
-    int percent;
-    Rcl::Doc doc;
-
-    int resCnt = docsource->getResCnt();
-
-    LOGDEB(("listNextPB_clicked: rescnt %d, winfirst %d\n", resCnt,
-	    reslist_winfirst));
-
-    // If we are already on the last page, nothing to do:
-    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize > resCnt)) {
-	listNextPB->setEnabled(false);
-	return;
-    }
-
-    if (reslist_winfirst < 0) {
-	reslist_winfirst = 0;
-	listPrevPB->setEnabled(false);
-    } else {
-	listPrevPB->setEnabled(true);
-	reslist_winfirst += respagesize;
-    }
-
-    bool gotone = false;
-    reslistTE->clear();
-
-    int last = MIN(resCnt-reslist_winfirst, respagesize);
-
-    // Insert results if any in result list window 
-    for (int i = 0; i < last; i++) {
-	string sh;
-	doc.erase();
-
-	if (!docsource->getDoc(reslist_winfirst + i, doc, &percent, &sh)) {
-	    if (i == 0) 
-		reslist_winfirst = -1;
-	    break;
-	}
-	if (i == 0) {
-	    // We could use a <title> but the textedit doesnt display
-	    // it prominently
-	    reslistTE->append("<qt><head></head><body>");
-	    QString line = "<p><font size=+1><b>";
-	    line += docsource->title().c_str();
-	    line += "</b></font><br>";
-	    reslistTE->append(line);
-	    line = tr("<b>Displaying results starting at index"
-		      " %1 (maximum set size %2)</b></p>")
-		.arg(reslist_winfirst+1)
-		.arg(resCnt);
-	    reslistTE->append(line);
-	}
-	    
-	gotone = true;
-
-	string img_name;
-	if (showicons) {
-	    string iconname = rclconfig->getMimeIconName(doc.mimetype);
-	    if (iconname.empty())
-		iconname = "document";
-	    string imgfile = iconsdir + "/" + iconname + ".png";
-
-	    LOGDEB1(("Img file; %s\n", imgfile.c_str()));
-	    QImage image(imgfile.c_str());
-	    if (!image.isNull()) {
-		img_name = string("img_") + iconname;
-		QMimeSourceFactory::defaultFactory()->
-		    setImage(img_name.c_str(),image);
-	    }
-	}
-
-	// Result list display: TOBEDONE
-	//  - move abstract/keywords to  Detail window ?
-	//  - keywords matched
-	//  - language
-        //  - size
-	char perbuf[10];
-	sprintf(perbuf, "%3d%%", percent);
-	if (doc.title.empty()) 
-	    doc.title = path_getsimple(doc.url);
-	char datebuf[100];
-	datebuf[0] = 0;
-	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
-	    time_t mtime = doc.dmtime.empty() ?
-		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
-	    struct tm *tm = localtime(&mtime);
-	    strftime(datebuf, 99, "<i>Modified:</i>&nbsp;%F&nbsp;%T", tm);
-	}
-	string abst = stripMarkup(doc.abstract);
-	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
-	string result;
-	if (!sh.empty())
-	    result += string("<br><b>") + sh + "</b><br><br>\n";
-	result += string("<p>");
-	if (!img_name.empty()) {
-	    result += "<img source=\"" + img_name + "\" align=\"left\">";
-	}
-	result += string(perbuf) + " <b>" + doc.title + "</b><br>" +
-	    doc.mimetype + "&nbsp;" +
-	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>")) +
-	    (!abst.empty() ? abst + "<br>" : string("")) +
-	    (!doc.keywords.empty() ? doc.keywords + "<br>" : string("")) +
-	    "<i>" + doc.url + +"</i><br>" +
-	    "</p>";
-
-	QString str = QString::fromUtf8(result.c_str(), result.length());
-	reslistTE->append(str);
-    }
-
-    reslist_current = -1;
-
-    if (gotone) {
-	reslistTE->append("</body></qt>");
-	reslistTE->setCursorPosition(0,0);
-	reslistTE->ensureCursorVisible();
-    } else {
-	// Restore first in win parameter that we shouln't have incremented
-	reslistTE->append(tr("<p>"
-			     /*"<img align=\"left\" source=\"myimage\">"*/
-			     "<b>No results found</b>"
-			     "<br>"));
-	reslist_winfirst -= respagesize;
-	if (reslist_winfirst < 0)
-	    reslist_winfirst = -1;
-    }
-
-    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize >= resCnt)) {
-	listNextPB->setEnabled(false);
-    } else {
-	listNextPB->setEnabled(true);
-    }
-}
-
-// If a preview (toplevel) window gets closed by the user, we need to
-// clean up because there is no way to reopen it. And check the case
-// where the current one is closed
-void RecollMain::previewClosed(Preview *w)
-{
-    if (w == curPreview) {
-	LOGDEB(("Active preview closed\n"));
-	curPreview = 0;
-    } else {
-	LOGDEB(("Old preview closed\n"));
-    }
-    delete w;
-}
-
-// Open advanced search dialog.
-void RecollMain::showAdvSearchDialog()
-{
-    if (asearchform == 0) {
-	asearchform = new advsearch(0, tr("Advanced search"), FALSE,
-				    WStyle_Customize | WStyle_NormalBorder | 
-				    WStyle_Title | WStyle_SysMenu);
-	asearchform->setSizeGripEnabled(FALSE);
-	connect(asearchform, SIGNAL(startSearch(Rcl::AdvSearchData)), 
-		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
-	asearchform->show();
-    } else {
-	asearchform->show();
-    }
-}
-
-void RecollMain::showSortDialog()
-{
-    if (sortform == 0) {
-	sortform = new SortForm(0, tr("Sort criteria"), FALSE,
-				    WStyle_Customize | WStyle_NormalBorder | 
-				    WStyle_Title | WStyle_SysMenu);
-	sortform->setSizeGripEnabled(FALSE);
-	connect(sortform, SIGNAL(sortDataChanged(int, RclSortSpec)), 
-		this, SLOT(sortDataChanged(int, RclSortSpec)));
-	sortform->show();
-    } else {
-        sortform->show();
-    }
-
+    sdata.orwords = u8;
+    startAdvSearch(sdata);
 }
 
 // Execute an advanced search query. The parameters normally come from
@@ -633,9 +409,230 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
 	docsource = new DocSequenceDb(rcldb);
     }
 
-    listNextPB_clicked();
+    showResultPage();
 }
 
+void RecollMain::resultPageBack()
+{
+    if (reslist_winfirst <= 0)
+	return;
+    reslist_winfirst -= 2*respagesize;
+    showResultPage();
+}
+
+
+// Fill up result list window with next screen of hits
+void RecollMain::showResultPage()
+{
+    if (!docsource)
+	return;
+
+    int percent;
+    Rcl::Doc doc;
+
+    int resCnt = docsource->getResCnt();
+
+    LOGDEB(("showResultPage: rescnt %d, winfirst %d\n", resCnt,
+	    reslist_winfirst));
+
+    pageParaToReldocnums.clear();
+
+    // If we are already on the last page, nothing to do:
+    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize > resCnt)) {
+	nextPageAction->setEnabled(false);
+	return;
+    }
+
+    if (reslist_winfirst < 0) {
+	reslist_winfirst = 0;
+	prevPageAction->setEnabled(false);
+    } else {
+	prevPageAction->setEnabled(true);
+	reslist_winfirst += respagesize;
+    }
+
+    bool gotone = false;
+    reslistTE->clear();
+
+    int last = MIN(resCnt-reslist_winfirst, respagesize);
+
+    string alltext;
+
+    // Insert results if any in result list window 
+    for (int i = 0; i < last; i++) {
+	string sh;
+	doc.erase();
+
+	if (!docsource->getDoc(reslist_winfirst + i, doc, &percent, &sh)) {
+	    if (i == 0) 
+		reslist_winfirst = -1;
+	    break;
+	}
+	if (i == 0) {
+	    // Display header
+	    // We could use a <title> but the textedit doesnt display
+	    // it prominently
+	    reslistTE->append("<qt><head></head><body>");
+	    QString line = "<p><font size=+1><b>";
+	    line += docsource->title().c_str();
+	    line += "</b></font><br>";
+	    //alltext.append(line.utf8());
+	    reslistTE->append(line);
+	    line = tr("<b>Displaying results starting at index"
+		      " %1 (maximum set size %2)</b></p>\n")
+		.arg(reslist_winfirst+1)
+		.arg(resCnt);
+	    //alltext.append(line.utf8());
+	    reslistTE->append(line);
+	}
+	    
+	gotone = true;
+
+	// Result list entry display: this must be exactly one paragraph
+	// TOBEDONE
+	//  - move abstract/keywords to  Detail window ?
+	//  - keywords matched ?
+	//  - language ?
+        //  - size ?
+
+	string result;
+	if (!sh.empty())
+	    result += string("<p><b>") + sh + "</p>\n<p>";
+	else
+	    result = "<p>";
+
+	string img_name;
+	if (showicons) {
+	    string iconname = rclconfig->getMimeIconName(doc.mimetype);
+	    if (iconname.empty())
+		iconname = "document";
+	    string imgfile = iconsdir + "/" + iconname + ".png";
+
+	    LOGDEB1(("Img file; %s\n", imgfile.c_str()));
+	    QImage image(imgfile.c_str());
+	    if (!image.isNull()) {
+		img_name = string("img_") + iconname;
+		QMimeSourceFactory::defaultFactory()->
+		    setImage(img_name.c_str(), image);
+	    }
+	}
+
+	char perbuf[10];
+	sprintf(perbuf, "%3d%%", percent);
+	if (doc.title.empty()) 
+	    doc.title = path_getsimple(doc.url);
+	char datebuf[100];
+	datebuf[0] = 0;
+	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
+	    time_t mtime = doc.dmtime.empty() ?
+		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
+	    struct tm *tm = localtime(&mtime);
+	    strftime(datebuf, 99, "<i>Modified:</i>&nbsp;%F&nbsp;%T", tm);
+	}
+	string abst = stripMarkup(doc.abstract);
+	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
+	if (!img_name.empty()) {
+	    result += "<img source=\"" + img_name + "\" align=\"left\">";
+	}
+	result += string(perbuf) + " <b>" + doc.title + "</b><br>" +
+	    doc.mimetype + "&nbsp;" +
+	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>")) +
+	    (!abst.empty() ? abst + "<br>" : string("")) +
+	    (!doc.keywords.empty() ? doc.keywords + "<br>" : string("")) +
+	    "<i>" + doc.url + +"</i><br></p>\n";
+
+	QString str = QString::fromUtf8(result.c_str(), result.length());
+	//alltext.append(str.utf8());
+	reslistTE->append(str);
+
+	pageParaToReldocnums[reslistTE->paragraphs()-1] = i;
+    }
+
+    reslist_current = -1;
+
+    if (gotone) {
+	reslistTE->append("</body></qt>");
+	reslistTE->setCursorPosition(0,0);
+	reslistTE->ensureCursorVisible();
+    } else {
+	// Restore first in win parameter that we shouln't have incremented
+	reslistTE->append(tr("<p>"
+			     /*"<img align=\"left\" source=\"myimage\">"*/
+			     "<b>No results found</b>"
+			     "<br>"));
+	reslist_winfirst -= respagesize;
+	if (reslist_winfirst < 0)
+	    reslist_winfirst = -1;
+    }
+
+#if 0
+    {
+	FILE *fp = fopen("/tmp/reslistdebug", "w");
+	if (fp) {
+	    const char *text = (const char *)reslistTE->text().utf8();
+	    //const char *text = alltext.c_str();
+	    fwrite(text, 1, strlen(text), fp);
+	    fclose(fp);
+	}
+    }
+#endif
+
+    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize >= resCnt)) {
+	nextPageAction->setEnabled(false);
+    } else {
+	nextPageAction->setEnabled(true);
+    }
+}
+
+// If a preview (toplevel) window gets closed by the user, we need to
+// clean up because there is no way to reopen it. And check the case
+// where the current one is closed
+void RecollMain::previewClosed(Preview *w)
+{
+    if (w == curPreview) {
+	LOGDEB(("Active preview closed\n"));
+	curPreview = 0;
+    } else {
+	LOGDEB(("Old preview closed\n"));
+    }
+    delete w;
+}
+
+// Open advanced search dialog.
+void RecollMain::showAdvSearchDialog()
+{
+    if (asearchform == 0) {
+	asearchform = new advsearch(0, tr("Advanced search"), FALSE,
+				    WStyle_Customize | WStyle_NormalBorder | 
+				    WStyle_Title | WStyle_SysMenu);
+	asearchform->setSizeGripEnabled(FALSE);
+	connect(asearchform, SIGNAL(startSearch(Rcl::AdvSearchData)), 
+		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
+	asearchform->show();
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	asearchform->close();
+	asearchform->show();
+    }
+}
+
+void RecollMain::showSortDialog()
+{
+    if (sortform == 0) {
+	sortform = new SortForm(0, tr("Sort criteria"), FALSE,
+				    WStyle_Customize | WStyle_NormalBorder | 
+				    WStyle_Title | WStyle_SysMenu);
+	sortform->setSizeGripEnabled(FALSE);
+	connect(sortform, SIGNAL(sortDataChanged(int, RclSortSpec)), 
+		this, SLOT(sortDataChanged(int, RclSortSpec)));
+	sortform->show();
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	sortform->close();
+        sortform->show();
+    }
+
+}
 
 /** 
  * Open a preview window for a given document, or load it into new tab of 
@@ -706,8 +703,14 @@ void RecollMain::showDocHistory()
 
     if (docsource)
 	delete docsource;
-    docsource = new DocSequenceHistory(rcldb, history);
-    listNextPB_clicked();
+
+    if (sortwidth > 0) {
+	DocSequenceHistory myseq(rcldb, history);
+	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs);
+    } else {
+	docsource = new DocSequenceHistory(rcldb, history);
+    }
+    showResultPage();
 }
 
 

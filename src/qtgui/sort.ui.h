@@ -33,6 +33,8 @@ void SortForm::reset()
     fldCMB2->setCurrentItem(0);
     descCB1->setChecked(false);
     descCB1->setChecked(false);
+    sortCB->setChecked(false);
+    setData();
 }
 
 void SortForm::setData()

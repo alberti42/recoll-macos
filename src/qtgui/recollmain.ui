@@ -99,20 +99,6 @@
                                 <string>Ctrl+S</string>
                             </property>
                         </widget>
-                        <widget class="Line">
-                            <property name="name">
-                                <cstring>line4</cstring>
-                            </property>
-                            <property name="frameShape">
-                                <enum>VLine</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>Sunken</enum>
-                            </property>
-                            <property name="orientation">
-                                <enum>Vertical</enum>
-                            </property>
-                        </widget>
                     </hbox>
                 </widget>
                 <widget class="QTextEdit">
@@ -170,11 +156,19 @@
         <property name="label">
             <string>Toolbar</string>
         </property>
+        <action name="prevPageAction"/>
+        <action name="nextPageAction"/>
+    </toolbar>
+    <toolbar dock="2">
+        <property name="name">
+            <cstring>Toolbar1</cstring>
+        </property>
+        <property name="label">
+            <string>Tools</string>
+        </property>
         <action name="toolsAdvanced_SearchAction"/>
         <action name="toolsSort_parametersAction"/>
         <action name="toolsDoc_HistoryAction"/>
-        <action name="prevPageAction"/>
-        <action name="nextPageAction"/>
     </toolbar>
 </toolbars>
 <actions>
@@ -393,6 +387,7 @@
     <variable>int sortwidth;</variable>
     <variable>RclSortSpec sortspecs;</variable>
     <variable>DocSequence *docsource;</variable>
+    <variable>std::map&lt;int,int&gt; pageParaToReldocnums;</variable>
 </variables>
 <slots>
     <slot>fileExit()</slot>
@@ -418,6 +413,7 @@
     <function returnType="bool">close( bool )</function>
     <function access="private" returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
     <function access="private">startPreview( int docnum )</function>
+    <function access="private" returnType="int">reldocnumfromparnum( int parnum )</function>
 </functions>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseq.cpp,v 1.2 2005-11-28 15:31:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseq.cpp,v 1.3 2005-12-05 12:02:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 #include <math.h>
 
@@ -39,6 +39,7 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent,
     } else {
 	skip = num;
 	it = hlist.begin();
+	prevtime = -1;
     }
     prevnum = num;
     while (skip--) 
@@ -50,6 +51,8 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent,
 	    prevtime = it->unixtime;
 	    time_t t = (time_t)(it->unixtime);
 	    *sh = string(ctime(&t));
+	    // Get rid of the final \n in ctime
+	    sh->erase(sh->length()-1);
 	} else
 	    sh->erase();
     }
