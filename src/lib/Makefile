@@ -13,7 +13,7 @@ OBJS = base64.o conftree.o csguess.o debuglog.o \
      mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathhash.o pathut.o \
      rclconfig.o rcldb.o rclinit.o readfile.o smallut.o \
      textsplit.o transcode.o \
-     unacpp.o unac.o docseq.o sortseq.o
+     unacpp.o unac.o docseq.o sortseq.o copyfile.o
 
 SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
      ../utils/execmd.cpp ../utils/idfile.cpp ../utils/md5.cpp \
@@ -27,7 +27,7 @@ SRCS = ../utils/conftree.cpp ../index/csguess.cpp ../utils/debuglog.cpp \
      ../utils/base64.cpp ../utils/readfile.cpp ../utils/smallut.cpp \
      ../common/textsplit.cpp ../utils/transcode.cpp \
      ../common/unacpp.cpp ../unac/unac.c ../query/history.cpp \
-     ../query/docseq.cpp ../query/sortseq.cpp
+     ../query/docseq.cpp ../query/sortseq.cpp ../utils/copyfile.cpp
 
 librcl.a : $(OBJS)
 	ar ru librcl.a $(OBJS)
@@ -102,6 +102,8 @@ transcode.o : ../utils/transcode.cpp
 md5.o : ../utils/md5.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 unacpp.o : ../common/unacpp.cpp 
+	$(CXX) $(CXXFLAGS) -c $<
+copyfile.o : ../utils/copyfile.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 
 depend: alldeps.stamp

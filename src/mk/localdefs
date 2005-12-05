@@ -5,5 +5,5 @@ XAPIANCXXFLAGS=-I/usr/local/include
 LIBICONV=-L/usr/local/lib -liconv
 INCICONV=-I/usr/local/include
 
-LOCALCXXFLAGS = $(INCICONV) $(XAPIANCXXFLAGS)
+LOCALCXXFLAGS = $(INCICONV) $(XAPIANCXXFLAGS) -DRECOLL_PREFIX=\"/usr/local\"
 

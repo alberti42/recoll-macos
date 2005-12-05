@@ -1,8 +1,11 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.15 2005-12-02 16:17:29 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.16 2005-12-05 14:09:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
+#include <stdio.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <iostream>
 
@@ -11,10 +14,43 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.15 2005-12-02 16:17:29 dockes E
 #include "conftree.h"
 #include "debuglog.h"
 #include "smallut.h"
+#include "pathut.h"
+#include "copyfile.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
+
+static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf"};
+static int ncffiles = sizeof(configfiles) / sizeof(char *);
+
+static bool createConfig(string &reason)
+{
+    const char *cprefix = getenv("RECOLL_PREFIX");
+    if (cprefix == 0)
+	cprefix = RECOLL_PREFIX;
+    string prefix(cprefix);
+    path_cat(prefix, "share/recoll/examples");
+
+    string recolldir = path_tildexpand("~/.recoll");
+    if (mkdir(recolldir.c_str(), 0755) < 0) {
+	reason += string("mkdir(") + recolldir + ") failed: " + 
+	    strerror(errno);
+	return false;
+    }
+    for (int i = 0; i < ncffiles; i++) {
+	string src = prefix;
+	path_cat(src, string(configfiles[i]));
+	string dst = recolldir;
+	path_cat(dst, string(configfiles[i])); 
+	if (!copyfile(src.c_str(), dst.c_str(), reason)) {
+	    LOGERR(("Copyfile failed: %s\n", reason.c_str()));
+	    return false;
+	}
+    }
+    return true;
+}
+
 
 RclConfig::RclConfig()
     : m_ok(false), conf(0), mimemap(0), mimeconf(0), stopsuffixes(0)
@@ -36,6 +72,11 @@ RclConfig::RclConfig()
     }
     string cfilename = confdir;
     path_cat(cfilename, "recoll.conf");
+
+    if (access(confdir.c_str(), 0) != 0 || access(cfilename.c_str(), 0) != 0) {
+	if (!createConfig(reason))
+	    return;
+    }
 
     // Open readonly here so as not to casually create a config file
     conf = new ConfTree(cfilename.c_str(), true);
@@ -177,7 +218,7 @@ string RclConfig::getMimeIconName(const string &mtype)
 }
 
 // Look up an executable filter.  
-// We look in RECOLL_FILTERSDIR, filtersdir param, RECOLL_CONFDIR, then
+// We look in RECOLL_FILTERSDIR, filtersdir param, then
 // let the system use the PATH
 string find_filter(RclConfig *conf, const string &icmd)
 {
