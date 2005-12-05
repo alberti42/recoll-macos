@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.20 2005-11-28 15:31:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.21 2005-12-05 14:57:54 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -186,12 +186,20 @@ int main( int argc, char ** argv )
 
     if (!rcldb || !rcldb->open(dbdir, Rcl::Db::DbRO)) {
 	startindexing = 1;
-	QMessageBox::information(0, "Recoll",
-				 a.translate("Main", 
-					     "Could not open database in ") + 
-				 QString(dbdir) + 
-				 a.translate("Main",
-					     ". Starting indexation"));
+	switch (QMessageBox::
+		question(0, "Recoll",
+			 a.translate("Main", "Could not open database in ")+
+			 QString(dbdir) +
+			 a.translate("Main", 
+				     ".\n"
+				     "Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed."),
+				      "Ok",
+				      "Cancel", 0, 0, 1 )) {
+	case 0: // Ok
+	    break;
+	case 1: // Cancel
+	    exit(0);
+	}
     }
 
     start_idxthread(rclconfig);

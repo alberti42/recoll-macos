@@ -1,4 +1,4 @@
-# @(#$Id: Makefile,v 1.19 2005-11-25 08:51:47 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.20 2005-12-05 14:57:54 dockes Exp $  (C) 2005 J.F.Dockes
 
 # Default values. These can be overridden on the command line ie: 
 # make prefix=/usr
@@ -45,8 +45,5 @@ distclean: clean
 
 install: all
 	./recollinstall ${prefix}
-
-installme:
-	./recollinstall
 
 .PHONY: all static clean distclean install installme

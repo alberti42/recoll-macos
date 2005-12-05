@@ -39,7 +39,7 @@ Installing Recoll
 
    Recoll has been built on Linux (redhat7.3, mandriva 2005), FreeBSD and
    Solaris 8. If you build on another system, I would very much welcome
-   comments and patches.
+   patches.
 
    Normal procedure:
 
@@ -48,15 +48,11 @@ Installing Recoll
      * make
      * (practise your usual hardship-repelling invocations).
 
-   There is no real autoconfiguration. The configure script will just link
-   one of the system-specific files in the mk directory to mk/sysconf. If
-   your system is known yet, it will tell you as much, and you may want to
+   There little autoconfiguration. The configure script will mainly link one
+   of the system-specific files in the mk directory to mk/sysconf. If your
+   system is not known yet, it will tell you as much, and you may want to
    manually copy and modify one of the existing files (the new file name
    should be the output of uname -s).
-
-   You may also need to adjust the recoll.pro file inside the qtgui directory
-   to fix the "-L/usr/local/lib -lxapian -liconv" piece, depending on where
-   your libs are installed. Then run 'qmake recoll.pro' in there.
 
   Using binary packages
 
@@ -77,28 +73,32 @@ Installing Recoll
 
    Either type make install or execute recollinstall targetdir, in the root
    of the source tree. This will copy the commands to $targetdir/bin and the
-   sample configuration files to $targetdir/share/examples/recoll
+   sample configuration files, scripts and other shared data to
+   $targetdir/share/recoll
 
     Personal configuration
 
-   Either type make installme in the root of the source tree, or execute
-   recollinstall. This will copy the configuration files to the .recoll
-   directory in your home.
+   The personal configuration files and the database are kept in the .recoll
+   directory in your home. If this directory does not exist when recoll or
+   recollindex are started, the directory will be created and the sample
+   configuration files will be copied. recoll will give you a chance to edit
+   the configuration file before starting indexation. recollindex will
+   proceed immediately.
 
   Configuration
 
    Recoll uses text configuration files. You will have to edit them by hand
-   for now (all hope is not lost that there will be dialogs to build them
-   from the GUI in the future).
+   for now (there is still some hope for a GUI configuration tool in the
+   future).
 
    The main configuration file is named ~/.recoll/recoll.conf.
 
-   A commented sample was copied to ~/.recoll by the installation. By
-   default, it will index your home directory.
+   The default configuration will index your home directory. If this is not
+   appropriate, use recoll to copy the sample configuration, click Cancel,
+   and edit the configuration file before restarting the command. This will
+   start the initial indexation, which may take some time.
 
-   Then start recollindex, and wait for indexing to complete (this may take
-   some time). When it's done, you can start recoll and try a search. See the
-   user manual for a little more details
+   You are then ready to try a query, see the user manual for more detail.
 
    Depending on what is installed on your system, you may also want to adjust
    the external viewers defined in ~/.recoll/mimeconf (ie: html is either
