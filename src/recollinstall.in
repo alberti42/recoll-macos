@@ -11,7 +11,10 @@ usage()
     fatal 'Usage: recollinstall <dir>, ie: recollinstall /usr/local'
 }
 
+test $# = 1 || usage
+
 INSTALL=${INSTALL:=install -c}
+STRIP=${STRIP:=strip}
 
 # Install commands and example config to target directory
 PREFIX=$1
@@ -34,6 +37,7 @@ do
 done
 
 ${INSTALL} qtgui/recoll index/recollindex $PREFIX/bin || exit 1
+${STRIP} $PREFIX/bin/recoll $PREFIX/bin/recollindex
 
 ${INSTALL} filters/rcl* ${PREFIX}/share/recoll/filters/ || exit 1
 chmod a+x ${PREFIX}/share/recoll/filters/rcl* || exit 1
