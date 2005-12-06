@@ -1,6 +1,5 @@
 bin/recoll
 bin/recollindex
-bin/recollinstall
 share/recoll/examples/mimeconf
 share/recoll/examples/mimemap
 share/recoll/examples/recoll.conf
