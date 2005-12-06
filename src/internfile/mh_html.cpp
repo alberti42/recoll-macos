@@ -101,8 +101,12 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
 
 	try {
 	    p.parse_html(transcoded);
-	} catch (bool) {
+	} catch (bool diag) {
 	    pres = p;
+	    if (diag == true)
+		break;
+	    LOGDEB(("textHtmlToDoc: charset [%s] doc charset [%s]\n",
+		    charset.c_str(),pres.doccharset.c_str()));
 	    if (!pres.doccharset.empty() && 
 		!samecharset(pres.doccharset, pres.ocharset)) {
 		LOGDEB(("textHtmlToDoc: charset '%s' doc charset '%s',"
@@ -117,7 +121,7 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
 
     docout.origcharset = charset;
     docout.text = pres.dump;
-    // LOGDEB(("textHtmlToDoc: dump : %s\n", pres.dump.c_str()));
+    //LOGDEB(("textHtmlToDoc: dump : %s\n", pres.dump.c_str()));
     docout.title = pres.title;
     docout.keywords = pres.keywords;
     docout.abstract = pres.sample;

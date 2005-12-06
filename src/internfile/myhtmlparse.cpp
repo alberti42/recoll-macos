@@ -156,7 +156,8 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 			    if (val.find("none") != string::npos ||
 				val.find("noindex") != string::npos) {
 				indexing_allowed = false;
-				throw true;
+				LOGDEB1(("myhtmlparse: robots/noindex\n"));
+				throw false;
 			    }
 			}
 		    } else if ((j = p.find("http-equiv")) != p.end()) {
@@ -175,7 +176,7 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 					     "differs from announced '%s'\n",
 					     doccharset.c_str(), 
 					     ocharset.c_str()));
-				    throw true;
+				    throw false;
 				}
 			    }
 			}
@@ -232,6 +233,7 @@ MyHtmlParser::closing_tag(const string &tag)
 	    break;
 	case 'b':
 	    if (tag == "body") {
+		LOGDEB1(("Myhtmlparse: body close tag found\n"));
 		throw true;
 	    }
 	    if (tag == "blockquote" || tag == "br") pending_space = true;
