@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.11 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.12 2005-12-06 08:35:48 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <sys/types.h>
@@ -161,7 +161,9 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	m_handler->mkDoc(m_cfg, m_fn, m_mime, doc, ipath);
     FileInterner::Status ret = FIError;
     switch (mhs) {
-    case MimeHandler::MHError: break;
+    case MimeHandler::MHError: 
+	LOGERR(("FileInterner::internfile: error parsing %s\n", m_fn.c_str()));
+	break;
     case MimeHandler::MHDone: ret = FIDone;break;
     case MimeHandler::MHAgain: ret = FIAgain;break;
     }

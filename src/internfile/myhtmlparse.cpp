@@ -24,10 +24,9 @@
 #include <stdio.h>
 
 #include "myhtmlparse.h"
-
 #include "indextext.h" // for lowercase_term()
-
 #include "mimeparse.h"
+#include "smallut.h"
 
 // The original version for this compresses whitespace and suppresses newlines
 // I can see no good reason to do this, and it actually helps preview to keep
@@ -171,7 +170,7 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 			    if ((k = p.params.find("charset")) != 
 				p.params.end()) {
 				doccharset = k->second;
-				if (doccharset != ocharset) {
+				if (!samecharset(doccharset, ocharset)) {
 				    LOGDEB1(("Doc specified charset '%s' "
 					     "differs from announced '%s'\n",
 					     doccharset.c_str(), 

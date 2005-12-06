@@ -108,8 +108,10 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
 		LOGDEB(("textHtmlToDoc: charset '%s' doc charset '%s',"
 			"reparse\n", charset.c_str(),pres.doccharset.c_str()));
 		charset = pres.doccharset;
-	    } else
-		break;
+	    } else {
+		LOGERR(("textHtmlToDoc:: error: non charset exception\n"));
+		return MimeHandler::MHError;
+	    }
 	}
     }
 
