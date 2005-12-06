@@ -25,18 +25,22 @@ Recoll
   Features:
 
      * QT-based GUI.
-     * Supports the following document types:
-          * text.
-          * html.
-          * OpenOffice files.
-          * maildir and mailbox mail folders (Mozilla and Thunderbird mail
-            ok).
-          * pdf (with pdftotext).
-          * postscript (with ghostscript's pstotext).
-          * msword (with antiword).
-          * rtf text (with unrtf).
-          * gaim log files.
-       along with their compressed versions.
+     * Supports the following document types (along with their compressed
+       versions):
+
+            Natively
+                    * text.
+                    * html.
+                    * OpenOffice files.
+                    * maildir and mailbox (Mozilla and Thunderbird mail ok).
+                    * gaim log files.
+
+            With external helpers
+                    * pdf (xpdf).
+                    * postscript (ghostscript).
+                    * msword (antiword).
+                    * rtf text (unrtf).
+
      * Powerful query facilities, with boolean searches, phrases, filter on
        file types and directory tree.
      * Support for multiple charsets. Internal processing and storage uses
