@@ -1,9 +1,8 @@
-# @(#$Id: Makefile,v 1.20 2005-12-05 14:57:54 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.21 2005-12-06 15:10:36 dockes Exp $  (C) 2005 J.F.Dockes
 
 # Default values. These can be overridden on the command line ie: 
 # make prefix=/usr
 prefix=/usr/local
-INSTALL = install -c
 
 all: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
@@ -46,4 +45,4 @@ distclean: clean
 install: all
 	./recollinstall ${prefix}
 
-.PHONY: all static clean distclean install installme
+.PHONY: all static clean distclean install

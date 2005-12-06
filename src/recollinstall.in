@@ -1,7 +1,5 @@
 #!/bin/sh
-
-# Install recoll files. This has 2 modes, for installing the binaries or
-# the personal configuration files
+# Install recoll files.
 
 fatal()
 {
@@ -10,22 +8,20 @@ fatal()
 }
 usage()
 {
-    echo 'Usage (common files): recollinstall <dir>, ie: recollinstall /usr/local'
-    fatal 'Usage (personal config): recollinstall'
+    fatal 'Usage: recollinstall <dir>, ie: recollinstall /usr/local'
 }
 
-INSTALL=${INSTALL:=install}
+INSTALL=${INSTALL:=install -c}
 
-if test $# = 1 ; then
-   # Install commands and example config to target directory
-   PREFIX=$1
+# Install commands and example config to target directory
+PREFIX=$1
 
-   echo "Installing to $PREFIX"
+echo "Installing to $PREFIX"
 
-   test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
-        " You need to build first (type 'make')."
+test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
+     " You need to build first (type 'make')."
 
-   for d in ${PREFIX} \
+for d in ${PREFIX} \
 	    ${PREFIX}/bin \
 	    ${PREFIX}/share \
 	    ${PREFIX}/share/recoll \
@@ -33,57 +29,19 @@ if test $# = 1 ; then
 	    ${PREFIX}/share/recoll/filters \
 	    ${PREFIX}/share/recoll/images \
 	    ${PREFIX}/share/recoll/translations
-   do
-     test -d $d || mkdir $d || exit 1
-   done
+do
+  test -d $d || mkdir $d || exit 1
+done
 
+${INSTALL} qtgui/recoll index/recollindex $PREFIX/bin || exit 1
 
-   ${INSTALL} qtgui/recoll index/recollindex recollinstall $PREFIX/bin \
-	      || exit 1
+${INSTALL} filters/rcl* ${PREFIX}/share/recoll/filters/ || exit 1
+chmod a+x ${PREFIX}/share/recoll/filters/rcl* || exit 1
+# Clean up possible old filters in examples
+rm -f ${PREFIX}/share/recoll/examples/rcl*
 
-   ${INSTALL} filters/rcl* ${PREFIX}/share/recoll/filters/ || exit 1
-   chmod a+x ${PREFIX}/share/recoll/filters/rcl* || exit 1
-   # Clean up possible old filters in examples
-   rm -f ${PREFIX}/share/recoll/examples/rcl*
-
-   ${INSTALL} sampleconf/recoll.conf sampleconf/mimeconf sampleconf/mimemap \
+${INSTALL} sampleconf/recoll.conf sampleconf/mimeconf sampleconf/mimemap \
 		    ${PREFIX}/share/recoll/examples/ || exit 1
 
-
-   ${INSTALL} qtgui/mtpics/*.png ${PREFIX}/share/recoll/images || exit 1
-   ${INSTALL} qtgui/recoll*.qm ${PREFIX}/share/recoll/translations || exit 1
-
-   exit 0
-
-else
-
-  # Install configuration files to home directory
-  PREFIX=${PREFIX:=@prefix@}
-
-  me=`whoami`
-  if test "$me" = root ; then
-    fatal "Can't install personal config in root's home directory"
-  fi
-  if test ! -d ${PREFIX}/share/recoll/examples ; then
-     fatal "Global install should be performed first"
-  fi
-
-  if test -d $HOME/.recoll ; then 
-    cat <<EOF
-     
-     $HOME/.recoll already exists, no modification done.
-     You should check for new filters or updated files in 
-     ${PREFIX}/share/recoll/examples.
-EOF
-     exit 0
-  fi
-
-  mkdir $HOME/.recoll || exit 1
-  cp ${PREFIX}/share/recoll/examples/* $HOME/.recoll
-  chmod +w $HOME/.recoll/recoll.conf
-  chmod +w $HOME/.recoll/mimeconf
-
-  echo Copied configuration files and filters to $HOME/.recoll/
-  echo You should now take a look at $HOME/.recoll/recoll.conf
-  exit 0
-fi
+${INSTALL} qtgui/mtpics/*.png ${PREFIX}/share/recoll/images || exit 1
+${INSTALL} qtgui/recoll*.qm ${PREFIX}/share/recoll/translations || exit 1
