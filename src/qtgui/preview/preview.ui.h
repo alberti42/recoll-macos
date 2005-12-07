@@ -10,6 +10,7 @@
 ** destructor.
 *****************************************************************************/
 #include <unistd.h>
+#include <time.h>
 
 #include <list>
 #include <utility>
@@ -267,7 +268,7 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc)
 	time_t mtime = doc.dmtime.empty() ? 
 	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
-	strftime(datebuf, 99, "%F %T", tm);
+	strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S", tm);
     }
     string tiptxt = doc.url + string("\n");
     tiptxt += doc.mimetype + " " + string(datebuf) + "\n";

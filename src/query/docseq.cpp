@@ -1,7 +1,8 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseq.cpp,v 1.4 2005-12-05 16:13:12 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseq.cpp,v 1.5 2005-12-07 15:41:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 #include <math.h>
+#include <time.h>
 
 #include "docseq.h"
 

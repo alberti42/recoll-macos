@@ -1,11 +1,12 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.11 2005-11-24 07:16:15 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.12 2005-12-07 15:41:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <map>
 #include <sstream>
