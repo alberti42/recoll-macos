@@ -32,6 +32,7 @@ class MyHtmlParser : public HtmlParser {
     public:
 	bool in_script_tag;
 	bool in_style_tag;
+	bool in_body_tag; 
 	bool pending_space;
     	string title, sample, keywords, dump, dmtime;
         string ocharset; // This is the charset our user thinks the doc was
@@ -41,9 +42,11 @@ class MyHtmlParser : public HtmlParser {
 	void process_text(const string &text);
 	void opening_tag(const string &tag, const map<string,string> &p);
 	void closing_tag(const string &tag);
+	void do_eof();
 	MyHtmlParser() :
 		in_script_tag(false),
 		in_style_tag(false),
+		in_body_tag(false),
 		pending_space(false),
 		indexing_allowed(true) { }
 };

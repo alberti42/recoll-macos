@@ -39,6 +39,7 @@ class HtmlParser {
 				 const map<string,string> &/*p*/) { }
 	virtual void closing_tag(const string &/*tag*/) { }
 	virtual void parse_html(const string &text);
+	virtual void do_eof() {}
 	HtmlParser();
 	virtual ~HtmlParser() { }
 };

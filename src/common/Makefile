@@ -1,6 +1,6 @@
 
 # Only test progs in there
-PROGS = unacpp textsplit
+PROGS = internfile unacpp textsplit
 
 all: $(BIGLIB) $(PROGS) 
 
@@ -20,6 +20,14 @@ textsplit : $(TEXTSPLIT_OBJS)
 trtextsplit.o : textsplit.cpp 
 	$(CXX) $(CXXFLAGS) -DTEST_TEXTSPLIT -c -o trtextsplit.o \
 	       textsplit.cpp
+
+INTERNFILE_OBJS= trinternfile.o  $(BIGLIB) $(MIMELIB)
+internfile : $(INTERNFILE_OBJS) 
+	$(CXX) $(CXXFLAGS) -o internfile $(INTERNFILE_OBJS) \
+	       $(LIBICONV) $(LIBSYS)
+trinternfile.o : internfile.cpp 
+	$(CXX) $(CXXFLAGS) -DTEST_INTERNFILE -c -o trinternfile.o \
+	       internfile.cpp
 
 clean::
 	rm -f *.o $(PROGS)

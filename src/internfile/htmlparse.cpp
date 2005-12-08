@@ -23,7 +23,7 @@
  */
 
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.3 2005-11-24 07:16:15 dockes Exp $ ";
+static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.4 2005-12-08 08:44:14 dockes Exp $ ";
 #endif
 
 //#include <config.h>
@@ -273,10 +273,11 @@ HtmlParser::parse_html(const string &body)
     string::const_iterator start = body.begin();
 
     while (1) {
-	// Skip through until we find an HTML tag, a comment, or the end of
-	// document.  Ignore isolated occurences of `<' which don't start
-	// a tag or comment
 	string::const_iterator p = start;
+
+	// Eat text until we find an HTML tag, a comment, or the end
+	// of document.  Ignore isolated occurences of `<' which don't
+	// start a tag or comment
 	while (1) {
 	    p = find(p, body.end(), '<');
 	    if (p == body.end()) break;
@@ -286,15 +287,17 @@ HtmlParser::parse_html(const string &body)
 	    p++; 
 	}
 
-
-	// process text up to start of tag
-	if (p > start) {
+	// Process text
+	if (p > start || p == body.end()) {
 	    string text = body.substr(start - body.begin(), p - start);
 	    decode_entities(text);
 	    process_text(text);
 	}
 
-	if (p == body.end()) break;
+	if (p == body.end()) {
+	    do_eof();
+	    break;
+	}
 
 	start = p + 1;
    

@@ -80,10 +80,10 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
     //   instead of the configuration one.
     LOGDEB(("textHtmlToDoc: charset before parsing: [%s]\n", charset.c_str()));
 
-    MyHtmlParser pres;
+    MyHtmlParser result;
     for (int pass = 0; pass < 2; pass++) {
 	string transcoded;
-
+	LOGDEB(("Html::mkDoc: pass %d\n", pass));
 	MyHtmlParser p;
 	// Try transcoding. If it fails, use original text.
 	if (!transcode(htext, transcoded, charset, "UTF-8")) {
@@ -101,17 +101,21 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
 
 	try {
 	    p.parse_html(transcoded);
+	    // No exception: ok?
+	    result = p;
+	    break;
 	} catch (bool diag) {
-	    pres = p;
+	    result = p;
 	    if (diag == true)
 		break;
 	    LOGDEB(("textHtmlToDoc: charset [%s] doc charset [%s]\n",
-		    charset.c_str(),pres.doccharset.c_str()));
-	    if (!pres.doccharset.empty() && 
-		!samecharset(pres.doccharset, pres.ocharset)) {
+		    charset.c_str(),result.doccharset.c_str()));
+	    if (!result.doccharset.empty() && 
+		!samecharset(result.doccharset, result.ocharset)) {
 		LOGDEB(("textHtmlToDoc: charset '%s' doc charset '%s',"
-			"reparse\n", charset.c_str(),pres.doccharset.c_str()));
-		charset = pres.doccharset;
+			"reparse\n", charset.c_str(),
+			result.doccharset.c_str()));
+		charset = result.doccharset;
 	    } else {
 		LOGERR(("textHtmlToDoc:: error: non charset exception\n"));
 		return MimeHandler::MHError;
@@ -120,11 +124,11 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
     }
 
     docout.origcharset = charset;
-    docout.text = pres.dump;
-    //LOGDEB(("textHtmlToDoc: dump : %s\n", pres.dump.c_str()));
-    docout.title = pres.title;
-    docout.keywords = pres.keywords;
-    docout.abstract = pres.sample;
-    docout.dmtime = pres.dmtime;
+    docout.text = result.dump;
+    //LOGDEB(("textHtmlToDoc: dump : %s\n", result.dump.c_str()));
+    docout.title = result.title;
+    docout.keywords = result.keywords;
+    docout.abstract = result.sample;
+    docout.dmtime = result.dmtime;
     return MimeHandler::MHDone;
 }

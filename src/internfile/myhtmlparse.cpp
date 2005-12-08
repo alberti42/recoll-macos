@@ -77,6 +77,7 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	case 'b':
 	    if (tag == "body") {
 		dump = "";
+		in_body_tag = true;
 		break;
 	    }
 	    if (tag == "blockquote" || tag == "br") {
@@ -234,6 +235,7 @@ MyHtmlParser::closing_tag(const string &tag)
 	case 'b':
 	    if (tag == "body") {
 		LOGDEB1(("Myhtmlparse: body close tag found\n"));
+		in_body_tag = false;
 		throw true;
 	    }
 	    if (tag == "blockquote" || tag == "br") pending_space = true;
@@ -301,4 +303,15 @@ MyHtmlParser::closing_tag(const string &tag)
 	    if (tag == "xmp") pending_space = true;
 	    break;
     }
+}
+
+// This gets called when hitting eof. If the <body> is open, do
+// something with the text (that is, don't throw up). Else, things are
+// too weird, throw an error. We don't get called if the parser finds
+// a closing body tag (exception gets thrown by closing_tag())
+void
+MyHtmlParser::do_eof()
+{
+    if (!in_body_tag)
+	throw(false);
 }
