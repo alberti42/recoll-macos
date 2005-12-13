@@ -74,6 +74,17 @@
                                 <string>Search</string>
                             </property>
                         </widget>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>allTermsCB</cstring>
+                            </property>
+                            <property name="text">
+                                <string>&amp;All terms</string>
+                            </property>
+                            <property name="accel">
+                                <string>Alt+A</string>
+                            </property>
+                        </widget>
                         <widget class="QLineEdit">
                             <property name="name">
                                 <cstring>queryText</cstring>
@@ -154,21 +165,21 @@
             <cstring>Toolbar</cstring>
         </property>
         <property name="label">
-            <string>Toolbar</string>
+            <string>Search tools</string>
         </property>
-        <action name="prevPageAction"/>
-        <action name="nextPageAction"/>
+        <action name="toolsAdvanced_SearchAction"/>
+        <action name="toolsSort_parametersAction"/>
+        <action name="toolsDoc_HistoryAction"/>
     </toolbar>
     <toolbar dock="2">
         <property name="name">
             <cstring>Toolbar1</cstring>
         </property>
         <property name="label">
-            <string>Tools</string>
+            <string>Result list</string>
         </property>
-        <action name="toolsAdvanced_SearchAction"/>
-        <action name="toolsSort_parametersAction"/>
-        <action name="toolsDoc_HistoryAction"/>
+        <action name="prevPageAction"/>
+        <action name="nextPageAction"/>
     </toolbar>
 </toolbars>
 <actions>

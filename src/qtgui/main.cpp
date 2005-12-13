@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.22 2005-12-13 12:42:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.23 2005-12-13 17:20:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -12,6 +12,7 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.22 2005-12-13 12:42:59 dockes Exp $ 
 #include <qtimer.h>
 #include <qmessagebox.h>
 #include <qsettings.h>
+#include <qcheckbox.h>
 
 
 #include "rcldb.h"
@@ -76,6 +77,8 @@ void recollCleanup()
 	settings.setPath("Recoll.org", "Recoll");
 	settings.writeEntry( "/Recoll/geometry/width", width);
 	settings.writeEntry("/Recoll/geometry/height", height);
+	settings.writeEntry("/Recoll/prefs/simpleSearchAll", 
+			    mainWindow->allTermsCB->isChecked());
     }
 
     stop_idxthread();
@@ -114,13 +117,14 @@ int main( int argc, char ** argv )
     settings.setPath("Recoll.org", "Recoll");
     int width = settings.readNumEntry( "/Recoll/geometry/width", 590);
     int height = settings.readNumEntry( "/Recoll/geometry/height", 810);
+    bool ssall = settings.readBoolEntry( "/Recoll/prefs/simpleSearchAll", 0); 
     QSize s(width, height);
     
     // Create main window and set its size to previous session's
     RecollMain w;
     mainWindow = &w;
     w.resize(s);
-    
+    w.allTermsCB->setDown(ssall);
     string reason;
     rclconfig = recollinit(recollCleanup, sigcleanup, reason);
     if (!rclconfig || !rclconfig->ok()) {

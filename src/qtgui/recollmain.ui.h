@@ -29,6 +29,7 @@ using std::pair;
 #include <qstatusbar.h>
 #include <qwindowdefs.h>
 #include <qapplication.h>
+#include <qcheckbox.h>
 
 #include "recoll.h"
 #include "debuglog.h"
@@ -389,7 +390,11 @@ void RecollMain::startSimpleSearch()
     Rcl::AdvSearchData sdata;
 
     QCString u8 =  queryText->text().utf8();
-    sdata.orwords = u8;
+    if (allTermsCB->isChecked())
+	sdata.allwords = u8;
+    else
+	sdata.orwords = u8;
+
     startAdvSearch(sdata);
 }
 
