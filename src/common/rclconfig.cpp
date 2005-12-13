@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.16 2005-12-05 14:09:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.17 2005-12-13 12:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <stdio.h>
@@ -9,12 +9,11 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.16 2005-12-05 14:09:16 dockes E
 
 #include <iostream>
 
-#include "rclconfig.h"
 #include "pathut.h"
+#include "rclconfig.h"
 #include "conftree.h"
 #include "debuglog.h"
 #include "smallut.h"
-#include "pathut.h"
 #include "copyfile.h"
 
 #ifndef NO_NAMESPACES
@@ -29,8 +28,7 @@ static bool createConfig(string &reason)
     const char *cprefix = getenv("RECOLL_PREFIX");
     if (cprefix == 0)
 	cprefix = RECOLL_PREFIX;
-    string prefix(cprefix);
-    path_cat(prefix, "share/recoll/examples");
+    string prefix = path_cat(cprefix, "share/recoll/examples");
 
     string recolldir = path_tildexpand("~/.recoll");
     if (mkdir(recolldir.c_str(), 0755) < 0) {
@@ -39,10 +37,8 @@ static bool createConfig(string &reason)
 	return false;
     }
     for (int i = 0; i < ncffiles; i++) {
-	string src = prefix;
-	path_cat(src, string(configfiles[i]));
-	string dst = recolldir;
-	path_cat(dst, string(configfiles[i])); 
+	string src = path_cat((const string&)prefix, string(configfiles[i]));
+	string dst = path_cat((const string&)recolldir, string(configfiles[i])); 
 	if (!copyfile(src.c_str(), dst.c_str(), reason)) {
 	    LOGERR(("Copyfile failed: %s\n", reason.c_str()));
 	    return false;
@@ -70,8 +66,7 @@ RclConfig::RclConfig()
 	confdir = path_home();
 	confdir += ".recoll/";
     }
-    string cfilename = confdir;
-    path_cat(cfilename, "recoll.conf");
+    string cfilename = path_cat(confdir, "recoll.conf");
 
     if (access(confdir.c_str(), 0) != 0 || access(cfilename.c_str(), 0) != 0) {
 	if (!createConfig(reason))
@@ -92,8 +87,7 @@ RclConfig::RclConfig()
     if (!conf->get("mimemapfile", mimemapfile, "")) {
 	mimemapfile = "mimemap";
     }
-    string mpath  = confdir;
-    path_cat(mpath, mimemapfile);
+    string mpath  = path_cat(confdir, mimemapfile);
     mimemap = new ConfTree(mpath.c_str(), true);
     if (mimemap == 0 ||
 	(mimemap->getStatus() != ConfSimple::STATUS_RO && 
@@ -108,8 +102,7 @@ RclConfig::RclConfig()
     if (!conf->get("mimeconffile", mimeconffile, "")) {
 	mimeconffile = "mimeconf";
     }
-    mpath = confdir;
-    path_cat(mpath, mimeconffile);
+    mpath = path_cat(confdir, mimeconffile);
     mimeconf = new ConfTree(mpath.c_str(), true);
     if (mimeconf == 0 ||
 	(mimeconf->getStatus() != ConfSimple::STATUS_RO && 
@@ -230,17 +223,15 @@ string find_filter(RclConfig *conf, const string &icmd)
     const char *cp;
 
     if (cp = getenv("RECOLL_FILTERSDIR")) {
-	cmd = cp;
-	path_cat(cmd, icmd);
+	cmd = path_cat(cp, icmd);
 	if (access(cmd.c_str(), X_OK) == 0)
 	    return cmd;
     } else if (conf->getConfParam(string("filtersdir"), cmd)) {
-	path_cat(cmd, icmd);
+	cmd = path_cat(cmd, icmd);
 	if (access(cmd.c_str(), X_OK) == 0)
 	    return cmd;
     } else {
-	cmd = conf->getConfDir();
-	path_cat(cmd, icmd);
+	cmd = path_cat(conf->getConfDir(), icmd);
 	if (access(cmd.c_str(), X_OK) == 0)
 	    return cmd;
     }

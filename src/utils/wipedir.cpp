@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wipedir.cpp,v 1.3 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wipedir.cpp,v 1.4 2005-12-13 12:43:00 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_WIPEDIR
@@ -50,8 +50,7 @@ int wipedir(const string& dir)
 	if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) 
 	    continue;
 
-	string fn = dir;
-	path_cat(fn, ent->d_name);
+	string fn = path_cat(dir, ent->d_name);
 
 	struct stat st;
 	int statret = stat(fn.c_str(), &st);

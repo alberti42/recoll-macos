@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.21 2005-12-05 14:57:54 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.22 2005-12-13 12:42:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -38,6 +38,8 @@ bool showicons;
 string iconsdir;
 RclDHistory *history;
 
+static string dbdir;
+
 void getQueryStemming(bool &dostem, std::string &stemlang)
 {
     string param;
@@ -51,20 +53,14 @@ void getQueryStemming(bool &dostem, std::string &stemlang)
 
 bool maybeOpenDb(string &reason)
 {
-    if (!rcldb)
+    if (!rcldb) {
+	reason = "Internal error: db not created";
 	return false;
-    if (!rcldb->isopen()) {
-	string dbdir;
-	if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
-	    reason = "No db directory in configuration";
-	    return false;
-	}
-	dbdir = path_tildexpand(dbdir);
-	if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
-	    reason = "Could not open database in " + 
-		dbdir + " wait for indexing to complete?";
-	    return false;
-	}
+    }
+    if (!rcldb->isopen() && !rcldb->open(dbdir, Rcl::Db::DbRO)) {
+	reason = "Could not open database in " + 
+	    dbdir + " wait for indexing to complete?";
+	return false;
     }
     return true;
 }
@@ -134,7 +130,6 @@ int main( int argc, char ** argv )
 	exit(1);
     }
 
-    string dbdir;
     if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
 	// Note: this will have to be replaced by a call to a
 	// configuration buildin dialog for initial configuration
@@ -143,10 +138,10 @@ int main( int argc, char ** argv )
 					  "No db directory in configuration"));
 	exit(1);
     }
+    dbdir = path_tildexpand(dbdir);
 
     // Translations for Recoll
-    string translatdir = string(recollsharedir);
-    path_cat(translatdir, "translations");
+    string translatdir = path_cat(recollsharedir, "translations");
     QTranslator translator( 0 );
     // QTextCodec::locale() returns $LANG
     translator.load( QString("recoll_") + QTextCodec::locale(), 
@@ -157,8 +152,7 @@ int main( int argc, char ** argv )
     rclconfig->getConfParam("showicons", &showicons);
     rclconfig->getConfParam("iconsdir", iconsdir);
     if (iconsdir.empty()) {
-	iconsdir = string(recollsharedir);
-	path_cat(iconsdir, "images");
+	iconsdir = path_cat(recollsharedir, "images");
     } else {
 	iconsdir = path_tildexpand(iconsdir);
     }
@@ -170,11 +164,9 @@ int main( int argc, char ** argv )
 	exit(1);
     }
 
-    string historyfile = rclconfig->getConfDir();
-    path_cat(historyfile, "history");
+    string historyfile = path_cat(rclconfig->getConfDir(), "history");
     history = new RclDHistory(historyfile);
 
-    dbdir = path_tildexpand(dbdir);
 
     rcldb = new Rcl::Db;
 

@@ -22,7 +22,7 @@ external filter, which will probably be the simpler solution in most cases.
 \section extfilts External filters
 
 Filters are programs (usually shell scripts) that will turn a document of
-foreign type into something that Recoll can understand. Html was chosen as
+foreign type into something that Recoll can understand. HTML was chosen as
 a pivot format for its ability to carry structured information.
 
 The meta-information tags that Recoll will use at the moment are the
@@ -33,15 +33,15 @@ following:
      - keywords 
      - description
 
-For an example, you can take a look, at rclsoff which translates openoffice
-documents.
+For an example, you can take a look at the rclsoff filter which translates
+openoffice documents.
 
 The filter is executed with the input file name as a parameter and should
 output the result to stdout.
 
 \section extassoc Associating a filter to a mime type
 
-This is done in mimeconf. Take a look at the file, the format is
-self-explanatory. 
+This is done in the mimeconf configuration file. Take a look at the file,
+the format is self-explanatory.
 
 */

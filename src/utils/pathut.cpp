@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.5 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.6 2005-12-13 12:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_PATHUT
@@ -11,6 +11,18 @@ static char rcsid[] = "@(#$Id: pathut.cpp,v 1.5 2005-11-24 07:16:16 dockes Exp $
 #ifndef NO_NAMESPACES
 using std::string;
 #endif /* NO_NAMESPACES */
+
+void path_catslash(std::string &s) {
+    if (s.empty() || s[s.length() - 1] != '/')
+	s += '/';
+}
+
+std::string path_cat(const std::string &s1, const std::string &s2) {
+    std::string res = s1;
+    path_catslash(res);
+    res +=  s2;
+    return res;
+}
 
 string path_getfather(const string &s) {
     string father = s;

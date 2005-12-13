@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.43 2005-12-05 10:39:20 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.44 2005-12-13 12:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -501,8 +501,7 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 /// Compute name of stem db for given base database and language
 static string stemdbname(const string& basename, string lang)
 {
-    string nm = basename;
-    path_cat(nm, string("stem_") + lang);
+    string nm = path_cat(basename, string("stem_") + lang);
     return nm;
 }
 

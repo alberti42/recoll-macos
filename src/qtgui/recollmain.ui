@@ -398,6 +398,8 @@
     <slot>reslistTE_delayedclick()</slot>
     <slot>startSimpleSearch()</slot>
     <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
+    <slot>resPageUpOrBack()</slot>
+    <slot>resPageDownOrNext()</slot>
     <slot>resultPageBack()</slot>
     <slot>showResultPage()</slot>
     <slot>previewClosed( Preview * w )</slot>

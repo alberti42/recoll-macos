@@ -20,3 +20,5 @@ Features:
       necessary. 
     * An indexer which runs either as a thread inside the GUI or as an
       external, cron'able program. 
+
+WWW:	http://www.lesbonscomptes.com/recoll/

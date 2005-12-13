@@ -1,5 +1,5 @@
 documentation:
 	doxygen Doxyfile
 clean:
-	rm -f html/*
+	rm -f docprog_html/*
 

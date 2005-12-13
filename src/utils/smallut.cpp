@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.10 2005-11-25 14:36:45 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.11 2005-12-13 12:43:00 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_SMALLUT
 #include <string>
@@ -27,8 +27,8 @@ bool maketmpdir(string& tdir)
 	tmpdir = getenv("TMPDIR");
     if (!tmpdir)
 	tmpdir = "/tmp";
-    tdir = tmpdir;
-    path_cat(tdir, "rcltmpXXXXXX");
+    tdir = path_cat(tmpdir, "rcltmpXXXXXX");
+
     {
 	char *cp = strdup(tdir.c_str());
 	if (!cp) {

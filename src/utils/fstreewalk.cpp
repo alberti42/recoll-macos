@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.5 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.6 2005-12-13 12:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_FSTREEWALK
@@ -128,8 +128,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string &top,
 	}
 
 	{
-	    string fn = top;
-	    path_cat(fn, ent->d_name);
+	    string fn = path_cat(top, ent->d_name);
 
 	    struct stat st;
 	    int statret = (data->options & FtwFollow) ? stat(fn.c_str(), &st) :

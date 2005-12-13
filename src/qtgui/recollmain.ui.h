@@ -66,7 +66,12 @@ void RecollMain::init()
     sortform = 0;
     docsource = 0;
     sortwidth = 0;
+
+    // We manage pgup/down, but let ie the arrows for the editor to process
+    reslistTE->installEventFilter(this);
     reslistTE->viewport()->installEventFilter(this);
+    // reslistTE->viewport()->setFocusPolicy(QWidget::NoFocus);
+
 }
 
 // We also want to get rid of the advanced search form and previews
@@ -78,7 +83,8 @@ bool RecollMain::close(bool)
     return false;
 }
 
-#if 0
+//#define SHOWEVENTS
+#if defined(SHOWEVENTS)
 static const char *eventTypeToStr(int tp)
 {
     switch (tp) {
@@ -167,12 +173,20 @@ static const char *eventTypeToStr(int tp)
 // ^Q thing is necessary (we have an action for this)?
 bool RecollMain::eventFilter( QObject * target, QEvent * event )
 {
-    //    LOGDEB(("RecollMain::eventFilter target %p, event %s\n", target,
-    //	    eventTypeToStr(int(event->type()))));
+#if defined(SHOWEVENTS)
+    LOGDEB(("RecollMain::eventFilter target %p, event %s\n", target,
+	    eventTypeToStr(int(event->type()))));
+#endif
     if (event->type() == QEvent::KeyPress) {
 	QKeyEvent *keyEvent = (QKeyEvent *)event;
 	if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
 	    recollNeedsExit = 1;
+	} else if (keyEvent->key() == Key_Prior) {
+	    resPageUpOrBack();
+	    return true;
+	} else if (keyEvent->key() == Key_Next) {
+	    resPageDownOrNext();
+	    return true;
 	}
     } else if (target == reslistTE->viewport()) { 
 	// We don't want btdown+drag+btup to be a click ! So monitor
@@ -413,6 +427,28 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
     showResultPage();
 }
 
+// Page Up/Down: we don't try to check if current paragraph is last or
+// first. We just page up/down and check if viewport moved. If it did,
+// fair enough, else we go to next/previous result page.
+void RecollMain::resPageUpOrBack()
+{
+    int vpos = reslistTE->contentsY();
+    reslistTE->moveCursor(QTextEdit::MovePgUp, false);
+    if (vpos == reslistTE->contentsY())
+	resultPageBack();
+}
+void RecollMain::resPageDownOrNext()
+{
+    int vpos = reslistTE->contentsY();
+    reslistTE->moveCursor(QTextEdit::MovePgDown, false);
+    LOGDEB(("RecollMain::resPageDownOrNext: vpos before %d, after %d\n",
+	    vpos, reslistTE->contentsY()));
+    if (vpos == reslistTE->contentsY()) 
+	showResultPage();
+}
+
+// Show previous page of results. We just set the current number back
+// 2 pages and show next page.
 void RecollMain::resultPageBack()
 {
     if (reslist_winfirst <= 0)
@@ -457,9 +493,15 @@ void RecollMain::showResultPage()
 
     int last = MIN(resCnt-reslist_winfirst, respagesize);
 
-    string alltext;
 
-    // Insert results if any in result list window 
+    // Insert results if any in result list window. We have to send
+    // the text to the widgets, because we need the paragraph number
+    // each time we add a result paragraph (its diffult and
+    // error-prone to compute the paragraph numbers in parallel. We
+    // would like to disable updates while we're doing this, but
+    // couldn't find a way to make it work, the widget seems to become
+    // confused if appended while updates are disabled
+    //      reslistTE->setUpdatesEnabled(false);
     for (int i = 0; i < last; i++) {
 	string sh;
 	doc.erase();
@@ -477,13 +519,11 @@ void RecollMain::showResultPage()
 	    QString line = "<p><font size=+1><b>";
 	    line += docsource->title().c_str();
 	    line += "</b></font><br>";
-	    //alltext.append(line.utf8());
 	    reslistTE->append(line);
 	    line = tr("<b>Displaying results starting at index"
 		      " %1 (maximum set size %2)</b></p>\n")
 		.arg(reslist_winfirst+1)
 		.arg(resCnt);
-	    //alltext.append(line.utf8());
 	    reslistTE->append(line);
 	}
 	    
@@ -544,7 +584,6 @@ void RecollMain::showResultPage()
 	    "<i>" + doc.url + +"</i><br></p>\n";
 
 	QString str = QString::fromUtf8(result.c_str(), result.length());
-	//alltext.append(str.utf8());
 	reslistTE->append(str);
 
 	pageParaToReldocnums[reslistTE->paragraphs()-1] = i;
@@ -559,13 +598,15 @@ void RecollMain::showResultPage()
     } else {
 	// Restore first in win parameter that we shouln't have incremented
 	reslistTE->append(tr("<p>"
-			     /*"<img align=\"left\" source=\"myimage\">"*/
-			     "<b>No results found</b>"
-			     "<br>"));
+			  /*"<img align=\"left\" source=\"myimage\">"*/
+			  "<b>No results found</b>"
+			  "<br>"));
 	reslist_winfirst -= respagesize;
 	if (reslist_winfirst < 0)
 	    reslist_winfirst = -1;
     }
+
+   //reslistTE->setUpdatesEnabled(true);reslistTE->sync();reslistTE->repaint();
 
 #if 0
     {
