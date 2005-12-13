@@ -214,6 +214,9 @@
                                     <property name="text">
                                         <string>All ----&gt;</string>
                                     </property>
+                                    <property name="autoDefault">
+                                        <bool>false</bool>
+                                    </property>
                                 </widget>
                                 <widget class="QPushButton">
                                     <property name="name">
@@ -224,6 +227,9 @@
                                     </property>
                                     <property name="text">
                                         <string>Sel -----&gt;</string>
+                                    </property>
+                                    <property name="autoDefault">
+                                        <bool>false</bool>
                                     </property>
                                 </widget>
                                 <widget class="QPushButton">
@@ -236,6 +242,9 @@
                                     <property name="text">
                                         <string>&lt;----- Sel</string>
                                     </property>
+                                    <property name="autoDefault">
+                                        <bool>false</bool>
+                                    </property>
                                 </widget>
                                 <widget class="QPushButton">
                                     <property name="name">
@@ -246,6 +255,9 @@
                                     </property>
                                     <property name="text">
                                         <string>&lt;----- All</string>
+                                    </property>
+                                    <property name="autoDefault">
+                                        <bool>false</bool>
                                     </property>
                                 </widget>
                             </vbox>
@@ -327,6 +339,9 @@
                             <property name="text">
                                 <string>Browse</string>
                             </property>
+                            <property name="autoDefault">
+                                <bool>false</bool>
+                            </property>
                         </widget>
                         <widget class="QLabel" row="0" column="0">
                             <property name="name">
@@ -374,6 +389,9 @@
                             </property>
                             <property name="text">
                                 <string>Dismiss</string>
+                            </property>
+                            <property name="autoDefault">
+                                <bool>false</bool>
                             </property>
                         </widget>
                     </hbox>
