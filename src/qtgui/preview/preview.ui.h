@@ -399,6 +399,8 @@ void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 
     // Load and convert file
     Rcl::Doc fdoc;
+    // Need to setup config to retrieve possibly local parameters
+    rclconfig->setKeyDir(path_getfather(fn));
     int status = 1;
     LoadThread lthr(&status, &fdoc, fn, doc.ipath, &doc.mimetype);
     lthr.start();
@@ -419,6 +421,8 @@ void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 			     doc.mimetype.c_str());
 	return;
     }
+    // Reset config just in case.
+    rclconfig->setKeyDir("");
 
     // Highlight search terms:
     progress.setLabelText(tr("Creating preview text"));

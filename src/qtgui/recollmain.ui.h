@@ -54,7 +54,6 @@ static const int respagesize = 8;
 void RecollMain::init()
 {
     reslist_winfirst = -1;
-    reslist_current = -1;
     reslist_mouseDrag = false;
     reslist_mouseDown = false;
     reslist_par = -1;
@@ -73,6 +72,8 @@ void RecollMain::init()
     reslistTE->viewport()->installEventFilter(this);
     // reslistTE->viewport()->setFocusPolicy(QWidget::NoFocus);
 
+    // Set the focus to the search terms entry:
+    queryText->setFocus();
 }
 
 // We also want to get rid of the advanced search form and previews
@@ -279,53 +280,10 @@ void RecollMain::reslistTE_doubleClicked(int par, int)
 {
     LOGDEB(("RecollMain::reslistTE_doubleClicked: par %d\n", par));
     reslist_dblclck = true;
-
-    Rcl::Doc doc;
     int reldocnum =  reldocnumfromparnum(par);
-    if (!docsource->getDoc(reslist_winfirst + reldocnum, doc, 0, 0))
+    if (reldocnum < 0)
 	return;
-    
-    // Look for appropriate viewer
-    string cmd = rclconfig->getMimeViewerDef(doc.mimetype);
-    if (cmd.length() == 0) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("No external viewer configured for mime type ")
-			     + doc.mimetype.c_str());
-	return;
-    }
-
-    string fn = urltolocalpath(doc.url);
-
-    // Substitute %u (url) and %f (file name) inside prototype command
-    string ncmd;
-    string::const_iterator it1;
-    for (it1 = cmd.begin(); it1 != cmd.end();it1++) {
-	if (*it1 == '%') {
-	    if (++it1 == cmd.end()) {
-		ncmd += '%';
-		break;
-	    }
-	    if (*it1 == '%')
-		ncmd += '%';
-	    if (*it1 == 'u')
-		ncmd += "'" + doc.url + "'";
-	    if (*it1 == 'f')
-		ncmd += "'" + fn + "'";
-	} else {
-	    ncmd += *it1;
-	}
-    }
-
-    ncmd += " &";
-    QStatusBar *stb = statusBar();
-    if (stb) {
-	QString msg = tr("Executing: [") + ncmd.c_str() + "]";
-	stb->message(msg, 5000);
-	stb->repaint(false);
-	XFlush(qt_xdisplay());
-    }
-    history->enterDocument(fn, doc.ipath);
-    system(ncmd.c_str());
+    startNativeViewer(reslist_winfirst + reldocnum);
 }
 
 
@@ -337,7 +295,7 @@ void RecollMain::reslistTE_clicked(int par, int car)
 {
     if (reslist_waitingdbl)
 	return;
-    LOGDEB(("RecollMain::reslistTE_clckd:winfirst %d par %d char %d drg %d\n", 
+    LOGDEB(("RecollMain::reslistTE_clicked:wfirst %d par %d char %d drg %d\n", 
 	    reslist_winfirst, par, car, reslist_mouseDrag));
     if (reslist_winfirst == -1 || reslist_mouseDrag)
 	return;
@@ -356,28 +314,32 @@ void RecollMain::reslistTE_clicked(int par, int car)
 // requested a native viewer by double-clicking
 void RecollMain::reslistTE_delayedclick()
 {
+    LOGDEB(("RecollMain::reslistTE_delayedclick:\n"));
     reslist_waitingdbl = false;
     if (reslist_dblclck) {
+	LOGDEB1(("RecollMain::reslistTE_delayedclick: dbleclick\n"));
 	reslist_dblclck = false;
 	return;
     }
 
     int par = reslist_par;
 
+    // Erase everything back to white
     {
 	QColor color("white");
 	for (int i = 1; i < reslistTE->paragraphs(); i++)
 	    reslistTE->setParagraphBackgroundColor(i, color);
     }
 
+    // Color the new active paragraph
     QColor color("lightblue");
     reslistTE->setParagraphBackgroundColor(par, color);
 
+    // Document number
     int reldocnum = reldocnumfromparnum(par);
-    if (curPreview && reslist_current == reldocnum)
+    // Bad number or already displayed. Forget it
+    if (reldocnum < 0)
 	return;
-
-    reslist_current = reldocnum;
     startPreview(reslist_winfirst + reldocnum);
 }
 
@@ -412,7 +374,6 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
     if (stemlang.empty())
 	getQueryStemming(dostem, stemlang);
 
-    reslist_current = -1;
     reslist_winfirst = -1;
 
     if (!rcldb->setQuery(sdata, dostem ? 
@@ -594,8 +555,6 @@ void RecollMain::showResultPage()
 	pageParaToReldocnums[reslistTE->paragraphs()-1] = i;
     }
 
-    reslist_current = -1;
-
     if (gotone) {
 	reslistTE->append("</body></qt>");
 	reslistTE->setCursorPosition(0,0);
@@ -702,8 +661,7 @@ void RecollMain::startPreview(int docnum)
     string fn = urltolocalpath(doc.url);
     struct stat st;
     if (stat(fn.c_str(), &st) < 0) {
-	QMessageBox::warning(0, "Recoll",
-			     tr("Cannot access document file: ") +
+	QMessageBox::warning(0, "Recoll", tr("Cannot access document file: ") +
 			     fn.c_str());
 	return;
     }
@@ -733,6 +691,59 @@ void RecollMain::startPreview(int docnum)
     curPreview->loadFileInCurrentTab(fn, st.st_size, doc);
 }
 
+void RecollMain::startNativeViewer(int docnum)
+{
+    Rcl::Doc doc;
+    if (!docsource->getDoc(docnum, doc, 0, 0)) {
+	QMessageBox::warning(0, "Recoll",
+			     tr("Cannot retrieve document info" 
+				" from database"));
+	return;
+    }
+    
+    // Look for appropriate viewer
+    string cmd = rclconfig->getMimeViewerDef(doc.mimetype);
+    if (cmd.length() == 0) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("No external viewer configured for mime type ")
+			     + doc.mimetype.c_str());
+	return;
+    }
+
+    string fn = urltolocalpath(doc.url);
+
+    // Substitute %u (url) and %f (file name) inside prototype command
+    string ncmd;
+    string::const_iterator it1;
+    for (it1 = cmd.begin(); it1 != cmd.end();it1++) {
+	if (*it1 == '%') {
+	    if (++it1 == cmd.end()) {
+		ncmd += '%';
+		break;
+	    }
+	    if (*it1 == '%')
+		ncmd += '%';
+	    if (*it1 == 'u')
+		ncmd += "'" + doc.url + "'";
+	    if (*it1 == 'f')
+		ncmd += "'" + fn + "'";
+	} else {
+	    ncmd += *it1;
+	}
+    }
+
+    ncmd += " &";
+    QStatusBar *stb = statusBar();
+    if (stb) {
+	QString msg = tr("Executing: [") + ncmd.c_str() + "]";
+	stb->message(msg, 5000);
+	stb->repaint(false);
+	XFlush(qt_xdisplay());
+    }
+    history->enterDocument(fn, doc.ipath);
+    system(ncmd.c_str());
+}
+
 
 void RecollMain::showAboutDialog()
 {
@@ -745,7 +756,6 @@ void RecollMain::showAboutDialog()
 void RecollMain::showDocHistory()
 {
     LOGDEB(("RecollMain::showDocHistory\n"));
-    reslist_current = -1;
     reslist_winfirst = -1;
     curPreview = 0;
 

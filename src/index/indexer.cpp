@@ -1,10 +1,10 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.19 2005-11-30 09:46:25 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.20 2005-12-14 11:00:48 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#include <errno.h>
 #include <strings.h>
 
 #include <iostream>
@@ -33,63 +33,24 @@ using namespace std;
 #define deleteZ(X) {delete X;X = 0;}
 #endif
 
-/// A class to index a list of top directories into one database. 
-///
-/// Inherits FsTreeWalkerCB so that its processone() method is
-/// called by the file-system tree walk code for each file and
-/// directory, and keeps all state used while indexing a
-/// directory tree. 
-class DbIndexer : public FsTreeWalkerCB {
-    FsTreeWalker walker;
-    RclConfig *config;
-    string dbdir;
-    list<string> *topdirs;
-    Rcl::Db db;
-    string tmpdir;
- public:
-    /// Constructor does nothing but store parameters
-    DbIndexer(RclConfig *cnf, const string &dbd, list<string> *top) 
-	: config(cnf), dbdir(dbd), topdirs(top) {}
-
-    virtual ~DbIndexer() {
-	// Maybe clean up temporary directory
-	if (tmpdir.length()) {
-	    wipedir(tmpdir);
-	    if (rmdir(tmpdir.c_str()) < 0) {
-		LOGERR(("DbIndexer::~DbIndexer: cant clear temp dir %s\n",
-			tmpdir.c_str()));
-	    }
+DbIndexer::~DbIndexer() {
+    // Maybe clean up temporary directory
+    if (tmpdir.length()) {
+	wipedir(tmpdir);
+	if (rmdir(tmpdir.c_str()) < 0) {
+	    LOGERR(("DbIndexer::~DbIndexer: cannot clear temp dir %s\n",
+		    tmpdir.c_str()));
 	}
     }
-
-    /// Start indexing.
-    bool index(bool resetbefore);
-
-    /// Tree walker callback method
-    FsTreeWalker::Status 
-    processone(const std::string &, const struct stat *, FsTreeWalker::CbFlag);
-};
+    db.close();
+}
 
 
-/// Top level file system tree index method for updating a given database.
-///
-/// We create the temporary directory, open the database, then call a
-/// file system walk for each top-level directory.
-/// When walking is done, we create the stem databases and close the
-/// main db.
-bool DbIndexer::index(bool resetbefore)
+bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 {
-    string tdir;
+    if (!init(resetbefore))
+	return false;
 
-    if (!maketmpdir(tmpdir)) {
-	LOGERR(("DbIndexer: cant create temp directory\n"));
-	return false;
-    }
-    if (!db.open(dbdir, resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd)) {
-	LOGERR(("DbIndexer::index: error opening database in %s\n", 
-		dbdir.c_str()));
-	return false;
-    }
     for (list<string>::const_iterator it = topdirs->begin();
 	 it != topdirs->end(); it++) {
 	LOGDEB(("DbIndexer::index: Indexing %s into %s\n", it->c_str(), 
@@ -118,7 +79,6 @@ bool DbIndexer::index(bool resetbefore)
 	if (walker.walk(*it, *this) != FsTreeWalker::FtwOk) {
 	    LOGERR(("DbIndexer::index: error while indexing %s\n", 
 		    it->c_str()));
-	    db.close();
 	    return false;
 	}
     }
@@ -138,6 +98,7 @@ bool DbIndexer::index(bool resetbefore)
 	}
     }
 
+    // The close would be done in our destructor, but we want status here
     if (!db.close()) {
 	LOGERR(("DbIndexer::index: error closing database in %s\n", 
 		dbdir.c_str()));
@@ -146,6 +107,52 @@ bool DbIndexer::index(bool resetbefore)
     return true;
 }
 
+bool DbIndexer::init(bool resetbefore)
+{
+    if (!maketmpdir(tmpdir)) {
+	LOGERR(("DbIndexer: cannot create temporary directory\n"));
+	return false;
+    }
+    if (!db.open(dbdir, resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd)) {
+	LOGERR(("DbIndexer: error opening database in %s\n", dbdir.c_str()));
+	return false;
+    }
+    return true;
+}
+
+bool DbIndexer::indexFiles(const list<string> &filenames)
+{
+    if (!init())
+	return false;
+
+    list<string>::const_iterator it;
+    for (it = filenames.begin(); it != filenames.end();it++) {
+	config->setKeyDir(path_getfather(*it));
+	struct stat stb;
+	if (stat(it->c_str(), &stb) != 0) {
+	    LOGERR(("DbIndexer::indexFiles: stat(%s): %s", it->c_str(),
+		    strerror(errno)));
+	    continue;
+	}
+	if (!S_ISREG(stb.st_mode)) {
+	    LOGERR(("DbIndexer::indexFiles: %s: not a regular file\n", 
+		    it->c_str()));
+	    continue;
+	}
+	if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
+	    FsTreeWalker::FtwOk) {
+	    LOGERR(("DbIndexer::indexFiles: Database error\n"));
+	    return false;
+	}
+    }
+    // The close would be done in our destructor, but we want status here
+    if (!db.close()) {
+	LOGERR(("DbIndexer::indexfiles: error closing database in %s\n", 
+		dbdir.c_str()));
+	return false;
+    }
+    return true;
+}
 
 /// This method gets called for every file and directory found by the
 /// tree walker. 
@@ -257,6 +264,7 @@ bool ConfIndexer::index(bool resetbefore)
     }
     config->setKeyDir("");
 
+    // The dbmap now has dbdir as key and directory lists as values.
     // Index each directory group in turn
     for (dbit = dbmap.begin(); dbit != dbmap.end(); dbit++) {
 	//cout << dbit->first << " -> ";
@@ -265,8 +273,8 @@ bool ConfIndexer::index(bool resetbefore)
 	//    cout << *dit << " ";
 	//}
 	//cout << endl;
-	dbindexer = new DbIndexer(config, dbit->first, &dbit->second);
-	if (!dbindexer->index(resetbefore)) {
+	dbindexer = new DbIndexer(config, dbit->first);
+	if (!dbindexer->indexDb(resetbefore, &dbit->second)) {
 	    deleteZ(dbindexer);
 	    return false;
 	}

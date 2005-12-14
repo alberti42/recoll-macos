@@ -22,7 +22,7 @@
     </property>
     <property name="minimumSize">
         <size>
-            <width>466</width>
+            <width>362</width>
             <height>190</height>
         </size>
     </property>
@@ -62,6 +62,9 @@
                             <property name="accel">
                                 <string>Ctrl+S</string>
                             </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Erase search entry</string>
+                            </property>
                         </widget>
                         <widget class="QPushButton">
                             <property name="name">
@@ -73,6 +76,9 @@
                             <property name="text">
                                 <string>Search</string>
                             </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Start query</string>
+                            </property>
                         </widget>
                         <widget class="QCheckBox">
                             <property name="name">
@@ -83,6 +89,12 @@
                             </property>
                             <property name="accel">
                                 <string>Alt+A</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Do documents have to contain all terms in query?</string>
+                            </property>
+                            <property name="whatsThis" stdset="0">
+                                <string>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</string>
                             </property>
                         </widget>
                         <widget class="QLineEdit">
@@ -108,6 +120,9 @@
                             </property>
                             <property name="frameShadow">
                                 <enum>Sunken</enum>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Enter search terms here</string>
                             </property>
                         </widget>
                     </hbox>
@@ -181,6 +196,14 @@
         <action name="prevPageAction"/>
         <action name="nextPageAction"/>
     </toolbar>
+    <toolbar dock="2">
+        <property name="name">
+            <cstring>HelpToolbar</cstring>
+        </property>
+        <property name="label">
+            <string>Toolbar_2</string>
+        </property>
+    </toolbar>
 </toolbars>
 <actions>
     <action>
@@ -224,10 +247,13 @@
             <iconset>history</iconset>
         </property>
         <property name="text">
-            <string>Doc History</string>
+            <string>Document &amp;History</string>
         </property>
         <property name="menuText">
-            <string>Doc &amp;History</string>
+            <string>Document &amp;History</string>
+        </property>
+        <property name="toolTip">
+            <string>Document  History</string>
         </property>
     </action>
     <action>
@@ -241,7 +267,10 @@
             <string>Advanced Search</string>
         </property>
         <property name="menuText">
-            <string>Advanced Search</string>
+            <string>&amp;Advanced Search</string>
+        </property>
+        <property name="toolTip">
+            <string>Advanced/complex  Search</string>
         </property>
     </action>
     <action>
@@ -252,9 +281,12 @@
             <iconset>sortparms</iconset>
         </property>
         <property name="text">
-            <string>Sort parameters</string>
+            <string>&amp;Sort parameters</string>
         </property>
         <property name="menuText">
+            <string>&amp;Sort parameters</string>
+        </property>
+        <property name="toolTip">
             <string>Sort parameters</string>
         </property>
     </action>
@@ -262,7 +294,7 @@
         <property name="name">
             <cstring>nextPageAction</cstring>
         </property>
-	<property name="enabled">
+        <property name="enabled">
             <bool>false</bool>
         </property>
         <property name="iconSet">
@@ -271,12 +303,15 @@
         <property name="text">
             <string>Next page</string>
         </property>
+        <property name="toolTip">
+            <string>Next page of results</string>
+        </property>
     </action>
     <action>
         <property name="name">
             <cstring>prevPageAction</cstring>
         </property>
-	<property name="enabled">
+        <property name="enabled">
             <bool>false</bool>
         </property>
         <property name="iconSet">
@@ -284,6 +319,9 @@
         </property>
         <property name="text">
             <string>Previous page</string>
+        </property>
+        <property name="toolTip">
+            <string>Previous page of results</string>
         </property>
     </action>
 </actions>
@@ -383,7 +421,6 @@
 </includes>
 <variables>
     <variable>int reslist_winfirst;</variable>
-    <variable>int reslist_current;</variable>
     <variable>bool reslist_mouseDrag;</variable>
     <variable>bool reslist_mouseDown;</variable>
     <variable>int reslist_par;</variable>
@@ -425,8 +462,9 @@
     <function access="private">init()</function>
     <function returnType="bool">close( bool )</function>
     <function access="private" returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
-    <function access="private">startPreview( int docnum )</function>
     <function access="private" returnType="int">reldocnumfromparnum( int parnum )</function>
+    <function access="private">startPreview( int docnum )</function>
+    <function access="private">startNativeViewer( int docnum )</function>
 </functions>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>

@@ -1,5 +1,5 @@
 
-PROGS = trhist qtry qxtry xadump
+PROGS = xadump #trhist qtry qxtry 
 all: $(PROGS)
 
 XADUMP_OBJS= xadump.o $(BIGLIB) 
