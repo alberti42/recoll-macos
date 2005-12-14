@@ -30,6 +30,8 @@ using std::pair;
 #include <qwindowdefs.h>
 #include <qapplication.h>
 #include <qcheckbox.h>
+#include <qfontdialog.h>
+#include <qspinbox.h>
 
 #include "recoll.h"
 #include "debuglog.h"
@@ -40,16 +42,13 @@ using std::pair;
 #include "advsearch.h"
 #include "rclversion.h"
 #include "sortseq.h"
+#include "uiprefs.h"
 
 extern "C" int XFlush(void *);
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
-
-// Number of abstracts in a result page. This will avoid scrollbars
-// with the default window size and font, most of the time.
-static const int respagesize = 8;
 
 void RecollMain::init()
 {
@@ -66,6 +65,7 @@ void RecollMain::init()
     sortform = 0;
     docsource = 0;
     sortwidth = 0;
+    uiprefs = 0;
 
     // We manage pgup/down, but let ie the arrows for the editor to process
     reslistTE->installEventFilter(this);
@@ -74,6 +74,12 @@ void RecollMain::init()
 
     // Set the focus to the search terms entry:
     queryText->setFocus();
+
+    // Set result list font according to user preferences.
+    if (prefs_reslistfontfamily.length()) {
+	QFont nfont(prefs_reslistfontfamily, prefs_reslistfontsize);
+	reslistTE->setFont(nfont);
+    }
 }
 
 // We also want to get rid of the advanced search form and previews
@@ -419,7 +425,7 @@ void RecollMain::resultPageBack()
 {
     if (reslist_winfirst <= 0)
 	return;
-    reslist_winfirst -= 2*respagesize;
+    reslist_winfirst -= 2 * prefs_respagesize;
     showResultPage();
 }
 
@@ -441,7 +447,8 @@ void RecollMain::showResultPage()
     pageParaToReldocnums.clear();
 
     // If we are already on the last page, nothing to do:
-    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize > resCnt)) {
+    if (reslist_winfirst >= 0 && 
+	(reslist_winfirst + prefs_respagesize > resCnt)) {
 	nextPageAction->setEnabled(false);
 	return;
     }
@@ -451,13 +458,13 @@ void RecollMain::showResultPage()
 	prevPageAction->setEnabled(false);
     } else {
 	prevPageAction->setEnabled(true);
-	reslist_winfirst += respagesize;
+	reslist_winfirst += prefs_respagesize;
     }
 
     bool gotone = false;
     reslistTE->clear();
 
-    int last = MIN(resCnt-reslist_winfirst, respagesize);
+    int last = MIN(resCnt-reslist_winfirst, prefs_respagesize);
 
 
     // Insert results if any in result list window. We have to send
@@ -509,7 +516,7 @@ void RecollMain::showResultPage()
 	    result = "<p>";
 
 	string img_name;
-	if (showicons) {
+	if (prefs_showicons) {
 	    string iconname = rclconfig->getMimeIconName(doc.mimetype);
 	    if (iconname.empty())
 		iconname = "document";
@@ -565,7 +572,7 @@ void RecollMain::showResultPage()
 			  /*"<img align=\"left\" source=\"myimage\">"*/
 			  "<b>No results found</b>"
 			  "<br>"));
-	reslist_winfirst -= respagesize;
+	reslist_winfirst -= prefs_respagesize;
 	if (reslist_winfirst < 0)
 	    reslist_winfirst = -1;
     }
@@ -584,7 +591,7 @@ void RecollMain::showResultPage()
     }
 #endif
 
-    if (reslist_winfirst >= 0 && (reslist_winfirst + respagesize >= resCnt)) {
+    if (reslist_winfirst >= 0 && (reslist_winfirst + prefs_respagesize >= resCnt)) {
 	nextPageAction->setEnabled(false);
     } else {
 	nextPageAction->setEnabled(true);
@@ -639,6 +646,22 @@ void RecollMain::showSortDialog()
         sortform->show();
     }
 
+}
+
+void RecollMain::showUIPrefs()
+{
+    if (uiprefs == 0) {
+	uiprefs = new UIPrefsDialog(0, tr("User interface preferences"), FALSE,
+				    WStyle_Customize | WStyle_NormalBorder | 
+				    WStyle_Title | WStyle_SysMenu);
+	uiprefs->setSizeGripEnabled(FALSE);
+	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
+	uiprefs->show();
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	uiprefs->close();
+        uiprefs->show();
+    }
 }
 
 /** 
@@ -790,3 +813,25 @@ void RecollMain::sortDataChanged(int cnt, RclSortSpec spec)
     sortwidth = cnt;
     sortspecs = spec;
 }
+
+// This could be handled inside the dialog's accept(), but we may want to
+// do something (ie: redisplay reslist?)
+void RecollMain::setUIPrefs()
+{
+    if (!uiprefs)
+	return;
+    LOGDEB(("Recollmain::setUIPrefs\n"));
+    prefs_showicons = uiprefs->useIconsCB->isChecked();
+    prefs_respagesize = uiprefs->pageLenSB->value();
+    prefs_reslistfontfamily = uiprefs->reslistFontFamily;
+    prefs_reslistfontsize = uiprefs->reslistFontSize;
+
+    if (prefs_reslistfontfamily.length()) {
+	QFont nfont(prefs_reslistfontfamily, prefs_reslistfontsize);
+	reslistTE->setFont(nfont);
+    } else {
+	reslistTE->setFont(this->font());
+    }
+}
+
+

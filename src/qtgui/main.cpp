@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.23 2005-12-13 17:20:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.24 2005-12-14 16:15:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -35,9 +35,16 @@ RclConfig *rclconfig;
 Rcl::Db *rcldb;
 int recollNeedsExit;
 string tmpdir;
-bool showicons;
 string iconsdir;
 RclDHistory *history;
+
+///////////////////////// 
+// Global variables for user preferences. These are set in the user preference
+// dialog and saved restored to the appropriate place in the qt settings
+bool prefs_showicons;
+int prefs_respagesize = 8;
+QString prefs_reslistfontfamily;
+int prefs_reslistfontsize;
 
 static string dbdir;
 
@@ -79,6 +86,14 @@ void recollCleanup()
 	settings.writeEntry("/Recoll/geometry/height", height);
 	settings.writeEntry("/Recoll/prefs/simpleSearchAll", 
 			    mainWindow->allTermsCB->isChecked());
+	settings.writeEntry("/Recoll/prefs/reslist/showicons", 
+			    prefs_showicons);
+    	settings.writeEntry("/Recoll/prefs/reslist/pagelen", 
+			      prefs_respagesize);
+    	settings.writeEntry("/Recoll/prefs/reslist/fontFamily", 
+			   prefs_reslistfontfamily);
+    	settings.writeEntry("/Recoll/prefs/reslist/fontSize", 
+			      prefs_reslistfontsize);;
     }
 
     stop_idxthread();
@@ -115,10 +130,19 @@ int main( int argc, char ** argv )
     // Restore some settings from previous session
     QSettings settings;
     settings.setPath("Recoll.org", "Recoll");
-    int width = settings.readNumEntry( "/Recoll/geometry/width", 590);
-    int height = settings.readNumEntry( "/Recoll/geometry/height", 810);
-    bool ssall = settings.readBoolEntry( "/Recoll/prefs/simpleSearchAll", 0); 
+    int width = settings.readNumEntry("/Recoll/geometry/width", 590);
+    int height = settings.readNumEntry("/Recoll/geometry/height", 810);
+    bool ssall = settings.readBoolEntry("/Recoll/prefs/simpleSearchAll", 0); 
     QSize s(width, height);
+    prefs_showicons = 
+	settings.readBoolEntry("/Recoll/prefs/reslist/showicons", true);
+    prefs_respagesize = 
+	settings.readNumEntry("/Recoll/prefs/reslist/pagelen", 8);
+    prefs_reslistfontfamily = 
+	settings.readEntry("/Recoll/prefs/reslist/fontFamily", "");
+    prefs_reslistfontsize = 
+	settings.readNumEntry("/Recoll/prefs/reslist/fontSize", 0);;
+
     
     // Create main window and set its size to previous session's
     RecollMain w;
@@ -152,8 +176,6 @@ int main( int argc, char ** argv )
 		     translatdir.c_str() );
     a.installTranslator( &translator );
 
-    showicons = false;
-    rclconfig->getConfParam("showicons", &showicons);
     rclconfig->getConfParam("iconsdir", iconsdir);
     if (iconsdir.empty()) {
 	iconsdir = path_cat(recollsharedir, "images");

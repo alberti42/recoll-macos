@@ -168,6 +168,9 @@
         <action name="toolsAdvanced_SearchAction"/>
         <action name="toolsSort_parametersAction"/>
     </item>
+    <item text="&amp;Preferences" name="Preferences">
+        <action name="preferencesUser_InterfaceAction"/>
+    </item>
     <separator/>
     <item text="&amp;Help" name="Help">
         <separator/>
@@ -324,6 +327,17 @@
             <string>Previous page of results</string>
         </property>
     </action>
+    <action>
+        <property name="name">
+            <cstring>preferencesUser_InterfaceAction</cstring>
+        </property>
+        <property name="text">
+            <string>&amp;User Interface</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;User Interface</string>
+        </property>
+    </action>
 </actions>
 <connections>
     <connection>
@@ -410,6 +424,12 @@
         <receiver>RecollMain</receiver>
         <slot>showResultPage()</slot>
     </connection>
+    <connection>
+        <sender>preferencesUser_InterfaceAction</sender>
+        <signal>activated()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>showUIPrefs()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in declaration">sortseq.h</include>
@@ -417,6 +437,7 @@
     <include location="local" impldecl="in declaration">recoll.h</include>
     <include location="local" impldecl="in declaration">advsearch.h</include>
     <include location="local" impldecl="in declaration">sort.h</include>
+    <include location="local" impldecl="in declaration">uiprefs.h</include>
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
 </includes>
 <variables>
@@ -432,6 +453,7 @@
     <variable>Preview *curPreview;</variable>
     <variable>advsearch *asearchform;</variable>
     <variable>SortForm *sortform;</variable>
+    <variable>UIPrefsDialog *uiprefs;</variable>
     <variable>int sortwidth;</variable>
     <variable>RclSortSpec sortspecs;</variable>
     <variable>DocSequence *docsource;</variable>
@@ -457,12 +479,14 @@
     <slot>showDocHistory()</slot>
     <slot>searchTextChanged( const QString &amp; text )</slot>
     <slot>sortDataChanged( int cnt, RclSortSpec spec )</slot>
+    <slot>showUIPrefs()</slot>
+    <slot>setUIPrefs()</slot>
 </slots>
 <functions>
     <function access="private">init()</function>
     <function returnType="bool">close( bool )</function>
     <function access="private" returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
-    <function access="private" returnType="int">reldocnumfromparnum( int parnum )</function>
+    <function access="private" returnType="int">reldocnumfromparnum( int par )</function>
     <function access="private">startPreview( int docnum )</function>
     <function access="private">startNativeViewer( int docnum )</function>
 </functions>

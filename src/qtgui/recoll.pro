@@ -10,7 +10,8 @@ SOURCES	+= main.cpp \
 FORMS	= recollmain.ui \
 	advsearch.ui \
 	preview/preview.ui \
-	sort.ui
+	sort.ui \
+	uiprefs.ui
 
 IMAGES	= images/filenew \
 	images/fileopen \
@@ -36,7 +37,6 @@ unix {
             $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
            -lz
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
-
 }
 
 UNAME = $$system(uname -s)

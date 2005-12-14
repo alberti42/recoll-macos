@@ -1,6 +1,6 @@
 #ifndef _RECOLL_H_INCLUDED_
 #define _RECOLL_H_INCLUDED_
-/* @(#$Id: recoll.h,v 1.7 2005-11-28 15:31:01 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: recoll.h,v 1.8 2005-12-14 16:15:39 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 
@@ -18,10 +18,15 @@ extern bool maybeOpenDb(std::string &reason);
 extern RclConfig *rclconfig;
 extern Rcl::Db *rcldb;
 extern std::string tmpdir;
-extern bool showicons;
 extern string iconsdir;
 extern RclDHistory *history;
 extern int recollNeedsExit;
+
+class QString;
+extern bool prefs_showicons;
+extern int prefs_respagesize;
+extern QString prefs_reslistfontfamily;
+extern int prefs_reslistfontsize;
 
 
 #endif /* _RECOLL_H_INCLUDED_ */
