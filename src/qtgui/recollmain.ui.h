@@ -32,6 +32,7 @@ using std::pair;
 #include <qcheckbox.h>
 #include <qfontdialog.h>
 #include <qspinbox.h>
+#include <qcombobox.h>
 
 #include "recoll.h"
 #include "debuglog.h"
@@ -59,7 +60,6 @@ void RecollMain::init()
     reslist_car = -1;
     reslist_waitingdbl = false;
     reslist_dblclck = false;
-    dostem = false;
     curPreview = 0;
     asearchform = 0;
     sortform = 0;
@@ -377,13 +377,12 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
 	exit(1);
     }
-    if (stemlang.empty())
-	getQueryStemming(dostem, stemlang);
 
     reslist_winfirst = -1;
 
-    if (!rcldb->setQuery(sdata, dostem ? 
-			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, stemlang))
+    if (!rcldb->setQuery(sdata, prefs_queryStemLang.length() > 0 ? 
+			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, 
+			 prefs_queryStemLang.ascii()))
 	return;
     curPreview = 0;
     if (docsource)
@@ -591,7 +590,9 @@ void RecollMain::showResultPage()
     }
 #endif
 
-    if (reslist_winfirst >= 0 && (reslist_winfirst + prefs_respagesize >= resCnt)) {
+    if (reslist_winfirst < 0 || 
+	(reslist_winfirst >= 0 && 
+	 reslist_winfirst + prefs_respagesize >= resCnt)) {
 	nextPageAction->setEnabled(false);
     } else {
 	nextPageAction->setEnabled(true);
@@ -823,15 +824,19 @@ void RecollMain::setUIPrefs()
     LOGDEB(("Recollmain::setUIPrefs\n"));
     prefs_showicons = uiprefs->useIconsCB->isChecked();
     prefs_respagesize = uiprefs->pageLenSB->value();
+
     prefs_reslistfontfamily = uiprefs->reslistFontFamily;
     prefs_reslistfontsize = uiprefs->reslistFontSize;
-
     if (prefs_reslistfontfamily.length()) {
 	QFont nfont(prefs_reslistfontfamily, prefs_reslistfontsize);
 	reslistTE->setFont(nfont);
     } else {
 	reslistTE->setFont(this->font());
     }
+
+    if (uiprefs->stemLangCMB->currentItem() == 0) {
+	prefs_queryStemLang = "";
+    } else {
+	prefs_queryStemLang = uiprefs->stemLangCMB->currentText();
+    }
 }
-
-

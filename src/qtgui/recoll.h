@@ -1,6 +1,6 @@
 #ifndef _RECOLL_H_INCLUDED_
 #define _RECOLL_H_INCLUDED_
-/* @(#$Id: recoll.h,v 1.8 2005-12-14 16:15:39 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: recoll.h,v 1.9 2005-12-15 14:39:57 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 
@@ -12,7 +12,6 @@
 
 // Misc declarations in need of sharing between the UI files
 extern void recollCleanup();
-extern void getQueryStemming(bool &dostem, std::string &stemlang);
 extern bool maybeOpenDb(std::string &reason);
 
 extern RclConfig *rclconfig;
@@ -27,6 +26,6 @@ extern bool prefs_showicons;
 extern int prefs_respagesize;
 extern QString prefs_reslistfontfamily;
 extern int prefs_reslistfontsize;
-
+extern QString prefs_queryStemLang;
 
 #endif /* _RECOLL_H_INCLUDED_ */

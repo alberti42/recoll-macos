@@ -169,7 +169,7 @@
         <action name="toolsSort_parametersAction"/>
     </item>
     <item text="&amp;Preferences" name="Preferences">
-        <action name="preferencesUser_InterfaceAction"/>
+        <action name="preferencesQuery_PrefsAction"/>
     </item>
     <separator/>
     <item text="&amp;Help" name="Help">
@@ -329,13 +329,13 @@
     </action>
     <action>
         <property name="name">
-            <cstring>preferencesUser_InterfaceAction</cstring>
+            <cstring>preferencesQuery_PrefsAction</cstring>
         </property>
         <property name="text">
-            <string>&amp;User Interface</string>
+            <string>&amp;Query configuration</string>
         </property>
         <property name="menuText">
-            <string>&amp;User Interface</string>
+            <string>&amp;Query configuration</string>
         </property>
     </action>
 </actions>
@@ -425,7 +425,7 @@
         <slot>showResultPage()</slot>
     </connection>
     <connection>
-        <sender>preferencesUser_InterfaceAction</sender>
+        <sender>preferencesQuery_PrefsAction</sender>
         <signal>activated()</signal>
         <receiver>RecollMain</receiver>
         <slot>showUIPrefs()</slot>
@@ -448,8 +448,6 @@
     <variable>int reslist_car;</variable>
     <variable>bool reslist_waitingdbl;</variable>
     <variable>bool reslist_dblclck;</variable>
-    <variable>bool dostem;</variable>
-    <variable>std::string stemlang;</variable>
     <variable>Preview *curPreview;</variable>
     <variable>advsearch *asearchform;</variable>
     <variable>SortForm *sortform;</variable>
