@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.24 2005-12-14 16:15:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.25 2005-12-15 13:41:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -45,19 +45,12 @@ bool prefs_showicons;
 int prefs_respagesize = 8;
 QString prefs_reslistfontfamily;
 int prefs_reslistfontsize;
-
+QString prefs_queryStemLang;
+int prefs_mainwidth;
+int prefs_mainheight;
+bool prefs_ssall;
+   
 static string dbdir;
-
-void getQueryStemming(bool &dostem, std::string &stemlang)
-{
-    string param;
-    if (rclconfig->getConfParam("querystemming", param))
-	dostem = stringToBool(param);
-    else
-	dostem = false;
-    if (!rclconfig->getConfParam("querystemminglanguage", stemlang))
-	stemlang = "english";
-}
 
 bool maybeOpenDb(string &reason)
 {
@@ -75,27 +68,60 @@ bool maybeOpenDb(string &reason)
 
 RecollMain *mainWindow;
 
+#define SETTING_RW(var, nm, tp, def) {		\
+	if (writing) {				\
+	    settings.writeEntry(#nm , var);	\
+	} else {				\
+	    var = settings.read##tp(#nm, def)	\
+}						
+
+static void saveSettings()
+{
+    if (!mainWindow) 
+	return;
+    prefs_mainwidth = mainWindow->width();
+    prefs_mainheight = mainWindow->height();
+    prefs_ssall = mainWindow->allTermsCB->isChecked();
+
+    QSettings settings;
+    settings.setPath("Recoll.org", "Recoll");
+
+    settings.writeEntry("/Recoll/geometry/width", prefs_mainwidth);
+    settings.writeEntry("/Recoll/geometry/height", prefs_mainheight);
+    settings.writeEntry("/Recoll/prefs/simpleSearchAll", prefs_ssall);
+    settings.writeEntry("/Recoll/prefs/reslist/showicons", prefs_showicons);
+    settings.writeEntry("/Recoll/prefs/reslist/pagelen", prefs_respagesize);
+    settings.writeEntry("/Recoll/prefs/reslist/fontFamily", 
+			prefs_reslistfontfamily);
+    settings.writeEntry("/Recoll/prefs/reslist/fontSize", 
+			prefs_reslistfontsize);;
+    settings.writeEntry("/Recoll/prefs/query/stemLang", prefs_queryStemLang);;
+}
+
+static void readSettings()
+{
+    // Restore some settings from previous session
+    QSettings settings;
+    settings.setPath("Recoll.org", "Recoll");
+
+    prefs_mainwidth = settings.readNumEntry("/Recoll/geometry/width", 590);
+    prefs_mainheight = settings.readNumEntry("/Recoll/geometry/height", 810);
+    prefs_ssall = settings.readBoolEntry("/Recoll/prefs/simpleSearchAll", 0); 
+    prefs_showicons = 
+	settings.readBoolEntry("/Recoll/prefs/reslist/showicons", true);
+    prefs_respagesize = 
+	settings.readNumEntry("/Recoll/prefs/reslist/pagelen", 8);
+    prefs_reslistfontfamily = 
+	settings.readEntry("/Recoll/prefs/reslist/fontFamily", "");
+    prefs_reslistfontsize = 
+	settings.readNumEntry("/Recoll/prefs/reslist/fontSize", 0);;
+    prefs_queryStemLang = 
+	settings.readEntry("/Recoll/prefs/query/stemLang", "english");
+}
+
 void recollCleanup()
 {
-    QSettings settings;
-    if (mainWindow) {
-	int width = mainWindow->width();
-	int height = mainWindow->height();
-	settings.setPath("Recoll.org", "Recoll");
-	settings.writeEntry( "/Recoll/geometry/width", width);
-	settings.writeEntry("/Recoll/geometry/height", height);
-	settings.writeEntry("/Recoll/prefs/simpleSearchAll", 
-			    mainWindow->allTermsCB->isChecked());
-	settings.writeEntry("/Recoll/prefs/reslist/showicons", 
-			    prefs_showicons);
-    	settings.writeEntry("/Recoll/prefs/reslist/pagelen", 
-			      prefs_respagesize);
-    	settings.writeEntry("/Recoll/prefs/reslist/fontFamily", 
-			   prefs_reslistfontfamily);
-    	settings.writeEntry("/Recoll/prefs/reslist/fontSize", 
-			      prefs_reslistfontsize);;
-    }
-
+    saveSettings();
     stop_idxthread();
     delete rcldb;
     rcldb = 0;
@@ -127,28 +153,14 @@ int main( int argc, char ** argv )
     qt.load( QString( "qt_" ) + QTextCodec::locale(), "." );
     a.installTranslator( &qt );
 
-    // Restore some settings from previous session
-    QSettings settings;
-    settings.setPath("Recoll.org", "Recoll");
-    int width = settings.readNumEntry("/Recoll/geometry/width", 590);
-    int height = settings.readNumEntry("/Recoll/geometry/height", 810);
-    bool ssall = settings.readBoolEntry("/Recoll/prefs/simpleSearchAll", 0); 
-    QSize s(width, height);
-    prefs_showicons = 
-	settings.readBoolEntry("/Recoll/prefs/reslist/showicons", true);
-    prefs_respagesize = 
-	settings.readNumEntry("/Recoll/prefs/reslist/pagelen", 8);
-    prefs_reslistfontfamily = 
-	settings.readEntry("/Recoll/prefs/reslist/fontFamily", "");
-    prefs_reslistfontsize = 
-	settings.readNumEntry("/Recoll/prefs/reslist/fontSize", 0);;
+    readSettings();
 
-    
     // Create main window and set its size to previous session's
     RecollMain w;
     mainWindow = &w;
+    QSize s(prefs_mainwidth, prefs_mainheight);
     w.resize(s);
-    w.allTermsCB->setDown(ssall);
+    w.allTermsCB->setChecked(prefs_ssall);
     string reason;
     rclconfig = recollinit(recollCleanup, sigcleanup, reason);
     if (!rclconfig || !rclconfig->ok()) {
