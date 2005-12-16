@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.26 2005-12-15 14:39:57 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.27 2005-12-16 10:06:56 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -29,7 +29,7 @@ using Rcl::AdvSearchData;
 
 #include "recollmain.h"
 
-static const char *recollsharedir = "/usr/local/share/recoll";
+static const char *recollprefix = RECOLL_PREFIX;
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
@@ -133,6 +133,15 @@ int main( int argc, char ** argv )
     qt.load( QString( "qt_" ) + QTextCodec::locale(), "." );
     a.installTranslator( &qt );
 
+    // Translations for Recoll
+    string recollsharedir = path_cat(recollprefix, "share");
+    string translatdir = path_cat(recollsharedir, "translations");
+    QTranslator translator( 0 );
+    // QTextCodec::locale() returns $LANG
+    translator.load( QString("recoll_") + QTextCodec::locale(), 
+		     translatdir.c_str() );
+    a.installTranslator( &translator );
+
     rwSettings(false);
 
     // Create main window and set its size to previous session's
@@ -160,14 +169,6 @@ int main( int argc, char ** argv )
 	exit(1);
     }
     dbdir = path_tildexpand(dbdir);
-
-    // Translations for Recoll
-    string translatdir = path_cat(recollsharedir, "translations");
-    QTranslator translator( 0 );
-    // QTextCodec::locale() returns $LANG
-    translator.load( QString("recoll_") + QTextCodec::locale(), 
-		     translatdir.c_str() );
-    a.installTranslator( &translator );
 
     rclconfig->getConfParam("iconsdir", iconsdir);
     if (iconsdir.empty()) {
