@@ -1,7 +1,7 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.6 2005-11-24 18:21:55 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.7 2005-12-16 10:08:07 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
-
+#include <signal.h>
 #include <strings.h>
 
 #include <iostream>

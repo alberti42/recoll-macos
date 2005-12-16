@@ -5,7 +5,7 @@ all: $(PROGS)
 XADUMP_OBJS= xadump.o $(BIGLIB) 
 xadump : $(XADUMP_OBJS)
 	$(CXX) $(CXXFLAGS) -o xadump $(XADUMP_OBJS) \
-	       $(LIBICONV) $(LIBXAPIAN)
+	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
 
 QXTRY_OBJS= qxtry.o  $(BIGLIB)
 qxtry : $(QXTRY_OBJS)
