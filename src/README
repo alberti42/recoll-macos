@@ -2,189 +2,252 @@
 A more complete version of this document can be found at http://www.recoll.org
 
 
-     * Home
-     * Screenshots
-     * Credits
-     * Downloads
-     * Installation
-     * User manual
-   [IMG]
+                               Recoll user manual
 
-Recoll
+  Jean-Francois Dockes
 
-   Recoll is a personal full text search package for Linux, FreeBSD and other
-   Unix systems.
+   <jean-francois.dockes@wanadoo.fr>
 
-   Recoll is based on a very strong backend (Xapian), for which it provides
-   an easy to use, feature-rich, easy administration interface.
+   Copyright (c) 2005 Jean-Francois Dockes
 
-   Recoll is free and copyrighted under the GPL license, see COPYING inside
-   the distribution. A lot of the code is imported from other packages, see
-   the Credits.
+   The Recoll user manual introduces full text search notions and describes
+   the installation and use of the Recoll application.
 
-  Features:
+   [ Split HTML / Single HTML ]
 
-     * QT-based GUI.
-     * Supports the following document types (along with their compressed
-       versions):
+     ----------------------------------------------------------------------
 
-            Natively
-                    * text.
-                    * html.
-                    * OpenOffice files.
-                    * maildir and mailbox (Mozilla and Thunderbird mail ok).
-                    * gaim log files.
+   Table of Contents
 
-            With external helpers
-                    * pdf (xpdf).
-                    * postscript (ghostscript).
-                    * msword (antiword).
-                    * rtf text (unrtf).
+   1. Introduction
 
-     * Powerful query facilities, with boolean searches, phrases, filter on
-       file types and directory tree.
-     * Support for multiple charsets. Internal processing and storage uses
-       Unicode UTF-8.
-     * Stemming performed at query time (can switch stemming language after
-       indexing)
-     * Easy installation. No database daemon, web server or exotic language
-       necessary.
-     * An indexer which runs either as a thread inside the GUI or as an
-       external, cron'able program.
+                1.1. Giving it a try
 
-   Recoll has been compiled and tested on FreeBSD, Linux, Darwin and Solaris
-   (versions FreeBSD 5.3, Redhat 7.3, Solaris 8, but other not too distant
-   releases should be ok too). You can download the source code here.
+                1.2. Full text search
 
-  Future evolutions
+                1.3. Recoll overview
 
-   Things hopefully coming in the not too far future (especially with some
-   help):
+   2. Indexation
 
-     * Support for the more advanced Xapian concepts like relevance feedback.
-     * An interactive configuration tool.
-     * Rpms or other kinds of packages.
-     * A more polished user interface with online help and better
-       documentation.
-     * More translations for the user interface.
-     * A few more filters for less common file types.
-     * Integration with the KDE desktop.
+                2.1. Introduction
 
-   I very much welcome suggestions or (gasp) code.
+                2.2. The indexation configuration
 
-   In hope that this can be useful to somebody, it already is for me.
-     * Home
-     * Screenshots
-     * Credits
-     * Downloads
-     * Installation
-     * User manual
+                2.3. Starting indexation
 
-  Credits
+   3. Searching
 
-   Recoll borrows (steals?) heavily from the following projects. I tried to
-   include the relevant copyright attributions with the code. Any omission is
-   unintentional and will be fixed as soon as notified.
+                3.1. Simple search
 
-     * Xapian: The database module (core) is used unmodified, and quite a lot
-       of code has been borrowed from Omega, the web-based search application
-       (ie: the html parser, plus miscellaneous bits and ideas).
-     * Estraier: Miscellaneous pieces of code and ideas, especially for
-       charset handling, and code from external filters.
-     * Unac: for accent removal. This is a relatively small package, not that
-       easy to find, it has been integrated almost unmodified in the Recoll
-       package.
-     * Iconv, for character set conversion.
-     * Binc IMAP for MIME parsing code.
-     * I fear that bugs found elsewhere are mostly mine:
-       jean-francois.dockes@wanadoo.fr
-     * Home
-     * Screenshots
-     * Credits
-     * Downloads
-     * Installation
-     * User manual
+                3.2. Complex/advanced search
 
-Introduction: full text search.
+                3.3. Document history
 
-   A full text search program will let you search for data by specifying the
-   terms that you think appear in the content you are looking for.
+                3.4. Search tips, shortcuts
+
+   4. Installation
+
+                4.1. Building from source
+
+                             4.1.1. Prerequisites
+
+                             4.1.2. Building
+
+                             4.1.3. Installation
+
+                4.2. Installing a prebuilt copy
+
+                             4.2.1. Installing through a package system
+
+                             4.2.2. Installing a prebuilt Recoll
+
+                4.3. Configuration overview
+
+                             4.3.1. Main configuration file
+
+                             4.3.2. The mimemap file
+
+                             4.3.3. The mimeconf file
+
+     ----------------------------------------------------------------------
+
+                            Chapter 1. Introduction
+
+1.1. Giving it a try
+
+   If you do not like reading manuals and would like to give Recoll a try,
+   just perform installation and start the recoll user interface, which will
+   index your home directory and let you search it right after.
+
+   Do not do this if your home has a huge number of documents and you do not
+   want to wait or are very short on disk space. In this case, you may want
+   to edit the configuration file first to restrict the indexed area.
+
+   Also be aware that you will need to install the appropriate supporting
+   applications for document types that need them (for example antiword for
+   ms-word files), and that the default character set is iso8859-1, which may
+   not be appropriate for you.
+
+     ----------------------------------------------------------------------
+
+1.2. Full text search
+
+   Full text search applications allow you to find your data by content
+   rather than by external attributes (like a file name). More specifically,
+   they will let you specify words (terms) that should or should not appear
+   in the text you are looking for, and return a list of matching documents,
+   ordered so that the most relevant documents will appear first.
 
    You do not need to remember in what file or email message you stored a
    given piece of information. You just ask for related terms, and the tool
    will return a list of documents where those terms are prominent.
 
-   In addition, the tool will automatically expand your search to terms
-   related to the ones you specified. Ie: a search for floor will also look
-   for floors, flooring etc. With Recoll you can disable this expansion when
-   entering the query.
+   This mode of operation has been made very familiar by www search engines.
 
-   Recoll, like most such search tools, works by remembering where terms
-   appear in your document files. The acquisition process is called
-   indexation. The resulting database can be big, in practise, roughly the
-   size of the original document set.
+   The notion of relevance is a difficult one, as only you, the user,
+   actually know which documents are relevant to your search, and the
+   application can only try a guess. The quality of this guess is probably
+   the most important element for a search application.
 
-   Recoll is not a document archive. It can only display data from files that
-   still exist where they lived when they were indexed.
+   In many cases, one is looking for all the forms of a word, not for a
+   specific form or spelling. These different forms may include plurals,
+   different tenses for a verb, or terms derived from the same root or stem
+   (exemple: floor, floors, floored, floorings...). Recoll will by default
+   expand queries to all such related terms (words that reduce to the same
+   stem). This expansion can be disabled at search time.
 
-Using Recoll
+   Stemming, by itself, does not provide for misspellings or phonetic
+   searches. Recoll does not support these currently.
 
-  Indexation
+     ----------------------------------------------------------------------
 
-   By default, Recoll will index your home directory. If you want to change
-   this, you need to edit the configuration file ($HOME/.recoll/recoll.conf
-   or $RECOLL_CONFDIR/recoll.conf if RECOLL_CONFDIR is set). Follow the
-   comments in the file to adjust the parameters.
+1.3. Recoll overview
 
-   Indexation is performed either by starting the recollindex program, or the
-   indexing thread inside the recoll program (use the File menu).
+   Recoll uses the Xapian information retrieval library as its storage and
+   retrieval engine. Xapian is a very mature package using a sophisticated
+   probabilistic ranking model. Recoll provides the interface to get data
+   into (indexation) and out (searching) of the system.
+
+   In practice, Xapian works by remembering where terms appear in your
+   document files. The acquisition process is called indexation.
+
+   The resulting database can be big (roughly the size of the original
+   document set), but it is not a document archive. Recoll can only display
+   documents that still exist at the place from which they were indexed.
+
+   Recoll stores all internal data in Unicode UTF-8 format, and it can index
+   files with different character sets, encodings, and languages into the
+   same database. It has input filters for many document types.
+
+   Stemming depends on the document language. Recoll stores the unstemmed
+   versions of terms and uses auxiliary databases for term expansion. It can
+   switch stemming languages without reindexing. Storing documents in
+   different languages in the same database is possible, and useful in
+   practice, but does introduce possibilities of confusion. Recoll makes no
+   attempt at automatic language recognition.
+
+   Recoll has many parameters which define exactly what to index, and how to
+   classify and decode the source documents. These are kept in a
+   configuration file. A sample configuration is installed into the .recoll
+   subdirectory of your home directory when you first execute a Recoll
+   command. The initial configuration will index your home directory with
+   default parameters and should be sufficient for giving Recoll a try, but
+   you may want to adjust it later.
+
+   Indexation is started automatically the first time you execute the recoll
+   search graphical user interface, or by executing the recollindex.
+
+   Searches are performed inside the recoll program, which has many options
+   to help you find what you are looking for.
+
+     ----------------------------------------------------------------------
+
+                             Chapter 2. Indexation
+
+2.1. Introduction
+
+   Indexation is the process by which the set of documents is analyzed and
+   the data entered into the database. Recoll indexation is normally
+   incremental: documents will only be processed if they have been modified.
+   On the first execution, of course, all documents will need processing. A
+   full index build can be forced later on by specifying an option to the
+   indexation command.
+
+   Recoll indexation takes place at discrete times. There is no currently no
+   interface to real time file modification monitors. The typical usage is to
+   have a nightly indexation run programmed into your cron file.
+
+   Recoll knows about quite a few different document types. The parameters
+   for document types recognition and processing are set in configuration
+   files Most file types, like HTML or word processing files, only hold one
+   document. Some file types, like mail folder files can hold many
+   individually indexed documents.
+
+   Without further configuration, Recoll will index all appropriate files
+   from your home directory, with a reasonable set of defaults, if you live
+   in western Europe or the USA. If your normal character set is not
+   iso8859-1, you almost certainly need to adjust the configuration.
+
+     ----------------------------------------------------------------------
+
+2.2. The indexation configuration
+
+   The main configuration file is named $HOME/.recoll/recoll.conf by default
+   or $RECOLL_CONFDIR/recoll.conf if RECOLL_CONFDIR is set.
+
+   The most accurate documentation for editing the file is given by comments
+   inside the default file that will be created when you first start recoll.
+   If you want to adjust the configuration before indexation, just click
+   Cancel when the program asks if it should start initial indexation.
+
+   You can also have a look to the configuration overview inside the
+   installation chapter of this document.
+
+     ----------------------------------------------------------------------
+
+2.3. Starting indexation
+
+   Indexation is performed either by the recollindex program, or by the
+   indexation thread inside the recoll program (use the File menu).
+
+   If the recoll program finds no database when it starts, it will
+   automatically start indexation (except if cancelled).
 
    It is best to avoid interrupting the indexation process, as this may
    sometimes leave the database in a bad state. This is not a serious
    problem, as you then just need to clear everything and restart the
    indexation. The database files are normally stored in the
-   $HOME/.recoll/xapiandb directory, which you can just delete when needed.
+   $HOME/.recoll/xapiandb directory, which you can just delete if needed.
    Alternatively, you can start recollindex -z, which will reset the database
-   before indexing.
+   before indexation.
 
-  Simple search
+     ----------------------------------------------------------------------
+
+                              Chapter 3. Searching
+
+3.1. Simple search
 
    Start the recoll program, then enter search term(s) in the text field at
    the top left of the window. Clicking the Search button or hitting the
    Enter key will start a search. By default, this will look for documents
    with any of the terms (the ones with more terms will get better scores).
-   Use the Tools / Advanced search dialog for other kinds of searches
+   You can check the All terms checkbox to ensure that only documents with
+   all the terms will be returned. Use the Tools / Advanced search dialog for
+   more complex searches.
 
-   A list of results will be displayed in the main list window. Clicking on
-   an entry will open an internal preview window for the document.
-   Double-clicking will attempt to start an external viewer (have a look at
-   the ~/.recoll/mimeconf file to see how these are configured).
-
-   Documents that you actually view (with the internal preview or an external
-   tool) are entered into the document history, which is remembered. You can
-   display the history list by using the Tools / Doc History menu entry.
+   After starting a search, a list of results will instantly be displayed in
+   the main list window. Clicking on an entry will open an internal preview
+   window for the document. Double-clicking will attempt to start an external
+   viewer (have a look at the ~/.recoll/mimeconf file to see how these are
+   configured).
 
    By default, the document list is presented in order of relevance (how well
    the system estimates that the document matches the query). You can specify
    a different ordering by using the Tools / Sort parameters dialog.
 
-  Search tips, shortcuts
+     ----------------------------------------------------------------------
 
-   Entering a capitalized word in any search field will prevent stem
-   expansion (example: Recoll will not look for gardening if you enter Garden
-   instead of garden). This is the only case where character case will make a
-   difference for a Recoll search.
-
-   A phrase can be looked for by enclosing it in double quotes. Example:
-   "user manual" will look only for occurrences of user immediately followed
-   by manual.
-
-   Entering ^Q almost anywhere will close the application.
-
-   Entering ^W in a preview tab will close it (and, for the last tab, close
-   the preview window).
-
-  Complex/advanced search
+3.2. Complex/advanced search
 
    The advanced search dialog has fields that will allow a more refined
    search, looking for documents with all given words, a given exact phrase,
@@ -198,3 +261,196 @@ Using Recoll
    area.
 
    In other respects, it works like the simple search.
+
+     ----------------------------------------------------------------------
+
+3.3. Document history
+
+   Documents that you actually view (with the internal preview or an external
+   tool) are entered into the document history, which is remembered. You can
+   display the history list by using the Tools/Doc History menu entry.
+
+     ----------------------------------------------------------------------
+
+3.4. Search tips, shortcuts
+
+   Entering a capitalized word in any search field will prevent stem
+   expansion (no search for gardening if you enter Garden instead of garden).
+   This is the only case where character case will make a difference for a
+   Recoll search.
+
+   A phrase can be looked for by enclosing it in double quotes. Example:
+   "user manual" will look only for occurrences of user immediately followed
+   by manual. You can use the This exact phrase field of the advanced search
+   dialog to the same effect.
+
+   Entering ^Q almost anywhere will close the application.
+
+   Entering ^W in a preview tab will close it (and, for the last tab, close
+   the preview window).
+
+     ----------------------------------------------------------------------
+
+                            Chapter 4. Installation
+
+4.1. Building from source
+
+  4.1.1. Prerequisites
+
+   At the very least, you will need to download and install the xapian core
+   package (Recoll currently uses version 0.9.2), and the qt runtime and
+   development packages (Recoll currently uses version 3.3.3).
+
+   You will most probably be able to find a binary package for qt for your
+   system. You may have to compile Xapian, but this is not difficult (if you
+   are using FreeBSD, there is a port).
+
+   You may also need libiconv. Recoll currently uses version 1.9 (this should
+   not be critical). On Linux systems, the iconv interface is part of libc
+   and you should not need to do anything special.
+
+   External file types. Recoll uses external applications to index some file
+   types. You need to install them for the file types that you wish to have
+   indexed:
+
+     * MS Word: antiword.
+
+     * PDF: pdftotext is part of the Xpdf package.
+
+     * Postscript: pstotext.
+
+     * RTF: unrtf
+
+     ----------------------------------------------------------------------
+
+  4.1.2. Building
+
+   Recoll has been built on Linux (redhat7.3, mandriva 2005), FreeBSD and
+   Solaris 8. If you build on another system, I would very much welcome
+   patches.
+
+   Normal procedure:
+
+         cd recoll-xxx
+         configure
+         make
+         (practises usual hardship-repelling invocations)
+     
+
+   There little autoconfiguration. The configure script will mainly link one
+   of the system-specific files in the mk directory to mk/sysconf. If your
+   system is not known yet, it will tell you as much, and you may want to
+   manually copy and modify one of the existing files (the new file name
+   should be the output of uname -s).
+
+     ----------------------------------------------------------------------
+
+  4.1.3. Installation
+
+   Either type make install or execute recollinstall targetdir, in the root
+   of the source tree. This will copy the commands to $targetdir/bin and the
+   sample configuration files, scripts and other shared data to
+   $targetdir/share/recoll.
+
+     ----------------------------------------------------------------------
+
+4.2. Installing a prebuilt copy
+
+  4.2.1. Installing through a package system
+
+   If you are lucky enough to be using a port system or a prebuilt package
+   (RPM or other), just follow the usual procedure, and have a look at the
+   configuration section.
+
+     ----------------------------------------------------------------------
+
+  4.2.2. Installing a prebuilt Recoll
+
+   The unpackaged binary versions are just compressed tar files of a build
+   tree, where only the useful parts were kept (executables and sample
+   configuration).
+
+   The executable binary files are built with a static link to libxapian and
+   libiconv, to make installation easier (no dependencies). However, this
+   also means that you cannot change the versions which are used.
+
+   After extracting the tar file, you can proceed with installation as if you
+   had built the package from source.
+
+     ----------------------------------------------------------------------
+
+4.3. Configuration overview
+
+   The personal configuration files and the database are kept in the .recoll
+   directory in your home. If this directory does not exist when recoll or
+   recollindex are started, the directory will be created and the sample
+   configuration files will be copied. recoll will give you a chance to edit
+   the configuration file before starting indexation. recollindex will
+   proceed immediately.
+
+   Recoll uses text configuration files. You will have to edit them by hand
+   for now (there is still some hope for a GUI configuration tool in the
+   future). The most accurate documentation for the configuraton parameters
+   is given by comments inside the sample files, and we will just give a
+   general overview here.
+
+   Most of the parameters specific to the recoll GUI are set through the
+   Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
+   You probably do not want to edit this by hand.
+
+     ----------------------------------------------------------------------
+
+  4.3.1. Main configuration file
+
+   ~/.recoll/recoll.conf is the main configuration file. It defines what to
+   index (top directories and things to ignore), and the default character
+   set to use (for document types which do not specify it internally). The
+   default character set can be specified separately for any directory
+   subtree.
+
+   The default configuration will index your home directory. If this is not
+   appropriate, use recoll to copy the sample configuration, click Cancel,
+   and edit the configuration file before restarting the command. This will
+   start the initial indexation, which may take some time.
+
+   There are also miscellaneous other parameters inside recoll.conf. Explore
+   and enjoy :)
+
+     ----------------------------------------------------------------------
+
+  4.3.2. The mimemap file
+
+   ~/.recoll/mimemap specifies the file name extension to mime type mappings.
+
+   For file names without an extension, or with an unknown one, the system's
+   file -i command will be executed to determine the mime type (this can be
+   switched off inside the main configuration file).
+
+   mimemap also has a list of extensions which should be ignored totally (to
+   avoid losing time by executing file for things that certainly should not
+   be indexed).
+
+   The mappings can be specified on a per-subtree basis, which may be useful
+   in some cases. Example: gaim logs have a .txt extension but should be
+   handled specially, which is possible because they are usually all located
+   in one place.
+
+     ----------------------------------------------------------------------
+
+  4.3.3. The mimeconf file
+
+   ~/.recoll/mimeconf specifies how the different mime types are handled for
+   indexation, and for display.
+
+   Changing the indexation parameters is probably not a good idea except if
+   you are a Recoll developper.
+
+   You may want to adjust the external viewers defined in (ie: html is either
+   previewed internally or displayed using firefox, but you may prefer
+   mozilla...). Look for the [view] section.
+
+   You can also change the icons which are displayed by recoll in the result
+   lists (the values are the basenames of the png images inside the iconsdir
+   directory (specified in recoll.conf).
+
+     ----------------------------------------------------------------------
