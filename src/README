@@ -1,5 +1,5 @@
 
-A more complete version of this document can be found at http://www.recoll.org
+More documentation can be found in the doc/ directory or at http://www.recoll.org
 
 
                                Recoll user manual
@@ -34,6 +34,8 @@ A more complete version of this document can be found at http://www.recoll.org
                 2.2. The indexation configuration
 
                 2.3. Starting indexation
+
+                2.4. Using cron to automate indexation
 
    3. Searching
 
@@ -85,8 +87,8 @@ A more complete version of this document can be found at http://www.recoll.org
 
    Also be aware that you will need to install the appropriate supporting
    applications for document types that need them (for example antiword for
-   ms-word files), and that the default character set is iso8859-1, which may
-   not be appropriate for you.
+   ms-word files), and that the default character set used to read raw text
+   files for indexing is iso8859-1, which may not be appropriate for you.
 
      ----------------------------------------------------------------------
 
@@ -123,10 +125,11 @@ A more complete version of this document can be found at http://www.recoll.org
 
 1.3. Recoll overview
 
-   Recoll uses the Xapian information retrieval library as its storage and
-   retrieval engine. Xapian is a very mature package using a sophisticated
-   probabilistic ranking model. Recoll provides the interface to get data
-   into (indexation) and out (searching) of the system.
+   Recoll is a full text search application which uses the Xapian information
+   retrieval library as its storage and retrieval engine. Xapian is a very
+   mature package using a sophisticated probabilistic ranking model. Recoll
+   provides the interface to get data into (indexation) and out (searching)
+   of the system.
 
    In practice, Xapian works by remembering where terms appear in your
    document files. The acquisition process is called indexation.
@@ -223,6 +226,20 @@ A more complete version of this document can be found at http://www.recoll.org
 
      ----------------------------------------------------------------------
 
+2.4. Using cron to automate indexation
+
+   The most common way to set up indexation is to have a cron task execute it
+   every night. For example the following crontab entry would do it every day
+   at 3:30AM (supposing recollindex is in your PATH):
+
+ 30 3 * * * recollindex > /tmp/recolltrace 2>&1
+
+   The usual command to edit your crontab is crontab -e (which will usually
+   start the vi editor to edit the file). You may have more sophisticated
+   tools available on your system.
+
+     ----------------------------------------------------------------------
+
                               Chapter 3. Searching
 
 3.1. Simple search
@@ -274,20 +291,20 @@ A more complete version of this document can be found at http://www.recoll.org
 
 3.4. Search tips, shortcuts
 
-   Entering a capitalized word in any search field will prevent stem
-   expansion (no search for gardening if you enter Garden instead of garden).
-   This is the only case where character case will make a difference for a
-   Recoll search.
+   Disabling stem expansion. Entering a capitalized word in any search field
+   will prevent stem expansion (no search for gardening if you enter Garden
+   instead of garden). This is the only case where character case will make a
+   difference for a Recoll search.
 
-   A phrase can be looked for by enclosing it in double quotes. Example:
-   "user manual" will look only for occurrences of user immediately followed
-   by manual. You can use the This exact phrase field of the advanced search
-   dialog to the same effect.
+   Phrases. A phrase can be looked for by enclosing it in double quotes.
+   Example: "user manual" will look only for occurrences of user immediately
+   followed by manual. You can use the This exact phrase field of the
+   advanced search dialog to the same effect.
 
-   Entering ^Q almost anywhere will close the application.
+   Quitting. Entering ^Q almost anywhere will close the application.
 
-   Entering ^W in a preview tab will close it (and, for the last tab, close
-   the preview window).
+   Closing previews. Entering ^W in a preview tab will close it (and, for the
+   last tab, close the preview window).
 
      ----------------------------------------------------------------------
 
