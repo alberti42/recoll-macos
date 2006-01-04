@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.27 2005-12-16 10:06:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.28 2006-01-04 11:33:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -26,6 +26,7 @@ using Rcl::AdvSearchData;
 #include "wipedir.h"
 #include "rclinit.h"
 #include "history.h"
+#include "debuglog.h"
 
 #include "recollmain.h"
 
@@ -39,6 +40,7 @@ string iconsdir;
 RclDHistory *history;
 static string dbdir;
 static RecollMain *mainWindow;
+static string recollsharedir;
 
 ///////////////////////// 
 // Global variables for user preferences. These are set in the user preference
@@ -51,6 +53,7 @@ QString prefs_queryStemLang;
 int prefs_mainwidth;
 int prefs_mainheight;
 bool prefs_ssall;
+QString prefs_htmlBrowser;
 
 #define SETTING_RW(var, nm, tp, def)			\
     if (writing) {					\
@@ -134,7 +137,7 @@ int main( int argc, char ** argv )
     a.installTranslator( &qt );
 
     // Translations for Recoll
-    string recollsharedir = path_cat(recollprefix, "share");
+    recollsharedir = path_cat(recollprefix, "share/recoll");
     string translatdir = path_cat(recollsharedir, "translations");
     QTranslator translator( 0 );
     // QTextCodec::locale() returns $LANG
@@ -219,4 +222,70 @@ int main( int argc, char ** argv )
     // Let's go
     w.show();
     return a.exec();
+}
+
+const static char *htmlbrowserlist = 
+    "opera konqueror firefox mozilla netscape";
+// Search for and launch an html browser for the documentation. If the
+// user has set a preference, we use it directly instead of guessing.
+bool startHelpBrowser(const string &iurl)
+{
+    string url;
+    if (iurl.empty()) {
+	url = path_cat(recollsharedir, "doc");
+	url = path_cat(url, "usermanual.html");
+	url = string("file://") + url;
+    } else
+	url = iurl;
+
+
+    // If the user set a preference with an absolute path then things are
+    // simple
+    if (!prefs_htmlBrowser.isEmpty() && prefs_htmlBrowser.find('/') != -1) {
+	if (access(prefs_htmlBrowser.ascii(), X_OK) != 0) {
+	    LOGERR(("startHelpBrowser: %s not found or not executable\n",
+		    prefs_htmlBrowser.ascii()));
+	}
+	string cmd = string(prefs_htmlBrowser.ascii()) + " " + url + "&";
+	if (system(cmd.c_str()) == 0)
+	    return true;
+	else 
+	    return false;
+    }
+
+    string searched;
+    if (prefs_htmlBrowser.isEmpty()) {
+	searched = htmlbrowserlist;
+    } else {
+	searched = prefs_htmlBrowser.ascii();
+    }
+    list<string> blist;
+    stringToTokens(searched, blist, " ");
+
+    const char *path = getenv("PATH");
+    if (path == 0)
+	path = "/bin:/usr/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/bin";
+
+    list<string> pathl;
+    stringToTokens(path, pathl, ":");
+    
+    // For each browser name, search path and exec/stop if found
+    for (list<string>::const_iterator bit = blist.begin(); 
+	 bit != blist.end(); bit++) {
+	for (list<string>::const_iterator pit = pathl.begin(); 
+	     pit != pathl.end(); pit++) {
+	    string exefile = path_cat(*pit, *bit);
+	    LOGDEB1(("startHelpBrowser: trying %s\n", exefile.c_str()));
+	    if (access(exefile.c_str(), X_OK) == 0) {
+		string cmd = exefile + " " + url + "&";
+		if (system(cmd.c_str()) == 0) {
+		    return true;
+		}
+	    }
+	}
+    }
+
+    LOGERR(("startHelpBrowser: no html browser found. Looked for: %s\n", 
+	    searched.c_str()));
+    return false;
 }

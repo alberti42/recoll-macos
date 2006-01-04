@@ -31,6 +31,7 @@ for d in ${PREFIX} \
 	    ${PREFIX}/bin \
 	    ${PREFIX}/share \
 	    ${PREFIX}/share/recoll \
+	    ${PREFIX}/share/recoll/doc \
 	    ${PREFIX}/share/recoll/examples \
 	    ${PREFIX}/share/recoll/filters \
 	    ${PREFIX}/share/recoll/images \
@@ -38,6 +39,8 @@ for d in ${PREFIX} \
 do
   test -d $d || mkdir $d || exit 1
 done
+
+${INSTALL} doc/usermanual.html doc/docbook.css ${PREFIX}/share/recoll/doc 
 
 ${INSTALL} qtgui/recoll index/recollindex $PREFIX/bin || exit 1
 ${STRIP} $PREFIX/bin/recoll $PREFIX/bin/recollindex

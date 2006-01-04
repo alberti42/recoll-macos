@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.11 2005-12-13 12:43:00 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.12 2006-01-04 11:33:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_SMALLUT
 #include <string>
@@ -263,6 +263,25 @@ bool stringToStrings(const string &s, std::list<string> &tokens)
 	return false;
     }
     return true;
+}
+
+void stringToTokens(const string& str, list<string>& tokens,
+		    const string& delims)
+{
+    string::size_type startPos, pos;
+
+    for (pos = 0;;) { 
+        // Skip initial delims, break if this eats all.
+        if ((startPos = str.find_first_not_of(delims, pos)) == string::npos)
+	    break;
+        // Find next delimiter or end of string (end of token)
+        pos = str.find_first_of(delims, startPos);
+        // Add token to the vector. Note: token cant be empty here
+	if (pos == string::npos)
+	    tokens.push_back(str.substr(startPos));
+	else
+	    tokens.push_back(str.substr(startPos, pos - startPos));
+    }
 }
 
 bool stringToBool(const string &s)

@@ -1,6 +1,6 @@
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.10 2005-11-25 14:36:46 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.11 2006-01-04 11:33:44 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 
@@ -20,13 +20,20 @@ extern bool maketmpdir(string& tdir);
 extern string stringlistdisp(const list<string>& strs);
 
 /**
- * Parse input stream into list of strings. 
+ * Parse input string into list of strings. 
  *
  * Token delimiter is " \t" except inside dquotes. dquote inside
  * dquotes can be escaped with \ etc...
  */
 extern bool stringToStrings(const string &s, std::list<string> &tokens);
 
+/**
+ * Split input string. No handling of quoting
+ */
+extern void stringToTokens(const string &s, std::list<string> &tokens, 
+			   const string &delims = " \t");
+
+/** Convert string to boolean */
 extern bool stringToBool(const string &s);
 
 /** Remove instances of characters belonging to set (default {space,

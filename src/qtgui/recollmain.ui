@@ -158,7 +158,6 @@
         <cstring>MenuBar</cstring>
     </property>
     <item text="&amp;File" name="fileMenu">
-        <separator/>
         <action name="fileStart_IndexingAction"/>
         <separator/>
         <action name="fileExitAction"/>
@@ -173,6 +172,7 @@
     </item>
     <separator/>
     <item text="&amp;Help" name="Help">
+        <action name="userManualAction"/>
         <separator/>
         <action name="helpAbout_RecollAction"/>
     </item>
@@ -240,6 +240,17 @@
         </property>
         <property name="menuText">
             <string>&amp;About Recoll</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>userManualAction</cstring>
+        </property>
+        <property name="text">
+            <string>User manual</string>
+        </property>
+        <property name="menuText">
+            <string>&amp;User manual</string>
         </property>
     </action>
     <action>
@@ -383,6 +394,12 @@
         <slot>showAboutDialog()</slot>
     </connection>
     <connection>
+        <sender>userManualAction</sender>
+        <signal>activated()</signal>
+        <receiver>RecollMain</receiver>
+        <slot>startManual()</slot>
+    </connection>
+    <connection>
         <sender>toolsDoc_HistoryAction</sender>
         <signal>activated()</signal>
         <receiver>RecollMain</receiver>
@@ -474,6 +491,7 @@
     <slot>showAdvSearchDialog()</slot>
     <slot>showSortDialog()</slot>
     <slot>showAboutDialog()</slot>
+    <slot>startManual()</slot>
     <slot>showDocHistory()</slot>
     <slot>searchTextChanged( const QString &amp; text )</slot>
     <slot>sortDataChanged( int cnt, RclSortSpec spec )</slot>

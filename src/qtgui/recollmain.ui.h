@@ -776,6 +776,11 @@ void RecollMain::showAboutDialog()
     QMessageBox::information(this, tr("About Recoll"), vstring.c_str());
 }
 
+void RecollMain::startManual()
+{
+    startHelpBrowser();
+}
+
 
 void RecollMain::showDocHistory()
 {

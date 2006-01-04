@@ -1,6 +1,8 @@
 #!/bin/sh
+# @(#$Id: makesrcdist.sh,v 1.7 2006-01-04 11:33:44 dockes Exp $  (C) 2005 J.F.Dockes
+# A shell-script to make a recoll source distribution
+
 #set -x
-# A shell-script to make a recoll distribution:
 
 TAR=/usr/bin/tar
  
@@ -26,27 +28,30 @@ else
     fi
 fi
 
+################################### Documentation
+###### Html doc
+RECOLLDOC=${RECOLLDOC:=doc/user}
+(cd $RECOLLDOC;make) || exit 1
+
+###### Text Doc
 chmod +w README INSTALL
 cat <<EOF > README
 
-A more complete version of this document can be found at http://www.recoll.org
+More documentation can be found in the doc/ directory or at http://www.recoll.org
 
 
 EOF
 cat <<EOF > INSTALL
 
-A more complete version of this document can be found at http://www.recoll.org
+More documentation can be found in the doc/ directory or at http://www.recoll.org
 
 
 EOF
 
 echo "Dumping html documentation to text files"
-RECOLLDOC=${RECOLLDOC:=$HOME/projets/lesbonscomptes/recoll}
-
-links -dump ${RECOLLDOC}/index.html >> README
-links -dump ${RECOLLDOC}/credits.html >> README
 links -dump ${RECOLLDOC}/usermanual.html >> README
-links -dump ${RECOLLDOC}/installation.html >> INSTALL
+links -dump ${RECOLLDOC}/rcl.install.html >> INSTALL
+
 cvs commit -m '' README INSTALL
 
 # Clean up this dir and copy the dist-specific files 

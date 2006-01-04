@@ -1,6 +1,6 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.9 2005-11-25 09:13:07 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.10 2006-01-04 11:33:44 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -61,7 +61,6 @@ class RclConfig {
      * Return icon name for mime type
      */
     string getMimeIconName(const string &mtype);
-
 
     const string &getDefCharset() {return defcharset;}
     const string &getDefLang() {return deflang;}

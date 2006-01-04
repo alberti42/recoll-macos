@@ -1,6 +1,6 @@
 #ifndef _RECOLL_H_INCLUDED_
 #define _RECOLL_H_INCLUDED_
-/* @(#$Id: recoll.h,v 1.9 2005-12-15 14:39:57 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: recoll.h,v 1.10 2006-01-04 11:33:44 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 
@@ -13,6 +13,7 @@
 // Misc declarations in need of sharing between the UI files
 extern void recollCleanup();
 extern bool maybeOpenDb(std::string &reason);
+extern bool startHelpBrowser(const string& url = "");
 
 extern RclConfig *rclconfig;
 extern Rcl::Db *rcldb;
