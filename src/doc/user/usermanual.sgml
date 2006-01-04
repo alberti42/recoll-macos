@@ -1,0 +1,596 @@
+<!DOCTYPE BOOK PUBLIC "-//FreeBSD//DTD DocBook V4.1-Based Extension//EN" [
+<!ENTITY RCL "<application>Recoll</application>">
+<!ENTITY XAP "<application>Xapian</application>">
+
+]>
+ 
+<book lang="en">
+  
+  <bookinfo>
+    <title>Recoll user manual</title>
+
+
+    <author>
+      <firstname>Jean-Francois</firstname>
+      <surname>Dockes</surname>
+      <affiliation>
+        <address><email>jean-francois.dockes@wanadoo.fr</email></address>
+      </affiliation>
+    </author>
+
+    <copyright>
+      <year>2005</year>
+      <holder role="mailto:jean-francois.dockes@wanadoo.fr">Jean-Francois
+      Dockes</holder>
+    </copyright>
+
+    <releaseinfo>$Id: usermanual.sgml,v 1.1 2006-01-04 11:09:53 dockes Exp $</releaseinfo>
+
+    <abstract>
+      <para>The &RCL; user manual introduces full text search notions
+      and describes the installation and use of the &RCL; application.</para>
+    </abstract>
+
+
+  </bookinfo>
+  
+  <chapter id="rcl.introduction">
+    <title>Introduction</title>
+
+    <sect1 id="rcl.introduction.tryit">
+      <title>Giving it a try</title>
+
+      <para>If you do not like reading manuals and would like to give
+      &RCL; a try, just perform <link
+      linkend="rcl.install">installation</link> and start the
+      <command>recoll</command> user interface, which will index your
+      home directory and let you search it right after.</para>
+
+      <para>Do not do this if your home has a huge
+      number of documents and you do not want to wait or are very
+      short on disk space. In this case, you may want to edit the <link
+      linkend="rcl.indexing.config">configuration file</link> first to
+      restrict the indexed area.</para>
+
+      <para>Also be aware that you will need to install the
+      appropriate supporting applications for document types that need
+      them (for example <application>antiword</application> for
+      ms-word files), and that the default character set used to read
+      raw text files for indexing is iso8859-1, which may not be
+      appropriate for you.</para>
+      
+    <sect1 id="rcl.introduction.search"> 
+      <title>Full text search</title>
+
+      <para>Full text search applications allow you to find your data
+        by content rather than by external attributes (like a file
+        name). More specifically, they will let you specify words
+        (terms) that should or should not appear in the text you are
+        looking for, and return a list of matching documents, ordered
+        so that the most <emphasis>relevant</emphasis> documents will
+        appear first.</para>
+
+      <para>You do not need to remember in what file or email message you
+        stored a given piece of information. You just ask for related
+        terms, and the tool will return a list of documents where
+        those terms are prominent.</para>
+
+      <para>This mode of operation has been made very familiar by www
+       search engines.</para>
+
+      <para>The notion of relevance is a difficult one, as only you, the
+      user, actually know which documents are relevant to your search,
+      and the application can only try a guess. The quality of this
+      guess is probably the most important element for a search
+      application.</para> 
+
+      <para>In many cases, one is looking for all the forms of a word,
+        not for a specific form or spelling. These different forms may include
+        plurals, different tenses for a verb, or terms derived from
+        the same root or <emphasis>stem</emphasis> (exemple: floor,
+        floors, floored, floorings...). &RCL; will by default expand
+        queries to all such related terms (words that reduce to the
+        same stem). This expansion can be disabled at search
+        time.</para>
+
+     <para>Stemming, by itself, does not provide for misspellings or
+        phonetic searches. &RCL; does not support these currently.</para>
+
+
+    </sect1>
+
+      <sect1 id="rcl.introduction.recoll">
+      <title>Recoll overview</title>
+
+      <para>&RCL; is a full text search application which uses the 
+      <ulink url="http://www.xapian.org">&XAP;</ulink> information retrieval
+      library as its storage and retrieval engine. &XAP; is a very
+      mature package using <ulink
+      url="http://www.xapian.org/docs/intro_ir.html">a sophisticated
+      probabilistic ranking model</ulink>. &RCL; provides the interface
+      to get data into (indexation) and out (searching) of the system.</para>
+
+      <para>In practice, &XAP; works by remembering where terms appear
+      in your document files. The acquisition process is called
+      indexation. </para> 
+
+      <para>The resulting database can be big (roughly the size of the
+        original document set), but it  is not a document archive. &RCL;
+        can only display documents that still exist at the place from which
+        they were indexed.</para>
+
+      <para>&RCL; stores all internal data in <application>Unicode
+      UTF-8</application> format, and it can index files with
+      different character sets, encodings, and languages into the same
+      database. It has input filters for many document types.</para>
+      
+      <para>Stemming depends on the document language. &RCL; stores
+      the unstemmed versions of terms and uses auxiliary databases for
+      term expansion. It can switch stemming languages without reindexing.
+      Storing documents in different languages in the same
+      database is possible, and useful in practice, but does introduce
+      possibilities of confusion. &RCL; makes no attempt at automatic
+      language recognition.</para>
+
+      <para>&RCL; has many parameters which define exactly what to
+        index, and how to classify and decode the source
+        documents. These are kept in a <link
+        linkend="rcl.indexing.config">configuration file</link>. A
+        sample configuration is installed into the
+        <filename>.recoll</filename> subdirectory of your home
+        directory when you first execute a &RCL; command. The initial
+        configuration will index your home directory with default
+        parameters and should be sufficient for giving &RCL; a try,
+        but you may want to adjust it later.</para>
+
+      <para><link linkend="rcl.indexing.exec">Indexation</link> is started
+      automatically the first time you execute the
+      <command>recoll</command> search graphical user interface, or by
+      executing the <command>recollindex</command>.</para>
+
+      <para><link linkend="rcl.searching">Searches</link> are
+      performed inside the <command>recoll</command> 
+      program, which has many options to help you find what you are
+      looking for.</para> 
+
+    </sect1>
+  </chapter>
+
+
+  <chapter id="rcl.indexing">
+    <title>Indexation</title>
+
+    <sect1 id="rcl.indexing.introduction">
+      <title>Introduction</title>
+
+      <para>Indexation is the process by which the set of documents is
+      analyzed and the data entered into the database. &RCL; indexation
+      is normally incremental: documents will only be processed if
+      they have been modified. On the first execution, of course, all
+      documents will need processing. A full index build can be forced
+      later on by specifying an option to the indexation command.</para>
+
+      <para>&RCL; indexation takes place at discrete times. There is no
+      currently no interface to real time file modification
+      monitors. The typical usage is to have a nightly indexation run
+      programmed into your <command>cron</command> file.</para>
+
+      <para>&RCL; knows about quite a few different document
+      types. The parameters for document types recognition and
+      processing are set in 
+       <link linkend="rcl.indexing.config">configuration files</link>
+      Most file types, like HTML or word processing files, only hold
+      one document. Some file types, like mail folder files can hold
+      many individually indexed documents.
+      </para>
+
+      <para>Without further configuration, &RCL; will index all
+      appropriate files from your home directory, with a reasonable
+      set of defaults, if you live in western Europe or the USA. If
+      your normal character set is not iso8859-1, you almost certainly
+      need to adjust the configuration.</para>
+
+
+    </sect1>
+
+    <sect1 id="rcl.indexing.config">
+      <title>The indexation configuration</title>
+
+      <para>The main configuration file is named 
+        <filename>$HOME/.recoll/recoll.conf</filename> by default or
+        <filename>$RECOLL_CONFDIR/recoll.conf</filename> if
+          RECOLL_CONFDIR is set.</para>
+
+      <para>The most accurate documentation for editing the file is
+      given by comments inside the default file that will be created
+      when you first start <command>recoll</command>. If you want to
+      adjust the configuration before indexation, just click
+      <guilabel>Cancel</guilabel> when the program asks if it should
+      start initial indexation.</para>
+
+      <para>You can also have a look to the <link
+      linkend="rcl.install.config">configuration overview</link> inside
+      the installation chapter of this document.</para>
+
+    </sect1>
+
+    <sect1 id="rcl.indexing.exec">
+      <title>Starting indexation</title>
+
+      <para>Indexation is performed either by the
+        <command>recollindex</command> program, or by the
+        indexation thread inside the <command>recoll</command>
+        program (use the <guimenu>File</guimenu> menu). 
+
+      <para>If the <command>recoll</command> program finds no database
+      when it starts, it will automatically start indexation (except
+      if cancelled).</para>
+
+      <para>It is best to avoid interrupting the indexation process, as
+        this may sometimes leave the database in a bad state.  This is
+        not a serious problem, as you then just need to clear
+        everything and restart the indexation. The database files are
+        normally stored in the <filename>$HOME/.recoll/xapiandb</filename>
+        directory, 
+        which you can just delete if needed. Alternatively, you can
+        start <command>recollindex -z</command>, which will
+        reset the database before indexation.</para>
+
+    </sect1>
+
+    <sect1 id="rcl.indexing.automat">
+      <title>Using <command>cron</command> to automate
+      indexation</title>
+
+      <para>The most common way to set up indexation is to have a cron
+      task execute it every night. For example the following
+      <filename>crontab</filename> entry would do it every day at
+      3:30AM (supposing <command>recollindex</command> is in your PATH):</para>
+
+      <programlisting>30 3 * * * recollindex > /tmp/recolltrace 2>&1</programlisting>
+
+      <para>The usual command to edit your
+      <filename>crontab</filename> is 
+        <userinput>crontab -e</userinput> (which will usually start the
+      <command>vi</command> editor to edit the file). You may have
+      more sophisticated tools available on your system.</para>
+
+    </sect1>
+
+  </chapter>
+
+  <chapter id="rcl.searching">
+    <title>Searching</title>
+
+    <sect1 id="rcl.searching.simple">
+      <title>Simple search</title>
+
+      <para>Start the <command>recoll</command> program, then
+        enter search term(s) in the text field at the top left of the
+        window. Clicking the <guilabel>Search</guilabel> button or
+        hitting the <keycap>Enter</keycap> key will start a search. By
+        default, this will look for documents with any of the terms
+        (the ones with more terms will get better scores). You can
+        check the <guilabel>All terms</guilabel> checkbox to ensure
+        that only documents with all the terms will be returned. Use
+        the <guilabel>Tools</guilabel> / <guilabel>Advanced
+        search</guilabel> dialog for more complex searches.</para>
+
+      <para>After starting a search, a list of results will instantly
+      be displayed in the main list window. Clicking on an entry will
+      open an internal preview window for the
+      document. Double-clicking will attempt to start an external
+      viewer (have a look at the
+      <filename>~/.recoll/mimeconf</filename> file to see how these
+      are configured).</para>
+
+      <para>By default, the document list is presented in order of
+      relevance (how well the system estimates that the document
+      matches the query). You can specify a different ordering by
+      using the <guilabel>Tools</guilabel>
+        / <guilabel>Sort parameters</guilabel> dialog.</para>
+
+    </sect1>
+
+      <sect1 id="rcl.searching.complex">
+      <title>Complex/advanced search</title>
+
+      <para>The advanced search dialog has fields that will allow a more
+        refined search, looking for documents with all given words, a
+        given exact phrase, or none of the given words (all fields may
+        be combined by an implicit AND clause).</para>
+
+      <para>It will let you search for documents of specific mime
+        types (ie: only <literal>text/plain</literal>, or
+        <literal>text/html</literal> or
+        <literal>application/pdf</literal> etc...)</para>
+
+      <para>It will let you restrict the search results to a subtree of
+        the indexed area.</para>
+
+      <para>In other respects, it works like the simple search.</para>
+    </sect1>
+
+    <sect1 id="rcl.searching.history">
+      <title>Document history</title>
+
+      <para>Documents that you actually view (with the internal preview
+        or an external tool) are entered into the document history,
+        which is remembered. You can display the history list by using
+        the <guilabel>Tools/</guilabel><guilabel>Doc History</guilabel> menu
+        entry.</para> 
+
+    </sect1>
+
+    <sect1 id="rcl.searching.tips">
+      <title>Search tips, shortcuts</title>
+
+      <formalpara><title>Disabling stem expansion</title>
+      <para>Entering a capitalized word in any search field will prevent
+        stem expansion (no search for
+        <literal>gardening</literal> if you enter
+        <literal>Garden</literal> instead of
+        <literal>garden</literal>). This is the only case where
+        character case will make a difference for a &RCL;
+        search.</para>
+      </formalpara>
+      <formalpara><title>Phrases</title>
+      <para>A phrase can be looked for by enclosing it in double
+        quotes. Example: <literal>"user manual"</literal> will look
+        only for occurrences of <literal>user</literal> immediately
+        followed by <literal>manual</literal>. You can use the
+        <guilabel>This exact phrase</guilabel> field of the advanced
+        search dialog to the same effect.</para>
+      </formalpara>
+
+      <formalpara><title>Quitting</title>
+      <para>Entering <keycap>^Q</keycap> almost anywhere will
+        close the application.</para>
+      </formalpara>
+      <formalpara><title>Closing previews</title>
+      <para>Entering <keycap>^W</keycap> in a preview tab will
+        close it (and, for the last tab, close the preview
+        window).</para>
+      </formalpara>
+    </sect1>
+
+  </chapter>
+
+
+
+  <chapter id="rcl.install">
+    <title>Installation</title>
+
+      <sect1 id="rcl.install.building">
+      <title>Building from source</title>
+
+      <sect2 id="rcl.install.building.prereqs">
+	<title>Prerequisites</title>
+
+      <para>At the very least, you will need to download and install the
+	<ulink url="http://www.xapian.org">xapian core
+	package</ulink> (&RCL; currently uses version 0.9.2), and the <ulink
+	url="http://www.trolltech.com/products/qt/index.html">qt
+	  runtime and development packages</ulink> (&RCL; currently uses
+	version 3.3.3).</para>
+
+      <para>You will most probably be able to find a binary package for
+	<application>qt</application> for your system. You may have to
+	compile <application>Xapian</application>, 
+	but this is not difficult (if you are using
+	<application>FreeBSD</application>, there is a port).</para>
+
+      <para>You may also need 
+	<ulink
+	url="http://www.gnu.org/software/libiconv/">libiconv</ulink>. &RCL;
+	currently uses version 1.9 (this should not be critical). On
+	<application>Linux</application> systems, the iconv interface
+	is part of libc and you should not need to do anything
+	special.</para>
+      
+      <formalpara><title>External file types</title><para>&RCL; uses
+      external applications 
+	to index some file types. You need to install them for the
+	file types that you wish to have indexed:</para>
+	</formalpara>
+
+      <itemizedlist>
+
+	<listitem><para>MS Word: <ulink
+	url="http://www.winfield.demon.nl"> 
+	    antiword</ulink>.</para>
+	  </listitem>
+
+	<listitem><para>PDF: pdftotext is part of the <ulink
+	    url="http://www.foolabs.com/xpdf/">Xpdf</ulink> package.</para>
+	  </listitem>
+
+	<listitem><para>Postscript: <ulink
+	  url="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
+	    pstotext</ulink>.</para>
+	  </listitem>
+
+	<listitem>
+	    <para>RTF: <ulink
+	    url="http://www.gnu.org/software/unrtf/unrtf.html">unrtf</ulink>
+          </para>
+	  </listitem>
+	  
+	</itemizedlist>
+
+      <sect2 id="rcl.install.building.build">
+	<title>Building</title>
+
+      <para>&RCL; has been built on
+	Linux (redhat7.3, mandriva 2005), FreeBSD and Solaris 8. If
+	you build on another system, <ulink
+	url="mailto:jean-francois.dockes@wanadoo.fr">I would very
+	much welcome patches</ulink>.</para>
+      
+      <para>Normal procedure:</para>
+      <screen>
+        <userinput>cd recoll-xxx</userinput>
+        <userinput>configure</userinput>
+        <userinput>make</userinput>
+        <userinput>(practises usual hardship-repelling invocations)</userinput>
+      </screen>
+
+
+      <para>There little autoconfiguration. The
+	<command>configure</command> script will mainly link one of
+	the system-specific files in the <filename>mk</filename>
+	directory to <filename>mk/sysconf</filename>. If your system
+	is not known yet, it will tell you as much, and you may want
+	to manually copy and modify one of the existing files (the new
+	file name should be the output of <command>uname -s</command>).</para>
+      </sect2>
+
+      <sect2 id="rcl.install.building.install">
+	<title>Installation</title>
+      
+      <para>Either type <userinput>make install</userinput> or execute
+      <userinput>recollinstall targetdir</userinput>, in the root
+	of the source tree. This will copy the commands to
+	<filename>$targetdir/bin</filename> and the sample
+	configuration files, scripts and other shared data to 
+	<filename>$targetdir/share/recoll</filename>.</para>
+      </sect2>
+    </sect1>
+
+    <sect1 id="rcl.install.binary">
+      <title>Installing a prebuilt copy</title>
+
+      <sect2 id="rcl.install.binary.package">
+	<title>Installing through a package system</title>
+
+	<para>If you are lucky enough to be using a port system or a
+	prebuilt package (RPM or other), just follow the usual
+	procedure, and have a look at the <link
+	linkend="rcl.install.config">configuration
+	section</link>.</para>
+      </sect2>
+
+      <sect2 id="rcl.install.binary.rcl">
+	<title>Installing a prebuilt &RCL;</title>
+
+      <para>The unpackaged binary versions are just compressed tar
+      files of a build
+	tree, where only the useful parts were kept (executables and
+	sample configuration).</para>
+
+      <para>The executable binary files are built with a static link to
+	libxapian and libiconv, to make installation easier (no
+	dependencies). However, this also means that you cannot change
+	the versions which are used.</para> 
+
+      <para>After extracting the tar file, you can proceed with
+	<link
+	linkend="rcl.install.building.install">installation</link> as
+	if you had built the package from source.</para> 
+      </sect2>
+    </sect1>
+
+    <sect1 id="rcl.install.config">
+      <title>Configuration overview</title>
+
+      <para>The personal configuration files and the database are kept in
+	the <filename>.recoll</filename> directory in your
+	home. If this directory does not exist when 
+	  <command>recoll</command> or 
+	<command>recollindex</command> are started, the
+	directory will be created and the sample configuration files will
+	be copied. <command>recoll</command> will give you a
+	chance to edit the configuration file before starting
+	indexation. <command>recollindex</command> will
+	proceed immediately.</para>
+      
+      <para>&RCL; uses text
+	configuration files. You will have to edit them by hand for
+	now (there is still some hope for a GUI configuration tool
+	in the future). The most accurate documentation for the
+	configuraton parameters is given by comments inside the sample
+	files, and we will just give a general overview here.</para>
+
+      <para>Most of the parameters specific to the
+ 	 <command>recoll</command> GUI are set through the
+	  <guilabel>Preferences</guilabel> menu and stored in the
+	  standard QT place
+	  (<filename>$HOME/.qt/recollrc</filename>). You probably do not
+	  want to edit this by hand.</para>
+
+      <sect2 id="rcl.install.config.recollconf">
+	<title>Main configuration file</title>
+
+	<para><filename>~/.recoll/recoll.conf</filename> is the main
+         configuration file. It defines
+	 what to index (top directories and things to ignore), and the
+	 default character set to use (for document types which do not
+	 specify it internally). The default character set can be
+	 specified separately for any directory subtree.</para>
+
+	<para>The default configuration will index your home
+	 directory. If this is not appropriate, use 
+	 <command>recoll</command> to copy the sample
+	 configuration, click <guimenu>Cancel</guimenu>, and edit
+	 the configuration file before restarting the command. This
+	 will start the initial indexation, which may take some time.</para>
+	
+	<para>There are also miscellaneous other parameters inside
+	<filename>recoll.conf</filename>. Explore and enjoy :)</para>
+
+      </sect2>
+
+      <sect2 id="rclinstall.config.mimemap">
+	<title>The mimemap file</title>
+
+	<para><filename>~/.recoll/mimemap</filename> specifies the
+	file name extension to mime type mappings.</para> <para>For
+	file names without an extension, or with an unknown one, the
+	system's <command>file -i</command> command will be executed
+	to determine the mime type (this can be switched off inside
+	the main configuration file).</para>
+
+	<para><filename>mimemap</filename> also has a list of
+	extensions which should be ignored totally (to avoid losing
+	time by executing <command>file</command> 
+	for things that certainly should not be indexed).</para>
+
+	<para>The mappings can be specified on a per-subtree basis,
+	which may be useful in some cases. Example:
+	<application>gaim</application> logs have a
+	<filename>.txt</filename> extension but 
+	should be handled specially, which is possible because they
+	are usually all located in one place.</para>
+
+      </sect2>
+
+      <sect2 id="rclinstall.config.mimeconf">
+	<title>The mimeconf file</title>
+
+	<para><filename>~/.recoll/mimeconf</filename> specifies how the
+         different mime types are handled for indexation, and for
+         display.</para>
+
+	<para>Changing the indexation parameters is probably not a
+         good idea except if you are a &RCL; developper.</para>
+
+	<para>You may want to adjust the external viewers defined in
+	 (ie: html is either
+	 previewed internally or displayed using 
+	 <application>firefox</application>, but you may prefer 
+	 <application>mozilla</application>...). Look for the
+	 <literal>[view]</literal> section.</para>
+
+	<para>You can also change the icons which are displayed by
+         <command>recoll</command> in the result lists (the values are
+         the basenames of the png images inside the
+         <filename>iconsdir</filename> directory (specified in
+         <filename>recoll.conf</filename>).</para> 
+
+      </sect2>
+
+    </sect1>
+  </chapter>
+
+</book>
+
