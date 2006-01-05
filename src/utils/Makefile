@@ -1,5 +1,6 @@
 
-PROGS = trconftree wipedir smallut trfstreewalk trpathut transcode \
+PROGS = trcaseconvert trconftree wipedir smallut trfstreewalk trpathut \
+      transcode \
       trmimeparse trexecmd utf8iter idfile
 
 all: $(PROGS) $(BIGLIB)
@@ -19,6 +20,12 @@ trpathut : $(PATHUT_OBJS)
 	$(CXX) $(CXXFLAGS) -o trpathut $(PATHUT_OBJS)
 trpathut.o : pathut.cpp pathut.h
 	$(CXX) -o trpathut.o -c $(CXXFLAGS) -DTEST_PATHUT pathut.cpp
+
+CASECONVERT_OBJS= trcaseconvert.o caseconvert.o  $(BIGLIB)
+trcaseconvert : $(CASECONVERT_OBJS)
+	$(CXX) $(CXXFLAGS) -o trcaseconvert $(CASECONVERT_OBJS)
+trcaseconvert.o : caseconvert.cpp caseconvert.h
+	$(CXX) -o trcaseconvert.o -c $(CXXFLAGS) -DTEST_CASECONVERT caseconvert.cpp
 
 EXECMD_OBJS= trexecmd.o $(BIGLIB)
 trexecmd : $(EXECMD_OBJS)

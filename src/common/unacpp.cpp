@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.4 2005-11-24 07:16:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.5 2006-01-05 16:37:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_UNACPP
@@ -23,6 +23,22 @@ bool unac_cpp(const std::string &in, std::string &out, const char *encoding)
     size_t out_len;
 
     if (unac_string(encoding, in.c_str(), in.length(), &cout, &out_len) < 0) {
+	char cerrno[20];
+	sprintf(cerrno, "%d", errno);
+	out = string("unac_string failed, errno : ") + cerrno;
+	return false;
+    }
+    out.assign(cout, out_len);
+    free(cout);
+    return true;
+}
+
+bool unac_cpp_utf16be(const std::string &in, std::string &out)
+{
+    char *cout = 0;
+    size_t out_len;
+
+    if (unac_string_utf16(in.c_str(), in.length(), &cout, &out_len) < 0) {
 	char cerrno[20];
 	sprintf(cerrno, "%d", errno);
 	out = string("unac_string failed, errno : ") + cerrno;

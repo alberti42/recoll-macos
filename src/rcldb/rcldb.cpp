@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.44 2005-12-13 12:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.45 2006-01-05 16:37:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -22,6 +22,7 @@ using namespace std;
 #include "pathut.h"
 #include "smallut.h"
 #include "pathhash.h"
+#include "caseconvert.h"
 
 #include "xapian.h"
 #include <xapian/stem.h>
@@ -210,31 +211,46 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
     return true;
 }
 
-// Unaccent and lowercase data: use unac 
-// for accents, and do it by hand for upper / lower. 
-// TOBEDONE: lowercasing is done only for ascii letters, just A-Z -> a-z 
+// Unaccent and lowercase data, replace \n\r with spaces
 // Removing crlfs is so that we can use the text in the document data fields.
+// Use unac for removing accents
+// Use our own lower-casing function (built from Unicode tables)
+// Everything is converted to/from UTF-16BE at begin/end as this the internal
+// format used by the processing functions.
+//
+// A possible optimization would be to remove accented characters from
+// the lowercasing function tables, as we execute unac first.  It
+// might even be possible must probably non trivial to combine both
+// conversions
 bool Rcl::dumb_string(const string &in, string &out)
 {
-    string inter;
     out.erase();
     if (in.empty())
 	return true;
-    if (!unac_cpp(in, inter)) {
-	LOGERR(("dumb_string: unac_cpp failed for %s\n", in.c_str()));
-	// Ok, no need to stop the whole show
-	inter = "";
+
+    string s1, s2;
+    for (unsigned int i = 0; i < in.length(); i++) {
+	if (in[i] == '\n' || in[i] == '\r')
+	    s1 += ' ';
+	else
+	    s1 += in[i];
     }
-    out.reserve(inter.length());
-    for (unsigned int i = 0; i < inter.length(); i++) {
-	if (inter[i] >= 'A' && inter[i] <= 'Z') {
-	    out += inter[i] + 'a' - 'A';
-	} else {
-	    if (inter[i] == '\n' || inter[i] == '\r')
-		out += ' ';
-	    else
-		out += inter[i];
-	}
+    if (!transcode(s1, s2, "UTF-8","UTF-16BE")) {
+	LOGERR(("dumb_string: convert to utf-16be failed\n"));
+	return false;
+    }
+
+    if (!unac_cpp_utf16be(s2, s1)) {
+	LOGERR(("dumb_string: unac_cpp failed for %s\n", in.c_str()));
+	return false;
+    }
+    if (!ucs2lower(s1, s2)) {
+	LOGERR(("dumb_string: ucs2lower failed\n"));
+	return false;
+    }
+    if (!transcode(s2, out, "UTF-16BE", "UTF-8")) {
+	LOGERR(("dumb_string: convert back to utf-8 failed\n"));
+	return false;
     }
     return true;
 }
