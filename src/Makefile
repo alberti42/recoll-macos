@@ -1,10 +1,10 @@
-# @(#$Id: Makefile,v 1.22 2005-12-16 10:06:56 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.23 2006-01-05 10:24:54 dockes Exp $  (C) 2005 J.F.Dockes
 
 all: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
 	cd bincimapmime; ${MAKE}
-	cd index; rm -f recollindex; ${MAKE} recollindex
-	cd qtgui; qmake recoll.pro; rm -f recoll; \
+	cd index; ${MAKE} recollindex
+	cd qtgui; qmake recoll.pro; \
 	   cat ../mk/sysconf Makefile | \
 	       ${MAKE} -f -
 
@@ -39,6 +39,6 @@ distclean: clean
 	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf recollinstall
 
 install: all
-	./recollinstall
+	bindir=${bindir} datadir=${datadir} ./recollinstall ${prefix}
 
 .PHONY: all static clean distclean install
