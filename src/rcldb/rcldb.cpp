@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.46 2006-01-06 13:18:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.47 2006-01-06 13:19:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -22,7 +22,6 @@ using namespace std;
 #include "pathut.h"
 #include "smallut.h"
 #include "pathhash.h"
-#include "caseconvert.h"
 
 #include "xapian.h"
 #include <xapian/stem.h>

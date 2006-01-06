@@ -5,7 +5,7 @@ LIBS = librcl.a
 
 all: depend $(LIBS)
 
-OBJS = base64.o caseconvert.o conftree.o csguess.o debuglog.o \
+OBJS = base64.o conftree.o csguess.o debuglog.o \
      execmd.o wipedir.o \
      fstreewalk.o mh_html.o mh_mail.o mh_exec.o mh_text.o history.o \
      htmlparse.o \
@@ -15,7 +15,7 @@ OBJS = base64.o caseconvert.o conftree.o csguess.o debuglog.o \
      textsplit.o transcode.o \
      unacpp.o unac.o docseq.o sortseq.o copyfile.o
 
-SRCS = ../utils/caseconvert.cpp ../utils/conftree.cpp \
+SRCS =  ../utils/conftree.cpp \
      ../index/csguess.cpp ../utils/debuglog.cpp \
      ../utils/execmd.cpp ../utils/idfile.cpp ../utils/md5.cpp \
      ../utils/wipedir.cpp ../utils/fstreewalk.cpp \
@@ -45,8 +45,6 @@ csguess.o : ../index/csguess.cpp
 debuglog.o : ../utils/debuglog.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 execmd.o : ../utils/execmd.cpp 
-	$(CXX) $(CXXFLAGS) -c $<
-caseconvert.o : ../utils/caseconvert.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
 wipedir.o : ../utils/wipedir.cpp 
 	$(CXX) $(CXXFLAGS) -c $<
