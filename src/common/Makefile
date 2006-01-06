@@ -1,5 +1,8 @@
+# @(#$Id: Makefile,v 1.8 2006-01-06 13:18:17 dockes Exp $  (C) 2005 J.F.Dockes
 
-# Only test progs in there
+include ../mk/sysconf
+
+# Only test executables get build in here
 PROGS = internfile unacpp textsplit
 
 all: $(BIGLIB) $(PROGS) 
@@ -29,8 +32,6 @@ trinternfile.o : internfile.cpp
 	$(CXX) $(CXXFLAGS) -DTEST_INTERNFILE -c -o trinternfile.o \
 	       internfile.cpp
 
-clean::
+clean:
 	rm -f *.o $(PROGS)
-
-include ../mk/sysconf
 

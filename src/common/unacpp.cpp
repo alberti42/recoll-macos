@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.5 2006-01-05 16:37:26 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.6 2006-01-06 13:18:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_UNACPP
@@ -17,28 +17,16 @@ using std::string;
 #include "unac.h"
 
 
-bool unac_cpp(const std::string &in, std::string &out, const char *encoding)
+bool unacmaybefold(const std::string &in, std::string &out, 
+		   const char *encoding, bool dofold)
 {
     char *cout = 0;
     size_t out_len;
-
-    if (unac_string(encoding, in.c_str(), in.length(), &cout, &out_len) < 0) {
-	char cerrno[20];
-	sprintf(cerrno, "%d", errno);
-	out = string("unac_string failed, errno : ") + cerrno;
-	return false;
-    }
-    out.assign(cout, out_len);
-    free(cout);
-    return true;
-}
-
-bool unac_cpp_utf16be(const std::string &in, std::string &out)
-{
-    char *cout = 0;
-    size_t out_len;
-
-    if (unac_string_utf16(in.c_str(), in.length(), &cout, &out_len) < 0) {
+    int status;
+    status = dofold ? 
+	unacfold_string(encoding, in.c_str(), in.length(), &cout, &out_len) :
+	unac_string(encoding, in.c_str(), in.length(), &cout, &out_len);
+    if (status < 0) {
 	char cerrno[20];
 	sprintf(cerrno, "%d", errno);
 	out = string("unac_string failed, errno : ") + cerrno;
@@ -65,6 +53,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+    bool dofold = true;
     if (argc != 4) {
 	cerr << "Usage: unacpp  <encoding> <infile> <outfile>" << endl;
 	exit(1);
@@ -79,7 +68,7 @@ int main(int argc, char **argv)
 	exit(1);
     }
     string ndata;
-    if (!unac_cpp(odata, ndata, encoding)) {
+    if (!unacmaybefold(odata, ndata, encoding, dofold)) {
 	cerr << "unac: " << ndata << endl;
 	exit(1);
     }
