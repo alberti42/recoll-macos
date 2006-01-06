@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.47 2006-01-06 13:19:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.48 2006-01-06 13:55:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -22,6 +22,7 @@ using namespace std;
 #include "pathut.h"
 #include "smallut.h"
 #include "pathhash.h"
+#include "utf8iter.h"
 
 #include "xapian.h"
 #include <xapian/stem.h>
@@ -317,7 +318,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 
     // Split and index title
     if (!dumb_string(doc.title, noacc)) {
-	LOGERR(("Rcl::Db::add: unac failed\n"));
+	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
@@ -762,14 +763,6 @@ static void stringToXapianQueries(const string &iq,
 				  Rcl::Db::QueryOpts opts = Rcl::Db::QO_NONE)
 {
     string qstring = iq;
-#if 0
-    // Unaccent and lowerterm. Note that lowerterming here may not be
-    // such a good idea because it forbids using capitalized words to
-    // indicate that a term should not use stem expansion, for
-    // example.
-    if (!Rcl::dumb_string(iqstring, qstring))
-	return false;
-#endif
 
     // Split into (possibly single word) phrases ("this is a phrase"):
     list<string> phrases;
@@ -792,17 +785,26 @@ static void stringToXapianQueries(const string &iq,
 	    {
 		string term = splitData.terms.front();
 		bool nostemexp = false;
-		// Yes this doesnt work with accented or non-european
-		// majuscules. TOBEDONE: something :)
-		if (term.length() > 0 && term[0] >= 'A' && term[0] <= 'Z')
-		    nostemexp = true;
+		// Check if the first letter is a majuscule in which
+		// case we do not want to do stem expansion. Note that
+		// the test is convoluted and possibly problematic
+		if (term.length() > 0) {
+		    string noacterm,noaclowterm;
+		    if (unacmaybefold(term, noacterm, "UTF-8", false) &&
+			unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
+			Utf8Iter it1(noacterm);
+			Utf8Iter it2(noaclowterm);
+			if (*it1 != *it2)
+			    nostemexp = true;
+		    }
+		}
+		LOGDEB(("Term: %s stem expansion: %s\n", 
+			term.c_str(), nostemexp?"no":"yes"));
 
-		LOGDEB(("Term: %s\n", term.c_str()));
-
-		// Possibly perform stem compression/expansion
 		list<string> exp;  
 		string term1;
 		Rcl::dumb_string(term, term1);
+		// Possibly perform stem compression/expansion
 		if (!nostemexp && (opts & Rcl::Db::QO_STEM)) {
 		    exp = stemexpand(ndb, term1, stemlang);
 		} else {
