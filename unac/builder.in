@@ -31,6 +31,7 @@ use Getopt::Long;
 
 sub main {
     my($base) = "UnicodeData-@UNICODE_VERSION@.txt";
+    my($cfbase) = "CaseFolding-@UNICODE_VERSION@.txt";
     my($verbose);
     my($source);
     my($reference);
@@ -39,7 +40,7 @@ sub main {
 	       "database=s" => \$base,
 	       "source!" => \$source,
                "reference!" => \$reference);
-    
+
     my(%decomposition, %mark, %name);
     my(%ranges);
     open(FILE, "<$base") or die "cannot open $base for reading : $!";
@@ -101,8 +102,38 @@ sub main {
 	}
     }
 
+    # Read in the casefolding file
+    my(%casefold);
+    open(FILE, "<$cfbase") or die "cannot open $cfbase for reading : $!";
+    while(<FILE>) {
+	next if(/^\s*#/);    # Skip comments
+	my($code_value,
+	   $foldstatus,
+	   $folded) = split(/;/, $_);
+	if ($foldstatus =~ /C|F/) {
+	    $casefold{$code_value} = $folded;
+	}
+    }
+    close(FILE);
+
+    #showcasefold(\%casefold);
     reference(\%decomposition, $verbose) if($reference);
-    source(\%decomposition, \%name, $verbose) if($source);
+    source(\%decomposition, \%name, \%casefold, $verbose) if($source);
+}
+
+sub showcasefold {
+    my($casefold) = @_;
+
+    my($code_value);
+    foreach $code_value (0 .. 0xFFFF) {
+	$code_value = uc(sprintf("%04x", $code_value));
+	print "$code_value";
+	if(exists($casefold->{$code_value})) {
+	    print " => $casefold->{$code_value}\n";
+	} else {
+	    print "\n";
+	}
+    }
 }
 
 #
@@ -202,7 +233,7 @@ sub spit {
 # The unac.c and unac.h files are substituted in place.
 #
 sub source {
-    my($decomposition, $name, $verbose) = @_;
+    my($decomposition, $name, $casefold, $verbose) = @_;
 
     my($csource) = slurp("unac.c");
     my($hsource) = slurp("unac.h");
@@ -276,6 +307,31 @@ sub source {
 		push(@values, $decomposition->{$code_value});
 	    } else {
 		push(@values, "FFFF");
+	    }
+	    # We also push the case-folded version of the unaccented char
+	    # Note that by pushing the case-folded version of the original
+	    # char, we'd have the possibility of independant unaccenting and
+	    # case folding, but with less performance. 
+	    # We could also keep the three chunks, using a little more memory
+	    if(exists($decomposition->{$code_value})) {
+	      my($cv);
+	      my(@vl);
+	      foreach $cv (split(' ', $decomposition->{$code_value})) {
+		if(exists($casefold->{$cv})) {
+		  push(@vl, $casefold->{$cv});
+		} else {
+		  push(@vl, $cv);
+		}
+	      }
+	      #print STDERR "Pushing " . join(" ", @vl) . " for " . 
+	      #$code_value . "\n";
+	      push(@values, join(" ", @vl));
+	    } else {
+	      if(exists($casefold->{$code_value})) {
+		push(@values, $casefold->{$code_value});
+	      } else {
+		push(@values, "FFFF");
+	      }
 	    }
 	}
 	print STDERR scalar(@blocks) . " blocks of " . $block_count . " entries, factorized $duplicate blocks\n\t" if($verbose);
@@ -372,7 +428,7 @@ EOF
 	$block_number++;
     }
     my($position_type) = $highest_position >= 256 ? "short" : "char";
-    my($positions_out) = "unsigned $position_type unac_positions[UNAC_BLOCK_COUNT][UNAC_BLOCK_SIZE + 1] = {\n";
+    my($positions_out) = "unsigned $position_type unac_positions[UNAC_BLOCK_COUNT][2*UNAC_BLOCK_SIZE + 1] = {\n";
 
     $positions_out .= join(",\n", @positions_out);
     $positions_out .= "\n};\n";
@@ -387,7 +443,7 @@ EOF
     my($declarations);
     $declarations = <<EOF;
 extern unsigned short unac_indexes[UNAC_INDEXES_SIZE];
-extern unsigned $position_type unac_positions[UNAC_BLOCK_COUNT][UNAC_BLOCK_SIZE + 1];
+extern unsigned $position_type unac_positions[UNAC_BLOCK_COUNT][2*UNAC_BLOCK_SIZE + 1];
 extern unsigned short* unac_data_table[UNAC_BLOCK_COUNT];
 EOF
     for($block_number = 0; $block_number < $block_count; $block_number++) {
