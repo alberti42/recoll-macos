@@ -1,7 +1,9 @@
+include ../mk/sysconf
+
 PROGS = recollindex csguess mimetype
 SRCS = recollindex.cpp
 
-all: $(PROGS)
+all: $(PROGS) 
 
 RECOLLINDEX_OBJS= recollindex.o $(BIGLIB) $(MIMELIB)
 recollindex : $(RECOLLINDEX_OBJS)
@@ -42,4 +44,3 @@ clean:
 	rm -f *.o $(PROGS)
 
 include alldeps
-include ../mk/sysconf

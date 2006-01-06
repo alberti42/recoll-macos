@@ -38,6 +38,7 @@ unix {
             $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
            -lz
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
+  POST_TARGETDEPS = ../lib/librcl.a
 }
 
 UNAME = $$system(uname -s)
