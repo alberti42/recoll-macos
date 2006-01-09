@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.13 2005-12-14 11:00:48 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.14 2006-01-09 16:53:31 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -19,10 +19,12 @@ using namespace std;
 #include "pathut.h"
 
 
+// Globals for exit cleanup
 ConfIndexer *confindexer;
 DbIndexer *dbindexer;
 
-bool indexfiles(RclConfig *config, const list<string> &filenames)
+// Index a list of files 
+static bool indexfiles(RclConfig *config, const list<string> &filenames)
 {
     if (filenames.empty())
 	return true;
@@ -40,6 +42,21 @@ bool indexfiles(RclConfig *config, const list<string> &filenames)
 
     dbindexer = new DbIndexer(config, dbdir);
     return dbindexer->indexFiles(filenames);
+}
+
+// Create additional stem database 
+static bool createstemdb(RclConfig *config, const string &lang)
+{
+    // Note that we do not bother to check for multiple databases,
+    // which are currently a fiction anyway. 
+    string dbdir;
+    if (!config->getConfParam("dbdir", dbdir)) {
+	LOGERR(("createstemdb: no database directory in configuration\n"));
+	return false;
+    }
+    dbdir = path_tildexpand(dbdir);
+    dbindexer = new DbIndexer(config, dbdir);
+    return dbindexer->createStemDb(lang);
 }
 
 static void cleanup()
@@ -63,15 +80,19 @@ static int     op_flags;
 #define OPT_z     0x2 
 #define OPT_h     0x4 
 #define OPT_i     0x8
+#define OPT_s     0x10
 
 static const char usage [] =
-"  recollindex [-hz] \n"
-"  recollindex -i <filename [filename ...]>\n"
+"\n"
+"recollindex [-hz] \n"
+"    Normal index run\n"
+"recollindex -i <filename [filename ...]>\n"
+"    Index individual files. No db purge or stem database updates\n"
+"recollindex -s <lang>\n"
+"    Build stem database for language <lang>\n"
 "Options:\n"
 " -h : print this message\n"
 " -z : reset database before starting indexation\n\n"
-" -i <filename [filename ...]> : index individual files. No db purge or stem\n"
-"           database updates in this case\n"
 ;
 
 static void
@@ -97,6 +118,7 @@ int main(int argc, const char **argv)
 	    case 'z': op_flags |= OPT_z; break;
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
+	    case 's': op_flags |= OPT_s; break;
 	    default: Usage(); break;
 	    }
     b1: argc--; argv++;
@@ -108,7 +130,6 @@ int main(int argc, const char **argv)
 
     string reason;
     RclConfig *config = recollinit(cleanup, sigcleanup, reason);
-
     if (config == 0 || !config->ok()) {
 	cerr << "Configuration problem: " << reason << endl;
 	exit(1);
@@ -130,6 +151,11 @@ int main(int argc, const char **argv)
 	    }
 	}
 	exit(!indexfiles(config, filenames));
+    } else if (op_flags & OPT_s) {
+	if (argc != 1) 
+	    Usage();
+	string lang = *argv++; argc--;
+	exit(!createstemdb(config, lang));
     } else {
 	confindexer = new ConfIndexer(config);
 	bool rezero(op_flags & OPT_z);

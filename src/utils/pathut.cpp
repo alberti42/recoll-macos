@@ -1,15 +1,21 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.6 2005-12-13 12:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.7 2006-01-09 16:53:31 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_PATHUT
 #include <unistd.h>
+#include <sys/param.h>
 #include <pwd.h>
+
 #include <iostream>
+#include <list>
+#include <stack>
 
 #include "pathut.h"
 #ifndef NO_NAMESPACES
 using std::string;
+using std::list;
+using std::stack;
 #endif /* NO_NAMESPACES */
 
 void path_catslash(std::string &s) {
@@ -61,6 +67,18 @@ string path_getsimple(const string &s) {
     return simple;
 }
 
+string path_basename(const string &s, const string &suff)
+{
+    string simple = path_getsimple(s);
+    string::size_type pos = string::npos;
+    if (suff.length() && simple.length() > suff.length()) {
+	pos = simple.rfind(suff);
+	if (pos != string::npos && pos + suff.length() == simple.length())
+	    return simple.substr(0, pos);
+    } 
+    return simple;
+}
+
 string path_home()
 {
     uid_t uid = getuid();
@@ -98,6 +116,64 @@ extern string path_tildexpand(const string &s)
     return o;
 }
 
+#include <smallut.h>
+extern std::string path_canon(const std::string &is)
+{
+    if (is.length() == 0)
+	return is;
+    string s = is;
+    if (s[0] != '/') {
+	char buf[MAXPATHLEN];
+	if (!getcwd(buf, MAXPATHLEN)) {
+	    return "";
+	}
+	s = path_cat(string(buf), s); 
+    }
+    list<string>elems;
+    stringToTokens(s, elems, "/");
+    list<string> cleaned;
+    for (list<string>::const_iterator it = elems.begin(); 
+	 it != elems.end(); it++){
+	if (*it == "..") {
+	    if (!cleaned.empty())
+		cleaned.pop_back();
+	} else if (it->empty() || *it == ".") {
+	} else {
+	    cleaned.push_back(*it);
+	}
+    }
+    string ret;
+    if (!cleaned.empty()) {
+	for (list<string>::const_iterator it = cleaned.begin(); 
+	     it != cleaned.end(); it++) {
+	    ret += "/";
+	    ret += *it;
+	}
+    } else {
+	ret = "/";
+    }
+    return ret;
+}
+
+#include <glob.h>
+#include <sys/stat.h>
+list<std::string> path_dirglob(const std::string &dir, 
+				    const std::string pattern)
+{
+    list<string> res;
+    glob_t mglob;
+    string mypat=path_cat(dir, pattern);
+    if (glob(mypat.c_str(), 0, 0, &mglob)) {
+	return res;
+    }
+    for (int i = 0; i < mglob.gl_pathc; i++) {
+	res.push_back(mglob.gl_pathv[i]);
+    }
+    globfree(&mglob);
+    return res;
+}
+
+
 #else // TEST_PATHUT
 
 #include <iostream>
@@ -108,7 +184,7 @@ using namespace std;
 const char *tstvec[] = {"", "/", "/dir", "/dir/", "/dir1/dir2",
 			 "/dir1/dir2",
 			"./dir", "./dir1/", "dir", "../dir", "/dir/toto.c",
-			"/dir/.c",
+			"/dir/.c", "/dir/toto.txt", "toto.txt1"
 };
 
 const string ttvec[] = {"/dir", "", "~", "~/sub", "~root", "~root/sub",
@@ -117,22 +193,51 @@ int nttvec = sizeof(ttvec) / sizeof(string);
 
 int main(int argc, const char **argv)
 {
+    string s;
+    list<string>::const_iterator it;
 #if 0
-    for (int i = 0;i < sizeof(tstvec) / sizeof(char *); i++) {
-	cout << tstvec[i] << " FATHER " << path_getfather(tstvec[i]) << endl;
+    for (unsigned int i = 0;i < sizeof(tstvec) / sizeof(char *); i++) {
+	cout << tstvec[i] << " Father " << path_getfather(tstvec[i]) << endl;
     }
-    for (int i = 0;i < sizeof(tstvec) / sizeof(char *); i++) {
-	cout << tstvec[i] << " SIMPLE " << path_getsimple(tstvec[i]) << endl;
+    for (unsigned int i = 0;i < sizeof(tstvec) / sizeof(char *); i++) {
+	cout << tstvec[i] << " Simple " << path_getsimple(tstvec[i]) << endl;
+    }
+    for (unsigned int i = 0;i < sizeof(tstvec) / sizeof(char *); i++) {
+	cout << tstvec[i] << " Basename " << 
+	    path_basename(tstvec[i], ".txt") << endl;
     }
 #endif
-    string s;
 
+#if 0
     for (int i = 0; i < nttvec; i++) {
 	cout << "tildexp: '" << ttvec[i] << "' -> '" << 
 	    path_tildexpand(ttvec[i]) << "'" << endl;
     }
-    
+#endif
 
+#if 0
+    const string canontst[] = {"/dir1/../../..", "/////", "", 
+			       "/dir1/../../.././/////dir2///////",
+			       "../../", 
+			       "../../../../../../../../../../"
+    };
+    unsigned int nttvec = sizeof(canontst) / sizeof(string);
+    for (unsigned int i = 0; i < nttvec; i++) {
+	cout << "canon: '" << canontst[i] << "' -> '" << 
+	    path_canon(canontst[i]) << "'" << endl;
+    }
+#endif    
+#if 1
+    if (argc != 3) {
+	fprintf(stderr, "Usage: trpathut <dir> <pattern>\n");
+	exit(1);
+    }
+    string dir=argv[1], pattern=argv[2];
+    list<string> matched = path_dirglob(dir, pattern);
+    for (it = matched.begin(); it != matched.end();it++) {
+	cout << *it << endl;
+    }
+#endif
 
     return 0;
 }

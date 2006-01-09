@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.48 2006-01-06 13:55:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.49 2006-01-09 16:53:31 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -23,6 +23,7 @@ using namespace std;
 #include "smallut.h"
 #include "pathhash.h"
 #include "utf8iter.h"
+#include "wipedir.h"
 
 #include "xapian.h"
 #include <xapian/stem.h>
@@ -67,23 +68,24 @@ Rcl::Db::~Db()
 	    ndb->iswritable));
     if (ndb->isopen == false)
 	return;
-    string ermsg;
+    const char *ermsg = "Unknown error";
     try {
 	LOGDEB(("Rcl::Db::~Db: closing native database\n"));
-	if (ndb->iswritable == true)
+	if (ndb->iswritable == true) {
 	    ndb->wdb.flush();
+	}
 	delete ndb;
 	return;
     } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg();
+	ermsg = e.get_msg().c_str();
     } catch (const string &s) {
-	ermsg = s;
+	ermsg = s.c_str();
     } catch (const char *s) {
 	ermsg = s;
     } catch (...) {
 	ermsg = "Caught unknown exception";
     }
-    LOGERR(("Rcl::Db::~Db: got exception: %s\n", ermsg.c_str()));
+    LOGERR(("Rcl::Db::~Db: got exception: %s\n", ermsg));
 }
 
 bool Rcl::Db::open(const string& dir, OpenMode mode)
@@ -98,7 +100,7 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
 	LOGERR(("Rcl::Db::open: already open\n"));
 	return false;
     }
-    string ermsg;
+    const char *ermsg = "Unknown";
     try {
 	switch (mode) {
 	case DbUpd:
@@ -125,16 +127,16 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
 	ndb->basedir = dir;
 	return true;
     } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg();
+	ermsg = e.get_msg().c_str();
     } catch (const string &s) {
-	ermsg = s;
+	ermsg = s.c_str();
     } catch (const char *s) {
 	ermsg = s;
     } catch (...) {
 	ermsg = "Caught unknown exception";
     }
     LOGERR(("Rcl::Db::open: exception while opening '%s': %s\n", 
-	    dir.c_str(), ermsg.c_str()));
+	    dir.c_str(), ermsg));
     return false;
 }
 
@@ -148,7 +150,7 @@ bool Rcl::Db::close()
 	    ndb->iswritable));
     if (ndb->isopen == false)
 	return true;
-    string ermsg;
+    const char *ermsg = "Unknown";
     try {
 	if (ndb->iswritable == true) {
 	    ndb->wdb.flush();
@@ -159,16 +161,15 @@ bool Rcl::Db::close()
 	if (pdata)
 	    return true;
     } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg();
+	ermsg = e.get_msg().c_str();
     } catch (const string &s) {
-	ermsg = s;
+	ermsg = s.c_str();
     } catch (const char *s) {
 	ermsg = s;
     } catch (...) {
 	ermsg = "Caught unknown exception";
     }
-    LOGERR(("Rcl::Db:close: exception while deleting db: %s\n", 
-	    ermsg.c_str()));
+    LOGERR(("Rcl::Db:close: exception while deleting db: %s\n", ermsg));
     return false;
 }
 
@@ -194,21 +195,29 @@ class mySplitterCB : public TextSplitCB {
 // Callback for the document to word splitting class during indexation
 bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 {
-    // cerr << "splitCb: term " << term << endl;
-    //string printable;
-    //transcode(term, printable, "UTF-8", "ISO-8859-1");
-    //cerr << "Adding " << printable << endl;
+#if 0
+    LOGDEB(("mySplitterCB::takeword:splitCb: [%s]\n", term.c_str()));
+    string printable;
+    if (transcode(term, printable, "UTF-8", "ISO-8859-1")) {
+	LOGDEB(("                                [%s]\n", printable.c_str()));
+    }
+#endif
 
+    const char *ermsg;
     try {
-	// 1 is the value for wdfinc in index_text when called from omindex
-	// TOBEDONE: check what this is used for
+	// Note: 1 is the within document frequency increment. It would 
+	// be possible to assign different weigths to doc parts (ie title)
+	// by using a higher value
 	curpos = pos;
 	doc.add_posting(term, basepos + curpos, 1);
+	return true;
+    } catch (const Xapian::Error &e) {
+	ermsg = e.get_msg().c_str();
     } catch (...) {
-	LOGERR(("Rcl::Db: Error occurred during xapian add_posting\n"));
-	return false;
+	ermsg= "Unknown error";
     }
-    return true;
+    LOGERR(("Rcl::Db: xapian add_posting error %s\n", ermsg));
+    return false;
 }
 
 // Unaccent and lowercase data, replace \n\r with spaces
@@ -239,7 +248,7 @@ bool Rcl::dumb_string(const string &in, string &out)
     return true;
 }
 
-/* omindex direct */
+/* From omindex direct */
 /* Truncate a string to a given maxlength, avoiding cutting off midword
  * if reasonably possible. */
 string
@@ -266,17 +275,13 @@ truncate_to_word(string & input, string::size_type maxlen)
 
 	output += " ...";
     }
-
-    // replace newlines with spaces
-    size_t i = 0;    
-    while ((i = output.find('\n', i)) != string::npos) output[i] = ' ';
+    // No need to replace newlines with spaces, we do this in dumb_string()
     return output;
 }
 
-// Truncate longer path and uniquize with hash . The goad for this is
+// Truncate longer path and uniquize with hash . The goal for this is
 // to avoid xapian max term length limitations, not to gain space (we
 // gain very little even with very short maxlens like 30)
-#define HASHPATH
 #define PATHHASHLEN 150
 
 // Add document in internal form to the database: index the terms in
@@ -310,7 +315,8 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 
     // Split and index file name. This supposes that it's either ascii
     // or utf-8. If this fails, we just go on. We need a config
-    // parameter for file name charset
+    // parameter for file name charset.
+    // Do we really want to fold case here ?
     if (dumb_string(fn, noacc)) {
 	splitter.text_to_words(noacc);
 	splitData.basepos += splitData.curpos + 100;
@@ -324,7 +330,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     splitter.text_to_words(noacc);
     splitData.basepos += splitData.curpos + 100;
 
-    // Split body and index terms
+    // Split and index body
     if (!dumb_string(doc.text, noacc)) {
 	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
@@ -332,7 +338,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     splitter.text_to_words(noacc);
     splitData.basepos += splitData.curpos + 100;
 
-    // Split keywords and index terms
+    // Split and index keywords
     if (!dumb_string(doc.keywords, noacc)) {
 	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
@@ -340,7 +346,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     splitter.text_to_words(noacc);
     splitData.basepos += splitData.curpos + 100;
 
-    // Split abstract and index terms
+    // Split and index abstract
     if (!dumb_string(doc.abstract, noacc)) {
 	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
 	return false;
@@ -354,18 +360,13 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 
     // Path name
     string hash;
-#ifdef HASHPATH
     pathHash(fn, hash, PATHHASHLEN);
-#else
-    hash = fn;
-#endif
     LOGDEB2(("Rcl::Db::add: pathhash [%s]\n", hash.c_str()));
-
     string pathterm  = "P" + hash;
     newdocument.add_term(pathterm);
 
-    // File path + internal path: document unique identifier for
-    // documents inside multidocument files.
+    // Internal path: with path, makes unique identifier for documents
+    // inside multidocument files.
     string uniterm;
     if (!doc.ipath.empty()) {
 	uniterm  = "Q" + hash + "|" + doc.ipath;
@@ -395,8 +396,9 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
     string record = "url=file://" + fn;
     record += "\nmtype=" + doc.mimetype;
     record += "\nfmtime=" + doc.fmtime;
-    if (!doc.dmtime.empty())
+    if (!doc.dmtime.empty()) {
 	record += "\ndmtime=" + doc.dmtime;
+    }
     record += "\norigcharset=" + doc.origcharset;
     record += "\ncaption=" + doc.title;
     record += "\nkeywords=" + doc.keywords;
@@ -405,12 +407,10 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 	record += "\nipath=" + doc.ipath;
     }
     record += "\n";
-
     LOGDEB1(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);
 
     const char *fnc = fn.c_str();
-   
     // Add db entry or update existing entry:
     try {
 	Xapian::docid did = 
@@ -426,13 +426,19 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 	}
     } catch (...) {
 	// FIXME: is this ever actually needed?
-	ndb->wdb.add_document(newdocument);
-	LOGDEB(("Rcl::Db::add: %s added (failed re-seek for duplicate)\n", 
-		fnc));
+	try {
+	    ndb->wdb.add_document(newdocument);
+	    LOGDEB(("Rcl::Db::add: %s added (failed re-seek for duplicate)\n", 
+		    fnc));
+	} catch (...) {
+	    LOGERR(("Rcl::Db::add: failed again after replace_document\n"));
+	    return false;
+	}
     }
     return true;
 }
 
+// Test if given filename has changed since last indexed:
 bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 {
     if (pdata == 0)
@@ -441,16 +447,9 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 
     // If no document exist with this path, we do need update
     string hash;
-#ifdef HASHPATH
     pathHash(filename, hash, PATHHASHLEN);
-#else
-    hash = filename;
-#endif
     string pathterm  = "P" + hash;
-    if (!ndb->wdb.term_exists(pathterm)) {
-	LOGDEB1(("Db::needUpdate: path inexistant: %s\n", pathterm.c_str()));
-	return true;
-    }
+    const char *ermsg;
 
     // Look for all documents with this path. We need to look at all
     // to set their existence flag.  We check the update time on the
@@ -459,6 +458,11 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
     // file changed)
     Xapian::PostingIterator doc;
     try {
+	if (!ndb->wdb.term_exists(pathterm)) {
+	    LOGDEB1(("Db::needUpdate: no such path: %s\n", pathterm.c_str()));
+	    return true;
+	}
+
 	Xapian::PostingIterator docid0 = ndb->wdb.postlist_begin(pathterm);
 	for (Xapian::PostingIterator docid = docid0;
 	     docid != ndb->wdb.postlist_end(pathterm); docid++) {
@@ -491,25 +495,48 @@ bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
 	    if (*docid < ndb->updated.size())
 		ndb->updated[*docid] = true;
 	}
+	return false;
+    } catch (const Xapian::Error &e) {
+	ermsg = e.get_msg().c_str();
     } catch (...) {
-	return true;
+	ermsg= "Unknown error";
     }
-
-    return false;
+    LOGERR(("Db::needUpdate: error while checking existence: %s\n", ermsg));
+    return true;
 }
 
+const static string stemdirstem = "stem_";
 /// Compute name of stem db for given base database and language
 static string stemdbname(const string& basename, string lang)
 {
-    string nm = path_cat(basename, string("stem_") + lang);
+    string nm = path_cat(basename, stemdirstem + lang);
     return nm;
 }
 
-// Is char non-lowercase ascii ?
+// Deciding if we try to stem the term. If it has numerals or capitals
+// we don't
 inline static bool
 p_notlowerorutf(unsigned int c)
 {
     if (c < 'a' || (c > 'z' && c < 128))
+	return true;
+    return false;
+}
+
+/**
+ * Delete stem db for given language
+ */
+bool Rcl::Db::deleteStemDb(const string& lang)
+{
+    LOGDEB(("Rcl::Db::deleteStemDb(%s)\n", lang.c_str()));
+    if (pdata == 0)
+	return false;
+    Native *ndb = (Native *)pdata;
+    if (ndb->isopen == false)
+	return false;
+
+    string dir = stemdbname(ndb->basedir, lang);
+    if (wipedir(dir) == 0 && rmdir(dir.c_str()) == 0)
 	return true;
     return false;
 }
@@ -526,7 +553,7 @@ bool Rcl::Db::createStemDb(const string& lang)
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
-    if (ndb->isopen == false || ndb->iswritable == false)
+    if (ndb->isopen == false)
 	return false;
 
     // First build the in-memory stem database:
@@ -562,23 +589,41 @@ bool Rcl::Db::createStemDb(const string& lang)
 	    }
 	    assocs.insert(pair<string,string>(stem, *it));
 	}
+    } catch (const Xapian::Error &e) {
+	LOGERR(("Db::createStemDb: build failed: %s\n", e.get_msg().c_str()));
+	return false;
     } catch (...) {
-	LOGERR(("Stem database build failed: no stemmer for %s ? \n", 
+	LOGERR(("Db::createStemDb: build failed: no stemmer for %s ? \n", 
 		lang.c_str()));
 	return false;
     }
 
+    class DirWiper {
+    public:
+	string dir;
+	bool do_it;
+	DirWiper(string d) : dir(d), do_it(true) {}
+	~DirWiper() {
+	    if (do_it) {
+		wipedir(dir);
+		rmdir(dir.c_str());
+	    }
+	}
+    };
     // Create xapian database for stem relations
     string stemdbdir = stemdbname(ndb->basedir, lang);
-    string ermsg = "NOERROR";
+    // We want to get rid of the db dir in case of error. This gets disarmed
+    // just before success return.
+    DirWiper wiper(stemdbdir);
+    const char *ermsg = "NOERROR";
     Xapian::WritableDatabase sdb;
     try {
 	sdb = Xapian::WritableDatabase(stemdbdir, 
 				       Xapian::DB_CREATE_OR_OVERWRITE);
     } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg();
+	ermsg = e.get_msg().c_str();
     } catch (const string &s) {
-	ermsg = s;
+	ermsg = s.c_str();
     } catch (const char *s) {
 	ermsg = s;
     } catch (...) {
@@ -586,7 +631,7 @@ bool Rcl::Db::createStemDb(const string& lang)
     }
     if (ermsg != "NOERROR") {
 	LOGERR(("Rcl::Db::createstemdb: exception while opening '%s': %s\n", 
-		stemdbdir.c_str(), ermsg.c_str()));
+		stemdbdir.c_str(), ermsg));
 	return false;
     }
 
@@ -632,8 +677,26 @@ bool Rcl::Db::createStemDb(const string& lang)
     }
     LOGDEB(("Stem map size: %d stems %d mult %d no %d const %d\n", 
 	    assocs.size(), stemdiff, stemmultiple, nostem, stemconst));
+    wiper.do_it = false;
     return true;
 }
+
+list<string> Rcl::Db::getStemLangs()
+{
+    list<string> dirs;
+    LOGDEB(("Rcl::Db::getStemLang\n"));
+    if (pdata == 0)
+	return dirs;
+    Native *ndb = (Native *)pdata;
+    string pattern = stemdirstem + "*";
+    dirs = path_dirglob(ndb->basedir, pattern);
+    for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
+	*it = path_basename(*it);
+	*it = it->substr(stemdirstem.length(), string::npos);
+    }
+    return dirs;
+}
+
 
 /**
  * This is called at the end of an indexing session, to delete the
@@ -658,7 +721,11 @@ bool Rcl::Db::purge()
     // and does nothing). Maybe related to the exceptions below when
     // trying to delete an unexistant document ?
     // Flushing before trying the deletes seeems to work around the problem
-    ndb->wdb.flush();
+    try {
+	ndb->wdb.flush();
+    } catch (...) {
+	LOGDEB(("Rcl::Db::purge: 1st flush failed\n"));
+    }
     for (Xapian::docid docid = 1; docid < ndb->updated.size(); ++docid) {
 	if (!ndb->updated[docid]) {
 	    try {
@@ -669,7 +736,11 @@ bool Rcl::Db::purge()
 	    }
 	}
     }
-    ndb->wdb.flush();
+    try {
+	ndb->wdb.flush();
+    } catch (...) {
+	LOGDEB(("Rcl::Db::purge: 2nd flush failed\n"));
+    }
     return true;
 }
 
@@ -749,7 +820,6 @@ class wsQData : public TextSplitCB {
 };
 
 
-//
 // Turn string into list of xapian queries. There is little
 // interpretation done on the string (no +term -term or filename:term
 // stuff). We just separate words and phrases, and interpret
@@ -1124,21 +1194,18 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
     Native *ndb = (Native *)pdata;
 
     string hash;
-#ifdef HASHPATH
     pathHash(fn, hash, PATHHASHLEN);
-#else
-    hash = fn;
-#endif
     string pathterm  = "P" + hash;
-    if (!ndb->db.term_exists(pathterm)) {
-	LOGDEB(("Db::getDoc: path inexistant: [%s] len %d\n", 
-		 pathterm.c_str(), pathterm.length()));
-	return false;
-    }
 
     // Look for all documents with this path, searching for the one
     // with the appropriate ipath. This is very inefficient.
+    const char *ermsg = "";
     try {
+	if (!ndb->db.term_exists(pathterm)) {
+	    LOGDEB(("Db::getDoc: path inexistant: [%s] len %d\n", 
+		    pathterm.c_str(), pathterm.length()));
+	    return false;
+	}
 	for (Xapian::PostingIterator docid = 
 		 ndb->db.postlist_begin(pathterm);
 	     docid != ndb->db.postlist_end(pathterm); docid++) {
@@ -1148,8 +1215,17 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
 	    if (dbDataToRclDoc(data, doc) && doc.ipath == ipath)
 		return true;
 	}
+    } catch (const Xapian::Error &e) {
+	ermsg = e.get_msg().c_str();
+    } catch (const string &s) {
+	ermsg = s.c_str();
+    } catch (const char *s) {
+	ermsg = s;
     } catch (...) {
-	return false;
+	ermsg = "Caught unknown exception";
+    }
+    if (*ermsg) {
+	LOGERR(("Rcl::Db::getDoc: %s\n", ermsg));
     }
     return false;
 }

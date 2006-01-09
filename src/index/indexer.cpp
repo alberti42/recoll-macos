@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.20 2005-12-14 11:00:48 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.21 2006-01-09 16:53:31 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -10,6 +10,7 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.20 2005-12-14 11:00:48 dockes Exp
 #include <iostream>
 #include <list>
 #include <map>
+#include <algorithm>
 
 #include "pathut.h"
 #include "conftree.h"
@@ -87,13 +88,22 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
     // filesystem anymore.
     db.purge();
 
-    // Create stemming databases
+    // Create stemming databases. We also remove those which are not
+    // configured.
     string slangs;
     if (config->getConfParam("indexstemminglanguages", slangs)) {
 	list<string> langs;
 	stringToStrings(slangs, langs);
-	for (list<string>::const_iterator it = langs.begin(); 
-	     it != langs.end(); it++) {
+
+	// Get the list of existing stem dbs from the database (some may have 
+	// been manually created, we just keep those from the config
+	list<string> dblangs = db.getStemLangs();
+	list<string>::const_iterator it;
+	for (it = dblangs.begin(); it != dblangs.end(); it++) {
+	    if (find(langs.begin(), langs.end(), *it) == langs.end())
+		db.deleteStemDb(*it);
+	}
+	for (it = langs.begin(); it != langs.end(); it++) {
 	    db.createStemDb(*it);
 	}
     }
@@ -120,6 +130,16 @@ bool DbIndexer::init(bool resetbefore)
     return true;
 }
 
+bool DbIndexer::createStemDb(const string &lang)
+{
+    if (!init())
+	return false;
+    return db.createStemDb(lang);
+}
+
+/** 
+ Index individual files, out of a full tree run. No database purging
+*/
 bool DbIndexer::indexFiles(const list<string> &filenames)
 {
     if (!init())

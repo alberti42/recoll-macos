@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.20 2005-12-02 16:18:20 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.21 2006-01-09 16:53:31 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -102,6 +102,7 @@ public:
     bool needUpdate(const string &filename, const struct stat *stp);
     bool purge();
     bool createStemDb(const string &lang);
+    bool deleteStemDb(const string &lang);
 
     // Query-related functions
 
@@ -127,6 +128,10 @@ public:
     /** Get results count for current query */
     int getResCnt();
 
+    /** Get a list of existing stemming databases */
+    std::list<std::string> getStemLangs();
+
+    /** Things we don't want to have here. */
     friend class Rcl::DbPops;
 
 private:

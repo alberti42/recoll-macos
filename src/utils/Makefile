@@ -15,8 +15,8 @@ trfstreewalk.o : fstreewalk.cpp fstreewalk.h
 	$(CXX) -o trfstreewalk.o -c $(CXXFLAGS) \
 	       -DTEST_FSTREEWALK fstreewalk.cpp
 
-PATHUT_OBJS= trpathut.o pathut.o 
-trpathut : $(PATHUT_OBJS)
+PATHUT_OBJS= trpathut.o pathut.o  $(BIGLIB)
+trpathut : $(PATHUT_OBJS) 
 	$(CXX) $(CXXFLAGS) -o trpathut $(PATHUT_OBJS)
 trpathut.o : pathut.cpp pathut.h
 	$(CXX) -o trpathut.o -c $(CXXFLAGS) -DTEST_PATHUT pathut.cpp

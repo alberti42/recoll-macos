@@ -1,6 +1,6 @@
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.8 2005-12-14 11:00:48 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.9 2006-01-09 16:53:31 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -24,10 +24,12 @@ class DbIndexer;
 class ConfIndexer {
  public:
     enum runStatus {IndexerOk, IndexerError};
-    ConfIndexer(RclConfig *cnf) : config(cnf), dbindexer(0) {}
-	virtual ~ConfIndexer();
-	/** Worker function: doe the actual indexing */
-	bool index(bool resetbefore = false);
+    ConfIndexer(RclConfig *cnf) : config(cnf), dbindexer(0) 
+	{
+	}
+    virtual ~ConfIndexer();
+    /** Worker function: doe the actual indexing */
+    bool index(bool resetbefore = false);
  private:
 	RclConfig *config;
 	DbIndexer *dbindexer; // Object to process directories for a given db
@@ -36,10 +38,10 @@ class ConfIndexer {
 /** Index things into one database
  
 Tree indexing: we inherits FsTreeWalkerCB so that, the processone()
-method is called by the file-system tree walk code for each file and
-directory. We keep all state needed while indexing, and finally call
-the methods to purge the db of stale entries and create the stemming
-databases.
+  method is called by the file-system tree walk code for each file and
+  directory. We keep all state needed while indexing, and finally call
+  the methods to purge the db of stale entries and create the stemming
+  databases.
 
 Single file(s) indexing: no database purging or stem db updating.
 */
@@ -66,6 +68,9 @@ class DbIndexer : public FsTreeWalkerCB {
 
     /** Index a list of files. No db cleaning or stemdb updating */
     bool indexFiles(const std::list<std::string> &files);
+
+    /** Create stem database for given language */
+    bool createStemDb(const string &lang);
 
     /**  Tree walker callback method */
     FsTreeWalker::Status 
