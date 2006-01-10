@@ -30,7 +30,7 @@ if test -z "$mandir" ; then
    fi
 fi
 
-INSTALL=${INSTALL:=install -c}
+INSTALL=${INSTALL:="install -c"}
 STRIP=${STRIP:=strip}
 
 test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
