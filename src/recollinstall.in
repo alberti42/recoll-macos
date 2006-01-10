@@ -22,6 +22,7 @@ fi
 echo "Installing to $PREFIX"
 test -n "$bindir" || bindir=$PREFIX/bin
 test -n "$datadir" || datadir=$PREFIX/share
+test -n "$mandir" || mandir=$PREFIX/man
 
 INSTALL=${INSTALL:=install -c}
 STRIP=${STRIP:=strip}
@@ -31,6 +32,8 @@ test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
 
 for d in \
     ${bindir} \
+    ${mandir}/man1 \
+    ${mandir}/man5 \
     ${datadir}/recoll/examples \
     ${datadir}/recoll/filters \
     ${datadir}/recoll/images \
@@ -39,18 +42,21 @@ do
     test -d $d || mkdir -p $d || exit 1
 done
 
-${INSTALL} doc/usermanual.html doc/docbook.css ${PREFIX}/share/recoll/doc 
+${INSTALL} doc/user/usermanual.html doc/user/docbook.css ${datadir}/recoll/doc 
 
-${INSTALL} qtgui/recoll index/recollindex $PREFIX/bin || exit 1
-${STRIP} $PREFIX/bin/recoll $PREFIX/bin/recollindex
+${INSTALL} doc/man/recoll.1 doc/man/docbook.css ${mandir}/man1
+${INSTALL} doc/man/recoll.conf.5  ${mandir}/man5
 
-${INSTALL} filters/rcl* ${PREFIX}/share/recoll/filters/ || exit 1
-chmod a+x ${PREFIX}/share/recoll/filters/rcl* || exit 1
+${INSTALL} qtgui/recoll index/recollindex ${bindir} || exit 1
+${STRIP} ${bindir}/recoll ${bindir}/recollindex
+
+${INSTALL} filters/rcl* ${datadir}/recoll/filters/ || exit 1
+chmod a+x ${datadir}/recoll/filters/rcl* || exit 1
 # Clean up possible old filters in examples
-rm -f ${PREFIX}/share/recoll/examples/rcl*
+rm -f ${datadir}/recoll/examples/rcl*
 
 ${INSTALL} sampleconf/recoll.conf sampleconf/mimeconf sampleconf/mimemap \
-		    ${PREFIX}/share/recoll/examples/ || exit 1
+		    ${datadir}/recoll/examples/ || exit 1
 
-${INSTALL} qtgui/mtpics/*.png ${PREFIX}/share/recoll/images || exit 1
-${INSTALL} qtgui/recoll*.qm ${PREFIX}/share/recoll/translations || exit 1
+${INSTALL} qtgui/mtpics/*.png ${datadir}/recoll/images || exit 1
+${INSTALL} qtgui/recoll*.qm ${datadir}/recoll/translations || exit 1

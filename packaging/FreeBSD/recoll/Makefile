@@ -6,7 +6,7 @@
 #
 
 PORTNAME=	recoll
-PORTVERSION=	1.0.14
+PORTVERSION=	1.1.0
 CATEGORIES=	deskutils
 MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 
@@ -21,5 +21,9 @@ USE_QT_VER=	3
 MAKE_ENV=       QTDIR="${QT_PREFIX}" QMAKESPEC="freebsd-g++"
 GNU_CONFIGURE=	yes
 USE_GMAKE=	yes
+
+MAN1=		recoll.1 recollindex.1
+MAN5=		recoll.conf.5
+MANCOMPRESSED=	no
 
 .include <bsd.port.mk>
