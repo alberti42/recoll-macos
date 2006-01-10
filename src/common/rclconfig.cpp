@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.17 2005-12-13 12:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.18 2006-01-10 12:58:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <stdio.h>
@@ -222,7 +222,7 @@ string find_filter(RclConfig *conf, const string &icmd)
     string cmd;
     const char *cp;
 
-    if (cp = getenv("RECOLL_FILTERSDIR")) {
+    if ((cp = getenv("RECOLL_FILTERSDIR"))) {
 	cmd = path_cat(cp, icmd);
 	if (access(cmd.c_str(), X_OK) == 0)
 	    return cmd;

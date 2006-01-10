@@ -1,4 +1,4 @@
-# @(#$Id: Makefile,v 1.23 2006-01-05 10:24:54 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.24 2006-01-10 12:58:39 dockes Exp $  (C) 2005 J.F.Dockes
 
 all: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
@@ -32,6 +32,7 @@ clean:
 	cd bincimapmime; ${MAKE} clean
 	cd query; ${MAKE} clean
 	cd utils; ${MAKE} clean
+        #cd doc/user; ${MAKE} clean
 	@-cd qtgui; ${MAKE} clean
 	rm -f qtgui/Makefile qtgui/preview/Makefile qtgui/recoll
 
