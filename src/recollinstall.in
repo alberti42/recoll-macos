@@ -22,7 +22,7 @@ fi
 echo "Installing to $PREFIX"
 test -n "$bindir" || bindir=$PREFIX/bin
 test -n "$datadir" || datadir=$PREFIX/share
-test -n "$mandir" || mandir=$PREFIX/man
+test -n "$mandir" || mandir=${datadir}/man
 
 INSTALL=${INSTALL:=install -c}
 STRIP=${STRIP:=strip}
@@ -44,8 +44,8 @@ done
 
 ${INSTALL} doc/user/usermanual.html doc/user/docbook.css ${datadir}/recoll/doc 
 
-${INSTALL} doc/man/recoll.1 doc/man/docbook.css ${mandir}/man1
-${INSTALL} doc/man/recoll.conf.5  ${mandir}/man5
+${INSTALL} doc/man/recoll.1 doc/man/docbook.css ${mandir}/man1/
+${INSTALL} doc/man/recoll.conf.5  ${mandir}/man5/
 
 ${INSTALL} qtgui/recoll index/recollindex ${bindir} || exit 1
 ${STRIP} ${bindir}/recoll ${bindir}/recollindex
