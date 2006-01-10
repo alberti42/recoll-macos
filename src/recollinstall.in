@@ -44,7 +44,7 @@ done
 
 ${INSTALL} doc/user/usermanual.html doc/user/docbook.css ${datadir}/recoll/doc 
 
-${INSTALL} doc/man/recoll.1 doc/man/docbook.css ${mandir}/man1/
+${INSTALL} doc/man/recoll.1 doc/man/recollindex.1 ${mandir}/man1/
 ${INSTALL} doc/man/recoll.conf.5  ${mandir}/man5/
 
 ${INSTALL} qtgui/recoll index/recollindex ${bindir} || exit 1
