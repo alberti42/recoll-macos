@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.5 2005-12-15 14:39:58 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.6 2006-01-10 11:07:21 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This should be copied to
 #   ~/.recoll/recoll.conf 
@@ -41,8 +41,6 @@ dbdir = ~/.recoll/xapiandb
 # below). Used when converting to utf-8 (internal storage format), so it
 # may be quite important for pure text files.
 defaultcharset = iso-8859-1
-# defaultlanguage is currently not used by the program.
-defaultlanguage = english
 
 # Guessing charsets usually does not work well
 guesscharset = 0

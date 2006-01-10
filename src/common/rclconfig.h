@@ -1,6 +1,6 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.10 2006-01-04 11:33:44 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.11 2006-01-10 11:07:21 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -37,7 +37,6 @@ class RclConfig {
     {
 	keydir = dir;
 	conf->get("defaultcharset", defcharset, keydir);
-	conf->get("defaultlanguage", deflang, keydir);
 	string str;
 	conf->get("guesscharset", str, keydir);
 	guesscharset = stringToBool(str);
@@ -63,7 +62,6 @@ class RclConfig {
     string getMimeIconName(const string &mtype);
 
     const string &getDefCharset() {return defcharset;}
-    const string &getDefLang() {return deflang;}
     bool getGuessCharset() {return guesscharset;}
     std::list<string> getAllMimeTypes();
 
@@ -81,7 +79,6 @@ class RclConfig {
 
     // Parameters auto-fetched on setkeydir
     string defcharset;   // These are stored locally to avoid 
-    string deflang;      // a config lookup each time.
     bool   guesscharset; // They are fetched initially or on setKeydir()
 };
 

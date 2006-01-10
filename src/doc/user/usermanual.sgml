@@ -24,10 +24,10 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.1 2006-01-04 11:09:53 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.2 2006-01-10 11:07:21 dockes Exp $</releaseinfo>
 
     <abstract>
-      <para>The &RCL; user manual introduces full text search notions
+      <para>This document introduces full text search notions
       and describes the installation and use of the &RCL; application.</para>
     </abstract>
 
@@ -40,8 +40,8 @@
     <sect1 id="rcl.introduction.tryit">
       <title>Giving it a try</title>
 
-      <para>If you do not like reading manuals and would like to give
-      &RCL; a try, just perform <link
+      <para>If you do not like reading manuals (who does?) and would
+      like to give &RCL; a try, just perform <link
       linkend="rcl.install">installation</link> and start the
       <command>recoll</command> user interface, which will index your
       home directory and let you search it right after.</para>
@@ -62,13 +62,14 @@
     <sect1 id="rcl.introduction.search"> 
       <title>Full text search</title>
 
-      <para>Full text search applications allow you to find your data
-        by content rather than by external attributes (like a file
-        name). More specifically, they will let you specify words
-        (terms) that should or should not appear in the text you are
-        looking for, and return a list of matching documents, ordered
-        so that the most <emphasis>relevant</emphasis> documents will
-        appear first.</para>
+      <para>&RCL; is a full text search application. Full text search
+        applications let you find your data by content rather
+        than by external attributes (like a file name). More
+        specifically, they will let you specify words (terms) that
+        should or should not appear in the text you are looking for,
+        and return a list of matching documents, ordered so that the
+        most <emphasis>relevant</emphasis> documents will appear
+        first.</para>
 
       <para>You do not need to remember in what file or email message you
         stored a given piece of information. You just ask for related
@@ -84,17 +85,17 @@
       guess is probably the most important element for a search
       application.</para> 
 
-      <para>In many cases, one is looking for all the forms of a word,
-        not for a specific form or spelling. These different forms may include
-        plurals, different tenses for a verb, or terms derived from
-        the same root or <emphasis>stem</emphasis> (exemple: floor,
-        floors, floored, floorings...). &RCL; will by default expand
-        queries to all such related terms (words that reduce to the
-        same stem). This expansion can be disabled at search
-        time.</para>
+      <para>In many cases, you are looking for all the forms of a
+        word, not for a specific form or spelling. These different
+        forms may include plurals, different tenses for a verb, or
+        terms derived from the same root or <emphasis>stem</emphasis>
+        (exemple: floor, floors, floored, floorings...). &RCL; will by
+        default expand queries to all such related terms (words that
+        reduce to the same stem). This expansion can be disabled at
+        search time.</para>
 
      <para>Stemming, by itself, does not provide for misspellings or
-        phonetic searches. &RCL; does not support these currently.</para>
+        phonetic searches. &RCL; currently does not support these.</para>
 
 
     </sect1>
@@ -102,7 +103,7 @@
       <sect1 id="rcl.introduction.recoll">
       <title>Recoll overview</title>
 
-      <para>&RCL; is a full text search application which uses the 
+      <para>&RCL; uses the 
       <ulink url="http://www.xapian.org">&XAP;</ulink> information retrieval
       library as its storage and retrieval engine. &XAP; is a very
       mature package using <ulink
@@ -126,11 +127,11 @@
       
       <para>Stemming depends on the document language. &RCL; stores
       the unstemmed versions of terms and uses auxiliary databases for
-      term expansion. It can switch stemming languages without reindexing.
-      Storing documents in different languages in the same
-      database is possible, and useful in practice, but does introduce
-      possibilities of confusion. &RCL; makes no attempt at automatic
-      language recognition.</para>
+      term expansion. It can switch stemming languages, or add a
+      language, without reindexing.  Storing documents in different
+      languages in the same database is possible, and useful in
+      practice, but does introduce possibilities of confusion. &RCL;
+      makes no attempt at automatic language recognition.</para>
 
       <para>&RCL; has many parameters which define exactly what to
         index, and how to classify and decode the source
@@ -146,9 +147,9 @@
       <para><link linkend="rcl.indexing.exec">Indexation</link> is started
       automatically the first time you execute the
       <command>recoll</command> search graphical user interface, or by
-      executing the <command>recollindex</command>.</para>
+      executing the <command>recollindex</command> command.</para>
 
-      <para><link linkend="rcl.searching">Searches</link> are
+      <para><link linkend="rcl.search">Searches</link> are
       performed inside the <command>recoll</command> 
       program, which has many options to help you find what you are
       looking for.</para> 
@@ -168,12 +169,14 @@
       is normally incremental: documents will only be processed if
       they have been modified. On the first execution, of course, all
       documents will need processing. A full index build can be forced
-      later on by specifying an option to the indexation command.</para>
+      later on by specifying an option to the indexation command
+      (<command>recollindex -z</command>).</para> 
 
-      <para>&RCL; indexation takes place at discrete times. There is no
+      <para>&RCL; indexation takes place at discrete times. There is
       currently no interface to real time file modification
       monitors. The typical usage is to have a nightly indexation run
-      programmed into your <command>cron</command> file.</para>
+      <link linkend="rcl.indexing.automat">programmed</link> into your
+      <command>cron</command> file.</para> 
 
       <para>&RCL; knows about quite a few different document
       types. The parameters for document types recognition and
@@ -184,12 +187,18 @@
       many individually indexed documents.
       </para>
 
+      <para>&RCL; indexation processes plain text, HTML, openoffice
+      and e-mail files internally. Other types (ie: postscript, pdf,
+      ms-word, rtf) need external applications for preprocessing. The
+      list is in the <link
+      linkend="rcl.install.building.prereqs">installation</link>
+      section.</para>
+
       <para>Without further configuration, &RCL; will index all
       appropriate files from your home directory, with a reasonable
       set of defaults, if you live in western Europe or the USA. If
       your normal character set is not iso8859-1, you almost certainly
       need to adjust the configuration.</para>
-
 
     </sect1>
 
@@ -208,9 +217,9 @@
       <guilabel>Cancel</guilabel> when the program asks if it should
       start initial indexation.</para>
 
-      <para>You can also have a look to the <link
-      linkend="rcl.install.config">configuration overview</link> inside
-      the installation chapter of this document.</para>
+      <para>The configuration is also documented inside the <link
+      linkend="rcl.install.config.recollconf">installation chapter</link> of
+      this document, or in the recoll.conf(5) man page.</para>
 
     </sect1>
 
@@ -229,7 +238,7 @@
       <para>It is best to avoid interrupting the indexation process, as
         this may sometimes leave the database in a bad state.  This is
         not a serious problem, as you then just need to clear
-        everything and restart the indexation. The database files are
+        everything and restart the indexation: the database files are
         normally stored in the <filename>$HOME/.recoll/xapiandb</filename>
         directory, 
         which you can just delete if needed. Alternatively, you can
@@ -259,10 +268,14 @@
 
   </chapter>
 
-  <chapter id="rcl.searching">
-    <title>Searching</title>
+  <chapter id="rcl.search">
+    <title>Search</title>
 
-    <sect1 id="rcl.searching.simple">
+    <para>The <command>recoll</command> program provides the user
+    interface for searching. It is based on the
+    <application>QT</application> library.</para>
+
+    <sect1 id="rcl.search.simple">
       <title>Simple search</title>
 
       <para>Start the <command>recoll</command> program, then
@@ -287,12 +300,12 @@
       <para>By default, the document list is presented in order of
       relevance (how well the system estimates that the document
       matches the query). You can specify a different ordering by
-      using the <guilabel>Tools</guilabel>
-        / <guilabel>Sort parameters</guilabel> dialog.</para>
+      using the  <link linkend="rcl.search.sort"><guilabel>Tools</guilabel>
+        / <guilabel>Sort parameters</guilabel></link> dialog.</para>
 
     </sect1>
 
-      <sect1 id="rcl.searching.complex">
+      <sect1 id="rcl.search.complex">
       <title>Complex/advanced search</title>
 
       <para>The advanced search dialog has fields that will allow a more
@@ -308,10 +321,13 @@
       <para>It will let you restrict the search results to a subtree of
         the indexed area.</para>
 
-      <para>In other respects, it works like the simple search.</para>
+      <para>Click on the <guilabel>Start Search</guilabel> button in
+      the advanced search dialog to start the search. The button in
+      the main window always performs a simple search.</para>
+
     </sect1>
 
-    <sect1 id="rcl.searching.history">
+    <sect1 id="rcl.search.history">
       <title>Document history</title>
 
       <para>Documents that you actually view (with the internal preview
@@ -322,7 +338,26 @@
 
     </sect1>
 
-    <sect1 id="rcl.searching.tips">
+    <sect1 id="rcl.search.sort">
+      <title>Result list sorting</title>
+
+      <para>The documents in a result list are normally sorted in
+      order of relevance. It is possible to specify different sort
+      parameters by using the <guimenu>Sort parameters</guimenu>
+      dialog (located in the <guimenu>Tools</guimenu>
+      menu).</para>
+
+      <para>The tool sorts a specified number of the most
+      relevant documents in the result list, according to
+      specified criteria. The currently available criteria are
+      <emphasis>date</emphasis> and <emphasis>mime type</emphasis>.</para> 
+
+      <para>The sort parameters stay in effect until they are explicitely
+      reset, or the program exits.</para>
+
+    </sect1>
+
+    <sect1 id="rcl.search.tips">
       <title>Search tips, shortcuts</title>
 
       <formalpara><title>Disabling stem expansion</title>
@@ -331,7 +366,7 @@
         <literal>gardening</literal> if you enter
         <literal>Garden</literal> instead of
         <literal>garden</literal>). This is the only case where
-        character case will make a difference for a &RCL;
+        character case should make a difference for a &RCL;
         search.</para>
       </formalpara>
       <formalpara><title>Phrases</title>
@@ -354,8 +389,28 @@
       </formalpara>
     </sect1>
 
-  </chapter>
+    <sect1 id="rcl.search.custom">
+      <title>Customising the search interface</title>
 
+      <para>It is possible to customise some aspects of the search
+      interface by using <guimenu>Query configuration</guimenu> entry
+      in the <guimenu>Preferences</guimenu> menu.</para>
+
+      <para>There are two tabs in the dialog, to modify the appearance
+      of the user interface (result list appearance), or the
+      parameters used for searching (language used for stem
+      expansion).</para> 
+
+      <para>The stemming language can be chosen among those that were
+      specified in the configuration file, or later added with
+      <command>recollindex -s</command> (See the recollindex
+      manual). Stemming languages which are dynamically added will be
+      deleted at the next indexation pass unless they are also added in
+      the configuration file.</para>
+
+    </sect1>
+
+  </chapter>
 
 
   <chapter id="rcl.install">
@@ -493,9 +548,12 @@
     <sect1 id="rcl.install.config">
       <title>Configuration overview</title>
 
-      <para>The personal configuration files and the database are kept in
-	the <filename>.recoll</filename> directory in your
-	home. If this directory does not exist when 
+      <para>The personal configuration files and the database are
+        normally kept in
+	the <filename>.recoll</filename> directory in your home (this
+	can be changed with the <literal>RECOLL_CONFDIR</literal>
+	environment variable, and a parameter inside the main
+	configuration file). If this directory does not exist when
 	  <command>recoll</command> or 
 	<command>recollindex</command> are started, the
 	directory will be created and the sample configuration files will
@@ -504,13 +562,6 @@
 	indexation. <command>recollindex</command> will
 	proceed immediately.</para>
       
-      <para>&RCL; uses text
-	configuration files. You will have to edit them by hand for
-	now (there is still some hope for a GUI configuration tool
-	in the future). The most accurate documentation for the
-	configuraton parameters is given by comments inside the sample
-	files, and we will just give a general overview here.</para>
-
       <para>Most of the parameters specific to the
  	 <command>recoll</command> GUI are set through the
 	  <guilabel>Preferences</guilabel> menu and stored in the
@@ -518,15 +569,58 @@
 	  (<filename>$HOME/.qt/recollrc</filename>). You probably do not
 	  want to edit this by hand.</para>
 
+      <para>For other options, &RCL; uses text configuration
+        files. You will have to edit them by hand for 
+	now (there is still some hope for a GUI configuration tool
+	in the future). The most accurate documentation for the
+	configuration parameters is given by comments inside the sample
+	files, and we will just give a general overview here.</para>
+
+	<para>All configuration files share the same format. For
+	exemple, a short extract of the main configuration file might
+	look as follows:</para> 
+	<programlisting>
+        # Space-separated list of directories to index.
+        topdirs =  ~/docs /usr/share/doc
+
+        [~/somedirectory-with-utf8-txt-files]
+        defaultcharset = utf-8
+        </programlisting>
+
+	<para>There are three kinds of lines: </para>
+	<itemizedlist>
+	  <listitem><para>Comment (starts with
+	  <emphasis>#</emphasis>) or empty.</para> 
+	  </listitem>
+	  <listitem><para>Parameter affectation (<emphasis>name =
+	  value</emphasis>).</para> 
+	  </listitem>
+	  <listitem><para>Section definition
+	  ([<emphasis>somedirname</emphasis>]).</para> 
+	  </listitem>
+	</itemizedlist>
+
+	<para>Section lines allow redefining some parameters for a
+	directory subtree. Some of the parameters used for indexation
+	are looked up hierarchically from the more to the less
+	specific. Not all parameters can be meaningfully redefined,
+	this is specified for each in the next section. </para>
+
+	<para>The tilde character (~) is expanded in file names to the
+	name of the user's home directory.</para>
+	
+	<para>White space is used for separation inside  lists.
+        Elements with embedded spaces can be quoted using
+        double-quotes.</para>
+
       <sect2 id="rcl.install.config.recollconf">
 	<title>Main configuration file</title>
 
 	<para><filename>~/.recoll/recoll.conf</filename> is the main
-         configuration file. It defines
+         configuration file. It defines things like
 	 what to index (top directories and things to ignore), and the
-	 default character set to use (for document types which do not
-	 specify it internally). The default character set can be
-	 specified separately for any directory subtree.</para>
+	 default character set to use for document types which do not
+	 specify it internally. </para>
 
 	<para>The default configuration will index your home
 	 directory. If this is not appropriate, use 
@@ -535,8 +629,103 @@
 	 the configuration file before restarting the command. This
 	 will start the initial indexation, which may take some time.</para>
 	
-	<para>There are also miscellaneous other parameters inside
-	<filename>recoll.conf</filename>. Explore and enjoy :)</para>
+	<para>Paramers:</para>
+
+	<variablelist>
+
+	  <varlistentry><term><literal>topdirs</literal></term>
+	    <listitem><para>Specifies the list of directories to index
+	    (recursively).</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>skippedNames</literal></term>
+	    <listitem><para>A space-separated list of patterns for
+	    names of files or directories that should be completely
+	    ignored. The list defined in the default file is: 
+<programlisting>
+*~ #* bin CVS  Cache caughtspam  tmp
+</programlisting>
+            The list can be redefined for subdirectories, but is only
+            actually changed for the top level ones in
+            <emphasis>topdirs</emphasis></para> 
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>loglevel</literal></term>
+	    <listitem><para>Verbosity level for recoll and
+	    recollindex. A value of 4 lists quite a lot of
+	    debug/information messages. 3 only lists errors. </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>logfilename</literal></term>
+	    <listitem><para>Where should the messages go. 'stderr' can
+	    be used as a special value. </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>filtersdir</literal></term>
+	    <listitem><para>A directory to search for the external
+	    filter scripts used to index some types of files. The
+	    value should not be changed, except if you want to modify
+	    one of the default scripts. The value can be redefined for
+	    any subdirectory. </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>indexstemminglanguages</literal></term>
+	    <listitem><para>A list of languages for which the stem
+	    expansion databases will be built. See recollindex(1) for
+	    possible values. You can add a stem expansion database for
+	    a different language by using <command>recollindex
+	    -s</command>, but it will be deleted during the next
+	    indexation. Only languages listed in the configuration
+	    file are permanent.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>iconsdir</literal></term>
+	    <listitem><para>The name of the directory where
+	    <command>recoll</command> result list icons are
+	    stored. You can change this if you want different
+	    images.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>dbdir</literal></term>
+	    <listitem><para>The name of the Xapian database
+	    directory. It will be created if needed when the database
+	    is initialized. </para>
+	    </listitem>
+	  </varlistentry>
+	  
+	  <varlistentry><term><literal>defaultcharset</literal></term>
+	    <listitem><para>The name of the character set used for
+	    files that do not contain a character set definition (ie:
+	    plain text files). This can be redefined for any
+	    subdirectory.</para> 
+
+	  <varlistentry><term><literal>guesscharset</literal></term>
+	    <listitem><para>Decide if we try to guess the character
+	    set of files if no internal value is available (ie: for
+	    plain text files). This does not work well in general, and
+	    should probably not be used. </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>usesystemfilecommand</literal></term>
+	    <listitem><para>Decide if we use the <command>file -i</command>
+            system command as a final step for determining the mime
+            type for a file (the main procedure uses suffix
+            associations as defined in the  <filename>mimemap</filename>
+            file). This can be useful for files with suffixless names,
+            but it will also cause the indexation of many bogus "text"
+            files.</para> 
+	    </listitem>
+	  </varlistentry>
+
+	</variablelist>
 
       </sect2>
 

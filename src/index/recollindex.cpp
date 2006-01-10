@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.14 2006-01-09 16:53:31 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.15 2006-01-10 11:07:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -84,22 +84,22 @@ static int     op_flags;
 
 static const char usage [] =
 "\n"
-"recollindex [-hz] \n"
-"    Normal index run\n"
+"recollindex [-h] \n"
+"    Print help\n"
+"recollindex [-z] \n"
+"    Index everything according to configuration file\n"
+"    -z : reset database before starting indexation\n"
 "recollindex -i <filename [filename ...]>\n"
-"    Index individual files. No db purge or stem database updates\n"
+"    Index individual files. No database purge or stem database updates\n"
 "recollindex -s <lang>\n"
-"    Build stem database for language <lang>\n"
-"Options:\n"
-" -h : print this message\n"
-" -z : reset database before starting indexation\n\n"
+"    Build stem database for additional language <lang>\n"
 ;
 
 static void
 Usage(void)
 {
     FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
-    fprintf(fp, "%s: usage: %s", thisprog, usage);
+    fprintf(fp, "%s: Usage: %s", thisprog, usage);
     exit((op_flags & OPT_h)==0);
 }
 
