@@ -40,6 +40,7 @@ for d in \
     ${bindir} \
     ${mandir}/man1 \
     ${mandir}/man5 \
+    ${datadir}/recoll/doc \
     ${datadir}/recoll/examples \
     ${datadir}/recoll/filters \
     ${datadir}/recoll/images \
