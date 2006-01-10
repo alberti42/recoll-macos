@@ -1,0 +1,81 @@
+.\" $Id: recollindex.1,v 1.1 2006-01-10 08:09:52 dockes Exp $ (C) 2005 J.F.Dockes\$
+.TH RECOLLINDEX 1 "8 January 2006"
+.SH NAME
+recollindex \- indexing command for the Recoll full text search system
+.SH SYNOPSIS
+.B recollindex -h
+.br
+.B recollindex
+[
+.B -z
+]
+.br
+.B recollindex 
+.B -i 
+<filename [filename ...]>
+.br
+.B recollindex
+.B -s 
+<lang>
+.SH DESCRIPTION
+The
+.B recollindex
+utility allows you to perform indexing operations for the Recoll text
+search system.
+.PP
+There are three modes of operation. 
+.PP
+The normal mode will index the set of files described in the configuration
+file 
+.B recoll.conf.
+This will incrementally update the database with files that changed since
+the last run. If option 
+.B -z 
+is given, the database will be erased before starting.
+.PP
+The two other modes are useful mainly for testing.
+.PP
+.B recollindex -i
+will index individual files into the database. The stem expansion databases
+will not be updated.
+.PP
+.B recollindex -s 
+will build the stem expansion database for a given language, which may or
+may not be part of the list in the configuration file. If the language is
+not part of the configuration, the stem expansion database will be deleted
+during the next normal run. The following languages (abbreviations) are
+recognized:
+.RS
+.IP \(bu
+danish (da)
+.IP \(bu
+dutch (nl)
+.IP \(bu
+english (en) Martin Porter's 2002 revision of his stemmer
+.IP \(bu
+english_lovins (lovins) Lovin's stemmer
+.IP \(bu
+english_porter (porter) Porter's stemmer as described in his 1980 paper
+.IP \(bu
+finnish (fi)
+.IP \(bu
+french (fr)
+.IP \(bu
+german (de)
+.IP \(bu
+italian (it)
+.IP \(bu
+norwegian (no)
+.IP \(bu
+portuguese (pt)
+.IP \(bu
+russian (ru)
+.IP \(bu
+spanish (es)
+.IP \(bu
+swedish (sv)
+.RE
+
+.SH SEE ALSO
+.PP 
+recoll(1) recoll.conf(5)
