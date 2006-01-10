@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.0.16
+%define version 1.1.0
 %define release 1
 
 Name:           %{name}
@@ -51,9 +51,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_datadir}/%{name}
+%{_mandir}/man1/recoll*
+%{_mandir}/man5/recoll*
 
 # ---------------------------------------------------------------------------
 
 %changelog
-* Thu Jan  5 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.0.15-1
+* Thu Jan 10 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.1.0-1
 - Initial packaging
