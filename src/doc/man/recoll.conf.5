@@ -1,0 +1,111 @@
+.\" $Id: recoll.conf.5,v 1.1 2006-01-10 09:10:51 dockes Exp $ (C) 2005 J.F.Dockes\$
+.TH RECOLL.CONF 5 "8 January 2006"
+.SH NAME
+recoll.conf \- main personal configuration file for Recoll
+.SH DESCRIPTION
+This file, by default
+.IR $HOME/.recoll/recoll.conf ,
+defines the indexation configuration for the full-text search system
+Recoll.
+.LP
+A short extract of the file might look as follows:
+.IP
+.nf
+
+# Space-separated list of directories to index.
+topdirs =  ~/docs /usr/share/doc
+
+[~/somedirectory-with-utf8-txt-files]
+defaultcharset = utf-8
+
+.fi
+.LP
+There are three kinds of lines: 
+.RS
+.IP \(bu
+Comment or empty
+.IP \(bu
+Parameter affectation
+.IP \(bu
+Section definition
+.RE
+.LP
+Empty lines or lines beginning with # are ignored.
+.LP
+Affectation lines are in the form 'name = value'.
+.LP
+Section lines allow redefining a parameter for a directory subtree. Some of
+the parameters used for indexaction are looked up hierarchically from the
+more to the less specific. Not all parameters can be meaningfully
+redefined, this is specified for each in the next section.
+.LP
+The tilde character (~) is expanded in file names to the name of the user's
+home directory.
+.LP
+Where values are lists, white space is used for separation, and elements with
+embedded spaces can be quoted with double-quotes.
+.SH OPTIONS
+.TP
+.BI "topdirs = "  directories
+Specifies the list of directories to index (recursively). 
+.TP
+.BI "skippedNames = " patterns
+A space-separated list of patterns for names of files or directories that
+should be completely ignored. The list defined in the default file is:
+.sp
+.nf
+*~ #* bin CVS  Cache caughtspam  tmp
+
+.fi
+The list can be redefined for subdirectories, but is only actually changed
+for the top level ones in 
+.I topdirs
+.TP
+.BI "loglevel = " value
+Verbosity level for recoll and recollindex. A value of 4 lists quite a lot of
+debug/information messages. 3 lists only errors.
+.TP
+.BI "logfilename = " file
+Where should the messages go. 'stderr' can be used as a special value.
+.TP
+.BI "filtersdir = " directory
+A directory to search for the external filter scripts used to index some
+types of files. The value should not be changed, except if you want to
+modify one of the default scripts. The value can be redefined for any
+subdirectory. 
+.TP
+.BI "indexstemminglanguages = " languages
+A list of languages for which the stem expansion databases will be
+built. See recollindex(1) for possible values.
+.TP
+.BI "iconsdir = " directory
+The name of the directory where 
+.B recoll
+result list icons are stored. You can change this if you want different
+images.
+.TP
+.BI "dbdir = " directory
+The name of the Xapian database directory. It will be created if needed
+when the database is initialized.
+.TP
+.BI "defaultcharset = " charset
+The name of the character set used for files that do not contain a
+character set definition (ie: plain text files). This can be redefined for
+any subdirectory.
+.TP
+.BI "guesscharset = " boolean
+Try to guess the character set of files if no internal value is available
+(ie: for plain text files). This does not work well in general, and should
+probably not be used.
+.TP
+.BI "usesystemfilecommand = " boolean
+Decide if we use the 
+.B "file -i"
+system command as a final step for determining the mime type for a file
+(the main procedure uses suffix associations as defined in the 
+.B mimemap 
+file). This can be useful for files with suffixless names, but it will
+also cause the indexation of many bogus "text" files.
+.SH SEE ALSO
+.PP 
+recollindex(1) recoll(1)
