@@ -20,9 +20,15 @@ else
 fi
 
 echo "Installing to $PREFIX"
-test -n "$bindir" || bindir=$PREFIX/bin
-test -n "$datadir" || datadir=$PREFIX/share
-test -n "$mandir" || mandir=${datadir}/man
+test -n "$bindir" || bindir=${PREFIX}/bin
+test -n "$datadir" || datadir=${PREFIX}/share
+if test -z "$mandir" ; then 
+   if test -d ${PREFIX}/man ; then
+      mandir=${PREFIX}/man
+   else
+      mandir=${datadir}/man
+   fi
+fi
 
 INSTALL=${INSTALL:=install -c}
 STRIP=${STRIP:=strip}
