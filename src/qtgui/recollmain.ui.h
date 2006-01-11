@@ -347,7 +347,7 @@ void RecollMain::reslistTE_delayedclick()
     if (reldocnum < 0) {
 	// Bad number: must have clicked on header. Show details of query
 	QString desc = tr("Query details") + ": " + 
-	    currentQueryData.description.c_str();
+	    QString::fromUtf8(currentQueryData.description.c_str());
 	QMessageBox::information(this, tr("Query details"), desc);
 	return;
     } else {
@@ -805,6 +805,7 @@ void RecollMain::showDocHistory()
 					   tr("Document history"));
     }
     currentQueryData.erase();
+    currentQueryData.description = tr("History data").utf8();
     showResultPage();
 }
 
