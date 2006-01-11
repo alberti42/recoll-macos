@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.21 2006-01-09 16:53:31 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.22 2006-01-11 15:08:21 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -76,10 +76,12 @@ class AdvSearchData {
     string nowords;
     list<string> filetypes; // restrict to types. Empty if inactive
     string topdir; // restrict to subtree. Empty if inactive
-
+    string description; // Printable expanded version of the complete query
+                        // returned after setQuery.
     void erase() {
 	allwords.erase();phrase.erase();orwords.erase();nowords.erase();
 	filetypes.clear(); topdir.erase();
+	description.clear();
     }
 };
  

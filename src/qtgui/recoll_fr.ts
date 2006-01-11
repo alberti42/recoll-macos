@@ -238,7 +238,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Toolbar_2</source>
-        <translation>Toolbar_2</translation>
+        <translation type="obsolete">Toolbar_2</translation>
     </message>
     <message>
         <source>Start &amp;Indexing</source>
@@ -309,6 +309,26 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>&amp;User manual</source>
         <translation>&amp;Manuel</translation>
+    </message>
+    <message>
+        <source>Query results</source>
+        <translation>Résultats de la recherche</translation>
+    </message>
+    <message>
+        <source>Query results (sorted)</source>
+        <translation>Résultats de la recherche (triés)</translation>
+    </message>
+    <message>
+        <source>Document history</source>
+        <translation>Historique des documents consultés</translation>
+    </message>
+    <message>
+        <source>Document history (sorted)</source>
+        <translation>Historique des documents consultés (trié)</translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation>Détail de la recherche</translation>
     </message>
 </context>
 <context>

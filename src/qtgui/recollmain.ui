@@ -199,14 +199,6 @@
         <action name="prevPageAction"/>
         <action name="nextPageAction"/>
     </toolbar>
-    <toolbar dock="2">
-        <property name="name">
-            <cstring>HelpToolbar</cstring>
-        </property>
-        <property name="label">
-            <string>Toolbar_2</string>
-        </property>
-    </toolbar>
 </toolbars>
 <actions>
     <action>
@@ -455,6 +447,7 @@
     <include location="local" impldecl="in declaration">advsearch.h</include>
     <include location="local" impldecl="in declaration">sort.h</include>
     <include location="local" impldecl="in declaration">uiprefs.h</include>
+    <include location="local" impldecl="in declaration">rcldb.h</include>
     <include location="local" impldecl="in implementation">recollmain.ui.h</include>
 </includes>
 <variables>
@@ -467,6 +460,7 @@
     <variable>bool reslist_dblclck;</variable>
     <variable>Preview *curPreview;</variable>
     <variable>advsearch *asearchform;</variable>
+    <variable>Rcl::AdvSearchData currentQueryData;</variable>
     <variable>SortForm *sortform;</variable>
     <variable>UIPrefsDialog *uiprefs;</variable>
     <variable>int sortwidth;</variable>

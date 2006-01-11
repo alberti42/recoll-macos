@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.50 2006-01-10 12:55:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.51 2006-01-11 15:08:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <unistd.h>
@@ -136,7 +136,7 @@ bool Rcl::Db::open(const string& dir, OpenMode mode)
     } catch (...) {
 	ermsg = "Caught unknown exception";
     }
-    LOGERR(("Rcl::Db::open: exception while opening '%s': %s\n", 
+    LOGERR(("Rcl::Db::open: exception while opening [%s]: %s\n", 
 	    dir.c_str(), ermsg));
     return false;
 }
@@ -578,7 +578,7 @@ bool Rcl::Db::createStemDb(const string& lang)
 	    string::iterator sit = (*it).begin(), eit = sit + (*it).length();
 	    if ((sit = find_if(sit, eit, p_notlowerorutf)) != eit) {
 		++nostem;
-		// LOGDEB(("stemskipped: '%s', because of 0x%x\n", 
+		// LOGDEB(("stemskipped: [%s], because of 0x%x\n", 
 		// (*it).c_str(), *sit));
 		continue;
 	    }
@@ -631,7 +631,7 @@ bool Rcl::Db::createStemDb(const string& lang)
 	ermsg = "Caught unknown exception";
     }
     if (ermsg != "NOERROR") {
-	LOGERR(("Rcl::Db::createstemdb: exception while opening '%s': %s\n", 
+	LOGERR(("Rcl::Db::createstemdb: exception while opening [%s]: %s\n", 
 		stemdbdir.c_str(), ermsg));
 	return false;
     }
@@ -754,7 +754,7 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
     try {
 	Xapian::Stem stemmer(lang);
 	string stem = stemmer.stem_word(term);
-	LOGDEB(("stemexpand: '%s' stem-> '%s'\n", term.c_str(), stem.c_str()));
+	LOGDEB(("stemexpand: [%s] stem-> [%s]\n", term.c_str(), stem.c_str()));
 	// Try to fetch the doc from the stem db
 	string stemdbdir = stemdbname(ndb->basedir, lang);
 	Xapian::Database sdb(stemdbdir);
@@ -824,9 +824,12 @@ class wsQData : public TextSplitCB {
 // Turn string into list of xapian queries. There is little
 // interpretation done on the string (no +term -term or filename:term
 // stuff). We just separate words and phrases, and interpret
-// capitalized terms as wanting no stem expansion. Elements of the
-// list corresponding to a stem-expanded part are an OR query of the
-// expanded elements
+// capitalized terms as wanting no stem expansion. 
+// The final list contains one query for each term or phrase
+//   - Elements corresponding to a stem-expanded part are an OP_OR
+//     composition of the stem-expanded terms (or a single term query).
+//   - Elements corresponding to a phrase are an OP_PHRASE composition of the
+//     phrase terms (no stem expansion in this case)
 static void stringToXapianQueries(const string &iq,
 				  const string& stemlang,
 				  Native *ndb,
@@ -848,7 +851,7 @@ static void stringToXapianQueries(const string &iq,
 	wsQData splitData;
 	TextSplit splitter(&splitData, true);
 	splitter.text_to_words(*it);
-	LOGDEB(("strToXapianQ: splitter term count: %d\n", 
+	LOGDEB1(("strToXapianQ: splitter term count: %d\n", 
 		splitData.terms.size()));
 	switch(splitData.terms.size()) {
 	case 0: continue;// ??
@@ -869,7 +872,7 @@ static void stringToXapianQueries(const string &iq,
 			    nostemexp = true;
 		    }
 		}
-		LOGDEB(("Term: %s stem expansion: %s\n", 
+		LOGDEB1(("Term: %s stem expansion: %s\n", 
 			term.c_str(), nostemexp?"no":"yes"));
 
 		list<string> exp;  
@@ -903,7 +906,7 @@ static void stringToXapianQueries(const string &iq,
 bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts, 
 		       const string& stemlang)
 {
-    LOGDEB(("Rcl::Db::setQuery: q: '%s', opts 0x%x, stemlang %s\n", 
+    LOGDEB(("Rcl::Db::setQuery: q: [%s], opts 0x%x, stemlang %s\n", 
 	    iqstring.c_str(), (unsigned int)opts, stemlang.c_str()));
     Native *ndb = (Native *)pdata;
     if (!ndb)
@@ -1011,6 +1014,11 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     ndb->enquire = new Xapian::Enquire(ndb->db);
     ndb->enquire->set_query(ndb->query);
     ndb->mset = Xapian::MSet();
+    // Get the query description and trim the "Xapian::Query"
+    sdata.description = ndb->query.get_description();
+    if (sdata.description.find("Xapian::Query") == 0)
+	sdata.description = sdata.description.substr(strlen("Xapian::Query"));
+    LOGDEB(("Rcl::Db::SetQuery: Q: %s\n", sdata.description.c_str()));
     return true;
 }
 
@@ -1169,7 +1177,7 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 	last = first + ndb->mset.size() -1;
     }
 
-    LOGDEB1(("Rcl::Db::getDoc: Qry '%s' win [%d-%d] Estimated results: %d",
+    LOGDEB1(("Rcl::Db::getDoc: Qry [%s] win [%d-%d] Estimated results: %d",
 	     ndb->query.get_description().c_str(), 
 	     first, last,
 	     ndb->mset.get_matches_lower_bound()));

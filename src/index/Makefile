@@ -3,7 +3,7 @@ include ../mk/sysconf
 PROGS = recollindex csguess mimetype
 SRCS = recollindex.cpp
 
-all: $(PROGS) 
+all: depend $(PROGS) 
 
 RECOLLINDEX_OBJS= recollindex.o $(BIGLIB) $(MIMELIB)
 recollindex : $(RECOLLINDEX_OBJS)

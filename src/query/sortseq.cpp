@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.4 2005-12-05 12:02:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.5 2006-01-11 15:08:22 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 #include <algorithm>
 
@@ -66,7 +66,9 @@ public:
     } 
 };
 
-DocSeqSorted::DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec)
+DocSeqSorted::DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec,
+			   const std::string &t)
+    : DocSequence(t)
 {
     LOGDEB(("DocSeqSorted:: count %d\n", cnt));
     
@@ -87,7 +89,6 @@ DocSeqSorted::DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec)
     for (i = 0; i < m_count; i++)
 	m_docsp[i] = &m_docs[i];
 
-    m_title = iseq.title() + " (sorted)";
     CompareDocs cmp(sortspec);
     sort(m_docsp.begin(), m_docsp.end(), cmp);
 }

@@ -343,10 +343,16 @@ void RecollMain::reslistTE_delayedclick()
 
     // Document number
     int reldocnum = reldocnumfromparnum(par);
-    // Bad number or already displayed. Forget it
-    if (reldocnum < 0)
+
+    if (reldocnum < 0) {
+	// Bad number: must have clicked on header. Show details of query
+	QString desc = tr("Query details") + ": " + 
+	    currentQueryData.description.c_str();
+	QMessageBox::information(this, tr("Query details"), desc);
 	return;
-    startPreview(reslist_winfirst + reldocnum);
+    } else {
+	startPreview(reslist_winfirst + reldocnum);
+    }
 }
 
 // User asked to start query. Send it to the db aand call
@@ -389,12 +395,13 @@ void RecollMain::startAdvSearch(Rcl::AdvSearchData sdata)
 	delete docsource;
 
     if (sortwidth > 0) {
-	DocSequenceDb myseq(rcldb);
-	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs);
+	DocSequenceDb myseq(rcldb, tr("Query results"));
+	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
+				     tr("Query results (sorted)"));
     } else {
-	docsource = new DocSequenceDb(rcldb);
+	docsource = new DocSequenceDb(rcldb, tr("Query results"));
     }
-
+    currentQueryData = sdata;
     showResultPage();
 }
 
@@ -781,22 +788,23 @@ void RecollMain::startManual()
     startHelpBrowser();
 }
 
-
 void RecollMain::showDocHistory()
 {
     LOGDEB(("RecollMain::showDocHistory\n"));
     reslist_winfirst = -1;
     curPreview = 0;
-
     if (docsource)
 	delete docsource;
 
     if (sortwidth > 0) {
-	DocSequenceHistory myseq(rcldb, history);
-	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs);
+	DocSequenceHistory myseq(rcldb, history, tr("Document history"));
+	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
+				     tr("Document history (sorted)"));
     } else {
-	docsource = new DocSequenceHistory(rcldb, history);
+	docsource = new DocSequenceHistory(rcldb, history, 
+					   tr("Document history"));
     }
+    currentQueryData.erase();
     showResultPage();
 }
 
