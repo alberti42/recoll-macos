@@ -331,6 +331,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    followed by manual. You can use the This exact phrase field of the
    advanced search dialog to the same effect.
 
+   Query explanation. You can get an exact description of what the query
+   looked for, including stem expansion, and boolean operators used, by
+   clicking on the result list header.
+
    Quitting. Entering ^Q almost anywhere will close the application.
 
    Closing previews. Entering ^W in a preview tab will close it (and, for the
