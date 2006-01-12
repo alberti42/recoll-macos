@@ -330,6 +330,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Query details</source>
         <translation>Détail de la recherche</translation>
     </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation>Document inaccessible</translation>
+    </message>
+    <message>
+        <source>History data</source>
+        <translation>Données d&apos;historique</translation>
+    </message>
 </context>
 <context>
     <name>SortForm</name>
