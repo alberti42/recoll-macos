@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.51 2006-01-11 15:08:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.52 2006-01-12 09:13:55 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <unistd.h>
@@ -1211,9 +1211,9 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
     const char *ermsg = "";
     try {
 	if (!ndb->db.term_exists(pathterm)) {
-	    LOGDEB(("Db::getDoc: path inexistant: [%s] len %d\n", 
-		    pathterm.c_str(), pathterm.length()));
-	    return false;
+	    char len[20];
+	    sprintf(len, "%d", pathterm.length());
+	    throw string("path inexistant: [") + pathterm +"] length " + len;
 	}
 	for (Xapian::PostingIterator docid = 
 		 ndb->db.postlist_begin(pathterm);
@@ -1235,6 +1235,10 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
     }
     if (*ermsg) {
 	LOGERR(("Rcl::Db::getDoc: %s\n", ermsg));
+	// Initialize what we can anyway. If this is history, caller
+	// will make partial display
+	doc.ipath = ipath;
+	doc.url = string("file://") + fn;
     }
     return false;
 }

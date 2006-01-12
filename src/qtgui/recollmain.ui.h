@@ -486,9 +486,9 @@ void RecollMain::showResultPage()
 	doc.erase();
 
 	if (!docsource->getDoc(reslist_winfirst + i, doc, &percent, &sh)) {
-	    if (i == 0) 
-		reslist_winfirst = -1;
-	    break;
+	    // This may very well happen for history if the doc has
+	    // been removed since. So don't treat it as fatal.
+	    doc.abstract = string(tr("Unavailable document").utf8());
 	}
 	if (i == 0) {
 	    // Display header
