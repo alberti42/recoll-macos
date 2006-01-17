@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.6 2005-12-13 12:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.7 2006-01-17 09:31:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_FSTREEWALK
@@ -63,7 +63,11 @@ bool FsTreeWalker::addSkippedName(const string& pattern)
     data->skippedNames.push_back(pattern);
     return true;
 }
-
+bool FsTreeWalker::setSkippedNames(const list<string> &patterns)
+{
+    data->skippedNames = patterns;
+    return true;
+}
 void FsTreeWalker::clearSkippedNames()
 {
     data->skippedNames.clear();
@@ -195,13 +199,20 @@ class myCB : public FsTreeWalkerCB {
 
 int main(int argc, const char **argv)
 {
-    if (argc != 2) {
-	cerr << "Usage: fstreewalk <topdir>" << endl;
+    if (argc < 2) {
+	cerr << "Usage: fstreewalk <topdir> [ignpat [ignpat] ...]" << endl;
 	exit(1);
     }
+    argv++;argc--;
+    string topdir = *argv++;argc--;
+    list<string> ignpats;
+    while (argc > 0) {
+	ignpats.push_back(*argv++);argc--;
+    }
     FsTreeWalker walker;
+    walker.setSkippedNames(ignpats);
     myCB cb;
-    walker.walk(argv[1], cb);
+    walker.walk(topdir, cb);
     if (walker.getErrCnt() > 0)
 	cout << walker.getReason();
 }

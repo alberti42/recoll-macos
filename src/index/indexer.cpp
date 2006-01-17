@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.21 2006-01-09 16:53:31 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.22 2006-01-17 09:31:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
@@ -46,7 +46,7 @@ DbIndexer::~DbIndexer() {
     db.close();
 }
 
-
+// Index each directory in the topdirs for a given db
 bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 {
     if (!init(resetbefore))
@@ -63,17 +63,12 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 
 	// Set up skipped patterns for this subtree. This probably should be
 	// done in the directory change code in processone() instead.
-	{
-	    walker.clearSkippedNames();
-	    string skipped; 
-	    if (config->getConfParam("skippedNames", skipped)) {
-		list<string> skpl;
-		stringToStrings(skipped, skpl);
-		list<string>::const_iterator it;
-		for (it = skpl.begin(); it != skpl.end(); it++) {
-		    walker.addSkippedName(*it);
-		}
-	    }
+	walker.clearSkippedNames();
+	string skipped; 
+	if (config->getConfParam("skippedNames", skipped)) {
+	    list<string> skpl;
+	    stringToStrings(skipped, skpl);
+	    walker.setSkippedNames(skpl);
 	}
 
 	// Walk the directory tree

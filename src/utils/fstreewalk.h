@@ -1,15 +1,25 @@
 #ifndef _FSTREEWALK_H_INCLUDED_
 #define _FSTREEWALK_H_INCLUDED_
-/* @(#$Id: fstreewalk.h,v 1.3 2005-04-04 13:18:47 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: fstreewalk.h,v 1.4 2006-01-17 09:31:10 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+#include <list>
 
 #ifndef NO_NAMESPACES
 using std::string;
+using std::list;
 #endif
 
 class FsTreeWalkerCB;
 
+/**
+ * Class implementing a unix directory recursive walk.
+ *
+ * A user-defined function object is called for every file or
+ * directory. Patterns to be ignored can be set before starting the
+ * walk. Options control whether we follow symlinks and whether we recurse
+ * on subdirectories.
+ */
 class FsTreeWalker {
  public:
     enum CbFlag {FtwRegular, FtwDirEnter, FtwDirReturn};
@@ -19,16 +29,26 @@ class FsTreeWalker {
 
     FsTreeWalker(Options opts = FtwOptNone);
     ~FsTreeWalker();
-    Status walk(const std::string &dir, FsTreeWalkerCB& cb);
-    std::string getReason();
+    /** 
+     * Begin file system walk.
+     * @param dir is not checked against the ignored patterns (this is 
+     *     a feature and must not change.
+     * @param cb the function object that will be called back for every 
+     *    file-system object (called both at entry and exit for directories).
+     */
+    Status walk(const string &dir, FsTreeWalkerCB& cb);
+    /** Get explanation for error */
+    string getReason();
     int getErrCnt();
-    bool addSkippedName(const std::string &pattern); // Add a pattern
-						     // for directory
-						     // entries (file
-						     // or dir) to be
-						     // ignored (ie:
-						     // #* , *~)
-    void clearSkippedNames(); // Clear all patterns
+    /**
+     * Add a pattern to the list of things (file or dir) to be ignored
+     * (ie: #* , *~)
+     */
+    bool addSkippedName(const string &pattern); 
+    /** Set the ignored patterns list */
+    bool setSkippedNames(const list<string> &patlist);
+    /** Clear the ignored patterns list */
+    void clearSkippedNames();
 
  private:
     class Internal;
