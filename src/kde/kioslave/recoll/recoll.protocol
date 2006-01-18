@@ -1,0 +1,9 @@
+[Protocol]
+exec=kio_recoll
+protocol=recoll
+input=none
+output=filesystem
+reading=true
+defaultMimeType=text/html
+Icon=help_index
+Class=:local
