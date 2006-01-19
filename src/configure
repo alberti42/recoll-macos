@@ -2296,6 +2296,8 @@ ac_config_files="$ac_config_files recollinstall"
 
 ac_config_files="$ac_config_files sampleconf/recoll.conf"
 
+ac_config_files="$ac_config_files Makefile"
+
 
 for d in bincimapmime index lib query
 do
@@ -2802,6 +2804,7 @@ do
   "mk/localdefs" ) CONFIG_FILES="$CONFIG_FILES mk/localdefs" ;;
   "recollinstall" ) CONFIG_FILES="$CONFIG_FILES recollinstall" ;;
   "sampleconf/recoll.conf" ) CONFIG_FILES="$CONFIG_FILES sampleconf/recoll.conf" ;;
+  "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;

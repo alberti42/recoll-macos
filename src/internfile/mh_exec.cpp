@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.3 2005-11-24 07:16:15 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.4 2006-01-19 17:11:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include "execmd.h"
@@ -24,7 +24,7 @@ MimeHandlerExec::mkDoc(RclConfig *conf, const string &fn,
 	return MimeHandler::MHError;
     }
     // Command name
-    string cmd = find_filter(conf, params.front());
+    string cmd = conf->findFilter(params.front());
     
     // Build parameter list: delete cmd name and add the file name
     list<string>::iterator it = params.begin();

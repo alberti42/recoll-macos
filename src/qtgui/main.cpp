@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.28 2006-01-04 11:33:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.29 2006-01-19 17:11:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -30,7 +30,7 @@ using Rcl::AdvSearchData;
 
 #include "recollmain.h"
 
-static const char *recollprefix = RECOLL_PREFIX;
+static const char *recoll_datadir = RECOLL_DATADIR;
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
@@ -137,8 +137,7 @@ int main( int argc, char ** argv )
     a.installTranslator( &qt );
 
     // Translations for Recoll
-    recollsharedir = path_cat(recollprefix, "share/recoll");
-    string translatdir = path_cat(recollsharedir, "translations");
+    string translatdir = path_cat(recoll_datadir, "translations");
     QTranslator translator( 0 );
     // QTextCodec::locale() returns $LANG
     translator.load( QString("recoll_") + QTextCodec::locale(), 
@@ -175,7 +174,7 @@ int main( int argc, char ** argv )
 
     rclconfig->getConfParam("iconsdir", iconsdir);
     if (iconsdir.empty()) {
-	iconsdir = path_cat(recollsharedir, "images");
+	iconsdir = path_cat(recoll_datadir, "images");
     } else {
 	iconsdir = path_tildexpand(iconsdir);
     }
@@ -232,7 +231,7 @@ bool startHelpBrowser(const string &iurl)
 {
     string url;
     if (iurl.empty()) {
-	url = path_cat(recollsharedir, "doc");
+	url = path_cat(recoll_datadir, "doc");
 	url = path_cat(url, "usermanual.html");
 	url = string("file://") + url;
     } else

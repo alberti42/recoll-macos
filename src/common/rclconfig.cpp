@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.18 2006-01-10 12:58:39 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.19 2006-01-19 17:11:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <stdio.h>
@@ -23,13 +23,11 @@ using namespace std;
 static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf"};
 static int ncffiles = sizeof(configfiles) / sizeof(char *);
 
-static bool createConfig(string &reason)
+static bool createConfig(const string &datadir, string &reason)
 {
-    const char *cprefix = getenv("RECOLL_PREFIX");
-    if (cprefix == 0)
-	cprefix = RECOLL_PREFIX;
-    string prefix = path_cat(cprefix, "share/recoll/examples");
-
+    // Samples directory
+    string exdir = path_cat(datadir, "examples");
+    // User's 
     string recolldir = path_tildexpand("~/.recoll");
     if (mkdir(recolldir.c_str(), 0755) < 0) {
 	reason += string("mkdir(") + recolldir + ") failed: " + 
@@ -37,7 +35,7 @@ static bool createConfig(string &reason)
 	return false;
     }
     for (int i = 0; i < ncffiles; i++) {
-	string src = path_cat((const string&)prefix, string(configfiles[i]));
+	string src = path_cat((const string&)exdir, string(configfiles[i]));
 	string dst = path_cat((const string&)recolldir, string(configfiles[i])); 
 	if (!copyfile(src.c_str(), dst.c_str(), reason)) {
 	    LOGERR(("Copyfile failed: %s\n", reason.c_str()));
@@ -49,8 +47,8 @@ static bool createConfig(string &reason)
 
 
 RclConfig::RclConfig()
-    : m_ok(false), conf(0), mimemap(0), mimeconf(0), stopsuffixes(0)
-
+    : m_ok(false), m_conf(0), mimemap(0), mimeconf(0), mimemap_local(0),
+      stopsuffixes(0)
 {
     static int loginit = 0;
     if (!loginit) {
@@ -59,35 +57,45 @@ RclConfig::RclConfig()
 	loginit = 1;
     }
 
+    // Compute our data dir name, typically /usr/local/share/recoll
+    const char *cdatadir = getenv("RECOLL_DATADIR");
+    if (cdatadir == 0) {
+	// If not in environment, use the compiled-in constant. 
+	m_datadir = RECOLL_DATADIR;
+    } else {
+	m_datadir = cdatadir;
+    }
+
     const char *cp = getenv("RECOLL_CONFDIR");
     if (cp) {
-	confdir = cp;
+	m_confdir = cp;
     } else {
-	confdir = path_home();
-	confdir += ".recoll/";
+	m_confdir = path_home();
+	m_confdir += ".recoll/";
     }
-    string cfilename = path_cat(confdir, "recoll.conf");
+    string cfilename = path_cat(m_confdir, "recoll.conf");
 
-    if (access(confdir.c_str(), 0) != 0 || access(cfilename.c_str(), 0) != 0) {
-	if (!createConfig(reason))
+    if (access(m_confdir.c_str(), 0) != 0 || 
+	access(cfilename.c_str(), 0) != 0) {
+	if (!createConfig(m_datadir, reason))
 	    return;
     }
 
     // Open readonly here so as not to casually create a config file
-    conf = new ConfTree(cfilename.c_str(), true);
-    if (conf == 0 || 
-	(conf->getStatus() != ConfSimple::STATUS_RO && 
-	 conf->getStatus() != ConfSimple::STATUS_RW)) {
+    m_conf = new ConfTree(cfilename.c_str(), true);
+    if (m_conf == 0 || 
+	(m_conf->getStatus() != ConfSimple::STATUS_RO && 
+	 m_conf->getStatus() != ConfSimple::STATUS_RW)) {
 	reason = string("No main configuration file: ") + cfilename + 
 	    " does not exist or cannot be parsed";
 	return;
     }
 
     string mimemapfile;
-    if (!conf->get("mimemapfile", mimemapfile, "")) {
+    if (!m_conf->get("mimemapfile", mimemapfile, "")) {
 	mimemapfile = "mimemap";
     }
-    string mpath  = path_cat(confdir, mimemapfile);
+    string mpath  = path_cat(m_confdir, mimemapfile);
     mimemap = new ConfTree(mpath.c_str(), true);
     if (mimemap == 0 ||
 	(mimemap->getStatus() != ConfSimple::STATUS_RO && 
@@ -99,10 +107,10 @@ RclConfig::RclConfig()
     // mimemap->list();
 
     string mimeconffile;
-    if (!conf->get("mimeconffile", mimeconffile, "")) {
+    if (!m_conf->get("mimeconffile", mimeconffile, "")) {
 	mimeconffile = "mimeconf";
     }
-    mpath = path_cat(confdir, mimeconffile);
+    mpath = path_cat(m_confdir, mimeconffile);
     mimeconf = new ConfTree(mpath.c_str(), true);
     if (mimeconf == 0 ||
 	(mimeconf->getStatus() != ConfSimple::STATUS_RO && 
@@ -210,10 +218,9 @@ string RclConfig::getMimeIconName(const string &mtype)
     return hs;
 }
 
-// Look up an executable filter.  
-// We look in RECOLL_FILTERSDIR, filtersdir param, then
-// let the system use the PATH
-string find_filter(RclConfig *conf, const string &icmd)
+// Look up an executable filter.  We look in $RECOLL_FILTERSDIR,
+// filtersdir in config file, then let the system use the PATH
+string RclConfig::findFilter(const string &icmd)
 {
     // If the path is absolute, this is it
     if (icmd[0] == '/')
@@ -222,19 +229,33 @@ string find_filter(RclConfig *conf, const string &icmd)
     string cmd;
     const char *cp;
 
+    // Filters dir from environment ?
     if ((cp = getenv("RECOLL_FILTERSDIR"))) {
 	cmd = path_cat(cp, icmd);
 	if (access(cmd.c_str(), X_OK) == 0)
 	    return cmd;
-    } else if (conf->getConfParam(string("filtersdir"), cmd)) {
+    } 
+    // Filters dir as configuration parameter?
+    if (getConfParam(string("filtersdir"), cmd)) {
 	cmd = path_cat(cmd, icmd);
 	if (access(cmd.c_str(), X_OK) == 0)
 	    return cmd;
-    } else {
-	cmd = path_cat(conf->getConfDir(), icmd);
-	if (access(cmd.c_str(), X_OK) == 0)
-	    return cmd;
-    }
+    } 
+
+    // Filters dir as datadir subdir. Actually the standard case, but
+    // this is normally the same value found in config file (previous step)
+    cmd = path_cat(m_datadir, "filters");
+    cmd = path_cat(cmd, icmd);
+    if (access(cmd.c_str(), X_OK) == 0)
+	return cmd;
+
+    // Last resort for historical reasons: check in personal config
+    // directory
+    cmd = path_cat(getConfDir(), icmd);
+    if (access(cmd.c_str(), X_OK) == 0)
+	return cmd;
+
+    // Let the shell try to find it...
     return icmd;
 }
 

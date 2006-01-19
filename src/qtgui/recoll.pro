@@ -33,7 +33,7 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  DEFINES += RECOLL_PREFIX=\"$(RECOLL_PREFIX)\"
+  DEFINES += RECOLL_DATADIR=\"$(RECOLL_DATADIR)\"
   LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
             $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
            -lz

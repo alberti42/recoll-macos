@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.13 2005-12-08 08:44:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.14 2006-01-19 17:11:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_INTERNFILE
@@ -33,7 +33,7 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
 	LOGERR(("uncompressfile: can't clear temp dir %s\n", tdir.c_str()));
 	return false;
     }
-    string cmd = find_filter(conf, cmdv.front());
+    string cmd = conf->findFilter(cmdv.front());
 
     // Substitute file name and temp dir in command elements
     list<string>::const_iterator it = cmdv.begin();

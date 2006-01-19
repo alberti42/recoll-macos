@@ -19,7 +19,7 @@ else
    usage
 fi
 
-echo "Installing to $PREFIX"
+
 test -n "$bindir" || bindir=${PREFIX}/bin
 test -n "$datadir" || datadir=${PREFIX}/share
 if test -z "$mandir" ; then 
@@ -30,7 +30,16 @@ if test -z "$mandir" ; then
    fi
 fi
 
-INSTALL=${INSTALL:="install -c"}
+if test -n "$DESTDIR" ; then
+   PREFIX=$DESTDIR/$PREFIX
+   bindir=$DESTDIR/$bindir
+   datadir=$DESTDIR/$datadir
+   mandir=$DESTDIR/$mandir
+fi
+
+echo "Installing to $PREFIX"
+
+INSTALL=${INSTALL:="install -c -v"}
 STRIP=${STRIP:=strip}
 
 test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \

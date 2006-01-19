@@ -1,6 +1,6 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.11 2006-01-10 11:07:21 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.12 2006-01-19 17:11:46 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -11,19 +11,25 @@ class RclConfig {
  public:
 
     RclConfig();
-    ~RclConfig() {delete conf;delete mimemap;delete mimeconf;}
+    ~RclConfig() {
+	delete m_conf;
+	delete mimemap;
+	delete mimeconf; 
+	delete mimemap_local;
+	delete stopsuffixes;
+    }
 
     bool ok() {return m_ok;}
     const string &getReason() {return reason;}
-    string getConfDir() {return confdir;}
+    string getConfDir() {return m_confdir;}
     //ConfTree *getConfig() {return m_ok ? conf : 0;}
 
     /// Get generic configuration parameter according to current keydir
     bool getConfParam(const string &name, string &value) 
     {
-	if (conf == 0)
+	if (m_conf == 0)
 	    return false;
-	return conf->get(name, value, keydir);
+	return m_conf->get(name, value, keydir);
     }
 
     /* 
@@ -36,9 +42,9 @@ class RclConfig {
     void setKeyDir(const string &dir) 
     {
 	keydir = dir;
-	conf->get("defaultcharset", defcharset, keydir);
+	m_conf->get("defaultcharset", defcharset, keydir);
 	string str;
-	conf->get("guesscharset", str, keydir);
+	m_conf->get("guesscharset", str, keydir);
 	guesscharset = stringToBool(str);
     }
 
@@ -65,11 +71,14 @@ class RclConfig {
     bool getGuessCharset() {return guesscharset;}
     std::list<string> getAllMimeTypes();
 
+    std::string findFilter(const std::string& cmd);
+
  private:
     int m_ok;
     string reason;    // Explanation for bad state
-    string   confdir; // Directory where the files are stored
-    ConfTree *conf;   // Parsed main configuration
+    string m_confdir; // Directory where the files are stored
+    string m_datadir; // Example: /usr/local/share/recoll
+    ConfTree *m_conf; // Parsed main configuration
     string keydir;    // Current directory used for parameter fetches.
     
     ConfTree *mimemap;  // These are independant of current keydir. 
@@ -82,6 +91,5 @@ class RclConfig {
     bool   guesscharset; // They are fetched initially or on setKeydir()
 };
 
-std::string find_filter(RclConfig *conf, const string& cmd);
 
 #endif /* _RCLCONFIG_H_INCLUDED_ */
