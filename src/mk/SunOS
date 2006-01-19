@@ -1,10 +1,10 @@
-include ../mk/commondefs
-include ../mk/localdefs
+include $(depth)/mk/commondefs
+include $(depth)/mk/localdefs
 
-CXXFLAGS = $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
+ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
          -DPUTENV_ARG_NOT_CONST 
 
-CC=gcc
-CXX=g++
+CC = gcc
+CXX = g++
 
 LIBSYS = -lpthread -lnsl -lsocket

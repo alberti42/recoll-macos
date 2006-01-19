@@ -550,7 +550,7 @@ void RecollMain::showResultPage()
 	    strftime(datebuf, 99, 
 		     "<i>Modified:</i>&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
 	}
-	string abst = stripMarkup(doc.abstract);
+	string abst = escapeHtml(doc.abstract);
 	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
 	if (!img_name.empty()) {
 	    result += "<img source=\"" + img_name + "\" align=\"left\">";

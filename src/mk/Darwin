@@ -1,7 +1,7 @@
-include ../mk/commondefs
-include ../mk/localdefs
+include $(depth)/mk/commondefs
+include $(depth)/mk/localdefs
 
-CXXFLAGS = $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
+ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
 	   -DHAVE_VASPRINTF=1 \
 	   -DHAVE_MKDTEMP=1
 

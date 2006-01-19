@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.6 2005-11-24 07:16:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.7 2006-01-19 12:01:42 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 
@@ -49,25 +49,6 @@ class myTextSplitCB : public TextSplitCB {
     }
 };
 
-// Just strip/escape things that would look like markup
-string stripMarkup(const string &in)
-{
-    string out;
-    for (string::size_type pos = 0; pos < in.length(); pos++) {
-	switch(in.at(pos)) {
-	case '<':
-	    out += "&lt;";
-	    break;
-	case '&':
-	    out += "&amp;";
-	    break;
-	default:
-	    out += in.at(pos);
-	}
-    }
-    return out;
-}
-
 // Fix result text for display inside the gui text window.
 //
 // To compute the term character positions in the output text, we have
@@ -83,6 +64,9 @@ string plaintorich(const string &in,  const list<string>& terms,
 
     termoffsets.erase(termoffsets.begin(), termoffsets.end());
 
+    // We first use the text splitter to break the text into words,
+    // and compare the words to the search terms, which yields the
+    // query terms positions inside the text
     myTextSplitCB cb(terms);
     TextSplit splitter(&cb, true);
     // Note that splitter returns the term locations in byte, not

@@ -1,15 +1,18 @@
 # Definitions mostly common to all systems, can be overridden by
 # sys-specific include
 
+COMMONCXXFLAGS = -Wall -Wno-unused -I. -I$(depth)/index \
+	       -I$(depth)/utils -I$(depth)/common \
+	       -I$(depth)/unac -I$(depth)/bincimapmime \
+	       -I/usr/local/include
 
-COMMONCXXFLAGS = -Wall -Wno-unused -g -I. -I../index -I../utils -I../common \
-	 -I../unac -I../bincimapmime -I/usr/local/include
+# We happen to be using gcc on all platforms for now. Can be overridden in
+# sys file anyway
+PIC_CXXFLAGS = -fPIC -DPIC
 
-BIGLIB = ../lib/librcl.a
-MIMELIB = ../bincimapmime/libmime.a
+BIGLIB = $(depth)/lib/librcl.a
+MIMELIB = $(depth)/bincimapmime/libmime.a
+
 RANLIB = test -f
+
 AR=ar
-
-INSTALL = install -c
-
-#QTDIR = /usr

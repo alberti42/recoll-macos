@@ -1,20 +1,18 @@
-# @(#$Id: Makefile,v 1.25 2006-01-14 11:48:03 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.26 2006-01-19 12:01:42 dockes Exp $  (C) 2005 J.F.Dockes
 
 all: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
 	cd bincimapmime; ${MAKE}
 	cd index; ${MAKE} recollindex
 	cd qtgui; PATH=${PATH}:${QTDIR}/bin; export PATH; qmake recoll.pro; \
-	   cat ../mk/sysconf Makefile | \
-	       ${MAKE} -f -
+	 cat ../mk/sysconf Makefile | ${MAKE} -f - depth=..
 
 mk/sysconf:
 	./configure
 
 common/rclversion.h: VERSION
-	(echo -n "static const char *rclversion= \"" && \
-	 echo -n `cat VERSION` && \
-	 echo "\";") > common/rclversion.h
+	echo 'static const char *rclversion = "'`cat VERSION`'";' \
+	   > common/rclversion.h
 
 static:
 	cd lib; ${MAKE}
@@ -22,9 +20,9 @@ static:
 	cd index; rm -f recollindex; \
 	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic recollindex
 	cd qtgui; PATH=${PATH}:${QTDIR}/bin; export PATH; qmake recoll.pro; \
-	   rm -f recoll; \
-	   cat ../mk/sysconf ../mk/localdefs Makefile | ${MAKE} -f - \
-	       BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic
+	   rm -f recoll;
+	cat ../mk/sysconf Makefile | \
+	   ${MAKE} -f - BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic depth=..
 
 clean:
 	cd common; ${MAKE} clean
@@ -38,7 +36,10 @@ clean:
 	rm -f qtgui/Makefile qtgui/preview/Makefile qtgui/recoll
 
 distclean: clean
-	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf recollinstall
+	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf \
+	   recollinstall \
+	   doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest
+	
 
 install: all
 	bindir=${bindir} datadir=${datadir} ./recollinstall ${prefix}

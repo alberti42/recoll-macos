@@ -1,6 +1,14 @@
+depth=../..
+include $(depth)/mk/sysconf
+
+all: kio_recoll.so 
+
 DEPS_CXXFLAGS =  -MT pop3.lo -MD -MP -MF .deps/pop3.Tpo
 
-INC_CXXFLAGS = -I. -I/usr/local/include -I/usr/X11R6/include
+INC_CXXFLAGS = -I. -I/usr/local/include -I/usr/X11R6/include \
+	     -I$(depth)/common -I$(depth)/query -I$(depth)/utils \
+	     -I$(depth)/qtgui
+
 PIC_CXXFLAGS = -fPIC -DPIC
 DEBUG_CXXFLAGS = -DNDEBUG -DNO_DEBUG -O2 -O
 LANG_CXXFLAGS = -fno-exceptions -fno-check-new -fno-common
@@ -15,14 +23,18 @@ LDFLAGS = -rpath=/usr/lib:/usr/local/lib \
 	-Wl,-export-dynamic -Wl,-soname -Wl,kio_recoll.so
 THREAD_LDFLAGS = -pthread
 
-kio_recoll.so : kio_recoll.o
-	c++ -shared $(LDFLAGS) $(THREAD_LDFLAGS) kio_recoll.o \
+kio_recoll.so : kio_recoll.o piclib/librcl.a
+	c++ -shared $(LDFLAGS) $(THREAD_LDFLAGS) \
+	    -Wl,--no-undefined \
+	    kio_recoll.o piclib/librcl.a \
+	    $(LIBXAPIAN) $(LIBICONV) \
 	    -L/usr/local/lib -L/usr/X11R6/lib -lkio -lkdeui -lkdesu \
 	    -lkdecore \
 	    -lDCOP \
 	    -lqt-mt \
 	    -lpng -lXext -lX11 -lSM -lICE -lXrender \
 	    -lz -lfam -lsasl2 -ljpeg -L/usr/lib -lstdc++ -lm \
+	    -lstdc++ -lc \
 	    -o kio_recoll.so 
 
 kio_recoll.o : kio_recoll.cpp kio_recoll.h
@@ -30,3 +42,8 @@ kio_recoll.o : kio_recoll.cpp kio_recoll.h
 	$(DEBUG_CXXFLAGS) $(LANG_CXXFLAGS) $(QT_CXXFLAGS) $(SYS_CXXFLAGS) \
 	$(THREAD_CXXFLAGS) \
 	-o kio_recoll.o
+
+piclib/librcl.a:
+	cd piclib;make
+
+.PHONY: all

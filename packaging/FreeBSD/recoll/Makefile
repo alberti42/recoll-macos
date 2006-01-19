@@ -1,6 +1,6 @@
 # New ports collection makefile for:   recoll
 # Date created:        5 December 2005
-# Whom:                J.F. Dockes
+# Whom:                J.F. Dockes <jean-francois.dockes@wanadoo.fr>
 #
 # $FreeBSD$
 #
@@ -18,7 +18,7 @@ LIB_DEPENDS=	xapian.8:${PORTSDIR}/databases/xapian-core \
 		qt-mt.3:${PORTSDIR}/x11-toolkits/qt33
 
 USE_QT_VER=	3
-MAKE_ENV=       QTDIR="${QT_PREFIX}" QMAKESPEC="freebsd-g++"
+MAKE_ENV=	QTDIR="${QT_PREFIX}" QMAKESPEC="freebsd-g++"
 GNU_CONFIGURE=	yes
 USE_GMAKE=	yes
 

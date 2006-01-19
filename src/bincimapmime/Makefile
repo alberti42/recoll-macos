@@ -1,3 +1,7 @@
+# @(#$Id: Makefile,v 1.6 2006-01-19 12:01:42 dockes Exp $  (C) 2005 J.F.Dockes
+
+depth = ..
+include $(depth)/mk/sysconf
 
 LIBS = libmime.a
 PROGS = trbinc
@@ -15,8 +19,8 @@ OBJS = mime-getpart.o mime-parsefull.o mime-parseonlyheader.o \
 libmime.a : $(OBJS)
 	 $(AR) ru libmime.a $(OBJS)
 
-.cc .o : 
-	$(CXX) $(CXXFLAGS) -c $<
+.cc.o:
+	$(CXX) $(ALL_CXXFLAGS) -c $<
 
 TRBINCOBJS = trbinc.o
 trbinc: trbinc.o
@@ -24,7 +28,7 @@ trbinc: trbinc.o
 
 depend: alldeps.stamp
 alldeps.stamp : $(SRCS)
-	$(CXX) -M $(CXXFLAGS) $(SRCS) > alldeps
+	$(CXX) -M $(ALL_CXXFLAGS) $(SRCS) > alldeps
 	touch alldeps.stamp
 
 clean:
@@ -32,5 +36,4 @@ clean:
 	rm -f alldeps.stamp
 	rm -f ${LIBS} ${PROGS} ${OBJS}
 
-include ../mk/sysconf
 include alldeps

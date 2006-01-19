@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.12 2006-01-04 11:33:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.13 2006-01-19 12:01:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #ifndef TEST_SMALLUT
 #include <string>
@@ -309,6 +309,25 @@ void trimstring(string &s, const char *ws)
     pos = s.find_last_not_of(ws);
     if (pos != string::npos && pos != s.length()-1)
 	s.replace(pos+1, string::npos, "");
+}
+
+// Escape things that would look like markup
+string escapeHtml(const string &in)
+{
+    string out;
+    for (string::size_type pos = 0; pos < in.length(); pos++) {
+	switch(in.at(pos)) {
+	case '<':
+	    out += "&lt;";
+	    break;
+	case '&':
+	    out += "&amp;";
+	    break;
+	default:
+	    out += in.at(pos);
+	}
+    }
+    return out;
 }
 
 #else

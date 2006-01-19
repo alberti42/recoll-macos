@@ -1,7 +1,8 @@
-include ../mk/commondefs
-include ../mk/localdefs
 
-CXXFLAGS = $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
+include $(depth)/mk/commondefs
+include $(depth)/mk/localdefs
+
+ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
 	 -D_GNU_SOURCE \
          -DPUTENV_ARG_NOT_CONST \
 	 -DHAVE_VASPRINTF=1 \

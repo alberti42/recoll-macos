@@ -35,11 +35,19 @@ rm -f index/recollindex qtgui/recoll
 make static || exit 1
 strip index/recollindex qtgui/recoll
 
-files="COPYING README INSTALL Makefile recollinstall
-filters sampleconf 
-index/recollindex qtgui/recoll qtgui/mtpics/*.png"
+files="COPYING README INSTALL VERSION Makefile recollinstall
+filters sampleconf doc/user doc/man
+index/recollindex qtgui/recoll qtgui/*.qm qtgui/mtpics/*.png"
 
 $TAR chf - $files  | (cd $topdir; $TAR xf -)
+
+# Remove any install dependancy
+chmod +w $topdir/Makefile
+sed -e '/^install:/c\
+install: ' < $topdir/Makefile > $topdir/toto && \
+	 mv $topdir/toto $topdir/Makefile
+
+
 (cd $targetdir ; \
     $TAR chf - $topdirsimple | \
     	gzip > $tarfile)
