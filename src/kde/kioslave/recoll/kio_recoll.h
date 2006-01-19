@@ -1,4 +1,5 @@
 #ifndef _RECOLL_H
+/* @(#$Id: kio_recoll.h,v 1.3 2006-01-19 14:57:59 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
 
 #include <string>
@@ -6,16 +7,12 @@
 #include <kio/global.h>
 #include <kio/slavebase.h>
 
-class RecollProtocol : public KIO::SlaveBase
-{
-public:
+class RecollProtocol : public KIO::SlaveBase {
+ public:
     RecollProtocol( const QCString &pool, const QCString &app );
     virtual ~RecollProtocol();
-    virtual void mimetype(const KURL& url);
     virtual void get( const KURL & url );
 
-    //    virtual void listDir( const KURL & url );
-    //    virtual void stat( const KURL & url );
  private:
     bool m_initok;
     RclConfig *m_rclconfig;
@@ -26,4 +23,5 @@ public:
     bool maybeOpenDb(string &reason);
     void outputError(const QString& errmsg);
 };
-#endif
+
+#endif // _RECOLL_H

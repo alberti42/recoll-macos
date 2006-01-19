@@ -28,13 +28,9 @@ kio_recoll.so : kio_recoll.o piclib/librcl.a
 	    -Wl,--no-undefined \
 	    kio_recoll.o piclib/librcl.a \
 	    $(LIBXAPIAN) $(LIBICONV) \
-	    -L/usr/local/lib -L/usr/X11R6/lib -lkio -lkdeui -lkdesu \
-	    -lkdecore \
-	    -lDCOP \
+	    -L/usr/local/lib -L/usr/X11R6/lib -lkio -lkdecore \
 	    -lqt-mt \
-	    -lpng -lXext -lX11 -lSM -lICE -lXrender \
-	    -lz -lfam -lsasl2 -ljpeg -L/usr/lib -lstdc++ -lm \
-	    -lstdc++ -lc \
+	    -L/usr/lib -lstdc++ -lm -lc \
 	    -o kio_recoll.so 
 
 kio_recoll.o : kio_recoll.cpp kio_recoll.h

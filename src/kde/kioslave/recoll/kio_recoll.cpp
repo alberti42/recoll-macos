@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.2 2006-01-19 12:01:42 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.3 2006-01-19 14:57:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -13,10 +13,7 @@ using namespace std;
 
 #include <qfile.h>
 
-#include <kglobal.h>
-#include <kurl.h>
 #include <kinstance.h>
-#include <kio/global.h>
 
 #include "rclconfig.h"
 #include "rcldb.h"
@@ -182,13 +179,6 @@ void RecollProtocol::get(const KURL & url)
 
     fprintf(stderr, "RecollProtocol::get: calling finished\n");
     finished();
-}
-
-void RecollProtocol::mimetype(const KURL & /*url*/)
-{
-  fprintf(stderr, "RecollProtocol::mimetype\n");
-  mimeType("text/html");
-  finished();
 }
 
 void RecollProtocol::outputError(const QString& errmsg)
