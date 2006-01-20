@@ -1,12 +1,12 @@
 #ifndef _IDXTHREAD_H_INCLUDED_
 #define _IDXTHREAD_H_INCLUDED_
-/* @(#$Id: idxthread.h,v 1.1 2005-02-01 17:20:05 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: idxthread.h,v 1.2 2006-01-20 10:01:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 class RclConfig;
 
 // These two deal with starting / stopping the thread itself, not indexing
 // sessions.
-extern void start_idxthread(RclConfig *cnf);
+extern void start_idxthread(const RclConfig& cnf);
 extern void stop_idxthread();
 
 extern int startindexing;

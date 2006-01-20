@@ -33,7 +33,7 @@ class DebugLog {
     int dodate;
     DebugLogWriter *writer;
   public:
-    DebugLog() : debuglevel(-1), dodate(0), writer(0) {}
+    DebugLog() : debuglevel(10), dodate(0), writer(0) {}
     DebugLog(DebugLogWriter *w) : debuglevel(-1), dodate(0), writer(w) {}
     virtual ~DebugLog() {}
     virtual void setwriter(DebugLogWriter *w) {writer = w;}

@@ -41,9 +41,12 @@ void IdxThread::run()
 
 static IdxThread idxthread;
 
-void start_idxthread(RclConfig *cnf)
+void start_idxthread(const RclConfig& cnf)
 {
-    ConfIndexer *ix = new ConfIndexer(cnf);
+    // We have to make a copy of the config (setKeydir changes it during 
+    // indexation)
+    RclConfig *myconf = new RclConfig(cnf);
+    ConfIndexer *ix = new ConfIndexer(myconf);
     idxthread.indexer = ix;
     idxthread.start();
 }
@@ -53,5 +56,3 @@ void stop_idxthread()
     stopidxthread = 1;
     idxthread.wait();
 }
-
-

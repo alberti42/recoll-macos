@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.19 2006-01-19 17:11:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.20 2006-01-20 10:01:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <stdio.h>
@@ -20,43 +20,9 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.19 2006-01-19 17:11:46 dockes E
 using namespace std;
 #endif /* NO_NAMESPACES */
 
-static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf"};
-static int ncffiles = sizeof(configfiles) / sizeof(char *);
-
-static bool createConfig(const string &datadir, string &reason)
-{
-    // Samples directory
-    string exdir = path_cat(datadir, "examples");
-    // User's 
-    string recolldir = path_tildexpand("~/.recoll");
-    if (mkdir(recolldir.c_str(), 0755) < 0) {
-	reason += string("mkdir(") + recolldir + ") failed: " + 
-	    strerror(errno);
-	return false;
-    }
-    for (int i = 0; i < ncffiles; i++) {
-	string src = path_cat((const string&)exdir, string(configfiles[i]));
-	string dst = path_cat((const string&)recolldir, string(configfiles[i])); 
-	if (!copyfile(src.c_str(), dst.c_str(), reason)) {
-	    LOGERR(("Copyfile failed: %s\n", reason.c_str()));
-	    return false;
-	}
-    }
-    return true;
-}
-
-
 RclConfig::RclConfig()
-    : m_ok(false), m_conf(0), mimemap(0), mimeconf(0), mimemap_local(0),
-      stopsuffixes(0)
 {
-    static int loginit = 0;
-    if (!loginit) {
-	DebugLog::setfilename("stderr");
-	DebugLog::getdbl()->setloglevel(10);
-	loginit = 1;
-    }
-
+    zeroMe();
     // Compute our data dir name, typically /usr/local/share/recoll
     const char *cdatadir = getenv("RECOLL_DATADIR");
     if (cdatadir == 0) {
@@ -77,7 +43,7 @@ RclConfig::RclConfig()
 
     if (access(m_confdir.c_str(), 0) != 0 || 
 	access(cfilename.c_str(), 0) != 0) {
-	if (!createConfig(m_datadir, reason))
+	if (!initUserConfig())
 	    return;
     }
 
@@ -86,7 +52,7 @@ RclConfig::RclConfig()
     if (m_conf == 0 || 
 	(m_conf->getStatus() != ConfSimple::STATUS_RO && 
 	 m_conf->getStatus() != ConfSimple::STATUS_RW)) {
-	reason = string("No main configuration file: ") + cfilename + 
+	m_reason = string("No main configuration file: ") + cfilename + 
 	    " does not exist or cannot be parsed";
 	return;
     }
@@ -100,7 +66,7 @@ RclConfig::RclConfig()
     if (mimemap == 0 ||
 	(mimemap->getStatus() != ConfSimple::STATUS_RO && 
 	 mimemap->getStatus() != ConfSimple::STATUS_RW)) {
-	reason = string("No mime map configuration file: ") + mpath + 
+	m_reason = string("No mime map configuration file: ") + mpath + 
 	    " does not exist or cannot be parsed";
 	return;
     }
@@ -115,13 +81,13 @@ RclConfig::RclConfig()
     if (mimeconf == 0 ||
 	(mimeconf->getStatus() != ConfSimple::STATUS_RO && 
 	 mimeconf->getStatus() != ConfSimple::STATUS_RW)) {
-	reason = string("No mime configuration file: ") + mpath + 
+	m_reason = string("No mime configuration file: ") + mpath + 
 	    " does not exist or cannot be parsed";
 	return;
     }
     //    mimeconf->list();
 
-    setKeyDir(string(""));
+    setKeyDir("");
 
     m_ok = true;
     return;
@@ -173,7 +139,7 @@ bool RclConfig::getStopSuffixes(list<string>& sufflist)
 {
     if (stopsuffixes == 0 && (stopsuffixes = new list<string>) != 0) {
 	string stp;
-	if (mimemap->get("recoll_noindex", stp, keydir)) {
+	if (mimemap && mimemap->get("recoll_noindex", stp, m_keydir)) {
 	    stringToStrings(stp, *stopsuffixes);
 	}
     }
@@ -188,7 +154,7 @@ bool RclConfig::getStopSuffixes(list<string>& sufflist)
 string RclConfig::getMimeTypeFromSuffix(const string &suff)
 {
     string mtype;
-    mimemap->get(suff, mtype, keydir);
+    mimemap->get(suff, mtype, m_keydir);
     return mtype;
 }
 
@@ -280,4 +246,54 @@ bool RclConfig::getUncompressor(const string &mtype, list<string>& cmd)
     list<string>::iterator it = tokens.begin();
     cmd.assign(++it, tokens.end());
     return true;
+}
+
+
+// Create initial user config by copying sample files
+static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf"};
+static int ncffiles = sizeof(configfiles) / sizeof(char *);
+bool RclConfig::initUserConfig()
+{
+    // Samples directory
+    string exdir = path_cat(m_datadir, "examples");
+    // User's 
+    string recolldir = path_tildexpand("~/.recoll");
+    if (mkdir(recolldir.c_str(), 0755) < 0) {
+	m_reason += string("mkdir(") + recolldir + ") failed: " + 
+	    strerror(errno);
+	return false;
+    }
+    for (int i = 0; i < ncffiles; i++) {
+	string src = path_cat((const string&)exdir, string(configfiles[i]));
+	string dst = path_cat((const string&)recolldir, string(configfiles[i])); 
+	if (!copyfile(src.c_str(), dst.c_str(), m_reason)) {
+	    LOGERR(("Copyfile failed: %s\n", m_reason.c_str()));
+	    return false;
+	}
+    }
+    return true;
+}
+
+void RclConfig::initFrom(const RclConfig& r)
+{
+    zeroMe();
+    if (!(m_ok = r.m_ok))
+	return;
+    m_reason = r.m_reason;
+    m_confdir = r.m_confdir;
+    m_datadir = r.m_datadir;
+    m_keydir = r.m_datadir;
+    // We should use reference-counted objects instead!
+    if (r.m_conf)
+	m_conf = new ConfTree(*(r.m_conf));
+    if (r.mimemap)
+	mimemap = new ConfTree(*(r.mimemap));
+    if (r.mimeconf)
+	mimeconf = new ConfTree(*(r.mimeconf));
+    if (r.mimemap_local)
+	mimemap_local = new ConfTree(*(r.mimemap_local));
+    if (r.stopsuffixes)
+	stopsuffixes = new std::list<std::string>(*(r.stopsuffixes));
+    defcharset = r.defcharset;
+    guesscharset = r.guesscharset;
 }

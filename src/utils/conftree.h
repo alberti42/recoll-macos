@@ -108,13 +108,43 @@ class ConfSimple {
 
     virtual std::string getFilename() {return filename;}
 
+    /**
+     * Copy constructor. Expensive but less so than a full rebuild
+     */
+    ConfSimple(const ConfSimple &rhs) : data(0) {
+	if ((status = rhs.status) == STATUS_ERROR)
+	    return;
+	filename = rhs.filename;
+	if (rhs.data) {
+	    data = new string(*(rhs.data));
+	}
+	submaps = rhs.submaps;
+    }
+
+    /**
+     * Assignement. This is expensive
+     */
+    ConfSimple& operator=(const ConfSimple &rhs) {
+	if (this != &rhs && (status = rhs.status) != STATUS_ERROR) {
+	    delete data;
+	    data = 0;
+	    filename = rhs.filename;
+	    if (rhs.data) {
+		data = new string(*(rhs.data));
+	    }
+	    submaps = rhs.submaps;
+	}
+	return *this;
+    }
+
  protected:
     bool dotildexpand;
  private:
+    StatusCode status;
     string filename; // set if we're working with a file
     string *data;    // set if we're working with an in-memory string
     map<string, map<string, string> > submaps;
-    StatusCode status;
+
     void parseinput(std::istream &input);
 };
 
@@ -141,9 +171,14 @@ class ConfTree : public ConfSimple {
     /**
      * Build the object by reading content from file.
      */
-    ConfTree(const char *fname, int readonly = 0)
+    ConfTree(const char *fname, int readonly = 0) 
 	: ConfSimple(fname, readonly, true) {}
     virtual ~ConfTree() {};
+    ConfTree(const ConfTree& r)	: ConfSimple(r) {};
+    ConfTree& operator=(const ConfTree& r) {
+	ConfSimple::operator=(r);
+	return *this;
+    }
 
     /** 
      * Get value for named parameter, from specified subsection, or its 

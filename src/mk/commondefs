@@ -1,7 +1,7 @@
-# Definitions mostly common to all systems, can be overridden by
-# sys-specific include
 
-COMMONCXXFLAGS = -Wall -Wno-unused -I. -I$(depth)/index \
+# Common/default for all systems, can be overridden by sys-specific include
+
+COMMONCXXFLAGS = -I. -I$(depth)/index \
 	       -I$(depth)/utils -I$(depth)/common \
 	       -I$(depth)/unac -I$(depth)/bincimapmime \
 	       -I/usr/local/include

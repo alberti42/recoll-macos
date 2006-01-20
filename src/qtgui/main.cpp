@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.29 2006-01-19 17:11:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.30 2006-01-20 10:01:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -149,9 +149,9 @@ int main( int argc, char ** argv )
     // Create main window and set its size to previous session's
     RecollMain w;
     mainWindow = &w;
-
     QSize s(prefs_mainwidth, prefs_mainheight);
     w.resize(s);
+
     w.allTermsCB->setChecked(prefs_ssall);
     string reason;
     rclconfig = recollinit(recollCleanup, sigcleanup, reason);
@@ -198,7 +198,7 @@ int main( int argc, char ** argv )
     w.connect(timer, SIGNAL(timeout()), &w, SLOT(periodic100()));
     timer->start(100);
 
-    if (!rcldb || !rcldb->open(dbdir, Rcl::Db::DbRO)) {
+    if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
 	startindexing = 1;
 	switch (QMessageBox::
 		question(0, "Recoll",
@@ -216,7 +216,7 @@ int main( int argc, char ** argv )
 	}
     }
 
-    start_idxthread(rclconfig);
+    start_idxthread(*rclconfig);
 
     // Let's go
     w.show();

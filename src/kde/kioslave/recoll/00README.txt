@@ -32,3 +32,6 @@ Implementation notes:
 - If you want to try, compile, then install kio_recoll.la kio_recoll.so
   wherever kde keeps its plugins (ie: lib/kde3), and recoll.protocol in the
   services directory (share/services ? look for other .protocol file).
+
+- I saw after doing the build/config mockup that kdevelop can generate a kio_slave project. This would certainly be the next thing to do.
+

@@ -1,6 +1,6 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.12 2006-01-19 17:11:46 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.13 2006-01-20 10:01:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -11,76 +11,97 @@ class RclConfig {
  public:
 
     RclConfig();
-    ~RclConfig() {
-	delete m_conf;
-	delete mimemap;
-	delete mimeconf; 
-	delete mimemap_local;
-	delete stopsuffixes;
+    bool ok() {return m_ok;}
+    const string &getReason() {return m_reason;}
+    /** Return the directory where this config is stored */
+    string getConfDir() {return m_confdir;}
+
+    /** Set current directory reference, and fetch automatic parameters. */
+    void setKeyDir(const string &dir) 
+    {
+	m_keydir = dir;
+	m_conf->get("defaultcharset", defcharset, m_keydir);
+	string str;
+	m_conf->get("guesscharset", str, m_keydir);
+	guesscharset = stringToBool(str);
     }
 
-    bool ok() {return m_ok;}
-    const string &getReason() {return reason;}
-    string getConfDir() {return m_confdir;}
-    //ConfTree *getConfig() {return m_ok ? conf : 0;}
-
-    /// Get generic configuration parameter according to current keydir
+    /** Get generic configuration parameter according to current keydir */
     bool getConfParam(const string &name, string &value) 
     {
 	if (m_conf == 0)
 	    return false;
-	return m_conf->get(name, value, keydir);
+	return m_conf->get(name, value, m_keydir);
     }
-
-    /* 
-     * Variants with autoconversion
-     */
+    /** Variant with autoconversion to int */
     bool getConfParam(const std::string &name, int *value);
+    /** Variant with autoconversion to bool */
     bool getConfParam(const std::string &name, bool *value);
+    /** Get default charset for current keydir (was set during setKeydir) */
+    const string &getDefCharset() {return defcharset;}
+    /** Get guessCharset for current keydir (was set during setKeydir) */
+    bool getGuessCharset() {return guesscharset;}
 
-    /// Set current directory reference, and fetch automatic parameters.
-    void setKeyDir(const string &dir) 
-    {
-	keydir = dir;
-	m_conf->get("defaultcharset", defcharset, keydir);
-	string str;
-	m_conf->get("guesscharset", str, keydir);
-	guesscharset = stringToBool(str);
-    }
 
     /** 
-     * Check if input mime type is a compressed one, and return command to 
-     * uncompress if it is
+     * Get list of ignored suffixes from mimemap
+     *
+     * The list is initialized on first call, and not changed for subsequent
+     * setKeydirs.
+     */
+    bool getStopSuffixes(std::list<std::string>& sufflist);
+
+    /** 
+     * Check in mimeconf if input mime type is a compressed one, and
+     * return command to uncompress if it is.
+     *
      * The returned command has substitutable places for input file name 
      * and temp dir name, and will return output name
      */
     bool getUncompressor(const std::string &mtpe, std::list<std::string>& cmd);
-    bool getStopSuffixes(std::list<std::string>& sufflist);
+
+    /** Use mimemap to compute mimetype */
     std::string getMimeTypeFromSuffix(const std::string &suffix);
-    std::string getMimeHandlerDef(const std::string &mtype);
-    /**
-     * Return external viewer exec string for given mime type
-     */
-    std::string getMimeViewerDef(const std::string &mtype);
-    /**
-     * Return icon name for mime type
-     */
+
+    /** Get input filter from mimeconf for mimetype */
+    std::string getMimeHandlerDef(const std::string &mimetype);
+
+    /** Get external viewer exec string from mimeconf for mimetype */
+    std::string getMimeViewerDef(const std::string &mimetype);
+
+    /** Get icon name from mimeconf for mimetype */
     string getMimeIconName(const string &mtype);
 
-    const string &getDefCharset() {return defcharset;}
-    bool getGuessCharset() {return guesscharset;}
+    /** Get a list of all indexable mime types defined in mimemap */
     std::list<string> getAllMimeTypes();
 
+    /** Find exec file for external filter. cmd is the command name from the
+     * command string returned by getMimeHandlerDef */
     std::string findFilter(const std::string& cmd);
 
+    ~RclConfig() {
+	freeAll();
+    }
+
+    RclConfig(const RclConfig &r) {
+	initFrom(r);
+    }
+    RclConfig& operator=(const RclConfig &r) {
+	if (this != &r) {
+	    freeAll();
+	    initFrom(r);
+	}
+	return *this;
+    }
+	
  private:
     int m_ok;
-    string reason;    // Explanation for bad state
+    string m_reason;    // Explanation for bad state
     string m_confdir; // Directory where the files are stored
     string m_datadir; // Example: /usr/local/share/recoll
+    string m_keydir;    // Current directory used for parameter fetches.
+
     ConfTree *m_conf; // Parsed main configuration
-    string keydir;    // Current directory used for parameter fetches.
-    
     ConfTree *mimemap;  // These are independant of current keydir. 
     ConfTree *mimeconf; 
     ConfTree *mimemap_local; // 
@@ -89,6 +110,31 @@ class RclConfig {
     // Parameters auto-fetched on setkeydir
     string defcharset;   // These are stored locally to avoid 
     bool   guesscharset; // They are fetched initially or on setKeydir()
+
+    /** Create initial user configuration */
+    bool initUserConfig();
+
+    /** Copy from other */
+    void initFrom(const RclConfig& r);
+    /** Init pointers to 0 */
+    void zeroMe() {
+	m_ok = false; 
+	m_conf = 0; 
+	mimemap = 0; 
+	mimeconf = 0; 
+	mimemap_local = 0; 
+	stopsuffixes = 0;
+    }
+    /** Free data then zero pointers */
+    void freeAll() {
+	delete m_conf;
+	delete mimemap;
+	delete mimeconf; 
+	delete mimemap_local;
+	delete stopsuffixes;
+	// just in case
+	zeroMe();
+    }
 };
 
 
