@@ -1,8 +1,8 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>RecollMain</class>
+<class>RclMainBase</class>
 <widget class="QMainWindow">
     <property name="name">
-        <cstring>RecollMain</cstring>
+        <cstring>RclMainBase</cstring>
     </property>
     <property name="geometry">
         <rect>
@@ -346,61 +346,61 @@
     <connection>
         <sender>fileExitAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>fileExit()</slot>
     </connection>
     <connection>
         <sender>fileStart_IndexingAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>fileStart_IndexingAction_activated()</slot>
     </connection>
     <connection>
         <sender>searchPB</sender>
         <signal>clicked()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>startSimpleSearch()</slot>
     </connection>
     <connection>
         <sender>queryText</sender>
         <signal>returnPressed()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>startSimpleSearch()</slot>
     </connection>
     <connection>
         <sender>reslistTE</sender>
         <signal>doubleClicked(int,int)</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>reslistTE_doubleClicked(int,int)</slot>
     </connection>
     <connection>
         <sender>reslistTE</sender>
         <signal>clicked(int,int)</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>reslistTE_clicked(int,int)</slot>
     </connection>
     <connection>
         <sender>helpAbout_RecollAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>showAboutDialog()</slot>
     </connection>
     <connection>
         <sender>userManualAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>startManual()</slot>
     </connection>
     <connection>
         <sender>toolsDoc_HistoryAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>showDocHistory()</slot>
     </connection>
     <connection>
         <sender>queryText</sender>
         <signal>textChanged(const QString&amp;)</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>searchTextChanged(const QString&amp;)</slot>
     </connection>
     <connection>
@@ -412,61 +412,37 @@
     <connection>
         <sender>toolsAdvanced_SearchAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>showAdvSearchDialog()</slot>
     </connection>
     <connection>
         <sender>toolsSort_parametersAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>showSortDialog()</slot>
     </connection>
     <connection>
         <sender>prevPageAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>resultPageBack()</slot>
     </connection>
     <connection>
         <sender>nextPageAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>showResultPage()</slot>
     </connection>
     <connection>
         <sender>preferencesQuery_PrefsAction</sender>
         <signal>activated()</signal>
-        <receiver>RecollMain</receiver>
+        <receiver>RclMainBase</receiver>
         <slot>showUIPrefs()</slot>
     </connection>
 </connections>
 <includes>
-    <include location="local" impldecl="in declaration">sortseq.h</include>
-    <include location="local" impldecl="in declaration">preview.h</include>
-    <include location="local" impldecl="in declaration">recoll.h</include>
-    <include location="local" impldecl="in declaration">advsearch.h</include>
-    <include location="local" impldecl="in declaration">sort.h</include>
-    <include location="local" impldecl="in declaration">uiprefs.h</include>
-    <include location="local" impldecl="in declaration">rcldb.h</include>
-    <include location="local" impldecl="in implementation">recollmain.ui.h</include>
 </includes>
 <variables>
-    <variable>int reslist_winfirst;</variable>
-    <variable>bool reslist_mouseDrag;</variable>
-    <variable>bool reslist_mouseDown;</variable>
-    <variable>int reslist_par;</variable>
-    <variable>int reslist_car;</variable>
-    <variable>bool reslist_waitingdbl;</variable>
-    <variable>bool reslist_dblclck;</variable>
-    <variable>Preview *curPreview;</variable>
-    <variable>advsearch *asearchform;</variable>
-    <variable>Rcl::AdvSearchData currentQueryData;</variable>
-    <variable>SortForm *sortform;</variable>
-    <variable>UIPrefsDialog *uiprefs;</variable>
-    <variable>int sortwidth;</variable>
-    <variable>RclSortSpec sortspecs;</variable>
-    <variable>DocSequence *docsource;</variable>
-    <variable>std::map&lt;int,int&gt; pageParaToReldocnums;</variable>
 </variables>
 <slots>
     <slot>fileExit()</slot>
@@ -476,29 +452,21 @@
     <slot>reslistTE_clicked( int par, int car )</slot>
     <slot>reslistTE_delayedclick()</slot>
     <slot>startSimpleSearch()</slot>
-    <slot>startAdvSearch( Rcl::AdvSearchData sdata )</slot>
     <slot>resPageUpOrBack()</slot>
     <slot>resPageDownOrNext()</slot>
     <slot>resultPageBack()</slot>
     <slot>showResultPage()</slot>
-    <slot>previewClosed( Preview * w )</slot>
+    <slot>previewClosed( QWidget * w )</slot>
     <slot>showAdvSearchDialog()</slot>
     <slot>showSortDialog()</slot>
     <slot>showAboutDialog()</slot>
     <slot>startManual()</slot>
     <slot>showDocHistory()</slot>
     <slot>searchTextChanged( const QString &amp; text )</slot>
-    <slot>sortDataChanged( int cnt, RclSortSpec spec )</slot>
     <slot>showUIPrefs()</slot>
     <slot>setUIPrefs()</slot>
 </slots>
 <functions>
-    <function access="private">init()</function>
-    <function returnType="bool">close( bool )</function>
-    <function access="private" returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
-    <function access="private" returnType="int">reldocnumfromparnum( int par )</function>
-    <function access="private">startPreview( int docnum )</function>
-    <function access="private">startNativeViewer( int docnum )</function>
 </functions>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>

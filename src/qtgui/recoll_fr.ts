@@ -18,10 +18,6 @@
         <translation>Impossible d&apos;ouvrir la base dans</translation>
     </message>
     <message>
-        <source>. Starting indexation</source>
-        <translation type="obsolete">. Démarrage de l&apos;indexation</translation>
-    </message>
-    <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
         <translation>Cliquer Annuler pour pouvoir editer le fichier de configuration avant que l&apos;indexation ne demarre, ou Ok pour continuer.</translation>
@@ -66,10 +62,6 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Alt+C</translation>
     </message>
     <message>
-        <source>Close Tab</source>
-        <translation type="obsolete">Fermer la tabulation</translation>
-    </message>
-    <message>
         <source>Clear</source>
         <translation>Effacer</translation>
     </message>
@@ -87,74 +79,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
 </context>
 <context>
-    <name>RecollMain</name>
-    <message>
-        <source>recoll</source>
-        <translation type="obsolete">recoll</translation>
-    </message>
-    <message>
-        <source>Search</source>
-        <translation>Rechercher</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>Effacer</translation>
-    </message>
-    <message>
-        <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
-    </message>
-    <message>
-        <source>Previous page</source>
-        <translation>Page précedente</translation>
-    </message>
-    <message>
-        <source>Next page</source>
-        <translation>Page suivante</translation>
-    </message>
+    <name>RclMain</name>
     <message>
         <source>Advanced search</source>
         <translation>Recherche avancée</translation>
     </message>
     <message>
-        <source>&amp;File</source>
-        <translation>&amp;Fichier</translation>
-    </message>
-    <message>
-        <source>Exit</source>
-        <translation>Quitter</translation>
-    </message>
-    <message>
-        <source>E&amp;xit</source>
-        <translation>&amp;Quitter</translation>
-    </message>
-    <message>
-        <source>Start Indexing</source>
-        <translation>Commencer l&apos;indexation</translation>
-    </message>
-    <message>
-        <source>Help</source>
-        <translation type="obsolete">Aide</translation>
-    </message>
-    <message>
         <source>About Recoll</source>
         <translation>À propos de Recoll</translation>
-    </message>
-    <message>
-        <source>&amp;Tools</source>
-        <translation>&amp;Outils</translation>
-    </message>
-    <message>
-        <source>&amp;Help</source>
-        <translation>&amp;Aide</translation>
-    </message>
-    <message>
-        <source>Ctrl+Q</source>
-        <translation type="obsolete">Ctrl+Q</translation>
-    </message>
-    <message>
-        <source>Doc History</source>
-        <translation type="obsolete">Historique documents</translation>
     </message>
     <message>
         <source>Indexing in progress</source>
@@ -167,10 +99,6 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Executing: [</source>
         <translation>Exécution de: [</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;</source>
-        <translation type="obsolete">&lt;b&gt;Affichage des résultats à partir de l&apos;indice %1 (taille maximum estimée %2)&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Cannot retrieve document info from database</source>
@@ -193,8 +121,93 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Impossible de créer la fenetre de visualisation</translation>
     </message>
     <message>
-        <source>Recoll</source>
-        <translation></translation>
+        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
+</source>
+        <translation>&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
+</translation>
+    </message>
+    <message>
+        <source>Sort criteria</source>
+        <translation>Critères de tri</translation>
+    </message>
+    <message>
+        <source>User interface preferences</source>
+        <translation>Préférences pour l&apos;interface utilisateur</translation>
+    </message>
+    <message>
+        <source>Query results</source>
+        <translation>Résultats de la recherche</translation>
+    </message>
+    <message>
+        <source>Query results (sorted)</source>
+        <translation>Résultats de la recherche (triés)</translation>
+    </message>
+    <message>
+        <source>Document history</source>
+        <translation>Historique des documents consultés</translation>
+    </message>
+    <message>
+        <source>Document history (sorted)</source>
+        <translation>Historique des documents consultés (trié)</translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation>Détail de la recherche</translation>
+    </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation>Document inaccessible</translation>
+    </message>
+    <message>
+        <source>History data</source>
+        <translation>Données d&apos;historique</translation>
+    </message>
+</context>
+<context>
+    <name>RclMainBase</name>
+    <message>
+        <source>Search</source>
+        <translation>Rechercher</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Effacer</translation>
+    </message>
+    <message>
+        <source>Ctrl+S</source>
+        <translation>Ctrl+S</translation>
+    </message>
+    <message>
+        <source>Previous page</source>
+        <translation>Page précedente</translation>
+    </message>
+    <message>
+        <source>Next page</source>
+        <translation>Page suivante</translation>
+    </message>
+    <message>
+        <source>&amp;File</source>
+        <translation>&amp;Fichier</translation>
+    </message>
+    <message>
+        <source>Exit</source>
+        <translation>Quitter</translation>
+    </message>
+    <message>
+        <source>E&amp;xit</source>
+        <translation>&amp;Quitter</translation>
+    </message>
+    <message>
+        <source>Start Indexing</source>
+        <translation>Commencer l&apos;indexation</translation>
+    </message>
+    <message>
+        <source>&amp;Tools</source>
+        <translation>&amp;Outils</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation>&amp;Aide</translation>
     </message>
     <message>
         <source>Erase search entry</source>
@@ -235,10 +248,6 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Result list</source>
         <translation>Liste de résultats</translation>
-    </message>
-    <message>
-        <source>Toolbar_2</source>
-        <translation type="obsolete">Toolbar_2</translation>
     </message>
     <message>
         <source>Start &amp;Indexing</source>
@@ -289,20 +298,6 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Configuration pour la &amp;recherche</translation>
     </message>
     <message>
-        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
-</source>
-        <translation>&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
-</translation>
-    </message>
-    <message>
-        <source>Sort criteria</source>
-        <translation>Critères de tri</translation>
-    </message>
-    <message>
-        <source>User interface preferences</source>
-        <translation>Préférences pour l&apos;interface utilisateur</translation>
-    </message>
-    <message>
         <source>User manual</source>
         <translation>Manuel</translation>
     </message>
@@ -311,32 +306,12 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>&amp;Manuel</translation>
     </message>
     <message>
-        <source>Query results</source>
-        <translation>Résultats de la recherche</translation>
+        <source>Recoll</source>
+        <translation>Recoll</translation>
     </message>
     <message>
-        <source>Query results (sorted)</source>
-        <translation>Résultats de la recherche (triés)</translation>
-    </message>
-    <message>
-        <source>Document history</source>
-        <translation>Historique des documents consultés</translation>
-    </message>
-    <message>
-        <source>Document history (sorted)</source>
-        <translation>Historique des documents consultés (trié)</translation>
-    </message>
-    <message>
-        <source>Query details</source>
-        <translation>Détail de la recherche</translation>
-    </message>
-    <message>
-        <source>Unavailable document</source>
-        <translation>Document inaccessible</translation>
-    </message>
-    <message>
-        <source>History data</source>
-        <translation>Données d&apos;historique</translation>
+        <source>About Recoll</source>
+        <translation>À propos de Recoll</translation>
     </message>
 </context>
 <context>
@@ -462,14 +437,6 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Searched file types</source>
         <translation>Type de fichier recherché</translation>
-    </message>
-    <message>
-        <source>--------&gt;</source>
-        <translation type="obsolete">--------&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;---------</source>
-        <translation type="obsolete">&lt;---------</translation>
     </message>
     <message>
         <source>Ignored file types</source>

@@ -4,14 +4,18 @@ LANGUAGE	= C++
 CONFIG	+= qt warn_on thread release debug
 
 SOURCES	+= main.cpp \
+	rclmain.cpp \
 	idxthread.cpp \
 	plaintorich.cpp
 
+HEADERS = rclmain.h
+
 FORMS	= recollmain.ui \
-	advsearch.ui \
-	preview/preview.ui \
-	sort.ui \
-	uiprefs.ui
+          advsearch.ui \
+	  preview/preview.ui \
+          sort.ui \
+          uiprefs.ui
+
 
 IMAGES	= images/filenew \
 	images/fileopen \

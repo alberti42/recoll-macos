@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.30 2006-01-20 10:01:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.31 2006-01-20 12:46:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -28,7 +28,7 @@ using Rcl::AdvSearchData;
 #include "history.h"
 #include "debuglog.h"
 
-#include "recollmain.h"
+#include "rclmain.h"
 
 static const char *recoll_datadir = RECOLL_DATADIR;
 
@@ -39,7 +39,7 @@ string tmpdir;
 string iconsdir;
 RclDHistory *history;
 static string dbdir;
-static RecollMain *mainWindow;
+static RclMainBase *mainWindow;
 static string recollsharedir;
 
 ///////////////////////// 
@@ -147,7 +147,7 @@ int main( int argc, char ** argv )
     rwSettings(false);
 
     // Create main window and set its size to previous session's
-    RecollMain w;
+    RclMain w;
     mainWindow = &w;
     QSize s(prefs_mainwidth, prefs_mainheight);
     w.resize(s);
