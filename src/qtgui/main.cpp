@@ -1,11 +1,14 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.31 2006-01-20 12:46:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.32 2006-01-20 14:58:57 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
 
 #include <qapplication.h>
-
+//#define WITH_KDE
+#ifdef WITH_KDE
+#include <kapplication.h>
+#endif
 #include <qtranslator.h>
 #include <qtextcodec.h> 
 #include <qthread.h>
@@ -23,9 +26,7 @@ using Rcl::AdvSearchData;
 #include "pathut.h"
 #include "recoll.h"
 #include "smallut.h"
-#include "wipedir.h"
 #include "rclinit.h"
-#include "history.h"
 #include "debuglog.h"
 
 #include "rclmain.h"
@@ -35,9 +36,6 @@ static const char *recoll_datadir = RECOLL_DATADIR;
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
 int recollNeedsExit;
-string tmpdir;
-string iconsdir;
-RclDHistory *history;
 static string dbdir;
 static RclMainBase *mainWindow;
 static string recollsharedir;
@@ -102,7 +100,7 @@ bool maybeOpenDb(string &reason)
     return true;
 }
 
-void recollCleanup()
+static void recollCleanup()
 {
     rwSettings(true);
     stop_idxthread();
@@ -110,11 +108,6 @@ void recollCleanup()
     rcldb = 0;
     delete rclconfig;
     rclconfig = 0;
-    if (tmpdir.length()) {
-	wipedir(tmpdir);
-	rmdir(tmpdir.c_str());
-	tmpdir.erase();
-    }
 }
 
 static void sigcleanup(int)
@@ -129,7 +122,11 @@ static void sigcleanup(int)
 
 int main( int argc, char ** argv )
 {
+#ifdef WITH_KDE
+    KApplication a(argc, argv, "recoll");
+#else
     QApplication a(argc, argv);
+#endif
 
     // translation file for Qt
     QTranslator qt( 0 );
@@ -146,13 +143,6 @@ int main( int argc, char ** argv )
 
     rwSettings(false);
 
-    // Create main window and set its size to previous session's
-    RclMain w;
-    mainWindow = &w;
-    QSize s(prefs_mainwidth, prefs_mainheight);
-    w.resize(s);
-
-    w.allTermsCB->setChecked(prefs_ssall);
     string reason;
     rclconfig = recollinit(recollCleanup, sigcleanup, reason);
     if (!rclconfig || !rclconfig->ok()) {
@@ -161,6 +151,14 @@ int main( int argc, char ** argv )
 	QMessageBox::critical(0, "Recoll",  msg);
 	exit(1);
     }
+
+    // Create main window and set its size to previous session's
+    RclMain w;
+    mainWindow = &w;
+    QSize s(prefs_mainwidth, prefs_mainheight);
+    w.resize(s);
+
+    w.allTermsCB->setChecked(prefs_ssall);
 
     if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
 	// Note: this will have to be replaced by a call to a
@@ -171,24 +169,6 @@ int main( int argc, char ** argv )
 	exit(1);
     }
     dbdir = path_tildexpand(dbdir);
-
-    rclconfig->getConfParam("iconsdir", iconsdir);
-    if (iconsdir.empty()) {
-	iconsdir = path_cat(recoll_datadir, "images");
-    } else {
-	iconsdir = path_tildexpand(iconsdir);
-    }
-
-    if (!maketmpdir(tmpdir)) {
-	QMessageBox::critical(0, "Recoll",
-			      a.translate("Main", 
-					 "Cannot create temporary directory"));
-	exit(1);
-    }
-
-    string historyfile = path_cat(rclconfig->getConfDir(), "history");
-    history = new RclDHistory(historyfile);
-
 
     rcldb = new Rcl::Db;
 

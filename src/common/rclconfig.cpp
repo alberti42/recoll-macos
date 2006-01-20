@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.20 2006-01-20 10:01:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.21 2006-01-20 14:58:57 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <stdio.h>
@@ -175,14 +175,28 @@ string RclConfig::getMimeViewerDef(const string &mtype)
 }
 
 /**
- * Return icon name
+ * Return icon name and path
  */
-string RclConfig::getMimeIconName(const string &mtype)
+string RclConfig::getMimeIconName(const string &mtype, string *path)
 {
-    string hs;
-    mimeconf->get(mtype, hs, "icons");
-    return hs;
+    string iconname;
+    mimeconf->get(mtype, iconname, "icons");
+    if (iconname.empty())
+	iconname = "document";
+
+    if (path) {
+	string iconsdir;
+	getConfParam("iconsdir", iconsdir);
+	if (iconsdir.empty()) {
+	    iconsdir = path_cat(m_datadir, "images");
+	} else {
+	    iconsdir = path_tildexpand(iconsdir);
+	}
+	*path = path_cat(iconsdir, iconname) + ".png";
+    }
+    return iconname;
 }
+
 
 // Look up an executable filter.  We look in $RECOLL_FILTERSDIR,
 // filtersdir in config file, then let the system use the PATH

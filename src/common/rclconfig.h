@@ -1,6 +1,6 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.13 2006-01-20 10:01:59 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.14 2006-01-20 14:58:57 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -70,7 +70,7 @@ class RclConfig {
     std::string getMimeViewerDef(const std::string &mimetype);
 
     /** Get icon name from mimeconf for mimetype */
-    string getMimeIconName(const string &mtype);
+    string getMimeIconName(const string &mtype, string *path = 0);
 
     /** Get a list of all indexable mime types defined in mimemap */
     std::list<string> getAllMimeTypes();

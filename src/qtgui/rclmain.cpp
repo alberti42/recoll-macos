@@ -88,6 +88,8 @@ void RclMain::init()
 	QFont nfont(prefs_reslistfontfamily, prefs_reslistfontsize);
 	reslistTE->setFont(nfont);
     }
+    string historyfile = path_cat(rclconfig->getConfDir(), "history");
+    m_history = new RclDHistory(historyfile);
 }
 
 // We also want to get rid of the advanced search form and previews
@@ -517,11 +519,7 @@ void RclMain::showResultPage()
 	gotone = true;
 
 	// Result list entry display: this must be exactly one paragraph
-	// TOBEDONE
-	//  - move abstract/keywords to  Detail window ?
-	//  - keywords matched ?
-	//  - language ?
-        //  - size ?
+	// We should probably display the size too   - size ?
 
 	string result;
 	if (!sh.empty())
@@ -531,13 +529,11 @@ void RclMain::showResultPage()
 
 	string img_name;
 	if (prefs_showicons) {
-	    string iconname = rclconfig->getMimeIconName(doc.mimetype);
-	    if (iconname.empty())
-		iconname = "document";
-	    string imgfile = iconsdir + "/" + iconname + ".png";
-
-	    LOGDEB1(("Img file; %s\n", imgfile.c_str()));
-	    QImage image(imgfile.c_str());
+	    string iconpath;
+	    string iconname = rclconfig->getMimeIconName(doc.mimetype,
+							 &iconpath);
+	    LOGDEB1(("Img file; %s\n", iconpath.c_str()));
+	    QImage image(iconpath.c_str());
 	    if (!image.isNull()) {
 		img_name = string("img_") + iconname;
 		QMimeSourceFactory::defaultFactory()->
@@ -726,7 +722,7 @@ void RclMain::startPreview(int docnum)
 	}
 	(void)curPreview->addEditorTab();
     }
-    history->enterDocument(fn, doc.ipath);
+    m_history->enterDocument(fn, doc.ipath);
     curPreview->loadFileInCurrentTab(fn, st.st_size, doc);
 }
 
@@ -779,7 +775,7 @@ void RclMain::startNativeViewer(int docnum)
 	stb->repaint(false);
 	XFlush(qt_xdisplay());
     }
-    history->enterDocument(fn, doc.ipath);
+    m_history->enterDocument(fn, doc.ipath);
     system(ncmd.c_str());
 }
 
@@ -805,11 +801,11 @@ void RclMain::showDocHistory()
 	delete docsource;
 
     if (sortwidth > 0) {
-	DocSequenceHistory myseq(rcldb, history, tr("Document history"));
+	DocSequenceHistory myseq(rcldb, m_history, tr("Document history"));
 	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
 				     tr("Document history (sorted)"));
     } else {
-	docsource = new DocSequenceHistory(rcldb, history, 
+	docsource = new DocSequenceHistory(rcldb, m_history, 
 					   tr("Document history"));
     }
     currentQueryData.erase();

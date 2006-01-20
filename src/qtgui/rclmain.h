@@ -68,7 +68,7 @@ protected:
     RclSortSpec sortspecs;
     DocSequence *docsource;
     std::map<int,int> pageParaToReldocnums;
-
+    RclDHistory *m_history;
 private:
     virtual void init();
     virtual bool eventFilter( QObject * target, QEvent * event );

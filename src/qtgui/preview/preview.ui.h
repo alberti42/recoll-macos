@@ -27,8 +27,8 @@ using std::pair;
 #include "internfile.h"
 #include "recoll.h"
 #include "plaintorich.h"
-
-extern int recollNeedsExit;
+#include "smallut.h"
+#include "wipedir.h"
 
 // We keep a list of data associated to each tab
 class TabData {
@@ -327,21 +327,33 @@ class LoadThread : public QThread {
     string filename;
     string ipath;
     string *mtype;
+    string tmpdir;
 
  public: 
     LoadThread(int *stp, Rcl::Doc *odoc, string fn, string ip, string *mt) 
 	: statusp(stp), out(odoc), filename(fn), ipath(ip), mtype(mt) 
-    {}
-   virtual void run() 
-   {
-       DebugLog::getdbl()->setloglevel(DEBDEB1);
-       FileInterner interner(filename, rclconfig, tmpdir, mtype);
-       if (interner.internfile(*out, ipath) != FileInterner::FIDone) {
-	   *statusp = -1;
-       } else {
-	   *statusp = 0;
-       }
-   }
+	{}
+    ~LoadThread() {
+	if (tmpdir.length()) {
+	    wipedir(tmpdir);
+	    rmdir(tmpdir.c_str());
+	}
+    }
+    virtual void run() {
+	DebugLog::getdbl()->setloglevel(DEBDEB1);
+	if (!maketmpdir(tmpdir)) {
+	    QMessageBox::critical(0, "Recoll",
+				  Preview::tr("Cannot create temporary directory"));
+	    *statusp = -1;
+	    return;
+	}
+	FileInterner interner(filename, rclconfig, tmpdir, mtype);
+	if (interner.internfile(*out, ipath) != FileInterner::FIDone) {
+	    *statusp = -1;
+	} else {
+	    *statusp = 0;
+	}
+    }
 };
 
 /* A thread to convert to rich text (mark search terms) */
