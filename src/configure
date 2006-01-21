@@ -2290,7 +2290,9 @@ cd ..
 ##################### End QT detection
 
 # We have to expand prefix in here, couldn't find a way to do it inside
-# the qt gui .pro file or Makefile
+# the qt gui .pro file or Makefile. This just means that you can't change
+# prefix at build time. It works at install time because we dont' use the
+# qtgui Makefile
 m_prefix=$prefix
 test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
