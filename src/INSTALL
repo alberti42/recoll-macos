@@ -51,9 +51,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 4.1.2. Building
 
-   Recoll has been built on Linux (redhat7.3, mandriva 2005), FreeBSD and
-   Solaris 8. If you build on another system, I would very much welcome
-   patches.
+   Recoll has been built on Linux (redhat7.3, mandriva 2005, Fedora Core 3),
+   FreeBSD and Solaris 8. If you build on another system, I would very much
+   welcome patches.
+
+   Depending on the qt configuration on your system, you may have to set the
+   QTDIR and QMAKESPECS variables in your environment:
+
+     * QTDIR should point to the directory above the one that holds the qt
+       include files (ie: qt.h).
+
+     * QMAKESPECS should be set to the name of one of the qt mkspecs
+       subdirectories (ie: linux-g++).
+
+   On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
+   is not needed because there is a default link in mkspecs/.
+
+   The Recoll configure script does a better job of checking these variables
+   after release 1.1.1. Before this, unexplained errors will occur during
+   compilation if the environment is not set up. Also, for 1.1.0 the qmake
+   command should be in your PATH (later releases can also find it in
+   $QTDIR/bin).
 
    Normal procedure:
 

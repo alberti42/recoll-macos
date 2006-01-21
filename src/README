@@ -393,9 +393,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   4.1.2. Building
 
-   Recoll has been built on Linux (redhat7.3, mandriva 2005), FreeBSD and
-   Solaris 8. If you build on another system, I would very much welcome
-   patches.
+   Recoll has been built on Linux (redhat7.3, mandriva 2005, Fedora Core 3),
+   FreeBSD and Solaris 8. If you build on another system, I would very much
+   welcome patches.
+
+   Depending on the qt configuration on your system, you may have to set the
+   QTDIR and QMAKESPECS variables in your environment:
+
+     * QTDIR should point to the directory above the one that holds the qt
+       include files (ie: qt.h).
+
+     * QMAKESPECS should be set to the name of one of the qt mkspecs
+       subdirectories (ie: linux-g++).
+
+   On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
+   is not needed because there is a default link in mkspecs/.
+
+   The Recoll configure script does a better job of checking these variables
+   after release 1.1.1. Before this, unexplained errors will occur during
+   compilation if the environment is not set up. Also, for 1.1.0 the qmake
+   command should be in your PATH (later releases can also find it in
+   $QTDIR/bin).
 
    Normal procedure:
 
@@ -526,12 +544,23 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
  *~ #* bin CVS  Cache caughtspam  tmp
 
            The list can be redefined for subdirectories, but is only actually
-           changed for the top level ones in topdirs
+           changed for the top level ones in topdirs.
+
+           The top-level directories are not affected by this list (that is,
+           a directory in topdirs might match and would still be indexed).
+
+           The list in the default configuration does not exclude hidden
+           directories (names beginning with a dot), which means that it may
+           index quite a few things that you do not want. On the other hand,
+           mail user agents like thunderbird usually store messages in hidden
+           directories, and you probably want this indexed. One possible
+           solution is to have .* in skippedNames, and add things like
+           ~/.thunderbird or ~/.evolution in topdirs.
 
    loglevel
 
            Verbosity level for recoll and recollindex. A value of 4 lists
-           quite a lot of debug/information messages. 3 only lists errors.
+           quite a lot of debug/information messages. 2 only lists errors.
 
    logfilename
 
@@ -601,6 +630,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    in some cases. Example: gaim logs have a .txt extension but should be
    handled specially, which is possible because they are usually all located
    in one place.
+
+   mimemap also has a recoll_noindex variable which is a list of suffixes.
+   Matching files will be skipped (avoids unnecessary decompressions or file
+   executions). This is partially redundant with skippedNames in the main
+   configuration file, with two differences: it will not affect directories,
+   and it can be changed for any subdirectory.
 
      ----------------------------------------------------------------------
 
