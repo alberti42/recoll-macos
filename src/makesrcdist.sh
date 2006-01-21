@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: makesrcdist.sh,v 1.7 2006-01-04 11:33:44 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: makesrcdist.sh,v 1.8 2006-01-21 15:36:05 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
 #set -x
@@ -58,6 +58,13 @@ cvs commit -m '' README INSTALL
 make clean
 yes | clean.O
 $TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
+
+# Fix the single/multiple page link in the header (we dont deliver the
+# multi-page version and the file name is wrong anyway
+sed -e '/\.\/index\.html/d' -e '/\.\/book\.html/d' \
+    < $topdir/doc/user/usermanual.html > $topdir/doc/user/u1.html
+diff $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
+mv -f $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
 
 CVSTAG="RECOLL-$versionforcvs"
 [ $dotag = "yes" ] && cvs tag -F $CVSTAG .

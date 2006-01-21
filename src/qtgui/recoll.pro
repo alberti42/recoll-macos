@@ -37,10 +37,12 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  DEFINES += RECOLL_DATADIR=\"$(RECOLL_DATADIR)\"
+
+  DEFINES += RECOLL_DATADIR=\"/usr/local/share\"
   LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
-            $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
+            $(BSTATIC) -L/usr/local/lib -lxapian -L/usr/local/lib -liconv $(BDYNAMIC) \
            -lz
+
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
   POST_TARGETDEPS = ../lib/librcl.a
 }

@@ -1,4 +1,4 @@
-# @(#$Id: Makefile.in,v 1.1 2006-01-19 17:11:45 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile.in,v 1.2 2006-01-21 15:36:05 dockes Exp $  (C) 2005 J.F.Dockes
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -12,7 +12,7 @@ all: mk/sysconf common/rclversion.h
 	cd bincimapmime; ${MAKE}
 	cd index; ${MAKE} recollindex
 	cd qtgui; PATH=${PATH}:${QTDIR}/bin; export PATH; qmake recoll.pro; \
-	 cat ../mk/sysconf Makefile | ${MAKE} -f - depth=.. 
+	  ${MAKE} depth=.. 
 
 mk/sysconf:
 	@echo "You need to run configure first" ; exit 1
@@ -27,10 +27,8 @@ static:
 	cd index; rm -f recollindex; \
 	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic recollindex
 	cd qtgui; PATH=${PATH}:${QTDIR}/bin; export PATH; qmake recoll.pro; \
-	   rm -f recoll;
-	cat ../mk/sysconf Makefile | \
-	   ${MAKE} -f - \
-	     BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic depth=.. 
+	   rm -f recoll; \
+	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic depth=.. 
 
 clean:
 	cd common; ${MAKE} clean

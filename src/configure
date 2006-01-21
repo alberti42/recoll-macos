@@ -2264,6 +2264,8 @@ it and/or set the QTDIR environment variable?" >&2;}
 fi
 
 cd qtgui
+# We just want a .pro file: no problem with unsubstituted variables
+cp recoll.pro.in recoll.pro
 ${QMAKE} recoll.pro
 if test $? != 0 ; then
    { { echo "$as_me:$LINENO: error: Cannot use qmake to generate a Makefile. Maybe you need to
@@ -2285,6 +2287,16 @@ installation. If there is no default mkspecs, you should also set QMAKESPEC" >&2
 fi
 cd ..
 
+##################### End QT detection
+
+# We have to expand prefix in here, couldn't find a way to do it inside
+# the qt gui .pro file or Makefile
+m_prefix=$prefix
+test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
+m_datadir=${m_prefix}/share
+QTRECOLL_DATADIR=${m_datadir}
+
+
 
 
 
@@ -2297,6 +2309,8 @@ ac_config_files="$ac_config_files recollinstall"
 ac_config_files="$ac_config_files sampleconf/recoll.conf"
 
 ac_config_files="$ac_config_files Makefile"
+
+ac_config_files="$ac_config_files qtgui/recoll.pro"
 
 
 for d in bincimapmime index lib query
@@ -2805,6 +2819,7 @@ do
   "recollinstall" ) CONFIG_FILES="$CONFIG_FILES recollinstall" ;;
   "sampleconf/recoll.conf" ) CONFIG_FILES="$CONFIG_FILES sampleconf/recoll.conf" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "qtgui/recoll.pro" ) CONFIG_FILES="$CONFIG_FILES qtgui/recoll.pro" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -2898,6 +2913,7 @@ s,@LIBXAPIAN@,$LIBXAPIAN,;t t
 s,@XAPIANCXXFLAGS@,$XAPIANCXXFLAGS,;t t
 s,@LIBICONV@,$LIBICONV,;t t
 s,@INCICONV@,$INCICONV,;t t
+s,@QTRECOLL_DATADIR@,$QTRECOLL_DATADIR,;t t
 CEOF
 
 _ACEOF

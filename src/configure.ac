@@ -93,6 +93,8 @@ it and/or set the QTDIR environment variable?])
 fi
 
 cd qtgui
+# We just want a .pro file: no problem with unsubstituted variables
+cp recoll.pro.in recoll.pro
 ${QMAKE} recoll.pro
 if test $? != 0 ; then
    AC_MSG_ERROR([Cannot use qmake to generate a Makefile. Maybe you need to
@@ -108,15 +110,28 @@ installation. If there is no default mkspecs, you should also set QMAKESPEC])
 fi
 cd ..
 
+##################### End QT detection
+
+# We have to expand prefix in here, couldn't find a way to do it inside 
+# the qt gui .pro file or Makefile. This just means that you can't change
+# prefix at build time. It works at install time because we dont' use the
+# qtgui Makefile
+m_prefix=$prefix
+test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
+m_datadir=${m_prefix}/share
+QTRECOLL_DATADIR=${m_datadir}
+
 AC_SUBST(LIBXAPIAN)
 AC_SUBST(XAPIANCXXFLAGS)
 AC_SUBST(LIBICONV)
 AC_SUBST(INCICONV)
+AC_SUBST(QTRECOLL_DATADIR)
 
 AC_CONFIG_FILES(mk/localdefs)
 AC_CONFIG_FILES(recollinstall)
 AC_CONFIG_FILES(sampleconf/recoll.conf)
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(qtgui/recoll.pro)
 
 for d in bincimapmime index lib query
 do 
