@@ -1,0 +1,122 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>SSearchBase</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>SSearchBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>563</width>
+            <height>560</height>
+        </rect>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout29</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>clearqPB</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="text">
+                        <string>Clear</string>
+                    </property>
+                    <property name="accel">
+                        <string>Ctrl+S</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Erase search entry</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>searchPB</cstring>
+                    </property>
+                    <property name="enabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="text">
+                        <string>Search</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Start query</string>
+                    </property>
+                </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>allTermsCB</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;All terms</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+A</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Do documents have to contain all terms in query?</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</string>
+                    </property>
+                </widget>
+                <widget class="QLineEdit">
+                    <property name="name">
+                        <cstring>queryText</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>7</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>8</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                        <size>
+                            <width>155</width>
+                            <height>0</height>
+                        </size>
+                    </property>
+                    <property name="frameShape">
+                        <enum>LineEditPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Sunken</enum>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Enter search terms here</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+</connections>
+<includes>
+    <include location="local" impldecl="in implementation">ssearchb.ui.h</include>
+</includes>
+<signals>
+    <signal>startSearch(Rcl::AdvSearchData)</signal>
+</signals>
+<slots>
+    <slot>searchTextChanged( const QString &amp; text )</slot>
+    <slot>startSimpleSearch()</slot>
+</slots>
+<functions>
+</functions>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
