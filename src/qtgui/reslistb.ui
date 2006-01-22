@@ -1,5 +1,5 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>ReslistBase</class>
+<class>ResListBase</class>
 <widget class="QWidget">
     <property name="name">
         <cstring>resListBase</cstring>
@@ -69,7 +69,28 @@
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">reslistb.ui.h</include>
+    <include location="local" impldecl="in declaration">docseq.h</include>
 </includes>
+<variables>
+    <variable access="public">int m_winfirst;</variable>
+    <variable access="public">bool m_mouseDrag;</variable>
+    <variable access="public">bool m_mouseDown;</variable>
+    <variable access="public">int m_par;</variable>
+    <variable access="public">int m_car;</variable>
+    <variable access="public">bool m_waitingdbl;</variable>
+    <variable access="public">bool m_dblclck;</variable>
+    <variable access="private">std::map&lt;int,int&gt; m_pageParaToReldocnums;</variable>
+    <variable access="private">DocSequence *m_docsource;</variable>
+</variables>
+<signals>
+    <signal>lastPageReached()</signal>
+    <signal>nextPageAvailable()</signal>
+    <signal>firstPageReached()</signal>
+    <signal>prevPageAvailable()</signal>
+    <signal>docDoubleClicked(int)</signal>
+    <signal>docClicked(int)</signal>
+    <signal>headerClicked()</signal>
+</signals>
 <slots>
     <slot>doubleClicked( int, int )</slot>
     <slot>clicked( int, int )</slot>
@@ -79,5 +100,9 @@
     <slot>resultPageBack()</slot>
     <slot>showResultPage()</slot>
 </slots>
+<functions>
+    <function access="private">init()</function>
+    <function returnType="int" access="private">reldocnumfromparnum( int )</function>
+</functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
