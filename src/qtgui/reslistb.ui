@@ -1,0 +1,83 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>ReslistBase</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>resListBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>198</width>
+            <height>144</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Result list</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>unnamed</cstring>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QTextEdit">
+                    <property name="name">
+                        <cstring>reslistTE</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>5</hsizetype>
+                            <vsizetype>5</vsizetype>
+                            <horstretch>2</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="textFormat">
+                        <enum>RichText</enum>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                    <property name="undoRedoEnabled">
+                        <bool>false</bool>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+    <connection>
+        <sender>reslistTE</sender>
+        <signal>doubleClicked( int , int )</signal>
+        <receiver>resListBase</receiver>
+        <slot>doubleClicked(int,int)</slot>
+    </connection>
+    <connection>
+        <sender>reslistTE</sender>
+        <signal>clicked( int , int )</signal>
+        <receiver>resListBase</receiver>
+        <slot>clicked(int,int)</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="local" impldecl="in implementation">reslistb.ui.h</include>
+</includes>
+<slots>
+    <slot>doubleClicked( int, int )</slot>
+    <slot>clicked( int, int )</slot>
+    <slot>delayedClick()</slot>
+    <slot>resPageUpOrBack()</slot>
+    <slot>resPageDownOrNext()</slot>
+    <slot>resultPageBack()</slot>
+    <slot>showResultPage()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
