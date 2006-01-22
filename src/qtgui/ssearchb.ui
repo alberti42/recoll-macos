@@ -8,9 +8,12 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>563</width>
-            <height>560</height>
+            <width>516</width>
+            <height>48</height>
         </rect>
+    </property>
+    <property name="caption">
+        <string>SSearchBase</string>
     </property>
     <vbox>
         <property name="name">
@@ -105,8 +108,33 @@
     </vbox>
 </widget>
 <connections>
+    <connection>
+        <sender>searchPB</sender>
+        <signal>clicked()</signal>
+        <receiver>SSearchBase</receiver>
+        <slot>startSimpleSearch()</slot>
+    </connection>
+    <connection>
+        <sender>queryText</sender>
+        <signal>returnPressed()</signal>
+        <receiver>SSearchBase</receiver>
+        <slot>startSimpleSearch()</slot>
+    </connection>
+    <connection>
+        <sender>queryText</sender>
+        <signal>textChanged(const QString&amp;)</signal>
+        <receiver>SSearchBase</receiver>
+        <slot>searchTextChanged(const QString&amp;)</slot>
+    </connection>
+    <connection>
+        <sender>clearqPB</sender>
+        <signal>clicked()</signal>
+        <receiver>queryText</receiver>
+        <slot>clear()</slot>
+    </connection>
 </connections>
 <includes>
+    <include location="local" impldecl="in declaration">recoll.h</include>
     <include location="local" impldecl="in implementation">ssearchb.ui.h</include>
 </includes>
 <signals>
@@ -116,7 +144,5 @@
     <slot>searchTextChanged( const QString &amp; text )</slot>
     <slot>startSimpleSearch()</slot>
 </slots>
-<functions>
-</functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
