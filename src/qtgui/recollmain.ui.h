@@ -18,30 +18,6 @@ void RclMainBase::periodic100()
 void RclMainBase::fileStart_IndexingAction_activated()
 {
 }
-void RclMainBase::reslistTE_doubleClicked( int , int )
-{
-}
-void RclMainBase::reslistTE_clicked( int , int  )
-{
-}
-void RclMainBase::reslistTE_delayedclick()
-{
-}
-void RclMainBase::startSimpleSearch()
-{
-}
-void RclMainBase::resPageUpOrBack()
-{
-}
-void RclMainBase::resPageDownOrNext()
-{
-}
-void RclMainBase::resultPageBack()
-{
-}
-void RclMainBase::showResultPage()
-{
-}
 void RclMainBase::previewClosed( QWidget * )
 {
 }
@@ -60,12 +36,24 @@ void RclMainBase::startManual()
 void RclMainBase::showDocHistory()
 {
 }
-void RclMainBase::searchTextChanged( const QString & )
-{
-}
 void RclMainBase::showUIPrefs()
 {
 }
 void RclMainBase::setUIPrefs()
+{
+}
+void RclMainBase::enableNextPage(bool)
+{
+}
+void RclMainBase::enablePrevPage(bool)
+{
+}
+void RclMainBase::startNativeViewer(int)
+{
+}
+void RclMainBase::startPreview(int)
+{
+}
+void RclMainBase::showQueryDetails()
 {
 }

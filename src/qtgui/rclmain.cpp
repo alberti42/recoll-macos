@@ -55,41 +55,32 @@ using std::pair;
 
 extern "C" int XFlush(void *);
 
-#ifndef MIN
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#endif
-
 void RclMain::init()
 {
-    reslist_winfirst = -1;
-    reslist_mouseDrag = false;
-    reslist_mouseDown = false;
-    reslist_par = -1;
-    reslist_car = -1;
-    reslist_waitingdbl = false;
-    reslist_dblclck = false;
     curPreview = 0;
     asearchform = 0;
     sortform = 0;
-    docsource = 0;
     sortwidth = 0;
     uiprefs = 0;
+    docsource = 0;
 
     // We manage pgup/down, but let ie the arrows for the editor to process
-    reslistTE->installEventFilter(this);
-    reslistTE->viewport()->installEventFilter(this);
-    // reslistTE->viewport()->setFocusPolicy(QWidget::NoFocus);
+    resList->reslistTE->installEventFilter(this);
+    resList->reslistTE->viewport()->installEventFilter(this);
+    // resList->viewport()->setFocusPolicy(QWidget::NoFocus);
 
     // Set the focus to the search terms entry:
-    queryText->setFocus();
+    sSearch->queryText->setFocus();
 
     // Set result list font according to user preferences.
     if (prefs_reslistfontfamily.length()) {
 	QFont nfont(prefs_reslistfontfamily, prefs_reslistfontsize);
-	reslistTE->setFont(nfont);
+	resList->setFont(nfont);
     }
     string historyfile = path_cat(rclconfig->getConfDir(), "history");
     m_history = new RclDHistory(historyfile);
+    connect(sSearch, SIGNAL(startSearch(Rcl::AdvSearchData)), 
+		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
 }
 
 // We also want to get rid of the advanced search form and previews
@@ -200,29 +191,29 @@ bool RclMain::eventFilter( QObject * target, QEvent * event )
 	if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
 	    recollNeedsExit = 1;
 	} else if (keyEvent->key() == Key_Prior) {
-	    resPageUpOrBack();
+	    resList->resPageUpOrBack();
 	    return true;
 	} else if (keyEvent->key() == Key_Next) {
-	    resPageDownOrNext();
+	    resList->resPageDownOrNext();
 	    return true;
 	}
-    } else if (target == reslistTE->viewport()) { 
+    } else if (target == resList->reslistTE->viewport()) { 
 	// We don't want btdown+drag+btup to be a click ! So monitor
 	// mouse events
 	if (event->type() == QEvent::MouseMove) {
-	    LOGDEB1(("reslistTE: MouseMove\n"));
-	    if (reslist_mouseDown)
-		reslist_mouseDrag = true;
+	    LOGDEB1(("resList: MouseMove\n"));
+	    if (resList->m_mouseDown)
+		resList->m_mouseDrag = true;
 	} else if (event->type() == QEvent::MouseButtonPress) {
-	    LOGDEB1(("reslistTE: MouseButtonPress\n"));
-	    reslist_mouseDown = true;
-	    reslist_mouseDrag = false;
+	    LOGDEB1(("resList: MouseButtonPress\n"));
+	    resList->m_mouseDown = true;
+	    resList->m_mouseDrag = false;
 	} else if (event->type() == QEvent::MouseButtonRelease) {
-	    LOGDEB1(("reslistTE: MouseButtonRelease\n"));
-	    reslist_mouseDown = false;
+	    LOGDEB1(("resList: MouseButtonRelease\n"));
+	    resList->m_mouseDown = false;
 	} else if (event->type() == QEvent::MouseButtonDblClick) {
-	    LOGDEB1(("reslistTE: MouseButtonDblClick\n"));
-	    reslist_mouseDown = false;
+	    LOGDEB1(("resList: MouseButtonDblClick\n"));
+	    resList->m_mouseDown = false;
 	}
     }
 
@@ -276,112 +267,6 @@ static string urltolocalpath(string url)
     return url.substr(7, string::npos);
 }
 
-// Translate paragraph number in list window to doc number. This depends on 
-// how we format the title etc..
-int RclMain::reldocnumfromparnum(int par)
-{
-    std::map<int,int>::iterator it = pageParaToReldocnums.find(par);
-    int rdn;
-    if (it != pageParaToReldocnums.end()) {
-	rdn = it->second;
-    } else {
-	rdn = -1;
-    }
-    LOGDEB1(("reldocnumfromparnum: par %d reldoc %d\n", par, rdn));
-    return rdn;
-}
-
-// Double click in result list: use external viewer to display file
-void RclMain::reslistTE_doubleClicked(int par, int)
-{
-    LOGDEB(("RclMain::reslistTE_doubleClicked: par %d\n", par));
-    reslist_dblclck = true;
-    int reldocnum =  reldocnumfromparnum(par);
-    if (reldocnum < 0)
-	return;
-    startNativeViewer(reslist_winfirst + reldocnum);
-}
-
-
-// Display preview for the selected document, and highlight entry. The
-// paragraph number is doc number in window + 1
-// We don't actually do anything but start a timer because we want to
-// check first if this might be a double click
-void RclMain::reslistTE_clicked(int par, int car)
-{
-    if (reslist_waitingdbl)
-	return;
-    LOGDEB(("RclMain::reslistTE_clicked:wfirst %d par %d char %d drg %d\n", 
-	    reslist_winfirst, par, car, reslist_mouseDrag));
-    if (reslist_winfirst == -1 || reslist_mouseDrag)
-	return;
-
-    // remember par and car
-    reslist_par = par;
-    reslist_car = car;
-    reslist_waitingdbl = true;
-    reslist_dblclck = false;
-    // Wait to see if there's going to be a dblclck
-    QTimer::singleShot(150, this, SLOT(reslistTE_delayedclick()) );
-}
-
-// This gets called by a timer 100mS after a single click in the
-// result list. We don't want to start a preview if the user has
-// requested a native viewer by double-clicking
-void RclMain::reslistTE_delayedclick()
-{
-    LOGDEB(("RclMain::reslistTE_delayedclick:\n"));
-    reslist_waitingdbl = false;
-    if (reslist_dblclck) {
-	LOGDEB1(("RclMain::reslistTE_delayedclick: dbleclick\n"));
-	reslist_dblclck = false;
-	return;
-    }
-
-    int par = reslist_par;
-
-    // Erase everything back to white
-    {
-	QColor color("white");
-	for (int i = 1; i < reslistTE->paragraphs(); i++)
-	    reslistTE->setParagraphBackgroundColor(i, color);
-    }
-
-    // Color the new active paragraph
-    QColor color("lightblue");
-    reslistTE->setParagraphBackgroundColor(par, color);
-
-    // Document number
-    int reldocnum = reldocnumfromparnum(par);
-
-    if (reldocnum < 0) {
-	// Bad number: must have clicked on header. Show details of query
-	QString desc = tr("Query details") + ": " + 
-	    QString::fromUtf8(currentQueryData.description.c_str());
-	QMessageBox::information(this, tr("Query details"), desc);
-	return;
-    } else {
-	startPreview(reslist_winfirst + reldocnum);
-    }
-}
-
-// User asked to start query. Send it to the db aand call
-// listNextPB_clicked to fetch and display the first page of results
-void RclMain::startSimpleSearch()
-{
-    LOGDEB(("RclMain::queryText_returnPressed()\n"));
-    // The db may have been closed at the end of indexing
-    Rcl::AdvSearchData sdata;
-
-    QCString u8 =  queryText->text().utf8();
-    if (allTermsCB->isChecked())
-	sdata.allwords = u8;
-    else
-	sdata.orwords = u8;
-
-    startAdvSearch(sdata);
-}
-
 // Execute an advanced search query. The parameters normally come from
 // the advanced search dialog
 void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
@@ -394,15 +279,19 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
 	exit(1);
     }
 
-    reslist_winfirst = -1;
+    resList->m_winfirst = -1;
 
     if (!rcldb->setQuery(sdata, prefs_queryStemLang.length() > 0 ? 
 			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, 
 			 prefs_queryStemLang.ascii()))
 	return;
     curPreview = 0;
-    if (docsource)
+
+    if (docsource) {
 	delete docsource;
+	docsource = 0;
+	resList->setDocSource(0);
+    }
 
     if (sortwidth > 0) {
 	DocSequenceDb myseq(rcldb, tr("Query results"));
@@ -412,202 +301,7 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
 	docsource = new DocSequenceDb(rcldb, tr("Query results"));
     }
     currentQueryData = sdata;
-    showResultPage();
-}
-
-// Page Up/Down: we don't try to check if current paragraph is last or
-// first. We just page up/down and check if viewport moved. If it did,
-// fair enough, else we go to next/previous result page.
-void RclMain::resPageUpOrBack()
-{
-    int vpos = reslistTE->contentsY();
-    reslistTE->moveCursor(QTextEdit::MovePgUp, false);
-    if (vpos == reslistTE->contentsY())
-	resultPageBack();
-}
-void RclMain::resPageDownOrNext()
-{
-    int vpos = reslistTE->contentsY();
-    reslistTE->moveCursor(QTextEdit::MovePgDown, false);
-    LOGDEB(("RclMain::resPageDownOrNext: vpos before %d, after %d\n",
-	    vpos, reslistTE->contentsY()));
-    if (vpos == reslistTE->contentsY()) 
-	showResultPage();
-}
-
-// Show previous page of results. We just set the current number back
-// 2 pages and show next page.
-void RclMain::resultPageBack()
-{
-    if (reslist_winfirst <= 0)
-	return;
-    reslist_winfirst -= 2 * prefs_respagesize;
-    showResultPage();
-}
-
-
-// Fill up result list window with next screen of hits
-void RclMain::showResultPage()
-{
-    if (!docsource)
-	return;
-
-    int percent;
-    Rcl::Doc doc;
-
-    int resCnt = docsource->getResCnt();
-
-    LOGDEB(("showResultPage: rescnt %d, winfirst %d\n", resCnt,
-	    reslist_winfirst));
-
-    pageParaToReldocnums.clear();
-
-    // If we are already on the last page, nothing to do:
-    if (reslist_winfirst >= 0 && 
-	(reslist_winfirst + prefs_respagesize > resCnt)) {
-	nextPageAction->setEnabled(false);
-	return;
-    }
-
-    if (reslist_winfirst < 0) {
-	reslist_winfirst = 0;
-	prevPageAction->setEnabled(false);
-    } else {
-	prevPageAction->setEnabled(true);
-	reslist_winfirst += prefs_respagesize;
-    }
-
-    bool gotone = false;
-    reslistTE->clear();
-
-    int last = MIN(resCnt-reslist_winfirst, prefs_respagesize);
-
-
-    // Insert results if any in result list window. We have to send
-    // the text to the widgets, because we need the paragraph number
-    // each time we add a result paragraph (its diffult and
-    // error-prone to compute the paragraph numbers in parallel. We
-    // would like to disable updates while we're doing this, but
-    // couldn't find a way to make it work, the widget seems to become
-    // confused if appended while updates are disabled
-    //      reslistTE->setUpdatesEnabled(false);
-    for (int i = 0; i < last; i++) {
-	string sh;
-	doc.erase();
-
-	if (!docsource->getDoc(reslist_winfirst + i, doc, &percent, &sh)) {
-	    // This may very well happen for history if the doc has
-	    // been removed since. So don't treat it as fatal.
-	    doc.abstract = string(tr("Unavailable document").utf8());
-	}
-	if (i == 0) {
-	    // Display header
-	    // We could use a <title> but the textedit doesnt display
-	    // it prominently
-	    reslistTE->append("<qt><head></head><body>");
-	    QString line = "<p><font size=+1><b>";
-	    line += docsource->title().c_str();
-	    line += "</b></font><br>";
-	    reslistTE->append(line);
-	    line = tr("<b>Displaying results starting at index"
-		      " %1 (maximum set size %2)</b></p>\n")
-		.arg(reslist_winfirst+1)
-		.arg(resCnt);
-	    reslistTE->append(line);
-	}
-	    
-	gotone = true;
-
-	// Result list entry display: this must be exactly one paragraph
-	// We should probably display the size too   - size ?
-
-	string result;
-	if (!sh.empty())
-	    result += string("<p><b>") + sh + "</p>\n<p>";
-	else
-	    result = "<p>";
-
-	string img_name;
-	if (prefs_showicons) {
-	    string iconpath;
-	    string iconname = rclconfig->getMimeIconName(doc.mimetype,
-							 &iconpath);
-	    LOGDEB1(("Img file; %s\n", iconpath.c_str()));
-	    QImage image(iconpath.c_str());
-	    if (!image.isNull()) {
-		img_name = string("img_") + iconname;
-		QMimeSourceFactory::defaultFactory()->
-		    setImage(img_name.c_str(), image);
-	    }
-	}
-
-	char perbuf[10];
-	sprintf(perbuf, "%3d%%", percent);
-	if (doc.title.empty()) 
-	    doc.title = path_getsimple(doc.url);
-	char datebuf[100];
-	datebuf[0] = 0;
-	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
-	    time_t mtime = doc.dmtime.empty() ?
-		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
-	    struct tm *tm = localtime(&mtime);
-	    strftime(datebuf, 99, 
-		     "<i>Modified:</i>&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
-	}
-	string abst = escapeHtml(doc.abstract);
-	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
-	if (!img_name.empty()) {
-	    result += "<img source=\"" + img_name + "\" align=\"left\">";
-	}
-	result += string(perbuf) + " <b>" + doc.title + "</b><br>" +
-	    doc.mimetype + "&nbsp;" +
-	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>")) +
-	    (!abst.empty() ? abst + "<br>" : string("")) +
-	    (!doc.keywords.empty() ? doc.keywords + "<br>" : string("")) +
-	    "<i>" + doc.url + +"</i><br></p>\n";
-
-	QString str = QString::fromUtf8(result.c_str(), result.length());
-	reslistTE->append(str);
-
-	pageParaToReldocnums[reslistTE->paragraphs()-1] = i;
-    }
-
-    if (gotone) {
-	reslistTE->append("</body></qt>");
-	reslistTE->setCursorPosition(0,0);
-	reslistTE->ensureCursorVisible();
-    } else {
-	// Restore first in win parameter that we shouln't have incremented
-	reslistTE->append(tr("<p>"
-			  /*"<img align=\"left\" source=\"myimage\">"*/
-			  "<b>No results found</b>"
-			  "<br>"));
-	reslist_winfirst -= prefs_respagesize;
-	if (reslist_winfirst < 0)
-	    reslist_winfirst = -1;
-    }
-
-   //reslistTE->setUpdatesEnabled(true);reslistTE->sync();reslistTE->repaint();
-
-#if 0
-    {
-	FILE *fp = fopen("/tmp/reslistdebug", "w");
-	if (fp) {
-	    const char *text = (const char *)reslistTE->text().utf8();
-	    //const char *text = alltext.c_str();
-	    fwrite(text, 1, strlen(text), fp);
-	    fclose(fp);
-	}
-    }
-#endif
-
-    if (reslist_winfirst < 0 || 
-	(reslist_winfirst >= 0 && 
-	 reslist_winfirst + prefs_respagesize >= resCnt)) {
-	nextPageAction->setEnabled(false);
-    } else {
-	nextPageAction->setEnabled(true);
-    }
+    resList->setDocSource(docsource);
 }
 
 // If a preview (toplevel) window gets closed by the user, we need to
@@ -711,7 +405,7 @@ void RclMain::startPreview(int docnum)
 	    return;
 	}
 
-	curPreview->setCaption(queryText->text());
+	curPreview->setCaption(QString::fromUtf8(currentQueryData.description.c_str()));
 	connect(curPreview, SIGNAL(previewClosed(Widget *)), 
 		this, SLOT(previewClosed(Widget *)));
 	curPreview->show();
@@ -795,10 +489,13 @@ void RclMain::startManual()
 void RclMain::showDocHistory()
 {
     LOGDEB(("RclMain::showDocHistory\n"));
-    reslist_winfirst = -1;
+    resList->m_winfirst = -1;
     curPreview = 0;
-    if (docsource)
+    if (docsource) {
 	delete docsource;
+	docsource = 0;
+	resList->setDocSource(0);
+    }
 
     if (sortwidth > 0) {
 	DocSequenceHistory myseq(rcldb, m_history, tr("Document history"));
@@ -810,21 +507,9 @@ void RclMain::showDocHistory()
     }
     currentQueryData.erase();
     currentQueryData.description = tr("History data").utf8();
-    showResultPage();
+    resList->setDocSource(docsource);
 }
 
-
-void RclMain::searchTextChanged(const QString & text)
-{
-    if (text.isEmpty()) {
-	searchPB->setEnabled(false);
-	clearqPB->setEnabled(false);
-    } else {
-	searchPB->setEnabled(true);
-	clearqPB->setEnabled(true);
-    }
-
-}
 
 void RclMain::sortDataChanged(int cnt, RclSortSpec spec)
 {
@@ -847,9 +532,9 @@ void RclMain::setUIPrefs()
     prefs_reslistfontsize = uiprefs->reslistFontSize;
     if (prefs_reslistfontfamily.length()) {
 	QFont nfont(prefs_reslistfontfamily, prefs_reslistfontsize);
-	reslistTE->setFont(nfont);
+	resList->setFont(nfont);
     } else {
-	reslistTE->setFont(this->font());
+	resList->setFont(this->font());
     }
 
     if (uiprefs->stemLangCMB->currentItem() == 0) {
@@ -857,4 +542,22 @@ void RclMain::setUIPrefs()
     } else {
 	prefs_queryStemLang = uiprefs->stemLangCMB->currentText();
     }
+}
+
+void RclMain::enableNextPage(bool yesno)
+{
+    nextPageAction->setEnabled(yesno);
+}
+
+void RclMain::enablePrevPage(bool yesno)
+{
+    prevPageAction->setEnabled(yesno);
+}
+
+void RclMain::showQueryDetails()
+{
+    // Bad number: must have clicked on header. Show details of query
+    QString desc = tr("Query details") + ": " + 
+	QString::fromUtf8(currentQueryData.description.c_str());
+    QMessageBox::information(this, tr("Query details"), desc);
 }

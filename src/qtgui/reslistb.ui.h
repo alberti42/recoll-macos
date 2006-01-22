@@ -154,6 +154,12 @@ void ResListBase::resultPageBack()
     showResultPage();
 }
 
+void ResListBase::setDocSource(DocSequence *docsource)
+{
+    m_docsource = docsource;
+    showResultPage();
+}
+
 // Fill up result list window with next screen of hits
 void ResListBase::showResultPage()
 {
@@ -173,15 +179,15 @@ void ResListBase::showResultPage()
     // If we are already on the last page, nothing to do:
     if (m_winfirst >= 0 && 
 	(m_winfirst + prefs_respagesize > resCnt)) {
-	emit lastPageReached();
+	emit nextPageAvailable(false);
 	return;
     }
 
     if (m_winfirst < 0) {
 	m_winfirst = 0;
-	emit firstPageReached();
+	emit prevPageAvailable(false);
     } else {
-	emit prevPageAvailable();
+	emit prevPageAvailable(true);
 	m_winfirst += prefs_respagesize;
     }
 
@@ -312,8 +318,8 @@ void ResListBase::showResultPage()
     if (m_winfirst < 0 || 
 	(m_winfirst >= 0 && 
 	 m_winfirst + prefs_respagesize >= resCnt)) {
-	emit lastPageReached();
+	emit nextPageAvailable(false);
     } else {
-	emit nextPageAvailable();
+	emit nextPageAvailable(true);
     }
 }

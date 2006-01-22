@@ -3,20 +3,19 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on thread release debug
 
-HEADERS	+= rclmain.h
-
 SOURCES	+= main.cpp \
 	rclmain.cpp \
 	idxthread.cpp \
 	plaintorich.cpp
 
-FORMS	= reslistb.ui \
-	recollmain.ui \
-	advsearch.ui \
-	preview/preview.ui \
-	sort.ui \
-	uiprefs.ui \
-	ssearchb.ui
+HEADERS = rclmain.h
+
+FORMS	= recollmain.ui \
+          advsearch.ui \
+	  preview/preview.ui \
+          sort.ui \
+          uiprefs.ui
+
 
 IMAGES	= images/filenew \
 	images/fileopen \
@@ -39,9 +38,9 @@ unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 
-  DEFINES += RECOLL_DATADIR=\"/usr/local/share\"
+  DEFINES += RECOLL_DATADIR=\"@QTRECOLL_DATADIR@\"
   LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
-            $(BSTATIC) -L/usr/local/lib -lxapian -L/usr/local/lib -liconv $(BDYNAMIC) \
+            $(BSTATIC) @LIBXAPIAN@ @LIBICONV@ $(BDYNAMIC) \
            -lz
 
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 

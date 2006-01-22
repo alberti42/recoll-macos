@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.32 2006-01-20 14:58:57 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.33 2006-01-22 18:46:41 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <unistd.h>
@@ -67,7 +67,7 @@ static void rwSettings(bool writing)
 	    return;
 	prefs_mainwidth = mainWindow->width();
 	prefs_mainheight = mainWindow->height();
-	prefs_ssall = mainWindow->allTermsCB->isChecked();
+	prefs_ssall = mainWindow->sSearch->allTermsCB->isChecked();
     }
 
     QSettings settings;
@@ -158,7 +158,7 @@ int main( int argc, char ** argv )
     QSize s(prefs_mainwidth, prefs_mainheight);
     w.resize(s);
 
-    w.allTermsCB->setChecked(prefs_ssall);
+    w.sSearch->allTermsCB->setChecked(prefs_ssall);
 
     if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
 	// Note: this will have to be replaced by a call to a

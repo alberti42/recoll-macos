@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>678</width>
-            <height>212</height>
+            <width>681</width>
+            <height>244</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -22,8 +22,8 @@
     </property>
     <property name="minimumSize">
         <size>
-            <width>362</width>
-            <height>190</height>
+            <width>25</width>
+            <height>244</height>
         </size>
     </property>
     <property name="caption">
@@ -35,101 +35,28 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout30</cstring>
+                <cstring>unnamed</cstring>
             </property>
             <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLayoutWidget">
+                <widget class="SSearchBase">
                     <property name="name">
-                        <cstring>layout29</cstring>
+                        <cstring>sSearch</cstring>
                     </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>clearqPB</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>Clear</string>
-                            </property>
-                            <property name="accel">
-                                <string>Ctrl+S</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Erase search entry</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>searchPB</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>Search</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Start query</string>
-                            </property>
-                        </widget>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>allTermsCB</cstring>
-                            </property>
-                            <property name="text">
-                                <string>&amp;All terms</string>
-                            </property>
-                            <property name="accel">
-                                <string>Alt+A</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Do documents have to contain all terms in query?</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</string>
-                            </property>
-                        </widget>
-                        <widget class="QLineEdit">
-                            <property name="name">
-                                <cstring>queryText</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>8</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>155</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="frameShape">
-                                <enum>LineEditPanel</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>Sunken</enum>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Enter search terms here</string>
-                            </property>
-                        </widget>
-                    </hbox>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>5</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
                 </widget>
-                <widget class="QTextEdit">
+                <widget class="ResListBase">
                     <property name="name">
-                        <cstring>reslistTE</cstring>
+                        <cstring>resList</cstring>
                     </property>
                     <property name="sizePolicy">
                         <sizepolicy>
@@ -138,15 +65,6 @@
                             <horstretch>2</horstretch>
                             <verstretch>0</verstretch>
                         </sizepolicy>
-                    </property>
-                    <property name="textFormat">
-                        <enum>RichText</enum>
-                    </property>
-                    <property name="readOnly">
-                        <bool>true</bool>
-                    </property>
-                    <property name="undoRedoEnabled">
-                        <bool>false</bool>
                     </property>
                 </widget>
             </vbox>
@@ -200,6 +118,50 @@
         <action name="nextPageAction"/>
     </toolbar>
 </toolbars>
+<customwidgets>
+    <customwidget>
+        <class>SSearchBase</class>
+        <header location="local">ssearchb.h</header>
+        <sizehint>
+            <width>-1</width>
+            <height>-1</height>
+        </sizehint>
+        <container>0</container>
+        <sizepolicy>
+            <hordata>5</hordata>
+            <verdata>5</verdata>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+        <pixmap>image0</pixmap>
+        <signal>startSearch(Rcl::AdvSearchData)</signal>
+    </customwidget>
+    <customwidget>
+        <class>ResListBase</class>
+        <header location="local">reslistb.h</header>
+        <sizehint>
+            <width>-1</width>
+            <height>-1</height>
+        </sizehint>
+        <container>0</container>
+        <sizepolicy>
+            <hordata>5</hordata>
+            <verdata>5</verdata>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+        <pixmap>image1</pixmap>
+        <signal>docDoubleClicked(int)</signal>
+        <signal>docClicked(int)</signal>
+        <signal>headerClicked()</signal>
+        <signal>nextPageAvailable(bool)</signal>
+        <signal>prevPageAvailable(bool)</signal>
+        <slot access="public" specifier="">resPageUpOrBack()</slot>
+        <slot access="public" specifier="">resPageDownOrNext()</slot>
+        <slot access="public" specifier="">resultPageBack()</slot>
+        <slot access="public" specifier="">showResultPage()</slot>
+    </customwidget>
+</customwidgets>
 <actions>
     <action>
         <property name="name">
@@ -342,6 +304,14 @@
         </property>
     </action>
 </actions>
+<images>
+    <image name="image0">
+        <data format="PNG" length="1002">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000003b149444154388dad945f4c5b551cc73fe7dc4b7b4bcba0762d45c43114323599ee6192609c51d883892ce083f1718b3ebb185f8dc91e972cf39d2d2a2f1af664b6f1e0fe3863a0718969700eb0c52142da0242a1bd6d696f7bcff101585203ceb8fd9ece39f99dcff9fe7edf939f88c562ec465f5f9fe609442c161362173c3e3eae7b7a7ac8e7f36432196cdbfe4f907c3e4f2291201e8fe338cec3737357e9e8e828aded1e229d650e1f2d51754b082110124c13a4dc5ea341eb9dc284c0558a853f3ce8cb0677ef500fde7d39d2596679e326597b8e9abb85d7a770ab16ab6983ec5a05b487a70e36f0f4e10afe408d6a558310980108478dba4a1e8233990c5d474b64ed39aa3a8fe5f3317fbf81dbd70bccfeb205947632fd74f6589c1c6ea2f70d03a58ba0c1f2c9bdc1b66de3b8256a6e11cbe7e3ee1d181b590124fe2693aeee08d223c82c3a2c24b7b874bec8f26288774f7bd054504aef0dde6e99c0eb83f9fb266323cb80a27fb0958141836044605a2ee5523393371cc646fee2da37195aa35d0c0c5b4859ac03d7e91712dcaac5adab3650a3ff9d08ef7dd8404bb48869e5d958b5b87dadc4c9a1464e9f0d0326df7ebd86bd2e310cb1bf62d384d59441f2d70a070e1c60e09489929b988681bdd9cc97170bcc4c65595f71f8e0e3301337fc24a7732467831875a47f289652b0be5e4151e6d07316c1b0c0340d8ab92023e76d66a6b2840e36d2fb7a13fee632475e6edc367ea98a90fb98b7dd6310ca0328a44761582e1bab41befabcc0ec940d28bc5e93b68e064cab84e1d9beaeb48934eac1f53b01c1b000fca496aa54b61a99fcde61662a4b4b4b23d1680be9d426173e4df3602a48ea411989a4fd590f52a8fd156b05ed9d350e3defe3cfdf4b4c7ce770ea7d3fb9f520afbe1620daeee5c26735d20b9b9cfb6811a754a439e4e5c5639a4caa1e5caf586bfc0197b78702005cb9b4cae4cd3267ce8638fe964bd72b393e39d74928d242617303a756a37f284447770dcdbffc6384a05a85de1306e9a52057c7527c7131c3c42d3f475eb2303c82d4fc3276d6811db37efeb148723082d9b08f79f97c1e5729109a9a28307cc622d2d6cdf52b2b24efe548dedb00142009862cfa879ee1a71f6cec928353511472fbf4389148b0b0e0c108081412458dfe21c9f11351e67e7358595468246d1d1e5e38a6e9e851bc39d84ab502a669331dafec0d8ec7e3e8cb06e1a881d727d1ae40180a434a8c9db129a54126ad48a7358c2b4c5352c8c374bcccdab2bb37d8719cba79fab8211f9df218e0582c261e95f8bfc04f1a1e8bc5c4dfe0a190172af6a9690000000049454e44ae426082</data>
+    </image>
+    <image name="image1">
+        <data format="XBM.GZ" length="79">789c534e494dcbcc4b554829cdcdad8c2fcf4c29c95030e0524611cd48cd4ccf28010a1797249664262b2467241641a592324b8aa363156c15aab914146aadb90067111b1f</data>
+    </image>
+</images>
 <connections>
     <connection>
         <sender>fileExitAction</sender>
@@ -354,30 +324,6 @@
         <signal>activated()</signal>
         <receiver>RclMainBase</receiver>
         <slot>fileStart_IndexingAction_activated()</slot>
-    </connection>
-    <connection>
-        <sender>searchPB</sender>
-        <signal>clicked()</signal>
-        <receiver>RclMainBase</receiver>
-        <slot>startSimpleSearch()</slot>
-    </connection>
-    <connection>
-        <sender>queryText</sender>
-        <signal>returnPressed()</signal>
-        <receiver>RclMainBase</receiver>
-        <slot>startSimpleSearch()</slot>
-    </connection>
-    <connection>
-        <sender>reslistTE</sender>
-        <signal>doubleClicked(int,int)</signal>
-        <receiver>RclMainBase</receiver>
-        <slot>reslistTE_doubleClicked(int,int)</slot>
-    </connection>
-    <connection>
-        <sender>reslistTE</sender>
-        <signal>clicked(int,int)</signal>
-        <receiver>RclMainBase</receiver>
-        <slot>reslistTE_clicked(int,int)</slot>
     </connection>
     <connection>
         <sender>helpAbout_RecollAction</sender>
@@ -398,18 +344,6 @@
         <slot>showDocHistory()</slot>
     </connection>
     <connection>
-        <sender>queryText</sender>
-        <signal>textChanged(const QString&amp;)</signal>
-        <receiver>RclMainBase</receiver>
-        <slot>searchTextChanged(const QString&amp;)</slot>
-    </connection>
-    <connection>
-        <sender>clearqPB</sender>
-        <signal>clicked()</signal>
-        <receiver>queryText</receiver>
-        <slot>clear()</slot>
-    </connection>
-    <connection>
         <sender>toolsAdvanced_SearchAction</sender>
         <signal>activated()</signal>
         <receiver>RclMainBase</receiver>
@@ -424,13 +358,13 @@
     <connection>
         <sender>prevPageAction</sender>
         <signal>activated()</signal>
-        <receiver>RclMainBase</receiver>
+        <receiver>resList</receiver>
         <slot>resultPageBack()</slot>
     </connection>
     <connection>
         <sender>nextPageAction</sender>
         <signal>activated()</signal>
-        <receiver>RclMainBase</receiver>
+        <receiver>resList</receiver>
         <slot>showResultPage()</slot>
     </connection>
     <connection>
@@ -439,35 +373,59 @@
         <receiver>RclMainBase</receiver>
         <slot>showUIPrefs()</slot>
     </connection>
+    <connection>
+        <sender>resList</sender>
+        <signal>nextPageAvailable(bool)</signal>
+        <receiver>RclMainBase</receiver>
+        <slot>enableNextPage(bool)</slot>
+    </connection>
+    <connection>
+        <sender>resList</sender>
+        <signal>prevPageAvailable(bool)</signal>
+        <receiver>RclMainBase</receiver>
+        <slot>enablePrevPage(bool)</slot>
+    </connection>
+    <connection>
+        <sender>resList</sender>
+        <signal>docDoubleClicked(int)</signal>
+        <receiver>RclMainBase</receiver>
+        <slot>startNativeViewer(int)</slot>
+    </connection>
+    <connection>
+        <sender>resList</sender>
+        <signal>docClicked(int)</signal>
+        <receiver>RclMainBase</receiver>
+        <slot>startPreview(int)</slot>
+    </connection>
+    <connection>
+        <sender>resList</sender>
+        <signal>headerClicked()</signal>
+        <receiver>RclMainBase</receiver>
+        <slot>showQueryDetails()</slot>
+    </connection>
 </connections>
 <includes>
+    <include location="local" impldecl="in declaration">ssearchb.h</include>
+    <include location="local" impldecl="in declaration">reslistb.h</include>
 </includes>
-<variables>
-</variables>
 <slots>
     <slot>fileExit()</slot>
     <slot>periodic100()</slot>
     <slot>fileStart_IndexingAction_activated()</slot>
-    <slot>reslistTE_doubleClicked( int par, int )</slot>
-    <slot>reslistTE_clicked( int par, int car )</slot>
-    <slot>reslistTE_delayedclick()</slot>
-    <slot>startSimpleSearch()</slot>
-    <slot>resPageUpOrBack()</slot>
-    <slot>resPageDownOrNext()</slot>
-    <slot>resultPageBack()</slot>
-    <slot>showResultPage()</slot>
     <slot>previewClosed( QWidget * w )</slot>
     <slot>showAdvSearchDialog()</slot>
     <slot>showSortDialog()</slot>
     <slot>showAboutDialog()</slot>
     <slot>startManual()</slot>
     <slot>showDocHistory()</slot>
-    <slot>searchTextChanged( const QString &amp; text )</slot>
     <slot>showUIPrefs()</slot>
     <slot>setUIPrefs()</slot>
+    <slot>enableNextPage(bool)</slot>
+    <slot>enablePrevPage(bool)</slot>
+    <slot>startNativeViewer(int)</slot>
+    <slot>startPreview(int)</slot>
+    <slot>showQueryDetails()</slot>
 </slots>
-<functions>
-</functions>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

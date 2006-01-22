@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>516</width>
+            <width>525</width>
             <height>48</height>
         </rect>
     </property>
@@ -144,5 +144,5 @@
     <slot>searchTextChanged( const QString &amp; text )</slot>
     <slot>startSimpleSearch()</slot>
 </slots>
-<layoutdefaults spacing="6" margin="11"/>
+<layoutdefaults spacing="6" margin="0"/>
 </UI>

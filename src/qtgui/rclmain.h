@@ -31,34 +31,20 @@ public slots:
     virtual void fileExit();
     virtual void periodic100();
     virtual void fileStart_IndexingAction_activated();
-    virtual void reslistTE_doubleClicked( int par, int );
-    virtual void reslistTE_clicked( int par, int car );
-    virtual void reslistTE_delayedclick();
-    virtual void startSimpleSearch();
     virtual void startAdvSearch( Rcl::AdvSearchData sdata );
-    virtual void resPageUpOrBack();
-    virtual void resPageDownOrNext();
-    virtual void resultPageBack();
-    virtual void showResultPage();
     virtual void previewClosed( QWidget * w );
     virtual void showAdvSearchDialog();
     virtual void showSortDialog();
     virtual void showAboutDialog();
     virtual void startManual();
     virtual void showDocHistory();
-    virtual void searchTextChanged( const QString & text );
     virtual void sortDataChanged( int cnt, RclSortSpec spec );
     virtual void showUIPrefs();
     virtual void setUIPrefs();
-
+    virtual void enableNextPage(bool);
+    virtual void enablePrevPage(bool);
+    virtual void showQueryDetails();
 protected:
-    int reslist_winfirst;
-    bool reslist_mouseDrag;
-    bool reslist_mouseDown;
-    int reslist_par;
-    int reslist_car;
-    bool reslist_waitingdbl;
-    bool reslist_dblclck;
     Preview *curPreview;
     advsearch *asearchform;
     Rcl::AdvSearchData currentQueryData;
@@ -67,12 +53,10 @@ protected:
     int sortwidth;
     RclSortSpec sortspecs;
     DocSequence *docsource;
-    std::map<int,int> pageParaToReldocnums;
     RclDHistory *m_history;
 private:
     virtual void init();
     virtual bool eventFilter( QObject * target, QEvent * event );
-    virtual int reldocnumfromparnum( int par );
     virtual void startPreview( int docnum );
     virtual void startNativeViewer( int docnum );
 };

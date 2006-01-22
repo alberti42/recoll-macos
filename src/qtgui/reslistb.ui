@@ -83,10 +83,8 @@
     <variable access="private">DocSequence *m_docsource;</variable>
 </variables>
 <signals>
-    <signal>lastPageReached()</signal>
-    <signal>nextPageAvailable()</signal>
-    <signal>firstPageReached()</signal>
-    <signal>prevPageAvailable()</signal>
+    <signal>nextPageAvailable(bool)</signal>
+    <signal>prevPageAvailable(bool)</signal>
     <signal>docDoubleClicked(int)</signal>
     <signal>docClicked(int)</signal>
     <signal>headerClicked()</signal>
@@ -103,6 +101,7 @@
 <functions>
     <function access="private">init()</function>
     <function returnType="int" access="private">reldocnumfromparnum( int )</function>
+    <function access="public">setDocSource(DocSequence *)</function>
 </functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
