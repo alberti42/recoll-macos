@@ -34,9 +34,30 @@ void ResListBase::init()
     m_car = -1;
     m_waitingdbl = false;
     m_dblclck = false;
+    m_docsource = 0;
 }
 
-// how we format the title etc..
+void ResListBase::destroy()
+{
+    if (m_docsource) 
+	delete m_docsource;
+}
+
+// Acquire new docsource
+void ResListBase::setDocSource(DocSequence *docsource)
+{
+    if (m_docsource)
+	delete m_docsource;
+    m_docsource = docsource;
+    showResultPage();
+}
+
+bool ResListBase::getDoc(int docnum, Rcl::Doc &doc)
+{
+    return m_docsource ? m_docsource->getDoc(docnum, doc, 0, 0) : false;
+}
+
+// Get document number-in-window from paragraph number
 int ResListBase::reldocnumfromparnum(int par)
 {
     std::map<int,int>::iterator it = m_pageParaToReldocnums.find(par);
@@ -50,10 +71,10 @@ int ResListBase::reldocnumfromparnum(int par)
     return rdn;
 }
 
-// Double click in result list: use external viewer to display file
+// Double click in result list
 void ResListBase::doubleClicked(int par, int )
 {
-    LOGDEB(("RclMain::reslist::doubleClicked: par %d\n", par));
+    LOGDEB(("ResListBase::doubleClicked: par %d\n", par));
     m_dblclck = true;
     int reldocnum =  reldocnumfromparnum(par);
     if (reldocnum < 0)
@@ -61,16 +82,14 @@ void ResListBase::doubleClicked(int par, int )
     emit docDoubleClicked(m_winfirst + reldocnum);
 }
 
-
-// Display preview for the selected document, and highlight entry. The
-// paragraph number is doc number in window + 1
-// We don't actually do anything but start a timer because we want to
-// check first if this might be a double click
+// Single click in result list: we don't actually do anything but
+// start a timer because we want to check first if this might be a
+// double click
 void ResListBase::clicked(int par, int car)
 {
     if (m_waitingdbl)
 	return;
-    LOGDEB(("RclMain::reslistTE_clicked:wfirst %d par %d char %d drg %d\n", 
+    LOGDEB(("ResListBase::clicked:wfirst %d par %d char %d drg %d\n", 
 	    m_winfirst, par, car, m_mouseDrag));
     if (m_winfirst == -1 || m_mouseDrag)
 	return;
@@ -81,19 +100,20 @@ void ResListBase::clicked(int par, int car)
     m_waitingdbl = true;
     m_dblclck = false;
     // Wait to see if there's going to be a dblclck
-    QTimer::singleShot(150, this, SLOT(reslistTE_delayedclick()) );
+    QTimer::singleShot(150, this, SLOT(delayedClick()) );
 }
 
 
 // This gets called by a timer 100mS after a single click in the
 // result list. We don't want to start a preview if the user has
-// requested a native viewer by double-clicking
+// requested a native viewer by double-clicking. If this was not actually
+// a double-clik, we finally say it's a click, and change the active paragraph
 void ResListBase::delayedClick()
 {
-    LOGDEB(("RclMain::reslistTE_delayedclick:\n"));
+    LOGDEB(("ResListBase::delayedClick:\n"));
     m_waitingdbl = false;
     if (m_dblclck) {
-	LOGDEB1(("RclMain::reslistTE_delayedclick: dbleclick\n"));
+	LOGDEB1(("ResListBase::delayedclick: dbleclick\n"));
 	m_dblclck = false;
 	return;
     }
@@ -138,7 +158,7 @@ void ResListBase::resPageDownOrNext()
 {
     int vpos = reslistTE->contentsY();
     reslistTE->moveCursor(QTextEdit::MovePgDown, false);
-    LOGDEB(("RclMain::resPageDownOrNext: vpos before %d, after %d\n",
+    LOGDEB(("ResListBase::resPageDownOrNext: vpos before %d, after %d\n",
 	    vpos, reslistTE->contentsY()));
     if (vpos == reslistTE->contentsY()) 
 	showResultPage();
@@ -151,12 +171,6 @@ void ResListBase::resultPageBack()
     if (m_winfirst <= 0)
 	return;
     m_winfirst -= 2 * prefs_respagesize;
-    showResultPage();
-}
-
-void ResListBase::setDocSource(DocSequence *docsource)
-{
-    m_docsource = docsource;
     showResultPage();
 }
 

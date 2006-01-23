@@ -52,7 +52,6 @@ protected:
     UIPrefsDialog *uiprefs;
     int sortwidth;
     RclSortSpec sortspecs;
-    DocSequence *docsource;
     RclDHistory *m_history;
 private:
     virtual void init();

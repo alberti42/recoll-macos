@@ -23,11 +23,10 @@ void SSearchBase::searchTextChanged( const QString & text )
     }
 }
 
-
 void SSearchBase::startSimpleSearch()
 {
-    LOGDEB(("RclMain::queryText_returnPressed()\n"));
-    // The db may have been closed at the end of indexing
+    LOGDEB(("SSearchBase::startSimpleSearch\n"));
+
     Rcl::AdvSearchData sdata;
 
     QCString u8 =  queryText->text().utf8();

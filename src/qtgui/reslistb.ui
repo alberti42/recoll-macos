@@ -100,7 +100,9 @@
 </slots>
 <functions>
     <function access="private">init()</function>
+    <function access="private">destroy()</function>
     <function returnType="int" access="private">reldocnumfromparnum( int )</function>
+    <function returnType="bool" access="public">getDoc( int, Rcl::Doc &amp; )</function>
     <function access="public">setDocSource(DocSequence *)</function>
 </functions>
 <layoutdefaults spacing="6" margin="11"/>

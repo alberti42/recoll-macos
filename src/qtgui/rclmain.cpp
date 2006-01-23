@@ -62,7 +62,6 @@ void RclMain::init()
     sortform = 0;
     sortwidth = 0;
     uiprefs = 0;
-    docsource = 0;
 
     // We manage pgup/down, but let ie the arrows for the editor to process
     resList->reslistTE->installEventFilter(this);
@@ -287,12 +286,7 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
 	return;
     curPreview = 0;
 
-    if (docsource) {
-	delete docsource;
-	docsource = 0;
-	resList->setDocSource(0);
-    }
-
+    DocSequence *docsource;
     if (sortwidth > 0) {
 	DocSequenceDb myseq(rcldb, tr("Query results"));
 	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
@@ -379,7 +373,7 @@ void RclMain::showUIPrefs()
 void RclMain::startPreview(int docnum)
 {
     Rcl::Doc doc;
-    if (!docsource->getDoc(docnum, doc, 0)) {
+    if (!resList->getDoc(docnum, doc)) {
 	QMessageBox::warning(0, "Recoll",
 			     tr("Cannot retrieve document info" 
 				     " from database"));
@@ -423,7 +417,7 @@ void RclMain::startPreview(int docnum)
 void RclMain::startNativeViewer(int docnum)
 {
     Rcl::Doc doc;
-    if (!docsource->getDoc(docnum, doc, 0, 0)) {
+    if (!resList->getDoc(docnum, doc)) {
 	QMessageBox::warning(0, "Recoll",
 			     tr("Cannot retrieve document info" 
 				" from database"));
@@ -491,12 +485,8 @@ void RclMain::showDocHistory()
     LOGDEB(("RclMain::showDocHistory\n"));
     resList->m_winfirst = -1;
     curPreview = 0;
-    if (docsource) {
-	delete docsource;
-	docsource = 0;
-	resList->setDocSource(0);
-    }
 
+    DocSequence *docsource;
     if (sortwidth > 0) {
 	DocSequenceHistory myseq(rcldb, m_history, tr("Document history"));
 	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
