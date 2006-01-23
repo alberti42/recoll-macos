@@ -179,6 +179,7 @@ static const char *eventTypeToStr(int tp)
 
 // There are a number of events that we want to process. Not sure the
 // ^Q thing is necessary (we have an action for this)?
+// TODO: Some of this probably should be moved into the reslist object
 bool RclMain::eventFilter( QObject * target, QEvent * event )
 {
 #if defined(SHOWEVENTS)
