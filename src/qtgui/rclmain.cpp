@@ -1,14 +1,22 @@
-/****************************************************************************
- ** ui.h extension file, included from the uic-generated form implementation.
- **
- ** If you want to add, delete, or rename functions or slots, use
- ** Qt Designer to update this file, preserving your code.
- **
- ** You should not define a constructor or destructor in this file.
- ** Instead, write your code in functions called init() and destroy().
- ** These will automatically be called by the form's constructor and
- ** destructor.
- *****************************************************************************/
+#ifndef lint
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.6 2006-01-23 13:32:06 dockes Exp $ (C) 2005 J.F.Dockes";
+#endif
+/*
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the
+ *   Free Software Foundation, Inc.,
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -49,6 +57,7 @@ using std::pair;
 #include "rclversion.h"
 #include "sortseq.h"
 #include "uiprefs.h"
+#include "guiutils.h"
 
 #include "rclmain.h"
 #include "moc_rclmain.cpp"
@@ -72,8 +81,8 @@ void RclMain::init()
     sSearch->queryText->setFocus();
 
     // Set result list font according to user preferences.
-    if (prefs_reslistfontfamily.length()) {
-	QFont nfont(prefs_reslistfontfamily, prefs_reslistfontsize);
+    if (prefs.reslistfontfamily.length()) {
+	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
 	resList->setFont(nfont);
     }
     string historyfile = path_cat(rclconfig->getConfDir(), "history");
@@ -281,9 +290,9 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
 
     resList->m_winfirst = -1;
 
-    if (!rcldb->setQuery(sdata, prefs_queryStemLang.length() > 0 ? 
+    if (!rcldb->setQuery(sdata, prefs.queryStemLang.length() > 0 ? 
 			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, 
-			 prefs_queryStemLang.ascii()))
+			 prefs.queryStemLang.ascii()))
 	return;
     curPreview = 0;
 
@@ -516,22 +525,22 @@ void RclMain::setUIPrefs()
     if (!uiprefs)
 	return;
     LOGDEB(("Recollmain::setUIPrefs\n"));
-    prefs_showicons = uiprefs->useIconsCB->isChecked();
-    prefs_respagesize = uiprefs->pageLenSB->value();
+    prefs.showicons = uiprefs->useIconsCB->isChecked();
+    prefs.respagesize = uiprefs->pageLenSB->value();
 
-    prefs_reslistfontfamily = uiprefs->reslistFontFamily;
-    prefs_reslistfontsize = uiprefs->reslistFontSize;
-    if (prefs_reslistfontfamily.length()) {
-	QFont nfont(prefs_reslistfontfamily, prefs_reslistfontsize);
+    prefs.reslistfontfamily = uiprefs->reslistFontFamily;
+    prefs.reslistfontsize = uiprefs->reslistFontSize;
+    if (prefs.reslistfontfamily.length()) {
+	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
 	resList->setFont(nfont);
     } else {
 	resList->setFont(this->font());
     }
 
     if (uiprefs->stemLangCMB->currentItem() == 0) {
-	prefs_queryStemLang = "";
+	prefs.queryStemLang = "";
     } else {
-	prefs_queryStemLang = uiprefs->stemLangCMB->currentText();
+	prefs.queryStemLang = uiprefs->stemLangCMB->currentText();
     }
 }
 

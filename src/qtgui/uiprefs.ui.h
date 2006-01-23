@@ -15,18 +15,19 @@
 #include "qmessagebox.h"
 
 #include "recoll.h"
+#include "guiutils.h"
 
 void UIPrefsDialog::init()
 {
     // Entries per result page spinbox
-    pageLenSB->setValue(prefs_respagesize);
+    pageLenSB->setValue(prefs.respagesize);
     // Show icons checkbox
-    useIconsCB->setChecked(prefs_showicons);
+    useIconsCB->setChecked(prefs.showicons);
     // Result list font family and size
-    reslistFontFamily = prefs_reslistfontfamily;
-    reslistFontSize = prefs_reslistfontsize;
+    reslistFontFamily = prefs.reslistfontfamily;
+    reslistFontSize = prefs.reslistfontsize;
     QString s;
-    if (prefs_reslistfontfamily.length() == 0) {
+    if (prefs.reslistfontfamily.length() == 0) {
 	reslistFontPB->setText(this->font().family() + "-" +
 			   s.setNum(this->font().pointSize()));
     } else {
@@ -57,7 +58,7 @@ void UIPrefsDialog::init()
 	    insertItem(QString::fromAscii(it->c_str(), it->length()));
 	i++;
 	if (cur == -1) {
-	    if (!strcmp(prefs_queryStemLang.ascii(), it->c_str()))
+	    if (!strcmp(prefs.queryStemLang.ascii(), it->c_str()))
 		cur = i;
 	}
     }
@@ -79,9 +80,9 @@ void UIPrefsDialog::showFontDialog()
 {
     bool ok;
     QFont font;
-    if (prefs_reslistfontfamily.length()) {
-	font.setFamily(prefs_reslistfontfamily);
-	font.setPointSize(prefs_reslistfontsize);
+    if (prefs.reslistfontfamily.length()) {
+	font.setFamily(prefs.reslistfontfamily);
+	font.setPointSize(prefs.reslistfontsize);
     }
 
     font = QFontDialog::getFont(&ok, font, this );

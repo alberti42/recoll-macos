@@ -8,7 +8,8 @@ HEADERS	+= rclmain.h
 SOURCES	+= main.cpp \
 	rclmain.cpp \
 	idxthread.cpp \
-	plaintorich.cpp
+	plaintorich.cpp \
+	guiutils.cpp
 
 FORMS	= reslistb.ui \
 	recollmain.ui \
@@ -42,7 +43,7 @@ unix {
   DEFINES += RECOLL_DATADIR=\"/usr/local/share\"
   LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
             $(BSTATIC) -L/usr/local/lib -lxapian -L/usr/local/lib -liconv $(BDYNAMIC) \
-           -lz
+           -lkdecore -lz
 
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
   POST_TARGETDEPS = ../lib/librcl.a

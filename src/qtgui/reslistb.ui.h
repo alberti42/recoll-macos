@@ -16,6 +16,7 @@
 
 #include "debuglog.h"
 #include "recoll.h"
+#include "guiutils.h"
 #include "pathut.h"
 #include "docseq.h"
 
@@ -170,7 +171,7 @@ void ResListBase::resultPageBack()
 {
     if (m_winfirst <= 0)
 	return;
-    m_winfirst -= 2 * prefs_respagesize;
+    m_winfirst -= 2 * prefs.respagesize;
     showResultPage();
 }
 
@@ -192,7 +193,7 @@ void ResListBase::showResultPage()
 
     // If we are already on the last page, nothing to do:
     if (m_winfirst >= 0 && 
-	(m_winfirst + prefs_respagesize > resCnt)) {
+	(m_winfirst + prefs.respagesize > resCnt)) {
 	emit nextPageAvailable(false);
 	return;
     }
@@ -202,13 +203,13 @@ void ResListBase::showResultPage()
 	emit prevPageAvailable(false);
     } else {
 	emit prevPageAvailable(true);
-	m_winfirst += prefs_respagesize;
+	m_winfirst += prefs.respagesize;
     }
 
     bool gotone = false;
     reslistTE->clear();
 
-    int last = MIN(resCnt-m_winfirst, prefs_respagesize);
+    int last = MIN(resCnt-m_winfirst, prefs.respagesize);
 
 
     // Insert results if any in result list window. We have to send
@@ -256,7 +257,7 @@ void ResListBase::showResultPage()
 	    result = "<p>";
 
 	string img_name;
-	if (prefs_showicons) {
+	if (prefs.showicons) {
 	    string iconpath;
 	    string iconname = rclconfig->getMimeIconName(doc.mimetype,
 							 &iconpath);
@@ -310,7 +311,7 @@ void ResListBase::showResultPage()
 			  /*"<img align=\"left\" source=\"myimage\">"*/
 			  "<b>No results found</b>"
 			  "<br>"));
-	m_winfirst -= prefs_respagesize;
+	m_winfirst -= prefs.respagesize;
 	if (m_winfirst < 0)
 	    m_winfirst = -1;
     }
@@ -331,7 +332,7 @@ void ResListBase::showResultPage()
 
     if (m_winfirst < 0 || 
 	(m_winfirst >= 0 && 
-	 m_winfirst + prefs_respagesize >= resCnt)) {
+	 m_winfirst + prefs.respagesize >= resCnt)) {
 	emit nextPageAvailable(false);
     } else {
 	emit nextPageAvailable(true);
