@@ -19,21 +19,13 @@ FORMS	= reslistb.ui \
 	uiprefs.ui \
 	ssearchb.ui
 
-IMAGES	= images/filenew \
-	images/fileopen \
-	images/filesave \
-	images/print \
-	images/undo \
-	images/redo \
-	images/editcut \
-	images/editcopy \
-	images/editpaste \
-	images/searchfind \
-	images/asearch \
-	images/history \
-	images/nextpage \
-	images/prevpage \
-	images/sortparms
+IMAGES	= images/asearch.png \
+	images/history.png \
+	images/d_nextpage.png \
+	images/nextpage.png \
+	images/d_prevpage.png \
+	images/prevpage.png \
+	images/sortparms.png
 
 unix {
   UI_DIR = .ui

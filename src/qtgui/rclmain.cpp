@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.6 2006-01-23 13:32:06 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.7 2006-01-23 17:21:30 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,7 @@ using std::pair;
 #include <qaction.h>
 #include <qpushbutton.h>
 #include <qimage.h>
+#include <qiconset.h>
 
 #include "recoll.h"
 #include "debuglog.h"
@@ -63,6 +64,16 @@ using std::pair;
 #include "moc_rclmain.cpp"
 
 extern "C" int XFlush(void *);
+
+// Taken from qt designer. Don't know why it's needed.
+static QIconSet createIconSet( const QString &name )
+{
+    QIconSet ic( QPixmap::fromMimeSource( name ) );
+    QString iname = "d_" + name;
+    ic.setPixmap(QPixmap::fromMimeSource(iname),
+		 QIconSet::Small, QIconSet::Disabled );
+    return ic;
+}
 
 void RclMain::init()
 {
@@ -89,6 +100,9 @@ void RclMain::init()
     m_history = new RclDHistory(historyfile);
     connect(sSearch, SIGNAL(startSearch(Rcl::AdvSearchData)), 
 		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
+
+    nextPageAction->setIconSet(createIconSet("nextpage.png"));
+    prevPageAction->setIconSet(createIconSet("prevpage.png"));
 }
 
 // We also want to get rid of the advanced search form and previews

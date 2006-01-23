@@ -212,7 +212,7 @@
             <cstring>toolsDoc_HistoryAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>history</iconset>
+            <iconset>history.png</iconset>
         </property>
         <property name="text">
             <string>Document &amp;History</string>
@@ -229,7 +229,7 @@
             <cstring>toolsAdvanced_SearchAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>asearch</iconset>
+            <iconset>asearch.png</iconset>
         </property>
         <property name="text">
             <string>Advanced Search</string>
@@ -246,7 +246,7 @@
             <cstring>toolsSort_parametersAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>sortparms</iconset>
+            <iconset>sortparms.png</iconset>
         </property>
         <property name="text">
             <string>&amp;Sort parameters</string>
@@ -266,7 +266,7 @@
             <bool>false</bool>
         </property>
         <property name="iconSet">
-            <iconset>nextpage</iconset>
+            <iconset>nextpage.png</iconset>
         </property>
         <property name="text">
             <string>Next page</string>
@@ -283,7 +283,7 @@
             <bool>false</bool>
         </property>
         <property name="iconSet">
-            <iconset>prevpage</iconset>
+            <iconset>prevpage.png</iconset>
         </property>
         <property name="text">
             <string>Previous page</string>
