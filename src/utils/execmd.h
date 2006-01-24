@@ -1,14 +1,21 @@
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-/* @(#$Id: execmd.h,v 1.4 2005-11-18 15:19:14 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: execmd.h,v 1.5 2006-01-24 12:22:20 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
 
+/** Callback function object to advise of new data arrival */
+class ExecCmdAdvise {
+ public:
+    virtual ~ExecCmdAdvise() {}
+    virtual void newData() = 0;
+};
+
 /**
- Execute command possibly taking both input and output (will do
- asynchronous io as appropriate for things to work).
-*/
+ * Execute command possibly taking both input and output (will do
+ * asynchronous io as appropriate for things to work).
+ */
 class ExecCmd {
  public:
     /**
@@ -34,8 +41,18 @@ class ExecCmd {
      */
     void putenv(const std::string &envassign);
 
+    /** Set function object to call whenever new data is available */
+    void setAdvise(ExecCmdAdvise *adv) {m_advise = adv;}
+
+    /** Cancel exec. This can be called from another thread or from newData */
+    void setCancel() {m_cancelRequest = true;}
+
+    ExecCmd() : m_advise(0), m_cancelRequest(false) {}
+
  private:
-    std::list<std::string> env;
+    std::list<std::string> m_env;
+    ExecCmdAdvise *m_advise;
+    bool m_cancelRequest;
 };
 
 
