@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.7 2006-01-23 17:21:30 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.8 2006-01-24 12:22:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -322,20 +322,6 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
     resList->setDocSource(docsource);
 }
 
-// If a preview (toplevel) window gets closed by the user, we need to
-// clean up because there is no way to reopen it. And check the case
-// where the current one is closed
-void RclMain::previewClosed(QWidget *w)
-{
-    if (w == (QWidget *)curPreview) {
-	LOGDEB(("Active preview closed\n"));
-	curPreview = 0;
-    } else {
-	LOGDEB(("Old preview closed\n"));
-    }
-    delete w;
-}
-
 // Open advanced search dialog.
 void RclMain::showAdvSearchDialog()
 {
@@ -388,6 +374,20 @@ void RclMain::showUIPrefs()
     }
 }
 
+// If a preview (toplevel) window gets closed by the user, we need to
+// clean up because there is no way to reopen it. And check the case
+// where the current one is closed
+void RclMain::previewClosed(QWidget *w)
+{
+    if (w == (QWidget *)curPreview) {
+	LOGDEB(("Active preview closed\n"));
+	curPreview = 0;
+    } else {
+	LOGDEB(("Old preview closed\n"));
+    }
+    delete w;
+}
+
 /** 
  * Open a preview window for a given document, or load it into new tab of 
  * existing window.
@@ -424,8 +424,8 @@ void RclMain::startPreview(int docnum)
 	}
 
 	curPreview->setCaption(QString::fromUtf8(currentQueryData.description.c_str()));
-	connect(curPreview, SIGNAL(previewClosed(Widget *)), 
-		this, SLOT(previewClosed(Widget *)));
+	connect(curPreview, SIGNAL(previewClosed(QWidget *)), 
+		this, SLOT(previewClosed(QWidget *)));
 	curPreview->show();
     } else {
 	if (curPreview->makeDocCurrent(fn, doc)) {
