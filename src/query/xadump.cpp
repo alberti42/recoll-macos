@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.8 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.9 2006-01-25 08:09:41 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,7 @@ static string thisprog;
 static string usage =
     " -d <dbdir> -e <output encoding>\n"
     " -i docid -D : get document data for docid\n"
+    " -i docid -b : 'rebuild' document from term positions\n"
     " -t term -E  : term existence test\n"
     " -t term -F  : retrieve term frequency data\n"
     " -t term -P  : retrieve postings for term\n"
@@ -62,6 +63,7 @@ static int        op_flags;
 #define OPT_P     0x40
 #define OPT_F     0x80
 #define OPT_E     0x100
+#define OPT_b     0x200
 
 Xapian::Database *db;
 
@@ -99,6 +101,7 @@ int main(int argc, char **argv)
 	    case 'F':   op_flags |= OPT_F; break;
 	    case 'P':	op_flags |= OPT_P; break;
 	    case 'T':	op_flags |= OPT_T; break;
+	    case 'b':   op_flags |= OPT_b; break;
 	    case 'd':	op_flags |= OPT_d; if (argc < 2)  Usage();
 		dbdir = *(++argv);
 		argc--; 
@@ -160,11 +163,36 @@ int main(int argc, char **argv)
 	    Xapian::Document doc = db->get_document(docid);
 	    string data = doc.get_data();
 	    cout << data << endl;
+	} else if (op_flags & OPT_b) {
+	    if (!(op_flags & OPT_i))
+		Usage();
+	    vector<string> buf;
+	    Xapian::TermIterator term;
+	    for (term = db->termlist_begin(docid);
+		 term != db->termlist_end(docid); term++) {
+		Xapian::PositionIterator pos;
+		for (pos = db->positionlist_begin(docid, *term); 
+		     pos != db->positionlist_end(docid, *term); pos++) {
+		    if (buf.size() < *pos)
+			buf.resize((*pos)+1);
+		    buf[(*pos)] = *term;
+		}
+	    }
+	    for (vector<string>::iterator it = buf.begin(); it != buf.end();
+		 it++) {
+		cout << *it << " ";
+	    }
 	} else if (op_flags & OPT_P) {
 	    Xapian::PostingIterator doc;
 	    for (doc = db->postlist_begin(aterm);
-		 doc != db->postlist_end(aterm);doc++) {
-		cout << *doc << endl;
+		 doc != db->postlist_end(aterm); doc++) {
+		cout << *doc << " : " ;
+		Xapian::PositionIterator pos;
+		for (pos = doc.positionlist_begin(); 
+		     pos != doc.positionlist_end(); pos++) {
+		    cout << *pos << " " ;
+		}
+		cout << endl;
 	    }
 		
 	} else if (op_flags & OPT_F) {

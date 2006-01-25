@@ -2,7 +2,12 @@ depth = ..
 include $(depth)/mk/sysconf
 
 PROGS = xadump #trhist qtry qxtry 
+
 all: $(PROGS)
+
+SRCS = xadump.cpp
+.cpp.o : 
+	$(CXX) -c $(ALL_CXXFLAGS) -o $@ $<
 
 XADUMP_OBJS= xadump.o $(BIGLIB) 
 xadump : $(XADUMP_OBJS)
