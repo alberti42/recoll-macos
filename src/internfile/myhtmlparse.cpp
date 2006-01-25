@@ -32,30 +32,34 @@
 // I can see no good reason to do this, and it actually helps preview to keep
 // whitespace, especially if the html comes from a filter that generated it 
 // from text (ie: inside '<pre> tags)
+//
+// Otoh doing it takes us closer to what the html rendering would
+// be. We should actually switch on/off according to pre tags
 void
 MyHtmlParser::process_text(const string &text)
 {
     if (!in_script_tag && !in_style_tag) {
-#if 0
-	string::size_type b = 0;
-	while ((b = text.find_first_not_of(WHITESPACE, b)) != string::npos) {
-	    if (pending_space || b != 0)
-		if (!dump.empty()) dump += ' ';
-	    pending_space = true;
-	    string::size_type e = text.find_first_of(WHITESPACE, b);
-	    if (e == string::npos) {
-		dump += text.substr(b);
-		pending_space = false;
-		break;
+	if (!in_pre_tag) {
+	    string::size_type b = 0;
+	    while ((b = text.find_first_not_of(WHITESPACE, b)) != string::npos) {
+		if (pending_space || b != 0)
+		    if (!dump.empty()) 
+			dump += ' ';
+		pending_space = true;
+		string::size_type e = text.find_first_of(WHITESPACE, b);
+		if (e == string::npos) {
+		    dump += text.substr(b);
+		    pending_space = false;
+		    break;
+		}
+		dump += text.substr(b, e - b);
+		b = e + 1;
 	    }
-	    dump += text.substr(b, e - b);
-	    b = e + 1;
+	} else {
+	    if (pending_space)
+		dump += ' ';
+	    dump += text;
 	}
-#else
-	if (pending_space)
-	    dump += ' ';
-	dump += text;
-#endif
     }
 }
 
@@ -192,7 +196,11 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	    if (tag == "ol" || tag == "option") pending_space = true;
 	    break;
 	case 'p':
-	    if (tag == "p" || tag == "pre" || tag == "plaintext") {
+	    if (tag == "p" || tag == "plaintext") {
+		dump += '\n';
+		pending_space = true;
+	    } else if (tag == "pre") {
+		in_pre_tag = true;
 		dump += '\n';
 		pending_space = true;
 	    }
@@ -269,7 +277,12 @@ MyHtmlParser::closing_tag(const string &tag)
 	    if (tag == "ol" || tag == "option") pending_space = true;
 	    break;
 	case 'p':
-	    if (tag == "p" || tag == "pre") pending_space = true;
+	    if (tag == "p") {
+		pending_space = true;
+	    } else if  (tag == "pre") {
+		pending_space = true;
+		in_pre_tag = false;
+	    }
 	    break;
 	case 'q':
 	    if (tag == "q") pending_space = true;
