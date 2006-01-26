@@ -3,35 +3,29 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on thread release debug
 
+HEADERS	+= rclmain.h
+
 SOURCES	+= main.cpp \
 	rclmain.cpp \
 	idxthread.cpp \
-	plaintorich.cpp
+	plaintorich.cpp \
+	guiutils.cpp
 
-HEADERS = rclmain.h
+FORMS	= reslistb.ui \
+	recollmain.ui \
+	advsearch.ui \
+	preview/preview.ui \
+	sort.ui \
+	uiprefs.ui \
+	ssearchb.ui
 
-FORMS	= recollmain.ui \
-          advsearch.ui \
-	  preview/preview.ui \
-          sort.ui \
-          uiprefs.ui
-
-
-IMAGES	= images/filenew \
-	images/fileopen \
-	images/filesave \
-	images/print \
-	images/undo \
-	images/redo \
-	images/editcut \
-	images/editcopy \
-	images/editpaste \
-	images/searchfind \
-	images/asearch \
-	images/history \
-	images/nextpage \
-	images/prevpage \
-	images/sortparms
+IMAGES	= images/asearch.png \
+	images/history.png \
+	images/d_nextpage.png \
+	images/nextpage.png \
+	images/d_prevpage.png \
+	images/prevpage.png \
+	images/sortparms.png
 
 unix {
   UI_DIR = .ui

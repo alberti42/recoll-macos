@@ -35,7 +35,7 @@ unix {
   DEFINES += RECOLL_DATADIR=\"/usr/local/share\"
   LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
             $(BSTATIC) -L/usr/local/lib -lxapian -L/usr/local/lib -liconv $(BDYNAMIC) \
-           -lkdecore -lz
+           -lz
 
   INCLUDEPATH += ../common ../index ../query ../unac ../utils 
   POST_TARGETDEPS = ../lib/librcl.a
