@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.5 2006-01-23 13:32:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.6 2006-01-26 17:59:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -22,10 +22,18 @@ static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.5 2006-01-23 13:32:28 dockes Exp 
 #include "mh_exec.h"
 #include "mh_html.h"
 #include "debuglog.h"
+#include "cancelcheck.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
+
+class MEAdv : public ExecCmdAdvise {
+public:
+    void newData(int) {
+	CancelCheck::instance().checkCancel();
+    }
+};
 
 // Execute an external program to translate a file from its native format
 // to html. Then call the html parser to do the actual indexing
@@ -49,10 +57,12 @@ MimeHandlerExec::mkDoc(RclConfig *conf, const string &fn,
 
     // Execute command and store the result text, which is supposedly html
     string html;
-    ExecCmd exec;
-    exec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
+    ExecCmd mexec;
+    MEAdv adv;
+    mexec.setAdvise(&adv);
+    mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
-    int status = exec.doexec(cmd, myparams, 0, &html);
+    int status = mexec.doexec(cmd, myparams, 0, &html);
     if (status) {
 	LOGERR(("MimeHandlerExec: command status 0x%x: %s\n", 
 		status, cmd.c_str()));
