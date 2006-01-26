@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.53 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.54 2006-01-26 12:28:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,13 @@ using namespace std;
 #include "xapian.h"
 #include <xapian/stem.h>
 
+#ifndef MAX
+#define MAX(A,B) (A>B?A:B)
+#endif
+#ifndef MIN
+#define MIN(A,B) (A<B?A:B)
+#endif
+
 // Data for a xapian database. There could actually be 2 different
 // ones for indexing or query as there is not much in common.
 class Native {
@@ -64,6 +71,12 @@ class Native {
     Xapian::Enquire *enquire;
     Xapian::MSet     mset;
 
+    string makeAbstract(Xapian::docid id, const list<string>& terms);
+    bool dbDataToRclDoc(std::string &data, Rcl::Doc &doc, 
+			int qopts,
+			Xapian::docid docid,
+			const list<string>& terms);
+
     Native() : isopen(false), iswritable(false), enquire(0) { }
     ~Native() {
 	delete enquire;
@@ -73,6 +86,7 @@ class Native {
 Rcl::Db::Db() 
 {
     pdata = new Native;
+    m_qOpts = 0;
 }
 
 Rcl::Db::~Db()
@@ -105,13 +119,14 @@ Rcl::Db::~Db()
     LOGERR(("Rcl::Db::~Db: got exception: %s\n", ermsg));
 }
 
-bool Rcl::Db::open(const string& dir, OpenMode mode)
+bool Rcl::Db::open(const string& dir, OpenMode mode, int qops)
 {
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
     LOGDEB(("Db::open: isopen %d iswritable %d\n", ndb->isopen, 
 	    ndb->iswritable));
+    m_qOpts = qops;
 
     if (ndb->isopen) {
 	LOGERR(("Rcl::Db::open: already open\n"));
@@ -268,7 +283,7 @@ bool Rcl::dumb_string(const string &in, string &out)
 /* From omindex direct */
 /* Truncate a string to a given maxlength, avoiding cutting off midword
  * if reasonably possible. */
-string
+static string
 truncate_to_word(string & input, string::size_type maxlen)
 {
     string output;
@@ -292,8 +307,29 @@ truncate_to_word(string & input, string::size_type maxlen)
 
 	output += " ...";
     }
-    // No need to replace newlines with spaces, we do this in dumb_string()
     return output;
+}
+
+// remove some chars and replace them with spaces
+static string stripchars(const string &str, string delims)
+{
+    string out;
+    string::size_type startPos, pos;
+
+    for (pos = 0;;) { 
+        // Skip initial delims, break if this eats all.
+        if ((startPos = str.find_first_not_of(delims, pos)) == string::npos)
+	    break;
+        // Find next delimiter or end of string (end of token)
+        pos = str.find_first_of(delims, startPos);
+        // Add token to the vector. Note: token cant be empty here
+	if (pos == string::npos) {
+	    out += str.substr(startPos) + " ";
+	} else {
+	    out += str.substr(startPos, pos - startPos) + " ";
+	}
+    }
+    return out;
 }
 
 // Truncate longer path and uniquize with hash . The goal for this is
@@ -301,23 +337,33 @@ truncate_to_word(string & input, string::size_type maxlen)
 // gain very little even with very short maxlens like 30)
 #define PATHHASHLEN 150
 
+#define ABSTRACT_SIZE 200
+const static string rclSyntAbs = "?!#@";
+
 // Add document in internal form to the database: index the terms in
 // the title abstract and body and add special terms for file name,
 // date, mime type ... , create the document data record (more
 // metadata), and update database
-bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
+bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc, 
+		  const struct stat *stp)
 {
     LOGDEB1(("Rcl::Db::add: fn %s\n", fn.c_str()));
     if (pdata == 0)
 	return false;
     Native *ndb = (Native *)pdata;
 
-    // Truncate abstract, title and keywords to reasonable lengths
     Rcl::Doc doc = idoc;
-    if (doc.abstract.empty()) 
-	doc.abstract = truncate_to_word(doc.text, 100);
-    else 
-	doc.abstract = truncate_to_word(doc.abstract, 100);
+
+    // Truncate abstract, title and keywords to reasonable lengths. If
+    // abstract is currently empty, we make up one with the beginning
+    // of the document.
+    if (doc.abstract.empty()) {
+	doc.abstract = rclSyntAbs + 
+	    truncate_to_word(doc.text, ABSTRACT_SIZE);
+    } else {
+	doc.abstract = truncate_to_word(doc.abstract, ABSTRACT_SIZE);
+    }
+    doc.abstract = stripchars(doc.abstract, "\n\r");
     doc.title = truncate_to_word(doc.title, 100);
     doc.keywords = truncate_to_word(doc.keywords, 300);
 
@@ -417,12 +463,20 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc)
 	record += "\ndmtime=" + doc.dmtime;
     }
     record += "\norigcharset=" + doc.origcharset;
-    record += "\ncaption=" + doc.title;
-    record += "\nkeywords=" + doc.keywords;
-    record += "\nabstract=" + doc.abstract;
+    char sizebuf[20]; 
+    sizebuf[0] = 0;
+    if (stp)
+	sprintf(sizebuf, "%ld", (long)stp->st_size);
+    if (sizebuf[0])
+	record += string("\nfbytes=") + sizebuf;
+    sprintf(sizebuf, "%u", (unsigned int)doc.text.length());
+    record += string("\ndbytes=") + sizebuf;
     if (!doc.ipath.empty()) {
 	record += "\nipath=" + doc.ipath;
     }
+    record += "\ncaption=" + doc.title;
+    record += "\nkeywords=" + doc.keywords;
+    record += "\nabstract=" + doc.abstract;
     record += "\n";
     LOGDEB1(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);
@@ -812,6 +866,7 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
 }
 
 
+// Splitter callback for breaking query into terms
 class wsQData : public TextSplitCB {
  public:
     vector<string> terms;
@@ -835,7 +890,6 @@ class wsQData : public TextSplitCB {
 	}
     }
 };
-
 
 // Turn string into list of xapian queries. There is little
 // interpretation done on the string (no +term -term or filename:term
@@ -927,7 +981,6 @@ bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts,
     Native *ndb = (Native *)pdata;
     if (!ndb)
 	return false;
-
     asdata.erase();
     dbindices.clear();
     list<Xapian::Query> pqueries;
@@ -950,6 +1003,7 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     LOGDEB((" phrase:   %s\n", sdata.phrase.c_str()));
     LOGDEB((" orwords:  %s\n", sdata.orwords.c_str()));
     LOGDEB((" nowords:  %s\n", sdata.nowords.c_str()));
+
     string ft;
     for (list<string>::iterator it = sdata.filetypes.begin(); 
     	 it != sdata.filetypes.end(); it++) {ft += *it + " ";}
@@ -1053,6 +1107,8 @@ bool Rcl::Db::getQueryTerms(list<string>& terms)
     return true;
 }
 
+static const int qquantum = 30;
+
 int Rcl::Db::getResCnt()
 {
     Native *ndb = (Native *)pdata;
@@ -1060,8 +1116,19 @@ int Rcl::Db::getResCnt()
 	LOGERR(("Rcl::Db::getResCnt: no query opened\n"));
 	return -1;
     }
-    if (ndb->mset.size() <= 0)
-	return -1;
+    if (ndb->mset.size() <= 0) {
+	try {
+	    ndb->mset = ndb->enquire->get_mset(0, qquantum);
+	} catch (const Xapian::DatabaseModifiedError &error) {
+	    ndb->db.reopen();
+	    ndb->mset = ndb->enquire->get_mset(0, qquantum);
+	} catch (const Xapian::Error & error) {
+	    LOGERR(("enquire->get_mset: exception: %s\n", 
+		    error.get_msg().c_str()));
+	    return -1;
+	}
+    }
+
     return ndb->mset.get_matches_lower_bound();
 }
 
@@ -1085,7 +1152,9 @@ class Rcl::DbPops {
     }
 };
 
-bool Rcl::Db::dbDataToRclDoc(std::string &data, Doc &doc)
+bool Native::dbDataToRclDoc(std::string &data, Rcl::Doc &doc, 
+			    int qopts,
+			    Xapian::docid docid, const list<string>& terms)
 {
     LOGDEB1(("Rcl::Db::dbDataToRclDoc: data: %s\n", data.c_str()));
     ConfSimple parms(&data);
@@ -1099,7 +1168,20 @@ bool Rcl::Db::dbDataToRclDoc(std::string &data, Doc &doc)
     parms.get(string("caption"), doc.title);
     parms.get(string("keywords"), doc.keywords);
     parms.get(string("abstract"), doc.abstract);
+    bool syntabs = false;
+    if (doc.abstract.find(rclSyntAbs) == 0) {
+	doc.abstract = doc.abstract.substr(rclSyntAbs.length());
+	syntabs = true;
+    }
+    if ((qopts && Rcl::Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
+	LOGDEB1(("dbDataToRclDoc:: building abstract from position data\n"));
+	if (doc.abstract.empty() || syntabs || 
+	    (qopts & Rcl::Db::QO_REPLACE_ABSTRACT))
+	    doc.abstract = makeAbstract(docid, terms);
+    }
     parms.get(string("ipath"), doc.ipath);
+    parms.get(string("fbytes"), doc.fbytes);
+    parms.get(string("dbytes"), doc.dbytes);
     return true;
 }
 
@@ -1114,7 +1196,6 @@ bool Rcl::Db::dbDataToRclDoc(std::string &data, Doc &doc)
 // that dont match the filter).
 bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 {
-    const int qquantum = 30;
     LOGDEB1(("Rcl::Db::getDoc: exti %d\n", exti));
     Native *ndb = (Native *)pdata;
     if (!ndb || !ndb->enquire) {
@@ -1199,12 +1280,15 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 	     ndb->mset.get_matches_lower_bound()));
 
     Xapian::Document xdoc = ndb->mset[xapi-first].get_document();
+    Xapian::docid docid = *(ndb->mset[xapi-first]);
     if (percent)
 	*percent = ndb->mset.convert_to_percent(ndb->mset[xapi-first]);
 
     // Parse xapian document's data and populate doc fields
     string data = xdoc.get_data();
-    return dbDataToRclDoc(data, doc);
+    list<string> terms;
+    getQueryTerms(terms);
+    return ndb->dbDataToRclDoc(data, doc, m_qOpts, docid, terms);
 }
 
 // Retrieve document defined by file name and internal path. Very inefficient,
@@ -1237,7 +1321,9 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
 
 	    Xapian::Document xdoc = ndb->db.get_document(*docid);
 	    string data = xdoc.get_data();
-	    if (dbDataToRclDoc(data, doc) && doc.ipath == ipath)
+	    list<string> terms;
+	    if (ndb->dbDataToRclDoc(data, doc, QO_NONE, *docid, terms) 
+		&& doc.ipath == ipath)
 		return true;
 	}
     } catch (const Xapian::Error &e) {
@@ -1257,4 +1343,124 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
 	doc.url = string("file://") + fn;
     }
     return false;
+}
+
+// Width of a sample extract around a query term
+//
+// We build a possibly full size but sparsely populated (only around
+// the search term) reconstruction of the document. It would be
+// possible to compress the array, by having only multiple chunks
+// around the terms, but this would seriously complicate the data
+// structure.
+#define EXTRACT_WIDTH 3
+string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
+{
+    Chrono chron;
+    // A buffer that we populate with the document terms, at their position
+    vector<string> buf;
+
+    // Go through the list of query terms. For each entry in each
+    // position list, populate the slot in the document buffer, and
+    // remember the position and its neigbours
+    vector<unsigned int> qtermposs; // The term positions
+    set<unsigned int> chunkposs; // All the positions we shall populate
+    for (list<string>::const_iterator qit = terms.begin(); qit != terms.end();
+	 qit++) {
+	Xapian::PositionIterator pos;
+	// There may be query terms not in this doc. This raises an
+	// exception when requesting the position list, we just catch it.
+	try {
+	    unsigned int occurrences = 0;
+	    for (pos = db.positionlist_begin(docid, *qit); 
+		 pos != db.positionlist_end(docid, *qit); pos++) {
+		unsigned int ipos = *pos;
+		LOGDEB1(("Abstract: [%s] at %d\n", qit->c_str(), ipos));
+		// Possibly extend the array. Do it in big chunks
+		if (ipos + EXTRACT_WIDTH >= buf.size()) {
+		    buf.resize(ipos + EXTRACT_WIDTH + 1000);
+		}
+		buf[ipos] = *qit;
+		// Remember the term position
+		qtermposs.push_back(ipos);
+		// Add adjacent slots to the set to populate at next step
+		for (unsigned int ii = MAX(0, ipos-EXTRACT_WIDTH); 
+		     ii <= MIN(ipos+EXTRACT_WIDTH, buf.size()-1); ii++) {
+		    chunkposs.insert(ii);
+		}
+		// Limit the number of occurences we keep for each
+		// term. The abstract has a finite length anyway !
+		if (occurrences++ > 10)
+		    break;
+	    }
+	} catch (...) {
+	}
+    }
+
+    LOGDEB1(("Abstract:%d:chosen number of positions %d. Populating\n", 
+	    chron.millis(), qtermposs.size()));
+
+    // Walk the full document position list and populate slots around
+    // the query terms. We arbitrarily truncate the list to avoid
+    // taking forever. If we do cutoff, the abstract may be
+    // inconsistant, which is bad...
+    { Xapian::TermIterator term;
+	int cutoff = 500 * 1000;
+	for (term = db.termlist_begin(docid);
+	     term != db.termlist_end(docid); term++) {
+	    Xapian::PositionIterator pos;
+	    for (pos = db.positionlist_begin(docid, *term); 
+		 pos != db.positionlist_end(docid, *term); pos++) {
+		if (cutoff-- < 0)
+		    break;
+		unsigned int ipos = *pos;
+		if (chunkposs.find(ipos) != chunkposs.end()) {
+		    buf[ipos] = *term;
+		}
+	    }
+	    if (cutoff-- < 0)
+		break;
+	}
+    }
+
+    LOGDEB1(("Abstract:%d: randomizing and extracting\n", chron.millis()));
+
+    // We randomize the selection of term positions, from which we
+    // shall pull, starting at the beginning, until the abstract is
+    // big enough. The abstract is finally built in correct position
+    // order, thanks to the position map.
+    random_shuffle(qtermposs.begin(), qtermposs.end());
+    map<unsigned int, string> mabs;
+    unsigned int abslen = 0;
+    LOGDEB1(("Abstract:%d: extracting\n", chron.millis()));
+    // Extract data around the first (in random order) term positions,
+    // and store the chunks in the map
+    for (vector<unsigned int>::const_iterator it = qtermposs.begin();
+	 it != qtermposs.end(); it++) {
+	unsigned int ipos = *it;
+	unsigned int start = MAX(0, ipos-EXTRACT_WIDTH);
+	unsigned int end = MIN(ipos+EXTRACT_WIDTH, buf.size()-1);
+	string chunk;
+	for (unsigned int ii = start; ii <= end; ii++) {
+	    if (!buf[ii].empty()) {
+		chunk += buf[ii] + " ";
+		abslen += buf[ii].length();
+	    }
+	    if (abslen > 300)
+		break;
+	}
+	if (end != buf.size()-1)
+	    chunk += "... ";
+	mabs[ipos] = chunk;
+	if (abslen > 300)
+	    break;
+    }
+
+    // Build the abstract by walking the map (in order of position)
+    string abstract;
+    for (map<unsigned int, string>::const_iterator it = mabs.begin();
+	 it != mabs.end(); it++) {
+	abstract += (*it).second;
+    }
+    LOGDEB(("Abtract: done in %d mS\n", chron.millis()));
+    return abstract;
 }

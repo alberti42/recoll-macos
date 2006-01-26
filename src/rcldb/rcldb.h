@@ -1,6 +1,6 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.22 2006-01-11 15:08:21 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.23 2006-01-26 12:28:50 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -31,7 +31,7 @@ namespace Rcl {
 #endif
 
 /**
- * Dumb bunch holder for document attributes and data
+ * Dumb holder for document attributes and data
  */
 class Doc {
  public:
@@ -45,7 +45,11 @@ class Doc {
     string title;
     string keywords;
     string abstract;
+    string fbytes;        // File size
+    string dbytes;        // Doc size
 
+    // The following fields don't go to the db. text is only used when
+    // indexing
     string text;
 
     int pc; // used by sortseq, convenience
@@ -60,6 +64,8 @@ class Doc {
 	title.erase();
 	keywords.erase();
 	abstract.erase();
+	fbytes.erase();
+	dbytes.erase();
 
 	text.erase();
     }
@@ -79,28 +85,36 @@ class AdvSearchData {
     string description; // Printable expanded version of the complete query
                         // returned after setQuery.
     void erase() {
-	allwords.erase();phrase.erase();orwords.erase();nowords.erase();
-	filetypes.clear(); topdir.erase();
-	description.clear();
+	allwords.erase();
+	phrase.erase();
+	orwords.erase();
+	nowords.erase();
+	filetypes.clear(); 
+	topdir.erase();
+	description.erase();
     }
 };
  
- class DbPops;
+class DbPops;
 
 /**
  * Wrapper class for the native database.
  */
 class Db {
-public:
+ public:
     Db();
     ~Db();
+
     enum OpenMode {DbRO, DbUpd, DbTrunc};
-    bool open(const string &dbdir, OpenMode mode);
+    enum QueryOpts {QO_NONE=0, QO_STEM = 1, QO_BUILD_ABSTRACT = 2,
+		    QO_REPLACE_ABSTRACT = 4};
+
+    bool open(const string &dbdir, OpenMode mode, int qops = 0);
     bool close();
     bool isopen();
 
     // Update-related functions
-    bool add(const string &filename, const Doc &doc);
+    bool add(const string &filename, const Doc &doc, const struct stat *stp);
     bool needUpdate(const string &filename, const struct stat *stp);
     bool purge();
     bool createStemDb(const string &lang);
@@ -109,7 +123,6 @@ public:
     // Query-related functions
 
     // Parse query string and initialize query
-    enum QueryOpts {QO_NONE=0, QO_STEM = 1};
     bool setQuery(const string &q, QueryOpts opts = QO_NONE, 
 		  const string& stemlang = "english");
     bool setQuery(AdvSearchData &q, QueryOpts opts = QO_NONE,
@@ -143,10 +156,11 @@ private:
                            // db indices that match
     void *pdata; // Pointer to private data. We don't want db(ie
                  // xapian)-specific defs to show in here
+    unsigned int m_qOpts;
+
     /* Copyconst and assignemt private and forbidden */
     Db(const Db &) {}
     Db & operator=(const Db &) {return *this;};
-    bool dbDataToRclDoc(std::string &data, Doc &doc);
 };
 
 // Unaccent and lowercase data.
