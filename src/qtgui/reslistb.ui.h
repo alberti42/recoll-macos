@@ -55,7 +55,12 @@ void ResListBase::setDocSource(DocSequence *docsource)
 
 bool ResListBase::getDoc(int docnum, Rcl::Doc &doc)
 {
-    return m_docsource ? m_docsource->getDoc(docnum, doc, 0, 0) : false;
+    if (docnum >= 0 && docnum >= int(m_winfirst) && 
+	docnum < int(m_winfirst + m_curDocs.size())) {
+	doc = m_curDocs[docnum - m_winfirst];
+	return true;
+    }
+    return false;
 }
 
 // Get document number-in-window from paragraph number
@@ -175,6 +180,22 @@ void ResListBase::resultPageBack()
     showResultPage();
 }
 
+static string displayableBytes(long size)
+{
+    char sizebuf[30];
+    const char * unit = " B ";
+
+    if (size > 1024 && size < 1024*1024) {
+	unit = " KB ";
+	size /= 1024;
+    } else if (size  >= 1024*1204) {
+	unit = " MB ";
+	size /= (1024*1024);
+    }
+    sprintf(sizebuf, "%ld%s", size, unit);
+    return string(sizebuf);
+}
+
 // Fill up result list window with next screen of hits
 void ResListBase::showResultPage()
 {
@@ -211,7 +232,7 @@ void ResListBase::showResultPage()
 
     int last = MIN(resCnt-m_winfirst, prefs.respagesize);
 
-
+    m_curDocs.clear();
     // Insert results if any in result list window. We have to send
     // the text to the widgets, because we need the paragraph number
     // each time we add a result paragraph (its diffult and
@@ -229,8 +250,9 @@ void ResListBase::showResultPage()
 	    // been removed since. So don't treat it as fatal.
 	    doc.abstract = string(tr("Unavailable document").utf8());
 	}
+
 	if (i == 0) {
-	    // Display header
+	    // Display list header
 	    // We could use a <title> but the textedit doesnt display
 	    // it prominently
 	    reslistTE->append("<qt><head></head><body>");
@@ -246,16 +268,8 @@ void ResListBase::showResultPage()
 	}
 	    
 	gotone = true;
-
-	// Result list entry display: this must be exactly one paragraph
-	// We should probably display the size too   - size ?
-
-	string result;
-	if (!sh.empty())
-	    result += string("<p><b>") + sh + "</p>\n<p>";
-	else
-	    result = "<p>";
-
+	
+	// Determine icon to display if any
 	string img_name;
 	if (prefs.showicons) {
 	    string iconpath;
@@ -270,10 +284,15 @@ void ResListBase::showResultPage()
 	    }
 	}
 
+	// Percentage of 'relevance'
 	char perbuf[10];
-	sprintf(perbuf, "%3d%%", percent);
+	sprintf(perbuf, "%3d%% ", percent);
+
+	// Make title out of file name if none yet
 	if (doc.title.empty()) 
 	    doc.title = path_getsimple(doc.url);
+
+	// Document date: either doc or file modification time
 	char datebuf[100];
 	datebuf[0] = 0;
 	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
@@ -283,27 +302,53 @@ void ResListBase::showResultPage()
 	    strftime(datebuf, 99, 
 		     "<i>Modified:</i>&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
 	}
+
+	// Size information. We print both doc and file if they differ a lot
+	long fsize = 0, dsize = 0;
+	if (!doc.dbytes.empty())
+	    dsize = atol(doc.dbytes.c_str());
+	if (!doc.fbytes.empty())
+	    fsize = atol(doc.fbytes.c_str());
+	string sizebuf;
+	if (dsize > 0) {
+	    sizebuf = displayableBytes(dsize);
+	    if (fsize > 10 * dsize)
+		sizebuf += string(" / ") + displayableBytes(fsize);
+	}
+
+	// Abstract
 	string abst = escapeHtml(doc.abstract);
 	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
+
+	// Concatenate chunks to build the result list paragraph:
+	string result;
+	if (!sh.empty())
+	    result += string("<p><b>") + sh + "</p>\n<p>";
+	else
+	    result = "<p>";
 	if (!img_name.empty()) {
 	    result += "<img source=\"" + img_name + "\" align=\"left\">";
 	}
-	result += string(perbuf) + " <b>" + doc.title + "</b><br>" +
-	    doc.mimetype + "&nbsp;" +
-	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>")) +
-	    (!abst.empty() ? abst + "<br>" : string("")) +
-	    (!doc.keywords.empty() ? doc.keywords + "<br>" : string("")) +
-	    "<i>" + doc.url + +"</i><br></p>\n";
+	result += string(perbuf) + sizebuf + "<b>" + doc.title + "</b><br>";
+	result += doc.mimetype + "&nbsp;" + 
+	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>"));
+	result += "<i>" + doc.url + +"</i><br>";
+	if (!abst.empty())
+	    result +=  abst + "<br>";
+	if (!doc.keywords.empty())
+	    result += doc.keywords + "<br>";
+	result += "</p>\n";
 
 	QString str = QString::fromUtf8(result.c_str(), result.length());
 	reslistTE->append(str);
+	reslistTE->setCursorPosition(0,0);
 
 	m_pageParaToReldocnums[reslistTE->paragraphs()-1] = i;
+	m_curDocs.push_back(doc);
     }
 
     if (gotone) {
 	reslistTE->append("</body></qt>");
-	reslistTE->setCursorPosition(0,0);
 	reslistTE->ensureCursorVisible();
     } else {
 	// Restore first in win parameter that we shouln't have incremented

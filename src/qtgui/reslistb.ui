@@ -70,6 +70,7 @@
 <includes>
     <include location="local" impldecl="in implementation">reslistb.ui.h</include>
     <include location="local" impldecl="in declaration">docseq.h</include>
+    <include location="global" impldecl="in declaration">vector</include>
 </includes>
 <variables>
     <variable access="public">int m_winfirst;</variable>
@@ -81,6 +82,7 @@
     <variable access="public">bool m_dblclck;</variable>
     <variable access="private">std::map&lt;int,int&gt; m_pageParaToReldocnums;</variable>
     <variable access="private">DocSequence *m_docsource;</variable>
+    <variable access="private">std::vector&lt;Rcl::Doc&gt; m_curDocs;</variable>
 </variables>
 <signals>
     <signal>nextPageAvailable(bool)</signal>
