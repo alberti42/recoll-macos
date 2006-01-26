@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.23 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.24 2006-01-26 07:02:06 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -237,7 +237,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	doc.ipath = ipath;
 
 	// Do database-specific work to update document data
-	if (!db.add(fn, doc)) 
+	if (!db.add(fn, doc, stp)) 
 	    return FsTreeWalker::FtwError;
     }
 
