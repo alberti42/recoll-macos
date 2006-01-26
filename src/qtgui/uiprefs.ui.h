@@ -29,27 +29,20 @@ void UIPrefsDialog::init()
     QString s;
     if (prefs.reslistfontfamily.length() == 0) {
 	reslistFontPB->setText(this->font().family() + "-" +
-			   s.setNum(this->font().pointSize()));
+			       s.setNum(this->font().pointSize()));
     } else {
 	reslistFontPB->setText(reslistFontFamily + "-" +
-			   s.setNum(reslistFontSize));
+			       s.setNum(reslistFontSize));
     }
     // Stemming language combobox
     stemLangCMB->insertItem("(no stemming)");
     list<string> langs;
-#if 0
-    string slangs;
-    if (rclconfig->getConfParam("indexstemminglanguages", slangs)) {
-	stringToStrings(slangs, langs);
-    }
-#else
     string reason;
     if (!maybeOpenDb(reason)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
 	exit(1);
     }
     langs = rcldb->getStemLangs();
-#endif
 
     int i = 0, cur = -1;
     for (list<string>::const_iterator it = langs.begin(); 
@@ -64,7 +57,13 @@ void UIPrefsDialog::init()
     }
     if (cur < 0)
 	cur = 0;
-	stemLangCMB->setCurrentItem(cur);
+    stemLangCMB->setCurrentItem(cur);
+
+    buildAbsCB->setDown(prefs.queryBuildAbstract);
+    if (!prefs.queryBuildAbstract) {
+	replAbsCB->setEnabled(false);
+    }
+    replAbsCB->setDown(prefs.queryReplaceAbstract);
     
     connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
@@ -72,6 +71,23 @@ void UIPrefsDialog::init()
 
 void UIPrefsDialog::accept()
 {
+    prefs.showicons = useIconsCB->isChecked();
+    prefs.respagesize = pageLenSB->value();
+
+    prefs.reslistfontfamily = reslistFontFamily;
+    prefs.reslistfontsize = reslistFontSize;
+
+    if (stemLangCMB->currentItem() == 0) {
+	prefs.queryStemLang = "";
+    } else {
+	prefs.queryStemLang = stemLangCMB->currentText();
+    }
+    prefs.queryBuildAbstract = buildAbsCB->isChecked();
+    prefs.queryReplaceAbstract = buildAbsCB->isChecked() && 
+	replAbsCB->isChecked();
+    rwSettings(true);
+    string reason;
+    maybeOpenDb(reason, true);
     emit uiprefsDone();
     QDialog::accept();
 }

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.8 2006-01-24 12:22:58 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.9 2006-01-26 14:02:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -532,29 +532,17 @@ void RclMain::sortDataChanged(int cnt, RclSortSpec spec)
     sortspecs = spec;
 }
 
-// This could be handled inside the dialog's accept(), but we may want to
-// do something (ie: redisplay reslist?)
+// Called when the uiprefs dialog is ok'd
 void RclMain::setUIPrefs()
 {
     if (!uiprefs)
 	return;
     LOGDEB(("Recollmain::setUIPrefs\n"));
-    prefs.showicons = uiprefs->useIconsCB->isChecked();
-    prefs.respagesize = uiprefs->pageLenSB->value();
-
-    prefs.reslistfontfamily = uiprefs->reslistFontFamily;
-    prefs.reslistfontsize = uiprefs->reslistFontSize;
     if (prefs.reslistfontfamily.length()) {
 	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
 	resList->setFont(nfont);
     } else {
 	resList->setFont(this->font());
-    }
-
-    if (uiprefs->stemLangCMB->currentItem() == 0) {
-	prefs.queryStemLang = "";
-    } else {
-	prefs.queryStemLang = uiprefs->stemLangCMB->currentText();
     }
 }
 

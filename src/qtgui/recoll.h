@@ -1,6 +1,6 @@
 #ifndef _RECOLL_H_INCLUDED_
 #define _RECOLL_H_INCLUDED_
-/* @(#$Id: recoll.h,v 1.12 2006-01-23 13:32:06 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: recoll.h,v 1.13 2006-01-26 14:00:04 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 
 #include "rclconfig.h"
@@ -8,7 +8,7 @@
 #include "idxthread.h"
 
 // Misc declarations in need of sharing between the UI files
-extern bool maybeOpenDb(std::string &reason);
+extern bool maybeOpenDb(std::string &reason, bool force = false);
 
 extern RclConfig *rclconfig;
 extern Rcl::Db *rcldb;

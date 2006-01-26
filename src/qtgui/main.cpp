@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.34 2006-01-23 13:32:05 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.35 2006-01-26 14:00:18 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -74,13 +74,21 @@ static string dbdir;
 static RclMainBase *mainWindow;
 static string recollsharedir;
 
-bool maybeOpenDb(string &reason)
+bool maybeOpenDb(string &reason, bool force)
 {
     if (!rcldb) {
 	reason = "Internal error: db not created";
 	return false;
     }
-    if (!rcldb->isopen() && !rcldb->open(dbdir, Rcl::Db::DbRO)) {
+
+    int qopts = 0;
+    if (prefs.queryBuildAbstract)
+	qopts |= Rcl::Db::QO_BUILD_ABSTRACT;
+    if (prefs.queryReplaceAbstract)
+	qopts |= Rcl::Db::QO_REPLACE_ABSTRACT;
+    if (force)
+	rcldb->close();
+    if (!rcldb->isopen() && !rcldb->open(dbdir, Rcl::Db::DbRO, qopts)) {
 	reason = "Could not open database in " + 
 	    dbdir + " wait for indexing to complete?";
 	return false;
@@ -199,7 +207,7 @@ int main( int argc, char ** argv )
 			mainWindow, SLOT(periodic100()));
     timer->start(100);
 
-    if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {
+    if (!maybeOpenDb(reason)) {
 	startindexing = 1;
 	switch (QMessageBox::
 		question(0, "Recoll",
