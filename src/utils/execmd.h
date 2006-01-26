@@ -1,15 +1,15 @@
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-/* @(#$Id: execmd.h,v 1.6 2006-01-26 17:44:51 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: execmd.h,v 1.7 2006-01-26 17:59:30 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
 
-/** Callback function object to advise of new data arrival */
+/** Callback function object to advise of new data arrival (or just heartbeat)  * if cnt is 0 */
 class ExecCmdAdvise {
  public:
     virtual ~ExecCmdAdvise() {}
-    virtual void newData() = 0;
+    virtual void newData(int cnt) = 0;
 };
 
 /**

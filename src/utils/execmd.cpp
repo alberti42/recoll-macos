@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.14 2006-01-26 17:44:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.15 2006-01-26 17:59:30 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -162,6 +162,8 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		if ((ss = select(nfds, &readfds, &writefds, 0, &tv)) <= 0) {
 		    if (ss == 0) {
 			// Timeout, is ok.
+			if (m_advise)
+			    m_advise->newData(0);
 			continue;
 		    }
 		    LOGERR(("ExecCmd::doexec: select(2) failed. errno %d\n", 
@@ -196,7 +198,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 			// cerr << "READ: " << n << endl;
 			output->append(buf, n);
 			if (m_advise)
-			    m_advise->newData();
+			    m_advise->newData(n);
 		    }
 		}
 	    }
@@ -297,7 +299,7 @@ const char *data = "Une ligne de donnees\n";
 class MEAdv : public ExecCmdAdvise {
 public:
     ExecCmd *cmd;
-    void newData() {
+    void newData(int) {
 	cerr << "New Data!" << endl;
 	CancelCheck::instance().setCancel();
 	CancelCheck::instance().checkCancel();
