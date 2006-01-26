@@ -1,6 +1,6 @@
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-/* @(#$Id: execmd.h,v 1.5 2006-01-24 12:22:20 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: execmd.h,v 1.6 2006-01-26 17:44:51 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -19,10 +19,15 @@ class ExecCmdAdvise {
 class ExecCmd {
  public:
     /**
-     * Execute command. Both input and output can be specified, and
+     * Execute command. 
+     *
+     * Both input and output can be specified, and
      * asynchronous io is used to prevent blocking. This wont work if
      * input and output need to be synchronized (ie: Q/A), but ok for
      * filtering.
+     * The function is exception-safe. In case an exception occurs in the 
+     * advise callback, fds and pids will be cleaned-up properly.
+     *
      * @param cmd the program to execute. This must be an absolute file name 
      *   or exist in the PATH.
      * @param args the argument list (NOT including argv[0]).
@@ -44,7 +49,10 @@ class ExecCmd {
     /** Set function object to call whenever new data is available */
     void setAdvise(ExecCmdAdvise *adv) {m_advise = adv;}
 
-    /** Cancel exec. This can be called from another thread or from newData */
+    /** Cancel exec. This can be called from another thread or from the
+     *  advise callback, which could also raise an exception to accomplish 
+     * the same thing
+     */
     void setCancel() {m_cancelRequest = true;}
 
     ExecCmd() : m_advise(0), m_cancelRequest(false) {}

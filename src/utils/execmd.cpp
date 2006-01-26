@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.13 2006-01-24 12:22:20 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.14 2006-01-26 17:44:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,49 @@ void  ExecCmd::putenv(const string &ea)
     m_env.push_back(ea);
 }
 
+/** A resource manager to ensure that execcmd cleans up if an exception is 
+ * raised in the callback */
+class ExecCmdRsrc {
+public:
+    int pipein[2];
+    int pipeout[2];
+    pid_t pid;
+    ExecCmdRsrc() {
+	reset();
+    }
+    void reset() {
+	pipein[0] = pipein[1] = pipeout[0] = pipeout[1] = -1;
+	pid = -1;
+    }
+    ~ExecCmdRsrc() {
+	int status;
+	if (pid > 0) {
+	    LOGDEB(("ExecCmd: killing cmd\n"));
+	    if (kill(pid, SIGTERM) == 0) {
+		for (int i = 0; i < 3; i++) {
+		    (void)waitpid(pid, &status, WNOHANG);
+		    if (kill(pid, 0) != 0)
+			break;
+		    sleep(1);
+		    if (i == 2) {
+			LOGDEB(("ExecCmd: killing (KILL) cmd\n"));
+			kill(pid, SIGKILL);
+		    }
+		}
+	    }
+	}
+	if (pipein[0] >= 0)
+	    close(pipein[0]);
+	if (pipein[1] >= 0)
+	    close(pipein[1]);
+	if (pipeout[0] >= 0)
+	    close(pipeout[0]);
+	if (pipeout[1] >= 0)
+	    close(pipeout[1]);
+    }
+};
+
+	
 int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		const string *inputstring, string *output)
 {
@@ -63,35 +106,31 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
     const char *input = inputstring ? inputstring->data() : 0;
     unsigned int inputlen = inputstring ? inputstring->length() : 0;
 
-    int pipein[2]; // subproc input
-    int pipeout[2]; // subproc output
-    pipein[0] = pipein[1] = pipeout[0] = pipeout[1] = -1;
+    ExecCmdRsrc e;
 
-    if (input && pipe(pipein) < 0) {
+    if (input && pipe(e.pipein) < 0) {
 	LOGERR(("ExecCmd::doexec: pipe(2) failed. errno %d\n", errno));
 	return -1;
     }
-    if (output && pipe(pipeout) < 0) {
+    if (output && pipe(e.pipeout) < 0) {
 	LOGERR(("ExecCmd::doexec: pipe(2) failed. errno %d\n", errno));
-	if (pipein[0] >= 0) close(pipein[0]);
-	if (pipein[1] >= 0) close(pipein[1]);
 	return -1;
     }
 
-    pid_t pid = fork();
-    if (pid < 0) {
+    e.pid = fork();
+    if (e.pid < 0) {
 	LOGERR(("ExecCmd::doexec: fork(2) failed. errno %d\n", errno));
 	return -1;
     }
 
-    if (pid) {
+    if (e.pid) {
 	if (input) {
-	    close(pipein[0]);
-	    pipein[0] = -1;
+	    close(e.pipein[0]);
+	    e.pipein[0] = -1;
 	}
 	if (output) {
-	    close(pipeout[1]);
-	    pipeout[1] = -1;
+	    close(e.pipeout[1]);
+	    e.pipeout[1] = -1;
 	}
 	fd_set readfds, writefds;
 	struct timeval tv;
@@ -100,25 +139,25 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 
 	if (input || output) {
 	    if (input)
-		fcntl(pipein[1], F_SETFL, O_NONBLOCK);
+		fcntl(e.pipein[1], F_SETFL, O_NONBLOCK);
 	    if (output)	
-		fcntl(pipeout[0], F_SETFL, O_NONBLOCK);
+		fcntl(e.pipeout[0], F_SETFL, O_NONBLOCK);
 	    unsigned int nwritten = 0;
-	    int nfds = MAX(pipein[1], pipeout[0]) + 1;
+	    int nfds = MAX(e.pipein[1], e.pipeout[0]) + 1;
 	    for(; nfds > 0;) {
 		if (m_cancelRequest)
 		    break;
 
 		FD_ZERO(&writefds);
 		FD_ZERO(&readfds);
-		if (pipein[1] >= 0)
-		    FD_SET(pipein[1], &writefds);
-		if (pipeout[0] >= 0)
-		    FD_SET(pipeout[0], &readfds);
-		nfds = MAX(pipein[1], pipeout[0]) + 1;
+		if (e.pipein[1] >= 0)
+		    FD_SET(e.pipein[1], &writefds);
+		if (e.pipeout[0] >= 0)
+		    FD_SET(e.pipeout[0], &readfds);
+		nfds = MAX(e.pipein[1], e.pipeout[0]) + 1;
 		//struct timeval to; to.tv_sec = 1;to.tv_usec=0;
-		//cerr << "pipein[1] "<< pipein[1] << " pipeout[0] " << 
-		//pipeout[0] << " nfds " << nfds << endl;
+		//cerr << "e.pipein[1] "<< e.pipein[1] << " e.pipeout[0] " << 
+		//e.pipeout[0] << " nfds " << nfds << endl;
 		int ss;
 		if ((ss = select(nfds, &readfds, &writefds, 0, &tv)) <= 0) {
 		    if (ss == 0) {
@@ -129,8 +168,8 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 			    errno));
 		    break;
 		}
-		if (pipein[1] >= 0 && FD_ISSET(pipein[1], &writefds)) {
-		    int n = write(pipein[1], input + nwritten, 
+		if (e.pipein[1] >= 0 && FD_ISSET(e.pipein[1], &writefds)) {
+		    int n = write(e.pipein[1], input + nwritten, 
 				  inputlen - nwritten);
 		    if (n < 0) {
 			LOGERR(("ExecCmd::doexec: write(2) failed. errno %d\n",
@@ -140,13 +179,13 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		    nwritten += n;
 		    if (nwritten == inputlen) {
 			// cerr << "Closing output" << endl;
-			close(pipein[1]);
-			pipein[1] = -1;
+			close(e.pipein[1]);
+			e.pipein[1] = -1;
 		    }
 		}
-		if (pipeout[0] > 0 && FD_ISSET(pipeout[0], &readfds)) {
+		if (e.pipeout[0] > 0 && FD_ISSET(e.pipeout[0], &readfds)) {
 		    char buf[8192];
-		    int n = read(pipeout[0], buf, 8192);
+		    int n = read(e.pipeout[0], buf, 8192);
 		    if (n == 0) {
 			goto out;
 		    } else if (n < 0) {
@@ -165,30 +204,11 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 
     out:
 	int status = -1;
-
-	if (m_cancelRequest) {
-	    // If we were canceled, need to cleanup
-	    LOGDEB1(("Killing cmd\n"));
-	    kill(pid, SIGTERM);
-	    for (int i = 0; i < 3; i++) {
-		if (kill(pid, 0) != 0)
-		    break;
-		sleep(1);
-		if (i == 2) {
-		    LOGDEB1(("Killing (KILL) cmd\n"));
-		    kill(pid, SIGKILL);
-		}
-	    }
+	if (!m_cancelRequest) {
+	    LOGDEB(("Execmd: canceled\n"));
+	    (void)waitpid(e.pid, &status, 0);
+	    e.pid = -1;
 	}
-	(void)waitpid(pid, &status, 0);
-	if (pipein[0] >= 0)
-	    close(pipein[0]);
-	if (pipein[1] >= 0)
-	    close(pipein[1]);
-	if (pipeout[0] >= 0)
-	    close(pipeout[0]);
-	if (pipeout[1] >= 0)
-	    close(pipeout[1]);
 	LOGDEB1(("ExecCmd::doexec: father got status 0x%x\n", status));
 	return status;
 
@@ -196,38 +216,36 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	// In child process. Set up pipes, environment, and exec command
 
 	if (input) {
-	    close(pipein[1]);
-	    pipein[1] = -1;
-	    if (pipein[0] != 0) {
-		dup2(pipein[0], 0);
-		close(pipein[0]);
-		pipein[0] = -1;
+	    close(e.pipein[1]);
+	    e.pipein[1] = -1;
+	    if (e.pipein[0] != 0) {
+		dup2(e.pipein[0], 0);
+		close(e.pipein[0]);
+		e.pipein[0] = -1;
 	    }
 	}
 	if (output) {
-	    close(pipeout[0]);
-	    pipeout[0] = -1;
-	    if (pipeout[1] != 1) {
-		if (dup2(pipeout[1], 1) < 0) {
+	    close(e.pipeout[0]);
+	    e.pipeout[0] = -1;
+	    if (e.pipeout[1] != 1) {
+		if (dup2(e.pipeout[1], 1) < 0) {
 		    LOGERR(("ExecCmd::doexec: dup2(2) failed. errno %d\n",
 			    errno));
 		}
-		if (close(pipeout[1]) < 0) {
+		if (close(e.pipeout[1]) < 0) {
 		    LOGERR(("ExecCmd::doexec: close(2) failed. errno %d\n",
 			    errno));
 		}
-		pipeout[1] = -1;
+		e.pipeout[1] = -1;
 	    }
 	}
 
-	// Count args
-	list<string>::const_iterator it;
-	int i = 0;
-	for (it = args.begin(); it != args.end(); it++) i++;
+	e.reset();
+
 	// Allocate arg vector (2 more for arg0 + final 0)
 	typedef const char *Ccharp;
 	Ccharp *argv;
-	argv = (Ccharp *)malloc((i+2) * sizeof(char *));
+	argv = (Ccharp *)malloc((args.size()+2) * sizeof(char *));
 	if (argv == 0) {
 	    LOGERR(("ExecCmd::doexec: malloc() failed. errno %d\n",
 		    errno));
@@ -236,7 +254,8 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	
 	// Fill up argv
 	argv[0] = path_getsimple(cmd).c_str();
-	i = 1;
+	int i = 1;
+	list<string>::const_iterator it;
 	for (it = args.begin(); it != args.end(); it++) {
 	    argv[i++] = it->c_str();
 	}
@@ -254,7 +273,6 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	    ::putenv(it->c_str());
 #endif
 	}
-	
 	execvp(cmd.c_str(), (char *const*)argv);
 	// Hu ho
 	LOGERR(("ExecCmd::doexec: execvp(%s) failed. errno %d\n", cmd.c_str(),
@@ -269,6 +287,8 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 #include <iostream>
 #include <list>
 #include "debuglog.h"
+#include "cancelcheck.h"
+
 using namespace std;
 
 #include "execmd.h"
@@ -277,8 +297,14 @@ const char *data = "Une ligne de donnees\n";
 class MEAdv : public ExecCmdAdvise {
 public:
     ExecCmd *cmd;
-    void newData() {cerr << "New Data!" << endl;cmd->setCancel();}
+    void newData() {
+	cerr << "New Data!" << endl;
+	CancelCheck::instance().setCancel();
+	CancelCheck::instance().checkCancel();
+	//	cmd->setCancel();
+    }
 };
+
 int main(int argc, const char **argv)
 {
     DebugLog::getdbl()->setloglevel(DEBDEB1);
@@ -304,7 +330,12 @@ int main(int argc, const char **argv)
     mexec.putenv("TESTVARIABLE2=TESTVALUE2");
     mexec.putenv("TESTVARIABLE3=TESTVALUE3");
 
-    int status = mexec.doexec(cmd, l, ip, &output);
+    int status = -1;
+    try {
+	status = mexec.doexec(cmd, l, ip, &output);
+    } catch (CancelExcept) {
+	cerr << "CANCELED" << endl;
+    }
 
     fprintf(stderr, "Status: 0x%x\n", status);
     cout << "Output:" << output << endl;
