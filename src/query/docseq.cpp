@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseq.cpp,v 1.6 2006-01-23 13:32:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseq.cpp,v 1.7 2006-01-26 12:30:14 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,11 +32,7 @@ int DocSequenceDb::getResCnt()
 {
     if (!m_db)
 	return -1;
-    // Need to fetch one document before we can get the result count 
     if (m_rescnt < 0) {
-	Rcl::Doc doc;
-	int percent;
-	m_db->getDoc(0, doc, &percent);
 	m_rescnt= m_db->getResCnt();
     }
     return m_rescnt;
