@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.14 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.15 2006-01-26 12:29:20 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -18,13 +18,17 @@ static char rcsid[] = "@(#$Id: smallut.cpp,v 1.14 2006-01-23 13:32:28 dockes Exp
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_SMALLUT
-#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <ctype.h>
 #include <unistd.h>
 #include <errno.h>
-
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#include <string>
 
 #include "smallut.h"
 #include "debuglog.h"
@@ -344,6 +348,92 @@ string escapeHtml(const string &in)
 	}
     }
     return out;
+}
+
+////////////////////
+// Internal redefinition of system time interface to help with dependancies
+struct m_timespec {
+  time_t tv_sec;
+  long   tv_nsec;
+};
+
+#ifndef CLOCK_REALTIME
+#define CLOCK_REALTIME 1
+#endif
+
+#define MILLIS(TV) ( (long)(((TV).tv_sec - m_secs) * 1000 + \
+  ((TV).tv_nsec - m_nsecs) / 1000000))
+
+#define MICROS(TV) ( (long)(((TV).tv_sec - m_secs) * 1000000 + \
+  ((TV).tv_nsec - m_nsecs) / 1000))
+
+
+// We use gettimeofday instead of clock_gettime for now and get only
+// uS resolution, because clock_gettime is more configuration trouble
+// than it's worth
+static void gettime(int, struct m_timespec *ts)
+{
+  struct timeval tv;
+  gettimeofday(&tv, 0);
+  ts->tv_sec = tv.tv_sec;
+  ts->tv_nsec = tv.tv_usec * 1000;
+}
+///// End system interface
+
+static m_timespec frozen_tv;
+void Chrono::refnow()
+{
+  gettime(CLOCK_REALTIME, &frozen_tv);
+}
+
+Chrono::Chrono()
+{
+  restart();
+}
+
+// Reset and return value before rest in milliseconds
+long Chrono::restart()
+{
+  struct m_timespec tv;
+  gettime(CLOCK_REALTIME, &tv);
+  long ret = MILLIS(tv);
+  m_secs = tv.tv_sec;
+  m_nsecs = tv.tv_nsec;
+  return ret;
+}
+
+// Get current timer value, milliseconds
+long Chrono::millis(int frozen)
+{
+  if (frozen) {
+    return MILLIS(frozen_tv);
+  } else {
+    struct m_timespec tv;
+    gettime(CLOCK_REALTIME, &tv);
+    return MILLIS(tv);
+  }
+}
+
+//
+long Chrono::micros(int frozen)
+{
+  if (frozen) {
+    return MICROS(frozen_tv);
+  } else {
+    struct m_timespec tv;
+    gettime(CLOCK_REALTIME, &tv);
+    return MICROS(tv);
+  }
+}
+
+float Chrono::secs(int frozen)
+{
+  struct m_timespec tv;
+  gettime(CLOCK_REALTIME, &tv);
+  float secs = (float)(frozen?frozen_tv.tv_sec:tv.tv_sec - m_secs);
+  float nsecs = (float)(frozen?frozen_tv.tv_nsec:tv.tv_nsec - m_nsecs); 
+  //fprintf(stderr, "secs %.2f nsecs %.2f\n", secs, nsecs);
+  return secs + nsecs * 1e-9;
 }
 
 #else
