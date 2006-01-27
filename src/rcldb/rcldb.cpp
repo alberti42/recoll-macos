@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.54 2006-01-26 12:28:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.55 2006-01-27 13:34:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,18 @@ using namespace std;
 #ifndef MIN
 #define MIN(A,B) (A<B?A:B)
 #endif
+
+// This is how long an abstract we keep or build from beginning of text when
+// indexing. It only has an influence on the size of the db as we are free
+// to shorten it again when displaying
+#define INDEX_ABSTRACT_SIZE 250
+
+// This is the size of the abstract that we synthetize out of query
+// term contexts at query time
+#define MA_ABSTRACT_SIZE 250
+// This is how many words (context size) we keep around query terms
+// when building the abstract
+#define MA_EXTRACT_WIDTH 4
 
 // Data for a xapian database. There could actually be 2 different
 // ones for indexing or query as there is not much in common.
@@ -337,7 +349,6 @@ static string stripchars(const string &str, string delims)
 // gain very little even with very short maxlens like 30)
 #define PATHHASHLEN 150
 
-#define ABSTRACT_SIZE 200
 const static string rclSyntAbs = "?!#@";
 
 // Add document in internal form to the database: index the terms in
@@ -359,9 +370,9 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
     // of the document.
     if (doc.abstract.empty()) {
 	doc.abstract = rclSyntAbs + 
-	    truncate_to_word(doc.text, ABSTRACT_SIZE);
+	    truncate_to_word(doc.text, INDEX_ABSTRACT_SIZE);
     } else {
-	doc.abstract = truncate_to_word(doc.abstract, ABSTRACT_SIZE);
+	doc.abstract = truncate_to_word(doc.abstract, INDEX_ABSTRACT_SIZE);
     }
     doc.abstract = stripchars(doc.abstract, "\n\r");
     doc.title = truncate_to_word(doc.title, 100);
@@ -1352,7 +1363,6 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
 // possible to compress the array, by having only multiple chunks
 // around the terms, but this would seriously complicate the data
 // structure.
-#define EXTRACT_WIDTH 3
 string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 {
     Chrono chron;
@@ -1376,15 +1386,15 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 		unsigned int ipos = *pos;
 		LOGDEB1(("Abstract: [%s] at %d\n", qit->c_str(), ipos));
 		// Possibly extend the array. Do it in big chunks
-		if (ipos + EXTRACT_WIDTH >= buf.size()) {
-		    buf.resize(ipos + EXTRACT_WIDTH + 1000);
+		if (ipos + MA_EXTRACT_WIDTH >= buf.size()) {
+		    buf.resize(ipos + MA_EXTRACT_WIDTH + 1000);
 		}
 		buf[ipos] = *qit;
 		// Remember the term position
 		qtermposs.push_back(ipos);
 		// Add adjacent slots to the set to populate at next step
-		for (unsigned int ii = MAX(0, ipos-EXTRACT_WIDTH); 
-		     ii <= MIN(ipos+EXTRACT_WIDTH, buf.size()-1); ii++) {
+		for (unsigned int ii = MAX(0, ipos-MA_EXTRACT_WIDTH); 
+		     ii <= MIN(ipos+MA_EXTRACT_WIDTH, buf.size()-1); ii++) {
 		    chunkposs.insert(ii);
 		}
 		// Limit the number of occurences we keep for each
@@ -1437,21 +1447,21 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     for (vector<unsigned int>::const_iterator it = qtermposs.begin();
 	 it != qtermposs.end(); it++) {
 	unsigned int ipos = *it;
-	unsigned int start = MAX(0, ipos-EXTRACT_WIDTH);
-	unsigned int end = MIN(ipos+EXTRACT_WIDTH, buf.size()-1);
+	unsigned int start = MAX(0, ipos-MA_EXTRACT_WIDTH);
+	unsigned int end = MIN(ipos+MA_EXTRACT_WIDTH, buf.size()-1);
 	string chunk;
 	for (unsigned int ii = start; ii <= end; ii++) {
 	    if (!buf[ii].empty()) {
 		chunk += buf[ii] + " ";
 		abslen += buf[ii].length();
 	    }
-	    if (abslen > 300)
+	    if (abslen > MA_ABSTRACT_SIZE)
 		break;
 	}
 	if (end != buf.size()-1)
 	    chunk += "... ";
 	mabs[ipos] = chunk;
-	if (abslen > 300)
+	if (abslen > MA_ABSTRACT_SIZE)
 	    break;
     }
 
