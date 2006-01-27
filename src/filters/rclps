@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclps,v 1.4 2005-10-20 15:42:29 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclps,v 1.5 2006-01-27 13:37:31 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -9,7 +9,8 @@
 # rclps
 # Extract text from a postscript file by executing pstotext or ps2ascii. 
 #
-# The default is to use pstotext which can deal with accents.
+# The default is to use pstotext which can deal with accents, but in a
+# partially broken way (it always outputs iso8859-1, when it should use utf.
 #
 # OTOH, ps2ascii is much faster, comes with ghostscript, and sometimes work
 # better (ie: on some openoffice output files).
@@ -74,24 +75,34 @@ BEGIN {
   printf("<html><head><title></title>\n")
   printf("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n")
   printf("</head>\n<body><p>");
-  esc = 1
+  doescape = 1
+  cont = ""
 }
 {
-  if ($0 ~ /-$/) {
-    sub(/-$/, "", $0)
-    printf("%s", $0);
-  } else if($0 == "\f") {
-    printf("</p>\n<hr>\n<p>")
-  } else {
-    if(esc > 0) {
+    $0 = cont $0
+    cont = ""
+
+    if ($0 == "\f") {
+       print "</p>\n<hr>\n<p>"
+       next
+    } else if ($0 ~ /­$/) {
+      # Note : soft-hyphen is iso8859 0xad
+      # Break at last whitespace
+      match($0, "[ \t][^ \t]+$")
+      line = substr($0, 0, RSTART)
+      cont = substr($0, RSTART, RLENGTH)
+      $0 = line
+      gsub("­", "", cont)
+    }
+
+    if(doescape > 0) {
       gsub(/&/, "\\&amp;", $0)
       gsub(/</, "\\&lt;", $0)
       gsub(/>/, "\\&gt;", $0)
     }
-    print $0
-  }
+    print $0 "<br>"
 }
 END {
-    printf("</p></body></html>\n");
+    print "</p></body></html>"
 }' | iconv -f iso-8859-1 -t UTF-8 -c -s 
 

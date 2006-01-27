@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclsoff,v 1.4 2005-10-20 15:42:29 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclsoff,v 1.5 2006-01-27 13:37:31 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -125,22 +125,27 @@ echo '</head><body><p>'
 echo "$content" | sed -e "s/&apos;/'/g" -e 's/&quot;/"/g' |\
 awk '
 BEGIN {
-  esc = 1
+  cont = ""
 }
 {
-  if ($0 ~ /-$/) {
-    sub(/-$/, "", $0)
-    printf("%s", $0);
-  } else if($0 == "\f") {
-    printf("</p>\n<hr>\n<p>")
-  } else {
-    if(esc > 0) {
-      gsub(/&/, "\\&amp;", $0)
-      gsub(/</, "\\&lt;", $0)
-      gsub(/>/, "\\&gt;", $0)
+    $0 = cont $0
+    cont = ""
+
+    if ($0 ~ /[­-]$/) {
+      # Note : soft-hyphen is iso8859 0xad
+      # Break at last whitespace
+      match($0, "[ \t][^ \t]+$")
+      line = substr($0, 0, RSTART)
+      cont = substr($0, RSTART, RLENGTH-1)
+      $0 = line
     }
-    printf("%s<br>", $0)
-  }
+
+    if($0 == "\f") {
+        print "</p>\n<hr>\n<p>"
+        next
+    } 
+
+    print $0 "<br>"
 }
 END {
     printf("</p></body></html>\n");

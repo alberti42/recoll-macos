@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclpdf,v 1.5 2005-12-02 16:17:55 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclpdf,v 1.6 2006-01-27 13:37:31 dockes Exp $  (C) 2004 J.F.Dockes
 # This is copied almost verbatim from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -7,9 +7,25 @@
 #================================================================
 #================================================================
 # rclpdf
-# Strip a file of PDF and extract its text as HTML.
-#================================================================
+# Convert a pdf file to  HTML.
+#
+# We use pdftotxt from the xpdf package. This does not perfect results as
+# whitespace is sometimes either arbitrarily inserted or stripped from the
+# text. This seems to depend on the usage of option -raw, and,
+# unfortunately also of the document itself, so that there does not seem to
+# be an universally good solution
+#
+# Also, the filter sometimes seems to output problematic utf-8. I did not
+# check if it was actually incorrect or just mis-understood by qtextedit
+# (tobedone) 
+#
+# In any case, for example, the code emitted for an fi ligature (correct or
+# not, I did not check) should be replaced with f and i characters as this
+# is what will get searched for.
 
+
+# Comment the following if you get better results without
+optionraw=-raw
 
 # set variables
 LANG=C ; export LANG
@@ -59,44 +75,70 @@ checkcmds()
 }
 checkcmds pdftotext iconv awk
 
-# output the result
-pdftotext -raw -htmlmeta -enc UTF-8 -eol unix -q "$infile" - |
+# Run pdftotext and fix the result (add a charset tag and fix the html escaping
+pdftotext $optionraw -htmlmeta -enc UTF-8 -eol unix -q "$infile" - |
 iconv -f UTF-8 -t UTF-8 -c -s |
 awk '
 BEGIN {
-  esc = 0
+  doescape = 0
+  cont = ""
+  charsetmeta = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
 }
 {
-  if(esc < 1 && $0 ~ /^<title>/ && $0 ~ /title>$/){
-    printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n")
-    gsub(/<[^>]*>/, "", $0)
-    gsub(/&/, "\\&amp;", $0)
-    gsub(/</, "\\&lt;", $0)
-    gsub(/>/, "\\&gt;", $0)
-    printf("<title>%s</title>\n", $0)
-  } else if($0 == "<pre>"){
+  $0 = cont $0
+  cont = ""
+  # Insert charset meta tag at end of header
+  if(doescape == 0 && $0 ~ /<\/head>/) {
+    match($0, /<\/head>/)
+    part1 = substr($0, 0, RSTART-1)
+    part2 = substr($0, RSTART, length($0))
+    $0 =  part1 charsetmeta part2
+  }
+  if(doescape == 0 && $0 ~ /<title>.*<\/title>/){
+    match($0, /<title>.*<\/title>/)
+    part1 = substr($0, 0, RSTART-1)
+    mid = substr($0, RSTART, RLENGTH)
+    part2 = substr($0, RSTART + RLENGTH, length($0))
+    gsub(/<title>/, "", mid)
+    gsub(/<\/title>/, "", mid)
+    gsub(/&/, "\\&amp;", mid)
+    gsub(/</, "\\&lt;", mid)
+    gsub(/>/, "\\&gt;", mid)
+    mid = "<title>" mid "</title>"
+    $0 = part1 mid part2
+  } 
+
+  if ($0 == "<pre>"){
     # Begin of body text. need to escape some chars from now on as 
     # pdftotext sometimes doesnt do it
-    esc++
-    printf("<p>")
+    doescape++
+    print $0
+    next
   } else if ($0 ~ /<\/pre>/){
-    esc--
-    printf("</p>\n")
-  } else if($0 ~ /-$/){
-    sub(/-$/, "", $0)
-    printf("%s", $0);
+    doescape--
+    print $0 
+    next
+  } else if ($0 ~ /[­-]$/) {
+    # Note : soft-hyphen is iso8859 0xad
+    # Break at last whitespace
+    match($0, "[ \t][^ \t]+$")
+    line = substr($0, 0, RSTART)
+    cont = substr($0, RSTART, RLENGTH-1)
+    $0 = line
+    # print "LINE [" $0 "] CONT[" cont "]"
   } else if($0 == "\f"){
-    printf("</p>\n<hr>\n<p>")
-  } else {
-    if(esc > 0){
+    $0 = "<hr>"
+    print 
+    next
+  }
+  if(doescape > 0){
       gsub(/&/, "\\&amp;", $0)
       gsub(/</, "\\&lt;", $0)
       gsub(/>/, "\\&gt;", $0)
       gsub(/^ */, "", $0)
       gsub(/ *$/, "", $0)
-    }
-    print $0
   }
+  print $0
 }
 ' 
 
