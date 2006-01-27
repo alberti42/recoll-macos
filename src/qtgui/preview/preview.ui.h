@@ -29,6 +29,7 @@ using std::pair;
 #include "plaintorich.h"
 #include "smallut.h"
 #include "wipedir.h"
+#include "cancelcheck.h"
 
 // We keep a list of data associated to each tab
 class TabData {
@@ -59,7 +60,7 @@ void Preview::destroy()
 
 void Preview::closeEvent(QCloseEvent *e)
 {
-    emit previewClosed(this);
+    emit previewClosed((QWidget *)this);
     QWidget::closeEvent(e);
 }
 
@@ -201,15 +202,15 @@ void Preview::prevPressed()
 
 void Preview::currentChanged(QWidget * tw)
 {
-    QObject *o = tw->child("pvEdit");
-    LOGDEB1(("Preview::currentChanged(). Edit %p\n", o));
+    QWidget *edit = (QWidget *)tw->child("pvEdit");
+    LOGDEB1(("Preview::currentChanged(). Editor: %p\n", edit));
     
-    if (o == 0) {
+    if (edit == 0) {
 	LOGERR(("Editor child not found\n"));
     } else {
 	tw->installEventFilter(this);
-	o->installEventFilter(this);
-	((QWidget*)o)->setFocus();
+	edit->installEventFilter(this);
+	edit->setFocus();
     }
 }
 
@@ -317,7 +318,9 @@ bool Preview::makeDocCurrent(const string &fn, const Rcl::Doc &doc)
   be even more complicated, and we probably don't want the user to click on
   things during this time anyway.
 
-  No cancel button is implemented, but this could conceivably be done
+  It might be possible, but complicated (need modifications in
+  handler) to implement a kind of bucket brigade, to have the
+  beginning of the text displayed faster
 */
 
 /* A thread to to the file reading / format conversion */
@@ -348,10 +351,14 @@ class LoadThread : public QThread {
 	    return;
 	}
 	FileInterner interner(filename, rclconfig, tmpdir, mtype);
-	if (interner.internfile(*out, ipath) != FileInterner::FIDone) {
+	try {
+	    if (interner.internfile(*out, ipath) != FileInterner::FIDone) {
+		*statusp = -1;
+	    } else {
+		*statusp = 0;
+	    }
+	} catch (CancelExcept) {
 	    *statusp = -1;
-	} else {
-	    *statusp = 0;
 	}
     }
 };
@@ -370,7 +377,11 @@ class ToRichThread : public QThread {
     virtual void run()
     {
 	DebugLog::getdbl()->setloglevel(DEBDEB1);
-	string rich = plaintorich(in, terms, termoffsets);
+	string rich;
+	try {
+	    plaintorich(in, rich, terms, termoffsets);
+	} catch (CancelExcept) {
+	}
 	out = QString::fromUtf8(rich.c_str(), rich.length());
     }
 };
@@ -385,9 +396,15 @@ class WaiterThread : public QThread {
     }
 };
 
-void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
+#define CHUNKL 50*1000
+#ifndef MIN
+#define MIN(A,B) ((A)<(B)?(A):(B))
+#endif
+
+bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 {
     Rcl::Doc doc = idoc;
+    bool cancel = false;
 
     if (doc.title.empty()) 
 	doc.title = path_getsimple(doc.url);
@@ -401,11 +418,8 @@ void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 	.arg(csz);
 
     // Create progress dialog and aux objects
-    const int nsteps = 10;
-    QProgressDialog progress( msg, "", nsteps, this, "Loading", TRUE );
-    QPushButton *pb = new QPushButton("", this);
-    pb->setEnabled(false);
-    progress.setCancelButton(pb);
+    const int nsteps = 20;
+    QProgressDialog progress(msg, tr("Cancel"), nsteps, this, "Loading", FALSE);
     progress.setMinimumDuration(1000);
     WaiterThread waiter(100);
 
@@ -416,57 +430,103 @@ void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     int status = 1;
     LoadThread lthr(&status, &fdoc, fn, doc.ipath, &doc.mimetype);
     lthr.start();
-    int i;
-    for (i = 1;;i++) {
+    int prog;
+    for (prog = 1;;prog++) {
 	waiter.start();
 	waiter.wait();
 	if (lthr.finished())
 	    break;
-	progress.setProgress(i , i <= nsteps-1 ? nsteps : i+1);
+	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
 	qApp->processEvents();
-	if (i >= 5)
+	if (progress.wasCanceled()) {
+	    CancelCheck::instance().setCancel();
+	    cancel = true;
+	}
+	if (prog >= 5)
 	    sleep(1);
     }
+    if (cancel)
+	return false;
     if (status != 0) {
 	QMessageBox::warning(0, "Recoll",
 			     tr("Can't turn doc into internal rep for ") +
 			     doc.mimetype.c_str());
-	return;
+	return false;
     }
     // Reset config just in case.
     rclconfig->setKeyDir("");
 
-    // Highlight search terms:
+    // Create preview text: highlight search terms:
     progress.setLabelText(tr("Creating preview text"));
     list<string> terms;
     rcldb->getQueryTerms(terms);
     list<pair<int, int> > termoffsets;
-    QString str;
-    ToRichThread rthr(fdoc.text, terms, termoffsets, str);
+    QString richTxt;
+    ToRichThread rthr(fdoc.text, terms, termoffsets, richTxt);
     rthr.start();
 
-    for (;;i++) {
-	waiter.start();
-	waiter.wait();
+    for (;;prog++) {
+	waiter.start();	waiter.wait();
 	if (rthr.finished())
 	    break;
-	progress.setProgress(i , i <= nsteps-1 ? nsteps : i+1);
+	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
 	qApp->processEvents();
-	if (i >= 5)
+	if (progress.wasCanceled()) {
+	    CancelCheck::instance().setCancel();
+	    cancel = true;
+	}
+	if (prog >= 5)
 	    sleep(1);
     }
-    LOGDEB(("Plaintorich done\n"));
-
+    if (cancel) {
+	if (richTxt.length() == 0) {
+	    // We cant call closeCurrentTab here as it might delete
+	    // the object which would be a nasty surprise to our
+	    // caller.
+	    return false;
+	} else {
+	    richTxt += "<b>Cancelled !</b>";
+	}
+    }
+	
     // Load into editor
     QTextEdit *editor = getCurrentEditor();
     QStyleSheetItem *item = 
 	new QStyleSheetItem(editor->styleSheet(), "termtag" );
     item->setColor("blue");
     item->setFontWeight(QFont::Bold);
-
+    
+    prog = 2 * nsteps / 3;
     progress.setLabelText(tr("Loading preview text into editor"));
     qApp->processEvents();
-    editor->setText(str);
+    // Do it in several chunks 
+    int l = 0;
+    for (unsigned int pos = 0; pos < richTxt.length(); pos += l, prog++) {
+	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
+	qApp->processEvents();
+	
+	l = MIN(CHUNKL, richTxt.length() - pos);
+	// Avoid breaking inside a tag. Our tags are short (ie: <br>)
+	for (int i = -4; i < 0; i++) {
+	    if (richTxt[pos+l+i] == '<') {
+		l = l+i;
+		break;
+	    }
+	}
+	
+	editor->append(richTxt.mid(pos, l));
+	// Stay at top
+	if (pos < 5) {
+	    editor->setCursorPosition(0,0);
+	    editor->ensureCursorVisible();
+	}
+	if (progress.wasCanceled()) {
+	    cancel = true;
+            editor->append("<b>Cancelled !</b>");
+	    LOGDEB(("Cancelled\n"));
+	    break;
+	}
+    }
     int para = 0, index = 1;
     if (!termoffsets.empty()) {
 	index = (termoffsets.begin())->first;
@@ -479,6 +539,5 @@ void Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 
     LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
 	    editor->length(), editor->paragraphs(),  para, index));
+    return true;
 }
-
-

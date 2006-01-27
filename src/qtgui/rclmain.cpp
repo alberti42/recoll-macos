@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.9 2006-01-26 14:02:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.10 2006-01-27 13:42:02 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,6 @@ using std::pair;
 #include "mimehandler.h"
 #include "pathut.h"
 #include "smallut.h"
-#include "plaintorich.h"
 #include "advsearch.h"
 #include "rclversion.h"
 #include "sortseq.h"
@@ -435,7 +434,8 @@ void RclMain::startPreview(int docnum)
 	(void)curPreview->addEditorTab();
     }
     m_history->enterDocument(fn, doc.ipath);
-    curPreview->loadFileInCurrentTab(fn, st.st_size, doc);
+    if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc))
+	curPreview->closeCurrentTab();
 }
 
 void RclMain::startNativeViewer(int docnum)
@@ -556,10 +556,40 @@ void RclMain::enablePrevPage(bool yesno)
     prevPageAction->setEnabled(yesno);
 }
 
+/** Show detailed expansion of a query */
 void RclMain::showQueryDetails()
 {
-    // Bad number: must have clicked on header. Show details of query
+    // Break query into lines of reasonable length, avoid cutting words!
+    const int ll = 80;
+    string query = currentQueryData.description;
+    string oq;
+    while (query.length() > 0) {
+	string ss = query.substr(0, ll);
+	if (ss.length() == ll) {
+	    string::size_type pos = ss.find_last_of(" ");
+	    if (pos == string::npos) {
+		pos = query.find_first_of(" ");
+		if (pos != string::npos)
+		    ss = query.substr(0, pos+1);
+		else 
+		    ss = query;
+	    } else {
+		ss = ss.substr(0, pos+1);
+	    }
+	}
+	// This cant happen, but anyway. Be very sure to avoid an infinite loop
+	if (ss.length() == 0) {
+	    LOGDEB(("showQueryDetails: Internal error!\n"));
+	    oq = query;
+	    break;
+	}
+	oq += ss + "\n";
+	query= query.substr(ss.length());
+	LOGDEB1(("oq [%s]\n, query [%s]\n, ss [%s]\n",
+		oq.c_str(), query.c_str(), ss.c_str()));
+    }
+
     QString desc = tr("Query details") + ": " + 
-	QString::fromUtf8(currentQueryData.description.c_str());
+	QString::fromUtf8(oq.c_str());
     QMessageBox::information(this, tr("Query details"), desc);
 }

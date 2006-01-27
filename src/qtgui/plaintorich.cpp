@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.8 2006-01-23 13:32:05 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.9 2006-01-27 13:42:02 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -22,9 +22,11 @@ static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.8 2006-01-23 13:32:05 dockes 
 #include <string>
 #include <utility>
 #include <list>
+#include <set>
 #ifndef NO_NAMESPACES
 using std::list;
 using std::pair;
+using std::set;
 #endif /* NO_NAMESPACES */
 
 #include "rcldb.h"
@@ -34,17 +36,24 @@ using std::pair;
 #include "utf8iter.h"
 #include "transcode.h"
 #include "smallut.h"
+#include "plaintorich.h"
+#include "cancelcheck.h"
 
 // Text splitter callback used to take note of the position of query terms 
 // inside the result text. This is then used to post highlight tags. 
 class myTextSplitCB : public TextSplitCB {
  public:
-    const list<string>    *terms;  // in: query terms
+    set<string>    terms;          // in: user query terms
     list<pair<int, int> > tboffs;  // out: begin and end positions of
                                    // query terms in text
 
-    myTextSplitCB(const list<string>& terms) 
-	: terms(&terms) {
+    myTextSplitCB(const list<string>& its) {
+	for (list<string>::const_iterator it = its.begin(); it != its.end();
+	     it++) {
+	    string s;
+	    Rcl::dumb_string(*it, s);
+	    terms.insert(s);
+	}
     }
 
     // Callback called by the text-to-words breaker for each word
@@ -53,14 +62,9 @@ class myTextSplitCB : public TextSplitCB {
 	Rcl::dumb_string(term, dumb);
 	//LOGDEB(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
 	// pos, bts, bte));
-	for (list<string>::const_iterator it = terms->begin(); 
-	     it != terms->end(); it++) {
-	    if (!stringlowercmp(*it, dumb)) {
-		tboffs.push_back(pair<int, int>(bts, bte));
-		break;
-	    }
-	}
-	     
+	if (terms.find(dumb) != terms.end()) 
+	    tboffs.push_back(pair<int, int>(bts, bte));
+	CancelCheck::instance().checkCancel();
 	return true;
     }
 };
@@ -72,12 +76,13 @@ class myTextSplitCB : public TextSplitCB {
 // duplicate whitespace etc...). This is tricky business and it might
 // be better to insert the text char by char, taking note of where qt
 // thinks it is at each term.
-string plaintorich(const string &in,  const list<string>& terms,
-		   list<pair<int, int> >&termoffsets)
+bool plaintorich(const string& in, string& out, const list<string>& terms,
+		 list<pair<int, int> >&termoffsets)
 {
+    Chrono chron;
     LOGDEB(("plaintorich: terms: %s\n", 
 	    stringlistdisp(terms).c_str()));
-
+    out.erase();
     termoffsets.erase(termoffsets.begin(), termoffsets.end());
 
     // We first use the text splitter to break the text into words,
@@ -89,11 +94,10 @@ string plaintorich(const string &in,  const list<string>& terms,
     // character offset
     splitter.text_to_words(in);
 
-    LOGDEB(("Split done\n"));
-
+    LOGDEB(("plaintorich: split done %d mS\n", chron.millis()));
 
     // Rich text output
-    string out = "<qt><head><title></title></head><body><p>";
+    out = "<qt><head><title></title></head><body><p>";
 
     // Iterator for the list of input term positions. We use it to
     // output highlight tags and to compute term positions in the
@@ -112,7 +116,10 @@ string plaintorich(const string &in,  const list<string>& terms,
     // consecutive blank chars
     int atblank = 0;
     for (string::size_type pos = 0; pos != string::npos; pos = chariter++) {
-	// If we still have terms, check (byte) position
+	if (pos && (pos % 1000) == 0) {
+	    CancelCheck::instance().checkCancel();
+	}
+	// If we still have terms positions, check (byte) position
 	if (it != cb.tboffs.end()) {
 	    int ibyteidx = chariter.getBpos();
 	    if (ibyteidx == it->first) {
@@ -148,7 +155,7 @@ string plaintorich(const string &in,  const list<string>& terms,
 	    break;
 	default:
 	    // We don't change the eol status for whitespace, want a real line
-	    if (*chariter == ' ' || *chariter == '	') {
+	    if (*chariter == ' ' || *chariter == '\t') {
 		if (!atblank)
 		    outcpos++;
 		atblank = 1;
@@ -167,5 +174,6 @@ string plaintorich(const string &in,  const list<string>& terms,
 	fclose(fp);
     }
 #endif
-    return out;
+    LOGDEB(("plaintorich: done %d mS\n", chron.millis()));
+    return true;
 }

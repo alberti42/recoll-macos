@@ -1,6 +1,6 @@
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.3 2006-01-19 12:01:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.4 2006-01-27 13:42:02 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -14,8 +14,8 @@
  * @param terms       list of query terms
  * @param termoffsets output: character offsets where we find terms.
  */
-extern string plaintorich(const string &in,
-			  const list<string>& terms,
-			  list<pair<int, int> >&termoffsets);
+extern bool plaintorich(const string &in, string &out,
+			const list<string>& terms,
+			list<pair<int, int> >& termoffsets);
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

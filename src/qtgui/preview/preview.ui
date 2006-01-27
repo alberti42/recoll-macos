@@ -198,7 +198,7 @@
     <variable>void *tabData;</variable>
 </variables>
 <signals>
-    <signal>previewClosed(Preview *)</signal>
+    <signal>previewClosed(QWidget *)</signal>
 </signals>
 <slots>
     <slot>searchTextLine_textChanged( const QString &amp; text )</slot>
@@ -208,7 +208,6 @@
     <slot>currentChanged( QWidget * tw )</slot>
     <slot>closeCurrentTab()</slot>
     <slot>setCurTabProps( const string &amp; fn, const Rcl::Doc &amp; doc )</slot>
-    <slot>loadFileInCurrentTab( string fn, size_t sz, const Rcl::Doc &amp; idoc )</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">init()</function>
@@ -218,6 +217,7 @@
     <function returnType="QTextEdit *">getCurrentEditor()</function>
     <function returnType="QTextEdit *">addEditorTab()</function>
     <function access="private">destroy()</function>
+    <function access="public" returnType="bool">loadFileInCurrentTab( string fn, size_t sz, const Rcl::Doc &amp; idoc )</function>
 </functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
