@@ -23,7 +23,7 @@
  */
 
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.4 2005-12-08 08:44:14 dockes Exp $ ";
+static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.5 2006-01-27 11:25:14 dockes Exp $ ";
 #endif
 
 //#include <config.h>
@@ -98,7 +98,7 @@ p_whitespaceeqgt(char c)
  * is covered by the GNU licence, as this file.*/
 static const char *epairs[] = {
     /* basic symbols */
-    "amp", "", "lt", "<", "gt", ">", "quot", "\"", "apos", "'",
+    "amp", "&", "lt", "<", "gt", ">", "quot", "\"", "apos", "'",
     /* ISO-8859-1 */
     "nbsp", "\xc2\xa0", "iexcl", "\xc2\xa1", "cent", "\xc2\xa2",
     "pound", "\xc2\xa3", "curren", "\xc2\xa4", "yen", "\xc2\xa5",
