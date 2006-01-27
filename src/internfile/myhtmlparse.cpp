@@ -27,24 +27,32 @@
 #include "indextext.h" // for lowercase_term()
 #include "mimeparse.h"
 #include "smallut.h"
+#include "cancelcheck.h"
+#include "debuglog.h"
 
-// The original version for this compresses whitespace and suppresses newlines
-// I can see no good reason to do this, and it actually helps preview to keep
-// whitespace, especially if the html comes from a filter that generated it 
-// from text (ie: inside '<pre> tags)
-//
-// Otoh doing it takes us closer to what the html rendering would
-// be. We should actually switch on/off according to pre tags
+// Compress whitespace and suppress newlines
+// Note that we independantly add some newlines to the output text in the
+// tag processing code. Like this, the preview looks a bit more like what a
+// browser would display.
+// We keep whitespace inside <pre> tags
 void
 MyHtmlParser::process_text(const string &text)
 {
+    LOGDEB2(("process_text: pending_space %d txt [%s]\n", pending_space,
+	    text.c_str()));
+    CancelCheck::instance().checkCancel();
+
     if (!in_script_tag && !in_style_tag) {
 	if (!in_pre_tag) {
 	    string::size_type b = 0;
+	    bool only_space = true;
 	    while ((b = text.find_first_not_of(WHITESPACE, b)) != string::npos) {
-		if (pending_space || b != 0)
-		    if (!dump.empty()) 
+		only_space = false;
+		// If space specifically needed or chunk begins with
+		// whitespace, add exactly one space
+		if (pending_space || b != 0) {
 			dump += ' ';
+		}
 		pending_space = true;
 		string::size_type e = text.find_first_of(WHITESPACE, b);
 		if (e == string::npos) {
@@ -55,6 +63,8 @@ MyHtmlParser::process_text(const string &text)
 		dump += text.substr(b, e - b);
 		b = e + 1;
 	    }
+	    if (only_space)
+		pending_space = true;
 	} else {
 	    if (pending_space)
 		dump += ' ';
@@ -66,6 +76,7 @@ MyHtmlParser::process_text(const string &text)
 void
 MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 {
+    LOGDEB2(("opening_tag: [%s]\n", tag.c_str()));
 #if 0
     cout << "TAG: " << tag << ": " << endl;
     map<string, string>::const_iterator x;
@@ -235,6 +246,7 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 void
 MyHtmlParser::closing_tag(const string &tag)
 {
+    LOGDEB2(("closing_tag: [%s]\n", tag.c_str()));
     if (tag.empty()) return;
     switch (tag[0]) {
 	case 'a':
