@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.9 2006-01-25 08:09:41 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.10 2006-01-28 10:23:55 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -147,16 +147,12 @@ int main(int argc, char **argv)
 	    if (op_flags & OPT_i) {
 		for (term = db->termlist_begin(docid);
 		     term != db->termlist_end(docid);term++) {
-		    transcode(*term, printable, "UTF-8", outencoding);
-		    cout << "[" << printable << "]" << endl;
+		    cout << "[" << *term << "]" << endl;
 		}
 	    } else {
 		for (term = db->allterms_begin(); 
 		     term != db->allterms_end();term++) {
-		    if (transcode(*term, printable, "UTF-8", outencoding))
-			cout << "[" << printable << "]" << endl;
-		    else
-			cout << "utf8[" << *term << "]" << endl;
+		    cout << "utf8[" << *term << "]" << endl;
 		}
 	    }
 	} else if (op_flags & OPT_D) {

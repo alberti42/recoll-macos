@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.16 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.17 2006-01-28 10:23:55 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,7 @@ static void setcharclasses()
     for (i = 0; i < strlen(blankspace); i++)
 	charclasses[int(blankspace[i])] = SPACE;
 
-    char seps[] = "!\"$%&()/<=>[\\]^{|}~:;,*`?";
+    char seps[] = "!\"$%&()/<=>[\\]^{|}~:;*`?";
     for (i = 0; i  < strlen(seps); i++)
 	charclasses[int(seps[i])] = SPACE;
 
@@ -91,6 +91,7 @@ static void setcharclasses()
     //for (i=0;i<256;i++)cerr<<i<<" -> "<<charclasses[i]<<endl;
     for (i = 0; i < sizeof(uniign); i++) 
 	unicign.insert(uniign[i]);
+    unicign.insert((unsigned int)-1);
 }
 
 // Do some cleanup (the kind which is simpler to do here than in the
@@ -100,9 +101,8 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
 {
     LOGDEB2(("TextSplit::emitterm: '%s' pos %d\n", w.c_str(), pos));
 
-    if (!cb)
-	return false;
-
+    // Maybe trim end of word. These are chars that we would keep inside 
+    // a word or span, but not at the end
     // Maybe trim end of word. These are chars that we would keep inside 
     // a word or span, but not at the end
     while (w.length() > 0) {
@@ -111,8 +111,9 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	case ',':
 	case '@':
 	case '\'':
-	    w.erase(w.length()-1);
-	    btend--; if (btend < 0) btend=0;
+	    w.resize(w.length()-1);
+	    if (--btend < 0) 
+		btend=0;
 	    break;
 	default:
 	    goto breakloop1;
@@ -120,30 +121,21 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
     }
  breakloop1:
 
-    // In addition, it doesn't make sense currently to keep ' at the beginning
-    while (w.length() > 0) {
-	switch (w[0]) {
-	case ',':
-	case '\'':
-	    w.erase(w.length()-1);
-	    btstart++;
-	    break;
-	default:
-	    goto breakloop2;
-	}
-    }
- breakloop2:
+    // Trimming chars at the beginning of string: used to have (buggy)
+    // code to remove , and \ at start of term, didn't seem to be ever called
 
-    // 1 char word: we index single letters, but nothing else
-    if (w.length() == 1) {
-	int c = (int)w[0];
-	if (charclasses[c] != LETTER && charclasses[c] != DIGIT) {
-	    //cerr << "ERASING single letter term " << c << endl;
-	    w.erase();
+    unsigned int l = w.length();
+    if (l > 0 && l < (unsigned)maxWordLength) {
+	if (l == 1) {
+	    // 1 char word: we index single letters and digits, but
+	    // nothing else
+	    int c = (int)w[0];
+	    if (charclasses[c] != LETTER && charclasses[c] != DIGIT) {
+		//cerr << "ERASING single letter term " << c << endl;
+		return true;
+	    }
 	}
-    }
-    if (w.length() > 0 && w.length() < (unsigned)maxWordLength) {
-	if (w != prevterm || pos != prevpos) {
+	if (pos != prevpos || l != prevterm.length() || w != prevterm) {
 	    bool ret = cb->takeword(w, pos, btstart, btend);
 	    prevterm = w;
 	    prevpos = pos;
@@ -153,11 +145,26 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
     return true;
 }
 
-// A routine called from different places in text_to_words(), to adjust
-// the current state and call the word handler. This is purely for
-// factoring common code from different places text_to_words()
-bool TextSplit::doemit(string &word, int &wordpos, string &span, int spanpos,
-		       bool spanerase, int bp)
+/**
+ * A routine called from different places in text_to_words(), to
+ * adjust the current state of the parser, and call the word
+ * handler/emitter. Emit and reset the current word, possibly emit the current
+ * span (if different). In query mode, words are not emitted, only final spans
+ * 
+ * This is purely for factoring common code from different places
+ * text_to_words(). 
+ * 
+ * @return true if ok, false for error. Splitting should stop in this case.
+ * @param word      Word value. This will be empty on return in ALL non-error
+ *                   cases
+ * @param wordpos   Term position for word. Always ++ by us.
+ * @param span      Span value
+ * @param spanpos   Term position for the current span
+ * @param spanerase Set if the current span is at its end. Reset it.
+ * @param bp        The current BYTE position in the stream
+ */
+inline bool TextSplit::doemit(string &word, int &wordpos, string &span, 
+			      int &spanpos, bool spanerase, int bp)
 {
 #if 0
     cerr << "doemit: " << "w: '" << word << "' wp: "<< wordpos << " s: '" <<
@@ -165,43 +172,36 @@ bool TextSplit::doemit(string &word, int &wordpos, string &span, int spanpos,
 	 << endl;
 #endif
 
-    // When splitting for query, we only emit final spans
-    if (fq && !spanerase) {
-	wordpos++;
-	word.erase();
-	return true;
-    }
-
-    // Emit span or both word and span if they are different
-    if (!emitterm(true, span, spanpos, bp-span.length(), bp))
-	return false;
+    // Emit span. When splitting for query, we only emit final spans
+    if (!fq || spanerase)
+	if (!emitterm(true, span, spanpos, bp-span.length(), bp))
+	    return false;
+    // Emit word if different from span and not query mode
     if (word.length() != span.length() && !fq)
 	if (!emitterm(false, word, wordpos, bp-word.length(), bp))
 	    return false;
 
     // Adjust state
     wordpos++;
-    if (spanerase)
-	span.erase();
-    word.erase();
+    word.clear();
+    if (spanerase) {
+	span.clear();
+	spanpos = wordpos;
+    }
 
     return true;
 }
 
 static inline int whatcc(unsigned int c)
 {
-    int cc;
     if (c <= 127) {
-	cc = charclasses[c]; 
+	return charclasses[c]; 
     } else {
-	if (c == (unsigned int)-1)
-	    cc = SPACE;
-	else if (unicign.find(c) != unicign.end())
-	    cc = SPACE;
+	if (unicign.find(c) != unicign.end())
+	    return SPACE;
 	else
-	    cc = LETTER;
+	    return LETTER;
     }
-    return cc;
 }
 
 /** 
@@ -240,8 +240,6 @@ bool TextSplit::text_to_words(const string &in)
 		    return false;
 		number = false;
 	    }
-	    spanpos = wordpos;
-	    span.erase();
 	    break;
 	case '-':
 	case '+':
@@ -259,6 +257,28 @@ bool TextSplit::text_to_words(const string &in)
 		span += it;
 	    }
 	    break;
+	case '.':
+	case ',':
+	    if (number) {
+		word += it;
+		span += it;
+		break;
+	    } else {
+		// If . inside a word, keep it, else, this is whitespace. 
+		// A final comma in a word will be removed by doemit
+		if (cc == '.' && word.length()) {
+		    if (!doemit(word, wordpos, span, spanpos, false, 
+				it.getBpos()))
+			return false;
+		    // span length could have been adjusted by trimming
+		    // inside doemit
+		    if (span.length())
+			span += it;
+		    break;
+		}
+	    }
+	    goto SPACE;
+	    break;
 	case '@':
 	    if (word.length()) {
 		if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
@@ -269,6 +289,8 @@ bool TextSplit::text_to_words(const string &in)
 	    span += it;
 	    break;
 	case '\'':
+	    // If in word, potential span: o'brien, else, this is more 
+	    // whitespace
 	    if (word.length()) {
 		if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
 		    return false;
@@ -276,31 +298,17 @@ bool TextSplit::text_to_words(const string &in)
 		span += it;
 	    }
 	    break;
-	case '.':
-	    if (number) {
-		word += it;
-	    } else {
-		//cerr<<"Got . span: '"<<span<<"' word: '"<<word<<"'"<<endl;
-		if (word.length()) {
-		    if (!doemit(word, wordpos, span, spanpos, false, 
-				it.getBpos()))
-			return false;
-		    number = false;
-		} else 
-		    word += it;
-	    }
-	    span += it;
-	    break;
 	case '#': 
-	    // Keep it only at end of word...
-	    if (word.length() > 0 && 
-		(whatcc(it[charpos+1]) == SPACE ||
-		 whatcc(it[charpos+1]) == '\n' || 
-		 whatcc(it[charpos+1]) == '\r')) {
-		word += it;
-		span += it;
+	    // Keep it only at end of word... Special case for c# you see...
+	    if (word.length() > 0) {
+		int w = whatcc(it[charpos+1]);
+		if (w == SPACE || w == '\n' || w == '\r') {
+		    word += it;
+		    span += it;
+		    break;
+		}
 	    }
-		
+	    goto SPACE;
 	    break;
 	case '\n':
 	case '\r':
@@ -310,20 +318,19 @@ bool TextSplit::text_to_words(const string &in)
 		// do almost always. We'd then need a way to check if
 		// the - was added as part of the word hyphenation, or was 
 		// there in the first place, but this would need a dictionary.
+		// Also we'd need to check for a soft-hyphen and remove it,
+		// but this would require more utf-8 magic
 	    } else {
 		// Handle like a normal separator
 		goto SPACE;
 	    }
 	    break;
-	case LETTER:
 	case DIGIT:
+	    if (word.length() == 0)
+		number = true;
+	    /* FALLTHROUGH */
+	case LETTER:
 	default:
-	    if (word.length() == 0) {
-		if (cc == DIGIT)
-		    number = true;
-		else
-		    number = false;
-	    }
 	    word += it;
 	    span += it;
 	    break;
@@ -367,21 +374,18 @@ class mySplitterCB : public TextSplitCB {
     }
 };
 
-static string teststring = 
-    "Un bout de texte \n" 
-    "normal. "
-    "jfd@okyz.com "
-    "Ceci. Est;Oui 1.24 n@d @net .net t@v@c c# c++ -10 o'brien l'ami "
-    "a 134 +134 -14 -1.5 +1.5 1.54e10 a "
-    "@^#$(#$(*) "
-    "192.168.4.1 "
-    "one\n\rtwo\nthree-\nfour "
-    "[olala][ululu] "
-    "'o'brien' "
-    "utf-8 ucs-4©"
-    "\n"							      
+static string teststring1 = 
+    "Un bout de texte \nnormal. jfd@okyz.com \n"
+    "Ceci. Est;Oui n@d @net .net t@v@c c# c++ -10 o'brien l'ami \n"
+    "a 134 +134 -14 -1.5 +1.5 1.54e10 a @^#$(#$(*) 1,2 1,2e30\n"
+    "192.168.4.1 one\n\rtwo\nthree-\nfour [olala][ululu] 'o'brien' \n"
+    "utf-8 ucs-4© \\nodef\n"
+    "','this \n"
+    "M9R F($AA;F1L:6YG\"0D)\"0D@(\" @(#4P, T)0W)A=&4)\"0D)\"2 @,C4P#0E3"
+    " ,able,test-domain "
+    " -wl,--export-dynamic "
 ;
-static string teststring1 = "c++ ";
+static string teststring = " -wl,--export-dynamic ";
 
 static string thisprog;
 

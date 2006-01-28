@@ -1,6 +1,6 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.8 2005-10-19 10:21:48 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.9 2006-01-28 10:23:55 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -35,7 +35,7 @@ class TextSplit {
     TextSplitCB *cb;
     int maxWordLength;
     bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
-    bool doemit(string &word, int &wordpos, string &span, int spanpos,
+    bool doemit(string &word, int &wordpos, string &span, int &spanpos,
 		bool spanerase, int bp);
  public:
     /**

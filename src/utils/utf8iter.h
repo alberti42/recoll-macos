@@ -1,6 +1,6 @@
 #ifndef _UTF8ITER_H_INCLUDED_
 #define _UTF8ITER_H_INCLUDED_
-/* @(#$Id: utf8iter.h,v 1.4 2005-12-07 15:41:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: utf8iter.h,v 1.5 2006-01-28 10:23:55 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * A small helper class to iterate over utf8 strings. This is not an
@@ -44,6 +44,7 @@ class Utf8Iter {
 	cl = get_cl(pos);
 	if (!poslok(pos, cl)) {
 	    bad = true;
+	    pos = s.length();
 	    cl = 0;
 	    return -1;
 	}
@@ -91,6 +92,7 @@ class Utf8Iter {
 	unsigned int val = getvalueat(pos, cl);
 	if (val == (unsigned int)-1) {
 	    bad = true;
+	    pos = s.length();
 	    cl = 0;
 	}
 	return val;
@@ -142,7 +144,9 @@ class Utf8Iter {
 	return s.substr(pos, cl);
     }
     bool eof() {
-	return bad || pos == s.length();
+	// Note: we always ensure that pos == s.length() when setting bad to 
+	// true
+	return pos == s.length();
     }
     bool error() {
 	return bad;

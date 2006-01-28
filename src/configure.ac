@@ -119,7 +119,7 @@ cd ..
 m_prefix=$prefix
 test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
-QTRECOLL_DATADIR=${m_datadir}
+QTRECOLL_DATADIR=${m_datadir}/recoll
 
 AC_SUBST(LIBXAPIAN)
 AC_SUBST(XAPIANCXXFLAGS)
