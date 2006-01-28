@@ -1,6 +1,6 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.9 2006-01-28 10:23:55 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.10 2006-01-28 15:36:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -27,26 +27,36 @@ class TextSplitCB {
  * but 'ts much simpler this way...
  */
 class TextSplit {
-    bool fq;        // for query:  Are we splitting for query or index ?
-    // It may happen that our cleanup would result in emitting the
-    // same term twice. We try to avoid this
-    string prevterm;
-    int prevpos;
-    TextSplitCB *cb;
-    int maxWordLength;
-    bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
-    bool doemit(string &word, int &wordpos, string &span, int &spanpos,
-		bool spanerase, int bp);
  public:
     /**
      * Constructor: just store callback object
      */
     TextSplit(TextSplitCB *t, bool forquery = false) 
-	: fq(forquery), prevpos(-1), cb(t), maxWordLength(40) {}
+	: fq(forquery), cb(t), maxWordLength(40), prevpos(-1) {}
     /**
      * Split text, emit words and positions.
      */
     bool text_to_words(const std::string &in);
+
+ private:
+    bool fq;        // for query:  Are we splitting for query or index ?
+    TextSplitCB *cb;
+    int maxWordLength;
+
+    string span; // Current span. Might be jf.dockes@wanadoo.f
+    string word; // Current word: no punctuation at all in there
+    bool number;
+    int wordpos; // Term position of current word
+    int spanpos; // Term position of current span
+    int charpos; // Character position
+
+    // It may happen that our cleanup would result in emitting the
+    // same term twice. We try to avoid this
+    int prevpos;
+    string prevterm;
+
+    bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
+    bool doemit(bool spanerase, int bp);
 };
 
 #endif /* _TEXTSPLIT_H_INCLUDED_ */

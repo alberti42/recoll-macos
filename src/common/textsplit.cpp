@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.17 2006-01-28 10:23:55 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.18 2006-01-28 15:36:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -163,8 +163,7 @@ bool TextSplit::emitterm(bool isspan, string &w, int pos,
  * @param spanerase Set if the current span is at its end. Reset it.
  * @param bp        The current BYTE position in the stream
  */
-inline bool TextSplit::doemit(string &word, int &wordpos, string &span, 
-			      int &spanpos, bool spanerase, int bp)
+inline bool TextSplit::doemit(bool spanerase, int bp)
 {
 #if 0
     cerr << "doemit: " << "w: '" << word << "' wp: "<< wordpos << " s: '" <<
@@ -216,12 +215,10 @@ bool TextSplit::text_to_words(const string &in)
 
     setcharclasses();
 
-    string span; // Current span. Might be jf.dockes@wanadoo.f
-    string word; // Current word: no punctuation at all in there
-    bool number = false;
-    int wordpos = 0; // Term position of current word
-    int spanpos = 0; // Term position of current span
-    int charpos = 0; // Character position
+    span.clear();
+    word.clear(); // Current word: no punctuation at all in there
+    number = false;
+    wordpos = spanpos = charpos = 0;
 
     Utf8Iter it(in);
 
@@ -236,7 +233,7 @@ bool TextSplit::text_to_words(const string &in)
 	case SPACE:
 	SPACE:
 	    if (word.length() || span.length()) {
-		if (!doemit(word, wordpos, span, spanpos, true, it.getBpos()))
+		if (!doemit(true, it.getBpos()))
 		    return false;
 		number = false;
 	    }
@@ -251,7 +248,7 @@ bool TextSplit::text_to_words(const string &in)
 		} else
 		    span += it;
 	    } else {
-		if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
+		if (!doemit(false, it.getBpos()))
 		    return false;
 		number = false;
 		span += it;
@@ -265,34 +262,41 @@ bool TextSplit::text_to_words(const string &in)
 		break;
 	    } else {
 		// If . inside a word, keep it, else, this is whitespace. 
+		// We also keep an initial '.' for catching .net, but this adds
+		// quite a few spurious terms !
+                // Another problem is that something like .x-errs 
+		// will be split as .x-errs, x, errs but not x-errs
 		// A final comma in a word will be removed by doemit
-		if (cc == '.' && word.length()) {
-		    if (!doemit(word, wordpos, span, spanpos, false, 
-				it.getBpos()))
-			return false;
-		    // span length could have been adjusted by trimming
-		    // inside doemit
-		    if (span.length())
+		if (cc == '.') {
+		    if (word.length()) {
+			if (!doemit(false, it.getBpos()))
+			    return false;
+			// span length could have been adjusted by trimming
+			// inside doemit
+			if (span.length())
+			    span += it;
+			break;
+		    } else {
 			span += it;
-		    break;
+			break;
+		    }
 		}
 	    }
 	    goto SPACE;
 	    break;
 	case '@':
 	    if (word.length()) {
-		if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
+		if (!doemit(false, it.getBpos()))
 		    return false;
 		number = false;
-	    } else
-		word += it;
+	    }
 	    span += it;
 	    break;
 	case '\'':
 	    // If in word, potential span: o'brien, else, this is more 
 	    // whitespace
 	    if (word.length()) {
-		if (!doemit(word, wordpos, span, spanpos, false, it.getBpos()))
+		if (!doemit(false, it.getBpos()))
 		    return false;
 		number = false;
 		span += it;
@@ -337,7 +341,7 @@ bool TextSplit::text_to_words(const string &in)
 	}
     }
     if (word.length() || span.length()) {
-	if (!doemit(word, wordpos, span, spanpos, true, it.getBpos()))
+	if (!doemit(true, it.getBpos()))
 	    return false;
     }
     return true;
@@ -374,7 +378,7 @@ class mySplitterCB : public TextSplitCB {
     }
 };
 
-static string teststring1 = 
+static string teststring = 
     "Un bout de texte \nnormal. jfd@okyz.com \n"
     "Ceci. Est;Oui n@d @net .net t@v@c c# c++ -10 o'brien l'ami \n"
     "a 134 +134 -14 -1.5 +1.5 1.54e10 a @^#$(#$(*) 1,2 1,2e30\n"
@@ -384,8 +388,9 @@ static string teststring1 =
     "M9R F($AA;F1L:6YG\"0D)\"0D@(\" @(#4P, T)0W)A=&4)\"0D)\"2 @,C4P#0E3"
     " ,able,test-domain "
     " -wl,--export-dynamic "
+    " ~/.xsession-errors "
 ;
-static string teststring = " -wl,--export-dynamic ";
+static string teststring1 = " ~/.xsession-errors ";
 
 static string thisprog;
 
