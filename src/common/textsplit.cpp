@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.18 2006-01-28 15:36:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.19 2006-01-30 09:28:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -94,35 +94,12 @@ static void setcharclasses()
     unicign.insert((unsigned int)-1);
 }
 
-// Do some cleanup (the kind which is simpler to do here than in the
-// main loop, then send term to our client.
-bool TextSplit::emitterm(bool isspan, string &w, int pos, 
+// Do some checking (the kind which is simpler to do here than in the
+// main loop), then send term to our client.
+inline bool TextSplit::emitterm(bool isspan, string &w, int pos, 
 			 int btstart, int btend)
 {
     LOGDEB2(("TextSplit::emitterm: '%s' pos %d\n", w.c_str(), pos));
-
-    // Maybe trim end of word. These are chars that we would keep inside 
-    // a word or span, but not at the end
-    // Maybe trim end of word. These are chars that we would keep inside 
-    // a word or span, but not at the end
-    while (w.length() > 0) {
-	switch (w[w.length()-1]) {
-	case '.':
-	case ',':
-	case '@':
-	case '\'':
-	    w.resize(w.length()-1);
-	    if (--btend < 0) 
-		btend=0;
-	    break;
-	default:
-	    goto breakloop1;
-	}
-    }
- breakloop1:
-
-    // Trimming chars at the beginning of string: used to have (buggy)
-    // code to remove , and \ at start of term, didn't seem to be ever called
 
     unsigned int l = w.length();
     if (l > 0 && l < (unsigned)maxWordLength) {
@@ -172,11 +149,31 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 #endif
 
     // Emit span. When splitting for query, we only emit final spans
-    if (!fq || spanerase)
+    if (spanerase) {
+	// Maybe trim at end These are chars that we would keep inside 
+	// a span, but not at the end
+	while (span.length() > 0) {
+	    switch (span[span.length()-1]) {
+	    case '.':
+	    case ',':
+	    case '@':
+	    case '\'':
+		span.resize(span.length()-1);
+		if (--bp < 0) 
+		    bp=0;
+		break;
+	    default:
+		goto breakloop1;
+	    }
+	}
+    breakloop1:
 	if (!emitterm(true, span, spanpos, bp-span.length(), bp))
 	    return false;
+    }
+
+
     // Emit word if different from span and not query mode
-    if (word.length() != span.length() && !fq)
+    if (!fq && (!spanerase || (word.length() != span.length())))
 	if (!emitterm(false, word, wordpos, bp-word.length(), bp))
 	    return false;
 
@@ -379,18 +376,21 @@ class mySplitterCB : public TextSplitCB {
 };
 
 static string teststring = 
-    "Un bout de texte \nnormal. jfd@okyz.com \n"
-    "Ceci. Est;Oui n@d @net .net t@v@c c# c++ -10 o'brien l'ami \n"
-    "a 134 +134 -14 -1.5 +1.5 1.54e10 a @^#$(#$(*) 1,2 1,2e30\n"
-    "192.168.4.1 one\n\rtwo\nthree-\nfour [olala][ululu] 'o'brien' \n"
-    "utf-8 ucs-4© \\nodef\n"
-    "','this \n"
-    "M9R F($AA;F1L:6YG\"0D)\"0D@(\" @(#4P, T)0W)A=&4)\"0D)\"2 @,C4P#0E3"
-    " ,able,test-domain "
-    " -wl,--export-dynamic "
-    " ~/.xsession-errors "
+	    "Un bout de texte \nnormal. 2eme phrase.3eme;quatrieme.\n"
+	    "\"Jean-Francois Dockes\" <jfd@okyz.com>\n"
+	    "n@d @net .net t@v@c c# c++ o'brien 'o'brien' l'ami\n"
+	    "134 +134 -14 -1.5 +1.5 1.54e10 1,2 1,2e30\n"
+	    "@^#$(#$(*)\n"
+	    "192.168.4.1 one\n\rtwo\r"
+	    "Debut-\ncontinue\n" 
+	    "[olala][ululu]  (valeur) (23)\n"
+	    "utf-8 ucs-4© \\nodef\n"
+	    "','this\n"
+	    " ,able,test-domain "
+	    " -wl,--export-dynamic "
+	    " ~/.xsession-errors "
 ;
-static string teststring1 = " ~/.xsession-errors ";
+static string teststring1 = " 124, ";
 
 static string thisprog;
 
