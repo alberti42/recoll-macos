@@ -1,3 +1,5 @@
+/* This file was copied from omega-0.8.5 and modified */
+
 /* htmlparse.cc: simple HTML parser for omega indexer
  *
  * ----START-LICENCE----
@@ -23,7 +25,7 @@
  */
 
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.5 2006-01-27 11:25:14 dockes Exp $ ";
+static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.6 2006-01-30 11:15:27 dockes Exp $ ";
 #endif
 
 //#include <config.h>

@@ -1,3 +1,5 @@
+/* This file was copied from omega-0.8.5 and modified */
+
 /* myhtmlparse.cc: subclass of HtmlParser for extracting text
  *
  * ----START-LICENCE----

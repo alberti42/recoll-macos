@@ -1,3 +1,5 @@
+/* This file was copied from omega-0.8.5 and modified */
+
 /* htmlparse.cc: simple HTML parser for omega indexer
  *
  * ----START-LICENCE----
