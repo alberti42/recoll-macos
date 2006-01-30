@@ -420,7 +420,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     // Create progress dialog and aux objects
     const int nsteps = 20;
     QProgressDialog progress(msg, tr("Cancel"), nsteps, this, "Loading", FALSE);
-    progress.setMinimumDuration(1000);
+    progress.setMinimumDuration(2000);
     WaiterThread waiter(100);
 
     // Load and convert file
@@ -456,45 +456,53 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     // Reset config just in case.
     rclconfig->setKeyDir("");
 
-    // Create preview text: highlight search terms:
-    progress.setLabelText(tr("Creating preview text"));
-    list<string> terms;
-    rcldb->getQueryTerms(terms);
-    list<pair<int, int> > termoffsets;
+    // Create preview text: highlight search terms (if not too big):
     QString richTxt;
-    ToRichThread rthr(fdoc.text, terms, termoffsets, richTxt);
-    rthr.start();
+    list<pair<int, int> > termoffsets;
+    bool highlightTerms = fdoc.text.length() < 1000 *1024;
 
-    for (;;prog++) {
-	waiter.start();	waiter.wait();
-	if (rthr.finished())
-	    break;
-	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
-	qApp->processEvents();
-	if (progress.wasCanceled()) {
-	    CancelCheck::instance().setCancel();
-	    cancel = true;
+    if (highlightTerms) {
+	progress.setLabelText(tr("Creating preview text"));
+	list<string> terms;
+	rcldb->getQueryTerms(terms);
+	ToRichThread rthr(fdoc.text, terms, termoffsets, richTxt);
+	rthr.start();
+
+	for (;;prog++) {
+	    waiter.start();	waiter.wait();
+	    if (rthr.finished())
+		break;
+	    progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
+	    qApp->processEvents();
+	    if (progress.wasCanceled()) {
+		CancelCheck::instance().setCancel();
+		cancel = true;
+	    }
+	    if (prog >= 5)
+		sleep(1);
 	}
-	if (prog >= 5)
-	    sleep(1);
-    }
-    if (cancel) {
-	if (richTxt.length() == 0) {
-	    // We cant call closeCurrentTab here as it might delete
-	    // the object which would be a nasty surprise to our
-	    // caller.
-	    return false;
-	} else {
-	    richTxt += "<b>Cancelled !</b>";
+	if (cancel) {
+	    if (richTxt.length() == 0) {
+		// We cant call closeCurrentTab here as it might delete
+		// the object which would be a nasty surprise to our
+		// caller.
+		return false;
+	    } else {
+		richTxt += "<b>Cancelled !</b>";
+	    }
 	}
+    } else {
+	richTxt = fdoc.text.c_str();
     }
-	
+
     // Load into editor
     QTextEdit *editor = getCurrentEditor();
-    QStyleSheetItem *item = 
-	new QStyleSheetItem(editor->styleSheet(), "termtag" );
-    item->setColor("blue");
-    item->setFontWeight(QFont::Bold);
+    if (highlightTerms) {
+	QStyleSheetItem *item = 
+	    new QStyleSheetItem(editor->styleSheet(), "termtag" );
+	item->setColor("blue");
+	item->setFontWeight(QFont::Bold);
+    }
     
     prog = 2 * nsteps / 3;
     progress.setLabelText(tr("Loading preview text into editor"));
@@ -507,12 +515,13 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 	
 	l = MIN(CHUNKL, richTxt.length() - pos);
 	// Avoid breaking inside a tag. Our tags are short (ie: <br>)
-	for (int i = -4; i < 0; i++) {
-	    if (richTxt[pos+l+i] == '<') {
-		l = l+i;
-		break;
+	if (pos + l != richTxt.length())
+	    for (int i = -15; i < 0; i++) {
+		if (richTxt[pos+l+i] == '<') {
+		    l = l+i;
+		    break;
+		}
 	    }
-	}
 	
 	editor->append(richTxt.mid(pos, l));
 	// Stay at top
@@ -527,17 +536,20 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 	    break;
 	}
     }
-    int para = 0, index = 1;
-    if (!termoffsets.empty()) {
-	index = (termoffsets.begin())->first;
-	LOGDEB(("Set cursor position: para %d, character index %d\n",
-		para,index));
-	editor->setCursorPosition(0, index);
-    }
-    editor->ensureCursorVisible();
-    editor->getCursorPosition(&para, &index);
 
-    LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
-	    editor->length(), editor->paragraphs(),  para, index));
+    if (highlightTerms) {
+	int para = 0, index = 1;
+	if (!termoffsets.empty()) {
+	    index = (termoffsets.begin())->first;
+	    LOGDEB(("Set cursor position: para %d, character index %d\n",
+		    para,index));
+	    editor->setCursorPosition(0, index);
+	}
+	editor->ensureCursorVisible();
+	editor->getCursorPosition(&para, &index);
+
+	LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
+		editor->length(), editor->paragraphs(),  para, index));
+    }
     return true;
 }
