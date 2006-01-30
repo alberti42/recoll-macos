@@ -11,6 +11,7 @@
 *****************************************************************************/
 
 #include "qfontdialog.h"
+#include "qfiledialog.h"
 #include "qspinbox.h"
 #include "qmessagebox.h"
 
@@ -34,6 +35,7 @@ void UIPrefsDialog::init()
 	reslistFontPB->setText(reslistFontFamily + "-" +
 			       s.setNum(reslistFontSize));
     }
+    helpBrowserLE->setText(prefs.htmlBrowser);
     // Stemming language combobox
     stemLangCMB->insertItem("(no stemming)");
     list<string> langs;
@@ -66,6 +68,7 @@ void UIPrefsDialog::init()
     replAbsCB->setDown(prefs.queryReplaceAbstract);
     
     connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
+    connect(helpBrowserPB, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
 }
 
@@ -76,6 +79,8 @@ void UIPrefsDialog::accept()
 
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
+
+    prefs.htmlBrowser =  helpBrowserLE->text();
 
     if (stemLangCMB->currentItem() == 0) {
 	prefs.queryStemLang = "";
@@ -126,4 +131,15 @@ void UIPrefsDialog::resetReslistFont()
     reslistFontSize = 0;
     reslistFontPB->setText(this->font().family() + "-" +
 			   QString().setNum(this->font().pointSize()));
+}
+
+void UIPrefsDialog::showBrowserDialog()
+{
+    QString s = QFileDialog::getOpenFileName("/usr",
+					     "",
+					     this,
+					     "open file dialog",
+					     "Choose a file" );
+    if (s) 
+	helpBrowserLE->setText(s);
 }

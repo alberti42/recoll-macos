@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>385</width>
-            <height>280</height>
+            <width>455</width>
+            <height>238</height>
         </rect>
     </property>
     <property name="caption">
@@ -39,51 +39,127 @@
                     </property>
                     <widget class="QLayoutWidget">
                         <property name="name">
-                            <cstring>layout4</cstring>
+                            <cstring>layout10</cstring>
                         </property>
-                        <grid>
+                        <vbox>
                             <property name="name">
                                 <cstring>unnamed</cstring>
                             </property>
-                            <widget class="QLabel" row="0" column="0" rowspan="1" colspan="2">
+                            <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>textLabel1</cstring>
+                                    <cstring>layout5</cstring>
                                 </property>
-                                <property name="text">
-                                    <string>Number of entries in a result page</string>
-                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1</cstring>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>5</hsizetype>
+                                                <vsizetype>5</vsizetype>
+                                                <horstretch>1</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="text">
+                                            <string>Number of entries in a result page</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>pageLenSB</cstring>
+                                        </property>
+                                        <property name="minValue">
+                                            <number>1</number>
+                                        </property>
+                                        <property name="value">
+                                            <number>8</number>
+                                        </property>
+                                    </widget>
+                                </hbox>
                             </widget>
-                            <widget class="QLabel" row="1" column="0">
+                            <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>textLabel3</cstring>
+                                    <cstring>layout6</cstring>
                                 </property>
-                                <property name="text">
-                                    <string>Result list font</string>
-                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel3</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Result list font</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QPushButton">
+                                        <property name="name">
+                                            <cstring>reslistFontPB</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Helvetica-10</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Opens a dialog to select the result list font</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QPushButton">
+                                        <property name="name">
+                                            <cstring>resetFontPB</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Reset</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Resets the result list font to the system default</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
                             </widget>
-                            <widget class="QPushButton" row="1" column="1" rowspan="1" colspan="2">
+                            <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>reslistFontPB</cstring>
+                                    <cstring>layout9</cstring>
                                 </property>
-                                <property name="text">
-                                    <string>Helvetica-10</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Opens a dialog to select the result list font</string>
-                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_3</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>HTML help browser</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QLineEdit">
+                                        <property name="name">
+                                            <cstring>helpBrowserLE</cstring>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>200</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                    </widget>
+                                    <widget class="QPushButton">
+                                        <property name="name">
+                                            <cstring>helpBrowserPB</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Select file</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
                             </widget>
-                            <widget class="QSpinBox" row="0" column="2" rowspan="1" colspan="2">
-                                <property name="name">
-                                    <cstring>pageLenSB</cstring>
-                                </property>
-                                <property name="minValue">
-                                    <number>1</number>
-                                </property>
-                                <property name="value">
-                                    <number>8</number>
-                                </property>
-                            </widget>
-                            <widget class="QCheckBox" row="2" column="0" rowspan="1" colspan="4">
+                            <widget class="QCheckBox">
                                 <property name="name">
                                     <cstring>useIconsCB</cstring>
                                 </property>
@@ -94,18 +170,7 @@
                                     <bool>true</bool>
                                 </property>
                             </widget>
-                            <widget class="QPushButton" row="1" column="3">
-                                <property name="name">
-                                    <cstring>resetFontPB</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Reset</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Resets the result list font to the system default</string>
-                                </property>
-                            </widget>
-                        </grid>
+                        </vbox>
                     </widget>
                 </vbox>
             </widget>
@@ -302,6 +367,7 @@ May be slow for big documents.</string>
     <slot access="protected">accept()</slot>
     <slot>showFontDialog()</slot>
     <slot>resetReslistFont()</slot>
+    <slot>showBrowserDialog()</slot>
 </slots>
 <functions>
     <function>init()</function>

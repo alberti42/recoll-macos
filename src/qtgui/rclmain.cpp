@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.10 2006-01-27 13:42:02 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.11 2006-01-30 09:28:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -501,6 +501,10 @@ void RclMain::showAboutDialog()
 
 void RclMain::startManual()
 {
+    QString msg = tr("Starting help browser ");
+    if (prefs.htmlBrowser != QString(""))
+	msg += prefs.htmlBrowser;
+    statusBar()->message(msg, 3000);
     startHelpBrowser();
 }
 
@@ -560,7 +564,7 @@ void RclMain::enablePrevPage(bool yesno)
 void RclMain::showQueryDetails()
 {
     // Break query into lines of reasonable length, avoid cutting words!
-    const int ll = 80;
+    const unsigned int ll = 80;
     string query = currentQueryData.description;
     string oq;
     while (query.length() > 0) {
