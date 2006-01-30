@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.15 2006-01-26 17:59:30 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.16 2006-01-30 09:28:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -207,7 +207,6 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
     out:
 	int status = -1;
 	if (!m_cancelRequest) {
-	    LOGDEB(("Execmd: canceled\n"));
 	    (void)waitpid(e.pid, &status, 0);
 	    e.pid = -1;
 	}
