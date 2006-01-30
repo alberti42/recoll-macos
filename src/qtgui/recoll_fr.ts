@@ -11,7 +11,7 @@
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation>Impossible de créer le répertoire temporaire</translation>
+        <translation type="obsolete">Impossible de créer le répertoire temporaire</translation>
     </message>
     <message>
         <source>Could not open database in </source>
@@ -77,6 +77,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Loading preview text into editor</source>
         <translation>Chargement du texte de la prévisualisation</translation>
     </message>
+    <message>
+        <source>Cannot create temporary directory</source>
+        <translation>Impossible de créer le répertoire temporaire</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
 </context>
 <context>
     <name>RclMain</name>
@@ -123,7 +131,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
 </source>
-        <translation>&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
+        <translation type="obsolete">&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
     </message>
     <message>
@@ -156,26 +164,30 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation>Document inaccessible</translation>
+        <translation type="obsolete">Document inaccessible</translation>
     </message>
     <message>
         <source>History data</source>
         <translation>Données d&apos;historique</translation>
+    </message>
+    <message>
+        <source>Starting help browser </source>
+        <translation>Demarrage de l&apos;outil de consultation de l&apos;aide</translation>
     </message>
 </context>
 <context>
     <name>RclMainBase</name>
     <message>
         <source>Search</source>
-        <translation>Rechercher</translation>
+        <translation type="obsolete">Rechercher</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Effacer</translation>
+        <translation type="obsolete">Effacer</translation>
     </message>
     <message>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation type="obsolete">Ctrl+S</translation>
     </message>
     <message>
         <source>Previous page</source>
@@ -211,31 +223,31 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Erase search entry</source>
-        <translation>Effacer l&apos;entrée</translation>
+        <translation type="obsolete">Effacer l&apos;entrée</translation>
     </message>
     <message>
         <source>Start query</source>
-        <translation>Démarrer la recherche</translation>
+        <translation type="obsolete">Démarrer la recherche</translation>
     </message>
     <message>
         <source>&amp;All terms</source>
-        <translation>&amp;Tous </translation>
+        <translation type="obsolete">&amp;Tous </translation>
     </message>
     <message>
         <source>Alt+A</source>
-        <translation>Alt+T</translation>
+        <translation type="obsolete">Alt+T</translation>
     </message>
     <message>
         <source>Do documents have to contain all terms in query?</source>
-        <translation>Est-ce que tous les termes doivent se trouver dans chaque document ?</translation>
+        <translation type="obsolete">Est-ce que tous les termes doivent se trouver dans chaque document ?</translation>
     </message>
     <message>
         <source>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</source>
-        <translation>Détermine si les documents doivent chacun contenir tous les termes, ou si ils seront simplement triés par pertinence, avec possibilité d&apos;absence de certains termes.</translation>
+        <translation type="obsolete">Détermine si les documents doivent chacun contenir tous les termes, ou si ils seront simplement triés par pertinence, avec possibilité d&apos;absence de certains termes.</translation>
     </message>
     <message>
         <source>Enter search terms here</source>
-        <translation>Entrer les termes à chercher</translation>
+        <translation type="obsolete">Entrer les termes à chercher</translation>
     </message>
     <message>
         <source>&amp;Preferences</source>
@@ -312,6 +324,70 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>About Recoll</source>
         <translation>À propos de Recoll</translation>
+    </message>
+</context>
+<context>
+    <name>ResListBase</name>
+    <message>
+        <source>Result list</source>
+        <translation>Liste de résultats</translation>
+    </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation>Document inaccessible</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
+</source>
+        <translation>&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
+</translation>
+    </message>
+</context>
+<context>
+    <name>SSearchBase</name>
+    <message>
+        <source>SSearchBase</source>
+        <translation>SSearchBase</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Effacer</translation>
+    </message>
+    <message>
+        <source>Ctrl+S</source>
+        <translation>Ctrl+S</translation>
+    </message>
+    <message>
+        <source>Erase search entry</source>
+        <translation>Effacer l&apos;entrée</translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation>Rechercher</translation>
+    </message>
+    <message>
+        <source>Start query</source>
+        <translation>Démarrer la recherche</translation>
+    </message>
+    <message>
+        <source>&amp;All terms</source>
+        <translation>&amp;Tous </translation>
+    </message>
+    <message>
+        <source>Alt+A</source>
+        <translation>Alt+T</translation>
+    </message>
+    <message>
+        <source>Do documents have to contain all terms in query?</source>
+        <translation>Est-ce que tous les termes doivent se trouver dans chaque document ?</translation>
+    </message>
+    <message>
+        <source>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</source>
+        <translation>Détermine si les documents doivent chacun contenir tous les termes, ou si ils seront simplement triés par pertinence, avec possibilité d&apos;absence de certains termes.</translation>
+    </message>
+    <message>
+        <source>Enter search terms here</source>
+        <translation>Entrer les termes à chercher</translation>
     </message>
 </context>
 <context>
@@ -402,6 +478,32 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Discard changes</source>
         <translation>Abandonner les modifications</translation>
+    </message>
+    <message>
+        <source>HTML help browser</source>
+        <translation>Outil de consultation de l&apos;aide HTML</translation>
+    </message>
+    <message>
+        <source>Select file</source>
+        <translation>Selectionner un fichier</translation>
+    </message>
+    <message>
+        <source>Dynamically build abstracts</source>
+        <translation>Construire dynamiquement les résumés</translation>
+    </message>
+    <message>
+        <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
+May be slow for big documents.</source>
+        <translation>Décide si des résumés seront construits à partir du contexte des termes de recherche. 
+Peut ralentir l&apos;affichage si les documents sont gros.</translation>
+    </message>
+    <message>
+        <source>Replace abstracts from documents</source>
+        <translation>Remplacer les résumés existant dans les documents</translation>
+    </message>
+    <message>
+        <source>Do we synthetize an abstract even if the document seemed to have one?</source>
+        <translation>Est-ce qu&apos;un résumé doit etre synthétisé meme dans le cas ou le document original en avait un?</translation>
     </message>
 </context>
 <context>
