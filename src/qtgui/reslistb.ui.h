@@ -113,7 +113,7 @@ void ResListBase::clicked(int par, int car)
 	return;
     LOGDEB(("ResListBase::clicked:wfirst %d par %d char %d drg %d\n", 
 	    m_winfirst, par, car, m_mouseDrag));
-    if (m_winfirst == -1 || m_mouseDrag)
+    if (m_mouseDrag)
 	return;
 
     // remember par and car
