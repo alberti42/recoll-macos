@@ -26,6 +26,8 @@
 ** destructor.
 *****************************************************************************/
 
+#include <time.h>
+
 #include <qtimer.h>
 #include <qmessagebox.h>
 #include <qimage.h>

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.2 2006-01-30 09:28:50 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.3 2006-02-01 14:34:34 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.2 2006-01-30 09:28:50 dockes Exp
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include <unistd.h>
 
 #include "debuglog.h"
 #include "smallut.h"
