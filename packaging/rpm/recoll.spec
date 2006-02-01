@@ -6,7 +6,7 @@ Name:           %{name}
 Version:        %{version}
 Release:        %{release}
 
-Summary:	desktop full text search tool with a qt gui
+Summary:	Desktop full text search tool with a qt gui
 Source0:	http://www.recoll.org/%{name}-%{version}.tar.gz
 URL:            http://www.recoll.org/
 Group:          Applications/Databases
