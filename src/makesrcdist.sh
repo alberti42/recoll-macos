@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: makesrcdist.sh,v 1.8 2006-01-21 15:36:05 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: makesrcdist.sh,v 1.9 2006-02-01 07:12:14 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
 #set -x
@@ -66,8 +66,9 @@ sed -e '/\.\/index\.html/d' -e '/\.\/book\.html/d' \
 diff $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
 mv -f $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
 
+# We tag .. as there is the 'packaging/' directory in there
 CVSTAG="RECOLL-$versionforcvs"
-[ $dotag = "yes" ] && cvs tag -F $CVSTAG .
+[ $dotag = "yes" ] && (cd ..;cvs tag -F $CVSTAG .)
 
 out=recoll-$version.tar.gz
 (cd $targetdir ; \

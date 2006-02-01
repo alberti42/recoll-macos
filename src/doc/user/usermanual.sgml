@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.4 2006-01-19 12:01:42 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.5 2006-02-01 07:05:06 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -116,9 +116,12 @@
       indexation. </para> 
 
       <para>The resulting database can be big (roughly the size of the
-        original document set), but it  is not a document archive. &RCL;
-        can only display documents that still exist at the place from which
-        they were indexed.</para>
+        original document set), but it is not a document
+        archive. &RCL; can only display documents that still exist at
+        the place from which they were indexed. (Actually, there is a
+        way to reconstruct a document from the information in the
+        database, but the result is not nice, as all formatting,
+        punctuation and capitalisation are lost).</para>
 
       <para>&RCL; stores all internal data in <application>Unicode
       UTF-8</application> format, and it can index files with
@@ -176,7 +179,18 @@
       currently no interface to real time file modification
       monitors. The typical usage is to have a nightly indexation run
       <link linkend="rcl.indexing.automat">programmed</link> into your
-      <command>cron</command> file.</para> 
+      <command>cron</command> file.</para>
+
+      <sidebar><para>Side note: there is nothing in &RCL; and &XAP;
+      that would prevent interfacing with a real time file
+      modification monitor, but this would tend to consume significant
+      system resources for dubious gain, because you rarely need a
+      full text search to find documents you just
+      modified. <command>recollindex -i</command>  can be used to add
+      individual files to the index if you want to play with this, see
+      the manual page.</para>
+      </sidebar>
+
 
       <para>&RCL; knows about quite a few different document
       types. The parameters for document types recognition and
@@ -278,12 +292,19 @@
     <sect1 id="rcl.search.simple">
       <title>Simple search</title>
 
-      <para>Start the <command>recoll</command> program, then
-        enter search term(s) in the text field at the top left of the
-        window. Clicking the <guilabel>Search</guilabel> button or
-        hitting the <keycap>Enter</keycap> key will start a search. By
-        default, this will look for documents with any of the terms
-        (the ones with more terms will get better scores). You can
+      <procedure>
+	<step><para>Start the <command>recoll</command> program.</para>
+	</step>
+	<step><para>Enter search term(s) in the text field at the top of the
+        window.</para>
+	</step>
+	<step><para>Click the <guilabel>Search</guilabel> button or
+        hit the <keycap>Enter</keycap> key to start the search.</para>
+	</step>
+      </procedure>
+
+      <para>By default, this will look for documents with any of the
+      search terms (the ones with more terms will get better scores). You can
         check the <guilabel>All terms</guilabel> checkbox to ensure
         that only documents with all the terms will be returned. Use
         the <guilabel>Tools</guilabel> / <guilabel>Advanced
@@ -303,6 +324,11 @@
       using the  <link linkend="rcl.search.sort"><guilabel>Tools</guilabel>
         / <guilabel>Sort parameters</guilabel></link> dialog.</para>
 
+      <para>You can click on the first paragraph (<literal>Query
+      results</literal> or <literal>No results found</literal>) in the
+      result list to get an exact display of the query actually
+      performed, after stem expansion and other processing.</para>
+
     </sect1>
 
       <sect1 id="rcl.search.complex">
@@ -310,8 +336,8 @@
 
       <para>The advanced search dialog has fields that will allow a more
         refined search, looking for documents with all given words, a
-        given exact phrase, or none of the given words (all fields may
-        be combined by an implicit AND clause).</para>
+        given exact phrase, or none of the given words (all relevant fields
+        will be combined by an implicit AND clause).</para>
 
       <para>It will let you search for documents of specific mime
         types (ie: only <literal>text/plain</literal>, or
@@ -324,6 +350,9 @@
       <para>Click on the <guilabel>Start Search</guilabel> button in
       the advanced search dialog to start the search. The button in
       the main window always performs a simple search.</para>
+
+      <para>Click on the result list header paragraph to see the query
+      expansion.</para>
 
     </sect1>
 
@@ -380,9 +409,9 @@
       </formalpara>
 
       <formalpara><title>Query explanation</title>
-	<para>You can get an exact description of what the query
-	looked for, including stem expansion, and boolean operators
-	used, by clicking on the result list header.</para>
+        <para>You can get an exact description of what the query
+        looked for, including stem expansion, and boolean operators
+        used, by clicking on the result list header.</para>
       </formalpara>
 
       <formalpara><title>Quitting</title>
@@ -403,17 +432,66 @@
       interface by using <guimenu>Query configuration</guimenu> entry
       in the <guimenu>Preferences</guimenu> menu.</para>
 
-      <para>There are two tabs in the dialog, to modify the appearance
-      of the user interface (result list appearance), or the
-      parameters used for searching (language used for stem
-      expansion).</para> 
+      <para>There are two tabs in the dialog, dealing with the
+      interface itself, and with the parameters used for searching and
+      returning results.</para> 
 
-      <para>The stemming language can be chosen among those that were
-      specified in the configuration file, or later added with
+      <para>User interface parameters:</para>
+      <itemizedlist>
+
+	<listitem><para><guilabel>Number of results in a result
+	page</guilabel></para> 
+	</listitem>
+
+	<listitem><para><guilabel>Result list font</guilabel>: There
+	is quite a lot of information shown in the result list, and
+	you may want to customise the font and/or font size. The rest
+	of the fonts used by &RCL; are determined by your generic QT
+	config (try the <command>qtconfig</command> command.</para>
+	</listitem>
+
+	<listitem><para><guilabel>Html help browser</guilabel>: this
+	will let you chose your the preferred browser which will be
+	started from the <guimenu>Help</guimenu> menu to read the user
+	manual. You can enter a simple name if the command is in your
+	PATH, or browse for a full pathname.</para>
+	</listitem>
+	<listitem><para><guilabel>Show document type icons in result
+	list</guilabel>: icons in the result list can be turned
+	off. They take quite a lot of space and convey relatively
+	little useful information.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para>Search parameters:</para>
+
+      <itemizedlist>
+	<listitem><para><guilabel>Stemming language</guilabel>:
+	stemming obviously depends on the document's language. This
+	listbox will let you chose among the stemming databases which
+	were built during indexing (this is set in the <link
+	linkend="rcl.install.config.recollconf">main configuration
+	file</link>), or later added with
       <command>recollindex -s</command> (See the recollindex
       manual). Stemming languages which are dynamically added will be
       deleted at the next indexation pass unless they are also added in
       the configuration file.</para>
+	</listitem>
+
+	<listitem><para><guilabel>Dynamically build
+	abstracts</guilabel>: this decides if &RCL; tries to build
+	document abstracts when displaying the result list. Abstracts
+	are constructed by taking context from the document
+	information, around the search terms. This can slow down
+	result list display significantly for big documents, and you
+	may want to turn it off.</para>
+	</listitem>
+	<listitem><para><guilabel>Replace abstracts from
+	documents</guilabel>: this decides if we should synthetize and
+	display an abstract in place of an explicit abstract found
+	within the document itself.</para>
+	</listitem>
+      </itemizedlist>
 
     </sect1>
 
@@ -427,96 +505,96 @@
       <title>Building from source</title>
 
       <sect2 id="rcl.install.building.prereqs">
-	<title>Prerequisites</title>
+        <title>Prerequisites</title>
 
       <para>At the very least, you will need to download and install the
-	<ulink url="http://www.xapian.org">xapian core
-	package</ulink> (&RCL; currently uses version 0.9.2), and the <ulink
-	url="http://www.trolltech.com/products/qt/index.html">qt
-	  runtime and development packages</ulink> (&RCL; currently uses
-	version 3.3.3).</para>
+        <ulink url="http://www.xapian.org">xapian core package</ulink>
+        (&RCL; currently uses version 0.9.2), and the <ulink
+        url="http://www.trolltech.com/products/qt/index.html">qt
+          runtime and development packages</ulink> (&RCL; development
+          currently uses version 3.3.5, but any 3.3 version is
+          probably ok).</para> 
 
       <para>You will most probably be able to find a binary package for
-	<application>qt</application> for your system. You may have to
-	compile <application>Xapian</application>, 
-	but this is not difficult (if you are using
-	<application>FreeBSD</application>, there is a port).</para>
+        <application>qt</application> for your system. You may have to
+        compile &XAP; but this is not difficult (if you are using
+        <application>FreeBSD</application>, there is a port).</para>
 
       <para>You may also need 
-	<ulink
-	url="http://www.gnu.org/software/libiconv/">libiconv</ulink>. &RCL;
-	currently uses version 1.9 (this should not be critical). On
-	<application>Linux</application> systems, the iconv interface
-	is part of libc and you should not need to do anything
-	special.</para>
+        <ulink
+        url="http://www.gnu.org/software/libiconv/">libiconv</ulink>. &RCL;
+        currently uses version 1.9 (this should not be critical). On
+        <application>Linux</application> systems, the iconv interface
+        is part of libc and you should not need to do anything
+        special.</para>
       
       <formalpara><title>External file types</title><para>&RCL; uses
       external applications 
-	to index some file types. You need to install them for the
-	file types that you wish to have indexed:</para>
-	</formalpara>
+        to index some file types. You need to install them for the
+        file types that you wish to have indexed:</para>
+        </formalpara>
 
       <itemizedlist>
 
-	<listitem><para>MS Word: <ulink
-	url="http://www.winfield.demon.nl"> 
-	    antiword</ulink>.</para>
-	  </listitem>
+        <listitem><para>MS Word: <ulink
+        url="http://www.winfield.demon.nl"> 
+            antiword</ulink>.</para>
+          </listitem>
 
-	<listitem><para>PDF: pdftotext is part of the <ulink
-	    url="http://www.foolabs.com/xpdf/">Xpdf</ulink> package.</para>
-	  </listitem>
+        <listitem><para>PDF: pdftotext is part of the <ulink
+            url="http://www.foolabs.com/xpdf/">Xpdf</ulink> package.</para>
+          </listitem>
 
-	<listitem><para>Postscript: <ulink
-	  url="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
-	    pstotext</ulink>.</para>
-	  </listitem>
+        <listitem><para>Postscript: <ulink
+          url="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
+            pstotext</ulink>.</para>
+          </listitem>
 
-	<listitem>
-	    <para>RTF: <ulink
-	    url="http://www.gnu.org/software/unrtf/unrtf.html">unrtf</ulink>
+        <listitem>
+            <para>RTF: <ulink
+            url="http://www.gnu.org/software/unrtf/unrtf.html">unrtf</ulink>
           </para>
-	  </listitem>
-	  
-	</itemizedlist>
+          </listitem>
+          
+        </itemizedlist>
 
       <sect2 id="rcl.install.building.build">
-	<title>Building</title>
+        <title>Building</title>
 
       <para>&RCL; has been built on
-	Linux (redhat7.3, mandriva 2005, Fedora Core 3), FreeBSD and
-	Solaris 8. If you build on another system, <ulink
-	url="mailto:jean-francois.dockes@wanadoo.fr">I would very much
-	welcome patches</ulink>.</para>
+        Linux (redhat7.3, mandriva 2005, Fedora Core 3), FreeBSD and
+        Solaris 8. If you build on another system, <ulink
+        url="mailto:jean-francois.dockes@wanadoo.fr">I would very much
+        welcome patches</ulink>.</para>
 
       <para>Depending on the <application>qt</application>
       configuration on your system, you may have to set the
       <literal>QTDIR</literal> and <literal>QMAKESPECS</literal>
       variables in your environment:</para>
-	<itemizedlist>
-	  <listitem><para><literal>QTDIR</literal> should point to the
-	  directory above the one that holds the qt include files (ie:
-	  qt.h).</para>
-	  </listitem>
-	  <listitem><para><literal>QMAKESPECS</literal> should
-	  be set to the name of one of the
-	  <application>qt</application> mkspecs subdirectories (ie:
-	  linux-g++).</para> 
-	  </listitem>
-	</itemizedlist>
+        <itemizedlist>
+          <listitem><para><literal>QTDIR</literal> should point to the
+          directory above the one that holds the qt include files (ie:
+          qt.h).</para>
+          </listitem>
+          <listitem><para><literal>QMAKESPECS</literal> should
+          be set to the name of one of the
+          <application>qt</application> mkspecs subdirectories (ie:
+          linux-g++).</para> 
+          </listitem>
+        </itemizedlist>
 
-	<para>On many Linux systems, <literal>QTDIR</literal> is set
-	by the login scripts, and <literal>QMAKESPECS</literal> is not
-	needed because there is a <filename>default</filename> link in
-	<filename>mkspecs/</filename>.</para>
+        <para>On many Linux systems, <literal>QTDIR</literal> is set
+        by the login scripts, and <literal>QMAKESPECS</literal> is not
+        needed because there is a <filename>default</filename> link in
+        <filename>mkspecs/</filename>.</para>
 
-	<para>The &RCL; <command>configure</command> script does a
-	better job of checking these variables after release
-	1.1.1. Before this, unexplained errors will occur during
-	compilation if the environment is not set up. Also, for 1.1.0 the
-	<command>qmake</command> command should be in your PATH (later
-	releases can also find it in
-	<filename>$QTDIR/bin</filename>).</para> 
+        <para>The &RCL; <command>configure</command> script does a
+        better job of checking these variables after release
+        1.1.1. Before this, unexplained errors will occur during
+        compilation if the environment is not set up. Also, for 1.1.0 the
+        <command>qmake</command> command should be in your PATH (later
+        releases can also find it in
+        <filename>$QTDIR/bin</filename>).</para> 
 
       <para>Normal procedure:</para>
       <screen>
@@ -528,23 +606,23 @@
 
 
       <para>There little autoconfiguration. The
-	<command>configure</command> script will mainly link one of
-	the system-specific files in the <filename>mk</filename>
-	directory to <filename>mk/sysconf</filename>. If your system
-	is not known yet, it will tell you as much, and you may want
-	to manually copy and modify one of the existing files (the new
-	file name should be the output of <command>uname -s</command>).</para>
+        <command>configure</command> script will mainly link one of
+        the system-specific files in the <filename>mk</filename>
+        directory to <filename>mk/sysconf</filename>. If your system
+        is not known yet, it will tell you as much, and you may want
+        to manually copy and modify one of the existing files (the new
+        file name should be the output of <command>uname -s</command>).</para>
       </sect2>
 
       <sect2 id="rcl.install.building.install">
-	<title>Installation</title>
+        <title>Installation</title>
       
       <para>Either type <userinput>make install</userinput> or execute
       <userinput>recollinstall targetdir</userinput>, in the root
-	of the source tree. This will copy the commands to
-	<filename>$targetdir/bin</filename> and the sample
-	configuration files, scripts and other shared data to 
-	<filename>$targetdir/share/recoll</filename>.</para>
+        of the source tree. This will copy the commands to
+        <filename>$targetdir/bin</filename> and the sample
+        configuration files, scripts and other shared data to 
+        <filename>$targetdir/share/recoll</filename>.</para>
       </sect2>
     </sect1>
 
@@ -552,32 +630,32 @@
       <title>Installing a prebuilt copy</title>
 
       <sect2 id="rcl.install.binary.package">
-	<title>Installing through a package system</title>
+        <title>Installing through a package system</title>
 
-	<para>If you are lucky enough to be using a port system or a
-	prebuilt package (RPM or other), just follow the usual
-	procedure, and have a look at the <link
-	linkend="rcl.install.config">configuration
-	section</link>.</para>
+        <para>If you are lucky enough to be using a port system or a
+        prebuilt package (RPM or other), just follow the usual
+        procedure, and have a look at the <link
+        linkend="rcl.install.config">configuration
+        section</link>.</para>
       </sect2>
 
       <sect2 id="rcl.install.binary.rcl">
-	<title>Installing a prebuilt &RCL;</title>
+        <title>Installing a prebuilt &RCL;</title>
 
       <para>The unpackaged binary versions are just compressed tar
       files of a build
-	tree, where only the useful parts were kept (executables and
-	sample configuration).</para>
+        tree, where only the useful parts were kept (executables and
+        sample configuration).</para>
 
       <para>The executable binary files are built with a static link to
-	libxapian and libiconv, to make installation easier (no
-	dependencies). However, this also means that you cannot change
-	the versions which are used.</para> 
+        libxapian and libiconv, to make installation easier (no
+        dependencies). However, this also means that you cannot change
+        the versions which are used.</para> 
 
       <para>After extracting the tar file, you can proceed with
-	<link
-	linkend="rcl.install.building.install">installation</link> as
-	if you had built the package from source.</para> 
+        <link
+        linkend="rcl.install.building.install">installation</link> as
+        if you had built the package from source.</para> 
       </sect2>
     </sect1>
 
@@ -586,36 +664,36 @@
 
       <para>The personal configuration files and the database are
         normally kept in
-	the <filename>.recoll</filename> directory in your home (this
-	can be changed with the <literal>RECOLL_CONFDIR</literal>
-	environment variable, and a parameter inside the main
-	configuration file). If this directory does not exist when
-	  <command>recoll</command> or 
-	<command>recollindex</command> are started, the
-	directory will be created and the sample configuration files will
-	be copied. <command>recoll</command> will give you a
-	chance to edit the configuration file before starting
-	indexation. <command>recollindex</command> will
-	proceed immediately.</para>
+        the <filename>.recoll</filename> directory in your home (this
+        can be changed with the <literal>RECOLL_CONFDIR</literal>
+        environment variable, and a parameter inside the main
+        configuration file). If this directory does not exist when
+          <command>recoll</command> or 
+        <command>recollindex</command> are started, the
+        directory will be created and the sample configuration files will
+        be copied. <command>recoll</command> will give you a
+        chance to edit the configuration file before starting
+        indexation. <command>recollindex</command> will
+        proceed immediately.</para>
       
       <para>Most of the parameters specific to the
- 	 <command>recoll</command> GUI are set through the
-	  <guilabel>Preferences</guilabel> menu and stored in the
-	  standard QT place
-	  (<filename>$HOME/.qt/recollrc</filename>). You probably do not
-	  want to edit this by hand.</para>
+         <command>recoll</command> GUI are set through the
+          <guilabel>Preferences</guilabel> menu and stored in the
+          standard QT place
+          (<filename>$HOME/.qt/recollrc</filename>). You probably do not
+          want to edit this by hand.</para>
 
       <para>For other options, &RCL; uses text configuration
         files. You will have to edit them by hand for 
-	now (there is still some hope for a GUI configuration tool
-	in the future). The most accurate documentation for the
-	configuration parameters is given by comments inside the sample
-	files, and we will just give a general overview here.</para>
+        now (there is still some hope for a GUI configuration tool
+        in the future). The most accurate documentation for the
+        configuration parameters is given by comments inside the sample
+        files, and we will just give a general overview here.</para>
 
-	<para>All configuration files share the same format. For
-	exemple, a short extract of the main configuration file might
-	look as follows:</para> 
-	<programlisting>
+        <para>All configuration files share the same format. For
+        exemple, a short extract of the main configuration file might
+        look as follows:</para> 
+        <programlisting>
         # Space-separated list of directories to index.
         topdirs =  ~/docs /usr/share/doc
 
@@ -623,215 +701,215 @@
         defaultcharset = utf-8
         </programlisting>
 
-	<para>There are three kinds of lines: </para>
-	<itemizedlist>
-	  <listitem><para>Comment (starts with
-	  <emphasis>#</emphasis>) or empty.</para> 
-	  </listitem>
-	  <listitem><para>Parameter affectation (<emphasis>name =
-	  value</emphasis>).</para> 
-	  </listitem>
-	  <listitem><para>Section definition
-	  ([<emphasis>somedirname</emphasis>]).</para> 
-	  </listitem>
-	</itemizedlist>
+        <para>There are three kinds of lines: </para>
+        <itemizedlist>
+          <listitem><para>Comment (starts with
+          <emphasis>#</emphasis>) or empty.</para> 
+          </listitem>
+          <listitem><para>Parameter affectation (<emphasis>name =
+          value</emphasis>).</para> 
+          </listitem>
+          <listitem><para>Section definition
+          ([<emphasis>somedirname</emphasis>]).</para> 
+          </listitem>
+        </itemizedlist>
 
-	<para>Section lines allow redefining some parameters for a
-	directory subtree. Some of the parameters used for indexation
-	are looked up hierarchically from the more to the less
-	specific. Not all parameters can be meaningfully redefined,
-	this is specified for each in the next section. </para>
+        <para>Section lines allow redefining some parameters for a
+        directory subtree. Some of the parameters used for indexation
+        are looked up hierarchically from the more to the less
+        specific. Not all parameters can be meaningfully redefined,
+        this is specified for each in the next section. </para>
 
-	<para>The tilde character (~) is expanded in file names to the
-	name of the user's home directory.</para>
-	
-	<para>White space is used for separation inside  lists.
+        <para>The tilde character (~) is expanded in file names to the
+        name of the user's home directory.</para>
+        
+        <para>White space is used for separation inside  lists.
         Elements with embedded spaces can be quoted using
         double-quotes.</para>
 
       <sect2 id="rcl.install.config.recollconf">
-	<title>Main configuration file</title>
+        <title>Main configuration file</title>
 
-	<para><filename>~/.recoll/recoll.conf</filename> is the main
+        <para><filename>~/.recoll/recoll.conf</filename> is the main
          configuration file. It defines things like
-	 what to index (top directories and things to ignore), and the
-	 default character set to use for document types which do not
-	 specify it internally. </para>
+         what to index (top directories and things to ignore), and the
+         default character set to use for document types which do not
+         specify it internally. </para>
 
-	<para>The default configuration will index your home
-	 directory. If this is not appropriate, use 
-	 <command>recoll</command> to copy the sample
-	 configuration, click <guimenu>Cancel</guimenu>, and edit
-	 the configuration file before restarting the command. This
-	 will start the initial indexation, which may take some time.</para>
-	
-	<para>Paramers:</para>
+        <para>The default configuration will index your home
+         directory. If this is not appropriate, use 
+         <command>recoll</command> to copy the sample
+         configuration, click <guimenu>Cancel</guimenu>, and edit
+         the configuration file before restarting the command. This
+         will start the initial indexation, which may take some time.</para>
+        
+        <para>Paramers:</para>
 
-	<variablelist>
+        <variablelist>
 
-	  <varlistentry><term><literal>topdirs</literal></term>
-	    <listitem><para>Specifies the list of directories to index
-	    (recursively).</para>
-	    </listitem>
-	  </varlistentry>
+          <varlistentry><term><literal>topdirs</literal></term>
+            <listitem><para>Specifies the list of directories to index
+            (recursively).</para>
+            </listitem>
+          </varlistentry>
 
-	  <varlistentry><term><literal>skippedNames</literal></term>
-	    <listitem>
-	      <para>A space-separated list of patterns for
-	       names of files or directories that should be completely
-	       ignored. The list defined in the default file is: </para>
+          <varlistentry><term><literal>skippedNames</literal></term>
+            <listitem>
+              <para>A space-separated list of patterns for
+               names of files or directories that should be completely
+               ignored. The list defined in the default file is: </para>
 <programlisting>
 *~ #* bin CVS  Cache caughtspam  tmp
 </programlisting>
-	      <para>The list can be redefined for subdirectories, but is only
+              <para>The list can be redefined for subdirectories, but is only
                actually changed for the top level ones in
                <literal>topdirs</literal>.</para>
-	       <para>The top-level directories are not affected by this
-	        list (that is, a directory in <literal>topdirs</literal>
-	        might match and would still be indexed).</para>
-	        <para>The list in the default configuration does not
-	        exclude hidden directories (names beginning with a
-	        dot), which means that it may index quite a few things
-	        that you do not want. On the other hand, mail user
-	        agents like <application>thunderbird</application>
-	        usually store messages in hidden directories, and you
-	        probably want this indexed. One possible solution is to
-	        have <userinput>.*</userinput> in
-	        <literal>skippedNames</literal>, and add things like
-	        <filename>~/.thunderbird</filename> or
-	        <filename>~/.evolution</filename> in
-	        <literal>topdirs</literal>.</para> 
-	    </listitem>
-	  </varlistentry>
+               <para>The top-level directories are not affected by this
+                list (that is, a directory in <literal>topdirs</literal>
+                might match and would still be indexed).</para>
+                <para>The list in the default configuration does not
+                exclude hidden directories (names beginning with a
+                dot), which means that it may index quite a few things
+                that you do not want. On the other hand, mail user
+                agents like <application>thunderbird</application>
+                usually store messages in hidden directories, and you
+                probably want this indexed. One possible solution is to
+                have <userinput>.*</userinput> in
+                <literal>skippedNames</literal>, and add things like
+                <filename>~/.thunderbird</filename> or
+                <filename>~/.evolution</filename> in
+                <literal>topdirs</literal>.</para> 
+            </listitem>
+          </varlistentry>
 
-	  <varlistentry><term><literal>loglevel</literal></term>
-	    <listitem><para>Verbosity level for recoll and
-	    recollindex. A value of 4 lists quite a lot of
-	    debug/information messages. 2 only lists errors. </para>
-	    </listitem>
-	  </varlistentry>
+          <varlistentry><term><literal>loglevel</literal></term>
+            <listitem><para>Verbosity level for recoll and
+            recollindex. A value of 4 lists quite a lot of
+            debug/information messages. 2 only lists errors. </para>
+            </listitem>
+          </varlistentry>
 
-	  <varlistentry><term><literal>logfilename</literal></term>
-	    <listitem><para>Where should the messages go. 'stderr' can
-	    be used as a special value. </para>
-	    </listitem>
-	  </varlistentry>
+          <varlistentry><term><literal>logfilename</literal></term>
+            <listitem><para>Where should the messages go. 'stderr' can
+            be used as a special value. </para>
+            </listitem>
+          </varlistentry>
 
-	  <varlistentry><term><literal>filtersdir</literal></term>
-	    <listitem><para>A directory to search for the external
-	    filter scripts used to index some types of files. The
-	    value should not be changed, except if you want to modify
-	    one of the default scripts. The value can be redefined for
-	    any subdirectory. </para>
-	    </listitem>
-	  </varlistentry>
+          <varlistentry><term><literal>filtersdir</literal></term>
+            <listitem><para>A directory to search for the external
+            filter scripts used to index some types of files. The
+            value should not be changed, except if you want to modify
+            one of the default scripts. The value can be redefined for
+            any subdirectory. </para>
+            </listitem>
+          </varlistentry>
 
-	  <varlistentry><term><literal>indexstemminglanguages</literal></term>
-	    <listitem><para>A list of languages for which the stem
-	    expansion databases will be built. See recollindex(1) for
-	    possible values. You can add a stem expansion database for
-	    a different language by using <command>recollindex
-	    -s</command>, but it will be deleted during the next
-	    indexation. Only languages listed in the configuration
-	    file are permanent.</para>
-	    </listitem>
-	  </varlistentry>
+          <varlistentry><term><literal>indexstemminglanguages</literal></term>
+            <listitem><para>A list of languages for which the stem
+            expansion databases will be built. See recollindex(1) for
+            possible values. You can add a stem expansion database for
+            a different language by using <command>recollindex
+            -s</command>, but it will be deleted during the next
+            indexation. Only languages listed in the configuration
+            file are permanent.</para>
+            </listitem>
+          </varlistentry>
 
-	  <varlistentry><term><literal>iconsdir</literal></term>
-	    <listitem><para>The name of the directory where
-	    <command>recoll</command> result list icons are
-	    stored. You can change this if you want different
-	    images.</para>
-	    </listitem>
-	  </varlistentry>
+          <varlistentry><term><literal>iconsdir</literal></term>
+            <listitem><para>The name of the directory where
+            <command>recoll</command> result list icons are
+            stored. You can change this if you want different
+            images.</para>
+            </listitem>
+          </varlistentry>
 
-	  <varlistentry><term><literal>dbdir</literal></term>
-	    <listitem><para>The name of the Xapian database
-	    directory. It will be created if needed when the database
-	    is initialized. </para>
-	    </listitem>
-	  </varlistentry>
-	  
-	  <varlistentry><term><literal>defaultcharset</literal></term>
-	    <listitem><para>The name of the character set used for
-	    files that do not contain a character set definition (ie:
-	    plain text files). This can be redefined for any
-	    subdirectory.</para> 
+          <varlistentry><term><literal>dbdir</literal></term>
+            <listitem><para>The name of the Xapian database
+            directory. It will be created if needed when the database
+            is initialized. </para>
+            </listitem>
+          </varlistentry>
+          
+          <varlistentry><term><literal>defaultcharset</literal></term>
+            <listitem><para>The name of the character set used for
+            files that do not contain a character set definition (ie:
+            plain text files). This can be redefined for any
+            subdirectory.</para> 
 
-	  <varlistentry><term><literal>guesscharset</literal></term>
-	    <listitem><para>Decide if we try to guess the character
-	    set of files if no internal value is available (ie: for
-	    plain text files). This does not work well in general, and
-	    should probably not be used. </para>
-	    </listitem>
-	  </varlistentry>
+          <varlistentry><term><literal>guesscharset</literal></term>
+            <listitem><para>Decide if we try to guess the character
+            set of files if no internal value is available (ie: for
+            plain text files). This does not work well in general, and
+            should probably not be used. </para>
+            </listitem>
+          </varlistentry>
 
-	  <varlistentry><term><literal>usesystemfilecommand</literal></term>
-	    <listitem><para>Decide if we use the <command>file -i</command>
+          <varlistentry><term><literal>usesystemfilecommand</literal></term>
+            <listitem><para>Decide if we use the <command>file -i</command>
             system command as a final step for determining the mime
             type for a file (the main procedure uses suffix
             associations as defined in the  <filename>mimemap</filename>
             file). This can be useful for files with suffixless names,
             but it will also cause the indexation of many bogus "text"
             files.</para> 
-	    </listitem>
-	  </varlistentry>
+            </listitem>
+          </varlistentry>
 
-	</variablelist>
+        </variablelist>
 
       </sect2>
 
       <sect2 id="rclinstall.config.mimemap">
-	<title>The mimemap file</title>
+        <title>The mimemap file</title>
 
-	<para><filename>~/.recoll/mimemap</filename> specifies the
-	file name extension to mime type mappings.</para> <para>For
-	file names without an extension, or with an unknown one, the
-	system's <command>file -i</command> command will be executed
-	to determine the mime type (this can be switched off inside
-	the main configuration file).</para>
+        <para><filename>~/.recoll/mimemap</filename> specifies the
+        file name extension to mime type mappings.</para> <para>For
+        file names without an extension, or with an unknown one, the
+        system's <command>file -i</command> command will be executed
+        to determine the mime type (this can be switched off inside
+        the main configuration file).</para>
 
-	<para><filename>mimemap</filename> also has a list of
-	extensions which should be ignored totally (to avoid losing
-	time by executing <command>file</command> 
-	for things that certainly should not be indexed).</para>
+        <para><filename>mimemap</filename> also has a list of
+        extensions which should be ignored totally (to avoid losing
+        time by executing <command>file</command> 
+        for things that certainly should not be indexed).</para>
 
-	<para>The mappings can be specified on a per-subtree basis,
-	which may be useful in some cases. Example:
-	<application>gaim</application> logs have a
-	<filename>.txt</filename> extension but 
-	should be handled specially, which is possible because they
-	are usually all located in one place.</para>
+        <para>The mappings can be specified on a per-subtree basis,
+        which may be useful in some cases. Example:
+        <application>gaim</application> logs have a
+        <filename>.txt</filename> extension but 
+        should be handled specially, which is possible because they
+        are usually all located in one place.</para>
 
-	<para><filename>mimemap</filename> also has a
-	<literal>recoll_noindex</literal> variable which is a list of
-	suffixes. Matching files will be skipped (avoids unnecessary
-	decompressions or <command>file</command> executions). This is
-	partially redundant with <literal>skippedNames</literal> in
-	the main configuration file, with two differences: it will not
-	affect directories, and it can be changed for any
-	subdirectory.</para>
+        <para><filename>mimemap</filename> also has a
+        <literal>recoll_noindex</literal> variable which is a list of
+        suffixes. Matching files will be skipped (avoids unnecessary
+        decompressions or <command>file</command> executions). This is
+        partially redundant with <literal>skippedNames</literal> in
+        the main configuration file, with two differences: it will not
+        affect directories, and it can be changed for any
+        subdirectory.</para>
 
       </sect2>
 
       <sect2 id="rclinstall.config.mimeconf">
-	<title>The mimeconf file</title>
+        <title>The mimeconf file</title>
 
-	<para><filename>~/.recoll/mimeconf</filename> specifies how the
+        <para><filename>~/.recoll/mimeconf</filename> specifies how the
          different mime types are handled for indexation, and for
          display.</para>
 
-	<para>Changing the indexation parameters is probably not a
+        <para>Changing the indexation parameters is probably not a
          good idea except if you are a &RCL; developper.</para>
 
-	<para>You may want to adjust the external viewers defined in
-	 (ie: html is either
-	 previewed internally or displayed using 
-	 <application>firefox</application>, but you may prefer 
-	 <application>mozilla</application>...). Look for the
-	 <literal>[view]</literal> section.</para>
+        <para>You may want to adjust the external viewers defined in
+         (ie: html is either
+         previewed internally or displayed using 
+         <application>firefox</application>, but you may prefer 
+         <application>mozilla</application>...). Look for the
+         <literal>[view]</literal> section.</para>
 
-	<para>You can also change the icons which are displayed by
+        <para>You can also change the icons which are displayed by
          <command>recoll</command> in the result lists (the values are
          the basenames of the png images inside the
          <filename>iconsdir</filename> directory (specified in

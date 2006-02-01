@@ -142,6 +142,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The resulting database can be big (roughly the size of the original
    document set), but it is not a document archive. Recoll can only display
    documents that still exist at the place from which they were indexed.
+   (Actually, there is a way to reconstruct a document from the information
+   in the database, but the result is not nice, as all formatting,
+   punctuation and capitalisation are lost).
 
    Recoll stores all internal data in Unicode UTF-8 format, and it can index
    files with different character sets, encodings, and languages into the
@@ -184,6 +187,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Recoll indexation takes place at discrete times. There is currently no
    interface to real time file modification monitors. The typical usage is to
    have a nightly indexation run programmed into your cron file.
+
+   +------------------------------------------------------------------------+
+   | Side note: there is nothing in Recoll and Xapian that would prevent    |
+   | interfacing with a real time file modification monitor, but this would |
+   | tend to consume significant system resources for dubious gain, because |
+   | you rarely need a full text search to find documents you just          |
+   | modified. recollindex -i can be used to add individual files to the    |
+   | index if you want to play with this, see the manual page.              |
+   +------------------------------------------------------------------------+
 
    Recoll knows about quite a few different document types. The parameters
    for document types recognition and processing are set in configuration
@@ -258,13 +270,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 3.1. Simple search
 
-   Start the recoll program, then enter search term(s) in the text field at
-   the top left of the window. Clicking the Search button or hitting the
-   Enter key will start a search. By default, this will look for documents
-   with any of the terms (the ones with more terms will get better scores).
-   You can check the All terms checkbox to ensure that only documents with
-   all the terms will be returned. Use the Tools / Advanced search dialog for
-   more complex searches.
+    1. Start the recoll program.
+
+    2. Enter search term(s) in the text field at the top of the window.
+
+    3. Click the Search button or hit the Enter key to start the search.
+
+   By default, this will look for documents with any of the search terms (the
+   ones with more terms will get better scores). You can check the All terms
+   checkbox to ensure that only documents with all the terms will be
+   returned. Use the Tools / Advanced search dialog for more complex
+   searches.
 
    After starting a search, a list of results will instantly be displayed in
    the main list window. Clicking on an entry will open an internal preview
@@ -276,14 +292,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    the system estimates that the document matches the query). You can specify
    a different ordering by using the Tools / Sort parameters dialog.
 
+   You can click on the first paragraph (Query results or No results found)
+   in the result list to get an exact display of the query actually
+   performed, after stem expansion and other processing.
+
      ----------------------------------------------------------------------
 
 3.2. Complex/advanced search
 
    The advanced search dialog has fields that will allow a more refined
    search, looking for documents with all given words, a given exact phrase,
-   or none of the given words (all fields may be combined by an implicit AND
-   clause).
+   or none of the given words (all relevant fields will be combined by an
+   implicit AND clause).
 
    It will let you search for documents of specific mime types (ie: only
    text/plain, or text/html or application/pdf etc...)
@@ -293,6 +313,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Click on the Start Search button in the advanced search dialog to start
    the search. The button in the main window always performs a simple search.
+
+   Click on the result list header paragraph to see the query expansion.
 
      ----------------------------------------------------------------------
 
@@ -347,15 +369,46 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    It is possible to customise some aspects of the search interface by using
    Query configuration entry in the Preferences menu.
 
-   There are two tabs in the dialog, to modify the appearance of the user
-   interface (result list appearance), or the parameters used for searching
-   (language used for stem expansion).
+   There are two tabs in the dialog, dealing with the interface itself, and
+   with the parameters used for searching and returning results.
 
-   The stemming language can be chosen among those that were specified in the
-   configuration file, or later added with recollindex -s (See the
-   recollindex manual). Stemming languages which are dynamically added will
-   be deleted at the next indexation pass unless they are also added in the
-   configuration file.
+   User interface parameters:
+
+     * Number of results in a result page
+
+     * Result list font: There is quite a lot of information shown in the
+       result list, and you may want to customise the font and/or font size.
+       The rest of the fonts used by Recoll are determined by your generic QT
+       config (try the qtconfig command.
+
+     * Html help browser: this will let you chose your the preferred browser
+       which will be started from the Help menu to read the user manual. You
+       can enter a simple name if the command is in your PATH, or browse for
+       a full pathname.
+
+     * Show document type icons in result list: icons in the result list can
+       be turned off. They take quite a lot of space and convey relatively
+       little useful information.
+
+   Search parameters:
+
+     * Stemming language: stemming obviously depends on the document's
+       language. This listbox will let you chose among the stemming databases
+       which were built during indexing (this is set in the main
+       configuration file), or later added with recollindex -s (See the
+       recollindex manual). Stemming languages which are dynamically added
+       will be deleted at the next indexation pass unless they are also added
+       in the configuration file.
+
+     * Dynamically build abstracts: this decides if Recoll tries to build
+       document abstracts when displaying the result list. Abstracts are
+       constructed by taking context from the document information, around
+       the search terms. This can slow down result list display significantly
+       for big documents, and you may want to turn it off.
+
+     * Replace abstracts from documents: this decides if we should synthetize
+       and display an abstract in place of an explicit abstract found within
+       the document itself.
 
      ----------------------------------------------------------------------
 
@@ -367,10 +420,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    At the very least, you will need to download and install the xapian core
    package (Recoll currently uses version 0.9.2), and the qt runtime and
-   development packages (Recoll currently uses version 3.3.3).
+   development packages (Recoll development currently uses version 3.3.5, but
+   any 3.3 version is probably ok).
 
    You will most probably be able to find a binary package for qt for your
-   system. You may have to compile Xapian, but this is not difficult (if you
+   system. You may have to compile Xapian but this is not difficult (if you
    are using FreeBSD, there is a port).
 
    You may also need libiconv. Recoll currently uses version 1.9 (this should
