@@ -39,7 +39,8 @@ fi
 
 echo "Installing to $PREFIX"
 
-INSTALL=${INSTALL:="install -c -v"}
+# Note: solaris 'install' does not understand -v
+INSTALL=${INSTALL:="install -c"}
 STRIP=${STRIP:=strip}
 
 test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
