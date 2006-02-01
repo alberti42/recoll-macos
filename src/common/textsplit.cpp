@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.19 2006-01-30 09:28:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.20 2006-02-01 14:18:20 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -179,9 +179,9 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 
     // Adjust state
     wordpos++;
-    word.clear();
+    word.erase();
     if (spanerase) {
-	span.clear();
+	span.erase();
 	spanpos = wordpos;
     }
 
@@ -212,8 +212,8 @@ bool TextSplit::text_to_words(const string &in)
 
     setcharclasses();
 
-    span.clear();
-    word.clear(); // Current word: no punctuation at all in there
+    span.erase();
+    word.erase(); // Current word: no punctuation at all in there
     number = false;
     wordpos = spanpos = charpos = 0;
 
