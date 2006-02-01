@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: base64.cpp,v 1.5 2006-01-23 13:32:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: base64.cpp,v 1.6 2006-02-01 07:14:45 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ static const char Base64[] =
 static const char Pad64 = '=';
 bool base64_decode(const string& in, string& out)
 {
-    int io = 0, state = 0, ch;
+    int io = 0, state = 0, ch = 0;
     char *pos;
     unsigned int ii = 0;
     out.erase();

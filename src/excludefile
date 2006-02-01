@@ -5,11 +5,11 @@
 *~
 .#*
 .#*
+./Makefile
 .moc
 .obj
 .ui
 CVS
-Makefile
 TAGS
 alldeps
 autom4*
@@ -21,10 +21,10 @@ lib/librcl.a
 makesrcdist.sh
 mk/localdefs
 qtgui/Makefile
-qtgui/recoll.pro
 qtgui/preview/Makefile
 qtgui/preview/preview.pro
 qtgui/preview/pvmain.cpp
+qtgui/recoll.pro
 recollinstall
 sampleconf/recoll.conf
 sysconf
