@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.36 2006-01-30 09:28:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.37 2006-02-02 08:35:18 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -211,8 +211,14 @@ int main( int argc, char ** argv )
 
     if (!maybeOpenDb(reason)) {
 	startindexing = 1;
+
 	switch (QMessageBox::
-		question(0, "Recoll",
+#if (QT_VERSION < 0x030200)
+		question
+#else
+		information
+#endif
+		(0, "Recoll",
 			 app.translate("Main", "Could not open database in ")+
 			 QString(dbdir) +
 			 app.translate("Main", 

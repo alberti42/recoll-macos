@@ -47,6 +47,10 @@ using std::pair;
 #include "wipedir.h"
 #include "cancelcheck.h"
 
+#if (QT_VERSION < 0x030300)
+#define wasCanceled wasCancelled
+#endif
+
 // We keep a list of data associated to each tab
 class TabData {
  public:

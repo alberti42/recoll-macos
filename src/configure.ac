@@ -54,11 +54,20 @@ xapian-core installed ?])
    exit 1
 fi
 LIBXAPIAN=`$XAPIAN_CONFIG --libs`
+# Workaround for problem in xapian-config in some versions: wrongly lists
+# libstdc++.la in the lib list
+for i in $LIBXAPIAN ; do
+    case $i in
+    *libstdc++.la);;
+    *) tmpxaplib="$tmpxaplib $i";;
+    esac
+done
+LIBXAPIAN=$tmpxaplib
 XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 
-#echo XAPIAN_CONFIG $XAPIAN_CONFIG 
-#echo LIBXAPIAN $LIBXAPIAN
-#echo XAPIANCXXFLAGS $XAPIANCXXFLAGS
+#echo XAPIAN_CONFIG: $XAPIAN_CONFIG 
+#echo LIBXAPIAN: $LIBXAPIAN
+#echo XAPIANCXXFLAGS: $XAPIANCXXFLAGS
 
 #### QT
 # The way qt and its tools (qmake especially) are installed is very
