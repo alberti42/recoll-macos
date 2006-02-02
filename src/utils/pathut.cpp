@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.8 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.9 2006-02-02 08:58:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -182,7 +182,7 @@ list<std::string> path_dirglob(const std::string &dir,
     if (glob(mypat.c_str(), 0, 0, &mglob)) {
 	return res;
     }
-    for (int i = 0; i < mglob.gl_pathc; i++) {
+    for (int i = 0; i < int(mglob.gl_pathc); i++) {
 	res.push_back(mglob.gl_pathv[i]);
     }
     globfree(&mglob);

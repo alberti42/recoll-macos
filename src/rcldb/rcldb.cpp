@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.55 2006-01-27 13:34:42 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.56 2006-02-02 08:58:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1323,7 +1323,7 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
     try {
 	if (!ndb->db.term_exists(pathterm)) {
 	    char len[20];
-	    sprintf(len, "%d", pathterm.length());
+	    sprintf(len, "%d", int(pathterm.length()));
 	    throw string("path inexistant: [") + pathterm +"] length " + len;
 	}
 	for (Xapian::PostingIterator docid = 
