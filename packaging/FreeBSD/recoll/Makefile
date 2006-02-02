@@ -6,7 +6,7 @@
 #
 
 PORTNAME=	recoll
-PORTVERSION=	1.1.0
+PORTVERSION=	1.2.2
 CATEGORIES=	deskutils
 MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 
@@ -24,6 +24,5 @@ USE_GMAKE=	yes
 
 MAN1=		recoll.1 recollindex.1
 MAN5=		recoll.conf.5
-MANCOMPRESSED=	no
 
 .include <bsd.port.mk>
