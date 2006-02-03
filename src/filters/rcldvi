@@ -1,10 +1,28 @@
 #!/bin/sh
-# @(#$Id: rcldvi,v 1.1 2006-02-03 10:53:34 dockes Exp $  (C) 2004 J.F.Dockes
-#================================================================
+# @(#$Id: rcldvi,v 1.2 2006-02-03 11:47:47 dockes Exp $  (C) 2006 J.F.Dockes
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the
+# Free Software Foundation, Inc.,
+# 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+#
 # rcldvi
-# Extract text from a dvi file by executing dvitops and rclps
-# 
-#================================================================
+# Extract text from a dvi file by either executing dvitops and rclps
+# or using catdvi. dvitops has given better results during tests, and is
+# chosen first if available, but the dvitops/rclps combination is much
+# slower than catdvi 
+
 
 # Show help message
 if test $# -ne 1 -o "$1" = "--help" 
@@ -13,8 +31,6 @@ then
   printf 'Usage: %s [infile]\n' "$progname"
   exit 1
 fi
-
-decoder=dvips
 
 # Find rclps. Note: this only works because we are always executed with a
 # full path
@@ -33,19 +49,19 @@ iscmd()
       return 1 ;;
     esac
 }
-checkcmds()
-{
-    for cmd in $*;do
-      if iscmd $cmd 
-      then 
-        a=1
-      else 
-        echo $cmd not found 1>&2 
-	exit 1
-      fi
-    done
-}
-checkcmds $decoder 
+
+decoder=""
+if iscmd dvips -a iscmd pstotext ; then
+  decoder=dvips
+else
+  decoder=catdvi
+fi
+
+if test X$decoder = X ; then
+   echo "$progname: did not find either catdvi or dvips." 1>&2
+   exit 1
+fi
+
 
 # check the input file existence
 if test ! -f "$infile"
@@ -54,5 +70,40 @@ then
   exit 1
 fi
 
-# output the result
-$decoder -f < "$infile" 2> /dev/null | $rclps -
+if test X$decoder = Xdvips ; then
+   $decoder -f < "$infile" 2> /dev/null | $rclps -
+   exit $?
+fi
+
+$decoder "$infile" |
+awk '
+BEGIN {
+  printf("<html><head><title></title>\n")
+  printf("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n")
+  printf("</head>\n<body><p>");
+  cont = ""
+}
+{
+    $0 = cont $0
+    cont = ""
+
+    if ($0 == "\f") {
+       print "</p>\n<hr>\n<p>"
+       next
+    } else if ($0 ~ /-$/) {
+      match($0, "[ \t][^ \t]+$")
+      line = substr($0, 0, RSTART)
+      cont = substr($0, RSTART, RLENGTH)
+      $0 = line
+      gsub("-", "", cont)
+    }
+
+    gsub(/&/, "\\&amp;", $0)
+    gsub(/</, "\\&lt;", $0)
+    gsub(/>/, "\\&gt;", $0)
+
+    print $0 "<br>"
+}
+END {
+    print "</p></body></html>"
+}'
