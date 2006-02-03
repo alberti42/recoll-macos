@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.12 2005-11-30 09:46:48 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.13 2006-02-03 10:53:35 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -38,6 +38,9 @@ application/vnd.sun.xml.math = exec rclsoff
 application/vnd.sun.xml.writer = exec rclsoff
 application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
+application/x-dvi = exec rcldvi
+
+image/vnd.djvu = exec rcldjvu
 
 message/rfc822 = internal
 
@@ -66,6 +69,8 @@ application/vnd.sun.xml.math = openoffice %f
 application/vnd.sun.xml.writer = openoffice %f
 application/vnd.sun.xml.writer.global = openoffice %f
 application/vnd.sun.xml.writer.template = openoffice %f
+image/vnd.djvu = djview %f
+application/x-dvi = xdvi %f
 
 # Icons to be used in the result list.
 [icons]

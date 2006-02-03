@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.10 2005-11-21 16:05:07 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.11 2006-02-03 10:53:35 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll: associations of file name extensions to mime types
 .txt = text/plain
@@ -17,6 +17,10 @@
 .ps = application/postscript
 .eps = application/postscript
 .ai = application/postscript
+
+.dvi = application/x-dvi
+
+.djvu = image/vnd.djvu
 
 .gz = application/x-gzip
 .Z = application/x-gzip

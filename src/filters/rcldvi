@@ -1,0 +1,58 @@
+#!/bin/sh
+# @(#$Id: rcldvi,v 1.1 2006-02-03 10:53:34 dockes Exp $  (C) 2004 J.F.Dockes
+#================================================================
+# rcldvi
+# Extract text from a dvi file by executing dvitops and rclps
+# 
+#================================================================
+
+# Show help message
+if test $# -ne 1 -o "$1" = "--help" 
+then
+  printf 'Convert a dvi file to unformatted HTML text for recoll indexation.\n'
+  printf 'Usage: %s [infile]\n' "$progname"
+  exit 1
+fi
+
+decoder=dvips
+
+# Find rclps. Note: this only works because we are always executed with a
+# full path
+infile="$1"
+rclps=`dirname $0`/rclps
+
+iscmd()
+{
+    cmd=$1
+    case $cmd in
+    */*)
+	if test -x $cmd ; then return 0; else return 1; fi ;;
+    *)
+      oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
+      for d in $*;do test -x $d/$cmd && return 0;done
+      return 1 ;;
+    esac
+}
+checkcmds()
+{
+    for cmd in $*;do
+      if iscmd $cmd 
+      then 
+        a=1
+      else 
+        echo $cmd not found 1>&2 
+	exit 1
+      fi
+    done
+}
+checkcmds $decoder 
+
+# check the input file existence
+if test ! -f "$infile"
+then
+  printf '%s: %s: no such file\n' "$progname" "$infile"
+  exit 1
+fi
+
+# output the result
+$decoder -f < "$infile" 2> /dev/null | $rclps -
