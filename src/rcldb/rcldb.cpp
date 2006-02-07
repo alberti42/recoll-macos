@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.56 2006-02-02 08:58:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.57 2006-02-07 10:26:49 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1305,7 +1305,7 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 // Retrieve document defined by file name and internal path. Very inefficient,
 // used only for history display. We'd need to enter path+ipath terms in the
 // db if we wanted to make this more efficient.
-bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
+bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 {
     LOGDEB(("Rcl::Db:getDoc: [%s] (%d) [%s]\n", fn.c_str(), fn.length(),
 	    ipath.c_str()));
@@ -1313,18 +1313,29 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
 	return false;
     Native *ndb = (Native *)pdata;
 
+    // Initialize what we can in any case. If this is history, caller
+    // will make partial display in case of error
+    doc.ipath = ipath;
+    doc.url = string("file://") + fn;
+    if (*pc)
+	*pc = 100;
+
     string hash;
     pathHash(fn, hash, PATHHASHLEN);
     string pathterm  = "P" + hash;
-
     // Look for all documents with this path, searching for the one
     // with the appropriate ipath. This is very inefficient.
     const char *ermsg = "";
     try {
 	if (!ndb->db.term_exists(pathterm)) {
-	    char len[20];
-	    sprintf(len, "%d", int(pathterm.length()));
-	    throw string("path inexistant: [") + pathterm +"] length " + len;
+	    // Document found in history no longer in the database.
+	    // We return true (because their might be other ok docs further)
+	    // but indicate the error with pc = -1
+	    if (*pc) 
+		*pc = -1;
+	    LOGINFO(("Rcl::Db:getDoc: path inexistant: [%s] length %d\n",
+		     pathterm.c_str(), pathterm.length()));
+	    return true;
 	}
 	for (Xapian::PostingIterator docid = 
 		 ndb->db.postlist_begin(pathterm);
@@ -1348,10 +1359,6 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc)
     }
     if (*ermsg) {
 	LOGERR(("Rcl::Db::getDoc: %s\n", ermsg));
-	// Initialize what we can anyway. If this is history, caller
-	// will make partial display
-	doc.ipath = ipath;
-	doc.url = string("file://") + fn;
     }
     return false;
 }

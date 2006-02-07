@@ -254,7 +254,7 @@ void ResListBase::showResultPage()
     // Insert results if any in result list window. We have to send
     // the text to the widgets, because we need the paragraph number
     // each time we add a result paragraph (its diffult and
-    // error-prone to compute the paragraph numbers in parallel. We
+    // error-prone to compute the paragraph numbers in parallel). We
     // would like to disable updates while we're doing this, but
     // couldn't find a way to make it work, the widget seems to become
     // confused if appended while updates are disabled
@@ -264,8 +264,12 @@ void ResListBase::showResultPage()
 	doc.erase();
 
 	if (!m_docsource->getDoc(m_winfirst + i, doc, &percent, &sh)) {
-	    // This may very well happen for history if the doc has
-	    // been removed since. So don't treat it as fatal.
+	    // Error or end of docs, stop.
+	    break;
+	}
+	if (percent == -1) {
+	    percent = 0;
+	    // Document not available, maybe other further, will go on.
 	    doc.abstract = string(tr("Unavailable document").utf8());
 	}
 

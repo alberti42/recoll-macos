@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.24 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.25 2006-02-07 10:26:49 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -154,7 +154,7 @@ class Db {
     bool getDoc(int i, Doc &doc, int *percent = 0);
 
     /** Get document for given filename and ipath */
-    bool getDoc(const string &fn, const string &ipath, Doc &doc);
+    bool getDoc(const string &fn, const string &ipath, Doc &doc, int *percent);
 
     /** Get results count for current query */
     int getResCnt();

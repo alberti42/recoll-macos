@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.5 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.6 2006-02-07 10:26:49 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "rcldb.h"
 #include "history.h"
@@ -31,6 +31,19 @@ class DocSequence {
  public:
     DocSequence(const std::string &t) : m_title(t) {}
     virtual ~DocSequence() {}
+    /** Get document at given rank 
+     *
+     * @param num document rank in sequence
+     * @param doc return data
+     * @param percent this will be updated with the percentage of relevance, if
+     *        available, depending on the type of sequence. Return -1 in there 
+     *        to indicate that the specified document data is
+     *        unavailable but that there may be available data further
+     *        in the sequence
+     * @param sh subheader to display before this result (ie: date change 
+     *           inside history)
+     * @return true if ok, false for error or end of data
+     */
     virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0) 
 	= 0;
     virtual int getResCnt() = 0;
