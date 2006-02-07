@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.5 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.6 2006-02-07 09:44:33 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -32,6 +32,6 @@
  */
 extern bool plaintorich(const string &in, string &out,
 			const list<string>& terms,
-			list<pair<int, int> >& termoffsets);
+			string* firstTerm);
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

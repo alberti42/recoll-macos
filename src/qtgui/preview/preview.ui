@@ -202,7 +202,7 @@
 </signals>
 <slots>
     <slot>searchTextLine_textChanged( const QString &amp; text )</slot>
-    <slot>doSearch( bool next, bool reverse )</slot>
+    <slot>doSearch( const QString &amp;str, bool next, bool reverse )</slot>
     <slot>nextPressed()</slot>
     <slot>prevPressed()</slot>
     <slot>currentChanged( QWidget * tw )</slot>

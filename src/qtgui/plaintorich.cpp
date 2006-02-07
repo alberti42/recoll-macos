@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.9 2006-01-27 13:42:02 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.10 2006-02-07 09:44:33 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,7 @@ using std::set;
 // inside the result text. This is then used to post highlight tags. 
 class myTextSplitCB : public TextSplitCB {
  public:
+    string firstTerm;
     set<string>    terms;          // in: user query terms
     list<pair<int, int> > tboffs;  // out: begin and end positions of
                                    // query terms in text
@@ -62,8 +63,11 @@ class myTextSplitCB : public TextSplitCB {
 	Rcl::dumb_string(term, dumb);
 	//LOGDEB(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
 	// pos, bts, bte));
-	if (terms.find(dumb) != terms.end()) 
+	if (terms.find(dumb) != terms.end()) {
 	    tboffs.push_back(pair<int, int>(bts, bte));
+	    if (firstTerm.empty())
+		firstTerm = term;
+	}
 	CancelCheck::instance().checkCancel();
 	return true;
     }
@@ -71,19 +75,20 @@ class myTextSplitCB : public TextSplitCB {
 
 // Fix result text for display inside the gui text window.
 //
-// To compute the term character positions in the output text, we have
+// To compute the term character positions in the output text, we used
 // to emulate how qt's textedit counts chars (ignoring tags and
-// duplicate whitespace etc...). This is tricky business and it might
-// be better to insert the text char by char, taking note of where qt
-// thinks it is at each term.
+// duplicate whitespace etc...). This was tricky business, dependant
+// on qtextedit internals, and we don't do it any more, so we finally
+// don't know the term par/car positions in the editor text.  Instead,
+// we return the first term encountered, and the caller will use the
+// editor's find() function to position on it
 bool plaintorich(const string& in, string& out, const list<string>& terms,
-		 list<pair<int, int> >&termoffsets)
+		 string *firstTerm)
 {
     Chrono chron;
     LOGDEB(("plaintorich: terms: %s\n", 
 	    stringlistdisp(terms).c_str()));
     out.erase();
-    termoffsets.erase(termoffsets.begin(), termoffsets.end());
 
     // We first use the text splitter to break the text into words,
     // and compare the words to the search terms, which yields the
@@ -94,6 +99,8 @@ bool plaintorich(const string& in, string& out, const list<string>& terms,
     // character offset
     splitter.text_to_words(in);
 
+    if (firstTerm)
+	*firstTerm = cb.firstTerm;
     LOGDEB(("plaintorich: split done %d mS\n", chron.millis()));
 
     // Rich text output
@@ -102,12 +109,8 @@ bool plaintorich(const string& in, string& out, const list<string>& terms,
     // Iterator for the list of input term positions. We use it to
     // output highlight tags and to compute term positions in the
     // output text
-    list<pair<int, int> >::iterator it = cb.tboffs.begin();
+    list<pair<int, int> >::iterator tPosIt = cb.tboffs.begin();
 
-    // Storage for the current term _character_ position in output.
-    pair<int, int> otermcpos;
-    // Current char position in output, excluding tags
-    int outcpos=0; 
     // Input character iterator
     Utf8Iter chariter(in);
     // State variable used to limitate the number of consecutive empty lines 
@@ -120,16 +123,13 @@ bool plaintorich(const string& in, string& out, const list<string>& terms,
 	    CancelCheck::instance().checkCancel();
 	}
 	// If we still have terms positions, check (byte) position
-	if (it != cb.tboffs.end()) {
+	if (tPosIt != cb.tboffs.end()) {
 	    int ibyteidx = chariter.getBpos();
-	    if (ibyteidx == it->first) {
+	    if (ibyteidx == tPosIt->first) {
 		out += "<termtag>";
-		otermcpos.first = outcpos;
-	    } else if (ibyteidx == it->second) {
-		if (it != cb.tboffs.end())
-		    it++;
-		otermcpos.second = outcpos;
-		termoffsets.push_back(otermcpos);
+	    } else if (ibyteidx == tPosIt->second) {
+		if (tPosIt != cb.tboffs.end())
+		    tPosIt++;
 		out += "</termtag>";
 	    }
 	}
@@ -138,7 +138,6 @@ bool plaintorich(const string& in, string& out, const list<string>& terms,
 	    if (ateol < 2) {
 		out += "<br>\n";
 		ateol++;
-		outcpos++;
 	    }
 	    break;
 	case '\r': 
@@ -146,23 +145,18 @@ bool plaintorich(const string& in, string& out, const list<string>& terms,
 	case '<':
 	    ateol = 0;
 	    out += "&lt;";
-	    outcpos++;
 	    break;
 	case '&':
 	    ateol = 0;
 	    out += "&amp;";
-	    outcpos++;
 	    break;
 	default:
 	    // We don't change the eol status for whitespace, want a real line
 	    if (*chariter == ' ' || *chariter == '\t') {
-		if (!atblank)
-		    outcpos++;
 		atblank = 1;
 	    } else {
 		ateol = 0;
 		atblank = 0;
-		outcpos++;
 	    }
 	    chariter.appendchartostring(out);
 	}

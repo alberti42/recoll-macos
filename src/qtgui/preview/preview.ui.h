@@ -100,7 +100,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	return true;
     } else if (dynSearchActive) {
 	if (keyEvent->key() == Key_F3) {
-	    doSearch(true, false);
+	    doSearch(searchTextLine->text(), true, false);
 	    return true;
 	}
 	if (target != searchTextLine)
@@ -134,7 +134,7 @@ void Preview::searchTextLine_textChanged(const QString & text)
 	nextButton->setEnabled(true);
 	prevButton->setEnabled(true);
 	clearPB->setEnabled(true);
-	doSearch(false, false);
+	doSearch(text, false, false);
     }
 }
 
@@ -152,7 +152,7 @@ QTextEdit * Preview::getCurrentEditor()
 // current search, trying to advance and possibly wrapping around. If next is
 // false, the search string has been modified, we search for the new string, 
 // starting from the current position
-void Preview::doSearch(bool next, bool reverse)
+void Preview::doSearch(const QString &text, bool next, bool reverse)
 {
     LOGDEB1(("Preview::doSearch: next %d rev %d\n", int(next), int(reverse)));
     QTextEdit *edit = getCurrentEditor();
@@ -184,8 +184,9 @@ void Preview::doSearch(bool next, bool reverse)
 	}
     }
 
-    bool found = edit->find(searchTextLine->text(), matchCase, false, 
+    bool found = edit->find(text, matchCase, false, 
 			      !reverse, &mspara, &msindex);
+    LOGDEB(("Found at para: %d index %d\n", mspara, msindex));
 
     if (!found && next && true) { // need a 'canwrap' test here
 	if (reverse) {
@@ -194,8 +195,7 @@ void Preview::doSearch(bool next, bool reverse)
 	} else {
 	    mspara = msindex = 0;
 	}
-	found = edit->find(searchTextLine->text(), matchCase, false, 
-			     !reverse, &mspara, &msindex);
+	found = edit->find(text, matchCase, false, !reverse, &mspara, &msindex);
     }
 
     if (found) {
@@ -210,13 +210,13 @@ void Preview::doSearch(bool next, bool reverse)
 
 void Preview::nextPressed()
 {
-    doSearch(true, false);
+    doSearch(searchTextLine->text(), true, false);
 }
 
 
 void Preview::prevPressed()
 {
-    doSearch(true, true);
+    doSearch(searchTextLine->text(), true, true);
 }
 
 
@@ -387,19 +387,19 @@ class LoadThread : public QThread {
 class ToRichThread : public QThread {
     string &in;
     list<string> &terms;
-    list<pair<int, int> > &termoffsets;
+    string& firstTerm;
     QString &out;
  public:
     ToRichThread(string &i, list<string> &trms, 
-		 list<pair<int, int> > &toffs, QString &o) 
-	: in(i), terms(trms), termoffsets(toffs), out(o)
+		 string& ft, QString &o) 
+	: in(i), terms(trms), firstTerm(ft), out(o)
     {}
     virtual void run()
     {
 	DebugLog::getdbl()->setloglevel(DEBDEB1);
 	string rich;
 	try {
-	    plaintorich(in, rich, terms, termoffsets);
+	    plaintorich(in, rich, terms, &firstTerm);
 	} catch (CancelExcept) {
 	}
 	out = QString::fromUtf8(rich.c_str(), rich.length());
@@ -478,14 +478,13 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 
     // Create preview text: highlight search terms (if not too big):
     QString richTxt;
-    list<pair<int, int> > termoffsets;
     bool highlightTerms = fdoc.text.length() < 1000 *1024;
-
+    string firstTerm;
+    list<string> terms;
+    rcldb->getQueryTerms(terms);
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
-	list<string> terms;
-	rcldb->getQueryTerms(terms);
-	ToRichThread rthr(fdoc.text, terms, termoffsets, richTxt);
+	ToRichThread rthr(fdoc.text, terms, firstTerm, richTxt);
 	rthr.start();
 
 	for (;;prog++) {
@@ -516,6 +515,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     }
 
     // Load into editor
+    // Do it in several chunks 
     QTextEdit *editor = getCurrentEditor();
     if (highlightTerms) {
 	QStyleSheetItem *item = 
@@ -523,11 +523,10 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 	item->setColor("blue");
 	item->setFontWeight(QFont::Bold);
     }
-    
+
     prog = 2 * nsteps / 3;
     progress.setLabelText(tr("Loading preview text into editor"));
     qApp->processEvents();
-    // Do it in several chunks 
     int l = 0;
     for (unsigned int pos = 0; pos < richTxt.length(); pos += l, prog++) {
 	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
@@ -535,14 +534,14 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 	
 	l = MIN(CHUNKL, richTxt.length() - pos);
 	// Avoid breaking inside a tag. Our tags are short (ie: <br>)
-	if (pos + l != richTxt.length())
+	if (pos + l != richTxt.length()) {
 	    for (int i = -15; i < 0; i++) {
 		if (richTxt[pos+l+i] == '<') {
 		    l = l+i;
 		    break;
 		}
 	    }
-	
+	}
 	editor->append(richTxt.mid(pos, l));
 	// Stay at top
 	if (pos < 5) {
@@ -557,19 +556,11 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 	}
     }
 
-    if (highlightTerms) {
-	int para = 0, index = 1;
-	if (!termoffsets.empty()) {
-	    index = (termoffsets.begin())->first;
-	    LOGDEB(("Set cursor position: para %d, character index %d\n",
-		    para,index));
-	    editor->setCursorPosition(0, index);
-	}
-	editor->ensureCursorVisible();
-	editor->getCursorPosition(&para, &index);
-
-	LOGDEB(("PREVIEW len %d paragraphs: %d. Cpos: %d %d\n", 
-		editor->length(), editor->paragraphs(),  para, index));
+    if (!firstTerm.empty()) {
+	bool wasC = matchCheck->isChecked();
+	matchCheck->setChecked(false);
+	doSearch(QString::fromUtf8(terms.begin()->c_str()), true, false);
+	matchCheck->setChecked(wasC);
     }
     return true;
 }
