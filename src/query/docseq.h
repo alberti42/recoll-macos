@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.6 2006-02-07 10:26:49 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.7 2006-02-21 12:52:48 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "rcldb.h"
 #include "history.h"
@@ -27,7 +27,6 @@
     history or Db query). We have an interface to make things cleaner.
 */
 class DocSequence {
-    std::string m_title;
  public:
     DocSequence(const std::string &t) : m_title(t) {}
     virtual ~DocSequence() {}
@@ -48,6 +47,9 @@ class DocSequence {
 	= 0;
     virtual int getResCnt() = 0;
     virtual std::string title() {return m_title;}
+
+ private:
+    std::string m_title;
 };
 
 

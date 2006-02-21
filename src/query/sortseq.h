@@ -16,7 +16,7 @@
  */
 #ifndef _SORTSEQ_H_INCLUDED_
 #define _SORTSEQ_H_INCLUDED_
-/* @(#$Id: sortseq.h,v 1.4 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: sortseq.h,v 1.5 2006-02-21 12:52:48 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <vector>
 #include <string>
@@ -45,9 +45,8 @@ class DocSeqSorted : public DocSequence {
     virtual ~DocSeqSorted() {}
     virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0);
     virtual int getResCnt() {return m_count;}
-    virtual std::string title() {return m_title;}
+
  private:
-    std::string m_title;
     int m_count;
     std::vector<Rcl::Doc> m_docs;
     std::vector<Rcl::Doc *> m_docsp;
