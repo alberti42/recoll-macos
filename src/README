@@ -357,6 +357,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    looked for, including stem expansion, and boolean operators used, by
    clicking on the result list header.
 
+   File names. All file name elements (the broken up file path) are entered
+   as terms during indexation, and you can specify them when searching.
+
    Quitting. Entering ^Q almost anywhere will close the application.
 
    Closing previews. Entering ^W in a preview tab will close it (and, for the
@@ -487,10 +490,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   4.1.3. Installation
 
-   Either type make install or execute recollinstall targetdir, in the root
-   of the source tree. This will copy the commands to $targetdir/bin and the
-   sample configuration files, scripts and other shared data to
-   $targetdir/share/recoll.
+   Either type make install or execute recollinstall prefix, in the root of
+   the source tree. This will copy the commands to prefix/bin and the sample
+   configuration files, scripts and other shared data to prefix/share/recoll.
+
+   You can then proceed to configuration.
 
      ----------------------------------------------------------------------
 
