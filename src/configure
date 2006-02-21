@@ -2313,6 +2313,7 @@ QTRECOLL_DATADIR=${m_datadir}/recoll
 
 
 
+
 ac_config_files="$ac_config_files mk/localdefs"
 
 ac_config_files="$ac_config_files recollinstall"
