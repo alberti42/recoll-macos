@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.5 2006-02-01 07:05:06 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.6 2006-03-04 10:09:59 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -414,6 +414,12 @@
         used, by clicking on the result list header.</para>
       </formalpara>
 
+      <formalpara><title>File names</title>
+        <para>All file name elements (the broken up file path) are entered
+        as terms during indexation, and you can specify them when
+        searching.</para>
+      </formalpara>
+
       <formalpara><title>Quitting</title>
       <para>Entering <keycap>^Q</keycap> almost anywhere will
         close the application.</para>
@@ -618,11 +624,16 @@
         <title>Installation</title>
       
       <para>Either type <userinput>make install</userinput> or execute
-      <userinput>recollinstall targetdir</userinput>, in the root
+      <userinput>recollinstall
+      <replaceable>prefix</replaceable></userinput>, in the root 
         of the source tree. This will copy the commands to
-        <filename>$targetdir/bin</filename> and the sample
-        configuration files, scripts and other shared data to 
-        <filename>$targetdir/share/recoll</filename>.</para>
+        <filename><replaceable>prefix</replaceable>/bin</filename>
+        and the sample configuration files, scripts and other shared
+        data to
+        <filename><replaceable>prefix</replaceable>/share/recoll</filename>.</para>
+	<para>You can then proceed to <link
+	linkend="rcl.install.config">configuration</link>. </para>
+
       </sect2>
     </sect1>
 
