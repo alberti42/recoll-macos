@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_text.cpp,v 1.4 2006-01-23 13:32:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_text.cpp,v 1.5 2006-03-20 15:14:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -58,9 +58,7 @@ MimeHandler::Status MimeHandlerText::mkDoc(RclConfig *conf, const string &fn,
 	return MimeHandler::MHError;
     }
 
-    Rcl::Doc out;
-    out.origcharset = charset;
-    out.text = utf8;
-    docout = out;
+    docout.origcharset = charset;
+    docout.text = utf8;
     return MimeHandler::MHDone;
 }
