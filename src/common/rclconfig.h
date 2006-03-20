@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.15 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.16 2006-03-20 09:51:45 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -54,7 +54,7 @@ class RclConfig {
     /** Variant with autoconversion to bool */
     bool getConfParam(const std::string &name, bool *value);
     /** Get default charset for current keydir (was set during setKeydir) */
-    const string &getDefCharset() {return defcharset;}
+    const string &getDefCharset();
     /** Get guessCharset for current keydir (was set during setKeydir) */
     bool getGuessCharset() {return guesscharset;}
 

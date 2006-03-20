@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.22 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.23 2006-03-20 09:51:45 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -134,6 +134,28 @@ bool RclConfig::getConfParam(const std::string &name, bool *bvp)
 	return false;
     *bvp = stringToBool(s);
     return true;
+}
+
+// If defcharset was set (from the config or a previous call), use it.
+// Else, try to guess it from LANG. 
+// Use iso8859-1 as ultimate default
+// defcharset is reset on setKeyDir()
+const string& RclConfig::getDefCharset() 
+{
+    if (defcharset.empty()) {
+	const char *cp;
+	if ((cp = getenv("LANG"))) {
+	    cp = strrchr(cp, '.');
+	    if (cp) {
+		cp++;
+		if (*cp)
+		    defcharset = string(cp);
+	    }
+	}
+	if (defcharset.empty())
+	    defcharset = string("ISO8859-1");
+    }
+    return defcharset;
 }
 
 // Get all known document mime values. We get them from the mimeconf
