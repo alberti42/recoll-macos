@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.24 2006-01-26 07:02:06 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.25 2006-03-20 16:05:41 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -236,6 +236,11 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	// Internal access path for multi-document files
 	doc.ipath = ipath;
 
+	// File name transcoded to utf8 for indexation. 
+	// We actually might want a separate param for the filename charset
+	string charset = config->getDefCharset();
+	// If this fails, the path won't be indexed, no big deal
+	transcode(fn, doc.utf8fn, charset, "UTF-8");
 	// Do database-specific work to update document data
 	if (!db.add(fn, doc, stp)) 
 	    return FsTreeWalker::FtwError;

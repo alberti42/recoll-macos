@@ -75,6 +75,23 @@
                         <string>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</string>
                     </property>
                 </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>isFNameCB</cstring>
+                    </property>
+                    <property name="text">
+                        <string>&amp;File name</string>
+                    </property>
+                    <property name="accel">
+                        <string>Alt+F</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Search is on file names only, and may use wildcards.</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>If this is set, the search will only be performed on file names. Wildcards ? and * can be used and will be matched as in a shell command line.</string>
+                    </property>
+                </widget>
                 <widget class="QLineEdit">
                     <property name="name">
                         <cstring>queryText</cstring>

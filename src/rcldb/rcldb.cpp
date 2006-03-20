@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.57 2006-02-07 10:26:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.58 2006-03-20 16:05:41 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@ static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.57 2006-02-07 10:26:49 dockes Exp $
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <fnmatch.h>
 
 #include <iostream>
 #include <string>
@@ -287,6 +288,7 @@ bool Rcl::dumb_string(const string &in, string &out)
     if (!unacmaybefold(s1, out, "UTF-8", true)) {
 	LOGERR(("dumb_string: unac failed for %s\n", in.c_str()));
 	out.erase();
+	// See comment at start of func
 	return true;
     }
     return true;
@@ -387,11 +389,9 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
     // /////// Split and index terms in document body and auxiliary fields
     string noacc;
 
-    // Split and index file name. This supposes that it's either ascii
-    // or utf-8. If this fails, we just go on. We need a config
-    // parameter for file name charset.
-    // Do we really want to fold case here ?
-    if (dumb_string(fn, noacc)) {
+    // Split and index file path. Do we really want to do this? Or do
+    // it with the simple file name only ?
+    if (dumb_string(doc.utf8fn, noacc)) {
 	splitter.text_to_words(noacc);
 	splitData.basepos += splitData.curpos + 100;
     }
@@ -438,6 +438,14 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
     LOGDEB2(("Rcl::Db::add: pathhash [%s]\n", hash.c_str()));
     string pathterm  = "P" + hash;
     newdocument.add_term(pathterm);
+
+    // Simple file name. This is used for file name searches only. We index
+    // it with a term prefix
+    string sfn = path_getsimple(doc.utf8fn);
+    if (dumb_string(sfn, noacc) && !noacc.empty()) {
+	sfn = string("XSFN") + noacc;
+	newdocument.add_term(sfn);
+    }
 
     // Internal path: with path, makes unique identifier for documents
     // inside multidocument files.
@@ -992,7 +1000,7 @@ bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts,
     Native *ndb = (Native *)pdata;
     if (!ndb)
 	return false;
-    asdata.erase();
+    m_asdata.erase();
     dbindices.clear();
     list<Xapian::Query> pqueries;
     stringToXapianQueries(iqstring, stemlang, ndb, pqueries, opts);
@@ -1023,7 +1031,7 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     if (!sdata.topdir.empty())
 	LOGDEB((" restricted to: %s\n", sdata.topdir.c_str()));
 
-    asdata = sdata;
+    m_asdata = sdata;
     dbindices.clear();
 
     Native *ndb = (Native *)pdata;
@@ -1031,12 +1039,62 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	return false;
     list<Xapian::Query> pqueries;
     Xapian::Query xq;
-    
+
+    if (!sdata.filename.empty()) {
+	LOGDEB((" filename search\n"));
+	// File name search, with possible wildcards. 
+	// We expand wildcards by scanning the filename terms (prefixed 
+        // with XSFN) from the database. 
+	// We build an OR query with the expanded values if any.
+	string pattern;
+	// We take the data either from allwords or orwords to avoid
+	// interaction with the allwords checkbox
+	dumb_string(sdata.filename, pattern);
+
+	// If pattern is not quoted, we add * at each end: match any
+	// substring
+	if (pattern[0] == '"' && pattern[pattern.size()-1] == '"')
+	    pattern = pattern.substr(1, pattern.size() -2);
+	else 
+	    pattern = "*" + pattern + "*";
+
+	LOGDEB((" pattern: [%s]\n", pattern.c_str()));
+
+	// Match pattern against all file names in the db
+	Xapian::TermIterator it = ndb->db.allterms_begin(); 
+	it.skip_to("XSFN");
+	list<string> names;
+	for (;it != ndb->db.allterms_end(); it++) {
+	    if ((*it).find("XSFN") != 0)
+		break;
+	    string fn = (*it).substr(4);
+	    LOGDEB2(("Matching [%s] and [%s]\n", pattern.c_str(), fn.c_str()));
+	    if (fnmatch(pattern.c_str(), fn.c_str(), 0) != FNM_NOMATCH) {
+		names.push_back((*it).c_str());
+	    }
+	    // Limit the match count
+	    if (names.size() > 1000) {
+		LOGERR(("Rcl::Db::SetQuery: too many matched file names\n"));
+		break;
+	    }
+	}
+	if (names.empty()) {
+	    // Build an impossible query: we know its impossible because we
+	    // control the prefixes!
+	    names.push_back("XIMPOSSIBLE");
+	}
+	// Build a query out of the matching file name terms.
+	xq = Xapian::Query(Xapian::Query::OP_OR, names.begin(), names.end());
+    }
+
     if (!sdata.allwords.empty()) {
 	stringToXapianQueries(sdata.allwords, stemlang, ndb, pqueries, opts);
 	if (!pqueries.empty()) {
-	    xq = Xapian::Query(Xapian::Query::OP_AND, pqueries.begin(), 
-			       pqueries.end());
+	    Xapian::Query nq = 
+		Xapian::Query(Xapian::Query::OP_AND, pqueries.begin(),
+			      pqueries.end());
+	    xq = xq.empty() ? nq :
+		Xapian::Query(Xapian::Query::OP_AND, xq, nq);
 	    pqueries.clear();
 	}
     }
@@ -1044,8 +1102,8 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     if (!sdata.orwords.empty()) {
 	stringToXapianQueries(sdata.orwords, stemlang, ndb, pqueries, opts);
 	if (!pqueries.empty()) {
-	    Xapian::Query nq;
-	    nq = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
+	    Xapian::Query nq = 
+		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
 			       pqueries.end());
 	    xq = xq.empty() ? nq :
 		Xapian::Query(Xapian::Query::OP_AND_MAYBE, xq, nq);
@@ -1157,7 +1215,7 @@ class Rcl::DbPops {
 	string url;
 	parms.get(string("url"), url);
 	url = url.substr(7);
-	if (url.find(rdb->asdata.topdir) == 0) 
+	if (url.find(rdb->m_asdata.topdir) == 0) 
 	    return true;
 	return false;
     }
@@ -1215,8 +1273,8 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
     }
 
     // For now the only post-query filter is on dir subtree
-    bool postqfilter = !asdata.topdir.empty();
-    LOGDEB1(("Topdir %s postqflt %d\n", asdata.topdir.c_str(), postqfilter));
+    bool postqfilter = !m_asdata.topdir.empty();
+    LOGDEB1(("Topdir %s postqflt %d\n", m_asdata.topdir.c_str(), postqfilter));
 
     int xapi;
     if (postqfilter) {

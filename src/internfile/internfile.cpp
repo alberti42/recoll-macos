@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.15 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.16 2006-03-20 16:05:41 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -125,41 +125,42 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
     // for a compressed file.
     m_mime = mimetype(m_fn, m_cfg, usfci);
 
-    // If identification fails, try to use the input parameter. Note that this 
-    // is normally not a compressed type (it's the mime type from the db)
+    // If identification fails, try to use the input parameter. This
+    // is then normally not a compressed type (it's the mime type from
+    // the db), and is only set when previewing, not for indexing
     if (m_mime.empty() && imime)
 	m_mime = *imime;
+
+    if (!m_mime.empty()) {
+	// Has mime: check for a compressed file. If so, create a
+	// temporary uncompressed file, and rerun the mime type
+	// identification, then do the rest with the temp file.
+	list<string>ucmd;
+	if (m_cfg->getUncompressor(m_mime, ucmd)) {
+	    if (!uncompressfile(m_cfg, m_fn, ucmd, m_tdir, m_tfile)) {
+		return;
+	    }
+	    LOGDEB(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
+		    m_tdir.c_str(), m_tfile.c_str()));
+	    m_fn = m_tfile;
+	    m_mime = mimetype(m_fn, m_cfg, usfci);
+	    if (m_mime.empty() && imime)
+		m_mime = *imime;
+	}
+    }
+
     if (m_mime.empty()) {
-	// No mime type: not listed in our map, or present in stop list
-	LOGDEB(("FileInterner::FileInterner: (no mime) [%s]\n", m_fn.c_str()));
-	return;
+	// No mime type. We let it through as config may warrant that
+	// we index all file names
+	LOGDEB(("internfile: (no mime) [%s]\n", m_fn.c_str()));
     }
 
-    // First check for a compressed file. If so, create a temporary
-    // uncompressed file, and rerun the mime type identification, then do the
-    // rest with the temp file.
-    list<string>ucmd;
-    if (m_cfg->getUncompressor(m_mime, ucmd)) {
-	if (!uncompressfile(m_cfg, m_fn, ucmd, m_tdir, m_tfile)) {
-	    return;
-	}
-	LOGDEB(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
-		m_tdir.c_str(), m_tfile.c_str()));
-	m_fn = m_tfile;
-	m_mime = mimetype(m_fn, m_cfg, usfci);
-	if (m_mime.empty() && imime)
-	    m_mime = *imime;
-	if (m_mime.empty()) {
-	    // No mime type ?? pass on.
-	    LOGDEB(("internfile: (no mime) [%s]\n", m_fn.c_str()));
-	    return;
-	}
-    }
-
-    // Look for appropriate handler
+    // Look for appropriate handler (might still return empty)
     m_handler = getMimeHandler(m_mime, m_cfg);
+
     if (!m_handler) {
-	// No handler for this type, for now :(
+	// No handler for this type, for now :( if indexallfilenames
+	// is set in the config, this normally wont happen (we get mh_unknown)
 	LOGDEB(("FileInterner::FileInterner: %s: no handler\n", 
 		m_mime.c_str()));
 	return;

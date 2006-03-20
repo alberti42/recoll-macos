@@ -131,6 +131,7 @@ void advsearch::searchPB_clicked()
     mydata.phrase  = string((const char*)(phraseLE->text().utf8()));
     mydata.orwords = string((const char*)(orWordsLE->text().utf8()));
     mydata.nowords = string((const char*)(noWordsLE->text().utf8()));
+    mydata.filename = string((const char*)(fileNameLE->text().utf8()));
     if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
 	for (unsigned int i = 0; i < yesFiltypsLB->count(); i++) {
 	    QCString ctext = yesFiltypsLB->item(i)->text().utf8();

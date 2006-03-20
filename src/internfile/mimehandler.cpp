@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.16 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.17 2006-03-20 16:05:41 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@ using namespace std;
 #include "mh_mail.h"
 #include "mh_text.h"
 #include "mh_exec.h"
+#include "mh_unknown.h"
   
 /** Create internal handler object appropriate for given mime type */
 static MimeHandler *mhFactory(const string &mime)
@@ -52,35 +53,48 @@ static MimeHandler *mhFactory(const string &mime)
 MimeHandler *getMimeHandler(const string &mtype, RclConfig *cfg)
 {
     // Get handler definition for mime type
-    string hs = cfg->getMimeHandlerDef(mtype);
-    if (hs.empty())
-	return 0;
+    string hs;
+    if (!mtype.empty())
+	hs = cfg->getMimeHandlerDef(mtype);
 
-    // Break definition into type and name 
-    list<string> toks;
-    stringToStrings(hs, toks);
-    if (toks.empty()) {
-	LOGERR(("getMimeHandler: bad mimeconf line for %s\n", mtype.c_str()));
-	return 0;
-    }
-
-    // Retrieve handler function according to type
-    if (!stringlowercmp("internal", toks.front())) {
-	return mhFactory(mtype);
-    } else if (!stringlowercmp("dll", toks.front())) {
-	return 0;
-    } else if (!stringlowercmp("exec", toks.front())) {
-	if (toks.size() < 2) {
-	    LOGERR(("getMimeHandler: bad line for %s: %s\n", mtype.c_str(),
-		    hs.c_str()));
+    if (!hs.empty()) {
+	// Break definition into type and name 
+	list<string> toks;
+	stringToStrings(hs, toks);
+	if (toks.empty()) {
+	    LOGERR(("getMimeHandler: bad mimeconf line for %s\n", 
+		    mtype.c_str()));
 	    return 0;
 	}
-	MimeHandlerExec *h = new MimeHandlerExec;
-	list<string>::const_iterator it1 = toks.begin();
-	it1++;
-	for (;it1 != toks.end();it1++)
-	    h->params.push_back(*it1);
-	return h;
+
+	// Retrieve handler function according to type
+	if (!stringlowercmp("internal", toks.front())) {
+	    return mhFactory(mtype);
+	} else if (!stringlowercmp("dll", toks.front())) {
+	} else if (!stringlowercmp("exec", toks.front())) {
+	    if (toks.size() < 2) {
+		LOGERR(("getMimeHandler: bad line for %s: %s\n", 
+			mtype.c_str(), hs.c_str()));
+		return 0;
+	    }
+	    MimeHandlerExec *h = new MimeHandlerExec;
+	    list<string>::const_iterator it1 = toks.begin();
+	    it1++;
+	    for (;it1 != toks.end();it1++)
+		h->params.push_back(*it1);
+	    return h;
+	}
     }
-    return 0;
+
+    // We are supposed to get here if there was no specific error, but
+    // there is no identified mime type, or no handler
+    // associated. These files are either ignored or their name is
+    // indexed, depending on configuration
+    bool indexunknown = false;
+    cfg->getConfParam("indexallfilenames", &indexunknown);
+    if (indexunknown) {
+	return new MimeHandlerUnknown;
+    } else {
+	return 0;
+    }
 }

@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.25 2006-02-07 10:26:49 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.26 2006-03-20 16:05:41 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -52,26 +52,33 @@ namespace Rcl {
 class Doc {
  public:
     // These fields potentially go into the document data record
-    string url;
-    string ipath;
-    string mimetype;
+    // We indicate the routine that sets them up during indexing
+    string url;          // Computed from fn by Db::add
+    string utf8fn;       // Transcoded version of the file path. 
+                         // Set by DbIndexer::processone
+    string ipath;        // Set by DbIndexer::processone
+    string mimetype;     // Set by FileInterner::internfile
     string fmtime;       // File modification time as decimal ascii unix time
+                         // Set by DbIndexer::processone
     string dmtime;       // Data reference date (same format). Ie: mail date
-    string origcharset;
-    string title;
-    string keywords;
-    string abstract;
-    string fbytes;        // File size
-    string dbytes;        // Doc size
+                         // Possibly set by handler
+    string origcharset;  // Charset we transcoded from (in case we want back)
+                         // Possibly set by handler
+    string title;        // Possibly set by handler
+    string keywords;     // Possibly set by handler
+    string abstract;     // Possibly set by handler
+    string fbytes;       // File size. Set by Db::Add
+    string dbytes;       // Doc size. Set by Db::Add from text length
 
-    // The following fields don't go to the db. text is only used when
-    // indexing
-    string text;
+    // The following fields don't go to the db record
+    
+    string text; // text is split and indexed 
 
     int pc; // used by sortseq, convenience
 
     void erase() {
 	url.erase();
+	utf8fn.erase();
 	ipath.erase();
 	mimetype.erase();
 	fmtime.erase();
@@ -96,6 +103,7 @@ class AdvSearchData {
     string phrase;
     string orwords;
     string nowords;
+    string filename; 
     list<string> filetypes; // restrict to types. Empty if inactive
     string topdir; // restrict to subtree. Empty if inactive
     string description; // Printable expanded version of the complete query
@@ -107,6 +115,7 @@ class AdvSearchData {
 	nowords.erase();
 	filetypes.clear(); 
 	topdir.erase();
+	filename.erase();
 	description.erase();
     }
 };
@@ -167,7 +176,7 @@ class Db {
 
 private:
 
-    AdvSearchData asdata;
+    AdvSearchData m_asdata;
     vector<int> dbindices; // In case there is a postq filter: sequence of 
                            // db indices that match
     void *pdata; // Pointer to private data. We don't want db(ie

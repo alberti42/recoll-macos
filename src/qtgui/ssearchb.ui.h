@@ -44,9 +44,11 @@ void SSearchBase::startSimpleSearch()
     LOGDEB(("SSearchBase::startSimpleSearch\n"));
 
     Rcl::AdvSearchData sdata;
-
     QCString u8 =  queryText->text().utf8();
-    if (allTermsCB->isChecked())
+
+    if (isFNameCB->isChecked())
+	sdata.filename = u8;
+    else if (allTermsCB->isChecked())
 	sdata.allwords = u8;
     else
 	sdata.orwords = u8;
