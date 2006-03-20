@@ -35,7 +35,7 @@ rm -f index/recollindex qtgui/recoll
 make static || exit 1
 strip index/recollindex qtgui/recoll
 
-files="COPYING README INSTALL VERSION Makefile recollinstall
+files="COPYING README INSTALL VERSION Makefile recoll.desktop recollinstall
 filters sampleconf doc/user doc/man
 index/recollindex qtgui/recoll qtgui/*.qm qtgui/mtpics/*.png"
 
