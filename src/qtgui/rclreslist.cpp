@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.2 2006-03-21 13:27:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.3 2006-03-21 13:46:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -40,8 +40,6 @@ RclResList::RclResList(QWidget* parent, const char* name)
     clearWState( WState_Polished );
 
     // signals and slots connections
-    connect(this, SIGNAL(doubleClicked(int, int)), 
-	    this, SLOT(doubleClicked(int,int)));
     connect(this, SIGNAL(clicked(int, int)), this, SLOT(clicked(int,int)));
     connect(this, SIGNAL(linkClicked(const QString &)), 
 	    this, SLOT(linkWasClicked(const QString &)));
@@ -49,14 +47,7 @@ RclResList::RclResList(QWidget* parent, const char* name)
 
     // Code from init:
     m_winfirst = -1;
-    m_mouseDrag = false;
-    m_mouseDown = false;
-    m_par = -1;
-    m_car = -1;
-    m_waitingdbl = false;
-    m_dblclck = false;
     m_docsource = 0;
-    viewport()->installEventFilter(this);
 }
 
 
@@ -88,119 +79,6 @@ bool RclResList::getDoc(int docnum, Rcl::Doc &doc)
 	return true;
     }
     return false;
-}
-
-// Get document number-in-window from paragraph number
-int RclResList::reldocnumfromparnum(int par)
-{
-    std::map<int,int>::iterator it = m_pageParaToReldocnums.find(par);
-    int rdn;
-    if (it != m_pageParaToReldocnums.end()) {
-	rdn = it->second;
-    } else {
-	rdn = -1;
-    }
-    LOGDEB1(("reldocnumfromparnum: par %d reldoc %d\n", par, rdn));
-    return rdn;
-}
-
-// Double click in result list
-void RclResList::doubleClicked(int par, int )
-{
-    LOGDEB(("RclResList::doubleClicked: par %d\n", par));
-#if 0
-    m_dblclck = true;
-    int reldocnum =  reldocnumfromparnum(par);
-    if (reldocnum < 0)
-	return;
-    emit docDoubleClicked(m_winfirst + reldocnum);
-#endif
-}
-
-// Single click in result list: we don't actually do anything but
-// start a timer because we want to check first if this might be a
-// double click
-void RclResList::clicked(int par, int car)
-{
-#if 0
-    if (m_waitingdbl)
-	return;
-    LOGDEB(("RclResList::clicked:wfirst %d par %d char %d drg %d\n", 
-	    m_winfirst, par, car, m_mouseDrag));
-    if (m_mouseDrag)
-	return;
-
-    // remember par and car
-    m_par = par;
-    m_car = car;
-    m_waitingdbl = true;
-    m_dblclck = false;
-    // Wait to see if there's going to be a dblclck
-    QTimer::singleShot(150, this, SLOT(delayedClick()) );
-#endif
-}
-
-
-// This gets called by a timer 100mS after a single click in the
-// result list. We don't want to start a preview if the user has
-// requested a native viewer by double-clicking. If this was not actually
-// a double-clik, we finally say it's a click, and change the active paragraph
-void RclResList::delayedClick()
-{
-    LOGDEB(("RclResList::delayedClick:\n"));
-    m_waitingdbl = false;
-    if (m_dblclck) {
-	LOGDEB1(("RclResList::delayedclick: dbleclick\n"));
-	m_dblclck = false;
-	return;
-    }
-
-    int par = m_par;
-
-    // Erase everything back to white
-    {
-	QColor color("white");
-	for (int i = 1; i < paragraphs(); i++)
-	    setParagraphBackgroundColor(i, color);
-    }
-
-    // Color the new active paragraph
-    QColor color("lightblue");
-    setParagraphBackgroundColor(par, color);
-
-    // Document number
-    int reldocnum = reldocnumfromparnum(par);
-
-    if (reldocnum < 0) {
-	//	emit headerClicked();
-    } else {
-	emit docClicked(m_winfirst + reldocnum);
-    }
-}
-
-bool RclResList::eventFilter( QObject *o, QEvent *e )
-{
-    if (o == viewport()) { 
-	// We don't want btdown+drag+btup to be a click ! So monitor
-	// mouse events
-	if (e->type() == QEvent::MouseMove) {
-	    LOGDEB1(("resList: MouseMove\n"));
-	    if (m_mouseDown)
-		m_mouseDrag = true;
-	} else if (e->type() == QEvent::MouseButtonPress) {
-	    LOGDEB1(("resList: MouseButtonPress\n"));
-	    m_mouseDown = true;
-	    m_mouseDrag = false;
-	} else if (e->type() == QEvent::MouseButtonRelease) {
-	    LOGDEB1(("resList: MouseButtonRelease\n"));
-	    m_mouseDown = false;
-	} else if (e->type() == QEvent::MouseButtonDblClick) {
-	    LOGDEB1(("resList: MouseButtonDblClick\n"));
-	    m_mouseDown = false;
-	}
-    }
-
-    return QTextBrowser::eventFilter(o, e);
 }
 
 void RclResList::keyPressEvent( QKeyEvent * e )
@@ -280,8 +158,6 @@ void RclResList::showResultPage()
 
     LOGDEB(("showResultPage: rescnt %d, winfirst %d\n", resCnt,
 	    m_winfirst));
-
-    m_pageParaToReldocnums.clear();
 
     // If we are already on the last page, nothing to do:
     if (m_winfirst >= 0 && 
@@ -434,7 +310,6 @@ void RclResList::showResultPage()
 	append(str);
 	setCursorPosition(0,0);
 
-	m_pageParaToReldocnums[paragraphs()-1] = i;
 	m_curDocs.push_back(doc);
     }
 
@@ -473,6 +348,25 @@ void RclResList::showResultPage()
     } else {
 	emit nextPageAvailable(true);
     }
+}
+
+// Single click in result list: we don't actually do anything but
+// start a timer because we want to check first if this might be a
+// double click
+void RclResList::clicked(int par, int car)
+{
+    LOGDEB(("RclResList::clicked:wfirst %d par %d char %d\n", 
+	    m_winfirst, par, car));
+    // Erase everything back to white
+    {
+	QColor color("white");
+	for (int i = 0; i < paragraphs(); i++)
+	    setParagraphBackgroundColor(i, color);
+    }
+
+    // Color the new active paragraph
+    QColor color("lightblue");
+    setParagraphBackgroundColor(par, color);
 }
 
 void RclResList::linkWasClicked(const QString &s)

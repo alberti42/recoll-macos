@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.12 2006-03-21 09:15:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.13 2006-03-21 13:46:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -254,7 +254,7 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
 	exit(1);
     }
 
-    resList->m_winfirst = -1;
+    resList->resetSearch();
 
     if (!rcldb->setQuery(sdata, prefs.queryStemLang.length() > 0 ? 
 			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, 
@@ -464,7 +464,7 @@ void RclMain::startManual()
 void RclMain::showDocHistory()
 {
     LOGDEB(("RclMain::showDocHistory\n"));
-    resList->m_winfirst = -1;
+    resList->resetSearch();
     curPreview = 0;
 
     DocSequence *docsource;
