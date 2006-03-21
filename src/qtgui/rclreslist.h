@@ -1,8 +1,9 @@
 #ifndef _RCLRESLIST_H_INCLUDED_
 #define _RCLRESLIST_H_INCLUDED_
-/* @(#$Id: rclreslist.h,v 1.2 2006-03-21 13:46:37 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: rclreslist.h,v 1.3 2006-03-21 15:11:30 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <qtextbrowser.h>
+#include <qpopupmenu.h>
 
 #include "rcldb.h"
 #include "docseq.h"
@@ -18,6 +19,7 @@ class RclResList : public QTextBrowser
     virtual void resetSearch() {m_winfirst = -1;}
     virtual bool getDoc( int, Rcl::Doc & );
     virtual void setDocSource(DocSequence *);
+    virtual QPopupMenu *createPopupMenu(const QPoint& pos);
 
  public slots:
     virtual void clicked(int, int);
@@ -25,6 +27,9 @@ class RclResList : public QTextBrowser
     virtual void resPageDownOrNext();
     virtual void resultPageBack();
     virtual void showResultPage();
+    virtual void menuPreview();
+    virtual void menuEdit();
+    virtual void menuCopyFN();
 
  signals:
     void nextPageAvailable(bool);
@@ -41,10 +46,13 @@ class RclResList : public QTextBrowser
     virtual void linkWasClicked(const QString &);
 
  private:
+    std::map<int,int> m_pageParaToReldocnums;
+    virtual int docnumfromparnum(int);
+
     DocSequence *m_docsource;
     std::vector<Rcl::Doc> m_curDocs;
     int m_winfirst;
-
+    int m_docnum; // Docnum matching the 
     void emitLinkClicked(const QString &s) {
 	emit linkClicked(s);
     };

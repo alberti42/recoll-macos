@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.3 2006-03-21 13:46:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.4 2006-03-21 15:11:30 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -12,6 +12,7 @@ static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.3 2006-03-21 13:46:37 dockes E
 #include <qtimer.h>
 #include <qmessagebox.h>
 #include <qimage.h>
+#include <qclipboard.h>
 
 #include "debuglog.h"
 #include "recoll.h"
@@ -69,6 +70,21 @@ void RclResList::setDocSource(DocSequence *docsource)
 	delete m_docsource;
     m_docsource = docsource;
     showResultPage();
+}
+
+// Get document number from paragraph number
+int RclResList::docnumfromparnum(int par)
+{
+    if (m_winfirst == -1)
+	return -1;
+    std::map<int,int>::iterator it = m_pageParaToReldocnums.find(par);
+    int dn;
+    if (it != m_pageParaToReldocnums.end()) {
+        dn = m_winfirst + it->second;
+    } else {
+        dn = -1;
+    }
+    return dn;
 }
 
 bool RclResList::getDoc(int docnum, Rcl::Doc &doc)
@@ -155,6 +171,7 @@ void RclResList::showResultPage()
     Rcl::Doc doc;
 
     int resCnt = m_docsource->getResCnt();
+    m_pageParaToReldocnums.clear();
 
     LOGDEB(("showResultPage: rescnt %d, winfirst %d\n", resCnt,
 	    m_winfirst));
@@ -180,6 +197,7 @@ void RclResList::showResultPage()
     int last = MIN(resCnt-m_winfirst, prefs.respagesize);
 
     m_curDocs.clear();
+
     // Insert results if any in result list window. We have to send
     // the text to the widgets, because we need the paragraph number
     // each time we add a result paragraph (its diffult and
@@ -310,6 +328,7 @@ void RclResList::showResultPage()
 	append(str);
 	setCursorPosition(0,0);
 
+        m_pageParaToReldocnums[paragraphs()-1] = i;
 	m_curDocs.push_back(doc);
     }
 
@@ -385,5 +404,35 @@ void RclResList::linkWasClicked(const QString &s)
 	emit docDoubleClicked(i);
 	break;
     default: break;// ?? 
+    }
+}
+
+QPopupMenu *RclResList::createPopupMenu(const QPoint& pos)
+{
+    int para = paragraphAt(pos);
+    clicked(para, 0);
+    m_docnum = docnumfromparnum(para);
+    QPopupMenu *popup = new QPopupMenu(this, "qt_edit_menu");
+    popup->insertItem(tr("&Preview"), this, SLOT(menuPreview()));
+    popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
+    popup->insertItem(tr("&Copy File Name"), this, SLOT(menuCopyFN()));
+    return popup;
+}
+
+void RclResList::menuPreview()
+{
+    emit docClicked(m_docnum);
+}
+void RclResList::menuEdit()
+{
+    emit docDoubleClicked(m_docnum);
+}
+void RclResList::menuCopyFN()
+{
+    Rcl::Doc doc;
+    if (getDoc(m_docnum, doc)) {
+	// Our urls currently always begin with "file://"
+	QApplication::clipboard()->setText(doc.url.c_str()+7, 
+					   QClipboard::Selection);
     }
 }
