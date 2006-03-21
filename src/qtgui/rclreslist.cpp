@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.1 2006-03-21 09:15:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.2 2006-03-21 13:27:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -40,8 +40,11 @@ RclResList::RclResList(QWidget* parent, const char* name)
     clearWState( WState_Polished );
 
     // signals and slots connections
-    connect(this, SIGNAL( doubleClicked( int , int ) ), this, SLOT( doubleClicked(int,int) ) );
-    connect(this, SIGNAL( clicked( int , int ) ), this, SLOT( clicked(int,int) ) );
+    connect(this, SIGNAL(doubleClicked(int, int)), 
+	    this, SLOT(doubleClicked(int,int)));
+    connect(this, SIGNAL(clicked(int, int)), this, SLOT(clicked(int,int)));
+    connect(this, SIGNAL(linkClicked(const QString &)), 
+	    this, SLOT(linkWasClicked(const QString &)));
 
 
     // Code from init:
@@ -53,8 +56,6 @@ RclResList::RclResList(QWidget* parent, const char* name)
     m_waitingdbl = false;
     m_dblclck = false;
     m_docsource = 0;
-    connect(this, SIGNAL(linkClicked(const QString &)), 
-	    this, SLOT(linkWasClicked(const QString &)));
     viewport()->installEventFilter(this);
 }
 
@@ -64,7 +65,6 @@ RclResList::~RclResList()
     if (m_docsource) 
 	delete m_docsource;
 }
-
 
 void RclResList::languageChange()
 {
@@ -108,11 +108,13 @@ int RclResList::reldocnumfromparnum(int par)
 void RclResList::doubleClicked(int par, int )
 {
     LOGDEB(("RclResList::doubleClicked: par %d\n", par));
+#if 0
     m_dblclck = true;
     int reldocnum =  reldocnumfromparnum(par);
     if (reldocnum < 0)
 	return;
     emit docDoubleClicked(m_winfirst + reldocnum);
+#endif
 }
 
 // Single click in result list: we don't actually do anything but
@@ -120,6 +122,7 @@ void RclResList::doubleClicked(int par, int )
 // double click
 void RclResList::clicked(int par, int car)
 {
+#if 0
     if (m_waitingdbl)
 	return;
     LOGDEB(("RclResList::clicked:wfirst %d par %d char %d drg %d\n", 
@@ -134,6 +137,7 @@ void RclResList::clicked(int par, int car)
     m_dblclck = false;
     // Wait to see if there's going to be a dblclck
     QTimer::singleShot(150, this, SLOT(delayedClick()) );
+#endif
 }
 
 
@@ -168,7 +172,7 @@ void RclResList::delayedClick()
     int reldocnum = reldocnumfromparnum(par);
 
     if (reldocnum < 0) {
-	emit headerClicked();
+	//	emit headerClicked();
     } else {
 	emit docClicked(m_winfirst + reldocnum);
     }
@@ -246,6 +250,7 @@ void RclResList::resultPageBack()
     showResultPage();
 }
 
+// Convert byte count into unit (KB/MB...) appropriate for display
 static string displayableBytes(long size)
 {
     char sizebuf[30];
@@ -326,16 +331,22 @@ void RclResList::showResultPage()
 	    // We could use a <title> but the textedit doesnt display
 	    // it prominently
 	    append("<qt><head></head><body>");
-	    QString line = "<p><font size=+1><b>";
-	    line += m_docsource->title().c_str();
-	    line += "</b></font><br>";
-	    append(line);
-	    line = tr("<b>Displaying results starting at index"
+	    // Note: have to append text in chunks that make sense
+	    // html-wise. If we break things up to much, the editor
+	    // gets confused. Hence the use of the 'chunk' text
+	    // accumulator
+	    QString chunk = "<p><font size=+1><b>";
+	    chunk += m_docsource->title().c_str();
+	    chunk += "</b></font><br>";
+	    chunk += "<a href=\"H-1\">";
+	    chunk += tr("Show query details");
+	    chunk += "</a><br>";
+	    append(chunk);
+	    chunk = tr("<b>Displaying results starting at index"
 		      " %1 (maximum set size %2)</b></p>\n")
 		.arg(m_winfirst+1)
 		.arg(resCnt);
-	    append(line);
-	    append("<a href=\"Une certaine valeur\">Ceci est un lien</a>\n");
+	    append(chunk);
 	}
 	    
 	gotone = true;
@@ -396,18 +407,27 @@ void RclResList::showResultPage()
 	if (!sh.empty())
 	    result += string("<p><b>") + sh + "</p>\n<p>";
 	else
-	    result = "<p>";
+	    result += "<p>";
+	result += string(perbuf) + sizebuf + "<b>" + doc.title + "</b><br>";
+	result += doc.mimetype + "&nbsp;";
+	result += string(datebuf) + "&nbsp;&nbsp;&nbsp;";
+	char vlbuf[100];
+	sprintf(vlbuf, "\"P%d\"", m_winfirst+i);
+	result += string("<a href=") + vlbuf + ">" + "Preview" + "</a>" 
+	    + "&nbsp;&nbsp;";
+	sprintf(vlbuf, "E%d", m_winfirst+i);
+	result += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
+	result += string("<br>");
+
 	if (!img_name.empty()) {
 	    result += "<img source=\"" + img_name + "\" align=\"left\">";
 	}
-	result += string(perbuf) + sizebuf + "<b>" + doc.title + "</b><br>";
-	result += doc.mimetype + "&nbsp;" + 
-	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>"));
 	result += "<i>" + doc.url + +"</i><br>";
 	if (!abst.empty())
 	    result +=  abst + "<br>";
 	if (!doc.keywords.empty())
 	    result += doc.keywords + "<br>";
+
 	result += "</p>\n";
 
 	QString str = QString::fromUtf8(result.c_str(), result.length());
@@ -458,5 +478,18 @@ void RclResList::showResultPage()
 void RclResList::linkWasClicked(const QString &s)
 {
     LOGDEB(("RclResList::linkClicked: [%s]\n", s.ascii()));
+    int i = atoi(s.ascii()+1);
+    int what = s.ascii()[0];
+    switch (what) {
+    case 'H': 
+	emit headerClicked(); 
+	break;
+    case 'P': 
+	emit docClicked(i); 
+	break;
+    case 'E': 
+	emit docDoubleClicked(i);
+	break;
+    default: break;// ?? 
+    }
 }
-
