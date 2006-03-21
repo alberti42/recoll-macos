@@ -54,7 +54,7 @@
                         </sizepolicy>
                     </property>
                 </widget>
-                <widget class="ResListBase">
+                <widget class="RclResList">
                     <property name="name">
                         <cstring>resList</cstring>
                     </property>
@@ -135,31 +135,6 @@
         </sizepolicy>
         <pixmap>image0</pixmap>
         <signal>startSearch(Rcl::AdvSearchData)</signal>
-    </customwidget>
-    <customwidget>
-        <class>ResListBase</class>
-        <header location="local">reslistb.h</header>
-        <sizehint>
-            <width>-1</width>
-            <height>-1</height>
-        </sizehint>
-        <container>0</container>
-        <sizepolicy>
-            <hordata>5</hordata>
-            <verdata>5</verdata>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-        </sizepolicy>
-        <pixmap>image1</pixmap>
-        <signal>docDoubleClicked(int)</signal>
-        <signal>docClicked(int)</signal>
-        <signal>headerClicked()</signal>
-        <signal>nextPageAvailable(bool)</signal>
-        <signal>prevPageAvailable(bool)</signal>
-        <slot access="public" specifier="">resPageUpOrBack()</slot>
-        <slot access="public" specifier="">resPageDownOrNext()</slot>
-        <slot access="public" specifier="">resultPageBack()</slot>
-        <slot access="public" specifier="">showResultPage()</slot>
     </customwidget>
 </customwidgets>
 <actions>
@@ -406,7 +381,7 @@
 </connections>
 <includes>
     <include location="local" impldecl="in declaration">ssearchb.h</include>
-    <include location="local" impldecl="in declaration">reslistb.h</include>
+    <include location="local" impldecl="in declaration">rclreslist.h</include>
 </includes>
 <slots>
     <slot>fileExit()</slot>

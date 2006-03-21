@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.11 2006-01-30 09:28:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.12 2006-03-21 09:15:56 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ using std::pair;
 #include <qfontdialog.h>
 #include <qspinbox.h>
 #include <qcombobox.h>
-#include <qtextedit.h>
+#include <qtextbrowser.h>
 #include <qlineedit.h>
 #include <qaction.h>
 #include <qpushbutton.h>
@@ -58,6 +58,7 @@ using std::pair;
 #include "sortseq.h"
 #include "uiprefs.h"
 #include "guiutils.h"
+#include "rclreslist.h"
 
 #include "rclmain.h"
 #include "moc_rclmain.cpp"
@@ -81,11 +82,6 @@ void RclMain::init()
     sortform = 0;
     sortwidth = 0;
     uiprefs = 0;
-
-    // We manage pgup/down, but let ie the arrows for the editor to process
-    resList->reslistTE->installEventFilter(this);
-    resList->reslistTE->viewport()->installEventFilter(this);
-    // resList->viewport()->setFocusPolicy(QWidget::NoFocus);
 
     // Set the focus to the search terms entry:
     sSearch->queryText->setFocus();
@@ -198,49 +194,6 @@ static const char *eventTypeToStr(int tp)
     }
 }
 #endif
-
-// There are a number of events that we want to process. Not sure the
-// ^Q thing is necessary (we have an action for this)?
-// TODO: Some of this probably should be moved into the reslist object
-bool RclMain::eventFilter( QObject * target, QEvent * event )
-{
-#if defined(SHOWEVENTS)
-    LOGDEB(("RclMain::eventFilter target %p, event %s\n", target,
-	    eventTypeToStr(int(event->type()))));
-#endif
-    if (event->type() == QEvent::KeyPress) {
-	QKeyEvent *keyEvent = (QKeyEvent *)event;
-	if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
-	    recollNeedsExit = 1;
-	} else if (keyEvent->key() == Key_Prior) {
-	    resList->resPageUpOrBack();
-	    return true;
-	} else if (keyEvent->key() == Key_Next) {
-	    resList->resPageDownOrNext();
-	    return true;
-	}
-    } else if (target == resList->reslistTE->viewport()) { 
-	// We don't want btdown+drag+btup to be a click ! So monitor
-	// mouse events
-	if (event->type() == QEvent::MouseMove) {
-	    LOGDEB1(("resList: MouseMove\n"));
-	    if (resList->m_mouseDown)
-		resList->m_mouseDrag = true;
-	} else if (event->type() == QEvent::MouseButtonPress) {
-	    LOGDEB1(("resList: MouseButtonPress\n"));
-	    resList->m_mouseDown = true;
-	    resList->m_mouseDrag = false;
-	} else if (event->type() == QEvent::MouseButtonRelease) {
-	    LOGDEB1(("resList: MouseButtonRelease\n"));
-	    resList->m_mouseDown = false;
-	} else if (event->type() == QEvent::MouseButtonDblClick) {
-	    LOGDEB1(("resList: MouseButtonDblClick\n"));
-	    resList->m_mouseDown = false;
-	}
-    }
-
-    return QWidget::eventFilter(target, event);
-}
 
 void RclMain::fileExit()
 {

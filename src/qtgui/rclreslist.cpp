@@ -1,33 +1,14 @@
-/*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the
- *   Free Software Foundation, Inc.,
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-/****************************************************************************
-** ui.h extension file, included from the uic-generated form implementation.
-**
-** If you want to add, delete, or rename functions or slots, use
-** Qt Designer to update this file, preserving your code.
-**
-** You should not define a constructor or destructor in this file.
-** Instead, write your code in functions called init() and destroy().
-** These will automatically be called by the form's constructor and
-** destructor.
-*****************************************************************************/
+#ifndef lint
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.1 2006-03-21 09:15:56 dockes Exp $ (C) 2005 J.F.Dockes";
+#endif
 
 #include <time.h>
 
+#include <qvariant.h>
+#include <qpushbutton.h>
+#include <qlayout.h>
+#include <qtooltip.h>
+#include <qwhatsthis.h>
 #include <qtimer.h>
 #include <qmessagebox.h>
 #include <qimage.h>
@@ -38,14 +19,32 @@
 #include "pathut.h"
 #include "docseq.h"
 
-#include "reslistb.h"
+#include "rclreslist.h"
+#include "moc_rclreslist.cpp"
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
 
-void ResListBase::init()
+RclResList::RclResList(QWidget* parent, const char* name)
+    : QTextBrowser(parent, name) 
 {
+    if ( !name )
+	setName( "rclResList" );
+    setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)5, (QSizePolicy::SizeType)5, 2, 0, this->sizePolicy().hasHeightForWidth() ) );
+    setTextFormat( RclResList::RichText );
+    setReadOnly( TRUE );
+    setUndoRedoEnabled( FALSE );
+    languageChange();
+    resize( QSize(198, 144).expandedTo(minimumSizeHint()) );
+    clearWState( WState_Polished );
+
+    // signals and slots connections
+    connect(this, SIGNAL( doubleClicked( int , int ) ), this, SLOT( doubleClicked(int,int) ) );
+    connect(this, SIGNAL( clicked( int , int ) ), this, SLOT( clicked(int,int) ) );
+
+
+    // Code from init:
     m_winfirst = -1;
     m_mouseDrag = false;
     m_mouseDown = false;
@@ -54,16 +53,26 @@ void ResListBase::init()
     m_waitingdbl = false;
     m_dblclck = false;
     m_docsource = 0;
+    connect(this, SIGNAL(linkClicked(const QString &)), 
+	    this, SLOT(linkWasClicked(const QString &)));
+    viewport()->installEventFilter(this);
 }
 
-void ResListBase::destroy()
+
+RclResList::~RclResList()
 {
     if (m_docsource) 
 	delete m_docsource;
 }
 
+
+void RclResList::languageChange()
+{
+    setCaption( tr( "Result list" ) );
+}
+
 // Acquire new docsource
-void ResListBase::setDocSource(DocSequence *docsource)
+void RclResList::setDocSource(DocSequence *docsource)
 {
     if (m_docsource)
 	delete m_docsource;
@@ -71,7 +80,7 @@ void ResListBase::setDocSource(DocSequence *docsource)
     showResultPage();
 }
 
-bool ResListBase::getDoc(int docnum, Rcl::Doc &doc)
+bool RclResList::getDoc(int docnum, Rcl::Doc &doc)
 {
     if (docnum >= 0 && docnum >= int(m_winfirst) && 
 	docnum < int(m_winfirst + m_curDocs.size())) {
@@ -82,7 +91,7 @@ bool ResListBase::getDoc(int docnum, Rcl::Doc &doc)
 }
 
 // Get document number-in-window from paragraph number
-int ResListBase::reldocnumfromparnum(int par)
+int RclResList::reldocnumfromparnum(int par)
 {
     std::map<int,int>::iterator it = m_pageParaToReldocnums.find(par);
     int rdn;
@@ -96,9 +105,9 @@ int ResListBase::reldocnumfromparnum(int par)
 }
 
 // Double click in result list
-void ResListBase::doubleClicked(int par, int )
+void RclResList::doubleClicked(int par, int )
 {
-    LOGDEB(("ResListBase::doubleClicked: par %d\n", par));
+    LOGDEB(("RclResList::doubleClicked: par %d\n", par));
     m_dblclck = true;
     int reldocnum =  reldocnumfromparnum(par);
     if (reldocnum < 0)
@@ -109,11 +118,11 @@ void ResListBase::doubleClicked(int par, int )
 // Single click in result list: we don't actually do anything but
 // start a timer because we want to check first if this might be a
 // double click
-void ResListBase::clicked(int par, int car)
+void RclResList::clicked(int par, int car)
 {
     if (m_waitingdbl)
 	return;
-    LOGDEB(("ResListBase::clicked:wfirst %d par %d char %d drg %d\n", 
+    LOGDEB(("RclResList::clicked:wfirst %d par %d char %d drg %d\n", 
 	    m_winfirst, par, car, m_mouseDrag));
     if (m_mouseDrag)
 	return;
@@ -132,12 +141,12 @@ void ResListBase::clicked(int par, int car)
 // result list. We don't want to start a preview if the user has
 // requested a native viewer by double-clicking. If this was not actually
 // a double-clik, we finally say it's a click, and change the active paragraph
-void ResListBase::delayedClick()
+void RclResList::delayedClick()
 {
-    LOGDEB(("ResListBase::delayedClick:\n"));
+    LOGDEB(("RclResList::delayedClick:\n"));
     m_waitingdbl = false;
     if (m_dblclck) {
-	LOGDEB1(("ResListBase::delayedclick: dbleclick\n"));
+	LOGDEB1(("RclResList::delayedclick: dbleclick\n"));
 	m_dblclck = false;
 	return;
     }
@@ -147,13 +156,13 @@ void ResListBase::delayedClick()
     // Erase everything back to white
     {
 	QColor color("white");
-	for (int i = 1; i < reslistTE->paragraphs(); i++)
-	    reslistTE->setParagraphBackgroundColor(i, color);
+	for (int i = 1; i < paragraphs(); i++)
+	    setParagraphBackgroundColor(i, color);
     }
 
     // Color the new active paragraph
     QColor color("lightblue");
-    reslistTE->setParagraphBackgroundColor(par, color);
+    setParagraphBackgroundColor(par, color);
 
     // Document number
     int reldocnum = reldocnumfromparnum(par);
@@ -165,32 +174,71 @@ void ResListBase::delayedClick()
     }
 }
 
+bool RclResList::eventFilter( QObject *o, QEvent *e )
+{
+    if (o == viewport()) { 
+	// We don't want btdown+drag+btup to be a click ! So monitor
+	// mouse events
+	if (e->type() == QEvent::MouseMove) {
+	    LOGDEB1(("resList: MouseMove\n"));
+	    if (m_mouseDown)
+		m_mouseDrag = true;
+	} else if (e->type() == QEvent::MouseButtonPress) {
+	    LOGDEB1(("resList: MouseButtonPress\n"));
+	    m_mouseDown = true;
+	    m_mouseDrag = false;
+	} else if (e->type() == QEvent::MouseButtonRelease) {
+	    LOGDEB1(("resList: MouseButtonRelease\n"));
+	    m_mouseDown = false;
+	} else if (e->type() == QEvent::MouseButtonDblClick) {
+	    LOGDEB1(("resList: MouseButtonDblClick\n"));
+	    m_mouseDown = false;
+	}
+    }
+
+    return QTextBrowser::eventFilter(o, e);
+}
+
+void RclResList::keyPressEvent( QKeyEvent * e )
+{
+    if (e->key() == Key_Q && (e->state() & ControlButton)) {
+	recollNeedsExit = 1;
+	return;
+    } else if (e->key() == Key_Prior) {
+	resPageUpOrBack();
+	return;
+    } else if (e->key() == Key_Next) {
+	resPageDownOrNext();
+	return;
+    }
+    QTextBrowser::keyPressEvent(e);
+}
 
 // Page Up/Down: we don't try to check if current paragraph is last or
 // first. We just page up/down and check if viewport moved. If it did,
 // fair enough, else we go to next/previous result page.
-void ResListBase::resPageUpOrBack()
+void RclResList::resPageUpOrBack()
 {
-    int vpos = reslistTE->contentsY();
-    reslistTE->moveCursor(QTextEdit::MovePgUp, false);
-    if (vpos == reslistTE->contentsY())
+    int vpos = contentsY();
+    moveCursor(QTextEdit::MovePgUp, false);
+    if (vpos == contentsY())
 	resultPageBack();
 }
 
 
-void ResListBase::resPageDownOrNext()
+void RclResList::resPageDownOrNext()
 {
-    int vpos = reslistTE->contentsY();
-    reslistTE->moveCursor(QTextEdit::MovePgDown, false);
-    LOGDEB(("ResListBase::resPageDownOrNext: vpos before %d, after %d\n",
-	    vpos, reslistTE->contentsY()));
-    if (vpos == reslistTE->contentsY()) 
+    int vpos = contentsY();
+    moveCursor(QTextEdit::MovePgDown, false);
+    LOGDEB(("RclResList::resPageDownOrNext: vpos before %d, after %d\n",
+	    vpos, contentsY()));
+    if (vpos == contentsY()) 
 	showResultPage();
 }
 
 // Show previous page of results. We just set the current number back
 // 2 pages and show next page.
-void ResListBase::resultPageBack()
+void RclResList::resultPageBack()
 {
     if (m_winfirst <= 0)
 	return;
@@ -215,7 +263,7 @@ static string displayableBytes(long size)
 }
 
 // Fill up result list window with next screen of hits
-void ResListBase::showResultPage()
+void RclResList::showResultPage()
 {
     if (!m_docsource)
 	return;
@@ -246,7 +294,7 @@ void ResListBase::showResultPage()
     }
 
     bool gotone = false;
-    reslistTE->clear();
+    clear();
 
     int last = MIN(resCnt-m_winfirst, prefs.respagesize);
 
@@ -258,7 +306,7 @@ void ResListBase::showResultPage()
     // would like to disable updates while we're doing this, but
     // couldn't find a way to make it work, the widget seems to become
     // confused if appended while updates are disabled
-    //      reslistTE->setUpdatesEnabled(false);
+    //      setUpdatesEnabled(false);
     for (int i = 0; i < last; i++) {
 	string sh;
 	doc.erase();
@@ -277,16 +325,17 @@ void ResListBase::showResultPage()
 	    // Display list header
 	    // We could use a <title> but the textedit doesnt display
 	    // it prominently
-	    reslistTE->append("<qt><head></head><body>");
+	    append("<qt><head></head><body>");
 	    QString line = "<p><font size=+1><b>";
 	    line += m_docsource->title().c_str();
 	    line += "</b></font><br>";
-	    reslistTE->append(line);
+	    append(line);
 	    line = tr("<b>Displaying results starting at index"
 		      " %1 (maximum set size %2)</b></p>\n")
 		.arg(m_winfirst+1)
 		.arg(resCnt);
-	    reslistTE->append(line);
+	    append(line);
+	    append("<a href=\"Une certaine valeur\">Ceci est un lien</a>\n");
 	}
 	    
 	gotone = true;
@@ -362,19 +411,19 @@ void ResListBase::showResultPage()
 	result += "</p>\n";
 
 	QString str = QString::fromUtf8(result.c_str(), result.length());
-	reslistTE->append(str);
-	reslistTE->setCursorPosition(0,0);
+	append(str);
+	setCursorPosition(0,0);
 
-	m_pageParaToReldocnums[reslistTE->paragraphs()-1] = i;
+	m_pageParaToReldocnums[paragraphs()-1] = i;
 	m_curDocs.push_back(doc);
     }
 
     if (gotone) {
-	reslistTE->append("</body></qt>");
-	reslistTE->ensureCursorVisible();
+	append("</body></qt>");
+	ensureCursorVisible();
     } else {
 	// Restore first in win parameter that we shouln't have incremented
-	reslistTE->append(tr("<p>"
+	append(tr("<p>"
 			  /*"<img align=\"left\" source=\"myimage\">"*/
 			  "<b>No results found</b>"
 			  "<br>"));
@@ -383,13 +432,13 @@ void ResListBase::showResultPage()
 	    m_winfirst = -1;
     }
 
-   //reslistTE->setUpdatesEnabled(true);reslistTE->sync();reslistTE->repaint();
+   //setUpdatesEnabled(true);sync();repaint();
 
 #if 0
     {
 	FILE *fp = fopen("/tmp/reslistdebug", "w");
 	if (fp) {
-	    const char *text = (const char *)reslistTE->text().utf8();
+	    const char *text = (const char *)text().utf8();
 	    //const char *text = alltext.c_str();
 	    fwrite(text, 1, strlen(text), fp);
 	    fclose(fp);
@@ -405,3 +454,9 @@ void ResListBase::showResultPage()
 	emit nextPageAvailable(true);
     }
 }
+
+void RclResList::linkWasClicked(const QString &s)
+{
+    LOGDEB(("RclResList::linkClicked: [%s]\n", s.ascii()));
+}
+

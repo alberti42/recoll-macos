@@ -71,7 +71,6 @@ protected:
     RclDHistory *m_history;
 private:
     virtual void init();
-    virtual bool eventFilter( QObject * target, QEvent * event );
     virtual void startPreview( int docnum );
     virtual void startNativeViewer( int docnum );
 };
