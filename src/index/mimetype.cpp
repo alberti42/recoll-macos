@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.16 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.17 2006-03-21 11:04:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -85,14 +85,16 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	// Split it, and take second field
 	list<string> res;
 	stringToStrings(result, res);
-	if (res.size() <= 1) 
+	if (res.size() <= 1)
 	    return "";
 	list<string>::iterator it = res.begin();
-	it++;
-	mime = *it;
+	mime = *++it;
 	// Remove possible punctuation at the end
 	if (mime.length() > 0 && !isalpha(mime[mime.length() - 1]))
 	    mime.erase(mime.length() -1);
+	// File -i will sometimes return strange stuff (ie: "very small file")
+	if(mime.find("/") == string::npos) 
+	    mime = "";
     }
 #endif
 
