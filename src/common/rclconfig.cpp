@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.23 2006-03-20 09:51:45 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.24 2006-03-22 14:25:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,6 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.23 2006-03-20 09:51:45 dockes E
 #include "conftree.h"
 #include "debuglog.h"
 #include "smallut.h"
-#include "copyfile.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -55,53 +54,58 @@ RclConfig::RclConfig()
 	m_confdir = path_home();
 	m_confdir += ".recoll/";
     }
-    string cfilename = path_cat(m_confdir, "recoll.conf");
 
-    if (access(m_confdir.c_str(), 0) != 0 || 
-	access(cfilename.c_str(), 0) != 0) {
+    if (access(m_confdir.c_str(), 0) < 0) {
 	if (!initUserConfig())
 	    return;
     }
 
-    // Open readonly here so as not to casually create a config file
-    m_conf = new ConfTree(cfilename.c_str(), true);
-    if (m_conf == 0 || 
-	(m_conf->getStatus() != ConfSimple::STATUS_RO && 
-	 m_conf->getStatus() != ConfSimple::STATUS_RW)) {
-	m_reason = string("No main configuration file: ") + cfilename + 
-	    " does not exist or cannot be parsed";
+    list<string>cfns;
+    string cpath;
+
+    cpath = path_cat(m_confdir, "recoll.conf");
+    cfns.push_back(cpath);
+    cpath = path_cat(m_datadir, "examples/recoll.conf");
+    cfns.push_back(cpath);
+    m_conf = new ConfStack<ConfTree>(cfns, true);
+    if (m_conf == 0 || !m_conf->ok()) {
+	m_reason = string("No main configuration file: ");
+	for (list<string>::const_iterator it = cfns.begin(); it != cfns.end();
+	     it++) 
+	    m_reason += "[" + *it + "] ";
+	m_reason += " do not exist or cannot be parsed";
 	return;
     }
 
-    string mimemapfile;
-    if (!m_conf->get("mimemapfile", mimemapfile, "")) {
-	mimemapfile = "mimemap";
-    }
-    string mpath  = path_cat(m_confdir, mimemapfile);
-    mimemap = new ConfTree(mpath.c_str(), true);
-    if (mimemap == 0 ||
-	(mimemap->getStatus() != ConfSimple::STATUS_RO && 
-	 mimemap->getStatus() != ConfSimple::STATUS_RW)) {
-	m_reason = string("No mime map configuration file: ") + mpath + 
-	    " does not exist or cannot be parsed";
+    cfns.clear();
+    cpath  = path_cat(m_confdir, "mimemap");
+    cfns.push_back(cpath);
+    cpath = path_cat(m_datadir, "examples/mimemap");
+    cfns.push_back(cpath);
+    mimemap = new ConfStack<ConfTree>(cfns, true);
+    if (mimemap == 0 || !mimemap->ok()) {
+	m_reason = string("No mime map configuration file: ");
+	for (list<string>::const_iterator it = cfns.begin(); it != cfns.end();
+	     it++) 
+	    m_reason += "[" + *it + "] ";
+	m_reason += " do not exist or cannot be parsed";
 	return;
     }
-    // mimemap->list();
 
-    string mimeconffile;
-    if (!m_conf->get("mimeconffile", mimeconffile, "")) {
-	mimeconffile = "mimeconf";
-    }
-    mpath = path_cat(m_confdir, mimeconffile);
-    mimeconf = new ConfTree(mpath.c_str(), true);
-    if (mimeconf == 0 ||
-	(mimeconf->getStatus() != ConfSimple::STATUS_RO && 
-	 mimeconf->getStatus() != ConfSimple::STATUS_RW)) {
-	m_reason = string("No mime configuration file: ") + mpath + 
-	    " does not exist or cannot be parsed";
+    cfns.clear();
+    cpath = path_cat(m_confdir, "mimeconf");
+    cfns.push_back(cpath);
+    cpath = path_cat(m_datadir, "examples/mimeconf");
+    cfns.push_back(cpath);
+    mimeconf = new ConfStack<ConfTree>(cfns, true);
+    if (mimeconf == 0 || !mimeconf->ok()) {
+	m_reason = string("No mime configuration file: ");
+	for (list<string>::const_iterator it = cfns.begin(); it != cfns.end();
+	     it++) 
+	    m_reason += "[" + *it + "] ";
+	m_reason += " do not exist or cannot be parsed";
 	return;
     }
-    //    mimeconf->list();
 
     setKeyDir("");
 
@@ -300,27 +304,44 @@ bool RclConfig::getUncompressor(const string &mtype, list<string>& cmd)
     return true;
 }
 
+static const char blurb0[] = 
+"# The system-wide configuration files for recoll are located in:\n"
+"#   %s\n"
+"# The default configuration files are commented, you should take a look\n"
+"# at them for an explanation of what can be set (you could also take a look\n"
+"# at the manual instead).\n"
+"# Values set in this file will override the system-wide values for the file\n"
+"# with the same name in the central directory. The syntax for setting\n"
+"# values is identical.\n"
+    ;
 
-// Create initial user config by copying sample files
+// Create initial user config by creating commented empty files
 static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf"};
 static int ncffiles = sizeof(configfiles) / sizeof(char *);
 bool RclConfig::initUserConfig()
 {
-    // Samples directory
+    // Explanatory text
+    char blurb[sizeof(blurb0)+1025];
     string exdir = path_cat(m_datadir, "examples");
-    // User's 
-    string recolldir = path_tildexpand("~/.recoll");
-    if (mkdir(recolldir.c_str(), 0755) < 0) {
-	m_reason += string("mkdir(") + recolldir + ") failed: " + 
+    sprintf(blurb, blurb0, exdir.c_str());
+
+    if (access(m_confdir.c_str(), 0) < 0 && 
+	mkdir(m_confdir.c_str(), 0755) < 0) {
+	m_reason += string("mkdir(") + m_confdir + ") failed: " + 
 	    strerror(errno);
 	return false;
     }
     for (int i = 0; i < ncffiles; i++) {
-	string src = path_cat((const string&)exdir, string(configfiles[i]));
-	string dst = path_cat((const string&)recolldir, string(configfiles[i])); 
-	if (!copyfile(src.c_str(), dst.c_str(), m_reason)) {
-	    LOGERR(("Copyfile failed: %s\n", m_reason.c_str()));
-	    return false;
+	string dst = path_cat(m_confdir, string(configfiles[i])); 
+	if (access(dst.c_str(), 0) < 0) {
+	    FILE *fp = fopen(dst.c_str(), "w");
+	    if (fp) {
+		fprintf(fp, "%s\n", blurb);
+		fclose(fp);
+	    } else {
+		m_reason += string("fopen ") + dst + ": " + strerror(errno);
+		return false;
+	    }
 	}
     }
     return true;
@@ -337,13 +358,11 @@ void RclConfig::initFrom(const RclConfig& r)
     m_keydir = r.m_datadir;
     // We should use reference-counted objects instead!
     if (r.m_conf)
-	m_conf = new ConfTree(*(r.m_conf));
+	m_conf = new ConfStack<ConfTree>(*(r.m_conf));
     if (r.mimemap)
-	mimemap = new ConfTree(*(r.mimemap));
+	mimemap = new ConfStack<ConfTree>(*(r.mimemap));
     if (r.mimeconf)
-	mimeconf = new ConfTree(*(r.mimeconf));
-    if (r.mimemap_local)
-	mimemap_local = new ConfTree(*(r.mimemap_local));
+	mimeconf = new ConfStack<ConfTree>(*(r.mimeconf));
     if (r.stopsuffixes)
 	stopsuffixes = new std::list<std::string>(*(r.stopsuffixes));
     defcharset = r.defcharset;

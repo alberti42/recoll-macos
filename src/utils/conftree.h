@@ -16,6 +16,7 @@
  */
 #ifndef _CONFTREE_H_
 #define  _CONFTREE_H_
+
 /**
  * A simple configuration file implementation.
  *
@@ -31,6 +32,7 @@
  * Any line without a '=' is discarded when rewriting the file.
  * All 'set' calls currently cause an immediate file rewrite.
  */
+
 #include <string>
 #include <map>
 #include <list>
@@ -77,15 +79,9 @@ class ConfSimple {
      * global space if sk is empty).
      * @return 0 if name not found, 1 else
      */
-    virtual int get(const std::string &name, string &value, const string &sk);
-    virtual int get(const std::string &name, string &value) {
-	return get(name, value, string(""));
-    }
-    /*
-     * See comments for std::string variant
-     * @return 0 if name not found, const C string else
-     */
-    virtual const char *get(const char *name, const char *sk = 0);
+    virtual int get(const std::string &name, string &value, 
+		    const string &sk = string(""));
+    /* Note: the version returning char* was buggy and has been removed */
 
     /** 
      * Set value for named parameter in specified subsection (or global)
@@ -155,8 +151,8 @@ class ConfSimple {
 
  protected:
     bool dotildexpand;
- private:
     StatusCode status;
+ private:
     string filename; // set if we're working with a file
     string *data;    // set if we're working with an in-memory string
     map<string, map<string, string> > submaps;
@@ -180,9 +176,6 @@ class ConfSimple {
  */
 class ConfTree : public ConfSimple {
 
-    /* Dont want this to be accessible: keep only the string-based one */
-    virtual const char *get(const char *, const char *) {return 0;}
-
  public:
     /**
      * Build the object by reading content from file.
@@ -205,6 +198,113 @@ class ConfTree : public ConfSimple {
 
     virtual int get(const char *name, string &value, const char *sk) {
 	return get(string(name), value, sk ? string(sk) : string(""));
+    }
+};
+
+/** 
+ * Use several config files, trying to get values from each in order. Used to
+ * have a central config, with possible overrides from more specific
+ * (ie personal) ones.
+ *
+ * Notes: it's ok for some of the files in the list to not exist, but the last
+ * one must or we generate an error. We open all trees readonly.
+ */
+template <class T> class ConfStack {
+ public:
+    ConfStack(const std::list<string> &fns, bool ro = true) {
+	construct(fns, ro);
+    }
+
+    ConfStack(const char *nm, bool ro = true) {
+	std::list<string> fns;
+	fns.push_back(string(nm));
+	construct(fns, ro);
+    }
+
+    ~ConfStack() {
+	erase();
+	m_ok = false;
+    }
+
+    ConfStack(const ConfStack &rhs) {
+	init_from(rhs);
+    }
+
+    ConfStack& operator=(const ConfStack &rhs) {
+	if (this != &rhs){
+	    erase();
+	    m_ok = rhs.m_ok;
+	    if (m_ok)
+		init_from(rhs);
+	}
+	return *this;
+    }
+
+    int get(const std::string &name, string &value, const string &sk) {
+	typename std::list<T*>::iterator it;
+	for (it = m_confs.begin();it != m_confs.end();it++) {
+	    if ((*it)->get(name, value, sk))
+		return true;
+	}
+	return false;
+    }
+
+    int get(const char *name, string &value, const char *sk) {
+	return get(string(name), value, sk ? string(sk) : string(""));
+    }
+
+    std::list<string> getNames(const string &sk) {
+	std::list<string> nms;
+	typename std::list<T*>::iterator it;
+	for (it = m_confs.begin();it != m_confs.end();it++) {
+	    std::list<string> lst;
+	    lst = (*it)->getNames(sk);
+	    nms.splice(nms.end(), lst);
+	}
+	return nms;
+    }
+
+    bool ok() {return m_ok;}
+
+ private:
+    bool m_ok;
+    std::list<T*> m_confs;
+    
+    void erase() {
+	typename std::list<T*>::iterator it;
+	for (it = m_confs.begin();it != m_confs.end();it++) {
+	    delete (*it);
+	}
+	m_confs.clear();
+    }
+
+    /// Common code to initialize from existing object
+    void init_from(const ConfStack &rhs) {
+	if ((m_ok = rhs.m_ok)) {
+	    typename std::list<T*>::const_iterator it;
+	    for (it = rhs.m_confs.begin();it != rhs.m_confs.end();it++) {
+		m_confs.push_back(new T(**it));
+	    }
+	}
+    }
+
+    /// Common constructor code
+    void construct(const std::list<string> &fns, bool ro) {
+	if (!ro) {
+	    m_ok = false;
+	    return;
+	}
+	std::list<std::string>::const_iterator it;
+	bool lastok = false;
+	for (it = fns.begin();it != fns.end();it++) {
+	    T* p = new T(it->c_str(), true);
+	    if (p && p->ok()) {
+		m_confs.push_back(p);
+		lastok = true;
+	    } else
+		lastok = false;
+	}
+	m_ok = lastok;
     }
 };
 

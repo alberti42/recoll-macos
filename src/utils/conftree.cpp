@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.5 2006-01-23 13:32:28 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.6 2006-03-22 14:25:46 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -201,24 +201,6 @@ int ConfSimple::get(const string &nm, string &value, const string &sk)
 	return 0;
     value = s->second;
     return 1;
-}
- 
-const char *ConfSimple::get(const char *nm, const char *sk)
-{
-    if (status == STATUS_ERROR)
-	return 0;
-    if (sk == 0)
-	sk = "";
-    // Find submap
-    map<string, map<string, string> >::iterator ss;
-    if ((ss = submaps.find(sk)) == submaps.end()) 
-	return 0;
-
-    // Find named value
-    map<string, string>::iterator s;
-    if ((s = ss->second.find(nm)) == ss->second.end()) 
-	return 0;
-    return (s->second).c_str();
 }
 
 static ConfSimple::WalkerCode swalker(void *f, const string &nm, 
@@ -540,25 +522,18 @@ int main(int argc, char **argv)
 	    ConfSimple parms(filename);
 	    if (parms.getStatus() != ConfSimple::STATUS_ERROR) {
 		// It's ok for the file to not exist here
-	    
-		const char *cp = parms.get("mypid");
-		if (cp) {
-		    printf("Value for mypid is '%s'\n", cp);
+		string value;
+		
+		if (parms.get("mypid", value)) {
+		    printf("Value for mypid is '%s'\n", value.c_str());
 		} else {
 		    printf("mypid not set\n");
 		}
-		cp = parms.get("unstring");
-		if (cp) {
-		    printf("Value for unstring is '%s'\n", cp);
+		
+		if (parms.get("unstring", value)) {
+		    printf("Value for unstring is '%s'\n", value.c_str());
 		} else {
 		    printf("unstring not set\n");
-		}
-		string myval;
-		if (parms.get(string("unstring"), myval, "")) {
-		    printf("std::string value for 'unstring' is '%s'\n", 
-			   myval.c_str());
-		} else {
-		    printf("unstring not set (std::string)\n");
 		}
 	    }
 	    char spid[100];

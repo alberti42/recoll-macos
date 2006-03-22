@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.16 2006-03-20 09:51:45 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.17 2006-03-22 14:25:46 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -117,10 +117,10 @@ class RclConfig {
     string m_datadir; // Example: /usr/local/share/recoll
     string m_keydir;    // Current directory used for parameter fetches.
 
-    ConfTree *m_conf; // Parsed main configuration
-    ConfTree *mimemap;  // These are independant of current keydir. 
-    ConfTree *mimeconf; 
-    ConfTree *mimemap_local; // 
+    ConfStack<ConfTree> *m_conf;   // Parsed configuration files
+    ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, but their
+    ConfStack<ConfTree> *mimeconf; // content may depend on it.
+
     std::list<std::string> *stopsuffixes;
 
     // Parameters auto-fetched on setkeydir
@@ -138,7 +138,6 @@ class RclConfig {
 	m_conf = 0; 
 	mimemap = 0; 
 	mimeconf = 0; 
-	mimemap_local = 0; 
 	stopsuffixes = 0;
     }
     /** Free data then zero pointers */
@@ -146,7 +145,6 @@ class RclConfig {
 	delete m_conf;
 	delete mimemap;
 	delete mimeconf; 
-	delete mimemap_local;
 	delete stopsuffixes;
 	// just in case
 	zeroMe();
