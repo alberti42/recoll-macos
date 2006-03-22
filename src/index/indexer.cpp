@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.25 2006-03-20 16:05:41 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.26 2006-03-22 16:24:41 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -200,6 +200,8 @@ FsTreeWalker::Status
 DbIndexer::processone(const std::string &fn, const struct stat *stp, 
 		      FsTreeWalker::CbFlag flg)
 {
+    if (m_updfunc)
+	m_updfunc->update(fn);
     // If we're changing directories, possibly adjust parameters (set
     // the current directory in configuration object)
     if (flg == FsTreeWalker::FtwDirEnter || 
@@ -309,7 +311,7 @@ bool ConfIndexer::index(bool resetbefore)
 	//    cout << *dit << " ";
 	//}
 	//cout << endl;
-	dbindexer = new DbIndexer(config, dbit->first);
+	dbindexer = new DbIndexer(config, dbit->first, m_updfunc);
 	if (!dbindexer->indexDb(resetbefore, &dbit->second)) {
 	    deleteZ(dbindexer);
 	    return false;

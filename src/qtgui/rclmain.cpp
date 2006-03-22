@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.13 2006-03-21 13:46:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.14 2006-03-22 16:24:41 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -208,7 +208,7 @@ void RclMain::fileExit()
 // thread and a possible need to exit
 void RclMain::periodic100()
 {
-    static int toggle;
+    static int toggle = 0;
     // Check if indexing thread done
     if (indexingstatus) {
 	statusBar()->message("");
@@ -217,14 +217,15 @@ void RclMain::periodic100()
 	LOGINFO(("Indexing done: closing query database\n"));
 	rcldb->close();
     } else if (indexingdone == 0) {
-	if (toggle < 9) {
-	    statusBar()->message(tr("Indexing in progress"));
-	} else {
+	if (toggle == 0) {
+	    QString msg = tr("Indexing in progress: ");
+	    msg += idxthread_currentfile().c_str();
+	    statusBar()->message(msg);
+	} else if (toggle == 9) {
 	    statusBar()->message("");
 	}
-	if (toggle >= 10)
+	if (++toggle >= 10)
 	    toggle = 0;
-	toggle++;
     }
     if (recollNeedsExit)
 	fileExit();

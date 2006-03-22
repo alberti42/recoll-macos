@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.10 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.11 2006-03-22 16:24:41 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -27,6 +27,13 @@
 
 /* Forward decl for lower level indexing object */
 class DbIndexer;
+
+/* Callback to say what we're doing */
+class DbIxStatusUpdater {
+ public:
+    virtual ~DbIxStatusUpdater(){}
+    virtual void update(const std::string &) = 0;
+};
 
 /**
    The top level indexing object. Processes the configuration, then invokes
@@ -40,15 +47,16 @@ class DbIndexer;
 class ConfIndexer {
  public:
     enum runStatus {IndexerOk, IndexerError};
-    ConfIndexer(RclConfig *cnf) : config(cnf), dbindexer(0) 
-	{
-	}
+    ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0)
+	: config(cnf), dbindexer(0), m_updfunc(updfunc)
+	{}
     virtual ~ConfIndexer();
     /** Worker function: doe the actual indexing */
     bool index(bool resetbefore = false);
  private:
-	RclConfig *config;
-	DbIndexer *dbindexer; // Object to process directories for a given db
+    RclConfig *config;
+    DbIndexer *dbindexer; // Object to process directories for a given db
+    DbIxStatusUpdater *m_updfunc;
 };
 
 /** Index things into one database
@@ -64,8 +72,11 @@ Single file(s) indexing: no database purging or stem db updating.
 class DbIndexer : public FsTreeWalkerCB {
  public:
     /** Constructor does nothing but store parameters */
-    DbIndexer(RclConfig *cnf, const std::string &dbd) 
-	: config(cnf), dbdir(dbd) { 
+    DbIndexer(RclConfig *cnf,         // Configuration data
+	      const std::string &dbd, // Place where the db lives
+	      DbIxStatusUpdater *updfunc = 0 // status updater callback
+	      ) 
+	: config(cnf), dbdir(dbd), m_updfunc(updfunc) { 
     }
 	
     virtual ~DbIndexer();
@@ -99,6 +110,7 @@ class DbIndexer : public FsTreeWalkerCB {
     std::string dbdir;
     Rcl::Db db;
     std::string tmpdir;
+    DbIxStatusUpdater *m_updfunc;
     bool init(bool rst = false);
 };
 
