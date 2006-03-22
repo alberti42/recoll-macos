@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.4 2006-03-21 15:11:30 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.5 2006-03-22 11:17:49 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -280,18 +280,19 @@ void RclResList::showResultPage()
 	}
 
 	// Size information. We print both doc and file if they differ a lot
-	long fsize = 0, dsize = 0;
+	long fsize = -1, dsize = -1;
 	if (!doc.dbytes.empty())
 	    dsize = atol(doc.dbytes.c_str());
 	if (!doc.fbytes.empty())
 	    fsize = atol(doc.fbytes.c_str());
 	string sizebuf;
-	if (dsize > 0) {
+	if (dsize >= 0) {
 	    sizebuf = displayableBytes(dsize);
-	    if (fsize > 10 * dsize)
+	    if (fsize > 10 * dsize && fsize - dsize > 1000)
 		sizebuf += string(" / ") + displayableBytes(fsize);
+	} else if (fsize >= 0) {
+	    sizebuf = displayableBytes(fsize);
 	}
-
 	// Abstract
 	string abst = escapeHtml(doc.abstract);
 	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
