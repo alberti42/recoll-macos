@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.12 2006-03-20 09:54:09 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.13 2006-03-28 09:38:13 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll: associations of file name extensions to mime types
 .txt = text/plain
@@ -49,6 +49,7 @@
 .wpd = application/vnd.wordperfect
 .rtf = text/rtf
 
+.mp3 = audio/mpeg
 
 # A list of stuff that we don't want to touch at all (for now). Having the
 # suffixes listed in there speeds up things quite a lot by avoiding

@@ -1,0 +1,72 @@
+#!/bin/sh
+# @(#$Id: rclmedia,v 1.1 2006-03-28 09:38:12 dockes Exp $  (C) 2004 J.F.Dockes
+#================================================================
+# rclmedia
+# Handle media files for recoll. This currently returns an empty
+# document to let the indexer process the file names as terms, but
+# we might want to extract mp3 tags one day
+#================================================================
+# set variables
+LANG=C ; export LANG
+LC_ALL=C ; export LC_ALL
+progname="rclsoff"
+
+# show help message
+if test $# -ne 1 -o "$1" = "--help" 
+then
+  printf 'Process a media file for recoll indexation.\n'
+  printf 'Usage: %s [infile]\n' "$progname"
+  exit 1
+fi
+
+infile="$1"
+
+iscmd()
+{
+    cmd=$1
+    case $cmd in
+    */*)
+	if test -x $cmd ; then return 0; else return 1; fi ;;
+    *)
+      oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
+      for d in $*;do test -x $d/$cmd && return 0;done
+      return 1 ;;
+    esac
+}
+checkcmds()
+{
+    cmdsok=0
+    for cmd in $*;do
+      if iscmd $cmd 
+      then 
+        cmdsok=1
+      else 
+        cmdsok=0
+      fi
+    done
+}
+
+# check the input file existence
+if test ! -f "$infile"
+then
+  printf '%s: %s: no such file\n' "$progname" "$infile"
+  exit 1
+fi
+checkcmds id3info
+
+# output the result
+echo '<html><head>'
+#echo '<title>' "$title" '</title>'
+echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
+echo '</head><body>'
+echo '<pre>'
+if test X$cmdsok = X1 ; then
+   id3info $infile | \
+   sed -e 's/</&lt;/g' -e 's/&/&amp;/g' -e 's/===.*://' | \
+	   grep -v 'Tag information for'
+fi
+echo '</pre>'
+echo '</body></html>'
+
+# exit normally
+exit 0
