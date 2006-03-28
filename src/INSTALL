@@ -42,13 +42,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    types. You need to install them for the file types that you wish to have
    indexed:
 
-     * MS Word: antiword.
-
      * PDF: pdftotext is part of the Xpdf package.
 
      * Postscript: pstotext.
 
+     * MS Word: antiword.
+
      * RTF: unrtf
+
+     * dvi: dvips
+
+     * djvu: DjVuLibre
+
+   Text, Html, mail folders and Openoffice files are processed internally.
 
 4.1.2. Building
 

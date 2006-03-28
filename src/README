@@ -41,6 +41,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.1. Simple search
 
+                             3.1.1. Filename search
+
                 3.2. Complex/advanced search
 
                 3.3. Document history
@@ -110,7 +112,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    given piece of information. You just ask for related terms, and the tool
    will return a list of documents where those terms are prominent.
 
-   This mode of operation has been made very familiar by www search engines.
+   This mode of operation has been made very familiar by internet search
+   engines.
 
    The notion of relevance is a difficult one, as only you, the user,
    actually know which documents are relevant to your search, and the
@@ -155,15 +158,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    switch stemming languages, or add a language, without reindexing. Storing
    documents in different languages in the same database is possible, and
    useful in practice, but does introduce possibilities of confusion. Recoll
-   makes no attempt at automatic language recognition.
+   currently makes no attempt at automatic language recognition.
 
    Recoll has many parameters which define exactly what to index, and how to
    classify and decode the source documents. These are kept in a
-   configuration file. A sample configuration is installed into the .recoll
-   subdirectory of your home directory when you first execute a Recoll
-   command. The initial configuration will index your home directory with
-   default parameters and should be sufficient for giving Recoll a try, but
-   you may want to adjust it later.
+   configuration file. A default configuration is copied into a standard
+   location (usually something like /usr/[local/]share/recoll/examples)
+   during installation. The default parameters from this file may be
+   overriden by values that you set inside your personal configuration, found
+   by default in the .recoll subdirectory of your home directory. The default
+   configuration will index your home directory with default parameters and
+   should be sufficient for giving Recoll a try, but you may want to adjust
+   it later.
 
    Indexation is started automatically the first time you execute the recoll
    search graphical user interface, or by executing the recollindex command.
@@ -216,13 +222,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 2.2. The indexation configuration
 
-   The main configuration file is named $HOME/.recoll/recoll.conf by default
-   or $RECOLL_CONFDIR/recoll.conf if RECOLL_CONFDIR is set.
+   Values set in the system-wide configuration file (named like
+   /usr/[local/]share/recoll/examples/recoll.conf) can be overriden by those
+   set in the personal one, named $HOME/.recoll/recoll.conf by default or
+   $RECOLL_CONFDIR/recoll.conf if RECOLL_CONFDIR is set.
 
    The most accurate documentation for editing the file is given by comments
-   inside the default file that will be created when you first start recoll.
-   If you want to adjust the configuration before indexation, just click
-   Cancel when the program asks if it should start initial indexation.
+   inside the central one. If you want to adjust the configuration before
+   indexation, just click Cancel when the program asks if it should start
+   initial indexation. This will have created a .recoll directory containing
+   empty configuration files.
 
    The configuration is also documented inside the installation chapter of
    this document, or in the recoll.conf(5) man page.
@@ -283,18 +292,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    searches.
 
    After starting a search, a list of results will instantly be displayed in
-   the main list window. Clicking on an entry will open an internal preview
-   window for the document. Double-clicking will attempt to start an external
-   viewer (have a look at the ~/.recoll/mimeconf file to see how these are
-   configured).
+   the main list window. Clicking on the Preview link for an entry will open
+   an internal preview window for the document. Clicking the Edit link will
+   attempt to start an external viewer (have a look at the mimeconf
+   configuration file to see how these are configured).
 
    By default, the document list is presented in order of relevance (how well
    the system estimates that the document matches the query). You can specify
    a different ordering by using the Tools / Sort parameters dialog.
 
-   You can click on the first paragraph (Query results or No results found)
-   in the result list to get an exact display of the query actually
-   performed, after stem expansion and other processing.
+   You can click on the Query details link at the top of the results page to
+   see the query actually performed, after stem expansion and other
+   processing.
+
+     ----------------------------------------------------------------------
+
+  3.1.1. Filename search
+
+   If the File name checkbox at the left of the search terms is checked, the
+   search will only done for file names. In this case you can use the usual
+   shell wildcard characters * and ? for expanding the search (ie
+   *somestring*).
 
      ----------------------------------------------------------------------
 
@@ -302,8 +320,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The advanced search dialog has fields that will allow a more refined
    search, looking for documents with all given words, a given exact phrase,
-   or none of the given words (all relevant fields will be combined by an
-   implicit AND clause).
+   none of the given words, or a given file name (with wildcard expansion).
+   All relevant fields will be combined by an implicit AND clause.
 
    It will let you search for documents of specific mime types (ie: only
    text/plain, or text/html or application/pdf etc...)
@@ -314,7 +332,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Click on the Start Search button in the advanced search dialog to start
    the search. The button in the main window always performs a simple search.
 
-   Click on the result list header paragraph to see the query expansion.
+   Click on the Show query details link at the top of the result page to see
+   the query expansion.
 
      ----------------------------------------------------------------------
 
@@ -337,7 +356,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    criteria are date and mime type.
 
    The sort parameters stay in effect until they are explicitely reset, or
-   the program exits.
+   the program exits. An activated sort is indicated in the result list
+   header.
 
      ----------------------------------------------------------------------
 
@@ -358,7 +378,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    clicking on the result list header.
 
    File names. All file name elements (the broken up file path) are entered
-   as terms during indexation, and you can specify them when searching.
+   as terms during indexation, and you can specify them as ordinary terms in
+   normal search fields. Alternatively, you can use specific file name search
+   which will only look for file names and can use wildcard expansion.
 
    Quitting. Entering ^Q almost anywhere will close the application.
 
@@ -438,13 +460,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    types. You need to install them for the file types that you wish to have
    indexed:
 
-     * MS Word: antiword.
-
      * PDF: pdftotext is part of the Xpdf package.
 
      * Postscript: pstotext.
 
+     * MS Word: antiword.
+
      * RTF: unrtf
+
+     * dvi: dvips
+
+     * djvu: DjVuLibre
+
+   Text, Html, mail folders and Openoffice files are processed internally.
 
      ----------------------------------------------------------------------
 
@@ -525,14 +553,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 4.3. Configuration overview
 
-   The personal configuration files and the database are normally kept in the
+   There are two sets of configuration files. The system-wide files are kept
+   in a directory named like /usr/[local/]share/recoll/examples, they define
+   default values for the system. A parallel set of files exists in the
    .recoll directory in your home (this can be changed with the
-   RECOLL_CONFDIR environment variable, and a parameter inside the main
-   configuration file). If this directory does not exist when recoll or
-   recollindex are started, the directory will be created and the sample
-   configuration files will be copied. recoll will give you a chance to edit
-   the configuration file before starting indexation. recollindex will
-   proceed immediately.
+   RECOLL_CONFDIR environment variable. The database is also kept in .recoll
+   by default, (this can be changed by a configuration parameter).
+
+   If the .recoll directory does not exist when recoll or recollindex are
+   started, it will be created with a set of empty configuration files.
+   recoll will give you a chance to edit the configuration file before
+   starting indexation. recollindex will proceed immediately.
 
    Most of the parameters specific to the recoll GUI are set through the
    Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
@@ -541,8 +572,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    For other options, Recoll uses text configuration files. You will have to
    edit them by hand for now (there is still some hope for a GUI
    configuration tool in the future). The most accurate documentation for the
-   configuration parameters is given by comments inside the sample files, and
-   we will just give a general overview here.
+   configuration parameters is given by comments inside the default files,
+   and we will just give a general overview here.
 
    All configuration files share the same format. For exemple, a short
    extract of the main configuration file might look as follows:
@@ -577,10 +608,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   4.3.1. Main configuration file
 
-   ~/.recoll/recoll.conf is the main configuration file. It defines things
-   like what to index (top directories and things to ignore), and the default
-   character set to use for document types which do not specify it
-   internally.
+   recoll.conf is the main configuration file. It defines things like what to
+   index (top directories and things to ignore), and the default character
+   set to use for document types which do not specify it internally.
 
    The default configuration will index your home directory. If this is not
    appropriate, use recoll to copy the sample configuration, click Cancel,
@@ -670,11 +700,20 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            useful for files with suffixless names, but it will also cause the
            indexation of many bogus "text" files.
 
+   indexallfilenames
+
+           Recoll indexes file names in a special section of the database to
+           allow specific file names searches using wild cards. This
+           parameter decides if file name indexing is performed only for
+           files with mime types that would qualify them for full text
+           indexation, or for all files inside the selected subtrees,
+           independant of mime type.
+
      ----------------------------------------------------------------------
 
   4.3.2. The mimemap file
 
-   ~/.recoll/mimemap specifies the file name extension to mime type mappings.
+   mimemap specifies the file name extension to mime type mappings.
 
    For file names without an extension, or with an unknown one, the system's
    file -i command will be executed to determine the mime type (this can be
@@ -699,7 +738,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   4.3.3. The mimeconf file
 
-   ~/.recoll/mimeconf specifies how the different mime types are handled for
+   mimeconf specifies how the different mime types are handled for
    indexation, and for display.
 
    Changing the indexation parameters is probably not a good idea except if
@@ -707,7 +746,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    You may want to adjust the external viewers defined in (ie: html is either
    previewed internally or displayed using firefox, but you may prefer
-   mozilla...). Look for the [view] section.
+   mozilla, your openoffice.org program might be named oofice instead of
+   openoffice ...). Look for the [view] section.
 
    You can also change the icons which are displayed by recoll in the result
    lists (the values are the basenames of the png images inside the iconsdir
