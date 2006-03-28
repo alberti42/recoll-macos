@@ -1,12 +1,16 @@
-.\" $Id: recoll.conf.5,v 1.1 2006-01-10 09:10:51 dockes Exp $ (C) 2005 J.F.Dockes\$
+.\" $Id: recoll.conf.5,v 1.2 2006-03-28 12:49:03 dockes Exp $ (C) 2005 J.F.Dockes\$
 .TH RECOLL.CONF 5 "8 January 2006"
 .SH NAME
 recoll.conf \- main personal configuration file for Recoll
 .SH DESCRIPTION
-This file, by default
-.IR $HOME/.recoll/recoll.conf ,
-defines the indexation configuration for the full-text search system
-Recoll.
+This file defines the indexation configuration for the full-text search
+system Recoll.
+.LP
+The system-wide configuration file is normally located inside
+/usr/[local]/share/recoll/examples. Any parameter set in the common file
+may be overriden by setting it in the personal configuration file, by default:
+.IR $HOME/.recoll/recoll.conf
+
 .LP
 A short extract of the file might look as follows:
 .IP
@@ -97,6 +101,13 @@ any subdirectory.
 Try to guess the character set of files if no internal value is available
 (ie: for plain text files). This does not work well in general, and should
 probably not be used.
+.TP
+.BI "indexallfilenames = " boolean
+Recoll indexes file names into a special section of the database to allow
+specific file names searches using wild cards. This parameter decides if
+file name indexing is performed only for files with mime types that would
+qualify them for full text indexation, or for all files inside
+the selected subtrees, independant of mime type.
 .TP
 .BI "usesystemfilecommand = " boolean
 Decide if we use the 

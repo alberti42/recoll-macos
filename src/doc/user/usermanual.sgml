@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.6 2006-03-04 10:09:59 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.7 2006-03-28 12:49:03 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -53,7 +53,8 @@
       restrict the indexed area.</para>
 
       <para>Also be aware that you will need to install the
-      appropriate supporting applications for document types that need
+      appropriate <link linkend="rcl.install.building.prereqs.external">
+      supporting applications</link> for document types that need
       them (for example <application>antiword</application> for
       ms-word files), and that the default character set used to read
       raw text files for indexing is iso8859-1, which may not be
@@ -76,7 +77,7 @@
         terms, and the tool will return a list of documents where
         those terms are prominent.</para>
 
-      <para>This mode of operation has been made very familiar by www
+      <para>This mode of operation has been made very familiar by internet
        search engines.</para>
 
       <para>The notion of relevance is a difficult one, as only you, the
@@ -134,18 +135,23 @@
       language, without reindexing.  Storing documents in different
       languages in the same database is possible, and useful in
       practice, but does introduce possibilities of confusion. &RCL;
-      makes no attempt at automatic language recognition.</para>
+      currently makes no attempt at automatic language recognition.</para>
 
       <para>&RCL; has many parameters which define exactly what to
         index, and how to classify and decode the source
         documents. These are kept in a <link
         linkend="rcl.indexing.config">configuration file</link>. A
-        sample configuration is installed into the
+        default configuration is copied into a standard location
+        (usually something like
+        <filename>/usr/[local/]share/recoll/examples</filename>)
+        during installation. The default parameters from this file may
+        be overriden by values that you set inside your personal
+        configuration, found by default in the
         <filename>.recoll</filename> subdirectory of your home
-        directory when you first execute a &RCL; command. The initial
-        configuration will index your home directory with default
-        parameters and should be sufficient for giving &RCL; a try,
-        but you may want to adjust it later.</para>
+        directory. The default configuration will index your home
+        directory with default parameters and should be sufficient for
+        giving &RCL; a try, but you may want to adjust it
+        later.</para>
 
       <para><link linkend="rcl.indexing.exec">Indexation</link> is started
       automatically the first time you execute the
@@ -219,17 +225,21 @@
     <sect1 id="rcl.indexing.config">
       <title>The indexation configuration</title>
 
-      <para>The main configuration file is named 
+      <para>Values set in the system-wide configuration file (named
+      like
+      <filename>/usr/[local/]share/recoll/examples/recoll.conf</filename>)
+      can be overriden by those set in the personal one, named
         <filename>$HOME/.recoll/recoll.conf</filename> by default or
         <filename>$RECOLL_CONFDIR/recoll.conf</filename> if
           RECOLL_CONFDIR is set.</para>
 
       <para>The most accurate documentation for editing the file is
-      given by comments inside the default file that will be created
-      when you first start <command>recoll</command>. If you want to
-      adjust the configuration before indexation, just click
+      given by comments inside the central one.  If you want to adjust
+      the configuration before indexation, just click
       <guilabel>Cancel</guilabel> when the program asks if it should
-      start initial indexation.</para>
+      start initial indexation. This will have created a
+      <filename>.recoll</filename> directory containing empty
+      configuration files.</para>
 
       <para>The configuration is also documented inside the <link
       linkend="rcl.install.config.recollconf">installation chapter</link> of
@@ -311,12 +321,12 @@
         search</guilabel> dialog for more complex searches.</para>
 
       <para>After starting a search, a list of results will instantly
-      be displayed in the main list window. Clicking on an entry will
-      open an internal preview window for the
-      document. Double-clicking will attempt to start an external
-      viewer (have a look at the
-      <filename>~/.recoll/mimeconf</filename> file to see how these
-      are configured).</para>
+      be displayed in the main list window. Clicking on the
+      <literal>Preview</literal> link for an entry will open an
+      internal preview window for the document. Clicking the
+      <literal>Edit</literal> link will attempt to start an external
+      viewer (have a look at the <filename>mimeconf</filename>
+      configuration file to see how these are configured).</para>
 
       <para>By default, the document list is presented in order of
       relevance (how well the system estimates that the document
@@ -324,11 +334,19 @@
       using the  <link linkend="rcl.search.sort"><guilabel>Tools</guilabel>
         / <guilabel>Sort parameters</guilabel></link> dialog.</para>
 
-      <para>You can click on the first paragraph (<literal>Query
-      results</literal> or <literal>No results found</literal>) in the
-      result list to get an exact display of the query actually
+      <para>You can click on the <literal>Query details</literal> link
+      at the top of the results page to see the query actually 
       performed, after stem expansion and other processing.</para>
 
+      <sect2 id="rcl.search.simple.filename">
+	<title>Filename search</title>
+	<para>If the <guilabel>File name</guilabel> checkbox at the
+	left of the search terms is checked, the search will only done
+	for file names. In this case you can use the usual shell
+	wildcard characters <literal>*</literal> and
+	<literal>?</literal> for expanding the search (ie
+	<literal>*somestring*</literal>).
+        </para>
     </sect1>
 
       <sect1 id="rcl.search.complex">
@@ -336,8 +354,9 @@
 
       <para>The advanced search dialog has fields that will allow a more
         refined search, looking for documents with all given words, a
-        given exact phrase, or none of the given words (all relevant fields
-        will be combined by an implicit AND clause).</para>
+        given exact phrase, none of the given words, or a given file
+        name (with wildcard expansion). All relevant fields will be
+        combined by an implicit AND clause.</para>
 
       <para>It will let you search for documents of specific mime
         types (ie: only <literal>text/plain</literal>, or
@@ -351,8 +370,8 @@
       the advanced search dialog to start the search. The button in
       the main window always performs a simple search.</para>
 
-      <para>Click on the result list header paragraph to see the query
-      expansion.</para>
+      <para>Click on the <literal>Show query details</literal> link at
+      the top of the result page to see the query expansion.</para>
 
     </sect1>
 
@@ -382,7 +401,8 @@
       <emphasis>date</emphasis> and <emphasis>mime type</emphasis>.</para> 
 
       <para>The sort parameters stay in effect until they are explicitely
-      reset, or the program exits.</para>
+      reset, or the program exits. An activated sort is indicated in
+      the result list header.</para>
 
     </sect1>
 
@@ -415,9 +435,12 @@
       </formalpara>
 
       <formalpara><title>File names</title>
-        <para>All file name elements (the broken up file path) are entered
-        as terms during indexation, and you can specify them when
-        searching.</para>
+        <para>All file name elements (the broken up file path) are
+        entered as terms during indexation, and you can specify them
+        as ordinary terms in normal search fields. Alternatively, you
+        can use specific file name search which will
+        <emphasis>only</emphasis> look for file names and can use
+        wildcard expansion.</para>
       </formalpara>
 
       <formalpara><title>Quitting</title>
@@ -534,18 +557,15 @@
         is part of libc and you should not need to do anything
         special.</para>
       
-      <formalpara><title>External file types</title><para>&RCL; uses
-      external applications 
+      <formalpara id="rcl.install.building.prereqs.external">
+	  <title>External file types</title>
+
+      <para>&RCL; uses external applications 
         to index some file types. You need to install them for the
         file types that you wish to have indexed:</para>
         </formalpara>
 
       <itemizedlist>
-
-        <listitem><para>MS Word: <ulink
-        url="http://www.winfield.demon.nl"> 
-            antiword</ulink>.</para>
-          </listitem>
 
         <listitem><para>PDF: pdftotext is part of the <ulink
             url="http://www.foolabs.com/xpdf/">Xpdf</ulink> package.</para>
@@ -556,13 +576,32 @@
             pstotext</ulink>.</para>
           </listitem>
 
+        <listitem><para>MS Word: <ulink url="http://www.winfield.demon.nl"> 
+            antiword</ulink>.</para>
+          </listitem>
+
         <listitem>
             <para>RTF: <ulink
             url="http://www.gnu.org/software/unrtf/unrtf.html">unrtf</ulink>
           </para>
-          </listitem>
+	</listitem>
+
+	<listitem>
+            <para>dvi: <ulink
+	       url="http://www.radicaleye.com/dvips.html">dvips</ulink></para>
+        </listitem>
+
+	<listitem>
+            <para>djvu: 
+	    <ulink
+	       url="http://djvulibre.djvuzone.org/doc/index.html">DjVuLibre
+	    </ulink></para>
+        </listitem>
           
         </itemizedlist>
+
+	<para>Text, Html, mail folders and Openoffice files are
+	processed internally.</para>
 
       <sect2 id="rcl.install.building.build">
         <title>Building</title>
@@ -673,16 +712,21 @@
     <sect1 id="rcl.install.config">
       <title>Configuration overview</title>
 
-      <para>The personal configuration files and the database are
-        normally kept in
-        the <filename>.recoll</filename> directory in your home (this
-        can be changed with the <literal>RECOLL_CONFDIR</literal>
-        environment variable, and a parameter inside the main
-        configuration file). If this directory does not exist when
-          <command>recoll</command> or 
-        <command>recollindex</command> are started, the
-        directory will be created and the sample configuration files will
-        be copied. <command>recoll</command> will give you a
+      <para>There are two sets of configuration files. The system-wide
+      files are kept in a directory named like
+      <filename>/usr/[local/]share/recoll/examples</filename>, 
+      they define default values for the system. A parallel set of
+      files exists  in the <filename>.recoll</filename> directory in
+      your home (this can be changed with the 
+      <literal>RECOLL_CONFDIR</literal> environment variable. 
+      The database is also kept in <filename>.recoll</filename> by
+        default, (this can be changed by a configuration
+        parameter).</para>
+      <para>If the <filename>.recoll</filename> directory does not
+      exist when <command>recoll</command> or 
+        <command>recollindex</command> are started, it
+        will be created with a set of empty configuration files.
+        <command>recoll</command> will give you a
         chance to edit the configuration file before starting
         indexation. <command>recollindex</command> will
         proceed immediately.</para>
@@ -698,7 +742,7 @@
         files. You will have to edit them by hand for 
         now (there is still some hope for a GUI configuration tool
         in the future). The most accurate documentation for the
-        configuration parameters is given by comments inside the sample
+        configuration parameters is given by comments inside the default
         files, and we will just give a general overview here.</para>
 
         <para>All configuration files share the same format. For
@@ -741,7 +785,7 @@
       <sect2 id="rcl.install.config.recollconf">
         <title>Main configuration file</title>
 
-        <para><filename>~/.recoll/recoll.conf</filename> is the main
+        <para><filename>recoll.conf</filename> is the main
          configuration file. It defines things like
          what to index (top directories and things to ignore), and the
          default character set to use for document types which do not
@@ -866,6 +910,17 @@
             </listitem>
           </varlistentry>
 
+	  <varlistentry><term><literal>indexallfilenames</literal></term>
+	    <listitem><para>&RCL; indexes file names in a special
+	    section of the database to allow specific file names
+	    searches using wild cards. This parameter decides if 
+            file name indexing is performed only for files with mime
+            types that would qualify them for full text indexation, or
+            for all files inside the selected subtrees, independant of
+            mime type.</para>
+	    </listitem>
+	  </varlistentry>
+
         </variablelist>
 
       </sect2>
@@ -873,12 +928,13 @@
       <sect2 id="rclinstall.config.mimemap">
         <title>The mimemap file</title>
 
-        <para><filename>~/.recoll/mimemap</filename> specifies the
-        file name extension to mime type mappings.</para> <para>For
-        file names without an extension, or with an unknown one, the
-        system's <command>file -i</command> command will be executed
-        to determine the mime type (this can be switched off inside
-        the main configuration file).</para>
+        <para><filename>mimemap</filename> specifies the
+        file name extension to mime type mappings.</para> 
+
+	<para>For file names without an extension, or with an unknown
+        one, the system's <command>file -i</command> command will be
+        executed to determine the mime type (this can be switched off
+        inside the main configuration file).</para>
 
         <para><filename>mimemap</filename> also has a list of
         extensions which should be ignored totally (to avoid losing
@@ -906,7 +962,7 @@
       <sect2 id="rclinstall.config.mimeconf">
         <title>The mimeconf file</title>
 
-        <para><filename>~/.recoll/mimeconf</filename> specifies how the
+        <para><filename>mimeconf</filename> specifies how the
          different mime types are handled for indexation, and for
          display.</para>
 
@@ -914,11 +970,13 @@
          good idea except if you are a &RCL; developper.</para>
 
         <para>You may want to adjust the external viewers defined in
-         (ie: html is either
-         previewed internally or displayed using 
-         <application>firefox</application>, but you may prefer 
-         <application>mozilla</application>...). Look for the
-         <literal>[view]</literal> section.</para>
+         (ie: html is either previewed internally or displayed using
+         <application>firefox</application>, but you may prefer
+         <application>mozilla</application>, your
+         <application>openoffice.org</application> 
+         program might be named <command>oofice</command> instead of
+         <command>openoffice</command> ...). Look
+         for the <literal>[view]</literal> section.</para>
 
         <para>You can also change the icons which are displayed by
          <command>recoll</command> in the result lists (the values are

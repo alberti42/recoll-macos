@@ -3,16 +3,16 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on thread release debug
 
-HEADERS	+= rclmain.h
+HEADERS	+= rclmain.h rclreslist.h
 
 SOURCES	+= main.cpp \
 	rclmain.cpp \
 	idxthread.cpp \
 	plaintorich.cpp \
-	guiutils.cpp
+	guiutils.cpp \
+	rclreslist.cpp
 
-FORMS	= reslistb.ui \
-	recollmain.ui \
+FORMS	=  recollmain.ui \
 	advsearch.ui \
 	preview/preview.ui \
 	sort.ui \
@@ -46,4 +46,4 @@ contains( UNAME, [lL]inux ) {
           LIBS -= -liconv
 }
 
-TRANSLATIONS = recoll_fr.ts
+TRANSLATIONS = recoll_fr.ts recoll_ru.ts

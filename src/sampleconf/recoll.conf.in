@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.6 2006-01-10 11:07:21 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.7 2006-03-28 12:49:03 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This should be copied to
 #   ~/.recoll/recoll.conf 
@@ -9,10 +9,10 @@ topdirs = ~
 # Wildcard expressions for names of files and directories that we should
 # ignore. If you need index mozilla/thunderbird mail folders, don't put
 # ".*" in there (as was the case with an older sample config)
-skippedNames = *~ #* bin CVS  Cache caughtspam  tmp
+skippedNames = *~ #* bin CVS  Cache cache* caughtspam  tmp .thumbnails
 
-# Debug messages. 4 is quite verbose. 3 would be errors only. 
-loglevel = 4
+# Debug messages. 3 is errors/warnings only. 4 would be quite verbose.
+loglevel = 3
 logfilename = stderr
 
 # Place to search for executable filters. If RECOLL_FILTERSDIR is set in
@@ -23,11 +23,6 @@ filtersdir = @prefix@/share/recoll/filters
 # indexing. Stemmer names can be found on http://www.xapian.org 
 # The flag to perform stem expansion at query time is now set from the GUI
 indexstemminglanguages = english french
-
-# Name of the file suffix to mime-type map file. 
-mimemapfile = mimemap
-# Name of the mime-type to filter type/name map file. 
-mimeconffile = mimeconf
 
 # The only reason to change this would be if you want to change the icons
 # displayed in the result list
@@ -49,6 +44,11 @@ guesscharset = 0
 # identification ? This may be useful, but will usually cause the
 # indexation of many bogus 'text' files
 usesystemfilecommand = 1
+
+# Should we index the file names of files with mime types we don't
+# know? (we can otherwise just ignore them)
+indexallfilenames = 1
+
 
 # You could specify different parameters for a subdirectory like this:
 #[~/hungariandocs/plain]
