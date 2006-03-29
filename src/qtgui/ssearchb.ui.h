@@ -28,6 +28,13 @@
 
 #include "debuglog.h"
 
+void SSearchBase::init()
+{
+    searchTypCMB->insertItem(tr("Any term"));
+    searchTypCMB->insertItem(tr("All terms"));
+    searchTypCMB->insertItem(tr("File name"));
+}
+
 void SSearchBase::searchTextChanged( const QString & text )
 {
     if (text.isEmpty()) {
@@ -45,13 +52,18 @@ void SSearchBase::startSimpleSearch()
 
     Rcl::AdvSearchData sdata;
     QCString u8 =  queryText->text().utf8();
-
-    if (isFNameCB->isChecked())
-	sdata.filename = u8;
-    else if (allTermsCB->isChecked())
-	sdata.allwords = u8;
-    else
+    switch (searchTypCMB->currentItem()) {
+    case 0:
+    default:
 	sdata.orwords = u8;
+	break;
+    case 1:
+	sdata.allwords = u8;
+	break;
+    case 2:
+	sdata.filename = u8;
+	break;
+    }
 
     emit startSearch(sdata);
 }

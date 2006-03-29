@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.37 2006-02-02 08:35:18 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.38 2006-03-29 17:31:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.37 2006-02-02 08:35:18 dockes Exp $ 
 #include <qtimer.h>
 #include <qmessagebox.h>
 #include <qcheckbox.h>
-
+#include <qcombobox.h>
 
 #include "rcldb.h"
 #ifndef NO_NAMESPACES
@@ -103,7 +103,7 @@ static void recollCleanup()
     if (mainWindow) {
 	prefs.mainwidth = mainWindow->width();
 	prefs.mainheight = mainWindow->height();
-	prefs.ssall = mainWindow->sSearch->allTermsCB->isChecked();
+	prefs.ssearchTyp = mainWindow->sSearch->searchTypCMB->currentItem();
     }
     rwSettings(true);
     stop_idxthread();
@@ -188,7 +188,7 @@ int main( int argc, char ** argv )
     mainWindow->resize(s);
 
 
-    mainWindow->sSearch->allTermsCB->setChecked(prefs.ssall);
+    mainWindow->sSearch->searchTypCMB->setCurrentItem(prefs.ssearchTyp);
 
     if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
 	// Note: this will have to be replaced by a call to a

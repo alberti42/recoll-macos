@@ -8,20 +8,20 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>525</width>
-            <height>48</height>
+            <width>593</width>
+            <height>44</height>
         </rect>
     </property>
     <property name="caption">
         <string>SSearchBase</string>
     </property>
-    <vbox>
+    <hbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout29</cstring>
+                <cstring>layout2</cstring>
             </property>
             <hbox>
                 <property name="name">
@@ -54,42 +54,19 @@
                     <property name="text">
                         <string>Search</string>
                     </property>
+                    <property name="accel">
+                        <string></string>
+                    </property>
                     <property name="toolTip" stdset="0">
                         <string>Start query</string>
                     </property>
                 </widget>
-                <widget class="QCheckBox">
+                <widget class="QComboBox">
                     <property name="name">
-                        <cstring>allTermsCB</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;All terms</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+A</string>
+                        <cstring>searchTypCMB</cstring>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Do documents have to contain all terms in query?</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>isFNameCB</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;File name</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+F</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Search is on file names only, and may use wildcards.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>If this is set, the search will only be performed on file names. Wildcards ? and * can be used and will be matched as in a shell command line.</string>
+                        <string>Choose type of search: any term, all terms, filename with possible wildcards.</string>
                     </property>
                 </widget>
                 <widget class="QLineEdit">
@@ -122,7 +99,7 @@
                 </widget>
             </hbox>
         </widget>
-    </vbox>
+    </hbox>
 </widget>
 <connections>
     <connection>
@@ -161,5 +138,8 @@
     <slot>searchTextChanged( const QString &amp; text )</slot>
     <slot>startSimpleSearch()</slot>
 </slots>
+<functions>
+    <function>init()</function>
+</functions>
 <layoutdefaults spacing="6" margin="0"/>
 </UI>
