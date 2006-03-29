@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.17 2006-03-20 16:05:41 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.18 2006-03-29 13:08:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -97,4 +97,16 @@ MimeHandler *getMimeHandler(const string &mtype, RclConfig *cfg)
     } else {
 	return 0;
     }
+}
+
+
+/// Can this mime type be interned (according to config) ?
+bool canIntern(const std::string mtype, RclConfig *cfg)
+{
+    if (mtype.empty())
+	return false;
+    string hs = cfg->getMimeHandlerDef(mtype);
+    if (hs.empty())
+	return false;
+    return true;
 }

@@ -1,4 +1,4 @@
-# @(#$Id: Makefile,v 1.9 2006-01-19 12:01:42 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.10 2006-03-29 13:08:08 dockes Exp $  (C) 2005 J.F.Dockes
 depth = ..
 include $(depth)/mk/sysconf
 
@@ -31,6 +31,14 @@ internfile : $(INTERNFILE_OBJS)
 trinternfile.o : internfile.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_INTERNFILE -c -o trinternfile.o \
 	       internfile.cpp
+
+RCLCONFIG_OBJS= trrclconfig.o  $(BIGLIB) $(MIMELIB)
+rclconfig : $(RCLCONFIG_OBJS) 
+	$(CXX) $(ALL_CXXFLAGS) -o rclconfig $(RCLCONFIG_OBJS) \
+	       $(LIBICONV) $(LIBSYS)
+trrclconfig.o : rclconfig.cpp 
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_RCLCONFIG -c -o trrclconfig.o \
+	       rclconfig.cpp
 
 clean:
 	rm -f *.o $(PROGS)

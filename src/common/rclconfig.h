@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.18 2006-03-29 11:18:14 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.19 2006-03-29 13:08:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -110,7 +110,10 @@ class RclConfig {
 	}
 	return *this;
     }
-	
+    std::list<string> getConfNames(const string &sk) {
+	return m_conf->getNames(sk);
+    }
+
  private:
     int m_ok;
     string m_reason;    // Explanation for bad state

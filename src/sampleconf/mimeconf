@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.14 2006-03-28 09:38:12 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.15 2006-03-29 13:08:08 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -75,6 +75,8 @@ image/vnd.djvu = djview %f
 application/x-dvi = xdvi %f
 
 audio/mpeg = xmms %f
+image/png = xv %f
+image/jpeg = xv %f
 
 # Icons to be used in the result list.
 [icons]

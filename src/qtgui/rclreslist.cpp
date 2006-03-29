@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.6 2006-03-29 11:18:14 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.7 2006-03-29 13:08:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -21,6 +21,7 @@ static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.6 2006-03-29 11:18:14 dockes E
 #include "docseq.h"
 #include "transcode.h"
 #include "pathut.h"
+#include "mimehandler.h"
 
 #include "rclreslist.h"
 #include "moc_rclreslist.cpp"
@@ -316,12 +317,19 @@ void RclResList::showResultPage()
 	result += string(perbuf) + sizebuf + "<b>" + doc.title + "</b><br>";
 	result += doc.mimetype + "&nbsp;";
 	result += string(datebuf) + "&nbsp;&nbsp;&nbsp;";
+
+
+	// Set up the preview and edit links
 	char vlbuf[100];
-	sprintf(vlbuf, "\"P%d\"", m_winfirst+i);
-	result += string("<a href=") + vlbuf + ">" + "Preview" + "</a>" 
-	    + "&nbsp;&nbsp;";
-	sprintf(vlbuf, "E%d", m_winfirst+i);
-	result += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
+	if (canIntern(doc.mimetype, rclconfig)) { 
+	    sprintf(vlbuf, "\"P%d\"", m_winfirst+i);
+	    result += string("<a href=") + vlbuf + ">" + "Preview" + "</a>" 
+		+ "&nbsp;&nbsp;";
+	}
+	if (!rclconfig->getMimeViewerDef(doc.mimetype).empty()) {
+	    sprintf(vlbuf, "E%d", m_winfirst+i);
+	    result += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
+	}
 	result += string("<br>");
 
 	if (!img_name.empty()) {

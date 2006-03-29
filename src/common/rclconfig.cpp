@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.25 2006-03-29 11:18:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.26 2006-03-29 13:08:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.25 2006-03-29 11:18:14 dockes E
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#ifndef TEST_RCLCONFIG
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
@@ -384,3 +385,39 @@ void RclConfig::initFrom(const RclConfig& r)
     defcharset = r.defcharset;
     guesscharset = r.guesscharset;
 }
+
+#else // -> Test
+
+#include <stdio.h>
+#include <signal.h>
+#include <sys/stat.h>
+
+#include <iostream>
+#include <list>
+#include <string>
+
+using namespace std;
+
+#include "debuglog.h"
+#include "rclinit.h"
+#include "rclconfig.h"
+
+int main(int, const char **)
+{
+    string reason;
+    RclConfig *config = recollinit(0, 0, reason);
+    if (config == 0 || !config->ok()) {
+	cerr << "Configuration problem: " << reason << endl;
+	exit(1);
+    }
+    list<string> names = config->getConfNames("");
+    names.sort();
+    names.unique();
+    for (list<string>::iterator it = names.begin(); it != names.end();it++) {
+	string value;
+	config->getConfParam(*it, value);
+	cout << *it << " -> [" << value << "]" << endl;
+    }
+}
+
+#endif // TEST_RCLCONFIG

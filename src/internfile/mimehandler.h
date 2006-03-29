@@ -16,7 +16,7 @@
  */
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-/* @(#$Id: mimehandler.h,v 1.11 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimehandler.h,v 1.12 2006-03-29 13:08:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -70,5 +70,8 @@ class MimeHandler {
  * returned pointer should be deleted by caller
  */
 extern MimeHandler *getMimeHandler(const std::string &mtyp, RclConfig *cfg);
+
+/// Can this mime type be interned ?
+extern bool canIntern(const std::string mimetype, RclConfig *cfg);
 
 #endif /* _MIMEHANDLER_H_INCLUDED_ */

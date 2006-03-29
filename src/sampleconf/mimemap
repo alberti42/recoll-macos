@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.13 2006-03-28 09:38:13 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.14 2006-03-29 13:08:08 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll: associations of file name extensions to mime types
 .txt = text/plain
@@ -50,16 +50,19 @@
 .rtf = text/rtf
 
 .mp3 = audio/mpeg
+.png = image/png
+.jpg = image/jpeg
 
 # A list of stuff that we don't want to touch at all (for now). Having the
 # suffixes listed in there speeds up things quite a lot by avoiding
-# unneeded decompression or 'file' calls
+# unneeded decompression or 'file' calls. File names still get indexed if
+# indexallfilenames is set
 recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
        .c .h .cpp .m4 .tcl .js .sh .pl .awk .php .php3 \
        .o .lib .dll .a \
        .dat .bak .rdf .log .db .ini .msf \
        .gnm .gnumeric .tex \
-       .jpg .gif .bmp .xpm .png \
+       .gif .bmp .xpm \
        ,v ~ #
 
 [~/.gaim]
