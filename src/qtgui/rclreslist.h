@@ -1,6 +1,6 @@
 #ifndef _RCLRESLIST_H_INCLUDED_
 #define _RCLRESLIST_H_INCLUDED_
-/* @(#$Id: rclreslist.h,v 1.3 2006-03-21 15:11:30 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: rclreslist.h,v 1.4 2006-03-29 11:18:14 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <qtextbrowser.h>
 #include <qpopupmenu.h>
@@ -30,6 +30,7 @@ class RclResList : public QTextBrowser
     virtual void menuPreview();
     virtual void menuEdit();
     virtual void menuCopyFN();
+    virtual void menuCopyURL();
 
  signals:
     void nextPageAvailable(bool);

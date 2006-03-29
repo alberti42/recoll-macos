@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.6 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.7 2006-03-29 11:18:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -40,14 +40,15 @@ using std::string;
 #endif
 
 bool transcode(const string &in, string &out, const string &icode,
-	       const string &ocode)
+	       const string &ocode, int *ecnt)
 {
     iconv_t ic;
     bool ret = false;
     const int OBSIZ = 8192;
     char obuf[OBSIZ], *op;
     bool icopen = false;
-
+    if (ecnt)
+	*ecnt = 0;
     out.erase();
     size_t isiz = in.length();
     out.reserve(isiz);
@@ -79,6 +80,8 @@ bool transcode(const string &in, string &out, const string &icode,
 			 ip - in.c_str(), out.length() + OBSIZ - osiz));
 		out.append(obuf, OBSIZ - osiz);
 		out += "?";
+		if (ecnt)
+		    (*ecnt)++;
 		ip++;isiz--;
 		continue;
 	    }

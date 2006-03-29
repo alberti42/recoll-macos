@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.58 2006-03-20 16:05:41 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.59 2006-03-29 11:18:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -389,8 +389,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
     // /////// Split and index terms in document body and auxiliary fields
     string noacc;
 
-    // Split and index file path. Do we really want to do this? Or do
-    // it with the simple file name only ?
+    // Split and index file name as document term(s)
     if (dumb_string(doc.utf8fn, noacc)) {
 	splitter.text_to_words(noacc);
 	splitData.basepos += splitData.curpos + 100;
@@ -432,7 +431,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
     // Mime type
     newdocument.add_term("T" + doc.mimetype);
 
-    // Path name
+    // Path name term. This is used for existence/uptodate checks
     string hash;
     pathHash(fn, hash, PATHHASHLEN);
     LOGDEB2(("Rcl::Db::add: pathhash [%s]\n", hash.c_str()));
@@ -440,11 +439,11 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
     newdocument.add_term(pathterm);
 
     // Simple file name. This is used for file name searches only. We index
-    // it with a term prefix
-    string sfn = path_getsimple(doc.utf8fn);
-    if (dumb_string(sfn, noacc) && !noacc.empty()) {
-	sfn = string("XSFN") + noacc;
-	newdocument.add_term(sfn);
+    // it with a term prefix. utf8fn used to be the full path, but it's now
+    // the simple file name.
+    if (dumb_string(doc.utf8fn, noacc) && !noacc.empty()) {
+	noacc = string("XSFN") + noacc;
+	newdocument.add_term(noacc);
     }
 
     // Internal path: with path, makes unique identifier for documents
@@ -1047,16 +1046,15 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
         // with XSFN) from the database. 
 	// We build an OR query with the expanded values if any.
 	string pattern;
-	// We take the data either from allwords or orwords to avoid
-	// interaction with the allwords checkbox
 	dumb_string(sdata.filename, pattern);
 
-	// If pattern is not quoted, we add * at each end: match any
-	// substring
-	if (pattern[0] == '"' && pattern[pattern.size()-1] == '"')
+	// If pattern is not quoted, and has no wildcards, we add * at
+	// each end: match any substring
+	if (pattern[0] == '"' && pattern[pattern.size()-1] == '"') {
 	    pattern = pattern.substr(1, pattern.size() -2);
-	else 
+	} else if (pattern.find_first_of("*?[") == string::npos) {
 	    pattern = "*" + pattern + "*";
+	} // else let it be
 
 	LOGDEB((" pattern: [%s]\n", pattern.c_str()));
 

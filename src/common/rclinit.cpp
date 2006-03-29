@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.4 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.5 2006-03-29 11:18:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@ static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.4 2006-01-23 13:32:28 dockes Exp 
 
 #include <stdio.h>
 #include <signal.h>
+#include <locale.h>
 
 #include "debuglog.h"
 #include "rclconfig.h"
@@ -59,6 +60,10 @@ RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int),
 	int lev = atoi(loglevel.c_str());
 	DebugLog::getdbl()->setloglevel(lev);
     }
-    
+
+    // Make sure the locale is set. This is only for converting file names 
+    // to utf8 for indexation.
+    setlocale(LC_CTYPE, "");
+
     return config;
 }

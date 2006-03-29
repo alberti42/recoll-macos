@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.26 2006-03-22 16:24:41 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.27 2006-03-29 11:18:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -195,7 +195,7 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
 ///
 /// Accent and majuscule handling are performed by the db module when doing
 /// the actual indexing work. The Rcl::Doc created by internfile()
-/// contains pretty raw utf8 data.
+/// mostly contains pretty raw utf8 data.
 FsTreeWalker::Status 
 DbIndexer::processone(const std::string &fn, const struct stat *stp, 
 		      FsTreeWalker::CbFlag flg)
@@ -239,10 +239,11 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	doc.ipath = ipath;
 
 	// File name transcoded to utf8 for indexation. 
-	// We actually might want a separate param for the filename charset
-	string charset = config->getDefCharset();
-	// If this fails, the path won't be indexed, no big deal
-	transcode(fn, doc.utf8fn, charset, "UTF-8");
+	string charset = config->getDefCharset(true);
+	// If this fails, the file name won't be indexed, no big deal
+	// Note that we used to do the full path here, but I ended up believing
+	// that it made more sense to use only the file name
+	transcode(path_getsimple(fn), doc.utf8fn, charset, "UTF-8");
 	// Do database-specific work to update document data
 	if (!db.add(fn, doc, stp)) 
 	    return FsTreeWalker::FtwError;

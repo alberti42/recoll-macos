@@ -16,7 +16,7 @@
  */
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
-/* @(#$Id: pathut.h,v 1.7 2006-03-20 09:54:22 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: pathut.h,v 1.8 2006-03-29 11:18:15 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -40,4 +40,8 @@ extern std::string path_canon(const std::string &s);
 /// Use glob(3) to return a list of file names matching pattern inside dir
 extern std::list<std::string> path_dirglob(const std::string &dir, 
 					   const std::string pattern);
+/// Encode according to rfc 1738
+extern std::string url_encode(const std::string url, 
+			      std::string::size_type offs);
+
 #endif /* _PATHUT_H_INCLUDED_ */

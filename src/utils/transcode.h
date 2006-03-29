@@ -16,7 +16,7 @@
  */
 #ifndef _TRANSCODE_H_INCLUDED_
 #define _TRANSCODE_H_INCLUDED_
-/* @(#$Id: transcode.h,v 1.3 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: transcode.h,v 1.4 2006-03-29 11:18:15 dockes Exp $  (C) 2004 J.F.Dockes */
 /** 
  * A very minimal c++ized interface to iconv
  */
@@ -24,6 +24,7 @@
 
 extern bool transcode(const std::string &in, std::string &out, 
 		      const std::string &icode,
-		      const std::string &ocode);
+		      const std::string &ocode, 
+		      int *ecnt = 0);
 
 #endif /* _TRANSCODE_H_INCLUDED_ */

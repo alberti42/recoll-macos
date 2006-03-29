@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.5 2006-03-22 11:17:49 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.6 2006-03-29 11:18:14 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -19,6 +19,8 @@ static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.5 2006-03-22 11:17:49 dockes E
 #include "guiutils.h"
 #include "pathut.h"
 #include "docseq.h"
+#include "transcode.h"
+#include "pathut.h"
 
 #include "rclreslist.h"
 #include "moc_rclreslist.cpp"
@@ -242,7 +244,7 @@ void RclResList::showResultPage()
 		.arg(resCnt);
 	    append(chunk);
 	}
-	    
+	   
 	gotone = true;
 	
 	// Determine icon to display if any
@@ -265,9 +267,17 @@ void RclResList::showResultPage()
 	sprintf(perbuf, "%3d%% ", percent);
 
 	// Make title out of file name if none yet
-	if (doc.title.empty()) 
-	    doc.title = path_getsimple(doc.url);
+	string fcharset = rclconfig->getDefCharset(true);
+	if (doc.title.empty()) {
+	    transcode(path_getsimple(doc.url), doc.title, fcharset, "UTF-8");
+	}
 
+	// Printable url: either utf-8 if transcoding succeeds, or url-encoded
+	string url; int ecnt = 0;
+	if (!transcode(doc.url, url, fcharset, "UTF-8", &ecnt) || ecnt) {
+	    url = url_encode(doc.url, 7);
+	}
+	
 	// Document date: either doc or file modification time
 	char datebuf[100];
 	datebuf[0] = 0;
@@ -317,7 +327,7 @@ void RclResList::showResultPage()
 	if (!img_name.empty()) {
 	    result += "<img source=\"" + img_name + "\" align=\"left\">";
 	}
-	result += "<i>" + doc.url + +"</i><br>";
+	result += "<i>" + url + +"</i><br>";
 	if (!abst.empty())
 	    result +=  abst + "<br>";
 	if (!doc.keywords.empty())
@@ -417,6 +427,7 @@ QPopupMenu *RclResList::createPopupMenu(const QPoint& pos)
     popup->insertItem(tr("&Preview"), this, SLOT(menuPreview()));
     popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
     popup->insertItem(tr("&Copy File Name"), this, SLOT(menuCopyFN()));
+    popup->insertItem(tr("Copy &Url"), this, SLOT(menuCopyURL()));
     return popup;
 }
 
@@ -434,6 +445,15 @@ void RclResList::menuCopyFN()
     if (getDoc(m_docnum, doc)) {
 	// Our urls currently always begin with "file://"
 	QApplication::clipboard()->setText(doc.url.c_str()+7, 
+					   QClipboard::Selection);
+    }
+}
+void RclResList::menuCopyURL()
+{
+    Rcl::Doc doc;
+    if (getDoc(m_docnum, doc)) {
+	string url =  url_encode(doc.url, 7);
+	QApplication::clipboard()->setText(url.c_str(), 
 					   QClipboard::Selection);
     }
 }

@@ -351,11 +351,13 @@ class LoadThread : public QThread {
     string ipath;
     string *mtype;
     string tmpdir;
-
+    int loglevel;
  public: 
     LoadThread(int *stp, Rcl::Doc *odoc, string fn, string ip, string *mt) 
 	: statusp(stp), out(odoc), filename(fn), ipath(ip), mtype(mt) 
-	{}
+	{
+	    loglevel = DebugLog::getdbl()->getlevel();
+	}
     ~LoadThread() {
 	if (tmpdir.length()) {
 	    wipedir(tmpdir);
@@ -363,7 +365,7 @@ class LoadThread : public QThread {
 	}
     }
     virtual void run() {
-	DebugLog::getdbl()->setloglevel(DEBDEB1);
+	DebugLog::getdbl()->setloglevel(loglevel);
 	if (!maketmpdir(tmpdir)) {
 	    QMessageBox::critical(0, "Recoll",
 				  Preview::tr("Cannot create temporary directory"));
@@ -389,14 +391,17 @@ class ToRichThread : public QThread {
     list<string> &terms;
     string& firstTerm;
     QString &out;
+    int loglevel;
  public:
     ToRichThread(string &i, list<string> &trms, 
 		 string& ft, QString &o) 
 	: in(i), terms(trms), firstTerm(ft), out(o)
-    {}
+    {
+	    loglevel = DebugLog::getdbl()->getlevel();
+    }
     virtual void run()
     {
-	DebugLog::getdbl()->setloglevel(DEBDEB1);
+	DebugLog::getdbl()->setloglevel(loglevel);
 	string rich;
 	try {
 	    plaintorich(in, rich, terms, &firstTerm);

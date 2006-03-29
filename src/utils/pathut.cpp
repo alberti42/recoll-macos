@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.9 2006-02-02 08:58:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.10 2006-03-29 11:18:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -189,6 +189,41 @@ list<std::string> path_dirglob(const std::string &dir,
     return res;
 }
 
+std::string url_encode(const std::string url, string::size_type offs)
+{
+    string out = url.substr(0, offs);
+    const char *cp = url.c_str();
+    for (string::size_type i = offs; i < url.size(); i++) {
+	int c;
+	char *h = "0123456789ABCDEF";
+	c = cp[i];
+	if(c <= 0x1f || 
+	   c >= 0x7f || 
+	   c == '<' ||
+	   c == '>' ||
+	   c == ' ' ||
+	   c == '\t'||
+	   c == '"' ||
+	   c == '#' ||
+	   c == '%' ||
+	   c == '{' ||
+	   c == '}' ||
+	   c == '|' ||
+	   c == '\\' ||
+	   c == '^' ||
+	   c == '~'||
+	   c == '[' ||
+	   c == ']' ||
+	   c == '`') {
+	    out += '%';
+	    out += h[(c >> 4) & 0xf];
+	    out += h[c & 0xf];
+	} else {
+	    out += char(c);
+	}
+    }
+    return out;
+}
 
 #else // TEST_PATHUT
 

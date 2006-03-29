@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.26 2006-03-20 16:05:41 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.27 2006-03-29 11:18:14 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -53,10 +53,14 @@ class Doc {
  public:
     // These fields potentially go into the document data record
     // We indicate the routine that sets them up during indexing
-    string url;          // Computed from fn by Db::add
-    string utf8fn;       // Transcoded version of the file path. 
+    string url;          // This is just "file://" + binary filename. 
+                         // No transcoding: this is used to access files
+                         // Computed from fn by Db::add
+    string utf8fn;       // Transcoded version of the simple file name for
+                         // SFN-prefixed specific file name indexation
                          // Set by DbIndexer::processone
-    string ipath;        // Set by DbIndexer::processone
+    string ipath;        // Internal path for multi-doc files. Ascii
+                         // Set by DbIndexer::processone
     string mimetype;     // Set by FileInterner::internfile
     string fmtime;       // File modification time as decimal ascii unix time
                          // Set by DbIndexer::processone

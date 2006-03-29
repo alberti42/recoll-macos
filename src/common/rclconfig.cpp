@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.24 2006-03-22 14:25:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.25 2006-03-29 11:18:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,8 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.24 2006-03-22 14:25:46 dockes E
 #include <unistd.h>
 #include <stdio.h>
 #include <errno.h>
+#include <langinfo.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -140,26 +142,40 @@ bool RclConfig::getConfParam(const std::string &name, bool *bvp)
     return true;
 }
 
-// If defcharset was set (from the config or a previous call), use it.
-// Else, try to guess it from LANG. 
-// Use iso8859-1 as ultimate default
-// defcharset is reset on setKeyDir()
-const string& RclConfig::getDefCharset() 
+// Get charset to be used for transcoding to utf-8 if unspecified by doc
+// For document contents:
+//   If defcharset was set (from the config or a previous call), use it.
+//   Else, try to guess it from the locale
+//   Use iso8859-1 as ultimate default
+//   defcharset is reset on setKeyDir()
+// For filenames, same thing except that we do not use the config file value
+// (only the locale).
+const string& RclConfig::getDefCharset(bool filename) 
 {
-    if (defcharset.empty()) {
+    static string localecharset; // This supposedly never changes
+    if (localecharset.empty()) {
 	const char *cp;
-	if ((cp = getenv("LANG"))) {
-	    cp = strrchr(cp, '.');
-	    if (cp) {
-		cp++;
-		if (*cp)
-		    defcharset = string(cp);
-	    }
+	cp = nl_langinfo(CODESET);
+	// We don't keep US-ASCII. It's better to use a superset
+	// Ie: me have a C locale and some french file names, and I
+	// can't imagine a version of iconv that couldn't translate
+	// from iso8859?
+	if (cp && *cp && strcmp(cp, "US-ASCII")) {
+	    localecharset = string(cp);
+	} else {
+	    localecharset = string("ISO8859-1");
 	}
-	if (defcharset.empty())
-	    defcharset = string("ISO8859-1");
     }
-    return defcharset;
+
+    if (defcharset.empty()) {
+	defcharset = localecharset;
+    }
+
+    if (filename) {
+	return localecharset;
+    } else {
+	return defcharset;
+    }
 }
 
 // Get all known document mime values. We get them from the mimeconf
