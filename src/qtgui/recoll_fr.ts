@@ -98,7 +98,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Indexing in progress</source>
-        <translation>Indexation en cours</translation>
+        <translation type="obsolete">Indexation en cours</translation>
     </message>
     <message>
         <source>No external viewer configured for mime type </source>
@@ -173,6 +173,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Starting help browser </source>
         <translation>Demarrage de l&apos;outil de consultation de l&apos;aide</translation>
+    </message>
+    <message>
+        <source>Indexing in progress: </source>
+        <translation>Indexation en cours: </translation>
     </message>
 </context>
 <context>
@@ -325,9 +329,13 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>About Recoll</source>
         <translation>À propos de Recoll</translation>
     </message>
+    <message>
+        <source>Ctrl+Q</source>
+        <translation>Ctrl+Q</translation>
+    </message>
 </context>
 <context>
-    <name>ResListBase</name>
+    <name>RclResList</name>
     <message>
         <source>Result list</source>
         <translation>Liste de résultats</translation>
@@ -337,9 +345,46 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Document inaccessible</translation>
     </message>
     <message>
+        <source>Show query details</source>
+        <translation>Afficher la requête</translation>
+    </message>
+    <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
 </source>
         <translation>&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
+</translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation>&amp;Voir contenu</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation>&amp;Editer</translation>
+    </message>
+    <message>
+        <source>&amp;Copy File Name</source>
+        <translation>&amp;Copier le nom de fichier</translation>
+    </message>
+    <message>
+        <source>Copy &amp;Url</source>
+        <translation>Copier l&apos;&amp;Url</translation>
+    </message>
+</context>
+<context>
+    <name>ResListBase</name>
+    <message>
+        <source>Result list</source>
+        <translation type="obsolete">Liste de résultats</translation>
+    </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation type="obsolete">Document inaccessible</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
+</source>
+        <translation type="obsolete">&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
     </message>
 </context>
@@ -371,23 +416,39 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>&amp;All terms</source>
-        <translation>&amp;Tous </translation>
+        <translation type="obsolete">&amp;Tous </translation>
     </message>
     <message>
         <source>Alt+A</source>
-        <translation>Alt+T</translation>
+        <translation type="obsolete">Alt+T</translation>
     </message>
     <message>
         <source>Do documents have to contain all terms in query?</source>
-        <translation>Est-ce que tous les termes doivent se trouver dans chaque document ?</translation>
+        <translation type="obsolete">Est-ce que tous les termes doivent se trouver dans chaque document ?</translation>
     </message>
     <message>
         <source>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</source>
-        <translation>Détermine si les documents doivent chacun contenir tous les termes, ou si ils seront simplement triés par pertinence, avec possibilité d&apos;absence de certains termes.</translation>
+        <translation type="obsolete">Détermine si les documents doivent chacun contenir tous les termes, ou si ils seront simplement triés par pertinence, avec possibilité d&apos;absence de certains termes.</translation>
     </message>
     <message>
         <source>Enter search terms here</source>
         <translation>Entrer les termes à chercher</translation>
+    </message>
+    <message>
+        <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
+        <translation>Choisir le type de recherche: termes, tous les termes, nom de fichiers avec *? possibles.</translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation>Certains termes</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation>Tous les termes</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation>Nom de fichier</translation>
     </message>
 </context>
 <context>
@@ -514,7 +575,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Search For</source>
-        <translation>Rechercher</translation>
+        <translation type="obsolete">Rechercher</translation>
     </message>
     <message>
         <source>All these words</source>
@@ -546,11 +607,11 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>ButinerParcourir</translation>
+        <translation>Parcourir</translation>
     </message>
     <message>
         <source>Restrict results to files in subtree:</source>
-        <translation>Restraindre les résultats aux fichiers de l&apos;arborescenc:</translation>
+        <translation>Restreindre les résultats aux fichiers de l&apos;arborescence:</translation>
     </message>
     <message>
         <source>Start Search</source>
@@ -575,6 +636,18 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     <message>
         <source>&lt;----- All</source>
         <translation>&lt;----- Tout</translation>
+    </message>
+    <message>
+        <source>Search for files&lt;br&gt;having all of:</source>
+        <translation>Rechercher les fichiers&lt;br&gt;vérifiant:</translation>
+    </message>
+    <message>
+        <source>All non blank fields will be combined with AND conjunctions</source>
+        <translation>Tous les champs renseignés seront combinés par des ET</translation>
+    </message>
+    <message>
+        <source>File name matching</source>
+        <translation>Modèle de nom de fichier</translation>
     </message>
 </context>
 </TS>

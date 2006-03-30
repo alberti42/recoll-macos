@@ -91,7 +91,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>RclMain</name>
     <message>
         <source>Indexing in progress</source>
-        <translation>Идёт индексирование</translation>
+        <translation type="obsolete">Идёт индексирование</translation>
     </message>
     <message>
         <source>Query results</source>
@@ -164,6 +164,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Query details</source>
         <translation>Детали запроса</translation>
+    </message>
+    <message>
+        <source>Indexing in progress: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -275,6 +279,47 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>&amp;Query configuration</source>
         <translation>&amp;Конфигурация</translation>
+    </message>
+    <message>
+        <source>Ctrl+Q</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RclResList</name>
+    <message>
+        <source>Result list</source>
+        <translation type="unfinished">Список результатов</translation>
+    </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation type="unfinished">Документ недоступен</translation>
+    </message>
+    <message>
+        <source>Show query details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
+</source>
+        <translation type="unfinished">&lt;b&gt;Отображаю результаты начиная с %1 (не более %2)&lt;/b&gt;&lt;/p&gt;
+</translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Copy File Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;Url</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -414,16 +459,16 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>ResListBase</name>
     <message>
         <source>Result list</source>
-        <translation>Список результатов</translation>
+        <translation type="obsolete">Список результатов</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation>Документ недоступен</translation>
+        <translation type="obsolete">Документ недоступен</translation>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
 </source>
-        <translation>&lt;b&gt;Отображаю результаты начиная с %1 (не более %2)&lt;/b&gt;&lt;/p&gt;
+        <translation type="obsolete">&lt;b&gt;Отображаю результаты начиная с %1 (не более %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
     </message>
 </context>
@@ -455,23 +500,39 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>&amp;All terms</source>
-        <translation>&amp;Все слова</translation>
+        <translation type="obsolete">&amp;Все слова</translation>
     </message>
     <message>
         <source>Alt+A</source>
-        <translation>Alt-A</translation>
+        <translation type="obsolete">Alt-A</translation>
     </message>
     <message>
         <source>Do documents have to contain all terms in query?</source>
-        <translation>Должны ли документы содержать все слова запроса?</translation>
+        <translation type="obsolete">Должны ли документы содержать все слова запроса?</translation>
     </message>
     <message>
         <source>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</source>
-        <translation>Если включено, каждый найденный документ содержит все слова запроса.  Иначе документы сортируются по релевантности, но могут содержать не все слова.</translation>
+        <translation type="obsolete">Если включено, каждый найденный документ содержит все слова запроса.  Иначе документы сортируются по релевантности, но могут содержать не все слова.</translation>
     </message>
     <message>
         <source>Enter search terms here</source>
         <translation>Введите ключевые слова</translation>
+    </message>
+    <message>
+        <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -598,7 +659,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Search For</source>
-        <translation>Искать</translation>
+        <translation type="obsolete">Искать</translation>
     </message>
     <message>
         <source>All these words</source>
@@ -659,6 +720,18 @@ May be slow for big documents.</source>
     <message>
         <source>&lt;----- All</source>
         <translation>&lt;----- Все</translation>
+    </message>
+    <message>
+        <source>Search for files&lt;br&gt;having all of:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All non blank fields will be combined with AND conjunctions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File name matching</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
