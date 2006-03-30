@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.7 2006-03-28 12:49:03 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.8 2006-03-30 10:31:45 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This should be copied to
 #   ~/.recoll/recoll.conf 
@@ -35,7 +35,11 @@ dbdir = ~/.recoll/xapiandb
 # documents, will override this. It can be specified per directory (see
 # below). Used when converting to utf-8 (internal storage format), so it
 # may be quite important for pure text files.
-defaultcharset = iso-8859-1
+# The default used to be set to iso8859-1, but we now take it from the nls 
+# environment (LC_ALL/LC_CTYPE/LANG). The ultimate hardwired default is
+# still 8859-1. If for some reason you want a general default which doesnt
+# match your LANG and is not 8859-1, set it here.
+#defaultcharset = iso-8859-1
 
 # Guessing charsets usually does not work well
 guesscharset = 0
