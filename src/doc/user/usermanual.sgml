@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.7 2006-03-28 12:49:03 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.8 2006-03-30 10:31:03 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -56,9 +56,7 @@
       appropriate <link linkend="rcl.install.building.prereqs.external">
       supporting applications</link> for document types that need
       them (for example <application>antiword</application> for
-      ms-word files), and that the default character set used to read
-      raw text files for indexing is iso8859-1, which may not be
-      appropriate for you.</para>
+      ms-word files).</para>
       
     <sect1 id="rcl.introduction.search"> 
       <title>Full text search</title>
@@ -216,9 +214,7 @@
 
       <para>Without further configuration, &RCL; will index all
       appropriate files from your home directory, with a reasonable
-      set of defaults, if you live in western Europe or the USA. If
-      your normal character set is not iso8859-1, you almost certainly
-      need to adjust the configuration.</para>
+      set of defaults.</para>
 
     </sect1>
 
@@ -305,6 +301,10 @@
       <procedure>
 	<step><para>Start the <command>recoll</command> program.</para>
 	</step>
+	<step><para>Possibly choose a search mode: <guilabel>Any
+	term</guilabel> or <guilabel>All terms</guilabel> or
+	<guilabel>File name</guilabel>.</para>
+	</step>
 	<step><para>Enter search term(s) in the text field at the top of the
         window.</para>
 	</step>
@@ -313,11 +313,17 @@
 	</step>
       </procedure>
 
-      <para>By default, this will look for documents with any of the
-      search terms (the ones with more terms will get better scores). You can
-        check the <guilabel>All terms</guilabel> checkbox to ensure
-        that only documents with all the terms will be returned. Use
-        the <guilabel>Tools</guilabel> / <guilabel>Advanced
+      <para>The initial default search mode is <guilabel>Any
+        term</guilabel>. This will look for documents with any of the
+        search terms (the ones with more terms will get better scores). 
+        <guilabel>All terms</guilabel> will ensure
+        that only documents with all the terms will be
+        returned. <guilabel>File name</guilabel> will specifically
+        look for file names, and allows using wildcards
+        (<literal>*</literal>, <literal>?</literal> ,
+        <literal>[]</literal>). </para>
+      
+      <para>You can use the <guilabel>Tools</guilabel> / <guilabel>Advanced
         search</guilabel> dialog for more complex searches.</para>
 
       <para>After starting a search, a list of results will instantly
@@ -334,19 +340,20 @@
       using the  <link linkend="rcl.search.sort"><guilabel>Tools</guilabel>
         / <guilabel>Sort parameters</guilabel></link> dialog.</para>
 
+      <para>The <literal>Preview</literal> and <literal>Edit</literal>
+      edit links may not be present for all entries, meaning that
+      &RCL; has no configured way to preview a given file type (which
+      was indexed by name only), or no configured external viewer for
+      the file type. This can sometimes be adjusted simply by tweaking
+      the <link linkend="rclinstall.config.mimemap">
+             <filename>mimemap</filename></link> and  
+      <link linkend="rclinstall.config.mimeconf">
+       <filename>mimeconf</filename></link> configuration files.</para> 
+
       <para>You can click on the <literal>Query details</literal> link
       at the top of the results page to see the query actually 
       performed, after stem expansion and other processing.</para>
 
-      <sect2 id="rcl.search.simple.filename">
-	<title>Filename search</title>
-	<para>If the <guilabel>File name</guilabel> checkbox at the
-	left of the search terms is checked, the search will only done
-	for file names. In this case you can use the usual shell
-	wildcard characters <literal>*</literal> and
-	<literal>?</literal> for expanding the search (ie
-	<literal>*somestring*</literal>).
-        </para>
     </sect1>
 
       <sect1 id="rcl.search.complex">
@@ -562,7 +569,8 @@
 
       <para>&RCL; uses external applications 
         to index some file types. You need to install them for the
-        file types that you wish to have indexed:</para>
+        file types that you wish to have indexed (these are run-time
+        dependencies. None is needed for building &RCL;):</para>
         </formalpara>
 
       <itemizedlist>
@@ -598,6 +606,12 @@
 	    </ulink></para>
         </listitem>
           
+        <listitem><para>MP3: &RCL; will use the
+        <command>id3info</command> command from the <ulink
+        url="http://id3lib.sourceforge.net/">id3lib</ulink> package to
+        extract tag information. Without it, only the filenames will
+        be indexed.</para>
+          </listitem>
         </itemizedlist>
 
 	<para>Text, Html, mail folders and Openoffice files are
@@ -889,7 +903,9 @@
             <listitem><para>The name of the character set used for
             files that do not contain a character set definition (ie:
             plain text files). This can be redefined for any
-            subdirectory.</para> 
+            subdirectory. If it is not set at all, the character set
+            used is the one defined by the nls environment (LC_ALL,
+            LC_CTYPE, LANG), or iso8859-1 if nothing is set.</para> 
 
           <varlistentry><term><literal>guesscharset</literal></term>
             <listitem><para>Decide if we try to guess the character
