@@ -40,7 +40,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    External file types. Recoll uses external applications to index some file
    types. You need to install them for the file types that you wish to have
-   indexed:
+   indexed (these are run-time dependencies. None is needed for building
+   Recoll):
 
      * PDF: pdftotext is part of the Xpdf package.
 
@@ -53,6 +54,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * dvi: dvips
 
      * djvu: DjVuLibre
+
+     * MP3: Recoll will use the id3info command from the id3lib package to
+       extract tag information. Without it, only the filenames will be
+       indexed.
 
    Text, Html, mail folders and Openoffice files are processed internally.
 

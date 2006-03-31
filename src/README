@@ -41,8 +41,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.1. Simple search
 
-                             3.1.1. Filename search
-
                 3.2. Complex/advanced search
 
                 3.3. Document history
@@ -94,8 +92,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Also be aware that you will need to install the appropriate supporting
    applications for document types that need them (for example antiword for
-   ms-word files), and that the default character set used to read raw text
-   files for indexing is iso8859-1, which may not be appropriate for you.
+   ms-word files).
 
      ----------------------------------------------------------------------
 
@@ -214,9 +211,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    applications for preprocessing. The list is in the installation section.
 
    Without further configuration, Recoll will index all appropriate files
-   from your home directory, with a reasonable set of defaults, if you live
-   in western Europe or the USA. If your normal character set is not
-   iso8859-1, you almost certainly need to adjust the configuration.
+   from your home directory, with a reasonable set of defaults.
 
      ----------------------------------------------------------------------
 
@@ -281,15 +276,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
     1. Start the recoll program.
 
-    2. Enter search term(s) in the text field at the top of the window.
+    2. Possibly choose a search mode: Any term or All terms or File name.
 
-    3. Click the Search button or hit the Enter key to start the search.
+    3. Enter search term(s) in the text field at the top of the window.
 
-   By default, this will look for documents with any of the search terms (the
-   ones with more terms will get better scores). You can check the All terms
-   checkbox to ensure that only documents with all the terms will be
-   returned. Use the Tools / Advanced search dialog for more complex
-   searches.
+    4. Click the Search button or hit the Enter key to start the search.
+
+   The initial default search mode is Any term. This will look for documents
+   with any of the search terms (the ones with more terms will get better
+   scores). All terms will ensure that only documents with all the terms will
+   be returned. File name will specifically look for file names, and allows
+   using wildcards (*, ? , []).
+
+   You can use the Tools / Advanced search dialog for more complex searches.
 
    After starting a search, a list of results will instantly be displayed in
    the main list window. Clicking on the Preview link for an entry will open
@@ -301,18 +300,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    the system estimates that the document matches the query). You can specify
    a different ordering by using the Tools / Sort parameters dialog.
 
+   The Preview and Edit edit links may not be present for all entries,
+   meaning that Recoll has no configured way to preview a given file type
+   (which was indexed by name only), or no configured external viewer for the
+   file type. This can sometimes be adjusted simply by tweaking the mimemap
+   and mimeconf configuration files.
+
    You can click on the Query details link at the top of the results page to
    see the query actually performed, after stem expansion and other
    processing.
-
-     ----------------------------------------------------------------------
-
-  3.1.1. Filename search
-
-   If the File name checkbox at the left of the search terms is checked, the
-   search will only done for file names. In this case you can use the usual
-   shell wildcard characters * and ? for expanding the search (ie
-   *somestring*).
 
      ----------------------------------------------------------------------
 
@@ -458,7 +454,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    External file types. Recoll uses external applications to index some file
    types. You need to install them for the file types that you wish to have
-   indexed:
+   indexed (these are run-time dependencies. None is needed for building
+   Recoll):
 
      * PDF: pdftotext is part of the Xpdf package.
 
@@ -471,6 +468,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * dvi: dvips
 
      * djvu: DjVuLibre
+
+     * MP3: Recoll will use the id3info command from the id3lib package to
+       extract tag information. Without it, only the filenames will be
+       indexed.
 
    Text, Html, mail folders and Openoffice files are processed internally.
 
@@ -684,7 +685,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
            The name of the character set used for files that do not contain a
            character set definition (ie: plain text files). This can be
-           redefined for any subdirectory.
+           redefined for any subdirectory. If it is not set at all, the
+           character set used is the one defined by the nls environment
+           (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
 
    guesscharset
 
