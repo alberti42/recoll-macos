@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.14 2006-03-22 16:24:41 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.15 2006-03-31 17:19:45 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -59,6 +59,7 @@ using std::pair;
 #include "uiprefs.h"
 #include "guiutils.h"
 #include "rclreslist.h"
+#include "transcode.h"
 
 #include "rclmain.h"
 #include "moc_rclmain.cpp"
@@ -219,7 +220,13 @@ void RclMain::periodic100()
     } else if (indexingdone == 0) {
 	if (toggle == 0) {
 	    QString msg = tr("Indexing in progress: ");
-	    msg += idxthread_currentfile().c_str();
+	    string cf = idxthread_currentfile();
+	    string mf;int ecnt = 0;
+	    string fcharset = rclconfig->getDefCharset(true);
+	    if (!transcode(cf, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
+		mf = url_encode(cf, 0);
+	    }
+	    msg += QString::fromUtf8(mf.c_str());
 	    statusBar()->message(msg);
 	} else if (toggle == 9) {
 	    statusBar()->message("");
@@ -265,11 +272,11 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
 
     DocSequence *docsource;
     if (sortwidth > 0) {
-	DocSequenceDb myseq(rcldb, tr("Query results"));
+	DocSequenceDb myseq(rcldb, string(tr("Query results").utf8()));
 	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
-				     tr("Query results (sorted)"));
+				     string(tr("Query results (sorted)").utf8()));
     } else {
-	docsource = new DocSequenceDb(rcldb, tr("Query results"));
+	docsource = new DocSequenceDb(rcldb, string(tr("Query results").utf8()));
     }
     currentQueryData = sdata;
     resList->setDocSource(docsource);
@@ -472,10 +479,10 @@ void RclMain::showDocHistory()
     if (sortwidth > 0) {
 	DocSequenceHistory myseq(rcldb, m_history, tr("Document history"));
 	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
-				     tr("Document history (sorted)"));
+				     string(tr("Document history (sorted)").utf8()));
     } else {
 	docsource = new DocSequenceHistory(rcldb, m_history, 
-					   tr("Document history"));
+					   string(tr("Document history").utf8()));
     }
     currentQueryData.erase();
     currentQueryData.description = tr("History data").utf8();

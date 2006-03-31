@@ -92,7 +92,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Query results</source>
-        <translation>Query results</translation>
+        <translation>Результати запиту</translation>
     </message>
     <message>
         <source>Query results (sorted)</source>

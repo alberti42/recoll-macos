@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.7 2006-03-29 13:08:08 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.8 2006-03-31 17:19:45 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -63,7 +63,7 @@ RclResList::~RclResList()
 
 void RclResList::languageChange()
 {
-    setCaption( tr( "Result list" ) );
+    setCaption(tr("Result list"));
 }
 
 // Acquire new docsource
@@ -233,7 +233,7 @@ void RclResList::showResultPage()
 	    // gets confused. Hence the use of the 'chunk' text
 	    // accumulator
 	    QString chunk = "<p><font size=+1><b>";
-	    chunk += m_docsource->title().c_str();
+	    chunk += QString::fromUtf8(m_docsource->title().c_str());
 	    chunk += "</b></font><br>";
 	    chunk += "<a href=\"H-1\">";
 	    chunk += tr("Show query details");

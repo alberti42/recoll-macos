@@ -95,7 +95,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Query results</source>
-        <translation>Query results</translation>
+        <translation>Результаты поиска</translation>
     </message>
     <message>
         <source>Query results (sorted)</source>
@@ -167,7 +167,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Indexing in progress: </source>
-        <translation type="unfinished"></translation>
+        <translation>Индексирование: </translation>
     </message>
 </context>
 <context>
@@ -282,44 +282,44 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Ctrl+Q</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+Q</translation>
     </message>
 </context>
 <context>
     <name>RclResList</name>
     <message>
         <source>Result list</source>
-        <translation type="unfinished">Список результатов</translation>
+        <translation>Список результатов</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation type="unfinished">Документ недоступен</translation>
+        <translation>Документ недоступен</translation>
     </message>
     <message>
         <source>Show query details</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать запрос</translation>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
 </source>
-        <translation type="unfinished">&lt;b&gt;Отображаю результаты начиная с %1 (не более %2)&lt;/b&gt;&lt;/p&gt;
+        <translation>&lt;b&gt;Результаты, начиная с %1 (всего %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Просмотр</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Редактирование</translation>
     </message>
     <message>
         <source>&amp;Copy File Name</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Копировать имя файла</translation>
     </message>
     <message>
         <source>Copy &amp;Url</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать &amp;адрес</translation>
     </message>
 </context>
 <context>
@@ -520,19 +520,19 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите тип поиска: любое слово, все слова, имя файла (шаблоны работают).</translation>
     </message>
     <message>
         <source>Any term</source>
-        <translation type="unfinished"></translation>
+        <translation>Любое слово</translation>
     </message>
     <message>
         <source>All terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Все слова</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла</translation>
     </message>
 </context>
 <context>
@@ -723,15 +723,15 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Search for files&lt;br&gt;having all of:</source>
-        <translation type="unfinished"></translation>
+        <translation>Искать файлы&lt;br&gt;со всем из:</translation>
     </message>
     <message>
         <source>All non blank fields will be combined with AND conjunctions</source>
-        <translation type="unfinished"></translation>
+        <translation>Все непустые поля будут объединены AND</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск по именам файлов</translation>
     </message>
 </context>
 </TS>
