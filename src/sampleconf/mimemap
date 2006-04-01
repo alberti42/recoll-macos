@@ -1,9 +1,16 @@
-# @(#$Id: mimemap,v 1.14 2006-03-29 13:08:08 dockes Exp $  (C) 2004 J.F.Dockes
-
+# @(#$Id: mimemap,v 1.15 2006-04-01 07:34:21 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
+
 .txt = text/plain
 .text = text/plain
 .d    = text/plain
+
+# Source files. Defining them as text/x-c will enable ext viewer. If
+# text/plain they will be somewhat indexed
+.cpp = text/x-c
+.h   = text/x-c
+.c   = text/x-c
+.cc  = text/x-c
 
 .rtf  = text/rtf
 
@@ -25,7 +32,7 @@
 .gz = application/x-gzip
 .Z = application/x-gzip
 .bz2 = application/x-bzip2
-.Z  = application/x-compress
+#.Z  = application/x-compress
 
 .doc = application/msword
 
@@ -58,12 +65,13 @@
 # unneeded decompression or 'file' calls. File names still get indexed if
 # indexallfilenames is set
 recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
-       .c .h .cpp .m4 .tcl .js .sh .pl .awk .php .php3 \
+       .m4 .tcl .js .sh .pl .awk \
        .o .lib .dll .a \
        .dat .bak .rdf .log .db .ini .msf \
        .gnm .gnumeric .tex \
        .gif .bmp .xpm \
        ,v ~ #
 
+# Special handling of .txt files inside ~/.gaim directory
 [~/.gaim]
 .txt = text/x-gaim-log

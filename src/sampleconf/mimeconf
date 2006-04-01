@@ -1,10 +1,10 @@
-# @(#$Id: mimeconf,v 1.15 2006-03-29 13:08:08 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.16 2006-04-01 07:34:21 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
 # and preview, and external viewers
 
-## 
+## #######################################
 # Decompression: these types need a first pass to create a temp file to
 # work with. We use a script because uncompress utilities usually work in
 # place, which is not suitable. 
@@ -20,7 +20,7 @@ application/x-gzip  =  uncompress rcluncomp gunzip %f %t
 application/x-compress = uncompress rcluncomp gunzip %f %t
 application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 
-## 
+## ###################################
 # Filters for indexing and internal preview.
 # The external (exec) filters  output the document in simple html format,
 # have a look at the scripts.
@@ -39,28 +39,21 @@ application/vnd.sun.xml.writer = exec rclsoff
 application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
 application/x-dvi = exec rcldvi
-
-image/vnd.djvu = exec rcldjvu
-
 audio/mpeg = exec rclmedia
-
+image/vnd.djvu = exec rcldjvu
 message/rfc822 = internal
-
 text/html  = internal 
 text/plain = internal 
 text/rtf = exec rclrtf
 text/x-gaim-log = exec rclgaim
 text/x-mail = internal
 
-## 
-# External viewers, launched when you double-click a result entry
+## ##########################################
+# External viewers, launched when you on a result entry 'edit' link
 [view]
-text/plain = xemacs %f
-#text/html = firefox -remote "openFile(%u)"
-text/html = firefox %u
+application/msword = openoffice %f
 application/pdf  = xpdf %f
 application/postscript = gv %f
-application/msword = openoffice %f
 application/vnd.sun.xml.calc = openoffice %f
 application/vnd.sun.xml.calc.template = openoffice %f
 application/vnd.sun.xml.draw = openoffice %f
@@ -71,14 +64,18 @@ application/vnd.sun.xml.math = openoffice %f
 application/vnd.sun.xml.writer = openoffice %f
 application/vnd.sun.xml.writer.global = openoffice %f
 application/vnd.sun.xml.writer.template = openoffice %f
-image/vnd.djvu = djview %f
 application/x-dvi = xdvi %f
-
 audio/mpeg = xmms %f
-image/png = xv %f
 image/jpeg = xv %f
+image/png = xv %f
+image/vnd.djvu = djview %f
+# Or firefox -remote "openFile(%u)"
+text/html = firefox %u
+text/plain = gnuclient -q %f
+text/x-c = gnuclient -q %f
 
-# Icons to be used in the result list.
+## #############################################
+# Icons to be used in the result list if required by gui config
 [icons]
 application/msword = wordprocessing
 application/pdf = pdf
@@ -93,8 +90,7 @@ application/vnd.sun.xml.writer = wordprocessing
 application/vnd.sun.xml.writer.global = wordprocessing
 application/vnd.sun.xml.writer.template = wordprocessing
 audio/mpeg = sownd
+message/rfc822 = message
 text/html = html
 text/plain = txt
 text/x-mail = message
-message/rfc822 = message
-
