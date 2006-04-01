@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.15 2006-03-31 17:19:45 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.16 2006-04-01 08:07:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -419,6 +419,7 @@ void RclMain::startNativeViewer(int docnum)
     }
 
     string fn = urltolocalpath(doc.url);
+    string url = url_encode(doc.url, 7);
 
     // Substitute %u (url) and %f (file name) inside prototype command
     string ncmd;
@@ -432,7 +433,7 @@ void RclMain::startNativeViewer(int docnum)
 	    if (*it1 == '%')
 		ncmd += '%';
 	    if (*it1 == 'u')
-		ncmd += "'" + doc.url + "'";
+		ncmd += "'" + url + "'";
 	    if (*it1 == 'f')
 		ncmd += "'" + fn + "'";
 	} else {
@@ -443,10 +444,12 @@ void RclMain::startNativeViewer(int docnum)
     ncmd += " &";
     QStatusBar *stb = statusBar();
     if (stb) {
-	QString msg = tr("Executing: [") + ncmd.c_str() + "]";
+	string fcharset = rclconfig->getDefCharset(true);
+	string prcmd;
+	transcode(ncmd, prcmd, fcharset, "UTF-8");
+	QString msg = tr("Executing: [") + 
+	    QString::fromUtf8(prcmd.c_str()) + "]";
 	stb->message(msg, 5000);
-	stb->repaint(false);
-	XFlush(qt_xdisplay());
     }
     m_history->enterDocument(fn, doc.ipath);
     system(ncmd.c_str());
