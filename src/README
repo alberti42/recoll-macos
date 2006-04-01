@@ -1,8 +1,4 @@
-
-More documentation can be found in the doc/ directory or at http://www.recoll.org
-
-
-                               Recoll user manual
+                           Recoll user manual
 
   Jean-Francois Dockes
 
@@ -10,12 +6,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Copyright (c) 2005 Jean-Francois Dockes
 
-   This document introduces full text search notions and describes the
-   installation and use of the Recoll application.
+   This document introduces full text search notions and describes
+   the installation and use of the Recoll application.
 
-   [ Split HTML / Single HTML ]
-
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
    Table of Contents
 
@@ -63,7 +57,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 4.2. Installing a prebuilt copy
 
-                             4.2.1. Installing through a package system
+                             4.2.1. Installing through a package
+                             system
 
                              4.2.2. Installing a prebuilt Recoll
 
@@ -75,387 +70,418 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              4.3.3. The mimeconf file
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
-                            Chapter 1. Introduction
+                        Chapter 1. Introduction
 
 1.1. Giving it a try
 
-   If you do not like reading manuals (who does?) and would like to give
-   Recoll a try, just perform installation and start the recoll user
-   interface, which will index your home directory and let you search it
-   right after.
+   If you do not like reading manuals (who does?) and would like to
+   give Recoll a try, just perform installation and start the recoll
+   user interface, which will index your home directory and let you
+   search it right after.
 
-   Do not do this if your home has a huge number of documents and you do not
-   want to wait or are very short on disk space. In this case, you may want
-   to edit the configuration file first to restrict the indexed area.
+   Do not do this if your home has a huge number of documents and you
+   do not want to wait or are very short on disk space. In this case,
+   you may want to edit the configuration file first to restrict the
+   indexed area.
 
-   Also be aware that you will need to install the appropriate supporting
-   applications for document types that need them (for example antiword for
-   ms-word files).
+   Also be aware that you will need to install the appropriate
+   supporting applications for document types that need them (for
+   example antiword for ms-word files).
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 1.2. Full text search
 
-   Recoll is a full text search application. Full text search applications
-   let you find your data by content rather than by external attributes (like
-   a file name). More specifically, they will let you specify words (terms)
-   that should or should not appear in the text you are looking for, and
-   return a list of matching documents, ordered so that the most relevant
-   documents will appear first.
+   Recoll is a full text search application. Full text search
+   applications let you find your data by content rather than by
+   external attributes (like a file name). More specifically, they
+   will let you specify words (terms) that should or should not
+   appear in the text you are looking for, and return a list of
+   matching documents, ordered so that the most relevant documents
+   will appear first.
 
-   You do not need to remember in what file or email message you stored a
-   given piece of information. You just ask for related terms, and the tool
-   will return a list of documents where those terms are prominent.
+   You do not need to remember in what file or email message you
+   stored a given piece of information. You just ask for related
+   terms, and the tool will return a list of documents where those
+   terms are prominent.
 
-   This mode of operation has been made very familiar by internet search
-   engines.
+   This mode of operation has been made very familiar by internet
+   search engines.
 
    The notion of relevance is a difficult one, as only you, the user,
    actually know which documents are relevant to your search, and the
-   application can only try a guess. The quality of this guess is probably
-   the most important element for a search application.
+   application can only try a guess. The quality of this guess is
+   probably the most important element for a search application.
 
-   In many cases, you are looking for all the forms of a word, not for a
-   specific form or spelling. These different forms may include plurals,
-   different tenses for a verb, or terms derived from the same root or stem
-   (exemple: floor, floors, floored, floorings...). Recoll will by default
-   expand queries to all such related terms (words that reduce to the same
-   stem). This expansion can be disabled at search time.
+   In many cases, you are looking for all the forms of a word, not
+   for a specific form or spelling. These different forms may include
+   plurals, different tenses for a verb, or terms derived from the
+   same root or stem (exemple: floor, floors, floored, floorings...).
+   Recoll will by default expand queries to all such related terms
+   (words that reduce to the same stem). This expansion can be
+   disabled at search time.
 
    Stemming, by itself, does not provide for misspellings or phonetic
    searches. Recoll currently does not support these.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 1.3. Recoll overview
 
-   Recoll uses the Xapian information retrieval library as its storage and
-   retrieval engine. Xapian is a very mature package using a sophisticated
-   probabilistic ranking model. Recoll provides the interface to get data
-   into (indexation) and out (searching) of the system.
+   Recoll uses the Xapian information retrieval library as its
+   storage and retrieval engine. Xapian is a very mature package
+   using a sophisticated probabilistic ranking model. Recoll provides
+   the interface to get data into (indexation) and out (searching) of
+   the system.
 
-   In practice, Xapian works by remembering where terms appear in your
-   document files. The acquisition process is called indexation.
+   In practice, Xapian works by remembering where terms appear in
+   your document files. The acquisition process is called indexation.
 
-   The resulting database can be big (roughly the size of the original
-   document set), but it is not a document archive. Recoll can only display
-   documents that still exist at the place from which they were indexed.
-   (Actually, there is a way to reconstruct a document from the information
-   in the database, but the result is not nice, as all formatting,
-   punctuation and capitalisation are lost).
+   The resulting database can be big (roughly the size of the
+   original document set), but it is not a document archive. Recoll
+   can only display documents that still exist at the place from
+   which they were indexed. (Actually, there is a way to reconstruct
+   a document from the information in the database, but the result is
+   not nice, as all formatting, punctuation and capitalisation are
+   lost).
 
-   Recoll stores all internal data in Unicode UTF-8 format, and it can index
-   files with different character sets, encodings, and languages into the
-   same database. It has input filters for many document types.
+   Recoll stores all internal data in Unicode UTF-8 format, and it
+   can index files with different character sets, encodings, and
+   languages into the same database. It has input filters for many
+   document types.
 
-   Stemming depends on the document language. Recoll stores the unstemmed
-   versions of terms and uses auxiliary databases for term expansion. It can
-   switch stemming languages, or add a language, without reindexing. Storing
-   documents in different languages in the same database is possible, and
-   useful in practice, but does introduce possibilities of confusion. Recoll
-   currently makes no attempt at automatic language recognition.
+   Stemming depends on the document language. Recoll stores the
+   unstemmed versions of terms and uses auxiliary databases for term
+   expansion. It can switch stemming languages, or add a language,
+   without reindexing. Storing documents in different languages in
+   the same database is possible, and useful in practice, but does
+   introduce possibilities of confusion. Recoll currently makes no
+   attempt at automatic language recognition.
 
-   Recoll has many parameters which define exactly what to index, and how to
-   classify and decode the source documents. These are kept in a
-   configuration file. A default configuration is copied into a standard
-   location (usually something like /usr/[local/]share/recoll/examples)
-   during installation. The default parameters from this file may be
-   overriden by values that you set inside your personal configuration, found
-   by default in the .recoll subdirectory of your home directory. The default
-   configuration will index your home directory with default parameters and
-   should be sufficient for giving Recoll a try, but you may want to adjust
-   it later.
+   Recoll has many parameters which define exactly what to index, and
+   how to classify and decode the source documents. These are kept in
+   a configuration file. A default configuration is copied into a
+   standard location (usually something like
+   /usr/[local/]share/recoll/examples) during installation. The
+   default parameters from this file may be overriden by values that
+   you set inside your personal configuration, found by default in
+   the .recoll subdirectory of your home directory. The default
+   configuration will index your home directory with default
+   parameters and should be sufficient for giving Recoll a try, but
+   you may want to adjust it later.
 
-   Indexation is started automatically the first time you execute the recoll
-   search graphical user interface, or by executing the recollindex command.
+   Indexation is started automatically the first time you execute the
+   recoll search graphical user interface, or by executing the
+   recollindex command.
 
-   Searches are performed inside the recoll program, which has many options
-   to help you find what you are looking for.
+   Searches are performed inside the recoll program, which has many
+   options to help you find what you are looking for.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
-                             Chapter 2. Indexation
+                         Chapter 2. Indexation
 
 2.1. Introduction
 
-   Indexation is the process by which the set of documents is analyzed and
-   the data entered into the database. Recoll indexation is normally
-   incremental: documents will only be processed if they have been modified.
-   On the first execution, of course, all documents will need processing. A
-   full index build can be forced later on by specifying an option to the
-   indexation command (recollindex -z).
+   Indexation is the process by which the set of documents is
+   analyzed and the data entered into the database. Recoll indexation
+   is normally incremental: documents will only be processed if they
+   have been modified. On the first execution, of course, all
+   documents will need processing. A full index build can be forced
+   later on by specifying an option to the indexation command
+   (recollindex -z).
 
-   Recoll indexation takes place at discrete times. There is currently no
-   interface to real time file modification monitors. The typical usage is to
-   have a nightly indexation run programmed into your cron file.
+   Recoll indexation takes place at discrete times. There is
+   currently no interface to real time file modification monitors.
+   The typical usage is to have a nightly indexation run programmed
+   into your cron file.
 
-   +------------------------------------------------------------------------+
-   | Side note: there is nothing in Recoll and Xapian that would prevent    |
-   | interfacing with a real time file modification monitor, but this would |
-   | tend to consume significant system resources for dubious gain, because |
-   | you rarely need a full text search to find documents you just          |
-   | modified. recollindex -i can be used to add individual files to the    |
-   | index if you want to play with this, see the manual page.              |
-   +------------------------------------------------------------------------+
+   +----------------------------------------------------------------+
+   | Side note: there is nothing in Recoll and Xapian that would    |
+   | prevent interfacing with a real time file modification         |
+   | monitor, but this would tend to consume significant system     |
+   | resources for dubious gain, because you rarely need a full     |
+   | text search to find documents you just modified. recollindex   |
+   | -i can be used to add individual files to the index if you     |
+   | want to play with this, see the manual page.                   |
+   +----------------------------------------------------------------+
 
-   Recoll knows about quite a few different document types. The parameters
-   for document types recognition and processing are set in configuration
-   files Most file types, like HTML or word processing files, only hold one
-   document. Some file types, like mail folder files can hold many
-   individually indexed documents.
+   Recoll knows about quite a few different document types. The
+   parameters for document types recognition and processing are set
+   in configuration files Most file types, like HTML or word
+   processing files, only hold one document. Some file types, like
+   mail folder files can hold many individually indexed documents.
 
-   Recoll indexation processes plain text, HTML, openoffice and e-mail files
-   internally. Other types (ie: postscript, pdf, ms-word, rtf) need external
-   applications for preprocessing. The list is in the installation section.
+   Recoll indexation processes plain text, HTML, openoffice and
+   e-mail files internally. Other types (ie: postscript, pdf,
+   ms-word, rtf) need external applications for preprocessing. The
+   list is in the installation section.
 
-   Without further configuration, Recoll will index all appropriate files
-   from your home directory, with a reasonable set of defaults.
+   Without further configuration, Recoll will index all appropriate
+   files from your home directory, with a reasonable set of defaults.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 2.2. The indexation configuration
 
    Values set in the system-wide configuration file (named like
-   /usr/[local/]share/recoll/examples/recoll.conf) can be overriden by those
-   set in the personal one, named $HOME/.recoll/recoll.conf by default or
-   $RECOLL_CONFDIR/recoll.conf if RECOLL_CONFDIR is set.
+   /usr/[local/]share/recoll/examples/recoll.conf) can be overriden
+   by those set in the personal one, named $HOME/.recoll/recoll.conf
+   by default or $RECOLL_CONFDIR/recoll.conf if RECOLL_CONFDIR is
+   set.
 
-   The most accurate documentation for editing the file is given by comments
-   inside the central one. If you want to adjust the configuration before
-   indexation, just click Cancel when the program asks if it should start
-   initial indexation. This will have created a .recoll directory containing
-   empty configuration files.
+   The most accurate documentation for editing the file is given by
+   comments inside the central one. If you want to adjust the
+   configuration before indexation, just click Cancel when the
+   program asks if it should start initial indexation. This will have
+   created a .recoll directory containing empty configuration files.
 
-   The configuration is also documented inside the installation chapter of
-   this document, or in the recoll.conf(5) man page.
+   The configuration is also documented inside the installation
+   chapter of this document, or in the recoll.conf(5) man page.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 2.3. Starting indexation
 
-   Indexation is performed either by the recollindex program, or by the
-   indexation thread inside the recoll program (use the File menu).
+   Indexation is performed either by the recollindex program, or by
+   the indexation thread inside the recoll program (use the File
+   menu).
 
    If the recoll program finds no database when it starts, it will
    automatically start indexation (except if cancelled).
 
-   It is best to avoid interrupting the indexation process, as this may
-   sometimes leave the database in a bad state. This is not a serious
-   problem, as you then just need to clear everything and restart the
-   indexation: the database files are normally stored in the
-   $HOME/.recoll/xapiandb directory, which you can just delete if needed.
-   Alternatively, you can start recollindex -z, which will reset the database
-   before indexation.
+   It is best to avoid interrupting the indexation process, as this
+   may sometimes leave the database in a bad state. This is not a
+   serious problem, as you then just need to clear everything and
+   restart the indexation: the database files are normally stored in
+   the $HOME/.recoll/xapiandb directory, which you can just delete if
+   needed. Alternatively, you can start recollindex -z, which will
+   reset the database before indexation.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 2.4. Using cron to automate indexation
 
-   The most common way to set up indexation is to have a cron task execute it
-   every night. For example the following crontab entry would do it every day
-   at 3:30AM (supposing recollindex is in your PATH):
+   The most common way to set up indexation is to have a cron task
+   execute it every night. For example the following crontab entry
+   would do it every day at 3:30AM (supposing recollindex is in your
+   PATH):
 
  30 3 * * * recollindex > /tmp/recolltrace 2>&1
 
-   The usual command to edit your crontab is crontab -e (which will usually
-   start the vi editor to edit the file). You may have more sophisticated
-   tools available on your system.
+   The usual command to edit your crontab is crontab -e (which will
+   usually start the vi editor to edit the file). You may have more
+   sophisticated tools available on your system.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
-                               Chapter 3. Search
+                           Chapter 3. Search
 
-   The recoll program provides the user interface for searching. It is based
-   on the QT library.
+   The recoll program provides the user interface for searching. It
+   is based on the QT library.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 3.1. Simple search
 
     1. Start the recoll program.
 
-    2. Possibly choose a search mode: Any term or All terms or File name.
+    2. Possibly choose a search mode: Any term or All terms or File
+       name.
 
-    3. Enter search term(s) in the text field at the top of the window.
+    3. Enter search term(s) in the text field at the top of the
+       window.
 
-    4. Click the Search button or hit the Enter key to start the search.
+    4. Click the Search button or hit the Enter key to start the
+       search.
 
-   The initial default search mode is Any term. This will look for documents
-   with any of the search terms (the ones with more terms will get better
-   scores). All terms will ensure that only documents with all the terms will
-   be returned. File name will specifically look for file names, and allows
-   using wildcards (*, ? , []).
+   The initial default search mode is Any term. This will look for
+   documents with any of the search terms (the ones with more terms
+   will get better scores). All terms will ensure that only documents
+   with all the terms will be returned. File name will specifically
+   look for file names, and allows using wildcards (*, ? , []).
 
-   You can use the Tools / Advanced search dialog for more complex searches.
+   You can use the Tools / Advanced search dialog for more complex
+   searches.
 
-   After starting a search, a list of results will instantly be displayed in
-   the main list window. Clicking on the Preview link for an entry will open
-   an internal preview window for the document. Clicking the Edit link will
-   attempt to start an external viewer (have a look at the mimeconf
-   configuration file to see how these are configured).
+   After starting a search, a list of results will instantly be
+   displayed in the main list window. Clicking on the Preview link
+   for an entry will open an internal preview window for the
+   document. Clicking the Edit link will attempt to start an external
+   viewer (have a look at the mimeconf configuration file to see how
+   these are configured).
 
-   By default, the document list is presented in order of relevance (how well
-   the system estimates that the document matches the query). You can specify
-   a different ordering by using the Tools / Sort parameters dialog.
+   By default, the document list is presented in order of relevance
+   (how well the system estimates that the document matches the
+   query). You can specify a different ordering by using the Tools /
+   Sort parameters dialog.
 
-   The Preview and Edit edit links may not be present for all entries,
-   meaning that Recoll has no configured way to preview a given file type
-   (which was indexed by name only), or no configured external viewer for the
-   file type. This can sometimes be adjusted simply by tweaking the mimemap
-   and mimeconf configuration files.
+   The Preview and Edit edit links may not be present for all
+   entries, meaning that Recoll has no configured way to preview a
+   given file type (which was indexed by name only), or no configured
+   external viewer for the file type. This can sometimes be adjusted
+   simply by tweaking the mimemap and mimeconf configuration files.
 
-   You can click on the Query details link at the top of the results page to
-   see the query actually performed, after stem expansion and other
-   processing.
+   You can click on the Query details link at the top of the results
+   page to see the query actually performed, after stem expansion and
+   other processing.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 3.2. Complex/advanced search
 
-   The advanced search dialog has fields that will allow a more refined
-   search, looking for documents with all given words, a given exact phrase,
-   none of the given words, or a given file name (with wildcard expansion).
-   All relevant fields will be combined by an implicit AND clause.
+   The advanced search dialog has fields that will allow a more
+   refined search, looking for documents with all given words, a
+   given exact phrase, none of the given words, or a given file name
+   (with wildcard expansion). All relevant fields will be combined by
+   an implicit AND clause.
 
-   It will let you search for documents of specific mime types (ie: only
-   text/plain, or text/html or application/pdf etc...)
+   It will let you search for documents of specific mime types (ie:
+   only text/plain, or text/html or application/pdf etc...)
 
-   It will let you restrict the search results to a subtree of the indexed
-   area.
+   It will let you restrict the search results to a subtree of the
+   indexed area.
 
-   Click on the Start Search button in the advanced search dialog to start
-   the search. The button in the main window always performs a simple search.
+   Click on the Start Search button in the advanced search dialog to
+   start the search. The button in the main window always performs a
+   simple search.
 
-   Click on the Show query details link at the top of the result page to see
-   the query expansion.
+   Click on the Show query details link at the top of the result page
+   to see the query expansion.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 3.3. Document history
 
-   Documents that you actually view (with the internal preview or an external
-   tool) are entered into the document history, which is remembered. You can
-   display the history list by using the Tools/Doc History menu entry.
+   Documents that you actually view (with the internal preview or an
+   external tool) are entered into the document history, which is
+   remembered. You can display the history list by using the
+   Tools/Doc History menu entry.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 3.4. Result list sorting
 
-   The documents in a result list are normally sorted in order of relevance.
-   It is possible to specify different sort parameters by using the Sort
-   parameters dialog (located in the Tools menu).
+   The documents in a result list are normally sorted in order of
+   relevance. It is possible to specify different sort parameters by
+   using the Sort parameters dialog (located in the Tools menu).
 
-   The tool sorts a specified number of the most relevant documents in the
-   result list, according to specified criteria. The currently available
-   criteria are date and mime type.
+   The tool sorts a specified number of the most relevant documents
+   in the result list, according to specified criteria. The currently
+   available criteria are date and mime type.
 
-   The sort parameters stay in effect until they are explicitely reset, or
-   the program exits. An activated sort is indicated in the result list
-   header.
+   The sort parameters stay in effect until they are explicitely
+   reset, or the program exits. An activated sort is indicated in the
+   result list header.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 3.5. Search tips, shortcuts
 
-   Disabling stem expansion. Entering a capitalized word in any search field
-   will prevent stem expansion (no search for gardening if you enter Garden
-   instead of garden). This is the only case where character case should make
-   a difference for a Recoll search.
+   Disabling stem expansion. Entering a capitalized word in any
+   search field will prevent stem expansion (no search for gardening
+   if you enter Garden instead of garden). This is the only case
+   where character case should make a difference for a Recoll search.
 
-   Phrases. A phrase can be looked for by enclosing it in double quotes.
-   Example: "user manual" will look only for occurrences of user immediately
-   followed by manual. You can use the This exact phrase field of the
-   advanced search dialog to the same effect.
+   Phrases. A phrase can be looked for by enclosing it in double
+   quotes. Example: "user manual" will look only for occurrences of
+   user immediately followed by manual. You can use the This exact
+   phrase field of the advanced search dialog to the same effect.
 
-   Query explanation. You can get an exact description of what the query
-   looked for, including stem expansion, and boolean operators used, by
-   clicking on the result list header.
+   Query explanation. You can get an exact description of what the
+   query looked for, including stem expansion, and boolean operators
+   used, by clicking on the result list header.
 
-   File names. All file name elements (the broken up file path) are entered
-   as terms during indexation, and you can specify them as ordinary terms in
-   normal search fields. Alternatively, you can use specific file name search
-   which will only look for file names and can use wildcard expansion.
+   File names. All file name elements (the broken up file path) are
+   entered as terms during indexation, and you can specify them as
+   ordinary terms in normal search fields. Alternatively, you can use
+   specific file name search which will only look for file names and
+   can use wildcard expansion.
 
    Quitting. Entering ^Q almost anywhere will close the application.
 
-   Closing previews. Entering ^W in a preview tab will close it (and, for the
-   last tab, close the preview window).
+   Closing previews. Entering ^W in a preview tab will close it (and,
+   for the last tab, close the preview window).
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 3.6. Customising the search interface
 
-   It is possible to customise some aspects of the search interface by using
-   Query configuration entry in the Preferences menu.
+   It is possible to customise some aspects of the search interface
+   by using Query configuration entry in the Preferences menu.
 
-   There are two tabs in the dialog, dealing with the interface itself, and
-   with the parameters used for searching and returning results.
+   There are two tabs in the dialog, dealing with the interface
+   itself, and with the parameters used for searching and returning
+   results.
 
    User interface parameters:
 
      * Number of results in a result page
 
-     * Result list font: There is quite a lot of information shown in the
-       result list, and you may want to customise the font and/or font size.
-       The rest of the fonts used by Recoll are determined by your generic QT
-       config (try the qtconfig command.
+     * Result list font: There is quite a lot of information shown in
+       the result list, and you may want to customise the font and/or
+       font size. The rest of the fonts used by Recoll are determined
+       by your generic QT config (try the qtconfig command.
 
-     * Html help browser: this will let you chose your the preferred browser
-       which will be started from the Help menu to read the user manual. You
-       can enter a simple name if the command is in your PATH, or browse for
-       a full pathname.
+     * Html help browser: this will let you chose your the preferred
+       browser which will be started from the Help menu to read the
+       user manual. You can enter a simple name if the command is in
+       your PATH, or browse for a full pathname.
 
-     * Show document type icons in result list: icons in the result list can
-       be turned off. They take quite a lot of space and convey relatively
-       little useful information.
+     * Show document type icons in result list: icons in the result
+       list can be turned off. They take quite a lot of space and
+       convey relatively little useful information.
 
    Search parameters:
 
-     * Stemming language: stemming obviously depends on the document's
-       language. This listbox will let you chose among the stemming databases
-       which were built during indexing (this is set in the main
-       configuration file), or later added with recollindex -s (See the
-       recollindex manual). Stemming languages which are dynamically added
-       will be deleted at the next indexation pass unless they are also added
-       in the configuration file.
+     * Stemming language: stemming obviously depends on the
+       document's language. This listbox will let you chose among the
+       stemming databases which were built during indexing (this is
+       set in the main configuration file), or later added with
+       recollindex -s (See the recollindex manual). Stemming
+       languages which are dynamically added will be deleted at the
+       next indexation pass unless they are also added in the
+       configuration file.
 
-     * Dynamically build abstracts: this decides if Recoll tries to build
-       document abstracts when displaying the result list. Abstracts are
-       constructed by taking context from the document information, around
-       the search terms. This can slow down result list display significantly
-       for big documents, and you may want to turn it off.
+     * Dynamically build abstracts: this decides if Recoll tries to
+       build document abstracts when displaying the result list.
+       Abstracts are constructed by taking context from the document
+       information, around the search terms. This can slow down
+       result list display significantly for big documents, and you
+       may want to turn it off.
 
-     * Replace abstracts from documents: this decides if we should synthetize
-       and display an abstract in place of an explicit abstract found within
-       the document itself.
+     * Replace abstracts from documents: this decides if we should
+       synthetize and display an abstract in place of an explicit
+       abstract found within the document itself.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
-                            Chapter 4. Installation
+                        Chapter 4. Installation
 
 4.1. Building from source
 
   4.1.1. Prerequisites
 
-   At the very least, you will need to download and install the xapian core
-   package (Recoll currently uses version 0.9.2), and the qt runtime and
-   development packages (Recoll development currently uses version 3.3.5, but
-   any 3.3 version is probably ok).
+   At the very least, you will need to download and install the
+   xapian core package (Recoll currently uses version 0.9.2), and the
+   qt runtime and development packages (Recoll development currently
+   uses version 3.3.5, but any 3.3 version is probably ok).
 
-   You will most probably be able to find a binary package for qt for your
-   system. You may have to compile Xapian but this is not difficult (if you
-   are using FreeBSD, there is a port).
+   You will most probably be able to find a binary package for qt for
+   your system. You may have to compile Xapian but this is not
+   difficult (if you are using FreeBSD, there is a port).
 
-   You may also need libiconv. Recoll currently uses version 1.9 (this should
-   not be critical). On Linux systems, the iconv interface is part of libc
-   and you should not need to do anything special.
+   You may also need libiconv. Recoll currently uses version 1.9
+   (this should not be critical). On Linux systems, the iconv
+   interface is part of libc and you should not need to do anything
+   special.
 
-   External file types. Recoll uses external applications to index some file
-   types. You need to install them for the file types that you wish to have
-   indexed (these are run-time dependencies. None is needed for building
-   Recoll):
+   External file types. Recoll uses external applications to index
+   some file types. You need to install them for the file types that
+   you wish to have indexed (these are run-time dependencies. None is
+   needed for building Recoll):
 
      * PDF: pdftotext is part of the Xpdf package.
 
@@ -469,37 +495,39 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * djvu: DjVuLibre
 
-     * MP3: Recoll will use the id3info command from the id3lib package to
-       extract tag information. Without it, only the filenames will be
-       indexed.
+     * MP3: Recoll will use the id3info command from the id3lib
+       package to extract tag information. Without it, only the
+       filenames will be indexed.
 
-   Text, Html, mail folders and Openoffice files are processed internally.
+   Text, Html, mail folders and Openoffice files are processed
+   internally.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
   4.1.2. Building
 
-   Recoll has been built on Linux (redhat7.3, mandriva 2005, Fedora Core 3),
-   FreeBSD and Solaris 8. If you build on another system, I would very much
-   welcome patches.
+   Recoll has been built on Linux (redhat7.3, mandriva 2005, Fedora
+   Core 3), FreeBSD and Solaris 8. If you build on another system, I
+   would very much welcome patches.
 
-   Depending on the qt configuration on your system, you may have to set the
-   QTDIR and QMAKESPECS variables in your environment:
+   Depending on the qt configuration on your system, you may have to
+   set the QTDIR and QMAKESPECS variables in your environment:
 
-     * QTDIR should point to the directory above the one that holds the qt
-       include files (ie: qt.h).
+     * QTDIR should point to the directory above the one that holds
+       the qt include files (ie: qt.h).
 
      * QMAKESPECS should be set to the name of one of the qt mkspecs
        subdirectories (ie: linux-g++).
 
-   On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
-   is not needed because there is a default link in mkspecs/.
+   On many Linux systems, QTDIR is set by the login scripts, and
+   QMAKESPECS is not needed because there is a default link in
+   mkspecs/.
 
-   The Recoll configure script does a better job of checking these variables
-   after release 1.1.1. Before this, unexplained errors will occur during
-   compilation if the environment is not set up. Also, for 1.1.0 the qmake
-   command should be in your PATH (later releases can also find it in
-   $QTDIR/bin).
+   The Recoll configure script does a better job of checking these
+   variables after release 1.1.1. Before this, unexplained errors
+   will occur during compilation if the environment is not set up.
+   Also, for 1.1.0 the qmake command should be in your PATH (later
+   releases can also find it in $QTDIR/bin).
 
    Normal procedure:
 
@@ -507,84 +535,93 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
          configure
          make
          (practises usual hardship-repelling invocations)
-     
+      
 
-   There little autoconfiguration. The configure script will mainly link one
-   of the system-specific files in the mk directory to mk/sysconf. If your
-   system is not known yet, it will tell you as much, and you may want to
-   manually copy and modify one of the existing files (the new file name
-   should be the output of uname -s).
+   There little autoconfiguration. The configure script will mainly
+   link one of the system-specific files in the mk directory to
+   mk/sysconf. If your system is not known yet, it will tell you as
+   much, and you may want to manually copy and modify one of the
+   existing files (the new file name should be the output of uname
+   -s).
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
   4.1.3. Installation
 
-   Either type make install or execute recollinstall prefix, in the root of
-   the source tree. This will copy the commands to prefix/bin and the sample
-   configuration files, scripts and other shared data to prefix/share/recoll.
+   Either type make install or execute recollinstall prefix, in the
+   root of the source tree. This will copy the commands to prefix/bin
+   and the sample configuration files, scripts and other shared data
+   to prefix/share/recoll.
 
    You can then proceed to configuration.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 4.2. Installing a prebuilt copy
 
   4.2.1. Installing through a package system
 
-   If you are lucky enough to be using a port system or a prebuilt package
-   (RPM or other), just follow the usual procedure, and have a look at the
-   configuration section.
+   If you are lucky enough to be using a port system or a prebuilt
+   package (RPM or other), just follow the usual procedure, and have
+   a look at the configuration section.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
   4.2.2. Installing a prebuilt Recoll
 
-   The unpackaged binary versions are just compressed tar files of a build
-   tree, where only the useful parts were kept (executables and sample
-   configuration).
+   The unpackaged binary versions are just compressed tar files of a
+   build tree, where only the useful parts were kept (executables and
+   sample configuration).
 
-   The executable binary files are built with a static link to libxapian and
-   libiconv, to make installation easier (no dependencies). However, this
-   also means that you cannot change the versions which are used.
+   The executable binary files are built with a static link to
+   libxapian and libiconv, to make installation easier (no
+   dependencies). However, this also means that you cannot change the
+   versions which are used.
 
-   After extracting the tar file, you can proceed with installation as if you
-   had built the package from source.
+   After extracting the tar file, you can proceed with installation
+   as if you had built the package from source.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
 4.3. Configuration overview
 
-   There are two sets of configuration files. The system-wide files are kept
-   in a directory named like /usr/[local/]share/recoll/examples, they define
-   default values for the system. A parallel set of files exists in the
-   .recoll directory in your home (this can be changed with the
-   RECOLL_CONFDIR environment variable. The database is also kept in .recoll
-   by default, (this can be changed by a configuration parameter).
+   There are two sets of configuration files. The system-wide files
+   are kept in a directory named like
+   /usr/[local/]share/recoll/examples, they define default values for
+   the system. A parallel set of files exists in the .recoll
+   directory in your home (this can be changed with the
+   RECOLL_CONFDIR environment variable. The database is also kept in
+   .recoll by default, (this can be changed by a configuration
+   parameter).
 
-   If the .recoll directory does not exist when recoll or recollindex are
-   started, it will be created with a set of empty configuration files.
-   recoll will give you a chance to edit the configuration file before
-   starting indexation. recollindex will proceed immediately.
+   If the .recoll directory does not exist when recoll or recollindex
+   are started, it will be created with a set of empty configuration
+   files. recoll will give you a chance to edit the configuration
+   file before starting indexation. recollindex will proceed
+   immediately.
 
-   Most of the parameters specific to the recoll GUI are set through the
-   Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
-   You probably do not want to edit this by hand.
+   Most of the parameters specific to the recoll GUI are set through
+   the Preferences menu and stored in the standard QT place
+   ($HOME/.qt/recollrc). You probably do not want to edit this by
+   hand.
 
-   For other options, Recoll uses text configuration files. You will have to
-   edit them by hand for now (there is still some hope for a GUI
-   configuration tool in the future). The most accurate documentation for the
-   configuration parameters is given by comments inside the default files,
-   and we will just give a general overview here.
+   For other options, Recoll uses text configuration files. You will
+   have to edit them by hand for now (there is still some hope for a
+   GUI configuration tool in the future). The most accurate
+   documentation for the configuration parameters is given by
+   comments inside the default files, and we will just give a general
+   overview here.
 
-   All configuration files share the same format. For exemple, a short
-   extract of the main configuration file might look as follows:
+   All configuration files share the same format. For exemple, a
+   short extract of the main configuration file might look as
+   follows:
 
          # Space-separated list of directories to index.
          topdirs =  ~/docs /usr/share/doc
 
          [~/somedirectory-with-utf8-txt-files]
          defaultcharset = utf-8
-       
+        
 
    There are three kinds of lines:
 
@@ -594,29 +631,32 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Section definition ([somedirname]).
 
-   Section lines allow redefining some parameters for a directory subtree.
-   Some of the parameters used for indexation are looked up hierarchically
-   from the more to the less specific. Not all parameters can be meaningfully
-   redefined, this is specified for each in the next section.
+   Section lines allow redefining some parameters for a directory
+   subtree. Some of the parameters used for indexation are looked up
+   hierarchically from the more to the less specific. Not all
+   parameters can be meaningfully redefined, this is specified for
+   each in the next section.
 
-   The tilde character (~) is expanded in file names to the name of the
-   user's home directory.
+   The tilde character (~) is expanded in file names to the name of
+   the user's home directory.
 
-   White space is used for separation inside lists. Elements with embedded
-   spaces can be quoted using double-quotes.
+   White space is used for separation inside lists. Elements with
+   embedded spaces can be quoted using double-quotes.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
   4.3.1. Main configuration file
 
-   recoll.conf is the main configuration file. It defines things like what to
-   index (top directories and things to ignore), and the default character
-   set to use for document types which do not specify it internally.
+   recoll.conf is the main configuration file. It defines things like
+   what to index (top directories and things to ignore), and the
+   default character set to use for document types which do not
+   specify it internally.
 
-   The default configuration will index your home directory. If this is not
-   appropriate, use recoll to copy the sample configuration, click Cancel,
-   and edit the configuration file before restarting the command. This will
-   start the initial indexation, which may take some time.
+   The default configuration will index your home directory. If this
+   is not appropriate, use recoll to copy the sample configuration,
+   click Cancel, and edit the configuration file before restarting
+   the command. This will start the initial indexation, which may
+   take some time.
 
    Paramers:
 
@@ -627,133 +667,143 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    skippedNames
 
            A space-separated list of patterns for names of files or
-           directories that should be completely ignored. The list defined in
-           the default file is:
+           directories that should be completely ignored. The list
+           defined in the default file is:
 
  *~ #* bin CVS  Cache caughtspam  tmp
 
-           The list can be redefined for subdirectories, but is only actually
-           changed for the top level ones in topdirs.
+           The list can be redefined for subdirectories, but is only
+           actually changed for the top level ones in topdirs.
 
-           The top-level directories are not affected by this list (that is,
-           a directory in topdirs might match and would still be indexed).
+           The top-level directories are not affected by this list
+           (that is, a directory in topdirs might match and would
+           still be indexed).
 
-           The list in the default configuration does not exclude hidden
-           directories (names beginning with a dot), which means that it may
-           index quite a few things that you do not want. On the other hand,
-           mail user agents like thunderbird usually store messages in hidden
-           directories, and you probably want this indexed. One possible
-           solution is to have .* in skippedNames, and add things like
+           The list in the default configuration does not exclude
+           hidden directories (names beginning with a dot), which
+           means that it may index quite a few things that you do not
+           want. On the other hand, mail user agents like thunderbird
+           usually store messages in hidden directories, and you
+           probably want this indexed. One possible solution is to
+           have .* in skippedNames, and add things like
            ~/.thunderbird or ~/.evolution in topdirs.
 
    loglevel
 
-           Verbosity level for recoll and recollindex. A value of 4 lists
-           quite a lot of debug/information messages. 2 only lists errors.
+           Verbosity level for recoll and recollindex. A value of 4
+           lists quite a lot of debug/information messages. 2 only
+           lists errors.
 
    logfilename
 
-           Where should the messages go. 'stderr' can be used as a special
-           value.
+           Where should the messages go. 'stderr' can be used as a
+           special value.
 
    filtersdir
 
-           A directory to search for the external filter scripts used to
-           index some types of files. The value should not be changed, except
-           if you want to modify one of the default scripts. The value can be
-           redefined for any subdirectory.
+           A directory to search for the external filter scripts used
+           to index some types of files. The value should not be
+           changed, except if you want to modify one of the default
+           scripts. The value can be redefined for any subdirectory.
 
    indexstemminglanguages
 
-           A list of languages for which the stem expansion databases will be
-           built. See recollindex(1) for possible values. You can add a stem
-           expansion database for a different language by using recollindex
-           -s, but it will be deleted during the next indexation. Only
-           languages listed in the configuration file are permanent.
+           A list of languages for which the stem expansion databases
+           will be built. See recollindex(1) for possible values. You
+           can add a stem expansion database for a different language
+           by using recollindex -s, but it will be deleted during the
+           next indexation. Only languages listed in the
+           configuration file are permanent.
 
    iconsdir
 
-           The name of the directory where recoll result list icons are
-           stored. You can change this if you want different images.
+           The name of the directory where recoll result list icons
+           are stored. You can change this if you want different
+           images.
 
    dbdir
 
-           The name of the Xapian database directory. It will be created if
-           needed when the database is initialized.
+           The name of the Xapian database directory. It will be
+           created if needed when the database is initialized.
 
    defaultcharset
 
-           The name of the character set used for files that do not contain a
-           character set definition (ie: plain text files). This can be
-           redefined for any subdirectory. If it is not set at all, the
-           character set used is the one defined by the nls environment
-           (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
+           The name of the character set used for files that do not
+           contain a character set definition (ie: plain text files).
+           This can be redefined for any subdirectory. If it is not
+           set at all, the character set used is the one defined by
+           the nls environment (LC_ALL, LC_CTYPE, LANG), or iso8859-1
+           if nothing is set.
 
    guesscharset
 
            Decide if we try to guess the character set of files if no
-           internal value is available (ie: for plain text files). This does
-           not work well in general, and should probably not be used.
+           internal value is available (ie: for plain text files).
+           This does not work well in general, and should probably
+           not be used.
 
    usesystemfilecommand
 
-           Decide if we use the file -i system command as a final step for
-           determining the mime type for a file (the main procedure uses
-           suffix associations as defined in the mimemap file). This can be
-           useful for files with suffixless names, but it will also cause the
-           indexation of many bogus "text" files.
+           Decide if we use the file -i system command as a final
+           step for determining the mime type for a file (the main
+           procedure uses suffix associations as defined in the
+           mimemap file). This can be useful for files with
+           suffixless names, but it will also cause the indexation of
+           many bogus "text" files.
 
    indexallfilenames
 
-           Recoll indexes file names in a special section of the database to
-           allow specific file names searches using wild cards. This
-           parameter decides if file name indexing is performed only for
-           files with mime types that would qualify them for full text
-           indexation, or for all files inside the selected subtrees,
-           independant of mime type.
+           Recoll indexes file names in a special section of the
+           database to allow specific file names searches using wild
+           cards. This parameter decides if file name indexing is
+           performed only for files with mime types that would
+           qualify them for full text indexation, or for all files
+           inside the selected subtrees, independant of mime type.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
   4.3.2. The mimemap file
 
    mimemap specifies the file name extension to mime type mappings.
 
-   For file names without an extension, or with an unknown one, the system's
-   file -i command will be executed to determine the mime type (this can be
-   switched off inside the main configuration file).
+   For file names without an extension, or with an unknown one, the
+   system's file -i command will be executed to determine the mime
+   type (this can be switched off inside the main configuration
+   file).
 
-   mimemap also has a list of extensions which should be ignored totally (to
-   avoid losing time by executing file for things that certainly should not
-   be indexed).
+   mimemap also has a list of extensions which should be ignored
+   totally (to avoid losing time by executing file for things that
+   certainly should not be indexed).
 
-   The mappings can be specified on a per-subtree basis, which may be useful
-   in some cases. Example: gaim logs have a .txt extension but should be
-   handled specially, which is possible because they are usually all located
-   in one place.
+   The mappings can be specified on a per-subtree basis, which may be
+   useful in some cases. Example: gaim logs have a .txt extension but
+   should be handled specially, which is possible because they are
+   usually all located in one place.
 
-   mimemap also has a recoll_noindex variable which is a list of suffixes.
-   Matching files will be skipped (avoids unnecessary decompressions or file
-   executions). This is partially redundant with skippedNames in the main
-   configuration file, with two differences: it will not affect directories,
-   and it can be changed for any subdirectory.
+   mimemap also has a recoll_noindex variable which is a list of
+   suffixes. Matching files will be skipped (avoids unnecessary
+   decompressions or file executions). This is partially redundant
+   with skippedNames in the main configuration file, with two
+   differences: it will not affect directories, and it can be changed
+   for any subdirectory.
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------
 
   4.3.3. The mimeconf file
 
    mimeconf specifies how the different mime types are handled for
    indexation, and for display.
 
-   Changing the indexation parameters is probably not a good idea except if
-   you are a Recoll developper.
+   Changing the indexation parameters is probably not a good idea
+   except if you are a Recoll developper.
 
-   You may want to adjust the external viewers defined in (ie: html is either
-   previewed internally or displayed using firefox, but you may prefer
-   mozilla, your openoffice.org program might be named oofice instead of
-   openoffice ...). Look for the [view] section.
+   You may want to adjust the external viewers defined in (ie: html
+   is either previewed internally or displayed using firefox, but you
+   may prefer mozilla, your openoffice.org program might be named
+   oofice instead of openoffice ...). Look for the [view] section.
 
-   You can also change the icons which are displayed by recoll in the result
-   lists (the values are the basenames of the png images inside the iconsdir
-   directory (specified in recoll.conf).
+   You can also change the icons which are displayed by recoll in the
+   result lists (the values are the basenames of the png images
+   inside the iconsdir directory (specified in recoll.conf).
 
-     ----------------------------------------------------------------------
+     --------------------------------------------------------------

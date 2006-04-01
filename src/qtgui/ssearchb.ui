@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>593</width>
-            <height>44</height>
+            <height>48</height>
         </rect>
     </property>
     <property name="caption">
@@ -64,6 +64,9 @@
                 <widget class="QComboBox">
                     <property name="name">
                         <cstring>searchTypCMB</cstring>
+                    </property>
+                    <property name="focusPolicy">
+                        <enum>TabFocus</enum>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Choose type of search: any term, all terms, filename with possible wildcards.</string>

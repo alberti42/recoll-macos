@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.8 2006-03-31 17:19:45 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.9 2006-04-01 09:15:28 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -42,6 +42,7 @@ RclResList::RclResList(QWidget* parent, const char* name)
     languageChange();
     resize( QSize(198, 144).expandedTo(minimumSizeHint()) );
     clearWState( WState_Polished );
+    setTabChangesFocus(true);
 
     // signals and slots connections
     connect(this, SIGNAL(clicked(int, int)), this, SLOT(clicked(int,int)));
