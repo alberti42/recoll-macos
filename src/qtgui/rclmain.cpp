@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.16 2006-04-01 08:07:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.17 2006-04-01 21:02:12 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -527,10 +527,13 @@ void RclMain::enablePrevPage(bool yesno)
 /** Show detailed expansion of a query */
 void RclMain::showQueryDetails()
 {
-    // Break query into lines of reasonable length, avoid cutting words!
-    const unsigned int ll = 80;
+    // Break query into lines of reasonable length, avoid cutting words,
+    // Also limit the total number of lines. 
+    const unsigned int ll = 100;
+    const unsigned int maxlines = 50;
     string query = currentQueryData.description;
     string oq;
+    unsigned int nlines = 0;
     while (query.length() > 0) {
 	string ss = query.substr(0, ll);
 	if (ss.length() == ll) {
@@ -552,6 +555,10 @@ void RclMain::showQueryDetails()
 	    break;
 	}
 	oq += ss + "\n";
+	if (nlines++ >= maxlines) {
+	    oq += " ... \n";
+	    break;
+	}
 	query= query.substr(ss.length());
 	LOGDEB1(("oq [%s]\n, query [%s]\n, ss [%s]\n",
 		oq.c_str(), query.c_str(), ss.c_str()));
