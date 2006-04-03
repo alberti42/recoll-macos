@@ -2,7 +2,7 @@
 # Date created:        5 December 2005
 # Whom:                J.F. Dockes <jean-francois.dockes@wanadoo.fr>
 #
-# $FreeBSD$
+# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.4 2006/02/03 15:28:20 vd Exp $
 #
 
 PORTNAME=	recoll
@@ -18,11 +18,18 @@ LIB_DEPENDS=	xapian.8:${PORTSDIR}/databases/xapian-core \
 		qt-mt.3:${PORTSDIR}/x11-toolkits/qt33
 
 USE_QT_VER=	3
-MAKE_ENV=	QTDIR="${QT_PREFIX}" QMAKESPEC="freebsd-g++"
+CONFIGURE_ENV=	QTDIR="${QT_PREFIX}" QMAKESPEC="freebsd-g++"
+MAKE_ENV=	${CONFIGURE_ENV}
 GNU_CONFIGURE=	yes
+CONFIGURE_TARGET=	--build=${MACHINE_ARCH}-portbld-freebsd${OSREL}
 USE_GMAKE=	yes
+USE_ICONV=	yes
 
 MAN1=		recoll.1 recollindex.1
 MAN5=		recoll.conf.5
+
+post-patch:
+	${REINPLACE_CMD} -e 's/^CXXFLAGS =/CXXFLAGS ?=/' \
+		${WRKSRC}/mk/localdefs.in
 
 .include <bsd.port.mk>
