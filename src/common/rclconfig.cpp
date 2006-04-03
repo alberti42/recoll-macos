@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.26 2006-03-29 13:08:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.27 2006-04-03 11:43:07 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,9 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.26 2006-03-29 13:08:08 dockes E
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef __FreeBSD__
+#include <osreldate.h>
+#endif
 
 #include <iostream>
 
@@ -161,10 +164,17 @@ const string& RclConfig::getDefCharset(bool filename)
 	// Ie: me have a C locale and some french file names, and I
 	// can't imagine a version of iconv that couldn't translate
 	// from iso8859?
-	if (cp && *cp && strcmp(cp, "US-ASCII")) {
+	// The 646 thing is for solaris. 
+	if (cp && *cp && strcmp(cp, "US-ASCII") 
+#ifdef sun
+	    && strcmp(cp, "646")
+#endif
+	    ) {
 	    localecharset = string(cp);
 	} else {
-	    localecharset = string("ISO8859-1");
+	    // Note: it seems that all versions of iconv will take
+	    // iso-8859. Some won't take iso8859
+	    localecharset = string("ISO-8859-1");
 	}
     }
 
@@ -245,7 +255,13 @@ string RclConfig::getMimeIconName(const string &mtype, string *path)
 
     if (path) {
 	string iconsdir;
+
+#if defined (__FreeBSD__) && __FreeBSD_version < 500000
+	// gcc 2.95 dies if we call getConfParam here ??
+	if (m_conf) m_conf->get(string("iconsdir"), iconsdir, m_keydir);
+#else
 	getConfParam("iconsdir", iconsdir);
+#endif
 	if (iconsdir.empty()) {
 	    iconsdir = path_cat(m_datadir, "images");
 	} else {
