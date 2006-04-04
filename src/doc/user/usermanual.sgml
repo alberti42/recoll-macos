@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.8 2006-03-30 10:31:03 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.9 2006-04-04 12:37:51 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -817,9 +817,12 @@
         <variablelist>
 
           <varlistentry><term><literal>topdirs</literal></term>
-            <listitem><para>Specifies the list of directories to index
-            (recursively).</para>
-            </listitem>
+            <listitem><para>Specifies the list of directories or files to
+            index (recursively for directories). The indexer will not
+            follow symbolic links inside the indexed trees. If an entry in
+            the <literal>topdirs</literal> list is a symbolic link,
+            indexation will not start and will generate an error.</para>
+            </listitem> 
           </varlistentry>
 
           <varlistentry><term><literal>skippedNames</literal></term>

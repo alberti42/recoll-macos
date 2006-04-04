@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.28 2006-04-04 09:34:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.29 2006-04-04 12:37:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -89,8 +89,8 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 
 	// Walk the directory tree
 	if (m_walker.walk(*it, *this) != FsTreeWalker::FtwOk) {
-	    LOGERR(("DbIndexer::index: error while indexing %s\n", 
-		    it->c_str()));
+	    LOGERR(("DbIndexer::index: error while indexing %s: %s\n", 
+		    it->c_str(), m_walker.getReason().c_str()));
 	    return false;
 	}
     }
@@ -267,11 +267,13 @@ bool ConfIndexer::index(bool resetbefore)
     string topdirs;
     if (!m_config->getConfParam("topdirs", topdirs)) {
 	LOGERR(("ConfIndexer::index: no top directories in configuration\n"));
+	m_reason = "Top directory list (topdirs param.) not found in config";
 	return false;
     }
     list<string> tdl; // List of directories to be indexed
     if (!stringToStrings(topdirs, tdl)) {
 	LOGERR(("ConfIndexer::index: parse error for directory list\n"));
+	m_reason = "Directory list parse error";
 	return false;
     }
 
@@ -285,10 +287,26 @@ bool ConfIndexer::index(bool resetbefore)
     for (dirit = tdl.begin(); dirit != tdl.end(); dirit++) {
 	string dbdir;
 	string doctopdir = path_tildexpand(*dirit);
+	{ // Check top dirs. Must not be symlinks
+	    struct stat st;
+	    if (lstat(doctopdir.c_str(), &st) < 0) {
+		LOGERR(("ConfIndexer::index: cant stat %s\n",
+			doctopdir.c_str()));
+		m_reason = string("Stat error for: ") + doctopdir;
+		return false;
+	    }
+	    if (S_ISLNK(st.st_mode)) {
+		LOGERR(("ConfIndexer::index: no symlinks allowed in topdirs: %s\n",
+			doctopdir.c_str()));
+		m_reason = doctopdir + "is a symbolic link";
+		return false;
+	    }
+	}
 	m_config->setKeyDir(doctopdir);
 	if (!m_config->getConfParam("dbdir", dbdir)) {
 	    LOGERR(("ConfIndexer::index: no database directory in "
 		    "configuration for %s\n", doctopdir.c_str()));
+	    m_reason = string("No database directory set for ") + doctopdir;
 	    return false;
 	}
 	dbdir = path_tildexpand(dbdir);
@@ -315,6 +333,7 @@ bool ConfIndexer::index(bool resetbefore)
 	m_dbindexer = new DbIndexer(m_config, dbit->first, m_updfunc);
 	if (!m_dbindexer->indexDb(resetbefore, &dbit->second)) {
 	    deleteZ(m_dbindexer);
+	    m_reason = string("Failed indexing in ") + dbit->first;
 	    return false;
 	}
 	deleteZ(m_dbindexer);

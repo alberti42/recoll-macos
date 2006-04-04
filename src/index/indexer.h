@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.12 2006-04-04 09:34:11 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.13 2006-04-04 12:37:51 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -53,10 +53,12 @@ class ConfIndexer {
     virtual ~ConfIndexer();
     /** Worker function: doe the actual indexing */
     bool index(bool resetbefore = false);
+    const string &getReason() {return m_reason;}
  private:
     RclConfig *m_config;
     DbIndexer *m_dbindexer; // Object to process directories for a given db
     DbIxStatusUpdater *m_updfunc;
+    string m_reason;
 };
 
 /** Index things into one database
