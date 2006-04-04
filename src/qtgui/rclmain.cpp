@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.17 2006-04-01 21:02:12 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.18 2006-04-04 07:55:29 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -480,7 +480,7 @@ void RclMain::showDocHistory()
 
     DocSequence *docsource;
     if (sortwidth > 0) {
-	DocSequenceHistory myseq(rcldb, m_history, tr("Document history"));
+	DocSequenceHistory myseq(rcldb, m_history, string(tr("Document history").utf8()));
 	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
 				     string(tr("Document history (sorted)").utf8()));
     } else {

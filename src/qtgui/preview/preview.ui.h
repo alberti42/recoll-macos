@@ -439,7 +439,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     char csz[20];
     sprintf(csz, "%lu", (unsigned long)sz);
     QString msg = QString("Loading: %1 (size %2 bytes)")
-	.arg(fn)
+	.arg(QString::fromLocal8Bit(fn.c_str()))
 	.arg(csz);
 
     // Create progress dialog and aux objects

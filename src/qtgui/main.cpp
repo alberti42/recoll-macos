@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.38 2006-03-29 17:31:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.39 2006-04-04 07:55:29 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -157,7 +157,7 @@ int main( int argc, char ** argv )
     rclconfig = recollinit(recollCleanup, sigcleanup, reason);
     if (!rclconfig || !rclconfig->ok()) {
 	QString msg = app.translate("Main", "Configuration problem: ");
-	msg += reason;
+	msg += QString::fromUtf8(reason.c_str());
 	QMessageBox::critical(0, "Recoll",  msg);
 	exit(1);
     }
@@ -219,13 +219,13 @@ int main( int argc, char ** argv )
 		information
 #endif
 		(0, "Recoll",
-			 app.translate("Main", "Could not open database in ")+
-			 QString(dbdir) +
-			 app.translate("Main", 
-				     ".\n"
-				     "Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed."),
-				      "Ok",
-				      "Cancel", 0, 0, 1 )) {
+		 app.translate("Main", "Could not open database in ") +
+		 QString::fromLocal8Bit(dbdir.c_str()) +
+		 app.translate("Main", 
+			       ".\n"
+			       "Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed."),
+		 "Ok",
+		 "Cancel", 0, 0, 1 )) {
 	case 0: // Ok
 	    break;
 	case 1: // Cancel
