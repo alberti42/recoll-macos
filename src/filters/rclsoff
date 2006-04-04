@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclsoff,v 1.5 2006-01-27 13:37:31 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclsoff,v 1.6 2006-04-04 16:03:28 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -84,7 +84,7 @@ cleanup()
 trap cleanup EXIT SIGHUP SIGQUIT SIGINT SIGTERM
 
 # Unzip the input file and change to the unzipped directory
-unzip -q -d $tmpdir/rclsofftmp $infile
+unzip -q -d $tmpdir/rclsofftmp "$infile"
 cd $tmpdir/rclsofftmp
 
 # Note: there can be newlines inside the description field, we don't want

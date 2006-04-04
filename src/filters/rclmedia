@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclmedia,v 1.1 2006-03-28 09:38:12 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclmedia,v 1.2 2006-04-04 16:03:28 dockes Exp $  (C) 2004 J.F.Dockes
 #================================================================
 # rclmedia
 # Handle media files for recoll. This currently returns an empty
@@ -61,7 +61,7 @@ echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
 echo '</head><body>'
 echo '<pre>'
 if test X$cmdsok = X1 ; then
-   id3info $infile | \
+   id3info "$infile" | \
    sed -e 's/</&lt;/g' -e 's/&/&amp;/g' -e 's/===.*://' | \
 	   grep -v 'Tag information for'
 fi

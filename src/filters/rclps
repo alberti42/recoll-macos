@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclps,v 1.6 2006-02-03 10:53:35 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclps,v 1.7 2006-04-04 16:03:28 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -34,7 +34,7 @@ then
 fi
 
 infile="$1"
-if test X$infile = X- ; then
+if test "X$infile" = X- ; then
   cmd=$decoder
 else
   cmd="$decoder $1"
@@ -67,7 +67,7 @@ checkcmds()
 checkcmds $decoder iconv awk
 
 # check the input file existence
-if test X$infile != X- -a ! -f "$infile"
+if test "X$infile" != X- -a ! -f "$infile"
 then
   printf '%s: %s: no such file\n' "$progname" "$infile"
   exit 1
