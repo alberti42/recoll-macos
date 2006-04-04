@@ -66,7 +66,7 @@ class ConfSimple {
 
     /**
      * Build the object by reading content from a string
-     * @param data points to the data to parse
+     * @param data points to the data to parse. 
      * @param readonly if true open readonly, else rw
      * @param tildexp  try tilde (home dir) expansion for subsection names
      */
@@ -127,9 +127,8 @@ class ConfSimple {
 	if ((status = rhs.status) == STATUS_ERROR)
 	    return;
 	filename = rhs.filename;
-	if (rhs.data) {
-	    data = new string(*(rhs.data));
-	}
+	// Note: we just share the pointer, this doesnt belong to us
+	data = rhs.data;
 	submaps = rhs.submaps;
     }
 
@@ -138,12 +137,9 @@ class ConfSimple {
      */
     ConfSimple& operator=(const ConfSimple &rhs) {
 	if (this != &rhs && (status = rhs.status) != STATUS_ERROR) {
-	    delete data;
-	    data = 0;
 	    filename = rhs.filename;
-	    if (rhs.data) {
-		data = new string(*(rhs.data));
-	    }
+	    // Note: we don't own data. Just share the pointer
+	    data = rhs.data;
 	    submaps = rhs.submaps;
 	}
 	return *this;
