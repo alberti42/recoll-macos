@@ -1,11 +1,11 @@
 #!/bin/sh
-# @(#$Id: rcluncomp,v 1.1 2005-02-04 14:21:17 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rcluncomp,v 1.2 2006-04-04 15:44:17 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Uncompress file using any program like gunzip/bunzip2. We jump through
 # hoops to let the decompressor remove the compression suffix in the file
 # name. The input directory must be empty on entry.
 
-if test $# != 3 -o ! -f $2 -o ! -d $3 ; then 
+if test $# != 3 -o ! -f "$2" -o ! -d "$3" ; then 
    echo "Usage: rcluncomp <ucomp_prog> <infile> <outdir>"
    exit 1
 fi
@@ -14,11 +14,14 @@ uncomp=$1
 infile=$2
 outdir=$3
 
-sinfile=`basename $infile`
-cp $infile $outdir/$sinfile || exit 1
+sinfile=`basename "$infile"`
+#echo "rcluncomp: $sinfile" 1>&2
 
-$uncomp $outdir/$sinfile
+cp "$infile" "$outdir/$sinfile" || exit 1
+
+$uncomp "$outdir/$sinfile"
 
 uncompressed=`echo $outdir/*`
+#echo "rcluncomp: $uncompressed" 1>&2
 
 echo $uncompressed
