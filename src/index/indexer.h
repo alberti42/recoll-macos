@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.11 2006-03-22 16:24:41 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.12 2006-04-04 09:34:11 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -48,14 +48,14 @@ class ConfIndexer {
  public:
     enum runStatus {IndexerOk, IndexerError};
     ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0)
-	: config(cnf), dbindexer(0), m_updfunc(updfunc)
+	: m_config(cnf), m_dbindexer(0), m_updfunc(updfunc)
 	{}
     virtual ~ConfIndexer();
     /** Worker function: doe the actual indexing */
     bool index(bool resetbefore = false);
  private:
-    RclConfig *config;
-    DbIndexer *dbindexer; // Object to process directories for a given db
+    RclConfig *m_config;
+    DbIndexer *m_dbindexer; // Object to process directories for a given db
     DbIxStatusUpdater *m_updfunc;
 };
 
@@ -76,7 +76,7 @@ class DbIndexer : public FsTreeWalkerCB {
 	      const std::string &dbd, // Place where the db lives
 	      DbIxStatusUpdater *updfunc = 0 // status updater callback
 	      ) 
-	: config(cnf), dbdir(dbd), m_updfunc(updfunc) { 
+	: m_config(cnf), m_dbdir(dbd), m_updfunc(updfunc) { 
     }
 	
     virtual ~DbIndexer();
@@ -105,12 +105,13 @@ class DbIndexer : public FsTreeWalkerCB {
 		   FsTreeWalker::CbFlag);
 
  private:
-    FsTreeWalker walker;
-    RclConfig *config;
-    std::string dbdir;
-    Rcl::Db db;
-    std::string tmpdir;
+    FsTreeWalker m_walker;
+    RclConfig *m_config;
+    std::string m_dbdir;
+    Rcl::Db m_db;
+    std::string m_tmpdir;
     DbIxStatusUpdater *m_updfunc;
+
     bool init(bool rst = false);
 };
 

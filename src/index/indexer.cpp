@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.27 2006-03-29 11:18:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.28 2006-04-04 09:34:10 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -52,14 +52,14 @@ using namespace std;
 
 DbIndexer::~DbIndexer() {
     // Maybe clean up temporary directory
-    if (tmpdir.length()) {
-	wipedir(tmpdir);
-	if (rmdir(tmpdir.c_str()) < 0) {
+    if (m_tmpdir.length()) {
+	wipedir(m_tmpdir);
+	if (rmdir(m_tmpdir.c_str()) < 0) {
 	    LOGERR(("DbIndexer::~DbIndexer: cannot clear temp dir %s\n",
-		    tmpdir.c_str()));
+		    m_tmpdir.c_str()));
 	}
     }
-    db.close();
+    m_db.close();
 }
 
 // Index each directory in the topdirs for a given db
@@ -71,24 +71,24 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
     for (list<string>::const_iterator it = topdirs->begin();
 	 it != topdirs->end(); it++) {
 	LOGDEB(("DbIndexer::index: Indexing %s into %s\n", it->c_str(), 
-		dbdir.c_str()));
+		m_dbdir.c_str()));
 
 	// Set the current directory in config so that subsequent
 	// getConfParams() will get local values
-	config->setKeyDir(*it);
+	m_config->setKeyDir(*it);
 
 	// Set up skipped patterns for this subtree. This probably should be
 	// done in the directory change code in processone() instead.
-	walker.clearSkippedNames();
+	m_walker.clearSkippedNames();
 	string skipped; 
-	if (config->getConfParam("skippedNames", skipped)) {
+	if (m_config->getConfParam("skippedNames", skipped)) {
 	    list<string> skpl;
 	    stringToStrings(skipped, skpl);
-	    walker.setSkippedNames(skpl);
+	    m_walker.setSkippedNames(skpl);
 	}
 
 	// Walk the directory tree
-	if (walker.walk(*it, *this) != FsTreeWalker::FtwOk) {
+	if (m_walker.walk(*it, *this) != FsTreeWalker::FtwOk) {
 	    LOGERR(("DbIndexer::index: error while indexing %s\n", 
 		    it->c_str()));
 	    return false;
@@ -97,32 +97,32 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 
     // Get rid of all database entries that don't exist in the
     // filesystem anymore.
-    db.purge();
+    m_db.purge();
 
     // Create stemming databases. We also remove those which are not
     // configured.
     string slangs;
-    if (config->getConfParam("indexstemminglanguages", slangs)) {
+    if (m_config->getConfParam("indexstemminglanguages", slangs)) {
 	list<string> langs;
 	stringToStrings(slangs, langs);
 
 	// Get the list of existing stem dbs from the database (some may have 
 	// been manually created, we just keep those from the config
-	list<string> dblangs = db.getStemLangs();
+	list<string> dblangs = m_db.getStemLangs();
 	list<string>::const_iterator it;
 	for (it = dblangs.begin(); it != dblangs.end(); it++) {
 	    if (find(langs.begin(), langs.end(), *it) == langs.end())
-		db.deleteStemDb(*it);
+		m_db.deleteStemDb(*it);
 	}
 	for (it = langs.begin(); it != langs.end(); it++) {
-	    db.createStemDb(*it);
+	    m_db.createStemDb(*it);
 	}
     }
 
     // The close would be done in our destructor, but we want status here
-    if (!db.close()) {
+    if (!m_db.close()) {
 	LOGERR(("DbIndexer::index: error closing database in %s\n", 
-		dbdir.c_str()));
+		m_dbdir.c_str()));
 	return false;
     }
     return true;
@@ -130,12 +130,12 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 
 bool DbIndexer::init(bool resetbefore)
 {
-    if (!maketmpdir(tmpdir)) {
+    if (!maketmpdir(m_tmpdir)) {
 	LOGERR(("DbIndexer: cannot create temporary directory\n"));
 	return false;
     }
-    if (!db.open(dbdir, resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd)) {
-	LOGERR(("DbIndexer: error opening database in %s\n", dbdir.c_str()));
+    if (!m_db.open(m_dbdir, resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd)) {
+	LOGERR(("DbIndexer: error opening database in %s\n", m_dbdir.c_str()));
 	return false;
     }
     return true;
@@ -145,7 +145,7 @@ bool DbIndexer::createStemDb(const string &lang)
 {
     if (!init())
 	return false;
-    return db.createStemDb(lang);
+    return m_db.createStemDb(lang);
 }
 
 /** 
@@ -158,7 +158,7 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
 
     list<string>::const_iterator it;
     for (it = filenames.begin(); it != filenames.end();it++) {
-	config->setKeyDir(path_getfather(*it));
+	m_config->setKeyDir(path_getfather(*it));
 	struct stat stb;
 	if (stat(it->c_str(), &stb) != 0) {
 	    LOGERR(("DbIndexer::indexFiles: stat(%s): %s", it->c_str(),
@@ -177,9 +177,9 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
 	}
     }
     // The close would be done in our destructor, but we want status here
-    if (!db.close()) {
+    if (!m_db.close()) {
 	LOGERR(("DbIndexer::indexfiles: error closing database in %s\n", 
-		dbdir.c_str()));
+		m_dbdir.c_str()));
 	return false;
     }
     return true;
@@ -206,7 +206,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     // the current directory in configuration object)
     if (flg == FsTreeWalker::FtwDirEnter || 
 	flg == FsTreeWalker::FtwDirReturn) {
-	config->setKeyDir(fn);
+	m_config->setKeyDir(fn);
 	return FsTreeWalker::FtwOk;
     }
 
@@ -215,12 +215,12 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     // from on to off it may happen that some files which are now
     // without mime type will not be purged from the db, resulting
     // into possible 'cannot intern file' messages at query time...
-    if (!db.needUpdate(fn, stp)) {
+    if (!m_db.needUpdate(fn, stp)) {
 	LOGDEB(("indexfile: up to date: %s\n", fn.c_str()));
 	return FsTreeWalker::FtwOk;
     }
 
-    FileInterner interner(fn, config, tmpdir);
+    FileInterner interner(fn, m_config, m_tmpdir);
     FileInterner::Status fis = FileInterner::FIAgain;
     while (fis == FileInterner::FIAgain) {
 	Rcl::Doc doc;
@@ -239,13 +239,13 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	doc.ipath = ipath;
 
 	// File name transcoded to utf8 for indexation. 
-	string charset = config->getDefCharset(true);
+	string charset = m_config->getDefCharset(true);
 	// If this fails, the file name won't be indexed, no big deal
 	// Note that we used to do the full path here, but I ended up believing
 	// that it made more sense to use only the file name
 	transcode(path_getsimple(fn), doc.utf8fn, charset, "UTF-8");
 	// Do database-specific work to update document data
-	if (!db.add(fn, doc, stp)) 
+	if (!m_db.add(fn, doc, stp)) 
 	    return FsTreeWalker::FtwError;
     }
 
@@ -258,14 +258,14 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 
 ConfIndexer::~ConfIndexer()
 {
-     deleteZ(dbindexer);
+     deleteZ(m_dbindexer);
 }
 
 bool ConfIndexer::index(bool resetbefore)
 {
     // Retrieve the list of directories to be indexed.
     string topdirs;
-    if (!config->getConfParam("topdirs", topdirs)) {
+    if (!m_config->getConfParam("topdirs", topdirs)) {
 	LOGERR(("ConfIndexer::index: no top directories in configuration\n"));
 	return false;
     }
@@ -285,8 +285,8 @@ bool ConfIndexer::index(bool resetbefore)
     for (dirit = tdl.begin(); dirit != tdl.end(); dirit++) {
 	string dbdir;
 	string doctopdir = path_tildexpand(*dirit);
-	config->setKeyDir(doctopdir);
-	if (!config->getConfParam("dbdir", dbdir)) {
+	m_config->setKeyDir(doctopdir);
+	if (!m_config->getConfParam("dbdir", dbdir)) {
 	    LOGERR(("ConfIndexer::index: no database directory in "
 		    "configuration for %s\n", doctopdir.c_str()));
 	    return false;
@@ -301,7 +301,7 @@ bool ConfIndexer::index(bool resetbefore)
 	    dbit->second.push_back(doctopdir);
 	}
     }
-    config->setKeyDir("");
+    m_config->setKeyDir("");
 
     // The dbmap now has dbdir as key and directory lists as values.
     // Index each directory group in turn
@@ -312,12 +312,12 @@ bool ConfIndexer::index(bool resetbefore)
 	//    cout << *dit << " ";
 	//}
 	//cout << endl;
-	dbindexer = new DbIndexer(config, dbit->first, m_updfunc);
-	if (!dbindexer->indexDb(resetbefore, &dbit->second)) {
-	    deleteZ(dbindexer);
+	m_dbindexer = new DbIndexer(m_config, dbit->first, m_updfunc);
+	if (!m_dbindexer->indexDb(resetbefore, &dbit->second)) {
+	    deleteZ(m_dbindexer);
 	    return false;
 	}
-	deleteZ(dbindexer);
+	deleteZ(m_dbindexer);
     }
     return true;
 }
