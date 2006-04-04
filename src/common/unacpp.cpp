@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.7 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.8 2006-04-04 09:36:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,13 +43,16 @@ bool unacmaybefold(const std::string &in, std::string &out,
 	unacfold_string(encoding, in.c_str(), in.length(), &cout, &out_len) :
 	unac_string(encoding, in.c_str(), in.length(), &cout, &out_len);
     if (status < 0) {
+	if (cout)
+	    free(cout);
 	char cerrno[20];
 	sprintf(cerrno, "%d", errno);
 	out = string("unac_string failed, errno : ") + cerrno;
 	return false;
     }
     out.assign(cout, out_len);
-    free(cout);
+    if (cout)
+	free(cout);
     return true;
 }
 

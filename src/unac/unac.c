@@ -13067,7 +13067,7 @@ unac_data314
  * Debug level. See unac.h for a detailed discussion of the
  * values.
  */
-static int debug_level = UNAC_DEBUG_NONE;
+static int debug_level = UNAC_DEBUG_LOW;
 
 #ifdef UNAC_DEBUG_AVAILABLE
 
@@ -13142,7 +13142,7 @@ static const char* utf16be()
 
   if(name == 0) {
     if((cd = iconv_open("UTF-16BE", "UTF-16BE")) == (iconv_t)-1) {
-      if(debug_level == UNAC_DEBUG_LOW) DEBUG("could not find UTF-16BE (see iconv -l), using UTF-16. If UTF-16 happens to be encoded in little endian, be prepared for an horrible mess.");
+      if(debug_level >= UNAC_DEBUG_LOW) DEBUG("could not find UTF-16BE (see iconv -l), using UTF-16. If UTF-16 happens to be encoded in little endian, be prepared for an horrible mess.");
       name = "UTF-16";
     } else {
       iconv_close(cd);
@@ -13162,14 +13162,24 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
   int i;
 
   out_size = in_length > 0 ? in_length : 1024;
-  if(*outp) {
+  if (*outp) {
     out = *outp;
     /* +1 for null */
     out = realloc(out, out_size + 1);
+    if(out == 0) {
+	if(debug_level >= UNAC_DEBUG_LOW)
+	  DEBUG("realloc %d bytes failed\n", out_size+1);
+	// *outp is still valid. Let the caller free it
+	return -1;
+    }
   } else {
     /* +1 for null */
     out = malloc(out_size + 1);
-    if(out == 0) return -1;
+    if (out == 0) {
+	if(debug_level >= UNAC_DEBUG_LOW)
+	  DEBUG("malloc %d bytes failed\n", out_size+1);
+	return -1;
+    }
   }
   out_length = 0;
 
@@ -13204,15 +13214,21 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
 	DEBUG_APPEND("\n");
       }
     }
+
     /*
      * Make sure there is enough space to hold the decomposition
+     * Note: a previous realloc may have succeeded, which means that *outp 
+     * is not valid any more. We have to do the freeing and zero out *outp
      */
     if(out_length + ((l + 1) * 2) > out_size) {
       out_size += ((l + 1) * 2) + 1024;
+      char *saved = out;
       out = realloc(out, out_size);
       if(out == 0) {
-	if(debug_level == UNAC_DEBUG_LOW)
+	if(debug_level >= UNAC_DEBUG_LOW)
 	  DEBUG("realloc %d bytes failed\n", out_size);
+        free(saved);
+	*outp = 0;
 	return -1;
       }
     }
@@ -13283,10 +13299,20 @@ static int convert(const char* from, const char* to,
     out = *outp;
     /* +1 for null */
     out = realloc(out, out_size + 1);
+    if(out == 0) {
+	// *outp still valid, no freeing
+	if(debug_level >= UNAC_DEBUG_LOW)
+	  DEBUG("realloc %d bytes failed\n", out_size+1);
+	return -1;
+    }
   } else {
     /* +1 for null */
     out = malloc(out_size + 1);
-    if(out == 0) return -1;
+    if(out == 0) {
+	if(debug_level >= UNAC_DEBUG_LOW)
+	  DEBUG("malloc %d bytes failed\n", out_size+1);
+	return -1;
+    }
   }
   out_remain = out_size;
   out_base = out;
@@ -13338,13 +13364,24 @@ static int convert(const char* from, const char* to,
       case E2BIG:
 	{
 	  /*
-	 * The output does not fit in the current out buffer, enlarge it.
-	 */
+	   * The output does not fit in the current out buffer, enlarge it.
+	   */
 	  int length = out - out_base;
 	  out_size *= 2;
-	  /* +1 for null */
-	  out_base = realloc(out_base, out_size + 1);
-	  if(out_base == 0) return -1;
+	  {
+	      char *saved = out_base;
+	      /* +1 for null */
+	      out_base = realloc(out_base, out_size + 1);
+	      if (out_base == 0) {
+		  // *outp potentially not valid any more. Free here,
+		  // and zero out
+		  if(debug_level >= UNAC_DEBUG_LOW)
+		      DEBUG("realloc %d bytes failed\n", out_size+1);
+		  free(saved);
+		  *outp = 0;
+		  return -1;
+	      }
+	  }
 	  out = out_base + length;
 	  out_remain = out_size - length;
 	}
@@ -13372,11 +13409,13 @@ int unacmaybefold_string(const char* charset,
    * When converting an empty string, skip everything but alloc the
    * buffer if NULL pointer.
    */
-  if(in_length <= 0) {
-    if(!*outp)
-      *outp = malloc(32);
-    (*outp)[0] = '\0';
-    *out_lengthp = 0;
+  if (in_length <= 0) {
+      if(!*outp) {
+	  if ((*outp = malloc(32)) == 0)
+	      return -1;
+      }
+      (*outp)[0] = '\0';
+      *out_lengthp = 0;
   } else {
     char* utf16 = 0;
     size_t utf16_length = 0;
