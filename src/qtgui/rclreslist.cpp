@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.9 2006-04-01 09:15:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.10 2006-04-04 10:38:52 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -33,15 +33,13 @@ static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.9 2006-04-01 09:15:28 dockes E
 RclResList::RclResList(QWidget* parent, const char* name)
     : QTextBrowser(parent, name) 
 {
-    if ( !name )
-	setName( "rclResList" );
-    setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)5, (QSizePolicy::SizeType)5, 2, 0, this->sizePolicy().hasHeightForWidth() ) );
-    setTextFormat( RclResList::RichText );
-    setReadOnly( TRUE );
-    setUndoRedoEnabled( FALSE );
+    if (!name)
+	setName("rclResList");
+    setTextFormat(RclResList::RichText);
+    setReadOnly(TRUE);
+    setUndoRedoEnabled(FALSE);
     languageChange();
-    resize( QSize(198, 144).expandedTo(minimumSizeHint()) );
-    clearWState( WState_Polished );
+    clearWState(WState_Polished);
     setTabChangesFocus(true);
 
     // signals and slots connections
@@ -49,8 +47,6 @@ RclResList::RclResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(linkClicked(const QString &)), 
 	    this, SLOT(linkWasClicked(const QString &)));
 
-
-    // Code from init:
     m_winfirst = -1;
     m_docsource = 0;
 }
