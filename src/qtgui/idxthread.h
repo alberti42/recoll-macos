@@ -16,7 +16,7 @@
  */
 #ifndef _IDXTHREAD_H_INCLUDED_
 #define _IDXTHREAD_H_INCLUDED_
-/* @(#$Id: idxthread.h,v 1.4 2006-03-22 16:24:41 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: idxthread.h,v 1.5 2006-04-04 13:49:55 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 
 class RclConfig;
@@ -27,8 +27,11 @@ extern void start_idxthread(const RclConfig& cnf);
 extern void stop_idxthread();
 extern std::string idxthread_currentfile();
 
+extern int stopindexing;
 extern int startindexing;
 extern int indexingdone;
-extern bool indexingstatus;
+enum IdxThreadStatus {IDXTS_NULL = 0, IDXTS_OK = 1, IDXTS_ERROR = 2};
+extern IdxThreadStatus indexingstatus;
+extern string indexingReason;
 
 #endif /* _IDXTHREAD_H_INCLUDED_ */

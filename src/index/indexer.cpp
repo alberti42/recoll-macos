@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.29 2006-04-04 12:37:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.30 2006-04-04 13:49:54 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -200,8 +200,11 @@ FsTreeWalker::Status
 DbIndexer::processone(const std::string &fn, const struct stat *stp, 
 		      FsTreeWalker::CbFlag flg)
 {
-    if (m_updfunc)
-	m_updfunc->update(fn);
+    if (m_updfunc) {
+	if (!m_updfunc->update(fn)) {
+	    return FsTreeWalker::FtwStop;
+	}
+    }
     // If we're changing directories, possibly adjust parameters (set
     // the current directory in configuration object)
     if (flg == FsTreeWalker::FtwDirEnter || 
@@ -222,12 +225,19 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 
     FileInterner interner(fn, m_config, m_tmpdir);
     FileInterner::Status fis = FileInterner::FIAgain;
+    int i = 0;
     while (fis == FileInterner::FIAgain) {
 	Rcl::Doc doc;
 	string ipath;
 	fis = interner.internfile(doc, ipath);
 	if (fis == FileInterner::FIError)
 	    break;
+
+	if (m_updfunc) {
+	    if ((++i % 100) == 0 && !m_updfunc->update(fn+"|"+ipath)) {
+		return FsTreeWalker::FtwStop;
+	    }
+	}
 
 	// Set the date if this was not done in the document handler
 	if (doc.fmtime.empty()) {
@@ -292,13 +302,13 @@ bool ConfIndexer::index(bool resetbefore)
 	    if (lstat(doctopdir.c_str(), &st) < 0) {
 		LOGERR(("ConfIndexer::index: cant stat %s\n",
 			doctopdir.c_str()));
-		m_reason = string("Stat error for: ") + doctopdir;
+		m_reason = "Stat error for: " + doctopdir;
 		return false;
 	    }
 	    if (S_ISLNK(st.st_mode)) {
 		LOGERR(("ConfIndexer::index: no symlinks allowed in topdirs: %s\n",
 			doctopdir.c_str()));
-		m_reason = doctopdir + "is a symbolic link";
+		m_reason = doctopdir + " is a symbolic link";
 		return false;
 	    }
 	}
@@ -306,7 +316,7 @@ bool ConfIndexer::index(bool resetbefore)
 	if (!m_config->getConfParam("dbdir", dbdir)) {
 	    LOGERR(("ConfIndexer::index: no database directory in "
 		    "configuration for %s\n", doctopdir.c_str()));
-	    m_reason = string("No database directory set for ") + doctopdir;
+	    m_reason = "No database directory set for " + doctopdir;
 	    return false;
 	}
 	dbdir = path_tildexpand(dbdir);
@@ -333,7 +343,7 @@ bool ConfIndexer::index(bool resetbefore)
 	m_dbindexer = new DbIndexer(m_config, dbit->first, m_updfunc);
 	if (!m_dbindexer->indexDb(resetbefore, &dbit->second)) {
 	    deleteZ(m_dbindexer);
-	    m_reason = string("Failed indexing in ") + dbit->first;
+	    m_reason = "Failed indexing in " + dbit->first;
 	    return false;
 	}
 	deleteZ(m_dbindexer);

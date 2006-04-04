@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.13 2006-04-04 12:37:51 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.14 2006-04-04 13:49:54 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -28,11 +28,12 @@
 /* Forward decl for lower level indexing object */
 class DbIndexer;
 
-/* Callback to say what we're doing */
+/* Callback to say what we're doing. If the update func returns false, we
+ * stop */
 class DbIxStatusUpdater {
  public:
     virtual ~DbIxStatusUpdater(){}
-    virtual void update(const std::string &) = 0;
+    virtual bool update(const std::string &) = 0;
 };
 
 /**

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.16 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.17 2006-04-04 13:49:54 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -83,11 +83,27 @@ static void cleanup()
     dbindexer = 0;
 }
 
+int stopindexing;
+string currentfile;
+// Mainly used to request indexing stop, we currently do not use the
+// current file name
+class MyUpdater : public DbIxStatusUpdater {
+ public:
+    virtual bool update(const string &fn) {
+	currentfile = fn;
+	if (stopindexing) {
+	    stopindexing = 0;
+	    return false;
+	}
+	return true;
+    }
+};
+MyUpdater updater;
+
 static void sigcleanup(int sig)
 {
     fprintf(stderr, "sigcleanup\n");
-    cleanup();
-    exit(1);
+    stopindexing = 1;
 }
 
 static const char *thisprog;
@@ -173,7 +189,7 @@ int main(int argc, const char **argv)
 	string lang = *argv++; argc--;
 	exit(!createstemdb(config, lang));
     } else {
-	confindexer = new ConfIndexer(config);
+	confindexer = new ConfIndexer(config, &updater);
 	bool rezero(op_flags & OPT_z);
 	exit(!confindexer->index(rezero));
     }

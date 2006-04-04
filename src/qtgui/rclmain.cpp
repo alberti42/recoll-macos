@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.18 2006-04-04 07:55:29 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.19 2006-04-04 13:49:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -211,9 +211,14 @@ void RclMain::periodic100()
 {
     static int toggle = 0;
     // Check if indexing thread done
-    if (indexingstatus) {
+    if (indexingstatus != IDXTS_NULL) {
 	statusBar()->message("");
-	indexingstatus = false;
+	if (indexingstatus != IDXTS_OK) {
+	    indexingstatus = IDXTS_NULL;
+	    QMessageBox::warning(0, "Recoll", 
+				 QString::fromAscii(indexingReason.c_str()));
+	}
+	indexingstatus = IDXTS_NULL;
 	// Make sure we reopen the db to get the results.
 	LOGINFO(("Indexing done: closing query database\n"));
 	rcldb->close();
@@ -240,7 +245,7 @@ void RclMain::periodic100()
 
 void RclMain::fileStart_IndexingAction_activated()
 {
-    if (indexingdone == 1)
+    if (indexingdone)
 	startindexing = 1;
 }
 

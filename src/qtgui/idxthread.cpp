@@ -30,20 +30,26 @@ static QMutex curfile_mutex;
 class IdxThread : public QThread , public DbIxStatusUpdater {
     virtual void run();
  public:
-    virtual void update(const string &fn) {
+    virtual bool update(const string &fn) {
 	QMutexLocker locker(&curfile_mutex);
 	m_curfile = fn;
-	LOGDEB(("IdxThread::update: indexing %s\n", m_curfile.c_str()));
+	LOGDEB1(("IdxThread::update: indexing %s\n", m_curfile.c_str()));
+	if (stopindexing) {
+	    stopindexing = 0;
+	    return false;
+	}
+	return true;
     }
     ConfIndexer *indexer;
     string m_curfile;
     int loglevel;
 };
 
+int stopindexing;
 int startindexing;
 int indexingdone = 1;
-bool indexingstatus = false;
-
+IdxThreadStatus indexingstatus = IDXTS_NULL;
+string indexingReason;
 static int stopidxthread;
 
 void IdxThread::run()
@@ -55,10 +61,16 @@ void IdxThread::run()
 	    return;
 	}
 	if (startindexing) {
-	    indexingdone = indexingstatus = 0;
-	    fprintf(stderr, "Index thread :start index\n");
-	    indexingstatus = indexer->index();
 	    startindexing = 0;
+	    indexingdone = 0;
+	    indexingstatus = IDXTS_NULL;
+	    if (indexer->index()) {
+		indexingstatus = IDXTS_OK;
+		indexingReason = "";
+	    } else {
+		indexingstatus = IDXTS_ERROR;
+		indexingReason = "Indexation failed: " + indexer->getReason();
+	    }
 	    indexingdone = 1;
 	} 
 	msleep(100);
@@ -80,6 +92,7 @@ void start_idxthread(const RclConfig& cnf)
 
 void stop_idxthread()
 {
+    stopindexing = 1;
     stopidxthread = 1;
     idxthread.wait();
 }
