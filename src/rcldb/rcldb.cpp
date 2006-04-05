@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.61 2006-04-05 12:50:42 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.62 2006-04-05 13:39:07 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -235,6 +235,13 @@ bool Db::open(const string& dir, OpenMode mode, int qops)
     LOGERR(("Db::open: exception while opening [%s]: %s\n", 
 	    dir.c_str(), ermsg));
     return false;
+}
+
+string Db::getDbDir()
+{
+    if (m_ndb == 0)
+	return "";
+    return m_ndb->m_basedir;
 }
 
 // Note: xapian has no close call, we delete and recreate the db

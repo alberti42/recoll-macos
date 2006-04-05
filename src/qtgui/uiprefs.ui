@@ -290,7 +290,7 @@ May be slow for big documents.</string>
                                     <string>Add database</string>
                                 </property>
                                 <property name="toolTip" stdset="0">
-                                    <string>Select the recoll.conf file defining the database you want to add, then click Add Database</string>
+                                    <string>Select the xapiandb directory for the  database you want to add, then click Add Database</string>
                                 </property>
                             </widget>
                             <widget class="QLineEdit">
@@ -304,7 +304,7 @@ May be slow for big documents.</string>
                                     </size>
                                 </property>
                                 <property name="toolTip" stdset="0">
-                                    <string>Select the recoll.conf file defining the database you want to add, then click Add Database</string>
+                                    <string>Select the xapiandb directory for the  database you want to add, then click Add Database</string>
                                 </property>
                             </widget>
                             <widget class="QPushButton">
@@ -315,7 +315,7 @@ May be slow for big documents.</string>
                                     <string>Browse</string>
                                 </property>
                                 <property name="toolTip" stdset="0">
-                                    <string>Select the recoll.conf file defining the database you want to add, then click Add Database</string>
+                                    <string>Select the xapiandb directory for the  database you want to add, then click Add Database</string>
                                 </property>
                             </widget>
                         </hbox>

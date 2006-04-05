@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.29 2006-04-05 12:50:42 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.30 2006-04-05 13:39:07 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -181,6 +181,7 @@ class Db {
     /** Get a list of existing stemming databases */
     std::list<std::string> getStemLangs();
 
+    string getDbDir();
 private:
 
     AdvSearchData m_asdata;

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.6 2006-04-05 12:50:42 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.7 2006-04-05 13:39:07 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -168,7 +168,7 @@ void rwSettings(bool writing)
 	}
     }
 
-#if 1 
+#if 0
     {
 	list<string>::const_iterator it;
 	fprintf(stderr, "All extra Dbs:\n");

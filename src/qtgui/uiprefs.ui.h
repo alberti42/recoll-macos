@@ -25,6 +25,8 @@
 ** These will automatically be called by the form's constructor and
 ** destructor.
 *****************************************************************************/
+#include <sys/stat.h>
+
 #include <string>
 #include <algorithm>
 #include <list>
@@ -37,6 +39,7 @@
 #include "recoll.h"
 #include "guiutils.h"
 #include "rcldb.h"
+#include "pathut.h"
 
 void UIPrefsDialog::init()
 {
@@ -135,6 +138,21 @@ void UIPrefsDialog::accept()
     prefs.queryBuildAbstract = buildAbsCB->isChecked();
     prefs.queryReplaceAbstract = buildAbsCB->isChecked() && 
 	replAbsCB->isChecked();
+
+    prefs.activeExtraDbs.clear();
+    for (unsigned int i = 0; i < actDbsLB->count(); i++) {
+	QListBoxItem *item = actDbsLB->item(i);
+	if (item)
+	    prefs.activeExtraDbs.push_back((const char *)item->text().local8Bit());
+    }
+    prefs.allExtraDbs.clear();
+    for (unsigned int i = 0; i < allDbsLB->count(); i++) {
+	QListBoxItem *item = allDbsLB->item(i);
+	if (item)
+	    prefs.allExtraDbs.push_back((const char *)item->text().local8Bit());
+    }
+
+
     rwSettings(true);
     string reason;
     maybeOpenDb(reason, true);
@@ -190,10 +208,8 @@ void UIPrefsDialog::showBrowserDialog()
 }
 
 ////////////////////////////////////////////
-// External / extra search databases setup: this should modify to take 
-// effect only when Ok is clicked. Currently modifs take effect as soon as
-// done in the Gui
-// Also needed: means to remove entry from 'all' list (del button? )
+// External / extra search databases setup
+// TBD: a way to remove entry from 'all' list (del button? )
 
 void UIPrefsDialog::extraDbTextChanged(const QString &text)
 {
@@ -204,24 +220,27 @@ void UIPrefsDialog::extraDbTextChanged(const QString &text)
     }
 }
 
-// Add selected dbs to the active list
+/** 
+ * Add the selected extra dbs to the active list
+ */
 void UIPrefsDialog::addADbPB_clicked()
 {
     for (unsigned int i = 0; i < allDbsLB->count();i++) {
 	QListBoxItem *item = allDbsLB->item(i);
 	if (item && item->isSelected()) {
 	    allDbsLB->setSelected(i, false);
-	    string dbname = (const char*)item->text().local8Bit();
-	    if (std::find(prefs.activeExtraDbs.begin(), prefs.activeExtraDbs.end(), 
-		     dbname) == prefs.activeExtraDbs.end()) {
+	    if (!actDbsLB->findItem(item->text(), 
+				    Qt::CaseSensitive|Qt::ExactMatch)) {
 		actDbsLB->insertItem(item->text());
-		prefs.activeExtraDbs.push_back(dbname);
 	    }
 	}
     }
     actDbsLB->sort();
 }
 
+/**
+ * Make all extra dbs active
+ */
 void UIPrefsDialog::addAADbPB_clicked()
 {
     for (unsigned int i = 0; i < allDbsLB->count();i++) {
@@ -230,19 +249,15 @@ void UIPrefsDialog::addAADbPB_clicked()
     addADbPB_clicked();
 }
 
+/**
+ * Remove the selected entries from the list of active extra search dbs
+ */
 void UIPrefsDialog::delADbPB_clicked()
 {
     list<int> rmi;
     for (unsigned int i = 0; i < actDbsLB->count(); i++) {
 	QListBoxItem *item = actDbsLB->item(i);
 	if (item && item->isSelected()) {
-	    string dbname = (const char*)item->text().local8Bit();
-	    list<string>::iterator sit;
-	    if ((sit = ::std::find(prefs.activeExtraDbs.begin(), 
-			    prefs.activeExtraDbs.end(), dbname)) != 
-		 prefs.activeExtraDbs.end()) {
-		prefs.activeExtraDbs.erase(sit);
-	    }
 	    rmi.push_front(i);
 	}
     }
@@ -251,6 +266,9 @@ void UIPrefsDialog::delADbPB_clicked()
     }
 }
 
+/**
+ * Remove all extra search databases from the active list
+ */
 void UIPrefsDialog::delAADbPB_clicked()
 {
     for (unsigned int i = 0; i < actDbsLB->count(); i++) {
@@ -259,22 +277,39 @@ void UIPrefsDialog::delAADbPB_clicked()
     delADbPB_clicked();
 }
 
+/** 
+ * Add the current content of the extra db line editor to the list of all
+ * extra dbs. We do a textual comparison to check for duplicates, except for
+ * the main db for which we check inode numbers. 
+ */
 void UIPrefsDialog::addExtraDbPB_clicked()
 {
     string dbdir = (const char *)extraDbLE->text().local8Bit();
+    path_catslash(dbdir);
     if (!Rcl::Db::testDbDir(dbdir)) {
 	QMessageBox::warning(0, "Recoll", 
-     tr("The selected directory does not appear to be a Xapian database"));
+        tr("The selected directory does not appear to be a Xapian database"));
 	return;
     }
-
-    if (::std::find(prefs.allExtraDbs.begin(), prefs.allExtraDbs.end(), 
-		    dbdir) != prefs.allExtraDbs.end()) {
+    struct stat st1, st2;
+    stat(dbdir.c_str(), &st1);
+    string rcldbdir;
+    if (rcldb) 
+	rcldbdir = rcldb->getDbDir();
+    stat(rcldbdir.c_str(), &st2);
+    path_catslash(rcldbdir);
+    fprintf(stderr, "rcldbdir: [%s]\n", rcldbdir.c_str());
+    if (st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("This is the main/local database!"));
+	return;
+    }
+    if (allDbsLB->findItem(extraDbLE->text(), 
+			    Qt::CaseSensitive|Qt::ExactMatch)) {
 	QMessageBox::warning(0, "Recoll", 
 		 tr("The selected directory is already in the database list"));
 	return;
     }
-    prefs.allExtraDbs.push_back(dbdir);
     allDbsLB->insertItem(extraDbLE->text());
     allDbsLB->sort();
 }
