@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.27 2006-03-29 11:18:14 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.28 2006-04-05 06:26:56 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -124,8 +124,6 @@ class AdvSearchData {
     }
 };
  
-class DbPops;
-
 /**
  * Wrapper class for the native database.
  */
@@ -176,14 +174,14 @@ class Db {
     std::list<std::string> getStemLangs();
 
     /** Things we don't want to have here. */
-    friend class Rcl::DbPops;
+    friend class Native;
 
 private:
 
     AdvSearchData m_asdata;
     vector<int> dbindices; // In case there is a postq filter: sequence of 
                            // db indices that match
-    void *pdata; // Pointer to private data. We don't want db(ie
+    Native *ndb; // Pointer to private data. We don't want db(ie
                  // xapian)-specific defs to show in here
     unsigned int m_qOpts;
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.59 2006-03-29 11:18:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.60 2006-04-05 06:26:56 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,9 @@ using namespace std;
 #ifndef MIN
 #define MIN(A,B) (A<B?A:B)
 #endif
-
+#ifndef NO_NAMESPACES
+namespace Rcl {
+#endif
 // This is how long an abstract we keep or build from beginning of text when
 // indexing. It only has an influence on the size of the db as we are free
 // to shorten it again when displaying
@@ -81,11 +83,11 @@ class Native {
     Xapian::Database db;
     Xapian::Query    query; // query descriptor: terms and subqueries
 			    // joined by operators (or/and etc...)
-    Xapian::Enquire *enquire;
-    Xapian::MSet     mset;
+    Xapian::Enquire *enquire; // Open query descriptor.
+    Xapian::MSet     mset;    // Partial result set
 
     string makeAbstract(Xapian::docid id, const list<string>& terms);
-    bool dbDataToRclDoc(std::string &data, Rcl::Doc &doc, 
+    bool dbDataToRclDoc(std::string &data, Doc &doc, 
 			int qopts,
 			Xapian::docid docid,
 			const list<string>& terms);
@@ -94,27 +96,39 @@ class Native {
     ~Native() {
 	delete enquire;
     }
+    bool filterMatch(Db *rdb, Xapian::Document &xdoc) {
+	// Parse xapian document's data and populate doc fields
+	string data = xdoc.get_data();
+	ConfSimple parms(&data);
+
+	// The only filtering for now is on file path (subtree)
+	string url;
+	parms.get(string("url"), url);
+	url = url.substr(7);
+	if (url.find(rdb->m_asdata.topdir) == 0) 
+	    return true;
+	return false;
+    }
 };
 
-Rcl::Db::Db() 
+Db::Db() 
 {
-    pdata = new Native;
+    ndb = new Native;
     m_qOpts = 0;
 }
 
-Rcl::Db::~Db()
+Db::~Db()
 {
-    LOGDEB1(("Rcl::Db::~Db\n"));
-    if (pdata == 0)
+    LOGDEB1(("Db::~Db\n"));
+    if (ndb == 0)
 	return;
-    Native *ndb = (Native *)pdata;
     LOGDEB(("Db::~Db: isopen %d iswritable %d\n", ndb->isopen, 
 	    ndb->iswritable));
     if (ndb->isopen == false)
 	return;
     const char *ermsg = "Unknown error";
     try {
-	LOGDEB(("Rcl::Db::~Db: closing native database\n"));
+	LOGDEB(("Db::~Db: closing native database\n"));
 	if (ndb->iswritable == true) {
 	    ndb->wdb.flush();
 	}
@@ -129,20 +143,19 @@ Rcl::Db::~Db()
     } catch (...) {
 	ermsg = "Caught unknown exception";
     }
-    LOGERR(("Rcl::Db::~Db: got exception: %s\n", ermsg));
+    LOGERR(("Db::~Db: got exception: %s\n", ermsg));
 }
 
-bool Rcl::Db::open(const string& dir, OpenMode mode, int qops)
+bool Db::open(const string& dir, OpenMode mode, int qops)
 {
-    if (pdata == 0)
+    if (ndb == 0)
 	return false;
-    Native *ndb = (Native *)pdata;
     LOGDEB(("Db::open: isopen %d iswritable %d\n", ndb->isopen, 
 	    ndb->iswritable));
     m_qOpts = qops;
 
     if (ndb->isopen) {
-	LOGERR(("Rcl::Db::open: already open\n"));
+	LOGERR(("Db::open: already open\n"));
 	return false;
     }
     const char *ermsg = "Unknown";
@@ -154,7 +167,7 @@ bool Rcl::Db::open(const string& dir, OpenMode mode, int qops)
 		int action = (mode == DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
 		    Xapian::DB_CREATE_OR_OVERWRITE;
 		ndb->wdb = Xapian::WritableDatabase(dir, action);
-		LOGDEB(("Rcl::Db::open: lastdocid: %d\n", 
+		LOGDEB(("Db::open: lastdocid: %d\n", 
 			ndb->wdb.get_lastdocid()));
 		ndb->updated.resize(ndb->wdb.get_lastdocid() + 1);
 		for (unsigned int i = 0; i < ndb->updated.size(); i++)
@@ -180,17 +193,16 @@ bool Rcl::Db::open(const string& dir, OpenMode mode, int qops)
     } catch (...) {
 	ermsg = "Caught unknown exception";
     }
-    LOGERR(("Rcl::Db::open: exception while opening [%s]: %s\n", 
+    LOGERR(("Db::open: exception while opening [%s]: %s\n", 
 	    dir.c_str(), ermsg));
     return false;
 }
 
 // Note: xapian has no close call, we delete and recreate the db
-bool Rcl::Db::close()
+bool Db::close()
 {
-    if (pdata == 0)
+    if (ndb == 0)
 	return false;
-    Native *ndb = (Native *)pdata;
     LOGDEB(("Db::close(): isopen %d iswritable %d\n", ndb->isopen, 
 	    ndb->iswritable));
     if (ndb->isopen == false)
@@ -202,8 +214,8 @@ bool Rcl::Db::close()
 	    LOGDEB(("Rcl:Db: Called xapian flush\n"));
 	}
 	delete ndb;
-	pdata = new Native;
-	if (pdata)
+	ndb = new Native;
+	if (ndb)
 	    return true;
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
@@ -214,15 +226,14 @@ bool Rcl::Db::close()
     } catch (...) {
 	ermsg = "Caught unknown exception";
     }
-    LOGERR(("Rcl::Db:close: exception while deleting db: %s\n", ermsg));
+    LOGERR(("Db:close: exception while deleting db: %s\n", ermsg));
     return false;
 }
 
-bool Rcl::Db::isopen()
+bool Db::isopen()
 {
-    if (pdata == 0)
+    if (ndb == 0)
 	return false;
-    Native *ndb = (Native *)pdata;
     return ndb->isopen;
 }
 
@@ -261,7 +272,7 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
     } catch (...) {
 	ermsg= "Unknown error";
     }
-    LOGERR(("Rcl::Db: xapian add_posting error %s\n", ermsg));
+    LOGERR(("Db: xapian add_posting error %s\n", ermsg));
     return false;
 }
 
@@ -271,7 +282,7 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 //
 // Note that we always return true (but set out to "" on error). We don't
 // want to stop indexation because of a bad string
-bool Rcl::dumb_string(const string &in, string &out)
+bool dumb_string(const string &in, string &out)
 {
     out.erase();
     if (in.empty())
@@ -357,15 +368,14 @@ const static string rclSyntAbs = "?!#@";
 // the title abstract and body and add special terms for file name,
 // date, mime type ... , create the document data record (more
 // metadata), and update database
-bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc, 
+bool Db::add(const string &fn, const Doc &idoc, 
 		  const struct stat *stp)
 {
-    LOGDEB1(("Rcl::Db::add: fn %s\n", fn.c_str()));
-    if (pdata == 0)
+    LOGDEB1(("Db::add: fn %s\n", fn.c_str()));
+    if (ndb == 0)
 	return false;
-    Native *ndb = (Native *)pdata;
 
-    Rcl::Doc doc = idoc;
+    Doc doc = idoc;
 
     // Truncate abstract, title and keywords to reasonable lengths. If
     // abstract is currently empty, we make up one with the beginning
@@ -397,7 +407,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
 
     // Split and index title
     if (!dumb_string(doc.title, noacc)) {
-	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
+	LOGERR(("Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
@@ -405,7 +415,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
 
     // Split and index body
     if (!dumb_string(doc.text, noacc)) {
-	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
+	LOGERR(("Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
@@ -413,7 +423,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
 
     // Split and index keywords
     if (!dumb_string(doc.keywords, noacc)) {
-	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
+	LOGERR(("Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
@@ -421,7 +431,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
 
     // Split and index abstract
     if (!dumb_string(doc.abstract, noacc)) {
-	LOGERR(("Rcl::Db::add: dumb_string failed\n"));
+	LOGERR(("Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
@@ -434,7 +444,7 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
     // Path name term. This is used for existence/uptodate checks
     string hash;
     pathHash(fn, hash, PATHHASHLEN);
-    LOGDEB2(("Rcl::Db::add: pathhash [%s]\n", hash.c_str()));
+    LOGDEB2(("Db::add: pathhash [%s]\n", hash.c_str()));
     string pathterm  = "P" + hash;
     newdocument.add_term(pathterm);
 
@@ -507,20 +517,20 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
 				      newdocument);
 	if (did < ndb->updated.size()) {
 	    ndb->updated[did] = true;
-	    LOGDEB(("Rcl::Db::add: docid %d updated [%s , %s]\n", did, fnc,
+	    LOGDEB(("Db::add: docid %d updated [%s , %s]\n", did, fnc,
 		    doc.ipath.c_str()));
 	} else {
-	    LOGDEB(("Rcl::Db::add: docid %d added [%s , %s]\n", did, fnc, 
+	    LOGDEB(("Db::add: docid %d added [%s , %s]\n", did, fnc, 
 		    doc.ipath.c_str()));
 	}
     } catch (...) {
 	// FIXME: is this ever actually needed?
 	try {
 	    ndb->wdb.add_document(newdocument);
-	    LOGDEB(("Rcl::Db::add: %s added (failed re-seek for duplicate)\n", 
+	    LOGDEB(("Db::add: %s added (failed re-seek for duplicate)\n", 
 		    fnc));
 	} catch (...) {
-	    LOGERR(("Rcl::Db::add: failed again after replace_document\n"));
+	    LOGERR(("Db::add: failed again after replace_document\n"));
 	    return false;
 	}
     }
@@ -528,11 +538,10 @@ bool Rcl::Db::add(const string &fn, const Rcl::Doc &idoc,
 }
 
 // Test if given filename has changed since last indexed:
-bool Rcl::Db::needUpdate(const string &filename, const struct stat *stp)
+bool Db::needUpdate(const string &filename, const struct stat *stp)
 {
-    if (pdata == 0)
+    if (ndb == 0)
 	return false;
-    Native *ndb = (Native *)pdata;
 
     // If no document exist with this path, we do need update
     string hash;
@@ -615,12 +624,11 @@ p_notlowerorutf(unsigned int c)
 /**
  * Delete stem db for given language
  */
-bool Rcl::Db::deleteStemDb(const string& lang)
+bool Db::deleteStemDb(const string& lang)
 {
-    LOGDEB(("Rcl::Db::deleteStemDb(%s)\n", lang.c_str()));
-    if (pdata == 0)
+    LOGDEB(("Db::deleteStemDb(%s)\n", lang.c_str()));
+    if (ndb == 0)
 	return false;
-    Native *ndb = (Native *)pdata;
     if (ndb->isopen == false)
 	return false;
 
@@ -636,12 +644,11 @@ bool Rcl::Db::deleteStemDb(const string& lang)
  * with documents indexed by a single term (the stem), and with the list of
  * parent terms in the document data.
  */
-bool Rcl::Db::createStemDb(const string& lang)
+bool Db::createStemDb(const string& lang)
 {
-    LOGDEB(("Rcl::Db::createStemDb(%s)\n", lang.c_str()));
-    if (pdata == 0)
+    LOGDEB(("Db::createStemDb(%s)\n", lang.c_str()));
+    if (ndb == 0)
 	return false;
-    Native *ndb = (Native *)pdata;
     if (ndb->isopen == false)
 	return false;
 
@@ -719,7 +726,7 @@ bool Rcl::Db::createStemDb(const string& lang)
 	ermsg = "Caught unknown exception";
     }
     if (ermsg != "NOERROR") {
-	LOGERR(("Rcl::Db::createstemdb: exception while opening [%s]: %s\n", 
+	LOGERR(("Db::createstemdb: exception while opening [%s]: %s\n", 
 		stemdbdir.c_str(), ermsg));
 	return false;
     }
@@ -754,7 +761,7 @@ bool Rcl::Db::createStemDb(const string& lang)
 		try {
 		    sdb.replace_document(stem, newdocument);
 		} catch (...) {
-		    LOGERR(("Rcl::Db::createstemdb: replace failed\n"));
+		    LOGERR(("Db::createstemdb: replace failed\n"));
 		    return false;
 		}
 	    }
@@ -770,13 +777,12 @@ bool Rcl::Db::createStemDb(const string& lang)
     return true;
 }
 
-list<string> Rcl::Db::getStemLangs()
+list<string> Db::getStemLangs()
 {
     list<string> dirs;
-    LOGDEB(("Rcl::Db::getStemLang\n"));
-    if (pdata == 0)
+    LOGDEB(("Db::getStemLang\n"));
+    if (ndb == 0)
 	return dirs;
-    Native *ndb = (Native *)pdata;
     string pattern = stemdirstem + "*";
     dirs = path_dirglob(ndb->basedir, pattern);
     for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
@@ -792,13 +798,12 @@ list<string> Rcl::Db::getStemLangs()
  *  documents for files that are no longer there. We also build the
  *  stem database while we are at it.
  */
-bool Rcl::Db::purge()
+bool Db::purge()
 {
-    LOGDEB(("Rcl::Db::purge\n"));
-    if (pdata == 0)
+    LOGDEB(("Db::purge\n"));
+    if (ndb == 0)
 	return false;
-    Native *ndb = (Native *)pdata;
-    LOGDEB(("Rcl::Db::purge: isopen %d iswritable %d\n", ndb->isopen, 
+    LOGDEB(("Db::purge: isopen %d iswritable %d\n", ndb->isopen, 
 	    ndb->iswritable));
     if (ndb->isopen == false || ndb->iswritable == false)
 	return false;
@@ -813,22 +818,22 @@ bool Rcl::Db::purge()
     try {
 	ndb->wdb.flush();
     } catch (...) {
-	LOGDEB(("Rcl::Db::purge: 1st flush failed\n"));
+	LOGDEB(("Db::purge: 1st flush failed\n"));
     }
     for (Xapian::docid docid = 1; docid < ndb->updated.size(); ++docid) {
 	if (!ndb->updated[docid]) {
 	    try {
 		ndb->wdb.delete_document(docid);
-		LOGDEB(("Rcl::Db::purge: deleted document #%d\n", docid));
+		LOGDEB(("Db::purge: deleted document #%d\n", docid));
 	    } catch (const Xapian::DocNotFoundError &) {
-		LOGDEB(("Rcl::Db::purge: document #%d not found\n", docid));
+		LOGDEB(("Db::purge: document #%d not found\n", docid));
 	    }
 	}
     }
     try {
 	ndb->wdb.flush();
     } catch (...) {
-	LOGDEB(("Rcl::Db::purge: 2nd flush failed\n"));
+	LOGDEB(("Db::purge: 2nd flush failed\n"));
     }
     return true;
 }
@@ -849,7 +854,7 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
 	LOGDEB1(("stemexpand: %s lastdocid: %d\n", 
 		stemdbdir.c_str(), sdb.get_lastdocid()));
 	if (!sdb.term_exists(stem)) {
-	    LOGDEB1(("Rcl::Db::stemexpand: no term for %s\n", stem.c_str()));
+	    LOGDEB1(("Db::stemexpand: no term for %s\n", stem.c_str()));
 	    explist.push_back(term);
 	    return explist;
 	}
@@ -903,7 +908,7 @@ class wsQData : public TextSplitCB {
     void dumball() {
 	for (vector<string>::iterator it=terms.begin(); it !=terms.end();it++){
 	    string dumb;
-	    Rcl::dumb_string(*it, dumb);
+	    dumb_string(*it, dumb);
 	    *it = dumb;
 	}
     }
@@ -922,7 +927,7 @@ static void stringToXapianQueries(const string &iq,
 				  const string& stemlang,
 				  Native *ndb,
 				  list<Xapian::Query> &pqueries,
-				  Rcl::Db::QueryOpts opts = Rcl::Db::QO_NONE)
+				  Db::QueryOpts opts = Db::QO_NONE)
 {
     string qstring = iq;
 
@@ -965,9 +970,9 @@ static void stringToXapianQueries(const string &iq,
 
 		list<string> exp;  
 		string term1;
-		Rcl::dumb_string(term, term1);
+		dumb_string(term, term1);
 		// Possibly perform stem compression/expansion
-		if (!nostemexp && (opts & Rcl::Db::QO_STEM)) {
+		if (!nostemexp && (opts & Db::QO_STEM)) {
 		    exp = stemexpand(ndb, term1, stemlang);
 		} else {
 		    exp.push_back(term1);
@@ -991,12 +996,11 @@ static void stringToXapianQueries(const string &iq,
 }
 
 // Prepare query out of simple query string 
-bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts, 
+bool Db::setQuery(const std::string &iqstring, QueryOpts opts, 
 		       const string& stemlang)
 {
-    LOGDEB(("Rcl::Db::setQuery: q: [%s], opts 0x%x, stemlang %s\n", 
+    LOGDEB(("Db::setQuery: q: [%s], opts 0x%x, stemlang %s\n", 
 	    iqstring.c_str(), (unsigned int)opts, stemlang.c_str()));
-    Native *ndb = (Native *)pdata;
     if (!ndb)
 	return false;
     m_asdata.erase();
@@ -1013,10 +1017,10 @@ bool Rcl::Db::setQuery(const std::string &iqstring, QueryOpts opts,
 }
 
 // Prepare query out of "advanced search" data
-bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts, 
+bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts, 
 		       const string& stemlang)
 {
-    LOGDEB(("Rcl::Db::setQuery: adv:\n"));
+    LOGDEB(("Db::setQuery: adv:\n"));
     LOGDEB((" allwords: %s\n", sdata.allwords.c_str()));
     LOGDEB((" phrase:   %s\n", sdata.phrase.c_str()));
     LOGDEB((" orwords:  %s\n", sdata.orwords.c_str()));
@@ -1033,7 +1037,6 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     m_asdata = sdata;
     dbindices.clear();
 
-    Native *ndb = (Native *)pdata;
     if (!ndb)
 	return false;
     list<Xapian::Query> pqueries;
@@ -1072,7 +1075,7 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	    }
 	    // Limit the match count
 	    if (names.size() > 1000) {
-		LOGERR(("Rcl::Db::SetQuery: too many matched file names\n"));
+		LOGERR(("Db::SetQuery: too many matched file names\n"));
 		break;
 	    }
 	}
@@ -1155,13 +1158,12 @@ bool Rcl::Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     sdata.description = ndb->query.get_description();
     if (sdata.description.find("Xapian::Query") == 0)
 	sdata.description = sdata.description.substr(strlen("Xapian::Query"));
-    LOGDEB(("Rcl::Db::SetQuery: Q: %s\n", sdata.description.c_str()));
+    LOGDEB(("Db::SetQuery: Q: %s\n", sdata.description.c_str()));
     return true;
 }
 
-bool Rcl::Db::getQueryTerms(list<string>& terms)
+bool Db::getQueryTerms(list<string>& terms)
 {
-    Native *ndb = (Native *)pdata;
     if (!ndb)
 	return false;
 
@@ -1176,11 +1178,10 @@ bool Rcl::Db::getQueryTerms(list<string>& terms)
 
 static const int qquantum = 30;
 
-int Rcl::Db::getResCnt()
+int Db::getResCnt()
 {
-    Native *ndb = (Native *)pdata;
     if (!ndb || !ndb->enquire) {
-	LOGERR(("Rcl::Db::getResCnt: no query opened\n"));
+	LOGERR(("Db::getResCnt: no query opened\n"));
 	return -1;
     }
     if (ndb->mset.size() <= 0) {
@@ -1202,28 +1203,15 @@ int Rcl::Db::getResCnt()
 // This class (friend to RclDb) exists so that we can have functions that 
 // access private RclDb data and have Xapian-specific parameters (so that we 
 // don't want them to appear in the public rcldb.h).
-class Rcl::DbPops {
+class DbPops {
  public:
-    static bool filterMatch(Rcl::Db *rdb, Xapian::Document &xdoc) {
-	// Parse xapian document's data and populate doc fields
-	string data = xdoc.get_data();
-	ConfSimple parms(&data);
-
-	// The only filtering for now is on file path (subtree)
-	string url;
-	parms.get(string("url"), url);
-	url = url.substr(7);
-	if (url.find(rdb->m_asdata.topdir) == 0) 
-	    return true;
-	return false;
-    }
 };
 
-bool Native::dbDataToRclDoc(std::string &data, Rcl::Doc &doc, 
+bool Native::dbDataToRclDoc(std::string &data, Doc &doc, 
 			    int qopts,
 			    Xapian::docid docid, const list<string>& terms)
 {
-    LOGDEB1(("Rcl::Db::dbDataToRclDoc: data: %s\n", data.c_str()));
+    LOGDEB1(("Db::dbDataToRclDoc: data: %s\n", data.c_str()));
     ConfSimple parms(&data);
     if (!parms.ok())
 	return false;
@@ -1240,10 +1228,10 @@ bool Native::dbDataToRclDoc(std::string &data, Rcl::Doc &doc,
 	doc.abstract = doc.abstract.substr(rclSyntAbs.length());
 	syntabs = true;
     }
-    if ((qopts && Rcl::Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
+    if ((qopts && Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
 	LOGDEB1(("dbDataToRclDoc:: building abstract from position data\n"));
 	if (doc.abstract.empty() || syntabs || 
-	    (qopts & Rcl::Db::QO_REPLACE_ABSTRACT))
+	    (qopts & Db::QO_REPLACE_ABSTRACT))
 	    doc.abstract = makeAbstract(docid, terms);
     }
     parms.get(string("ipath"), doc.ipath);
@@ -1261,12 +1249,11 @@ bool Native::dbDataToRclDoc(std::string &data, Rcl::Doc &doc,
 // maintain a correspondance from the sequential external index
 // sequence to the internal Xapian hole-y one (the holes being the documents 
 // that dont match the filter).
-bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
+bool Db::getDoc(int exti, Doc &doc, int *percent)
 {
-    LOGDEB1(("Rcl::Db::getDoc: exti %d\n", exti));
-    Native *ndb = (Native *)pdata;
+    LOGDEB1(("Db::getDoc: exti %d\n", exti));
     if (!ndb || !ndb->enquire) {
-	LOGERR(("Rcl::Db::getDoc: no query opened\n"));
+	LOGERR(("Db::getDoc: no query opened\n"));
 	return false;
     }
 
@@ -1285,7 +1272,7 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 	    int first = dbindices.size() > 0 ? dbindices.back() + 1 : 0;
 	    // Loop until we get enough docs
 	    while (exti >= (int)dbindices.size()) {
-		LOGDEB(("Rcl::Db::getDoc: fetching %d starting at %d\n",
+		LOGDEB(("Db::getDoc: fetching %d starting at %d\n",
 			qquantum, first));
 		try {
 		    ndb->mset = ndb->enquire->get_mset(first, qquantum);
@@ -1299,14 +1286,14 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 		}
 
 		if (ndb->mset.empty()) {
-		    LOGDEB(("Rcl::Db::getDoc: got empty mset\n"));
+		    LOGDEB(("Db::getDoc: got empty mset\n"));
 		    return false;
 		}
 		first = ndb->mset.get_firstitem();
 		for (unsigned int i = 0; i < ndb->mset.size() ; i++) {
-		    LOGDEB(("Rcl::Db::getDoc: [%d]\n", i));
+		    LOGDEB(("Db::getDoc: [%d]\n", i));
 		    Xapian::Document xdoc = ndb->mset[i].get_document();
-		    if (Rcl::DbPops::filterMatch(this, xdoc)) {
+		    if (ndb->filterMatch(this, xdoc)) {
 			dbindices.push_back(first + i);
 		    }
 		}
@@ -1341,7 +1328,7 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 	last = first + ndb->mset.size() -1;
     }
 
-    LOGDEB1(("Rcl::Db::getDoc: Qry [%s] win [%d-%d] Estimated results: %d",
+    LOGDEB1(("Db::getDoc: Qry [%s] win [%d-%d] Estimated results: %d",
 	     ndb->query.get_description().c_str(), 
 	     first, last,
 	     ndb->mset.get_matches_lower_bound()));
@@ -1361,13 +1348,12 @@ bool Rcl::Db::getDoc(int exti, Doc &doc, int *percent)
 // Retrieve document defined by file name and internal path. Very inefficient,
 // used only for history display. We'd need to enter path+ipath terms in the
 // db if we wanted to make this more efficient.
-bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
+bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 {
-    LOGDEB(("Rcl::Db:getDoc: [%s] (%d) [%s]\n", fn.c_str(), fn.length(),
+    LOGDEB(("Db:getDoc: [%s] (%d) [%s]\n", fn.c_str(), fn.length(),
 	    ipath.c_str()));
-    if (pdata == 0)
+    if (ndb == 0)
 	return false;
-    Native *ndb = (Native *)pdata;
 
     // Initialize what we can in any case. If this is history, caller
     // will make partial display in case of error
@@ -1389,7 +1375,7 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 	    // but indicate the error with pc = -1
 	    if (*pc) 
 		*pc = -1;
-	    LOGINFO(("Rcl::Db:getDoc: path inexistant: [%s] length %d\n",
+	    LOGINFO(("Db:getDoc: path inexistant: [%s] length %d\n",
 		     pathterm.c_str(), pathterm.length()));
 	    return true;
 	}
@@ -1414,7 +1400,7 @@ bool Rcl::Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 	ermsg = "Caught unknown exception";
     }
     if (*ermsg) {
-	LOGERR(("Rcl::Db::getDoc: %s\n", ermsg));
+	LOGERR(("Db::getDoc: %s\n", ermsg));
     }
     return false;
 }
@@ -1537,3 +1523,6 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     LOGDEB(("Abtract: done in %d mS\n", chron.millis()));
     return abstract;
 }
+#ifndef NO_NAMESPACES
+}
+#endif
