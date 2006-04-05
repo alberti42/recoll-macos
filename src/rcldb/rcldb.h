@@ -16,11 +16,12 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.28 2006-04-05 06:26:56 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.29 2006-04-05 12:50:42 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
 #include <vector>
+
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
@@ -156,6 +157,13 @@ class Db {
 		  const string& stemlang = "english");
     bool getQueryTerms(list<string>& terms);
 
+    /// Add extra database for querying
+    bool addQueryDb(const string &dir);
+    /// Remove extra database. if dir == "", remove all.
+    bool rmQueryDb(const string &dir);
+    /// Tell if directory seems to hold xapian db
+    static bool testDbDir(const string &dir);
+
     /** Get document at rank i in current query. 
 
 	This is probably vastly inferior to the type of interface in
@@ -173,18 +181,20 @@ class Db {
     /** Get a list of existing stemming databases */
     std::list<std::string> getStemLangs();
 
-    /** Things we don't want to have here. */
-    friend class Native;
-
 private:
 
     AdvSearchData m_asdata;
-    vector<int> dbindices; // In case there is a postq filter: sequence of 
-                           // db indices that match
-    Native *ndb; // Pointer to private data. We don't want db(ie
+    vector<int> m_dbindices; // In case there is a postq filter: sequence of 
+                             // db indices that match
+
+    // Things we don't want to have here.
+    friend class Native;
+    Native *m_ndb; // Pointer to private data. We don't want db(ie
                  // xapian)-specific defs to show in here
+
     unsigned int m_qOpts;
 
+    bool reOpen(); // Close/open, same mode/opts
     /* Copyconst and assignemt private and forbidden */
     Db(const Db &) {}
     Db & operator=(const Db &) {return *this;};

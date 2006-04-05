@@ -25,6 +25,9 @@
 ** These will automatically be called by the form's constructor and
 ** destructor.
 *****************************************************************************/
+#include <string>
+#include <algorithm>
+#include <list>
 
 #include "qfontdialog.h"
 #include "qfiledialog.h"
@@ -33,6 +36,7 @@
 
 #include "recoll.h"
 #include "guiutils.h"
+#include "rcldb.h"
 
 void UIPrefsDialog::init()
 {
@@ -82,10 +86,35 @@ void UIPrefsDialog::init()
 	replAbsCB->setEnabled(false);
     }
     replAbsCB->setDown(prefs.queryReplaceAbstract);
+
+    // Initialize the extra databases listboxes
+    QStringList ql;
+    for (list<string>::iterator it = prefs.allExtraDbs.begin(); 
+	 it != prefs.allExtraDbs.end(); it++) {
+	ql.append(QString::fromLocal8Bit(it->c_str()));
+    }
+    allDbsLB->insertStringList(ql);
+    ql.clear();
+    for (list<string>::iterator it = prefs.activeExtraDbs.begin(); 
+	 it != prefs.activeExtraDbs.end(); it++) {
+	ql.append(QString::fromLocal8Bit(it->c_str()));
+    }
+    actDbsLB->insertStringList(ql);
+    ql.clear();
     
     connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
     connect(helpBrowserPB, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
+    connect(extraDbLE,SIGNAL(textChanged(const QString&)), this, 
+	    SLOT(extraDbTextChanged(const QString&)));
+    connect(addAADbPB, SIGNAL(clicked()), this, SLOT(addAADbPB_clicked()));
+    connect(addADbPB, SIGNAL(clicked()), this, SLOT(addADbPB_clicked()));
+    connect(delADbPB, SIGNAL(clicked()), this, SLOT(delADbPB_clicked()));
+    connect(delAADbPB, SIGNAL(clicked()), this, SLOT(delAADbPB_clicked()));
+    connect(addExtraDbPB, SIGNAL(clicked()), this, SLOT(addExtraDbPB_clicked()));
+    connect(browseDbPB, SIGNAL(clicked()), this, SLOT(browseDbPB_clicked()));
+
+
 }
 
 void UIPrefsDialog::accept()
@@ -158,4 +187,107 @@ void UIPrefsDialog::showBrowserDialog()
 					     "Choose a file" );
     if (s) 
 	helpBrowserLE->setText(s);
+}
+
+////////////////////////////////////////////
+// External / extra search databases setup: this should modify to take 
+// effect only when Ok is clicked. Currently modifs take effect as soon as
+// done in the Gui
+// Also needed: means to remove entry from 'all' list (del button? )
+
+void UIPrefsDialog::extraDbTextChanged(const QString &text)
+{
+    if (text.isEmpty()) {
+	addExtraDbPB->setEnabled(false);
+    } else {
+	addExtraDbPB->setEnabled(true);
+    }
+}
+
+// Add selected dbs to the active list
+void UIPrefsDialog::addADbPB_clicked()
+{
+    for (unsigned int i = 0; i < allDbsLB->count();i++) {
+	QListBoxItem *item = allDbsLB->item(i);
+	if (item && item->isSelected()) {
+	    allDbsLB->setSelected(i, false);
+	    string dbname = (const char*)item->text().local8Bit();
+	    if (std::find(prefs.activeExtraDbs.begin(), prefs.activeExtraDbs.end(), 
+		     dbname) == prefs.activeExtraDbs.end()) {
+		actDbsLB->insertItem(item->text());
+		prefs.activeExtraDbs.push_back(dbname);
+	    }
+	}
+    }
+    actDbsLB->sort();
+}
+
+void UIPrefsDialog::addAADbPB_clicked()
+{
+    for (unsigned int i = 0; i < allDbsLB->count();i++) {
+	allDbsLB->setSelected(i, true);
+    }
+    addADbPB_clicked();
+}
+
+void UIPrefsDialog::delADbPB_clicked()
+{
+    list<int> rmi;
+    for (unsigned int i = 0; i < actDbsLB->count(); i++) {
+	QListBoxItem *item = actDbsLB->item(i);
+	if (item && item->isSelected()) {
+	    string dbname = (const char*)item->text().local8Bit();
+	    list<string>::iterator sit;
+	    if ((sit = ::std::find(prefs.activeExtraDbs.begin(), 
+			    prefs.activeExtraDbs.end(), dbname)) != 
+		 prefs.activeExtraDbs.end()) {
+		prefs.activeExtraDbs.erase(sit);
+	    }
+	    rmi.push_front(i);
+	}
+    }
+    for (list<int>::iterator ii = rmi.begin(); ii != rmi.end(); ii++) {
+	actDbsLB->removeItem(*ii);
+    }
+}
+
+void UIPrefsDialog::delAADbPB_clicked()
+{
+    for (unsigned int i = 0; i < actDbsLB->count(); i++) {
+	actDbsLB->setSelected(i, true);
+    }
+    delADbPB_clicked();
+}
+
+void UIPrefsDialog::addExtraDbPB_clicked()
+{
+    string dbdir = (const char *)extraDbLE->text().local8Bit();
+    if (!Rcl::Db::testDbDir(dbdir)) {
+	QMessageBox::warning(0, "Recoll", 
+     tr("The selected directory does not appear to be a Xapian database"));
+	return;
+    }
+
+    if (::std::find(prefs.allExtraDbs.begin(), prefs.allExtraDbs.end(), 
+		    dbdir) != prefs.allExtraDbs.end()) {
+	QMessageBox::warning(0, "Recoll", 
+		 tr("The selected directory is already in the database list"));
+	return;
+    }
+    prefs.allExtraDbs.push_back(dbdir);
+    allDbsLB->insertItem(extraDbLE->text());
+    allDbsLB->sort();
+}
+
+void UIPrefsDialog::browseDbPB_clicked()
+{
+    QFileDialog fdia;
+    bool savedh = fdia.showHiddenFiles();
+    fdia.setShowHiddenFiles(true);
+    QString s = QFileDialog::getExistingDirectory("", this, 0, 
+tr("Select directory holding xapian database (ie: /home/someone/.recoll/xapiandb)"));
+
+    fdia.setShowHiddenFiles(savedh);
+    if (s) 
+	extraDbLE->setText(s);
 }

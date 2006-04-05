@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.3 2006-03-29 17:31:55 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.4 2006-04-05 12:50:42 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,13 @@
  */
 
 #include <string>
+#include <list>
 #include <qstring.h>
+
+#ifndef NO_NAMESPACES
+using std::string;
+using std::list;
+#endif
 
 /** Start a browser on the help document */
 extern bool startHelpBrowser(const string& url = "");
@@ -56,6 +62,11 @@ class PrefsPack {
     QString htmlBrowser;
     bool queryBuildAbstract;
     bool queryReplaceAbstract;
+    // Extra query databases. This are encoded to base64 before storing
+    // to the qt settings file to avoid any bin string/ charset conv issues
+    list<string> allExtraDbs;
+    list<string> activeExtraDbs;
+
     PrefsPack() :
 	showicons(true), 
 	respagesize(8), 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.39 2006-04-04 07:55:29 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.40 2006-04-05 12:50:42 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -90,6 +90,12 @@ bool maybeOpenDb(string &reason, bool force)
 	qopts |= Rcl::Db::QO_REPLACE_ABSTRACT;
     if (force)
 	rcldb->close();
+    rcldb->rmQueryDb("");
+    for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
+	 it != prefs.activeExtraDbs.end(); it++) {
+	LOGDEB(("main: adding [%s]\n", it->c_str()));
+	rcldb->addQueryDb(*it);
+    }
     if (!rcldb->isopen() && !rcldb->open(dbdir, Rcl::Db::DbRO, qopts)) {
 	reason = "Could not open database in " + 
 	    dbdir + " wait for indexing to complete?";

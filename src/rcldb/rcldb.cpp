@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.60 2006-04-05 06:26:56 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.61 2006-04-05 12:50:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -67,13 +67,26 @@ namespace Rcl {
 // when building the abstract
 #define MA_EXTRACT_WIDTH 4
 
+// Truncate longer path and uniquize with hash . The goal for this is
+// to avoid xapian max term length limitations, not to gain space (we
+// gain very little even with very short maxlens like 30)
+#define PATHHASHLEN 150
+
+// Synthetic abstract marker (to discriminate from abstract actually
+// found in doc)
+const static string rclSyntAbs = "?!#@";
+
 // Data for a xapian database. There could actually be 2 different
 // ones for indexing or query as there is not much in common.
 class Native {
  public:
-    bool isopen;
-    bool iswritable;
-    string basedir;
+    bool m_isopen;
+    bool m_iswritable;
+    Db::OpenMode m_mode;
+    string m_basedir;
+
+    // List of directories for additional databases to query
+    list<string> m_extraDbs;
 
     // Indexing
     Xapian::WritableDatabase wdb;
@@ -92,7 +105,9 @@ class Native {
 			Xapian::docid docid,
 			const list<string>& terms);
 
-    Native() : isopen(false), iswritable(false), enquire(0) { }
+    Native() 
+	: m_isopen(false), m_iswritable(false), m_mode(Db::DbRO), enquire(0) 
+    { }
     ~Native() {
 	delete enquire;
     }
@@ -112,27 +127,28 @@ class Native {
 };
 
 Db::Db() 
+    : m_qOpts(0)
 {
-    ndb = new Native;
-    m_qOpts = 0;
+    m_ndb = new Native;
 }
 
 Db::~Db()
 {
     LOGDEB1(("Db::~Db\n"));
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return;
-    LOGDEB(("Db::~Db: isopen %d iswritable %d\n", ndb->isopen, 
-	    ndb->iswritable));
-    if (ndb->isopen == false)
+    LOGDEB(("Db::~Db: isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
+	    m_ndb->m_iswritable));
+    if (m_ndb->m_isopen == false)
 	return;
     const char *ermsg = "Unknown error";
     try {
 	LOGDEB(("Db::~Db: closing native database\n"));
-	if (ndb->iswritable == true) {
-	    ndb->wdb.flush();
+	if (m_ndb->m_iswritable == true) {
+	    m_ndb->wdb.flush();
 	}
-	delete ndb;
+	delete m_ndb;
+	m_ndb = 0;
 	return;
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
@@ -148,15 +164,15 @@ Db::~Db()
 
 bool Db::open(const string& dir, OpenMode mode, int qops)
 {
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return false;
-    LOGDEB(("Db::open: isopen %d iswritable %d\n", ndb->isopen, 
-	    ndb->iswritable));
-    m_qOpts = qops;
+    LOGDEB(("Db::open: m_isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
+	    m_ndb->m_iswritable));
 
-    if (ndb->isopen) {
-	LOGERR(("Db::open: already open\n"));
-	return false;
+    if (m_ndb->m_isopen) {
+	// We used to return an error here but I see no reason to
+	if (!close())
+	    return false;
     }
     const char *ermsg = "Unknown";
     try {
@@ -166,23 +182,46 @@ bool Db::open(const string& dir, OpenMode mode, int qops)
 	    {
 		int action = (mode == DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
 		    Xapian::DB_CREATE_OR_OVERWRITE;
-		ndb->wdb = Xapian::WritableDatabase(dir, action);
+		m_ndb->wdb = Xapian::WritableDatabase(dir, action);
 		LOGDEB(("Db::open: lastdocid: %d\n", 
-			ndb->wdb.get_lastdocid()));
-		ndb->updated.resize(ndb->wdb.get_lastdocid() + 1);
-		for (unsigned int i = 0; i < ndb->updated.size(); i++)
-		    ndb->updated[i] = false;
-		ndb->iswritable = true;
+			m_ndb->wdb.get_lastdocid()));
+		m_ndb->updated.resize(m_ndb->wdb.get_lastdocid() + 1);
+		for (unsigned int i = 0; i < m_ndb->updated.size(); i++)
+		    m_ndb->updated[i] = false;
+		m_ndb->m_iswritable = true;
 	    }
 	    break;
 	case DbRO:
 	default:
-	    ndb->iswritable = false;
-	    ndb->db = Xapian::Database(dir);
+	    m_ndb->m_iswritable = false;
+	    m_ndb->db = Xapian::Database(dir);
+	    for (list<string>::iterator it = m_ndb->m_extraDbs.begin();
+		 it != m_ndb->m_extraDbs.end(); it++) {
+		string aerr;
+		LOGDEB(("Db::Open: adding query db [%s]\n", it->c_str()));
+		aerr.clear();
+		try {
+		    // Make this non-fatal
+		    m_ndb->db.add_database(Xapian::Database(*it));
+		} catch (const Xapian::Error &e) {
+		    aerr = e.get_msg().c_str();
+		} catch (const string &s) {
+		    aerr = s.c_str();
+		} catch (const char *s) {
+		    aerr = s;
+		} catch (...) {
+		    aerr = "Caught unknown exception";
+		}
+		if (!aerr.empty())
+		    LOGERR(("Db::Open: error while trying to add database "
+			    "from [%s]: %s\n", it->c_str(), aerr.c_str()));
+	    }
 	    break;
 	}
-	ndb->isopen = true;
-	ndb->basedir = dir;
+	m_qOpts = qops;
+	m_ndb->m_mode = mode;
+	m_ndb->m_isopen = true;
+	m_ndb->m_basedir = dir;
 	return true;
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
@@ -201,21 +240,21 @@ bool Db::open(const string& dir, OpenMode mode, int qops)
 // Note: xapian has no close call, we delete and recreate the db
 bool Db::close()
 {
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return false;
-    LOGDEB(("Db::close(): isopen %d iswritable %d\n", ndb->isopen, 
-	    ndb->iswritable));
-    if (ndb->isopen == false)
+    LOGDEB(("Db::close(): m_isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
+	    m_ndb->m_iswritable));
+    if (m_ndb->m_isopen == false)
 	return true;
     const char *ermsg = "Unknown";
     try {
-	if (ndb->iswritable == true) {
-	    ndb->wdb.flush();
+	if (m_ndb->m_iswritable == true) {
+	    m_ndb->wdb.flush();
 	    LOGDEB(("Rcl:Db: Called xapian flush\n"));
 	}
-	delete ndb;
-	ndb = new Native;
-	if (ndb)
+	delete m_ndb;
+	m_ndb = new Native;
+	if (m_ndb)
 	    return true;
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
@@ -229,12 +268,77 @@ bool Db::close()
     LOGERR(("Db:close: exception while deleting db: %s\n", ermsg));
     return false;
 }
+bool Db::reOpen()
+{
+    if (m_ndb->m_isopen) {
+	if (!close())
+	    return false;
+	if (!open(m_ndb->m_basedir, m_ndb->m_mode, m_qOpts)) {
+	    return false;
+	}
+    }
+    return true;
+}
+bool Db::addQueryDb(const string &dir) 
+{
+    LOGDEB(("Db::addQueryDb: ndb %p iswritable %d db [%s]\n", m_ndb,
+	      (m_ndb)?m_ndb->m_iswritable:0, dir.c_str()));
+    if (!m_ndb)
+	return false;
+    if (m_ndb->m_iswritable)
+	return false;
+    if (find(m_ndb->m_extraDbs.begin(), m_ndb->m_extraDbs.end(), dir) == 
+	m_ndb->m_extraDbs.end()) {
+	m_ndb->m_extraDbs.push_back(dir);
+    }
+    return reOpen();
+}
+
+bool Db::rmQueryDb(const string &dir)
+{
+    if (!m_ndb)
+	return false;
+    if (m_ndb->m_iswritable)
+	return false;
+    if (dir.empty()) {
+	m_ndb->m_extraDbs.clear();
+    } else {
+	list<string>::iterator it = find(m_ndb->m_extraDbs.begin(), 
+					 m_ndb->m_extraDbs.end(), dir);
+	if (it != m_ndb->m_extraDbs.end()) {
+	    m_ndb->m_extraDbs.erase(it);
+	}
+    }
+    return reOpen();
+}
+bool Db::testDbDir(const string &dir)
+{
+    string aerr;
+    LOGDEB(("Db::testDbDir: [%s]\n", dir.c_str()));
+    try {
+	Xapian::Database db(dir);
+    } catch (const Xapian::Error &e) {
+	aerr = e.get_msg().c_str();
+    } catch (const string &s) {
+	aerr = s.c_str();
+    } catch (const char *s) {
+	aerr = s;
+    } catch (...) {
+	aerr = "Caught unknown exception";
+    }
+    if (!aerr.empty()) {
+	LOGERR(("Db::Open: error while trying to open database "
+		"from [%s]: %s\n", dir.c_str(), aerr.c_str()));
+	return false;
+    }
+    return true;
+}
 
 bool Db::isopen()
 {
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return false;
-    return ndb->isopen;
+    return m_ndb->m_isopen;
 }
 
 // A small class to hold state while splitting text
@@ -335,7 +439,7 @@ truncate_to_word(string & input, string::size_type maxlen)
     return output;
 }
 
-// remove some chars and replace them with spaces
+// Remove some chars and replace them with spaces
 static string stripchars(const string &str, string delims)
 {
     string out;
@@ -357,13 +461,6 @@ static string stripchars(const string &str, string delims)
     return out;
 }
 
-// Truncate longer path and uniquize with hash . The goal for this is
-// to avoid xapian max term length limitations, not to gain space (we
-// gain very little even with very short maxlens like 30)
-#define PATHHASHLEN 150
-
-const static string rclSyntAbs = "?!#@";
-
 // Add document in internal form to the database: index the terms in
 // the title abstract and body and add special terms for file name,
 // date, mime type ... , create the document data record (more
@@ -372,7 +469,7 @@ bool Db::add(const string &fn, const Doc &idoc,
 		  const struct stat *stp)
 {
     LOGDEB1(("Db::add: fn %s\n", fn.c_str()));
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return false;
 
     Doc doc = idoc;
@@ -513,10 +610,10 @@ bool Db::add(const string &fn, const Doc &idoc,
     // Add db entry or update existing entry:
     try {
 	Xapian::docid did = 
-	    ndb->wdb.replace_document(uniterm.empty() ? pathterm : uniterm, 
+	    m_ndb->wdb.replace_document(uniterm.empty() ? pathterm : uniterm, 
 				      newdocument);
-	if (did < ndb->updated.size()) {
-	    ndb->updated[did] = true;
+	if (did < m_ndb->updated.size()) {
+	    m_ndb->updated[did] = true;
 	    LOGDEB(("Db::add: docid %d updated [%s , %s]\n", did, fnc,
 		    doc.ipath.c_str()));
 	} else {
@@ -526,7 +623,7 @@ bool Db::add(const string &fn, const Doc &idoc,
     } catch (...) {
 	// FIXME: is this ever actually needed?
 	try {
-	    ndb->wdb.add_document(newdocument);
+	    m_ndb->wdb.add_document(newdocument);
 	    LOGDEB(("Db::add: %s added (failed re-seek for duplicate)\n", 
 		    fnc));
 	} catch (...) {
@@ -540,7 +637,7 @@ bool Db::add(const string &fn, const Doc &idoc,
 // Test if given filename has changed since last indexed:
 bool Db::needUpdate(const string &filename, const struct stat *stp)
 {
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return false;
 
     // If no document exist with this path, we do need update
@@ -556,16 +653,16 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
     // file changed)
     Xapian::PostingIterator doc;
     try {
-	if (!ndb->wdb.term_exists(pathterm)) {
+	if (!m_ndb->wdb.term_exists(pathterm)) {
 	    LOGDEB1(("Db::needUpdate: no such path: %s\n", pathterm.c_str()));
 	    return true;
 	}
 
-	Xapian::PostingIterator docid0 = ndb->wdb.postlist_begin(pathterm);
+	Xapian::PostingIterator docid0 = m_ndb->wdb.postlist_begin(pathterm);
 	for (Xapian::PostingIterator docid = docid0;
-	     docid != ndb->wdb.postlist_end(pathterm); docid++) {
+	     docid != m_ndb->wdb.postlist_end(pathterm); docid++) {
 
-	    Xapian::Document doc = ndb->wdb.get_document(*docid);
+	    Xapian::Document doc = m_ndb->wdb.get_document(*docid);
 
 	    // Check the date once. no need to look at the others if
 	    // the db needs updating. Note that the fmtime used to be
@@ -590,8 +687,8 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 	    }
 
 	    // Db is up to date. Make a note that this document exists.
-	    if (*docid < ndb->updated.size())
-		ndb->updated[*docid] = true;
+	    if (*docid < m_ndb->updated.size())
+		m_ndb->updated[*docid] = true;
 	}
 	return false;
     } catch (const Xapian::Error &e) {
@@ -627,12 +724,12 @@ p_notlowerorutf(unsigned int c)
 bool Db::deleteStemDb(const string& lang)
 {
     LOGDEB(("Db::deleteStemDb(%s)\n", lang.c_str()));
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return false;
-    if (ndb->isopen == false)
+    if (m_ndb->m_isopen == false)
 	return false;
 
-    string dir = stemdbname(ndb->basedir, lang);
+    string dir = stemdbname(m_ndb->m_basedir, lang);
     if (wipedir(dir) == 0 && rmdir(dir.c_str()) == 0)
 	return true;
     return false;
@@ -647,9 +744,9 @@ bool Db::deleteStemDb(const string& lang)
 bool Db::createStemDb(const string& lang)
 {
     LOGDEB(("Db::createStemDb(%s)\n", lang.c_str()));
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return false;
-    if (ndb->isopen == false)
+    if (m_ndb->m_isopen == false)
 	return false;
 
     // First build the in-memory stem database:
@@ -667,8 +764,8 @@ bool Db::createStemDb(const string& lang)
     try {
 	Xapian::Stem stemmer(lang);
 	Xapian::TermIterator it;
-	for (it = ndb->wdb.allterms_begin(); 
-	     it != ndb->wdb.allterms_end(); it++) {
+	for (it = m_ndb->wdb.allterms_begin(); 
+	     it != m_ndb->wdb.allterms_end(); it++) {
 	    // If it has any non-lowercase 7bit char, cant be stemmable
 	    string::iterator sit = (*it).begin(), eit = sit + (*it).length();
 	    if ((sit = find_if(sit, eit, p_notlowerorutf)) != eit) {
@@ -707,7 +804,7 @@ bool Db::createStemDb(const string& lang)
 	}
     };
     // Create xapian database for stem relations
-    string stemdbdir = stemdbname(ndb->basedir, lang);
+    string stemdbdir = stemdbname(m_ndb->m_basedir, lang);
     // We want to get rid of the db dir in case of error. This gets disarmed
     // just before success return.
     DirWiper wiper(stemdbdir);
@@ -781,10 +878,10 @@ list<string> Db::getStemLangs()
 {
     list<string> dirs;
     LOGDEB(("Db::getStemLang\n"));
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return dirs;
     string pattern = stemdirstem + "*";
-    dirs = path_dirglob(ndb->basedir, pattern);
+    dirs = path_dirglob(m_ndb->m_basedir, pattern);
     for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
 	*it = path_basename(*it);
 	*it = it->substr(stemdirstem.length(), string::npos);
@@ -801,11 +898,11 @@ list<string> Db::getStemLangs()
 bool Db::purge()
 {
     LOGDEB(("Db::purge\n"));
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return false;
-    LOGDEB(("Db::purge: isopen %d iswritable %d\n", ndb->isopen, 
-	    ndb->iswritable));
-    if (ndb->isopen == false || ndb->iswritable == false)
+    LOGDEB(("Db::purge: m_isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
+	    m_ndb->m_iswritable));
+    if (m_ndb->m_isopen == false || m_ndb->m_iswritable == false)
 	return false;
 
     // There seems to be problems with the document delete code, when
@@ -816,14 +913,14 @@ bool Db::purge()
     // trying to delete an unexistant document ?
     // Flushing before trying the deletes seeems to work around the problem
     try {
-	ndb->wdb.flush();
+	m_ndb->wdb.flush();
     } catch (...) {
 	LOGDEB(("Db::purge: 1st flush failed\n"));
     }
-    for (Xapian::docid docid = 1; docid < ndb->updated.size(); ++docid) {
-	if (!ndb->updated[docid]) {
+    for (Xapian::docid docid = 1; docid < m_ndb->updated.size(); ++docid) {
+	if (!m_ndb->updated[docid]) {
 	    try {
-		ndb->wdb.delete_document(docid);
+		m_ndb->wdb.delete_document(docid);
 		LOGDEB(("Db::purge: deleted document #%d\n", docid));
 	    } catch (const Xapian::DocNotFoundError &) {
 		LOGDEB(("Db::purge: document #%d not found\n", docid));
@@ -831,7 +928,7 @@ bool Db::purge()
 	}
     }
     try {
-	ndb->wdb.flush();
+	m_ndb->wdb.flush();
     } catch (...) {
 	LOGDEB(("Db::purge: 2nd flush failed\n"));
     }
@@ -841,7 +938,7 @@ bool Db::purge()
 /**
  * Expand term to list of all terms which stem to the same term.
  */
-static list<string> stemexpand(Native *ndb, string term, const string& lang)
+static list<string> stemexpand(Native *m_ndb, string term, const string& lang)
 {
     list<string> explist;
     try {
@@ -849,7 +946,7 @@ static list<string> stemexpand(Native *ndb, string term, const string& lang)
 	string stem = stemmer.stem_word(term);
 	LOGDEB(("stemexpand: [%s] stem-> [%s]\n", term.c_str(), stem.c_str()));
 	// Try to fetch the doc from the stem db
-	string stemdbdir = stemdbname(ndb->basedir, lang);
+	string stemdbdir = stemdbname(m_ndb->m_basedir, lang);
 	Xapian::Database sdb(stemdbdir);
 	LOGDEB1(("stemexpand: %s lastdocid: %d\n", 
 		stemdbdir.c_str(), sdb.get_lastdocid()));
@@ -925,7 +1022,7 @@ class wsQData : public TextSplitCB {
 //     phrase terms (no stem expansion in this case)
 static void stringToXapianQueries(const string &iq,
 				  const string& stemlang,
-				  Native *ndb,
+				  Native *m_ndb,
 				  list<Xapian::Query> &pqueries,
 				  Db::QueryOpts opts = Db::QO_NONE)
 {
@@ -973,7 +1070,7 @@ static void stringToXapianQueries(const string &iq,
 		dumb_string(term, term1);
 		// Possibly perform stem compression/expansion
 		if (!nostemexp && (opts & Db::QO_STEM)) {
-		    exp = stemexpand(ndb, term1, stemlang);
+		    exp = stemexpand(m_ndb, term1, stemlang);
 		} else {
 		    exp.push_back(term1);
 		}
@@ -1001,18 +1098,18 @@ bool Db::setQuery(const std::string &iqstring, QueryOpts opts,
 {
     LOGDEB(("Db::setQuery: q: [%s], opts 0x%x, stemlang %s\n", 
 	    iqstring.c_str(), (unsigned int)opts, stemlang.c_str()));
-    if (!ndb)
+    if (!m_ndb)
 	return false;
     m_asdata.erase();
-    dbindices.clear();
+    m_dbindices.clear();
     list<Xapian::Query> pqueries;
-    stringToXapianQueries(iqstring, stemlang, ndb, pqueries, opts);
-    ndb->query = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(), 
+    stringToXapianQueries(iqstring, stemlang, m_ndb, pqueries, opts);
+    m_ndb->query = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(), 
 			       pqueries.end());
-    delete ndb->enquire;
-    ndb->enquire = new Xapian::Enquire(ndb->db);
-    ndb->enquire->set_query(ndb->query);
-    ndb->mset = Xapian::MSet();
+    delete m_ndb->enquire;
+    m_ndb->enquire = new Xapian::Enquire(m_ndb->db);
+    m_ndb->enquire->set_query(m_ndb->query);
+    m_ndb->mset = Xapian::MSet();
     return true;
 }
 
@@ -1035,9 +1132,9 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	LOGDEB((" restricted to: %s\n", sdata.topdir.c_str()));
 
     m_asdata = sdata;
-    dbindices.clear();
+    m_dbindices.clear();
 
-    if (!ndb)
+    if (!m_ndb)
 	return false;
     list<Xapian::Query> pqueries;
     Xapian::Query xq;
@@ -1062,10 +1159,10 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	LOGDEB((" pattern: [%s]\n", pattern.c_str()));
 
 	// Match pattern against all file names in the db
-	Xapian::TermIterator it = ndb->db.allterms_begin(); 
+	Xapian::TermIterator it = m_ndb->db.allterms_begin(); 
 	it.skip_to("XSFN");
 	list<string> names;
-	for (;it != ndb->db.allterms_end(); it++) {
+	for (;it != m_ndb->db.allterms_end(); it++) {
 	    if ((*it).find("XSFN") != 0)
 		break;
 	    string fn = (*it).substr(4);
@@ -1089,7 +1186,7 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     }
 
     if (!sdata.allwords.empty()) {
-	stringToXapianQueries(sdata.allwords, stemlang, ndb, pqueries, opts);
+	stringToXapianQueries(sdata.allwords, stemlang, m_ndb, pqueries, opts);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq = 
 		Xapian::Query(Xapian::Query::OP_AND, pqueries.begin(),
@@ -1101,7 +1198,7 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     }
 
     if (!sdata.orwords.empty()) {
-	stringToXapianQueries(sdata.orwords, stemlang, ndb, pqueries, opts);
+	stringToXapianQueries(sdata.orwords, stemlang, m_ndb, pqueries, opts);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq = 
 		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
@@ -1114,7 +1211,7 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 
     // We do no stem expansion on 'No' words. Should we ?
     if (!sdata.nowords.empty()) {
-	stringToXapianQueries(sdata.nowords, stemlang, ndb, pqueries);
+	stringToXapianQueries(sdata.nowords, stemlang, m_ndb, pqueries);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq;
 	    nq = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
@@ -1128,7 +1225,7 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     if (!sdata.phrase.empty()) {
 	Xapian::Query nq;
 	string s = string("\"") + sdata.phrase + string("\"");
-	stringToXapianQueries(s, stemlang, ndb, pqueries);
+	stringToXapianQueries(s, stemlang, m_ndb, pqueries);
 	if (!pqueries.empty()) {
 	    // There should be a single list element phrase query.
 	    xq = xq.empty() ? *pqueries.begin() : 
@@ -1149,13 +1246,13 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_FILTER, xq, tq);
     }
 
-    ndb->query = xq;
-    delete ndb->enquire;
-    ndb->enquire = new Xapian::Enquire(ndb->db);
-    ndb->enquire->set_query(ndb->query);
-    ndb->mset = Xapian::MSet();
+    m_ndb->query = xq;
+    delete m_ndb->enquire;
+    m_ndb->enquire = new Xapian::Enquire(m_ndb->db);
+    m_ndb->enquire->set_query(m_ndb->query);
+    m_ndb->mset = Xapian::MSet();
     // Get the query description and trim the "Xapian::Query"
-    sdata.description = ndb->query.get_description();
+    sdata.description = m_ndb->query.get_description();
     if (sdata.description.find("Xapian::Query") == 0)
 	sdata.description = sdata.description.substr(strlen("Xapian::Query"));
     LOGDEB(("Db::SetQuery: Q: %s\n", sdata.description.c_str()));
@@ -1164,32 +1261,33 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 
 bool Db::getQueryTerms(list<string>& terms)
 {
-    if (!ndb)
+    if (!m_ndb)
 	return false;
 
     terms.clear();
     Xapian::TermIterator it;
-    for (it = ndb->query.get_terms_begin(); it != ndb->query.get_terms_end();
+    for (it = m_ndb->query.get_terms_begin(); it != m_ndb->query.get_terms_end();
 	 it++) {
 	terms.push_back(*it);
     }
     return true;
 }
 
+// Mset size
 static const int qquantum = 30;
 
 int Db::getResCnt()
 {
-    if (!ndb || !ndb->enquire) {
+    if (!m_ndb || !m_ndb->enquire) {
 	LOGERR(("Db::getResCnt: no query opened\n"));
 	return -1;
     }
-    if (ndb->mset.size() <= 0) {
+    if (m_ndb->mset.size() <= 0) {
 	try {
-	    ndb->mset = ndb->enquire->get_mset(0, qquantum);
+	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum);
 	} catch (const Xapian::DatabaseModifiedError &error) {
-	    ndb->db.reopen();
-	    ndb->mset = ndb->enquire->get_mset(0, qquantum);
+	    m_ndb->db.reopen();
+	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum);
 	} catch (const Xapian::Error & error) {
 	    LOGERR(("enquire->get_mset: exception: %s\n", 
 		    error.get_msg().c_str()));
@@ -1197,15 +1295,8 @@ int Db::getResCnt()
 	}
     }
 
-    return ndb->mset.get_matches_lower_bound();
+    return m_ndb->mset.get_matches_lower_bound();
 }
-
-// This class (friend to RclDb) exists so that we can have functions that 
-// access private RclDb data and have Xapian-specific parameters (so that we 
-// don't want them to appear in the public rcldb.h).
-class DbPops {
- public:
-};
 
 bool Native::dbDataToRclDoc(std::string &data, Doc &doc, 
 			    int qopts,
@@ -1252,7 +1343,7 @@ bool Native::dbDataToRclDoc(std::string &data, Doc &doc,
 bool Db::getDoc(int exti, Doc &doc, int *percent)
 {
     LOGDEB1(("Db::getDoc: exti %d\n", exti));
-    if (!ndb || !ndb->enquire) {
+    if (!m_ndb || !m_ndb->enquire) {
 	LOGERR(("Db::getDoc: no query opened\n"));
 	return false;
     }
@@ -1264,85 +1355,85 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
     int xapi;
     if (postqfilter) {
 	// There is a postquery filter, does this fall in already known area ?
-	if (exti >= (int)dbindices.size()) {
+	if (exti >= (int)m_dbindices.size()) {
 	    // Have to fetch xapian docs and filter until we get
 	    // enough or fail
-	    dbindices.reserve(exti+1);
+	    m_dbindices.reserve(exti+1);
 	    // First xapian doc we fetch is the one after last stored 
-	    int first = dbindices.size() > 0 ? dbindices.back() + 1 : 0;
+	    int first = m_dbindices.size() > 0 ? m_dbindices.back() + 1 : 0;
 	    // Loop until we get enough docs
-	    while (exti >= (int)dbindices.size()) {
+	    while (exti >= (int)m_dbindices.size()) {
 		LOGDEB(("Db::getDoc: fetching %d starting at %d\n",
 			qquantum, first));
 		try {
-		    ndb->mset = ndb->enquire->get_mset(first, qquantum);
+		    m_ndb->mset = m_ndb->enquire->get_mset(first, qquantum);
 		} catch (const Xapian::DatabaseModifiedError &error) {
-		    ndb->db.reopen();
-		    ndb->mset = ndb->enquire->get_mset(first, qquantum);
+		    m_ndb->db.reopen();
+		    m_ndb->mset = m_ndb->enquire->get_mset(first, qquantum);
 		} catch (const Xapian::Error & error) {
 		  LOGERR(("enquire->get_mset: exception: %s\n", 
 			  error.get_msg().c_str()));
 		  abort();
 		}
 
-		if (ndb->mset.empty()) {
+		if (m_ndb->mset.empty()) {
 		    LOGDEB(("Db::getDoc: got empty mset\n"));
 		    return false;
 		}
-		first = ndb->mset.get_firstitem();
-		for (unsigned int i = 0; i < ndb->mset.size() ; i++) {
+		first = m_ndb->mset.get_firstitem();
+		for (unsigned int i = 0; i < m_ndb->mset.size() ; i++) {
 		    LOGDEB(("Db::getDoc: [%d]\n", i));
-		    Xapian::Document xdoc = ndb->mset[i].get_document();
-		    if (ndb->filterMatch(this, xdoc)) {
-			dbindices.push_back(first + i);
+		    Xapian::Document xdoc = m_ndb->mset[i].get_document();
+		    if (m_ndb->filterMatch(this, xdoc)) {
+			m_dbindices.push_back(first + i);
 		    }
 		}
-		first = first + ndb->mset.size();
+		first = first + m_ndb->mset.size();
 	    }
 	}
-	xapi = dbindices[exti];
+	xapi = m_dbindices[exti];
     } else {
 	xapi = exti;
     }
 
 
     // From there on, we work with a xapian enquire item number. Fetch it
-    int first = ndb->mset.get_firstitem();
-    int last = first + ndb->mset.size() -1;
+    int first = m_ndb->mset.get_firstitem();
+    int last = first + m_ndb->mset.size() -1;
 
     if (!(xapi >= first && xapi <= last)) {
 	LOGDEB(("Fetching for first %d, count %d\n", xapi, qquantum));
 	try {
-	  ndb->mset = ndb->enquire->get_mset(xapi, qquantum);
+	  m_ndb->mset = m_ndb->enquire->get_mset(xapi, qquantum);
 	} catch (const Xapian::DatabaseModifiedError &error) {
-	    ndb->db.reopen();
-	    ndb->mset = ndb->enquire->get_mset(xapi, qquantum);
+	    m_ndb->db.reopen();
+	    m_ndb->mset = m_ndb->enquire->get_mset(xapi, qquantum);
 	} catch (const Xapian::Error & error) {
 	  LOGERR(("enquire->get_mset: exception: %s\n", 
 		  error.get_msg().c_str()));
 	  abort();
 	}
-	if (ndb->mset.empty())
+	if (m_ndb->mset.empty())
 	    return false;
-	first = ndb->mset.get_firstitem();
-	last = first + ndb->mset.size() -1;
+	first = m_ndb->mset.get_firstitem();
+	last = first + m_ndb->mset.size() -1;
     }
 
     LOGDEB1(("Db::getDoc: Qry [%s] win [%d-%d] Estimated results: %d",
-	     ndb->query.get_description().c_str(), 
+	     m_ndb->query.get_description().c_str(), 
 	     first, last,
-	     ndb->mset.get_matches_lower_bound()));
+	     m_ndb->mset.get_matches_lower_bound()));
 
-    Xapian::Document xdoc = ndb->mset[xapi-first].get_document();
-    Xapian::docid docid = *(ndb->mset[xapi-first]);
+    Xapian::Document xdoc = m_ndb->mset[xapi-first].get_document();
+    Xapian::docid docid = *(m_ndb->mset[xapi-first]);
     if (percent)
-	*percent = ndb->mset.convert_to_percent(ndb->mset[xapi-first]);
+	*percent = m_ndb->mset.convert_to_percent(m_ndb->mset[xapi-first]);
 
     // Parse xapian document's data and populate doc fields
     string data = xdoc.get_data();
     list<string> terms;
     getQueryTerms(terms);
-    return ndb->dbDataToRclDoc(data, doc, m_qOpts, docid, terms);
+    return m_ndb->dbDataToRclDoc(data, doc, m_qOpts, docid, terms);
 }
 
 // Retrieve document defined by file name and internal path. Very inefficient,
@@ -1352,7 +1443,7 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 {
     LOGDEB(("Db:getDoc: [%s] (%d) [%s]\n", fn.c_str(), fn.length(),
 	    ipath.c_str()));
-    if (ndb == 0)
+    if (m_ndb == 0)
 	return false;
 
     // Initialize what we can in any case. If this is history, caller
@@ -1369,7 +1460,7 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
     // with the appropriate ipath. This is very inefficient.
     const char *ermsg = "";
     try {
-	if (!ndb->db.term_exists(pathterm)) {
+	if (!m_ndb->db.term_exists(pathterm)) {
 	    // Document found in history no longer in the database.
 	    // We return true (because their might be other ok docs further)
 	    // but indicate the error with pc = -1
@@ -1380,13 +1471,13 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 	    return true;
 	}
 	for (Xapian::PostingIterator docid = 
-		 ndb->db.postlist_begin(pathterm);
-	     docid != ndb->db.postlist_end(pathterm); docid++) {
+		 m_ndb->db.postlist_begin(pathterm);
+	     docid != m_ndb->db.postlist_end(pathterm); docid++) {
 
-	    Xapian::Document xdoc = ndb->db.get_document(*docid);
+	    Xapian::Document xdoc = m_ndb->db.get_document(*docid);
 	    string data = xdoc.get_data();
 	    list<string> terms;
-	    if (ndb->dbDataToRclDoc(data, doc, QO_NONE, *docid, terms) 
+	    if (m_ndb->dbDataToRclDoc(data, doc, QO_NONE, *docid, terms) 
 		&& doc.ipath == ipath)
 		return true;
 	}

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.5 2006-04-04 10:38:52 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.6 2006-04-05 12:50:42 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,10 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.5 2006-04-04 10:38:52 dockes Exp
 #include "recoll.h"
 #include "guiutils.h"
 #include "pathut.h"
+#include "base64.h"
 
 #include <qsettings.h>
+#include <qstringlist.h>
 
 const static char *htmlbrowserlist = 
     "opera konqueror firefox mozilla netscape";
@@ -129,6 +131,58 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/query/buildAbstract", Bool, true);
     SETTING_RW(prefs.queryReplaceAbstract, 
 	       "/Recoll/prefs/query/replaceAbstract", Bool, false);
+
+    QStringList qsl;
+    if (writing) {
+	for (list<string>::const_iterator it = prefs.allExtraDbs.begin();
+	     it != prefs.allExtraDbs.end(); it++) {
+	    string b64;
+	    base64_encode(*it, b64);
+	    qsl.push_back(QString::fromAscii(b64.c_str()));
+	}
+	settings.writeEntry("/Recoll/prefs/query/allExtraDbs", qsl);
+
+	qsl.clear();
+	for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
+	     it != prefs.activeExtraDbs.end(); it++) {
+	    string b64;
+	    base64_encode(*it, b64);
+	    qsl.push_back(QString::fromAscii(b64.c_str()));
+	}
+	settings.writeEntry("/Recoll/prefs/query/activeExtraDbs", qsl);
+    } else {
+	qsl = settings.readListEntry("/Recoll/prefs/query/allExtraDbs");
+	prefs.allExtraDbs.clear();
+	for (QStringList::iterator it = qsl.begin(); it != qsl.end(); it++) {
+	    string dec;
+	    base64_decode((*it).ascii(), dec);
+	    prefs.allExtraDbs.push_back(dec);
+	}
+
+	qsl = settings.readListEntry("/Recoll/prefs/query/activeExtraDbs");
+	prefs.activeExtraDbs.clear();
+	for (QStringList::iterator it = qsl.begin(); it != qsl.end(); it++) {
+	    string dec;
+	    base64_decode((*it).ascii(), dec);
+	    prefs.activeExtraDbs.push_back(dec);
+	}
+    }
+
+#if 1 
+    {
+	list<string>::const_iterator it;
+	fprintf(stderr, "All extra Dbs:\n");
+	for (it = prefs.allExtraDbs.begin(); 
+	     it != prefs.allExtraDbs.end(); it++) {
+	    fprintf(stderr, "    [%s]\n", it->c_str());
+	}
+	fprintf(stderr, "Active extra Dbs:\n");
+	for (it = prefs.activeExtraDbs.begin(); 
+	     it != prefs.activeExtraDbs.end(); it++) {
+	    fprintf(stderr, "    [%s]\n", it->c_str());
+	}
+    }
+#endif
 }
 
 
