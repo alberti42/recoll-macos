@@ -60,22 +60,23 @@ do
     test -d $d || mkdir -p $d || exit 1
 done
 
-${INSTALL} recoll.desktop ${datadir}/applications
-${INSTALL} doc/user/usermanual.html doc/user/docbook.css ${datadir}/recoll/doc 
+${INSTALL} -m 0444 recoll.desktop ${datadir}/applications
+${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
+			${datadir}/recoll/doc 
 
-${INSTALL} doc/man/recoll.1 doc/man/recollindex.1 ${mandir}/man1/
-${INSTALL} doc/man/recoll.conf.5  ${mandir}/man5/
+${INSTALL} -m 0444 doc/man/recoll.1 doc/man/recollindex.1 ${mandir}/man1/
+${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 
-${INSTALL} qtgui/recoll index/recollindex ${bindir} || exit 1
+${INSTALL} -m 0555 qtgui/recoll index/recollindex ${bindir} || exit 1
 ${STRIP} ${bindir}/recoll ${bindir}/recollindex
 
-${INSTALL} filters/rcl* ${datadir}/recoll/filters/ || exit 1
-chmod a+x ${datadir}/recoll/filters/rcl* || exit 1
+${INSTALL} -m 0555 filters/rcl* ${datadir}/recoll/filters/ || exit 1
+
 # Clean up possible old filters in examples
 rm -f ${datadir}/recoll/examples/rcl*
 
-${INSTALL} sampleconf/recoll.conf sampleconf/mimeconf sampleconf/mimemap \
-		    ${datadir}/recoll/examples/ || exit 1
+${INSTALL} -m 0444 sampleconf/recoll.conf sampleconf/mimeconf \
+	           sampleconf/mimemap ${datadir}/recoll/examples/ || exit 1
 
-${INSTALL} qtgui/mtpics/*.png ${datadir}/recoll/images || exit 1
-${INSTALL} qtgui/recoll*.qm ${datadir}/recoll/translations || exit 1
+${INSTALL} -m 0444 qtgui/mtpics/*.png ${datadir}/recoll/images || exit 1
+${INSTALL} -m 0444 qtgui/recoll*.qm ${datadir}/recoll/translations || exit 1
