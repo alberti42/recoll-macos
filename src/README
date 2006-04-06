@@ -67,13 +67,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              4.2.2. Installing a prebuilt Recoll
 
-                4.3. Configuration overview
+                4.3. Packages needed for external file types
 
-                             4.3.1. Main configuration file
+                4.4. Configuration overview
 
-                             4.3.2. The mimemap file
+                             4.4.1. Main configuration file
 
-                             4.3.3. The mimeconf file
+                             4.4.2. The mimemap file
+
+                             4.4.3. The mimeconf file
 
      ----------------------------------------------------------------------
 
@@ -452,29 +454,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    not be critical). On Linux systems, the iconv interface is part of libc
    and you should not need to do anything special.
 
-   External file types. Recoll uses external applications to index some file
-   types. You need to install them for the file types that you wish to have
-   indexed (these are run-time dependencies. None is needed for building
-   Recoll):
-
-     * PDF: pdftotext is part of the Xpdf package.
-
-     * Postscript: pstotext.
-
-     * MS Word: antiword.
-
-     * RTF: unrtf
-
-     * dvi: dvips
-
-     * djvu: DjVuLibre
-
-     * MP3: Recoll will use the id3info command from the id3lib package to
-       extract tag information. Without it, only the filenames will be
-       indexed.
-
-   Text, Html, mail folders and Openoffice files are processed internally.
-
      ----------------------------------------------------------------------
 
   4.1.2. Building
@@ -552,7 +531,33 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-4.3. Configuration overview
+4.3. Packages needed for external file types
+
+   Recoll uses external applications to index some file types. You need to
+   install them for the file types that you wish to have indexed (these are
+   run-time dependencies. None is needed for building Recoll):
+
+     * PDF: pdftotext is part of the Xpdf package.
+
+     * Postscript: pstotext.
+
+     * MS Word: antiword.
+
+     * RTF: unrtf
+
+     * dvi: dvips
+
+     * djvu: DjVuLibre
+
+     * MP3: Recoll will use the id3info command from the id3lib package to
+       extract tag information. Without it, only the filenames will be
+       indexed.
+
+   Text, Html, mail folders and Openoffice files are processed internally.
+
+     ----------------------------------------------------------------------
+
+4.4. Configuration overview
 
    There are two sets of configuration files. The system-wide files are kept
    in a directory named like /usr/[local/]share/recoll/examples, they define
@@ -607,7 +612,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.3.1. Main configuration file
+  4.4.1. Main configuration file
 
    recoll.conf is the main configuration file. It defines things like what to
    index (top directories and things to ignore), and the default character
@@ -622,7 +627,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    topdirs
 
-           Specifies the list of directories to index (recursively).
+           Specifies the list of directories or files to index (recursively
+           for directories). The indexer will not follow symbolic links
+           inside the indexed trees. If an entry in the topdirs list is a
+           symbolic link, indexation will not start and will generate an
+           error.
 
    skippedNames
 
@@ -714,7 +723,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.3.2. The mimemap file
+  4.4.2. The mimemap file
 
    mimemap specifies the file name extension to mime type mappings.
 
@@ -739,7 +748,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.3.3. The mimeconf file
+  4.4.3. The mimeconf file
 
    mimeconf specifies how the different mime types are handled for
    indexation, and for display.
