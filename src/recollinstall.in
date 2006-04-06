@@ -67,10 +67,10 @@ ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 ${INSTALL} -m 0444 doc/man/recoll.1 doc/man/recollindex.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 
-${INSTALL} -m 0555 qtgui/recoll index/recollindex ${bindir} || exit 1
+${INSTALL} -m 0755 qtgui/recoll index/recollindex ${bindir} || exit 1
 ${STRIP} ${bindir}/recoll ${bindir}/recollindex
 
-${INSTALL} -m 0555 filters/rcl* ${datadir}/recoll/filters/ || exit 1
+${INSTALL} -m 0755 filters/rcl* ${datadir}/recoll/filters/ || exit 1
 
 # Clean up possible old filters in examples
 rm -f ${datadir}/recoll/examples/rcl*
