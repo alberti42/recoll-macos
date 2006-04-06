@@ -38,3 +38,4 @@ share/applications/recoll.desktop
 @dirrm %%DATADIR%%/images
 @dirrm %%DATADIR%%/translations
 @dirrm %%DATADIR%%
+@dirrmtry share/applications
