@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.8 2006-03-30 10:31:45 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.9 2006-04-06 14:28:21 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This should be copied to
 #   ~/.recoll/recoll.conf 
@@ -22,7 +22,7 @@ filtersdir = @prefix@/share/recoll/filters
 # Languages for which to build stemming databases at the end of
 # indexing. Stemmer names can be found on http://www.xapian.org 
 # The flag to perform stem expansion at query time is now set from the GUI
-indexstemminglanguages = english french
+indexstemminglanguages = english 
 
 # The only reason to change this would be if you want to change the icons
 # displayed in the result list
