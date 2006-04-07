@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.62 2006-04-05 13:39:07 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.63 2006-04-07 13:10:22 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -545,13 +545,6 @@ bool Db::add(const string &fn, const Doc &idoc,
     // Mime type
     newdocument.add_term("T" + doc.mimetype);
 
-    // Path name term. This is used for existence/uptodate checks
-    string hash;
-    pathHash(fn, hash, PATHHASHLEN);
-    LOGDEB2(("Db::add: pathhash [%s]\n", hash.c_str()));
-    string pathterm  = "P" + hash;
-    newdocument.add_term(pathterm);
-
     // Simple file name. This is used for file name searches only. We index
     // it with a term prefix. utf8fn used to be the full path, but it's now
     // the simple file name.
@@ -560,10 +553,23 @@ bool Db::add(const string &fn, const Doc &idoc,
 	newdocument.add_term(noacc);
     }
 
-    // Internal path: with path, makes unique identifier for documents
+    // Pathname/ipath terms. This is used for file existence/uptodate
+    // checks, and unique id for the replace_document() call 
+
+    // Truncate the filepath part to a reasonable length and
+    // replace the truncated part with a hopefully unique hash
+    string hash;
+    pathHash(fn, hash, PATHHASHLEN);
+    LOGDEB2(("Db::add: pathhash [%s]\n", hash.c_str()));
+    string pathterm = "P" + hash;
+    newdocument.add_term(pathterm);
+    
+    // Unique term: with path, makes unique identifier for documents
     // inside multidocument files.
     string uniterm;
-    if (!doc.ipath.empty()) {
+    if (doc.ipath.empty()) {
+	uniterm = pathterm;
+    } else {
 	uniterm  = "Q" + hash + "|" + doc.ipath;
 	newdocument.add_term(uniterm);
     }
@@ -617,8 +623,7 @@ bool Db::add(const string &fn, const Doc &idoc,
     // Add db entry or update existing entry:
     try {
 	Xapian::docid did = 
-	    m_ndb->wdb.replace_document(uniterm.empty() ? pathterm : uniterm, 
-				      newdocument);
+	    m_ndb->wdb.replace_document(uniterm, newdocument);
 	if (did < m_ndb->updated.size()) {
 	    m_ndb->updated[did] = true;
 	    LOGDEB(("Db::add: docid %d updated [%s , %s]\n", did, fnc,
@@ -1216,19 +1221,6 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	}
     }
 
-    // We do no stem expansion on 'No' words. Should we ?
-    if (!sdata.nowords.empty()) {
-	stringToXapianQueries(sdata.nowords, stemlang, m_ndb, pqueries);
-	if (!pqueries.empty()) {
-	    Xapian::Query nq;
-	    nq = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
-			       pqueries.end());
-	    xq = xq.empty() ? nq :
-		Xapian::Query(Xapian::Query::OP_AND_NOT, xq, nq);
-	    pqueries.clear();
-	}
-    }
-
     if (!sdata.phrase.empty()) {
 	Xapian::Query nq;
 	string s = string("\"") + sdata.phrase + string("\"");
@@ -1251,6 +1243,27 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
 	}
 	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_FILTER, xq, tq);
+    }
+
+    // "And not" part. Must come last, as we have to check it's not
+    // the only term in the query.  We do no stem expansion on 'No'
+    // words. Should we ?
+    if (!sdata.nowords.empty()) {
+	stringToXapianQueries(sdata.nowords, stemlang, m_ndb, pqueries);
+	if (!pqueries.empty()) {
+	    Xapian::Query nq;
+	    nq = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
+			       pqueries.end());
+	    if (xq.empty()) {
+		// Xapian cant do this currently. Have to have a positive 
+		// part!
+		sdata.description = "Error: pure negative query\n";
+		LOGERR(("Rcl::Db::setQuery: error: pure negative query\n"));
+		return false;
+	    }
+	    xq = Xapian::Query(Xapian::Query::OP_AND_NOT, xq, nq);
+	    pqueries.clear();
+	}
     }
 
     m_ndb->query = xq;

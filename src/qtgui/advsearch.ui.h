@@ -27,6 +27,7 @@
 *****************************************************************************/
 
 #include <qfiledialog.h>
+#include <qmessagebox.h>
 
 #include <list>
 #include <string>
@@ -127,11 +128,23 @@ void advsearch::restrictFtCB_toggled(bool on)
 void advsearch::searchPB_clicked()
 {
     Rcl::AdvSearchData mydata;
+
     mydata.allwords = string((const char*)(andWordsLE->text().utf8()));
     mydata.phrase  = string((const char*)(phraseLE->text().utf8()));
     mydata.orwords = string((const char*)(orWordsLE->text().utf8()));
     mydata.nowords = string((const char*)(noWordsLE->text().utf8()));
     mydata.filename = string((const char*)(fileNameLE->text().utf8()));
+
+    if (mydata.allwords.empty() && mydata.phrase.empty() && 
+	mydata.orwords.empty() && mydata.filename.empty()) {
+	if (mydata.nowords.empty())
+	    return;
+	QMessageBox::warning(0, "Recoll",
+			     tr("Cannot execute pure negative query. "
+				"Please enter common terms in the 'any words' field")); 
+	return;
+    }
+
     if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
 	for (unsigned int i = 0; i < yesFiltypsLB->count(); i++) {
 	    QCString ctext = yesFiltypsLB->item(i)->text().utf8();
