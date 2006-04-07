@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.7 2006-04-05 13:39:07 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.8 2006-04-07 13:08:08 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.7 2006-04-05 13:39:07 dockes Exp
 #include "guiutils.h"
 #include "pathut.h"
 #include "base64.h"
+#include "rcldb.h"
 
 #include <qsettings.h>
 #include <qstringlist.h>
@@ -32,8 +33,10 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.7 2006-04-05 13:39:07 dockes Exp
 const static char *htmlbrowserlist = 
     "opera konqueror firefox mozilla netscape";
 
-// Search for and launch an html browser for the documentation. If the
-// user has set a preference, we use it directly instead of guessing.
+/** 
+ * Search for and launch an html browser for the documentation. If the
+ * user has set a preference, we use it directly instead of guessing.
+ */
 bool startHelpBrowser(const string &iurl)
 {
     string url;
@@ -43,7 +46,6 @@ bool startHelpBrowser(const string &iurl)
 	url = string("file://") + url;
     } else
 	url = iurl;
-
 
     // If the user set a preference with an absolute path then things are
     // simple
@@ -97,11 +99,11 @@ bool startHelpBrowser(const string &iurl)
 }
 
 
-///////////////////////// 
-// Global variables for user preferences. These are set in the user preference
-// dialog and saved restored to the appropriate place in the qt settings
+// The global preferences structure
 PrefsPack prefs;
 
+// Using the same macro to read/write a setting. insurance against typing 
+// mistakes
 #define SETTING_RW(var, nm, tp, def)			\
     if (writing) {					\
 	settings.writeEntry(nm , var);			\
@@ -109,6 +111,11 @@ PrefsPack prefs;
 	var = settings.read##tp##Entry(nm, def);	\
     }						
 
+/** 
+ * Saving and restoring user preferences. These are stored in a global
+ * structure during program execution and saved to disk using the QT
+ * settings mechanism
+ */
 void rwSettings(bool writing)
 {
     QSettings settings;
@@ -132,6 +139,12 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.queryReplaceAbstract, 
 	       "/Recoll/prefs/query/replaceAbstract", Bool, false);
 
+    // The extra databases settings. These are stored as a list of
+    // xapian directory names, encoded in base64 to avoid any
+    // binary/charset conversion issues. There are 2 lists for all
+    // known dbs and active (searched) ones.
+    // When starting up, we also add from the RECOLL_EXTRA_DBS environment
+    // variable.
     QStringList qsl;
     if (writing) {
 	for (list<string>::const_iterator it = prefs.allExtraDbs.begin();
@@ -158,7 +171,24 @@ void rwSettings(bool writing)
 	    base64_decode((*it).ascii(), dec);
 	    prefs.allExtraDbs.push_back(dec);
 	}
-
+	const char *cp;
+	if ((cp = getenv("RECOLL_EXTRA_DBS")) != 0) {
+	    list<string> dbl;
+	    stringToTokens(cp, dbl, ":");
+	    for (list<string>::iterator dit = dbl.begin(); dit != dbl.end();
+		 dit++) {
+		string dbdir = path_canon(*dit);
+		path_catslash(dbdir);
+		if (find(prefs.allExtraDbs.begin(), prefs.allExtraDbs.end(),
+			 dbdir) != prefs.allExtraDbs.end())
+		    continue;
+		if (!Rcl::Db::testDbDir(dbdir)) {
+		    LOGERR(("Not a xapian database: [%s]\n", dbdir.c_str()));
+		    continue;
+		}
+		prefs.allExtraDbs.push_back(dbdir);
+	    }
+	}
 	qsl = settings.readListEntry("/Recoll/prefs/query/activeExtraDbs");
 	prefs.activeExtraDbs.clear();
 	for (QStringList::iterator it = qsl.begin(); it != qsl.end(); it++) {
