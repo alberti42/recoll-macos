@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.13 2006-01-23 13:32:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.14 2006-04-07 08:51:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -52,20 +52,23 @@ walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc, int depth);
 
 MimeHandlerMail::~MimeHandlerMail()
 {
-    if (vfp) {
-	fclose((FILE *)vfp);
-	vfp = 0;
+    if (m_vfp) {
+	fclose((FILE *)m_vfp);
+	m_vfp = 0;
     }
 }
 
 // We are called for two different file types: mbox-type folders
 // holding multiple messages, and maildir-type files with one message
+// ipath is non empty only when we are called for retrieving a single message
+// for preview. It is always empty during indexing, and we fill it up with 
+// the message number for the returned doc
 MimeHandler::Status 
 MimeHandlerMail::mkDoc(RclConfig *cnf, const string &fn, 
 			const string &mtype, Rcl::Doc &docout, string& ipath)
 {
     LOGDEB2(("MimeHandlerMail::mkDoc: %s [%s]\n", mtype.c_str(), fn.c_str()));
-    conf = cnf;
+    m_conf = cnf;
 
     if (!stringlowercmp("message/rfc822", mtype)) {
 	ipath = "";
@@ -97,20 +100,30 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 	    mtarg));
 
     FILE *fp;
-    if (vfp) {
-	fp = (FILE *)vfp;
-    } else {
+    // Open the file on first call, then save/reuse the file pointer
+    if (!m_vfp) {
 	fp = fopen(fn.c_str(), "r");
 	if (fp == 0) {
 	    LOGERR(("MimeHandlerMail::processmbox: error opening %s\n", 
 		    fn.c_str()));
 	    return MimeHandler::MHError;
 	}
-	vfp = fp;
+	m_vfp = fp;
+    } else {
+	fp = (FILE *)m_vfp;
     }
+
+    // If we are called to retrieve a specific message, seek to bof
+    // (then scan up to the message). This is for the case where the
+    // same object is reused to fetch several messages (else the fp is
+    // just opened no need for a seek).  We could also check if the
+    // current message number is lower than the requested one and
+    // avoid rereading the whole thing in this case. But I'm not sure
+    // we're ever used in this way (multiple retrieves on same
+    // object).  So:
     if (mtarg > 0) {
 	fseek(fp, 0, SEEK_SET);
-	msgnum = 0;
+	m_msgnum = 0;
     }
 
     off_t start, end;
@@ -142,9 +155,9 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 		break;
 	    }
 	}
-	msgnum++;
+	m_msgnum++;
 	fseek(fp, end, SEEK_SET);
-    } while (mtarg > 0 && msgnum < mtarg);
+    } while (mtarg > 0 && m_msgnum < mtarg);
 
 
     size_t size = end - start;
@@ -169,7 +182,7 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
     if (ret == MimeHandler::MHError)
 	return ret;
     char buf[20];
-    sprintf(buf, "%d", msgnum);
+    sprintf(buf, "%d", m_msgnum);
     ipath = buf;
     return iseof ? MimeHandler::MHDone : 
 	(mtarg > 0) ? MimeHandler::MHDone : MimeHandler::MHAgain;
@@ -230,7 +243,7 @@ MimeHandlerMail::processone(const string &fn, Binc::MimeDocument& doc,
 
     LOGDEB2(("MimeHandlerMail::processone: ismultipart %d mime subtype '%s'\n",
 	    doc.isMultipart(), doc.getSubType().c_str()));
-    walkmime(conf, docout.text, doc, 0);
+    walkmime(m_conf, docout.text, doc, 0);
 
     // LOGDEB(("MimeHandlerMail::processone: text: '%s'\n", docout.text.c_str()));
     return MimeHandler::MHDone;

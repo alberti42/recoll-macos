@@ -16,7 +16,7 @@
  */
 #ifndef _MAIL_H_INCLUDED_
 #define _MAIL_H_INCLUDED_
-/* @(#$Id: mh_mail.h,v 1.5 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_mail.h,v 1.6 2006-04-07 08:51:15 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "mimehandler.h"
 
@@ -25,13 +25,13 @@ namespace Binc {
 }
 
 /** 
-    Translate a mail folder file into internal documents (also works
-    for maildir files). This has to keep state while parsing a mail folder
-    file. 
-*/
+ * Translate a mail folder file into internal documents (also works
+ * for maildir files). This has to keep state while parsing a mail folder
+ * file. 
+ */
 class MimeHandlerMail : public MimeHandler {
  public:
-    MimeHandlerMail() : vfp(0), msgnum(0), conf(0) {}
+    MimeHandlerMail() : m_vfp(0), m_msgnum(0), m_conf(0) {}
 
     virtual MimeHandler::Status 
 	mkDoc(RclConfig *conf, const std::string &fn, 
@@ -40,9 +40,10 @@ class MimeHandlerMail : public MimeHandler {
     virtual ~MimeHandlerMail();
 
  private:
-    void *vfp;
-    int msgnum;
-    RclConfig *conf;
+    void      *m_vfp;    // File pointer for folder
+    int        m_msgnum; // Current message number in folder. Starts at 1
+    RclConfig *m_conf;   // Keep pointer to rclconfig around
+
     MimeHandler::Status processone(const string &fn, Binc::MimeDocument& doc,
 				   Rcl::Doc &docout);
     MimeHandler::Status processmbox(const string &fn, Rcl::Doc &docout, 
