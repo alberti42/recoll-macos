@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.10 2006-04-05 13:30:00 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.11 2006-04-07 13:07:34 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -108,11 +108,11 @@
       mature package using <ulink
       url="http://www.xapian.org/docs/intro_ir.html">a sophisticated
       probabilistic ranking model</ulink>. &RCL; provides the interface
-      to get data into (indexation) and out (searching) of the system.</para>
+      to get data into (indexing) and out (searching) of the system.</para>
 
       <para>In practice, &XAP; works by remembering where terms appear
       in your document files. The acquisition process is called
-      indexation. </para> 
+      indexing. </para> 
 
       <para>The resulting database can be big (roughly the size of the
         original document set), but it is not a document
@@ -151,7 +151,7 @@
         giving &RCL; a try, but you may want to adjust it
         later.</para>
 
-      <para><link linkend="rcl.indexing.exec">Indexation</link> is started
+      <para><link linkend="rcl.indexing.exec">Indexing</link> is started
       automatically the first time you execute the
       <command>recoll</command> search graphical user interface, or by
       executing the <command>recollindex</command> command.</para>
@@ -166,22 +166,22 @@
 
 
   <chapter id="rcl.indexing">
-    <title>Indexation</title>
+    <title>Indexing</title>
 
     <sect1 id="rcl.indexing.introduction">
       <title>Introduction</title>
 
-      <para>Indexation is the process by which the set of documents is
-      analyzed and the data entered into the database. &RCL; indexation
+      <para>Indexing is the process by which the set of documents is
+      analyzed and the data entered into the database. &RCL; indexing
       is normally incremental: documents will only be processed if
       they have been modified. On the first execution, of course, all
       documents will need processing. A full index build can be forced
-      later on by specifying an option to the indexation command
+      later on by specifying an option to the indexing command
       (<command>recollindex -z</command>).</para> 
 
-      <para>&RCL; indexation takes place at discrete times. There is
+      <para>&RCL; indexing takes place at discrete times. There is
       currently no interface to real time file modification
-      monitors. The typical usage is to have a nightly indexation run
+      monitors. The typical usage is to have a nightly indexing run
       <link linkend="rcl.indexing.automat">programmed</link> into your
       <command>cron</command> file.</para>
 
@@ -205,7 +205,7 @@
       many individually indexed documents.
       </para>
 
-      <para>&RCL; indexation processes plain text, HTML, openoffice
+      <para>&RCL; indexing processes plain text, HTML, openoffice
       and e-mail files internally. Other types (ie: postscript, pdf,
       ms-word, rtf) need external applications for preprocessing. The
       list is in the <link
@@ -219,7 +219,7 @@
     </sect1>
 
     <sect1 id="rcl.indexing.config">
-      <title>The indexation configuration</title>
+      <title>The indexing configuration</title>
 
       <para>Values set in the system-wide configuration file (named
       like
@@ -231,9 +231,9 @@
 
       <para>The most accurate documentation for editing the file is
       given by comments inside the central one.  If you want to adjust
-      the configuration before indexation, just click
+      the configuration before indexing, just click
       <guilabel>Cancel</guilabel> when the program asks if it should
-      start initial indexation. This will have created a
+      start initial indexing. This will have created a
       <filename>.recoll</filename> directory containing empty
       configuration files.</para>
 
@@ -244,34 +244,34 @@
     </sect1>
 
     <sect1 id="rcl.indexing.exec">
-      <title>Starting indexation</title>
+      <title>Starting indexing</title>
 
-      <para>Indexation is performed either by the
+      <para>Indexing is performed either by the
         <command>recollindex</command> program, or by the
-        indexation thread inside the <command>recoll</command>
+        indexing thread inside the <command>recoll</command>
         program (use the <guimenu>File</guimenu> menu). 
 
       <para>If the <command>recoll</command> program finds no database
-      when it starts, it will automatically start indexation (except
+      when it starts, it will automatically start indexing (except
       if cancelled).</para>
 
-      <para>It is best to avoid interrupting the indexation process, as
+      <para>It is best to avoid interrupting the indexing process, as
         this may sometimes leave the database in a bad state.  This is
         not a serious problem, as you then just need to clear
-        everything and restart the indexation: the database files are
+        everything and restart the indexing: the database files are
         normally stored in the <filename>$HOME/.recoll/xapiandb</filename>
         directory, 
         which you can just delete if needed. Alternatively, you can
         start <command>recollindex -z</command>, which will
-        reset the database before indexation.</para>
+        reset the database before indexing.</para>
 
     </sect1>
 
     <sect1 id="rcl.indexing.automat">
       <title>Using <command>cron</command> to automate
-      indexation</title>
+      indexing</title>
 
-      <para>The most common way to set up indexation is to have a cron
+      <para>The most common way to set up indexing is to have a cron
       task execute it every night. For example the following
       <filename>crontab</filename> entry would do it every day at
       3:30AM (supposing <command>recollindex</command> is in your PATH):</para>
@@ -443,7 +443,7 @@
 
       <formalpara><title>File names</title>
         <para>All file name elements (the broken up file path) are
-        entered as terms during indexation, and you can specify them
+        entered as terms during indexing, and you can specify them
         as ordinary terms in normal search fields. Alternatively, you
         can use specific file name search which will
         <emphasis>only</emphasis> look for file names and can use
@@ -510,7 +510,7 @@
 	file</link>), or later added with
       <command>recollindex -s</command> (See the recollindex
       manual). Stemming languages which are dynamically added will be
-      deleted at the next indexation pass unless they are also added in
+      deleted at the next indexing pass unless they are also added in
       the configuration file.</para>
 	</listitem>
 
@@ -745,7 +745,7 @@
         will be created with a set of empty configuration files.
         <command>recoll</command> will give you a
         chance to edit the configuration file before starting
-        indexation. <command>recollindex</command> will
+        indexing. <command>recollindex</command> will
         proceed immediately.</para>
       
       <para>Most of the parameters specific to the
@@ -787,7 +787,7 @@
         </itemizedlist>
 
         <para>Section lines allow redefining some parameters for a
-        directory subtree. Some of the parameters used for indexation
+        directory subtree. Some of the parameters used for indexing
         are looked up hierarchically from the more to the less
         specific. Not all parameters can be meaningfully redefined,
         this is specified for each in the next section. </para>
@@ -813,7 +813,7 @@
          <command>recoll</command> to copy the sample
          configuration, click <guimenu>Cancel</guimenu>, and edit
          the configuration file before restarting the command. This
-         will start the initial indexation, which may take some time.</para>
+         will start the initial indexing, which may take some time.</para>
         
         <para>Paramers:</para>
 
@@ -824,7 +824,7 @@
             index (recursively for directories). The indexer will not
             follow symbolic links inside the indexed trees. If an entry in
             the <literal>topdirs</literal> list is a symbolic link,
-            indexation will not start and will generate an error.</para>
+            indexing will not start and will generate an error.</para>
             </listitem> 
           </varlistentry>
 
@@ -885,7 +885,7 @@
             possible values. You can add a stem expansion database for
             a different language by using <command>recollindex
             -s</command>, but it will be deleted during the next
-            indexation. Only languages listed in the configuration
+            indexing. Only languages listed in the configuration
             file are permanent.</para>
             </listitem>
           </varlistentry>
@@ -927,7 +927,7 @@
             type for a file (the main procedure uses suffix
             associations as defined in the  <filename>mimemap</filename>
             file). This can be useful for files with suffixless names,
-            but it will also cause the indexation of many bogus "text"
+            but it will also cause the indexing of many bogus "text"
             files.</para> 
             </listitem>
           </varlistentry>
@@ -937,7 +937,7 @@
 	    section of the database to allow specific file names
 	    searches using wild cards. This parameter decides if 
             file name indexing is performed only for files with mime
-            types that would qualify them for full text indexation, or
+            types that would qualify them for full text indexing, or
             for all files inside the selected subtrees, independant of
             mime type.</para>
 	    </listitem>
@@ -985,10 +985,10 @@
         <title>The mimeconf file</title>
 
         <para><filename>mimeconf</filename> specifies how the
-         different mime types are handled for indexation, and for
+         different mime types are handled for indexing, and for
          display.</para>
 
-        <para>Changing the indexation parameters is probably not a
+        <para>Changing the indexing parameters is probably not a
          good idea except if you are a &RCL; developper.</para>
 
         <para>You may want to adjust the external viewers defined in
