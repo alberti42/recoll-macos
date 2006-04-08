@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.11 2006-04-07 13:07:34 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.12 2006-04-08 14:00:14 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -114,24 +114,24 @@
       in your document files. The acquisition process is called
       indexing. </para> 
 
-      <para>The resulting database can be big (roughly the size of the
+      <para>The resulting index can be big (roughly the size of the
         original document set), but it is not a document
         archive. &RCL; can only display documents that still exist at
         the place from which they were indexed. (Actually, there is a
         way to reconstruct a document from the information in the
-        database, but the result is not nice, as all formatting,
+        index, but the result is not nice, as all formatting,
         punctuation and capitalisation are lost).</para>
 
       <para>&RCL; stores all internal data in <application>Unicode
       UTF-8</application> format, and it can index files with
       different character sets, encodings, and languages into the same
-      database. It has input filters for many document types.</para>
+      index. It has input filters for many document types.</para>
       
       <para>Stemming depends on the document language. &RCL; stores
       the unstemmed versions of terms and uses auxiliary databases for
       term expansion. It can switch stemming languages, or add a
       language, without reindexing.  Storing documents in different
-      languages in the same database is possible, and useful in
+      languages in the same index is possible, and useful in
       practice, but does introduce possibilities of confusion. &RCL;
       currently makes no attempt at automatic language recognition.</para>
 
@@ -218,6 +218,37 @@
 
     </sect1>
 
+    <sect1 id="rcl.indexing.storage">
+      <title>Index storage</title>
+
+      <para>The default location for the index data is the
+      <filename>$HOME/.recoll/xapiandb/</filename> directory. This can
+      be changed by setting the <literal>RECOLL_CONFDIR</literal>
+      environment variable, or by specifying the
+      <literal>dbdir</literal> parameter in the configuration file
+      (see the <link linkend="rcl.install.config">configuration
+      section</link>).</para>
+
+      <para>The size of the index is determined by the size of the set
+      of documents, but the ratio can vary a lot. For a typical mixed
+      set of documents, the index size will often be close to
+      the data set size. In specific cases (a set of compressed
+      mbox files for example), the index can become much bigger than
+      the documents. It may also be much smaller if the documents
+      contain a lot of images or other non-indexed data (an extreme
+      example being a set of mp3 files where only the tags would be
+      indexed).</para>
+
+      <para>Of course, images, sound and video do not increase the
+      index size, which means that it will be quite typical nowadays
+      (2006), that even a big index will be negligible against the
+      total amount of data on the computer.</para>
+      
+      <para>The index data directory only contains data that will be
+      rebuilt by an index run, so that it can be destroyed safely.</para>
+
+    </sect1>
+
     <sect1 id="rcl.indexing.config">
       <title>The indexing configuration</title>
 
@@ -251,14 +282,14 @@
         indexing thread inside the <command>recoll</command>
         program (use the <guimenu>File</guimenu> menu). 
 
-      <para>If the <command>recoll</command> program finds no database
+      <para>If the <command>recoll</command> program finds no index
       when it starts, it will automatically start indexing (except
       if cancelled).</para>
 
       <para>It is best to avoid interrupting the indexing process, as
         this may sometimes leave the database in a bad state.  This is
         not a serious problem, as you then just need to clear
-        everything and restart the indexing: the database files are
+        everything and restart the indexing: the index files are
         normally stored in the <filename>$HOME/.recoll/xapiandb</filename>
         directory, 
         which you can just delete if needed. Alternatively, you can
@@ -442,12 +473,13 @@
       </formalpara>
 
       <formalpara><title>File names</title>
-        <para>All file name elements (the broken up file path) are
-        entered as terms during indexing, and you can specify them
-        as ordinary terms in normal search fields. Alternatively, you
+        <para>File names are added as terms during indexing, and you can
+        specify them as ordinary terms in normal search fields (&RCL; used
+        to index all directories in the file path as terms. This has been
+        abandonned as it did not seem really useful). Alternatively, you
         can use specific file name search which will
-        <emphasis>only</emphasis> look for file names and can use
-        wildcard expansion.</para>
+        <emphasis>only</emphasis> look for file names and can use wildcard
+        expansion.</para>
       </formalpara>
 
       <formalpara><title>Quitting</title>
@@ -487,7 +519,7 @@
 	</listitem>
 
 	<listitem><para><guilabel>Html help browser</guilabel>: this
-	will let you chose your the preferred browser which will be
+	will let you chose your preferred browser which will be
 	started from the <guimenu>Help</guimenu> menu to read the user
 	manual. You can enter a simple name if the command is in your
 	PATH, or browse for a full pathname.</para>
@@ -735,10 +767,8 @@
       they define default values for the system. A parallel set of
       files exists  in the <filename>.recoll</filename> directory in
       your home (this can be changed with the 
-      <literal>RECOLL_CONFDIR</literal> environment variable. 
-      The database is also kept in <filename>.recoll</filename> by
-        default, (this can be changed by a configuration
-        parameter).</para>
+      <literal>RECOLL_CONFDIR</literal> environment variable.</para>
+
       <para>If the <filename>.recoll</filename> directory does not
       exist when <command>recoll</command> or 
         <command>recollindex</command> are started, it
@@ -806,11 +836,11 @@
          configuration file. It defines things like
          what to index (top directories and things to ignore), and the
          default character set to use for document types which do not
-         specify it internally. </para>
+         specify it internally.</para>
 
         <para>The default configuration will index your home
-         directory. If this is not appropriate, use 
-         <command>recoll</command> to copy the sample
+         directory. If this is not appropriate, start
+         <command>recoll</command> to create a blank 
          configuration, click <guimenu>Cancel</guimenu>, and edit
          the configuration file before restarting the command. This
          will start the initial indexing, which may take some time.</para>
@@ -865,8 +895,8 @@
           </varlistentry>
 
           <varlistentry><term><literal>logfilename</literal></term>
-            <listitem><para>Where should the messages go. 'stderr' can
-            be used as a special value. </para>
+            <listitem><para>Where the messages should go. 'stderr' can
+            be used as a special value, and is the default. </para>
             </listitem>
           </varlistentry>
 
@@ -899,9 +929,9 @@
           </varlistentry>
 
           <varlistentry><term><literal>dbdir</literal></term>
-            <listitem><para>The name of the Xapian database
-            directory. It will be created if needed when the database
-            is initialized. </para>
+            <listitem><para>The name of the Xapian data directory. It
+            will be created if needed when the index is
+            initialized. </para>
             </listitem>
           </varlistentry>
           
@@ -957,11 +987,6 @@
         one, the system's <command>file -i</command> command will be
         executed to determine the mime type (this can be switched off
         inside the main configuration file).</para>
-
-        <para><filename>mimemap</filename> also has a list of
-        extensions which should be ignored totally (to avoid losing
-        time by executing <command>file</command> 
-        for things that certainly should not be indexed).</para>
 
         <para>The mappings can be specified on a per-subtree basis,
         which may be useful in some cases. Example:
