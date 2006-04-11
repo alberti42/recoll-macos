@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.64 2006-04-11 06:49:45 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.65 2006-04-11 07:14:28 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -724,6 +724,7 @@ bool Db::createStemDb(const string& lang)
     // Else, we add an entry to the multimap.
     // At the end, we only save stem-terms associations with several terms, the
     // others are not useful
+    // Note: a map<string, list<string> > would probably be more efficient
     multimap<string, string> assocs;
     // Statistics
     int nostem=0; // Dont even try: not-alphanum (incomplete for now)
@@ -810,6 +811,13 @@ bool Db::createStemDb(const string& lang)
 	} else {
 	    // Changing stems 
 	    ++stemdiff;
+	    if (derivs.size() == 1) {
+		// Exactly one term stems to this. Check for the case where
+		// the stem itself exists as a term. The code above would not
+		// have inserted anything in this case.
+		if (m_ndb->wdb.term_exists(stem))
+		    derivs.push_back(stem);
+	    }
 	    if (derivs.size() > 1) {
 		// Previous stem has multiple derivatives. Enter in db
 		++stemmultiple;
