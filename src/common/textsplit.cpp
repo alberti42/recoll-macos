@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.20 2006-02-01 14:18:20 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.21 2006-04-11 06:49:45 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,29 +32,23 @@ using namespace std;
 #endif /* NO_NAMESPACES */
 
 /**
- * Splitting a text into words. The code in this file will work with any 
- * charset where the basic separators (.,- etc.) have their ascii values 
- * (ok for UTF-8, ascii, iso8859* and quite a few others).
- *
- * We work in a way which would make it quite difficult to handle non-ascii
- * separator chars (en-dash, etc.). We would then need to actually parse the 
- * utf-8 stream, and use a different way to classify the characters (instead 
- * of a 256 slot array).
+ * Splitting a text into words. The code in this file works with utf-8
+ * in a semi-clean way (see uproplist.h)
  *
  * We are also not using capitalization information.
  *
- * How to fix: use some kind of utf-8 aware iterator, or convert to UCS4 first.
- * Then specialcase all 'real' utf chars, by checking for the few
- * punctuation ones we're interested in (put them in a map). Then
- * classify all other non-ascii as letter, and use the current method
- * for chars < 127.
+ * There are a few remnants of the initial utf8-ignorant version in this file.
  */
 
 // Character classes: we have three main groups, and then some chars
 // are their own class because they want special handling.
+// 
 // We have an array with 256 slots where we keep the character types. 
 // The array could be fully static, but we use a small function to fill it 
 // once.
+// The array is actually a remnant of the original version which did no utf8
+// It could be reduced to 128, because real (over 128) utf8 chars are now 
+// handled with a set holding all the separator values.
 enum CharClass {LETTER=256, SPACE=257, DIGIT=258};
 static int charclasses[256];
 
@@ -87,11 +81,11 @@ static void setcharclasses()
     for (i = 0; i  < strlen(special); i++)
 	charclasses[int(special[i])] = special[i];
 
-    init = 1;
-    //for (i=0;i<256;i++)cerr<<i<<" -> "<<charclasses[i]<<endl;
     for (i = 0; i < sizeof(uniign); i++) 
 	unicign.insert(uniign[i]);
     unicign.insert((unsigned int)-1);
+
+    init = 1;
 }
 
 // Do some checking (the kind which is simpler to do here than in the
@@ -103,9 +97,10 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 
     unsigned int l = w.length();
     if (l > 0 && l < (unsigned)maxWordLength) {
+	// 1 char word: we index single letters and digits, but
+	// nothing else. We might want to turn this into a test for a single
+	// utf8 character instead.
 	if (l == 1) {
-	    // 1 char word: we index single letters and digits, but
-	    // nothing else
 	    int c = (int)w[0];
 	    if (charclasses[c] != LETTER && charclasses[c] != DIGIT) {
 		//cerr << "ERASING single letter term " << c << endl;
@@ -227,6 +222,18 @@ bool TextSplit::text_to_words(const string &in)
 	}
 	int cc = whatcc(c);
 	switch (cc) {
+	case LETTER:
+	    word += it;
+	    span += it;
+	    break;
+
+	case DIGIT:
+	    if (word.length() == 0)
+		number = true;
+	    word += it;
+	    span += it;
+	    break;
+
 	case SPACE:
 	SPACE:
 	    if (word.length() || span.length()) {
@@ -326,11 +333,7 @@ bool TextSplit::text_to_words(const string &in)
 		goto SPACE;
 	    }
 	    break;
-	case DIGIT:
-	    if (word.length() == 0)
-		number = true;
-	    /* FALLTHROUGH */
-	case LETTER:
+
 	default:
 	    word += it;
 	    span += it;

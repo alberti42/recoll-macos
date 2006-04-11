@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.15 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.16 2006-04-11 06:49:45 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 
@@ -59,6 +59,13 @@ extern void trimstring(string &s, const char *ws = " \t");
 /** Escape things like < or & by turining them to entities */
 extern string escapeHtml(const string &in);
 
+/** Replace some chars with spaces (ie: newline chars). This is not utf8-aware
+ *  so chars should only contain ascii */
+extern string neutchars(const string &str, string chars);
+
+/** Truncate a string to a given maxlength, avoiding cutting off midword
+ *  if reasonably possible. */
+extern string truncate_to_word(string &input, string::size_type maxlen);
 
 class Chrono {
  public:

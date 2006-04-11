@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.15 2006-01-26 12:29:20 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.16 2006-04-11 06:49:45 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -329,6 +329,58 @@ void trimstring(string &s, const char *ws)
     pos = s.find_last_not_of(ws);
     if (pos != string::npos && pos != s.length()-1)
 	s.replace(pos+1, string::npos, "");
+}
+
+// Remove some chars and replace them with spaces
+string neutchars(const string &str, string delims)
+{
+    string out;
+    string::size_type startPos, pos;
+
+    for (pos = 0;;) { 
+        // Skip initial delims, break if this eats all.
+        if ((startPos = str.find_first_not_of(delims, pos)) == string::npos)
+	    break;
+        // Find next delimiter or end of string (end of token)
+        pos = str.find_first_of(delims, startPos);
+        // Add token to the output. Note: token cant be empty here
+	if (pos == string::npos) {
+	    out += str.substr(startPos);
+	} else {
+	    out += str.substr(startPos, pos - startPos) + " ";
+	}
+    }
+    return out;
+}
+
+
+/* Truncate a string to a given maxlength, avoiding cutting off midword
+ * if reasonably possible. Note: we could also use textsplit, stopping when
+ * we have enough, this would be cleanly utf8-aware but would remove 
+ * punctuation */
+static const string SEPAR = " \t\n\r-:.;,/[]{}";
+string truncate_to_word(string & input, string::size_type maxlen)
+{
+    string output;
+    if (input.length() <= maxlen) {
+	output = input;
+    } else {
+	output = input.substr(0, maxlen);
+	string::size_type space = output.find_last_of(SEPAR);
+	// Original version only truncated at space if space was found after
+	// maxlen/2. But we HAVE to truncate at space, else we'd need to do
+	// utf8 stuff to avoid truncating at multibyte char. In any case,
+	// not finding space means that the text probably has no value.
+	// Except probably for Asian languages, so we may want to fix this 
+	// one day
+	if (space == string::npos) {
+	    output.erase();
+	} else {
+	    output.erase(space);
+	}
+	output += " ...";
+    }
+    return output;
 }
 
 // Escape things that would look like markup

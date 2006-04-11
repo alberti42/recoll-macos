@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.63 2006-04-07 13:10:22 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.64 2006-04-11 06:49:45 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -399,14 +399,7 @@ bool dumb_string(const string &in, string &out)
     if (in.empty())
 	return true;
 
-    string s1;
-    s1.reserve(in.length());
-    for (unsigned int i = 0; i < in.length(); i++) {
-	if (in[i] == '\n' || in[i] == '\r')
-	    s1 += ' ';
-	else
-	    s1 += in[i];
-    }
+    string s1 = neutchars(in, "\n\r");
     if (!unacmaybefold(s1, out, "UTF-8", true)) {
 	LOGERR(("dumb_string: unac failed for %s\n", in.c_str()));
 	out.erase();
@@ -414,58 +407,6 @@ bool dumb_string(const string &in, string &out)
 	return true;
     }
     return true;
-}
-
-/* From omindex direct */
-/* Truncate a string to a given maxlength, avoiding cutting off midword
- * if reasonably possible. */
-static string
-truncate_to_word(string & input, string::size_type maxlen)
-{
-    string output;
-    if (input.length() <= maxlen) {
-	output = input;
-    } else {
-	output = input.substr(0, maxlen);
-	const char *SEPAR = " \t\n\r-:.;,/[]{}";
-	string::size_type space = output.find_last_of(SEPAR);
-	// Original version only truncated at space if space was found after
-	// maxlen/2. But we HAVE to truncate at space, else we'd need to do
-	// utf8 stuff to avoid truncating at multibyte char. In any case,
-	// not finding space means that the text probably has no value.
-	// Except probably for Asian languages, so we may want to fix this 
-	// one day
-	if (space == string::npos) {
-	    output.erase();
-	} else {
-	    output.erase(space);
-	}
-
-	output += " ...";
-    }
-    return output;
-}
-
-// Remove some chars and replace them with spaces
-static string stripchars(const string &str, string delims)
-{
-    string out;
-    string::size_type startPos, pos;
-
-    for (pos = 0;;) { 
-        // Skip initial delims, break if this eats all.
-        if ((startPos = str.find_first_not_of(delims, pos)) == string::npos)
-	    break;
-        // Find next delimiter or end of string (end of token)
-        pos = str.find_first_of(delims, startPos);
-        // Add token to the vector. Note: token cant be empty here
-	if (pos == string::npos) {
-	    out += str.substr(startPos) + " ";
-	} else {
-	    out += str.substr(startPos, pos - startPos) + " ";
-	}
-    }
-    return out;
 }
 
 // Add document in internal form to the database: index the terms in
@@ -490,7 +431,7 @@ bool Db::add(const string &fn, const Doc &idoc,
     } else {
 	doc.abstract = truncate_to_word(doc.abstract, INDEX_ABSTRACT_SIZE);
     }
-    doc.abstract = stripchars(doc.abstract, "\n\r");
+    doc.abstract = neutchars(doc.abstract, "\n\r");
     doc.title = truncate_to_word(doc.title, 100);
     doc.keywords = truncate_to_word(doc.keywords, 300);
 
@@ -720,14 +661,20 @@ static string stemdbname(const string& basename, string lang)
     return nm;
 }
 
-// Deciding if we try to stem the term. If it has numerals or capitals
-// we don't
-inline static bool
-p_notlowerorutf(unsigned int c)
+// Return list of existing stem db languages
+list<string> Db::getStemLangs()
 {
-    if (c < 'a' || (c > 'z' && c < 128))
-	return true;
-    return false;
+    list<string> dirs;
+    LOGDEB(("Db::getStemLang\n"));
+    if (m_ndb == 0)
+	return dirs;
+    string pattern = stemdirstem + "*";
+    dirs = path_dirglob(m_ndb->m_basedir, pattern);
+    for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
+	*it = path_basename(*it);
+	*it = it->substr(stemdirstem.length(), string::npos);
+    }
+    return dirs;
 }
 
 /**
@@ -743,6 +690,16 @@ bool Db::deleteStemDb(const string& lang)
 
     string dir = stemdbname(m_ndb->m_basedir, lang);
     if (wipedir(dir) == 0 && rmdir(dir.c_str()) == 0)
+	return true;
+    return false;
+}
+
+// Deciding if we try to stem the term. If it has numerals or capitals
+// we don't
+inline static bool
+p_notlowerascii(unsigned int c)
+{
+    if (c < 'a' || (c > 'z' && c < 128))
 	return true;
     return false;
 }
@@ -780,7 +737,7 @@ bool Db::createStemDb(const string& lang)
 	     it != m_ndb->wdb.allterms_end(); it++) {
 	    // If it has any non-lowercase 7bit char, cant be stemmable
 	    string::iterator sit = (*it).begin(), eit = sit + (*it).length();
-	    if ((sit = find_if(sit, eit, p_notlowerorutf)) != eit) {
+	    if ((sit = find_if(sit, eit, p_notlowerascii)) != eit) {
 		++nostem;
 		// LOGDEB(("stemskipped: [%s], because of 0x%x\n", 
 		// (*it).c_str(), *sit));
@@ -886,26 +843,10 @@ bool Db::createStemDb(const string& lang)
     return true;
 }
 
-list<string> Db::getStemLangs()
-{
-    list<string> dirs;
-    LOGDEB(("Db::getStemLang\n"));
-    if (m_ndb == 0)
-	return dirs;
-    string pattern = stemdirstem + "*";
-    dirs = path_dirglob(m_ndb->m_basedir, pattern);
-    for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
-	*it = path_basename(*it);
-	*it = it->substr(stemdirstem.length(), string::npos);
-    }
-    return dirs;
-}
-
 
 /**
  * This is called at the end of an indexing session, to delete the
- *  documents for files that are no longer there. We also build the
- *  stem database while we are at it.
+ * documents for files that are no longer there. 
  */
 bool Db::purge()
 {
