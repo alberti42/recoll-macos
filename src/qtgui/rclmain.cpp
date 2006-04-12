@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.19 2006-04-04 13:49:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.20 2006-04-12 07:26:17 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -482,6 +482,12 @@ void RclMain::showDocHistory()
     LOGDEB(("RclMain::showDocHistory\n"));
     resList->resetSearch();
     curPreview = 0;
+
+    string reason;
+    if (!maybeOpenDb(reason)) {
+	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+	exit(1);
+    }
 
     DocSequence *docsource;
     if (sortwidth > 0) {

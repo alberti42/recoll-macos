@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.65 2006-04-11 07:14:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.66 2006-04-12 07:26:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1435,7 +1435,7 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 	    // but indicate the error with pc = -1
 	    if (*pc) 
 		*pc = -1;
-	    LOGINFO(("Db:getDoc: path inexistant: [%s] length %d\n",
+	    LOGINFO(("Db:getDoc: no such path in index: [%s] (len %d)\n",
 		     pathterm.c_str(), pathterm.length()));
 	    return true;
 	}
