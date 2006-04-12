@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.20 2006-04-12 07:26:17 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.21 2006-04-12 10:41:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -219,17 +219,35 @@ void RclMain::periodic100()
 				 QString::fromAscii(indexingReason.c_str()));
 	}
 	indexingstatus = IDXTS_NULL;
+	fileStart_IndexingAction->setEnabled(TRUE);
 	// Make sure we reopen the db to get the results.
 	LOGINFO(("Indexing done: closing query database\n"));
 	rcldb->close();
     } else if (indexingdone == 0) {
 	if (toggle == 0) {
 	    QString msg = tr("Indexing in progress: ");
-	    string cf = idxthread_currentfile();
+	    DbIxStatus status = idxthread_idxStatus();
+	    QString phs;
+	    switch (status.phase) {
+	    case DbIxStatus::DBIXS_FILES: phs=tr("Files");break;
+	    case DbIxStatus::DBIXS_PURGE: phs=tr("Purge");break;
+	    case DbIxStatus::DBIXS_STEMDB: phs=tr("Stemdb");break;
+	    case DbIxStatus::DBIXS_CLOSING:phs=tr("Closing");break;
+	    default: phs=tr("Unknown");break;
+	    }
+	    msg += phs + " ";
+	    if (status.phase == DbIxStatus::DBIXS_FILES) {
+		char cnts[100];
+		if (status.dbtotdocs>0)
+		    sprintf(cnts,"(%d/%d) ",status.docsdone, status.dbtotdocs);
+		else
+		    sprintf(cnts, "(%d) ", status.docsdone);
+		msg += QString::fromAscii(cnts) + " ";
+	    }
 	    string mf;int ecnt = 0;
 	    string fcharset = rclconfig->getDefCharset(true);
-	    if (!transcode(cf, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
-		mf = url_encode(cf, 0);
+	    if (!transcode(status.fn, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
+		mf = url_encode(status.fn, 0);
 	    }
 	    msg += QString::fromUtf8(mf.c_str());
 	    statusBar()->message(msg);
@@ -247,6 +265,7 @@ void RclMain::fileStart_IndexingAction_activated()
 {
     if (indexingdone)
 	startindexing = 1;
+    fileStart_IndexingAction->setEnabled(FALSE);
 }
 
 // Note that all our 'urls' are like : file://...

@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.31 2006-04-06 13:08:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.32 2006-04-12 10:41:39 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -142,6 +142,8 @@ class Db {
     bool open(const string &dbdir, OpenMode mode, int qops = 0);
     bool close();
     bool isopen();
+
+    int  docCnt(); /// Return total docs in db
 
     // Update-related functions
     bool add(const string &filename, const Doc &doc, const struct stat *stp);

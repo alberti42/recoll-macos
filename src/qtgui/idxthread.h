@@ -16,8 +16,9 @@
  */
 #ifndef _IDXTHREAD_H_INCLUDED_
 #define _IDXTHREAD_H_INCLUDED_
-/* @(#$Id: idxthread.h,v 1.5 2006-04-04 13:49:55 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: idxthread.h,v 1.6 2006-04-12 10:41:39 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
+#include "indexer.h"
 
 class RclConfig;
 
@@ -25,7 +26,7 @@ class RclConfig;
 // sessions.
 extern void start_idxthread(const RclConfig& cnf);
 extern void stop_idxthread();
-extern std::string idxthread_currentfile();
+extern DbIxStatus idxthread_idxStatus();
 
 extern int stopindexing;
 extern int startindexing;

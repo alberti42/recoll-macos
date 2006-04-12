@@ -30,10 +30,10 @@ static QMutex curfile_mutex;
 class IdxThread : public QThread , public DbIxStatusUpdater {
     virtual void run();
  public:
-    virtual bool update(const string &fn) {
+    virtual bool update() {
 	QMutexLocker locker(&curfile_mutex);
-	m_curfile = fn;
-	LOGDEB1(("IdxThread::update: indexing %s\n", m_curfile.c_str()));
+	m_statusSnap = status;
+	LOGDEB1(("IdxThread::update: indexing %s\n", m_statusSnap.fn.c_str()));
 	if (stopindexing) {
 	    stopindexing = 0;
 	    return false;
@@ -41,7 +41,8 @@ class IdxThread : public QThread , public DbIxStatusUpdater {
 	return true;
     }
     ConfIndexer *indexer;
-    string m_curfile;
+    // Maintain a copy/snapshot of idx status
+    DbIxStatus m_statusSnap;
     int loglevel;
 };
 
@@ -97,8 +98,8 @@ void stop_idxthread()
     idxthread.wait();
 }
 
-std::string idxthread_currentfile()
+DbIxStatus idxthread_idxStatus()
 {
     QMutexLocker locker(&curfile_mutex);
-    return(idxthread.m_curfile);
+    return(idxthread.m_statusSnap);
 }

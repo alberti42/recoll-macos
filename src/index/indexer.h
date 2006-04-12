@@ -16,10 +16,15 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.14 2006-04-04 13:49:54 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.15 2006-04-12 10:41:39 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
+
+#ifndef NO_NAMESPACES
+using std::string;
+using std::list;
+#endif
 
 #include "rclconfig.h"
 #include "fstreewalk.h"
@@ -28,12 +33,24 @@
 /* Forward decl for lower level indexing object */
 class DbIndexer;
 
-/* Callback to say what we're doing. If the update func returns false, we
- * stop */
+class DbIxStatus {
+ public:
+    enum Phase {DBIXS_FILES, DBIXS_PURGE, DBIXS_STEMDB, DBIXS_CLOSING};
+    Phase phase;
+    string fn;   // Last file processed
+    int docsdone;  // Documents processed
+    int dbtotdocs;  // Doc count in index at start
+    void reset() {phase = DBIXS_FILES;fn.clear();docsdone=dbtotdocs=0;}
+    DbIxStatus() {reset();}
+};
+
+/** Callback to say what we're doing. If the update func returns false, we
+ * stop as soon as possible without corrupting state */
 class DbIxStatusUpdater {
  public:
+    DbIxStatus status;
     virtual ~DbIxStatusUpdater(){}
-    virtual bool update(const std::string &) = 0;
+    virtual bool update() = 0;
 };
 
 /**
@@ -49,7 +66,7 @@ class ConfIndexer {
  public:
     enum runStatus {IndexerOk, IndexerError};
     ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0)
-	: m_config(cnf), m_dbindexer(0), m_updfunc(updfunc)
+	: m_config(cnf), m_dbindexer(0), m_updater(updfunc)
 	{}
     virtual ~ConfIndexer();
     /** Worker function: doe the actual indexing */
@@ -58,7 +75,7 @@ class ConfIndexer {
  private:
     RclConfig *m_config;
     DbIndexer *m_dbindexer; // Object to process directories for a given db
-    DbIxStatusUpdater *m_updfunc;
+    DbIxStatusUpdater *m_updater;
     string m_reason;
 };
 
@@ -76,10 +93,10 @@ class DbIndexer : public FsTreeWalkerCB {
  public:
     /** Constructor does nothing but store parameters */
     DbIndexer(RclConfig *cnf,         // Configuration data
-	      const std::string &dbd, // Place where the db lives
+	      const string &dbd, // Place where the db lives
 	      DbIxStatusUpdater *updfunc = 0 // status updater callback
 	      ) 
-	: m_config(cnf), m_dbdir(dbd), m_updfunc(updfunc) { 
+	: m_config(cnf), m_dbdir(dbd), m_updater(updfunc) { 
     }
 	
     virtual ~DbIndexer();
@@ -94,26 +111,26 @@ class DbIndexer : public FsTreeWalkerCB {
 	When walking is done, we create the stem databases and close
 	the main db.
     */
-    bool indexDb(bool resetbefore, std::list<std::string> *topdirs);
+    bool indexDb(bool resetbefore, std::list<string> *topdirs);
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(const std::list<std::string> &files);
+    bool indexFiles(const std::list<string> &files);
 
     /** Create stem database for given language */
     bool createStemDb(const string &lang);
 
     /**  Tree walker callback method */
     FsTreeWalker::Status 
-	processone(const std::string &, const struct stat *, 
+	processone(const string &, const struct stat *, 
 		   FsTreeWalker::CbFlag);
 
  private:
     FsTreeWalker m_walker;
     RclConfig *m_config;
-    std::string m_dbdir;
+    string m_dbdir;
     Rcl::Db m_db;
-    std::string m_tmpdir;
-    DbIxStatusUpdater *m_updfunc;
+    string m_tmpdir;
+    DbIxStatusUpdater *m_updater;
 
     bool init(bool rst = false);
 };

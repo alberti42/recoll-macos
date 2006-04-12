@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.66 2006-04-12 07:26:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.67 2006-04-12 10:41:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -275,9 +275,10 @@ bool Db::close()
     LOGERR(("Db:close: exception while deleting db: %s\n", ermsg));
     return false;
 }
+
 bool Db::reOpen()
 {
-    if (m_ndb->m_isopen) {
+    if (m_ndb && m_ndb->m_isopen) {
 	if (!close())
 	    return false;
 	if (!open(m_ndb->m_basedir, m_ndb->m_mode, m_qOpts)) {
@@ -286,6 +287,16 @@ bool Db::reOpen()
     }
     return true;
 }
+
+int Db::docCnt()
+{
+    if (m_ndb && m_ndb->m_isopen) {
+	return m_ndb->m_iswritable ? m_ndb->wdb.get_doccount() : 
+	    m_ndb->db.get_doccount();
+    }
+    return -1;
+}
+
 bool Db::addQueryDb(const string &dir) 
 {
     LOGDEB(("Db::addQueryDb: ndb %p iswritable %d db [%s]\n", m_ndb,

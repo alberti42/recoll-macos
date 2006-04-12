@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.30 2006-04-04 13:49:54 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.31 2006-04-12 10:41:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,6 +68,11 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
     if (!init(resetbefore))
 	return false;
 
+    if (m_updater) {
+	m_updater->status.reset();
+	m_updater->status.dbtotdocs = m_db.docCnt();
+    }
+
     for (list<string>::const_iterator it = topdirs->begin();
 	 it != topdirs->end(); it++) {
 	LOGDEB(("DbIndexer::index: Indexing %s into %s\n", it->c_str(), 
@@ -94,6 +99,11 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 	    return false;
 	}
     }
+    if (m_updater) {
+	m_updater->status.fn.clear();
+	m_updater->status.phase = DbIxStatus::DBIXS_PURGE;
+	m_updater->update();
+    }
 
     // Get rid of all database entries that don't exist in the
     // filesystem anymore.
@@ -115,11 +125,21 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 		m_db.deleteStemDb(*it);
 	}
 	for (it = langs.begin(); it != langs.end(); it++) {
+	    if (m_updater) {
+		m_updater->status.phase = DbIxStatus::DBIXS_STEMDB;
+		m_updater->status.fn = *it;
+		m_updater->update();
+	    }
 	    m_db.createStemDb(*it);
 	}
     }
 
     // The close would be done in our destructor, but we want status here
+    if (m_updater) {
+	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
+	m_updater->status.fn.clear();
+	m_updater->update();
+    }
     if (!m_db.close()) {
 	LOGERR(("DbIndexer::index: error closing database in %s\n", 
 		m_dbdir.c_str()));
@@ -200,10 +220,8 @@ FsTreeWalker::Status
 DbIndexer::processone(const std::string &fn, const struct stat *stp, 
 		      FsTreeWalker::CbFlag flg)
 {
-    if (m_updfunc) {
-	if (!m_updfunc->update(fn)) {
+    if (m_updater && !m_updater->update()) {
 	    return FsTreeWalker::FtwStop;
-	}
     }
     // If we're changing directories, possibly adjust parameters (set
     // the current directory in configuration object)
@@ -217,27 +235,26 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     // identification means that, if usesystemfilecommand is switched
     // from on to off it may happen that some files which are now
     // without mime type will not be purged from the db, resulting
-    // into possible 'cannot intern file' messages at query time...
+    // in possible 'cannot intern file' messages at query time...
     if (!m_db.needUpdate(fn, stp)) {
 	LOGDEB(("indexfile: up to date: %s\n", fn.c_str()));
+	if (m_updater) {
+	    m_updater->status.fn = fn;
+	    if (!m_updater->update()) {
+		return FsTreeWalker::FtwStop;
+	    }
+	}
 	return FsTreeWalker::FtwOk;
     }
 
     FileInterner interner(fn, m_config, m_tmpdir);
     FileInterner::Status fis = FileInterner::FIAgain;
-    int i = 0;
     while (fis == FileInterner::FIAgain) {
 	Rcl::Doc doc;
 	string ipath;
 	fis = interner.internfile(doc, ipath);
 	if (fis == FileInterner::FIError)
 	    break;
-
-	if (m_updfunc) {
-	    if ((++i % 100) == 0 && !m_updfunc->update(fn+"|"+ipath)) {
-		return FsTreeWalker::FtwStop;
-	    }
-	}
 
 	// Set the date if this was not done in the document handler
 	if (doc.fmtime.empty()) {
@@ -257,6 +274,17 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	// Do database-specific work to update document data
 	if (!m_db.add(fn, doc, stp)) 
 	    return FsTreeWalker::FtwError;
+
+	if (m_updater) {
+	    if ((++(m_updater->status.docsdone) % 10) == 0) {
+		m_updater->status.fn = fn;
+		if (!ipath.empty())
+		    m_updater->status.fn += "|" + ipath;
+		if (!m_updater->update()) {
+		    return FsTreeWalker::FtwStop;
+		}
+	    }
+	}
     }
 
     return FsTreeWalker::FtwOk;
@@ -340,7 +368,7 @@ bool ConfIndexer::index(bool resetbefore)
 	//    cout << *dit << " ";
 	//}
 	//cout << endl;
-	m_dbindexer = new DbIndexer(m_config, dbit->first, m_updfunc);
+	m_dbindexer = new DbIndexer(m_config, dbit->first, m_updater);
 	if (!m_dbindexer->indexDb(resetbefore, &dbit->second)) {
 	    deleteZ(m_dbindexer);
 	    m_reason = "Failed indexing in " + dbit->first;

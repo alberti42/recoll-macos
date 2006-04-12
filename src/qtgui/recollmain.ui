@@ -173,10 +173,10 @@
             <cstring>fileStart_IndexingAction</cstring>
         </property>
         <property name="text">
-            <string>Start Indexing</string>
+            <string>Update index</string>
         </property>
         <property name="menuText">
-            <string>Start &amp;Indexing</string>
+            <string>Update &amp;index</string>
         </property>
     </action>
     <action>
