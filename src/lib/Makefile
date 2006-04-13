@@ -15,7 +15,7 @@ OBJS = base64.o conftree.o csguess.o debuglog.o \
      mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathhash.o pathut.o \
      rclconfig.o rcldb.o rclinit.o readfile.o smallut.o \
      textsplit.o transcode.o \
-     unacpp.o unac.o docseq.o sortseq.o copyfile.o
+     unacpp.o unac.o docseq.o sortseq.o copyfile.o stemdb.o
 
 SRCS =  \
      $(depth)/utils/conftree.cpp $(depth)/index/csguess.cpp \
@@ -30,6 +30,7 @@ SRCS =  \
      $(depth)/common/myhtmlparse.cpp $(depth)/common/pathhash.cpp \
      $(depth)/utils/pathut.cpp $(depth)/common/rclconfig.cpp \
      $(depth)/common/rcldb.cpp $(depth)/common/rclinit.cpp \
+     $(depth)/common/stemdb.cpp \
      $(depth)/utils/base64.cpp $(depth)/utils/readfile.cpp \
      $(depth)/utils/smallut.cpp $(depth)/common/textsplit.cpp \
      $(depth)/utils/transcode.cpp $(depth)/common/unacpp.cpp \
@@ -95,6 +96,8 @@ rclconfig.o : $(depth)/common/rclconfig.cpp
 rclinit.o : $(depth)/common/rclinit.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -c $<
 rcldb.o : $(depth)/common/rcldb.cpp 
+	$(CXX) $(ALL_CXXFLAGS) -c $<
+stemdb.o : $(depth)/common/stemdb.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -c $<
 readfile.o : $(depth)/utils/readfile.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -c $<
