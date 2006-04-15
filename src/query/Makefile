@@ -9,7 +9,7 @@ SRCS = xadump.cpp
 .cpp.o : 
 	$(CXX) -c $(ALL_CXXFLAGS) -o $@ $<
 
-XADUMP_OBJS= xadump.o $(BIGLIB) 
+XADUMP_OBJS= xadump.o $(BIGLIB) ../bincimapmime/libmime.a
 xadump : $(XADUMP_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o xadump $(XADUMP_OBJS) \
 	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)

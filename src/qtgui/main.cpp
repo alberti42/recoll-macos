@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.40 2006-04-05 12:50:42 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.41 2006-04-15 17:15:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -219,7 +219,7 @@ int main( int argc, char ** argv )
 	startindexing = 1;
 
 	switch (QMessageBox::
-#if (QT_VERSION < 0x030200)
+#if (QT_VERSION >= 0x030200)
 		question
 #else
 		information
