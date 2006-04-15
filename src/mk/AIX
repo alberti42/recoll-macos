@@ -1,0 +1,10 @@
+include $(depth)/mk/commondefs
+include $(depth)/mk/localdefs
+
+ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
+         -DPUTENV_ARG_NOT_CONST 
+
+CC = gcc
+CXX = g++
+
+LIBSYS = -lpthread
