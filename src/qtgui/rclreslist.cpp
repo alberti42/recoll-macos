@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.10 2006-04-04 10:38:52 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.11 2006-04-18 08:53:28 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -353,10 +353,14 @@ void RclResList::showResultPage()
 	ensureCursorVisible();
     } else {
 	// Restore first in win parameter that we shouln't have incremented
-	append(tr("<p>"
-			  /*"<img align=\"left\" source=\"myimage\">"*/
-			  "<b>No results found</b>"
-			  "<br>"));
+	QString chunk = "<p><font size=+1><b>";
+	chunk += QString::fromUtf8(m_docsource->title().c_str());
+	chunk += "</b></font><br>";
+	chunk += "<a href=\"H-1\">";
+	chunk += tr("Show query details");
+	chunk += "</a><br>";
+	append(chunk);
+	append(tr("<p><b>No results found</b><br>"));
 	m_winfirst -= prefs.respagesize;
 	if (m_winfirst < 0)
 	    m_winfirst = -1;
@@ -385,9 +389,7 @@ void RclResList::showResultPage()
     }
 }
 
-// Single click in result list: we don't actually do anything but
-// start a timer because we want to check first if this might be a
-// double click
+// Single click in result list: color active paragraph
 void RclResList::clicked(int par, int car)
 {
     LOGDEB(("RclResList::clicked:wfirst %d par %d char %d\n", 
@@ -414,10 +416,10 @@ void RclResList::linkWasClicked(const QString &s)
 	emit headerClicked(); 
 	break;
     case 'P': 
-	emit docClicked(i); 
+	emit docPreviewClicked(i); 
 	break;
     case 'E': 
-	emit docDoubleClicked(i);
+	emit docEditClicked(i);
 	break;
     default: break;// ?? 
     }
@@ -438,11 +440,11 @@ QPopupMenu *RclResList::createPopupMenu(const QPoint& pos)
 
 void RclResList::menuPreview()
 {
-    emit docClicked(m_docnum);
+    emit docPreviewClicked(m_docnum);
 }
 void RclResList::menuEdit()
 {
-    emit docDoubleClicked(m_docnum);
+    emit docEditClicked(m_docnum);
 }
 void RclResList::menuCopyFN()
 {

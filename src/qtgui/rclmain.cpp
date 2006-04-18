@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.21 2006-04-12 10:41:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.22 2006-04-18 08:53:28 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -96,6 +96,8 @@ void RclMain::init()
     m_history = new RclDHistory(historyfile);
     connect(sSearch, SIGNAL(startSearch(Rcl::AdvSearchData)), 
 		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
+    connect(sSearch, SIGNAL(clearSearch()), 
+	    resList, SLOT(resetSearch()));
 
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));

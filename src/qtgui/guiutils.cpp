@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.8 2006-04-07 13:08:08 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.9 2006-04-18 08:53:28 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -126,6 +126,8 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Num, 0);
     SETTING_RW(prefs.htmlBrowser, "/Recoll/prefs/htmlBrowser", , "");
     SETTING_RW(prefs.showicons, "/Recoll/prefs/reslist/showicons", Bool, true);
+    SETTING_RW(prefs.autoSearchOnWS, "/Recoll/prefs/reslist/autoSearchOnWS", 
+	       Bool, false);
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Num, 8);
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", ,
 	       "");

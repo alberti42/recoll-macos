@@ -47,6 +47,7 @@ void UIPrefsDialog::init()
     pageLenSB->setValue(prefs.respagesize);
     // Show icons checkbox
     useIconsCB->setChecked(prefs.showicons);
+    autoSearchCB->setChecked(prefs.autoSearchOnWS);
     // Result list font family and size
     reslistFontFamily = prefs.reslistfontfamily;
     reslistFontSize = prefs.reslistfontsize;
@@ -123,6 +124,7 @@ void UIPrefsDialog::init()
 void UIPrefsDialog::accept()
 {
     prefs.showicons = useIconsCB->isChecked();
+    prefs.autoSearchOnWS = autoSearchCB->isChecked();
     prefs.respagesize = pageLenSB->value();
 
     prefs.reslistfontfamily = reslistFontFamily;

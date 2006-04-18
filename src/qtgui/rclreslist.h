@@ -1,6 +1,6 @@
 #ifndef _RCLRESLIST_H_INCLUDED_
 #define _RCLRESLIST_H_INCLUDED_
-/* @(#$Id: rclreslist.h,v 1.4 2006-03-29 11:18:14 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: rclreslist.h,v 1.5 2006-04-18 08:53:28 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <qtextbrowser.h>
 #include <qpopupmenu.h>
@@ -16,12 +16,12 @@ class RclResList : public QTextBrowser
     RclResList(QWidget* parent = 0, const char* name = 0);
     virtual ~RclResList();
 
-    virtual void resetSearch() {m_winfirst = -1;}
     virtual bool getDoc( int, Rcl::Doc & );
     virtual void setDocSource(DocSequence *);
     virtual QPopupMenu *createPopupMenu(const QPoint& pos);
 
  public slots:
+    virtual void resetSearch() {m_winfirst = -1;clear();}
     virtual void clicked(int, int);
     virtual void resPageUpOrBack();
     virtual void resPageDownOrNext();
@@ -35,8 +35,8 @@ class RclResList : public QTextBrowser
  signals:
     void nextPageAvailable(bool);
     void prevPageAvailable(bool);
-    void docDoubleClicked(int);
-    void docClicked(int);
+    void docEditClicked(int);
+    void docPreviewClicked(int);
     void headerClicked();
 
  protected:

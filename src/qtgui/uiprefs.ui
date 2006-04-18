@@ -170,6 +170,17 @@
                                     <bool>true</bool>
                                 </property>
                             </widget>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>autoSearchCB</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Auto-start simple search on whitespace entry</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>false</bool>
+                                </property>
+                            </widget>
                         </vbox>
                     </widget>
                 </vbox>

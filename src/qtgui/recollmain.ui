@@ -378,13 +378,13 @@
     </connection>
     <connection>
         <sender>resList</sender>
-        <signal>docDoubleClicked(int)</signal>
+        <signal>docEditClicked(int)</signal>
         <receiver>RclMainBase</receiver>
         <slot>startNativeViewer(int)</slot>
     </connection>
     <connection>
         <sender>resList</sender>
-        <signal>docClicked(int)</signal>
+        <signal>docPreviewClicked(int)</signal>
         <receiver>RclMainBase</receiver>
         <slot>startPreview(int)</slot>
     </connection>

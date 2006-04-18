@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.17 2006-04-04 13:49:54 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.18 2006-04-18 08:53:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -84,15 +84,12 @@ static void cleanup()
 }
 
 int stopindexing;
-string currentfile;
 // Mainly used to request indexing stop, we currently do not use the
 // current file name
 class MyUpdater : public DbIxStatusUpdater {
  public:
-    virtual bool update(const string &fn) {
-	currentfile = fn;
+    virtual bool update() {
 	if (stopindexing) {
-	    stopindexing = 0;
 	    return false;
 	}
 	return true;

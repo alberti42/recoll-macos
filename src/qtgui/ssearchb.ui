@@ -136,6 +136,7 @@
 </includes>
 <signals>
     <signal>startSearch(Rcl::AdvSearchData)</signal>
+    <signal>clearSearch()</signal>
 </signals>
 <slots>
     <slot>searchTextChanged( const QString &amp; text )</slot>

@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.4 2006-04-05 12:50:42 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.5 2006-04-18 08:53:28 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,7 @@ extern bool startHelpBrowser(const string& url = "");
 class PrefsPack {
  public:
     bool showicons;
+    bool autoSearchOnWS;
     int respagesize;
     QString reslistfontfamily;
     int reslistfontsize;

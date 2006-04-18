@@ -188,7 +188,7 @@
                                     <property name="minimumSize">
                                         <size>
                                             <width>200</width>
-                                            <height>100</height>
+                                            <height>80</height>
                                         </size>
                                     </property>
                                     <property name="selectionMode">
@@ -289,7 +289,7 @@
                                     <property name="minimumSize">
                                         <size>
                                             <width>200</width>
-                                            <height>100</height>
+                                            <height>80</height>
                                         </size>
                                     </property>
                                     <property name="selectionMode">

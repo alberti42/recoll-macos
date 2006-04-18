@@ -27,6 +27,7 @@
 *****************************************************************************/
 
 #include "debuglog.h"
+#include "guiutils.h"
 
 void SSearchBase::init()
 {
@@ -40,9 +41,13 @@ void SSearchBase::searchTextChanged( const QString & text )
     if (text.isEmpty()) {
 	searchPB->setEnabled(false);
 	clearqPB->setEnabled(false);
+	emit clearSearch();
     } else {
 	searchPB->setEnabled(true);
 	clearqPB->setEnabled(true);
+	string u8 =  (const char *)queryText->text().utf8();
+	if (prefs.autoSearchOnWS && !u8.empty() && u8[u8.length()-1] == ' ')
+	    startSimpleSearch();
     }
 }
 
