@@ -25,9 +25,12 @@
 ** These will automatically be called by the form's constructor and
 ** destructor.
 *****************************************************************************/
+#include <qapplication.h>
+#include <qinputdialog.h>
 
 #include "debuglog.h"
 #include "guiutils.h"
+#include "searchdata.h"
 
 void SSearchBase::init()
 {
@@ -72,3 +75,72 @@ void SSearchBase::startSimpleSearch()
 
     emit startSearch(sdata);
 }
+
+// Complete last word in input by querying db for all possible terms.
+void SSearchBase::completion()
+{
+    if (!rcldb)
+	return;
+
+    // Extract last word in text
+    string txt = (const char *)queryText->text().utf8();
+    string::size_type cs = txt.find_last_of(" ");
+    if (cs == string::npos)
+	cs = 0;
+    else
+	cs++;
+    if (txt.size() == 0 || cs == txt.size()) {
+	QApplication::beep();
+	return;
+    }
+    string s = txt.substr(cs);
+    LOGDEB(("Completing: [%s]\n", s.c_str()));
+
+    // Query database
+    const int max = 100;
+    list<string> strs = rcldb->completions(s, prefs.queryStemLang.ascii(),max);
+    if (strs.size() == 0 || strs.size() == (unsigned int)max) {
+	QApplication::beep();
+	return;
+    }
+
+    // If list from db is single word, insert it, else ask user to select
+    QString res;
+    bool ok = false;
+    if (strs.size() == 1) {
+	res = QString::fromUtf8(strs.begin()->c_str());
+	ok = true;
+    } else {
+	QStringList lst;
+	for (list<string>::iterator it=strs.begin(); it != strs.end(); it++) 
+	    lst.push_back(QString::fromUtf8(it->c_str()));
+	res = QInputDialog::getItem(tr("Completions"),
+				    tr("Select an item:"), lst, 0, 
+				    FALSE, &ok, this);
+    }
+
+    // Insert result
+    if (ok) {
+	txt.erase(cs);
+	txt.append(res.utf8());
+	queryText->setText(QString::fromUtf8(txt.c_str()));
+    } else {
+	return;
+    }
+}
+
+// Handle CTRL-TAB to mean completion
+bool SSearchBase::event( QEvent *evt ) 
+{
+    if ( evt->type() == QEvent::KeyPress ) {
+	QKeyEvent *ke = (QKeyEvent *)evt;
+	if ( ke->key() == Key_Tab  && (ke->state() & Qt::ControlButton)) {
+	    // special tab handling here
+	    completion();
+	    ke->accept();
+	    return TRUE;
+	}
+    }
+    return QWidget::event( evt );
+}
+

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.41 2006-04-15 17:15:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.42 2006-04-19 08:26:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -40,9 +40,6 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.41 2006-04-15 17:15:01 dockes Exp $ 
 #include <qcombobox.h>
 
 #include "rcldb.h"
-#ifndef NO_NAMESPACES
-using Rcl::AdvSearchData;
-#endif /* NO_NAMESPACES */
 #include "rclconfig.h"
 #include "pathut.h"
 #include "recoll.h"

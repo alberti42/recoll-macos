@@ -40,6 +40,7 @@ using std::string;
 #include "recoll.h"
 #include "rclconfig.h"
 #include "debuglog.h"
+#include "searchdata.h"
 
 extern RclConfig *rclconfig;
 
@@ -132,11 +133,13 @@ void advsearch::searchPB_clicked()
     mydata.allwords = string((const char*)(andWordsLE->text().utf8()));
     mydata.phrase  = string((const char*)(phraseLE->text().utf8()));
     mydata.orwords = string((const char*)(orWordsLE->text().utf8()));
+    mydata.orwords1 = string((const char*)(orWords1LE->text().utf8()));
     mydata.nowords = string((const char*)(noWordsLE->text().utf8()));
     mydata.filename = string((const char*)(fileNameLE->text().utf8()));
 
     if (mydata.allwords.empty() && mydata.phrase.empty() && 
-	mydata.orwords.empty() && mydata.filename.empty()) {
+	mydata.orwords.empty() && mydata.orwords1.empty() && 
+	mydata.filename.empty()) {
 	if (mydata.nowords.empty())
 	    return;
 	QMessageBox::warning(0, "Recoll",

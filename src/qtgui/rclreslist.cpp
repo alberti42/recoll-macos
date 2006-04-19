@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.11 2006-04-18 08:53:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.12 2006-04-19 08:26:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -283,8 +283,7 @@ void RclResList::showResultPage()
 	    time_t mtime = doc.dmtime.empty() ?
 		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	    struct tm *tm = localtime(&mtime);
-	    strftime(datebuf, 99, 
-		     "<i>Modified:</i>&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
+	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
 	}
 
 	// Size information. We print both doc and file if they differ a lot
@@ -301,6 +300,7 @@ void RclResList::showResultPage()
 	} else if (fsize >= 0) {
 	    sizebuf = displayableBytes(fsize);
 	}
+
 	// Abstract
 	string abst = escapeHtml(doc.abstract);
 	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
@@ -311,12 +311,9 @@ void RclResList::showResultPage()
 	    result += string("<p><b>") + sh + "</p>\n<p>";
 	else
 	    result += "<p>";
-	result += string(perbuf) + sizebuf + "<b>" + doc.title + "</b><br>";
-	result += doc.mimetype + "&nbsp;";
-	result += string(datebuf) + "&nbsp;&nbsp;&nbsp;";
 
-
-	// Set up the preview and edit links
+	// Percent relevant + size + preview/edit links + title
+	result += string(perbuf) + sizebuf;
 	char vlbuf[100];
 	if (canIntern(doc.mimetype, rclconfig)) { 
 	    sprintf(vlbuf, "\"P%d\"", m_winfirst+i);
@@ -327,12 +324,17 @@ void RclResList::showResultPage()
 	    sprintf(vlbuf, "E%d", m_winfirst+i);
 	    result += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
 	}
-	result += string("<br>");
+	result += "&nbsp;&nbsp;<b>" + doc.title + "</b><br>";
 
+	// Mime type, date modified, url
+	result += doc.mimetype + "&nbsp;";
+	result += string(datebuf) + "&nbsp;&nbsp;&nbsp;";
 	if (!img_name.empty()) {
 	    result += "<img source=\"" + img_name + "\" align=\"left\">";
 	}
 	result += "<i>" + url + +"</i><br>";
+
+	// Text: abstract and keywords
 	if (!abst.empty())
 	    result +=  abst + "<br>";
 	if (!doc.keywords.empty())

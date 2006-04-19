@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.32 2006-04-12 10:41:39 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.33 2006-04-19 08:26:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -99,32 +99,7 @@ class Doc {
     }
 };
 
-/**
- * Holder for the advanced query data 
- */
-class AdvSearchData {
-    public:
-    string allwords;
-    string phrase;
-    string orwords;
-    string nowords;
-    string filename; 
-    list<string> filetypes; // restrict to types. Empty if inactive
-    string topdir; // restrict to subtree. Empty if inactive
-    string description; // Printable expanded version of the complete query
-                        // returned after setQuery.
-    void erase() {
-	allwords.erase();
-	phrase.erase();
-	orwords.erase();
-	nowords.erase();
-	filetypes.clear(); 
-	topdir.erase();
-	filename.erase();
-	description.erase();
-    }
-};
-
+class AdvSearchData;
 class Native;
  
 /**
@@ -155,11 +130,13 @@ class Db {
     // Query-related functions
 
     // Parse query string and initialize query
-    bool setQuery(const string &q, QueryOpts opts = QO_NONE, 
-		  const string& stemlang = "english");
     bool setQuery(AdvSearchData &q, QueryOpts opts = QO_NONE,
 		  const string& stemlang = "english");
     bool getQueryTerms(list<string>& terms);
+
+    // Return a list of database terms that begin with the input string
+    // Stem expansion is performed if lang is not empty
+    list<string> completions(const string &s, const string &lang, int max=20);
 
     /// Add extra database for querying
     bool addQueryDb(const string &dir);
@@ -188,7 +165,7 @@ class Db {
     string getDbDir();
 private:
 
-    AdvSearchData m_asdata;
+    string m_filterTopDir; // Current query filter on subtree top directory 
     vector<int> m_dbindices; // In case there is a postq filter: sequence of 
                              // db indices that match
 

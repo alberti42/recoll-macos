@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.68 2006-04-13 09:50:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.69 2006-04-19 08:26:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,7 @@ using namespace std;
 #include "smallut.h"
 #include "pathhash.h"
 #include "utf8iter.h"
+#include "searchdata.h"
 
 #include "xapian.h"
 
@@ -120,7 +121,7 @@ class Native {
 	string url;
 	parms.get(string("url"), url);
 	url = url.substr(7);
-	if (url.find(rdb->m_asdata.topdir) == 0) 
+	if (url.find(rdb->m_filterTopDir) == 0) 
 	    return true;
 	return false;
     }
@@ -853,27 +854,6 @@ static void stringToXapianQueries(const string &iq,
     }
 }
 
-// Prepare query out of simple query string 
-bool Db::setQuery(const std::string &iqstring, QueryOpts opts, 
-		       const string& stemlang)
-{
-    LOGDEB(("Db::setQuery: q: [%s], opts 0x%x, stemlang %s\n", 
-	    iqstring.c_str(), (unsigned int)opts, stemlang.c_str()));
-    if (!m_ndb)
-	return false;
-    m_asdata.erase();
-    m_dbindices.clear();
-    list<Xapian::Query> pqueries;
-    stringToXapianQueries(iqstring, stemlang, m_ndb, pqueries, opts);
-    m_ndb->query = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(), 
-			       pqueries.end());
-    delete m_ndb->enquire;
-    m_ndb->enquire = new Xapian::Enquire(m_ndb->db);
-    m_ndb->enquire->set_query(m_ndb->query);
-    m_ndb->mset = Xapian::MSet();
-    return true;
-}
-
 // Prepare query out of "advanced search" data
 bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts, 
 		       const string& stemlang)
@@ -882,7 +862,9 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     LOGDEB((" allwords: %s\n", sdata.allwords.c_str()));
     LOGDEB((" phrase:   %s\n", sdata.phrase.c_str()));
     LOGDEB((" orwords:  %s\n", sdata.orwords.c_str()));
+    LOGDEB((" orwords1:  %s\n", sdata.orwords1.c_str()));
     LOGDEB((" nowords:  %s\n", sdata.nowords.c_str()));
+    LOGDEB((" filename:  %s\n", sdata.filename.c_str()));
 
     string ft;
     for (list<string>::iterator it = sdata.filetypes.begin(); 
@@ -892,7 +874,7 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     if (!sdata.topdir.empty())
 	LOGDEB((" restricted to: %s\n", sdata.topdir.c_str()));
 
-    m_asdata = sdata;
+    m_filterTopDir = sdata.topdir;
     m_dbindices.clear();
 
     if (!m_ndb)
@@ -965,7 +947,19 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
 			       pqueries.end());
 	    xq = xq.empty() ? nq :
-		Xapian::Query(Xapian::Query::OP_AND_MAYBE, xq, nq);
+		Xapian::Query(Xapian::Query::OP_AND, xq, nq);
+	    pqueries.clear();
+	}
+    }
+
+    if (!sdata.orwords1.empty()) {
+	stringToXapianQueries(sdata.orwords1, stemlang, m_ndb, pqueries, opts);
+	if (!pqueries.empty()) {
+	    Xapian::Query nq = 
+		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
+			       pqueries.end());
+	    xq = xq.empty() ? nq :
+		Xapian::Query(Xapian::Query::OP_AND, xq, nq);
 	    pqueries.clear();
 	}
     }
@@ -1026,6 +1020,42 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	sdata.description = sdata.description.substr(strlen("Xapian::Query"));
     LOGDEB(("Db::SetQuery: Q: %s\n", sdata.description.c_str()));
     return true;
+}
+
+list<string> Db::completions(const string &root, const string &lang, int max) 
+{
+    Xapian::Database db;
+    list<string> res;
+    if (!m_ndb || !m_ndb->m_isopen)
+	return res;
+    string droot;
+    dumb_string(root, droot);
+    db = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
+    Xapian::TermIterator it = db.allterms_begin(); 
+    it.skip_to(droot.c_str());
+    for (int n = 0;it != db.allterms_end(); it++) {
+	if ((*it).find(droot) != 0)
+	    break;
+	if (lang.empty()) {
+	    res.push_back(*it);
+	    ++n;
+	} else {
+	    list<string> stemexps = 
+		StemDb::stemExpand(m_ndb->m_basedir, lang, *it);
+	    unsigned int cnt = 
+		(int)stemexps.size() > max - n ? max - n : stemexps.size();
+	    list<string>::iterator sit = stemexps.begin();
+	    while (cnt--) {
+		res.push_back(*sit++);
+		n++;
+	    }
+	}
+	if (n >= max)
+	    break;
+    }
+    res.sort();
+    res.unique();
+    return res;
 }
 
 bool Db::getQueryTerms(list<string>& terms)
@@ -1118,7 +1148,7 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
     }
 
     // For now the only post-query filter is on dir subtree
-    bool postqfilter = !m_asdata.topdir.empty();
+    bool postqfilter = !m_filterTopDir.empty();
     LOGDEB1(("Topdir %s postqflt %d\n", m_asdata.topdir.c_str(), postqfilter));
 
     int xapi;

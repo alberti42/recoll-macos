@@ -132,6 +132,7 @@
 </connections>
 <includes>
     <include location="local" impldecl="in declaration">recoll.h</include>
+    <include location="local" impldecl="in declaration">searchdata.h</include>
     <include location="local" impldecl="in implementation">ssearchb.ui.h</include>
 </includes>
 <signals>
@@ -144,6 +145,8 @@
 </slots>
 <functions>
     <function>init()</function>
+    <function>completion()</function>
+    <function returnType="bool">event( QEvent * evt )</function>
 </functions>
 <layoutdefaults spacing="6" margin="0"/>
 </UI>

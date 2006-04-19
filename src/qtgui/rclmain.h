@@ -26,6 +26,7 @@
 #include "sort.h"
 #include "uiprefs.h"
 #include "rcldb.h"
+#include "searchdata.h"
 
 #include "recollmain.h"
 
