@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.22 2006-04-18 08:53:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.23 2006-04-20 09:20:09 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -81,7 +81,6 @@ void RclMain::init()
     curPreview = 0;
     asearchform = 0;
     sortform = 0;
-    sortwidth = 0;
     uiprefs = 0;
 
     // Set the focus to the search terms entry:
@@ -297,15 +296,14 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
     curPreview = 0;
 
     DocSequence *docsource;
-    if (sortwidth > 0) {
+    if (sortspecs.sortwidth > 0) {
 	DocSequenceDb myseq(rcldb, string(tr("Query results").utf8()));
-	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
+	docsource = new DocSeqSorted(myseq, sortspecs,
 				     string(tr("Query results (sorted)").utf8()));
     } else {
 	docsource = new DocSequenceDb(rcldb, string(tr("Query results").utf8()));
     }
-    currentQueryData = sdata;
-    resList->setDocSource(docsource);
+    resList->setDocSource(docsource, sdata);
 }
 
 // Open advanced search dialog.
@@ -333,8 +331,8 @@ void RclMain::showSortDialog()
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
 	sortform->setSizeGripEnabled(FALSE);
-	connect(sortform, SIGNAL(sortDataChanged(int, RclSortSpec)), 
-		this, SLOT(sortDataChanged(int, RclSortSpec)));
+	connect(sortform, SIGNAL(sortDataChanged(RclSortSpec)), 
+		this, SLOT(sortDataChanged(RclSortSpec)));
 	sortform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
@@ -408,8 +406,7 @@ void RclMain::startPreview(int docnum)
 				 QMessageBox::NoButton);
 	    return;
 	}
-
-	curPreview->setCaption(QString::fromUtf8(currentQueryData.description.c_str()));
+	curPreview->setCaption(resList->getDescription());
 	connect(curPreview, SIGNAL(previewClosed(QWidget *)), 
 		this, SLOT(previewClosed(QWidget *)));
 	curPreview->show();
@@ -511,24 +508,23 @@ void RclMain::showDocHistory()
     }
 
     DocSequence *docsource;
-    if (sortwidth > 0) {
+    if (sortspecs.sortwidth > 0) {
 	DocSequenceHistory myseq(rcldb, m_history, string(tr("Document history").utf8()));
-	docsource = new DocSeqSorted(myseq, sortwidth, sortspecs,
+	docsource = new DocSeqSorted(myseq, sortspecs,
 				     string(tr("Document history (sorted)").utf8()));
     } else {
 	docsource = new DocSequenceHistory(rcldb, m_history, 
 					   string(tr("Document history").utf8()));
     }
-    currentQueryData.erase();
-    currentQueryData.description = tr("History data").utf8();
-    resList->setDocSource(docsource);
+    Rcl::AdvSearchData sdata;
+    sdata.description = tr("History data").utf8();
+    resList->setDocSource(docsource, sdata);
 }
 
 
-void RclMain::sortDataChanged(int cnt, RclSortSpec spec)
+void RclMain::sortDataChanged(RclSortSpec spec)
 {
     LOGDEB(("RclMain::sortDataChanged\n"));
-    sortwidth = cnt;
     sortspecs = spec;
 }
 
@@ -556,47 +552,3 @@ void RclMain::enablePrevPage(bool yesno)
     prevPageAction->setEnabled(yesno);
 }
 
-/** Show detailed expansion of a query */
-void RclMain::showQueryDetails()
-{
-    // Break query into lines of reasonable length, avoid cutting words,
-    // Also limit the total number of lines. 
-    const unsigned int ll = 100;
-    const unsigned int maxlines = 50;
-    string query = currentQueryData.description;
-    string oq;
-    unsigned int nlines = 0;
-    while (query.length() > 0) {
-	string ss = query.substr(0, ll);
-	if (ss.length() == ll) {
-	    string::size_type pos = ss.find_last_of(" ");
-	    if (pos == string::npos) {
-		pos = query.find_first_of(" ");
-		if (pos != string::npos)
-		    ss = query.substr(0, pos+1);
-		else 
-		    ss = query;
-	    } else {
-		ss = ss.substr(0, pos+1);
-	    }
-	}
-	// This cant happen, but anyway. Be very sure to avoid an infinite loop
-	if (ss.length() == 0) {
-	    LOGDEB(("showQueryDetails: Internal error!\n"));
-	    oq = query;
-	    break;
-	}
-	oq += ss + "\n";
-	if (nlines++ >= maxlines) {
-	    oq += " ... \n";
-	    break;
-	}
-	query= query.substr(ss.length());
-	LOGDEB1(("oq [%s]\n, query [%s]\n, ss [%s]\n",
-		oq.c_str(), query.c_str(), ss.c_str()));
-    }
-
-    QString desc = tr("Query details") + ": " + 
-	QString::fromUtf8(oq.c_str());
-    QMessageBox::information(this, tr("Query details"), desc);
-}

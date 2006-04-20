@@ -388,12 +388,6 @@
         <receiver>RclMainBase</receiver>
         <slot>startPreview(int)</slot>
     </connection>
-    <connection>
-        <sender>resList</sender>
-        <signal>headerClicked()</signal>
-        <receiver>RclMainBase</receiver>
-        <slot>showQueryDetails()</slot>
-    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in declaration">ssearchb.h</include>
@@ -415,7 +409,6 @@
     <slot>enablePrevPage(bool)</slot>
     <slot>startNativeViewer(int)</slot>
     <slot>startPreview(int)</slot>
-    <slot>showQueryDetails()</slot>
 </slots>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.27 2006-04-03 11:43:07 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.28 2006-04-20 09:20:09 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -358,8 +358,10 @@ bool RclConfig::initUserConfig()
     string exdir = path_cat(m_datadir, "examples");
     sprintf(blurb, blurb0, exdir.c_str());
 
+    // Use protective 700 mode to create the top configuration
+    // directory: documents can be reconstructed from index data.
     if (access(m_confdir.c_str(), 0) < 0 && 
-	mkdir(m_confdir.c_str(), 0755) < 0) {
+	mkdir(m_confdir.c_str(), 0700) < 0) {
 	m_reason += string("mkdir(") + m_confdir + ") failed: " + 
 	    strerror(errno);
 	return false;

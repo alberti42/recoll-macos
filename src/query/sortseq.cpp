@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.6 2006-01-23 13:32:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.7 2006-04-20 09:20:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -82,15 +82,15 @@ public:
     } 
 };
 
-DocSeqSorted::DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec,
+DocSeqSorted::DocSeqSorted(DocSequence &iseq, RclSortSpec &sortspec,
 			   const std::string &t)
     : DocSequence(t)
 {
-    LOGDEB(("DocSeqSorted:: count %d\n", cnt));
-    
-    m_docs.resize(cnt);
+    m_spec = sortspec;
+    LOGDEB(("DocSeqSorted:: count %d\n", m_spec.sortwidth));
+    m_docs.resize(m_spec.sortwidth);
     int i;
-    for (i = 0; i < cnt; i++) {
+    for (i = 0; i < m_spec.sortwidth; i++) {
 	int percent;
 	if (!iseq.getDoc(i, m_docs[i], &percent)) {
 	    LOGERR(("DocSeqSorted: getDoc failed for doc %d\n", i));
@@ -98,11 +98,11 @@ DocSeqSorted::DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec,
 	}
 	m_docs[i].pc = percent;
     }
-    m_count = i;
-    LOGDEB(("DocSeqSorted:: m_count %d\n", m_count));
-    m_docs.resize(m_count);
-    m_docsp.resize(m_count);
-    for (i = 0; i < m_count; i++)
+    m_spec.sortwidth = i;
+    LOGDEB(("DocSeqSorted:: m_count %d\n", m_spec.sortwidth));
+    m_docs.resize(m_spec.sortwidth);
+    m_docsp.resize(m_spec.sortwidth);
+    for (i = 0; i < m_spec.sortwidth; i++)
 	m_docsp[i] = &m_docs[i];
 
     CompareDocs cmp(sortspec);
@@ -113,7 +113,7 @@ bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, int *percent, string *)
 {
     LOGDEB1(("DocSeqSorted: fetching %d\n", num));
     
-    if (num >= m_count)
+    if (num >= m_spec.sortwidth)
 	return false;
     if (percent)
 	*percent = (*m_docsp[num]).pc;

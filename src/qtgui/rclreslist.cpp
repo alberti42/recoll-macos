@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.12 2006-04-19 08:26:08 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.13 2006-04-20 09:20:09 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -46,7 +46,7 @@ RclResList::RclResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(clicked(int, int)), this, SLOT(clicked(int,int)));
     connect(this, SIGNAL(linkClicked(const QString &)), 
 	    this, SLOT(linkWasClicked(const QString &)));
-
+    connect(this, SIGNAL(headerClicked()), this, SLOT(showQueryDetails()));
     m_winfirst = -1;
     m_docsource = 0;
 }
@@ -64,11 +64,12 @@ void RclResList::languageChange()
 }
 
 // Acquire new docsource
-void RclResList::setDocSource(DocSequence *docsource)
+void RclResList::setDocSource(DocSequence *docsource, Rcl::AdvSearchData& sdt)
 {
     if (m_docsource)
 	delete m_docsource;
     m_docsource = docsource;
+    m_queryData = sdt;
     showResultPage();
 }
 
@@ -465,4 +466,54 @@ void RclResList::menuCopyURL()
 	QApplication::clipboard()->setText(url.c_str(), 
 					   QClipboard::Selection);
     }
+}
+
+QString RclResList::getDescription()
+{
+    return QString::fromUtf8(m_queryData.description.c_str());
+}
+
+/** Show detailed expansion of a query */
+void RclResList::showQueryDetails()
+{
+    // Break query into lines of reasonable length, avoid cutting words,
+    // Also limit the total number of lines. 
+    const unsigned int ll = 100;
+    const unsigned int maxlines = 50;
+    string query = m_queryData.description;
+    string oq;
+    unsigned int nlines = 0;
+    while (query.length() > 0) {
+	string ss = query.substr(0, ll);
+	if (ss.length() == ll) {
+	    string::size_type pos = ss.find_last_of(" ");
+	    if (pos == string::npos) {
+		pos = query.find_first_of(" ");
+		if (pos != string::npos)
+		    ss = query.substr(0, pos+1);
+		else 
+		    ss = query;
+	    } else {
+		ss = ss.substr(0, pos+1);
+	    }
+	}
+	// This cant happen, but anyway. Be very sure to avoid an infinite loop
+	if (ss.length() == 0) {
+	    LOGDEB(("showQueryDetails: Internal error!\n"));
+	    oq = query;
+	    break;
+	}
+	oq += ss + "\n";
+	if (nlines++ >= maxlines) {
+	    oq += " ... \n";
+	    break;
+	}
+	query= query.substr(ss.length());
+	LOGDEB1(("oq [%s]\n, query [%s]\n, ss [%s]\n",
+		oq.c_str(), query.c_str(), ss.c_str()));
+    }
+
+    QString desc = tr("Query details") + ": " + 
+	QString::fromUtf8(oq.c_str());
+    QMessageBox::information(this, tr("Query details"), desc);
 }

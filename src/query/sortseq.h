@@ -16,7 +16,7 @@
  */
 #ifndef _SORTSEQ_H_INCLUDED_
 #define _SORTSEQ_H_INCLUDED_
-/* @(#$Id: sortseq.h,v 1.5 2006-02-21 12:52:48 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: sortseq.h,v 1.6 2006-04-20 09:20:10 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <vector>
 #include <string>
@@ -25,6 +25,8 @@
 
 class RclSortSpec {
  public:
+    RclSortSpec() : sortwidth(0) {}
+    int sortwidth; // We only re-sort the first sortwidth most relevant docs
     enum Field {RCLFLD_URL, RCLFLD_IPATH, RCLFLD_MIMETYPE, RCLFLD_MTIME};
     void addCrit(Field fld, bool desc = false) {
 	crits.push_back(fld);
@@ -40,14 +42,14 @@ class RclSortSpec {
  */
 class DocSeqSorted : public DocSequence {
  public:
-    DocSeqSorted(DocSequence &iseq, int cnt, RclSortSpec &sortspec, 
+    DocSeqSorted(DocSequence &iseq, RclSortSpec &sortspec, 
 		 const std::string &t);
     virtual ~DocSeqSorted() {}
     virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0);
-    virtual int getResCnt() {return m_count;}
+    virtual int getResCnt() {return m_spec.sortwidth;}
 
  private:
-    int m_count;
+    RclSortSpec m_spec;
     std::vector<Rcl::Doc> m_docs;
     std::vector<Rcl::Doc *> m_docsp;
 };

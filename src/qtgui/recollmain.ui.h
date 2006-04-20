@@ -70,6 +70,3 @@ void RclMainBase::startNativeViewer(int)
 void RclMainBase::startPreview(int)
 {
 }
-void RclMainBase::showQueryDetails()
-{
-}

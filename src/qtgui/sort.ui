@@ -216,7 +216,7 @@
     <include location="local" impldecl="in implementation">sort.ui.h</include>
 </includes>
 <signals>
-    <signal>sortDataChanged(int, RclSortSpec)</signal>
+    <signal>sortDataChanged(RclSortSpec)</signal>
 </signals>
 <slots>
     <slot>reset()</slot>

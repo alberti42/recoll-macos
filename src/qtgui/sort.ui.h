@@ -57,7 +57,6 @@ void SortForm::setData()
 {
     LOGDEB(("SortForm::setData\n"));
     RclSortSpec spec;
-    int width;
 
     mcntSB->setEnabled(sortCB->isChecked());
     fldCMB1->setEnabled(sortCB->isChecked());
@@ -66,7 +65,7 @@ void SortForm::setData()
     descCB2->setEnabled(sortCB->isChecked());
 
     if (!sortCB->isChecked()) {
-	width = 0;
+	spec.sortwidth = 0;
     } else {
 	bool desc = descCB1->isChecked();
 	switch (fldCMB1->currentItem()) {
@@ -87,7 +86,7 @@ void SortForm::setData()
 	    spec.addCrit(RclSortSpec::RCLFLD_MIMETYPE, desc?true:false);
 	    break;
 	}
-	width = mcntSB->value();
+	spec.sortwidth = mcntSB->value();
     }
-    emit sortDataChanged(width, spec);
+    emit sortDataChanged(spec);
 }

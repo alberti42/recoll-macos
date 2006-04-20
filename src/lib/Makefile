@@ -1,3 +1,4 @@
+# DONT EDIT BY HAND: created by script mkMake
 depth = ..
 include $(depth)/mk/sysconf
 

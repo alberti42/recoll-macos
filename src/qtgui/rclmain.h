@@ -40,7 +40,7 @@ public:
 	: RclMainBase(parent,name,fl) {
 	init();
     }
-	~RclMain() {}
+    ~RclMain() {}
 
     virtual bool close( bool );
 
@@ -48,26 +48,23 @@ public slots:
     virtual void fileExit();
     virtual void periodic100();
     virtual void fileStart_IndexingAction_activated();
-    virtual void startAdvSearch( Rcl::AdvSearchData sdata );
-    virtual void previewClosed( QWidget * w );
+    virtual void startAdvSearch(Rcl::AdvSearchData sdata);
+    virtual void previewClosed(QWidget * w);
     virtual void showAdvSearchDialog();
     virtual void showSortDialog();
     virtual void showAboutDialog();
     virtual void startManual();
     virtual void showDocHistory();
-    virtual void sortDataChanged( int cnt, RclSortSpec spec );
+    virtual void sortDataChanged(RclSortSpec spec);
     virtual void showUIPrefs();
     virtual void setUIPrefs();
     virtual void enableNextPage(bool);
     virtual void enablePrevPage(bool);
-    virtual void showQueryDetails();
 protected:
     Preview *curPreview;
     advsearch *asearchform;
-    Rcl::AdvSearchData currentQueryData;
     SortForm *sortform;
     UIPrefsDialog *uiprefs;
-    int sortwidth;
     RclSortSpec sortspecs;
     RclDHistory *m_history;
 private:

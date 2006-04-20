@@ -81,7 +81,11 @@ void SSearchBase::completion()
 {
     if (!rcldb)
 	return;
-
+    if (searchTypCMB->currentItem() == 2) {
+	// Filename: no completion
+	QApplication::beep();
+	return;
+    }
     // Extract last word in text
     string txt = (const char *)queryText->text().utf8();
     string::size_type cs = txt.find_last_of(" ");
