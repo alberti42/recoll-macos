@@ -196,9 +196,11 @@
     <variable>bool dynSearchActive;</variable>
     <variable>bool canBeep;</variable>
     <variable>void *tabData;</variable>
+    <variable>QWidget *currentW;</variable>
 </variables>
 <signals>
     <signal>previewClosed(QWidget *)</signal>
+    <signal>wordSelect(QString)</signal>
 </signals>
 <slots>
     <slot>searchTextLine_textChanged( const QString &amp; text )</slot>
@@ -208,6 +210,7 @@
     <slot>currentChanged( QWidget * tw )</slot>
     <slot>closeCurrentTab()</slot>
     <slot>setCurTabProps( const string &amp; fn, const Rcl::Doc &amp; doc )</slot>
+    <slot>textDoubleClicked(int, int)</slot>
 </slots>
 <functions>
     <function access="private" specifier="non virtual">init()</function>

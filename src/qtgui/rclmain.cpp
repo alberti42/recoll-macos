@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.23 2006-04-20 09:20:09 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.24 2006-04-22 06:27:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -95,8 +95,8 @@ void RclMain::init()
     m_history = new RclDHistory(historyfile);
     connect(sSearch, SIGNAL(startSearch(Rcl::AdvSearchData)), 
 		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
-    connect(sSearch, SIGNAL(clearSearch()), 
-	    resList, SLOT(resetSearch()));
+    connect(sSearch, SIGNAL(clearSearch()), resList, SLOT(resetSearch()));
+    connect(resList, SIGNAL(docExpand(int)), this, SLOT(docExpand(int)));
 
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
@@ -289,9 +289,16 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
 
     resList->resetSearch();
 
-    if (!rcldb->setQuery(sdata, prefs.queryStemLang.length() > 0 ? 
-			 Rcl::Db::QO_STEM : Rcl::Db::QO_NONE, 
-			 prefs.queryStemLang.ascii()))
+    int qopts = 0;
+    if (prefs.queryBuildAbstract && !sdata.fileNameOnly()) {
+	qopts |= Rcl::Db::QO_BUILD_ABSTRACT;
+	if (prefs.queryReplaceAbstract)
+	    qopts |= Rcl::Db::QO_REPLACE_ABSTRACT;
+    }
+    if (!prefs.queryStemLang.length() == 0)
+	qopts |= Rcl::Db::QO_STEM;
+
+    if (!rcldb->setQuery(sdata, qopts, prefs.queryStemLang.ascii()))
 	return;
     curPreview = 0;
 
@@ -409,6 +416,8 @@ void RclMain::startPreview(int docnum)
 	curPreview->setCaption(resList->getDescription());
 	connect(curPreview, SIGNAL(previewClosed(QWidget *)), 
 		this, SLOT(previewClosed(QWidget *)));
+	connect(curPreview, SIGNAL(wordSelect(QString)),
+		this, SLOT(ssearchAddTerm(QString)));
 	curPreview->show();
     } else {
 	if (curPreview->makeDocCurrent(fn, doc)) {
@@ -420,6 +429,13 @@ void RclMain::startPreview(int docnum)
     m_history->enterDocument(fn, doc.ipath);
     if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc))
 	curPreview->closeCurrentTab();
+}
+
+void RclMain::ssearchAddTerm(QString term)
+{
+    QString text = sSearch->queryText->text();
+    text += QString::fromLatin1(" ") + term;
+    sSearch->queryText->setText(text);
 }
 
 void RclMain::startNativeViewer(int docnum)
@@ -493,6 +509,23 @@ void RclMain::startManual()
 	msg += prefs.htmlBrowser;
     statusBar()->message(msg, 3000);
     startHelpBrowser();
+}
+
+void RclMain::docExpand(int docnum)
+{
+    Rcl::Doc doc;
+    if (!resList->getDoc(docnum, doc))
+	return;
+    list<string> terms;
+    terms = rcldb->expand(doc);
+    QString text = sSearch->queryText->text();
+    for (list<string>::iterator it = terms.begin(); it != terms.end(); it++) {
+	text += QString::fromLatin1(" \"") +
+	    QString::fromUtf8((*it).c_str()) + QString::fromLatin1("\"");
+    }
+    sSearch->queryText->setText(text);
+    sSearch->setAnyTermMode();
+    sSearch->startSimpleSearch();
 }
 
 void RclMain::showDocHistory()

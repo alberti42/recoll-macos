@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.69 2006-04-19 08:26:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.70 2006-04-22 06:27:37 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -128,7 +128,7 @@ class Native {
 };
 
 Db::Db() 
-    : m_qOpts(0)
+    : m_qOpts(QO_NONE)
 {
     m_ndb = new Native;
 }
@@ -786,7 +786,7 @@ static void stringToXapianQueries(const string &iq,
 				  const string& stemlang,
 				  Native *m_ndb,
 				  list<Xapian::Query> &pqueries,
-				  Db::QueryOpts opts = Db::QO_NONE)
+				  unsigned int opts = Db::QO_NONE)
 {
     string qstring = iq;
 
@@ -855,8 +855,7 @@ static void stringToXapianQueries(const string &iq,
 }
 
 // Prepare query out of "advanced search" data
-bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts, 
-		       const string& stemlang)
+bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
 {
     LOGDEB(("Db::setQuery: adv:\n"));
     LOGDEB((" allwords: %s\n", sdata.allwords.c_str()));
@@ -873,6 +872,7 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	LOGDEB((" searched file types: %s\n", ft.c_str()));
     if (!sdata.topdir.empty())
 	LOGDEB((" restricted to: %s\n", sdata.topdir.c_str()));
+    LOGDEB((" Options: 0x%x\n", opts));
 
     m_filterTopDir = sdata.topdir;
     m_dbindices.clear();
@@ -881,6 +881,8 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
 	return false;
     list<Xapian::Query> pqueries;
     Xapian::Query xq;
+
+    m_qOpts = opts;
 
     if (!sdata.filename.empty()) {
 	LOGDEB((" filename search\n"));
@@ -929,7 +931,7 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     }
 
     if (!sdata.allwords.empty()) {
-	stringToXapianQueries(sdata.allwords, stemlang, m_ndb, pqueries, opts);
+	stringToXapianQueries(sdata.allwords, stemlang, m_ndb, pqueries, m_qOpts);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq = 
 		Xapian::Query(Xapian::Query::OP_AND, pqueries.begin(),
@@ -941,7 +943,7 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     }
 
     if (!sdata.orwords.empty()) {
-	stringToXapianQueries(sdata.orwords, stemlang, m_ndb, pqueries, opts);
+	stringToXapianQueries(sdata.orwords, stemlang, m_ndb, pqueries, m_qOpts);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq = 
 		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
@@ -953,7 +955,7 @@ bool Db::setQuery(AdvSearchData &sdata, QueryOpts opts,
     }
 
     if (!sdata.orwords1.empty()) {
-	stringToXapianQueries(sdata.orwords1, stemlang, m_ndb, pqueries, opts);
+	stringToXapianQueries(sdata.orwords1, stemlang, m_ndb, pqueries, m_qOpts);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq = 
 		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
@@ -1101,7 +1103,7 @@ bool Native::dbDataToRclDoc(std::string &data, Doc &doc,
 			    int qopts,
 			    Xapian::docid docid, const list<string>& terms)
 {
-    LOGDEB1(("Db::dbDataToRclDoc: data: %s\n", data.c_str()));
+    LOGDEB1(("Db::dbDataToRclDoc: opts %x data: %s\n", qopts, data.c_str()));
     ConfSimple parms(&data);
     if (!parms.ok())
 	return false;
@@ -1118,7 +1120,7 @@ bool Native::dbDataToRclDoc(std::string &data, Doc &doc,
 	doc.abstract = doc.abstract.substr(rclSyntAbs.length());
 	syntabs = true;
     }
-    if ((qopts && Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
+    if ((qopts & Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
 	LOGDEB1(("dbDataToRclDoc:: building abstract from position data\n"));
 	if (doc.abstract.empty() || syntabs || 
 	    (qopts & Db::QO_REPLACE_ABSTRACT))
@@ -1127,6 +1129,7 @@ bool Native::dbDataToRclDoc(std::string &data, Doc &doc,
     parms.get(string("ipath"), doc.ipath);
     parms.get(string("fbytes"), doc.fbytes);
     parms.get(string("dbytes"), doc.dbytes);
+    doc.xdocid = docid;
     return true;
 }
 
@@ -1293,6 +1296,24 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 	LOGERR(("Db::getDoc: %s\n", ermsg));
     }
     return false;
+}
+
+list<string> Db::expand(const Doc &doc)
+{
+    list<string> res;
+    if (!m_ndb || !m_ndb->enquire) {
+	LOGERR(("Db::expand: no query opened\n"));
+	return res;
+    }
+    Xapian::RSet rset;
+    rset.add_document(Xapian::docid(doc.xdocid));
+    Xapian::ESet eset = m_ndb->enquire->get_eset(10, rset);
+    LOGDEB(("ESet terms:\n"));
+    for (Xapian::ESetIterator it = eset.begin(); it != eset.end(); it++) {
+	LOGDEB((" [%s]\n", (*it).c_str()));
+	res.push_back(*it);
+    }
+    return res;
 }
 
 // Width of a sample extract around a query term

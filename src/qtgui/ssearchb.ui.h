@@ -75,6 +75,10 @@ void SSearchBase::startSimpleSearch()
 
     emit startSearch(sdata);
 }
+void SSearchBase::setAnyTermMode()
+{
+    searchTypCMB->setCurrentItem(0);
+}
 
 // Complete last word in input by querying db for all possible terms.
 void SSearchBase::completion()

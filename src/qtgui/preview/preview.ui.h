@@ -71,6 +71,7 @@ void Preview::init()
     canBeep = true;
     tabData = new list<TabData>;
     TABDATA->push_back(TabData(pvTab->currentPage()));
+    currentW = 0;
 }
 
 void Preview::destroy()
@@ -223,6 +224,7 @@ void Preview::prevPressed()
 void Preview::currentChanged(QWidget * tw)
 {
     QWidget *edit = (QWidget *)tw->child("pvEdit");
+    currentW = tw;
     LOGDEB1(("Preview::currentChanged(). Editor: %p\n", edit));
     
     if (edit == 0) {
@@ -231,9 +233,23 @@ void Preview::currentChanged(QWidget * tw)
 	tw->installEventFilter(this);
 	edit->installEventFilter(this);
 	edit->setFocus();
+	connect(edit, SIGNAL(doubleClicked(int, int)), 
+		this, SLOT(textDoubleClicked(int, int)));
     }
 }
 
+void Preview::textDoubleClicked(int, int)
+{
+    if (!currentW)
+	return;
+    QTextEdit *edit = (QTextEdit *)currentW->child("pvEdit");
+    if (edit == 0) {
+	LOGERR(("Editor child not found\n"));
+	return;
+    }
+    if (edit->hasSelectedText())
+	emit(wordSelect(edit->selectedText()));
+}
 
 void Preview::closeCurrentTab()
 {

@@ -1,6 +1,6 @@
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.1 2006-04-19 08:26:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.2 2006-04-22 06:27:37 dockes Exp $  (C) 2004 J.F.Dockes */
 
 namespace Rcl {
 /**
@@ -28,6 +28,10 @@ class AdvSearchData {
 	topdir.erase();
 	filename.erase();
 	description.erase();
+    }
+    bool fileNameOnly() {
+	return allwords.empty() && phrase.empty() && orwords.empty() && 
+	    orwords1.empty() && nowords.empty();
     }
 };
 

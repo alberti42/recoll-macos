@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.13 2006-04-20 09:20:09 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.14 2006-04-22 06:27:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -294,7 +294,7 @@ void RclResList::showResultPage()
 	if (!doc.fbytes.empty())
 	    fsize = atol(doc.fbytes.c_str());
 	string sizebuf;
-	if (dsize >= 0) {
+	if (dsize > 0) {
 	    sizebuf = displayableBytes(dsize);
 	    if (fsize > 10 * dsize && fsize - dsize > 1000)
 		sizebuf += string(" / ") + displayableBytes(fsize);
@@ -438,6 +438,7 @@ QPopupMenu *RclResList::createPopupMenu(const QPoint& pos)
     popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
     popup->insertItem(tr("&Copy File Name"), this, SLOT(menuCopyFN()));
     popup->insertItem(tr("Copy &Url"), this, SLOT(menuCopyURL()));
+    popup->insertItem(tr("&More like this"), this, SLOT(menuExpand()));
     return popup;
 }
 
@@ -465,6 +466,13 @@ void RclResList::menuCopyURL()
 	string url =  url_encode(doc.url, 7);
 	QApplication::clipboard()->setText(url.c_str(), 
 					   QClipboard::Selection);
+    }
+}
+void RclResList::menuExpand()
+{
+    Rcl::Doc doc;
+    if (rcldb && getDoc(m_docnum, doc)) {
+	emit docExpand(m_docnum);
     }
 }
 

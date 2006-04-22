@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.33 2006-04-19 08:26:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.34 2006-04-22 06:27:37 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -77,9 +77,11 @@ class Doc {
 
     // The following fields don't go to the db record
     
-    string text; // text is split and indexed 
+    string text; // During indexing only: text returned by input handler will
+                 // be split and indexed 
 
     int pc; // used by sortseq, convenience
+    unsigned long xdocid; // Opaque: rcldb doc identifier.
 
     void erase() {
 	url.erase();
@@ -96,6 +98,8 @@ class Doc {
 	dbytes.erase();
 
 	text.erase();
+	pc = 0;
+	xdocid = 0;
     }
 };
 
@@ -114,7 +118,7 @@ class Db {
     enum QueryOpts {QO_NONE=0, QO_STEM = 1, QO_BUILD_ABSTRACT = 2,
 		    QO_REPLACE_ABSTRACT = 4};
 
-    bool open(const string &dbdir, OpenMode mode, int qops = 0);
+    bool open(const string &dbdir, OpenMode mode, int qops = QO_NONE);
     bool close();
     bool isopen();
 
@@ -130,7 +134,7 @@ class Db {
     // Query-related functions
 
     // Parse query string and initialize query
-    bool setQuery(AdvSearchData &q, QueryOpts opts = QO_NONE,
+    bool setQuery(AdvSearchData &q, int opts = QO_NONE,
 		  const string& stemlang = "english");
     bool getQueryTerms(list<string>& terms);
 
@@ -155,6 +159,9 @@ class Db {
 
     /** Get document for given filename and ipath */
     bool getDoc(const string &fn, const string &ipath, Doc &doc, int *percent);
+
+    /** Expand query */
+    list<string> expand(const Doc &doc);
 
     /** Get results count for current query */
     int getResCnt();

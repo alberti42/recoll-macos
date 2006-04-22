@@ -60,6 +60,8 @@ public slots:
     virtual void setUIPrefs();
     virtual void enableNextPage(bool);
     virtual void enablePrevPage(bool);
+    virtual void docExpand(int);
+    virtual void ssearchAddTerm(QString);
 protected:
     Preview *curPreview;
     advsearch *asearchform;

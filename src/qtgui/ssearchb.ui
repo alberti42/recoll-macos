@@ -147,6 +147,7 @@
     <function>init()</function>
     <function>completion()</function>
     <function returnType="bool">event( QEvent * evt )</function>
+    <function>setAnyTermMode()</function>
 </functions>
 <layoutdefaults spacing="6" margin="0"/>
 </UI>
