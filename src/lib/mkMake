@@ -1,0 +1,78 @@
+#!/bin/sh
+
+mk=Makefile
+depth=..
+
+SRCS="${depth}/utils/conftree.cpp ${depth}/index/csguess.cpp \
+     ${depth}/utils/debuglog.cpp ${depth}/utils/execmd.cpp \
+     ${depth}/utils/idfile.cpp ${depth}/utils/md5.cpp \
+     ${depth}/utils/wipedir.cpp ${depth}/utils/fstreewalk.cpp \
+     ${depth}/common/mh_html.cpp ${depth}/common/mh_mail.cpp \
+     ${depth}/common/mh_exec.cpp ${depth}/common/mh_text.cpp \
+     ${depth}/common/htmlparse.cpp ${depth}/index/indexer.cpp \
+     ${depth}/common/internfile.cpp ${depth}/common/mimehandler.cpp \
+     ${depth}/utils/mimeparse.cpp ${depth}/index/mimetype.cpp \
+     ${depth}/common/myhtmlparse.cpp ${depth}/common/pathhash.cpp \
+     ${depth}/utils/pathut.cpp ${depth}/common/rclconfig.cpp \
+     ${depth}/common/rcldb.cpp ${depth}/common/rclinit.cpp \
+     ${depth}/common/stemdb.cpp \
+     ${depth}/utils/base64.cpp ${depth}/utils/readfile.cpp \
+     ${depth}/utils/smallut.cpp ${depth}/common/textsplit.cpp \
+     ${depth}/utils/transcode.cpp ${depth}/common/unacpp.cpp \
+     ${depth}/query/history.cpp \
+     ${depth}/query/docseq.cpp ${depth}/query/sortseq.cpp \
+     ${depth}/utils/copyfile.cpp"
+
+
+for c in $SRCS;do
+    o=`basename $c .cpp`.o
+    OBJS="$OBJS $o"
+    d=`basename $c .cpp`.dep
+    DEPS="$DEPS $d"
+done
+
+test -f $mk && chmod +w $mk
+
+cat > $mk <<EOF
+# DONT EDIT BY HAND: created by script mkMake
+depth = ..
+include \$(depth)/mk/sysconf
+
+UNACCFLAGS = -g -I. -I\$(depth)/unac \$(INCICONV) -DUNAC_VERSION=\\"1.0.7\\"
+
+LIBS = librcl.a
+
+all: \$(LIBS)
+
+OBJS = $OBJS
+DEPS = $DEPS
+
+librcl.a : \$(OBJS) \$(DEPS) unac.o
+	ar ru librcl.a \$(OBJS) unac.o
+	\$(RANLIB) librcl.a
+
+unac.o : \$(depth)/unac/unac.c \$(depth)/unac/unac.h
+	\$(CC) \$(UNACCFLAGS) -c \$<
+EOF
+
+for c in $SRCS;do
+    o=`basename $c .cpp`.o
+    echo "$o :" >> $mk
+    echo "	\$(CXX) \$(ALL_CXXFLAGS) -c \$<" >> $mk
+done
+
+cat >> $mk <<EOF
+depend: \$(DEPS)
+clean:
+	rm -f \$(OBJS) \$(LIBS) \$(DEPS) unac.o
+EOF
+
+for c in $SRCS;do
+    d=`basename $c .cpp`.dep
+    echo "$d : $c" >> $mk
+    echo "	\$(CXX) -M \$(ALL_CXXFLAGS) \$< > $d" >> $mk
+done
+for c in $SRCS;do
+    d=`basename $c .cpp`.dep
+    echo "include $d" >> $mk
+done
