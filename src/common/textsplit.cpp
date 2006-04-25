@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.21 2006-04-11 06:49:45 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.22 2006-04-25 08:17:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -203,14 +203,16 @@ static inline int whatcc(unsigned int c)
  */
 bool TextSplit::text_to_words(const string &in)
 {
-    LOGDEB2(("TextSplit::text_to_words: cb %p\n", cb));
+    LOGDEB2(("TextSplit::text_to_words: cb %p in [%s]\n", cb, 
+	    in.substr(0,50).c_str()));
 
     setcharclasses();
 
     span.erase();
     word.erase(); // Current word: no punctuation at all in there
     number = false;
-    wordpos = spanpos = charpos = 0;
+    prevpos = wordpos = spanpos = charpos = 0;
+    prevterm.erase();
 
     Utf8Iter it(in);
 

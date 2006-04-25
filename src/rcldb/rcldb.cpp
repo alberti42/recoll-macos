@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.70 2006-04-22 06:27:37 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.71 2006-04-25 08:17:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -437,7 +437,9 @@ bool Db::add(const string &fn, const Doc &idoc,
     // Truncate abstract, title and keywords to reasonable lengths. If
     // abstract is currently empty, we make up one with the beginning
     // of the document.
+    bool syntabs = false;
     if (doc.abstract.empty()) {
+	syntabs = true;
 	doc.abstract = rclSyntAbs + 
 	    truncate_to_word(doc.text, INDEX_ABSTRACT_SIZE);
     } else {
@@ -457,12 +459,14 @@ bool Db::add(const string &fn, const Doc &idoc,
     string noacc;
 
     // Split and index file name as document term(s)
+    LOGDEB2(("Db::add: split file name [%s]\n", fn.c_str()));
     if (dumb_string(doc.utf8fn, noacc)) {
 	splitter.text_to_words(noacc);
 	splitData.basepos += splitData.curpos + 100;
     }
 
     // Split and index title
+    LOGDEB2(("Db::add: split title [%s]\n", doc.title.c_str()));
     if (!dumb_string(doc.title, noacc)) {
 	LOGERR(("Db::add: dumb_string failed\n"));
 	return false;
@@ -471,6 +475,7 @@ bool Db::add(const string &fn, const Doc &idoc,
     splitData.basepos += splitData.curpos + 100;
 
     // Split and index body
+    LOGDEB2(("Db::add: split body\n"));
     if (!dumb_string(doc.text, noacc)) {
 	LOGERR(("Db::add: dumb_string failed\n"));
 	return false;
@@ -479,6 +484,7 @@ bool Db::add(const string &fn, const Doc &idoc,
     splitData.basepos += splitData.curpos + 100;
 
     // Split and index keywords
+    LOGDEB2(("Db::add: split kw [%s]\n", doc.keywords.c_str()));
     if (!dumb_string(doc.keywords, noacc)) {
 	LOGERR(("Db::add: dumb_string failed\n"));
 	return false;
@@ -487,7 +493,9 @@ bool Db::add(const string &fn, const Doc &idoc,
     splitData.basepos += splitData.curpos + 100;
 
     // Split and index abstract
-    if (!dumb_string(doc.abstract, noacc)) {
+    LOGDEB2(("Db::add: split abstract [%s]\n", doc.abstract.c_str()));
+    if (!dumb_string(syntabs ? doc.abstract.substr(rclSyntAbs.length()) : 
+		     doc.abstract, noacc)) {
 	LOGERR(("Db::add: dumb_string failed\n"));
 	return false;
     }
