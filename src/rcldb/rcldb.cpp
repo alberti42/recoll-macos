@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.71 2006-04-25 08:17:36 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.72 2006-04-25 09:59:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -522,18 +522,20 @@ bool Db::add(const string &fn, const Doc &idoc,
     string hash;
     pathHash(fn, hash, PATHHASHLEN);
     LOGDEB2(("Db::add: pathhash [%s]\n", hash.c_str()));
-    string pathterm = "P" + hash;
-    newdocument.add_term(pathterm);
-    
-    // Unique term: with path, makes unique identifier for documents
-    // inside multidocument files.
+
+    // Unique term: makes unique identifier for documents
+    // either path or path+ipath inside multidocument files.
+    // We only add a path term if ipath is empty. Else there will be a qterm
+    // (path+ipath), and a pseudo-doc will be created to stand for the file 
+    // itself (for up to date checks). This is handled by 
+    // DbIndexer::processone() 
     string uniterm;
     if (doc.ipath.empty()) {
-	uniterm = pathterm;
+	uniterm = "P" + hash;
     } else {
-	uniterm  = "Q" + hash + "|" + doc.ipath;
-	newdocument.add_term(uniterm);
+	uniterm = "Q" + hash + "|" + doc.ipath;
     }
+    newdocument.add_term(uniterm);
 
     // Dates etc...
     time_t mtime = atol(doc.dmtime.empty() ? doc.fmtime.c_str() : 
@@ -613,11 +615,11 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
     if (m_ndb == 0)
 	return false;
 
-    // If no document exist with this path, we do need update
     string hash;
     pathHash(filename, hash, PATHHASHLEN);
-    string pathterm  = "P" + hash;
+    string pterm  = "P" + hash;
     const char *ermsg;
+    string qterm = "Q"+ hash + "|";
 
     // Look for all documents with this path. We need to look at all
     // to set their existence flag.  We check the update time on the
@@ -626,42 +628,54 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
     // file changed)
     Xapian::PostingIterator doc;
     try {
-	if (!m_ndb->wdb.term_exists(pathterm)) {
-	    LOGDEB1(("Db::needUpdate: no such path: %s\n", pathterm.c_str()));
+	if (!m_ndb->wdb.term_exists(pterm)) {
+	    // If no document exist with this path, we do need update
+	    LOGDEB2(("Db::needUpdate: no such path: [%s]\n", pterm.c_str()));
 	    return true;
 	}
+	// Check the date using the Pterm doc or pseudo-doc
+	Xapian::PostingIterator docid = m_ndb->wdb.postlist_begin(pterm);
+	Xapian::Document doc = m_ndb->wdb.get_document(*docid);
+	string data = doc.get_data();
+	const char *cp = strstr(data.c_str(), "fmtime=");
+	if (cp) {
+	    cp += 7;
+	} else {
+	    cp = strstr(data.c_str(), "mtime=");
+	    if (cp)
+		cp+= 6;
+	}
+	long mtime = cp ? atol(cp) : 0;
+	if (mtime < stp->st_mtime) {
+	    LOGDEB2(("Db::needUpdate: yes: mtime: Db %ld file %ld\n", 
+		     (long)mtime, (long)stp->st_mtime));
+	    // Db is not up to date. Let's index the file
+	    return true;
+	} 
 
-	Xapian::PostingIterator docid0 = m_ndb->wdb.postlist_begin(pathterm);
-	for (Xapian::PostingIterator docid = docid0;
-	     docid != m_ndb->wdb.postlist_end(pathterm); docid++) {
+	LOGDEB2(("Db::needUpdate: uptodate: [%s]\n", pterm.c_str()));
 
-	    Xapian::Document doc = m_ndb->wdb.get_document(*docid);
+	// Up to date. 
 
-	    // Check the date once. no need to look at the others if
-	    // the db needs updating. Note that the fmtime used to be
-	    // called mtime, and we're keeping compat
-	    if (docid == docid0) {
-		string data = doc.get_data();
-		const char *cp = strstr(data.c_str(), "fmtime=");
-		if (cp) {
-		    cp += 7;
-		} else {
-		    cp = strstr(data.c_str(), "mtime=");
-		    if (cp)
-			cp+= 6;
-		}
-		long mtime = cp ? atol(cp) : 0;
-		if (mtime < stp->st_mtime) {
-		    LOGDEB2(("Db::needUpdate: yes: mtime: Db %ld file %ld\n", 
-			    (long)mtime, (long)stp->st_mtime));
-		    // Db is not up to date. Let's index the file
-		    return true;
-		} 
-	    }
+	// Set the uptodate flag for doc / pseudo doc
+	m_ndb->updated[*docid] = true;
 
-	    // Db is up to date. Make a note that this document exists.
-	    if (*docid < m_ndb->updated.size())
+	// Set the existence flag for all the subdocs (if any)
+	Xapian::TermIterator it = m_ndb->wdb.allterms_begin(); 
+	it.skip_to(qterm);
+	LOGDEB2(("First qterm: [%s]\n", (*it).c_str()));
+	for (;it != m_ndb->wdb.allterms_end(); it++) {
+	    // If current term does not begin with qterm or has another |, not
+	    // the same file
+	    if ((*it).find(qterm) != 0 || 
+		(*it).find_last_of("|") != qterm.length() -1)
+		break;
+	    docid = m_ndb->wdb.postlist_begin(*it);
+	    if (*docid < m_ndb->updated.size()) {
+		LOGDEB2(("Db::needUpdate: set exist flag for docid %d [%s]\n", 
+			*docid, (*it).c_str()));
 		m_ndb->updated[*docid] = true;
+	    }
 	}
 	return false;
     } catch (const Xapian::Error &e) {
@@ -1246,9 +1260,7 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
     return m_ndb->dbDataToRclDoc(data, doc, m_qOpts, docid, terms);
 }
 
-// Retrieve document defined by file name and internal path. Very inefficient,
-// used only for history display. We'd need to enter path+ipath terms in the
-// db if we wanted to make this more efficient.
+// Retrieve document defined by file name and internal path. 
 bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 {
     LOGDEB(("Db:getDoc: [%s] (%d) [%s]\n", fn.c_str(), fn.length(),
@@ -1265,32 +1277,24 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 
     string hash;
     pathHash(fn, hash, PATHHASHLEN);
-    string pathterm  = "P" + hash;
-    // Look for all documents with this path, searching for the one
-    // with the appropriate ipath. This is very inefficient.
+    string pqterm  = ipath.empty() ? "P" + hash : "Q" + hash + "|" + ipath;
     const char *ermsg = "";
     try {
-	if (!m_ndb->db.term_exists(pathterm)) {
+	if (!m_ndb->db.term_exists(pqterm)) {
 	    // Document found in history no longer in the database.
 	    // We return true (because their might be other ok docs further)
 	    // but indicate the error with pc = -1
 	    if (*pc) 
 		*pc = -1;
-	    LOGINFO(("Db:getDoc: no such path in index: [%s] (len %d)\n",
-		     pathterm.c_str(), pathterm.length()));
+	    LOGINFO(("Db:getDoc: no such doc in index: [%s] (len %d)\n",
+		     pqterm.c_str(), pqterm.length()));
 	    return true;
 	}
-	for (Xapian::PostingIterator docid = 
-		 m_ndb->db.postlist_begin(pathterm);
-	     docid != m_ndb->db.postlist_end(pathterm); docid++) {
-
-	    Xapian::Document xdoc = m_ndb->db.get_document(*docid);
-	    string data = xdoc.get_data();
-	    list<string> terms;
-	    if (m_ndb->dbDataToRclDoc(data, doc, QO_NONE, *docid, terms) 
-		&& doc.ipath == ipath)
-		return true;
-	}
+	Xapian::PostingIterator docid = m_ndb->db.postlist_begin(pqterm);
+	Xapian::Document xdoc = m_ndb->db.get_document(*docid);
+	string data = xdoc.get_data();
+	list<string> terms;
+	return m_ndb->dbDataToRclDoc(data, doc, QO_NONE, *docid, terms);
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
     } catch (const string &s) {

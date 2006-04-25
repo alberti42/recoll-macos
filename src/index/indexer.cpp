@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.31 2006-04-12 10:41:39 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.32 2006-04-25 09:59:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -248,33 +248,48 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     }
 
     FileInterner interner(fn, m_config, m_tmpdir);
+
+    // File name transcoded to utf8 for indexation. 
+    string charset = m_config->getDefCharset(true);
+    // If this fails, the file name won't be indexed, no big deal
+    // Note that we used to do the full path here, but I ended up believing
+    // that it made more sense to use only the file name
+    string utf8fn;
+    transcode(path_getsimple(fn), utf8fn, charset, "UTF-8");
+
     FileInterner::Status fis = FileInterner::FIAgain;
+    bool hadNullIpath = false;
+    Rcl::Doc doc;
+    char ascdate[20];
+    sprintf(ascdate, "%ld", long(stp->st_ctime));
     while (fis == FileInterner::FIAgain) {
-	Rcl::Doc doc;
+	doc.erase();
+
 	string ipath;
 	fis = interner.internfile(doc, ipath);
-	if (fis == FileInterner::FIError)
-	    break;
+	if (fis == FileInterner::FIError) {
+	    // We dont stop indexing for one bad doc
+	    return FsTreeWalker::FtwOk;
+	}
 
 	// Set the date if this was not done in the document handler
 	if (doc.fmtime.empty()) {
-	    char ascdate[20];
-	    sprintf(ascdate, "%ld", long(stp->st_ctime));
 	    doc.fmtime = ascdate;
 	}
-	// Internal access path for multi-document files
-	doc.ipath = ipath;
 
-	// File name transcoded to utf8 for indexation. 
-	string charset = m_config->getDefCharset(true);
-	// If this fails, the file name won't be indexed, no big deal
-	// Note that we used to do the full path here, but I ended up believing
-	// that it made more sense to use only the file name
-	transcode(path_getsimple(fn), doc.utf8fn, charset, "UTF-8");
-	// Do database-specific work to update document data
+	// Internal access path for multi-document files
+	if (ipath.empty())
+	    hadNullIpath = true;
+	else
+	    doc.ipath = ipath;
+	
+	doc.utf8fn = utf8fn;
+
+	// Add document to database
 	if (!m_db.add(fn, doc, stp)) 
 	    return FsTreeWalker::FtwError;
 
+	// Tell what we are doing and check for interrupt request
 	if (m_updater) {
 	    if ((++(m_updater->status.docsdone) % 10) == 0) {
 		m_updater->status.fn = fn;
@@ -285,6 +300,19 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 		}
 	    }
 	}
+    }
+
+    // If we had no instance with a null ipath, we create an empty
+    // document to stand for the file itself, to be used mainly for up
+    // to date checks. Typically this happens for an mbox file.
+    if (hadNullIpath == false) {
+	LOGDEB1(("Creating empty doc for file\n"));
+	Rcl::Doc fileDoc;
+	fileDoc.fmtime = doc.fmtime;
+	fileDoc.utf8fn = doc.utf8fn;
+	fileDoc.mimetype = doc.mimetype;
+	if (!m_db.add(fn, fileDoc, stp)) 
+	    return FsTreeWalker::FtwError;
     }
 
     return FsTreeWalker::FtwOk;
