@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.14 2006-04-22 06:27:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.15 2006-04-26 11:29:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -35,7 +35,7 @@ RclResList::RclResList(QWidget* parent, const char* name)
 {
     if (!name)
 	setName("rclResList");
-    setTextFormat(RclResList::RichText);
+    setTextFormat(Qt::RichText);
     setReadOnly(TRUE);
     setUndoRedoEnabled(FALSE);
     languageChange();
@@ -47,6 +47,8 @@ RclResList::RclResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(linkClicked(const QString &)), 
 	    this, SLOT(linkWasClicked(const QString &)));
     connect(this, SIGNAL(headerClicked()), this, SLOT(showQueryDetails()));
+    connect(this, SIGNAL(doubleClicked(int,int)), 
+	    this, SLOT(doubleClicked(int, int)));
     m_winfirst = -1;
     m_docsource = 0;
 }
@@ -407,6 +409,13 @@ void RclResList::clicked(int par, int car)
     // Color the new active paragraph
     QColor color("lightblue");
     setParagraphBackgroundColor(par, color);
+}
+
+// Double click in res list: add selection to simple search
+void RclResList::doubleClicked(int, int)
+{
+    if (hasSelectedText())
+	emit(wordSelect(selectedText()));
 }
 
 void RclResList::linkWasClicked(const QString &s)

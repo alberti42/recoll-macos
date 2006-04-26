@@ -1,6 +1,6 @@
 #ifndef _RCLRESLIST_H_INCLUDED_
 #define _RCLRESLIST_H_INCLUDED_
-/* @(#$Id: rclreslist.h,v 1.7 2006-04-22 06:27:37 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: rclreslist.h,v 1.8 2006-04-26 11:29:10 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <qtextbrowser.h>
 #include <qpopupmenu.h>
@@ -25,6 +25,7 @@ class RclResList : public QTextBrowser
  public slots:
     virtual void resetSearch() {m_winfirst = -1;clear();}
     virtual void clicked(int, int);
+    virtual void doubleClicked(int, int);
     virtual void resPageUpOrBack();
     virtual void resPageDownOrNext();
     virtual void resultPageBack();
@@ -42,6 +43,7 @@ class RclResList : public QTextBrowser
     void docPreviewClicked(int);
     void headerClicked();
     void docExpand(int);
+    void wordSelect(QString);
 
  protected:
     void keyPressEvent(QKeyEvent *e);

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.24 2006-04-22 06:27:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.25 2006-04-26 11:29:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -97,6 +97,8 @@ void RclMain::init()
 		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
     connect(sSearch, SIGNAL(clearSearch()), resList, SLOT(resetSearch()));
     connect(resList, SIGNAL(docExpand(int)), this, SLOT(docExpand(int)));
+    connect(resList, SIGNAL(wordSelect(QString)),
+	    this, SLOT(ssearchAddTerm(QString)));
 
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
@@ -431,8 +433,30 @@ void RclMain::startPreview(int docnum)
 	curPreview->closeCurrentTab();
 }
 
+// Add term to simple search. Term comes out of double-click in
+// reslist or preview. The cleanup code is really horrible. Selection
+// out of the reslist will typically look like 
+// <!-- Fragment -->sometext
+// It would probably be better to cleanup in preview.ui.h and
+// rclreslist.cpp and do the proper html stuff in the latter case
+// (which is different because it's format is explicit richtext
+// instead of auto as for preview, needed because it's built by
+// fragments?).
+static const char* punct = " \t()<>\"'[]{}!^*,";
 void RclMain::ssearchAddTerm(QString term)
 {
+    string t = (const char *)term.utf8();
+    string::size_type pos = t.find_last_not_of(punct);
+    if (pos == string::npos)
+	return;
+    t = t.substr(0, pos+1);
+    pos = t.find_last_of(punct);
+    if (pos != string::npos)
+	t = t.substr(pos+1);
+    if (t.empty())
+	return;
+    term = QString::fromUtf8(t.c_str());
+
     QString text = sSearch->queryText->text();
     text += QString::fromLatin1(" ") + term;
     sSearch->queryText->setText(text);
