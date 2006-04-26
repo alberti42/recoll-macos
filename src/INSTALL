@@ -28,9 +28,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 4.1.1. Prerequisites
 
    At the very least, you will need to download and install the xapian core
-   package (Recoll currently uses version 0.9.2), and the qt runtime and
-   development packages (Recoll development currently uses version 3.3.5, but
-   any 3.3 version is probably ok).
+   package (Recoll development currently uses version 0.9.5), and the qt
+   runtime and development packages (Recoll development currently uses
+   version 3.3.5, but any 3.3 version is probably ok).
 
    You will most probably be able to find a binary package for qt for your
    system. You may have to compile Xapian but this is not difficult (if you

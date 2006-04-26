@@ -27,15 +27,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 1.3. Recoll overview
 
-   2. Indexation
+   2. Indexing
 
                 2.1. Introduction
 
-                2.2. The indexation configuration
+                2.2. Index storage
 
-                2.3. Starting indexation
+                             2.2.1. Security aspects
 
-                2.4. Using cron to automate indexation
+                2.3. The indexing configuration
+
+                2.4. Starting indexing
+
+                2.5. Using cron to automate indexing
 
    3. Search
 
@@ -43,13 +47,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.2. Complex/advanced search
 
-                3.3. Document history
+                3.3. Multiple databases
 
-                3.4. Result list sorting
+                3.4. Document history
 
-                3.5. Search tips, shortcuts
+                3.5. Result list sorting
 
-                3.6. Customising the search interface
+                3.6. Additional result list functionality
+
+                3.7. Search tips, shortcuts
+
+                3.8. Customising the search interface
 
    4. Installation
 
@@ -136,27 +144,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Recoll uses the Xapian information retrieval library as its storage and
    retrieval engine. Xapian is a very mature package using a sophisticated
    probabilistic ranking model. Recoll provides the interface to get data
-   into (indexation) and out (searching) of the system.
+   into (indexing) and out (searching) of the system.
 
    In practice, Xapian works by remembering where terms appear in your
-   document files. The acquisition process is called indexation.
+   document files. The acquisition process is called indexing.
 
-   The resulting database can be big (roughly the size of the original
-   document set), but it is not a document archive. Recoll can only display
-   documents that still exist at the place from which they were indexed.
-   (Actually, there is a way to reconstruct a document from the information
-   in the database, but the result is not nice, as all formatting,
-   punctuation and capitalisation are lost).
+   The resulting index can be big (roughly the size of the original document
+   set), but it is not a document archive. Recoll can only display documents
+   that still exist at the place from which they were indexed. (Actually,
+   there is a way to reconstruct a document from the information in the
+   index, but the result is not nice, as all formatting, punctuation and
+   capitalisation are lost).
 
    Recoll stores all internal data in Unicode UTF-8 format, and it can index
    files with different character sets, encodings, and languages into the
-   same database. It has input filters for many document types.
+   same index. It has input filters for many document types.
 
    Stemming depends on the document language. Recoll stores the unstemmed
    versions of terms and uses auxiliary databases for term expansion. It can
    switch stemming languages, or add a language, without reindexing. Storing
-   documents in different languages in the same database is possible, and
-   useful in practice, but does introduce possibilities of confusion. Recoll
+   documents in different languages in the same index is possible, and useful
+   in practice, but does introduce possibilities of confusion. Recoll
    currently makes no attempt at automatic language recognition.
 
    Recoll has many parameters which define exactly what to index, and how to
@@ -170,7 +178,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    should be sufficient for giving Recoll a try, but you may want to adjust
    it later.
 
-   Indexation is started automatically the first time you execute the recoll
+   Indexing is started automatically the first time you execute the recoll
    search graphical user interface, or by executing the recollindex command.
 
    Searches are performed inside the recoll program, which has many options
@@ -178,20 +186,20 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-                             Chapter 2. Indexation
+                              Chapter 2. Indexing
 
 2.1. Introduction
 
-   Indexation is the process by which the set of documents is analyzed and
-   the data entered into the database. Recoll indexation is normally
-   incremental: documents will only be processed if they have been modified.
-   On the first execution, of course, all documents will need processing. A
-   full index build can be forced later on by specifying an option to the
-   indexation command (recollindex -z).
+   Indexing is the process by which the set of documents is analyzed and the
+   data entered into the database. Recoll indexing is normally incremental:
+   documents will only be processed if they have been modified. On the first
+   execution, of course, all documents will need processing. A full index
+   build can be forced later on by specifying an option to the indexing
+   command (recollindex -z).
 
-   Recoll indexation takes place at discrete times. There is currently no
+   Recoll indexing takes place at discrete times. There is currently no
    interface to real time file modification monitors. The typical usage is to
-   have a nightly indexation run programmed into your cron file.
+   have a nightly indexing run programmed into your cron file.
 
    +------------------------------------------------------------------------+
    | Side note: there is nothing in Recoll and Xapian that would prevent    |
@@ -208,7 +216,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    document. Some file types, like mail folder files can hold many
    individually indexed documents.
 
-   Recoll indexation processes plain text, HTML, openoffice and e-mail files
+   Recoll indexing processes plain text, HTML, openoffice and e-mail files
    internally. Other types (ie: postscript, pdf, ms-word, rtf) need external
    applications for preprocessing. The list is in the installation section.
 
@@ -217,7 +225,48 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-2.2. The indexation configuration
+2.2. Index storage
+
+   The default location for the index data is the $HOME/.recoll/xapiandb/
+   directory. This can be changed by setting the RECOLL_CONFDIR environment
+   variable, or by specifying the dbdir parameter in the configuration file
+   (see the configuration section).
+
+   The size of the index is determined by the size of the set of documents,
+   but the ratio can vary a lot. For a typical mixed set of documents, the
+   index size will often be close to the data set size. In specific cases (a
+   set of compressed mbox files for example), the index can become much
+   bigger than the documents. It may also be much smaller if the documents
+   contain a lot of images or other non-indexed data (an extreme example
+   being a set of mp3 files where only the tags would be indexed).
+
+   Of course, images, sound and video do not increase the index size, which
+   means that it will be quite typical nowadays (2006), that even a big index
+   will be negligible against the total amount of data on the computer.
+
+   The index data directory only contains data that will be rebuilt by an
+   index run, so that it can be destroyed safely.
+
+     ----------------------------------------------------------------------
+
+  2.2.1. Security aspects
+
+   The Recoll index does not hold copies of the indexed documents. But it
+   does hold enough data to allow for an almost complete reconstruction. If
+   confidential data is indexed, access to the database directory should be
+   restricted.
+
+   As of version 1.4, Recoll will create the configuration directory with a
+   mode of 0700 (access by owner only). As the index directory is by default
+   a subdirectory of the configuration directory, this should result in
+   appropriate protection.
+
+   If you use another setup, you should think of the kind of protection you
+   need for your index, and set the directory access modes appropriately.
+
+     ----------------------------------------------------------------------
+
+2.3. The indexing configuration
 
    Values set in the system-wide configuration file (named like
    /usr/[local/]share/recoll/examples/recoll.conf) can be overriden by those
@@ -226,8 +275,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The most accurate documentation for editing the file is given by comments
    inside the central one. If you want to adjust the configuration before
-   indexation, just click Cancel when the program asks if it should start
-   initial indexation. This will have created a .recoll directory containing
+   indexing, just click Cancel when the program asks if it should start
+   initial indexing. This will have created a .recoll directory containing
    empty configuration files.
 
    The configuration is also documented inside the installation chapter of
@@ -235,27 +284,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-2.3. Starting indexation
+2.4. Starting indexing
 
-   Indexation is performed either by the recollindex program, or by the
-   indexation thread inside the recoll program (use the File menu).
+   Indexing is performed either by the recollindex program, or by the
+   indexing thread inside the recoll program (use the File menu).
 
-   If the recoll program finds no database when it starts, it will
-   automatically start indexation (except if cancelled).
+   If the recoll program finds no index when it starts, it will automatically
+   start indexing (except if cancelled).
 
-   It is best to avoid interrupting the indexation process, as this may
+   It is best to avoid interrupting the indexing process, as this may
    sometimes leave the database in a bad state. This is not a serious
    problem, as you then just need to clear everything and restart the
-   indexation: the database files are normally stored in the
+   indexing: the index files are normally stored in the
    $HOME/.recoll/xapiandb directory, which you can just delete if needed.
    Alternatively, you can start recollindex -z, which will reset the database
-   before indexation.
+   before indexing.
 
      ----------------------------------------------------------------------
 
-2.4. Using cron to automate indexation
+2.5. Using cron to automate indexing
 
-   The most common way to set up indexation is to have a cron task execute it
+   The most common way to set up indexing is to have a cron task execute it
    every night. For example the following crontab entry would do it every day
    at 3:30AM (supposing recollindex is in your PATH):
 
@@ -335,7 +384,30 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.3. Document history
+3.3. Multiple databases
+
+   Your Recoll configuration always defines a main index. This is what gets
+   updated, for example, when you execute recollindex.
+
+   You can use the search configuration tool to define additional databases
+   to be searched. These databases can be made active or inactive at any
+   moment.
+
+   The typical use of this feature is for a system administrator to set up a
+   central index, that you may choose to search, or not, in addition to your
+   personal data. Of course, there are other possibilities.
+
+   The main index (defined by your personal configuration) is always active.
+
+   The list of searchable databases may also be defined by the
+   RECOLL_EXTRA_DBS environment variable. This should hold a colon-separated
+   list of index directories, ie:
+
+ export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db
+
+     ----------------------------------------------------------------------
+
+3.4. Document history
 
    Documents that you actually view (with the internal preview or an external
    tool) are entered into the document history, which is remembered. You can
@@ -343,7 +415,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.4. Result list sorting
+3.5. Result list sorting
 
    The documents in a result list are normally sorted in order of relevance.
    It is possible to specify different sort parameters by using the Sort
@@ -359,7 +431,34 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.5. Search tips, shortcuts
+3.6. Additional result list functionality
+
+   Apart from the preview and edit links, you can display a popup menu by
+   right-clicking over a paragraph in the result list. This menu has the
+   following entries:
+
+     * Preview
+
+     * Edit
+
+     * Copy File Name
+
+     * Copy Url
+
+     * More like this
+
+   The Preview and Edit entries do the same thing as the corresponding links.
+   The two following entries will copy either an url or the file path to the
+   clipboard, for pasting into another application.
+
+   The More like this entry will select a number of relevant term from the
+   current document and enter them into the simple search field. You can then
+   start a simple search, with a good chance of finding documents related to
+   the current result.
+
+     ----------------------------------------------------------------------
+
+3.7. Search tips, shortcuts
 
    Disabling stem expansion. Entering a capitalized word in any search field
    will prevent stem expansion (no search for gardening if you enter Garden
@@ -371,14 +470,31 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    followed by manual. You can use the This exact phrase field of the
    advanced search dialog to the same effect.
 
+   Term completion. Typing ^TAB (Control+Tab) in the simple search entry
+   field while entering a word will either complete the current word if its
+   beginning matches a unique term in the index, or open a window to propose
+   a list of completions
+
+   Picking up new terms for search from displayed documents. Double-clicking
+   on a word in the result list or in a preview window will copy it to the
+   simple search entry field.
+
+   Finding related documents. Selecting the More like this entry in the
+   result list paragraph right-click menu will select a set of "interesting"
+   terms from the current result, and insert them into the simple search
+   entry field. You can then possibly edit the list and start a search to
+   find documents which may be apparented to the current result.
+
    Query explanation. You can get an exact description of what the query
    looked for, including stem expansion, and boolean operators used, by
    clicking on the result list header.
 
-   File names. All file name elements (the broken up file path) are entered
-   as terms during indexation, and you can specify them as ordinary terms in
-   normal search fields. Alternatively, you can use specific file name search
-   which will only look for file names and can use wildcard expansion.
+   File names. File names are added as terms during indexing, and you can
+   specify them as ordinary terms in normal search fields (Recoll used to
+   index all directories in the file path as terms. This has been abandonned
+   as it did not seem really useful). Alternatively, you can use specific
+   file name search which will only look for file names and can use wildcard
+   expansion.
 
    Quitting. Entering ^Q almost anywhere will close the application.
 
@@ -387,7 +503,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.6. Customising the search interface
+3.8. Customising the search interface
 
    It is possible to customise some aspects of the search interface by using
    Query configuration entry in the Preferences menu.
@@ -404,7 +520,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        The rest of the fonts used by Recoll are determined by your generic QT
        config (try the qtconfig command.
 
-     * Html help browser: this will let you chose your the preferred browser
+     * Html help browser: this will let you chose your preferred browser
        which will be started from the Help menu to read the user manual. You
        can enter a simple name if the command is in your PATH, or browse for
        a full pathname.
@@ -413,6 +529,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        be turned off. They take quite a lot of space and convey relatively
        little useful information.
 
+     * Auto-start simple search on whitespace entry: if this is checked, a
+       search will be executed each time you enter a space in the simple
+       search input field. This lets you look at the result list as you enter
+       new terms. This is off by default, you may like it or not...
+
    Search parameters:
 
      * Stemming language: stemming obviously depends on the document's
@@ -420,7 +541,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        which were built during indexing (this is set in the main
        configuration file), or later added with recollindex -s (See the
        recollindex manual). Stemming languages which are dynamically added
-       will be deleted at the next indexation pass unless they are also added
+       will be deleted at the next indexing pass unless they are also added
        in the configuration file.
 
      * Dynamically build abstracts: this decides if Recoll tries to build
@@ -433,6 +554,20 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        and display an abstract in place of an explicit abstract found within
        the document itself.
 
+   Extra databases:
+
+   This panel will let you browse for additional databases that you may want
+   to search. Extra databases are designated by their database directory (ie:
+   /home/someothergui/.recoll/xapiandb, /usr/local/recollglobal/xapiandb).
+
+   Once entered, the databases will appear in the All extra databases list,
+   and you can chose which ones you want to use at any moment by tranferring
+   them to/from the Active extra databases list.
+
+   Your main database (the one the current configuration indexes to), is
+   always implicitely active. If this is not desirable, you can set up your
+   configuration so that it indexes, for example, an empty directory.
+
      ----------------------------------------------------------------------
 
                             Chapter 4. Installation
@@ -442,9 +577,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
   4.1.1. Prerequisites
 
    At the very least, you will need to download and install the xapian core
-   package (Recoll currently uses version 0.9.2), and the qt runtime and
-   development packages (Recoll development currently uses version 3.3.5, but
-   any 3.3 version is probably ok).
+   package (Recoll development currently uses version 0.9.5), and the qt
+   runtime and development packages (Recoll development currently uses
+   version 3.3.5, but any 3.3 version is probably ok).
 
    You will most probably be able to find a binary package for qt for your
    system. You may have to compile Xapian but this is not difficult (if you
@@ -563,13 +698,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    in a directory named like /usr/[local/]share/recoll/examples, they define
    default values for the system. A parallel set of files exists in the
    .recoll directory in your home (this can be changed with the
-   RECOLL_CONFDIR environment variable. The database is also kept in .recoll
-   by default, (this can be changed by a configuration parameter).
+   RECOLL_CONFDIR environment variable.
 
    If the .recoll directory does not exist when recoll or recollindex are
    started, it will be created with a set of empty configuration files.
    recoll will give you a chance to edit the configuration file before
-   starting indexation. recollindex will proceed immediately.
+   starting indexing. recollindex will proceed immediately.
 
    Most of the parameters specific to the recoll GUI are set through the
    Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
@@ -600,8 +734,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * Section definition ([somedirname]).
 
    Section lines allow redefining some parameters for a directory subtree.
-   Some of the parameters used for indexation are looked up hierarchically
-   from the more to the less specific. Not all parameters can be meaningfully
+   Some of the parameters used for indexing are looked up hierarchically from
+   the more to the less specific. Not all parameters can be meaningfully
    redefined, this is specified for each in the next section.
 
    The tilde character (~) is expanded in file names to the name of the
@@ -619,9 +753,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    set to use for document types which do not specify it internally.
 
    The default configuration will index your home directory. If this is not
-   appropriate, use recoll to copy the sample configuration, click Cancel,
+   appropriate, start recoll to create a blank configuration, click Cancel,
    and edit the configuration file before restarting the command. This will
-   start the initial indexation, which may take some time.
+   start the initial indexing, which may take some time.
 
    Paramers:
 
@@ -630,8 +764,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Specifies the list of directories or files to index (recursively
            for directories). The indexer will not follow symbolic links
            inside the indexed trees. If an entry in the topdirs list is a
-           symbolic link, indexation will not start and will generate an
-           error.
+           symbolic link, indexing will not start and will generate an error.
 
    skippedNames
 
@@ -662,8 +795,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    logfilename
 
-           Where should the messages go. 'stderr' can be used as a special
-           value.
+           Where the messages should go. 'stderr' can be used as a special
+           value, and is the default.
 
    filtersdir
 
@@ -677,7 +810,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            A list of languages for which the stem expansion databases will be
            built. See recollindex(1) for possible values. You can add a stem
            expansion database for a different language by using recollindex
-           -s, but it will be deleted during the next indexation. Only
+           -s, but it will be deleted during the next indexing. Only
            languages listed in the configuration file are permanent.
 
    iconsdir
@@ -687,8 +820,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    dbdir
 
-           The name of the Xapian database directory. It will be created if
-           needed when the database is initialized.
+           The name of the Xapian data directory. It will be created if
+           needed when the index is initialized.
 
    defaultcharset
 
@@ -710,7 +843,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            determining the mime type for a file (the main procedure uses
            suffix associations as defined in the mimemap file). This can be
            useful for files with suffixless names, but it will also cause the
-           indexation of many bogus "text" files.
+           indexing of many bogus "text" files.
 
    indexallfilenames
 
@@ -718,7 +851,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            allow specific file names searches using wild cards. This
            parameter decides if file name indexing is performed only for
            files with mime types that would qualify them for full text
-           indexation, or for all files inside the selected subtrees,
+           indexing, or for all files inside the selected subtrees,
            independant of mime type.
 
      ----------------------------------------------------------------------
@@ -730,10 +863,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    For file names without an extension, or with an unknown one, the system's
    file -i command will be executed to determine the mime type (this can be
    switched off inside the main configuration file).
-
-   mimemap also has a list of extensions which should be ignored totally (to
-   avoid losing time by executing file for things that certainly should not
-   be indexed).
 
    The mappings can be specified on a per-subtree basis, which may be useful
    in some cases. Example: gaim logs have a .txt extension but should be
@@ -750,11 +879,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   4.4.3. The mimeconf file
 
-   mimeconf specifies how the different mime types are handled for
-   indexation, and for display.
+   mimeconf specifies how the different mime types are handled for indexing,
+   and for display.
 
-   Changing the indexation parameters is probably not a good idea except if
-   you are a Recoll developper.
+   Changing the indexing parameters is probably not a good idea except if you
+   are a Recoll developper.
 
    You may want to adjust the external viewers defined in (ie: html is either
    previewed internally or displayed using firefox, but you may prefer
