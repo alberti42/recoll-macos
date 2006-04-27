@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.12 2006-04-08 14:00:14 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.13 2006-04-27 09:23:10 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -247,6 +247,26 @@
       <para>The index data directory only contains data that will be
       rebuilt by an index run, so that it can be destroyed safely.</para>
 
+      <sect2 id="rcl.indexing.storage.security">
+	<title>Security aspects</title>
+
+	<para>The &RCL; index does not hold copies of the indexed
+	documents. But it does hold enough data to allow for an almost
+	complete reconstruction. If confidential data is indexed,
+	access to the database directory should be restricted. </para>
+
+	<para>As of version 1.4, &RCL; will create the configuration
+	directory with a mode of 0700 (access by owner only). As the
+	index directory is by default a subdirectory of the
+	configuration directory, this should result in appropriate
+	protection. </para> 
+
+	<para>If you use another setup, you should think of the kind
+	of protection you need for your index, and set the directory
+	access modes appropriately.</para>
+
+      </sect2>
+
     </sect1>
 
     <sect1 id="rcl.indexing.config">
@@ -353,7 +373,13 @@
         look for file names, and allows using wildcards
         (<literal>*</literal>, <literal>?</literal> ,
         <literal>[]</literal>). </para>
-      
+
+      <para>&RCL; remembers the last few searches that you
+      performed. You can use the simple search text entry widget (a
+      combobox) to recall them (click on the thing at the right of the
+      text field). Please note, however, that only the search texts
+      are remembered, not the mode (all/any/filename).</para>
+
       <para>You can use the <guilabel>Tools</guilabel> / <guilabel>Advanced
         search</guilabel> dialog for more complex searches.</para>
 
@@ -413,6 +439,35 @@
 
     </sect1>
 
+    <sect1 id="rcl.search.multidb">
+      <title>Multiple databases</title>
+
+      <para>Your &RCL; configuration always defines a main index. This
+      is what gets updated, for example, when you execute
+      <command>recollindex</command>. </para>
+
+      <para>You can use the <link
+      linkend="rcl.search.custom.extradb">search configuration
+      tool</link> to define additional databases to be searched. These
+      databases can be made active or inactive at any moment.</para>
+
+      <para>The typical use of this feature is for a system
+      administrator to set up a central index, that you may choose to
+      search, or not, in addition to your personal data. Of course,
+      there are other possibilities.</para>
+
+      <para>The main index (defined by your personal configuration) is
+      always active.</para>
+
+      <para>The list of searchable databases may also be defined by
+      the <literal>RECOLL_EXTRA_DBS</literal> environment
+      variable. This should hold a colon-separated list of index
+      directories, ie: 
+       <screen>export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</screen> 
+     </para> 
+
+    </sect1>
+
     <sect1 id="rcl.search.history">
       <title>Document history</title>
 
@@ -444,6 +499,35 @@
 
     </sect1>
 
+    <sect1 id="rcl.search.resultlist">
+      <title>Additional result list functionality</title>
+
+      <para>Apart from the preview and edit links, you can display a
+      popup menu by right-clicking over a paragraph in the result
+      list. This menu has the following entries:</para>
+
+      <itemizedlist>
+        <listitem><para><guilabel>Preview</guilabel></para></listitem>
+        <listitem><para><guilabel>Edit</guilabel></para></listitem>
+        <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
+        <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
+        <listitem><para><guilabel>More like this</guilabel></para></listitem>
+      </itemizedlist>
+
+      <para>The <guilabel>Preview</guilabel> and
+      <guilabel>Edit</guilabel> entries do the same thing as the 
+      corresponding links. The two following entries will copy either
+      an url or the file path to the clipboard, for pasting into
+      another application.</para>
+
+      <para>The <guilabel>More like this</guilabel> entry will select
+      a number of relevant term from the current document and enter
+      them into the simple search field. You can then start a simple
+      search, with a good chance of finding documents related to the
+      current result.</para>
+
+    </sect1>
+
     <sect1 id="rcl.search.tips">
       <title>Search tips, shortcuts</title>
 
@@ -466,6 +550,28 @@
         search dialog to the same effect.</para>
       </formalpara>
 
+      <formalpara><title>Term completion</title>
+	<para>Typing <keycap>^TAB</keycap> (Control+Tab) in the simple
+	search entry field while entering a word will either complete
+	the current word if its beginning matches a unique term in the
+	index, or open a window to propose a list of completions</para>
+      </formalpara>
+
+      <formalpara><title>Picking up new terms for search from displayed
+      documents</title>
+	<para>Double-clicking on a word in the result list or in a
+	preview window will copy it to the simple search entry field.</para>
+      </formalpara>
+
+      <formalpara><title>Finding related documents</title>
+	<para>Selecting the <guilabel>More like this</guilabel> entry
+	in the result list paragraph right-click menu will select a
+	set of "interesting" terms from the current result, and insert
+	them into the simple search entry field. You can then possibly
+	edit the list and start a search to find documents which may
+	be apparented to the current result.</para>
+      </formalpara>
+
       <formalpara><title>Query explanation</title>
         <para>You can get an exact description of what the query
         looked for, including stem expansion, and boolean operators
@@ -486,11 +592,13 @@
       <para>Entering <keycap>^Q</keycap> almost anywhere will
         close the application.</para>
       </formalpara>
+
       <formalpara><title>Closing previews</title>
       <para>Entering <keycap>^W</keycap> in a preview tab will
         close it (and, for the last tab, close the preview
         window).</para>
       </formalpara>
+
     </sect1>
 
     <sect1 id="rcl.search.custom">
@@ -504,7 +612,8 @@
       interface itself, and with the parameters used for searching and
       returning results.</para> 
 
-      <para>User interface parameters:</para>
+      <formalpara><title>User interface parameters:</title>
+	<para>
       <itemizedlist>
 
 	<listitem><para><guilabel>Number of results in a result
@@ -524,15 +633,28 @@
 	manual. You can enter a simple name if the command is in your
 	PATH, or browse for a full pathname.</para>
 	</listitem>
+
 	<listitem><para><guilabel>Show document type icons in result
 	list</guilabel>: icons in the result list can be turned
 	off. They take quite a lot of space and convey relatively
 	little useful information.</para>
 	</listitem>
+
+	<listitem><para><guilabel>Auto-start simple search on
+	whitespace entry</guilabel>: if this is checked, a search will
+	be executed each time you enter a space in the simple search
+	input field. This lets you look at the result list as you
+	enter new terms. This is off by default, you may like it or
+	not...</para> 
+	</listitem>
+
       </itemizedlist>
+      </para>
+      </formalpara>
 
-      <para>Search parameters:</para>
 
+      <formalpara><title>Search parameters:</title>
+	<para>
       <itemizedlist>
 	<listitem><para><guilabel>Stemming language</guilabel>:
 	stemming obviously depends on the document's language. This
@@ -560,6 +682,28 @@
 	within the document itself.</para>
 	</listitem>
       </itemizedlist>
+       </para>
+      </formalpara>
+
+      <formalpara id="rcl.search.custom.extradb"><title>Extra
+      databases:</title> 
+	<para></para>
+      </formalpara>
+      <para>This panel will let you browse for additional databases
+      that you may want to search. Extra databases are designated by
+      their database directory (ie:
+      <filename>/home/someothergui/.recoll/xapiandb</filename>,
+      <filename>/usr/local/recollglobal/xapiandb</filename>).</para>
+
+      <para>Once entered, the databases will appear in the
+	<guilabel>All extra databases</guilabel> list, and you can
+	chose which ones you want to use at any moment by tranferring
+	them to/from the <guilabel>Active extra databases</guilabel>
+	list.</para> 
+      <para>Your main database (the one the current configuration
+      indexes to), is always implicitely active. If this is not
+      desirable, you can set up your configuration so that it indexes,
+      for example, an empty directory.</para>
 
     </sect1>
 
@@ -577,7 +721,7 @@
 
       <para>At the very least, you will need to download and install the
         <ulink url="http://www.xapian.org">xapian core package</ulink>
-        (&RCL; currently uses version 0.9.2), and the <ulink
+        (&RCL; development currently uses version 0.9.5), and the <ulink
         url="http://www.trolltech.com/products/qt/index.html">qt
           runtime and development packages</ulink> (&RCL; development
           currently uses version 3.3.5, but any 3.3 version is

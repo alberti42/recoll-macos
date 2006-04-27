@@ -37,6 +37,14 @@ void SSearchBase::init()
     searchTypCMB->insertItem(tr("Any term"));
     searchTypCMB->insertItem(tr("All terms"));
     searchTypCMB->insertItem(tr("File name"));
+    queryText->insertStringList(prefs.ssearchHistory);
+    queryText->setEditText("");
+    connect(queryText->lineEdit(), SIGNAL(returnPressed()),
+	    this, SLOT(startSimpleSearch()));
+    connect(queryText->lineEdit(), SIGNAL(textChanged(const QString&)),
+	    this, SLOT(searchTextChanged(const QString&)));
+    connect(clearqPB, SIGNAL(clicked()), 
+	    queryText->lineEdit(), SLOT(clear()));
 }
 
 void SSearchBase::searchTextChanged( const QString & text )
@@ -48,7 +56,7 @@ void SSearchBase::searchTextChanged( const QString & text )
     } else {
 	searchPB->setEnabled(true);
 	clearqPB->setEnabled(true);
-	string u8 =  (const char *)queryText->text().utf8();
+	string u8 =  (const char *)queryText->currentText().utf8();
 	if (prefs.autoSearchOnWS && !u8.empty() && u8[u8.length()-1] == ' ')
 	    startSimpleSearch();
     }
@@ -59,7 +67,7 @@ void SSearchBase::startSimpleSearch()
     LOGDEB(("SSearchBase::startSimpleSearch\n"));
 
     Rcl::AdvSearchData sdata;
-    QCString u8 =  queryText->text().utf8();
+    QCString u8 =  queryText->currentText().utf8();
     switch (searchTypCMB->currentItem()) {
     case 0:
     default:
@@ -72,9 +80,13 @@ void SSearchBase::startSimpleSearch()
 	sdata.filename = u8;
 	break;
     }
+    prefs.ssearchHistory.clear();
+    for (int index = 0; index < queryText->count(); index++)
+	prefs.ssearchHistory.push_back(queryText->text(index));
 
     emit startSearch(sdata);
 }
+
 void SSearchBase::setAnyTermMode()
 {
     searchTypCMB->setCurrentItem(0);
@@ -91,7 +103,7 @@ void SSearchBase::completion()
 	return;
     }
     // Extract last word in text
-    string txt = (const char *)queryText->text().utf8();
+    string txt = (const char *)queryText->currentText().utf8();
     string::size_type cs = txt.find_last_of(" ");
     if (cs == string::npos)
 	cs = 0;
@@ -131,7 +143,7 @@ void SSearchBase::completion()
     if (ok) {
 	txt.erase(cs);
 	txt.append(res.utf8());
-	queryText->setText(QString::fromUtf8(txt.c_str()));
+	queryText->setEditText(QString::fromUtf8(txt.c_str()));
     } else {
 	return;
     }

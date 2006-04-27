@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.9 2006-04-18 08:53:28 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.10 2006-04-27 09:23:10 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -140,6 +140,15 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/query/buildAbstract", Bool, true);
     SETTING_RW(prefs.queryReplaceAbstract, 
 	       "/Recoll/prefs/query/replaceAbstract", Bool, false);
+
+    // Ssearch combobox history list
+    if (writing) {
+	settings.writeEntry("/Recoll/prefs/query/ssearchHistory",
+			    prefs.ssearchHistory);
+    } else {
+	prefs.ssearchHistory = 
+	    settings.readListEntry("/Recoll/prefs/query/ssearchHistory");
+    }
 
     // The extra databases settings. These are stored as a list of
     // xapian directory names, encoded in base64 to avoid any

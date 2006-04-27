@@ -72,7 +72,7 @@
                         <string>Choose type of search: any term, all terms, filename with possible wildcards.</string>
                     </property>
                 </widget>
-                <widget class="QLineEdit">
+                <widget class="QComboBox">
                     <property name="name">
                         <cstring>queryText</cstring>
                     </property>
@@ -90,11 +90,20 @@
                             <height>0</height>
                         </size>
                     </property>
-                    <property name="frameShape">
-                        <enum>LineEditPanel</enum>
+                    <property name="editable">
+                        <bool>true</bool>
                     </property>
-                    <property name="frameShadow">
-                        <enum>Sunken</enum>
+                    <property name="sizeLimit">
+                        <number>20</number>
+                    </property>
+                    <property name="maxCount">
+                        <number>30</number>
+                    </property>
+                    <property name="insertionPolicy">
+                        <enum>AtTop</enum>
+                    </property>
+                    <property name="duplicatesEnabled">
+                        <bool>false</bool>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Enter search terms here</string>
@@ -110,24 +119,6 @@
         <signal>clicked()</signal>
         <receiver>SSearchBase</receiver>
         <slot>startSimpleSearch()</slot>
-    </connection>
-    <connection>
-        <sender>queryText</sender>
-        <signal>returnPressed()</signal>
-        <receiver>SSearchBase</receiver>
-        <slot>startSimpleSearch()</slot>
-    </connection>
-    <connection>
-        <sender>queryText</sender>
-        <signal>textChanged(const QString&amp;)</signal>
-        <receiver>SSearchBase</receiver>
-        <slot>searchTextChanged(const QString&amp;)</slot>
-    </connection>
-    <connection>
-        <sender>clearqPB</sender>
-        <signal>clicked()</signal>
-        <receiver>queryText</receiver>
-        <slot>clear()</slot>
     </connection>
 </connections>
 <includes>
@@ -145,9 +136,9 @@
 </slots>
 <functions>
     <function>init()</function>
+    <function>setAnyTermMode()</function>
     <function>completion()</function>
     <function returnType="bool">event( QEvent * evt )</function>
-    <function>setAnyTermMode()</function>
 </functions>
 <layoutdefaults spacing="6" margin="0"/>
 </UI>

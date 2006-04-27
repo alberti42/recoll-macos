@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.26 2006-04-27 06:12:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.27 2006-04-27 09:23:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -457,9 +457,9 @@ void RclMain::ssearchAddTerm(QString term)
 	return;
     term = QString::fromUtf8(t.c_str());
 
-    QString text = sSearch->queryText->text();
+    QString text = sSearch->queryText->currentText();
     text += QString::fromLatin1(" ") + term;
-    sSearch->queryText->setText(text);
+    sSearch->queryText->setEditText(text);
 }
 
 void RclMain::startNativeViewer(int docnum)
@@ -543,12 +543,16 @@ void RclMain::docExpand(int docnum)
     list<string> terms;
     terms = rcldb->expand(doc);
     // Do we keep the original query. I think we'd better not.
-    QString text;// = sSearch->queryText->text();
+    // rcldb->expand is set to keep the original query terms instead.
+    QString text;// = sSearch->queryText->currentText();
     for (list<string>::iterator it = terms.begin(); it != terms.end(); it++) {
 	text += QString::fromLatin1(" \"") +
 	    QString::fromUtf8((*it).c_str()) + QString::fromLatin1("\"");
     }
-    sSearch->queryText->setText(text);
+    // We need to insert item here, its not auto-done like when the user types
+    // CR
+    sSearch->queryText->setEditText(text);
+    sSearch->queryText->insertItem(text, 0);
     sSearch->setAnyTermMode();
     sSearch->startSimpleSearch();
 }

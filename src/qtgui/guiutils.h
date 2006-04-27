@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.5 2006-04-18 08:53:28 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.6 2006-04-27 09:23:10 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@
 #include <string>
 #include <list>
 #include <qstring.h>
+#include <qstringlist.h>
 
 #ifndef NO_NAMESPACES
 using std::string;
@@ -67,6 +68,8 @@ class PrefsPack {
     // to the qt settings file to avoid any bin string/ charset conv issues
     list<string> allExtraDbs;
     list<string> activeExtraDbs;
+    // Textual history of simple searches (this is just the combobox list)
+    QStringList ssearchHistory;
 
     PrefsPack() :
 	showicons(true), 
