@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.25 2006-04-26 11:29:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.26 2006-04-27 06:12:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -442,7 +442,7 @@ void RclMain::startPreview(int docnum)
 // (which is different because it's format is explicit richtext
 // instead of auto as for preview, needed because it's built by
 // fragments?).
-static const char* punct = " \t()<>\"'[]{}!^*,";
+static const char* punct = " \t()<>\"'[]{}!^*,\n\r";
 void RclMain::ssearchAddTerm(QString term)
 {
     string t = (const char *)term.utf8();
@@ -542,7 +542,8 @@ void RclMain::docExpand(int docnum)
 	return;
     list<string> terms;
     terms = rcldb->expand(doc);
-    QString text = sSearch->queryText->text();
+    // Do we keep the original query. I think we'd better not.
+    QString text;// = sSearch->queryText->text();
     for (list<string>::iterator it = terms.begin(); it != terms.end(); it++) {
 	text += QString::fromLatin1(" \"") +
 	    QString::fromUtf8((*it).c_str()) + QString::fromLatin1("\"");

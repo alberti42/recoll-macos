@@ -502,7 +502,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     bool highlightTerms = fdoc.text.length() < 1000 *1024;
     string firstTerm;
     list<string> terms;
-    rcldb->getQueryTerms(terms);
+    rcldb->getMatchTerms(idoc, terms);
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
 	ToRichThread rthr(fdoc.text, terms, firstTerm, richTxt);

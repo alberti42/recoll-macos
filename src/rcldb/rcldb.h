@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.34 2006-04-22 06:27:37 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.35 2006-04-27 06:12:10 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -137,6 +137,7 @@ class Db {
     bool setQuery(AdvSearchData &q, int opts = QO_NONE,
 		  const string& stemlang = "english");
     bool getQueryTerms(list<string>& terms);
+    bool getMatchTerms(const Doc& doc, list<string>& terms);
 
     // Return a list of database terms that begin with the input string
     // Stem expansion is performed if lang is not empty

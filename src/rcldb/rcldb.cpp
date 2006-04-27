@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.72 2006-04-25 09:59:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.73 2006-04-27 06:12:10 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1089,9 +1089,34 @@ bool Db::getQueryTerms(list<string>& terms)
 
     terms.clear();
     Xapian::TermIterator it;
-    for (it = m_ndb->query.get_terms_begin(); it != m_ndb->query.get_terms_end();
-	 it++) {
-	terms.push_back(*it);
+    try {
+	for (it = m_ndb->query.get_terms_begin(); 
+	     it != m_ndb->query.get_terms_end(); it++) {
+	    terms.push_back(*it);
+	}
+    } catch (...) {
+	return false;
+    }
+    return true;
+}
+
+bool Db::getMatchTerms(const Doc& doc, list<string>& terms)
+{
+    if (!m_ndb || !m_ndb->enquire) {
+	LOGERR(("Db::getMatchTerms: no query opened\n"));
+	return -1;
+    }
+
+    terms.clear();
+    Xapian::TermIterator it;
+    Xapian::docid id = Xapian::docid(doc.xdocid);
+    try {
+	for (it=m_ndb->enquire->get_matching_terms_begin(id);
+	     it != m_ndb->enquire->get_matching_terms_end(id); it++) {
+	    terms.push_back(*it);
+	}
+    } catch (...) {
+	return false;
     }
     return true;
 }
@@ -1319,11 +1344,17 @@ list<string> Db::expand(const Doc &doc)
     }
     Xapian::RSet rset;
     rset.add_document(Xapian::docid(doc.xdocid));
-    Xapian::ESet eset = m_ndb->enquire->get_eset(10, rset);
+    // We don't exclude the original query terms.
+    Xapian::ESet eset = m_ndb->enquire->get_eset(20, rset, false);
     LOGDEB(("ESet terms:\n"));
+    // We filter out the special terms
     for (Xapian::ESetIterator it = eset.begin(); it != eset.end(); it++) {
 	LOGDEB((" [%s]\n", (*it).c_str()));
+	if ((*it).empty() || ((*it).at(0)>='A' && (*it).at(0)<='Z'))
+	    continue;
 	res.push_back(*it);
+	if (res.size() >= 10)
+	    break;
     }
     return res;
 }
