@@ -2318,9 +2318,9 @@ ac_config_files="$ac_config_files mk/localdefs"
 
 ac_config_files="$ac_config_files recollinstall"
 
-ac_config_files="$ac_config_files sampleconf/recoll.conf"
-
 ac_config_files="$ac_config_files Makefile"
+
+ac_config_files="$ac_config_files sampleconf/recoll.conf"
 
 ac_config_files="$ac_config_files qtgui/recoll.pro"
 
@@ -2330,6 +2330,8 @@ do
     rm -f $d/alldeps.stamp
     cp -f /dev/null $d/alldeps
 done
+
+(cd lib;test -f Makefile && chmod +w Makefile;sh mkMake)
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -2829,8 +2831,8 @@ do
   # Handling of arguments.
   "mk/localdefs" ) CONFIG_FILES="$CONFIG_FILES mk/localdefs" ;;
   "recollinstall" ) CONFIG_FILES="$CONFIG_FILES recollinstall" ;;
-  "sampleconf/recoll.conf" ) CONFIG_FILES="$CONFIG_FILES sampleconf/recoll.conf" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "sampleconf/recoll.conf" ) CONFIG_FILES="$CONFIG_FILES sampleconf/recoll.conf" ;;
   "qtgui/recoll.pro" ) CONFIG_FILES="$CONFIG_FILES qtgui/recoll.pro" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

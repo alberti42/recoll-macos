@@ -28,7 +28,9 @@ for c in $SRCS;do
     o=`basename $c .cpp`.o
     OBJS="$OBJS $o"
     d=`basename $c .cpp`.dep
-    DEPS="$DEPS $d"
+    cp /dev/null $d
+    s=`basename $c .cpp`.dep.stamp
+    DEPS="$DEPS $s"
 done
 
 test -f $mk && chmod +w $mk
@@ -47,7 +49,7 @@ all: \$(LIBS)
 OBJS = $OBJS
 DEPS = $DEPS
 
-librcl.a : \$(OBJS) \$(DEPS) unac.o
+librcl.a : \$(DEPS) \$(OBJS) unac.o
 	ar ru librcl.a \$(OBJS) unac.o
 	\$(RANLIB) librcl.a
 
@@ -57,7 +59,7 @@ EOF
 
 for c in $SRCS;do
     o=`basename $c .cpp`.o
-    echo "$o :" >> $mk
+    echo "$o : $c" >> $mk
     echo "	\$(CXX) \$(ALL_CXXFLAGS) -c \$<" >> $mk
 done
 
@@ -65,12 +67,17 @@ cat >> $mk <<EOF
 depend: \$(DEPS)
 clean:
 	rm -f \$(OBJS) \$(LIBS) \$(DEPS) unac.o
+	for i in *.dep;do test -f \$\$i && cp /dev/null \$\$i;done
+distclean: clean
+	rm -f *.dep   
 EOF
 
 for c in $SRCS;do
     d=`basename $c .cpp`.dep
-    echo "$d : $c" >> $mk
+    s=`basename $c .cpp`.dep.stamp
+    echo "$s : $c" >> $mk
     echo "	\$(CXX) -M \$(ALL_CXXFLAGS) \$< > $d" >> $mk
+    echo "	touch $s" >> $mk
 done
 for c in $SRCS;do
     d=`basename $c .cpp`.dep

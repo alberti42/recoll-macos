@@ -9,157 +9,195 @@ LIBS = librcl.a
 all: $(LIBS)
 
 OBJS =  conftree.o csguess.o debuglog.o execmd.o idfile.o md5.o wipedir.o fstreewalk.o mh_html.o mh_mail.o mh_exec.o mh_text.o htmlparse.o indexer.o internfile.o mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathhash.o pathut.o rclconfig.o rcldb.o rclinit.o stemdb.o base64.o readfile.o smallut.o textsplit.o transcode.o unacpp.o history.o docseq.o sortseq.o copyfile.o
-DEPS =  conftree.dep csguess.dep debuglog.dep execmd.dep idfile.dep md5.dep wipedir.dep fstreewalk.dep mh_html.dep mh_mail.dep mh_exec.dep mh_text.dep htmlparse.dep indexer.dep internfile.dep mimehandler.dep mimeparse.dep mimetype.dep myhtmlparse.dep pathhash.dep pathut.dep rclconfig.dep rcldb.dep rclinit.dep stemdb.dep base64.dep readfile.dep smallut.dep textsplit.dep transcode.dep unacpp.dep history.dep docseq.dep sortseq.dep copyfile.dep
+DEPS =  conftree.dep.stamp csguess.dep.stamp debuglog.dep.stamp execmd.dep.stamp idfile.dep.stamp md5.dep.stamp wipedir.dep.stamp fstreewalk.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_exec.dep.stamp mh_text.dep.stamp htmlparse.dep.stamp indexer.dep.stamp internfile.dep.stamp mimehandler.dep.stamp mimeparse.dep.stamp mimetype.dep.stamp myhtmlparse.dep.stamp pathhash.dep.stamp pathut.dep.stamp rclconfig.dep.stamp rcldb.dep.stamp rclinit.dep.stamp stemdb.dep.stamp base64.dep.stamp readfile.dep.stamp smallut.dep.stamp textsplit.dep.stamp transcode.dep.stamp unacpp.dep.stamp history.dep.stamp docseq.dep.stamp sortseq.dep.stamp copyfile.dep.stamp
 
-librcl.a : $(OBJS) $(DEPS) unac.o
+librcl.a : $(DEPS) $(OBJS) unac.o
 	ar ru librcl.a $(OBJS) unac.o
 	$(RANLIB) librcl.a
 
 unac.o : $(depth)/unac/unac.c $(depth)/unac/unac.h
 	$(CC) $(UNACCFLAGS) -c $<
-conftree.o :
+conftree.o : ../utils/conftree.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-csguess.o :
+csguess.o : ../index/csguess.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-debuglog.o :
+debuglog.o : ../utils/debuglog.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-execmd.o :
+execmd.o : ../utils/execmd.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-idfile.o :
+idfile.o : ../utils/idfile.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-md5.o :
+md5.o : ../utils/md5.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-wipedir.o :
+wipedir.o : ../utils/wipedir.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-fstreewalk.o :
+fstreewalk.o : ../utils/fstreewalk.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-mh_html.o :
+mh_html.o : ../common/mh_html.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-mh_mail.o :
+mh_mail.o : ../common/mh_mail.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-mh_exec.o :
+mh_exec.o : ../common/mh_exec.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-mh_text.o :
+mh_text.o : ../common/mh_text.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-htmlparse.o :
+htmlparse.o : ../common/htmlparse.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-indexer.o :
+indexer.o : ../index/indexer.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-internfile.o :
+internfile.o : ../common/internfile.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-mimehandler.o :
+mimehandler.o : ../common/mimehandler.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-mimeparse.o :
+mimeparse.o : ../utils/mimeparse.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-mimetype.o :
+mimetype.o : ../index/mimetype.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-myhtmlparse.o :
+myhtmlparse.o : ../common/myhtmlparse.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-pathhash.o :
+pathhash.o : ../common/pathhash.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-pathut.o :
+pathut.o : ../utils/pathut.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-rclconfig.o :
+rclconfig.o : ../common/rclconfig.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-rcldb.o :
+rcldb.o : ../common/rcldb.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-rclinit.o :
+rclinit.o : ../common/rclinit.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-stemdb.o :
+stemdb.o : ../common/stemdb.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-base64.o :
+base64.o : ../utils/base64.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-readfile.o :
+readfile.o : ../utils/readfile.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-smallut.o :
+smallut.o : ../utils/smallut.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-textsplit.o :
+textsplit.o : ../common/textsplit.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-transcode.o :
+transcode.o : ../utils/transcode.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-unacpp.o :
+unacpp.o : ../common/unacpp.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-history.o :
+history.o : ../query/history.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-docseq.o :
+docseq.o : ../query/docseq.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-sortseq.o :
+sortseq.o : ../query/sortseq.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
-copyfile.o :
+copyfile.o : ../utils/copyfile.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c $<
 depend: $(DEPS)
 clean:
 	rm -f $(OBJS) $(LIBS) $(DEPS) unac.o
-conftree.dep : ../utils/conftree.cpp
+	for i in *.dep;do test -f $$i && cp /dev/null $$i;done
+distclean: clean
+	rm -f *.dep   
+conftree.dep.stamp : ../utils/conftree.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > conftree.dep
-csguess.dep : ../index/csguess.cpp
+	touch conftree.dep.stamp
+csguess.dep.stamp : ../index/csguess.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > csguess.dep
-debuglog.dep : ../utils/debuglog.cpp
+	touch csguess.dep.stamp
+debuglog.dep.stamp : ../utils/debuglog.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > debuglog.dep
-execmd.dep : ../utils/execmd.cpp
+	touch debuglog.dep.stamp
+execmd.dep.stamp : ../utils/execmd.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > execmd.dep
-idfile.dep : ../utils/idfile.cpp
+	touch execmd.dep.stamp
+idfile.dep.stamp : ../utils/idfile.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > idfile.dep
-md5.dep : ../utils/md5.cpp
+	touch idfile.dep.stamp
+md5.dep.stamp : ../utils/md5.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > md5.dep
-wipedir.dep : ../utils/wipedir.cpp
+	touch md5.dep.stamp
+wipedir.dep.stamp : ../utils/wipedir.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > wipedir.dep
-fstreewalk.dep : ../utils/fstreewalk.cpp
+	touch wipedir.dep.stamp
+fstreewalk.dep.stamp : ../utils/fstreewalk.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > fstreewalk.dep
-mh_html.dep : ../common/mh_html.cpp
+	touch fstreewalk.dep.stamp
+mh_html.dep.stamp : ../common/mh_html.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > mh_html.dep
-mh_mail.dep : ../common/mh_mail.cpp
+	touch mh_html.dep.stamp
+mh_mail.dep.stamp : ../common/mh_mail.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > mh_mail.dep
-mh_exec.dep : ../common/mh_exec.cpp
+	touch mh_mail.dep.stamp
+mh_exec.dep.stamp : ../common/mh_exec.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > mh_exec.dep
-mh_text.dep : ../common/mh_text.cpp
+	touch mh_exec.dep.stamp
+mh_text.dep.stamp : ../common/mh_text.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > mh_text.dep
-htmlparse.dep : ../common/htmlparse.cpp
+	touch mh_text.dep.stamp
+htmlparse.dep.stamp : ../common/htmlparse.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > htmlparse.dep
-indexer.dep : ../index/indexer.cpp
+	touch htmlparse.dep.stamp
+indexer.dep.stamp : ../index/indexer.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > indexer.dep
-internfile.dep : ../common/internfile.cpp
+	touch indexer.dep.stamp
+internfile.dep.stamp : ../common/internfile.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > internfile.dep
-mimehandler.dep : ../common/mimehandler.cpp
+	touch internfile.dep.stamp
+mimehandler.dep.stamp : ../common/mimehandler.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > mimehandler.dep
-mimeparse.dep : ../utils/mimeparse.cpp
+	touch mimehandler.dep.stamp
+mimeparse.dep.stamp : ../utils/mimeparse.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > mimeparse.dep
-mimetype.dep : ../index/mimetype.cpp
+	touch mimeparse.dep.stamp
+mimetype.dep.stamp : ../index/mimetype.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > mimetype.dep
-myhtmlparse.dep : ../common/myhtmlparse.cpp
+	touch mimetype.dep.stamp
+myhtmlparse.dep.stamp : ../common/myhtmlparse.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > myhtmlparse.dep
-pathhash.dep : ../common/pathhash.cpp
+	touch myhtmlparse.dep.stamp
+pathhash.dep.stamp : ../common/pathhash.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > pathhash.dep
-pathut.dep : ../utils/pathut.cpp
+	touch pathhash.dep.stamp
+pathut.dep.stamp : ../utils/pathut.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > pathut.dep
-rclconfig.dep : ../common/rclconfig.cpp
+	touch pathut.dep.stamp
+rclconfig.dep.stamp : ../common/rclconfig.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > rclconfig.dep
-rcldb.dep : ../common/rcldb.cpp
+	touch rclconfig.dep.stamp
+rcldb.dep.stamp : ../common/rcldb.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > rcldb.dep
-rclinit.dep : ../common/rclinit.cpp
+	touch rcldb.dep.stamp
+rclinit.dep.stamp : ../common/rclinit.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > rclinit.dep
-stemdb.dep : ../common/stemdb.cpp
+	touch rclinit.dep.stamp
+stemdb.dep.stamp : ../common/stemdb.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > stemdb.dep
-base64.dep : ../utils/base64.cpp
+	touch stemdb.dep.stamp
+base64.dep.stamp : ../utils/base64.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > base64.dep
-readfile.dep : ../utils/readfile.cpp
+	touch base64.dep.stamp
+readfile.dep.stamp : ../utils/readfile.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > readfile.dep
-smallut.dep : ../utils/smallut.cpp
+	touch readfile.dep.stamp
+smallut.dep.stamp : ../utils/smallut.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > smallut.dep
-textsplit.dep : ../common/textsplit.cpp
+	touch smallut.dep.stamp
+textsplit.dep.stamp : ../common/textsplit.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > textsplit.dep
-transcode.dep : ../utils/transcode.cpp
+	touch textsplit.dep.stamp
+transcode.dep.stamp : ../utils/transcode.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > transcode.dep
-unacpp.dep : ../common/unacpp.cpp
+	touch transcode.dep.stamp
+unacpp.dep.stamp : ../common/unacpp.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > unacpp.dep
-history.dep : ../query/history.cpp
+	touch unacpp.dep.stamp
+history.dep.stamp : ../query/history.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > history.dep
-docseq.dep : ../query/docseq.cpp
+	touch history.dep.stamp
+docseq.dep.stamp : ../query/docseq.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > docseq.dep
-sortseq.dep : ../query/sortseq.cpp
+	touch docseq.dep.stamp
+sortseq.dep.stamp : ../query/sortseq.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > sortseq.dep
-copyfile.dep : ../utils/copyfile.cpp
+	touch sortseq.dep.stamp
+copyfile.dep.stamp : ../utils/copyfile.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) $< > copyfile.dep
+	touch copyfile.dep.stamp
 include conftree.dep
 include csguess.dep
 include debuglog.dep

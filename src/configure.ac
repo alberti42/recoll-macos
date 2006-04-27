@@ -139,8 +139,8 @@ AC_SUBST(QMAKE)
 
 AC_CONFIG_FILES(mk/localdefs)
 AC_CONFIG_FILES(recollinstall)
-AC_CONFIG_FILES(sampleconf/recoll.conf)
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(sampleconf/recoll.conf)
 AC_CONFIG_FILES(qtgui/recoll.pro)
 
 for d in bincimapmime index lib query
@@ -148,6 +148,8 @@ do
     rm -f $d/alldeps.stamp
     cp -f /dev/null $d/alldeps
 done
+
+(cd lib;test -f Makefile && chmod +w Makefile;sh mkMake)
 
 AC_OUTPUT
 chmod a+x recollinstall
