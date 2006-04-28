@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.3 2006-01-19 14:57:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.4 2006-04-28 07:54:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -38,14 +38,14 @@ RecollProtocol::RecollProtocol(const QCString &pool, const QCString &app)
 	m_reason = string("Configuration problem: ") + reason;
 	return;
     }
-
-    if (m_rclconfig->getConfParam(string("dbdir"), m_dbdir) == 0) {
+    m_dbdir = m_rclconfig->getDbDir();
+    if (m_dbdir.empty()) {
 	// Note: this will have to be replaced by a call to a
 	// configuration buildin dialog for initial configuration
 	m_reason = "No db directory in configuration ??";
 	return;
     }
-    m_dbdir = path_tildexpand(m_dbdir);
+
     m_rcldb = new Rcl::Db;
     if (!m_rcldb) {
 	m_reason = "Could not build database object. (out of memory ?)";

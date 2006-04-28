@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: qtry.cpp,v 1.7 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: qtry.cpp,v 1.8 2006-04-28 07:54:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -86,12 +86,12 @@ int main(int argc, char **argv)
     if (!rclconfig->ok())
 	cerr << "Config could not be built" << endl;
 
-    string dbdir;
-    if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
+    string dbdir = rclconfig->getDbDir();
+    if (dbdir.empty()) {
 	cerr << "No database directory in configuration" << endl;
 	exit(1);
     }
-    dbdir = path_tildexpand(dbdir);
+
     Rcl::Db *rcldb = new Rcl::Db;
 
     if (!rcldb->open(dbdir, Rcl::Db::DbRO)) {

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.28 2006-04-20 09:20:09 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.29 2006-04-28 07:54:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -270,6 +270,23 @@ string RclConfig::getMimeIconName(const string &mtype, string *path)
 	*path = path_cat(iconsdir, iconname) + ".png";
     }
     return iconname;
+}
+
+string RclConfig::getDbDir()
+{
+    string dbdir;
+    if (!getConfParam("dbdir", dbdir)) {
+	LOGERR(("RclConfig::getDbDir: no db directory in configuration\n"));
+    } else {
+	dbdir = path_tildexpand(dbdir);
+	// If not an absolute path, compute relative to config dir
+	if (dbdir.at(0) != '/') {
+	    LOGDEB1(("Dbdir not abs, catting with confdir\n"));
+	    dbdir = path_cat(m_confdir, dbdir);
+	}
+    }
+    LOGDEB1(("RclConfig::getDbDir: dbdir: [%s]\n", dbdir.c_str()));
+    return dbdir;
 }
 
 

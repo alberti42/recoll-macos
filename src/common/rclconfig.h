@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.19 2006-03-29 13:08:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.20 2006-04-28 07:54:38 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -53,12 +53,15 @@ class RclConfig {
     bool getConfParam(const std::string &name, int *value);
     /** Variant with autoconversion to bool */
     bool getConfParam(const std::string &name, bool *value);
+
     /** Get default charset for current keydir (was set during setKeydir) 
      * filenames are handled differently */
     const string &getDefCharset(bool filename = false);
     /** Get guessCharset for current keydir (was set during setKeydir) */
     bool getGuessCharset() {return guesscharset;}
 
+    /** Get database directory */
+    string getDbDir();
 
     /** 
      * Get list of ignored suffixes from mimemap

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.32 2006-04-25 09:59:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.33 2006-04-28 07:54:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -369,13 +369,13 @@ bool ConfIndexer::index(bool resetbefore)
 	    }
 	}
 	m_config->setKeyDir(doctopdir);
-	if (!m_config->getConfParam("dbdir", dbdir)) {
+	dbdir = m_config->getDbDir();
+	if (dbdir.empty()) {
 	    LOGERR(("ConfIndexer::index: no database directory in "
 		    "configuration for %s\n", doctopdir.c_str()));
 	    m_reason = "No database directory set for " + doctopdir;
 	    return false;
 	}
-	dbdir = path_tildexpand(dbdir);
 	dbit = dbmap.find(dbdir);
 	if (dbit == dbmap.end()) {
 	    list<string> l;

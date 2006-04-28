@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.43 2006-04-22 06:27:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.44 2006-04-28 07:54:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -195,8 +195,8 @@ int main( int argc, char ** argv )
 
 
     mainWindow->sSearch->searchTypCMB->setCurrentItem(prefs.ssearchTyp);
-
-    if (rclconfig->getConfParam(string("dbdir"), dbdir) == 0) {
+    dbdir = rclconfig->getDbDir();
+    if (dbdir.empty()) {
 	// Note: this will have to be replaced by a call to a
 	// configuration buildin dialog for initial configuration
 	QMessageBox::critical(0, "Recoll",
@@ -204,7 +204,6 @@ int main( int argc, char ** argv )
 					  "No db directory in configuration"));
 	exit(1);
     }
-    dbdir = path_tildexpand(dbdir);
 
     rcldb = new Rcl::Db;
 

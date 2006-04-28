@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.18 2006-04-18 08:53:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.19 2006-04-28 07:54:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -48,14 +48,12 @@ static bool indexfiles(RclConfig *config, const list<string> &filenames)
     // Note that we do not bother to check for multiple databases,
     // which are currently a fiction anyway. 
     config->setKeyDir(path_getfather(*filenames.begin()));
-    string dbdir;
-    if (!config->getConfParam("dbdir", dbdir)) {
+    string dbdir = config->getDbDir();
+    if (dbdir.empty()) {
 	LOGERR(("indexfiles: no database directory in "
 		"configuration for %s\n", filenames.begin()->c_str()));
 	return false;
     }
-    dbdir = path_tildexpand(dbdir);
-
     dbindexer = new DbIndexer(config, dbdir);
     return dbindexer->indexFiles(filenames);
 }
@@ -65,12 +63,11 @@ static bool createstemdb(RclConfig *config, const string &lang)
 {
     // Note that we do not bother to check for multiple databases,
     // which are currently a fiction anyway. 
-    string dbdir;
-    if (!config->getConfParam("dbdir", dbdir)) {
+    string dbdir = config->getDbDir();
+    if (dbdir.empty()) {
 	LOGERR(("createstemdb: no database directory in configuration\n"));
 	return false;
     }
-    dbdir = path_tildexpand(dbdir);
     dbindexer = new DbIndexer(config, dbdir);
     return dbindexer->createStemDb(lang);
 }
