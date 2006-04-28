@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.7 2006-03-29 11:18:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.8 2006-04-28 07:23:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -47,8 +47,7 @@ bool transcode(const string &in, string &out, const string &icode,
     const int OBSIZ = 8192;
     char obuf[OBSIZ], *op;
     bool icopen = false;
-    if (ecnt)
-	*ecnt = 0;
+    int mecnt = 0;
     out.erase();
     size_t isiz = in.length();
     out.reserve(isiz);
@@ -75,13 +74,12 @@ bool transcode(const string &in, string &out, const string &icode,
 		" : " + strerror(errno);
 #endif
 	    if (errno == EILSEQ) {
-		LOGDEB(("transcode:iconv: bad input seq.: shift, retry\n"));
+		LOGDEB1(("transcode:iconv: bad input seq.: shift, retry\n"));
 		LOGDEB1((" Input consumed %d output produced %d\n",
 			 ip - in.c_str(), out.length() + OBSIZ - osiz));
 		out.append(obuf, OBSIZ - osiz);
 		out += "?";
-		if (ecnt)
-		    (*ecnt)++;
+		mecnt++;
 		ip++;isiz--;
 		continue;
 	    }
@@ -103,6 +101,10 @@ bool transcode(const string &in, string &out, const string &icode,
     if (icopen)
 	iconv_close(ic);
     //fprintf(stderr, "TRANSCODE OUT:\n%s\n", out.c_str());
+    if (mecnt)
+	LOGDEB(("transcode: %d errors\n", mecnt));
+    if (ecnt)
+	*ecnt = mecnt;
     return ret;
 }
 
