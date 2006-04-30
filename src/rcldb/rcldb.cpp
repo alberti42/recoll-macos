@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.73 2006-04-27 06:12:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.74 2006-04-30 07:44:20 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -200,7 +200,7 @@ bool Db::open(const string& dir, OpenMode mode, int qops)
 		 it != m_ndb->m_extraDbs.end(); it++) {
 		string aerr;
 		LOGDEB(("Db::Open: adding query db [%s]\n", it->c_str()));
-		aerr.clear();
+		aerr.erase();
 		try {
 		    // Make this non-fatal
 		    m_ndb->db.add_database(Xapian::Database(*it));
