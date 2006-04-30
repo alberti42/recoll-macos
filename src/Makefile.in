@@ -1,4 +1,4 @@
-# @(#$Id: Makefile.in,v 1.4 2006-02-21 12:56:55 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile.in,v 1.5 2006-04-30 07:23:29 dockes Exp $  (C) 2005 J.F.Dockes
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -46,7 +46,8 @@ distclean: clean
 	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf \
 	   qtgui/recoll.pro Makefile \
 	   recollinstall \
-	   doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest
+	   doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest \
+	  lib/*.dep
 
 # recollinstall can be executed by the user and will compute 'normal'
 # values for bindir etc., relative to the prefix argument.  When executed
