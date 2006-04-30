@@ -54,13 +54,13 @@ librcl.a : \$(DEPS) \$(OBJS) unac.o
 	\$(RANLIB) librcl.a
 
 unac.o : \$(depth)/unac/unac.c \$(depth)/unac/unac.h
-	\$(CC) \$(UNACCFLAGS) -c \$<
+	\$(CC) \$(UNACCFLAGS) -c \$(depth)/unac/unac.c
 EOF
 
 for c in $SRCS;do
     o=`basename $c .cpp`.o
     echo "$o : $c" >> $mk
-    echo "	\$(CXX) \$(ALL_CXXFLAGS) -c \$<" >> $mk
+    echo "	\$(CXX) \$(ALL_CXXFLAGS) -c $c" >> $mk
 done
 
 cat >> $mk <<EOF
@@ -76,7 +76,7 @@ for c in $SRCS;do
     d=`basename $c .cpp`.dep
     s=`basename $c .cpp`.dep.stamp
     echo "$s : $c" >> $mk
-    echo "	\$(CXX) -M \$(ALL_CXXFLAGS) \$< > $d" >> $mk
+    echo "	\$(CXX) -M \$(ALL_CXXFLAGS) $c > $d" >> $mk
     echo "	touch $s" >> $mk
 done
 for c in $SRCS;do

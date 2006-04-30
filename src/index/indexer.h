@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.15 2006-04-12 10:41:39 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.16 2006-04-30 07:35:18 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -40,7 +40,7 @@ class DbIxStatus {
     string fn;   // Last file processed
     int docsdone;  // Documents processed
     int dbtotdocs;  // Doc count in index at start
-    void reset() {phase = DBIXS_FILES;fn.clear();docsdone=dbtotdocs=0;}
+    void reset() {phase = DBIXS_FILES;fn.erase();docsdone=dbtotdocs=0;}
     DbIxStatus() {reset();}
 };
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.33 2006-04-28 07:54:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.34 2006-04-30 07:39:09 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 	}
     }
     if (m_updater) {
-	m_updater->status.fn.clear();
+	m_updater->status.fn.erase();
 	m_updater->status.phase = DbIxStatus::DBIXS_PURGE;
 	m_updater->update();
     }
@@ -137,7 +137,7 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
     // The close would be done in our destructor, but we want status here
     if (m_updater) {
 	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
-	m_updater->status.fn.clear();
+	m_updater->status.fn.erase();
 	m_updater->update();
     }
     if (!m_db.close()) {
