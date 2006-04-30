@@ -339,6 +339,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    be returned. File name will specifically look for file names, and allows
    using wildcards (*, ? , []).
 
+   Recoll remembers the last few searches that you performed. You can use the
+   simple search text entry widget (a combobox) to recall them (click on the
+   thing at the right of the text field). Please note, however, that only the
+   search texts are remembered, not the mode (all/any/filename).
+
    You can use the Tools / Advanced search dialog for more complex searches.
 
    After starting a search, a list of results will instantly be displayed in
