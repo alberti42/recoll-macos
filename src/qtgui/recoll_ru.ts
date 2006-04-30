@@ -163,11 +163,31 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Query details</source>
-        <translation>Детали запроса</translation>
+        <translation type="obsolete">Детали запроса</translation>
     </message>
     <message>
         <source>Indexing in progress: </source>
         <translation>Индексирование: </translation>
+    </message>
+    <message>
+        <source>Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stemdb</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Closing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -210,11 +230,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Start Indexing</source>
-        <translation>Индексировать</translation>
+        <translation type="obsolete">Индексировать</translation>
     </message>
     <message>
         <source>Start &amp;Indexing</source>
-        <translation>&amp;Начать индексирование</translation>
+        <translation type="obsolete">&amp;Начать индексирование</translation>
     </message>
     <message>
         <source>About Recoll</source>
@@ -284,6 +304,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
+    <message>
+        <source>Update index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update &amp;index</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -320,6 +348,18 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Copy &amp;Url</source>
         <translation>Копировать &amp;адрес</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;More like this</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation type="unfinished">Детали запроса</translation>
     </message>
 </context>
 <context>
@@ -534,6 +574,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>File name</source>
         <translation>Имя файла</translation>
     </message>
+    <message>
+        <source>Completions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select an item:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SortForm</name>
@@ -650,6 +698,74 @@ May be slow for big documents.</source>
         <source>Discard changes</source>
         <translation>Отменить изменения</translation>
     </message>
+    <message>
+        <source>Auto-start simple search on whitespace entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extra Databases</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select the xapiandb directory for the  database you want to add, then click Add Database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation type="unfinished">Просмотр</translation>
+    </message>
+    <message>
+        <source>All extra databases</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All known extra databases</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All ----&gt;</source>
+        <translation type="unfinished">Все ----&gt;</translation>
+    </message>
+    <message>
+        <source>Sel -----&gt;</source>
+        <translation type="unfinished">Эти ----&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;----- Sel</source>
+        <translation type="unfinished">&lt;----- Эти</translation>
+    </message>
+    <message>
+        <source>&lt;----- All</source>
+        <translation type="unfinished">&lt;----- Все</translation>
+    </message>
+    <message>
+        <source>Active extra databases</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extra databases that will be searched in addition to the main one</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory does not appear to be a Xapian database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the main/local database!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory is already in the database list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select directory holding xapian database (ie: /home/someone/.recoll/xapiandb)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>advsearch</name>
@@ -732,6 +848,10 @@ May be slow for big documents.</source>
     <message>
         <source>File name matching</source>
         <translation>Поиск по именам файлов</translation>
+    </message>
+    <message>
+        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

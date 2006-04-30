@@ -160,7 +160,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Query details</source>
-        <translation>Détail de la recherche</translation>
+        <translation type="obsolete">Détail de la recherche</translation>
     </message>
     <message>
         <source>Unavailable document</source>
@@ -177,6 +177,26 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Indexing in progress: </source>
         <translation>Indexation en cours: </translation>
+    </message>
+    <message>
+        <source>Files</source>
+        <translation>Fichiers</translation>
+    </message>
+    <message>
+        <source>Purge</source>
+        <translation>Nettoyage</translation>
+    </message>
+    <message>
+        <source>Stemdb</source>
+        <translation>Base radicaux</translation>
+    </message>
+    <message>
+        <source>Closing</source>
+        <translation>Fermeture</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation>Inconnue</translation>
     </message>
 </context>
 <context>
@@ -215,7 +235,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Start Indexing</source>
-        <translation>Commencer l&apos;indexation</translation>
+        <translation type="obsolete">Commencer l&apos;indexation</translation>
     </message>
     <message>
         <source>&amp;Tools</source>
@@ -267,7 +287,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Start &amp;Indexing</source>
-        <translation>Démarrer l&apos;&amp;Indexation</translation>
+        <translation type="obsolete">Démarrer l&apos;&amp;Indexation</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
@@ -333,6 +353,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
+    <message>
+        <source>Update index</source>
+        <translation>MIse à jour index</translation>
+    </message>
+    <message>
+        <source>Update &amp;index</source>
+        <translation>&amp;Indexer</translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -369,6 +397,18 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Copy &amp;Url</source>
         <translation>Copier l&apos;&amp;Url</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
+        <translation>&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>&amp;More like this</source>
+        <translation>Documents &amp;ressemblants</translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation>Détail de la recherche</translation>
     </message>
 </context>
 <context>
@@ -449,6 +489,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>File name</source>
         <translation>Nom de fichier</translation>
+    </message>
+    <message>
+        <source>Completions</source>
+        <translation>Complétions</translation>
+    </message>
+    <message>
+        <source>Select an item:</source>
+        <translation>Sélectionner un élément:</translation>
     </message>
 </context>
 <context>
@@ -566,6 +614,74 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
         <translation>Est-ce qu&apos;un résumé doit etre synthétisé meme dans le cas ou le document original en avait un?</translation>
     </message>
+    <message>
+        <source>Auto-start simple search on whitespace entry</source>
+        <translation>Démarrage automatique de la recherche sur entrée d&apos;un espace</translation>
+    </message>
+    <message>
+        <source>Extra Databases</source>
+        <translation>Index extérieurs</translation>
+    </message>
+    <message>
+        <source>Add database</source>
+        <translation>Ajouter un index</translation>
+    </message>
+    <message>
+        <source>Select the xapiandb directory for the  database you want to add, then click Add Database</source>
+        <translation>Sélectionner le répertoire xapiandb pour l&apos;index(sp)(sp) que vous voulez ajouter, puis cliquer Ajouter Index</translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation>Parcourir</translation>
+    </message>
+    <message>
+        <source>All extra databases</source>
+        <translation>Tous les index extérieurs</translation>
+    </message>
+    <message>
+        <source>All known extra databases</source>
+        <translation>Tous les index extérieurs connus</translation>
+    </message>
+    <message>
+        <source>All ----&gt;</source>
+        <translation>Tout ----&gt;</translation>
+    </message>
+    <message>
+        <source>Sel -----&gt;</source>
+        <translation>Sel -----&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;----- Sel</source>
+        <translation>&lt;----- Sel</translation>
+    </message>
+    <message>
+        <source>&lt;----- All</source>
+        <translation>&lt;----- Tout</translation>
+    </message>
+    <message>
+        <source>Active extra databases</source>
+        <translation>Index extérieurs actifs</translation>
+    </message>
+    <message>
+        <source>Extra databases that will be searched in addition to the main one</source>
+        <translation>Index extérieurs utilisés</translation>
+    </message>
+    <message>
+        <source>The selected directory does not appear to be a Xapian database</source>
+        <translation>Le répertoire sélectionné ne semble pas être un index Xapian</translation>
+    </message>
+    <message>
+        <source>This is the main/local database!</source>
+        <translation>C&apos;est l&apos;index principal!</translation>
+    </message>
+    <message>
+        <source>The selected directory is already in the database list</source>
+        <translation>Le répertoire sélectionné existe déjà dans la liste</translation>
+    </message>
+    <message>
+        <source>Select directory holding xapian database (ie: /home/someone/.recoll/xapiandb)</source>
+        <translation>Sélectionner un répertoire contenant un index Xapian (ex: /home/someone/.recoll/xapiandb)</translation>
+    </message>
 </context>
 <context>
     <name>advsearch</name>
@@ -648,6 +764,10 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     <message>
         <source>File name matching</source>
         <translation>Modèle de nom de fichier</translation>
+    </message>
+    <message>
+        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
+        <translation>Impossible d&apos;éxécuter une requête purement négative. Essayez d&apos;entrer des termes courants dans un champ &apos;ou&apos;</translation>
     </message>
 </context>
 </TS>
