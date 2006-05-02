@@ -13221,8 +13221,9 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
      * is not valid any more. We have to do the freeing and zero out *outp
      */
     if(out_length + ((l + 1) * 2) > out_size) {
+      char *saved;
       out_size += ((l + 1) * 2) + 1024;
-      char *saved = out;
+      saved = out;
       out = realloc(out, out_size);
       if(out == 0) {
 	if(debug_level >= UNAC_DEBUG_LOW)

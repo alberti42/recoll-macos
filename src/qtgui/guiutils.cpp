@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.10 2006-04-27 09:23:10 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.11 2006-05-02 09:49:06 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.10 2006-04-27 09:23:10 dockes Ex
  */
 #include <unistd.h>
 
+#include <algorithm>
+
 #include "debuglog.h"
 #include "smallut.h"
 #include "recoll.h"
@@ -30,7 +32,7 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.10 2006-04-27 09:23:10 dockes Ex
 #include <qsettings.h>
 #include <qstringlist.h>
 
-const static char *htmlbrowserlist = 
+static const char *htmlbrowserlist = 
     "opera konqueror firefox mozilla netscape";
 
 /** 
@@ -190,8 +192,9 @@ void rwSettings(bool writing)
 		 dit++) {
 		string dbdir = path_canon(*dit);
 		path_catslash(dbdir);
-		if (find(prefs.allExtraDbs.begin(), prefs.allExtraDbs.end(),
-			 dbdir) != prefs.allExtraDbs.end())
+		if (std::find(prefs.allExtraDbs.begin(), 
+			      prefs.allExtraDbs.end(), dbdir) != 
+		    prefs.allExtraDbs.end())
 		    continue;
 		if (!Rcl::Db::testDbDir(dbdir)) {
 		    LOGERR(("Not a xapian database: [%s]\n", dbdir.c_str()));

@@ -1,6 +1,12 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.1 2006-04-13 09:50:03 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.2 2006-05-02 09:49:06 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
+
+/**
+ * Management of the auxiliary databases listing stems and their expansion 
+ * terms
+ */
+#include <unistd.h>
 
 #include <algorithm>
 #include <map>
