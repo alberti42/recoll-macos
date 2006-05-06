@@ -164,23 +164,23 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Файли</translation>
     </message>
     <message>
         <source>Purge</source>
-        <translation type="unfinished"></translation>
+        <translation>Очистити</translation>
     </message>
     <message>
         <source>Stemdb</source>
-        <translation type="unfinished"></translation>
+        <translation>База коренів</translation>
     </message>
     <message>
         <source>Closing</source>
-        <translation type="unfinished"></translation>
+        <translation>Закриваю</translation>
     </message>
     <message>
         <source>Unknown</source>
-        <translation type="unfinished"></translation>
+        <translation>Невідомо</translation>
     </message>
 </context>
 <context>
@@ -299,11 +299,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Update index</source>
-        <translation type="unfinished"></translation>
+        <translation>Поновити індекс</translation>
     </message>
     <message>
         <source>Update &amp;index</source>
-        <translation type="unfinished"></translation>
+        <translation>Поновити &amp;індекс</translation>
     </message>
 </context>
 <context>
@@ -344,15 +344,15 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;&lt;b&gt;Не знайдено&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;More like this</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Інші схожі</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="unfinished">Деталі запиту</translation>
+        <translation>Деталі запиту</translation>
     </message>
 </context>
 <context>
@@ -403,11 +403,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Completions</source>
-        <translation type="unfinished"></translation>
+        <translation>Доповнення</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть:</translation>
     </message>
 </context>
 <context>
@@ -527,71 +527,71 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry</source>
-        <translation type="unfinished"></translation>
+        <translation>Починати простий пошук при введенні пробілу</translation>
     </message>
     <message>
         <source>Extra Databases</source>
-        <translation type="unfinished"></translation>
+        <translation>Додаткові бази</translation>
     </message>
     <message>
         <source>Add database</source>
-        <translation type="unfinished"></translation>
+        <translation>Додати</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the  database you want to add, then click Add Database</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть теку xapiandb для бази даних, яку бажаєте додати, та натисніть &quot;Додати&quot;</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation type="unfinished">Перегляд</translation>
+        <translation>Перегляд</translation>
     </message>
     <message>
         <source>All extra databases</source>
-        <translation type="unfinished"></translation>
+        <translation>Усі</translation>
     </message>
     <message>
         <source>All known extra databases</source>
-        <translation type="unfinished"></translation>
+        <translation>Усі відомі додаткові бази даних</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation type="unfinished">Всі -----&gt;</translation>
+        <translation>Всі -----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
-        <translation type="unfinished">Виб -----&gt;</translation>
+        <translation>Виб -----&gt;</translation>
     </message>
     <message>
         <source>&lt;----- Sel</source>
-        <translation type="unfinished">&lt;----- Виб</translation>
+        <translation>&lt;----- Виб</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation type="unfinished">&lt;----- Всі</translation>
+        <translation>&lt;----- Всі</translation>
     </message>
     <message>
         <source>Active extra databases</source>
-        <translation type="unfinished"></translation>
+        <translation>Активні</translation>
     </message>
     <message>
         <source>Extra databases that will be searched in addition to the main one</source>
-        <translation type="unfinished"></translation>
+        <translation>Додаткові бази даних, по яких проходитиме пошук, окрім загальної</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian database</source>
-        <translation type="unfinished"></translation>
+        <translation>Обрана тека не схожа на базу даних Xapian</translation>
     </message>
     <message>
         <source>This is the main/local database!</source>
-        <translation type="unfinished"></translation>
+        <translation>Це загальна база!</translation>
     </message>
     <message>
         <source>The selected directory is already in the database list</source>
-        <translation type="unfinished"></translation>
+        <translation>Обрана тека вже у списку</translation>
     </message>
     <message>
         <source>Select directory holding xapian database (ie: /home/someone/.recoll/xapiandb)</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть теку, де є база даних xapian (наприклад, /home/someone/.recoll/xapiandb)</translation>
     </message>
 </context>
 <context>
@@ -674,7 +674,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="unfinished"></translation>
+        <translation>Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
     </message>
 </context>
 </TS>
