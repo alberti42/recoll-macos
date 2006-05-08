@@ -51,6 +51,7 @@ for d in \
     ${mandir}/man1 \
     ${mandir}/man5 \
     ${datadir}/applications \
+    ${datadir}/icons \
     ${datadir}/recoll/doc \
     ${datadir}/recoll/examples \
     ${datadir}/recoll/filters \
@@ -61,6 +62,7 @@ do
 done
 
 ${INSTALL} -m 0444 recoll.desktop ${datadir}/applications
+${INSTALL} -m 0444 recoll.png ${datadir}/icons
 ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 			${datadir}/recoll/doc 
 
