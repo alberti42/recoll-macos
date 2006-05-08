@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.15 2006-04-26 11:29:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.16 2006-05-08 07:08:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -447,7 +447,7 @@ QPopupMenu *RclResList::createPopupMenu(const QPoint& pos)
     popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
     popup->insertItem(tr("&Copy File Name"), this, SLOT(menuCopyFN()));
     popup->insertItem(tr("Copy &Url"), this, SLOT(menuCopyURL()));
-    popup->insertItem(tr("&More like this"), this, SLOT(menuExpand()));
+    popup->insertItem(tr("Find &similar documents"), this, SLOT(menuExpand()));
     return popup;
 }
 
