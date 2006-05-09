@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.16 2006-05-08 07:08:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.17 2006-05-09 07:56:07 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -186,18 +186,19 @@ void RclResList::showResultPage()
 	return;
     }
 
+    bool hasPrev = false;
     if (m_winfirst < 0) {
 	m_winfirst = 0;
-	emit prevPageAvailable(false);
     } else {
-	emit prevPageAvailable(true);
+	hasPrev = true;
 	m_winfirst += prefs.respagesize;
     }
+    emit prevPageAvailable(hasPrev);
 
     bool gotone = false;
     clear();
 
-    int last = MIN(resCnt-m_winfirst, prefs.respagesize);
+    int last = MIN(resCnt - m_winfirst, prefs.respagesize);
 
     m_curDocs.clear();
 
@@ -353,7 +354,27 @@ void RclResList::showResultPage()
 	m_curDocs.push_back(doc);
     }
 
+    bool hasNext = false;
+    if (m_winfirst >= 0 && m_winfirst + prefs.respagesize < resCnt) {
+	hasNext = true;
+    }
+
     if (gotone) {
+	QString chunk = "<p align=\"center\">";
+	if (hasPrev || hasNext) {
+	    if (hasPrev) {
+		chunk += "<a href=\"p-1\"><b>";
+		chunk += tr("Previous");
+		chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
+	    }
+	    if (hasNext) {
+		chunk += "<a href=\"n-1\"><b>";
+		chunk += tr("Next");
+		chunk += "</b></a>";
+	    }
+	    chunk += "</p>\n";
+	    append(chunk);
+	}
 	append("</body></qt>");
 	ensureCursorVisible();
     } else {
@@ -369,29 +390,10 @@ void RclResList::showResultPage()
 	m_winfirst -= prefs.respagesize;
 	if (m_winfirst < 0)
 	    m_winfirst = -1;
+	hasNext = false;
     }
 
-   //setUpdatesEnabled(true);sync();repaint();
-
-#if 0
-    {
-	FILE *fp = fopen("/tmp/reslistdebug", "w");
-	if (fp) {
-	    const char *text = (const char *)text().utf8();
-	    //const char *text = alltext.c_str();
-	    fwrite(text, 1, strlen(text), fp);
-	    fclose(fp);
-	}
-    }
-#endif
-
-    if (m_winfirst < 0 || 
-	(m_winfirst >= 0 && 
-	 m_winfirst + prefs.respagesize >= resCnt)) {
-	emit nextPageAvailable(false);
-    } else {
-	emit nextPageAvailable(true);
-    }
+    emit nextPageAvailable(hasNext);
 }
 
 // Single click in result list: color active paragraph
@@ -432,6 +434,12 @@ void RclResList::linkWasClicked(const QString &s)
 	break;
     case 'E': 
 	emit docEditClicked(i);
+	break;
+    case 'n':
+	showResultPage();
+	break;
+    case 'p':
+	resultPageBack();
 	break;
     default: break;// ?? 
     }

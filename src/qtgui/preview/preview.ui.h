@@ -95,7 +95,11 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
 	recollNeedsExit = 1;
 	return true;
-    } else if (keyEvent->key() ==Key_W &&(keyEvent->state() & ControlButton)) {
+    } else if (keyEvent->key() == Key_Escape) {
+	close();
+	return true;
+    } else if (keyEvent->key() == Key_W &&
+	       (keyEvent->state() & ControlButton)) {
 	// LOGDEB(("Preview::eventFilter: got ^W\n"));
 	closeCurrentTab();
 	return true;
