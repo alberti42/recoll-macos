@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.74 2006-04-30 07:44:20 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.75 2006-05-09 10:15:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -125,6 +125,27 @@ class Native {
 	    return true;
 	return false;
     }
+
+    /// Perform stem expansion across all dbs configured for searching
+    list<string> stemExpand(const string& lang,
+			    const string& term) 
+    {
+	list<string> dirs = m_extraDbs;
+	dirs.push_front(m_basedir);
+	list<string> exp;
+	for (list<string>::iterator it = dirs.begin();
+	     it != dirs.end(); it++) {
+	    list<string> more = StemDb::stemExpand(*it, lang, term);
+	    LOGDEB1(("Native::stemExpand: Got %d from %s\n", 
+		    more.size(), it->c_str()));
+	    exp.splice(exp.end(), more);
+	}
+	exp.sort();
+	exp.unique();
+	LOGDEB1(("Native::stemExpand: final count %d \n", exp.size()));
+	return exp;
+    }
+
 };
 
 Db::Db() 
@@ -854,7 +875,7 @@ static void stringToXapianQueries(const string &iq,
 		dumb_string(term, term1);
 		// Possibly perform stem compression/expansion
 		if (!nostemexp && (opts & Db::QO_STEM)) {
-		    exp = StemDb::stemExpand(m_ndb->m_basedir, stemlang,term1);
+		    exp = m_ndb->stemExpand(stemlang,term1);
 		} else {
 		    exp.push_back(term1);
 		}
@@ -1064,8 +1085,7 @@ list<string> Db::completions(const string &root, const string &lang, int max)
 	    res.push_back(*it);
 	    ++n;
 	} else {
-	    list<string> stemexps = 
-		StemDb::stemExpand(m_ndb->m_basedir, lang, *it);
+	    list<string> stemexps = m_ndb->stemExpand(lang, *it);
 	    unsigned int cnt = 
 		(int)stemexps.size() > max - n ? max - n : stemexps.size();
 	    list<string>::iterator sit = stemexps.begin();
