@@ -1,0 +1,58 @@
+TEMPLATE	= app
+LANGUAGE	= C++
+
+CONFIG	+= qt warn_on thread release debug
+
+HEADERS	+= rclmain.h rclreslist.h uiprefs.h recollmain.h 
+HEADERS += preview/preview.h advsearch.h sort.h ssearchb.h
+
+SOURCES	+= main.cpp \
+	rclmain.cpp \
+	idxthread.cpp \
+	plaintorich.cpp \
+	guiutils.cpp \
+	rclreslist.cpp \
+        uiprefs.cpp \
+        recollmain.cpp \
+        preview/preview.cpp \
+        advsearch.cpp \
+        sort.cpp \
+        ssearchb.cpp
+
+FORMS =  sort.ui \
+        advsearch.ui \
+        recollmain.ui \
+        preview/preview.ui \
+        uiprefs.ui \
+        ssearchb.ui
+
+IMAGES	= images/asearch.png \
+	images/history.png \
+	images/d_nextpage.png \
+	images/nextpage.png \
+	images/d_prevpage.png \
+	images/prevpage.png \
+	images/sortparms.png
+
+unix {
+  UI_DIR = .ui
+  MOC_DIR = .moc
+  OBJECTS_DIR = .obj
+
+  DEFINES += RECOLL_DATADIR=\"@QTRECOLL_DATADIR@\"
+  LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
+            $(BSTATIC) @LIBXAPIAN@ @LIBICONV@ $(BDYNAMIC) \
+           -lz
+
+  INCLUDEPATH += ../common ../index ../query ../unac ../utils 
+  POST_TARGETDEPS = ../lib/librcl.a
+}
+
+UNAME = $$system(uname -s)
+contains( UNAME, [lL]inux ) {
+          LIBS -= -liconv
+}
+
+TRANSLATIONS = i18n/recoll_fr.ts i18n/recoll_ru.ts i18n/recoll_uk.ts
+#The following line was inserted by qt3to4
+QT +=  qt3support 
