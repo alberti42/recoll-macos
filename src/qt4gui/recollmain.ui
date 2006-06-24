@@ -2,8 +2,8 @@
  <author></author>
  <comment></comment>
  <exportmacro></exportmacro>
- <class>RclMainBase</class>
- <widget class="Q3MainWindow" name="RclMainBase" >
+ <class>RclMain</class>
+ <widget class="QMainWindow" name="RclMain" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -81,7 +81,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="Q3ToolBar" name="Toolbar" >
+  <widget class="QToolBar" name="Toolbar" >
    <property name="geometry" >
     <rect>
      <x>0</x>
@@ -97,7 +97,7 @@
    <addaction name="toolsSort_parametersAction" />
    <addaction name="toolsDoc_HistoryAction" />
   </widget>
-  <widget class="Q3ToolBar" name="Toolbar1" >
+  <widget class="QToolBar" name="Toolbar1" >
    <property name="geometry" >
     <rect>
      <x>118</x>
@@ -275,13 +275,6 @@
  <pixmapfunction></pixmapfunction>
  <customwidgets>
   <customwidget>
-   <class>Q3ToolBar</class>
-   <extends>Q3Frame</extends>
-   <header>q3listview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
    <class>SSearchBase</class>
    <extends>QWidget</extends>
    <header>ssearchb.h</header>
@@ -293,13 +286,6 @@
    <extends>QWidget</extends>
    <header>rclreslist.h</header>
    <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>Q3MainWindow</class>
-   <extends>QWidget</extends>
-   <header>q3mainwindow.h</header>
-   <container>1</container>
    <pixmap></pixmap>
   </customwidget>
  </customwidgets>
