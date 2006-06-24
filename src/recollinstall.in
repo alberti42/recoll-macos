@@ -18,7 +18,12 @@ elif test $# -eq 1 ; then
 else
    usage
 fi
-
+QTGUI=@QTGUI@
+if test X$QTGUI = Xqtgui ; then
+  I18N=$QTGUI
+else
+  I18N=${QTGUI}/i18n
+fi
 
 test -n "$bindir" || bindir=${PREFIX}/bin
 test -n "$datadir" || datadir=${PREFIX}/share
@@ -43,7 +48,7 @@ echo "Installing to $PREFIX"
 INSTALL=${INSTALL:="install -c"}
 STRIP=${STRIP:=strip}
 
-test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
+test -x ${QTGUI}/recoll || fatal "${QTGUI}/recoll does not exist." \
      " You need to build first (type 'make')."
 
 for d in \
@@ -69,7 +74,7 @@ ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 ${INSTALL} -m 0444 doc/man/recoll.1 doc/man/recollindex.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 
-${INSTALL} -m 0755 qtgui/recoll index/recollindex ${bindir} || exit 1
+${INSTALL} -m 0755 ${QTGUI}/recoll index/recollindex ${bindir} || exit 1
 ${STRIP} ${bindir}/recoll ${bindir}/recollindex
 
 ${INSTALL} -m 0755 filters/rcl* ${datadir}/recoll/filters/ || exit 1
@@ -80,5 +85,5 @@ rm -f ${datadir}/recoll/examples/rcl*
 ${INSTALL} -m 0444 sampleconf/recoll.conf sampleconf/mimeconf \
 	           sampleconf/mimemap ${datadir}/recoll/examples/ || exit 1
 
-${INSTALL} -m 0444 qtgui/mtpics/*.png ${datadir}/recoll/images || exit 1
-${INSTALL} -m 0444 qtgui/recoll*.qm ${datadir}/recoll/translations || exit 1
+${INSTALL} -m 0444 ${QTGUI}/mtpics/*.png ${datadir}/recoll/images || exit 1
+${INSTALL} -m 0444 ${I18N}/recoll*.qm ${datadir}/recoll/translations || exit 1

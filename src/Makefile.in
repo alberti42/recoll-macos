@@ -1,4 +1,4 @@
-# @(#$Id: Makefile.in,v 1.6 2006-04-30 07:26:59 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile.in,v 1.7 2006-06-24 07:40:04 dockes Exp $  (C) 2005 J.F.Dockes
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -8,12 +8,13 @@ datadir = @datadir@
 mandir = @mandir@
 
 QMAKE = @QMAKE@
+QTGUI = @QTGUI@
 
 all: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
 	cd bincimapmime; ${MAKE}
 	cd index; ${MAKE} recollindex
-	cd qtgui; ${QMAKE} recoll.pro; ${MAKE} depth=.. 
+	cd $(QTGUI); ${QMAKE} recoll.pro; ${MAKE} depth=.. 
 
 mk/sysconf:
 	@echo "You need to run configure first" ; exit 1
@@ -27,7 +28,7 @@ static:
 	cd bincimapmime; ${MAKE}
 	cd index; rm -f recollindex; \
 	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic recollindex
-	cd qtgui; $(QMAKE) recoll.pro; \
+	cd $(QTGUI); $(QMAKE) recoll.pro; \
 	   rm -f recoll; \
 	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic depth=.. 
 
@@ -39,12 +40,12 @@ clean:
 	cd query; ${MAKE} clean
 	cd utils; ${MAKE} clean
         #cd doc/user; ${MAKE} clean
-	@-cd qtgui; ${MAKE} clean
-	rm -f qtgui/Makefile qtgui/preview/Makefile qtgui/recoll
+	@-cd $(QTGUI); ${MAKE} clean
+	rm -f $(QTGUI)/Makefile $(QTGUI)/preview/Makefile $(QTGUI)/recoll
 
 distclean: clean
 	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf \
-	   qtgui/recoll.pro Makefile config.log config.status \
+	   $(QTGUI)/recoll.pro Makefile config.log config.status \
 	   recollinstall \
 	   doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest \
 	  lib/*.dep

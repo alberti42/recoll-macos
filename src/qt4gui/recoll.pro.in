@@ -26,13 +26,7 @@ FORMS =  sort.ui \
         uiprefs.ui \
         ssearchb.ui
 
-IMAGES	= images/asearch.png \
-	images/history.png \
-	images/d_nextpage.png \
-	images/nextpage.png \
-	images/d_prevpage.png \
-	images/prevpage.png \
-	images/sortparms.png
+RESOURCES += icons.qrc
 
 unix {
   UI_DIR = .ui

@@ -307,7 +307,9 @@
   <include location="local" >ssearchb.h</include>
   <include location="local" >rclreslist.h</include>
  </includes>
- <resources/>
+ <resources>
+  <include location="icons.qrc" />
+ </resources>
  <connections>
   <connection>
    <sender>prevPageAction</sender>

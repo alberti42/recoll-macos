@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.13 2006-04-27 09:23:10 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.14 2006-06-24 07:40:04 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -292,6 +292,11 @@
       linkend="rcl.install.config.recollconf">installation chapter</link> of
       this document, or in the recoll.conf(5) man page.</para>
 
+      <para>The applications needed to index file types other than
+      text, html or email (ie: pdf, postscript, ms-word...)  are
+      described in the <link linkend="rcl.install.external">external
+      packages section</link></para>
+
     </sect1>
 
     <sect1 id="rcl.indexing.exec">
@@ -511,7 +516,7 @@
         <listitem><para><guilabel>Edit</guilabel></para></listitem>
         <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
         <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
-        <listitem><para><guilabel>More like this</guilabel></para></listitem>
+        <listitem><para><guilabel>Find similar</guilabel></para></listitem>
       </itemizedlist>
 
       <para>The <guilabel>Preview</guilabel> and
@@ -520,7 +525,7 @@
       an url or the file path to the clipboard, for pasting into
       another application.</para>
 
-      <para>The <guilabel>More like this</guilabel> entry will select
+      <para>The <guilabel>Find similar</guilabel> entry will select
       a number of relevant term from the current document and enter
       them into the simple search field. You can then start a simple
       search, with a good chance of finding documents related to the
@@ -593,10 +598,10 @@
         close the application.</para>
       </formalpara>
 
-      <formalpara><title>Closing previews</title>
-      <para>Entering <keycap>^W</keycap> in a preview tab will
-        close it (and, for the last tab, close the preview
-        window).</para>
+      <formalpara><title>Closing previews</title> 
+       <para>Entering <keycap>Esc</keycap> will close the preview
+        window and all its tabs. Entering <keycap>^W</keycap> in a tab will
+        close it (and, for the last tab, close the preview window).</para>
       </formalpara>
 
     </sect1>

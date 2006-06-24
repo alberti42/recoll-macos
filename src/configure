@@ -780,6 +780,11 @@ if test -n "$ac_init_help"; then
    esac
   cat <<\_ACEOF
 
+Optional Features:
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-qt4            Use qt version 4
+
 Some influential environment variables:
   CC          C compiler command
   CFLAGS      C compiler flags
@@ -2218,6 +2223,24 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 # mkspecs directory, so that QMAKESPEC is not needed.
 # If QMAKESPEC is not set and needed, the qmake test at the previous test
 # will have failed, and we tell the user to check his environment.
+#
+# Note about qt4: if --enable-qt4 (enables the qt4gui directory), and the
+# QTDIR variable are inconsistent, too bad.
+#
+# Check whether --enable-qt4 or --disable-qt4 was given.
+if test "${enable_qt4+set}" = set; then
+  enableval="$enable_qt4"
+  rcl_cv_qt4=$enableval
+else
+  rcl_cv_qt4=no
+fi;
+{ echo "$as_me:$LINENO: rcl_cv_qt4 $rcl_cv_qt4" >&5
+echo "$as_me: rcl_cv_qt4 $rcl_cv_qt4" >&6;}
+if test X$rcl_cv_qt4 = Xyes ; then
+   QTGUI=qt4gui
+else
+   QTGUI=qtgui
+fi
 
 if test X$QTDIR != X ; then
    PATH=$QTDIR/bin:$PATH
@@ -2272,7 +2295,7 @@ it and/or set the QTDIR environment variable?" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
-cd qtgui
+cd $QTGUI
 # We just want a .pro file: no problem with unsubstituted variables
 cp recoll.pro.in recoll.pro
 ${QMAKE} recoll.pro
@@ -2314,6 +2337,7 @@ QTRECOLL_DATADIR=${m_datadir}/recoll
 
 
 
+
 ac_config_files="$ac_config_files mk/localdefs"
 
 ac_config_files="$ac_config_files recollinstall"
@@ -2322,7 +2346,7 @@ ac_config_files="$ac_config_files Makefile"
 
 ac_config_files="$ac_config_files sampleconf/recoll.conf"
 
-ac_config_files="$ac_config_files qtgui/recoll.pro"
+ac_config_files="$ac_config_files $QTGUI/recoll.pro"
 
 
 for d in bincimapmime index lib query
@@ -2833,7 +2857,7 @@ do
   "recollinstall" ) CONFIG_FILES="$CONFIG_FILES recollinstall" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "sampleconf/recoll.conf" ) CONFIG_FILES="$CONFIG_FILES sampleconf/recoll.conf" ;;
-  "qtgui/recoll.pro" ) CONFIG_FILES="$CONFIG_FILES qtgui/recoll.pro" ;;
+  "$QTGUI/recoll.pro" ) CONFIG_FILES="$CONFIG_FILES $QTGUI/recoll.pro" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -2928,6 +2952,7 @@ s,@XAPIANCXXFLAGS@,$XAPIANCXXFLAGS,;t t
 s,@LIBICONV@,$LIBICONV,;t t
 s,@INCICONV@,$INCICONV,;t t
 s,@QTRECOLL_DATADIR@,$QTRECOLL_DATADIR,;t t
+s,@QTGUI@,$QTGUI,;t t
 CEOF
 
 _ACEOF

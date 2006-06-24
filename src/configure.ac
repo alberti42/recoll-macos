@@ -89,6 +89,20 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 # mkspecs directory, so that QMAKESPEC is not needed.
 # If QMAKESPEC is not set and needed, the qmake test at the previous test
 # will have failed, and we tell the user to check his environment.
+#
+# Note about qt4: if --enable-qt4 (enables the qt4gui directory), and the 
+# QTDIR variable are inconsistent, too bad.
+#
+AC_ARG_ENABLE(qt4,
+    AC_HELP_STRING([--enable-qt4],
+        [Use qt version 4]),
+        rcl_cv_qt4=$enableval, rcl_cv_qt4=no)
+AC_MSG_NOTICE(rcl_cv_qt4 $rcl_cv_qt4)
+if test X$rcl_cv_qt4 = Xyes ; then 
+   QTGUI=qt4gui
+else
+   QTGUI=qtgui
+fi
 
 if test X$QTDIR != X ; then
    PATH=$QTDIR/bin:$PATH
@@ -101,7 +115,7 @@ if test X$QMAKE = XNOTFOUND ; then
 it and/or set the QTDIR environment variable?])
 fi
 
-cd qtgui
+cd $QTGUI
 # We just want a .pro file: no problem with unsubstituted variables
 cp recoll.pro.in recoll.pro
 ${QMAKE} recoll.pro
@@ -136,12 +150,13 @@ AC_SUBST(LIBICONV)
 AC_SUBST(INCICONV)
 AC_SUBST(QTRECOLL_DATADIR)
 AC_SUBST(QMAKE)
+AC_SUBST(QTGUI)
 
 AC_CONFIG_FILES(mk/localdefs)
 AC_CONFIG_FILES(recollinstall)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(sampleconf/recoll.conf)
-AC_CONFIG_FILES(qtgui/recoll.pro)
+AC_CONFIG_FILES($QTGUI/recoll.pro)
 
 for d in bincimapmime index lib query
 do 
