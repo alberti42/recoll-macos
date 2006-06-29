@@ -30,14 +30,6 @@
    <string>Recoll</string>
   </property>
   <widget class="QWidget" name="widget" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>64</y>
-     <width>681</width>
-     <height>180</height>
-    </rect>
-   </property>
    <layout class="QVBoxLayout" >
     <property name="margin" >
      <number>11</number>
@@ -82,33 +74,23 @@
    </layout>
   </widget>
   <widget class="QToolBar" name="Toolbar" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>118</width>
-     <height>35</height>
-    </rect>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
    </property>
-   <property name="label" >
-    <string>Search tools</string>
-   </property>
+   <attribute name="toolBarArea" >
+    <number>4</number>
+   </attribute>
    <addaction name="toolsAdvanced_SearchAction" />
    <addaction name="toolsSort_parametersAction" />
    <addaction name="toolsDoc_HistoryAction" />
   </widget>
   <widget class="QToolBar" name="Toolbar1" >
-   <property name="geometry" >
-    <rect>
-     <x>118</x>
-     <y>0</y>
-     <width>85</width>
-     <height>35</height>
-    </rect>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
    </property>
-   <property name="label" >
-    <string>Result list</string>
-   </property>
+   <attribute name="toolBarArea" >
+    <number>4</number>
+   </attribute>
    <addaction name="prevPageAction" />
    <addaction name="nextPageAction" />
   </widget>
@@ -118,17 +100,9 @@
      <x>0</x>
      <y>0</y>
      <width>681</width>
-     <height>29</height>
+     <height>27</height>
     </rect>
    </property>
-   <widget class="QMenu" name="fileMenu" >
-    <property name="title" >
-     <string>&amp;File</string>
-    </property>
-    <addaction name="fileStart_IndexingAction" />
-    <addaction name="separator" />
-    <addaction name="fileExitAction" />
-   </widget>
    <widget class="QMenu" name="Tools" >
     <property name="title" >
      <string>&amp;Tools</string>
@@ -150,6 +124,14 @@
     <addaction name="userManualAction" />
     <addaction name="separator" />
     <addaction name="helpAbout_RecollAction" />
+   </widget>
+   <widget class="QMenu" name="fileMenu" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <addaction name="fileStart_IndexingAction" />
+    <addaction name="separator" />
+    <addaction name="fileExitAction" />
    </widget>
    <addaction name="fileMenu" />
    <addaction name="Tools" />
@@ -194,7 +176,7 @@
   </action>
   <action name="toolsDoc_HistoryAction" >
    <property name="icon" >
-    <iconset>images/history.png</iconset>
+    <iconset resource="icons.qrc" >:/icons/images/history.png</iconset>
    </property>
    <property name="text" >
     <string>Document &amp;History</string>
@@ -208,7 +190,7 @@
   </action>
   <action name="toolsAdvanced_SearchAction" >
    <property name="icon" >
-    <iconset>images/asearch.png</iconset>
+    <iconset resource="icons.qrc" >:/icons/images/asearch.png</iconset>
    </property>
    <property name="text" >
     <string>&amp;Advanced Search</string>
@@ -222,7 +204,7 @@
   </action>
   <action name="toolsSort_parametersAction" >
    <property name="icon" >
-    <iconset>images/sortparms.png</iconset>
+    <iconset resource="icons.qrc" >:/icons/images/sortparms.png</iconset>
    </property>
    <property name="text" >
     <string>&amp;Sort parameters</string>
@@ -239,7 +221,7 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset>images/nextpage.png</iconset>
+    <iconset resource="icons.qrc" >:/icons/images/nextpage.png</iconset>
    </property>
    <property name="iconText" >
     <string>Next page</string>
@@ -253,7 +235,7 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset>images/prevpage.png</iconset>
+    <iconset resource="icons.qrc" >:/icons/images/prevpage.png</iconset>
    </property>
    <property name="iconText" >
     <string>Previous page</string>
