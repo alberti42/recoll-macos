@@ -1,8 +1,8 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>SortForm</class>
+<class>SortFormBase</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>SortForm</cstring>
+        <cstring>SortFormBase</cstring>
     </property>
     <property name="geometry">
         <rect>
@@ -161,69 +161,5 @@
         </widget>
     </vbox>
 </widget>
-<connections>
-    <connection>
-        <sender>resetPB</sender>
-        <signal>clicked()</signal>
-        <receiver>SortForm</receiver>
-        <slot>reset()</slot>
-    </connection>
-    <connection>
-        <sender>closePB</sender>
-        <signal>clicked()</signal>
-        <receiver>SortForm</receiver>
-        <slot>close()</slot>
-    </connection>
-    <connection>
-        <sender>mcntSB</sender>
-        <signal>valueChanged(int)</signal>
-        <receiver>SortForm</receiver>
-        <slot>setData()</slot>
-    </connection>
-    <connection>
-        <sender>fldCMB1</sender>
-        <signal>activated(const QString&amp;)</signal>
-        <receiver>SortForm</receiver>
-        <slot>setData()</slot>
-    </connection>
-    <connection>
-        <sender>fldCMB2</sender>
-        <signal>activated(const QString&amp;)</signal>
-        <receiver>SortForm</receiver>
-        <slot>setData()</slot>
-    </connection>
-    <connection>
-        <sender>descCB1</sender>
-        <signal>stateChanged(int)</signal>
-        <receiver>SortForm</receiver>
-        <slot>setData()</slot>
-    </connection>
-    <connection>
-        <sender>descCB2</sender>
-        <signal>stateChanged(int)</signal>
-        <receiver>SortForm</receiver>
-        <slot>setData()</slot>
-    </connection>
-    <connection>
-        <sender>sortCB</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>SortForm</receiver>
-        <slot>setData()</slot>
-    </connection>
-</connections>
-<includes>
-    <include location="local" impldecl="in declaration">sortseq.h</include>
-    <include location="local" impldecl="in implementation">sort.ui.h</include>
-</includes>
-<signals>
-    <signal>sortDataChanged(RclSortSpec)</signal>
-</signals>
-<slots>
-    <slot>reset()</slot>
-    <slot>setData()</slot>
-</slots>
-<functions>
-    <function>init()</function>
-</functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

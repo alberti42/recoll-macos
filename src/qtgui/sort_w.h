@@ -1,3 +1,4 @@
+/* @(#$Id: sort_w.h,v 1.1 2006-09-04 15:13:01 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -14,14 +15,35 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/****************************************************************************
- ** ui.h extension file, included from the uic-generated form implementation.
- **
- ** If you want to add, delete, or rename functions or slots, use
- ** Qt Designer to update this file, preserving your code.
- **
- ** You should not define a constructor or destructor in this file.
- ** Instead, write your code in functions called init() and destroy().
- ** These will automatically be called by the form's constructor and
- ** destructor.
- *****************************************************************************/
+#ifndef _SORT_W_H_INCLUDED_
+#define _SORT_W_H_INCLUDED_
+
+#include <qvariant.h>
+#include <qdialog.h>
+#include "sortseq.h"
+#include "sort.h"
+
+class SortForm : public SortFormBase
+{
+    Q_OBJECT
+
+public:
+    SortForm(QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 ) : SortFormBase(parent, name, modal, fl) {
+	init();
+    }
+	~SortForm() {}
+
+
+public slots:
+    virtual void reset();
+    virtual void setData();
+
+signals:
+    void sortDataChanged(RclSortSpec);
+
+private:
+    virtual void init();
+};
+
+
+#endif /* _SORT_W_H_INCLUDED_ */

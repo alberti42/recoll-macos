@@ -20,11 +20,11 @@
 #include <qvariant.h>
 #include <qmainwindow.h>
 #include "sortseq.h"
-#include "preview.h"
+#include "preview_w.h"
 #include "recoll.h"
-#include "advsearch.h"
-#include "sort.h"
-#include "uiprefs.h"
+#include "advsearch_w.h"
+#include "sort_w.h"
+#include "uiprefs_w.h"
 #include "rcldb.h"
 #include "searchdata.h"
 
@@ -47,7 +47,7 @@ public:
 public slots:
     virtual void fileExit();
     virtual void periodic100();
-    virtual void fileStart_IndexingAction_activated();
+    virtual void startIndexing();
     virtual void startAdvSearch(Rcl::AdvSearchData sdata);
     virtual void previewClosed(QWidget * w);
     virtual void showAdvSearchDialog();
@@ -62,17 +62,17 @@ public slots:
     virtual void enablePrevPage(bool);
     virtual void docExpand(int);
     virtual void ssearchAddTerm(QString);
-protected:
+    virtual void startPreview(int docnum);
+    virtual void startNativeViewer(int docnum);
+
+private:
     Preview *curPreview;
-    advsearch *asearchform;
+    AdvSearch *asearchform;
     SortForm *sortform;
     UIPrefsDialog *uiprefs;
     RclSortSpec sortspecs;
     RclDHistory *m_history;
-private:
     virtual void init();
-    virtual void startPreview( int docnum );
-    virtual void startNativeViewer( int docnum );
 };
 
 #endif // RCLMAIN_H

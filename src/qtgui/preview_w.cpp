@@ -1,3 +1,6 @@
+#ifndef lint
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.1 2006-09-04 15:13:01 dockes Exp $ (C) 2005 J.F.Dockes";
+#endif
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -14,17 +17,6 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/****************************************************************************
-** ui.h extension file, included from the uic-generated form implementation.
-**
-** If you want to add, delete, or rename functions or slots, use
-** Qt Designer to update this file, preserving your code.
-**
-** You should not define a constructor or destructor in this file.
-** Instead, write your code in functions called init() and destroy().
-** These will automatically be called by the form's constructor and
-** destructor.
-*****************************************************************************/
 #include <unistd.h>
 #include <time.h>
 
@@ -37,6 +29,17 @@ using std::pair;
 #include <qmessagebox.h>
 #include <qprogressdialog.h>
 #include <qthread.h>
+#include <qvariant.h>
+#include <qpushbutton.h>
+#include <qtabwidget.h>
+#include <qtextedit.h>
+#include <qlabel.h>
+#include <qlineedit.h>
+#include <qcheckbox.h>
+#include <qlayout.h>
+#include <qtooltip.h>
+#include <qwhatsthis.h>
+#include "qapplication.h"
 
 #include "debuglog.h"
 #include "pathut.h"
@@ -46,6 +49,7 @@ using std::pair;
 #include "smallut.h"
 #include "wipedir.h"
 #include "cancelcheck.h"
+#include "preview_w.h"
 
 #if (QT_VERSION < 0x030300)
 #define wasCanceled wasCancelled
@@ -64,8 +68,15 @@ class TabData {
 
 void Preview::init()
 {
+    // signals and slots connections
+    connect(searchTextLine, SIGNAL(textChanged(const QString&)), 
+	    this, SLOT(searchTextLine_textChanged(const QString&)));
+    connect(nextButton, SIGNAL(clicked()), this, SLOT(nextPressed()));
+    connect(prevButton, SIGNAL(clicked()), this, SLOT(prevPressed()));
+    connect(clearPB, SIGNAL(clicked()), searchTextLine, SLOT(clear()));
     connect(pvTab, SIGNAL(currentChanged(QWidget *)), 
 	    this, SLOT(currentChanged(QWidget *)));
+
     searchTextLine->installEventFilter(this);
     dynSearchActive = false;
     canBeep = true;
@@ -278,13 +289,13 @@ void Preview::closeCurrentTab()
 }
 
 
-QTextEdit * Preview::addEditorTab()
+QTextEdit *Preview::addEditorTab()
 {
     QWidget *anon = new QWidget((QWidget *)pvTab);
     QVBoxLayout *anonLayout = new QVBoxLayout(anon, 1, 1, "anonLayout"); 
     QTextEdit *editor = new QTextEdit(anon, "pvEdit");
-    editor->setReadOnly( TRUE );
-    editor->setUndoRedoEnabled( FALSE );
+    editor->setReadOnly(TRUE);
+    editor->setUndoRedoEnabled(FALSE );
     anonLayout->addWidget(editor);
     pvTab->addTab(anon, "Tab");
     pvTab->showPage(anon);
@@ -589,3 +600,4 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     }
     return true;
 }
+

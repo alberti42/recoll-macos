@@ -1,8 +1,8 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>UIPrefsDialog</class>
+<class>UIPrefsDialogBase</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>uiPrefsDialog</cstring>
+        <cstring>uiPrefsDialogBase</cstring>
     </property>
     <property name="geometry">
         <rect>
@@ -558,51 +558,5 @@ May be slow for big documents.</string>
         </widget>
     </vbox>
 </widget>
-<connections>
-    <connection>
-        <sender>buttonOk</sender>
-        <signal>clicked()</signal>
-        <receiver>uiPrefsDialog</receiver>
-        <slot>accept()</slot>
-    </connection>
-    <connection>
-        <sender>buttonCancel</sender>
-        <signal>clicked()</signal>
-        <receiver>uiPrefsDialog</receiver>
-        <slot>reject()</slot>
-    </connection>
-    <connection>
-        <sender>buildAbsCB</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>replAbsCB</receiver>
-        <slot>setEnabled(bool)</slot>
-    </connection>
-</connections>
-<includes>
-    <include location="local" impldecl="in implementation">uiprefs.ui.h</include>
-</includes>
-<variables>
-    <variable access="public">QString reslistFontFamily;</variable>
-    <variable access="public">int reslistFontSize;</variable>
-</variables>
-<signals>
-    <signal>uiprefsDone()</signal>
-</signals>
-<slots>
-    <slot access="protected">accept()</slot>
-    <slot>showFontDialog()</slot>
-    <slot>resetReslistFont()</slot>
-    <slot>showBrowserDialog()</slot>
-    <slot>extraDbTextChanged( const QString &amp; text )</slot>
-    <slot>addAADbPB_clicked()</slot>
-    <slot>addADbPB_clicked()</slot>
-    <slot>delADbPB_clicked()</slot>
-    <slot>delAADbPB_clicked()</slot>
-    <slot>addExtraDbPB_clicked()</slot>
-    <slot>browseDbPB_clicked()</slot>
-</slots>
-<functions>
-    <function>init()</function>
-</functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.44 2006-04-28 07:54:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.45 2006-09-04 15:13:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -70,7 +70,7 @@ RclConfig *rclconfig;
 Rcl::Db *rcldb;
 int recollNeedsExit;
 static string dbdir;
-static RclMainBase *mainWindow;
+static RclMain *mainWindow;
 static string recollsharedir;
 
 bool maybeOpenDb(string &reason, bool force)

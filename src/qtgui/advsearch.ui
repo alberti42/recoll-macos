@@ -1,8 +1,8 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>advsearch</class>
+<class>AdvSearchBase</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>advsearch</cstring>
+        <cstring>AdvSearchBase</cstring>
     </property>
     <property name="geometry">
         <rect>
@@ -414,105 +414,5 @@
         </widget>
     </vbox>
 </widget>
-<connections>
-    <connection>
-        <sender>delFiltypPB</sender>
-        <signal>clicked()</signal>
-        <receiver>advsearch</receiver>
-        <slot>delFiltypPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>searchPB</sender>
-        <signal>clicked()</signal>
-        <receiver>advsearch</receiver>
-        <slot>searchPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>restrictFtCB</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>advsearch</receiver>
-        <slot>restrictFtCB_toggled(bool)</slot>
-    </connection>
-    <connection>
-        <sender>dismissPB</sender>
-        <signal>clicked()</signal>
-        <receiver>advsearch</receiver>
-        <slot>close()</slot>
-    </connection>
-    <connection>
-        <sender>browsePB</sender>
-        <signal>clicked()</signal>
-        <receiver>advsearch</receiver>
-        <slot>browsePB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>addFiltypPB</sender>
-        <signal>clicked()</signal>
-        <receiver>advsearch</receiver>
-        <slot>addFiltypPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>andWordsLE</sender>
-        <signal>returnPressed()</signal>
-        <receiver>advsearch</receiver>
-        <slot>searchPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>orWordsLE</sender>
-        <signal>returnPressed()</signal>
-        <receiver>advsearch</receiver>
-        <slot>searchPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>noWordsLE</sender>
-        <signal>returnPressed()</signal>
-        <receiver>advsearch</receiver>
-        <slot>searchPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>phraseLE</sender>
-        <signal>returnPressed()</signal>
-        <receiver>advsearch</receiver>
-        <slot>searchPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>subtreeLE</sender>
-        <signal>returnPressed()</signal>
-        <receiver>advsearch</receiver>
-        <slot>searchPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>delAFiltypPB</sender>
-        <signal>clicked()</signal>
-        <receiver>advsearch</receiver>
-        <slot>delAFiltypPB_clicked()</slot>
-    </connection>
-    <connection>
-        <sender>addAFiltypPB</sender>
-        <signal>clicked()</signal>
-        <receiver>advsearch</receiver>
-        <slot>addAFiltypPB_clicked()</slot>
-    </connection>
-</connections>
-<includes>
-    <include location="local" impldecl="in declaration">recoll.h</include>
-    <include location="local" impldecl="in declaration">searchdata.h</include>
-    <include location="local" impldecl="in implementation">advsearch.ui.h</include>
-</includes>
-<signals>
-    <signal>startSearch(Rcl::AdvSearchData)</signal>
-</signals>
-<slots>
-    <slot>delFiltypPB_clicked()</slot>
-    <slot>delAFiltypPB_clicked()</slot>
-    <slot>addFiltypPB_clicked()</slot>
-    <slot>addAFiltypPB_clicked()</slot>
-    <slot>restrictFtCB_toggled( bool on )</slot>
-    <slot>searchPB_clicked()</slot>
-    <slot>browsePB_clicked()</slot>
-</slots>
-<functions>
-    <function access="private">init()</function>
-</functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

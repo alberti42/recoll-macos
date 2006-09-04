@@ -14,7 +14,7 @@ SOURCES	+= main.cpp \
 
 FORMS	=  recollmain.ui \
 	advsearch.ui \
-	preview/preview.ui \
+	preview.ui \
 	sort.ui \
 	uiprefs.ui \
 	ssearchb.ui

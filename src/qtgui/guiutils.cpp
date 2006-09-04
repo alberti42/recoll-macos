@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.11 2006-05-02 09:49:06 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.12 2006-09-04 15:13:01 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -120,9 +120,13 @@ PrefsPack prefs;
  */
 void rwSettings(bool writing)
 {
+    fprintf(stderr, "rwSettings: write %d\n", int(writing));
+#if QT_VERSION >= 0x040000
+    QSettings settings("Recoll.org", "recoll");
+#else
     QSettings settings;
-    settings.setPath("Recoll.org", "Recoll");
-
+    settings.setPath("Recoll.org", "Recoll", QSettings::User);
+#endif
     SETTING_RW(prefs.mainwidth, "/Recoll/geometry/width", Num, 500);
     SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Num, 400);
     SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Num, 0);

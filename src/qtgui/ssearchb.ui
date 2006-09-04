@@ -113,32 +113,5 @@
         </widget>
     </hbox>
 </widget>
-<connections>
-    <connection>
-        <sender>searchPB</sender>
-        <signal>clicked()</signal>
-        <receiver>SSearchBase</receiver>
-        <slot>startSimpleSearch()</slot>
-    </connection>
-</connections>
-<includes>
-    <include location="local" impldecl="in declaration">recoll.h</include>
-    <include location="local" impldecl="in declaration">searchdata.h</include>
-    <include location="local" impldecl="in implementation">ssearchb.ui.h</include>
-</includes>
-<signals>
-    <signal>startSearch(Rcl::AdvSearchData)</signal>
-    <signal>clearSearch()</signal>
-</signals>
-<slots>
-    <slot>searchTextChanged( const QString &amp; text )</slot>
-    <slot>startSimpleSearch()</slot>
-</slots>
-<functions>
-    <function>init()</function>
-    <function>setAnyTermMode()</function>
-    <function>completion()</function>
-    <function returnType="bool">event( QEvent * evt )</function>
-</functions>
 <layoutdefaults spacing="6" margin="0"/>
 </UI>

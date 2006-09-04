@@ -1,8 +1,8 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>Preview</class>
+<class>PreviewBase</class>
 <widget class="QWidget">
     <property name="name">
-        <cstring>Preview</cstring>
+        <cstring>PreviewBase</cstring>
     </property>
     <property name="geometry">
         <rect>
@@ -159,68 +159,5 @@
         </widget>
     </vbox>
 </widget>
-<connections>
-    <connection>
-        <sender>searchTextLine</sender>
-        <signal>textChanged(const QString&amp;)</signal>
-        <receiver>Preview</receiver>
-        <slot>searchTextLine_textChanged(const QString&amp;)</slot>
-    </connection>
-    <connection>
-        <sender>nextButton</sender>
-        <signal>clicked()</signal>
-        <receiver>Preview</receiver>
-        <slot>nextPressed()</slot>
-    </connection>
-    <connection>
-        <sender>prevButton</sender>
-        <signal>clicked()</signal>
-        <receiver>Preview</receiver>
-        <slot>prevPressed()</slot>
-    </connection>
-    <connection>
-        <sender>clearPB</sender>
-        <signal>clicked()</signal>
-        <receiver>searchTextLine</receiver>
-        <slot>clear()</slot>
-    </connection>
-</connections>
-<includes>
-    <include location="local" impldecl="in implementation">qapplication.h</include>
-    <include location="local" impldecl="in declaration">rcldb.h</include>
-    <include location="local" impldecl="in implementation">preview.ui.h</include>
-</includes>
-<variables>
-    <variable>int matchIndex;</variable>
-    <variable>int matchPara;</variable>
-    <variable>bool dynSearchActive;</variable>
-    <variable>bool canBeep;</variable>
-    <variable>void *tabData;</variable>
-    <variable>QWidget *currentW;</variable>
-</variables>
-<signals>
-    <signal>previewClosed(QWidget *)</signal>
-    <signal>wordSelect(QString)</signal>
-</signals>
-<slots>
-    <slot>searchTextLine_textChanged( const QString &amp; text )</slot>
-    <slot>doSearch( const QString &amp;str, bool next, bool reverse )</slot>
-    <slot>nextPressed()</slot>
-    <slot>prevPressed()</slot>
-    <slot>currentChanged( QWidget * tw )</slot>
-    <slot>closeCurrentTab()</slot>
-    <slot>setCurTabProps( const string &amp; fn, const Rcl::Doc &amp; doc )</slot>
-    <slot>textDoubleClicked(int, int)</slot>
-</slots>
-<functions>
-    <function access="private" specifier="non virtual">init()</function>
-    <function>closeEvent( QCloseEvent * e )</function>
-    <function returnType="bool">eventFilter( QObject * target, QEvent * event )</function>
-    <function returnType="bool">makeDocCurrent( const string &amp; fn, const Rcl::Doc &amp; doc )</function>
-    <function returnType="QTextEdit *">getCurrentEditor()</function>
-    <function returnType="QTextEdit *">addEditorTab()</function>
-    <function access="private">destroy()</function>
-    <function access="public" returnType="bool">loadFileInCurrentTab( string fn, size_t sz, const Rcl::Doc &amp; idoc )</function>
-</functions>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

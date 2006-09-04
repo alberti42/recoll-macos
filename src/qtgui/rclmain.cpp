@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.27 2006-04-27 09:23:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.28 2006-09-04 15:13:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -95,10 +95,40 @@ void RclMain::init()
     m_history = new RclDHistory(historyfile);
     connect(sSearch, SIGNAL(startSearch(Rcl::AdvSearchData)), 
 		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
-    connect(sSearch, SIGNAL(clearSearch()), resList, SLOT(resetSearch()));
+
+    // signals and slots connections
+    connect(sSearch, SIGNAL(clearSearch()),
+	    resList, SLOT(resetSearch()));
+    connect(prevPageAction, SIGNAL(activated()), 
+	    resList, SLOT(resultPageBack()));
+    connect(nextPageAction, SIGNAL(activated()),
+	    resList, SLOT(showResultPage()));
+
     connect(resList, SIGNAL(docExpand(int)), this, SLOT(docExpand(int)));
     connect(resList, SIGNAL(wordSelect(QString)),
 	    this, SLOT(ssearchAddTerm(QString)));
+    connect(fileExitAction, SIGNAL(activated() ), this, SLOT(fileExit() ) );
+    connect(fileStart_IndexingAction, SIGNAL(activated()), 
+	    this, SLOT(startIndexing()));
+    connect(helpAbout_RecollAction, SIGNAL(activated()), 
+	    this, SLOT(showAboutDialog()));
+    connect(userManualAction, SIGNAL(activated()), this, SLOT(startManual()));
+    connect(toolsDoc_HistoryAction, SIGNAL(activated()), 
+	    this, SLOT(showDocHistory()));
+    connect(toolsAdvanced_SearchAction, SIGNAL(activated()), 
+	    this, SLOT(showAdvSearchDialog()));
+    connect(toolsSort_parametersAction, SIGNAL(activated()), 
+	    this, SLOT(showSortDialog()));
+    connect(preferencesQuery_PrefsAction, SIGNAL(activated()), 
+	    this, SLOT(showUIPrefs()));
+    connect(resList, SIGNAL(nextPageAvailable(bool)), 
+	    this, SLOT(enableNextPage(bool)));
+    connect(resList, SIGNAL(prevPageAvailable(bool)), 
+	    this, SLOT(enablePrevPage(bool)));
+    connect(resList, SIGNAL(docEditClicked(int)), 
+	    this, SLOT(startNativeViewer(int)));
+    connect(resList, SIGNAL(docPreviewClicked(int)), 
+	    this, SLOT(startPreview(int)));
 
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
@@ -264,7 +294,7 @@ void RclMain::periodic100()
 	fileExit();
 }
 
-void RclMain::fileStart_IndexingAction_activated()
+void RclMain::startIndexing()
 {
     if (indexingdone)
 	startindexing = 1;
@@ -319,7 +349,7 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
 void RclMain::showAdvSearchDialog()
 {
     if (asearchform == 0) {
-	asearchform = new advsearch(0, tr("Advanced search"), FALSE,
+	asearchform = new AdvSearch(0, tr("Advanced search"), FALSE,
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
 	asearchform->setSizeGripEnabled(FALSE);
