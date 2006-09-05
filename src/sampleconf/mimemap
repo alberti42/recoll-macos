@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.15 2006-04-01 07:34:21 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.16 2006-09-05 09:52:23 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
 
 .txt = text/plain
@@ -35,6 +35,8 @@
 #.Z  = application/x-compress
 
 .doc = application/msword
+.ppt = application/vnd.ms-powerpoint
+.xls = application/vnd.ms-excel
 
 # OpenOffice / opendocument. We handle opendocument as old openoffice files
 # for now

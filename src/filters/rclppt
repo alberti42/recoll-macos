@@ -1,0 +1,93 @@
+#!/bin/sh
+# @(#$Id: rclppt,v 1.1 2006-09-05 09:52:23 dockes Exp $  (C) 2004 J.F.Dockes
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the
+# Free Software Foundation, Inc.,
+# 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+#================================================================
+# rclppt
+# Handle powerpoint files for recoll. 
+# Uses catppt from the catdoc utilities
+# (http://ftp.45.free.net/~vitus/software/catdoc/)
+# In my experience, this sometimes fail to extract text, printing "Default
+# Design" ou "format par defaut" instead and only.
+#
+#================================================================
+# set variables
+LANG=C ; export LANG
+LC_ALL=C ; export LC_ALL
+progname="rclsoff"
+
+# show help message
+if test $# -ne 1 -o "$1" = "--help" 
+then
+  printf 'Process a powerpoint file for recoll indexation.\n'
+  printf 'Usage: %s [infile]\n' "$progname"
+  exit 1
+fi
+
+infile="$1"
+
+iscmd()
+{
+    cmd=$1
+    case $cmd in
+    */*)
+	if test -x $cmd ; then return 0; else return 1; fi ;;
+    *)
+      oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
+      for d in $*;do test -x $d/$cmd && return 0;done
+      return 1 ;;
+    esac
+}
+checkcmds()
+{
+    cmdsok=0
+    for cmd in $*;do
+      if iscmd $cmd 
+      then 
+        cmdsok=1
+      else 
+        cmdsok=0
+      fi
+    done
+}
+
+# check the input file existence
+if test ! -f "$infile"
+then
+  printf '%s: %s: no such file\n' "$progname" "$infile"
+  exit 1
+fi
+checkcmds catppt
+if test X$cmdsok = X0 ; then
+   printf "Catppt not found"
+   exit 1
+fi
+
+# output the result
+echo '<html><head>'
+#echo '<title>' "$title" '</title>'
+echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
+echo '</head><body>'
+echo '<pre>'
+
+catppt -d utf-8 "$infile" | \
+   sed -e 's/</&lt;/g' -e 's/&/&amp;/g' 
+
+echo '</pre>'
+echo '</body></html>'
+
+# exit normally
+exit 0

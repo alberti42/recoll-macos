@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.16 2006-04-01 07:34:21 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.17 2006-09-05 09:52:23 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -28,6 +28,8 @@ application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 application/msword = exec rcldoc
 application/pdf = exec rclpdf
 application/postscript = exec rclps
+application/vnd.ms-powerpoint = exec rclppt
+application/vnd.ms-excel = exec rclxls
 application/vnd.sun.xml.calc = exec rclsoff
 application/vnd.sun.xml.calc.template = exec rclsoff
 application/vnd.sun.xml.draw = exec rclsoff
@@ -52,6 +54,8 @@ text/x-mail = internal
 # External viewers, launched when you on a result entry 'edit' link
 [view]
 application/msword = openoffice %f
+application/vnd.ms-powerpoint = openoffice %f
+application/vnd.ms-excel = openoffice %f
 application/pdf  = xpdf %f
 application/postscript = gv %f
 application/vnd.sun.xml.calc = openoffice %f
