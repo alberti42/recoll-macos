@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.15 2006-09-05 08:05:02 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.16 2006-09-05 17:09:30 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -321,12 +321,11 @@ void MimeHandlerMail::walkmime(string &out, Binc::MimePart& doc, int depth)
 	// If this is an attachment, we index the file name if any and, when
 	// previewing, at least show that it was there.
 	if (!stringlowercmp("attachment", content_disposition.value)) {
-	    string rafn = "NoFileName", afn;
+	    string afn;
 	    map<string,string>::const_iterator it;
 	    it = content_disposition.params.find(string("filename"));
-	    if (it != content_type.params.end())
-		rafn = it->second;
-	    rfc2047_decode(rafn, afn);
+	    if (it != content_disposition.params.end())
+		afn = it->second;
 	    out += "\n";
 	    if (m_forPreview)
 		out += "[Attachment: ";
