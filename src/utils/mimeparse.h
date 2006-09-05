@@ -16,7 +16,7 @@
  */
 #ifndef _MIME_H_INCLUDED_
 #define _MIME_H_INCLUDED_
-/* @(#$Id: mimeparse.h,v 1.5 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimeparse.h,v 1.6 2006-09-05 08:04:36 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <map>
@@ -44,6 +44,8 @@ extern bool qp_decode(const std::string& in, std::string &out);
 /** Decode an Internet mail header value encoded according to rfc2047 
  *
  * Example input:  =?iso-8859-1?Q?RE=A0=3A_Smoke_Tests?=
+ * The input normally comes from parseMimeHeaderValue() output
+ * and no comments or quoting are expected.
  * @param in input string, ascii with rfc2047 markup
  * @return out output string encoded in utf-8
  */

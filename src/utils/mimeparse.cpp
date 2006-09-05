@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.10 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.11 2006-09-05 08:04:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,14 +32,14 @@ static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.10 2006-01-23 13:32:28 dockes E
 using namespace std;
 #endif /* NO_NAMESPACES */
 
-// Parsing a header value. Only content-type has parameters, but
-// others are compatible with content-type syntax, only, parameters
-// are not used. So we can parse all like content-type:
+// Parsing a header value. Only content-type and content-disposition
+// have parameters, but others are compatible with content-type
+// syntax, only, parameters are not used. So we can parse all like
+// content-type:
 //    headertype: value [; paramname=paramvalue] ...
 // Value and paramvalues can be quoted strings, and there can be
-// comments in there
-
-
+// comments too
+// Ref: RFC2045/6/7 (MIME) RFC1806 (content-disposition)
 
 // The lexical token returned by find_next_token
 class Lexical {
