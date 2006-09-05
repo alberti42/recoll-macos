@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.14 2006-04-07 08:51:15 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.15 2006-09-05 08:05:02 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -46,9 +46,6 @@ static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.14 2006-04-07 08:51:15 dockes Exp
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
-
-static void 
-walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc, int depth);
 
 MimeHandlerMail::~MimeHandlerMail()
 {
@@ -241,18 +238,17 @@ MimeHandlerMail::processone(const string &fn, Binc::MimeDocument& doc,
 	docout.text += string("Subject: ") + transcoded + string("\n");
     }
 
-    LOGDEB2(("MimeHandlerMail::processone: ismultipart %d mime subtype '%s'\n",
+    LOGDEB2(("MimeHandlerMail::processone:ismultipart %d mime subtype '%s'\n",
 	    doc.isMultipart(), doc.getSubType().c_str()));
-    walkmime(m_conf, docout.text, doc, 0);
+    walkmime(docout.text, doc, 0);
 
-    // LOGDEB(("MimeHandlerMail::processone: text: '%s'\n", docout.text.c_str()));
+    LOGDEB2(("MimeHandlerMail::processone:text:[%s]\n", docout.text.c_str()));
     return MimeHandler::MHDone;
 }
 
 // Recursively walk the message mime parts and concatenate all the
 // inline html or text that we find anywhere.
-static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc, 
-		     int depth)
+void MimeHandlerMail::walkmime(string &out, Binc::MimePart& doc, int depth)
 {
     if (depth > 5) {
 	LOGINFO(("walkmime: max depth exceeded\n"));
@@ -269,7 +265,7 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	if (!stringicmp("mixed", doc.getSubType()) || 
 	    !stringicmp("related", doc.getSubType())) {
 	    for (it = doc.members.begin(); it != doc.members.end();it++) {
-		walkmime(cnf, out, *it, depth+1);
+		walkmime(out, *it, depth+1);
 	    }
 	} else if (!stringicmp("alternative", doc.getSubType())) {
 	    std::vector<Binc::MimePart>::iterator ittxt, ithtml;
@@ -292,15 +288,14 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	    }
 	    if (ittxt != doc.members.end()) {
 		LOGDEB2(("walkmime: alternative: chose text/plain part\n"))
-		walkmime(cnf, out, *ittxt, depth+1);
+		walkmime(out, *ittxt, depth+1);
 	    } else if (ithtml != doc.members.end()) {
 		LOGDEB2(("walkmime: alternative: chose text/html part\n"))
-		walkmime(cnf, out, *ithtml, depth+1);
+		walkmime(out, *ithtml, depth+1);
 	    }
 	}
     } else {
-	// If content-type is text or html and content-disposition is inline, 
-	// decode and add to text.
+	// "Simple" part. See what it is:
 
 	// Get and parse content-type header.
 	Binc::HeaderItem hi;
@@ -311,6 +306,43 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	LOGDEB2(("walkmime:content-type: %s\n", ctt.c_str()));
 	MimeHeaderValue content_type;
 	parseMimeHeaderValue(ctt, content_type);
+	    
+	// Get and parse Content-Disposition header
+	string ctd = "inline";
+	if (doc.h.getFirstHeader("Content-Disposition", hi)) {
+	    ctd = hi.getValue();
+	}
+	MimeHeaderValue content_disposition;
+	parseMimeHeaderValue(ctd, content_disposition);
+
+	LOGDEB2(("Content_disposition:[%s]\n", 
+		content_disposition.value.c_str()));
+
+	// If this is an attachment, we index the file name if any and, when
+	// previewing, at least show that it was there.
+	if (!stringlowercmp("attachment", content_disposition.value)) {
+	    string rafn = "NoFileName", afn;
+	    map<string,string>::const_iterator it;
+	    it = content_disposition.params.find(string("filename"));
+	    if (it != content_type.params.end())
+		rafn = it->second;
+	    rfc2047_decode(rafn, afn);
+	    out += "\n";
+	    if (m_forPreview)
+		out += "[Attachment: ";
+	    out += afn;
+	    if (m_forPreview)
+		out += "]";
+	    out += "\n\n";
+	    // Attachment: we're done with this part
+	    return;
+	}
+
+	// The only other disposition that interests us is "inline", and then
+	// this has to be plain text or html
+	if (stringlowercmp("inline", content_disposition.value)) {
+	    return;
+	}
 	if (stringlowercmp("text/plain", content_type.value) && 
 	    stringlowercmp("text/html", content_type.value)) {
 	    return;
@@ -334,17 +366,6 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	    !stringlowercmp("unknown", charset) ) {
 	    charset = "iso-8859-1";
 	}
-	    
-	// Content disposition
-	string ctd = "inline";
-	if (doc.h.getFirstHeader("Content-Disposition", hi)) {
-	    ctd = hi.getValue();
-	}
-	MimeHeaderValue content_disposition;
-	parseMimeHeaderValue(ctd, content_disposition);
-	if (stringlowercmp("inline", content_disposition.value)) {
-	    return;
-	}
 
 	// Content transfer encoding
 	string cte = "7bit";
@@ -357,7 +378,7 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	string body;
 	doc.getBody(body, 0, doc.bodylength);
 
-	// Decode content transfer encoding
+	// Decode according to content transfer encoding
 	if (!stringlowercmp("quoted-printable", cte)) {
 	    string decoded;
 	    if (!qp_decode(body, decoded)) {
@@ -381,23 +402,24 @@ static void walkmime(RclConfig *cnf, string &out, Binc::MimePart& doc,
 	    body = decoded;
 	}
 
-	string transcoded;
+	// Handle html stripping and transcoding to utf8
+	string utf8;
 	if (!stringlowercmp("text/html", content_type.value)) {
 	    MimeHandlerHtml mh;
 	    Rcl::Doc hdoc;
 	    mh.charsethint = charset;
-	    mh.mkDoc(cnf, "", body, content_type.value,  hdoc);
-	    transcoded = hdoc.text;
+	    mh.mkDoc(m_conf, "", body, content_type.value,  hdoc);
+	    utf8 = hdoc.text;
 	} else {
 	    // Transcode to utf-8 
-	    if (!transcode(body, transcoded, charset, "UTF-8")) {
+	    if (!transcode(body, utf8, charset, "UTF-8")) {
 		LOGERR(("walkmime: transcode failed from cs '%s' to UTF-8\n",
 			charset.c_str()));
-		transcoded = body;
+		utf8 = body;
 	    }
 	}
 
-	out += string("\r\n") + transcoded;
+	out += string("\r\n") + utf8;
 	LOGDEB2(("walkmime: out now: [%s]\n", out.c_str()));
     }
 }
