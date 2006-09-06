@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.1 2006-09-04 15:13:02 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.2 2006-09-06 09:50:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -91,11 +91,11 @@ void UIPrefsDialog::init()
 	cur = 0;
     stemLangCMB->setCurrentItem(cur);
 
-    buildAbsCB->setDown(prefs.queryBuildAbstract);
+    buildAbsCB->setChecked(prefs.queryBuildAbstract);
     if (!prefs.queryBuildAbstract) {
 	replAbsCB->setEnabled(false);
     }
-    replAbsCB->setDown(prefs.queryReplaceAbstract);
+    replAbsCB->setChecked(prefs.queryReplaceAbstract);
 
     // Initialize the extra databases listboxes
     QStringList ql;
