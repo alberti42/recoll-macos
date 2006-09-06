@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.11 2006-09-05 08:04:36 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.12 2006-09-06 09:14:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,17 @@ static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.11 2006-09-05 08:04:36 dockes E
 #ifndef TEST_MIMEPARSE
 
 #include <string>
+#include <vector>
+
 #include <ctype.h>
 #include <stdio.h>
 #include <ctype.h>
 
 #include "mimeparse.h"
 #include "base64.h"
+#include "transcode.h"
+#include "smallut.h"
+
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -34,12 +39,61 @@ using namespace std;
 
 // Parsing a header value. Only content-type and content-disposition
 // have parameters, but others are compatible with content-type
-// syntax, only, parameters are not used. So we can parse all like
-// content-type:
+// syntax, only, parameters are not used. So we can parse all like:
+//
 //    headertype: value [; paramname=paramvalue] ...
+//
 // Value and paramvalues can be quoted strings, and there can be
-// comments too
-// Ref: RFC2045/6/7 (MIME) RFC1806 (content-disposition)
+// comments too. Note that RFC2047 is explicitely forbidden for
+// parameter values (RFC2231 must be used), but I have seen it used
+// anyway (ie: thunderbird 1.0)
+//
+// Ref: RFC2045/6/7 (MIME) RFC2183/2231 (content-disposition and encodings)
+
+
+
+/** Decode a MIME parameter value encoded according to rfc2231
+ *
+ * Example input withs input charset == "":  
+ *     [iso-8859-1'french'RE%A0%3A_Smoke_Tests%20bla]
+ * Or (if charset is set) : RE%A0%3A_Smoke_Tests%20bla
+ *
+ * @param in input string, ascii with rfc2231 markup
+ * @param out output string
+ * @param charset if empty: decode string like 'charset'lang'more%20stuff,
+ *      else just do the %XX part
+ * @return out output string encoded in utf-8
+ */
+bool rfc2231_decode(const string &in, string &out, string &charset)
+{
+    string::size_type pos1, pos2=0;
+
+    if (charset.empty()) {
+	if ((pos1 = in.find("'")) == string::npos)
+	    return false;
+	charset = in.substr(0, pos1);
+	// fprintf(stderr, "Charset: [%s]\n", charset.c_str());
+	pos1++;
+
+	if ((pos2 = in.find("'", pos1)) == string::npos)
+	    return false;
+	// We have no use for lang for now
+	// string lang = in.substr(pos1, pos2-pos1); 
+	// fprintf(stderr, "Lang: [%s]\n", lang.c_str());
+	pos2++;
+    }
+
+    string raw;
+    qp_decode(in.substr(pos2), raw, '%');
+    // fprintf(stderr, "raw [%s]\n", raw.c_str());
+    if (!transcode(raw, out, charset, "UTF-8"))
+	return false;
+    return true;
+}
+
+
+/////////////////////////////////////////
+/// Decoding of MIME fields values and parameters
 
 // The lexical token returned by find_next_token
 class Lexical {
@@ -54,8 +108,8 @@ class Lexical {
 };
 
 // Skip mime comment. This must be called with in[start] == '('
-string::size_type skip_comment(const string &in, string::size_type start, 
-			       Lexical &lex)
+static string::size_type 
+skip_comment(const string &in, string::size_type start, Lexical &lex)
 {
     int commentlevel = 0;
     for (; start < in.size(); start++) {
@@ -66,7 +120,7 @@ string::size_type skip_comment(const string &in, string::size_type start,
 		continue;
 	    } else {
 		lex.error.append("\\ at end of string ");
-		return string::npos;
+		return in.size();
 	    }
 	}
 	if (in[start] == '(')
@@ -76,17 +130,17 @@ string::size_type skip_comment(const string &in, string::size_type start,
 		break;
 	}
     }
-    if (start == in.size()) {
+    if (start == in.size() && commentlevel != 0) {
 	lex.error.append("Unclosed comment ");
-	return string::npos;
+	return in.size();
     }
     return start;
 }
 
 // Skip initial whitespace and (possibly nested) comments. 
-string::size_type skip_whitespace_and_comment(const string &in, 
-					      string::size_type start, 
-					      Lexical &lex)
+static string::size_type 
+skip_whitespace_and_comment(const string &in, string::size_type start, 
+			    Lexical &lex)
 {
     while (1) {
 	if ((start = in.find_first_not_of(" \t\r\n", start)) == string::npos)
@@ -103,19 +157,19 @@ string::size_type skip_whitespace_and_comment(const string &in,
 
 /// Find next token in mime header value string. 
 /// @return the next starting position in string, string::npos for error 
-///   (ie unbalanced quoting)
 /// @param in the input string
 /// @param start the starting position
 /// @param lex  the returned token and its description
 /// @param delims separators we should look for
-string::size_type find_next_token(const string &in, string::size_type start, 
-				  Lexical &lex, string delims = ";=")
+static string::size_type 
+find_next_token(const string &in, string::size_type start, 
+		Lexical &lex, string delims = ";=")
 {
     char oquot, cquot;
 
     start = skip_whitespace_and_comment(in, start, lex);
     if (start == string::npos || start == in.size())
-	return start;
+	return in.size();
 
     // Begins with separator ? return it.
     string::size_type delimi = delims.find_first_of(in[start]);
@@ -172,12 +226,26 @@ string::size_type find_next_token(const string &in, string::size_type start,
     }
 }
 
+// Classes for handling rfc2231 value continuations
+class Chunk {
+public:
+    Chunk() : decode(false) {}
+    bool decode;
+    string value;
+};
+class Chunks {
+public:
+    vector<Chunk> chunks;
+};
+
 void stringtolower(string &out, const string& in)
 {
     for (string::size_type i = 0; i < in.size(); i++)
 	out.append(1, char(tolower(in[i])));
 }
 
+// Parse MIME field value. Should look like:
+//  somevalue ; param1=val1;param2=val2
 bool parseMimeHeaderValue(const string& value, MimeHeaderValue& parsed)
 {
     parsed.value.erase();
@@ -185,20 +253,25 @@ bool parseMimeHeaderValue(const string& value, MimeHeaderValue& parsed)
 
     Lexical lex;
     string::size_type start = 0;
+
+    // Get the field value
     start = find_next_token(value, start, lex);
     if (start == string::npos || lex.what != Lexical::token) 
 	return false;
-
     parsed.value = lex.value;
 
+    map<string, string> rawparams;
+    // Look for parameters
     for (;;) {
 	string paramname, paramvalue;
 	lex.reset();
 	start = find_next_token(value, start, lex);
 	if (start == value.size())
-	    return true;
-	if (start == string::npos)
+	    break;
+	if (start == string::npos) {
+	    //fprintf(stderr, "Find_next_token error(1)\n");
 	    return false;
+	}
 	if (lex.what == Lexical::separator && lex.value[0] == ';')
 	    continue;
 	if (lex.what != Lexical::token) 
@@ -207,26 +280,108 @@ bool parseMimeHeaderValue(const string& value, MimeHeaderValue& parsed)
 
 	start = find_next_token(value, start, lex);
 	if (start == string::npos || lex.what != Lexical::separator || 
-	    lex.value[0] != '=') 
+	    lex.value[0] != '=') {
+	    //fprintf(stderr, "Find_next_token error (2)\n");
 	    return false;
+	}
 
 	start = find_next_token(value, start, lex);
-	if (start == string::npos || lex.what != Lexical::token)
+	if (start == string::npos || lex.what != Lexical::token) {
+	    //fprintf(stderr, "Parameter has no value!");
 	    return false;
+	}
 	paramvalue = lex.value;
-	parsed.params[paramname] = paramvalue;
+	rawparams[paramname] = paramvalue;
+	//fprintf(stderr, "RAW: name [%s], value [%s]\n", paramname.c_str(),
+	//		paramvalue.c_str());
     }
+    //    fprintf(stderr, "Number of raw params %d\n", rawparams.size());
+
+    // RFC2231 handling: 
+    // - if a parameter name ends in * it must be decoded 
+    // - If a parameter name looks line name*ii[*] it is a
+    //   partial value, and must be concatenated with other such.
+    
+    map<string, Chunks> chunks;
+    for (map<string, string>::const_iterator it = rawparams.begin(); 
+	 it != rawparams.end(); it++) {
+	string nm = it->first;
+	//	fprintf(stderr, "NM: [%s]\n", nm.c_str());
+	if (nm.empty()) // ??
+	    continue;
+
+	Chunk chunk;
+	if (nm[nm.length()-1] == '*') {
+	    nm.erase(nm.length() - 1);
+	    chunk.decode = true;
+	} else
+	    chunk.decode = false;
+	//	fprintf(stderr, "NM1: [%s]\n", nm.c_str());
+
+	chunk.value = it->second;
+
+	// Look for another asterisk in nm. If none, assign index 0
+	string::size_type aster;
+	int idx = 0;
+	if ((aster = nm.rfind("*")) != string::npos) {
+	    string num = nm.substr(aster+1);
+	    //fprintf(stderr, "NUM: [%s]\n", num.c_str());
+	    nm.erase(aster);
+	    idx = atoi(num.c_str());
+	}
+	Chunks empty;
+	if (chunks.find(nm) == chunks.end())
+	    chunks[nm] = empty;
+	chunks[nm].chunks.resize(idx+1);
+	chunks[nm].chunks[idx] = chunk;
+	//fprintf(stderr, "CHNKS: nm [%s], idx %d, decode %d, value [%s]\n", 
+	// nm.c_str(), idx, int(chunk.decode), chunk.value.c_str());
+    }
+
+    // For each parameter name, concatenate its chunks and possibly
+    // decode Note that we pass the whole concatenated string to
+    // decoding if the first chunk indicates that decoding is needed,
+    // which is not right because there might be uncoded chunks
+    // according to the rfc.
+    for (map<string, Chunks>::const_iterator it = chunks.begin(); 
+	 it != chunks.end(); it++) {
+	if (it->second.chunks.empty())
+	    continue;
+	string nm = it->first;
+	// Create the name entry
+	if (parsed.params.find(nm) == parsed.params.end())
+	    parsed.params[nm] = "";
+	// Concatenate all chunks and decode the whole if the first one needs
+	// to. Yes, this is not quite right.
+	string value;
+	for (vector<Chunk>::const_iterator vi = it->second.chunks.begin();
+	     vi != it->second.chunks.end(); vi++) {
+	    value += vi->value;
+	}
+	if (it->second.chunks[0].decode) {
+	    string charset;
+	    rfc2231_decode(value, parsed.params[nm], charset);
+	} else {
+	    // rfc2047 MUST NOT but IS used by some agents
+	    rfc2047_decode(value, parsed.params[nm]);
+	}
+	//fprintf(stderr, "FINAL: nm [%s], value [%s]\n", 
+	//nm.c_str(), parsed.params[nm].c_str());
+    }
+    
     return true;
 }
 
 // Decode a string encoded with quoted-printable encoding. 
-bool qp_decode(const string& in, string &out) 
+// we reuse the code for rfc2231 % encoding, even if the eol
+// processing is not useful in this case
+bool qp_decode(const string& in, string &out, char esc) 
 {
     out.reserve(in.length());
     string::size_type ii;
     for (ii = 0; ii < in.length(); ii++) {
-	if (in[ii] == '=') {
-	    ii++; // Skip '='
+	if (in[ii] == esc) {
+	    ii++; // Skip '=' or '%'
 	    if(ii >= in.length() - 1) { // Need at least 2 more chars
 		break;
 	    } else if (in[ii] == '\r' && in[ii+1] == '\n') { // Soft nl, skip
@@ -264,11 +419,7 @@ bool qp_decode(const string& in, string &out)
     return true;
 }
 
-
-#include "transcode.h"
-#include "smallut.h"
-
-// Decode a parsed encoded word
+// Decode an word encoded as quoted printable or base 64
 static bool rfc2047_decodeParsed(const std::string& charset, 
 				 const std::string& encoding, 
 				 const std::string& value, 
@@ -307,13 +458,19 @@ static bool rfc2047_decodeParsed(const std::string& charset,
     return true;
 }
 
-// Parse a mail header encoded value
-typedef enum  {rfc2047base, rfc2047open_eq, rfc2047charset, rfc2047encoding, 
+// Parse a mail header value encoded according to RFC2047. 
+// This is not supposed to be used for MIME parameter values, but it
+// happens.
+// Bugs: 
+//    - We should turn off decoding while inside quoted strings
+//
+typedef enum  {rfc2047base, rfc2047ready, rfc2047open_eq, 
+	       rfc2047charset, rfc2047encoding, 
 	       rfc2047value, rfc2047close_q} Rfc2047States;
 
 bool rfc2047_decode(const std::string& in, std::string &out) 
 {
-    Rfc2047States state = rfc2047base;
+    Rfc2047States state = rfc2047ready;
     string encoding, charset, value, utf8;
 
     out = "";
@@ -321,11 +478,25 @@ bool rfc2047_decode(const std::string& in, std::string &out)
     for (string::size_type ii = 0; ii < in.length(); ii++) {
 	char ch = in[ii];
 	switch (state) {
-	case rfc2047base: 
+	case rfc2047base:
+	    {
+		value += ch;
+		switch (ch) {
+		// Linear whitespace
+		case ' ': case '	': state = rfc2047ready; break;
+		default: break;
+		}
+	    }
+	    break;
+	case rfc2047ready: 
 	    {
 		switch (ch) {
+		    // Whitespace: stay ready
+		case ' ': case '	': value += ch;break;
+		    // '=' -> forward to next state
 		case '=': state = rfc2047open_eq; break;
-		default: value += ch;
+		    // Other: go back to sleep
+		default: value += ch; state = rfc2047base;
 		}
 	    }
 	    break;
@@ -409,19 +580,28 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 
 #else 
 
+
 #include <string>
 #include "mimeparse.h"
 #include "readfile.h"
 
 
 using namespace std;
+extern bool rfc2231_decode(const string& in, string& out, string& charset); 
+
 int
 main(int argc, const char **argv)
 {
 #if 0
-    //    const char *tr = "text/html; charset=utf-8; otherparam=garb";
+    //const char *tr = "text/html; charset=utf-8; otherparam=garb";
+
     const char *tr = "text/html;charset = UTF-8 ; otherparam=garb; \n"
 	"QUOTEDPARAM=\"quoted value\"";
+
+    //    const char *tr = "application/x-stuff;"
+    //	"title*0*=us-ascii'en'This%20is%20even%20more%20;"
+    //"title*1*=%2A%2A%2Afun%2A%2A%2A%20;"
+    //"title*2=\"isn't it!\"";
 
     MimeHeaderValue parsed;
 
@@ -429,10 +609,12 @@ main(int argc, const char **argv)
 	fprintf(stderr, "PARSE ERROR\n");
     }
     
-    printf("'%s' \n", parsed.value.c_str());
+    printf("Field value: [%s]\n", parsed.value.c_str());
     map<string, string>::iterator it;
     for (it = parsed.params.begin();it != parsed.params.end();it++) {
-	printf("  '%s' = '%s'\n", it->first.c_str(), it->second.c_str());
+	if (it == parsed.params.begin())
+	    printf("Parameters:\n");
+	printf("  [%s] = [%s]\n", it->first.c_str(), it->second.c_str());
     }
 #elif 0
     const char *qp = "=41=68 =e0 boire=\r\n continue 1ere\ndeuxieme\n\r3eme "
@@ -459,19 +641,28 @@ main(int argc, const char **argv)
 	exit(1);
     }
     printf("Decoded: '%s'\n", out.c_str());
-#elif 0
+#elif 1
     char line [1024];
     string out;
+    bool res;
     while (fgets(line, 1023, stdin)) {
 	int l = strlen(line);
 	if (l == 0)
 	    continue;
 	line[l-1] = 0;
 	fprintf(stderr, "Line: [%s]\n", line);
-	rfc2047_decode(line, out);
-	fprintf(stderr, "Out:  [%s]\n", out.c_str());
+#if 0
+	res = rfc2047_decode(line, out);
+#else
+	string charset;
+	res = rfc2231_decode(line, out, charset);
+#endif
+	if (res)
+	    fprintf(stderr, "Out:  [%s]\n", out.c_str());
+	else
+	    fprintf(stderr, "Decoding failed\n");
     }
-#elif 1
+#elif 0
     string coded, decoded;
     const char *fname = "/tmp/recoll_decodefail";
     if (!file_to_string(fname, coded)) {

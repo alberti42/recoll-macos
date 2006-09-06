@@ -16,7 +16,7 @@
  */
 #ifndef _MIME_H_INCLUDED_
 #define _MIME_H_INCLUDED_
-/* @(#$Id: mimeparse.h,v 1.6 2006-09-05 08:04:36 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimeparse.h,v 1.7 2006-09-06 09:14:43 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <map>
@@ -38,14 +38,18 @@ class MimeHeaderValue {
  */
 extern bool parseMimeHeaderValue(const std::string& in, MimeHeaderValue& psd);
 
-/** Quoted printable decoding */
-extern bool qp_decode(const std::string& in, std::string &out);
+/** Quoted printable decoding. Doubles up as rfc2231 decoder, hence the esc */
+extern bool qp_decode(const std::string& in, std::string &out, 
+		      char esc = '=');
 
-/** Decode an Internet mail header value encoded according to rfc2047 
+/** Decode an Internet mail field value encoded according to rfc2047 
  *
- * Example input:  =?iso-8859-1?Q?RE=A0=3A_Smoke_Tests?=
- * The input normally comes from parseMimeHeaderValue() output
- * and no comments or quoting are expected.
+ * Example input:  Some words =?iso-8859-1?Q?RE=A0=3A_Smoke_Tests?= more input
+ * 
+ * Note that MIME parameter values are explicitely NOT to be encoded with
+ * this encoding which is only for headers like Subject:, To:. But it
+ * is sometimes used anyway...
+ * 
  * @param in input string, ascii with rfc2047 markup
  * @return out output string encoded in utf-8
  */
