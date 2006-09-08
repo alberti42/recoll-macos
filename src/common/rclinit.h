@@ -16,13 +16,14 @@
  */
 #ifndef _RCLINIT_H_INCLUDED_
 #define _RCLINIT_H_INCLUDED_
-/* @(#$Id: rclinit.h,v 1.3 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclinit.h,v 1.4 2006-09-08 09:02:47 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
 class RclConfig;
 
 extern RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int), 
-			     std::string &reason);
+			     std::string &reason, 
+			     const std::string *argcnf = 0);
 
 #endif /* _RCLINIT_H_INCLUDED_ */

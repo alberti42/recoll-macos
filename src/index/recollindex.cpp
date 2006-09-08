@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.19 2006-04-28 07:54:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.20 2006-09-08 09:02:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -107,6 +107,7 @@ static int     op_flags;
 #define OPT_h     0x4 
 #define OPT_i     0x8
 #define OPT_s     0x10
+#define OPT_c     0x20
 
 static const char usage [] =
 "\n"
@@ -119,6 +120,8 @@ static const char usage [] =
 "    Index individual files. No database purge or stem database updates\n"
 "recollindex -s <lang>\n"
 "    Build stem database for additional language <lang>\n"
+"Common options:\n"
+"    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
 ;
 
 static void
@@ -132,6 +135,7 @@ Usage(void)
 
 int main(int argc, const char **argv)
 {
+    string a_config;
     thisprog = argv[0];
     argc--; argv++;
 
@@ -141,10 +145,13 @@ int main(int argc, const char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'z': op_flags |= OPT_z; break;
+	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
+		a_config = *(++argv);
+		argc--; goto b1;
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
 	    case 's': op_flags |= OPT_s; break;
+	    case 'z': op_flags |= OPT_z; break;
 	    default: Usage(); break;
 	    }
     b1: argc--; argv++;
@@ -155,7 +162,7 @@ int main(int argc, const char **argv)
 	Usage();
 
     string reason;
-    RclConfig *config = recollinit(cleanup, sigcleanup, reason);
+    RclConfig *config = recollinit(cleanup, sigcleanup, reason, &a_config);
     if (config == 0 || !config->ok()) {
 	cerr << "Configuration problem: " << reason << endl;
 	exit(1);

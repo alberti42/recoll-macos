@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.14 2006-06-24 07:40:04 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.15 2006-09-08 09:02:47 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -44,7 +44,8 @@
       like to give &RCL; a try, just perform <link
       linkend="rcl.install">installation</link> and start the
       <command>recoll</command> user interface, which will index your
-      home directory and let you search it right after.</para>
+      home directory by default, allowing you to search immediately after
+      indexing completes.</para>
 
       <para>Do not do this if your home has a huge
       number of documents and you do not want to wait or are very
@@ -73,16 +74,15 @@
       <para>You do not need to remember in what file or email message you
         stored a given piece of information. You just ask for related
         terms, and the tool will return a list of documents where
-        those terms are prominent.</para>
+        those terms are prominent, in a similar way to internet search
+        engines.</para>
 
-      <para>This mode of operation has been made very familiar by internet
-       search engines.</para>
-
-      <para>The notion of relevance is a difficult one, as only you, the
-      user, actually know which documents are relevant to your search,
-      and the application can only try a guess. The quality of this
-      guess is probably the most important element for a search
-      application.</para> 
+      <para>&RCL; tries to determine which documents are most relevant to
+      the search terms you provide. Computer algorithms for determining
+      relevance can be very complex, and in general are inferior to the
+      power of the human mind to rapidly determine relevance. The quality
+      of relevance guessing by the search tool is probably the most
+      important element for a search application.</para>
 
       <para>In many cases, you are looking for all the forms of a
         word, not for a specific form or spelling. These different
@@ -93,8 +93,9 @@
         reduce to the same stem). This expansion can be disabled at
         search time.</para>
 
-     <para>Stemming, by itself, does not provide for misspellings or
-        phonetic searches. &RCL; currently does not support these.</para>
+     <para>Stemming, by itself, does not accomodate for misspellings or
+        phonetic searches. &RCL; currently does not support these
+        features.</para> 
 
 
     </sect1>
@@ -914,9 +915,11 @@
       files are kept in a directory named like
       <filename>/usr/[local/]share/recoll/examples</filename>, 
       they define default values for the system. A parallel set of
-      files exists  in the <filename>.recoll</filename> directory in
-      your home (this can be changed with the 
-      <literal>RECOLL_CONFDIR</literal> environment variable.</para>
+      files exists by default in the <filename>.recoll</filename> directory
+      in your home. This directory can be changed with the 
+      <literal>RECOLL_CONFDIR</literal> environment variable or the -c
+      option parameter to <command>recoll</command> and
+      <command>recollindex</command>.</para> 
 
       <para>If the <filename>.recoll</filename> directory does not
       exist when <command>recoll</command> or 
@@ -1080,7 +1083,8 @@
           <varlistentry><term><literal>dbdir</literal></term>
             <listitem><para>The name of the Xapian data directory. It
             will be created if needed when the index is
-            initialized. </para>
+            initialized. If this is not an absolute path, it will be
+            interpreted relative to the configuration directory.</para>
             </listitem>
           </varlistentry>
           

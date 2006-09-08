@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.29 2006-04-28 07:54:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.30 2006-09-08 09:02:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.29 2006-04-28 07:54:38 dockes E
 using namespace std;
 #endif /* NO_NAMESPACES */
 
-RclConfig::RclConfig()
+RclConfig::RclConfig(const string *argcnf)
 {
     zeroMe();
     // Compute our data dir name, typically /usr/local/share/recoll
@@ -53,14 +53,18 @@ RclConfig::RclConfig()
 	m_datadir = cdatadir;
     }
 
-    const char *cp = getenv("RECOLL_CONFDIR");
-    if (cp) {
-	m_confdir = cp;
+    // Command line config name overrides environment
+    if (argcnf && !argcnf->empty()) {
+	m_confdir = *argcnf;
     } else {
-	m_confdir = path_home();
-	m_confdir += ".recoll/";
+	const char *cp = getenv("RECOLL_CONFDIR");
+	if (cp) {
+	    m_confdir = cp;
+	} else {
+	    m_confdir = path_home();
+	    m_confdir += ".recoll/";
+	}
     }
-
     if (access(m_confdir.c_str(), 0) < 0) {
 	if (!initUserConfig())
 	    return;

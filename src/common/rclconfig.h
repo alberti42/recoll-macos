@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.20 2006-04-28 07:54:38 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.21 2006-09-08 09:02:47 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -26,7 +26,7 @@
 class RclConfig {
  public:
 
-    RclConfig();
+    RclConfig(const string *argcnf=0);
     bool ok() {return m_ok;}
     const string &getReason() {return m_reason;}
     /** Return the directory where this config is stored */

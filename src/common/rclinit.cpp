@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.5 2006-03-29 11:18:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.6 2006-09-08 09:02:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.5 2006-03-29 11:18:14 dockes Exp 
 #include "rclinit.h"
 
 RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int), 
-		      string &reason)
+		      string &reason, const string *argcnf)
 {
     if (cleanup)
 	atexit(cleanup);
@@ -43,7 +43,7 @@ RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int),
     }
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
-    RclConfig *config = new RclConfig;
+    RclConfig *config = new RclConfig(argcnf);
     if (!config || !config->ok()) {
 	reason = "Configuration could not be built:\n";
 	if (config)

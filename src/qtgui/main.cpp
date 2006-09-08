@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.45 2006-09-04 15:13:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.46 2006-09-08 09:02:47 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -130,7 +130,26 @@ static void sigcleanup(int)
 
 extern void qInitImages_recoll();
 
-int main( int argc, char ** argv )
+static const char *thisprog;
+static int    op_flags;
+#define OPT_MOINS 0x1
+#define OPT_h     0x4 
+#define OPT_c     0x20
+static const char usage [] =
+"\n"
+"recoll [-h] [-c <configdir>]\n"
+"   -h : Print help and exit\n"
+"   -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+;
+static void
+Usage(void)
+{
+    FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
+    fprintf(fp, "%s: Usage: %s", thisprog, usage);
+    exit((op_flags & OPT_h)==0);
+}
+
+int main(int argc, char **argv)
 {
 #ifdef WITH_KDE
     KAboutData about("recoll", I18N_NOOP("Recoll"), rclversion, description,
@@ -143,6 +162,24 @@ int main( int argc, char ** argv )
 #else
     QApplication app(argc, argv);
 #endif
+
+    string a_config;
+    thisprog = argv[0];
+    argc--; argv++;
+
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
+		a_config = *(++argv);
+		argc--; goto b1;
+	    case 'h': op_flags |= OPT_h; Usage();break;
+	    }
+    b1: argc--; argv++;
+    }
 
     // Translation file for Qt
     QTranslator qt( 0 );
@@ -160,7 +197,7 @@ int main( int argc, char ** argv )
     rwSettings(false);
 
     string reason;
-    rclconfig = recollinit(recollCleanup, sigcleanup, reason);
+    rclconfig = recollinit(recollCleanup, sigcleanup, reason, &a_config);
     if (!rclconfig || !rclconfig->ok()) {
 	QString msg = app.translate("Main", "Configuration problem: ");
 	msg += QString::fromUtf8(reason.c_str());
