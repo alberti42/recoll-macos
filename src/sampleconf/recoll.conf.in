@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.9 2006-04-06 14:28:21 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.10 2006-09-08 08:51:47 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This should be copied to
 #   ~/.recoll/recoll.conf 
@@ -28,8 +28,11 @@ indexstemminglanguages = english
 # displayed in the result list
 iconsdir = @prefix@/share/recoll/images
 
-# Where to store the database.
-dbdir = ~/.recoll/xapiandb
+# Where to store the database (directory). This may be an absolute path,
+# else it is taken as relative to the configuration directory (-c argument
+# or $RECOLL_CONFDIR). 
+# If nothing is specified, the default is then ~/.recoll/xapiandb/
+dbdir = xapiandb
 
 # Default character set. Values found inside files, ie content tag in html
 # documents, will override this. It can be specified per directory (see
