@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.15 2006-09-08 09:02:47 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.16 2006-09-11 14:22:15 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -423,10 +423,12 @@
       <title>Complex/advanced search</title>
 
       <para>The advanced search dialog has fields that will allow a more
-        refined search, looking for documents with all given words, a
-        given exact phrase, none of the given words, or a given file
+        refined search, looking for documents with all given elements, a
+        given exact phrase, none of the given elements, or a given file
         name (with wildcard expansion). All relevant fields will be
-        combined by an implicit AND clause.</para>
+        combined by an implicit AND clause. All fields except "Exact
+        phrase" can accept single words, or phrases enclosed in double
+        quotes.</para>
 
       <para>It will let you search for documents of specific mime
         types (ie: only <literal>text/plain</literal>, or

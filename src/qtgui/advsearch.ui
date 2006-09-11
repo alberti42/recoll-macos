@@ -46,7 +46,7 @@
                                 <string>Search for files&lt;br&gt;having all of:</string>
                             </property>
                             <property name="toolTip" stdset="0">
-                                <string>All non blank fields will be combined with AND conjunctions</string>
+                                <string>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except "exact phrase" can accept a mix of simple words, and phrases enclosed in double quotes.</string>
                             </property>
                         </widget>
                         <widget class="QLayoutWidget">
@@ -65,12 +65,21 @@
                                         <cstring>andWordsTL</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>All these words</string>
+                                        <string>All of these</string>
                                     </property>
                                 </widget>
                                 <widget class="QLineEdit" row="0" column="1">
                                     <property name="name">
                                         <cstring>andWordsLE</cstring>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>300</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Enter words, and/or quoted phrases.</string>
                                     </property>
                                 </widget>
                                 <widget class="QLabel" row="1" column="0">
@@ -85,18 +94,24 @@
                                     <property name="name">
                                         <cstring>phraseLE</cstring>
                                     </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Enter words.</string>
+                                    </property>
                                 </widget>
                                 <widget class="QLabel" row="2" column="0">
                                     <property name="name">
                                         <cstring>orWordsTL</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>Any of these words</string>
+                                        <string>Any of these</string>
                                     </property>
                                 </widget>
                                 <widget class="QLineEdit" row="2" column="1">
                                     <property name="name">
                                         <cstring>orWordsLE</cstring>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Enter words, and/or quoted phrases.</string>
                                     </property>
                                 </widget>
                                 <widget class="QLabel" row="3" column="0">
@@ -104,12 +119,15 @@
                                         <cstring>orWords1TL</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>Any of these words</string>
+                                        <string>Any of these</string>
                                     </property>
                                 </widget>
                                 <widget class="QLineEdit" row="3" column="1">
                                     <property name="name">
                                         <cstring>orWords1LE</cstring>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Enter words, and/or quoted phrases.</string>
                                     </property>
                                 </widget>
                                 <widget class="QLabel" row="4" column="0">
@@ -117,12 +135,15 @@
                                         <cstring>noWordsTL</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>None of these words</string>
+                                        <string>None of these</string>
                                     </property>
                                 </widget>
                                 <widget class="QLineEdit" row="4" column="1">
                                     <property name="name">
                                         <cstring>noWordsLE</cstring>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Enter words, and/or quoted phrases.</string>
                                     </property>
                                 </widget>
                                 <widget class="QLabel" row="5" column="0">
@@ -136,6 +157,9 @@
                                 <widget class="QLineEdit" row="5" column="1">
                                     <property name="name">
                                         <cstring>fileNameLE</cstring>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>Enter file name. * and ? are wildcards.</string>
                                     </property>
                                 </widget>
                             </grid>
