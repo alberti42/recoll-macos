@@ -8,15 +8,12 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>563</width>
-            <height>560</height>
+            <width>0</width>
+            <height>0</height>
         </rect>
     </property>
     <property name="caption">
         <string>Advanced search</string>
-    </property>
-    <property name="sizeGripEnabled">
-        <bool>true</bool>
     </property>
     <vbox>
         <property name="name">
@@ -367,6 +364,20 @@
                         </widget>
                     </grid>
                 </widget>
+        <widget class="Line">
+            <property name="name">
+                <cstring>line1</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+        </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
                         <cstring>layout25</cstring>
@@ -397,20 +408,6 @@
                     </hbox>
                 </widget>
             </vbox>
-        </widget>
-        <widget class="Line">
-            <property name="name">
-                <cstring>line1</cstring>
-            </property>
-            <property name="frameShape">
-                <enum>HLine</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
-            </property>
         </widget>
     </vbox>
 </widget>
