@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.6 2006-04-27 09:23:10 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.7 2006-09-11 12:05:38 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -68,6 +68,9 @@ class PrefsPack {
     // to the qt settings file to avoid any bin string/ charset conv issues
     list<string> allExtraDbs;
     list<string> activeExtraDbs;
+    // Advanced search subdir restriction: we don't activate the last value
+    // but just remember previously entered values
+    QStringList asearchSubdirHist;
     // Textual history of simple searches (this is just the combobox list)
     QStringList ssearchHistory;
 

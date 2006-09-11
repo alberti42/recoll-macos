@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: history.cpp,v 1.6 2006-09-11 09:08:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: history.cpp,v 1.7 2006-09-11 12:05:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -146,6 +146,20 @@ bool RclHistory::eraseAll(const string &sk)
     list<string> names = m_data.getNames(sk);
     list<string>::const_iterator it;
     for (it = names.begin(); it != names.end(); it++) {
+	    m_data.erase(*it, sk);
+    }
+    return true;
+}
+bool RclHistory::truncate(const string &sk, unsigned int n)
+{
+    // Is this doc already in history ? If it is we remove the old entry
+    list<string> names = m_data.getNames(sk);
+    if (names.size() <= n)
+	return true;
+    unsigned int i = 0;
+    for (list<string>::const_iterator it = names.begin(); 
+	 it != names.end(); it++, i++) {
+	if (i >= n)
 	    m_data.erase(*it, sk);
     }
     return true;

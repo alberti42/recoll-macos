@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.2 2006-09-11 07:10:25 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.3 2006-09-11 12:05:38 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -66,6 +66,8 @@ void SSearch::startSimpleSearch()
 {
     LOGDEB(("SSearch::startSimpleSearch\n"));
 
+    if (queryText->currentText().length() == 0)
+	return;
     Rcl::AdvSearchData sdata;
     QCString u8 =  queryText->currentText().utf8();
     switch (searchTypCMB->currentItem()) {
@@ -80,6 +82,8 @@ void SSearch::startSimpleSearch()
 	sdata.filename = u8;
 	break;
     }
+
+    // Search terms history
 
     // Need to remove any previous occurence of the search entry from
     // the listbox list, The qt listbox doesn't do lru correctly (if
@@ -96,11 +100,13 @@ void SSearch::startSimpleSearch()
 	    }
 	}
     } while (changed);
+    if (queryText->text(0) != queryText->currentText()) 
+	queryText->insertItem(queryText->currentText(), 0);
 
     // Save the current state of the listbox list to file
     prefs.ssearchHistory.clear();
     for (int index = 0; index < queryText->count(); index++)
-	prefs.ssearchHistory.push_back(queryText->text(index));
+	prefs.ssearchHistory.push_back(queryText->text(index).utf8());
 
     emit startSearch(sdata);
 }

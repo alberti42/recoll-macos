@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.1 2006-09-04 15:13:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.2 2006-09-11 12:05:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@ static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.1 2006-09-04 15:13:01 dockes 
 #include <qlineedit.h>
 #include <qframe.h>
 #include <qcheckbox.h>
+#include <qcombobox.h>
 #include <qlistbox.h>
 #include <qlayout.h>
 #include <qtooltip.h>
@@ -44,26 +45,33 @@ using std::string;
 #include "rclconfig.h"
 #include "debuglog.h"
 #include "searchdata.h"
+#include "guiutils.h"
 
 extern RclConfig *rclconfig;
 
 void AdvSearch::init()
 {
     // signals and slots connections
-    connect( delFiltypPB, SIGNAL( clicked() ), this, SLOT( delFiltypPB_clicked() ) );
-    connect( searchPB, SIGNAL( clicked() ), this, SLOT( searchPB_clicked() ) );
-    connect( restrictFtCB, SIGNAL( toggled(bool) ), this, SLOT( restrictFtCB_toggled(bool) ) );
-    connect( dismissPB, SIGNAL( clicked() ), this, SLOT( close() ) );
-    connect( browsePB, SIGNAL( clicked() ), this, SLOT( browsePB_clicked() ) );
-    connect( addFiltypPB, SIGNAL( clicked() ), this, SLOT( addFiltypPB_clicked() ) );
-    connect( andWordsLE, SIGNAL( returnPressed() ), this, SLOT( searchPB_clicked() ) );
-    connect( orWordsLE, SIGNAL( returnPressed() ), this, SLOT( searchPB_clicked() ) );
-    connect( noWordsLE, SIGNAL( returnPressed() ), this, SLOT( searchPB_clicked() ) );
-    connect( phraseLE, SIGNAL( returnPressed() ), this, SLOT( searchPB_clicked() ) );
-    connect( subtreeLE, SIGNAL( returnPressed() ), this, SLOT( searchPB_clicked() ) );
-    connect( delAFiltypPB, SIGNAL( clicked() ), this, SLOT( delAFiltypPB_clicked() ) );
-    connect( addAFiltypPB, SIGNAL( clicked() ), this, SLOT( addAFiltypPB_clicked() ) );
-
+    connect(delFiltypPB, SIGNAL(clicked()), this, SLOT(delFiltypPB_clicked()));
+    connect(searchPB, SIGNAL(clicked()), this, SLOT(searchPB_clicked()));
+    connect(restrictFtCB, SIGNAL(toggled(bool)), 
+	    this, SLOT(restrictFtCB_toggled(bool)));
+    connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
+    connect(browsePB, SIGNAL(clicked()), this, SLOT(browsePB_clicked()));
+    connect(addFiltypPB, SIGNAL(clicked()), this, SLOT(addFiltypPB_clicked()));
+    connect(andWordsLE, SIGNAL(returnPressed()), 
+	    this, SLOT(searchPB_clicked()));
+    connect(orWordsLE, SIGNAL(returnPressed()), 
+	    this, SLOT(searchPB_clicked()));
+    connect(noWordsLE, SIGNAL(returnPressed()), 
+	    this, SLOT(searchPB_clicked()));
+    connect(phraseLE, SIGNAL(returnPressed()), this, SLOT(searchPB_clicked()));
+    connect(subtreeCMB->lineEdit(), SIGNAL(returnPressed()), 
+	    this, SLOT(searchPB_clicked()));
+    connect(delAFiltypPB, SIGNAL(clicked()), 
+	    this, SLOT(delAFiltypPB_clicked()));
+    connect(addAFiltypPB, SIGNAL(clicked()), 
+	    this, SLOT(addAFiltypPB_clicked()));
 
     list<string> types = rclconfig->getAllMimeTypes();
 
@@ -73,6 +81,8 @@ void AdvSearch::init()
     }
     yesFiltypsLB->insertStringList(ql);
 
+    subtreeCMB->insertStringList(prefs.asearchSubdirHist);
+    subtreeCMB->setEditText("");
 }
 
 
@@ -174,8 +184,16 @@ void AdvSearch::searchPB_clicked()
 	    mydata.filetypes.push_back(string((const char *)ctext));
 	}
     }
-    if (!subtreeLE->text().isEmpty()) {
-	mydata.topdir = string((const char*)(subtreeLE->text().utf8()));
+
+    if (!subtreeCMB->currentText().isEmpty()) {
+	mydata.topdir = 
+	    string((const char*)(subtreeCMB->currentText().utf8()));
+	// If this was started by clicking, need to insert the new entry
+	if (subtreeCMB->text(0) != subtreeCMB->currentText()) 
+	    subtreeCMB->insertItem(subtreeCMB->currentText(), 0);
+	prefs.asearchSubdirHist.clear();
+	for (int index = 0; index < subtreeCMB->count(); index++)
+	    prefs.asearchSubdirHist.push_back(subtreeCMB->text(index));
     }
     emit startSearch(mydata);
 }
@@ -184,6 +202,6 @@ void AdvSearch::searchPB_clicked()
 void AdvSearch::browsePB_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory();
-    subtreeLE->setText(dir);
+    subtreeCMB->setEditText(dir);
 }
 

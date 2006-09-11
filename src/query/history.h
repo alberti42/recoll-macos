@@ -16,7 +16,7 @@
  */
 #ifndef _HISTORY_H_INCLUDED_
 #define _HISTORY_H_INCLUDED_
-/* @(#$Id: history.h,v 1.4 2006-09-11 09:08:44 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: history.h,v 1.5 2006-09-11 12:05:39 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /**
  * Dynamic configuration storage
@@ -101,6 +101,7 @@ class RclHistory {
     bool enterString(const string sk, const string value);
     list<string> getStringList(const string sk);
     bool eraseAll(const string& sk);
+    bool truncate(const string& sk, unsigned int n);
 
  private:
     unsigned int m_mlen;

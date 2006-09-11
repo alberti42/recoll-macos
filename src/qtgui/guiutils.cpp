@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.14 2006-09-11 09:08:44 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.15 2006-09-11 12:05:38 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -167,7 +167,6 @@ void rwSettings(bool writing)
     const string allEdbsSk = "allExtDbs";
     const string actEdbsSk = "actExtDbs";
     if (writing) {
-	LOGDEB(("settings: writing to dynconf\n"));
 	g_dynconf->eraseAll(allEdbsSk);
 	for (list<string>::const_iterator it = prefs.allExtraDbs.begin();
 	     it != prefs.allExtraDbs.end(); it++) {
@@ -203,7 +202,6 @@ void rwSettings(bool writing)
 	}
 	prefs.activeExtraDbs = g_dynconf->getStringList(actEdbsSk);
     }
-
 #if 0
     {
 	list<string>::const_iterator it;
@@ -219,6 +217,21 @@ void rwSettings(bool writing)
 	}
     }
 #endif
+
+
+    const string asbdSk = "asearchSbd";
+    if (writing) {
+	while (prefs.asearchSubdirHist.size() > 20)
+	    prefs.asearchSubdirHist.pop_back();
+	g_dynconf->eraseAll(asbdSk);
+	for (QStringList::iterator it = prefs.asearchSubdirHist.begin();
+	     it != prefs.asearchSubdirHist.end(); it++) {
+	    g_dynconf->enterString(asbdSk, (const char *)((*it).utf8()));
+	}
+    } else {
+	list<string> tl = g_dynconf->getStringList(asbdSk);
+	for (list<string>::iterator it = tl.begin(); it != tl.end(); it++)
+	    prefs.asearchSubdirHist.push_front(QString::fromUtf8(it->c_str()));
+    }
+
 }
-
-
