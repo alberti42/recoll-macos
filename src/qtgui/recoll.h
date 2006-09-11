@@ -16,12 +16,13 @@
  */
 #ifndef _RECOLL_H_INCLUDED_
 #define _RECOLL_H_INCLUDED_
-/* @(#$Id: recoll.h,v 1.15 2006-01-31 11:39:12 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: recoll.h,v 1.16 2006-09-11 09:08:44 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 
 #include "rclconfig.h"
 #include "rcldb.h"
 #include "idxthread.h"
+#include "history.h"
 
 // Misc declarations in need of sharing between the UI files
 
@@ -32,5 +33,6 @@ extern RclConfig *rclconfig;
 extern Rcl::Db *rcldb;
 extern int recollNeedsExit;
 extern const std::string recoll_datadir;
+extern RclHistory *g_dynconf;
 
 #endif /* _RECOLL_H_INCLUDED_ */

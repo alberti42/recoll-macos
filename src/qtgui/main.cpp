@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.46 2006-09-08 09:02:47 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.47 2006-09-11 09:08:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,6 +68,8 @@ const string recoll_datadir = RECOLL_DATADIR;
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
+
+RclHistory *g_dynconf;
 int recollNeedsExit;
 static string dbdir;
 static RclMain *mainWindow;
@@ -194,7 +196,6 @@ int main(int argc, char **argv)
 		     translatdir.c_str() );
     app.installTranslator( &translator );
 
-    rwSettings(false);
 
     string reason;
     rclconfig = recollinit(recollCleanup, sigcleanup, reason, &a_config);
@@ -204,6 +205,17 @@ int main(int argc, char **argv)
 	QMessageBox::critical(0, "Recoll",  msg);
 	exit(1);
     }
+
+    string historyfile = path_cat(rclconfig->getConfDir(), "history");
+    g_dynconf = new RclHistory(historyfile);
+    if (!g_dynconf || !g_dynconf->ok()) {
+	QString msg = app.translate("Main", "Configuration problem (dynconf");
+	QMessageBox::critical(0, "Recoll",  msg);
+	exit(1);
+    }
+
+    rwSettings(false);
+
 
     // Create main window and set its size to previous session's
 #ifdef WITH_KDE

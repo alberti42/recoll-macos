@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.13 2006-09-08 09:02:47 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.14 2006-09-11 09:08:44 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -162,32 +162,26 @@ void rwSettings(bool writing)
     // known dbs and active (searched) ones.
     // When starting up, we also add from the RECOLL_EXTRA_DBS environment
     // variable.
-    QStringList qsl;
+    // This are stored inside the dynamic configuration file (aka: history), 
+    // as they are likely to depend on RECOLL_CONFDIR.
+    const string allEdbsSk = "allExtDbs";
+    const string actEdbsSk = "actExtDbs";
     if (writing) {
+	LOGDEB(("settings: writing to dynconf\n"));
+	g_dynconf->eraseAll(allEdbsSk);
 	for (list<string>::const_iterator it = prefs.allExtraDbs.begin();
 	     it != prefs.allExtraDbs.end(); it++) {
-	    string b64;
-	    base64_encode(*it, b64);
-	    qsl.push_back(QString::fromAscii(b64.c_str()));
+	    g_dynconf->enterString(allEdbsSk, *it);
 	}
-	settings.writeEntry("/Recoll/prefs/query/allExtraDbs", qsl);
 
-	qsl.clear();
+	g_dynconf->eraseAll(actEdbsSk);
 	for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
 	     it != prefs.activeExtraDbs.end(); it++) {
-	    string b64;
-	    base64_encode(*it, b64);
-	    qsl.push_back(QString::fromAscii(b64.c_str()));
+	    g_dynconf->enterString(actEdbsSk, *it);
+
 	}
-	settings.writeEntry("/Recoll/prefs/query/activeExtraDbs", qsl);
     } else {
-	qsl = settings.readListEntry("/Recoll/prefs/query/allExtraDbs");
-	prefs.allExtraDbs.clear();
-	for (QStringList::iterator it = qsl.begin(); it != qsl.end(); it++) {
-	    string dec;
-	    base64_decode((*it).ascii(), dec);
-	    prefs.allExtraDbs.push_back(dec);
-	}
+	prefs.allExtraDbs = g_dynconf->getStringList(allEdbsSk);
 	const char *cp;
 	if ((cp = getenv("RECOLL_EXTRA_DBS")) != 0) {
 	    list<string> dbl;
@@ -207,13 +201,7 @@ void rwSettings(bool writing)
 		prefs.allExtraDbs.push_back(dbdir);
 	    }
 	}
-	qsl = settings.readListEntry("/Recoll/prefs/query/activeExtraDbs");
-	prefs.activeExtraDbs.clear();
-	for (QStringList::iterator it = qsl.begin(); it != qsl.end(); it++) {
-	    string dec;
-	    base64_decode((*it).ascii(), dec);
-	    prefs.activeExtraDbs.push_back(dec);
-	}
+	prefs.activeExtraDbs = g_dynconf->getStringList(actEdbsSk);
     }
 
 #if 0

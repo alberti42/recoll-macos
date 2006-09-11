@@ -16,7 +16,23 @@
  */
 #ifndef _HISTORY_H_INCLUDED_
 #define _HISTORY_H_INCLUDED_
-/* @(#$Id: history.h,v 1.3 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: history.h,v 1.4 2006-09-11 09:08:44 dockes Exp $  (C) 2004 J.F.Dockes */
+
+/**
+ * Dynamic configuration storage
+ *
+ * The term "history" is a misnomer as this code is now used to save
+ * all dynamic parameters except those that are stored in the global
+ * recollrc QT preferences file. Examples:
+ *  - History of documents selected for preview
+ *  - Active and inactive external databases (these should depend on the 
+ *    configuration directory and cant be stored in recollrc).
+ *  - ...
+ *
+ * The storage is performed in a ConSimple file, with subkeys and
+ * encodings which depend on the data stored.
+ *
+ */
 
 #include <string>
 #include <list>
@@ -24,32 +40,90 @@
 
 #include "conftree.h"
 
-/** Holder for data returned when querying history */
-class RclDHistoryEntry {
+#ifndef NO_NAMESPACES
+using namespace std;
+#endif
+
+class HistoryEntry {
+ public:
+    virtual bool decode(const string &value) = 0;
+    virtual bool encode(string& value) = 0;
+    virtual bool equal(const HistoryEntry &other) = 0;
+};
+
+
+/** Document history entry */
+class RclDHistoryEntry : public HistoryEntry {
  public:
     RclDHistoryEntry() : unixtime(0) {}
+    RclDHistoryEntry(long t, const string& f, const string& i) 
+	: unixtime(t), fn(f), ipath(i) {}
+    virtual ~RclDHistoryEntry() {}
+    virtual bool decode(const string &value);
+    virtual bool encode(string& value);
+    virtual bool equal(const HistoryEntry& other);
     long unixtime;
     string fn;
     string ipath;
 };
 
-/** 
- * The documents history class. This is based on a ConfTree for no
- * imperative reason
- */
-class RclDHistory {
+
+/** String storage generic object */
+class RclSListEntry : public HistoryEntry {
  public:
-    RclDHistory(const std::string &fn, unsigned int maxsize=1000);
-    bool ok() {return m_data.getStatus() == ConfSimple::STATUS_RW;}
+    RclSListEntry() {}
+    RclSListEntry(const string& v) : value(v) {}
+    virtual ~RclSListEntry() {}
+    virtual bool decode(const string &enc);
+    virtual bool encode(string& enc);
+    virtual bool equal(const HistoryEntry& other);
 
-    bool enterDocument(const std::string fn, const std::string ipath);
-    std::list<RclDHistoryEntry> getDocHistory();
-
- private:
-    bool decodeValue(const string &value, RclDHistoryEntry *e);
-    unsigned int m_mlen;
-    ConfSimple m_data;
+    string value;
 };
 
+/** 
+ * The history class. This uses a ConfSimple for storage, and should be 
+ * renamed something like dynconf, as it is used to stored quite a few 
+ * things beyond doc history: all dynamic configuration parameters that are 
+ * not suitable for QT settings because they are specific to a RECOLL_CONFDIR
+ */
+class RclHistory {
+ public:
+    RclHistory(const string &fn, unsigned int maxsize=100)
+	: m_mlen(maxsize), m_data(fn.c_str()) {}
+    bool ok() {return m_data.getStatus() == ConfSimple::STATUS_RW;}
+
+    // Specific methods for history entries
+    bool enterDoc(const string fn, const string ipath);
+    list<RclDHistoryEntry> getDocHistory();
+
+    // Generic methods used for string lists, designated by the subkey value
+    bool enterString(const string sk, const string value);
+    list<string> getStringList(const string sk);
+    bool eraseAll(const string& sk);
+
+ private:
+    unsigned int m_mlen;
+    ConfSimple m_data;
+    bool insertNew(const string& sk, HistoryEntry &n, HistoryEntry &s);
+    template<typename Tp> list<Tp> getHistory(const string& sk);
+};
+
+template<typename Tp> list<Tp> RclHistory::getHistory(const string &sk)
+{
+    list<Tp> mlist;
+    Tp entry;
+    list<string> names = m_data.getNames(sk);
+    for (list<string>::const_iterator it = names.begin(); 
+	 it != names.end(); it++) {
+	string value;
+	if (m_data.get(*it, value, sk)) {
+	    if (!entry.decode(value))
+		continue;
+	    mlist.push_front(entry);
+	}
+    }
+    return mlist;
+}
 
 #endif /* _HISTORY_H_INCLUDED_ */

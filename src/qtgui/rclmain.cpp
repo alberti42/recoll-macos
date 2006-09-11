@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.28 2006-09-04 15:13:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.29 2006-09-11 09:08:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -91,8 +91,6 @@ void RclMain::init()
 	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
 	resList->setFont(nfont);
     }
-    string historyfile = path_cat(rclconfig->getConfDir(), "history");
-    m_history = new RclDHistory(historyfile);
     connect(sSearch, SIGNAL(startSearch(Rcl::AdvSearchData)), 
 		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
 
@@ -352,7 +350,6 @@ void RclMain::showAdvSearchDialog()
 	asearchform = new AdvSearch(0, tr("Advanced search"), FALSE,
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
-	asearchform->setSizeGripEnabled(FALSE);
 	connect(asearchform, SIGNAL(startSearch(Rcl::AdvSearchData)), 
 		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
 	asearchform->show();
@@ -369,7 +366,6 @@ void RclMain::showSortDialog()
 	sortform = new SortForm(0, tr("Sort criteria"), FALSE,
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
-	sortform->setSizeGripEnabled(FALSE);
 	connect(sortform, SIGNAL(sortDataChanged(RclSortSpec)), 
 		this, SLOT(sortDataChanged(RclSortSpec)));
 	sortform->show();
@@ -387,7 +383,6 @@ void RclMain::showUIPrefs()
 	uiprefs = new UIPrefsDialog(0, tr("User interface preferences"), FALSE,
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
-	uiprefs->setSizeGripEnabled(FALSE);
 	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
 	uiprefs->show();
     } else {
@@ -458,7 +453,7 @@ void RclMain::startPreview(int docnum)
 	}
 	(void)curPreview->addEditorTab();
     }
-    m_history->enterDocument(fn, doc.ipath);
+    g_dynconf->enterDoc(fn, doc.ipath);
     if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc))
 	curPreview->closeCurrentTab();
 }
@@ -544,7 +539,7 @@ void RclMain::startNativeViewer(int docnum)
 	    QString::fromUtf8(prcmd.c_str()) + "]";
 	stb->message(msg, 5000);
     }
-    m_history->enterDocument(fn, doc.ipath);
+    g_dynconf->enterDoc(fn, doc.ipath);
     system(ncmd.c_str());
 }
 
@@ -601,11 +596,12 @@ void RclMain::showDocHistory()
 
     DocSequence *docsource;
     if (sortspecs.sortwidth > 0) {
-	DocSequenceHistory myseq(rcldb, m_history, string(tr("Document history").utf8()));
+	DocSequenceHistory myseq(rcldb, g_dynconf, 
+				 string(tr("Document history").utf8()));
 	docsource = new DocSeqSorted(myseq, sortspecs,
 				     string(tr("Document history (sorted)").utf8()));
     } else {
-	docsource = new DocSequenceHistory(rcldb, m_history, 
+	docsource = new DocSequenceHistory(rcldb, g_dynconf, 
 					   string(tr("Document history").utf8()));
     }
     Rcl::AdvSearchData sdata;

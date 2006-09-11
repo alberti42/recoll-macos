@@ -276,7 +276,7 @@ May be slow for big documents.</string>
                     <cstring>ExtraDb</cstring>
                 </property>
                 <attribute name="title">
-                    <string>Extra Databases</string>
+                    <string>External Databases</string>
                 </attribute>
                 <vbox>
                     <property name="name">
@@ -352,10 +352,10 @@ May be slow for big documents.</string>
                                             <cstring>textLabel2_2</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>All extra databases</string>
+                                            <string>All databases</string>
                                         </property>
                                         <property name="toolTip" stdset="0">
-                                            <string>All known extra databases</string>
+                                            <string>Databases currently not used</string>
                                         </property>
                                     </widget>
                                     <widget class="QListBox">
@@ -456,10 +456,10 @@ May be slow for big documents.</string>
                                             <cstring>textLabel3</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Active extra databases</string>
+                                            <string>Active databases</string>
                                         </property>
                                         <property name="toolTip" stdset="0">
-                                            <string>Extra databases that will be searched in addition to the main one</string>
+                                            <string>Databases that will be searched in addition to the main one</string>
                                         </property>
                                     </widget>
                                     <widget class="QListBox">

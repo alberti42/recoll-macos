@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.7 2006-02-21 12:52:48 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.8 2006-09-11 09:08:44 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "rcldb.h"
 #include "history.h"
@@ -71,7 +71,7 @@ class DocSequenceDb : public DocSequence {
 /** A DocSequence coming from the history file */
 class DocSequenceHistory : public DocSequence {
  public:
-    DocSequenceHistory(Rcl::Db *d, RclDHistory *h, const std::string &t) 
+    DocSequenceHistory(Rcl::Db *d, RclHistory *h, const std::string &t) 
 	: DocSequence(t), m_db(d), m_hist(h), m_prevnum(-1), m_prevtime(-1) {}
     virtual ~DocSequenceHistory() {}
 
@@ -79,7 +79,7 @@ class DocSequenceHistory : public DocSequence {
     virtual int getResCnt();
  private:
     Rcl::Db *m_db;
-    RclDHistory *m_hist;
+    RclHistory *m_hist;
     int m_prevnum;
     long m_prevtime;
 

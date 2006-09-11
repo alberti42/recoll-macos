@@ -71,7 +71,6 @@ private:
     SortForm *sortform;
     UIPrefsDialog *uiprefs;
     RclSortSpec sortspecs;
-    RclDHistory *m_history;
     virtual void init();
 };
 
