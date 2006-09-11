@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.1 2006-09-04 15:13:02 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.2 2006-09-11 07:10:25 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -80,6 +80,24 @@ void SSearch::startSimpleSearch()
 	sdata.filename = u8;
 	break;
     }
+
+    // Need to remove any previous occurence of the search entry from
+    // the listbox list, The qt listbox doesn't do lru correctly (if
+    // already in the list the new entry would remain at it's place,
+    // not jump at the top as it should
+    bool changed;
+    do {
+	changed = false;
+	for (int index = 1; index < queryText->count(); index++) {
+	    if (queryText->text(index) == queryText->currentText()) {
+		queryText->removeItem(index);
+		changed = true;
+		break;
+	    }
+	}
+    } while (changed);
+
+    // Save the current state of the listbox list to file
     prefs.ssearchHistory.clear();
     for (int index = 0; index < queryText->count(); index++)
 	prefs.ssearchHistory.push_back(queryText->text(index));
