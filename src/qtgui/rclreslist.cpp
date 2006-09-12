@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.17 2006-05-09 07:56:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.18 2006-09-12 10:11:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -72,7 +72,7 @@ void RclResList::setDocSource(DocSequence *docsource, Rcl::AdvSearchData& sdt)
 	delete m_docsource;
     m_docsource = docsource;
     m_queryData = sdt;
-    showResultPage();
+    resultPageNext();
 }
 
 // Get document number from paragraph number
@@ -90,14 +90,58 @@ int RclResList::docnumfromparnum(int par)
     return dn;
 }
 
+// Get paragraph number from document number
+int RclResList::parnumfromdocnum(int docnum)
+{
+    if (m_winfirst == -1 || docnum - m_winfirst < 0)
+	return -1;
+    docnum -= m_winfirst;
+    for (std::map<int,int>::iterator it = m_pageParaToReldocnums.begin();
+	 it != m_pageParaToReldocnums.end(); it++) {
+	if (docnum == it->second)
+	    return it->first;
+    }
+    return -1;
+}
+
+// Return doc from current or adjacent result pages
 bool RclResList::getDoc(int docnum, Rcl::Doc &doc)
 {
-    if (docnum >= 0 && docnum >= int(m_winfirst) && 
+    if (docnum < 0)
+	return false;
+    // Is docnum in current page ? Then all Ok
+    if (docnum >= int(m_winfirst) && 
 	docnum < int(m_winfirst + m_curDocs.size())) {
 	doc = m_curDocs[docnum - m_winfirst];
-	return true;
+	goto found;
+    }
+
+    // Else we accept to page down or up but not further
+    if (docnum < int(m_winfirst) && 
+	docnum >= int(m_winfirst) - prefs.respagesize) {
+	resultPageBack();
+    } else if (docnum < 
+	       int(m_winfirst + m_curDocs.size()) + prefs.respagesize) {
+	resultPageNext();
+    }
+    if (docnum >= int(m_winfirst) && 
+	docnum < int(m_winfirst + m_curDocs.size())) {
+	doc = m_curDocs[docnum - m_winfirst];
+	goto found;
     }
     return false;
+
+ found:
+    if (docnum != m_docnum) {
+	int par = parnumfromdocnum(docnum);
+	if (par >= 0) {
+	    setCursorPosition(par, 1);
+	    ensureCursorVisible();
+	    clicked(par, 1);
+	    m_docnum = docnum;
+	}
+    }
+    return true;
 }
 
 void RclResList::keyPressEvent( QKeyEvent * e )
@@ -115,6 +159,14 @@ void RclResList::keyPressEvent( QKeyEvent * e )
     QTextBrowser::keyPressEvent(e);
 }
 
+// Return total result list count
+int RclResList::getResCnt()
+{
+    if (!m_docsource)
+	return -1;
+    return m_docsource->getResCnt();
+}
+
 // Page Up/Down: we don't try to check if current paragraph is last or
 // first. We just page up/down and check if viewport moved. If it did,
 // fair enough, else we go to next/previous result page.
@@ -126,7 +178,6 @@ void RclResList::resPageUpOrBack()
 	resultPageBack();
 }
 
-
 void RclResList::resPageDownOrNext()
 {
     int vpos = contentsY();
@@ -134,7 +185,7 @@ void RclResList::resPageDownOrNext()
     LOGDEB(("RclResList::resPageDownOrNext: vpos before %d, after %d\n",
 	    vpos, contentsY()));
     if (vpos == contentsY()) 
-	showResultPage();
+	resultPageNext();
 }
 
 // Show previous page of results. We just set the current number back
@@ -144,7 +195,7 @@ void RclResList::resultPageBack()
     if (m_winfirst <= 0)
 	return;
     m_winfirst -= 2 * prefs.respagesize;
-    showResultPage();
+    resultPageNext();
 }
 
 // Convert byte count into unit (KB/MB...) appropriate for display
@@ -165,7 +216,7 @@ static string displayableBytes(long size)
 }
 
 // Fill up result list window with next screen of hits
-void RclResList::showResultPage()
+void RclResList::resultPageNext()
 {
     if (!m_docsource)
 	return;
@@ -176,7 +227,7 @@ void RclResList::showResultPage()
     int resCnt = m_docsource->getResCnt();
     m_pageParaToReldocnums.clear();
 
-    LOGDEB(("showResultPage: rescnt %d, winfirst %d\n", resCnt,
+    LOGDEB(("resultPageNext: rescnt %d, winfirst %d\n", resCnt,
 	    m_winfirst));
 
     // If we are already on the last page, nothing to do:
@@ -436,7 +487,7 @@ void RclResList::linkWasClicked(const QString &s)
 	emit docEditClicked(i);
 	break;
     case 'n':
-	showResultPage();
+	resultPageNext();
 	break;
     case 'p':
 	resultPageBack();

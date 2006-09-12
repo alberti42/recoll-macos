@@ -64,6 +64,8 @@ public slots:
     virtual void ssearchAddTerm(QString);
     virtual void startPreview(int docnum);
     virtual void startNativeViewer(int docnum);
+    virtual void previewNextInTab(int sid, int docnum);
+    virtual void previewPrevInTab(int sid, int docnum);
 
 private:
     Preview *curPreview;
@@ -71,6 +73,8 @@ private:
     SortForm *sortform;
     UIPrefsDialog *uiprefs;
     RclSortSpec sortspecs;
+    int m_searchId; // Serial number of current search for this process.
+                  // Used to match to preview windows
     virtual void init();
 };
 

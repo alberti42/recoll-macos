@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.29 2006-09-11 09:08:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.30 2006-09-12 10:11:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -82,7 +82,7 @@ void RclMain::init()
     asearchform = 0;
     sortform = 0;
     uiprefs = 0;
-
+    m_searchId = 0;
     // Set the focus to the search terms entry:
     sSearch->queryText->setFocus();
 
@@ -100,11 +100,20 @@ void RclMain::init()
     connect(prevPageAction, SIGNAL(activated()), 
 	    resList, SLOT(resultPageBack()));
     connect(nextPageAction, SIGNAL(activated()),
-	    resList, SLOT(showResultPage()));
+	    resList, SLOT(resultPageNext()));
 
     connect(resList, SIGNAL(docExpand(int)), this, SLOT(docExpand(int)));
     connect(resList, SIGNAL(wordSelect(QString)),
 	    this, SLOT(ssearchAddTerm(QString)));
+    connect(resList, SIGNAL(nextPageAvailable(bool)), 
+	    this, SLOT(enableNextPage(bool)));
+    connect(resList, SIGNAL(prevPageAvailable(bool)), 
+	    this, SLOT(enablePrevPage(bool)));
+    connect(resList, SIGNAL(docEditClicked(int)), 
+	    this, SLOT(startNativeViewer(int)));
+    connect(resList, SIGNAL(docPreviewClicked(int)), 
+	    this, SLOT(startPreview(int)));
+
     connect(fileExitAction, SIGNAL(activated() ), this, SLOT(fileExit() ) );
     connect(fileStart_IndexingAction, SIGNAL(activated()), 
 	    this, SLOT(startIndexing()));
@@ -119,14 +128,6 @@ void RclMain::init()
 	    this, SLOT(showSortDialog()));
     connect(preferencesQuery_PrefsAction, SIGNAL(activated()), 
 	    this, SLOT(showUIPrefs()));
-    connect(resList, SIGNAL(nextPageAvailable(bool)), 
-	    this, SLOT(enableNextPage(bool)));
-    connect(resList, SIGNAL(prevPageAvailable(bool)), 
-	    this, SLOT(enablePrevPage(bool)));
-    connect(resList, SIGNAL(docEditClicked(int)), 
-	    this, SLOT(startNativeViewer(int)));
-    connect(resList, SIGNAL(docPreviewClicked(int)), 
-	    this, SLOT(startPreview(int)));
 
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
@@ -340,6 +341,7 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
     } else {
 	docsource = new DocSequenceDb(rcldb, string(tr("Query results").utf8()));
     }
+    m_searchId++;
     resList->setDocSource(docsource, sdata);
 }
 
@@ -440,11 +442,16 @@ void RclMain::startPreview(int docnum)
 				 QMessageBox::NoButton);
 	    return;
 	}
+	curPreview->setSId(m_searchId);
 	curPreview->setCaption(resList->getDescription());
 	connect(curPreview, SIGNAL(previewClosed(QWidget *)), 
 		this, SLOT(previewClosed(QWidget *)));
 	connect(curPreview, SIGNAL(wordSelect(QString)),
 		this, SLOT(ssearchAddTerm(QString)));
+	connect(curPreview, SIGNAL(showNext(int, int)),
+		this, SLOT(previewNextInTab(int, int)));
+	connect(curPreview, SIGNAL(showPrev(int, int)),
+		this, SLOT(previewPrevInTab(int, int)));
 	curPreview->show();
     } else {
 	if (curPreview->makeDocCurrent(fn, doc)) {
@@ -453,8 +460,84 @@ void RclMain::startPreview(int docnum)
 	}
 	(void)curPreview->addEditorTab();
     }
+    // Enter document in document history
     g_dynconf->enterDoc(fn, doc.ipath);
-    if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc))
+    if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc, docnum))
+	curPreview->closeCurrentTab();
+}
+
+// Show next document from result list in current preview tab
+void RclMain::previewNextInTab(int sid, int docnum)
+{
+    LOGDEB(("RclMain::previewNextInTab  sid %d docnum %d, m_sid %d\n", 
+	    sid, docnum, m_searchId));
+
+    if (sid != m_searchId) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("This search is not active any more"));
+	return;
+    }
+
+    docnum++;
+    if (docnum >= resList->getResCnt()) {
+	QApplication::beep();
+	return;
+    }
+
+    Rcl::Doc doc;
+    if (!resList->getDoc(docnum, doc)) {
+	QMessageBox::warning(0, "Recoll",
+			     tr("Cannot retrieve document info" 
+				     " from database"));
+	return;
+    }
+	
+    // Check that file exists in file system
+    string fn = urltolocalpath(doc.url);
+    struct stat st;
+    if (stat(fn.c_str(), &st) < 0) {
+	QMessageBox::warning(0, "Recoll", tr("Cannot access document file: ") +
+			     fn.c_str());
+	return;
+    }
+
+    if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc, docnum))
+	curPreview->closeCurrentTab();
+}
+
+// Show previous document from result list in current preview tab
+void RclMain::previewPrevInTab(int sid, int docnum)
+{
+    LOGDEB(("RclMain::previewPrevInTab  sid %d docnum %d, m_sid %d\n", 
+	    sid, docnum, m_searchId));
+
+    if (sid != m_searchId) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("This search is not active any more"));
+	return;
+    }
+    if (docnum <= 0) {
+	QApplication::beep();
+	return;
+    }
+    docnum--;
+    Rcl::Doc doc;
+    if (!resList->getDoc(docnum, doc)) {
+	QMessageBox::warning(0, "Recoll",
+			     tr("Cannot retrieve document info" 
+				     " from database"));
+	return;
+    }
+	
+    // Check that the file exists in the file system
+    string fn = urltolocalpath(doc.url);
+    struct stat st;
+    if (stat(fn.c_str(), &st) < 0) {
+	QMessageBox::warning(0, "Recoll", tr("Cannot access document file: ") +
+			     fn.c_str());
+	return;
+    }
+    if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc, docnum))
 	curPreview->closeCurrentTab();
 }
 
@@ -560,6 +643,7 @@ void RclMain::startManual()
     startHelpBrowser();
 }
 
+// Search for document 'like' the selected one.
 void RclMain::docExpand(int docnum)
 {
     Rcl::Doc doc;
@@ -606,6 +690,7 @@ void RclMain::showDocHistory()
     }
     Rcl::AdvSearchData sdata;
     sdata.description = tr("History data").utf8();
+    m_searchId++;
     resList->setDocSource(docsource, sdata);
 }
 

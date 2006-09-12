@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.1 2006-09-04 15:13:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.2 2006-09-12 10:11:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -55,17 +55,6 @@ using std::pair;
 #define wasCanceled wasCancelled
 #endif
 
-// We keep a list of data associated to each tab
-class TabData {
- public:
-    string fn; // filename for this tab
-    string ipath; // Internal doc path inside file
-    QWidget *w; // widget for setCurrent
-    TabData(QWidget *wi) : w(wi) {}
-};
-
-#define TABDATA ((list<TabData> *)tabData)
-
 void Preview::init()
 {
     // signals and slots connections
@@ -80,14 +69,12 @@ void Preview::init()
     searchTextLine->installEventFilter(this);
     dynSearchActive = false;
     canBeep = true;
-    tabData = new list<TabData>;
-    TABDATA->push_back(TabData(pvTab->currentPage()));
+    tabData.push_back(TabData(pvTab->currentPage()));
     currentW = 0;
 }
 
 void Preview::destroy()
 {
-    delete TABDATA;
 }
 
 void Preview::closeEvent(QCloseEvent *e)
@@ -108,6 +95,20 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	return true;
     } else if (keyEvent->key() == Key_Escape) {
 	close();
+	return true;
+    } else if (keyEvent->key() == Qt::Key_Down &&
+	       (keyEvent->state() & ShiftButton)) {
+	// LOGDEB(("Preview::eventFilter: got Shift-Up\n"));
+	TabData *d = tabDataForCurrent();
+	if (d) 
+	    emit(showNext(m_searchId, d->docnum));
+	return true;
+    } else if (keyEvent->key() == Qt::Key_Up &&
+	       (keyEvent->state() & ShiftButton)) {
+	// LOGDEB(("Preview::eventFilter: got Shift-Down\n"));
+	TabData *d = tabDataForCurrent();
+	if (d) 
+	    emit(showPrev(m_searchId, d->docnum));
 	return true;
     } else if (keyEvent->key() == Key_W &&
 	       (keyEvent->state() & ControlButton)) {
@@ -154,7 +155,7 @@ void Preview::searchTextLine_textChanged(const QString & text)
     }
 }
 
-QTextEdit * Preview::getCurrentEditor()
+QTextEdit *Preview::getCurrentEditor()
 {
     QWidget *tw = pvTab->currentPage();
     QTextEdit *edit = 0;
@@ -235,7 +236,7 @@ void Preview::prevPressed()
     doSearch(searchTextLine->text(), true, true);
 }
 
-
+// Called when user clicks on tab
 void Preview::currentChanged(QWidget * tw)
 {
     QWidget *edit = (QWidget *)tw->child("pvEdit");
@@ -274,12 +275,10 @@ void Preview::closeCurrentTab()
 	    return;
 	pvTab->removePage(tw);
 	// Have to remove from tab data list
-	if (tabData == 0)
-	    return;
-	for (list<TabData>::iterator it = TABDATA->begin(); 
-	     it != TABDATA->end(); it++) {
+	for (list<TabData>::iterator it = tabData.begin(); 
+	     it != tabData.end(); it++) {
 	    if (it->w == tw) {
-		TABDATA->erase(it);
+		tabData.erase(it);
 		return;
 	    }
 	}
@@ -299,12 +298,12 @@ QTextEdit *Preview::addEditorTab()
     anonLayout->addWidget(editor);
     pvTab->addTab(anon, "Tab");
     pvTab->showPage(anon);
-    if (tabData)
-	TABDATA->push_back(TabData(anon));
+    tabData.push_back(TabData(anon));
     return editor;
 }
 
-void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc)
+void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
+			     int docnum)
 {
     QString title = QString::fromUtf8(doc.title.c_str(), 
 				      doc.title.length());
@@ -328,21 +327,36 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc)
 	tiptxt += doc.title + "\n";
     pvTab->setTabToolTip(w,QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
 
-    for (list<TabData>::iterator it = TABDATA->begin(); 
-	 it != TABDATA->end(); it++) {
+    for (list<TabData>::iterator it = tabData.begin(); 
+	 it != tabData.end(); it++) {
 	if (it->w == w) {
 	    it->fn = fn;
 	    it->ipath = doc.ipath;
+	    it->docnum = docnum;
 	    break;
 	}
     }
 }
 
+TabData *Preview::tabDataForCurrent()
+{
+    QWidget *w = pvTab->currentPage();
+    if (w == 0)
+	return 0;
+    for (list<TabData>::iterator it = tabData.begin(); 
+	 it != tabData.end(); it++) {
+	if (it->w == w) {
+	    return &(*it);
+	}
+    }
+    return 0;
+}
+
 bool Preview::makeDocCurrent(const string &fn, const Rcl::Doc &doc)
 {
     LOGDEB(("Preview::makeFileCurrent: %s\n", fn.c_str()));
-    for (list<TabData>::iterator it = TABDATA->begin(); 
-	 it != TABDATA->end(); it++) {
+    for (list<TabData>::iterator it = tabData.begin(); 
+	 it != tabData.end(); it++) {
 	LOGDEB2(("Preview::makeFileCurrent: compare to w %p, file %s\n", 
 		 it->w, it->fn.c_str()));
 	if (!it->fn.compare(fn) && !it->ipath.compare(doc.ipath)) {
@@ -457,7 +471,8 @@ class WaiterThread : public QThread {
 #define MIN(A,B) ((A)<(B)?(A):(B))
 #endif
 
-bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
+bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
+				   int docnum)
 {
     Rcl::Doc doc = idoc;
     bool cancel = false;
@@ -465,7 +480,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     if (doc.title.empty()) 
 	doc.title = path_getsimple(doc.url);
 
-    setCurTabProps(fn, doc);
+    setCurTabProps(fn, doc, docnum);
 
     char csz[20];
     sprintf(csz, "%lu", (unsigned long)sz);
@@ -553,6 +568,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
     // Load into editor
     // Do it in several chunks 
     QTextEdit *editor = getCurrentEditor();
+    editor->setText("");
     if (highlightTerms) {
 	QStyleSheetItem *item = 
 	    new QStyleSheetItem(editor->styleSheet(), "termtag" );
@@ -592,11 +608,16 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc)
 	}
     }
 
-    if (!firstTerm.empty()) {
-	bool wasC = matchCheck->isChecked();
-	matchCheck->setChecked(false);
-	doSearch(QString::fromUtf8(terms.begin()->c_str()), true, false);
-	matchCheck->setChecked(wasC);
+    if (searchTextLine->text().length() != 0) {
+	canBeep = true;
+	doSearch(searchTextLine->text(), true, false);
+    } else {
+	if (!firstTerm.empty()) {
+	    bool wasC = matchCheck->isChecked();
+	    matchCheck->setChecked(false);
+	    doSearch(QString::fromUtf8(terms.begin()->c_str()), true, false);
+	    matchCheck->setChecked(wasC);
+	}
     }
     return true;
 }

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.3 2006-09-11 12:05:38 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.4 2006-09-12 10:11:36 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -92,16 +92,17 @@ void SSearch::startSimpleSearch()
     bool changed;
     do {
 	changed = false;
-	for (int index = 1; index < queryText->count(); index++) {
-	    if (queryText->text(index) == queryText->currentText()) {
+	for (int index = 0; index < queryText->count(); index++) {
+	    if (queryText->text(index).length() == 0 || 
+		queryText->text(index) == queryText->currentText()) {
 		queryText->removeItem(index);
 		changed = true;
 		break;
 	    }
 	}
     } while (changed);
-    if (queryText->text(0) != queryText->currentText()) 
-	queryText->insertItem(queryText->currentText(), 0);
+    // The combobox is set for no insertion, insert here:
+    queryText->insertItem(queryText->currentText(), 0);
 
     // Save the current state of the listbox list to file
     prefs.ssearchHistory.clear();

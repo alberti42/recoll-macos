@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.2 2006-09-11 12:05:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.3 2006-09-12 10:11:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -188,9 +188,14 @@ void AdvSearch::searchPB_clicked()
     if (!subtreeCMB->currentText().isEmpty()) {
 	mydata.topdir = 
 	    string((const char*)(subtreeCMB->currentText().utf8()));
-	// If this was started by clicking, need to insert the new entry
-	if (subtreeCMB->text(0) != subtreeCMB->currentText()) 
+	// The listbox is set for no insertion, do it. Have to check
+	// for dups as the internal feature seems to only work for
+	// user-inserted strings
+	if (!subtreeCMB->listBox()->findItem(subtreeCMB->currentText(),
+					     Qt::CaseSensitive|Qt::ExactMatch))
 	    subtreeCMB->insertItem(subtreeCMB->currentText(), 0);
+	// And keep it sorted
+	subtreeCMB->listBox()->sort();
 	prefs.asearchSubdirHist.clear();
 	for (int index = 0; index < subtreeCMB->count(); index++)
 	    prefs.asearchSubdirHist.push_back(subtreeCMB->text(index));
