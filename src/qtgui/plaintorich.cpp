@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.10 2006-02-07 09:44:33 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.11 2006-09-13 14:57:56 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -83,7 +83,7 @@ class myTextSplitCB : public TextSplitCB {
 // we return the first term encountered, and the caller will use the
 // editor's find() function to position on it
 bool plaintorich(const string& in, string& out, const list<string>& terms,
-		 string *firstTerm)
+		 string *firstTerm, bool noHeader)
 {
     Chrono chron;
     LOGDEB(("plaintorich: terms: %s\n", 
@@ -104,7 +104,10 @@ bool plaintorich(const string& in, string& out, const list<string>& terms,
     LOGDEB(("plaintorich: split done %d mS\n", chron.millis()));
 
     // Rich text output
-    out = "<qt><head><title></title></head><body><p>";
+    if (noHeader)
+	out = "";
+    else 
+	out = "<qt><head><title></title></head><body><p>";
 
     // Iterator for the list of input term positions. We use it to
     // output highlight tags and to compute term positions in the

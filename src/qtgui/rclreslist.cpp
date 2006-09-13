@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.18 2006-09-12 10:11:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.19 2006-09-13 14:57:56 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -22,6 +22,7 @@ static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.18 2006-09-12 10:11:36 dockes 
 #include "transcode.h"
 #include "pathut.h"
 #include "mimehandler.h"
+#include "plaintorich.h"
 
 #include "rclreslist.h"
 #include "moc_rclreslist.cpp"
@@ -253,6 +254,14 @@ void RclResList::resultPageNext()
 
     m_curDocs.clear();
 
+    // Query term colorization
+    QStyleSheetItem *item = 
+	new QStyleSheetItem(styleSheet(), "termtag" );
+    item->setColor("blue");
+    //    item->setFontWeight(QFont::Bold);
+    list<string> qTerms;
+    m_docsource->getTerms(qTerms);
+
     // Insert results if any in result list window. We have to send
     // the text to the widgets, because we need the paragraph number
     // each time we add a result paragraph (its diffult and
@@ -357,7 +366,9 @@ void RclResList::resultPageNext()
 	}
 
 	// Abstract
-	string abst = escapeHtml(doc.abstract);
+	string abst;
+	plaintorich(doc.abstract, abst, qTerms, 0, true);
+	//string abst = escapeHtml(doc.abstract);
 	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
 
 	// Concatenate chunks to build the result list paragraph:

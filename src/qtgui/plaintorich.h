@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.6 2006-02-07 09:44:33 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.7 2006-09-13 14:57:56 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -27,11 +27,13 @@
  * colorize the query terms.
  * 
  * @param in          raw text out of internfile.
- * @param terms       list of query terms
- * @param termoffsets output: character offsets where we find terms.
+ * @param out         rich text output
+ * @param terms       list of query terms. These are out of Rcl::Db and dumb
+ * @param firstTerm   out: value of the first search term in text.
+ * @param noHeader    if true don't output header (<qt><title>...)
  */
 extern bool plaintorich(const string &in, string &out,
 			const list<string>& terms,
-			string* firstTerm);
+			string* firstTerm, bool noHeader = false);
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

@@ -16,7 +16,14 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.8 2006-09-11 09:08:44 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.9 2006-09-13 14:57:56 dockes Exp $  (C) 2004 J.F.Dockes */
+#include <string>
+#include <list>
+
+#ifndef NO_NAMESPACES
+using std::string;
+using std::list;
+#endif
 
 #include "rcldb.h"
 #include "history.h"
@@ -28,7 +35,7 @@
 */
 class DocSequence {
  public:
-    DocSequence(const std::string &t) : m_title(t) {}
+    DocSequence(const string &t) : m_title(t) {}
     virtual ~DocSequence() {}
     /** Get document at given rank 
      *
@@ -46,10 +53,11 @@ class DocSequence {
     virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0) 
 	= 0;
     virtual int getResCnt() = 0;
-    virtual std::string title() {return m_title;}
+    virtual string title() {return m_title;}
+    virtual void getTerms(list<string>& t) {t.clear();}
 
  private:
-    std::string m_title;
+    string m_title;
 };
 
 
@@ -57,12 +65,14 @@ class DocSequence {
     to make sense */
 class DocSequenceDb : public DocSequence {
  public:
-    DocSequenceDb(Rcl::Db *d, const std::string &t) : 
+    DocSequenceDb(Rcl::Db *d, const string &t) : 
 	DocSequence(t), m_db(d), m_rescnt(-1) 
 	{}
     virtual ~DocSequenceDb() {}
     virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string * = 0);
     virtual int getResCnt();
+    virtual void getTerms(list<string>&);
+
  private:
     Rcl::Db *m_db;
     int m_rescnt;
@@ -71,7 +81,7 @@ class DocSequenceDb : public DocSequence {
 /** A DocSequence coming from the history file */
 class DocSequenceHistory : public DocSequence {
  public:
-    DocSequenceHistory(Rcl::Db *d, RclHistory *h, const std::string &t) 
+    DocSequenceHistory(Rcl::Db *d, RclHistory *h, const string &t) 
 	: DocSequence(t), m_db(d), m_hist(h), m_prevnum(-1), m_prevtime(-1) {}
     virtual ~DocSequenceHistory() {}
 
@@ -83,8 +93,8 @@ class DocSequenceHistory : public DocSequence {
     int m_prevnum;
     long m_prevtime;
 
-    std::list<RclDHistoryEntry> m_hlist;
-    std::list<RclDHistoryEntry>::const_iterator m_it;
+    list<RclDHistoryEntry> m_hlist;
+    list<RclDHistoryEntry>::const_iterator m_it;
 };
 
 #endif /* _DOCSEQ_H_INCLUDED_ */
