@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.4 2006-09-13 13:53:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.5 2006-09-13 15:31:07 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -97,6 +97,8 @@ void UIPrefsDialog::init()
 	cur = 0;
     stemLangCMB->setCurrentItem(cur);
 
+    autoPhraseCB->setChecked(prefs.ssearchAutoPhrase);
+
     buildAbsCB->setChecked(prefs.queryBuildAbstract);
     if (!prefs.queryBuildAbstract) {
 	replAbsCB->setEnabled(false);
@@ -151,6 +153,7 @@ void UIPrefsDialog::accept()
     } else {
 	prefs.queryStemLang = stemLangCMB->currentText();
     }
+    prefs.ssearchAutoPhrase = autoPhraseCB->isChecked();
     prefs.queryBuildAbstract = buildAbsCB->isChecked();
     prefs.queryReplaceAbstract = buildAbsCB->isChecked() && 
 	replAbsCB->isChecked();

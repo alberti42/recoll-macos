@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.5 2006-09-13 13:53:35 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.6 2006-09-13 15:31:06 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -72,8 +72,17 @@ void SSearch::startSimpleSearch()
     QCString u8 =  queryText->currentText().utf8();
     switch (searchTypCMB->currentItem()) {
     case 0:
-    default:
+    default: {
+	QString comp = queryText->currentText();
+	// If this is an or and we're set for autophrase and there are
+	// no quotes in the query, add a phrase search
+	if (prefs.ssearchAutoPhrase && comp.find('"', 0) == -1) {
+	    comp += QString::fromAscii(" \"") + comp + 
+		QString::fromAscii("\"");
+	    u8 = comp.utf8();
+	}
 	sdata.orwords = u8;
+    }
 	break;
     case 1:
 	sdata.allwords = u8;

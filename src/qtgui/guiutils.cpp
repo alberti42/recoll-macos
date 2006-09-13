@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.17 2006-09-13 13:53:35 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.18 2006-09-13 15:31:06 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -139,6 +139,8 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.showicons, "/Recoll/prefs/reslist/showicons", Bool, true);
     SETTING_RW(prefs.autoSearchOnWS, "/Recoll/prefs/reslist/autoSearchOnWS", 
 	       Bool, false);
+    SETTING_RW(prefs.ssearchAutoPhrase, 
+	       "/Recoll/prefs/startWithSortToolOpen", Bool, false);
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Num, 8);
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", ,
 	       "");
@@ -164,6 +166,8 @@ void rwSettings(bool writing)
 	prefs.ssearchHistory = 
 	    settings.readListEntry("/Recoll/prefs/query/ssearchHistory");
     }
+    SETTING_RW(prefs.ssearchAutoPhrase, 
+	       "/Recoll/prefs/query/ssearchAutoPhrase", Bool, false);
 
     // Ssearch combobox history list
     if (writing) {

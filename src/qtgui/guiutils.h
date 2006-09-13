@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.9 2006-09-13 13:53:35 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.10 2006-09-13 15:31:06 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -75,9 +75,12 @@ class PrefsPack {
     QStringList asearchSubdirHist;
     // Textual history of simple searches (this is just the combobox list)
     QStringList ssearchHistory;
+    // Make phrase out of search terms and add to search in simple search
+    bool ssearchAutoPhrase;
     // Ignored file types in adv search (startup default)
     QStringList asearchIgnFilTyps;
-
+    
+    // Synthetized abstract length and word context size
     int syntAbsLen;
     int syntAbsCtx;
 

@@ -251,6 +251,17 @@
                             </widget>
                             <widget class="QCheckBox">
                                 <property name="name">
+                                    <cstring>autoPhraseCB</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Automatically add phrase to simple searchs</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)].</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox">
+                                <property name="name">
                                     <cstring>buildAbsCB</cstring>
                                 </property>
                                 <property name="text">
