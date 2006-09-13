@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.30 2006-09-12 10:11:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.31 2006-09-13 08:13:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -131,6 +131,12 @@ void RclMain::init()
 
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
+    
+
+    if (prefs.startWithAdvSearchOpen)
+	showAdvSearchDialog();
+    if (prefs.startWithSortToolOpen)
+	showSortDialog();
 }
 
 // We also want to get rid of the advanced search form and previews

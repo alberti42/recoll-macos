@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.3 2006-09-12 10:11:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.4 2006-09-13 08:13:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -72,12 +72,18 @@ void AdvSearch::init()
 	    this, SLOT(delAFiltypPB_clicked()));
     connect(addAFiltypPB, SIGNAL(clicked()), 
 	    this, SLOT(addAFiltypPB_clicked()));
+    connect(saveFileTypesPB, SIGNAL(clicked()), 
+	    this, SLOT(saveFileTypes()));
 
+    // Initialize lists of accepted and ignored mime types from config
+    // and settings
     list<string> types = rclconfig->getAllMimeTypes();
+    noFiltypsLB->insertStringList(prefs.asearchIgnFilTyps); 
 
     QStringList ql;
     for (list<string>::iterator it = types.begin(); it != types.end(); it++) {
-	ql.append(it->c_str());
+	if (prefs.asearchIgnFilTyps.findIndex(it->c_str())<0)
+	    ql.append(it->c_str());
     }
     yesFiltypsLB->insertStringList(ql);
 
@@ -113,6 +119,17 @@ void AdvSearch::delAFiltypPB_clicked()
 	yesFiltypsLB->setSelected(i, true);
     }
     delFiltypPB_clicked();
+}
+
+// Save current list of ignored file types to prefs
+void AdvSearch::saveFileTypes()
+{
+    prefs.asearchIgnFilTyps.clear();
+    for (unsigned int i = 0; i < noFiltypsLB->count();i++) {
+	QListBoxItem *item = noFiltypsLB->item(i);
+	prefs.asearchIgnFilTyps.append(item->text());
+    }
+    rwSettings(true);
 }
 
 // Move selected file types from the ignored to the searched box

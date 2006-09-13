@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.47 2006-09-11 09:08:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.48 2006-09-13 08:13:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -288,6 +288,11 @@ int main(int argc, char **argv)
     }
 
     mainWindow->show();
+    if (prefs.startWithAdvSearchOpen)
+	mainWindow->showAdvSearchDialog();
+    if (prefs.startWithSortToolOpen)
+	mainWindow->showSortDialog();
+
     start_idxthread(*rclconfig);
 
     // Let's go

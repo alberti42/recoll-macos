@@ -164,7 +164,7 @@
                                     <cstring>useIconsCB</cstring>
                                 </property>
                                 <property name="text">
-                                    <string>Show document type icons in result list</string>
+                                    <string>Show document type icons in result list.</string>
                                 </property>
                                 <property name="checked">
                                     <bool>true</bool>
@@ -175,12 +175,38 @@
                                     <cstring>autoSearchCB</cstring>
                                 </property>
                                 <property name="text">
-                                    <string>Auto-start simple search on whitespace entry</string>
+                                    <string>Auto-start simple search on whitespace entry.</string>
                                 </property>
                                 <property name="checked">
                                     <bool>false</bool>
                                 </property>
                             </widget>
+
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>initStartAdvCB</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Start with advanced search dialog open.</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>false</bool>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>initStartSortCB</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Start with sort dialog open.</string>
+                                </property>
+                                <property name="checked">
+                                    <bool>false</bool>
+                                </property>
+                            </widget>
+
+
+
                         </vbox>
                     </widget>
                 </vbox>

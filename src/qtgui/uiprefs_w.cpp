@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.2 2006-09-06 09:50:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.3 2006-09-13 08:13:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -54,6 +54,10 @@ void UIPrefsDialog::init()
     // Show icons checkbox
     useIconsCB->setChecked(prefs.showicons);
     autoSearchCB->setChecked(prefs.autoSearchOnWS);
+
+    initStartAdvCB->setChecked(prefs.startWithAdvSearchOpen);
+    initStartSortCB->setChecked(prefs.startWithSortToolOpen);
+
     // Result list font family and size
     reslistFontFamily = prefs.reslistfontfamily;
     reslistFontSize = prefs.reslistfontsize;
@@ -148,6 +152,9 @@ void UIPrefsDialog::accept()
     prefs.queryBuildAbstract = buildAbsCB->isChecked();
     prefs.queryReplaceAbstract = buildAbsCB->isChecked() && 
 	replAbsCB->isChecked();
+
+    prefs.startWithAdvSearchOpen = initStartAdvCB->isChecked();
+    prefs.startWithSortToolOpen = initStartSortCB->isChecked();
 
     prefs.activeExtraDbs.clear();
     for (unsigned int i = 0; i < actDbsLB->count(); i++) {

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.15 2006-09-11 12:05:38 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.16 2006-09-13 08:13:36 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -131,6 +131,11 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Num, 400);
     SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Num, 0);
     SETTING_RW(prefs.htmlBrowser, "/Recoll/prefs/htmlBrowser", , "");
+    SETTING_RW(prefs.startWithAdvSearchOpen, 
+	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
+    SETTING_RW(prefs.startWithSortToolOpen, 
+	       "/Recoll/prefs/startWithSortToolOpen", Bool, false);
+
     SETTING_RW(prefs.showicons, "/Recoll/prefs/reslist/showicons", Bool, true);
     SETTING_RW(prefs.autoSearchOnWS, "/Recoll/prefs/reslist/autoSearchOnWS", 
 	       Bool, false);
@@ -139,9 +144,9 @@ void rwSettings(bool writing)
 	       "");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Num, 
 	       0);
+
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", ,
 	       "english");
-
     SETTING_RW(prefs.queryBuildAbstract, 
 	       "/Recoll/prefs/query/buildAbstract", Bool, true);
     SETTING_RW(prefs.queryReplaceAbstract, 
@@ -154,6 +159,15 @@ void rwSettings(bool writing)
     } else {
 	prefs.ssearchHistory = 
 	    settings.readListEntry("/Recoll/prefs/query/ssearchHistory");
+    }
+
+    // Ssearch combobox history list
+    if (writing) {
+	settings.writeEntry("/Recoll/prefs/query/asearchIgnFilTyps",
+			    prefs.asearchIgnFilTyps);
+    } else {
+	prefs.asearchIgnFilTyps = 
+	    settings.readListEntry("/Recoll/prefs/query/asearchIgnFilTyps");
     }
 
     // The extra databases settings. These are stored as a list of

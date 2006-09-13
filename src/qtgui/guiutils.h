@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.7 2006-09-11 12:05:38 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.8 2006-09-13 08:13:36 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -64,6 +64,8 @@ class PrefsPack {
     QString htmlBrowser;
     bool queryBuildAbstract;
     bool queryReplaceAbstract;
+    bool startWithAdvSearchOpen;
+    bool startWithSortToolOpen;
     // Extra query databases. This are encoded to base64 before storing
     // to the qt settings file to avoid any bin string/ charset conv issues
     list<string> allExtraDbs;
@@ -73,6 +75,8 @@ class PrefsPack {
     QStringList asearchSubdirHist;
     // Textual history of simple searches (this is just the combobox list)
     QStringList ssearchHistory;
+    // Ignored file types in adv search (startup default)
+    QStringList asearchIgnFilTyps;
 
     PrefsPack() :
 	showicons(true), 
@@ -80,7 +84,9 @@ class PrefsPack {
 	reslistfontsize(10),
 	ssearchTyp(0),
 	queryBuildAbstract(true),
-	queryReplaceAbstract(false)
+	queryReplaceAbstract(false),
+	startWithAdvSearchOpen(false),
+	startWithSortToolOpen(false)
 	    {
 	    }
 };
