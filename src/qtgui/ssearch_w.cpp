@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.4 2006-09-12 10:11:36 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.5 2006-09-13 13:53:35 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -89,12 +89,20 @@ void SSearch::startSimpleSearch()
     // the listbox list, The qt listbox doesn't do lru correctly (if
     // already in the list the new entry would remain at it's place,
     // not jump at the top as it should
+    LOGDEB3(("Querytext list count %d\n", queryText->count()));
+    // Have to save current text, this will change while we clean up the list
+    QString txt = queryText->currentText();
     bool changed;
     do {
 	changed = false;
 	for (int index = 0; index < queryText->count(); index++) {
+	    LOGDEB3(("Querytext[%d] = [%s]\n", index,
+		    (const char *)(queryText->text(index).utf8())));
 	    if (queryText->text(index).length() == 0 || 
-		queryText->text(index) == queryText->currentText()) {
+		QString::compare(queryText->text(index), txt) == 0) {
+		LOGDEB3(("Querytext removing at %d [%s] [%s]\n", index,
+			(const char *)(queryText->text(index).utf8()),
+			(const char *)(txt.utf8())));
 		queryText->removeItem(index);
 		changed = true;
 		break;
@@ -102,13 +110,14 @@ void SSearch::startSimpleSearch()
 	}
     } while (changed);
     // The combobox is set for no insertion, insert here:
-    queryText->insertItem(queryText->currentText(), 0);
+    queryText->insertItem(txt, 0);
+    queryText->setCurrentItem(0);
 
     // Save the current state of the listbox list to file
     prefs.ssearchHistory.clear();
-    for (int index = 0; index < queryText->count(); index++)
+    for (int index = 0; index < queryText->count(); index++) {
 	prefs.ssearchHistory.push_back(queryText->text(index).utf8());
-
+    }
     emit startSearch(sdata);
 }
 

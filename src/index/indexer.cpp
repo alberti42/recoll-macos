@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.34 2006-04-30 07:39:09 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.35 2006-09-13 13:53:35 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -81,6 +81,9 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 	// Set the current directory in config so that subsequent
 	// getConfParams() will get local values
 	m_config->setKeyDir(*it);
+	int abslen;
+	if (m_config->getConfParam("idxabsmlen", &abslen))
+	    m_db.setAbstractParams(abslen, -1, -1);
 
 	// Set up skipped patterns for this subtree. This probably should be
 	// done in the directory change code in processone() instead.
@@ -179,6 +182,9 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
     list<string>::const_iterator it;
     for (it = filenames.begin(); it != filenames.end();it++) {
 	m_config->setKeyDir(path_getfather(*it));
+	int abslen;
+	if (m_config->getConfParam("idxabsmlen", &abslen))
+	    m_db.setAbstractParams(abslen, -1, -1);
 	struct stat stb;
 	if (stat(it->c_str(), &stb) != 0) {
 	    LOGERR(("DbIndexer::indexFiles: stat(%s): %s", it->c_str(),
@@ -228,6 +234,9 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     if (flg == FsTreeWalker::FtwDirEnter || 
 	flg == FsTreeWalker::FtwDirReturn) {
 	m_config->setKeyDir(fn);
+	int abslen;
+	if (m_config->getConfParam("idxabsmlen", &abslen))
+	    m_db.setAbstractParams(abslen, -1, -1);
 	return FsTreeWalker::FtwOk;
     }
 

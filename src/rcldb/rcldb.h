@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.35 2006-04-27 06:12:10 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.36 2006-09-13 13:53:35 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -171,6 +171,8 @@ class Db {
     std::list<std::string> getStemLangs();
 
     string getDbDir();
+    void setAbstractParams(int idxTrunc, int synthLen, int syntCtxLen);
+
 private:
 
     string m_filterTopDir; // Current query filter on subtree top directory 
@@ -183,6 +185,17 @@ private:
                  // xapian)-specific defs to show in here
 
     unsigned int m_qOpts;
+    
+    // This is how long an abstract we keep or build from beginning of
+    // text when indexing. It only has an influence on the size of the
+    // db as we are free to shorten it again when displaying
+    int          m_idxAbsTruncLen;
+    // This is the size of the abstract that we synthetize out of query
+    // term contexts at *query time*
+    int          m_synthAbsLen;
+    // This is how many words (context size) we keep around query terms
+    // when building the abstract
+    int          m_synthAbsWordCtxLen;
 
     bool reOpen(); // Close/open, same mode/opts
     /* Copyconst and assignemt private and forbidden */

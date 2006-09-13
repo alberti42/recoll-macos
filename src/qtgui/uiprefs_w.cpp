@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.3 2006-09-13 08:13:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.4 2006-09-13 13:53:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -54,6 +54,8 @@ void UIPrefsDialog::init()
     // Show icons checkbox
     useIconsCB->setChecked(prefs.showicons);
     autoSearchCB->setChecked(prefs.autoSearchOnWS);
+    syntlenSB->setValue(prefs.syntAbsLen);
+    syntctxSB->setValue(prefs.syntAbsCtx);
 
     initStartAdvCB->setChecked(prefs.startWithAdvSearchOpen);
     initStartSortCB->setChecked(prefs.startWithSortToolOpen);
@@ -155,6 +157,9 @@ void UIPrefsDialog::accept()
 
     prefs.startWithAdvSearchOpen = initStartAdvCB->isChecked();
     prefs.startWithSortToolOpen = initStartSortCB->isChecked();
+
+    prefs.syntAbsLen = syntlenSB->value();
+    prefs.syntAbsCtx = syntctxSB->value();
 
     prefs.activeExtraDbs.clear();
     for (unsigned int i = 0; i < actDbsLB->count(); i++) {

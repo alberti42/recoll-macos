@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.48 2006-09-13 08:13:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.49 2006-09-13 13:53:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -103,6 +103,7 @@ bool maybeOpenDb(string &reason, bool force)
 	    dbdir + " wait for indexing to complete?";
 	return false;
     }
+    rcldb->setAbstractParams(-1, prefs.syntAbsLen, prefs.syntAbsCtx);
     return true;
 }
 

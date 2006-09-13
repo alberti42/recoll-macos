@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.16 2006-09-13 08:13:36 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.17 2006-09-13 13:53:35 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -151,6 +151,10 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/query/buildAbstract", Bool, true);
     SETTING_RW(prefs.queryReplaceAbstract, 
 	       "/Recoll/prefs/query/replaceAbstract", Bool, false);
+    SETTING_RW(prefs.syntAbsLen, "/Recoll/prefs/query/syntAbsLen", 
+	       Num, 250);
+    SETTING_RW(prefs.syntAbsCtx, "/Recoll/prefs/query/syntAbsCtx", 
+	       Num, 4);
 
     // Ssearch combobox history list
     if (writing) {

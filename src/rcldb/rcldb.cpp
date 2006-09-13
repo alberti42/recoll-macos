@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.75 2006-05-09 10:15:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.76 2006-09-13 13:53:35 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -56,17 +56,6 @@ using namespace std;
 #ifndef NO_NAMESPACES
 namespace Rcl {
 #endif
-// This is how long an abstract we keep or build from beginning of text when
-// indexing. It only has an influence on the size of the db as we are free
-// to shorten it again when displaying
-#define INDEX_ABSTRACT_SIZE 250
-
-// This is the size of the abstract that we synthetize out of query
-// term contexts at query time
-#define MA_ABSTRACT_SIZE 250
-// This is how many words (context size) we keep around query terms
-// when building the abstract
-#define MA_EXTRACT_WIDTH 4
 
 // Truncate longer path and uniquize with hash . The goal for this is
 // to avoid xapian max term length limitations, not to gain space (we
@@ -81,6 +70,7 @@ const static string rclSyntAbs = "?!#@";
 // ones for indexing or query as there is not much in common.
 class Native {
  public:
+    Db *m_db;
     bool m_isopen;
     bool m_iswritable;
     Db::OpenMode m_mode;
@@ -106,8 +96,9 @@ class Native {
 			Xapian::docid docid,
 			const list<string>& terms);
 
-    Native() 
-	: m_isopen(false), m_iswritable(false), m_mode(Db::DbRO), enquire(0) 
+    Native(Db *db) 
+	: m_db(db),
+	  m_isopen(false), m_iswritable(false), m_mode(Db::DbRO), enquire(0) 
     { }
     ~Native() {
 	delete enquire;
@@ -149,9 +140,10 @@ class Native {
 };
 
 Db::Db() 
-    : m_qOpts(QO_NONE)
+    : m_qOpts(QO_NONE), m_idxAbsTruncLen(250), m_synthAbsLen(250),
+      m_synthAbsWordCtxLen(4)
 {
-    m_ndb = new Native;
+    m_ndb = new Native(this);
 }
 
 Db::~Db()
@@ -282,7 +274,7 @@ bool Db::close()
 	    LOGDEB(("Rcl:Db: Called xapian flush\n"));
 	}
 	delete m_ndb;
-	m_ndb = new Native;
+	m_ndb = new Native(this);
 	if (m_ndb)
 	    return true;
     } catch (const Xapian::Error &e) {
@@ -442,6 +434,19 @@ bool dumb_string(const string &in, string &out)
     return true;
 }
 
+// Let our user set the parameters for abstract processing
+void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
+{
+    LOGDEB(("Db::setAbstractParams: trunc %d syntlen %d ctxlen %d\n",
+	    idxtrunc, syntlen, syntctxlen));
+    if (idxtrunc > 0 && idxtrunc < 2000)
+	m_idxAbsTruncLen = idxtrunc;
+    if (syntlen > 0 && syntlen < 2000)
+	m_synthAbsLen = syntlen;
+    if (syntctxlen > 0 && syntctxlen < 20)
+	m_synthAbsWordCtxLen = syntctxlen;
+}
+
 // Add document in internal form to the database: index the terms in
 // the title abstract and body and add special terms for file name,
 // date, mime type ... , create the document data record (more
@@ -457,14 +462,16 @@ bool Db::add(const string &fn, const Doc &idoc,
 
     // Truncate abstract, title and keywords to reasonable lengths. If
     // abstract is currently empty, we make up one with the beginning
-    // of the document.
+    // of the document. This is then not indexed, but part of the doc
+    // data so that we can return it to a query without having to
+    // decode the original file.
     bool syntabs = false;
     if (doc.abstract.empty()) {
 	syntabs = true;
 	doc.abstract = rclSyntAbs + 
-	    truncate_to_word(doc.text, INDEX_ABSTRACT_SIZE);
+	    truncate_to_word(doc.text, m_idxAbsTruncLen);
     } else {
-	doc.abstract = truncate_to_word(doc.abstract, INDEX_ABSTRACT_SIZE);
+	doc.abstract = truncate_to_word(doc.abstract, m_idxAbsTruncLen);
     }
     doc.abstract = neutchars(doc.abstract, "\n\r");
     doc.title = truncate_to_word(doc.title, 100);
@@ -513,14 +520,20 @@ bool Db::add(const string &fn, const Doc &idoc,
     splitter.text_to_words(noacc);
     splitData.basepos += splitData.curpos + 100;
 
-    // Split and index abstract
+    // Split and index abstract. We don't do this if it is synthetic
+    // any more (this used to give a relevance boost to the beginning
+    // of text, why ?)
     LOGDEB2(("Db::add: split abstract [%s]\n", doc.abstract.c_str()));
-    if (!dumb_string(syntabs ? doc.abstract.substr(rclSyntAbs.length()) : 
-		     doc.abstract, noacc)) {
-	LOGERR(("Db::add: dumb_string failed\n"));
-	return false;
+    if (!syntabs) {
+	// syntabs indicator test kept here in case we want to go back
+	// to indexing synthetic abstracts one day
+	if (!dumb_string(syntabs ? doc.abstract.substr(rclSyntAbs.length()) : 
+			 doc.abstract, noacc)) {
+	    LOGERR(("Db::add: dumb_string failed\n"));
+	    return false;
+	}
+	splitter.text_to_words(noacc);
     }
-    splitter.text_to_words(noacc);
     splitData.basepos += splitData.curpos + 100;
 
     ////// Special terms for metadata
@@ -1182,17 +1195,21 @@ bool Native::dbDataToRclDoc(std::string &data, Doc &doc,
     parms.get(string("caption"), doc.title);
     parms.get(string("keywords"), doc.keywords);
     parms.get(string("abstract"), doc.abstract);
+    // Possibly remove synthetic abstract indicator (if it's there, we
+    // used to index the beginning of the text as abstract).
     bool syntabs = false;
     if (doc.abstract.find(rclSyntAbs) == 0) {
 	doc.abstract = doc.abstract.substr(rclSyntAbs.length());
 	syntabs = true;
     }
+    // If the option is set and the abstract is synthetic or empty , build 
+    // abstract from position data. 
     if ((qopts & Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
-	LOGDEB1(("dbDataToRclDoc:: building abstract from position data\n"));
+	LOGDEB(("dbDataToRclDoc:: building abstract from position data\n"));
 	if (doc.abstract.empty() || syntabs || 
 	    (qopts & Db::QO_REPLACE_ABSTRACT))
 	    doc.abstract = makeAbstract(docid, terms);
-    }
+    } 
     parms.get(string("ipath"), doc.ipath);
     parms.get(string("fbytes"), doc.fbytes);
     parms.get(string("dbytes"), doc.dbytes);
@@ -1397,6 +1414,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     // remember the position and its neigbours
     vector<unsigned int> qtermposs; // The term positions
     set<unsigned int> chunkposs; // All the positions we shall populate
+    int totaloccs = 0;
     for (list<string>::const_iterator qit = terms.begin(); qit != terms.end();
 	 qit++) {
 	Xapian::PositionIterator pos;
@@ -1409,15 +1427,15 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 		unsigned int ipos = *pos;
 		LOGDEB1(("Abstract: [%s] at %d\n", qit->c_str(), ipos));
 		// Possibly extend the array. Do it in big chunks
-		if (ipos + MA_EXTRACT_WIDTH >= buf.size()) {
-		    buf.resize(ipos + MA_EXTRACT_WIDTH + 1000);
+		if (ipos + m_db->m_synthAbsWordCtxLen >= buf.size()) {
+		    buf.resize(ipos + m_db->m_synthAbsWordCtxLen + 1000);
 		}
 		buf[ipos] = *qit;
 		// Remember the term position
 		qtermposs.push_back(ipos);
 		// Add adjacent slots to the set to populate at next step
-		for (unsigned int ii = MAX(0, ipos-MA_EXTRACT_WIDTH); 
-		     ii <= MIN(ipos+MA_EXTRACT_WIDTH, buf.size()-1); ii++) {
+		for (unsigned int ii = MAX(0, ipos-m_db->m_synthAbsWordCtxLen); 
+		     ii <= MIN(ipos+m_db->m_synthAbsWordCtxLen, buf.size()-1); ii++) {
 		    chunkposs.insert(ii);
 		}
 		// Limit the number of occurences we keep for each
@@ -1427,6 +1445,9 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	    }
 	} catch (...) {
 	}
+	// Limit total size
+	if (totaloccs++ > 100)
+	    break;
     }
 
     LOGDEB1(("Abstract:%d:chosen number of positions %d. Populating\n", 
@@ -1470,21 +1491,21 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     for (vector<unsigned int>::const_iterator it = qtermposs.begin();
 	 it != qtermposs.end(); it++) {
 	unsigned int ipos = *it;
-	unsigned int start = MAX(0, ipos-MA_EXTRACT_WIDTH);
-	unsigned int end = MIN(ipos+MA_EXTRACT_WIDTH, buf.size()-1);
+	unsigned int start = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
+	unsigned int end = MIN(ipos+m_db->m_synthAbsWordCtxLen, buf.size()-1);
 	string chunk;
 	for (unsigned int ii = start; ii <= end; ii++) {
 	    if (!buf[ii].empty()) {
 		chunk += buf[ii] + " ";
 		abslen += buf[ii].length();
 	    }
-	    if (abslen > MA_ABSTRACT_SIZE)
+	    if (int(abslen) > m_db->m_synthAbsLen)
 		break;
 	}
 	if (end != buf.size()-1)
 	    chunk += "... ";
 	mabs[ipos] = chunk;
-	if (abslen > MA_ABSTRACT_SIZE)
+	if (int(abslen) > m_db->m_synthAbsLen)
 	    break;
     }
 

@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.8 2006-09-13 08:13:36 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.9 2006-09-13 13:53:35 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -77,6 +77,9 @@ class PrefsPack {
     QStringList ssearchHistory;
     // Ignored file types in adv search (startup default)
     QStringList asearchIgnFilTyps;
+
+    int syntAbsLen;
+    int syntAbsCtx;
 
     PrefsPack() :
 	showicons(true), 
