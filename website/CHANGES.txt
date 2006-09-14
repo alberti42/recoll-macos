@@ -1,0 +1,137 @@
+CHANGES 
+
+Updating from 1.2 to 1.3 or 1.4: 
+-------------------------------
+From version 1.3 up, there is a new feature to search specifically for file
+names (with wildcard processing). If you want to take full advantage of
+this, you should perform a full reindex after installing the new version
+(ie: use recollindex -z, or delete ~/.recoll/xapiandb).
+Also, we now use the central copies of configuration files for default
+values, and the user ones only for overrides. Your old configuration files
+will still work, but, you may want to remove them if they are unmodified,
+or keep only the modified parameters.
+
+
+1.4.3 2006-05-07
+ - Multiple search databases. 
+ - Optionally auto-search when a word is entered in the simple search
+   field.
+ - Show possible term completions in simple search by typing CTRL+TAB
+ - Add 'more like this' option to result list right-click menu, to look for
+   documents related to the current result.
+ - Double-click in preview or result list adds the selected word to the
+   simple search text field.
+ - The simple search text entry field is now a combobox and remembers
+   previous searches.
+ - Additional OR field in complex search.
+ - Improved indexing cancellability (interrupting recollindex or closing 
+   recoll with an indexing thread active), and status reporting.
+ - Fixed filters to handle file paths with embedded spaces.
+ - Misc small bug and memory leaks fixes.
+ - More compact result list.
+ - Set mode 0700 on .recoll directory by default
+
+1.3.3 2006-04-04
+ - Implement specific search on file names with wildcard
+   support. Indexation can optionally process all file names or only those
+   with mime types supported for normal indexation. UPDATING: you need a
+   full re-indexation to take advantage of this.
+ - Use links and a right-click popup menu to replace confusing use of
+   mouse clicks and double-clicks inside the result list.
+ - The 'example' configuration files are now used as default, and are not
+   copied any more to the user directory during installation. Overrides can
+   be set in the personal files for any value that the user wishes to
+   modify, with unchanged formats and file names (so that the files from
+   previous versions remain valid, but you may wish to trim them of values
+   that duplicate the central ones).
+ - Use NLS information (LC_CTYPE, LANG) do determine default charset when
+   possible.
+ - Mp3 file indexing, either filenames only or also id3 tags if id3info is
+   available. c/c++  ext edit. Use gnuclient instead of xemacs for text files.
+ - Russian and Ukrainian translations and many improvement ideas thanks to
+   Michael Shigorin.
+
+1.2.3 2006-03-03
+ - Added support for dvi (with dvips), and dvu (with DjVuLibre).
+ - Ensure that configure and make use the same qt version.
+ - Fix sorted sequence title display.
+ - Discriminate fatal errors and missing docs while loading a doc list.
+ - Improved and cleaned up way to position a preview on the first search term.
+1.2.2 2006-02-02
+ - Fix minor compilation glitches (FreeBSD 4, QT 3.1, xapian-config problem)
+1.2.0 2006-02-01
+ - Improved preview loading: don't highlight very big documents (over 1Mb),
+   allow cancellation while loading.
+ - Abstracts generated in the result list by looking at search term
+   contexts. This can slow down result list display for big documents, and
+   can be turned off in the preferences menu.
+ - Wrap query detail line displayed when clicking on result list header.
+ - Text splitting cleanup with less spurious terms should result in
+   slightly smaller databases.
+ - Sligthly improved presentation in preview, esp. line breaks.
+ - Color icons...
+ - Let the user select the html browser used for help display.
+ - autoconf/Makefile change: allow building UI from inside the qtgui
+   directory. 
+ - autoconf/Makefile: improved search and diagnostics for qt/qmake.
+ - Internal code cleanup for maintainability: text splitting, user
+   interface.
+ - Added prototype kio_slave to show result inside Konqueror, doesn't seem
+   particularly useful.
+1.1.0 2006-01-12
+ - A much better user manual, which can be browsed from the help menu.
+ - man pages for recoll, recollindex, recoll.conf
+ - User/query interface configuration dialog.
+ - Click on result list header will display the exact boolean search which
+   was used.
+ - recollindex can be used to create stem expansion databases independantly
+   of a full indexing pass.
+ - Misc user interface improvements, like an 'all terms' checkbox for
+   simple search.
+ - Fixed case-insensitivity issues. Probably needs more testing.
+1.0.16 2006-01-05
+ - Minor installation tweaks for rpm compatibility
+1.0.15 
+ - Fix problems with prefix != /usr/local
+ - Remove '.*' from the default list of ignored file/dir names: this
+   prevented mozilla/thunderbird mail indexing. 
+ - Fix some 64 bits issues
+1.0.14
+ - Small changes for FreeBSD 4 compilation.
+1.0.13
+ - Install of recollinstall program not done or needed any more.
+1.0.12
+ - Fixed nasty html parsing bug introduced in 1.0.9 Html parsing failed
+   whenever the document charset name differed from the default only in 
+   character case or punctuation.
+1.0.11
+ - Create personal configuration on first start.
+ - Use qt toolbars.
+ - Also index terms in file paths.
+ - Tool for sorting on dates or mime types.
+ - Fixed pdf filter which was broken by more recent xpdf
+ - Filters now installed/executed from /usr/local
+
+1.0.10
+ - Added tool to manage the history of consulted documents.
+ - Try harder to convert email messages with wrongly declared charsets.
+ - Add option to reset the database before indexing (easier than rm -rf).
+ - Small gui improvements.
+ - Install partial french translation as a tease for future translaters...
+
+1.0.8->1.0.9
+ - Fixed 2 really ennoying bugs in 1.0.8: wouldn't preview 2nd document
+   from same file + spurious db close when filter could not be executed.
+
+1.0.5 -> 1.0.8
+ - Add support for rtf and gaim logs
+ - Optionally show icons to indicate mime types in result list
+ - Better (but imperfect) feedback during the preview loading for big files
+ - Remember main window geometry when closing
+ - Fix stem expansion in advanced search
+ - Some autoconf
+ - Option to use the system's 'file' command as a final step of
+   identification for suffix-less or unknown files.
+ - Typo had removed support for .Z compression
+ - Use more appropriate conjonction operators when computing the advanced
+   search query (OP_AND_MAYBE, OP_FILTER instead of OP_AND)

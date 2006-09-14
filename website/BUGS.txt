@@ -1,0 +1,55 @@
+Known bugs in current version and older versions:
+
+1.4.2
+- When a mime type has an external viewer defined, but the actual file is
+  compressed (ie: xxx.txt.gz), recoll will try to start the external viewer
+  on the compressed file, which will not work in most cases.
+
+- There are problems which have been reported indexing big mailstores
+  (several hundreds of thousands of messages): resulting in a very big
+  database and even crashes during indexation.
+
+1.3.3
+
+- Several of the external filters did not handle path names with embedded
+  spaces (rcluncomp rclsoff rclps rclmedia rcldjvu). This is fixed in 1.4.
+
+- If your QT installation is built with the QT_NO_STL flag, Recoll will not
+  compile. I have a patch for this (will be fixed in the next release),
+  contact me if you get the problem. Typical error message:
+     main.cpp:160: error: no match for 'operator+=' in 'msg += reason'
+
+- The 'None of these words' field in the complex search does not work if
+  there are no other filled fields (it transforms into an ordinary
+  search). Workaround: enter very common term(s) in the 'any of these
+  words' field.
+
+- Indexing cannot currently be conveniently and cleanly stopped when it's
+  started. You can kill the process, and keyboard interrupt might work, but
+  this may leave the database in a bad state. This is fixed in the upcoming
+  release, there is no current workaround.
+
+1.2.2
+- The preview window is supposed to scroll after loading the document so
+  that the first search term is visible. This does not work in many cases.
+- The result list title is not shown for sorted lists
+
+Notes on older versions:
+- Trouble compiling on some linux systems (Gentoo and Slackware?). There
+  existed a quite common issue where the Recoll link will fail trying to
+  use a libstdc++.la file. This was due to a problem with the xapian-config
+  program. A workaround has been included in the configure script for
+  recoll 1.2.2, and the problem should not occur any more.
+
+- Case-insensitive search should now work in most cases (used to not work
+  except for accented ascii).
+
+- All directories and files with names beginning with a dot were ignored
+  by the skippedNames directive in the default recoll.conf file from
+  older versions (no indexation of mozilla or thunderbird email !). An
+  upgrade will not fix this (it will not modify an existing
+  configuration). You need to edit recoll.conf by hand and remove the .*
+  from skippedNames.
+
+
+

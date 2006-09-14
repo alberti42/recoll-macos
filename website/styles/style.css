@@ -1,0 +1,90 @@
+/*--General-----------------------------------------------*/
+html {
+    margin 0;
+}
+body {
+    position: relative;
+    margin: 0;
+    color: black; 
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+
+a img {
+    border:none;
+    margin:0px;
+    padding:0px;
+}
+
+/*- Menu---------------------------------------*/
+
+div.rightlinks {
+    width: 130px;
+    float: right;
+    font-size: 80%;
+    padding-top: 4em;
+}
+
+.rightlinks ul {
+    margin-left: 2px ; 
+    padding-left: 1.5em ;
+    line-height: 200%;
+}
+
+/*-Main content area-------------------------*/
+.content {
+    margin-top: 2em;
+    margin-left: 25px;
+    margin-right: 145px;
+}
+
+.content img {
+    margin: 0.3em;
+}
+
+.content dt {
+    font-weight: bold;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #222299;
+}
+
+h1 {
+  font-weight:          normal;
+  font-size:            140%;
+  padding-bottom:       1em;
+}
+h2 {
+  font-weight:          normal;
+  font-size:            120%;
+}
+h3 {
+  font-weight:          normal;
+}
+p.indexthumb {
+    margin-left: 1em;
+}
+.guimenu, .guimenuitem, .guisubmenu,
+.guilabel, .interface, .guibutton,
+.shortcut, .shortcut .keycap {
+    background-color: #F0F0F0;
+    font-family: monospace;
+}
+.application {
+    font-weight: bold;
+}
+.command {
+    font-family: monospace;
+}
+.filename {
+    font-family: monospace;
+    color: #007a00;
+}
+
+a.important {
+    background: yellow;
+}
+a.weak {
+    color: #aaaaaa;
+}
+
