@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.5 2006-09-13 15:31:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.6 2006-09-15 16:49:27 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -105,7 +105,7 @@ void UIPrefsDialog::init()
     }
     replAbsCB->setChecked(prefs.queryReplaceAbstract);
 
-    // Initialize the extra databases listboxes
+    // Initialize the extra indexes listboxes
     QStringList ql;
     for (list<string>::iterator it = prefs.allExtraDbs.begin(); 
 	 it != prefs.allExtraDbs.end(); it++) {
@@ -233,7 +233,7 @@ void UIPrefsDialog::showBrowserDialog()
 }
 
 ////////////////////////////////////////////
-// External / extra search databases setup
+// External / extra search indexes setup
 // TBD: a way to remove entry from 'all' list (del button?)
 
 void UIPrefsDialog::extraDbTextChanged(const QString &text)
@@ -292,7 +292,7 @@ void UIPrefsDialog::delADbPB_clicked()
 }
 
 /**
- * Remove all extra search databases from the active list
+ * Remove all extra search indexes from the active list
  */
 void UIPrefsDialog::delAADbPB_clicked()
 {
@@ -313,7 +313,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     path_catslash(dbdir);
     if (!Rcl::Db::testDbDir(dbdir)) {
 	QMessageBox::warning(0, "Recoll", 
-        tr("The selected directory does not appear to be a Xapian database"));
+        tr("The selected directory does not appear to be a Xapian index"));
 	return;
     }
     struct stat st1, st2;
@@ -326,13 +326,13 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     fprintf(stderr, "rcldbdir: [%s]\n", rcldbdir.c_str());
     if (st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino) {
 	QMessageBox::warning(0, "Recoll", 
-			     tr("This is the main/local database!"));
+			     tr("This is the main/local index!"));
 	return;
     }
     if (allDbsLB->findItem(extraDbLE->text(), 
 			    Qt::CaseSensitive|Qt::ExactMatch)) {
 	QMessageBox::warning(0, "Recoll", 
-		 tr("The selected directory is already in the database list"));
+		 tr("The selected directory is already in the index list"));
 	return;
     }
     allDbsLB->insertItem(extraDbLE->text());
@@ -345,7 +345,7 @@ void UIPrefsDialog::browseDbPB_clicked()
     bool savedh = fdia.showHiddenFiles();
     fdia.setShowHiddenFiles(true);
     QString s = QFileDialog::getExistingDirectory("", this, 0, 
-tr("Select directory holding xapian database (ie: /home/someone/.recoll/xapiandb)"));
+       tr("Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)"));
 
     fdia.setShowHiddenFiles(savedh);
     if (s) 

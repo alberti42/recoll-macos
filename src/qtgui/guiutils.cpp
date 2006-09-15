@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.18 2006-09-13 15:31:06 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.19 2006-09-15 16:49:27 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -135,12 +135,11 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
     SETTING_RW(prefs.startWithSortToolOpen, 
 	       "/Recoll/prefs/startWithSortToolOpen", Bool, false);
-
     SETTING_RW(prefs.showicons, "/Recoll/prefs/reslist/showicons", Bool, true);
     SETTING_RW(prefs.autoSearchOnWS, "/Recoll/prefs/reslist/autoSearchOnWS", 
 	       Bool, false);
     SETTING_RW(prefs.ssearchAutoPhrase, 
-	       "/Recoll/prefs/startWithSortToolOpen", Bool, false);
+	       "/Recoll/prefs/ssearchAutoPhrase", Bool, false);
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Num, 8);
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", ,
 	       "");
@@ -216,7 +215,7 @@ void rwSettings(bool writing)
 		    prefs.allExtraDbs.end())
 		    continue;
 		if (!Rcl::Db::testDbDir(dbdir)) {
-		    LOGERR(("Not a xapian database: [%s]\n", dbdir.c_str()));
+		    LOGERR(("Not a xapian index: [%s]\n", dbdir.c_str()));
 		    continue;
 		}
 		prefs.allExtraDbs.push_back(dbdir);

@@ -3,21 +3,36 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on thread release debug
 
-HEADERS	+= rclmain.h rclreslist.h
+HEADERS	+= \
+	advsearch_w.h \
+	preview_w.h \
+	rclmain.h \
+	rclreslist.h \
+	sort_w.h \
+	ssearch_w.h \
+	uiprefs_w.h
 
-SOURCES	+= main.cpp \
-	rclmain.cpp \
-	idxthread.cpp \
-	plaintorich.cpp \
+
+SOURCES	+= \
 	guiutils.cpp \
-	rclreslist.cpp
+	idxthread.cpp \
+	main.cpp \
+	plaintorich.cpp \
+	rclmain.cpp \
+	rclreslist.cpp \
+        advsearch_w.cpp \
+        preview_w.cpp \
+        sort_w.cpp \
+        ssearch_w.cpp \
+        uiprefs_w.cpp
 
-FORMS	=  recollmain.ui \
+FORMS	= \
 	advsearch.ui \
 	preview.ui \
+	recollmain.ui \
 	sort.ui \
-	uiprefs.ui \
-	ssearchb.ui
+	ssearchb.ui \
+	uiprefs.ui 
 
 IMAGES	= images/asearch.png \
 	images/history.png \
