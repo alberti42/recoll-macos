@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.16 2006-09-11 14:22:15 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.17 2006-09-15 16:50:44 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -42,18 +42,18 @@
 
       <para>If you do not like reading manuals (who does?) and would
       like to give &RCL; a try, just perform <link
-      linkend="rcl.install">installation</link> and start the
+      linkend="rcl.install.binary">installation</link> and start the
       <command>recoll</command> user interface, which will index your
       home directory by default, allowing you to search immediately after
       indexing completes.</para>
 
-      <para>Do not do this if your home has a huge
+      <para>Do not do this if your home directory contains a huge
       number of documents and you do not want to wait or are very
       short on disk space. In this case, you may want to edit the <link
       linkend="rcl.indexing.config">configuration file</link> first to
       restrict the indexed area.</para>
 
-      <para>Also be aware that you will need to install the
+      <para>Also be aware that you may need to install the
       appropriate <link linkend="rcl.install.external">
       supporting applications</link> for document types that need
       them (for example <application>antiword</application> for
@@ -186,7 +186,7 @@
       <link linkend="rcl.indexing.automat">programmed</link> into your
       <command>cron</command> file.</para>
 
-      <sidebar><para>Side note: there is nothing in &RCL; and &XAP;
+      <sidebar><para>There is nothing in &RCL; and &XAP;
       that would prevent interfacing with a real time file
       modification monitor, but this would tend to consume significant
       system resources for dubious gain, because you rarely need a
@@ -195,7 +195,6 @@
       individual files to the index if you want to play with this, see
       the manual page.</para>
       </sidebar>
-
 
       <para>&RCL; knows about quite a few different document
       types. The parameters for document types recognition and
@@ -209,14 +208,23 @@
       <para>&RCL; indexing processes plain text, HTML, openoffice
       and e-mail files internally. Other types (ie: postscript, pdf,
       ms-word, rtf) need external applications for preprocessing. The
-      list is in the <link
-      linkend="rcl.install.building.prereqs">installation</link>
-      section.</para>
+      list is in the <link linkend="rcl.install.external">
+      installation</link> section.</para>
 
       <para>Without further configuration, &RCL; will index all
       appropriate files from your home directory, with a reasonable
       set of defaults.</para>
 
+      <para>In some cases, it may be interesting to index different
+      areas of the file system to separate databases. You can do this
+      by using multiple configuration directories, each indexing a
+      file system area to a specific database. You would use the
+      <literal>RECOLL_CONFDIR</literal> environment variable or the
+      <literal>-c</literal> <replaceable>confdir</replaceable> option
+      to <command>recollindex</command> to indicate which
+      configuration to process. The <command>recoll</command> search
+      program can use any selection of the existing databases for each
+      search, this is configurable inside the user interface.</para>
     </sect1>
 
     <sect1 id="rcl.indexing.storage">
@@ -227,7 +235,7 @@
       be changed by setting the <literal>RECOLL_CONFDIR</literal>
       environment variable, or by specifying the
       <literal>dbdir</literal> parameter in the configuration file
-      (see the <link linkend="rcl.install.config">configuration
+      (see the <link linkend="rcl.install.config.recollconf">configuration
       section</link>).</para>
 
       <para>The size of the index is determined by the size of the set
@@ -245,8 +253,9 @@
       (2006), that even a big index will be negligible against the
       total amount of data on the computer.</para>
       
-      <para>The index data directory only contains data that will be
-      rebuilt by an index run, so that it can be destroyed safely.</para>
+      <para>The index data directory (<filename>xapiandb</filename>)
+      only contains data that will be rebuilt by an index run, and it 
+      can always be destroyed safely.</para>
 
       <sect2 id="rcl.indexing.storage.security">
 	<title>Security aspects</title>
@@ -258,13 +267,13 @@
 
 	<para>As of version 1.4, &RCL; will create the configuration
 	directory with a mode of 0700 (access by owner only). As the
-	index directory is by default a subdirectory of the
+	index data directory is by default a subdirectory of the
 	configuration directory, this should result in appropriate
-	protection. </para> 
+	protection.</para> 
 
 	<para>If you use another setup, you should think of the kind
 	of protection you need for your index, and set the directory
-	access modes appropriately.</para>
+	and files access modes appropriately.</para>
 
       </sect2>
 
@@ -306,21 +315,25 @@
       <para>Indexing is performed either by the
         <command>recollindex</command> program, or by the
         indexing thread inside the <command>recoll</command>
-        program (use the <guimenu>File</guimenu> menu). 
+        program (use the <guimenu>File</guimenu> menu). Both programs
+        will use of the <literal>RECOLL_CONFDIR</literal>
+        variable or accept a <literal>-c</literal>
+        <replaceable>confdir</replaceable> option to specify the
+        configuration directory to be used.</para>
 
       <para>If the <command>recoll</command> program finds no index
-      when it starts, it will automatically start indexing (except
-      if cancelled).</para>
+       when it starts, it will automatically start indexing (except
+       if cancelled).</para>
 
       <para>It is best to avoid interrupting the indexing process, as
-        this may sometimes leave the database in a bad state.  This is
+        this may sometimes leave the index in a bad state.  This is
         not a serious problem, as you then just need to clear
         everything and restart the indexing: the index files are
         normally stored in the <filename>$HOME/.recoll/xapiandb</filename>
-        directory, 
-        which you can just delete if needed. Alternatively, you can
-        start <command>recollindex -z</command>, which will
-        reset the database before indexing.</para>
+        directory, which you can just delete if needed. Alternatively,
+        you can start <command>recollindex</command> with option
+        <literal>-z</literal>, which will reset the database before
+        indexing.</para> 
 
     </sect1>
 
@@ -380,46 +393,153 @@
         (<literal>*</literal>, <literal>?</literal> ,
         <literal>[]</literal>). </para>
 
+      <para>You can search for exact phrases (adjacent words in a
+      given order) by enclosing the input inside double quotes. Ex:
+     <literal>"virtual reality"</literal>.</para>
+      <para>Character case has no influence on search, except that you
+      can disable stem expansion for any term by capitalizing it. Ie:
+      a search for <literal>floor</literal> will also normally look for 
+      <literal>flooring</literal>, <literal>floored</literal>, etc., but
+      a search for <literal>Floor</literal> will only look for
+      <literal>floor</literal>, in any character case (stemming can
+      also be disabled globally in the preferences). </para>
+
       <para>&RCL; remembers the last few searches that you
-      performed. You can use the simple search text entry widget (a
-      combobox) to recall them (click on the thing at the right of the
-      text field). Please note, however, that only the search texts
-      are remembered, not the mode (all/any/filename).</para>
+        performed. You can use the simple search text entry widget (a
+        combobox) to recall them (click on the thing at the right of the
+        text field). Please note, however, that only the search texts
+        are remembered, not the mode (all/any/filename).</para>
+
+      <para>Hitting <keycap>^Tab</keycap> (<keycap>Ctrl</keycap> +
+        <keycap>Tab</keycap>) while entering a word in the 
+        simple search entry will open a window with possible completions
+        for the word. The completions are extracted from the
+        database.</para>
+
+      <para>Double-clicking on a word in the result list or a preview
+      window will insert it into the simple search entry field.</para>
 
       <para>You can use the <guilabel>Tools</guilabel> / <guilabel>Advanced
         search</guilabel> dialog for more complex searches.</para>
+    </sect1>
+
+    <sect1 id="rcl.search.reslist">
+      <title>The result list</title>
 
       <para>After starting a search, a list of results will instantly
-      be displayed in the main list window. Clicking on the
-      <literal>Preview</literal> link for an entry will open an
-      internal preview window for the document. Clicking the
-      <literal>Edit</literal> link will attempt to start an external
-      viewer (have a look at the <filename>mimeconf</filename>
-      configuration file to see how these are configured).</para>
+       be displayed in the main list window.</para> 
 
       <para>By default, the document list is presented in order of
-      relevance (how well the system estimates that the document
-      matches the query). You can specify a different ordering by
-      using the  <link linkend="rcl.search.sort"><guilabel>Tools</guilabel>
+       relevance (how well the system estimates that the document
+       matches the query). You can specify a different ordering by
+       using the  <link linkend="rcl.search.sort"><guilabel>Tools</guilabel>
         / <guilabel>Sort parameters</guilabel></link> dialog.</para>
 
+      <para>Clicking on the
+       <literal>Preview</literal> link for an entry will open an
+       internal preview window for the document. Clicking the
+       <literal>Edit</literal> link will attempt to start an external
+       viewer (have a look at the <filename>mimeconf</filename>
+       configuration file to see how these are configured).</para>
+
       <para>The <literal>Preview</literal> and <literal>Edit</literal>
-      edit links may not be present for all entries, meaning that
-      &RCL; has no configured way to preview a given file type (which
-      was indexed by name only), or no configured external viewer for
-      the file type. This can sometimes be adjusted simply by tweaking
-      the <link linkend="rclinstall.config.mimemap">
+       edit links may not be present for all entries, meaning that
+       &RCL; has no configured way to preview a given file type (which
+       was indexed by name only), or no configured external viewer for
+       the file type. This can sometimes be adjusted simply by tweaking
+       the <link linkend="rclinstall.config.mimemap">
              <filename>mimemap</filename></link> and  
-      <link linkend="rclinstall.config.mimeconf">
+       <link linkend="rclinstall.config.mimeconf">
        <filename>mimeconf</filename></link> configuration files.</para> 
 
       <para>You can click on the <literal>Query details</literal> link
-      at the top of the results page to see the query actually 
-      performed, after stem expansion and other processing.</para>
+        at the top of the results page to see the query actually 
+        performed, after stem expansion and other processing.</para>
+
+      <para>Double-clicking on any word inside the result list or a
+      preview window will insert it into the simple search text.</para>
+
+      <para>The result list is divided into pages (the size of which
+       you can change in the preferences). Use the arrow buttons in the
+       toolbar or the links at the bottom of the page to browse the
+       results.</para>
+
+
+      <sect2 id="rcl.search.resultlist.menu">
+	<title>The result list right-click menu</title>
+
+	<para>Apart from the preview and edit links, you can display a
+          popup menu by right-clicking over a paragraph in the result
+         list. This menu has the following entries:</para>
+
+	<itemizedlist>
+	  <listitem><para><guilabel>Preview</guilabel></para></listitem>
+	  <listitem><para><guilabel>Edit</guilabel></para></listitem>
+	  <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
+	  <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
+	  <listitem><para><guilabel>Find similar</guilabel></para></listitem>
+	</itemizedlist>
+
+	<para>The <guilabel>Preview</guilabel> and
+          <guilabel>Edit</guilabel> entries do the same thing as the 
+          corresponding links. The two following entries will copy either
+          an url or the file path to the clipboard, for pasting into
+          another application.</para>
+
+        <para>The <guilabel>Find similar</guilabel> entry will select
+          a number of relevant term from the current document and enter
+          them into the simple search field. You can then start a simple
+          search, with a good chance of finding documents related to the
+         current result.</para>
+
+      </sect2>
+    </sect1>
+
+    <sect1 id="rcl.search.preview">
+      <title>The preview window</title>
+
+      <para>The preview window opens when you first click a
+      <literal>Preview</literal> link inside the result list.</para>
+
+      <para>Subsequent preview requests for a given search open new
+      tabs in the existing window.</para>
+      
+      <para>Starting another search and requesting a preview will
+      create a new preview window. The old one stays open until you
+      close it.</para>
+
+      <para>You can close a preview tab by typing <keycap>^W</keycap> 
+      (<keycap>Ctrl</keycap> + <keycap>W</keycap>) in the
+      window. Closing the last tab for a window will also close the
+      window.</para> 
+
+      <para>Of course you can also close a preview window by using the
+      window manager button in the top of the frame.</para>
+
+      <para>You can display successive or previous documents from the
+      result list inside a preview tab by typing
+      <keycap>Shift</keycap>+<keycap>Down</keycap> or
+      <keycap>Shift</keycap>+<keycap>Up</keycap> (<keycap>Down</keycap>
+      and <keycap>Up</keycap> are the arrow keys).</para> 
+
+      <para>The preview tabs have an internal incremental search
+      function. You initiate the search either by typing a
+      <keycap>/</keycap> (slash) inside the text area or by clicking
+      into the <guilabel>Search for:</guilabel> text field and
+      entering the search string. You can then use the
+      <guilabel>Next</guilabel> and <guilabel>Previous</guilabel>
+      buttons to find the next/previous occurence. You can also type
+      <keycap>F3</keycap> inside the text area to get to the next
+      occurrence.</para>
+
+      <para>If you have a search string entered and you use ^Up/^Down
+      to browse the results, the search is initiated for each successive
+      document. If the string is found, the cursor will be positionned
+      at the first occurrence of the search string.</para>
 
     </sect1>
 
-      <sect1 id="rcl.search.complex">
+    <sect1 id="rcl.search.complex">
       <title>Complex/advanced search</title>
 
       <para>The advanced search dialog has fields that will allow a more
@@ -427,19 +547,25 @@
         given exact phrase, none of the given elements, or a given file
         name (with wildcard expansion). All relevant fields will be
         combined by an implicit AND clause. All fields except "Exact
-        phrase" can accept single words, or phrases enclosed in double
-        quotes.</para>
+        phrase" can accept a mix of single words and phrases enclosed
+        in double quotes.</para>
 
-      <para>It will let you search for documents of specific mime
+      <para>Advanced search will let you search for documents of specific mime
         types (ie: only <literal>text/plain</literal>, or
         <literal>text/html</literal> or
-        <literal>application/pdf</literal> etc...)</para>
+        <literal>application/pdf</literal> etc...). The state of the
+        file type selection can be saved as the default (the file type
+        filter will not be activated at program startup, but the lists
+        will be in the restored state).</para>
 
-      <para>It will let you restrict the search results to a subtree of
-        the indexed area.</para>
+      <para>You can also restrict the search results
+      to a subtree of the indexed area. If you need to do this often,
+      you may think of setting up multiple indexes instead, as the
+      performance will be much better.</para>
 
       <para>Click on the <guilabel>Start Search</guilabel> button in
-      the advanced search dialog to start the search. The button in
+      the advanced search dialog, or type <keycap>Enter</keycap> in
+      any text field to start the search. The button in
       the main window always performs a simple search.</para>
 
       <para>Click on the <literal>Show query details</literal> link at
@@ -450,29 +576,57 @@
     <sect1 id="rcl.search.multidb">
       <title>Multiple databases</title>
 
-      <para>Your &RCL; configuration always defines a main index. This
-      is what gets updated, for example, when you execute
-      <command>recollindex</command>. </para>
+      <para>Multiple &RCL; databases or indexes can be created by
+      using several configuration directories which are usually set to
+      index different areas of the file system. A specific index can
+      be selected for updating or searching, using the
+      <literal>RECOLL_CONFDIR</literal> environment variable or the
+      <literal>-c</literal> option to <command>recoll</command> and
+      <command>recollindex</command>.</para>
 
-      <para>You can use the <link
-      linkend="rcl.search.custom.extradb">search configuration
-      tool</link> to define additional databases to be searched. These
-      databases can be made active or inactive at any moment.</para>
+      <para>A <command>recollindex</command> program instance can only
+      update one specific index.</para>
 
-      <para>The typical use of this feature is for a system
-      administrator to set up a central index, that you may choose to
-      search, or not, in addition to your personal data. Of course,
-      there are other possibilities.</para>
+      <para>A <command>recoll</command> program instance is also
+      associated with a specific index, which is the one to be
+      updated by its indexing thread, but it can use any
+      number of &RCL; indexes for searching. The external indexes
+      can be selected through the <guilabel>external
+      indexes</guilabel> tab in the preferences dialog.</para>
 
-      <para>The main index (defined by your personal configuration) is
-      always active.</para>
+      <para>Index selection is performed in two phases. A set of all
+      usable indexes must first be defined, and then the subset of
+      indexes to be used for searching. Of course, these parameters
+      are retained across program executions (there are kept
+      separately for each &RCL; configuration). The set of all indexes
+      is usually quite stable, while the active ones might typically
+      be adjusted quite frequently.</para>
 
-      <para>The list of searchable databases may also be defined by
-      the <literal>RECOLL_EXTRA_DBS</literal> environment
-      variable. This should hold a colon-separated list of index
-      directories, ie: 
+      <para>The main index (defined by
+      <literal>RECOLL_CONFDIR</literal>) is always active. If this is
+      undesirable, you can set up your base configuration to index
+      an empty directory.</para>
+
+      <para>As building the set of all indexes can be a little tedious
+      when done through the user interface, you can use the
+      <literal>RECOLL_EXTRA_DBS</literal> environment
+      variable to provide an initial set. This might typically be
+      set up by a system administrator so that every user does not
+      have to do it. The variable should define a colon-separated list
+      of index  directories, ie: 
+     </para>
        <screen>export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</screen> 
-     </para> 
+
+      <para>A typical usage scenario for the multiple index feature
+      would be for a system administrator to set up a central index
+      for shared data, that you may choose to search, or not, in
+      addition to your personal data. Of course, there are other
+      possibilities. There are many cases where you know the subset of
+      files that you want to be searched for a given query, and where
+      restricting the query will much improve the precision of the
+      results. This can also be performed with the directory filter in
+      advanced search, but multiple indexes will have much better
+      performance and may be worth the trouble.</para>
 
     </sect1>
 
@@ -488,7 +642,7 @@
     </sect1>
 
     <sect1 id="rcl.search.sort">
-      <title>Result list sorting</title>
+      <title>Sorting search results</title>
 
       <para>The documents in a result list are normally sorted in
       order of relevance. It is possible to specify different sort
@@ -504,35 +658,6 @@
       <para>The sort parameters stay in effect until they are explicitely
       reset, or the program exits. An activated sort is indicated in
       the result list header.</para>
-
-    </sect1>
-
-    <sect1 id="rcl.search.resultlist">
-      <title>Additional result list functionality</title>
-
-      <para>Apart from the preview and edit links, you can display a
-      popup menu by right-clicking over a paragraph in the result
-      list. This menu has the following entries:</para>
-
-      <itemizedlist>
-        <listitem><para><guilabel>Preview</guilabel></para></listitem>
-        <listitem><para><guilabel>Edit</guilabel></para></listitem>
-        <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
-        <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
-        <listitem><para><guilabel>Find similar</guilabel></para></listitem>
-      </itemizedlist>
-
-      <para>The <guilabel>Preview</guilabel> and
-      <guilabel>Edit</guilabel> entries do the same thing as the 
-      corresponding links. The two following entries will copy either
-      an url or the file path to the clipboard, for pasting into
-      another application.</para>
-
-      <para>The <guilabel>Find similar</guilabel> entry will select
-      a number of relevant term from the current document and enter
-      them into the simple search field. You can then start a simple
-      search, with a good chance of finding documents related to the
-      current result.</para>
 
     </sect1>
 
@@ -555,11 +680,27 @@
         only for occurrences of <literal>user</literal> immediately
         followed by <literal>manual</literal>. You can use the
         <guilabel>This exact phrase</guilabel> field of the advanced
-        search dialog to the same effect.</para>
+        search dialog to the same effect. Phrases can be entered along
+        simple terms in all search entry fields (except <guilabel>This
+        exact phrase</guilabel>).</para>
       </formalpara>
 
+      <formalpara><title>AutoPhrases</title>
+      <para>This option can be set in the preferences dialog. If it is
+      set, a phrase will be automatically built and added to simple
+      searches when looking for <literal>Any terms</literal>. This
+      will not change radically the results, but will give a relevance
+      boost to the results where the search terms appear as a
+      phrase. Ie: searching for <literal>virtual reality</literal>
+      will still find all documents where either
+      <literal>virtual</literal> or <literal>reality</literal> or 
+      both appear, but those which contain <literal>virtual
+      reality</literal> should appear sooner in the list.</para>
+
+
       <formalpara><title>Term completion</title>
-	<para>Typing <keycap>^TAB</keycap> (Control+Tab) in the simple
+	<para>Typing <keycap>^TAB</keycap> (<keycap>Control</keycap> +
+	<keycap>Tab</keycap>) in the simple
 	search entry field while entering a word will either complete
 	the current word if its beginning matches a unique term in the
 	index, or open a window to propose a list of completions</para>
@@ -572,7 +713,7 @@
       </formalpara>
 
       <formalpara><title>Finding related documents</title>
-	<para>Selecting the <guilabel>More like this</guilabel> entry
+	<para>Selecting the <guilabel>Find similar documents</guilabel> entry
 	in the result list paragraph right-click menu will select a
 	set of "interesting" terms from the current result, and insert
 	them into the simple search entry field. You can then possibly
@@ -591,7 +732,7 @@
         specify them as ordinary terms in normal search fields (&RCL; used
         to index all directories in the file path as terms. This has been
         abandonned as it did not seem really useful). Alternatively, you
-        can use specific file name search which will
+        can use the specific file name search which will
         <emphasis>only</emphasis> look for file names and can use wildcard
         expansion.</para>
       </formalpara>
@@ -605,6 +746,14 @@
        <para>Entering <keycap>Esc</keycap> will close the preview
         window and all its tabs. Entering <keycap>^W</keycap> in a tab will
         close it (and, for the last tab, close the preview window).</para>
+      </formalpara>
+
+      <formalpara><title>List browsing in preview</title> 
+       <para>Entering <keycap>Shift-Down</keycap> or <keycap>Shift-Up</keycap>
+       (<keycap>Shift</keycap> + an arrow key) in a preview window will
+       display the next or the previous document from the result
+       list. Any secondary search currently active will be executed on
+       the new document.</para>
       </formalpara>
 
     </sect1>
@@ -664,16 +813,17 @@
       <formalpara><title>Search parameters:</title>
 	<para>
       <itemizedlist>
+
 	<listitem><para><guilabel>Stemming language</guilabel>:
 	stemming obviously depends on the document's language. This
 	listbox will let you chose among the stemming databases which
 	were built during indexing (this is set in the <link
 	linkend="rcl.install.config.recollconf">main configuration
 	file</link>), or later added with
-      <command>recollindex -s</command> (See the recollindex
-      manual). Stemming languages which are dynamically added will be
-      deleted at the next indexing pass unless they are also added in
-      the configuration file.</para>
+        <command>recollindex -s</command> (See the recollindex
+        manual). Stemming languages which are dynamically added will be
+        deleted at the next indexing pass unless they are also added in
+        the configuration file.</para>
 	</listitem>
 
 	<listitem><para><guilabel>Dynamically build
@@ -684,29 +834,38 @@
 	result list display significantly for big documents, and you
 	may want to turn it off.</para>
 	</listitem>
+
 	<listitem><para><guilabel>Replace abstracts from
 	documents</guilabel>: this decides if we should synthetize and
 	display an abstract in place of an explicit abstract found
 	within the document itself.</para>
 	</listitem>
+
+	<listitem><para><guilabel>Synthetic abstract size</guilabel>:
+	adjust to taste...</para>
+	</listitem>
+
+	<listitem><para><guilabel>Synthetic abstract context
+	words</guilabel>: how many words should be displayed around
+	each term occurrence.</para>
+	</listitem>
+
       </itemizedlist>
        </para>
       </formalpara>
 
-      <formalpara id="rcl.search.custom.extradb"><title>Extra
-      databases:</title> 
-	<para></para>
-      </formalpara>
-      <para>This panel will let you browse for additional databases
-      that you may want to search. Extra databases are designated by
+      <formalpara id="rcl.search.custom.extradb">
+	<title>External indexes:</title> 
+      <para>This panel will let you browse for additional indexes
+      that you may want to search. External indexes are designated by
       their database directory (ie:
       <filename>/home/someothergui/.recoll/xapiandb</filename>,
       <filename>/usr/local/recollglobal/xapiandb</filename>).</para>
 
-      <para>Once entered, the databases will appear in the
-	<guilabel>All extra databases</guilabel> list, and you can
+      <para>Once entered, the indexes will appear in the
+	<guilabel>All indexes</guilabel> list, and you can
 	chose which ones you want to use at any moment by tranferring
-	them to/from the <guilabel>Active extra databases</guilabel>
+	them to/from the <guilabel>Active indexes</guilabel>
 	list.</para> 
       <para>Your main database (the one the current configuration
       indexes to), is always implicitely active. If this is not
@@ -721,6 +880,51 @@
   <chapter id="rcl.install">
     <title>Installation</title>
 
+    <sect1 id="rcl.install.binary">
+      <title>Installing a prebuilt copy</title>
+
+      <para>Recoll binary installations are always linked statically
+        to the xapian libraries, and have no other dependencies. You
+        will only have to check or install 
+        <link linkend="rcl.install.external">supporting
+        applications</link> for the file types that you want to index
+        beyond text, html and mail files.</para> 
+
+      <sect2 id="rcl.install.binary.package">
+        <title>Installing through a package system</title>
+
+        <para>If you use a BSD-type port system or a
+         prebuilt package (RPM or other), just follow the usual
+         procedure, and maybe have a look at the <link
+         linkend="rcl.install.config">configuration
+         section</link> (but this may not be necessary for a quick
+         test with default parameters).</para>
+
+      </sect2>
+
+      <sect2 id="rcl.install.binary.rcl">
+        <title>Installing a prebuilt &RCL;</title>
+
+      <para>The unpackaged binary versions are just compressed tar
+        files of a build tree, where only the useful parts were kept
+        (executables and sample configuration).</para>
+
+      <para>The executable binary files are built with a static link to
+        libxapian and libiconv, to make installation easier (no
+        dependencies). However, this also means that you cannot change
+        the versions which are used.</para> 
+
+      <para>After extracting the tar file, you can proceed with
+        <link
+        linkend="rcl.install.building.install">installation</link> as
+        if you had built the package from source.</para> 
+
+	<para>The binary trees are built for installation to
+	<filename>/usr/local</filename>.</para>
+      </sect2>
+
+
+    </sect1>
       <sect1 id="rcl.install.building">
       <title>Building from source</title>
 
@@ -815,46 +1019,19 @@
         and the sample configuration files, scripts and other shared
         data to
         <filename><replaceable>prefix</replaceable>/share/recoll</filename>.</para>
+	<para>If the installation prefix given to
+	<command>recollinstall</command> is different from what was
+	specified when executing <command>configure</command>, you
+	will have to set the <literal>RECOLL_DATADIR</literal>
+	environment variable to indicate where the shared data is to
+	be found.</para>
+
 	<para>You can then proceed to <link
 	linkend="rcl.install.config">configuration</link>. </para>
 
       </sect2>
     </sect1>
 
-    <sect1 id="rcl.install.binary">
-      <title>Installing a prebuilt copy</title>
-
-      <sect2 id="rcl.install.binary.package">
-        <title>Installing through a package system</title>
-
-        <para>If you are lucky enough to be using a port system or a
-        prebuilt package (RPM or other), just follow the usual
-        procedure, and have a look at the <link
-        linkend="rcl.install.config">configuration
-        section</link>.</para>
-      </sect2>
-
-      <sect2 id="rcl.install.binary.rcl">
-        <title>Installing a prebuilt &RCL;</title>
-
-      <para>The unpackaged binary versions are just compressed tar
-      files of a build
-        tree, where only the useful parts were kept (executables and
-        sample configuration).</para>
-
-      <para>The executable binary files are built with a static link to
-        libxapian and libiconv, to make installation easier (no
-        dependencies). However, this also means that you cannot change
-        the versions which are used.</para> 
-
-      <para>After extracting the tar file, you can proceed with
-        <link
-        linkend="rcl.install.building.install">installation</link> as
-        if you had built the package from source.</para> 
-      </sect2>
-
-
-    </sect1>
 
 
     <sect1 id="rcl.install.external">
@@ -878,6 +1055,11 @@
 
         <listitem><para>MS Word: <ulink url="http://www.winfield.demon.nl"> 
             antiword</ulink>.</para>
+          </listitem>
+
+        <listitem><para>MS Excel and PowerPoint: 
+           <ulink url="http://www.45.free.net/~vitus/software/catdoc/"> 
+            catdoc</ulink>.</para>
           </listitem>
 
         <listitem>
@@ -1012,6 +1194,14 @@
             </listitem> 
           </varlistentry>
 
+          <varlistentry><term><literal>dbdir</literal></term>
+            <listitem><para>The name of the Xapian data directory. It
+            will be created if needed when the index is
+            initialized. If this is not an absolute path, it will be
+            interpreted relative to the configuration directory.</para>
+            </listitem>
+          </varlistentry>
+
           <varlistentry><term><literal>skippedNames</literal></term>
             <listitem>
               <para>A space-separated list of patterns for
@@ -1074,22 +1264,7 @@
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>iconsdir</literal></term>
-            <listitem><para>The name of the directory where
-            <command>recoll</command> result list icons are
-            stored. You can change this if you want different
-            images.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry><term><literal>dbdir</literal></term>
-            <listitem><para>The name of the Xapian data directory. It
-            will be created if needed when the index is
-            initialized. If this is not an absolute path, it will be
-            interpreted relative to the configuration directory.</para>
-            </listitem>
-          </varlistentry>
-          
+         
           <varlistentry><term><literal>defaultcharset</literal></term>
             <listitem><para>The name of the character set used for
             files that do not contain a character set definition (ie:
@@ -1127,6 +1302,25 @@
             mime type.</para>
 	    </listitem>
 	  </varlistentry>
+
+	  <varlistentry><term><literal>idxabsmlen</literal></term>
+	    <listitem><para>&RCL; stores an abstract for each indexed
+	    file inside the database. This is so that they can be
+	    displayed inside the result lists without decoding the
+	    original file. This parameter defines the size of the
+	    stored abstract (which can come from an actual section or
+	    just be the beginning of the text). The default value is 250.
+            </para>
+	    </listitem>
+	  </varlistentry>
+
+          <varlistentry><term><literal>iconsdir</literal></term>
+            <listitem><para>The name of the directory where
+            <command>recoll</command> result list icons are
+            stored. You can change this if you want different
+            images.</para>
+            </listitem>
+          </varlistentry>
 
         </variablelist>
 

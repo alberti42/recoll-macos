@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.12 2006-09-06 09:14:43 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.13 2006-09-15 16:50:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@ static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.12 2006-09-06 09:14:43 dockes E
 #include <ctype.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "mimeparse.h"
 #include "base64.h"
@@ -578,8 +579,159 @@ bool rfc2047_decode(const std::string& in, std::string &out)
     return true;
 }
 
+#define DEBUGDATE 1
+#if DEBUGDATE
+#define DATEDEB(X) fprintf X
+#else
+#define DATEDEB(X)
+#endif
+
+// Convert rfc822 date to unix time. A date string normally looks like:
+//  Mon, 3 Jul 2006 09:51:58 +0200
+// But there are many common variations
+//
+time_t rfc2822DateToUxTime(const string& dt)
+{
+    // Strip everything up to first comma if any, we don't need weekday,
+    // then break into tokens
+    list<string> toks;
+    string::size_type idx;
+    if ((idx = dt.find_first_of(",")) != string::npos) {
+	if (idx == dt.length() - 1) {
+	    DATEDEB((stderr, "Bad rfc822 date format (short1): [%s]\n", 
+		     dt.c_str()));
+	    return (time_t)-1;
+	}
+	string date = dt.substr(idx+1);
+	stringToTokens(date, toks, " \t:");
+    } else {
+	stringToTokens(dt, toks, " \t:");
+    }
+
+#if DEBUGDATE
+    for (list<string>::iterator it = toks.begin(); it != toks.end(); it++) {
+	DATEDEB((stderr, "[%s] ", it->c_str()));
+    }
+    DATEDEB((stderr, "\n"));
+#endif
+
+    if (toks.size() == 6) {
+	// Probably no timezone, sometimes happens
+	toks.push_back("+0000");
+    }
+
+    if (toks.size() < 7) {
+	DATEDEB((stderr, "Bad rfc822 date format (toks cnt): [%s]\n", 
+		 dt.c_str()));
+	return (time_t)-1;
+    }
+	
+    struct tm tm;
+    memset(&tm, 0, sizeof(tm));
+
+    // Load struct tm with appropriate tokens, possibly converting
+    // when needed
+
+    list<string>::iterator it = toks.begin();
+
+    // Day of month: no conversion needed
+    tm.tm_mday = atoi(it->c_str());
+    it++;
+
+    // Month. Only Jan-Dec are legal. January, February do happen
+    // though. Convert to 0-11
+    if (*it == "Jan" || *it == "January") tm.tm_mon = 0; else if
+	(*it == "Feb" || *it == "February") tm.tm_mon = 1; else if
+	(*it == "Mar" || *it == "March") tm.tm_mon = 2; else if
+	(*it == "Apr" || *it == "April") tm.tm_mon = 3; else if
+	(*it == "May") tm.tm_mon = 4; else if
+	(*it == "Jun" || *it == "June") tm.tm_mon = 5; else if
+	(*it == "Jul" || *it == "July") tm.tm_mon = 6; else if
+	(*it == "Aug" || *it == "August") tm.tm_mon = 7; else if
+	(*it == "Sep" || *it == "September") tm.tm_mon = 8; else if
+	(*it == "Oct" || *it == "October") tm.tm_mon = 9; else if
+	(*it == "Nov" || *it == "November") tm.tm_mon = 10; else if
+	(*it == "Dec" || *it == "December") tm.tm_mon = 11; else {
+	DATEDEB((stderr, "Bad rfc822 date format (month): [%s]\n", 
+		 dt.c_str()));
+	return (time_t)-1;
+    }
+    it++;
+
+    // Year. Struct tm counts from 1900
+    tm.tm_year = atoi(it->c_str());
+    if (tm.tm_year > 1900)
+	tm.tm_year -= 1900;
+    it++;
+
+    // Hour minute second need no adjustments
+    tm.tm_hour = atoi(it->c_str()); it++;
+    tm.tm_min  = atoi(it->c_str()); it++;
+    tm.tm_sec  = atoi(it->c_str()); it++;	
+
+
+    // Timezone is supposed to be either +-XYZT or a zone name
+    int zonesecs = 0;
+    if (it->length() < 1) {
+	DATEDEB((stderr, "Bad rfc822 date format (zlen): [%s]\n", dt.c_str()));
+	return (time_t)-1;
+    }
+    if (it->at(0) == '-' || it->at(0) == '+') {
+	// Note that +xy:zt (instead of +xyzt) sometimes happen, we
+	// may want to process it one day
+	if (it->length() < 5) {
+	    DATEDEB((stderr, "Bad rfc822 date format (zlen1): [%s]\n", 
+		     dt.c_str()));
+	    goto nozone;
+	}
+	zonesecs = 3600*((it->at(1)-'0') * 10 + it->at(2)-'0')+ 
+	    (it->at(3)-'0')*10 + it->at(4)-'0';
+	zonesecs = it->at(0) == '+' ? -1 * zonesecs : zonesecs;
+    } else {
+	int hours;
+	if (*it == "A") hours= 1; else if (*it == "B") hours= 2; 
+	else if (*it == "C") hours= 3; else if (*it == "D") hours= 4; 
+	else if (*it == "E") hours= 5; else if (*it == "F") hours= 6;
+	else if (*it == "G") hours= 7; else if (*it == "H") hours= 8; 
+	else if (*it == "I") hours= 9; else if (*it == "K") hours= 10;
+	else if (*it == "L") hours= 11; else if (*it == "M") hours= 12; 
+	else if (*it == "N") hours= -1; else if (*it == "O") hours= -2; 
+	else if (*it == "P") hours= -3; else if (*it == "Q") hours= -4; 
+	else if (*it == "R") hours= -5; else if (*it == "S") hours= -6; 
+	else if (*it == "T") hours= -7; else if (*it == "U") hours= -8; 
+	else if (*it == "V") hours= -9; else if (*it == "W") hours= -10;
+	else if (*it == "X") hours= -11; else if (*it == "Y") hours= -12;
+	else if (*it == "Z") hours=  0; else if  (*it == "UT") hours= 0; 
+	else if (*it == "GMT") hours= 0; else if (*it == "EST") hours= 5;
+	else if (*it == "EDT") hours= 4; else if (*it == "CST") hours= 6;
+	else if (*it == "CDT") hours= 5; else if (*it == "MST") hours= 7;
+	else if (*it == "MDT") hours= 6; else if (*it == "PST") hours= 8;
+	else if (*it == "PDT") hours= 7; 
+	    // Non standard names
+	    // Standard Time (or Irish Summer Time?) is actually +5.5
+	else if (*it == "CET") hours= -1; else if (*it == "JST") hours= -9; 
+	else if (*it == "IST") hours= -5; else if (*it == "WET") hours= 0; 
+	else if (*it == "MET") hours= -1; 
+	else {
+	    DATEDEB((stderr, "Bad rfc822 date format (zname): [%s]\n", 
+		     dt.c_str()));
+	    // Forget tz
+	    goto nozone;
+	}
+	zonesecs = 3600 * hours;
+    }
+    DATEDEB((stderr, "Tz: [%s] -> %d\n", it->c_str(), zonesecs));
+ nozone:
+
+    time_t tim = mktime(&tm);
+    tim += zonesecs;
+    DATEDEB((stderr, "Date: %s  uxtime %ld \n", ctime(&tim), tim));
+    return tim;
+}
+
 #else 
 
+#include <time.h>
 
 #include <string>
 #include "mimeparse.h"
@@ -588,6 +740,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 
 using namespace std;
 extern bool rfc2231_decode(const string& in, string& out, string& charset); 
+extern time_t rfc2822DateToUxTime(const string& date);
 
 int
 main(int argc, const char **argv)
@@ -641,7 +794,7 @@ main(int argc, const char **argv)
 	exit(1);
     }
     printf("Decoded: '%s'\n", out.c_str());
-#elif 1
+#elif 0
     char line [1024];
     string out;
     bool res;
@@ -675,7 +828,22 @@ main(int argc, const char **argv)
 	exit(1);
     }
     printf("Decoded: [%s]\n", decoded.c_str());
-    
+#elif 1
+    {
+	time_t t;
+	
+	const char *dates[] = {
+	    " Wed, 13 Sep 2006 11:40:26 -0700 (PDT)",
+	    " Mon, 3 Jul 2006 09:51:58 +0200",
+	    " Wed, 13 Sep 2006 08:19:48 GMT-07:00",
+	    " Wed, 13 Sep 2006 11:40:26 -0700 (PDT)",
+	    " Sat, 23 Dec 89 19:27:12 EST",
+            "   13 Jan 90 08:23:29 GMT"};
+
+	for (unsigned int i = 0; i <sizeof(dates) / sizeof(char *); i++) {
+	    t = rfc2822DateToUxTime(dates[i]);
+	}
+    }
 #endif
 }
 

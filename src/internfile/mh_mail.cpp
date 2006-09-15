@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.16 2006-09-05 17:09:30 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.17 2006-09-15 16:50:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -216,19 +216,14 @@ MimeHandlerMail::processone(const string &fn, Binc::MimeDocument& doc,
     }
     if (doc.h.getFirstHeader("Date", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
-	// Try to set the mtime from the date field.
-	string date = transcoded;
-	string::size_type pos;
-	// Possibly get rid of the day
-	if ((pos = date.find(",")) != string::npos)
-	    date = date.substr(pos+1);
-	struct tm tm;
-	if (strptime(date.c_str(), " %d %b %Y %H:%M:%S %z ", &tm)) {
+	time_t t = rfc2822DateToUxTime(transcoded);
+	if (t != (time_t)-1) {
 	    char ascuxtime[100];
-	    sprintf(ascuxtime, "%ld", (long)mktime(&tm));
+	    sprintf(ascuxtime, "%ld", (long)t);
 	    docout.dmtime = ascuxtime;
 	} else {
-	    LOGDEB(("strptime failed for [%s]\n", date.c_str()));
+	    // Leave mtime field alone, ftime will be used instead.
+	    LOGDEB(("rfc2822Date...: failed for [%s]\n", transcoded.c_str()));
 	}
 
 	docout.text += string("Date: ") + transcoded + string("\n");

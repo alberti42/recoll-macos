@@ -16,18 +16,24 @@
  */
 #ifndef _MIME_H_INCLUDED_
 #define _MIME_H_INCLUDED_
-/* @(#$Id: mimeparse.h,v 1.7 2006-09-06 09:14:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimeparse.h,v 1.8 2006-09-15 16:50:44 dockes Exp $  (C) 2004 J.F.Dockes */
+
+#include <time.h>
 
 #include <string>
 #include <map>
 
 #include "base64.h"
 
+#ifndef NO_NAMESPACES
+using std::string;
+#endif
+
 /** A class to represent a MIME header value with parameters */
 class MimeHeaderValue {
  public:
-    std::string value;
-    std::map<std::string, std::string> params;
+    string value;
+    std::map<string, string> params;
 };
 
 /** 
@@ -36,10 +42,10 @@ class MimeHeaderValue {
  * @param in the input string should be like: value; pn1=pv1; pn2=pv2. 
  *   Example: text/plain; charset="iso-8859-1" 
  */
-extern bool parseMimeHeaderValue(const std::string& in, MimeHeaderValue& psd);
+extern bool parseMimeHeaderValue(const string& in, MimeHeaderValue& psd);
 
 /** Quoted printable decoding. Doubles up as rfc2231 decoder, hence the esc */
-extern bool qp_decode(const std::string& in, std::string &out, 
+extern bool qp_decode(const string& in, string &out, 
 		      char esc = '=');
 
 /** Decode an Internet mail field value encoded according to rfc2047 
@@ -53,6 +59,14 @@ extern bool qp_decode(const std::string& in, std::string &out,
  * @param in input string, ascii with rfc2047 markup
  * @return out output string encoded in utf-8
  */
-extern bool rfc2047_decode(const std::string& in, std::string &out);
+extern bool rfc2047_decode(const string& in, string &out);
+
+
+/** Decode RFC2822 date to unix time (gmt secs from 1970
+ *
+ * @param dt date string (the part after Date: )
+ * @return unix time
+ */
+time_t rfc2822DateToUxTime(const string& dt);
 
 #endif /* _MIME_H_INCLUDED_ */
