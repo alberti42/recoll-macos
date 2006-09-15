@@ -15,78 +15,44 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Table of Contents
 
-   4.1. Building from source
+   4.1. Installing a prebuilt copy
 
-   4.2. Installing a prebuilt copy
+   4.2. Building from source
 
    4.3. Packages needed for external file types
 
    4.4. Configuration overview
 
-                           4.1. Building from source
+                        4.1. Installing a prebuilt copy
 
-4.1.1. Prerequisites
+   Recoll binary installations are always linked statically to the xapian
+   libraries, and have no other dependencies. You will only have to check or
+   install supporting applications for the file types that you want to index
+   beyond text, html and mail files.
 
-   At the very least, you will need to download and install the xapian core
-   package (Recoll development currently uses version 0.9.5), and the qt
-   runtime and development packages (Recoll development currently uses
-   version 3.3.5, but any 3.3 version is probably ok).
+4.1.1. Installing through a package system
 
-   You will most probably be able to find a binary package for qt for your
-   system. You may have to compile Xapian but this is not difficult (if you
-   are using FreeBSD, there is a port).
+   If you use a BSD-type port system or a prebuilt package (RPM or other),
+   just follow the usual procedure, and maybe have a look at the
+   configuration section (but this may not be necessary for a quick test with
+   default parameters).
 
-   You may also need libiconv. Recoll currently uses version 1.9 (this should
-   not be critical). On Linux systems, the iconv interface is part of libc
-   and you should not need to do anything special.
+4.1.2. Installing a prebuilt Recoll
 
-4.1.2. Building
+   The unpackaged binary versions are just compressed tar files of a build
+   tree, where only the useful parts were kept (executables and sample
+   configuration).
 
-   Recoll has been built on Linux (redhat7.3, mandriva 2005, Fedora Core 3),
-   FreeBSD and Solaris 8. If you build on another system, I would very much
-   welcome patches.
+   The executable binary files are built with a static link to libxapian and
+   libiconv, to make installation easier (no dependencies). However, this
+   also means that you cannot change the versions which are used.
 
-   Depending on the qt configuration on your system, you may have to set the
-   QTDIR and QMAKESPECS variables in your environment:
+   After extracting the tar file, you can proceed with installation as if you
+   had built the package from source.
 
-     * QTDIR should point to the directory above the one that holds the qt
-       include files (ie: qt.h).
-
-     * QMAKESPECS should be set to the name of one of the qt mkspecs
-       subdirectories (ie: linux-g++).
-
-   On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
-   is not needed because there is a default link in mkspecs/.
-
-   The Recoll configure script does a better job of checking these variables
-   after release 1.1.1. Before this, unexplained errors will occur during
-   compilation if the environment is not set up. Also, for 1.1.0 the qmake
-   command should be in your PATH (later releases can also find it in
-   $QTDIR/bin).
-
-   Normal procedure:
-
-         cd recoll-xxx
-         configure
-         make
-         (practises usual hardship-repelling invocations)
-     
-
-   There little autoconfiguration. The configure script will mainly link one
-   of the system-specific files in the mk directory to mk/sysconf. If your
-   system is not known yet, it will tell you as much, and you may want to
-   manually copy and modify one of the existing files (the new file name
-   should be the output of uname -s).
-
-4.1.3. Installation
-
-   Either type make install or execute recollinstall prefix, in the root of
-   the source tree. This will copy the commands to prefix/bin and the sample
-   configuration files, scripts and other shared data to prefix/share/recoll.
-
-   You can then proceed to configuration.
+   The binary trees are built for installation to /usr/local.
 
    --------------------------------------------------------------------------
 
-   Prev                                  Home                            Next 
-   Customising the search interface                Installing a prebuilt copy 
+   Prev                                   Home                           Next 
+   Customising the search interface                      Building from source 
