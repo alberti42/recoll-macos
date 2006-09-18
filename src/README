@@ -461,7 +461,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    button in the top of the frame.
 
    You can display successive or previous documents from the result list
-   inside a preview tab by typing Ctrl+Down or Ctrl+Up (Down and Up are the
+   inside a preview tab by typing Shift+Down or Shift+Up (Down and Up are the
    arrow keys).
 
    The preview tabs have an internal incremental search function. You
@@ -629,10 +629,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    tabs. Entering ^W in a tab will close it (and, for the last tab, close the
    preview window).
 
-   List browsing in preview. Entering ^Down or ^Up (Ctrl + an arrow key) in a
-   preview window will display the next or the previous document from the
-   result list. Any secondary search currently active will be executed on the
-   new document.
+   List browsing in preview. Entering Shift-Down or Shift-Up (Shift + an
+   arrow key) in a preview window will display the next or the previous
+   document from the result list. Any secondary search currently active will
+   be executed on the new document.
 
      ----------------------------------------------------------------------
 
