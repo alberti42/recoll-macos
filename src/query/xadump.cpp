@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.10 2006-01-28 10:23:55 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.11 2006-09-19 14:18:57 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,7 @@ static string usage =
     " -t term -P  : retrieve postings for term\n"
     " -i docid -T : term list for doc docid\n"
     " -T          : list all terms\n"
+    " -s          : special mode to dump recoll stem db\n"
     "  \n\n"
     ;
 
@@ -64,6 +65,7 @@ static int        op_flags;
 #define OPT_F     0x80
 #define OPT_E     0x100
 #define OPT_b     0x200
+#define OPT_s     0x400
 
 Xapian::Database *db;
 
@@ -100,6 +102,7 @@ int main(int argc, char **argv)
 	    case 'E':	op_flags |= OPT_E; break;
 	    case 'F':   op_flags |= OPT_F; break;
 	    case 'P':	op_flags |= OPT_P; break;
+	    case 's':	op_flags |= OPT_s; break;
 	    case 'T':	op_flags |= OPT_T; break;
 	    case 'b':   op_flags |= OPT_b; break;
 	    case 'd':	op_flags |= OPT_d; if (argc < 2)  Usage();
@@ -145,14 +148,27 @@ int main(int argc, char **argv)
 	    Xapian::TermIterator term;
 	    string printable;
 	    if (op_flags & OPT_i) {
-		for (term = db->termlist_begin(docid);
+		for (term = db->termlist_begin(docid); 
 		     term != db->termlist_end(docid);term++) {
 		    cout << "[" << *term << "]" << endl;
 		}
 	    } else {
 		for (term = db->allterms_begin(); 
 		     term != db->allterms_end();term++) {
-		    cout << "utf8[" << *term << "]" << endl;
+		    cout << "[" << *term << "]" << endl;
+		}
+	    }
+	} else if (op_flags & OPT_s) {
+	    for (unsigned int docid = 1;
+		 docid < db->get_lastdocid(); docid++) {
+		// cout << docid << ": ";
+		Xapian::TermIterator term;
+		for (term = db->termlist_begin(docid); 
+		     term != db->termlist_end(docid);term++) {
+		    cout << *term << " ";
+		    Xapian::Document doc = db->get_document(docid);
+		    string data = doc.get_data();
+		    cout << data;
 		}
 	    }
 	} else if (op_flags & OPT_D) {
