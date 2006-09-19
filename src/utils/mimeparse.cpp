@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.13 2006-09-15 16:50:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.14 2006-09-19 14:19:32 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -579,7 +579,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
     return true;
 }
 
-#define DEBUGDATE 1
+#define DEBUGDATE 0
 #if DEBUGDATE
 #define DATEDEB(X) fprintf X
 #else
