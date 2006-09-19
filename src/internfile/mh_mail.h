@@ -16,7 +16,7 @@
  */
 #ifndef _MAIL_H_INCLUDED_
 #define _MAIL_H_INCLUDED_
-/* @(#$Id: mh_mail.h,v 1.7 2006-09-05 08:05:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_mail.h,v 1.8 2006-09-19 14:30:39 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "mimehandler.h"
 
@@ -45,11 +45,11 @@ class MimeHandlerMail : public MimeHandler {
     int        m_msgnum; // Current message number in folder. Starts at 1
     RclConfig *m_conf;   // Keep pointer to rclconfig around
 
-    MimeHandler::Status processone(const string &fn, Binc::MimeDocument& doc,
-				   Rcl::Doc &docout);
     MimeHandler::Status processmbox(const string &fn, Rcl::Doc &docout, 
 				   string &ipath);
-    void walkmime(string &out, Binc::MimePart& doc, int depth);
+    MimeHandler::Status processMsg(Rcl::Doc &docout, Binc::MimePart& doc,
+				   int depth);
+    void walkmime(Rcl::Doc &docout, Binc::MimePart& doc, int depth);
 };
 
 #endif /* _MAIL_H_INCLUDED_ */

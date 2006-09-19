@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.17 2006-09-15 16:50:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.18 2006-09-19 14:30:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,12 @@ MimeHandlerMail::mkDoc(RclConfig *cnf, const string &fn,
 	}
 	Binc::MimeDocument doc;
 	doc.parseFull(fd);
-	MimeHandler::Status ret = processone(fn, doc, docout);
+	if (!doc.isHeaderParsed() && !doc.isAllParsed()) {
+	    LOGERR(("MimeHandlerMail::mkDoc: mime parse error for %s\n",
+		    fn.c_str()));
+	    return MimeHandler::MHError;
+	}
+	MimeHandler::Status ret = processMsg(docout, doc, 0);
 	close(fd);
 	return ret;
     } else  if (!stringlowercmp("text/x-mail", mtype)) {
@@ -175,7 +180,12 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
     stringstream s(msgbuf);
     Binc::MimeDocument doc;
     doc.parseFull(s);
-    MimeHandler::Status ret = processone(fn, doc, docout);
+    if (!doc.isHeaderParsed() && !doc.isAllParsed()) {
+	LOGERR(("MimeHandlerMail::processMbox: mime parse error for %s\n",
+		fn.c_str()));
+	return MimeHandler::MHError;
+    }
+    MimeHandler::Status ret = processMsg(docout, doc, 0);
     if (ret == MimeHandler::MHError)
 	return ret;
     char buf[20];
@@ -189,23 +199,23 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 // Transform a single message into a document. The subject becomes the
 // title, and any simple body part with a content-type of text or html
 // and content-disposition inline gets concatenated as text.
+// 
+// If depth is not zero, we're called recursively for an
+// message/rfc822 part and we must not touch the doc fields except the
+// text
 MimeHandler::Status 
-MimeHandlerMail::processone(const string &fn, Binc::MimeDocument& doc, 
-			    Rcl::Doc &docout)
+MimeHandlerMail::processMsg(Rcl::Doc &docout, Binc::MimePart& doc, 
+			    int depth)
 {
-    if (!doc.isHeaderParsed() && !doc.isAllParsed()) {
-	LOGERR(("MimeHandlerMail::processone: mime parse error for %s\n", 
-		fn.c_str()));
-	return MimeHandler::MHError;
+    if (depth >= 5) {
+	// Have to stop somewhere
+	LOGDEB(("MimeHandlerMail::processMsg: stopping at depth 5\n"));
+	return MimeHandler::MHDone;
     }
-
+	
     // Handle some headers. 
     Binc::HeaderItem hi;
     string transcoded;
-    if (doc.h.getFirstHeader("Subject", hi)) {
-	rfc2047_decode(hi.getValue(), transcoded);
-	docout.title = transcoded;
-    }
     if (doc.h.getFirstHeader("From", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
 	docout.text += string("From: ") + transcoded + string("\n");
@@ -216,37 +226,50 @@ MimeHandlerMail::processone(const string &fn, Binc::MimeDocument& doc,
     }
     if (doc.h.getFirstHeader("Date", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
-	time_t t = rfc2822DateToUxTime(transcoded);
-	if (t != (time_t)-1) {
-	    char ascuxtime[100];
-	    sprintf(ascuxtime, "%ld", (long)t);
-	    docout.dmtime = ascuxtime;
-	} else {
-	    // Leave mtime field alone, ftime will be used instead.
-	    LOGDEB(("rfc2822Date...: failed for [%s]\n", transcoded.c_str()));
+	if (depth == 0) {
+	    time_t t = rfc2822DateToUxTime(transcoded);
+	    if (t != (time_t)-1) {
+		char ascuxtime[100];
+		sprintf(ascuxtime, "%ld", (long)t);
+		docout.dmtime = ascuxtime;
+	    } else {
+		// Leave mtime field alone, ftime will be used instead.
+		LOGDEB(("rfc2822Date...: failed: [%s]\n", transcoded.c_str()));
+	    }
 	}
-
 	docout.text += string("Date: ") + transcoded + string("\n");
     }
     if (doc.h.getFirstHeader("Subject", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
+	if (depth == 0)
+	    docout.title = transcoded;
 	docout.text += string("Subject: ") + transcoded + string("\n");
     }
 
-    LOGDEB2(("MimeHandlerMail::processone:ismultipart %d mime subtype '%s'\n",
+    LOGDEB2(("MimeHandlerMail::processMsg:ismultipart %d mime subtype '%s'\n",
 	    doc.isMultipart(), doc.getSubType().c_str()));
-    walkmime(docout.text, doc, 0);
+    walkmime(docout, doc, depth);
 
-    LOGDEB2(("MimeHandlerMail::processone:text:[%s]\n", docout.text.c_str()));
+    LOGDEB2(("MimeHandlerMail::processMsg:text:[%s]\n", docout.text.c_str()));
     return MimeHandler::MHDone;
 }
 
 // Recursively walk the message mime parts and concatenate all the
-// inline html or text that we find anywhere.
-void MimeHandlerMail::walkmime(string &out, Binc::MimePart& doc, int depth)
+// inline html or text that we find anywhere.  
+//
+// RFC2046 reminder: 
+// Top level media types: 
+//      Simple:    text, image, audio, video, application, 
+//      Composite: multipart, message.
+// 
+// multipart can be mixed, alternative, parallel, digest.
+// message/rfc822 may also be of interest.
+
+void MimeHandlerMail::walkmime(Rcl::Doc& docout, Binc::MimePart& doc, int depth)
 {
+    string &out = docout.text;
     if (depth > 5) {
-	LOGINFO(("walkmime: max depth exceeded\n"));
+	LOGINFO(("walkmime: max depth (5) exceeded\n"));
 	return;
     }
 
@@ -255,12 +278,12 @@ void MimeHandlerMail::walkmime(string &out, Binc::MimePart& doc, int depth)
 		doc.isMultipart(), doc.getSubType().c_str()));
 	// We only handle alternative, related and mixed for now. For
 	// alternative, we look for a text/plain part, else html and
-	// process it For mixed and related, we process each part.
+	// process it. For mixed and related, we process each part.
 	std::vector<Binc::MimePart>::iterator it;
 	if (!stringicmp("mixed", doc.getSubType()) || 
 	    !stringicmp("related", doc.getSubType())) {
 	    for (it = doc.members.begin(); it != doc.members.end();it++) {
-		walkmime(out, *it, depth+1);
+		walkmime(docout, *it, depth+1);
 	    }
 	} else if (!stringicmp("alternative", doc.getSubType())) {
 	    std::vector<Binc::MimePart>::iterator ittxt, ithtml;
@@ -283,137 +306,165 @@ void MimeHandlerMail::walkmime(string &out, Binc::MimePart& doc, int depth)
 	    }
 	    if (ittxt != doc.members.end()) {
 		LOGDEB2(("walkmime: alternative: chose text/plain part\n"))
-		walkmime(out, *ittxt, depth+1);
+		walkmime(docout, *ittxt, depth+1);
 	    } else if (ithtml != doc.members.end()) {
 		LOGDEB2(("walkmime: alternative: chose text/html part\n"))
-		walkmime(out, *ithtml, depth+1);
+		walkmime(docout, *ithtml, depth+1);
 	    }
 	}
-    } else {
-	// "Simple" part. See what it is:
+	return;
+    } 
+    
+    // Part is not multipart: it must be either simple or message. Take
+    // a look at interesting headers and a possible filename parameter
 
-	// Get and parse content-type header.
-	Binc::HeaderItem hi;
-	string ctt = "text/plain";
-	if (doc.h.getFirstHeader("Content-Type", hi)) {
-	    ctt = hi.getValue();
-	}
-	LOGDEB2(("walkmime:content-type: %s\n", ctt.c_str()));
-	MimeHeaderValue content_type;
-	parseMimeHeaderValue(ctt, content_type);
+    // Get and parse content-type header.
+    Binc::HeaderItem hi;
+    string ctt = "text/plain";
+    if (doc.h.getFirstHeader("Content-Type", hi)) {
+	ctt = hi.getValue();
+    }
+    LOGDEB2(("walkmime:content-type: %s\n", ctt.c_str()));
+    MimeHeaderValue content_type;
+    parseMimeHeaderValue(ctt, content_type);
 	    
-	// Get and parse Content-Disposition header
-	string ctd = "inline";
-	if (doc.h.getFirstHeader("Content-Disposition", hi)) {
-	    ctd = hi.getValue();
+    // Get and parse Content-Disposition header
+    string ctd = "inline";
+    if (doc.h.getFirstHeader("Content-Disposition", hi)) {
+	ctd = hi.getValue();
+    }
+    MimeHeaderValue content_disposition;
+    parseMimeHeaderValue(ctd, content_disposition);
+    LOGDEB2(("Content_disposition:[%s]\n", content_disposition.value.c_str()));
+    string dispindic;
+    if (stringlowercmp("inline", content_disposition.value))
+	dispindic = "Attachment";
+    else 
+	dispindic = "Inline";
+
+    // See if we have a filename.
+    string filename;
+    map<string,string>::const_iterator it;
+    it = content_disposition.params.find(string("filename"));
+    if (it != content_disposition.params.end())
+	filename = it->second;
+
+    if (doc.isMessageRFC822()) {
+	LOGDEB2(("walkmime: message/RFC822 part\n"));
+	
+	// The first part is the already parsed message.
+	// Call processMsg instead of walkmime so tha mail headers get 
+	// printed. The depth will tell it what to do
+	if (doc.members.empty()) {
+	    //??
+	    return;
 	}
-	MimeHeaderValue content_disposition;
-	parseMimeHeaderValue(ctd, content_disposition);
+	out += "\n";
+	if (m_forPreview)
+	    out += "[" + dispindic + " " + content_type.value + ": ";
+	out += filename;
+	if (m_forPreview)
+	    out += "]";
+	out += "\n\n";
+	processMsg(docout, doc.members[0], depth+1);
+	return;
+    }
 
-	LOGDEB2(("Content_disposition:[%s]\n", 
-		content_disposition.value.c_str()));
+    // "Simple" part. 
+    LOGDEB2(("walkmime: simple  part\n"));
 
-	// If this is an attachment, we index the file name if any and, when
-	// previewing, at least show that it was there.
-	if (!stringlowercmp("attachment", content_disposition.value)) {
-	    string afn;
-	    map<string,string>::const_iterator it;
-	    it = content_disposition.params.find(string("filename"));
-	    if (it != content_disposition.params.end())
-		afn = it->second;
+    // If the Content-Disposition is not inline, we treat it as
+    // attachment, as per rfc2183. We don't process attachments
+    // for now, except for indexing/displaying the file name
+    // If it is inline but not text or html, same thing.
+    if (stringlowercmp("inline", content_disposition.value) ||
+	(stringlowercmp("text/plain", content_type.value) && 
+	 stringlowercmp("text/html", content_type.value)) ) {
+	if (!filename.empty()) {
 	    out += "\n";
 	    if (m_forPreview)
-		out += "[Attachment: ";
-	    out += afn;
+		out += "[" + dispindic + " " + content_type.value + ": ";
+	    out += filename;
 	    if (m_forPreview)
 		out += "]";
 	    out += "\n\n";
-	    // Attachment: we're done with this part
-	    return;
 	}
-
-	// The only other disposition that interests us is "inline", and then
-	// this has to be plain text or html
-	if (stringlowercmp("inline", content_disposition.value)) {
-	    return;
-	}
-	if (stringlowercmp("text/plain", content_type.value) && 
-	    stringlowercmp("text/html", content_type.value)) {
-	    return;
-	}
-
-	// Normally the default charset is us-ascii. But it happens that
-	// 8 bit chars exist in a message that is stated as us-ascii. Ie the 
-	// mailer used by yahoo support ('KANA') does this. We could convert 
-	// to iso-8859 only if the transfer-encoding is 8 bit, or test for
-	// actual 8 bit chars, but what the heck, le'ts use 8859-1 as default
-	string charset = "iso-8859-1";
-	map<string,string>::const_iterator it;
-	it = content_type.params.find(string("charset"));
-	if (it != content_type.params.end())
-	    charset = it->second;
-	if (charset.empty() || 
-	    !stringlowercmp("us-ascii", charset) || 
-	    !stringlowercmp("default", charset) || 
-	    !stringlowercmp("x-user-defined", charset) || 
-	    !stringlowercmp("x-unknown", charset) || 
-	    !stringlowercmp("unknown", charset) ) {
-	    charset = "iso-8859-1";
-	}
-
-	// Content transfer encoding
-	string cte = "7bit";
-	if (doc.h.getFirstHeader("Content-Transfer-Encoding", hi)) {
-	    cte = hi.getValue();
-	} 
-
-	LOGDEB2(("walkmime: final: body start offset %d, length %d\n", 
-		 doc.getBodyStartOffset(), doc.getBodyLength()));
-	string body;
-	doc.getBody(body, 0, doc.bodylength);
-
-	// Decode according to content transfer encoding
-	if (!stringlowercmp("quoted-printable", cte)) {
-	    string decoded;
-	    if (!qp_decode(body, decoded)) {
-		LOGERR(("walkmime: quoted-printable decoding failed !\n"));
-		return;
-	    }
-	    body = decoded;
-	} else if (!stringlowercmp("base64", cte)) {
-	    string decoded;
-	    if (!base64_decode(body, decoded)) {
-		LOGERR(("walkmime: base64 decoding failed !\n"));
-#if 0
-		FILE *fp = fopen("/tmp/recoll_decodefail", "w");
-		if (fp) {
-		    fprintf(fp, "%s", body.c_str());
-		    fclose(fp);
-		}
-#endif
-		return;
-	    }
-	    body = decoded;
-	}
-
-	// Handle html stripping and transcoding to utf8
-	string utf8;
-	if (!stringlowercmp("text/html", content_type.value)) {
-	    MimeHandlerHtml mh;
-	    Rcl::Doc hdoc;
-	    mh.charsethint = charset;
-	    mh.mkDoc(m_conf, "", body, content_type.value,  hdoc);
-	    utf8 = hdoc.text;
-	} else {
-	    // Transcode to utf-8 
-	    if (!transcode(body, utf8, charset, "UTF-8")) {
-		LOGERR(("walkmime: transcode failed from cs '%s' to UTF-8\n",
-			charset.c_str()));
-		utf8 = body;
-	    }
-	}
-
-	out += string("\r\n") + utf8;
-	LOGDEB2(("walkmime: out now: [%s]\n", out.c_str()));
+	// We're done with this part
+	return;
     }
+
+    // We are dealing with an inline part of text/plain or text/html type
+
+    // Normally the default charset is us-ascii. But it happens that
+    // 8 bit chars exist in a message that is stated as us-ascii. Ie the 
+    // mailer used by yahoo support ('KANA') does this. We could convert 
+    // to iso-8859 only if the transfer-encoding is 8 bit, or test for
+    // actual 8 bit chars, but what the heck, le'ts use 8859-1 as default
+    string charset = "iso-8859-1";
+    it = content_type.params.find(string("charset"));
+    if (it != content_type.params.end())
+	charset = it->second;
+    if (charset.empty() || 
+	!stringlowercmp("us-ascii", charset) || 
+	!stringlowercmp("default", charset) || 
+	!stringlowercmp("x-user-defined", charset) || 
+	!stringlowercmp("x-unknown", charset) || 
+	!stringlowercmp("unknown", charset) ) {
+	charset = "iso-8859-1";
+    }
+
+    // Content transfer encoding
+    string cte = "7bit";
+    if (doc.h.getFirstHeader("Content-Transfer-Encoding", hi)) {
+	cte = hi.getValue();
+    } 
+
+    LOGDEB2(("walkmime: final: body start offset %d, length %d\n", 
+	     doc.getBodyStartOffset(), doc.getBodyLength()));
+    string body;
+    doc.getBody(body, 0, doc.bodylength);
+
+    // Decode according to content transfer encoding
+    if (!stringlowercmp("quoted-printable", cte)) {
+	string decoded;
+	if (!qp_decode(body, decoded)) {
+	    LOGERR(("walkmime: quoted-printable decoding failed !\n"));
+	    return;
+	}
+	body = decoded;
+    } else if (!stringlowercmp("base64", cte)) {
+	string decoded;
+	if (!base64_decode(body, decoded)) {
+	    LOGERR(("walkmime: base64 decoding failed !\n"));
+#if 0
+	    FILE *fp = fopen("/tmp/recoll_decodefail", "w");
+	    if (fp) {
+		fprintf(fp, "%s", body.c_str());
+		fclose(fp);
+	    }
+#endif
+	    return;
+	}
+	body = decoded;
+    }
+
+    // Handle html stripping and transcoding to utf8
+    string utf8;
+    if (!stringlowercmp("text/html", content_type.value)) {
+	MimeHandlerHtml mh;
+	Rcl::Doc hdoc;
+	mh.charsethint = charset;
+	mh.mkDoc(m_conf, "", body, content_type.value,  hdoc);
+	utf8 = hdoc.text;
+    } else {
+	// Transcode to utf-8 
+	if (!transcode(body, utf8, charset, "UTF-8")) {
+	    LOGERR(("walkmime: transcode failed from cs '%s' to UTF-8\n",
+		    charset.c_str()));
+	    utf8 = body;
+	}
+    }
+
+    out += string("\r\n") + utf8;
+    LOGDEB2(("walkmime: out now: [%s]\n", out.c_str()));
 }
