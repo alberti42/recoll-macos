@@ -116,7 +116,9 @@ it and/or set the QTDIR environment variable?])
 fi
 
 cd $QTGUI
-# We just want a .pro file: no problem with unsubstituted variables
+# We just want a .pro file: no problem with unsubstituted variables at 
+# this point.
+test -f recoll.pro && chmod +w recoll.pro
 cp recoll.pro.in recoll.pro
 ${QMAKE} recoll.pro
 if test $? != 0 ; then
