@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.2 2006-05-02 09:49:06 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.3 2006-09-19 14:30:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -168,14 +168,10 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 	} else {
 	    // Changing stems 
 	    ++stemdiff;
-	    if (derivs.size() == 1) {
-		// Exactly one term stems to this. Check for the case where
-		// the stem itself exists as a term. The code above would not
-		// have inserted anything in this case.
-		if (xdb.term_exists(stem))
-		    derivs.push_back(stem);
-	    }
-	    if (derivs.size() > 1) {
+	    // We need an entry even if there is only one derivative
+	    // so that it is possible to search by entering the stem
+	    // even if it doesnt exist as a term
+	    if (derivs.size() >= 1) {
 		// Previous stem has multiple derivatives. Enter in db
 		++stemmultiple;
 		Xapian::Document newdocument;
@@ -237,6 +233,8 @@ list<string> stemExpand(const string& dbdir, const string& lang,
 	}
 	Xapian::Document doc = sdb.get_document(*did);
 	string data = doc.get_data();
+
+	// Build expansion list from database data
 	// No need for a conftree, but we need to massage the data a little
 	string::size_type pos = data.find_first_of("=");
 	++pos;
@@ -244,8 +242,10 @@ list<string> stemExpand(const string& dbdir, const string& lang,
 	if (pos == string::npos || pos1 == string::npos ||pos1 <= pos) { // ??
 	    explist.push_back(term);
 	    return explist;
-	}	    
+	}
 	stringToStrings(data.substr(pos, pos1-pos), explist);
+
+	// If the user term itself is not in the list, add it.
 	if (find(explist.begin(), explist.end(), term) == explist.end()) {
 	    explist.push_back(term);
 	}
