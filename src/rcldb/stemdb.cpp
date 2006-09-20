@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.3 2006-09-19 14:30:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.4 2006-09-20 06:21:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -67,8 +67,6 @@ class DirWiper {
     }
 };
 
-// Deciding if we try to stem the term. If it has numerals or capitals
-// we don't
 inline static bool
 p_notlowerascii(unsigned int c)
 {
@@ -105,7 +103,11 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 	Xapian::TermIterator it;
 	for (it = xdb.allterms_begin(); 
 	     it != xdb.allterms_end(); it++) {
-	    // If it has any non-lowercase 7bit char, cant be stemmable
+	    // Deciding if we try to stem the term. If it has any
+	    // non-lowercase 7bit char, dont. Note that
+	    // as we are dealing with unaccented data, we are still
+	    // processing most of western european languages (where
+	    // most unaccented letters are ascii)
 	    string::iterator sit = (*it).begin(), eit = sit + (*it).length();
 	    if ((sit = find_if(sit, eit, p_notlowerascii)) != eit) {
 		++nostem;
