@@ -7,8 +7,9 @@ PROGS = trconftree wipedir smallut trfstreewalk trpathut \
 
 all: $(PROGS) $(BIGLIB)
 
-$(BIGLIB):
+$(BIGLIB): force
 	cd $(depth)/lib;$(MAKE)
+force:
 
 FSTREEWALK_OBJS= trfstreewalk.o fstreewalk.o $(BIGLIB)
 trfstreewalk : $(FSTREEWALK_OBJS)

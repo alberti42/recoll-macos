@@ -1,4 +1,4 @@
-# @(#$Id: Makefile,v 1.11 2006-03-30 13:00:56 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.12 2006-09-21 05:57:45 dockes Exp $  (C) 2005 J.F.Dockes
 depth = ..
 include $(depth)/mk/sysconf
 
@@ -7,8 +7,9 @@ PROGS = internfile unacpp textsplit rclconfig
 
 all: $(BIGLIB) $(PROGS) 
 
-$(BIGLIB):
+$(BIGLIB): force
 	cd $(depth)/lib;$(MAKE)
+force:
 
 UNACPP_OBJS= trunacpp.o $(BIGLIB)
 unacpp : $(UNACPP_OBJS)
