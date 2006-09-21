@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.7 2006-04-20 09:20:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.8 2006-09-21 09:37:28 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,9 @@ static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.7 2006-04-20 09:20:10 dockes Exp 
 using std::string;
 
 class CompareDocs { 
-    RclSortSpec ss;
+    DocSeqSortSpec ss;
 public: 
-    CompareDocs(const RclSortSpec &sortspec) : ss(sortspec) {}
+    CompareDocs(const DocSeqSortSpec &sortspec) : ss(sortspec) {}
 
     // It's not too clear in the std::sort doc what this should do. This 
     // behaves as operator< 
@@ -39,7 +39,7 @@ public:
 	// be made if previous order ones are equal.
 	for (unsigned int i = 0; i < ss.crits.size(); i++) {
 	    switch (ss.crits[i]) {
-	    case RclSortSpec::RCLFLD_MTIME:
+	    case DocSeqSortSpec::RCLFLD_MTIME:
 		{
 		    long xmtime = x->dmtime.empty() ? atol(x->fmtime.c_str()) :
 			atol(x->dmtime.c_str());
@@ -53,21 +53,21 @@ public:
 			return 0;
 		}
 		break;
-	    case RclSortSpec::RCLFLD_URL:
+	    case DocSeqSortSpec::RCLFLD_URL:
 		LOGDEB1((" URL\n"));
 		if (ss.dirs[i] ? x->url > y->url :  x->url < y->url)
 		    return 1;
 		else if (x->url != y->url)
 		    return 0;
 		break;
-	    case RclSortSpec::RCLFLD_IPATH: 
+	    case DocSeqSortSpec::RCLFLD_IPATH: 
 		LOGDEB1((" IPATH\n"));
 		if (ss.dirs[i] ? x->ipath > y->ipath : x->ipath < y->ipath)
 		    return 1;
 		else if (x->ipath != y->ipath)
 		    return 0;
 		break;
-	    case RclSortSpec::RCLFLD_MIMETYPE:
+	    case DocSeqSortSpec::RCLFLD_MIMETYPE:
 		LOGDEB1((" MIMETYPE\n"));
 		if (ss.dirs[i] ? x->mimetype > y->mimetype : 
 		    x->mimetype < y->mimetype)
@@ -82,7 +82,7 @@ public:
     } 
 };
 
-DocSeqSorted::DocSeqSorted(DocSequence &iseq, RclSortSpec &sortspec,
+DocSeqSorted::DocSeqSorted(DocSequence &iseq, DocSeqSortSpec &sortspec,
 			   const std::string &t)
     : DocSequence(t)
 {

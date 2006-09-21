@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.32 2006-09-13 13:53:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.33 2006-09-21 09:37:28 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -368,8 +368,8 @@ void RclMain::showSortDialog()
 	sortform = new SortForm(0, tr("Sort criteria"), FALSE,
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
-	connect(sortform, SIGNAL(sortDataChanged(RclSortSpec)), 
-		this, SLOT(sortDataChanged(RclSortSpec)));
+	connect(sortform, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
+		this, SLOT(sortDataChanged(DocSeqSortSpec)));
 	sortform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
@@ -694,7 +694,7 @@ void RclMain::showDocHistory()
 }
 
 
-void RclMain::sortDataChanged(RclSortSpec spec)
+void RclMain::sortDataChanged(DocSeqSortSpec spec)
 {
     LOGDEB(("RclMain::sortDataChanged\n"));
     sortspecs = spec;

@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.11 2006-09-15 16:49:27 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.12 2006-09-21 09:37:28 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -83,6 +83,10 @@ class PrefsPack {
     // Synthetized abstract length and word context size
     int syntAbsLen;
     int syntAbsCtx;
+
+    // Sort specs (sort_w.cpp knows how to deal with the values
+    int sortWidth;
+    int sortSpec;
 
     PrefsPack() :
 	showicons(true), 

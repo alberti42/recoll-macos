@@ -55,7 +55,7 @@ public slots:
     virtual void showAboutDialog();
     virtual void startManual();
     virtual void showDocHistory();
-    virtual void sortDataChanged(RclSortSpec spec);
+    virtual void sortDataChanged(DocSeqSortSpec spec);
     virtual void showUIPrefs();
     virtual void setUIPrefs();
     virtual void enableNextPage(bool);
@@ -72,7 +72,7 @@ private:
     AdvSearch *asearchform;
     SortForm *sortform;
     UIPrefsDialog *uiprefs;
-    RclSortSpec sortspecs;
+    DocSeqSortSpec sortspecs;
     int m_searchId; // Serial number of current search for this process.
                   // Used to match to preview windows
     virtual void init();

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.1 2006-09-04 15:13:01 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.2 2006-09-21 09:37:28 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,8 @@ static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.1 2006-09-04 15:13:01 dockes Exp $
 
 #include "sortseq.h"
 #include "debuglog.h"
+#include "guiutils.h"
+
 #include "sort_w.h"
 
 void SortForm::init()
@@ -35,8 +37,30 @@ void SortForm::init()
     labels[2] = "Mime type";
     labels[3] = 0;
     fldCMB1->insertStrList(labels, 3);
-    fldCMB1->setCurrentItem(0);
-    fldCMB2->insertStrList(labels, 3); fldCMB2->setCurrentItem(0);
+    fldCMB2->insertStrList(labels, 3); 
+
+    // Initialize values from prefs:
+    mcntSB->setValue(prefs.sortWidth);
+    unsigned int spec = (unsigned int)prefs.sortSpec;
+
+    // We use 4 bits per spec hi is direction, 3 low bits = sort field
+    unsigned int v, d;
+
+    v = spec & (0xf & ~(1<<3));
+    d = spec & (1 << 3);
+    spec >>= 4;
+    fldCMB1->setCurrentItem(v < 3 ? v : 0);
+    descCB1->setChecked(d!=0?true:false);
+
+    v = spec & (0xf & ~(1<<3));
+    d = spec & (1 << 3);
+    spec >>= 4;
+    fldCMB2->setCurrentItem(v < 3 ? v : 0);
+    descCB2->setChecked(d!=0?true:false);
+
+    // Always start with sort disabled
+    sortCB->setChecked(false);
+
     // signals and slots connections
     connect(resetPB, SIGNAL(clicked()), this, SLOT(reset()));
     connect(closePB, SIGNAL(clicked()), this, SLOT(close()));
@@ -62,7 +86,7 @@ void SortForm::reset()
 void SortForm::setData()
 {
     LOGDEB(("SortForm::setData\n"));
-    RclSortSpec spec;
+    DocSeqSortSpec spec;
 
     mcntSB->setEnabled(sortCB->isChecked());
     fldCMB1->setEnabled(sortCB->isChecked());
@@ -76,23 +100,34 @@ void SortForm::setData()
 	bool desc = descCB1->isChecked();
 	switch (fldCMB1->currentItem()) {
 	case 1: 
-	    spec.addCrit(RclSortSpec::RCLFLD_MTIME, desc?true:false);
+	    spec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, desc?true:false);
 	    break;
 	case 2: 
-	    spec.addCrit(RclSortSpec::RCLFLD_MIMETYPE, desc?true:false);
+	    spec.addCrit(DocSeqSortSpec::RCLFLD_MIMETYPE, desc?true:false);
 	    break;
 	}
 
 	desc = descCB2->isChecked();
 	switch (fldCMB2->currentItem()) {
 	case 1: 
-	    spec.addCrit(RclSortSpec::RCLFLD_MTIME, desc?true:false);
+	    spec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, desc?true:false);
 	    break;
 	case 2: 
-	    spec.addCrit(RclSortSpec::RCLFLD_MIMETYPE, desc?true:false);
+	    spec.addCrit(DocSeqSortSpec::RCLFLD_MIMETYPE, desc?true:false);
 	    break;
 	}
 	spec.sortwidth = mcntSB->value();
+
+	// Set data in prefs;
+	prefs.sortWidth = spec.sortwidth;
+	unsigned int spec = 0, v, d;
+	v = fldCMB1->currentItem() & 0x7;
+	d = descCB1->isChecked() ? 8 : 0;
+	spec |=  (d|v);
+	v = fldCMB2->currentItem() & 0x7;
+	d = descCB2->isChecked() ? 8 : 0;
+	spec |= (d|v) << 4;
+	prefs.sortSpec = (int) spec;
     }
     emit sortDataChanged(spec);
 }
