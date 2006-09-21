@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.22 2006-04-25 08:17:36 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.23 2006-09-21 05:59:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -263,6 +263,9 @@ bool TextSplit::text_to_words(const string &in)
 	case '.':
 	case ',':
 	    if (number) {
+		// 132.jpg ?
+		if (whatcc(it[charpos+1]) != DIGIT)
+		    goto SPACE;
 		word += it;
 		span += it;
 		break;
@@ -368,7 +371,7 @@ using namespace std;
 class mySplitterCB : public TextSplitCB {
     int first;
  public:
-    mySplitterCB() : first(0) {}
+    mySplitterCB() : first(1) {}
 
     bool takeword(const std::string &term, int pos, int bs, int be) {
 	if (first) {
