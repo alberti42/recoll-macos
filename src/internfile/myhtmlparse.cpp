@@ -167,7 +167,9 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 				sprintf(ascuxtime, "%ld", (long)mktime(&tm));
 				dmtime = ascuxtime;
 			    }
-			} else if (name == "robots") {
+			} 
+#if 0 // We're not a robot, so we don't care about robots metainfo
+			else if (name == "robots") {
 			    string val = i->second;
 			    decode_entities(val);
 			    lowercase_term(val);
@@ -178,6 +180,7 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 				throw false;
 			    }
 			}
+#endif // 0
 		    } else if ((j = p.find("http-equiv")) != p.end()) {
 			string hequiv = j->second;
 			lowercase_term(hequiv);
@@ -332,13 +335,17 @@ MyHtmlParser::closing_tag(const string &tag)
     }
 }
 
-// This gets called when hitting eof. If the <body> is open, do
-// something with the text (that is, don't throw up). Else, things are
-// too weird, throw an error. We don't get called if the parser finds
-// a closing body tag (exception gets thrown by closing_tag())
+// This gets called when hitting eof. 
+// We used to do: 
+//    > If the <body> is open, do
+//    > something with the text (that is, don't throw up). Else, things are
+//    > too weird, throw an error. We don't get called if the parser finds
+//    > a closing body tag (exception gets thrown by closing_tag())
+// But we don't throw any more. Whatever text we've extracted up to now is
+// better than nothing.
 void
 MyHtmlParser::do_eof()
 {
-    if (!in_body_tag)
-	throw(false);
+    //    if (!in_body_tag)
+    //	throw(false);
 }
