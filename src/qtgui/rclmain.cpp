@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.33 2006-09-21 09:37:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.34 2006-09-21 12:56:57 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -452,6 +452,8 @@ void RclMain::startPreview(int docnum)
 		this, SLOT(previewNextInTab(int, int)));
 	connect(curPreview, SIGNAL(showPrev(int, int)),
 		this, SLOT(previewPrevInTab(int, int)));
+	connect(curPreview, SIGNAL(previewExposed(int, int)),
+		this, SLOT(previewExposed(int, int)));
 	curPreview->show();
     } else {
 	if (curPreview->makeDocCurrent(fn, doc)) {
@@ -539,6 +541,18 @@ void RclMain::previewPrevInTab(int sid, int docnum)
     }
     if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc, docnum))
 	curPreview->closeCurrentTab();
+}
+
+// Preview tab exposed: possibly tell reslist (to color the paragraph)
+void RclMain::previewExposed(int sid, int docnum)
+{
+    LOGDEB2(("RclMain::previewExposed: sid %d docnum %d, m_sid %d\n", 
+	     sid, docnum, m_searchId));
+
+    if (sid != m_searchId) {
+	return;
+    }
+    resList->previewExposed(docnum);
 }
 
 // Add term to simple search. Term comes out of double-click in

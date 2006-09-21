@@ -66,6 +66,7 @@ public slots:
     virtual void startNativeViewer(int docnum);
     virtual void previewNextInTab(int sid, int docnum);
     virtual void previewPrevInTab(int sid, int docnum);
+    virtual void previewExposed(int sid, int docnum);
 
 private:
     Preview *curPreview;

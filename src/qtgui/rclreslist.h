@@ -1,6 +1,6 @@
 #ifndef _RCLRESLIST_H_INCLUDED_
 #define _RCLRESLIST_H_INCLUDED_
-/* @(#$Id: rclreslist.h,v 1.9 2006-09-12 10:11:36 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: rclreslist.h,v 1.10 2006-09-21 12:56:57 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <qtextbrowser.h>
 #include <qpopupmenu.h>
@@ -41,6 +41,7 @@ class RclResList : public QTextBrowser
     virtual void menuCopyFN();
     virtual void menuCopyURL();
     virtual void menuExpand();
+    virtual void previewExposed(int);
 
  signals:
     void nextPageAvailable(bool);
@@ -66,9 +67,12 @@ class RclResList : public QTextBrowser
     std::vector<Rcl::Doc> m_curDocs;
     int                m_winfirst;
     int                m_docnum; // Docnum matching the currently active para
+    int                m_curPvDoc;// Docnum for current preview
 
     virtual int docnumfromparnum(int);
     virtual int parnumfromdocnum(int);
+
+    // Don't know why this is necessary but it is
     void emitLinkClicked(const QString &s) {
 	emit linkClicked(s);
     };

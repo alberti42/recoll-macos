@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.2 2006-09-12 10:11:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.3 2006-09-21 12:56:57 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -79,6 +79,7 @@ void Preview::destroy()
 
 void Preview::closeEvent(QCloseEvent *e)
 {
+    emit previewExposed(m_searchId, -1);
     emit previewClosed((QWidget *)this);
     QWidget::closeEvent(e);
 }
@@ -251,6 +252,9 @@ void Preview::currentChanged(QWidget * tw)
 	edit->setFocus();
 	connect(edit, SIGNAL(doubleClicked(int, int)), 
 		this, SLOT(textDoubleClicked(int, int)));
+	TabData *d = tabDataForCurrent();
+	if (d) 
+	    emit(previewExposed(m_searchId, d->docnum));
     }
 }
 
@@ -619,6 +623,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	    matchCheck->setChecked(wasC);
 	}
     }
+    emit(previewExposed(m_searchId, docnum));
     return true;
 }
 

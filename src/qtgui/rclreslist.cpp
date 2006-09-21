@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.19 2006-09-13 14:57:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.20 2006-09-21 12:56:57 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -52,6 +52,7 @@ RclResList::RclResList(QWidget* parent, const char* name)
 	    this, SLOT(doubleClicked(int, int)));
     m_winfirst = -1;
     m_docsource = 0;
+    m_curPvDoc = -1;
 }
 
 
@@ -454,24 +455,36 @@ void RclResList::resultPageNext()
 	    m_winfirst = -1;
 	hasNext = false;
     }
-
+    // Possibly color paragraph of current preview if any
+    previewExposed(m_curPvDoc);
     emit nextPageAvailable(hasNext);
 }
 
-// Single click in result list: color active paragraph
-void RclResList::clicked(int par, int car)
+// Single click in result list: 
+void RclResList::clicked(int, int)
 {
-    LOGDEB(("RclResList::clicked:wfirst %d par %d char %d\n", 
-	    m_winfirst, par, car));
-    // Erase everything back to white
-    {
+}
+
+// Color paragraph (if any) of currently visible preview
+void RclResList::previewExposed(int docnum)
+{
+    LOGDEB(("RclResList::previewExposed: doc %d\n", docnum));
+
+    // Possibly erase old one to white
+    int par;
+    if (m_curPvDoc != -1 && (par = parnumfromdocnum(m_curPvDoc)) != -1) {
 	QColor color("white");
-	for (int i = 0; i < paragraphs(); i++)
-	    setParagraphBackgroundColor(i, color);
+	setParagraphBackgroundColor(par, color);
+	m_curPvDoc = -1;
     }
+    m_curPvDoc = docnum;
+    par = parnumfromdocnum(docnum);
+    // Maybe docnum is -1 or not in this window, 
+    if (par < 0)
+	return;
 
     // Color the new active paragraph
-    QColor color("lightblue");
+    QColor color("LightBlue");
     setParagraphBackgroundColor(par, color);
 }
 

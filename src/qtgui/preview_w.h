@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.2 2006-09-12 10:11:36 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.3 2006-09-21 12:56:57 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@ signals:
     void wordSelect(QString);
     void showNext(int sid, int docnum);
     void showPrev(int sid, int docnum);
+    void previewExposed(int sid, int docnum);
 
 protected:
     int m_searchId; // Identifier of search in main window. This is so that
