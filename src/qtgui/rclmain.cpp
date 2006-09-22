@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.34 2006-09-21 12:56:57 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.35 2006-09-22 07:29:34 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ using std::pair;
 #include "sortseq.h"
 #include "uiprefs.h"
 #include "guiutils.h"
-#include "rclreslist.h"
+#include "reslist.h"
 #include "transcode.h"
 
 #include "rclmain.h"
@@ -560,7 +560,7 @@ void RclMain::previewExposed(int sid, int docnum)
 // out of the reslist will typically look like 
 // <!-- Fragment -->sometext
 // It would probably be better to cleanup in preview.ui.h and
-// rclreslist.cpp and do the proper html stuff in the latter case
+// reslist.cpp and do the proper html stuff in the latter case
 // (which is different because it's format is explicit richtext
 // instead of auto as for preview, needed because it's built by
 // fragments?).

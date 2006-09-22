@@ -54,7 +54,7 @@
                         </sizepolicy>
                     </property>
                 </widget>
-                <widget class="RclResList">
+                <widget class="ResList">
                     <property name="name">
                         <cstring>resList</cstring>
                     </property>
@@ -136,8 +136,8 @@
         <signal>startSearch(Rcl::AdvSearchData)</signal>
     </customwidget>
     <customwidget>
-        <class>RclResList</class>
-        <header location="local">rclreslist.h</header>
+        <class>ResList</class>
+        <header location="local">reslist.h</header>
         <sizehint>
             <width>300</width>
             <height>200</height>
@@ -299,11 +299,11 @@
 </actions>
 <includes>
     <include location="local" impldecl="in declaration">ssearch_w.h</include>
-    <include location="local" impldecl="in declaration">rclreslist.h</include>
+    <include location="local" impldecl="in declaration">reslist.h</include>
 </includes>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>rclreslist.h</includehint>
+    <includehint>reslist.h</includehint>
 </includehints>
 </UI>

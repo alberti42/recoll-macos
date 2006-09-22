@@ -1,6 +1,6 @@
-#ifndef _RCLRESLIST_H_INCLUDED_
-#define _RCLRESLIST_H_INCLUDED_
-/* @(#$Id: rclreslist.h,v 1.11 2006-09-22 07:22:07 dockes Exp $  (C) 2005 J.F.Dockes */
+#ifndef _RESLIST_H_INCLUDED_
+#define _RESLIST_H_INCLUDED_
+/* @(#$Id: reslist.h,v 1.1 2006-09-22 07:29:34 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -15,13 +15,13 @@ using std::list;
 #include "docseq.h"
 #include "searchdata.h"
 
-class RclResList : public QTextBrowser
+class ResList : public QTextBrowser
 {
     Q_OBJECT;
 
  public:
-    RclResList(QWidget* parent = 0, const char* name = 0);
-    virtual ~RclResList();
+    ResList(QWidget* parent = 0, const char* name = 0);
+    virtual ~ResList();
     
     // Return document for given docnum. We act as an intermediary to
     // the docseq here. This has also the side-effect of making the
@@ -88,4 +88,4 @@ class RclResList : public QTextBrowser
 };
 
 
-#endif /* _RCLRESLIST_H_INCLUDED_ */
+#endif /* _RESLIST_H_INCLUDED_ */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.21 2006-09-22 07:22:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.1 2006-09-22 07:29:34 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -24,18 +24,18 @@ static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.21 2006-09-22 07:22:07 dockes 
 #include "mimehandler.h"
 #include "plaintorich.h"
 
-#include "rclreslist.h"
-#include "moc_rclreslist.cpp"
+#include "reslist.h"
+#include "moc_reslist.cpp"
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
 
-RclResList::RclResList(QWidget* parent, const char* name)
+ResList::ResList(QWidget* parent, const char* name)
     : QTextBrowser(parent, name) 
 {
     if (!name)
-	setName("rclResList");
+	setName("resList");
     setTextFormat(Qt::RichText);
     setReadOnly(TRUE);
     setUndoRedoEnabled(FALSE);
@@ -57,19 +57,19 @@ RclResList::RclResList(QWidget* parent, const char* name)
 }
 
 
-RclResList::~RclResList()
+ResList::~ResList()
 {
     if (m_docsource) 
 	delete m_docsource;
 }
 
-void RclResList::languageChange()
+void ResList::languageChange()
 {
     setCaption(tr("Result list"));
 }
 
 // Acquire new docsource
-void RclResList::setDocSource(DocSequence *docsource, Rcl::AdvSearchData& sdt)
+void ResList::setDocSource(DocSequence *docsource, Rcl::AdvSearchData& sdt)
 {
     if (m_docsource)
 	delete m_docsource;
@@ -79,7 +79,7 @@ void RclResList::setDocSource(DocSequence *docsource, Rcl::AdvSearchData& sdt)
 }
 
 // Get document number from paragraph number
-int RclResList::docnumfromparnum(int par)
+int ResList::docnumfromparnum(int par)
 {
     if (m_winfirst == -1)
 	return -1;
@@ -94,7 +94,7 @@ int RclResList::docnumfromparnum(int par)
 }
 
 // Get paragraph number from document number
-int RclResList::parnumfromdocnum(int docnum)
+int ResList::parnumfromdocnum(int docnum)
 {
     if (m_winfirst == -1 || docnum - m_winfirst < 0)
 	return -1;
@@ -108,7 +108,7 @@ int RclResList::parnumfromdocnum(int docnum)
 }
 
 // Return doc from current or adjacent result pages
-bool RclResList::getDoc(int docnum, Rcl::Doc &doc)
+bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 {
     if (docnum < 0)
 	return false;
@@ -138,7 +138,7 @@ bool RclResList::getDoc(int docnum, Rcl::Doc &doc)
     return true;
 }
 
-void RclResList::keyPressEvent(QKeyEvent * e)
+void ResList::keyPressEvent(QKeyEvent * e)
 {
     if (e->key() == Key_Q && (e->state() & ControlButton)) {
 	recollNeedsExit = 1;
@@ -153,7 +153,7 @@ void RclResList::keyPressEvent(QKeyEvent * e)
     QTextBrowser::keyPressEvent(e);
 }
 
-void RclResList::contentsMouseReleaseEvent(QMouseEvent *e)
+void ResList::contentsMouseReleaseEvent(QMouseEvent *e)
 {
     m_lstClckMod = 0;
     if (e->state() & ControlButton) {
@@ -166,7 +166,7 @@ void RclResList::contentsMouseReleaseEvent(QMouseEvent *e)
 }
 
 // Return total result list count
-int RclResList::getResCnt()
+int ResList::getResCnt()
 {
     if (!m_docsource)
 	return -1;
@@ -176,7 +176,7 @@ int RclResList::getResCnt()
 // Page Up/Down: we don't try to check if current paragraph is last or
 // first. We just page up/down and check if viewport moved. If it did,
 // fair enough, else we go to next/previous result page.
-void RclResList::resPageUpOrBack()
+void ResList::resPageUpOrBack()
 {
     int vpos = contentsY();
     moveCursor(QTextEdit::MovePgUp, false);
@@ -184,11 +184,11 @@ void RclResList::resPageUpOrBack()
 	resultPageBack();
 }
 
-void RclResList::resPageDownOrNext()
+void ResList::resPageDownOrNext()
 {
     int vpos = contentsY();
     moveCursor(QTextEdit::MovePgDown, false);
-    LOGDEB(("RclResList::resPageDownOrNext: vpos before %d, after %d\n",
+    LOGDEB(("ResList::resPageDownOrNext: vpos before %d, after %d\n",
 	    vpos, contentsY()));
     if (vpos == contentsY()) 
 	resultPageNext();
@@ -196,7 +196,7 @@ void RclResList::resPageDownOrNext()
 
 // Show previous page of results. We just set the current number back
 // 2 pages and show next page.
-void RclResList::resultPageBack()
+void ResList::resultPageBack()
 {
     if (m_winfirst <= 0)
 	return;
@@ -222,7 +222,7 @@ static string displayableBytes(long size)
 }
 
 // Fill up result list window with next screen of hits
-void RclResList::resultPageNext()
+void ResList::resultPageNext()
 {
     if (!m_docsource)
 	return;
@@ -466,9 +466,9 @@ void RclResList::resultPageNext()
 
 // Single click in result list use this for document selection, if no
 // text selection active:
-void RclResList::clicked(int par, int)
+void ResList::clicked(int par, int)
 {
-    LOGDEB2(("RclResList::clicked\n"));
+    LOGDEB2(("ResList::clicked\n"));
 
     // It's very ennoying, textBrowser always has selected text. This
     // is bound to change with qt releases!
@@ -484,9 +484,9 @@ void RclResList::clicked(int par, int)
 }
 
 // Color paragraph (if any) of currently visible preview
-void RclResList::previewExposed(int docnum)
+void ResList::previewExposed(int docnum)
 {
-    LOGDEB(("RclResList::previewExposed: doc %d\n", docnum));
+    LOGDEB(("ResList::previewExposed: doc %d\n", docnum));
 
     // Possibly erase old one to white
     int par;
@@ -510,15 +510,15 @@ void RclResList::previewExposed(int docnum)
 }
 
 // Double click in res list: add selection to simple search
-void RclResList::doubleClicked(int, int)
+void ResList::doubleClicked(int, int)
 {
     if (hasSelectedText())
 	emit(wordSelect(selectedText()));
 }
 
-void RclResList::linkWasClicked(const QString &s)
+void ResList::linkWasClicked(const QString &s)
 {
-    LOGDEB(("RclResList::linkClicked: [%s]\n", s.ascii()));
+    LOGDEB(("ResList::linkClicked: [%s]\n", s.ascii()));
     int i = atoi(s.ascii()+1);
     int what = s.ascii()[0];
     switch (what) {
@@ -541,7 +541,7 @@ void RclResList::linkWasClicked(const QString &s)
     }
 }
 
-QPopupMenu *RclResList::createPopupMenu(const QPoint& pos)
+QPopupMenu *ResList::createPopupMenu(const QPoint& pos)
 {
     int para = paragraphAt(pos);
     clicked(para, 0);
@@ -555,15 +555,15 @@ QPopupMenu *RclResList::createPopupMenu(const QPoint& pos)
     return popup;
 }
 
-void RclResList::menuPreview()
+void ResList::menuPreview()
 {
     emit docPreviewClicked(m_popDoc);
 }
-void RclResList::menuEdit()
+void ResList::menuEdit()
 {
     emit docEditClicked(m_popDoc);
 }
-void RclResList::menuCopyFN()
+void ResList::menuCopyFN()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc)) {
@@ -572,7 +572,7 @@ void RclResList::menuCopyFN()
 					   QClipboard::Selection);
     }
 }
-void RclResList::menuCopyURL()
+void ResList::menuCopyURL()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc)) {
@@ -581,7 +581,7 @@ void RclResList::menuCopyURL()
 					   QClipboard::Selection);
     }
 }
-void RclResList::menuExpand()
+void ResList::menuExpand()
 {
     Rcl::Doc doc;
     if (rcldb && getDoc(m_popDoc, doc)) {
@@ -589,13 +589,13 @@ void RclResList::menuExpand()
     }
 }
 
-QString RclResList::getDescription()
+QString ResList::getDescription()
 {
     return QString::fromUtf8(m_queryData.description.c_str());
 }
 
 /** Show detailed expansion of a query */
-void RclResList::showQueryDetails()
+void ResList::showQueryDetails()
 {
     // Break query into lines of reasonable length, avoid cutting words,
     // Also limit the total number of lines. 
