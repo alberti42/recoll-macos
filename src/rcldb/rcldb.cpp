@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.76 2006-09-13 13:53:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.77 2006-09-22 14:11:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -112,6 +112,8 @@ class Native {
 	string url;
 	parms.get(string("url"), url);
 	url = url.substr(7);
+	LOGDEB2(("Rcl::Db::Native:filter filter [%s] fn [%s]\n",
+		 rdb->m_filterTopDir.c_str(), url.c_str()));
 	if (url.find(rdb->m_filterTopDir) == 0) 
 	    return true;
 	return false;

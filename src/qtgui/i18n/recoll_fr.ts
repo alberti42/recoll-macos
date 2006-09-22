@@ -944,7 +944,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>(no stemming)</source>
-        <translation></translation>
+        <translation>(pas d'expansion)</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian index</source>
