@@ -6,8 +6,8 @@ CONFIG	+= qt warn_on thread release debug
 HEADERS	+= \
 	advsearch_w.h \
 	preview_w.h \
-	rclmain.h \
-	rclreslist.h \
+	rclmain_w.h \
+	reslist.h \
 	sort_w.h \
 	ssearch_w.h \
 	uiprefs_w.h
@@ -18,8 +18,8 @@ SOURCES	+= \
 	idxthread.cpp \
 	main.cpp \
 	plaintorich.cpp \
-	rclmain.cpp \
-	rclreslist.cpp \
+	rclmain_w.cpp \
+	reslist.cpp \
         advsearch_w.cpp \
         preview_w.cpp \
         sort_w.cpp \
@@ -29,7 +29,7 @@ SOURCES	+= \
 FORMS	= \
 	advsearch.ui \
 	preview.ui \
-	recollmain.ui \
+	rclmain.ui \
 	sort.ui \
 	ssearchb.ui \
 	uiprefs.ui 
