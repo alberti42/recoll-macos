@@ -1,5 +1,111 @@
 <!DOCTYPE TS><TS>
 <context>
+    <name>AdvSearch</name>
+    <message>
+        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
+        <translation>Impossible d&apos;exécuter une requête purement négative. Essayez d&apos;entrer des termes courants dans un champ &apos;ou&apos;</translation>
+    </message>
+</context>
+<context>
+    <name>AdvSearchBase</name>
+    <message>
+        <source>Advanced search</source>
+        <translation>Recherche avancée</translation>
+    </message>
+    <message>
+        <source>Search for files&lt;br&gt;having all of:</source>
+        <translation>Rechercher les fichiers&lt;br&gt;vérifiant:</translation>
+    </message>
+    <message>
+        <source>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except &quot;exact phrase&quot; can accept a mix of simple words, and phrases enclosed in double quotes.</source>
+        <translation>Tous les champs renseignés seront combinées avec des &quot;ET&quot;.&lt;br&gt;Tous les champs sauf &quot;phrase&quot; peuvent accepter un mélange de mots et de phrases entourées d&apos;apostrophes doubles. </translation>
+    </message>
+    <message>
+        <source>All of these</source>
+        <translation>Tous ces mots</translation>
+    </message>
+    <message>
+        <source>Enter words, and/or quoted phrases.</source>
+        <translation>Entrer des mots, et/ou des phrases entre doubles apostrophes.</translation>
+    </message>
+    <message>
+        <source>This exact phrase</source>
+        <translation>Cette phrase exactement</translation>
+    </message>
+    <message>
+        <source>Enter words.</source>
+        <translation>Entrer des mots.</translation>
+    </message>
+    <message>
+        <source>Any of these</source>
+        <translation>Un de ces mots</translation>
+    </message>
+    <message>
+        <source>None of these</source>
+        <translation>Aucun de ces mots</translation>
+    </message>
+    <message>
+        <source>File name matching</source>
+        <translation>Modèle de nom de fichier</translation>
+    </message>
+    <message>
+        <source>Enter file name. * and ? are wildcards.</source>
+        <translation>Entrer un nom de fichier. * et ? peuvent être utilisés comme jokers.</translation>
+    </message>
+    <message>
+        <source>Restrict file types</source>
+        <translation>Restreindre le type de fichier</translation>
+    </message>
+    <message>
+        <source>Save as default</source>
+        <translation>Sauver comme valeur initiale</translation>
+    </message>
+    <message>
+        <source>Searched file types</source>
+        <translation>Types de fichier recherchés</translation>
+    </message>
+    <message>
+        <source>All ----&gt;</source>
+        <translation>Tout ----&gt;</translation>
+    </message>
+    <message>
+        <source>Sel -----&gt;</source>
+        <translation>Sel -----&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;----- Sel</source>
+        <translation>&lt;----- Sel</translation>
+    </message>
+    <message>
+        <source>&lt;----- All</source>
+        <translation>&lt;----- Tout</translation>
+    </message>
+    <message>
+        <source>Ignored file types</source>
+        <translation>Types de fichiers ignorés</translation>
+    </message>
+    <message>
+        <source>Enter top directory for search</source>
+        <translation>Entrer le répertoire où démarre la recherche</translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation>Parcourir</translation>
+    </message>
+    <message>
+        <source>Restrict results to files in subtree:</source>
+        <translation>Restreindre les résultats aux fichiers de l&apos;arborescence:</translation>
+    </message>
+    <message>
+        <source>Start Search</source>
+        <translation>Lancer la recherche</translation>
+    </message>
+    <message>
+        <source>Dismiss</source>
+        <translation>Annuler</translation>
+    </message>
+</context>
+<context>
     <name>Main</name>
     <message>
         <source>Configuration problem: </source>
@@ -15,16 +121,83 @@
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation>Impossible d&apos;ouvrir la base dans</translation>
+        <translation>Impossible d&apos;ouvrir la base dans </translation>
     </message>
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
         <translation>Cliquer Annuler pour pouvoir editer le fichier de configuration avant que l&apos;indexation ne demarre, ou Ok pour continuer.</translation>
     </message>
+    <message>
+        <source>Configuration problem (dynconf</source>
+        <translation>Problème de configuration (dynconf)</translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
+    <message>
+        <source>Preview</source>
+        <translation type="obsolete">Previsualisation</translation>
+    </message>
+    <message>
+        <source>Preview 1</source>
+        <translation type="obsolete">Previsualisation 1</translation>
+    </message>
+    <message>
+        <source>&amp;Search for:</source>
+        <translation type="obsolete">&amp;Rechercher:</translation>
+    </message>
+    <message>
+        <source>&amp;Next</source>
+        <translation type="obsolete">&amp;Suivant</translation>
+    </message>
+    <message>
+        <source>Alt+N</source>
+        <translation type="obsolete">Alt+S</translation>
+    </message>
+    <message>
+        <source>&amp;Previous</source>
+        <translation type="obsolete">&amp;Precédent</translation>
+    </message>
+    <message>
+        <source>Alt+P</source>
+        <translation type="obsolete">Alt+P</translation>
+    </message>
+    <message>
+        <source>Match &amp;Case</source>
+        <translation type="obsolete">Respecter la &amp;casse</translation>
+    </message>
+    <message>
+        <source>Alt+C</source>
+        <translation type="obsolete">Alt+C</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="obsolete">Effacer</translation>
+    </message>
+    <message>
+        <source>Can&apos;t turn doc into internal rep for </source>
+        <translation>Impossible de créer une représentation interne pour </translation>
+    </message>
+    <message>
+        <source>Creating preview text</source>
+        <translation>Création du texte pour la prévisualisation</translation>
+    </message>
+    <message>
+        <source>Loading preview text into editor</source>
+        <translation>Chargement du texte de la prévisualisation</translation>
+    </message>
+    <message>
+        <source>Cannot create temporary directory</source>
+        <translation>Impossible de créer le répertoire temporaire</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+</context>
+<context>
+    <name>PreviewBase</name>
     <message>
         <source>Preview</source>
         <translation>Previsualisation</translation>
@@ -54,36 +227,16 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Alt+P</translation>
     </message>
     <message>
+        <source>Clear</source>
+        <translation>Effacer</translation>
+    </message>
+    <message>
         <source>Match &amp;Case</source>
         <translation>Respecter la &amp;casse</translation>
     </message>
     <message>
         <source>Alt+C</source>
         <translation>Alt+C</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>Effacer</translation>
-    </message>
-    <message>
-        <source>Can&apos;t turn doc into internal rep for </source>
-        <translation>Impossible de créer une représentation interne pour </translation>
-    </message>
-    <message>
-        <source>Creating preview text</source>
-        <translation>Création du texte pour la prévisualisation</translation>
-    </message>
-    <message>
-        <source>Loading preview text into editor</source>
-        <translation>Chargement du texte de la prévisualisation</translation>
-    </message>
-    <message>
-        <source>Cannot create temporary directory</source>
-        <translation>Impossible de créer le répertoire temporaire</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Annuler</translation>
     </message>
 </context>
 <context>
@@ -197,6 +350,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Unknown</source>
         <translation>Inconnue</translation>
+    </message>
+    <message>
+        <source>This search is not active any more</source>
+        <translation>Cette recherche n&apos;est plus active</translation>
     </message>
 </context>
 <context>
@@ -366,6 +523,55 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>RclResList</name>
     <message>
         <source>Result list</source>
+        <translation type="obsolete">Liste de résultats</translation>
+    </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation type="obsolete">Document inaccessible</translation>
+    </message>
+    <message>
+        <source>Show query details</source>
+        <translation type="obsolete">Afficher la requête</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
+</source>
+        <translation type="obsolete">&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
+</translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="obsolete">&amp;Voir contenu</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="obsolete">&amp;Editer</translation>
+    </message>
+    <message>
+        <source>&amp;Copy File Name</source>
+        <translation type="obsolete">&amp;Copier le nom de fichier</translation>
+    </message>
+    <message>
+        <source>Copy &amp;Url</source>
+        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
+        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>&amp;More like this</source>
+        <translation type="obsolete">Documents &amp;ressemblants</translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation type="obsolete">Détail de la recherche</translation>
+    </message>
+</context>
+<context>
+    <name>ResList</name>
+    <message>
+        <source>Result list</source>
         <translation>Liste de résultats</translation>
     </message>
     <message>
@@ -381,6 +587,18 @@ Click Cancel if you want to edit the configuration file before indexation starts
 </source>
         <translation>&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
+    </message>
+    <message>
+        <source>Previous</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation>Suivant</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
+        <translation>&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -399,12 +617,8 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Copier l&apos;&amp;Url</translation>
     </message>
     <message>
-        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
-    </message>
-    <message>
-        <source>&amp;More like this</source>
-        <translation>Documents &amp;ressemblants</translation>
+        <source>Find &amp;similar documents</source>
+        <translation>Chercher des documents &amp;similaires</translation>
     </message>
     <message>
         <source>Query details</source>
@@ -426,6 +640,29 @@ Click Cancel if you want to edit the configuration file before indexation starts
 </source>
         <translation type="obsolete">&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
+    </message>
+</context>
+<context>
+    <name>SSearch</name>
+    <message>
+        <source>Any term</source>
+        <translation>Certains termes</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation>Tous les termes</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation>Nom de fichier</translation>
+    </message>
+    <message>
+        <source>Completions</source>
+        <translation>Complétions</translation>
+    </message>
+    <message>
+        <source>Select an item:</source>
+        <translation>Sélectionner un élément:</translation>
     </message>
 </context>
 <context>
@@ -480,27 +717,54 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Any term</source>
-        <translation>Certains termes</translation>
+        <translation type="obsolete">Certains termes</translation>
     </message>
     <message>
         <source>All terms</source>
-        <translation>Tous les termes</translation>
+        <translation type="obsolete">Tous les termes</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation>Nom de fichier</translation>
+        <translation type="obsolete">Nom de fichier</translation>
     </message>
     <message>
         <source>Completions</source>
-        <translation>Complétions</translation>
+        <translation type="obsolete">Complétions</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation>Sélectionner un élément:</translation>
+        <translation type="obsolete">Sélectionner un élément:</translation>
     </message>
 </context>
 <context>
     <name>SortForm</name>
+    <message>
+        <source>Sort Criteria</source>
+        <translation type="obsolete">Critères de tri</translation>
+    </message>
+    <message>
+        <source>Sort the</source>
+        <translation type="obsolete">Trier les</translation>
+    </message>
+    <message>
+        <source>most relevant results by:</source>
+        <translation type="obsolete">résultats les plus pertinents en fonction de:</translation>
+    </message>
+    <message>
+        <source>Descending</source>
+        <translation type="obsolete">Décroissant</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="obsolete">Réinitialiser</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="obsolete">Fermer</translation>
+    </message>
+</context>
+<context>
+    <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
         <translation>Critères de tri</translation>
@@ -529,8 +793,181 @@ Click Cancel if you want to edit the configuration file before indexation starts
 <context>
     <name>UIPrefsDialog</name>
     <message>
-        <source>MyDialog</source>
+        <source>User interface</source>
+        <translation type="obsolete">Interface utilisateur</translation>
+    </message>
+    <message>
+        <source>Number of entries in a result page</source>
+        <translation type="obsolete">Nombre de résultats par page</translation>
+    </message>
+    <message>
+        <source>Result list font</source>
+        <translation type="obsolete">Fonte pour la liste de résultats</translation>
+    </message>
+    <message>
+        <source>Helvetica-10</source>
+        <translation type="obsolete">Helvetica-10</translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the result list font</source>
+        <translation type="obsolete">Ouvre une fenetre permettant de changer la fonte</translation>
+    </message>
+    <message>
+        <source>Show document type icons in result list</source>
+        <translation type="obsolete">Afficher les icones dans la liste de résultats</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="obsolete">Réinitialiser</translation>
+    </message>
+    <message>
+        <source>Resets the result list font to the system default</source>
+        <translation type="obsolete">Réinitialiser la fonte à la valeur par défaut</translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="obsolete">Paramètres pour la recherche</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="obsolete">Langue pour l&apos;expansion des termes</translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation type="obsolete">&amp;OK</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation type="obsolete">Appliquer les modifications</translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="obsolete">&amp;Annuler</translation>
+    </message>
+    <message>
+        <source>Discard changes</source>
+        <translation type="obsolete">Abandonner les modifications</translation>
+    </message>
+    <message>
+        <source>HTML help browser</source>
+        <translation type="obsolete">Outil de consultation de l&apos;aide HTML</translation>
+    </message>
+    <message>
+        <source>Select file</source>
+        <translation type="obsolete">Selectionner un fichier</translation>
+    </message>
+    <message>
+        <source>Dynamically build abstracts</source>
+        <translation type="obsolete">Construire dynamiquement les résumés</translation>
+    </message>
+    <message>
+        <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
+May be slow for big documents.</source>
+        <translation type="obsolete">Décide si des résumés seront construits à partir du contexte des termes de recherche. 
+Peut ralentir l&apos;affichage si les documents sont gros.</translation>
+    </message>
+    <message>
+        <source>Replace abstracts from documents</source>
+        <translation type="obsolete">Remplacer les résumés existant dans les documents</translation>
+    </message>
+    <message>
+        <source>Do we synthetize an abstract even if the document seemed to have one?</source>
+        <translation type="obsolete">Est-ce qu&apos;un résumé doit etre synthétisé meme dans le cas ou le document original en avait un?</translation>
+    </message>
+    <message>
+        <source>Auto-start simple search on whitespace entry</source>
+        <translation type="obsolete">Démarrage automatique de la recherche sur entrée d&apos;un espace</translation>
+    </message>
+    <message>
+        <source>Extra Databases</source>
+        <translation type="obsolete">Index extérieurs</translation>
+    </message>
+    <message>
+        <source>Add database</source>
+        <translation type="obsolete">Ajouter un index</translation>
+    </message>
+    <message>
+        <source>Select the xapiandb directory for the  database you want to add, then click Add Database</source>
+        <translation type="obsolete">Sélectionner le répertoire xapiandb pour l&apos;index(sp)(sp) que vous voulez ajouter, puis cliquer Ajouter Index</translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation type="obsolete">Parcourir</translation>
+    </message>
+    <message>
+        <source>All extra databases</source>
+        <translation type="obsolete">Tous les index extérieurs</translation>
+    </message>
+    <message>
+        <source>All known extra databases</source>
+        <translation type="obsolete">Tous les index extérieurs connus</translation>
+    </message>
+    <message>
+        <source>All ----&gt;</source>
+        <translation type="obsolete">Tout ----&gt;</translation>
+    </message>
+    <message>
+        <source>Sel -----&gt;</source>
+        <translation type="obsolete">Sel -----&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;----- Sel</source>
+        <translation type="obsolete">&lt;----- Sel</translation>
+    </message>
+    <message>
+        <source>&lt;----- All</source>
+        <translation type="obsolete">&lt;----- Tout</translation>
+    </message>
+    <message>
+        <source>Active extra databases</source>
+        <translation type="obsolete">Index extérieurs actifs</translation>
+    </message>
+    <message>
+        <source>Extra databases that will be searched in addition to the main one</source>
+        <translation type="obsolete">Index extérieurs utilisés</translation>
+    </message>
+    <message>
+        <source>The selected directory does not appear to be a Xapian database</source>
+        <translation type="obsolete">Le répertoire sélectionné ne semble pas être un index Xapian</translation>
+    </message>
+    <message>
+        <source>This is the main/local database!</source>
+        <translation type="obsolete">C&apos;est l&apos;index principal!</translation>
+    </message>
+    <message>
+        <source>The selected directory is already in the database list</source>
+        <translation type="obsolete">Le répertoire sélectionné existe déjà dans la liste</translation>
+    </message>
+    <message>
+        <source>Select directory holding xapian database (ie: /home/someone/.recoll/xapiandb)</source>
+        <translation type="obsolete">Sélectionner un répertoire contenant un index Xapian (ex: /home/someone/.recoll/xapiandb)</translation>
+    </message>
+    <message>
+        <source>(no stemming)</source>
         <translation></translation>
+    </message>
+    <message>
+        <source>The selected directory does not appear to be a Xapian index</source>
+        <translation>Le répertoire sélectionné ne semble pas être un index Xapian</translation>
+    </message>
+    <message>
+        <source>This is the main/local index!</source>
+        <translation>C&apos;est l&apos;index principal !</translation>
+    </message>
+    <message>
+        <source>The selected directory is already in the index list</source>
+        <translation>Le répertoire sélectionné est déjà dans la liste</translation>
+    </message>
+    <message>
+        <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
+        <translation>Sélectionner un répertoire contenant un index Xapian (ex: /home/monAmi/.recoll/xapiandb)</translation>
+    </message>
+</context>
+<context>
+    <name>UIPrefsDialogBase</name>
+    <message>
+        <source>MyDialog</source>
+        <translation>MonDialogue</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -553,16 +990,36 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Ouvre une fenetre permettant de changer la fonte</translation>
     </message>
     <message>
-        <source>Show document type icons in result list</source>
-        <translation>Afficher les icones dans la liste de résultats</translation>
-    </message>
-    <message>
         <source>Reset</source>
         <translation>Réinitialiser</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
         <translation>Réinitialiser la fonte à la valeur par défaut</translation>
+    </message>
+    <message>
+        <source>HTML help browser</source>
+        <translation>Outil de consultation de l&apos;aide HTML</translation>
+    </message>
+    <message>
+        <source>Select file</source>
+        <translation>Selectionner un fichier</translation>
+    </message>
+    <message>
+        <source>Show document type icons in result list.</source>
+        <translation>Afficher les icônes de type de fichier dans la liste de résultats.</translation>
+    </message>
+    <message>
+        <source>Auto-start simple search on whitespace entry.</source>
+        <translation>Démarrer automatiquement une recherche simple sur entrée d&apos;un espace.</translation>
+    </message>
+    <message>
+        <source>Start with advanced search dialog open.</source>
+        <translation>Panneau de recherche avancée ouvert au démarrage.</translation>
+    </message>
+    <message>
+        <source>Start with sort dialog open.</source>
+        <translation>Panneau de tri ouvert au démarrage.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -573,28 +1030,12 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Langue pour l&apos;expansion des termes</translation>
     </message>
     <message>
-        <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <source>Automatically add phrase to simple searchs</source>
+        <translation>Générer automatiquement une phrase ajoutée aux critères de la recherche simple</translation>
     </message>
     <message>
-        <source>Apply changes</source>
-        <translation>Appliquer les modifications</translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
-        <translation>&amp;Annuler</translation>
-    </message>
-    <message>
-        <source>Discard changes</source>
-        <translation>Abandonner les modifications</translation>
-    </message>
-    <message>
-        <source>HTML help browser</source>
-        <translation>Outil de consultation de l&apos;aide HTML</translation>
-    </message>
-    <message>
-        <source>Select file</source>
-        <translation>Selectionner un fichier</translation>
+        <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)].</source>
+        <translation>Une recherche de  [rolling stones] (2 termes) sera changée en [rolling or stones or (rolling phrase 2 stones)].</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
@@ -615,32 +1056,36 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
         <translation>Est-ce qu&apos;un résumé doit etre synthétisé meme dans le cas ou le document original en avait un?</translation>
     </message>
     <message>
-        <source>Auto-start simple search on whitespace entry</source>
-        <translation>Démarrage automatique de la recherche sur entrée d&apos;un espace</translation>
+        <source>Synthetic abstract size (characters)</source>
+        <translation>Taille du résumé synthétique (caractères)</translation>
     </message>
     <message>
-        <source>Extra Databases</source>
-        <translation>Index extérieurs</translation>
+        <source>Synthetic abstract context words</source>
+        <translation>Nombre de mots de contexte par occurrence de terme dans le résumé</translation>
     </message>
     <message>
-        <source>Add database</source>
+        <source>External Indexes</source>
+        <translation>Index externes</translation>
+    </message>
+    <message>
+        <source>Add index</source>
         <translation>Ajouter un index</translation>
     </message>
     <message>
-        <source>Select the xapiandb directory for the  database you want to add, then click Add Database</source>
-        <translation>Sélectionner le répertoire xapiandb pour l&apos;index(sp)(sp) que vous voulez ajouter, puis cliquer Ajouter Index</translation>
+        <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
+        <translation>Sélectionner le répertoire xapian de l&apos;index à ajouter, puis cliquer Ajouter Index</translation>
     </message>
     <message>
         <source>Browse</source>
         <translation>Parcourir</translation>
     </message>
     <message>
-        <source>All extra databases</source>
-        <translation>Tous les index extérieurs</translation>
+        <source>All indexes</source>
+        <translation>Tous les index</translation>
     </message>
     <message>
-        <source>All known extra databases</source>
-        <translation>Tous les index extérieurs connus</translation>
+        <source>Indexes currently not used</source>
+        <translation>Index inactifs</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
@@ -659,35 +1104,35 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
         <translation>&lt;----- Tout</translation>
     </message>
     <message>
-        <source>Active extra databases</source>
-        <translation>Index extérieurs actifs</translation>
+        <source>Active indexes</source>
+        <translation>Index actifs</translation>
     </message>
     <message>
-        <source>Extra databases that will be searched in addition to the main one</source>
-        <translation>Index extérieurs utilisés</translation>
+        <source>Indexes that will be searched in addition to the main one</source>
+        <translation>Index actifs en plus de l&apos;index principal</translation>
     </message>
     <message>
-        <source>The selected directory does not appear to be a Xapian database</source>
-        <translation>Le répertoire sélectionné ne semble pas être un index Xapian</translation>
+        <source>&amp;OK</source>
+        <translation>&amp;OK</translation>
     </message>
     <message>
-        <source>This is the main/local database!</source>
-        <translation>C&apos;est l&apos;index principal!</translation>
+        <source>Apply changes</source>
+        <translation>Appliquer les modifications</translation>
     </message>
     <message>
-        <source>The selected directory is already in the database list</source>
-        <translation>Le répertoire sélectionné existe déjà dans la liste</translation>
+        <source>&amp;Cancel</source>
+        <translation>&amp;Annuler</translation>
     </message>
     <message>
-        <source>Select directory holding xapian database (ie: /home/someone/.recoll/xapiandb)</source>
-        <translation>Sélectionner un répertoire contenant un index Xapian (ex: /home/someone/.recoll/xapiandb)</translation>
+        <source>Discard changes</source>
+        <translation>Suivant</translation>
     </message>
 </context>
 <context>
     <name>advsearch</name>
     <message>
         <source>Advanced search</source>
-        <translation>Recherche avancée</translation>
+        <translation type="obsolete">Recherche avancée</translation>
     </message>
     <message>
         <source>Search For</source>
@@ -695,79 +1140,79 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>All these words</source>
-        <translation>Tous les mots</translation>
+        <translation type="obsolete">Tous les mots</translation>
     </message>
     <message>
         <source>This exact phrase</source>
-        <translation>Cette phrase exactement</translation>
+        <translation type="obsolete">Cette phrase exactement</translation>
     </message>
     <message>
         <source>Any of these words</source>
-        <translation>N&apos;importe lequel de ces mots</translation>
+        <translation type="obsolete">N&apos;importe lequel de ces mots</translation>
     </message>
     <message>
         <source>None of these words</source>
-        <translation>Aucun parmi ces mots</translation>
+        <translation type="obsolete">Aucun parmi ces mots</translation>
     </message>
     <message>
         <source>Restrict file types</source>
-        <translation>Restraindre le type de fichier</translation>
+        <translation type="obsolete">Restraindre le type de fichier</translation>
     </message>
     <message>
         <source>Searched file types</source>
-        <translation>Type de fichier recherché</translation>
+        <translation type="obsolete">Type de fichier recherché</translation>
     </message>
     <message>
         <source>Ignored file types</source>
-        <translation>Types de fichier ignorés</translation>
+        <translation type="obsolete">Types de fichier ignorés</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>Parcourir</translation>
+        <translation type="obsolete">Parcourir</translation>
     </message>
     <message>
         <source>Restrict results to files in subtree:</source>
-        <translation>Restreindre les résultats aux fichiers de l&apos;arborescence:</translation>
+        <translation type="obsolete">Restreindre les résultats aux fichiers de l&apos;arborescence:</translation>
     </message>
     <message>
         <source>Start Search</source>
-        <translation>Lancer la recherche</translation>
+        <translation type="obsolete">Lancer la recherche</translation>
     </message>
     <message>
         <source>Dismiss</source>
-        <translation>Annuler</translation>
+        <translation type="obsolete">Annuler</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation>Tout ----&gt;</translation>
+        <translation type="obsolete">Tout ----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
-        <translation>Sel -----&gt;</translation>
+        <translation type="obsolete">Sel -----&gt;</translation>
     </message>
     <message>
         <source>&lt;----- Sel</source>
-        <translation>&lt;----- Sel</translation>
+        <translation type="obsolete">&lt;----- Sel</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation>&lt;----- Tout</translation>
+        <translation type="obsolete">&lt;----- Tout</translation>
     </message>
     <message>
         <source>Search for files&lt;br&gt;having all of:</source>
-        <translation>Rechercher les fichiers&lt;br&gt;vérifiant:</translation>
+        <translation type="obsolete">Rechercher les fichiers&lt;br&gt;vérifiant:</translation>
     </message>
     <message>
         <source>All non blank fields will be combined with AND conjunctions</source>
-        <translation>Tous les champs renseignés seront combinés par des ET</translation>
+        <translation type="obsolete">Tous les champs renseignés seront combinés par des ET</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>Modèle de nom de fichier</translation>
+        <translation type="obsolete">Modèle de nom de fichier</translation>
     </message>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Impossible d&apos;éxécuter une requête purement négative. Essayez d&apos;entrer des termes courants dans un champ &apos;ou&apos;</translation>
+        <translation type="obsolete">Impossible d&apos;éxécuter une requête purement négative. Essayez d&apos;entrer des termes courants dans un champ &apos;ou&apos;</translation>
     </message>
 </context>
 </TS>

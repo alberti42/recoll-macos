@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.6 2006-09-15 16:49:27 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.7 2006-09-22 10:46:26 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -73,7 +73,7 @@ void UIPrefsDialog::init()
     }
     helpBrowserLE->setText(prefs.htmlBrowser);
     // Stemming language combobox
-    stemLangCMB->insertItem("(no stemming)");
+    stemLangCMB->insertItem(tr("(no stemming)"));
     list<string> langs;
     string reason;
     if (!maybeOpenDb(reason)) {

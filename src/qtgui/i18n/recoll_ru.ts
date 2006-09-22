@@ -1,5 +1,111 @@
 <!DOCTYPE TS><TS>
 <context>
+    <name>AdvSearch</name>
+    <message>
+        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
+        <translation type="unfinished">Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
+    </message>
+</context>
+<context>
+    <name>AdvSearchBase</name>
+    <message>
+        <source>Advanced search</source>
+        <translation type="unfinished">Сложный поиск</translation>
+    </message>
+    <message>
+        <source>Search for files&lt;br&gt;having all of:</source>
+        <translation type="unfinished">Искать файлы&lt;br&gt;со всем из:</translation>
+    </message>
+    <message>
+        <source>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except &quot;exact phrase&quot; can accept a mix of simple words, and phrases enclosed in double quotes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All of these</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter words, and/or quoted phrases.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This exact phrase</source>
+        <translation type="unfinished">Точную фразу</translation>
+    </message>
+    <message>
+        <source>Enter words.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any of these</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None of these</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File name matching</source>
+        <translation type="unfinished">Поиск по именам файлов</translation>
+    </message>
+    <message>
+        <source>Enter file name. * and ? are wildcards.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restrict file types</source>
+        <translation type="unfinished">Ограничить типы файлов</translation>
+    </message>
+    <message>
+        <source>Save as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Searched file types</source>
+        <translation type="unfinished">Искать</translation>
+    </message>
+    <message>
+        <source>All ----&gt;</source>
+        <translation type="unfinished">Все ----&gt;</translation>
+    </message>
+    <message>
+        <source>Sel -----&gt;</source>
+        <translation type="unfinished">Эти ----&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;----- Sel</source>
+        <translation type="unfinished">&lt;----- Эти</translation>
+    </message>
+    <message>
+        <source>&lt;----- All</source>
+        <translation type="unfinished">&lt;----- Все</translation>
+    </message>
+    <message>
+        <source>Ignored file types</source>
+        <translation type="unfinished">Игнорировать</translation>
+    </message>
+    <message>
+        <source>Enter top directory for search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation type="unfinished">Просмотр</translation>
+    </message>
+    <message>
+        <source>Restrict results to files in subtree:</source>
+        <translation type="unfinished">Ограничиться каталогом:</translation>
+    </message>
+    <message>
+        <source>Start Search</source>
+        <translation type="unfinished">Начать поиск</translation>
+    </message>
+    <message>
+        <source>Dismiss</source>
+        <translation type="unfinished">Отменить</translation>
+    </message>
+</context>
+<context>
     <name>Main</name>
     <message>
         <source>Configuration problem: </source>
@@ -23,48 +129,52 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>.
 Нажмите &quot;Отменить&quot;, если хотите исправить файл конфигурации до начала индексирования, или &quot;OK&quot; для продолжения.</translation>
     </message>
+    <message>
+        <source>Configuration problem (dynconf</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Preview</name>
     <message>
         <source>Preview</source>
-        <translation>Предв. просмотр</translation>
+        <translation type="obsolete">Предв. просмотр</translation>
     </message>
     <message>
         <source>Preview 1</source>
-        <translation>Предв. просмотр 1</translation>
+        <translation type="obsolete">Предв. просмотр 1</translation>
     </message>
     <message>
         <source>&amp;Search for:</source>
-        <translation>&amp;Искать:</translation>
+        <translation type="obsolete">&amp;Искать:</translation>
     </message>
     <message>
         <source>&amp;Next</source>
-        <translation>&amp;Дальше</translation>
+        <translation type="obsolete">&amp;Дальше</translation>
     </message>
     <message>
         <source>Alt+N</source>
-        <translation>Alt+N</translation>
+        <translation type="obsolete">Alt+N</translation>
     </message>
     <message>
         <source>&amp;Previous</source>
-        <translation>&amp;Предыдущее</translation>
+        <translation type="obsolete">&amp;Предыдущее</translation>
     </message>
     <message>
         <source>Alt+P</source>
-        <translation>Alt+P</translation>
+        <translation type="obsolete">Alt+P</translation>
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation>&amp;Соблюдать регистр</translation>
+        <translation type="obsolete">&amp;Соблюдать регистр</translation>
     </message>
     <message>
         <source>Alt+C</source>
-        <translation>Alt+C</translation>
+        <translation type="obsolete">Alt+C</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Очистить</translation>
+        <translation type="obsolete">Очистить</translation>
     </message>
     <message>
         <source>Can&apos;t turn doc into internal rep for </source>
@@ -85,6 +195,49 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Cancel</source>
         <translation>Отмена</translation>
+    </message>
+</context>
+<context>
+    <name>PreviewBase</name>
+    <message>
+        <source>Preview</source>
+        <translation type="unfinished">Предв. просмотр</translation>
+    </message>
+    <message>
+        <source>Preview 1</source>
+        <translation type="unfinished">Предв. просмотр 1</translation>
+    </message>
+    <message>
+        <source>&amp;Search for:</source>
+        <translation type="unfinished">&amp;Искать:</translation>
+    </message>
+    <message>
+        <source>&amp;Next</source>
+        <translation type="unfinished">&amp;Дальше</translation>
+    </message>
+    <message>
+        <source>Alt+N</source>
+        <translation type="unfinished">Alt+N</translation>
+    </message>
+    <message>
+        <source>&amp;Previous</source>
+        <translation type="unfinished">&amp;Предыдущее</translation>
+    </message>
+    <message>
+        <source>Alt+P</source>
+        <translation type="unfinished">Alt+P</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation type="unfinished">Очистить</translation>
+    </message>
+    <message>
+        <source>Match &amp;Case</source>
+        <translation type="unfinished">&amp;Соблюдать регистр</translation>
+    </message>
+    <message>
+        <source>Alt+C</source>
+        <translation type="unfinished">Alt+C</translation>
     </message>
 </context>
 <context>
@@ -188,6 +341,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Unknown</source>
         <translation>Неизвестно</translation>
+    </message>
+    <message>
+        <source>This search is not active any more</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -317,49 +474,49 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>RclResList</name>
     <message>
         <source>Result list</source>
-        <translation>Список результатов</translation>
+        <translation type="obsolete">Список результатов</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation>Документ недоступен</translation>
+        <translation type="obsolete">Документ недоступен</translation>
     </message>
     <message>
         <source>Show query details</source>
-        <translation>Показать запрос</translation>
+        <translation type="obsolete">Показать запрос</translation>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
 </source>
-        <translation>&lt;b&gt;Результаты, начиная с %1 (всего %2)&lt;/b&gt;&lt;/p&gt;
+        <translation type="obsolete">&lt;b&gt;Результаты, начиная с %1 (всего %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Просмотр</translation>
+        <translation type="obsolete">&amp;Просмотр</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
-        <translation>&amp;Редактирование</translation>
+        <translation type="obsolete">&amp;Редактирование</translation>
     </message>
     <message>
         <source>&amp;Copy File Name</source>
-        <translation>&amp;Копировать имя файла</translation>
+        <translation type="obsolete">&amp;Копировать имя файла</translation>
     </message>
     <message>
         <source>Copy &amp;Url</source>
-        <translation>Копировать &amp;адрес</translation>
+        <translation type="obsolete">Копировать &amp;адрес</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;p&gt;&lt;b&gt;Не найдено&lt;/b&gt;&lt;br&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Не найдено&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;More like this</source>
-        <translation>&amp;Другие похожие</translation>
+        <translation type="obsolete">&amp;Другие похожие</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Детали запроса</translation>
+        <translation type="obsolete">Детали запроса</translation>
     </message>
 </context>
 <context>
@@ -496,6 +653,62 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
 </context>
 <context>
+    <name>ResList</name>
+    <message>
+        <source>Result list</source>
+        <translation type="unfinished">Список результатов</translation>
+    </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation type="unfinished">Документ недоступен</translation>
+    </message>
+    <message>
+        <source>Show query details</source>
+        <translation type="unfinished">Показать запрос</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
+        <translation type="unfinished">&lt;p&gt;&lt;b&gt;Не найдено&lt;/b&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Просмотр</translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished">&amp;Редактирование</translation>
+    </message>
+    <message>
+        <source>&amp;Copy File Name</source>
+        <translation type="unfinished">&amp;Копировать имя файла</translation>
+    </message>
+    <message>
+        <source>Copy &amp;Url</source>
+        <translation type="unfinished">Копировать &amp;адрес</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation type="unfinished">Детали запроса</translation>
+    </message>
+</context>
+<context>
     <name>ResListBase</name>
     <message>
         <source>Result list</source>
@@ -510,6 +723,29 @@ Click Cancel if you want to edit the configuration file before indexation starts
 </source>
         <translation type="obsolete">&lt;b&gt;Отображаю результаты начиная с %1 (не более %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
+    </message>
+</context>
+<context>
+    <name>SSearch</name>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Любое слово</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Все слова</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Имя файла</translation>
+    </message>
+    <message>
+        <source>Completions</source>
+        <translation type="unfinished">Дополнения</translation>
+    </message>
+    <message>
+        <source>Select an item:</source>
+        <translation type="unfinished">Выберите:</translation>
     </message>
 </context>
 <context>
@@ -564,214 +800,422 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Any term</source>
-        <translation>Любое слово</translation>
+        <translation type="obsolete">Любое слово</translation>
     </message>
     <message>
         <source>All terms</source>
-        <translation>Все слова</translation>
+        <translation type="obsolete">Все слова</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation>Имя файла</translation>
+        <translation type="obsolete">Имя файла</translation>
     </message>
     <message>
         <source>Completions</source>
-        <translation>Дополнения</translation>
+        <translation type="obsolete">Дополнения</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation>Выберите:</translation>
+        <translation type="obsolete">Выберите:</translation>
     </message>
 </context>
 <context>
     <name>SortForm</name>
     <message>
         <source>Sort Criteria</source>
-        <translation>Критерии сортировки</translation>
+        <translation type="obsolete">Критерии сортировки</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation>Сортировать</translation>
+        <translation type="obsolete">Сортировать</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation>наиболее похожих результатов по:</translation>
+        <translation type="obsolete">наиболее похожих результатов по:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation>убыванию</translation>
+        <translation type="obsolete">убыванию</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Вернуть</translation>
+        <translation type="obsolete">Вернуть</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Закрыть</translation>
+        <translation type="obsolete">Закрыть</translation>
+    </message>
+</context>
+<context>
+    <name>SortFormBase</name>
+    <message>
+        <source>Sort Criteria</source>
+        <translation type="unfinished">Критерии сортировки</translation>
+    </message>
+    <message>
+        <source>Sort the</source>
+        <translation type="unfinished">Сортировать</translation>
+    </message>
+    <message>
+        <source>most relevant results by:</source>
+        <translation type="unfinished">наиболее похожих результатов по:</translation>
+    </message>
+    <message>
+        <source>Descending</source>
+        <translation type="unfinished">убыванию</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="unfinished">Вернуть</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">Закрыть</translation>
     </message>
 </context>
 <context>
     <name>UIPrefsDialog</name>
     <message>
-        <source>MyDialog</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>User interface</source>
-        <translation>Интерфейс</translation>
+        <translation type="obsolete">Интерфейс</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation>Количество записей на страницу результатов</translation>
+        <translation type="obsolete">Количество записей на страницу результатов</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation>Шрифт списка результатов</translation>
+        <translation type="obsolete">Шрифт списка результатов</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation>Helvetica-10</translation>
+        <translation type="obsolete">Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation>Открывает диалог выбора шрифта списка результатов</translation>
+        <translation type="obsolete">Открывает диалог выбора шрифта списка результатов</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Вернуть</translation>
+        <translation type="obsolete">Вернуть</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation>Устанавливает шрифт списка результатов в обычный</translation>
+        <translation type="obsolete">Устанавливает шрифт списка результатов в обычный</translation>
     </message>
     <message>
         <source>HTML help browser</source>
-        <translation>Просмотр справки в HTML</translation>
+        <translation type="obsolete">Просмотр справки в HTML</translation>
     </message>
     <message>
         <source>Select file</source>
-        <translation>Выберите файл</translation>
+        <translation type="obsolete">Выберите файл</translation>
     </message>
     <message>
         <source>Show document type icons in result list</source>
-        <translation>Показывать пиктограммы типов документов</translation>
+        <translation type="obsolete">Показывать пиктограммы типов документов</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>Поиск</translation>
+        <translation type="obsolete">Поиск</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>Язык словообразования</translation>
+        <translation type="obsolete">Язык словообразования</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation>Динамическое выделение контекста</translation>
+        <translation type="obsolete">Динамическое выделение контекста</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation>Следует ли пытаться построить сжатые фрагменты из найденных документов, опираясь на контекст ключевых слов?
+        <translation type="obsolete">Следует ли пытаться построить сжатые фрагменты из найденных документов, опираясь на контекст ключевых слов?
 Может быть медленным для больших документов.</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation>Замещать контекст документов</translation>
+        <translation type="obsolete">Замещать контекст документов</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation>Создавать ли сжатое изложение, если документ уже имеет его?</translation>
+        <translation type="obsolete">Создавать ли сжатое изложение, если документ уже имеет его?</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation type="obsolete">&amp;OK</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation>Применить изменения</translation>
+        <translation type="obsolete">Применить изменения</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>&amp;Отмена</translation>
+        <translation type="obsolete">&amp;Отмена</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation>Отменить изменения</translation>
+        <translation type="obsolete">Отменить изменения</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry</source>
-        <translation>Автостарт простого запроса при вводе с пробелами</translation>
+        <translation type="obsolete">Автостарт простого запроса при вводе с пробелами</translation>
     </message>
     <message>
         <source>Extra Databases</source>
-        <translation>Дополнительные базы</translation>
+        <translation type="obsolete">Дополнительные базы</translation>
     </message>
     <message>
         <source>Add database</source>
-        <translation>Добавить</translation>
+        <translation type="obsolete">Добавить</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the  database you want to add, then click Add Database</source>
-        <translation>Выберите каталог xapiandb для БД, которую хотите добавить, и нажмите &quot;Добавить&quot;</translation>
+        <translation type="obsolete">Выберите каталог xapiandb для БД, которую хотите добавить, и нажмите &quot;Добавить&quot;</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>Просмотр</translation>
+        <translation type="obsolete">Просмотр</translation>
     </message>
     <message>
         <source>All extra databases</source>
-        <translation>Все</translation>
+        <translation type="obsolete">Все</translation>
     </message>
     <message>
         <source>All known extra databases</source>
-        <translation>Все известные дополнительные базы данных</translation>
+        <translation type="obsolete">Все известные дополнительные базы данных</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation>Все ----&gt;</translation>
+        <translation type="obsolete">Все ----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
-        <translation>Эти ----&gt;</translation>
+        <translation type="obsolete">Эти ----&gt;</translation>
     </message>
     <message>
         <source>&lt;----- Sel</source>
-        <translation>&lt;----- Эти</translation>
+        <translation type="obsolete">&lt;----- Эти</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation>&lt;----- Все</translation>
+        <translation type="obsolete">&lt;----- Все</translation>
     </message>
     <message>
         <source>Active extra databases</source>
-        <translation>Активные</translation>
+        <translation type="obsolete">Активные</translation>
     </message>
     <message>
         <source>Extra databases that will be searched in addition to the main one</source>
-        <translation>Дополнительные базы данных, по которым производится поиск, помимо основной</translation>
+        <translation type="obsolete">Дополнительные базы данных, по которым производится поиск, помимо основной</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian database</source>
-        <translation>Выбранный каталог не похож на БД Xapian</translation>
+        <translation type="obsolete">Выбранный каталог не похож на БД Xapian</translation>
     </message>
     <message>
         <source>This is the main/local database!</source>
-        <translation>Это основная/локальная база!</translation>
+        <translation type="obsolete">Это основная/локальная база!</translation>
     </message>
     <message>
         <source>The selected directory is already in the database list</source>
-        <translation>Выбранный каталог уже в списке</translation>
+        <translation type="obsolete">Выбранный каталог уже в списке</translation>
     </message>
     <message>
         <source>Select directory holding xapian database (ie: /home/someone/.recoll/xapiandb)</source>
-        <translation>Выберите каталог, содержащий базу xapian (например, /home/someone/.recoll/xapiandb)</translation>
+        <translation type="obsolete">Выберите каталог, содержащий базу xapian (например, /home/someone/.recoll/xapiandb)</translation>
+    </message>
+    <message>
+        <source>(no stemming)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory does not appear to be a Xapian index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the main/local index!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory is already in the index list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UIPrefsDialogBase</name>
+    <message>
+        <source>MyDialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User interface</source>
+        <translation type="unfinished">Интерфейс</translation>
+    </message>
+    <message>
+        <source>Number of entries in a result page</source>
+        <translation type="unfinished">Количество записей на страницу результатов</translation>
+    </message>
+    <message>
+        <source>Result list font</source>
+        <translation type="unfinished">Шрифт списка результатов</translation>
+    </message>
+    <message>
+        <source>Helvetica-10</source>
+        <translation type="unfinished">Helvetica-10</translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the result list font</source>
+        <translation type="unfinished">Открывает диалог выбора шрифта списка результатов</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="unfinished">Вернуть</translation>
+    </message>
+    <message>
+        <source>Resets the result list font to the system default</source>
+        <translation type="unfinished">Устанавливает шрифт списка результатов в обычный</translation>
+    </message>
+    <message>
+        <source>HTML help browser</source>
+        <translation type="unfinished">Просмотр справки в HTML</translation>
+    </message>
+    <message>
+        <source>Select file</source>
+        <translation type="unfinished">Выберите файл</translation>
+    </message>
+    <message>
+        <source>Show document type icons in result list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto-start simple search on whitespace entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start with advanced search dialog open.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start with sort dialog open.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished">Поиск</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished">Язык словообразования</translation>
+    </message>
+    <message>
+        <source>Automatically add phrase to simple searchs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)].</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dynamically build abstracts</source>
+        <translation type="unfinished">Динамическое выделение контекста</translation>
+    </message>
+    <message>
+        <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
+May be slow for big documents.</source>
+        <translation type="unfinished">Следует ли пытаться построить сжатые фрагменты из найденных документов, опираясь на контекст ключевых слов?
+Может быть медленным для больших документов.</translation>
+    </message>
+    <message>
+        <source>Replace abstracts from documents</source>
+        <translation type="unfinished">Замещать контекст документов</translation>
+    </message>
+    <message>
+        <source>Do we synthetize an abstract even if the document seemed to have one?</source>
+        <translation type="unfinished">Создавать ли сжатое изложение, если документ уже имеет его?</translation>
+    </message>
+    <message>
+        <source>Synthetic abstract size (characters)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Synthetic abstract context words</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External Indexes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation type="unfinished">Просмотр</translation>
+    </message>
+    <message>
+        <source>All indexes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexes currently not used</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All ----&gt;</source>
+        <translation type="unfinished">Все ----&gt;</translation>
+    </message>
+    <message>
+        <source>Sel -----&gt;</source>
+        <translation type="unfinished">Эти ----&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;----- Sel</source>
+        <translation type="unfinished">&lt;----- Эти</translation>
+    </message>
+    <message>
+        <source>&lt;----- All</source>
+        <translation type="unfinished">&lt;----- Все</translation>
+    </message>
+    <message>
+        <source>Active indexes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexes that will be searched in addition to the main one</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation type="unfinished">&amp;OK</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation type="unfinished">Применить изменения</translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished">&amp;Отмена</translation>
+    </message>
+    <message>
+        <source>Discard changes</source>
+        <translation type="unfinished">Отменить изменения</translation>
     </message>
 </context>
 <context>
     <name>advsearch</name>
     <message>
         <source>Advanced search</source>
-        <translation>Сложный поиск</translation>
+        <translation type="obsolete">Сложный поиск</translation>
     </message>
     <message>
         <source>Search For</source>
@@ -779,79 +1223,79 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>All these words</source>
-        <translation>Все слова</translation>
+        <translation type="obsolete">Все слова</translation>
     </message>
     <message>
         <source>This exact phrase</source>
-        <translation>Точную фразу</translation>
+        <translation type="obsolete">Точную фразу</translation>
     </message>
     <message>
         <source>Any of these words</source>
-        <translation>Любое из слов</translation>
+        <translation type="obsolete">Любое из слов</translation>
     </message>
     <message>
         <source>None of these words</source>
-        <translation>Ни одно из слов</translation>
+        <translation type="obsolete">Ни одно из слов</translation>
     </message>
     <message>
         <source>Restrict file types</source>
-        <translation>Ограничить типы файлов</translation>
+        <translation type="obsolete">Ограничить типы файлов</translation>
     </message>
     <message>
         <source>Searched file types</source>
-        <translation>Искать</translation>
+        <translation type="obsolete">Искать</translation>
     </message>
     <message>
         <source>Ignored file types</source>
-        <translation>Игнорировать</translation>
+        <translation type="obsolete">Игнорировать</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>Просмотр</translation>
+        <translation type="obsolete">Просмотр</translation>
     </message>
     <message>
         <source>Restrict results to files in subtree:</source>
-        <translation>Ограничиться каталогом:</translation>
+        <translation type="obsolete">Ограничиться каталогом:</translation>
     </message>
     <message>
         <source>Start Search</source>
-        <translation>Начать поиск</translation>
+        <translation type="obsolete">Начать поиск</translation>
     </message>
     <message>
         <source>Dismiss</source>
-        <translation>Отменить</translation>
+        <translation type="obsolete">Отменить</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation>Все ----&gt;</translation>
+        <translation type="obsolete">Все ----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
-        <translation>Эти ----&gt;</translation>
+        <translation type="obsolete">Эти ----&gt;</translation>
     </message>
     <message>
         <source>&lt;----- Sel</source>
-        <translation>&lt;----- Эти</translation>
+        <translation type="obsolete">&lt;----- Эти</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation>&lt;----- Все</translation>
+        <translation type="obsolete">&lt;----- Все</translation>
     </message>
     <message>
         <source>Search for files&lt;br&gt;having all of:</source>
-        <translation>Искать файлы&lt;br&gt;со всем из:</translation>
+        <translation type="obsolete">Искать файлы&lt;br&gt;со всем из:</translation>
     </message>
     <message>
         <source>All non blank fields will be combined with AND conjunctions</source>
-        <translation>Все непустые поля будут объединены AND</translation>
+        <translation type="obsolete">Все непустые поля будут объединены AND</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>Поиск по именам файлов</translation>
+        <translation type="obsolete">Поиск по именам файлов</translation>
     </message>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
+        <translation type="obsolete">Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
     </message>
 </context>
 </TS>
