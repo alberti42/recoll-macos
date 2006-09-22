@@ -19,11 +19,7 @@ else
    usage
 fi
 QTGUI=@QTGUI@
-if test X$QTGUI = Xqtgui ; then
-  I18N=$QTGUI
-else
-  I18N=${QTGUI}/i18n
-fi
+I18N=${QTGUI}/i18n
 
 test -n "$bindir" || bindir=${PREFIX}/bin
 test -n "$datadir" || datadir=${PREFIX}/share
