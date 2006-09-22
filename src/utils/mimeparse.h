@@ -16,7 +16,36 @@
  */
 #ifndef _MIME_H_INCLUDED_
 #define _MIME_H_INCLUDED_
-/* @(#$Id: mimeparse.h,v 1.8 2006-09-15 16:50:44 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimeparse.h,v 1.9 2006-09-22 07:42:55 dockes Exp $  (C) 2004 J.F.Dockes */
+/*
+Mime definitions RFC to 4-9-2006:
+
+2045 Multipurpose Internet Mail Extensions (MIME) Part One: Format of
+     Internet Message Bodies. N. Freed, N. Borenstein. November 1996.
+     (Format: TXT=72932 bytes) (Obsoletes RFC1521, RFC1522, RFC1590)
+     (Updated by RFC2184, RFC2231) (Status: DRAFT STANDARD)
+
+2046 Multipurpose Internet Mail Extensions (MIME) Part Two: Media
+     Types. N. Freed, N. Borenstein. November 1996. (Format: TXT=105854
+     bytes) (Obsoletes RFC1521, RFC1522, RFC1590) (Updated by RFC2646,
+     RFC3798) (Status: DRAFT STANDARD)
+
+2047 MIME (Multipurpose Internet Mail Extensions) Part Three: Message
+     Header Extensions for Non-ASCII Text. K. Moore. November 1996.
+     (Format: TXT=33262 bytes) (Obsoletes RFC1521, RFC1522, RFC1590)
+     (Updated by RFC2184, RFC2231) (Status: DRAFT STANDARD)
+
+2183 Communicating Presentation Information in Internet Messages: The
+     Content-Disposition Header Field. R. Troost, S. Dorner, K. Moore,
+     Ed.. August 1997. (Format: TXT=23150 bytes) (Updates RFC1806)
+     (Updated by RFC2184, RFC2231) (Status: PROPOSED STANDARD)
+
+2231 MIME Parameter Value and Encoded Word Extensions: Character Sets,
+     Languages, and Continuations. N. Freed, K. Moore. November 1997.
+     (Format: TXT=19280 bytes) (Obsoletes RFC2184) (Updates RFC2045,
+     RFC2047, RFC2183) (Status: PROPOSED STANDARD)
+*/
+
 
 #include <time.h>
 
