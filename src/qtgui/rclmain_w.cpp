@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain.cpp,v 1.35 2006-09-22 07:29:34 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.1 2006-09-22 07:41:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -61,8 +61,8 @@ using std::pair;
 #include "reslist.h"
 #include "transcode.h"
 
-#include "rclmain.h"
-#include "moc_rclmain.cpp"
+#include "rclmain_w.h"
+#include "moc_rclmain_w.cpp"
 
 extern "C" int XFlush(void *);
 

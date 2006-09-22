@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.49 2006-09-13 13:53:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.50 2006-09-22 07:37:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.49 2006-09-13 13:53:35 dockes Exp $ 
 #ifdef WITH_KDE
 #include "rclversion.h"
 #endif
-#include "rclmain.h"
+#include "rclmain_w.h"
 #include "guiutils.h"
 
 #ifdef WITH_KDE

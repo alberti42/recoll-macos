@@ -14,8 +14,8 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef RCLMAIN_H
-#define RCLMAIN_H
+#ifndef RCLMAIN_W_H
+#define RCLMAIN_W_H
 
 #include <qvariant.h>
 #include <qmainwindow.h>
@@ -28,7 +28,7 @@
 #include "rcldb.h"
 #include "searchdata.h"
 
-#include "recollmain.h"
+#include "rclmain.h"
 
 class RclMain : public RclMainBase
 {
@@ -79,4 +79,4 @@ private:
     virtual void init();
 };
 
-#endif // RCLMAIN_H
+#endif // RCLMAIN_W_H
