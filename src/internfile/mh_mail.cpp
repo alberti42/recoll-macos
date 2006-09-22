@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.18 2006-09-19 14:30:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.19 2006-09-22 07:19:13 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,8 @@ static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.18 2006-09-19 14:30:39 dockes Exp
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
+
+static const int maxdepth = 20;
 
 MimeHandlerMail::~MimeHandlerMail()
 {
@@ -185,6 +187,7 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 		fn.c_str()));
 	return MimeHandler::MHError;
     }
+    LOGDEB2(("Calling processMsg with msgnum %d\n", m_msgnum));
     MimeHandler::Status ret = processMsg(docout, doc, 0);
     if (ret == MimeHandler::MHError)
 	return ret;
@@ -207,9 +210,11 @@ MimeHandler::Status
 MimeHandlerMail::processMsg(Rcl::Doc &docout, Binc::MimePart& doc, 
 			    int depth)
 {
-    if (depth >= 5) {
+    LOGDEB2(("MimeHandlerMail::processMsg: depth %d\n", depth));
+    if (depth++ >= maxdepth) {
 	// Have to stop somewhere
-	LOGDEB(("MimeHandlerMail::processMsg: stopping at depth 5\n"));
+	LOGDEB(("MimeHandlerMail::processMsg: maxdepth %d exceeded\n", 
+		maxdepth));
 	return MimeHandler::MHDone;
     }
 	
@@ -226,7 +231,7 @@ MimeHandlerMail::processMsg(Rcl::Doc &docout, Binc::MimePart& doc,
     }
     if (doc.h.getFirstHeader("Date", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
-	if (depth == 0) {
+	if (depth == 1) {
 	    time_t t = rfc2822DateToUxTime(transcoded);
 	    if (t != (time_t)-1) {
 		char ascuxtime[100];
@@ -241,7 +246,7 @@ MimeHandlerMail::processMsg(Rcl::Doc &docout, Binc::MimePart& doc,
     }
     if (doc.h.getFirstHeader("Subject", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
-	if (depth == 0)
+	if (depth == 1)
 	    docout.title = transcoded;
 	docout.text += string("Subject: ") + transcoded + string("\n");
     }
@@ -265,13 +270,15 @@ MimeHandlerMail::processMsg(Rcl::Doc &docout, Binc::MimePart& doc,
 // multipart can be mixed, alternative, parallel, digest.
 // message/rfc822 may also be of interest.
 
-void MimeHandlerMail::walkmime(Rcl::Doc& docout, Binc::MimePart& doc, int depth)
+void MimeHandlerMail::walkmime(Rcl::Doc& docout, Binc::MimePart& doc,int depth)
 {
-    string &out = docout.text;
-    if (depth > 5) {
-	LOGINFO(("walkmime: max depth (5) exceeded\n"));
+    LOGDEB2(("MimeHandlerMail::walkmime: depth %d\n", depth));
+    if (depth++ >= maxdepth) {
+	LOGINFO(("walkmime: max depth (%d) exceeded\n", maxdepth));
 	return;
     }
+
+    string &out = docout.text;
 
     if (doc.isMultipart()) {
 	LOGDEB2(("walkmime: ismultipart %d subtype '%s'\n", 
@@ -283,7 +290,7 @@ void MimeHandlerMail::walkmime(Rcl::Doc& docout, Binc::MimePart& doc, int depth)
 	if (!stringicmp("mixed", doc.getSubType()) || 
 	    !stringicmp("related", doc.getSubType())) {
 	    for (it = doc.members.begin(); it != doc.members.end();it++) {
-		walkmime(docout, *it, depth+1);
+		walkmime(docout, *it, depth);
 	    }
 	} else if (!stringicmp("alternative", doc.getSubType())) {
 	    std::vector<Binc::MimePart>::iterator ittxt, ithtml;
@@ -306,10 +313,10 @@ void MimeHandlerMail::walkmime(Rcl::Doc& docout, Binc::MimePart& doc, int depth)
 	    }
 	    if (ittxt != doc.members.end()) {
 		LOGDEB2(("walkmime: alternative: chose text/plain part\n"))
-		walkmime(docout, *ittxt, depth+1);
+		walkmime(docout, *ittxt, depth);
 	    } else if (ithtml != doc.members.end()) {
 		LOGDEB2(("walkmime: alternative: chose text/html part\n"))
-		walkmime(docout, *ithtml, depth+1);
+		walkmime(docout, *ithtml, depth);
 	    }
 	}
 	return;
@@ -366,7 +373,7 @@ void MimeHandlerMail::walkmime(Rcl::Doc& docout, Binc::MimePart& doc, int depth)
 	if (m_forPreview)
 	    out += "]";
 	out += "\n\n";
-	processMsg(docout, doc.members[0], depth+1);
+	processMsg(docout, doc.members[0], depth);
 	return;
     }
 
