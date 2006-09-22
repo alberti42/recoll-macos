@@ -1,6 +1,12 @@
 #ifndef _RCLRESLIST_H_INCLUDED_
 #define _RCLRESLIST_H_INCLUDED_
-/* @(#$Id: rclreslist.h,v 1.10 2006-09-21 12:56:57 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: rclreslist.h,v 1.11 2006-09-22 07:22:07 dockes Exp $  (C) 2005 J.F.Dockes */
+
+#include <list>
+
+#ifndef NO_NAMESPACES
+using std::list;
+#endif
 
 #include <qtextbrowser.h>
 #include <qpopupmenu.h>
@@ -54,6 +60,7 @@ class RclResList : public QTextBrowser
 
  protected:
     void keyPressEvent(QKeyEvent *e);
+    void contentsMouseReleaseEvent(QMouseEvent *e);
 
  protected slots:
     virtual void languageChange();
@@ -66,8 +73,10 @@ class RclResList : public QTextBrowser
     DocSequence       *m_docsource;
     std::vector<Rcl::Doc> m_curDocs;
     int                m_winfirst;
-    int                m_docnum; // Docnum matching the currently active para
+    int                m_popDoc; // Docnum for the popup menu.
     int                m_curPvDoc;// Docnum for current preview
+    int                m_lstClckMod; // Last click modifier. 
+    list<int>          m_selDocs;
 
     virtual int docnumfromparnum(int);
     virtual int parnumfromdocnum(int);

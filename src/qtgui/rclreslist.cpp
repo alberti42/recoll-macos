@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.20 2006-09-21 12:56:57 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclreslist.cpp,v 1.21 2006-09-22 07:22:07 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -53,6 +53,7 @@ RclResList::RclResList(QWidget* parent, const char* name)
     m_winfirst = -1;
     m_docsource = 0;
     m_curPvDoc = -1;
+    m_lstClckMod = 0;
 }
 
 
@@ -134,19 +135,10 @@ bool RclResList::getDoc(int docnum, Rcl::Doc &doc)
     return false;
 
  found:
-    if (docnum != m_docnum) {
-	int par = parnumfromdocnum(docnum);
-	if (par >= 0) {
-	    setCursorPosition(par, 1);
-	    ensureCursorVisible();
-	    clicked(par, 1);
-	    m_docnum = docnum;
-	}
-    }
     return true;
 }
 
-void RclResList::keyPressEvent( QKeyEvent * e )
+void RclResList::keyPressEvent(QKeyEvent * e)
 {
     if (e->key() == Key_Q && (e->state() & ControlButton)) {
 	recollNeedsExit = 1;
@@ -159,6 +151,18 @@ void RclResList::keyPressEvent( QKeyEvent * e )
 	return;
     }
     QTextBrowser::keyPressEvent(e);
+}
+
+void RclResList::contentsMouseReleaseEvent(QMouseEvent *e)
+{
+    m_lstClckMod = 0;
+    if (e->state() & ControlButton) {
+	m_lstClckMod |= ControlButton;
+    } 
+    if (e->state() & ShiftButton) {
+	m_lstClckMod |= ShiftButton;
+    }
+    QTextBrowser::contentsMouseReleaseEvent(e);
 }
 
 // Return total result list count
@@ -460,9 +464,23 @@ void RclResList::resultPageNext()
     emit nextPageAvailable(hasNext);
 }
 
-// Single click in result list: 
-void RclResList::clicked(int, int)
+// Single click in result list use this for document selection, if no
+// text selection active:
+void RclResList::clicked(int par, int)
 {
+    LOGDEB2(("RclResList::clicked\n"));
+
+    // It's very ennoying, textBrowser always has selected text. This
+    // is bound to change with qt releases!
+    if (hasSelectedText()&& selectedText().compare("<!--StartFragment-->")) {
+	// Give priority to text selection, do nothing
+	LOGDEB2(("%s\n", (const char *)(selectedText().ascii())));
+	return;
+    }
+    LOGDEB(("click at par %d (with %s %s)\n", par, 
+	    (m_lstClckMod & ControlButton) ? "Ctrl" : "",
+	    (m_lstClckMod & ShiftButton) ? "Shft" : ""));
+
 }
 
 // Color paragraph (if any) of currently visible preview
@@ -482,6 +500,9 @@ void RclResList::previewExposed(int docnum)
     // Maybe docnum is -1 or not in this window, 
     if (par < 0)
 	return;
+
+    setCursorPosition(par, 1);
+    ensureCursorVisible();
 
     // Color the new active paragraph
     QColor color("LightBlue");
@@ -524,7 +545,7 @@ QPopupMenu *RclResList::createPopupMenu(const QPoint& pos)
 {
     int para = paragraphAt(pos);
     clicked(para, 0);
-    m_docnum = docnumfromparnum(para);
+    m_popDoc = docnumfromparnum(para);
     QPopupMenu *popup = new QPopupMenu(this, "qt_edit_menu");
     popup->insertItem(tr("&Preview"), this, SLOT(menuPreview()));
     popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
@@ -536,16 +557,16 @@ QPopupMenu *RclResList::createPopupMenu(const QPoint& pos)
 
 void RclResList::menuPreview()
 {
-    emit docPreviewClicked(m_docnum);
+    emit docPreviewClicked(m_popDoc);
 }
 void RclResList::menuEdit()
 {
-    emit docEditClicked(m_docnum);
+    emit docEditClicked(m_popDoc);
 }
 void RclResList::menuCopyFN()
 {
     Rcl::Doc doc;
-    if (getDoc(m_docnum, doc)) {
+    if (getDoc(m_popDoc, doc)) {
 	// Our urls currently always begin with "file://"
 	QApplication::clipboard()->setText(doc.url.c_str()+7, 
 					   QClipboard::Selection);
@@ -554,7 +575,7 @@ void RclResList::menuCopyFN()
 void RclResList::menuCopyURL()
 {
     Rcl::Doc doc;
-    if (getDoc(m_docnum, doc)) {
+    if (getDoc(m_popDoc, doc)) {
 	string url =  url_encode(doc.url, 7);
 	QApplication::clipboard()->setText(url.c_str(), 
 					   QClipboard::Selection);
@@ -563,8 +584,8 @@ void RclResList::menuCopyURL()
 void RclResList::menuExpand()
 {
     Rcl::Doc doc;
-    if (rcldb && getDoc(m_docnum, doc)) {
-	emit docExpand(m_docnum);
+    if (rcldb && getDoc(m_popDoc, doc)) {
+	emit docExpand(m_popDoc);
     }
 }
 
