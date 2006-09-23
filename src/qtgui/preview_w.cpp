@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.3 2006-09-21 12:56:57 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.4 2006-09-23 07:39:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,7 @@ using std::pair;
 #include "wipedir.h"
 #include "cancelcheck.h"
 #include "preview_w.h"
+#include "guiutils.h"
 
 #if (QT_VERSION < 0x030300)
 #define wasCanceled wasCancelled
@@ -325,7 +326,10 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
 	struct tm *tm = localtime(&mtime);
 	strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S", tm);
     }
-    string tiptxt = doc.url + string("\n");
+    LOGDEB(("Doc.url: [%s]\n", doc.url.c_str()));
+    string url;
+    printableUrl(doc.url, url);
+    string tiptxt = url + string("\n");
     tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
     if (!doc.title.empty())
 	tiptxt += doc.title + "\n";

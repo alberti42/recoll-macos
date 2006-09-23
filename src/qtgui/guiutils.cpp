@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.20 2006-09-21 09:37:28 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.21 2006-09-23 07:39:55 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.20 2006-09-21 09:37:28 dockes Ex
 #include "pathut.h"
 #include "base64.h"
 #include "rcldb.h"
+#include "transcode.h"
 
 #include <qsettings.h>
 #include <qstringlist.h>
@@ -98,6 +99,17 @@ bool startHelpBrowser(const string &iurl)
     LOGERR(("startHelpBrowser: no html browser found. Looked for: %s\n", 
 	    searched.c_str()));
     return false;
+}
+
+// Printable url: either utf-8 if transcoding succeeds, or url-encoded
+bool printableUrl(const string &in, string &out)
+{
+    string fcharset = rclconfig->getDefCharset(true);
+    int ecnt = 0;
+    if (!transcode(in, out, fcharset, "UTF-8", &ecnt) || ecnt) {
+	out = url_encode(in, 7);
+    }
+    return true;
 }
 
 

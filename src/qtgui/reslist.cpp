@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.1 2006-09-22 07:29:34 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.2 2006-09-23 07:39:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -333,16 +333,13 @@ void ResList::resultPageNext()
 	char perbuf[10];
 	sprintf(perbuf, "%3d%% ", percent);
 
-	// Make title out of file name if none yet
-	string fcharset = rclconfig->getDefCharset(true);
-	if (doc.title.empty()) {
-	    transcode(path_getsimple(doc.url), doc.title, fcharset, "UTF-8");
-	}
-
 	// Printable url: either utf-8 if transcoding succeeds, or url-encoded
-	string url; int ecnt = 0;
-	if (!transcode(doc.url, url, fcharset, "UTF-8", &ecnt) || ecnt) {
-	    url = url_encode(doc.url, 7);
+	string url;
+	printableUrl(doc.url, url);
+
+	// Make title out of file name if none yet
+	if (doc.title.empty()) {
+	    doc.title = path_getsimple(url);
 	}
 	
 	// Document date: either doc or file modification time

@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.12 2006-09-21 09:37:28 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.13 2006-09-23 07:39:55 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,9 @@ using std::list;
 
 /** Start a browser on the help document */
 extern bool startHelpBrowser(const string& url = "");
+
+/** Try to make an utf8 printable url */
+extern bool printableUrl(const string &in, string &out);
 
 /** Holder for preferences (gets saved to user Qt prefs) */
 class PrefsPack {
