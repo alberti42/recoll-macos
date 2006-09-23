@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.19 2006-09-22 07:19:13 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.20 2006-09-23 07:39:18 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -250,6 +250,7 @@ MimeHandlerMail::processMsg(Rcl::Doc &docout, Binc::MimePart& doc,
 	    docout.title = transcoded;
 	docout.text += string("Subject: ") + transcoded + string("\n");
     }
+    docout.text += '\n';
 
     LOGDEB2(("MimeHandlerMail::processMsg:ismultipart %d mime subtype '%s'\n",
 	    doc.isMultipart(), doc.getSubType().c_str()));
@@ -283,16 +284,19 @@ void MimeHandlerMail::walkmime(Rcl::Doc& docout, Binc::MimePart& doc,int depth)
     if (doc.isMultipart()) {
 	LOGDEB2(("walkmime: ismultipart %d subtype '%s'\n", 
 		doc.isMultipart(), doc.getSubType().c_str()));
-	// We only handle alternative, related and mixed for now. For
-	// alternative, we look for a text/plain part, else html and
-	// process it. For mixed and related, we process each part.
+	// We only handle alternative, related and mixed (no digests). 
 	std::vector<Binc::MimePart>::iterator it;
+
 	if (!stringicmp("mixed", doc.getSubType()) || 
 	    !stringicmp("related", doc.getSubType())) {
+	    // Multipart mixed and related:  process each part.
 	    for (it = doc.members.begin(); it != doc.members.end();it++) {
 		walkmime(docout, *it, depth);
 	    }
+
 	} else if (!stringicmp("alternative", doc.getSubType())) {
+	    // Multipart/alternative: look for a text/plain part, then html.
+	    // Process if found
 	    std::vector<Binc::MimePart>::iterator ittxt, ithtml;
 	    ittxt = ithtml = doc.members.end();
 	    int i = 1;
@@ -359,8 +363,8 @@ void MimeHandlerMail::walkmime(Rcl::Doc& docout, Binc::MimePart& doc,int depth)
     if (doc.isMessageRFC822()) {
 	LOGDEB2(("walkmime: message/RFC822 part\n"));
 	
-	// The first part is the already parsed message.
-	// Call processMsg instead of walkmime so tha mail headers get 
+	// The first part is the already parsed message.  Call
+	// processMsg instead of walkmime so that mail headers get
 	// printed. The depth will tell it what to do
 	if (doc.members.empty()) {
 	    //??
@@ -472,6 +476,9 @@ void MimeHandlerMail::walkmime(Rcl::Doc& docout, Binc::MimePart& doc,int depth)
 	}
     }
 
-    out += string("\r\n") + utf8;
+    out += utf8;
+    if (out.length() && out[out.length()-1] != '\n')
+	out += '\n';
+    
     LOGDEB2(("walkmime: out now: [%s]\n", out.c_str()));
 }
