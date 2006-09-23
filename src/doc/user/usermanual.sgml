@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.18 2006-09-23 13:09:09 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.19 2006-09-23 13:11:17 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -928,6 +928,7 @@
         linkend="rcl.indexing.config">configuration section</link>.</para>
 
       </sect2>
+      </sect1>
 
     <sect1 id="rcl.install.external">
       <title>Packages needed for external file types</title>
@@ -987,7 +988,7 @@
 	processed internally.</para>
     </sect1>
 
-    </sect1>
+
       <sect1 id="rcl.install.building">
       <title>Building from source</title>
 
