@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.17 2006-09-15 16:50:44 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.18 2006-09-23 13:09:09 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -915,14 +915,77 @@
         the versions which are used.</para> 
 
       <para>After extracting the tar file, you can proceed with
-        <link
-        linkend="rcl.install.building.install">installation</link> as
-        if you had built the package from source.</para> 
+        <link linkend="rcl.install.building.install">installation</link> as
+        if you had built the package from source (that is, just type
+        <literal>make install</literal>). The binary trees are built for
+        installation to	<filename>/usr/local</filename>.</para>
 
-	<para>The binary trees are built for installation to
-	<filename>/usr/local</filename>.</para>
+	<para>You may then need to install external applications to process
+	some file types that you want indexed (ie: acrobat, 
+	postscript&nbsp;...). See next section.</para> 
+
+	<para>Finally, you may want to have a look at the <link
+        linkend="rcl.indexing.config">configuration section</link>.</para>
+
       </sect2>
 
+    <sect1 id="rcl.install.external">
+      <title>Packages needed for external file types</title>
+
+	<para>&RCL; uses external applications 
+        to index some file types. You need to install them for the
+        file types that you wish to have indexed (these are run-time
+        dependencies. None is needed for building &RCL;):</para>
+
+      <itemizedlist>
+
+        <listitem><para>PDF: pdftotext is part of the <ulink
+            url="http://www.foolabs.com/xpdf/">Xpdf</ulink> package.</para>
+          </listitem>
+
+        <listitem><para>Postscript: <ulink
+          url="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
+            pstotext</ulink>.</para>
+          </listitem>
+
+        <listitem><para>MS Word: <ulink url="http://www.winfield.demon.nl"> 
+            antiword</ulink>.</para>
+          </listitem>
+
+        <listitem><para>MS Excel and PowerPoint: 
+           <ulink url="http://www.45.free.net/~vitus/software/catdoc/"> 
+            catdoc</ulink>.</para>
+          </listitem>
+
+        <listitem>
+            <para>RTF: <ulink
+            url="http://www.gnu.org/software/unrtf/unrtf.html">unrtf</ulink>
+          </para>
+	</listitem>
+
+	<listitem>
+            <para>dvi: <ulink
+	       url="http://www.radicaleye.com/dvips.html">dvips</ulink></para>
+        </listitem>
+
+	<listitem>
+            <para>djvu: 
+	    <ulink
+	       url="http://djvulibre.djvuzone.org/doc/index.html">DjVuLibre
+	    </ulink></para>
+        </listitem>
+          
+        <listitem><para>MP3: &RCL; will use the
+        <command>id3info</command> command from the <ulink
+        url="http://id3lib.sourceforge.net/">id3lib</ulink> package to
+        extract tag information. Without it, only the filenames will
+        be indexed.</para>
+          </listitem>
+        </itemizedlist>
+
+	<para>Text, Html, mail folders and Openoffice files are
+	processed internally.</para>
+    </sect1>
 
     </sect1>
       <sect1 id="rcl.install.building">
@@ -1027,69 +1090,9 @@
 	be found.</para>
 
 	<para>You can then proceed to <link
-	linkend="rcl.install.config">configuration</link>. </para>
+       linkend="rcl.install.config">configuration</link>. </para>
 
       </sect2>
-    </sect1>
-
-
-
-    <sect1 id="rcl.install.external">
-      <title>Packages needed for external file types</title>
-
-	<para>&RCL; uses external applications 
-        to index some file types. You need to install them for the
-        file types that you wish to have indexed (these are run-time
-        dependencies. None is needed for building &RCL;):</para>
-
-      <itemizedlist>
-
-        <listitem><para>PDF: pdftotext is part of the <ulink
-            url="http://www.foolabs.com/xpdf/">Xpdf</ulink> package.</para>
-          </listitem>
-
-        <listitem><para>Postscript: <ulink
-          url="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
-            pstotext</ulink>.</para>
-          </listitem>
-
-        <listitem><para>MS Word: <ulink url="http://www.winfield.demon.nl"> 
-            antiword</ulink>.</para>
-          </listitem>
-
-        <listitem><para>MS Excel and PowerPoint: 
-           <ulink url="http://www.45.free.net/~vitus/software/catdoc/"> 
-            catdoc</ulink>.</para>
-          </listitem>
-
-        <listitem>
-            <para>RTF: <ulink
-            url="http://www.gnu.org/software/unrtf/unrtf.html">unrtf</ulink>
-          </para>
-	</listitem>
-
-	<listitem>
-            <para>dvi: <ulink
-	       url="http://www.radicaleye.com/dvips.html">dvips</ulink></para>
-        </listitem>
-
-	<listitem>
-            <para>djvu: 
-	    <ulink
-	       url="http://djvulibre.djvuzone.org/doc/index.html">DjVuLibre
-	    </ulink></para>
-        </listitem>
-          
-        <listitem><para>MP3: &RCL; will use the
-        <command>id3info</command> command from the <ulink
-        url="http://id3lib.sourceforge.net/">id3lib</ulink> package to
-        extract tag information. Without it, only the filenames will
-        be indexed.</para>
-          </listitem>
-        </itemizedlist>
-
-	<para>Text, Html, mail folders and Openoffice files are
-	processed internally.</para>
     </sect1>
 
     <sect1 id="rcl.install.config">
