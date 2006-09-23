@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.77 2006-09-22 14:11:26 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.78 2006-09-23 07:21:54 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -428,7 +428,7 @@ bool dumb_string(const string &in, string &out)
 
     string s1 = neutchars(in, "\n\r");
     if (!unacmaybefold(s1, out, "UTF-8", true)) {
-	LOGERR(("dumb_string: unac failed for %s\n", in.c_str()));
+	LOGINFO(("dumb_string: unac failed for [%s]\n", in.c_str()));
 	out.erase();
 	// See comment at start of func
 	return true;
