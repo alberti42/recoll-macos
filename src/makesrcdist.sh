@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: makesrcdist.sh,v 1.9 2006-02-01 07:12:14 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: makesrcdist.sh,v 1.10 2006-09-23 13:13:49 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
 #set -x
@@ -50,7 +50,11 @@ EOF
 
 echo "Dumping html documentation to text files"
 links -dump ${RECOLLDOC}/usermanual.html >> README
+
 links -dump ${RECOLLDOC}/rcl.install.html >> INSTALL
+links -dump ${RECOLLDOC}/rcl.install.external.html >> INSTALL
+links -dump ${RECOLLDOC}/rcl.install.building.html >> INSTALL
+links -dump ${RECOLLDOC}/rcl.install.config.html >> INSTALL
 
 cvs commit -m '' README INSTALL
 

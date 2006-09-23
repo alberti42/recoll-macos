@@ -71,15 +71,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              4.1.2. Installing a prebuilt Recoll
 
-                4.2. Building from source
+                4.2. Packages needed for external file types
 
-                             4.2.1. Prerequisites
+                4.3. Building from source
 
-                             4.2.2. Building
+                             4.3.1. Prerequisites
 
-                             4.2.3. Installation
+                             4.3.2. Building
 
-                4.3. Packages needed for external file types
+                             4.3.3. Installation
 
                 4.4. Configuration overview
 
@@ -738,15 +738,48 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    also means that you cannot change the versions which are used.
 
    After extracting the tar file, you can proceed with installation as if you
-   had built the package from source.
+   had built the package from source (that is, just type make install). The
+   binary trees are built for installation to /usr/local.
 
-   The binary trees are built for installation to /usr/local.
+   You may then need to install external applications to process some file
+   types that you want indexed (ie: acrobat, postscript ...). See next
+   section.
+
+   Finally, you may want to have a look at the configuration section.
 
      ----------------------------------------------------------------------
 
-4.2. Building from source
+4.2. Packages needed for external file types
 
-  4.2.1. Prerequisites
+   Recoll uses external applications to index some file types. You need to
+   install them for the file types that you wish to have indexed (these are
+   run-time dependencies. None is needed for building Recoll):
+
+     * PDF: pdftotext is part of the Xpdf package.
+
+     * Postscript: pstotext.
+
+     * MS Word: antiword.
+
+     * MS Excel and PowerPoint: catdoc.
+
+     * RTF: unrtf
+
+     * dvi: dvips
+
+     * djvu: DjVuLibre
+
+     * MP3: Recoll will use the id3info command from the id3lib package to
+       extract tag information. Without it, only the filenames will be
+       indexed.
+
+   Text, Html, mail folders and Openoffice files are processed internally.
+
+     ----------------------------------------------------------------------
+
+4.3. Building from source
+
+  4.3.1. Prerequisites
 
    At the very least, you will need to download and install the xapian core
    package (Recoll development currently uses version 0.9.5), and the qt
@@ -763,7 +796,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.2.2. Building
+  4.3.2. Building
 
    Recoll has been built on Linux (redhat7.3, mandriva 2005, Fedora Core 3),
    FreeBSD and Solaris 8. If you build on another system, I would very much
@@ -803,7 +836,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.2.3. Installation
+  4.3.3. Installation
 
    Either type make install or execute recollinstall prefix, in the root of
    the source tree. This will copy the commands to prefix/bin and the sample
@@ -815,34 +848,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    to be found.
 
    You can then proceed to configuration.
-
-     ----------------------------------------------------------------------
-
-4.3. Packages needed for external file types
-
-   Recoll uses external applications to index some file types. You need to
-   install them for the file types that you wish to have indexed (these are
-   run-time dependencies. None is needed for building Recoll):
-
-     * PDF: pdftotext is part of the Xpdf package.
-
-     * Postscript: pstotext.
-
-     * MS Word: antiword.
-
-     * MS Excel and PowerPoint: catdoc.
-
-     * RTF: unrtf
-
-     * dvi: dvips
-
-     * djvu: DjVuLibre
-
-     * MP3: Recoll will use the id3info command from the id3lib package to
-       extract tag information. Without it, only the filenames will be
-       indexed.
-
-   Text, Html, mail folders and Openoffice files are processed internally.
 
      ----------------------------------------------------------------------
 

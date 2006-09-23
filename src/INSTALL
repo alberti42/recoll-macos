@@ -184,3 +184,224 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Prev                                      Home                        Next 
    Packages needed for external file types    Up       Configuration overview 
+   Link: HOME
+   Link: UP
+   Link: PREVIOUS
+
+                               Recoll user manual
+   Prev                     Chapter 4. Installation                           
+
+   --------------------------------------------------------------------------
+
+                          4.4. Configuration overview
+
+   There are two sets of configuration files. The system-wide files are kept
+   in a directory named like /usr/[local/]share/recoll/examples, they define
+   default values for the system. A parallel set of files exists by default
+   in the .recoll directory in your home. This directory can be changed with
+   the RECOLL_CONFDIR environment variable or the -c option parameter to
+   recoll and recollindex.
+
+   If the .recoll directory does not exist when recoll or recollindex are
+   started, it will be created with a set of empty configuration files.
+   recoll will give you a chance to edit the configuration file before
+   starting indexing. recollindex will proceed immediately.
+
+   Most of the parameters specific to the recoll GUI are set through the
+   Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
+   You probably do not want to edit this by hand.
+
+   For other options, Recoll uses text configuration files. You will have to
+   edit them by hand for now (there is still some hope for a GUI
+   configuration tool in the future). The most accurate documentation for the
+   configuration parameters is given by comments inside the default files,
+   and we will just give a general overview here.
+
+   All configuration files share the same format. For exemple, a short
+   extract of the main configuration file might look as follows:
+
+         # Space-separated list of directories to index.
+         topdirs =  ~/docs /usr/share/doc
+
+         [~/somedirectory-with-utf8-txt-files]
+         defaultcharset = utf-8
+       
+
+   There are three kinds of lines:
+
+     * Comment (starts with #) or empty.
+
+     * Parameter affectation (name = value).
+
+     * Section definition ([somedirname]).
+
+   Section lines allow redefining some parameters for a directory subtree.
+   Some of the parameters used for indexing are looked up hierarchically from
+   the more to the less specific. Not all parameters can be meaningfully
+   redefined, this is specified for each in the next section.
+
+   The tilde character (~) is expanded in file names to the name of the
+   user's home directory.
+
+   White space is used for separation inside lists. Elements with embedded
+   spaces can be quoted using double-quotes.
+
+4.4.1. Main configuration file
+
+   recoll.conf is the main configuration file. It defines things like what to
+   index (top directories and things to ignore), and the default character
+   set to use for document types which do not specify it internally.
+
+   The default configuration will index your home directory. If this is not
+   appropriate, start recoll to create a blank configuration, click Cancel,
+   and edit the configuration file before restarting the command. This will
+   start the initial indexing, which may take some time.
+
+   Paramers:
+
+   topdirs
+
+           Specifies the list of directories or files to index (recursively
+           for directories). The indexer will not follow symbolic links
+           inside the indexed trees. If an entry in the topdirs list is a
+           symbolic link, indexing will not start and will generate an error.
+
+   dbdir
+
+           The name of the Xapian data directory. It will be created if
+           needed when the index is initialized. If this is not an absolute
+           path, it will be interpreted relative to the configuration
+           directory.
+
+   skippedNames
+
+           A space-separated list of patterns for names of files or
+           directories that should be completely ignored. The list defined in
+           the default file is:
+
+ *~ #* bin CVS  Cache caughtspam  tmp
+
+           The list can be redefined for subdirectories, but is only actually
+           changed for the top level ones in topdirs.
+
+           The top-level directories are not affected by this list (that is,
+           a directory in topdirs might match and would still be indexed).
+
+           The list in the default configuration does not exclude hidden
+           directories (names beginning with a dot), which means that it may
+           index quite a few things that you do not want. On the other hand,
+           mail user agents like thunderbird usually store messages in hidden
+           directories, and you probably want this indexed. One possible
+           solution is to have .* in skippedNames, and add things like
+           ~/.thunderbird or ~/.evolution in topdirs.
+
+   loglevel
+
+           Verbosity level for recoll and recollindex. A value of 4 lists
+           quite a lot of debug/information messages. 2 only lists errors.
+
+   logfilename
+
+           Where the messages should go. 'stderr' can be used as a special
+           value, and is the default.
+
+   filtersdir
+
+           A directory to search for the external filter scripts used to
+           index some types of files. The value should not be changed, except
+           if you want to modify one of the default scripts. The value can be
+           redefined for any subdirectory.
+
+   indexstemminglanguages
+
+           A list of languages for which the stem expansion databases will be
+           built. See recollindex(1) for possible values. You can add a stem
+           expansion database for a different language by using recollindex
+           -s, but it will be deleted during the next indexing. Only
+           languages listed in the configuration file are permanent.
+
+   defaultcharset
+
+           The name of the character set used for files that do not contain a
+           character set definition (ie: plain text files). This can be
+           redefined for any subdirectory. If it is not set at all, the
+           character set used is the one defined by the nls environment
+           (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
+
+   guesscharset
+
+           Decide if we try to guess the character set of files if no
+           internal value is available (ie: for plain text files). This does
+           not work well in general, and should probably not be used.
+
+   usesystemfilecommand
+
+           Decide if we use the file -i system command as a final step for
+           determining the mime type for a file (the main procedure uses
+           suffix associations as defined in the mimemap file). This can be
+           useful for files with suffixless names, but it will also cause the
+           indexing of many bogus "text" files.
+
+   indexallfilenames
+
+           Recoll indexes file names in a special section of the database to
+           allow specific file names searches using wild cards. This
+           parameter decides if file name indexing is performed only for
+           files with mime types that would qualify them for full text
+           indexing, or for all files inside the selected subtrees,
+           independant of mime type.
+
+   idxabsmlen
+
+           Recoll stores an abstract for each indexed file inside the
+           database. This is so that they can be displayed inside the result
+           lists without decoding the original file. This parameter defines
+           the size of the stored abstract (which can come from an actual
+           section or just be the beginning of the text). The default value
+           is 250.
+
+   iconsdir
+
+           The name of the directory where recoll result list icons are
+           stored. You can change this if you want different images.
+
+4.4.2. The mimemap file
+
+   mimemap specifies the file name extension to mime type mappings.
+
+   For file names without an extension, or with an unknown one, the system's
+   file -i command will be executed to determine the mime type (this can be
+   switched off inside the main configuration file).
+
+   The mappings can be specified on a per-subtree basis, which may be useful
+   in some cases. Example: gaim logs have a .txt extension but should be
+   handled specially, which is possible because they are usually all located
+   in one place.
+
+   mimemap also has a recoll_noindex variable which is a list of suffixes.
+   Matching files will be skipped (avoids unnecessary decompressions or file
+   executions). This is partially redundant with skippedNames in the main
+   configuration file, with two differences: it will not affect directories,
+   and it can be changed for any subdirectory.
+
+4.4.3. The mimeconf file
+
+   mimeconf specifies how the different mime types are handled for indexing,
+   and for display.
+
+   Changing the indexing parameters is probably not a good idea except if you
+   are a Recoll developper.
+
+   You may want to adjust the external viewers defined in (ie: html is either
+   previewed internally or displayed using firefox, but you may prefer
+   mozilla, your openoffice.org program might be named oofice instead of
+   openoffice ...). Look for the [view] section.
+
+   You can also change the icons which are displayed by recoll in the result
+   lists (the values are the basenames of the png images inside the iconsdir
+   directory (specified in recoll.conf).
+
+   --------------------------------------------------------------------------
+
+   Prev                               Home                                    
+   Building from source                Up                                     
