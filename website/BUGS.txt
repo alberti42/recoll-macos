@@ -1,6 +1,6 @@
 Known bugs in current version and older versions:
 
-1.4.2
+1.4.2 - 1.5.0
 - When a mime type has an external viewer defined, but the actual file is
   compressed (ie: xxx.txt.gz), recoll will try to start the external viewer
   on the compressed file, which will not work in most cases.
