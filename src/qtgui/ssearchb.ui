@@ -106,7 +106,7 @@
                         <bool>false</bool>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Enter search terms here</string>
+                        <string>Enter search terms here. CTRL-TAB for completions of current term.</string>
                     </property>
                 </widget>
             </hbox>
