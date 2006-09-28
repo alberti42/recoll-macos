@@ -709,7 +709,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Enter search terms here</source>
-        <translation>Entrer les termes à chercher</translation>
+        <translation type="obsolete">Entrer les termes à chercher</translation>
     </message>
     <message>
         <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
@@ -734,6 +734,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Select an item:</source>
         <translation type="obsolete">Sélectionner un élément:</translation>
+    </message>
+    <message>
+        <source>Enter search terms here. CTRL-TAB for completions of current term.</source>
+        <translation>Entrer les mots recherchés. CTRL-TAB pour obtenir une liste de terminaisons pour l&apos;entrée en cours.</translation>
     </message>
 </context>
 <context>
@@ -944,7 +948,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>(no stemming)</source>
-        <translation>(pas d'expansion)</translation>
+        <translation>(pas d&apos;expansion)</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian index</source>
