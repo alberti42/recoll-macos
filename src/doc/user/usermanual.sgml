@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.19 2006-09-23 13:11:17 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.20 2006-09-28 14:30:53 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -664,6 +664,20 @@
     <sect1 id="rcl.search.tips">
       <title>Search tips, shortcuts</title>
 
+      <formalpara><title>Term completion</title>
+	<para>Typing <keycap>^TAB</keycap> (<keycap>Control</keycap> +
+	<keycap>Tab</keycap>) in the simple
+	search entry field while entering a word will either complete
+	the current word if its beginning matches a unique term in the
+	index, or open a window to propose a list of completions</para>
+      </formalpara>
+
+      <formalpara><title>Picking up new terms from result or preview 
+                   text</title>
+	<para>Double-clicking on a word in the result list or in a
+	preview window will copy it to the simple search entry field.</para>
+      </formalpara>
+
       <formalpara><title>Disabling stem expansion</title>
       <para>Entering a capitalized word in any search field will prevent
         stem expansion (no search for
@@ -671,7 +685,8 @@
         <literal>Garden</literal> instead of
         <literal>garden</literal>). This is the only case where
         character case should make a difference for a &RCL;
-        search.</para>
+        search. You can also disable stem expansion or change the
+        stemming language in the preferences.</para>
       </formalpara>
 
       <formalpara><title>Phrases</title>
@@ -681,11 +696,20 @@
         followed by <literal>manual</literal>. You can use the
         <guilabel>This exact phrase</guilabel> field of the advanced
         search dialog to the same effect. Phrases can be entered along
-        simple terms in all search entry fields (except <guilabel>This
-        exact phrase</guilabel>).</para>
+        simple terms in all simple or advanced search entry fields
+        (except <guilabel>This exact phrase</guilabel>).</para>
       </formalpara>
 
-      <formalpara><title>AutoPhrases</title>
+      <formalpara><title>Browsing the result list inside a preview 
+                   window (1.5)</title>
+       <para>Entering <keycap>Shift-Down</keycap> or <keycap>Shift-Up</keycap>
+       (<keycap>Shift</keycap> + an arrow key) in a preview window will
+       display the next or the previous document from the result
+       list. Any secondary search currently active will be executed on
+       the new document.</para>
+      </formalpara>
+
+      <formalpara><title>AutoPhrases (1.5)</title>
       <para>This option can be set in the preferences dialog. If it is
       set, a phrase will be automatically built and added to simple
       searches when looking for <literal>Any terms</literal>. This
@@ -697,21 +721,6 @@
       both appear, but those which contain <literal>virtual
       reality</literal> should appear sooner in the list.</para>
 
-
-      <formalpara><title>Term completion</title>
-	<para>Typing <keycap>^TAB</keycap> (<keycap>Control</keycap> +
-	<keycap>Tab</keycap>) in the simple
-	search entry field while entering a word will either complete
-	the current word if its beginning matches a unique term in the
-	index, or open a window to propose a list of completions</para>
-      </formalpara>
-
-      <formalpara><title>Picking up new terms for search from displayed
-      documents</title>
-	<para>Double-clicking on a word in the result list or in a
-	preview window will copy it to the simple search entry field.</para>
-      </formalpara>
-
       <formalpara><title>Finding related documents</title>
 	<para>Selecting the <guilabel>Find similar documents</guilabel> entry
 	in the result list paragraph right-click menu will select a
@@ -719,12 +728,6 @@
 	them into the simple search entry field. You can then possibly
 	edit the list and start a search to find documents which may
 	be apparented to the current result.</para>
-      </formalpara>
-
-      <formalpara><title>Query explanation</title>
-        <para>You can get an exact description of what the query
-        looked for, including stem expansion, and boolean operators
-        used, by clicking on the result list header.</para>
       </formalpara>
 
       <formalpara><title>File names</title>
@@ -737,23 +740,22 @@
         expansion.</para>
       </formalpara>
 
-      <formalpara><title>Quitting</title>
-      <para>Entering <keycap>^Q</keycap> almost anywhere will
-        close the application.</para>
+      <formalpara><title>Query explanation</title>
+        <para>You can get an exact description of what the query
+        looked for, including stem expansion, and boolean operators
+        used, by clicking on the result list header.</para>
       </formalpara>
 
       <formalpara><title>Closing previews</title> 
-       <para>Entering <keycap>Esc</keycap> will close the preview
-        window and all its tabs. Entering <keycap>^W</keycap> in a tab will
-        close it (and, for the last tab, close the preview window).</para>
+       <para>Entering <keycap>^W</keycap> in a tab will
+        close it (and, for the last tab, close the preview
+        window). Entering <keycap>Esc</keycap> will close the preview
+        window and all its tabs.</para>
       </formalpara>
 
-      <formalpara><title>List browsing in preview</title> 
-       <para>Entering <keycap>Shift-Down</keycap> or <keycap>Shift-Up</keycap>
-       (<keycap>Shift</keycap> + an arrow key) in a preview window will
-       display the next or the previous document from the result
-       list. Any secondary search currently active will be executed on
-       the new document.</para>
+      <formalpara><title>Quitting</title>
+      <para>Entering <keycap>^Q</keycap> almost anywhere will
+        close the application.</para>
       </formalpara>
 
     </sect1>
