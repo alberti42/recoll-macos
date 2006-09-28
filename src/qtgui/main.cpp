@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.50 2006-09-22 07:37:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.51 2006-09-28 11:55:30 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -109,17 +109,21 @@ bool maybeOpenDb(string &reason, bool force)
 
 static void recollCleanup()
 {
+    LOGDEB(("recollCleanup: writing settings\n"));
     if (mainWindow) {
 	prefs.mainwidth = mainWindow->width();
 	prefs.mainheight = mainWindow->height();
 	prefs.ssearchTyp = mainWindow->sSearch->searchTypCMB->currentItem();
     }
     rwSettings(true);
+    LOGDEB2(("recollCleanup: stopping idx thread\n"));
     stop_idxthread();
+    LOGDEB2(("recollCleanup: closing database\n"));
     delete rcldb;
     rcldb = 0;
     delete rclconfig;
     rclconfig = 0;
+    LOGDEB2(("recollCleanup: done\n"));
 }
 
 static void sigcleanup(int)
@@ -166,6 +170,7 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 #endif
 
+    //    fprintf(stderr, "Application created\n");
     string a_config;
     thisprog = argv[0];
     argc--; argv++;
@@ -197,6 +202,7 @@ int main(int argc, char **argv)
 		     translatdir.c_str() );
     app.installTranslator( &translator );
 
+    //    fprintf(stderr, "Translations installed\n");
 
     string reason;
     rclconfig = recollinit(recollCleanup, sigcleanup, reason, &a_config);
@@ -206,6 +212,7 @@ int main(int argc, char **argv)
 	QMessageBox::critical(0, "Recoll",  msg);
 	exit(1);
     }
+    //    fprintf(stderr, "recollinit done\n");
 
     string historyfile = path_cat(rclconfig->getConfDir(), "history");
     g_dynconf = new RclHistory(historyfile);
@@ -215,7 +222,9 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
+    //    fprintf(stderr, "History done\n");
     rwSettings(false);
+    //    fprintf(stderr, "Settings done\n");
 
 
     // Create main window and set its size to previous session's
@@ -242,6 +251,7 @@ int main(int argc, char **argv)
 #endif
     QSize s(prefs.mainwidth, prefs.mainheight);
     mainWindow->resize(s);
+    //    fprintf(stderr, "Main win created\n");
 
 
     mainWindow->sSearch->searchTypCMB->setCurrentItem(prefs.ssearchTyp);
@@ -287,6 +297,7 @@ int main(int argc, char **argv)
 	    exit(0);
 	}
     }
+    //    fprintf(stderr, "Db opened\n");
 
     mainWindow->show();
     if (prefs.startWithAdvSearchOpen)
@@ -296,6 +307,7 @@ int main(int argc, char **argv)
 
     start_idxthread(*rclconfig);
 
+    //    fprintf(stderr, "Go\n");
     // Let's go
     return app.exec();
 }
