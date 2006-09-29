@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.6 2006-09-13 15:31:06 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.7 2006-09-29 07:13:22 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -122,10 +122,11 @@ void SSearch::startSimpleSearch()
     queryText->insertItem(txt, 0);
     queryText->setCurrentItem(0);
 
-    // Save the current state of the listbox list to file
+    // Save the current state of the listbox list to the prefs (will
+    // go to disk)
     prefs.ssearchHistory.clear();
     for (int index = 0; index < queryText->count(); index++) {
-	prefs.ssearchHistory.push_back(queryText->text(index).utf8());
+	prefs.ssearchHistory.push_back(queryText->text(index));
     }
     emit startSearch(sdata);
 }
