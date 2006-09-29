@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.2 2006-09-23 07:39:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.3 2006-09-29 08:24:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -56,7 +56,6 @@ ResList::ResList(QWidget* parent, const char* name)
     m_lstClckMod = 0;
 }
 
-
 ResList::~ResList()
 {
     if (m_docsource) 
@@ -73,8 +72,11 @@ void ResList::setDocSource(DocSequence *docsource, Rcl::AdvSearchData& sdt)
 {
     if (m_docsource)
 	delete m_docsource;
+    m_winfirst = -1;
     m_docsource = docsource;
     m_queryData = sdt;
+    m_curPvDoc = -1;
+
     resultPageNext();
 }
 
