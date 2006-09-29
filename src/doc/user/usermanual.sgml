@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.20 2006-09-28 14:30:53 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.21 2006-09-29 11:43:45 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -74,7 +74,7 @@
       <para>You do not need to remember in what file or email message you
         stored a given piece of information. You just ask for related
         terms, and the tool will return a list of documents where
-        those terms are prominent, in a similar way to internet search
+        those terms are prominent, in a similar way to Internet search
         engines.</para>
 
       <para>&RCL; tries to determine which documents are most relevant to
@@ -88,12 +88,12 @@
         word, not for a specific form or spelling. These different
         forms may include plurals, different tenses for a verb, or
         terms derived from the same root or <emphasis>stem</emphasis>
-        (exemple: floor, floors, floored, floorings...). &RCL; will by
+        (example: floor, floors, floored, flooring...). &RCL; will by
         default expand queries to all such related terms (words that
         reduce to the same stem). This expansion can be disabled at
         search time.</para>
 
-     <para>Stemming, by itself, does not accomodate for misspellings or
+     <para>Stemming, by itself, does not accommodate for misspellings or
         phonetic searches. &RCL; currently does not support these
         features.</para> 
 
@@ -121,7 +121,7 @@
         the place from which they were indexed. (Actually, there is a
         way to reconstruct a document from the information in the
         index, but the result is not nice, as all formatting,
-        punctuation and capitalisation are lost).</para>
+        punctuation and capitalization are lost).</para>
 
       <para>&RCL; stores all internal data in <application>Unicode
       UTF-8</application> format, and it can index files with
@@ -131,7 +131,7 @@
       <para>Stemming depends on the document language. &RCL; stores
       the unstemmed versions of terms and uses auxiliary databases for
       term expansion. It can switch stemming languages, or add a
-      language, without reindexing.  Storing documents in different
+      language, without re-indexing.  Storing documents in different
       languages in the same index is possible, and useful in
       practice, but does introduce possibilities of confusion. &RCL;
       currently makes no attempt at automatic language recognition.</para>
@@ -144,9 +144,9 @@
         (usually something like
         <filename>/usr/[local/]share/recoll/examples</filename>)
         during installation. The default parameters from this file may
-        be overriden by values that you set inside your personal
+        be overridden by values that you set inside your personal
         configuration, found by default in the
-        <filename>.recoll</filename> subdirectory of your home
+        <filename>.recoll</filename> sub-directory of your home
         directory. The default configuration will index your home
         directory with default parameters and should be sufficient for
         giving &RCL; a try, but you may want to adjust it
@@ -267,7 +267,7 @@
 
 	<para>As of version 1.4, &RCL; will create the configuration
 	directory with a mode of 0700 (access by owner only). As the
-	index data directory is by default a subdirectory of the
+	index data directory is by default a sub-directory of the
 	configuration directory, this should result in appropriate
 	protection.</para> 
 
@@ -285,7 +285,7 @@
       <para>Values set in the system-wide configuration file (named
       like
       <filename>/usr/[local/]share/recoll/examples/recoll.conf</filename>)
-      can be overriden by those set in the personal one, named
+      can be overridden by those set in the personal one, named
         <filename>$HOME/.recoll/recoll.conf</filename> by default or
         <filename>$RECOLL_CONFDIR/recoll.conf</filename> if
           RECOLL_CONFDIR is set.</para>
@@ -303,7 +303,7 @@
       this document, or in the recoll.conf(5) man page.</para>
 
       <para>The applications needed to index file types other than
-      text, html or email (ie: pdf, postscript, ms-word...)  are
+      text, HTML or email (ie: pdf, postscript, ms-word...)  are
       described in the <link linkend="rcl.install.external">external
       packages section</link></para>
 
@@ -323,7 +323,7 @@
 
       <para>If the <command>recoll</command> program finds no index
        when it starts, it will automatically start indexing (except
-       if cancelled).</para>
+       if canceled).</para>
 
       <para>It is best to avoid interrupting the indexing process, as
         this may sometimes leave the index in a bad state.  This is
@@ -408,7 +408,7 @@
         performed. You can use the simple search text entry widget (a
         combobox) to recall them (click on the thing at the right of the
         text field). Please note, however, that only the search texts
-        are remembered, not the mode (all/any/filename).</para>
+        are remembered, not the mode (all/any/file name).</para>
 
       <para>Hitting <keycap>^Tab</keycap> (<keycap>Ctrl</keycap> +
         <keycap>Tab</keycap>) while entering a word in the 
@@ -469,7 +469,7 @@
 	<title>The result list right-click menu</title>
 
 	<para>Apart from the preview and edit links, you can display a
-          popup menu by right-clicking over a paragraph in the result
+          pop-up menu by right-clicking over a paragraph in the result
          list. This menu has the following entries:</para>
 
 	<itemizedlist>
@@ -483,7 +483,7 @@
 	<para>The <guilabel>Preview</guilabel> and
           <guilabel>Edit</guilabel> entries do the same thing as the 
           corresponding links. The two following entries will copy either
-          an url or the file path to the clipboard, for pasting into
+          an URL or the file path to the clipboard, for pasting into
           another application.</para>
 
         <para>The <guilabel>Find similar</guilabel> entry will select
@@ -528,13 +528,13 @@
       into the <guilabel>Search for:</guilabel> text field and
       entering the search string. You can then use the
       <guilabel>Next</guilabel> and <guilabel>Previous</guilabel>
-      buttons to find the next/previous occurence. You can also type
+      buttons to find the next/previous occurrence. You can also type
       <keycap>F3</keycap> inside the text area to get to the next
       occurrence.</para>
 
       <para>If you have a search string entered and you use ^Up/^Down
       to browse the results, the search is initiated for each successive
-      document. If the string is found, the cursor will be positionned
+      document. If the string is found, the cursor will be positioned
       at the first occurrence of the search string.</para>
 
     </sect1>
@@ -552,14 +552,14 @@
 
       <para>Advanced search will let you search for documents of specific mime
         types (ie: only <literal>text/plain</literal>, or
-        <literal>text/html</literal> or
+        <literal>text/HTML</literal> or
         <literal>application/pdf</literal> etc...). The state of the
         file type selection can be saved as the default (the file type
-        filter will not be activated at program startup, but the lists
+        filter will not be activated at program start-up, but the lists
         will be in the restored state).</para>
 
       <para>You can also restrict the search results
-      to a subtree of the indexed area. If you need to do this often,
+      to a sub-tree of the indexed area. If you need to do this often,
       you may think of setting up multiple indexes instead, as the
       performance will be much better.</para>
 
@@ -655,7 +655,7 @@
       specified criteria. The currently available criteria are
       <emphasis>date</emphasis> and <emphasis>mime type</emphasis>.</para> 
 
-      <para>The sort parameters stay in effect until they are explicitely
+      <para>The sort parameters stay in effect until they are explicitly
       reset, or the program exits. An activated sort is indicated in
       the result list header.</para>
 
@@ -734,7 +734,7 @@
         <para>File names are added as terms during indexing, and you can
         specify them as ordinary terms in normal search fields (&RCL; used
         to index all directories in the file path as terms. This has been
-        abandonned as it did not seem really useful). Alternatively, you
+        abandoned as it did not seem really useful). Alternatively, you
         can use the specific file name search which will
         <emphasis>only</emphasis> look for file names and can use wildcard
         expansion.</para>
@@ -742,7 +742,7 @@
 
       <formalpara><title>Query explanation</title>
         <para>You can get an exact description of what the query
-        looked for, including stem expansion, and boolean operators
+        looked for, including stem expansion, and Boolean operators
         used, by clicking on the result list header.</para>
       </formalpara>
 
@@ -761,9 +761,9 @@
     </sect1>
 
     <sect1 id="rcl.search.custom">
-      <title>Customising the search interface</title>
+      <title>Customizing the search interface</title>
 
-      <para>It is possible to customise some aspects of the search
+      <para>It is possible to customize some aspects of the search
       interface by using <guimenu>Query configuration</guimenu> entry
       in the <guimenu>Preferences</guimenu> menu.</para>
 
@@ -781,12 +781,12 @@
 
 	<listitem><para><guilabel>Result list font</guilabel>: There
 	is quite a lot of information shown in the result list, and
-	you may want to customise the font and/or font size. The rest
+	you may want to customize the font and/or font size. The rest
 	of the fonts used by &RCL; are determined by your generic QT
 	config (try the <command>qtconfig</command> command.</para>
 	</listitem>
 
-	<listitem><para><guilabel>Html help browser</guilabel>: this
+	<listitem><para><guilabel>HTML help browser</guilabel>: this
 	will let you chose your preferred browser which will be
 	started from the <guimenu>Help</guimenu> menu to read the user
 	manual. You can enter a simple name if the command is in your
@@ -800,7 +800,7 @@
 	</listitem>
 
 	<listitem><para><guilabel>Auto-start simple search on
-	whitespace entry</guilabel>: if this is checked, a search will
+	white space entry</guilabel>: if this is checked, a search will
 	be executed each time you enter a space in the simple search
 	input field. This lets you look at the result list as you
 	enter new terms. This is off by default, you may like it or
@@ -838,7 +838,7 @@
 	</listitem>
 
 	<listitem><para><guilabel>Replace abstracts from
-	documents</guilabel>: this decides if we should synthetize and
+	documents</guilabel>: this decides if we should synthesize and
 	display an abstract in place of an explicit abstract found
 	within the document itself.</para>
 	</listitem>
@@ -866,11 +866,11 @@
 
       <para>Once entered, the indexes will appear in the
 	<guilabel>All indexes</guilabel> list, and you can
-	chose which ones you want to use at any moment by tranferring
+	chose which ones you want to use at any moment by transferring
 	them to/from the <guilabel>Active indexes</guilabel>
 	list.</para> 
       <para>Your main database (the one the current configuration
-      indexes to), is always implicitely active. If this is not
+      indexes to), is always implicitly active. If this is not
       desirable, you can set up your configuration so that it indexes,
       for example, an empty directory.</para>
 
@@ -890,7 +890,7 @@
         will only have to check or install 
         <link linkend="rcl.install.external">supporting
         applications</link> for the file types that you want to index
-        beyond text, html and mail files.</para> 
+        beyond text, HTML and mail files.</para> 
 
       <sect2 id="rcl.install.binary.package">
         <title>Installing through a package system</title>
@@ -981,12 +981,12 @@
         <listitem><para>MP3: &RCL; will use the
         <command>id3info</command> command from the <ulink
         url="http://id3lib.sourceforge.net/">id3lib</ulink> package to
-        extract tag information. Without it, only the filenames will
+        extract tag information. Without it, only the file names will
         be indexed.</para>
           </listitem>
         </itemizedlist>
 
-	<para>Text, Html, mail folders and Openoffice files are
+	<para>Text, HTML, mail folders and Openoffice files are
 	processed internally.</para>
     </sect1>
 
@@ -1001,9 +1001,9 @@
         <ulink url="http://www.xapian.org">xapian core package</ulink>
         (&RCL; development currently uses version 0.9.5), and the <ulink
         url="http://www.trolltech.com/products/qt/index.html">qt
-          runtime and development packages</ulink> (&RCL; development
+          run-time and development packages</ulink> (&RCL; development
           currently uses version 3.3.5, but any 3.3 version is
-          probably ok).</para> 
+          probably OK).</para> 
 
       <para>You will most probably be able to find a binary package for
         <application>qt</application> for your system. You may have to
@@ -1038,7 +1038,7 @@
           </listitem>
           <listitem><para><literal>QMAKESPECS</literal> should
           be set to the name of one of the
-          <application>qt</application> mkspecs subdirectories (ie:
+          <application>qt</application> mkspecs sub-directories (ie:
           linux-g++).</para> 
           </listitem>
         </itemizedlist>
@@ -1061,11 +1061,11 @@
         <userinput>cd recoll-xxx</userinput>
         <userinput>configure</userinput>
         <userinput>make</userinput>
-        <userinput>(practises usual hardship-repelling invocations)</userinput>
+        <userinput>(practices usual hardship-repelling invocations)</userinput>
       </screen>
 
 
-      <para>There little autoconfiguration. The
+      <para>There little auto-configuration. The
         <command>configure</command> script will mainly link one of
         the system-specific files in the <filename>mk</filename>
         directory to <filename>mk/sysconf</filename>. If your system
@@ -1135,7 +1135,7 @@
         files, and we will just give a general overview here.</para>
 
         <para>All configuration files share the same format. For
-        exemple, a short extract of the main configuration file might
+        example, a short extract of the main configuration file might
         look as follows:</para> 
         <programlisting>
         # Space-separated list of directories to index.
@@ -1159,7 +1159,7 @@
         </itemizedlist>
 
         <para>Section lines allow redefining some parameters for a
-        directory subtree. Some of the parameters used for indexing
+        directory sub-tree. Some of the parameters used for indexing
         are looked up hierarchically from the more to the less
         specific. Not all parameters can be meaningfully redefined,
         this is specified for each in the next section. </para>
@@ -1216,7 +1216,7 @@
 <programlisting>
 *~ #* bin CVS  Cache caughtspam  tmp
 </programlisting>
-              <para>The list can be redefined for subdirectories, but is only
+              <para>The list can be redefined for sub-directories, but is only
                actually changed for the top level ones in
                <literal>topdirs</literal>.</para>
                <para>The top-level directories are not affected by this
@@ -1255,7 +1255,7 @@
             filter scripts used to index some types of files. The
             value should not be changed, except if you want to modify
             one of the default scripts. The value can be redefined for
-            any subdirectory. </para>
+            any sub-directory. </para>
             </listitem>
           </varlistentry>
 
@@ -1275,7 +1275,7 @@
             <listitem><para>The name of the character set used for
             files that do not contain a character set definition (ie:
             plain text files). This can be redefined for any
-            subdirectory. If it is not set at all, the character set
+            sub-directory. If it is not set at all, the character set
             used is the one defined by the nls environment (LC_ALL,
             LC_CTYPE, LANG), or iso8859-1 if nothing is set.</para> 
 
@@ -1292,7 +1292,7 @@
             system command as a final step for determining the mime
             type for a file (the main procedure uses suffix
             associations as defined in the  <filename>mimemap</filename>
-            file). This can be useful for files with suffixless names,
+            file). This can be useful for files with suffix-less names,
             but it will also cause the indexing of many bogus "text"
             files.</para> 
             </listitem>
@@ -1304,7 +1304,7 @@
 	    searches using wild cards. This parameter decides if 
             file name indexing is performed only for files with mime
             types that would qualify them for full text indexing, or
-            for all files inside the selected subtrees, independant of
+            for all files inside the selected subtrees, independently of
             mime type.</para>
 	    </listitem>
 	  </varlistentry>
@@ -1357,7 +1357,7 @@
         partially redundant with <literal>skippedNames</literal> in
         the main configuration file, with two differences: it will not
         affect directories, and it can be changed for any
-        subdirectory.</para>
+        sub-directory.</para>
 
       </sect2>
 
@@ -1369,10 +1369,10 @@
          display.</para>
 
         <para>Changing the indexing parameters is probably not a
-         good idea except if you are a &RCL; developper.</para>
+         good idea except if you are a &RCL; developers.</para>
 
         <para>You may want to adjust the external viewers defined in
-         (ie: html is either previewed internally or displayed using
+         (ie: HTML is either previewed internally or displayed using
          <application>firefox</application>, but you may prefer
          <application>mozilla</application>, your
          <application>openoffice.org</application> 
