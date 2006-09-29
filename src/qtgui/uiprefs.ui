@@ -340,7 +340,7 @@ May be slow for big documents.</string>
                                             <number>80</number>
                                         </property>
                                         <property name="maxValue">
-                                            <number>999</number>
+                                            <number>100000</number>
                                         </property>
                                         <property name="value">
                                             <number>250</number>
@@ -377,7 +377,7 @@ May be slow for big documents.</string>
                                             <cstring>syntctxSB</cstring>
                                         </property>
                                         <property name="maxValue">
-                                            <number>20</number>
+                                            <number>20000</number>
                                         </property>
                                         <property name="minValue">
                                             <number>2</number>
