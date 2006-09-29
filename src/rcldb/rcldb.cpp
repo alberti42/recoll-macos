@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.78 2006-09-23 07:21:54 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.79 2006-09-29 08:26:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -441,11 +441,11 @@ void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 {
     LOGDEB(("Db::setAbstractParams: trunc %d syntlen %d ctxlen %d\n",
 	    idxtrunc, syntlen, syntctxlen));
-    if (idxtrunc > 0 && idxtrunc < 2000)
+    if (idxtrunc > 0)
 	m_idxAbsTruncLen = idxtrunc;
-    if (syntlen > 0 && syntlen < 2000)
+    if (syntlen > 0)
 	m_synthAbsLen = syntlen;
-    if (syntctxlen > 0 && syntctxlen < 20)
+    if (syntctxlen > 0)
 	m_synthAbsWordCtxLen = syntctxlen;
 }
 
@@ -1398,25 +1398,44 @@ list<string> Db::expand(const Doc &doc)
     return res;
 }
 
-// Width of a sample extract around a query term
-//
+
 // We build a possibly full size but sparsely populated (only around
-// the search term) reconstruction of the document. It would be
-// possible to compress the array, by having only multiple chunks
-// around the terms, but this would seriously complicate the data
-// structure.
+// the search term occurrences) reconstruction of the document. It
+// would be possible to compress the array, by having only multiple
+// chunks around the terms, but this would seriously complicate the
+// data structure.
 string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 {
-    Chrono chron;
-    // A buffer that we populate with the document terms, at their position
-    vector<string> buf;
+    LOGDEB(("Native::makeAbstract: maxlen %d wWidth %d\n",
+	    m_db->m_synthAbsLen, m_db->m_synthAbsWordCtxLen));
 
-    // Go through the list of query terms. For each entry in each
-    // position list, populate the slot in the document buffer, and
-    // remember the position and its neigbours
-    vector<unsigned int> qtermposs; // The term positions
-    set<unsigned int> chunkposs; // All the positions we shall populate
-    int totaloccs = 0;
+    Chrono chron;
+
+    // The terms array that we populate with the document terms, at
+    // their position:
+    vector<string> termsVec;
+
+    // For each of the query terms, query xapian for its positions
+    // list in the document. For positions list entry, populate the
+    // slot in the terms vector, and remember the position and its
+    // neigbours.
+
+    // All the query term positions. We remember this mainly because we are
+    // going to random-shuffle it for selecting the chunks that we actually 
+    // print.
+    vector<unsigned int> qtermposs; 
+    // All the positions we shall populate with the query terms and
+    // their neighbour words.
+    set<unsigned int> chunkposs; 
+    // Limit the total number of slots we populate.
+    const unsigned int maxtotaloccs = 200;
+    // Max occurrences per term. We initially know nothing about the
+    // occurrences repartition (it would be possible that only one
+    // term in the list occurs, or that all do). So this is a rather
+    // arbitrary choice.
+    const unsigned int maxoccperterm = maxtotaloccs / 10;
+    unsigned int totaloccs = 0;
+
     for (list<string>::const_iterator qit = terms.begin(); qit != terms.end();
 	 qit++) {
 	Xapian::PositionIterator pos;
@@ -1429,26 +1448,27 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 		unsigned int ipos = *pos;
 		LOGDEB1(("Abstract: [%s] at %d\n", qit->c_str(), ipos));
 		// Possibly extend the array. Do it in big chunks
-		if (ipos + m_db->m_synthAbsWordCtxLen >= buf.size()) {
-		    buf.resize(ipos + m_db->m_synthAbsWordCtxLen + 1000);
+		if (ipos + m_db->m_synthAbsWordCtxLen >= termsVec.size()) {
+		    termsVec.resize(ipos + m_db->m_synthAbsWordCtxLen + 1000);
 		}
-		buf[ipos] = *qit;
 		// Remember the term position
 		qtermposs.push_back(ipos);
 		// Add adjacent slots to the set to populate at next step
-		for (unsigned int ii = MAX(0, ipos-m_db->m_synthAbsWordCtxLen); 
-		     ii <= MIN(ipos+m_db->m_synthAbsWordCtxLen, buf.size()-1); ii++) {
+		for (unsigned int ii = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
+		 ii <= MIN(ipos+m_db->m_synthAbsWordCtxLen, termsVec.size()-1);
+		     ii++) {
 		    chunkposs.insert(ii);
 		}
 		// Limit the number of occurences we keep for each
 		// term. The abstract has a finite length anyway !
-		if (occurrences++ > 10)
+		if (occurrences++ > maxoccperterm)
 		    break;
 	    }
 	} catch (...) {
+	    // Term does not occur. No problem.
 	}
 	// Limit total size
-	if (totaloccs++ > 100)
+	if (totaloccs++ > maxtotaloccs)
 	    break;
     }
 
@@ -1470,7 +1490,12 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 		    break;
 		unsigned int ipos = *pos;
 		if (chunkposs.find(ipos) != chunkposs.end()) {
-		    buf[ipos] = *term;
+		    // Don't replace a term: the terms list is in
+		    // alphabetic order, and we may have several terms
+		    // at the same position, we want to keep only the
+		    // first one (ie: dockes and dockes@wanadoo.fr)
+		    if (termsVec[ipos].empty())
+			termsVec[ipos] = *term;
 		}
 	    }
 	    if (cutoff-- < 0)
@@ -1488,34 +1513,36 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     map<unsigned int, string> mabs;
     unsigned int abslen = 0;
     LOGDEB1(("Abstract:%d: extracting\n", chron.millis()));
-    // Extract data around the first (in random order) term positions,
-    // and store the chunks in the map
+    // Extract data around the first (in random order) query term
+    // positions, and store the terms in the map. Don't concatenate
+    // immediately into chunks because there might be overlaps
     for (vector<unsigned int>::const_iterator it = qtermposs.begin();
 	 it != qtermposs.end(); it++) {
 	unsigned int ipos = *it;
 	unsigned int start = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
-	unsigned int end = MIN(ipos+m_db->m_synthAbsWordCtxLen, buf.size()-1);
-	string chunk;
+	unsigned int end = MIN(ipos+m_db->m_synthAbsWordCtxLen, 
+			       termsVec.size()-1);
 	for (unsigned int ii = start; ii <= end; ii++) {
-	    if (!buf[ii].empty()) {
-		chunk += buf[ii] + " ";
-		abslen += buf[ii].length();
+	    if (!termsVec[ii].empty()) {
+		mabs[ii] = termsVec[ii];
+		abslen += termsVec[ii].length();
 	    }
 	    if (int(abslen) > m_db->m_synthAbsLen)
 		break;
 	}
-	if (end != buf.size()-1)
-	    chunk += "... ";
-	mabs[ipos] = chunk;
-	if (int(abslen) > m_db->m_synthAbsLen)
-	    break;
+	// Possibly add a ... at the end of chunk if it's not
+	// overlapping and not at the end of doc
+	if (end != termsVec.size()-1) {
+	    if (mabs.find(end+1) == mabs.end())
+		mabs[end+1] = "...";
+	}
     }
 
     // Build the abstract by walking the map (in order of position)
     string abstract;
     for (map<unsigned int, string>::const_iterator it = mabs.begin();
 	 it != mabs.end(); it++) {
-	abstract += (*it).second;
+	abstract += (*it).second + " ";
     }
     LOGDEB(("Abtract: done in %d mS\n", chron.millis()));
     return abstract;
