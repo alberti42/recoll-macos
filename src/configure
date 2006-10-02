@@ -2192,7 +2192,7 @@ LIBXAPIAN=`$XAPIAN_CONFIG --libs`
 # libstdc++.la in the lib list
 for i in $LIBXAPIAN ; do
     case $i in
-    *libstdc++.la);;
+    *stdc++*|-lm|-lgcc_s);;
     *) tmpxaplib="$tmpxaplib $i";;
     esac
 done
@@ -2296,7 +2296,8 @@ it and/or set the QTDIR environment variable?" >&2;}
 fi
 
 cd $QTGUI
-# We just want a .pro file: no problem with unsubstituted variables for now
+# We just want a .pro file: no problem with unsubstituted variables at
+# this point.
 test -f recoll.pro && chmod +w recoll.pro
 cp recoll.pro.in recoll.pro
 ${QMAKE} recoll.pro

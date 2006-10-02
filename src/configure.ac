@@ -58,7 +58,7 @@ LIBXAPIAN=`$XAPIAN_CONFIG --libs`
 # libstdc++.la in the lib list
 for i in $LIBXAPIAN ; do
     case $i in
-    *libstdc++.la);;
+    *stdc++*|-lm|-lgcc_s);;
     *) tmpxaplib="$tmpxaplib $i";;
     esac
 done

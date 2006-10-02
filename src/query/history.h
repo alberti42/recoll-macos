@@ -16,7 +16,7 @@
  */
 #ifndef _HISTORY_H_INCLUDED_
 #define _HISTORY_H_INCLUDED_
-/* @(#$Id: history.h,v 1.5 2006-09-11 12:05:39 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: history.h,v 1.6 2006-10-02 12:33:13 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /**
  * Dynamic configuration storage
@@ -46,6 +46,7 @@ using namespace std;
 
 class HistoryEntry {
  public:
+    virtual ~HistoryEntry() {}
     virtual bool decode(const string &value) = 0;
     virtual bool encode(string& value) = 0;
     virtual bool equal(const HistoryEntry &other) = 0;
