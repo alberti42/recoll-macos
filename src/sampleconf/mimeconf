@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.17 2006-09-05 09:52:23 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.18 2006-10-02 08:26:20 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -54,10 +54,10 @@ text/x-mail = internal
 # External viewers, launched when you on a result entry 'edit' link
 [view]
 application/msword = openoffice %f
-application/vnd.ms-powerpoint = openoffice %f
-application/vnd.ms-excel = openoffice %f
 application/pdf  = xpdf %f
 application/postscript = gv %f
+application/vnd.ms-excel = openoffice %f
+application/vnd.ms-powerpoint = openoffice %f
 application/vnd.sun.xml.calc = openoffice %f
 application/vnd.sun.xml.calc.template = openoffice %f
 application/vnd.sun.xml.draw = openoffice %f
@@ -84,6 +84,8 @@ text/x-c = gnuclient -q %f
 application/msword = wordprocessing
 application/pdf = pdf
 application/postscript = postscript
+application/vnd.ms-excel = spreadsheet
+application/vnd.ms-powerpoint = presentation
 application/vnd.sun.xml.calc = spreadsheet
 application/vnd.sun.xml.calc.template = spreadsheet
 application/vnd.sun.xml.draw = drawing
@@ -93,8 +95,13 @@ application/vnd.sun.xml.impress.template = presentation
 application/vnd.sun.xml.writer = wordprocessing
 application/vnd.sun.xml.writer.global = wordprocessing
 application/vnd.sun.xml.writer.template = wordprocessing
+application/x-dvi = document
 audio/mpeg = sownd
+image/jpeg = image
+image/png = image
+image/vnd.djvu = document
 message/rfc822 = message
 text/html = html
 text/plain = txt
 text/x-mail = message
+text/x-c = source
