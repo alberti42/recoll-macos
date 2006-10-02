@@ -792,7 +792,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Enter search terms here</source>
-        <translation>Введите ключевые слова</translation>
+        <translation type="obsolete">Введите ключевые слова</translation>
     </message>
     <message>
         <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
@@ -817,6 +817,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Select an item:</source>
         <translation type="obsolete">Выберите:</translation>
+    </message>
+    <message>
+        <source>Enter search terms here. CTRL-TAB for completions of current term.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
