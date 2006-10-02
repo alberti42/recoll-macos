@@ -28,7 +28,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Recoll binary installations are always linked statically to the xapian
    libraries, and have no other dependencies. You will only have to check or
    install supporting applications for the file types that you want to index
-   beyond text, html and mail files.
+   beyond text, HTML and mail files.
 
 4.1.1. Installing through a package system
 
@@ -60,7 +60,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    --------------------------------------------------------------------------
 
    Prev                             Home                                 Next 
-   Customising the search interface         Packages needed for external file 
+   Customizing the search interface         Packages needed for external file 
                                                                         types 
    Link: HOME
    Link: UP
@@ -93,10 +93,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * djvu: DjVuLibre
 
      * MP3: Recoll will use the id3info command from the id3lib package to
-       extract tag information. Without it, only the filenames will be
+       extract tag information. Without it, only the file names will be
        indexed.
 
-   Text, Html, mail folders and Openoffice files are processed internally.
+   Text, HTML, mail folders and Openoffice files are processed internally.
 
    --------------------------------------------------------------------------
 
@@ -118,8 +118,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    At the very least, you will need to download and install the xapian core
    package (Recoll development currently uses version 0.9.5), and the qt
-   runtime and development packages (Recoll development currently uses
-   version 3.3.5, but any 3.3 version is probably ok).
+   run-time and development packages (Recoll development currently uses
+   version 3.3.5, but any 3.3 version is probably OK).
 
    You will most probably be able to find a binary package for qt for your
    system. You may have to compile Xapian but this is not difficult (if you
@@ -142,7 +142,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        include files (ie: qt.h).
 
      * QMAKESPECS should be set to the name of one of the qt mkspecs
-       subdirectories (ie: linux-g++).
+       sub-directories (ie: linux-g++).
 
    On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
    is not needed because there is a default link in mkspecs/.
@@ -158,10 +158,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
          cd recoll-xxx
          configure
          make
-         (practises usual hardship-repelling invocations)
+         (practices usual hardship-repelling invocations)
      
 
-   There little autoconfiguration. The configure script will mainly link one
+   There little auto-configuration. The configure script will mainly link one
    of the system-specific files in the mk directory to mk/sysconf. If your
    system is not known yet, it will tell you as much, and you may want to
    manually copy and modify one of the existing files (the new file name
@@ -217,7 +217,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    configuration parameters is given by comments inside the default files,
    and we will just give a general overview here.
 
-   All configuration files share the same format. For exemple, a short
+   All configuration files share the same format. For example, a short
    extract of the main configuration file might look as follows:
 
          # Space-separated list of directories to index.
@@ -235,7 +235,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Section definition ([somedirname]).
 
-   Section lines allow redefining some parameters for a directory subtree.
+   Section lines allow redefining some parameters for a directory sub-tree.
    Some of the parameters used for indexing are looked up hierarchically from
    the more to the less specific. Not all parameters can be meaningfully
    redefined, this is specified for each in the next section.
@@ -281,8 +281,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
  *~ #* bin CVS  Cache caughtspam  tmp
 
-           The list can be redefined for subdirectories, but is only actually
-           changed for the top level ones in topdirs.
+           The list can be redefined for sub-directories, but is only
+           actually changed for the top level ones in topdirs.
 
            The top-level directories are not affected by this list (that is,
            a directory in topdirs might match and would still be indexed).
@@ -310,7 +310,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            A directory to search for the external filter scripts used to
            index some types of files. The value should not be changed, except
            if you want to modify one of the default scripts. The value can be
-           redefined for any subdirectory.
+           redefined for any sub-directory.
 
    indexstemminglanguages
 
@@ -324,7 +324,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
            The name of the character set used for files that do not contain a
            character set definition (ie: plain text files). This can be
-           redefined for any subdirectory. If it is not set at all, the
+           redefined for any sub-directory. If it is not set at all, the
            character set used is the one defined by the nls environment
            (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
 
@@ -339,8 +339,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Decide if we use the file -i system command as a final step for
            determining the mime type for a file (the main procedure uses
            suffix associations as defined in the mimemap file). This can be
-           useful for files with suffixless names, but it will also cause the
-           indexing of many bogus "text" files.
+           useful for files with suffix-less names, but it will also cause
+           the indexing of many bogus "text" files.
 
    indexallfilenames
 
@@ -349,7 +349,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            parameter decides if file name indexing is performed only for
            files with mime types that would qualify them for full text
            indexing, or for all files inside the selected subtrees,
-           independant of mime type.
+           independently of mime type.
 
    idxabsmlen
 
@@ -382,7 +382,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Matching files will be skipped (avoids unnecessary decompressions or file
    executions). This is partially redundant with skippedNames in the main
    configuration file, with two differences: it will not affect directories,
-   and it can be changed for any subdirectory.
+   and it can be changed for any sub-directory.
 
 4.4.3. The mimeconf file
 
@@ -390,9 +390,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    and for display.
 
    Changing the indexing parameters is probably not a good idea except if you
-   are a Recoll developper.
+   are a Recoll developers.
 
-   You may want to adjust the external viewers defined in (ie: html is either
+   You may want to adjust the external viewers defined in (ie: HTML is either
    previewed internally or displayed using firefox, but you may prefer
    mozilla, your openoffice.org program might be named oofice instead of
    openoffice ...). Look for the [view] section.

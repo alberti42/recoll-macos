@@ -61,7 +61,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.8. Search tips, shortcuts
 
-                3.9. Customising the search interface
+                3.9. Customizing the search interface
 
    4. Installation
 
@@ -123,7 +123,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    You do not need to remember in what file or email message you stored a
    given piece of information. You just ask for related terms, and the tool
    will return a list of documents where those terms are prominent, in a
-   similar way to internet search engines.
+   similar way to Internet search engines.
 
    Recoll tries to determine which documents are most relevant to the search
    terms you provide. Computer algorithms for determining relevance can be
@@ -135,11 +135,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    In many cases, you are looking for all the forms of a word, not for a
    specific form or spelling. These different forms may include plurals,
    different tenses for a verb, or terms derived from the same root or stem
-   (exemple: floor, floors, floored, floorings...). Recoll will by default
+   (example: floor, floors, floored, flooring...). Recoll will by default
    expand queries to all such related terms (words that reduce to the same
    stem). This expansion can be disabled at search time.
 
-   Stemming, by itself, does not accomodate for misspellings or phonetic
+   Stemming, by itself, does not accommodate for misspellings or phonetic
    searches. Recoll currently does not support these features.
 
      ----------------------------------------------------------------------
@@ -159,7 +159,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    that still exist at the place from which they were indexed. (Actually,
    there is a way to reconstruct a document from the information in the
    index, but the result is not nice, as all formatting, punctuation and
-   capitalisation are lost).
+   capitalization are lost).
 
    Recoll stores all internal data in Unicode UTF-8 format, and it can index
    files with different character sets, encodings, and languages into the
@@ -167,7 +167,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Stemming depends on the document language. Recoll stores the unstemmed
    versions of terms and uses auxiliary databases for term expansion. It can
-   switch stemming languages, or add a language, without reindexing. Storing
+   switch stemming languages, or add a language, without re-indexing. Storing
    documents in different languages in the same index is possible, and useful
    in practice, but does introduce possibilities of confusion. Recoll
    currently makes no attempt at automatic language recognition.
@@ -177,11 +177,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    configuration file. A default configuration is copied into a standard
    location (usually something like /usr/[local/]share/recoll/examples)
    during installation. The default parameters from this file may be
-   overriden by values that you set inside your personal configuration, found
-   by default in the .recoll subdirectory of your home directory. The default
-   configuration will index your home directory with default parameters and
-   should be sufficient for giving Recoll a try, but you may want to adjust
-   it later.
+   overridden by values that you set inside your personal configuration,
+   found by default in the .recoll sub-directory of your home directory. The
+   default configuration will index your home directory with default
+   parameters and should be sufficient for giving Recoll a try, but you may
+   want to adjust it later.
 
    Indexing is started automatically the first time you execute the recoll
    search graphical user interface, or by executing the recollindex command.
@@ -271,7 +271,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    As of version 1.4, Recoll will create the configuration directory with a
    mode of 0700 (access by owner only). As the index data directory is by
-   default a subdirectory of the configuration directory, this should result
+   default a sub-directory of the configuration directory, this should result
    in appropriate protection.
 
    If you use another setup, you should think of the kind of protection you
@@ -283,7 +283,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 2.3. The indexing configuration
 
    Values set in the system-wide configuration file (named like
-   /usr/[local/]share/recoll/examples/recoll.conf) can be overriden by those
+   /usr/[local/]share/recoll/examples/recoll.conf) can be overridden by those
    set in the personal one, named $HOME/.recoll/recoll.conf by default or
    $RECOLL_CONFDIR/recoll.conf if RECOLL_CONFDIR is set.
 
@@ -296,7 +296,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The configuration is also documented inside the installation chapter of
    this document, or in the recoll.conf(5) man page.
 
-   The applications needed to index file types other than text, html or email
+   The applications needed to index file types other than text, HTML or email
    (ie: pdf, postscript, ms-word...) are described in the external packages
    section
 
@@ -310,7 +310,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    option to specify the configuration directory to be used.
 
    If the recoll program finds no index when it starts, it will automatically
-   start indexing (except if cancelled).
+   start indexing (except if canceled).
 
    It is best to avoid interrupting the indexing process, as this may
    sometimes leave the index in a bad state. This is not a serious problem,
@@ -370,7 +370,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Recoll remembers the last few searches that you performed. You can use the
    simple search text entry widget (a combobox) to recall them (click on the
    thing at the right of the text field). Please note, however, that only the
-   search texts are remembered, not the mode (all/any/filename).
+   search texts are remembered, not the mode (all/any/file name).
 
    Hitting ^Tab (Ctrl + Tab) while entering a word in the simple search entry
    will open a window with possible completions for the word. The completions
@@ -418,7 +418,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   3.2.1. The result list right-click menu
 
-   Apart from the preview and edit links, you can display a popup menu by
+   Apart from the preview and edit links, you can display a pop-up menu by
    right-clicking over a paragraph in the result list. This menu has the
    following entries:
 
@@ -433,7 +433,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * Find similar
 
    The Preview and Edit entries do the same thing as the corresponding links.
-   The two following entries will copy either an url or the file path to the
+   The two following entries will copy either an URL or the file path to the
    clipboard, for pasting into another application.
 
    The Find similar entry will select a number of relevant term from the
@@ -468,12 +468,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    initiate the search either by typing a / (slash) inside the text area or
    by clicking into the Search for: text field and entering the search
    string. You can then use the Next and Previous buttons to find the
-   next/previous occurence. You can also type F3 inside the text area to get
+   next/previous occurrence. You can also type F3 inside the text area to get
    to the next occurrence.
 
    If you have a search string entered and you use ^Up/^Down to browse the
    results, the search is initiated for each successive document. If the
-   string is found, the cursor will be positionned at the first occurrence of
+   string is found, the cursor will be positioned at the first occurrence of
    the search string.
 
      ----------------------------------------------------------------------
@@ -488,14 +488,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    and phrases enclosed in double quotes.
 
    Advanced search will let you search for documents of specific mime types
-   (ie: only text/plain, or text/html or application/pdf etc...). The state
+   (ie: only text/plain, or text/HTML or application/pdf etc...). The state
    of the file type selection can be saved as the default (the file type
-   filter will not be activated at program startup, but the lists will be in
+   filter will not be activated at program start-up, but the lists will be in
    the restored state).
 
-   You can also restrict the search results to a subtree of the indexed area.
-   If you need to do this often, you may think of setting up multiple indexes
-   instead, as the performance will be much better.
+   You can also restrict the search results to a sub-tree of the indexed
+   area. If you need to do this often, you may think of setting up multiple
+   indexes instead, as the performance will be much better.
 
    Click on the Start Search button in the advanced search dialog, or type
    Enter in any text field to start the search. The button in the main window
@@ -570,41 +570,47 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    result list, according to specified criteria. The currently available
    criteria are date and mime type.
 
-   The sort parameters stay in effect until they are explicitely reset, or
-   the program exits. An activated sort is indicated in the result list
-   header.
+   The sort parameters stay in effect until they are explicitly reset, or the
+   program exits. An activated sort is indicated in the result list header.
 
      ----------------------------------------------------------------------
 
 3.8. Search tips, shortcuts
-
-   Disabling stem expansion. Entering a capitalized word in any search field
-   will prevent stem expansion (no search for gardening if you enter Garden
-   instead of garden). This is the only case where character case should make
-   a difference for a Recoll search.
-
-   Phrases. A phrase can be looked for by enclosing it in double quotes.
-   Example: "user manual" will look only for occurrences of user immediately
-   followed by manual. You can use the This exact phrase field of the
-   advanced search dialog to the same effect. Phrases can be entered along
-   simple terms in all search entry fields (except This exact phrase).
-
-   AutoPhrases. This option can be set in the preferences dialog. If it is
-   set, a phrase will be automatically built and added to simple searches
-   when looking for Any terms. This will not change radically the results,
-   but will give a relevance boost to the results where the search terms
-   appear as a phrase. Ie: searching for virtual reality will still find all
-   documents where either virtual or reality or both appear, but those which
-   contain virtual reality should appear sooner in the list.
 
    Term completion. Typing ^TAB (Control + Tab) in the simple search entry
    field while entering a word will either complete the current word if its
    beginning matches a unique term in the index, or open a window to propose
    a list of completions
 
-   Picking up new terms for search from displayed documents. Double-clicking
-   on a word in the result list or in a preview window will copy it to the
-   simple search entry field.
+   Picking up new terms from result or preview text. Double-clicking on a
+   word in the result list or in a preview window will copy it to the simple
+   search entry field.
+
+   Disabling stem expansion. Entering a capitalized word in any search field
+   will prevent stem expansion (no search for gardening if you enter Garden
+   instead of garden). This is the only case where character case should make
+   a difference for a Recoll search. You can also disable stem expansion or
+   change the stemming language in the preferences.
+
+   Phrases. A phrase can be looked for by enclosing it in double quotes.
+   Example: "user manual" will look only for occurrences of user immediately
+   followed by manual. You can use the This exact phrase field of the
+   advanced search dialog to the same effect. Phrases can be entered along
+   simple terms in all simple or advanced search entry fields (except This
+   exact phrase).
+
+   Browsing the result list inside a preview window (1.5). Entering
+   Shift-Down or Shift-Up (Shift + an arrow key) in a preview window will
+   display the next or the previous document from the result list. Any
+   secondary search currently active will be executed on the new document.
+
+   AutoPhrases (1.5). This option can be set in the preferences dialog. If it
+   is set, a phrase will be automatically built and added to simple searches
+   when looking for Any terms. This will not change radically the results,
+   but will give a relevance boost to the results where the search terms
+   appear as a phrase. Ie: searching for virtual reality will still find all
+   documents where either virtual or reality or both appear, but those which
+   contain virtual reality should appear sooner in the list.
 
    Finding related documents. Selecting the Find similar documents entry in
    the result list paragraph right-click menu will select a set of
@@ -612,33 +618,28 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    simple search entry field. You can then possibly edit the list and start a
    search to find documents which may be apparented to the current result.
 
-   Query explanation. You can get an exact description of what the query
-   looked for, including stem expansion, and boolean operators used, by
-   clicking on the result list header.
-
    File names. File names are added as terms during indexing, and you can
    specify them as ordinary terms in normal search fields (Recoll used to
-   index all directories in the file path as terms. This has been abandonned
+   index all directories in the file path as terms. This has been abandoned
    as it did not seem really useful). Alternatively, you can use the specific
    file name search which will only look for file names and can use wildcard
    expansion.
 
+   Query explanation. You can get an exact description of what the query
+   looked for, including stem expansion, and Boolean operators used, by
+   clicking on the result list header.
+
+   Closing previews. Entering ^W in a tab will close it (and, for the last
+   tab, close the preview window). Entering Esc will close the preview window
+   and all its tabs.
+
    Quitting. Entering ^Q almost anywhere will close the application.
-
-   Closing previews. Entering Esc will close the preview window and all its
-   tabs. Entering ^W in a tab will close it (and, for the last tab, close the
-   preview window).
-
-   List browsing in preview. Entering Shift-Down or Shift-Up (Shift + an
-   arrow key) in a preview window will display the next or the previous
-   document from the result list. Any secondary search currently active will
-   be executed on the new document.
 
      ----------------------------------------------------------------------
 
-3.9. Customising the search interface
+3.9. Customizing the search interface
 
-   It is possible to customise some aspects of the search interface by using
+   It is possible to customize some aspects of the search interface by using
    Query configuration entry in the Preferences menu.
 
    There are two tabs in the dialog, dealing with the interface itself, and
@@ -649,11 +650,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * Number of results in a result page
 
      * Result list font: There is quite a lot of information shown in the
-       result list, and you may want to customise the font and/or font size.
+       result list, and you may want to customize the font and/or font size.
        The rest of the fonts used by Recoll are determined by your generic QT
        config (try the qtconfig command.
 
-     * Html help browser: this will let you chose your preferred browser
+     * HTML help browser: this will let you chose your preferred browser
        which will be started from the Help menu to read the user manual. You
        can enter a simple name if the command is in your PATH, or browse for
        a full pathname.
@@ -662,7 +663,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        be turned off. They take quite a lot of space and convey relatively
        little useful information.
 
-     * Auto-start simple search on whitespace entry: if this is checked, a
+     * Auto-start simple search on white space entry: if this is checked, a
        search will be executed each time you enter a space in the simple
        search input field. This lets you look at the result list as you enter
        new terms. This is off by default, you may like it or not...
@@ -683,7 +684,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        the search terms. This can slow down result list display significantly
        for big documents, and you may want to turn it off.
 
-     * Replace abstracts from documents: this decides if we should synthetize
+     * Replace abstracts from documents: this decides if we should synthesize
        and display an abstract in place of an explicit abstract found within
        the document itself.
 
@@ -698,11 +699,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    /usr/local/recollglobal/xapiandb).
 
    Once entered, the indexes will appear in the All indexes list, and you can
-   chose which ones you want to use at any moment by tranferring them to/from
-   the Active indexes list.
+   chose which ones you want to use at any moment by transferring them
+   to/from the Active indexes list.
 
    Your main database (the one the current configuration indexes to), is
-   always implicitely active. If this is not desirable, you can set up your
+   always implicitly active. If this is not desirable, you can set up your
    configuration so that it indexes, for example, an empty directory.
 
      ----------------------------------------------------------------------
@@ -714,7 +715,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Recoll binary installations are always linked statically to the xapian
    libraries, and have no other dependencies. You will only have to check or
    install supporting applications for the file types that you want to index
-   beyond text, html and mail files.
+   beyond text, HTML and mail files.
 
      ----------------------------------------------------------------------
 
@@ -770,10 +771,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * djvu: DjVuLibre
 
      * MP3: Recoll will use the id3info command from the id3lib package to
-       extract tag information. Without it, only the filenames will be
+       extract tag information. Without it, only the file names will be
        indexed.
 
-   Text, Html, mail folders and Openoffice files are processed internally.
+   Text, HTML, mail folders and Openoffice files are processed internally.
 
      ----------------------------------------------------------------------
 
@@ -783,8 +784,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    At the very least, you will need to download and install the xapian core
    package (Recoll development currently uses version 0.9.5), and the qt
-   runtime and development packages (Recoll development currently uses
-   version 3.3.5, but any 3.3 version is probably ok).
+   run-time and development packages (Recoll development currently uses
+   version 3.3.5, but any 3.3 version is probably OK).
 
    You will most probably be able to find a binary package for qt for your
    system. You may have to compile Xapian but this is not difficult (if you
@@ -809,7 +810,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        include files (ie: qt.h).
 
      * QMAKESPECS should be set to the name of one of the qt mkspecs
-       subdirectories (ie: linux-g++).
+       sub-directories (ie: linux-g++).
 
    On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
    is not needed because there is a default link in mkspecs/.
@@ -825,10 +826,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
          cd recoll-xxx
          configure
          make
-         (practises usual hardship-repelling invocations)
+         (practices usual hardship-repelling invocations)
      
 
-   There little autoconfiguration. The configure script will mainly link one
+   There little auto-configuration. The configure script will mainly link one
    of the system-specific files in the mk directory to mk/sysconf. If your
    system is not known yet, it will tell you as much, and you may want to
    manually copy and modify one of the existing files (the new file name
@@ -875,7 +876,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    configuration parameters is given by comments inside the default files,
    and we will just give a general overview here.
 
-   All configuration files share the same format. For exemple, a short
+   All configuration files share the same format. For example, a short
    extract of the main configuration file might look as follows:
 
          # Space-separated list of directories to index.
@@ -893,7 +894,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Section definition ([somedirname]).
 
-   Section lines allow redefining some parameters for a directory subtree.
+   Section lines allow redefining some parameters for a directory sub-tree.
    Some of the parameters used for indexing are looked up hierarchically from
    the more to the less specific. Not all parameters can be meaningfully
    redefined, this is specified for each in the next section.
@@ -941,8 +942,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
  *~ #* bin CVS  Cache caughtspam  tmp
 
-           The list can be redefined for subdirectories, but is only actually
-           changed for the top level ones in topdirs.
+           The list can be redefined for sub-directories, but is only
+           actually changed for the top level ones in topdirs.
 
            The top-level directories are not affected by this list (that is,
            a directory in topdirs might match and would still be indexed).
@@ -970,7 +971,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            A directory to search for the external filter scripts used to
            index some types of files. The value should not be changed, except
            if you want to modify one of the default scripts. The value can be
-           redefined for any subdirectory.
+           redefined for any sub-directory.
 
    indexstemminglanguages
 
@@ -984,7 +985,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
            The name of the character set used for files that do not contain a
            character set definition (ie: plain text files). This can be
-           redefined for any subdirectory. If it is not set at all, the
+           redefined for any sub-directory. If it is not set at all, the
            character set used is the one defined by the nls environment
            (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
 
@@ -999,8 +1000,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Decide if we use the file -i system command as a final step for
            determining the mime type for a file (the main procedure uses
            suffix associations as defined in the mimemap file). This can be
-           useful for files with suffixless names, but it will also cause the
-           indexing of many bogus "text" files.
+           useful for files with suffix-less names, but it will also cause
+           the indexing of many bogus "text" files.
 
    indexallfilenames
 
@@ -1009,7 +1010,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            parameter decides if file name indexing is performed only for
            files with mime types that would qualify them for full text
            indexing, or for all files inside the selected subtrees,
-           independant of mime type.
+           independently of mime type.
 
    idxabsmlen
 
@@ -1044,7 +1045,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Matching files will be skipped (avoids unnecessary decompressions or file
    executions). This is partially redundant with skippedNames in the main
    configuration file, with two differences: it will not affect directories,
-   and it can be changed for any subdirectory.
+   and it can be changed for any sub-directory.
 
      ----------------------------------------------------------------------
 
@@ -1054,9 +1055,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    and for display.
 
    Changing the indexing parameters is probably not a good idea except if you
-   are a Recoll developper.
+   are a Recoll developers.
 
-   You may want to adjust the external viewers defined in (ie: html is either
+   You may want to adjust the external viewers defined in (ie: HTML is either
    previewed internally or displayed using firefox, but you may prefer
    mozilla, your openoffice.org program might be named oofice instead of
    openoffice ...). Look for the [view] section.

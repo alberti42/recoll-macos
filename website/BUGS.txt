@@ -1,5 +1,10 @@
 Known bugs in current version and older versions:
 
+1.5.0
+- Under some conditions, recoll startup and exit could be very slow: the
+  simple search history list had serious problems with non-ascii strings,
+  whose size sometimes doubled at each program startup/stop.
+  
 1.4.2 - 1.5.0
 - When a mime type has an external viewer defined, but the actual file is
   compressed (ie: xxx.txt.gz), recoll will try to start the external viewer
