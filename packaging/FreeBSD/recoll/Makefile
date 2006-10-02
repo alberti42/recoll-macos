@@ -2,11 +2,11 @@
 # Date created:        5 December 2005
 # Whom:                J.F. Dockes <jean-francois.dockes@wanadoo.fr>
 #
-# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.4 2006/02/03 15:28:20 vd Exp $
+# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.8 2006/07/26 08:14:38 lbr Exp $
 #
 
 PORTNAME=	recoll
-PORTVERSION=	1.4.3
+PORTVERSION=	1.5.2
 CATEGORIES=	deskutils
 MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 
@@ -14,7 +14,7 @@ MAINTAINER=	jean-francois.dockes@wanadoo.fr
 COMMENT=	A personal full text search package, based on QT and Xapian
 
 BUILD_DEPENDS=	qmake:${PORTSDIR}/devel/qmake
-LIB_DEPENDS=	xapian.11:${PORTSDIR}/databases/xapian-core \
+LIB_DEPENDS=	xapian.12:${PORTSDIR}/databases/xapian-core \
 		qt-mt.3:${PORTSDIR}/x11-toolkits/qt33
 
 USE_QT_VER=	3
