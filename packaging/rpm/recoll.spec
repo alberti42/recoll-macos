@@ -1,20 +1,22 @@
 %define name recoll
-%define version 1.4.3
-%define release 1
+%define version 1.5.3
+%define release 0
 
 Name:           %{name}
 Version:        %{version}
 Release:        %{release}
 
-Summary:	Desktop full text search tool with a qt gui
+Summary:	Desktop Full Text Search Tool with a QT Gui
 Source0:	http://www.recoll.org/%{name}-%{version}.tar.gz
 URL:            http://www.recoll.org/
 Group:          Applications/Databases
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
-# We build with a static link to xapian to avoid this dependency
-#Requires:	xapian-core
+
+# We build with a static link to xapian to avoid depending on xapian
+BuildRequires: qt3-devel
+Requires:      qt3
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -51,13 +53,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_datadir}/%{name}
+%{_datadir}/applications/recoll.desktop
+%{_datadir}/icons/recoll.png
 %{_mandir}/man1/recoll*
 %{_mandir}/man5/recoll*
-%{_datadir}/applications/recoll.desktop
 
 # ---------------------------------------------------------------------------
 
 %changelog
+* Mon Oct 2 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.4.3-1
+- Update to release 1.5.3
 * Sun May 7 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.4.3-1
 - Update to release 1.4.3
 * Fri Mar 31 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.3.3-1
