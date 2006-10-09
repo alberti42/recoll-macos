@@ -16,10 +16,14 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-/* @(#$Id: execmd.h,v 1.8 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: execmd.h,v 1.9 2006-10-09 16:37:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
+#ifndef NO_NAMESPACES
+using std::list;
+using std::string;
+#endif
 
 /** Callback function object to advise of new data arrival (or just heartbeat)  * if cnt is 0 */
 class ExecCmdAdvise {
@@ -37,46 +41,66 @@ class ExecCmd {
     /**
      * Execute command. 
      *
-     * Both input and output can be specified, and
-     * asynchronous io is used to prevent blocking. This wont work if
-     * input and output need to be synchronized (ie: Q/A), but ok for
-     * filtering.
+     * Both input and output can be specified, and asynchronous 
+     * io (select-based) is used to prevent blocking. This will not
+     * work if input and output need to be synchronized (ie: Q/A), but
+     * works ok for filtering.
      * The function is exception-safe. In case an exception occurs in the 
      * advise callback, fds and pids will be cleaned-up properly.
      *
      * @param cmd the program to execute. This must be an absolute file name 
      *   or exist in the PATH.
      * @param args the argument list (NOT including argv[0]).
-     * @param input Input to send to the command.
-     * @param output Output from the command.
+     * @param input Input to send TO the command.
+     * @param output Output FROM the command.
      * @return the exec ouput status (0 if ok).
      */
-    int doexec(const std::string &cmd, const std::list<std::string>& args, 
-	       const std::string *input = 0, 
-	       std::string *output = 0);
+    int doexec(const string &cmd, const list<string>& args, 
+	       const string *input = 0, 
+	       string *output = 0);
     /** 
-     * Add/replace environment variable before executing command. This should 
-     * be called before doexec of course (possibly multiple times for several
-     * variables).
+     * Add/replace environment variable before executing command. This must
+     * be called before doexec to have an effect (possibly multiple
+     * times for several variables).
      * @param envassign an environment assignment string (name=value)
      */
-    void putenv(const std::string &envassign);
+    void putenv(const string &envassign);
 
-    /** Set function object to call whenever new data is available */
+    /** 
+     * Set function object to call whenever new data is available or on
+     * select timeout.
+     */
     void setAdvise(ExecCmdAdvise *adv) {m_advise = adv;}
 
-    /** Cancel exec. This can be called from another thread or from the
-     *  advise callback, which could also raise an exception to accomplish 
-     * the same thing
+    /**
+     * Set select timeout in milliseconds. The default is 1 S. 
+     */
+    void setTimeout(int mS) {if (mS > 30) m_timeoutMs = mS;}
+
+    /** 
+     * Set destination for stderr data. The default is to let it alone (will 
+     * usually go to the terminal or to wherever the desktop messages go).
+     * There is currently no option to put stderr data into a program variable
+     * If the parameter can't be opened for writing, the command's
+     * stderr will be closed.
+     */
+    void setStderr(const string &stderrFile) {m_stderrFile = stderrFile;}
+
+    /** 
+     * Cancel/kill command. This can be called from another thread or
+     * from the advise callback, which could also raise an exception to 
+     * accomplish the same thing
      */
     void setCancel() {m_cancelRequest = true;}
 
-    ExecCmd() : m_advise(0), m_cancelRequest(false) {}
+    ExecCmd() : m_advise(0), m_cancelRequest(false), m_timeoutMs(1000) {}
 
  private:
-    std::list<std::string> m_env;
+    list<string>   m_env;
     ExecCmdAdvise *m_advise;
-    bool m_cancelRequest;
+    bool           m_cancelRequest;
+    int            m_timeoutMs;
+    string         m_stderrFile;
 };
 
 

@@ -21,7 +21,7 @@ SRCS="${depth}/utils/conftree.cpp ${depth}/index/csguess.cpp \
      ${depth}/utils/transcode.cpp ${depth}/common/unacpp.cpp \
      ${depth}/query/history.cpp \
      ${depth}/query/docseq.cpp ${depth}/query/sortseq.cpp \
-     ${depth}/utils/copyfile.cpp"
+     ${depth}/utils/copyfile.cpp ${depth}/aspell/rclaspell.cpp"
 
 
 for c in $SRCS;do

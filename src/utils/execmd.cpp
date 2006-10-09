@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.17 2006-04-03 09:42:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.18 2006-10-09 16:37:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,9 @@ void  ExecCmd::putenv(const string &ea)
  * raised in the callback */
 class ExecCmdRsrc {
 public:
+    // Pipe for data going to the command
     int pipein[2];
+    // Pipe for data coming out
     int pipeout[2];
     pid_t pid;
     ExecCmdRsrc() {
@@ -124,26 +126,25 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
     }
 
     if (e.pid) {
+	// Father process
 	if (input) {
 	    close(e.pipein[0]);
 	    e.pipein[0] = -1;
+	    fcntl(e.pipein[1], F_SETFL, O_NONBLOCK);
 	}
 	if (output) {
 	    close(e.pipeout[1]);
 	    e.pipeout[1] = -1;
+	    fcntl(e.pipeout[0], F_SETFL, O_NONBLOCK);
 	}
-	fd_set readfds, writefds;
-	struct timeval tv;
-	tv.tv_sec = 1;
-	tv.tv_usec = 0;
 
 	if (input || output) {
-	    if (input)
-		fcntl(e.pipein[1], F_SETFL, O_NONBLOCK);
-	    if (output)	
-		fcntl(e.pipeout[0], F_SETFL, O_NONBLOCK);
 	    unsigned int nwritten = 0;
 	    int nfds = MAX(e.pipein[1], e.pipeout[0]) + 1;
+	    fd_set readfds, writefds;
+	    struct timeval tv;
+	    tv.tv_sec = m_timeoutMs / 1000;
+	    tv.tv_usec = 1000 * (m_timeoutMs % 1000);
 	    for(; nfds > 0;) {
 		if (m_cancelRequest)
 		    break;
@@ -240,7 +241,22 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		e.pipeout[1] = -1;
 	    }
 	}
-
+	// Do we need to redirect stderr ?
+	if (!m_stderrFile.empty()) {
+	    int fd = open(m_stderrFile.c_str(), O_WRONLY|O_CREAT
+#ifdef O_APPEND
+			  |O_APPEND
+#endif
+			  , 0600);
+	    if (fd < 0) {
+		close(2);
+	    } else {
+		if (fd != 2) {
+		    dup2(fd, 2);
+		}
+		lseek(2, 0, 2);
+	    }
+	}
 	e.reset();
 
 	// Allocate arg vector (2 more for arg0 + final 0)
@@ -300,10 +316,10 @@ const char *data = "Une ligne de donnees\n";
 class MEAdv : public ExecCmdAdvise {
 public:
     ExecCmd *cmd;
-    void newData(int) {
-	cerr << "New Data!" << endl;
-	CancelCheck::instance().setCancel();
-	CancelCheck::instance().checkCancel();
+    void newData(int cnt) {
+	cerr << "newData(" << cnt << ")" << endl;
+	//	CancelCheck::instance().setCancel();
+	//	CancelCheck::instance().checkCancel();
 	//	cmd->setCancel();
     }
 };
@@ -325,10 +341,13 @@ int main(int argc, const char **argv)
     MEAdv adv;
     adv.cmd = &mexec;
     mexec.setAdvise(&adv);
+    mexec.setTimeout(500);
+    mexec.setStderr("/tmp/trexecStderr");
+
     string input, output;
     input = data;
     string *ip = 0;
-    //ip = &input;
+    ip = &input;
     mexec.putenv("TESTVARIABLE1=TESTVALUE1");
     mexec.putenv("TESTVARIABLE2=TESTVALUE2");
     mexec.putenv("TESTVARIABLE3=TESTVALUE3");

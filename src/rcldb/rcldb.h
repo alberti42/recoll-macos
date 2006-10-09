@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.36 2006-09-13 13:53:35 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.37 2006-10-09 16:37:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -105,6 +105,7 @@ class Doc {
 
 class AdvSearchData;
 class Native;
+class TermIter;
  
 /**
  * Wrapper class for the native database.
@@ -170,8 +171,21 @@ class Db {
     /** Get a list of existing stemming databases */
     std::list<std::string> getStemLangs();
 
+    /** Retrieve main database directory */
     string getDbDir();
+
+    /** Set parameters for synthetic abstract generation */
     void setAbstractParams(int idxTrunc, int synthLen, int syntCtxLen);
+
+    /** Whole term list walking. */
+    TermIter *termWalkOpen();
+    bool termWalkNext(TermIter *, string &term);
+    void termWalkClose(TermIter *);
+    /** Test term existence */
+    bool termExists(const string& term);
+    /** Test if terms stem to different roots. */
+    bool stemDiffers(const string& lang, const string& term, 
+		     const string& base);
 
 private:
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.4 2006-09-20 06:21:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.5 2006-10-09 16:37:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -254,7 +254,8 @@ list<string> stemExpand(const string& dbdir, const string& lang,
 	LOGDEB(("stemExpand: %s ->  %s\n", stem.c_str(),
 		stringlistdisp(explist).c_str()));
     } catch (...) {
-	LOGERR(("stemExpand: error accessing stem db\n"));
+	LOGERR(("stemExpand: error accessing stem db. dbdir [%s] lang [%s]\n",
+		dbdir.c_str(), lang.c_str()));
 	explist.push_back(term);
 	return explist;
     }

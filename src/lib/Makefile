@@ -8,8 +8,8 @@ LIBS = librcl.a
 
 all: $(LIBS)
 
-OBJS =  conftree.o csguess.o debuglog.o execmd.o idfile.o md5.o wipedir.o fstreewalk.o mh_html.o mh_mail.o mh_exec.o mh_text.o htmlparse.o indexer.o internfile.o mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathhash.o pathut.o rclconfig.o rcldb.o rclinit.o stemdb.o base64.o readfile.o smallut.o textsplit.o transcode.o unacpp.o history.o docseq.o sortseq.o copyfile.o
-DEPS =  conftree.dep.stamp csguess.dep.stamp debuglog.dep.stamp execmd.dep.stamp idfile.dep.stamp md5.dep.stamp wipedir.dep.stamp fstreewalk.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_exec.dep.stamp mh_text.dep.stamp htmlparse.dep.stamp indexer.dep.stamp internfile.dep.stamp mimehandler.dep.stamp mimeparse.dep.stamp mimetype.dep.stamp myhtmlparse.dep.stamp pathhash.dep.stamp pathut.dep.stamp rclconfig.dep.stamp rcldb.dep.stamp rclinit.dep.stamp stemdb.dep.stamp base64.dep.stamp readfile.dep.stamp smallut.dep.stamp textsplit.dep.stamp transcode.dep.stamp unacpp.dep.stamp history.dep.stamp docseq.dep.stamp sortseq.dep.stamp copyfile.dep.stamp
+OBJS =  conftree.o csguess.o debuglog.o execmd.o idfile.o md5.o wipedir.o fstreewalk.o mh_html.o mh_mail.o mh_exec.o mh_text.o htmlparse.o indexer.o internfile.o mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathhash.o pathut.o rclconfig.o rcldb.o rclinit.o stemdb.o base64.o readfile.o smallut.o textsplit.o transcode.o unacpp.o history.o docseq.o sortseq.o copyfile.o rclaspell.o
+DEPS =  conftree.dep.stamp csguess.dep.stamp debuglog.dep.stamp execmd.dep.stamp idfile.dep.stamp md5.dep.stamp wipedir.dep.stamp fstreewalk.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_exec.dep.stamp mh_text.dep.stamp htmlparse.dep.stamp indexer.dep.stamp internfile.dep.stamp mimehandler.dep.stamp mimeparse.dep.stamp mimetype.dep.stamp myhtmlparse.dep.stamp pathhash.dep.stamp pathut.dep.stamp rclconfig.dep.stamp rcldb.dep.stamp rclinit.dep.stamp stemdb.dep.stamp base64.dep.stamp readfile.dep.stamp smallut.dep.stamp textsplit.dep.stamp transcode.dep.stamp unacpp.dep.stamp history.dep.stamp docseq.dep.stamp sortseq.dep.stamp copyfile.dep.stamp rclaspell.dep.stamp
 
 librcl.a : $(DEPS) $(OBJS) unac.o
 	ar ru librcl.a $(OBJS) unac.o
@@ -87,6 +87,8 @@ sortseq.o : ../query/sortseq.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../query/sortseq.cpp
 copyfile.o : ../utils/copyfile.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../utils/copyfile.cpp
+rclaspell.o : ../aspell/rclaspell.cpp
+	$(CXX) $(ALL_CXXFLAGS) -c ../aspell/rclaspell.cpp
 depend: $(DEPS)
 clean:
 	rm -f $(OBJS) $(LIBS) $(DEPS) unac.o
@@ -198,6 +200,9 @@ sortseq.dep.stamp : ../query/sortseq.cpp
 copyfile.dep.stamp : ../utils/copyfile.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../utils/copyfile.cpp > copyfile.dep
 	touch copyfile.dep.stamp
+rclaspell.dep.stamp : ../aspell/rclaspell.cpp
+	$(CXX) -M $(ALL_CXXFLAGS) ../aspell/rclaspell.cpp > rclaspell.dep
+	touch rclaspell.dep.stamp
 include conftree.dep
 include csguess.dep
 include debuglog.dep
@@ -233,3 +238,4 @@ include history.dep
 include docseq.dep
 include sortseq.dep
 include copyfile.dep
+include rclaspell.dep

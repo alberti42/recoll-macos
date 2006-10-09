@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.79 2006-09-29 08:26:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.80 2006-10-09 16:37:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -890,7 +890,7 @@ static void stringToXapianQueries(const string &iq,
 		dumb_string(term, term1);
 		// Possibly perform stem compression/expansion
 		if (!nostemexp && (opts & Db::QO_STEM)) {
-		    exp = m_ndb->stemExpand(stemlang,term1);
+		    exp = m_ndb->stemExpand(stemlang, term1);
 		} else {
 		    exp.push_back(term1);
 		}
@@ -1115,6 +1115,60 @@ list<string> Db::completions(const string &root, const string &lang, int max)
     res.sort();
     res.unique();
     return res;
+}
+
+/** Term list walking. */
+class TermIter {
+public:
+    Xapian::TermIterator it;
+    Xapian::Database db;
+};
+TermIter *Db::termWalkOpen()
+{
+    if (!m_ndb || !m_ndb->m_isopen)
+	return 0;
+    TermIter *tit = new TermIter;
+    if (tit) {
+	tit->db = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
+	tit->it = tit->db.allterms_begin();
+    }
+    return tit;
+}
+bool Db::termWalkNext(TermIter *tit, string &term)
+{
+    
+    if (tit && tit->it != tit->db.allterms_end()) {
+	term = *(tit->it)++;
+	return true;
+    }
+    return false;
+}
+void Db::termWalkClose(TermIter *tit)
+{
+    delete tit;
+}
+
+
+bool Db::termExists(const string& word)
+{
+    if (!m_ndb || !m_ndb->m_isopen)
+	return 0;
+    Xapian::Database db = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
+    if (!db.term_exists(word))
+	return false;
+    return true;
+}
+
+bool Db::stemDiffers(const string& lang, const string& word, 
+		     const string& base)
+{
+    Xapian::Stem stemmer(lang);
+    if (!stemmer.stem_word(word).compare(stemmer.stem_word(base))) {
+	LOGDEB2(("Rcl::Db::stemDiffers: same for %s and %s\n", 
+		word.c_str(), base.c_str()));
+	return false;
+    }
+    return true;
 }
 
 bool Db::getQueryTerms(list<string>& terms)

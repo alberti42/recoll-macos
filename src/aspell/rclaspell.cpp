@@ -1,6 +1,6 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.1 2006-10-09 14:05:35 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.2 2006-10-09 16:37:08 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #include <unistd.h>
 #include <dlfcn.h>
@@ -173,7 +173,7 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
 
 
 bool Aspell::suggest(Rcl::Db &db,
-		     string &term, list<string>suggestions, string &reason)
+		     string &term, list<string> &suggestions, string &reason)
 {
     AspellCanHaveError *ret;
     AspellSpeller *speller;
@@ -184,6 +184,8 @@ bool Aspell::suggest(Rcl::Db &db,
     aapi.aspell_config_replace(config, "lang", m_lang.c_str());
     aapi.aspell_config_replace(config, "encoding", "utf-8");
     aapi.aspell_config_replace(config, "master", dicPath().c_str());
+    aapi.aspell_config_replace(config, "sug-mode", "fast");
+    //    aapi.aspell_config_replace(config, "sug-edit-dist", "2");
     ret = aapi.new_aspell_speller(config);
     aapi.delete_aspell_config(config);
 
@@ -203,7 +205,15 @@ bool Aspell::suggest(Rcl::Db &db,
     AspellStringEnumeration *els = aapi.aspell_word_list_elements(wl);
     const char *word;
     while ((word = aapi.aspell_string_enumeration_next(els)) != 0) {
-	suggestions.push_back(word);
+	// stemDiffers checks that the word exists (we don't want
+	// aspell computed stuff, only exact terms from the dictionary),
+	// and that it stems differently to the base word (else it's not 
+	// useful to expand the search). Or is it ? 
+        // ******** This should depend if
+	// stemming is turned on or not for querying  *******
+	string sw(word);
+	if (db.termExists(sw) && db.stemDiffers("english", sw, term))
+	    suggestions.push_back(word);
     }
     aapi.delete_aspell_string_enumeration(els);
     aapi.delete_aspell_speller(speller);
@@ -233,7 +243,9 @@ RclConfig *rclconfig;
 Rcl::Db rcldb;
 
 static char usage [] =
-"  \n\n"
+" -b : build dictionary\n"
+" -s <term>: suggestions for term\n"
+"\n\n"
 ;
 static void
 Usage(void)
@@ -249,75 +261,75 @@ static int     op_flags;
 
 int main(int argc, char **argv)
 {
-  int count = 10;
+    string word;
     
-  thisprog = argv[0];
-  argc--; argv++;
+    thisprog = argv[0];
+    argc--; argv++;
 
-  while (argc > 0 && **argv == '-') {
-    (*argv)++;
-    if (!(**argv))
-      /* Cas du "adb - core" */
-      Usage();
-    while (**argv)
-      switch (*(*argv)++) {
-      case 's':	op_flags |= OPT_s; break;
-      case 'b':	op_flags |= OPT_b; if (argc < 2)  Usage();
-	if ((sscanf(*(++argv), "%d", &count)) != 1) 
-	  Usage(); 
-	argc--; 
-	goto b1;
-      default: Usage();	break;
-      }
-  b1: argc--; argv++;
-  }
-
-  if (argc != 0)
-    Usage();
-
-  string reason;
-  rclconfig = recollinit(0, 0, reason);
-  if (!rclconfig || !rclconfig->ok()) {
-      fprintf(stderr, "Configuration problem: %s\n", reason.c_str());
-      exit(1);
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    /* Cas du "adb - core" */
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 'b':	op_flags |= OPT_b; break;
+	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
+		word = *(++argv);
+		argc--; 
+		goto b1;
+	    default: Usage();	break;
+	    }
+    b1: argc--; argv++;
     }
 
-  string dbdir = rclconfig->getDbDir();
-  if (dbdir.empty()) {
-      fprintf(stderr, "No db directory in configuration");
-      exit(1);
-  }
+    if (argc != 0 || op_flags == 0)
+	Usage();
 
-  if (!rcldb.open(dbdir, Rcl::Db::DbRO, 0)) {
-      fprintf(stderr, "Could not open database in %s\n", dbdir.c_str());
-      exit(1);
-  }
+    string reason;
+    rclconfig = recollinit(0, 0, reason);
+    if (!rclconfig || !rclconfig->ok()) {
+	fprintf(stderr, "Configuration problem: %s\n", reason.c_str());
+	exit(1);
+    }
 
-  string lang = "en";
+    string dbdir = rclconfig->getDbDir();
+    if (dbdir.empty()) {
+	fprintf(stderr, "No db directory in configuration");
+	exit(1);
+    }
 
-  Aspell aspell(rclconfig, lang);
+    if (!rcldb.open(dbdir, Rcl::Db::DbRO, 0)) {
+	fprintf(stderr, "Could not open database in %s\n", dbdir.c_str());
+	exit(1);
+    }
 
-  if (!aspell.init("/usr/local", reason)) {
-      cerr << "Init failed: " << reason << endl;
-      exit(1);
-  }
-#if 0
-  if (!aspell.buildDict(rcldb, reason)) {
-      cerr << "buildDict failed: " << reason << endl;
-      exit(1);
-  }
-#endif
-  list<string> sug;
-  string word = "practice";
-  if (!aspell.suggest(rcldb, word, sug, reason)) {
-      cerr << "suggest failed: " << reason << endl;
-      exit(1);
-  }
-  for (list<string>::iterator it = sug.begin(); it != sug.end(); it++) {
-      cout << *it << endl;
-  }
+    string lang = "en";
 
-  exit(0);
+    Aspell aspell(rclconfig, lang);
+
+    if (!aspell.init("/usr/local", reason)) {
+	cerr << "Init failed: " << reason << endl;
+	exit(1);
+    }
+    if (op_flags & OPT_b) {
+	if (!aspell.buildDict(rcldb, reason)) {
+	    cerr << "buildDict failed: " << reason << endl;
+	    exit(1);
+	}
+    } else {
+	list<string> suggs;
+	if (!aspell.suggest(rcldb, word, suggs, reason)) {
+	    cerr << "suggest failed: " << reason << endl;
+	    exit(1);
+	}
+	cout << "Suggestions for " << word << ":" << endl;
+	for (list<string>::iterator it = suggs.begin(); 
+	     it != suggs.end(); it++) {
+	    cout << *it << endl;
+	}
+    }
+    exit(0);
 }
 
 #endif // TEST_RCLASPELL test driver

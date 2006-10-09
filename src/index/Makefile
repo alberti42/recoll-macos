@@ -4,7 +4,7 @@ include $(depth)/mk/sysconf
 PROGS = recollindex csguess mimetype
 SRCS = recollindex.cpp
 
-all: depend $(PROGS) 
+all: depend $(PROGS) $(BIGLIB)
 
 RECOLLINDEX_OBJS= recollindex.o $(BIGLIB) $(MIMELIB)
 recollindex : $(RECOLLINDEX_OBJS)
@@ -29,8 +29,10 @@ trmimetype.o : mimetype.cpp
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_MIMETYPE -c -o trmimetype.o \
 	       mimetype.cpp
 
-$(BIGLIB): 
+$(BIGLIB): force
 	cd $(depth)/lib;$(MAKE)
+force:
+
 $(MIMELIB): 
 	cd $(depth)/bincimapmime;$(MAKE)
 
