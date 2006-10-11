@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.18 2006-10-09 16:37:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.19 2006-10-11 16:09:45 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ public:
     }
 };
 
-	
+
 int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		const string *inputstring, string *output)
 {
@@ -181,9 +181,21 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		    }
 		    nwritten += n;
 		    if (nwritten == inputlen) {
-			// cerr << "Closing output" << endl;
-			close(e.pipein[1]);
-			e.pipein[1] = -1;
+			if (m_provide) {
+			    m_provide->newData();
+			    if (inputstring->empty()) {
+				close(e.pipein[1]);
+				e.pipein[1] = -1;
+			    } else {
+				input = inputstring->data();
+				inputlen = inputstring->length();
+				nwritten = 0;
+			    }
+			} else {
+			    // cerr << "Closing output" << endl;
+			    close(e.pipein[1]);
+			    e.pipein[1] = -1;
+			}
 		    }
 		}
 		if (e.pipeout[0] > 0 && FD_ISSET(e.pipeout[0], &readfds)) {
@@ -300,6 +312,9 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
     return -1;
 }
 
+
+
+////////////////////////////////////////////////////////////////////
 #else // TEST
 #include <stdio.h>
 #include <string>
@@ -324,33 +339,100 @@ public:
     }
 };
 
-int main(int argc, const char **argv)
+class MEPv : public ExecCmdProvide {
+public:
+    FILE *m_fp;
+    string *m_input;
+    MEPv(string *i) 
+	: m_input(i)
+    {
+	m_fp = fopen("/etc/group", "r");
+    }
+    ~MEPv() {
+	if (m_fp)
+	    fclose(m_fp);
+    }
+    void newData() {
+	char line[1024];
+	if (m_fp && fgets(line, 1024, m_fp)) {
+	    m_input->assign((const char *)line);
+	} else {
+	    m_input->erase();
+	}
+    }
+};
+
+
+static char *thisprog;
+static char usage [] =
+"execmd cmd [arg1 arg2 ...]\n" 
+"  \n\n"
+;
+static void Usage(void)
 {
+    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    exit(1);
+}
+
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_s	  0x2 
+#define OPT_b	  0x4 
+
+int main(int argc, char **argv)
+{
+    int count = 10;
+    
+    thisprog = argv[0];
+    argc--; argv++;
+
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    /* Cas du "adb - core" */
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 's':	op_flags |= OPT_s; break;
+	    case 'b':	op_flags |= OPT_b; if (argc < 2)  Usage();
+		if ((sscanf(*(++argv), "%d", &count)) != 1) 
+		    Usage(); 
+		argc--; 
+		goto b1;
+	    default: Usage();	break;
+	    }
+    b1: argc--; argv++;
+    }
+
+    if (argc < 1)
+	Usage();
+
+    string cmd = *argv++; argc--;
+    list<string> l;
+    while (argc > 0) {
+	l.push_back(*argv++); argc--;
+    }
+
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
-    if (argc < 2) {
-	cerr << "Usage: execmd cmd arg1 arg2 ..." << endl;
-	exit(1);
-    }
-    const string cmd = argv[1];
-    list<string> l;
-    for (int i = 2; i < argc; i++) {
-	l.push_back(argv[i]);
-    }
+
     ExecCmd mexec;
     MEAdv adv;
     adv.cmd = &mexec;
     mexec.setAdvise(&adv);
     mexec.setTimeout(500);
     mexec.setStderr("/tmp/trexecStderr");
-
-    string input, output;
-    input = data;
-    string *ip = 0;
-    ip = &input;
     mexec.putenv("TESTVARIABLE1=TESTVALUE1");
     mexec.putenv("TESTVARIABLE2=TESTVALUE2");
     mexec.putenv("TESTVARIABLE3=TESTVALUE3");
+
+    string input, output;
+    //    input = data;
+    string *ip = 0;
+    ip = &input;
+
+    MEPv  pv(&input);
+    mexec.setProvide(&pv);
 
     int status = -1;
     try {
@@ -360,7 +442,7 @@ int main(int argc, const char **argv)
     }
 
     fprintf(stderr, "Status: 0x%x\n", status);
-    cout << "Output:" << output << endl;
+    cout << "Output:[" << output << "]" << endl;
     exit (status >> 8);
 }
 #endif // TEST

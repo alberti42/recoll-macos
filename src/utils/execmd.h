@@ -16,7 +16,7 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-/* @(#$Id: execmd.h,v 1.9 2006-10-09 16:37:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: execmd.h,v 1.10 2006-10-11 16:09:45 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -32,9 +32,28 @@ class ExecCmdAdvise {
     virtual void newData(int cnt) = 0;
 };
 
+/** Callback function object to get more input data. Data has to be provided
+ *  in the initial input string, set it to empty to signify eof
+ */
+class ExecCmdProvide {
+ public:
+    virtual ~ExecCmdProvide() {}
+    virtual void newData() = 0;
+};
+
 /**
  * Execute command possibly taking both input and output (will do
  * asynchronous io as appropriate for things to work).
+ *
+ * Input to the command can be provided either once in a parameter to doexec
+ * or provided in chunks by setting a callback which will be called to 
+ * request new data. In this case, the 'input' parameter to doexec may be
+ * empty (but not null)
+ *
+ * Output from the command is normally returned in a single string, but a
+ * callback can be set to be called whenever new data arrives, in which case
+ * it is permissible to consume the data and erase the string.
+ *
  */
 class ExecCmd {
  public:
@@ -67,10 +86,11 @@ class ExecCmd {
     void putenv(const string &envassign);
 
     /** 
-     * Set function object to call whenever new data is available or on
-     * select timeout.
+     * Set function objects to call whenever new data is available or on
+     * select timeout / whenever new data is needed to send.
      */
     void setAdvise(ExecCmdAdvise *adv) {m_advise = adv;}
+    void setProvide(ExecCmdProvide *p) {m_provide = p;}
 
     /**
      * Set select timeout in milliseconds. The default is 1 S. 
@@ -93,11 +113,14 @@ class ExecCmd {
      */
     void setCancel() {m_cancelRequest = true;}
 
-    ExecCmd() : m_advise(0), m_cancelRequest(false), m_timeoutMs(1000) {}
+    ExecCmd() 
+	: m_advise(0), m_provide(0), m_cancelRequest(false), m_timeoutMs(1000)
+	{}
 
  private:
     list<string>   m_env;
     ExecCmdAdvise *m_advise;
+    ExecCmdProvide *m_provide;
     bool           m_cancelRequest;
     int            m_timeoutMs;
     string         m_stderrFile;

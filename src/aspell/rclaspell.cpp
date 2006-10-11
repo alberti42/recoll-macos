@@ -1,6 +1,6 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.3 2006-10-11 14:16:25 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.4 2006-10-11 16:09:45 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
@@ -174,6 +174,36 @@ string Aspell::dicPath()
 		    string("aspdict.") + m_lang + string(".rws"));
 }
 
+
+class AspExecPv : public ExecCmdProvide {
+public:
+    string *m_input; // pointer to string used as input buffer to command
+    Rcl::TermIter *m_tit;
+    Rcl::Db &m_db;
+    AspExecPv(string *i, Rcl::TermIter *tit, Rcl::Db &db) 
+	: m_input(i), m_tit(tit), m_db(db)
+    {}
+    void newData() {
+	while (m_db.termWalkNext(m_tit, *m_input)) {
+	    // Filter out terms beginning with upper case (special stuff) and 
+	    // containing numbers
+	    if (m_input->empty())
+		continue;
+	    if ('A' <= m_input->at(0) && m_input->at(0) <= 'Z')
+		continue;
+	    if (m_input->find_first_of("0123456789+-._@") != string::npos)
+		continue;
+	    // Got a non-empty sort-of appropriate term, let's send it to
+	    // aspell
+	    m_input->append("\n");
+	    return;
+	}
+	// End of data. Tell so. Exec will close cmd.
+	m_input->erase();
+    }
+};
+
+
 bool Aspell::buildDict(Rcl::Db &db, string &reason)
 {
     if (!ok())
@@ -194,24 +224,16 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
 	reason = "termWalkOpen failed\n";
 	return false;
     }
-    string allterms, term;
-    while (db.termWalkNext(tit, term)) {
-	// Filter out terms beginning with upper case (special stuff) and 
-	// containing numbers
-	if (term.empty())
-	    continue;
-	if ('A' <= term.at(0) && term.at(0) <= 'Z')
-	    continue;
-	if (term.find_first_of("0123456789+-._@") != string::npos)
-	    continue;
-	allterms += term + "\n";
-	//      std::cout << "[" << term << "]" << std::endl;
-    }
-    db.termWalkClose(tit);
-    if (aspell.doexec(m_data->m_exec, args, &allterms)) {
+
+    string termbuf;
+    AspExecPv pv(&termbuf, tit, db);
+    aspell.setProvide(&pv);
+
+    if (aspell.doexec(m_data->m_exec, args, &termbuf)) {
 	reason = string("aspell dictionary creation command failed. Check the language data files for lang = ") + m_lang;
 	return false;
     }
+    db.termWalkClose(tit);
     return true;
 }
 
