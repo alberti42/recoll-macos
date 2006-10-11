@@ -5,6 +5,7 @@ CONFIG	+= qt warn_on thread release debug
 
 HEADERS	+= \
 	advsearch_w.h \
+	spell_w.h \
 	preview_w.h \
 	rclmain_w.h \
 	reslist.h \
@@ -21,6 +22,7 @@ SOURCES	+= \
 	rclmain_w.cpp \
 	reslist.cpp \
         advsearch_w.cpp \
+	spell_w.cpp \
         preview_w.cpp \
         sort_w.cpp \
         ssearch_w.cpp \
@@ -28,6 +30,7 @@ SOURCES	+= \
 
 FORMS	= \
 	advsearch.ui \
+	spell.ui \
 	preview.ui \
 	rclmain.ui \
 	sort.ui \
@@ -40,7 +43,9 @@ IMAGES	= images/asearch.png \
 	images/nextpage.png \
 	images/d_prevpage.png \
 	images/prevpage.png \
-	images/sortparms.png
+	images/sortparms.png \
+	images/d_spell.png \
+	images/spell.png
 
 unix {
   UI_DIR = .ui
@@ -52,7 +57,7 @@ unix {
             $(BSTATIC) @LIBXAPIAN@ @LIBICONV@ $(BDYNAMIC) \
            -lz
 
-  INCLUDEPATH += ../common ../index ../query ../unac ../utils 
+  INCLUDEPATH += ../common ../index ../query ../unac ../utils ../aspell
   POST_TARGETDEPS = ../lib/librcl.a
 }
 

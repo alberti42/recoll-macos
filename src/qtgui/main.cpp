@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.51 2006-09-28 11:55:30 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.52 2006-10-11 14:16:26 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,8 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.51 2006-09-28 11:55:30 dockes Exp $ 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
+#include "autoconfig.h"
 
 #include <unistd.h>
 
@@ -51,6 +53,9 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.51 2006-09-28 11:55:30 dockes Exp $ 
 #endif
 #include "rclmain_w.h"
 #include "guiutils.h"
+#ifdef RCL_USE_ASPELL
+#include "rclaspell.h"
+#endif
 
 #ifdef WITH_KDE
 static const char description[] =
@@ -68,6 +73,9 @@ const string recoll_datadir = RECOLL_DATADIR;
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
+#ifdef RCL_USE_ASPELL
+Aspell *aspell;
+#endif
 
 RclHistory *g_dynconf;
 int recollNeedsExit;
@@ -123,6 +131,10 @@ static void recollCleanup()
     rcldb = 0;
     delete rclconfig;
     rclconfig = 0;
+#ifdef RCL_USE_ASPELL
+    delete aspell;
+    aspell = 0;
+#endif
     LOGDEB2(("recollCleanup: done\n"));
 }
 
@@ -213,6 +225,15 @@ int main(int argc, char **argv)
 	exit(1);
     }
     //    fprintf(stderr, "recollinit done\n");
+
+#ifdef RCL_USE_ASPELL
+    aspell = new Aspell(rclconfig);
+    aspell->init(reason);
+    if (!aspell || !aspell->ok()) {
+	LOGDEB(("Aspell speller creation failed %s\n", reason.c_str()));
+	aspell = 0;
+    }
+#endif
 
     string historyfile = path_cat(rclconfig->getConfDir(), "history");
     g_dynconf = new RclHistory(historyfile);

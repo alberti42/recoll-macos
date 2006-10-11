@@ -1,4 +1,5 @@
-AC_INIT(Recoll, 1.0)
+AC_INIT(Recoll, 1.6)
+AC_CONFIG_HEADERS([common/autoconfig.h])
 AC_PREREQ(2.53)
 AC_CONFIG_SRCDIR(index/recollindex.cpp)
 
@@ -13,6 +14,44 @@ else
 EOF
    exit 1
 fi
+
+# Use aspell to provide spelling expansions ?
+# The default is yes. If we do find an aspell installation, we use it. Else
+# we do compile the aspell module using an internal copy of aspell.h
+# Only --with-aspell=no will completely disable aspell support
+AC_ARG_WITH(aspell, 
+    AC_HELP_STRING([--with-aspell],
+   [Use aspell spelling package to provide term expansion to other spellings]),
+        withAspell=$withval, withAspell=yes)
+case $withAspell in
+     no);;
+     yes)
+     AC_PATH_PROG(aspellProg, aspell)
+     ;;
+     *) # The argument should be the path to the aspell program
+     aspellProg=$withAspell
+     ;;
+esac
+# if 
+if test X$withAspell != Xno ; then
+   AC_DEFINE(RCL_USE_ASPELL, 1, [Compile the aspell interface])
+   if test X$aspellProg != X ; then
+      aspellBase=`dirname $aspellProg`
+      aspellBase=`dirname $aspellBase`
+      if test ! -f $aspellBase/include/aspell.h ; then
+	 AC_MSG_ERROR([aspell.h not found in $aspellBase/include. Specify --with-aspell=no to disable aspell support])
+      fi
+      AC_DEFINE_UNQUOTED(ASPELL_PROG, "$aspellProg",
+	[Path to the aspell program])
+      AC_DEFINE_UNQUOTED(ASPELL_INCLUDE, "$aspellBase/include/aspell.h",
+	[Path to the aspell api include file])
+   else
+     # aspell support enabled but no aspell install yet
+	AC_MSG_NOTICE([aspell support enabled but aspell package not found. Compiling with internal aspell interface file])
+	AC_DEFINE(ASPELL_INCLUDE, ["aspell-local.h"])
+   fi
+fi
+
 
 ##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
 ##    then in libc (Linux, solaris)

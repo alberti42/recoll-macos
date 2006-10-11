@@ -1,3 +1,6 @@
+#ifndef _ASPELL_W_H_INCLUDED_
+#define _ASPELL_W_H_INCLUDED_
+/* @(#$Id: spell_w.h,v 1.1 2006-10-11 14:16:26 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -14,29 +17,32 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef _RECOLL_H_INCLUDED_
-#define _RECOLL_H_INCLUDED_
-/* @(#$Id: recoll.h,v 1.17 2006-10-11 14:16:26 dockes Exp $  (C) 2004 J.F.Dockes */
-#include <string>
 
-#include "rclconfig.h"
+#include <qvariant.h>
+#include <qwidget.h>
 #include "rcldb.h"
-#include "idxthread.h"
-#include "history.h"
+#include "spell.h"
 
-// Misc declarations in need of sharing between the UI files
+class SpellW : public SpellBase
+{
+    Q_OBJECT
 
-// Open the database if needed. We now force a close/open by default
-extern bool maybeOpenDb(std::string &reason, bool force = true);
+public:
+    SpellW(QWidget* parent = 0, const char* name = 0, WFlags fl = 0) :
+	SpellBase(parent,name,fl) {init();}
+	
+    ~SpellW(){}
 
-extern RclConfig *rclconfig;
-extern Rcl::Db *rcldb;
-extern int recollNeedsExit;
-extern const std::string recoll_datadir;
-extern RclHistory *g_dynconf;
-#ifdef RCL_USE_ASPELL
-class Aspell;
-extern Aspell *aspell;
-#endif
+public slots:
+    virtual void doExpand();
+    virtual void wordChanged(const QString&);
+    //    virtual void textDoubleClicked(int, int);
 
-#endif /* _RECOLL_H_INCLUDED_ */
+signals:
+    //    void wordSelect(QString);
+
+private:
+    void init();
+};
+
+#endif /* _ASPELL_W_H_INCLUDED_ */

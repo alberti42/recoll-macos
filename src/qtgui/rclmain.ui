@@ -84,6 +84,7 @@
         <action name="toolsDoc_HistoryAction"/>
         <action name="toolsAdvanced_SearchAction"/>
         <action name="toolsSort_parametersAction"/>
+        <action name="toolsSpellAction"/>
     </item>
     <item text="&amp;Preferences" name="Preferences">
         <action name="preferencesQuery_PrefsAction"/>
@@ -106,6 +107,7 @@
         <action name="toolsAdvanced_SearchAction"/>
         <action name="toolsSort_parametersAction"/>
         <action name="toolsDoc_HistoryAction"/>
+        <action name="toolsSpellAction"/>
     </toolbar>
     <toolbar dock="2">
         <property name="name">
@@ -249,6 +251,23 @@
         </property>
         <property name="toolTip">
             <string>Sort parameters</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>toolsSpellAction</cstring>
+        </property>
+        <property name="iconSet">
+            <iconset>spell.png</iconset>
+        </property>
+        <property name="text">
+            <string>Spelling expansion</string>
+        </property>
+        <property name="menuText">
+            <string>Spelling expansion</string>
+        </property>
+        <property name="toolTip">
+            <string>Spelling expansion tool</string>
         </property>
     </action>
     <action>

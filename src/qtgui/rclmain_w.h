@@ -27,6 +27,7 @@
 #include "uiprefs_w.h"
 #include "rcldb.h"
 #include "searchdata.h"
+#include "spell_w.h"
 
 #include "rclmain.h"
 
@@ -52,6 +53,7 @@ public slots:
     virtual void previewClosed(QWidget * w);
     virtual void showAdvSearchDialog();
     virtual void showSortDialog();
+    virtual void showSpellDialog();
     virtual void showAboutDialog();
     virtual void startManual();
     virtual void showDocHistory();
@@ -73,6 +75,8 @@ private:
     AdvSearch *asearchform;
     SortForm *sortform;
     UIPrefsDialog *uiprefs;
+    SpellW *spellform;
+
     DocSeqSortSpec sortspecs;
     int m_searchId; // Serial number of current search for this process.
                   // Used to match to preview windows

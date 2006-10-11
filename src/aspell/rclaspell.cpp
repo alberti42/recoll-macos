@@ -1,17 +1,24 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.2 2006-10-09 16:37:08 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.3 2006-10-11 14:16:25 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
+#ifdef HAVE_CONFIG_H
+#include "autoconfig.h"
+#endif
+
+#ifdef RCL_USE_ASPELL
+
 #include <unistd.h>
 #include <dlfcn.h>
 #include <iostream>
 
-#include "aspell.h"
+#include ASPELL_INCLUDE
 
 #include "pathut.h"
 #include "execmd.h"
 #include "rclaspell.h"
 
+// Stuff that we don't wish to see in the .h (possible sysdeps, etc.)
 class AspellData {
 public:
     AspellData() : m_handle(0) {}
@@ -62,22 +69,54 @@ static AspellApi aapi;
 	badnames += #NM + string(" ");					\
     }
 
-bool Aspell::init(const string &basedir, string &reason)
+const char *aspell_progs[] = {
+#ifdef ASPELL_PROG
+    ASPELL_PROG ,
+#endif
+    "/usr/local/bin/aspell",
+    "/usr/bin/aspell"
+};
+
+bool Aspell::init(string &reason)
 {
-    if (m_data == 0)
-	m_data = new AspellData;
-    if (m_data->m_handle) {
-	dlclose(m_data->m_handle);
-	m_data->m_handle = 0;
+    delete m_data;
+    m_data = 0;
+    // Language: we get this from the configuration, else from the NLS
+    // environment. The aspell language names used for selecting language 
+    // definition files (used to create dictionaries) are like en, fr
+    if (!m_config->getConfParam("aspellLanguage", m_lang)) {
+	string lang = "en";
+	const char *cp;
+	if (cp = getenv("LC_ALL"))
+	    lang = cp;
+	else if (cp = getenv("LANG"))
+	    lang = cp;
+	if (!lang.compare("C"))
+	    lang = "en";
+	m_lang = lang.substr(0, lang.find_first_of("_"));
+    } else {
+	if (!m_lang.compare("disable")) {
+	    reason = "Aspell disabled in recoll configuration file";
+	    return false;
+	}
     }
 
-    m_data->m_exec = path_cat(basedir, "bin");
-    m_data->m_exec = path_cat(m_data->m_exec, "aspell");
-    if (access(m_data->m_exec.c_str(), X_OK) != 0) {
-	reason = m_data->m_exec + " not found or not executable";
+    m_data = new AspellData;
+    for (unsigned int i = 0; i < sizeof(aspell_progs) / sizeof(char*); i++) {
+	if (access(aspell_progs[i], X_OK) == 0) {
+	    m_data->m_exec = aspell_progs[i];
+	    break;
+	}
+    }
+    if (m_data->m_exec.empty()) {
+	reason = "aspell program not found or not executable";
 	return false;
     }
-    string lib = path_cat(basedir, "lib");
+
+    // For now, the aspell library has to live under the same prefix as the 
+    // aspell program.
+    string aspellPrefix = path_getfather(path_getfather(m_data->m_exec));
+    string lib = path_cat(aspellPrefix, "lib");
     lib = path_cat(lib, "libaspell.so");
     if ((m_data->m_handle = dlopen(lib.c_str(), RTLD_LAZY)) == 0) {
 	reason = "Could not open shared library [";
@@ -120,6 +159,7 @@ bool Aspell::init(const string &basedir, string &reason)
 	reason = string("Aspell::init: symbols not found:") + badnames;
 	return false;
     }
+
     return true;
 }
 
@@ -130,51 +170,58 @@ bool Aspell::ok()
 
 string Aspell::dicPath()
 {
-    return path_cat(m_conf->getConfDir(), 
+    return path_cat(m_config->getConfDir(), 
 		    string("aspdict.") + m_lang + string(".rws"));
 }
 
 bool Aspell::buildDict(Rcl::Db &db, string &reason)
 {
-  string term;
+    if (!ok())
+	return false;
 
-  //  Il faut nettoyer la liste, peut-etre faire un tri unique (verifier), 
-  //      puis construire le dico 
-  Rcl::TermIter *tit = db.termWalkOpen();
-  if (tit == 0) {
-      reason = "termWalkOpen failed\n";
-      return false;
-  }
-  ExecCmd aspell;
-  list<string> args;
-  // aspell --lang=[lang] create master [dictApath]
-  args.push_back(string("--lang=")+ m_lang);
-  args.push_back("create");
-  args.push_back("master");
-  args.push_back(dicPath());
-  //  aspell.setStderr("/dev/null");
-  string allterms;
-  while (db.termWalkNext(tit, term)) {
-      // Filter out terms beginning with upper case (special stuff) and 
-      // containing numbers
-      if (term.empty())
-	  continue;
-      if ('A' <= term.at(0) && term.at(0) <= 'Z')
-	  continue;
-      if (term.find_first_of("0123456789+-._@") != string::npos)
-	  continue;
-      allterms += term + "\n";
-      //      std::cout << "[" << term << "]" << std::endl;
-  }
-  db.termWalkClose(tit);
-  aspell.doexec(m_data->m_exec, args, &allterms);
-  return true;
+    // We create the dictionary by executing the aspell command:
+    // aspell --lang=[lang] create master [dictApath]
+    ExecCmd aspell;
+    list<string> args;
+    args.push_back(string("--lang=")+ m_lang);
+    args.push_back("create");
+    args.push_back("master");
+    args.push_back(dicPath());
+    aspell.setStderr("/dev/null");
+
+    Rcl::TermIter *tit = db.termWalkOpen();
+    if (tit == 0) {
+	reason = "termWalkOpen failed\n";
+	return false;
+    }
+    string allterms, term;
+    while (db.termWalkNext(tit, term)) {
+	// Filter out terms beginning with upper case (special stuff) and 
+	// containing numbers
+	if (term.empty())
+	    continue;
+	if ('A' <= term.at(0) && term.at(0) <= 'Z')
+	    continue;
+	if (term.find_first_of("0123456789+-._@") != string::npos)
+	    continue;
+	allterms += term + "\n";
+	//      std::cout << "[" << term << "]" << std::endl;
+    }
+    db.termWalkClose(tit);
+    if (aspell.doexec(m_data->m_exec, args, &allterms)) {
+	reason = string("aspell dictionary creation command failed. Check the language data files for lang = ") + m_lang;
+	return false;
+    }
+    return true;
 }
 
 
 bool Aspell::suggest(Rcl::Db &db,
 		     string &term, list<string> &suggestions, string &reason)
 {
+    if (!ok())
+	return false;
+
     AspellCanHaveError *ret;
     AspellSpeller *speller;
     AspellConfig *config;
@@ -221,8 +268,15 @@ bool Aspell::suggest(Rcl::Db &db,
     return true;
 }
 
+#endif // RCL_USE_ASPELL
 
 #else // TEST_RCLASPELL test driver ->
+
+#ifdef HAVE_CONFIG_H
+#include "autoconfig.h"
+#endif
+
+#ifdef RCL_USE_ASPELL
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -304,11 +358,9 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
-    string lang = "en";
+    Aspell aspell(rclconfig);
 
-    Aspell aspell(rclconfig, lang);
-
-    if (!aspell.init("/usr/local", reason)) {
+    if (!aspell.init(reason)) {
 	cerr << "Init failed: " << reason << endl;
 	exit(1);
     }
@@ -331,5 +383,9 @@ int main(int argc, char **argv)
     }
     exit(0);
 }
+#else
+int main(int argc, char **argv)
+{return 1;}
+#endif // RCL_USE_ASPELL
 
 #endif // TEST_RCLASPELL test driver

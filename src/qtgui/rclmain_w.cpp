@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.1 2006-09-22 07:41:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.2 2006-10-11 14:16:26 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@ static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.1 2006-09-22 07:41:35 dockes Ex
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -126,6 +127,14 @@ void RclMain::init()
 	    this, SLOT(showAdvSearchDialog()));
     connect(toolsSort_parametersAction, SIGNAL(activated()), 
 	    this, SLOT(showSortDialog()));
+    toolsSpellAction->setIconSet(createIconSet("spell.png"));
+#ifdef RCL_USE_ASPELL
+    connect(toolsSpellAction, SIGNAL(activated()), 
+	    this, SLOT(showSpellDialog()));
+#else
+    toolsSpellAction->setEnabled(FALSE);
+#endif
+
     connect(preferencesQuery_PrefsAction, SIGNAL(activated()), 
 	    this, SLOT(showUIPrefs()));
 
@@ -375,6 +384,21 @@ void RclMain::showSortDialog()
 	// Close and reopen, in hope that makes us visible...
 	sortform->close();
         sortform->show();
+    }
+
+}
+
+void RclMain::showSpellDialog()
+{
+    if (spellform == 0) {
+	spellform = new SpellW(0, tr("Spell expansion"), 
+				    WStyle_Customize | WStyle_NormalBorder | 
+				    WStyle_Title | WStyle_SysMenu);
+	spellform->show();
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	spellform->close();
+        spellform->show();
     }
 
 }

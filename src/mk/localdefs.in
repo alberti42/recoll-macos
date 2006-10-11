@@ -10,6 +10,6 @@ datadir = @datadir@
 RECOLL_DATADIR = ${datadir}/recoll
 
 LOCALCXXFLAGS = $(INCICONV) $(XAPIANCXXFLAGS) \
-	      -DRECOLL_DATADIR=\"$(RECOLL_DATADIR)\"
+	      -DRECOLL_DATADIR=\"$(RECOLL_DATADIR)\" @DEFS@
 
 CXXFLAGS = -g -O2 -Wall -Wno-unused 

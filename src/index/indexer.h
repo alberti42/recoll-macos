@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.16 2006-04-30 07:35:18 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.17 2006-10-11 14:16:26 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -118,6 +118,9 @@ class DbIndexer : public FsTreeWalkerCB {
 
     /** Create stem database for given language */
     bool createStemDb(const string &lang);
+
+    /** Create misspelling expansion dictionary if aspell i/f is available */
+    bool createAspellDict();
 
     /**  Tree walker callback method */
     FsTreeWalker::Status 

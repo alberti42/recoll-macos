@@ -1,6 +1,9 @@
 #ifndef _RCLASPELL_H_INCLUDED_
 #define _RCLASPELL_H_INCLUDED_
-/* @(#$Id: rclaspell.h,v 1.2 2006-10-09 16:37:08 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rclaspell.h,v 1.3 2006-10-11 14:16:25 dockes Exp $  (C) 2006 J.F.Dockes */
+
+/* autoconfig.h must be included before this file */
+#ifdef RCL_USE_ASPELL
 
 /**
  * Aspell speller interface class.
@@ -28,15 +31,15 @@ class AspellData;
 
 class Aspell {
  public:
-    Aspell(RclConfig *cnf, const string &lang) 
-	: m_conf(cnf), m_lang(lang), m_data(0) {};
+    Aspell(RclConfig *cnf)
+	: m_config(cnf), m_data(0) {};
     ~Aspell();
 
     /** Check health */
     bool ok();
 
     /** Find the aspell command and shared library, init function pointers */
-    bool init(const string &basedir, string &reason); 
+    bool init(string &reason); 
 
     /**  Build dictionary out of index term list. This is done at the end
      * of an indexing pass. */
@@ -48,9 +51,10 @@ class Aspell {
 
  private:
     string dicPath();
-    RclConfig  *m_conf;
+    RclConfig  *m_config;
     string      m_lang;
     AspellData *m_data;
 };
 
+#endif /* RCL_USE_ASPELL */
 #endif /* _RCLASPELL_H_INCLUDED_ */

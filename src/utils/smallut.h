@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.16 2006-04-11 06:49:45 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.17 2006-10-11 14:16:26 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 
@@ -38,7 +38,7 @@ extern string stringlistdisp(const list<string>& strs);
 /**
  * Parse input string into list of strings. 
  *
- * Token delimiter is " \t" except inside dquotes. dquote inside
+ * Token delimiter is " \t\n" except inside dquotes. dquote inside
  * dquotes can be escaped with \ etc...
  */
 extern bool stringToStrings(const string &s, list<string> &tokens);

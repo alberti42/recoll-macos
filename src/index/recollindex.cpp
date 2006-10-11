@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.20 2006-09-08 09:02:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.21 2006-10-11 14:16:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,9 @@ static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.20 2006-09-08 09:02:47 dockes
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#ifdef HAVE_CONFIG_H
+#include "autoconfig.h"
+#endif
 
 #include <stdio.h>
 #include <signal.h>
@@ -39,37 +42,45 @@ using namespace std;
 ConfIndexer *confindexer;
 DbIndexer *dbindexer;
 
+static bool makeDbIndexer(RclConfig *config)
+{
+    if (dbindexer)
+	delete dbindexer;
+    // Note that we do not bother to check for multiple databases,
+    // which are currently a fiction anyway. 
+    string dbdir = config->getDbDir();
+    if (dbdir.empty()) {
+	fprintf(stderr, "makeDbIndexer: no database directory in "
+		"configuration for %s\n", config->getKeyDir().c_str());
+	return false;
+    }
+    dbindexer = new DbIndexer(config, dbdir);
+    return true;
+}
+
 // Index a list of files 
 static bool indexfiles(RclConfig *config, const list<string> &filenames)
 {
     if (filenames.empty())
 	return true;
 
-    // Note that we do not bother to check for multiple databases,
-    // which are currently a fiction anyway. 
     config->setKeyDir(path_getfather(*filenames.begin()));
-    string dbdir = config->getDbDir();
-    if (dbdir.empty()) {
-	LOGERR(("indexfiles: no database directory in "
-		"configuration for %s\n", filenames.begin()->c_str()));
+
+    makeDbIndexer(config);
+    if (dbindexer)
+	return dbindexer->indexFiles(filenames);
+    else
 	return false;
-    }
-    dbindexer = new DbIndexer(config, dbdir);
-    return dbindexer->indexFiles(filenames);
 }
 
 // Create additional stem database 
 static bool createstemdb(RclConfig *config, const string &lang)
 {
-    // Note that we do not bother to check for multiple databases,
-    // which are currently a fiction anyway. 
-    string dbdir = config->getDbDir();
-    if (dbdir.empty()) {
-	LOGERR(("createstemdb: no database directory in configuration\n"));
+    makeDbIndexer(config);
+    if (dbindexer)
+	return dbindexer->createStemDb(lang);
+    else
 	return false;
-    }
-    dbindexer = new DbIndexer(config, dbdir);
-    return dbindexer->createStemDb(lang);
 }
 
 static void cleanup()
@@ -108,6 +119,7 @@ static int     op_flags;
 #define OPT_i     0x8
 #define OPT_s     0x10
 #define OPT_c     0x20
+#define OPT_S     0x40
 
 static const char usage [] =
 "\n"
@@ -120,6 +132,10 @@ static const char usage [] =
 "    Index individual files. No database purge or stem database updates\n"
 "recollindex -s <lang>\n"
 "    Build stem database for additional language <lang>\n"
+#ifdef RCL_USE_ASPELL
+"recollindex -S\n"
+"    Build aspell spelling dictionary.>\n"
+#endif
 "Common options:\n"
 "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
 ;
@@ -151,6 +167,9 @@ int main(int argc, const char **argv)
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
 	    case 's': op_flags |= OPT_s; break;
+#ifdef RCL_USE_ASPELL
+	    case 'S': op_flags |= OPT_S; break;
+#endif
 	    case 'z': op_flags |= OPT_z; break;
 	    default: Usage(); break;
 	    }
@@ -189,6 +208,14 @@ int main(int argc, const char **argv)
 	    Usage();
 	string lang = *argv++; argc--;
 	exit(!createstemdb(config, lang));
+#ifdef RCL_USE_ASPELL
+    } else if (op_flags & OPT_S) {
+	makeDbIndexer(config);
+	if (dbindexer)
+	    exit(!dbindexer->createAspellDict());
+	else
+	    exit(1);
+#endif
     } else {
 	confindexer = new ConfIndexer(config, &updater);
 	bool rezero(op_flags & OPT_z);

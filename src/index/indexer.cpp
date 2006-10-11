@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.35 2006-09-13 13:53:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.36 2006-10-11 14:16:25 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,10 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.35 2006-09-13 13:53:35 dockes Exp
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#ifdef HAVE_CONFIG_H
+#include "autoconfig.h"
+#endif
+
 #include <stdio.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -41,6 +45,10 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.35 2006-09-13 13:53:35 dockes Exp
 #include "internfile.h"
 #include "smallut.h"
 #include "wipedir.h"
+
+#ifdef RCL_USE_ASPELL
+#include "rclaspell.h"
+#endif
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -137,6 +145,8 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 	}
     }
 
+    createAspellDict();
+
     // The close would be done in our destructor, but we want status here
     if (m_updater) {
 	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
@@ -169,6 +179,31 @@ bool DbIndexer::createStemDb(const string &lang)
     if (!init())
 	return false;
     return m_db.createStemDb(lang);
+}
+
+// The language for the aspell dictionary is handled internally by the aspell
+// module, either from a configuration variable or the NLS environment.
+bool DbIndexer::createAspellDict()
+{
+    LOGDEB2(("DbIndexer::createAspellDict()\n"));
+#ifdef RCL_USE_ASPELL
+    if (!init())
+	return false;
+    Aspell aspell(m_config);
+    string reason;
+    if (!aspell.init(reason)) {
+	LOGERR(("DbIndexer::createAspellDict: aspell init failed: %s\n", 
+		reason.c_str()));
+	return false;
+    }
+    LOGDEB(("DbIndexer::createAspellDict: creating dictionary\n"));
+    if (!aspell.buildDict(m_db, reason)) {
+	LOGERR(("DbIndexer::createAspellDict: aspell buildDict failed: %s\n", 
+		reason.c_str()));
+	return false;
+    }
+#endif
+    return true;
 }
 
 /** 

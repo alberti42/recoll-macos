@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.21 2006-09-08 09:02:47 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.22 2006-10-11 14:16:25 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 
@@ -41,6 +41,7 @@ class RclConfig {
 	m_conf->get("guesscharset", str, m_keydir);
 	guesscharset = stringToBool(str);
     }
+    string getKeyDir() const {return m_keydir;}
 
     /** Get generic configuration parameter according to current keydir */
     bool getConfParam(const string &name, string &value) 

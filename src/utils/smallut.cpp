@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.16 2006-04-11 06:49:45 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.17 2006-10-11 14:16:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -242,6 +242,7 @@ bool stringToStrings(const string &s, std::list<string> &tokens)
 
 	    case ' ': 
 	    case '\t': 
+	    case '\n': 
 	    switch(state) {
 	      case SPACE: 
 		  continue;
