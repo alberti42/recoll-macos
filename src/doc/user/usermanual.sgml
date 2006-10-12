@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.21 2006-09-29 11:43:45 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.22 2006-10-12 08:39:55 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -218,25 +218,57 @@
       <para>In some cases, it may be interesting to index different
       areas of the file system to separate databases. You can do this
       by using multiple configuration directories, each indexing a
-      file system area to a specific database. You would use the
-      <literal>RECOLL_CONFDIR</literal> environment variable or the
-      <literal>-c</literal> <replaceable>confdir</replaceable> option
-      to <command>recollindex</command> to indicate which
-      configuration to process. The <command>recoll</command> search
-      program can use any selection of the existing databases for each
-      search, this is configurable inside the user interface.</para>
+      file system area to a specific database. See the <link
+      linkend="rcl.search.multidb">section about using multiple
+      databases</link> for more information on multiple configurations
+      and indexes. </para>
     </sect1>
 
     <sect1 id="rcl.indexing.storage">
       <title>Index storage</title>
 
       <para>The default location for the index data is the
-      <filename>$HOME/.recoll/xapiandb/</filename> directory. This can
-      be changed by setting the <literal>RECOLL_CONFDIR</literal>
-      environment variable, or by specifying the
-      <literal>dbdir</literal> parameter in the configuration file
-      (see the <link linkend="rcl.install.config.recollconf">configuration
-      section</link>).</para>
+      <filename>xapiandb</filename> subdirectory of the &RCL;
+      configuration directory, typically
+      <filename>$HOME/.recoll/xapiandb/</filename>. This can be
+      changed via two different methods (with different purposes):</para>
+
+      <itemizedlist>
+
+	  <listitem><para>You can specify a different configuration
+	  directory by setting the <literal>RECOLL_CONFDIR</literal>
+          environment variable, or using the <literal>-c</literal>
+          option to the &RCL; commands. This method would typically be
+          used to index different areas of the file system to
+          different indexes. For example, if you were to issue the
+          following commands: 
+          <programlisting>
+export RECOLL_CONFDIR=~/.indexes-email
+recoll
+          </programlisting> Then &RCL; would use configuration files
+          stored in <filename>~/.indexes-email/</filename> and,
+          (unless specified otherwise in
+          <filename>recoll.conf</filename>) would look for 
+          the index in <filename>~/.indexes-email/xapiandb/</filename>.
+
+          <para>Using multiple configuration directories and 
+          <link linkend="rcl.install.config.recollconf">configuration
+          options</link> allows you to tailor multiple configurations
+          and indexes to handle whatever subset of the available data
+          that you wish to make searchable.</para>
+
+	  </listitem>
+	  <listitem><para>You can also specify a different storage
+	  location for the index by setting the <literal>dbdir</literal>
+	  parameter in the configuration file 
+          (see the <link linkend="rcl.install.config.recollconf">configuration
+          section</link>). This method would mainly be of use if you
+          wanted to keep the configuration directory in its default location,
+          but desired another location for the index, typically out of
+          disk occupation concerns.</para>
+	  </listitem>
+
+	</itemizedlist>
 
       <para>The size of the index is determined by the size of the set
       of documents, but the ratio can vary a lot. For a typical mixed
@@ -254,8 +286,8 @@
       total amount of data on the computer.</para>
       
       <para>The index data directory (<filename>xapiandb</filename>)
-      only contains data that will be rebuilt by an index run, and it 
-      can always be destroyed safely.</para>
+      only contains data that can be completely rebuilt by an index
+      run, and it can always be destroyed safely.</para>
 
       <sect2 id="rcl.indexing.storage.security">
 	<title>Security aspects</title>
@@ -282,28 +314,32 @@
     <sect1 id="rcl.indexing.config">
       <title>The indexing configuration</title>
 
-      <para>Values set in the system-wide configuration file (named
-      like
-      <filename>/usr/[local/]share/recoll/examples/recoll.conf</filename>)
-      can be overridden by those set in the personal one, named
-        <filename>$HOME/.recoll/recoll.conf</filename> by default or
-        <filename>$RECOLL_CONFDIR/recoll.conf</filename> if
-          RECOLL_CONFDIR is set.</para>
+      <para>You can control which areas of the file system are
+      indexed, and how files are processed, by setting variables inside
+      the <link linkend="rcl.install.config">&RCL; configuration
+      files</link>.</para>
 
-      <para>The most accurate documentation for editing the file is
-      given by comments inside the central one.  If you want to adjust
-      the configuration before indexing, just click
-      <guilabel>Cancel</guilabel> when the program asks if it should
-      start initial indexing. This will have created a
-      <filename>.recoll</filename> directory containing empty
+      <para>You can also use <link linkend="rcl.search.multidb">multiple 
+      indexes</link> defined by separate configurations, typically to 
+      separate personal and shared indexes, or to take advantage of
+      the organization of your data to improve search precision.</para> 
+
+      <para>The first time you start <command>recoll</command>, you
+      will be asked whether or not you would like recoll to build the
+      index. If you want to adjust the configuration before indexing,
+      just click <guilabel>Cancel</guilabel> at this point. That way,
+      recoll will have created a ~/.recoll directory containing empty
       configuration files.</para>
 
-      <para>The configuration is also documented inside the <link
-      linkend="rcl.install.config.recollconf">installation chapter</link> of
-      this document, or in the recoll.conf(5) man page.</para>
+      <para>The configuration is documented inside the <link
+      linkend="rcl.install.config">installation chapter</link> of
+      this document, or in the recoll.conf(5) man page. The most
+      immediately useful variable you may interested in is probably <link
+      linkend="rcl.install.config.recollconf.topdirs">topdirs</link>,
+      which determines what subtrees get indexed.</para>
 
       <para>The applications needed to index file types other than
-      text, HTML or email (ie: pdf, postscript, ms-word...)  are
+      text, HTML or email (ie: pdf, postscript, ms-word...) are
       described in the <link linkend="rcl.install.external">external
       packages section</link></para>
 
@@ -327,8 +363,8 @@
 
       <para>It is best to avoid interrupting the indexing process, as
         this may sometimes leave the index in a bad state.  This is
-        not a serious problem, as you then just need to clear
-        everything and restart the indexing: the index files are
+        not a serious problem, as you then just need to delete 
+        the index files and restart the indexing. The index files are
         normally stored in the <filename>$HOME/.recoll/xapiandb</filename>
         directory, which you can just delete if needed. Alternatively,
         you can start <command>recollindex</command> with option
@@ -1101,6 +1137,20 @@
     <sect1 id="rcl.install.config">
       <title>Configuration overview</title>
 
+      <para>Most of the parameters specific to the
+         <command>recoll</command> GUI are set through the
+          <guilabel>Preferences</guilabel> menu and stored in the
+          standard QT place
+          (<filename>$HOME/.qt/recollrc</filename>). You probably do not
+          want to edit this by hand.</para>
+
+      <para>For other options, &RCL; uses text configuration
+        files. You will have to edit them by hand for 
+        now (there is still some hope for a GUI configuration tool
+        in the future). The most accurate documentation for the
+        configuration parameters is given by comments inside the default
+        files, and we will just give a general overview here.</para>
+
       <para>There are two sets of configuration files. The system-wide
       files are kept in a directory named like
       <filename>/usr/[local/]share/recoll/examples</filename>, 
@@ -1120,19 +1170,6 @@
         indexing. <command>recollindex</command> will
         proceed immediately.</para>
       
-      <para>Most of the parameters specific to the
-         <command>recoll</command> GUI are set through the
-          <guilabel>Preferences</guilabel> menu and stored in the
-          standard QT place
-          (<filename>$HOME/.qt/recollrc</filename>). You probably do not
-          want to edit this by hand.</para>
-
-      <para>For other options, &RCL; uses text configuration
-        files. You will have to edit them by hand for 
-        now (there is still some hope for a GUI configuration tool
-        in the future). The most accurate documentation for the
-        configuration parameters is given by comments inside the default
-        files, and we will just give a general overview here.</para>
 
         <para>All configuration files share the same format. For
         example, a short extract of the main configuration file might
@@ -1158,10 +1195,12 @@
           </listitem>
         </itemizedlist>
 
-        <para>Section lines allow redefining some parameters for a
-        directory sub-tree. Some of the parameters used for indexing
-        are looked up hierarchically from the more to the less
-        specific. Not all parameters can be meaningfully redefined,
+        <para>Section definitions allow redefining some parameters for
+        a directory sub-tree. They stay in effect until another
+        section definition, or the end of file, is encountered. Some
+        of the parameters used for indexing are looked up
+        hierarchically from the current directory location
+        upwards. Not all parameters can be meaningfully redefined,
         this is specified for each in the next section. </para>
 
         <para>The tilde character (~) is expanded in file names to the
@@ -1191,7 +1230,8 @@
 
         <variablelist>
 
-          <varlistentry><term><literal>topdirs</literal></term>
+          <varlistentry id="rcl.install.config.recollconf.topdirs">
+	    <term><literal>topdirs</literal></term>
             <listitem><para>Specifies the list of directories or files to
             index (recursively for directories). The indexer will not
             follow symbolic links inside the indexed trees. If an entry in
