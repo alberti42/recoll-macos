@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.36 2006-10-11 14:16:25 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.37 2006-10-12 14:46:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -371,22 +371,33 @@ ConfIndexer::~ConfIndexer()
      deleteZ(m_dbindexer);
 }
 
-bool ConfIndexer::index(bool resetbefore)
+list<string> topdirsToList(RclConfig *conf)
 {
+    list<string> tdl;
     // Retrieve the list of directories to be indexed.
     string topdirs;
-    if (!m_config->getConfParam("topdirs", topdirs)) {
+    if (!conf->getConfParam("topdirs", topdirs)) {
 	LOGERR(("ConfIndexer::index: no top directories in configuration\n"));
-	m_reason = "Top directory list (topdirs param.) not found in config";
-	return false;
+	return tdl;
     }
-    list<string> tdl; // List of directories to be indexed
     if (!stringToStrings(topdirs, tdl)) {
 	LOGERR(("ConfIndexer::index: parse error for directory list\n"));
-	m_reason = "Directory list parse error";
+    }
+    for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
+	*it = path_tildexpand(*it);
+    }
+    return tdl;
+}
+
+bool ConfIndexer::index(bool resetbefore)
+{
+    list<string> tdl = topdirsToList(m_config);
+    if (tdl.empty()) {
+	m_reason = "Top directory list (topdirs param.) not found in config"
+	    "or Directory list parse error";
 	return false;
     }
-
+    
     // Each top level directory to be indexed can be associated with a
     // different database. We first group the directories by database:
     // it is important that all directories for a database be indexed
@@ -396,7 +407,7 @@ bool ConfIndexer::index(bool resetbefore)
     map<string, list<string> >::iterator dbit;
     for (dirit = tdl.begin(); dirit != tdl.end(); dirit++) {
 	string dbdir;
-	string doctopdir = path_tildexpand(*dirit);
+	string doctopdir = *dirit;
 	{ // Check top dirs. Must not be symlinks
 	    struct stat st;
 	    if (lstat(doctopdir.c_str(), &st) < 0) {

@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.17 2006-10-11 14:16:26 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.18 2006-10-12 14:46:02 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -137,5 +137,8 @@ class DbIndexer : public FsTreeWalkerCB {
 
     bool init(bool rst = false);
 };
+
+/** utility function to turn topdirs into a proper list */
+list<string> topdirsToList(RclConfig *conf);
 
 #endif /* _INDEXER_H_INCLUDED_ */

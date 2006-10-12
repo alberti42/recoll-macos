@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.21 2006-10-11 14:16:26 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.22 2006-10-12 14:46:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -44,10 +44,10 @@ DbIndexer *dbindexer;
 
 static bool makeDbIndexer(RclConfig *config)
 {
-    if (dbindexer)
+    if (dbindexer) {
 	delete dbindexer;
-    // Note that we do not bother to check for multiple databases,
-    // which are currently a fiction anyway. 
+	dbindexer = 0;
+    }
     string dbdir = config->getDbDir();
     if (dbdir.empty()) {
 	fprintf(stderr, "makeDbIndexer: no database directory in "
@@ -64,13 +64,46 @@ static bool indexfiles(RclConfig *config, const list<string> &filenames)
     if (filenames.empty())
 	return true;
 
-    config->setKeyDir(path_getfather(*filenames.begin()));
-
-    makeDbIndexer(config);
-    if (dbindexer)
-	return dbindexer->indexFiles(filenames);
-    else
+    list<string> tdl = topdirsToList(config);
+    if (tdl.empty()) {
+	fprintf(stderr, "Top directory list (topdirs param.) not found in"
+		"config or Directory list parse error");
 	return false;
+    }
+    for (list<string>::iterator dit= tdl.begin(); dit!= tdl.end(); dit++) {
+	*dit = path_canon(*dit);
+    }
+
+    list<string> myfiles;
+    for (list<string>::const_iterator it = filenames.begin(); 
+	 it != filenames.end(); it++) {
+	string fn = path_canon(*it);
+	bool ok = false;
+	for (list<string>::iterator dit= tdl.begin(); dit!= tdl.end(); dit++) {
+	    if (fn.find(*dit) == 0) {
+		myfiles.push_back(fn);
+		ok = true;
+		break;
+	    }
+	}
+	if (!ok) {
+	    fprintf(stderr, "File %s not in indexed area\n", fn.c_str());
+	}
+    }
+    if (myfiles.empty())
+	return true;
+
+    // Note: we should sort the file names against the topdirs here
+    // and check for different databases. But we can for now only have
+    // one database per config, so we set the keydir from the first
+    // file (which is not really needed...), create the indexer/db and
+    // go:
+    config->setKeyDir(path_getfather(*myfiles.begin()));
+
+    if (!makeDbIndexer(config) || !dbindexer)
+	return false;
+    else
+	return dbindexer->indexFiles(myfiles);
 }
 
 // Create additional stem database 
