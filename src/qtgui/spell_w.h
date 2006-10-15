@@ -1,6 +1,6 @@
 #ifndef _ASPELL_W_H_INCLUDED_
 #define _ASPELL_W_H_INCLUDED_
-/* @(#$Id: spell_w.h,v 1.1 2006-10-11 14:16:26 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: spell_w.h,v 1.2 2006-10-15 13:07:45 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,10 +36,10 @@ public:
 public slots:
     virtual void doExpand();
     virtual void wordChanged(const QString&);
-    //    virtual void textDoubleClicked(int, int);
+    virtual void textDoubleClicked(int, int);
 
 signals:
-    //    void wordSelect(QString);
+    void wordSelect(QString);
 
 private:
     void init();

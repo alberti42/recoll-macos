@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.1 2006-10-11 14:16:26 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.2 2006-10-15 13:07:45 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,8 @@ void SpellW::init()
     connect(expandPB, SIGNAL(clicked()), this, SLOT(doExpand()));
     connect(clearPB, SIGNAL(clicked()), baseWordLE, SLOT(clear()));
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
+    connect(suggsTE, SIGNAL(doubleClicked(int, int)), 
+	    this, SLOT(textDoubleClicked(int, int)));
 }
 
 void SpellW::doExpand()
@@ -91,4 +93,10 @@ void SpellW::wordChanged(const QString &text)
 	expandPB->setEnabled(true);
 	clearPB->setEnabled(true);
     }
+}
+
+void SpellW::textDoubleClicked(int, int)
+{
+    if (suggsTE->hasSelectedText())
+	emit(wordSelect(suggsTE->selectedText()));
 }
