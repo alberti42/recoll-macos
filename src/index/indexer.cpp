@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.37 2006-10-12 14:46:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.38 2006-10-16 15:33:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.37 2006-10-12 14:46:02 dockes Exp
 #include <unistd.h>
 #include <errno.h>
 #include <strings.h>
+#include <fnmatch.h>
 
 #include <iostream>
 #include <list>
@@ -207,16 +208,17 @@ bool DbIndexer::createAspellDict()
 }
 
 /** 
- Index individual files, out of a full tree run. No database purging
-*/
+ * Index individual files, out of a full tree run. No database purging
+ */
 bool DbIndexer::indexFiles(const list<string> &filenames)
 {
     if (!init())
 	return false;
 
     list<string>::const_iterator it;
-    for (it = filenames.begin(); it != filenames.end();it++) {
-	m_config->setKeyDir(path_getfather(*it));
+    for (it = filenames.begin(); it != filenames.end(); it++) {
+	string dir = path_getfather(*it);
+	m_config->setKeyDir(dir);
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
 	    m_db.setAbstractParams(abslen, -1, -1);
@@ -231,12 +233,37 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
 		    it->c_str()));
 	    continue;
 	}
+
+	static string lstdir;
+	static list<string> skpl;
+	if (lstdir.compare(dir)) {
+	    LOGDEB(("Recomputing list of skipped names\n"));
+	    string skipped; 
+	    if (m_config->getConfParam("skippedNames", skipped)) {
+		stringToStrings(skipped, skpl);
+		lstdir = dir;
+	    }
+	}
+	if (!skpl.empty()) {
+	    list<string>::const_iterator skit;
+	    string fn = path_getsimple(*it);
+	    for (skit = skpl.begin(); skit != skpl.end(); skit++) {
+		if (fnmatch(skit->c_str(), fn.c_str(), 0) == 0) {
+		    LOGDEB(("Skipping [%s] :matches skip list\n", fn.c_str()));
+		    goto skipped;
+		}
+	    }
+	}
+
 	if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("DbIndexer::indexFiles: Database error\n"));
 	    return false;
 	}
+    skipped: 
+	false; // Need a statement here to make compiler happy ??
     }
+
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("DbIndexer::indexfiles: error closing database in %s\n", 
@@ -371,27 +398,9 @@ ConfIndexer::~ConfIndexer()
      deleteZ(m_dbindexer);
 }
 
-list<string> topdirsToList(RclConfig *conf)
-{
-    list<string> tdl;
-    // Retrieve the list of directories to be indexed.
-    string topdirs;
-    if (!conf->getConfParam("topdirs", topdirs)) {
-	LOGERR(("ConfIndexer::index: no top directories in configuration\n"));
-	return tdl;
-    }
-    if (!stringToStrings(topdirs, tdl)) {
-	LOGERR(("ConfIndexer::index: parse error for directory list\n"));
-    }
-    for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
-	*it = path_tildexpand(*it);
-    }
-    return tdl;
-}
-
 bool ConfIndexer::index(bool resetbefore)
 {
-    list<string> tdl = topdirsToList(m_config);
+    list<string> tdl = m_config->getTopdirs();
     if (tdl.empty()) {
 	m_reason = "Top directory list (topdirs param.) not found in config"
 	    "or Directory list parse error";

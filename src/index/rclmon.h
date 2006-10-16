@@ -1,0 +1,65 @@
+#ifndef _RCLMON_H_INCLUDED_
+#define _RCLMON_H_INCLUDED_
+/* @(#$Id: rclmon.h,v 1.1 2006-10-16 15:33:08 dockes Exp $  (C) 2006 J.F.Dockes */
+/**
+ * Definitions for the real-time monitoring recoll. 
+ * We're interested in file modifications, deletions and renaming.
+ * We use two threads, one to receive events from the source, the
+ * other to perform adequate processing.
+ *
+ * The two threads communicate through an event buffer which is
+ * actually a hash map indexed by file path for easy coalescing of
+ * multiple events to the same file.
+ */
+
+#include <string>
+#include <map>
+
+#include "rclconfig.h"
+
+#ifndef NO_NAMESPACES
+using std::string;
+using std::multimap;
+#endif
+
+class RclMonEvent {
+ public: 
+    enum EvType {RCLEVT_NONE, RCLEVT_MODIFY, RCLEVT_DELETE, RCLEVT_RENAME};
+    string m_path;
+    string m_opath;
+    EvType m_etyp;
+    RclMonEvent() : m_etyp(RCLEVT_NONE) {}
+};
+
+class RclEQData;
+
+class RclMonEventQueue {
+ public:
+    RclMonEventQueue();
+    ~RclMonEventQueue();
+    /** Unlock queue and wait until there are new events. 
+     *  Returns with the queue locked */
+    bool wait();
+    /** Unlock queue */
+    bool unlock();
+    /** Lock queue. */
+    bool lock();
+    /** Lock queue and add event. */
+    bool pushEvent(const RclMonEvent &ev);
+    void setTerminate(); /* To all threads: end processing */
+    bool ok();
+    bool empty();
+    RclMonEvent pop();
+
+    // Convenience function for initially communicating config to mon thr
+    void setConfig(RclConfig *conf);
+    RclConfig *getConfig();
+
+ private:
+    RclEQData *m_data;
+};
+
+extern RclMonEventQueue rclEQ;
+extern bool startMonitor(RclConfig *conf, bool nofork);
+
+#endif /* _RCLMON_H_INCLUDED_ */

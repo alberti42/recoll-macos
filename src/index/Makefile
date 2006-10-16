@@ -2,16 +2,20 @@ depth = ..
 include $(depth)/mk/sysconf
 
 PROGS = recollindex csguess mimetype
-SRCS = recollindex.cpp
+SRCS = recollindex.cpp rclmonrcv.cpp rclmonprc.cpp
 
 all: depend $(PROGS) $(BIGLIB)
 
-RECOLLINDEX_OBJS= recollindex.o $(BIGLIB) $(MIMELIB)
+RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o $(BIGLIB) $(MIMELIB)
 recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
-	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) $(LIBSYS)
+	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) -lfam $(LIBSYS)
 recollindex.o : recollindex.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c -o recollindex.o $<
+rclmonrcv.o : rclmonrcv.cpp 
+	$(CXX) $(ALL_CXXFLAGS) -c -o rclmonrcv.o $<
+rclmonprc.o : rclmonprc.cpp 
+	$(CXX) $(ALL_CXXFLAGS) -c -o rclmonprc.o $<
 
 CSGUESS_OBJS= trcsguess.o  $(BIGLIB) 
 csguess : $(CSGUESS_OBJS)

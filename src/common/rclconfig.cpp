@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.30 2006-09-08 09:02:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.31 2006-10-16 15:33:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -148,6 +148,26 @@ bool RclConfig::getConfParam(const std::string &name, bool *bvp)
 	return false;
     *bvp = stringToBool(s);
     return true;
+}
+
+list<string> RclConfig::getTopdirs()
+{
+    list<string> tdl;
+    // Retrieve the list of directories to be indexed.
+    string topdirs;
+    if (!getConfParam("topdirs", topdirs)) {
+	LOGERR(("RclConfig::getTopdirs: no top directories in config\n"));
+	return tdl;
+    }
+    if (!stringToStrings(topdirs, tdl)) {
+	LOGERR(("RclConfig::getTopdirs: parse error for directory list\n"));
+	return tdl;
+    }
+    for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
+	*it = path_tildexpand(*it);
+	*it = path_canon(*it);
+    }
+    return tdl;
 }
 
 // Get charset to be used for transcoding to utf-8 if unspecified by doc

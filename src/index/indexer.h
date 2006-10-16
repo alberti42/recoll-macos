@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.18 2006-10-12 14:46:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.19 2006-10-16 15:33:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -127,18 +127,22 @@ class DbIndexer : public FsTreeWalkerCB {
 	processone(const string &, const struct stat *, 
 		   FsTreeWalker::CbFlag);
 
+    /** Return my db dir */
+    string getDbDir() {return m_dbdir;}
+
  private:
     FsTreeWalker m_walker;
-    RclConfig *m_config;
-    string m_dbdir;
-    Rcl::Db m_db;
-    string m_tmpdir;
+    RclConfig   *m_config;
+    string       m_dbdir;
+    Rcl::Db      m_db;
+    string       m_tmpdir;
     DbIxStatusUpdater *m_updater;
 
     bool init(bool rst = false);
 };
 
-/** utility function to turn topdirs into a proper list */
-list<string> topdirsToList(RclConfig *conf);
+/** Helper method in recollindex.cpp for initial checks/setup to index 
+ * a list of files (either from the monitor or the command line) */
+extern bool indexfiles(RclConfig *config, const list<string> &filenames);
 
 #endif /* _INDEXER_H_INCLUDED_ */

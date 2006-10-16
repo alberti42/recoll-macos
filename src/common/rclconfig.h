@@ -16,9 +16,14 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.22 2006-10-11 14:16:25 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.23 2006-10-16 15:33:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
+#include <string>
+#ifndef NO_NAMESPACES
+using std::list;
+using std::string;
+#endif
 
 #include "conftree.h"
 #include "smallut.h"
@@ -61,6 +66,11 @@ class RclConfig {
     /** Get guessCharset for current keydir (was set during setKeydir) */
     bool getGuessCharset() {return guesscharset;}
 
+    /** Get list of top directories. This is needed from a number of places
+     * and needs some cleaning-up code. An empty list is always an error, no
+     * need for other status */
+    list<string> getTopdirs();
+
     /** Get database directory */
     string getDbDir();
 
@@ -70,7 +80,7 @@ class RclConfig {
      * The list is initialized on first call, and not changed for subsequent
      * setKeydirs.
      */
-    bool getStopSuffixes(std::list<std::string>& sufflist);
+    bool getStopSuffixes(list<string>& sufflist);
 
     /** 
      * Check in mimeconf if input mime type is a compressed one, and
@@ -79,26 +89,26 @@ class RclConfig {
      * The returned command has substitutable places for input file name 
      * and temp dir name, and will return output name
      */
-    bool getUncompressor(const std::string &mtpe, std::list<std::string>& cmd);
+    bool getUncompressor(const string &mtpe, list<string>& cmd);
 
     /** Use mimemap to compute mimetype */
-    std::string getMimeTypeFromSuffix(const std::string &suffix);
+    string getMimeTypeFromSuffix(const string &suffix);
 
     /** Get input filter from mimeconf for mimetype */
-    std::string getMimeHandlerDef(const std::string &mimetype);
+    string getMimeHandlerDef(const string &mimetype);
 
     /** Get external viewer exec string from mimeconf for mimetype */
-    std::string getMimeViewerDef(const std::string &mimetype);
+    string getMimeViewerDef(const string &mimetype);
 
     /** Get icon name from mimeconf for mimetype */
     string getMimeIconName(const string &mtype, string *path = 0);
 
     /** Get a list of all indexable mime types defined in mimemap */
-    std::list<string> getAllMimeTypes();
+    list<string> getAllMimeTypes();
 
     /** Find exec file for external filter. cmd is the command name from the
      * command string returned by getMimeHandlerDef */
-    std::string findFilter(const std::string& cmd);
+    string findFilter(const string& cmd);
 
     ~RclConfig() {
 	freeAll();
@@ -114,7 +124,7 @@ class RclConfig {
 	}
 	return *this;
     }
-    std::list<string> getConfNames(const string &sk) {
+    list<string> getConfNames(const string &sk) {
 	return m_conf->getNames(sk);
     }
 
@@ -129,7 +139,7 @@ class RclConfig {
     ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, but their
     ConfStack<ConfTree> *mimeconf; // content may depend on it.
 
-    std::list<std::string> *stopsuffixes;
+    list<string> *stopsuffixes;
 
     // Parameters auto-fetched on setkeydir
     string defcharset;   // These are stored locally to avoid 

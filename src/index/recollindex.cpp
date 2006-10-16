@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.22 2006-10-12 14:46:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.23 2006-10-16 15:33:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ using namespace std;
 #include "indexer.h"
 #include "smallut.h"
 #include "pathut.h"
-
+#include "rclmon.h"
 
 // Globals for exit cleanup
 ConfIndexer *confindexer;
@@ -44,34 +44,42 @@ DbIndexer *dbindexer;
 
 static bool makeDbIndexer(RclConfig *config)
 {
-    if (dbindexer) {
-	delete dbindexer;
-	dbindexer = 0;
-    }
     string dbdir = config->getDbDir();
     if (dbdir.empty()) {
 	fprintf(stderr, "makeDbIndexer: no database directory in "
 		"configuration for %s\n", config->getKeyDir().c_str());
 	return false;
     }
-    dbindexer = new DbIndexer(config, dbdir);
+    // Check if there is already an indexer for the right db
+    if (dbindexer && dbindexer->getDbDir().compare(dbdir)) {
+	delete dbindexer;
+	dbindexer = 0;
+    }
+
+    if (!dbindexer)
+	dbindexer = new DbIndexer(config, dbdir);
+
     return true;
 }
 
-// Index a list of files 
-static bool indexfiles(RclConfig *config, const list<string> &filenames)
+// The list of top directories/files wont change during program run,
+// let's cache it:
+static list<string> o_tdl;
+
+// Index a list of files. We just check that they belong to one of the topdirs
+// subtrees, and call the indexer method
+bool indexfiles(RclConfig *config, const list<string> &filenames)
 {
     if (filenames.empty())
 	return true;
-
-    list<string> tdl = topdirsToList(config);
-    if (tdl.empty()) {
-	fprintf(stderr, "Top directory list (topdirs param.) not found in"
-		"config or Directory list parse error");
-	return false;
-    }
-    for (list<string>::iterator dit= tdl.begin(); dit!= tdl.end(); dit++) {
-	*dit = path_canon(*dit);
+    
+    if (o_tdl.empty()) {
+	o_tdl = config->getTopdirs();
+	if (o_tdl.empty()) {
+	    fprintf(stderr, "Top directory list (topdirs param.) "
+		    "not found in config or Directory list parse error");
+	    return false;
+	}
     }
 
     list<string> myfiles;
@@ -79,7 +87,9 @@ static bool indexfiles(RclConfig *config, const list<string> &filenames)
 	 it != filenames.end(); it++) {
 	string fn = path_canon(*it);
 	bool ok = false;
-	for (list<string>::iterator dit= tdl.begin(); dit!= tdl.end(); dit++) {
+	// Check that this file name belongs to one of our subtrees
+	for (list<string>::iterator dit = o_tdl.begin(); 
+	     dit != o_tdl.end(); dit++) {
 	    if (fn.find(*dit) == 0) {
 		myfiles.push_back(fn);
 		ok = true;
@@ -153,6 +163,8 @@ static int     op_flags;
 #define OPT_s     0x10
 #define OPT_c     0x20
 #define OPT_S     0x40
+#define OPT_m     0x80
+#define OPT_D     0x100
 
 static const char usage [] =
 "\n"
@@ -161,6 +173,8 @@ static const char usage [] =
 "recollindex [-z] \n"
 "    Index everything according to configuration file\n"
 "    -z : reset database before starting indexation\n"
+"recollindex -m [-D]\n"
+"    Perform real time indexation. Don't become a daemon if -D is set\n"
 "recollindex -i <filename [filename ...]>\n"
 "    Index individual files. No database purge or stem database updates\n"
 "recollindex -s <lang>\n"
@@ -181,7 +195,6 @@ Usage(void)
     exit((op_flags & OPT_h)==0);
 }
 
-
 int main(int argc, const char **argv)
 {
     string a_config;
@@ -197,8 +210,10 @@ int main(int argc, const char **argv)
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
+	    case 'D': op_flags |= OPT_D; break;
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
+	    case 'm': op_flags |= OPT_m; break;
 	    case 's': op_flags |= OPT_s; break;
 #ifdef RCL_USE_ASPELL
 	    case 'S': op_flags |= OPT_S; break;
@@ -241,6 +256,16 @@ int main(int argc, const char **argv)
 	    Usage();
 	string lang = *argv++; argc--;
 	exit(!createstemdb(config, lang));
+    } else if (op_flags & OPT_m) {
+	if (argc != 0) 
+	    Usage();
+	if (!(op_flags&OPT_D)) {
+	    LOGDEB(("Daemonizing\n"));
+	    daemon(0,0);
+	}
+	if (startMonitor(config, (op_flags&OPT_D)!=0))
+	    exit(0);
+	exit(1);
 #ifdef RCL_USE_ASPELL
     } else if (op_flags & OPT_S) {
 	makeDbIndexer(config);
