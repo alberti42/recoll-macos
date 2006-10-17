@@ -1,6 +1,8 @@
 #ifndef _RCLMON_H_INCLUDED_
 #define _RCLMON_H_INCLUDED_
-/* @(#$Id: rclmon.h,v 1.1 2006-10-16 15:33:08 dockes Exp $  (C) 2006 J.F.Dockes */
+#include "autoconfig.h"
+#ifdef RCL_MONITOR
+/* @(#$Id: rclmon.h,v 1.2 2006-10-17 14:41:59 dockes Exp $  (C) 2006 J.F.Dockes */
 /**
  * Definitions for the real-time monitoring recoll. 
  * We're interested in file modifications, deletions and renaming.
@@ -61,5 +63,5 @@ class RclMonEventQueue {
 
 extern RclMonEventQueue rclEQ;
 extern bool startMonitor(RclConfig *conf, bool nofork);
-
+#endif // RCL_MONITOR
 #endif /* _RCLMON_H_INCLUDED_ */

@@ -8,3 +8,13 @@
 
 /* Path to the aspell program */
 #undef ASPELL_PROG
+
+/* Real time monitoring option */
+#undef RCL_MONITOR
+
+/* Compile the fam interface */
+#undef RCL_USE_FAM
+
+/* Path to the fam api include file */
+#undef FAM_INCLUDE
+

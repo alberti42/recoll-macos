@@ -52,6 +52,38 @@ if test X$withAspell != Xno ; then
    fi
 fi
 
+# Real time monitoring with FAM
+AC_ARG_WITH(fam, 
+    AC_HELP_STRING([--with-fam],
+   [Use File Alteration Monitor for almost real time indexing of modified files. Give directory where fam library lives as argument if this is not found by configure.]),
+        withFam=$withval, withFam=no)
+case $withFam in
+     no);;
+     yes)
+	for dir in /usr/local/lib /usr/lib;do 
+	 if test -f $dir/libfam.so ; then famLibDir=$dir;break;fi
+	done
+     ;;
+     *) # The argument should be the path to the fam library
+     famLibDir=$withFam
+     ;;
+esac
+
+if test X$withFam != Xno ; then
+   AC_DEFINE(RCL_MONITOR, 1, [Real time monitoring option])
+   AC_DEFINE(RCL_USE_FAM, 1, [Compile the fam interface])
+   if test X$famLibDir != X ; then
+      famBase=`dirname $famLibDir`
+      if test ! -f $famBase/include/fam.h ; then
+	 AC_MSG_ERROR([fam.h not found in $famBase/include. Specify --with-fam=no to disable fam support])
+      fi
+      LIBFAM="-L$famLibDir -lfam"
+      AC_DEFINE_UNQUOTED(FAM_INCLUDE, "$famBase/include/fam.h",
+	[Path to the fam api include file])
+   else
+	AC_MSG_ERROR([fam library not found])
+   fi
+fi
 
 ##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
 ##    then in libc (Linux, solaris)
@@ -185,13 +217,14 @@ test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
 QTRECOLL_DATADIR=${m_datadir}/recoll
 
-AC_SUBST(LIBXAPIAN)
-AC_SUBST(XAPIANCXXFLAGS)
-AC_SUBST(LIBICONV)
 AC_SUBST(INCICONV)
-AC_SUBST(QTRECOLL_DATADIR)
+AC_SUBST(LIBICONV)
+AC_SUBST(LIBXAPIAN)
+AC_SUBST(LIBFAM)
 AC_SUBST(QMAKE)
 AC_SUBST(QTGUI)
+AC_SUBST(QTRECOLL_DATADIR)
+AC_SUBST(XAPIANCXXFLAGS)
 
 AC_CONFIG_FILES(mk/localdefs)
 AC_CONFIG_FILES(recollinstall)

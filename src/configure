@@ -790,6 +790,10 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-aspell           Use aspell spelling package to provide term
                           expansion to other spellings
+  --with-fam              Use File Alteration Monitor for almost real time
+                          indexing of modified files. Give directory where fam
+                          library lives as argument if this is not found by
+                          configure.
 
 Some influential environment variables:
   CC          C compiler command
@@ -1269,6 +1273,57 @@ _ACEOF
    fi
 fi
 
+# Real time monitoring with FAM
+
+# Check whether --with-fam or --without-fam was given.
+if test "${with_fam+set}" = set; then
+  withval="$with_fam"
+  withFam=$withval
+else
+  withFam=no
+fi;
+case $withFam in
+     no);;
+     yes)
+	for dir in /usr/local/lib /usr/lib;do
+	 if test -f $dir/libfam.so ; then famLibDir=$dir;break;fi
+	done
+     ;;
+     *) # The argument should be the path to the fam library
+     famLibDir=$withFam
+     ;;
+esac
+
+if test X$withFam != Xno ; then
+
+cat >>confdefs.h <<\_ACEOF
+#define RCL_MONITOR 1
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define RCL_USE_FAM 1
+_ACEOF
+
+   if test X$famLibDir != X ; then
+      famBase=`dirname $famLibDir`
+      if test ! -f $famBase/include/fam.h ; then
+	 { { echo "$as_me:$LINENO: error: fam.h not found in $famBase/include. Specify --with-fam=no to disable fam support" >&5
+echo "$as_me: error: fam.h not found in $famBase/include. Specify --with-fam=no to disable fam support" >&2;}
+   { (exit 1); exit 1; }; }
+      fi
+      LIBFAM="-L$famLibDir -lfam"
+
+cat >>confdefs.h <<_ACEOF
+#define FAM_INCLUDE "$famBase/include/fam.h"
+_ACEOF
+
+   else
+	{ { echo "$as_me:$LINENO: error: fam library not found" >&5
+echo "$as_me: error: fam library not found" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+fi
 
 ##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
 ##    then in libc (Linux, solaris)
@@ -2296,7 +2351,7 @@ LIBXAPIAN=`$XAPIAN_CONFIG --libs`
 # libstdc++.la in the lib list
 for i in $LIBXAPIAN ; do
     case $i in
-    *stdc++*|-lm|-lgcc_s);;
+    *stdc++*|-lm|-lgcc_s|-lc);;
     *) tmpxaplib="$tmpxaplib $i";;
     esac
 done
@@ -2435,6 +2490,7 @@ m_prefix=$prefix
 test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
 QTRECOLL_DATADIR=${m_datadir}/recoll
+
 
 
 
@@ -3030,12 +3086,13 @@ s,@EXEEXT@,$EXEEXT,;t t
 s,@OBJEXT@,$OBJEXT,;t t
 s,@XAPIAN_CONFIG@,$XAPIAN_CONFIG,;t t
 s,@QMAKE@,$QMAKE,;t t
-s,@LIBXAPIAN@,$LIBXAPIAN,;t t
-s,@XAPIANCXXFLAGS@,$XAPIANCXXFLAGS,;t t
-s,@LIBICONV@,$LIBICONV,;t t
 s,@INCICONV@,$INCICONV,;t t
-s,@QTRECOLL_DATADIR@,$QTRECOLL_DATADIR,;t t
+s,@LIBICONV@,$LIBICONV,;t t
+s,@LIBXAPIAN@,$LIBXAPIAN,;t t
+s,@LIBFAM@,$LIBFAM,;t t
 s,@QTGUI@,$QTGUI,;t t
+s,@QTRECOLL_DATADIR@,$QTRECOLL_DATADIR,;t t
+s,@XAPIANCXXFLAGS@,$XAPIANCXXFLAGS,;t t
 CEOF
 
 _ACEOF

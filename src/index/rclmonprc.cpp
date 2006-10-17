@@ -1,5 +1,8 @@
+#include "autoconfig.h"
+
+#ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.1 2006-10-16 15:33:08 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.2 2006-10-17 14:41:59 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -195,3 +198,4 @@ bool startMonitor(RclConfig *conf, bool nofork)
     LOGERR(("start_monitoring: rclEQ::wait() failed\n"));
     return false;
 }
+#endif // RCL_MONITOR

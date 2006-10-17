@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.23 2006-10-16 15:33:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.24 2006-10-17 14:41:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -173,8 +173,10 @@ static const char usage [] =
 "recollindex [-z] \n"
 "    Index everything according to configuration file\n"
 "    -z : reset database before starting indexation\n"
+#ifdef RCL_MONITOR
 "recollindex -m [-D]\n"
 "    Perform real time indexation. Don't become a daemon if -D is set\n"
+#endif
 "recollindex -i <filename [filename ...]>\n"
 "    Index individual files. No database purge or stem database updates\n"
 "recollindex -s <lang>\n"
@@ -210,10 +212,14 @@ int main(int argc, const char **argv)
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
+#ifdef RCL_MONITOR
 	    case 'D': op_flags |= OPT_D; break;
+#endif
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
+#ifdef RCL_MONITOR
 	    case 'm': op_flags |= OPT_m; break;
+#endif
 	    case 's': op_flags |= OPT_s; break;
 #ifdef RCL_USE_ASPELL
 	    case 'S': op_flags |= OPT_S; break;
@@ -256,6 +262,8 @@ int main(int argc, const char **argv)
 	    Usage();
 	string lang = *argv++; argc--;
 	exit(!createstemdb(config, lang));
+
+#ifdef RCL_MONITOR
     } else if (op_flags & OPT_m) {
 	if (argc != 0) 
 	    Usage();
@@ -266,6 +274,8 @@ int main(int argc, const char **argv)
 	if (startMonitor(config, (op_flags&OPT_D)!=0))
 	    exit(0);
 	exit(1);
+#endif // MONITOR
+
 #ifdef RCL_USE_ASPELL
     } else if (op_flags & OPT_S) {
 	makeDbIndexer(config);
@@ -273,7 +283,8 @@ int main(int argc, const char **argv)
 	    exit(!dbindexer->createAspellDict());
 	else
 	    exit(1);
-#endif
+#endif // ASPELL
+
     } else {
 	confindexer = new ConfIndexer(config, &updater);
 	bool rezero(op_flags & OPT_z);
