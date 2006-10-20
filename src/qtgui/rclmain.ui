@@ -159,9 +159,6 @@
         <property name="name">
             <cstring>fileExitAction</cstring>
         </property>
-        <property name="text">
-            <string>Exit</string>
-        </property>
         <property name="menuText">
             <string>E&amp;xit</string>
         </property>
@@ -173,9 +170,6 @@
         <property name="name">
             <cstring>fileStart_IndexingAction</cstring>
         </property>
-        <property name="text">
-            <string>Update index</string>
-        </property>
         <property name="menuText">
             <string>Update &amp;index</string>
         </property>
@@ -184,9 +178,6 @@
         <property name="name">
             <cstring>helpAbout_RecollAction</cstring>
         </property>
-        <property name="text">
-            <string>About Recoll</string>
-        </property>
         <property name="menuText">
             <string>&amp;About Recoll</string>
         </property>
@@ -194,9 +185,6 @@
     <action>
         <property name="name">
             <cstring>userManualAction</cstring>
-        </property>
-        <property name="text">
-            <string>User manual</string>
         </property>
         <property name="menuText">
             <string>&amp;User manual</string>
@@ -208,9 +196,6 @@
         </property>
         <property name="iconSet">
             <iconset>history.png</iconset>
-        </property>
-        <property name="text">
-            <string>Document &amp;History</string>
         </property>
         <property name="menuText">
             <string>Document &amp;History</string>
@@ -226,9 +211,6 @@
         <property name="iconSet">
             <iconset>asearch.png</iconset>
         </property>
-        <property name="text">
-            <string>Advanced Search</string>
-        </property>
         <property name="menuText">
             <string>&amp;Advanced Search</string>
         </property>
@@ -242,9 +224,6 @@
         </property>
         <property name="iconSet">
             <iconset>sortparms.png</iconset>
-        </property>
-        <property name="text">
-            <string>&amp;Sort parameters</string>
         </property>
         <property name="menuText">
             <string>&amp;Sort parameters</string>
@@ -260,11 +239,8 @@
         <property name="iconSet">
             <iconset>spell.png</iconset>
         </property>
-        <property name="text">
-            <string>Spelling expansion</string>
-        </property>
         <property name="menuText">
-            <string>Spelling expansion</string>
+            <string>Spelling &amp;expansion</string>
         </property>
         <property name="toolTip">
             <string>Spelling expansion tool</string>
@@ -307,9 +283,6 @@
     <action>
         <property name="name">
             <cstring>preferencesQuery_PrefsAction</cstring>
-        </property>
-        <property name="text">
-            <string>&amp;Query configuration</string>
         </property>
         <property name="menuText">
             <string>&amp;Query configuration</string>
