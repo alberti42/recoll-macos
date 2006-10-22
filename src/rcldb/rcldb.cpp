@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.81 2006-10-22 14:47:13 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.82 2006-10-22 15:54:23 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -680,6 +680,7 @@ bool Db::add(const string &fn, const Doc &idoc,
 // Test if given filename has changed since last indexed:
 bool Db::needUpdate(const string &filename, const struct stat *stp)
 {
+    //    Chrono chron;
     if (m_ndb == 0)
 	return false;
 
@@ -695,13 +696,13 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
     // file changed)
     Xapian::PostingIterator doc;
     try {
-	if (!m_ndb->wdb.term_exists(pterm)) {
+	// Check the date using the Pterm doc or pseudo-doc
+	Xapian::PostingIterator docid = m_ndb->wdb.postlist_begin(pterm);
+	if (docid == m_ndb->wdb.postlist_end(pterm)) {
 	    // If no document exist with this path, we do need update
 	    LOGDEB2(("Db::needUpdate: no such path: [%s]\n", pterm.c_str()));
 	    return true;
 	}
-	// Check the date using the Pterm doc or pseudo-doc
-	Xapian::PostingIterator docid = m_ndb->wdb.postlist_begin(pterm);
 	Xapian::Document doc = m_ndb->wdb.get_document(*docid);
 	string data = doc.get_data();
 	const char *cp = strstr(data.c_str(), "fmtime=");
@@ -740,6 +741,7 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 		m_ndb->updated[*it] = true;
 	    }
 	}
+	//	LOGDEB(("Db::needUpdate: used %d mS\n", chron.millis()));
 	return false;
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
