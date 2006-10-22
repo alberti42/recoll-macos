@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.80 2006-10-09 16:37:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.81 2006-10-22 14:47:13 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -56,18 +56,21 @@ using namespace std;
 #ifndef NO_NAMESPACES
 namespace Rcl {
 #endif
-
-// Truncate longer path and uniquize with hash . The goal for this is
-// to avoid xapian max term length limitations, not to gain space (we
-// gain very little even with very short maxlens like 30)
+    
+// Max length for path terms stored for each document. Truncate
+// longer path and uniquize with hash. The goal for this is to avoid
+// xapian max term length limitations, not to gain space (we gain very
+// little even with very short maxlens like 30)
 #define PATHHASHLEN 150
 
 // Synthetic abstract marker (to discriminate from abstract actually
 // found in doc)
 const static string rclSyntAbs = "?!#@";
 
-// Data for a xapian database. There could actually be 2 different
-// ones for indexing or query as there is not much in common.
+// A class for data and methods that would have to expose
+// Xapian-specific stuff if they were in Rcl::Db. There could actually be
+// 2 different ones for indexing or query as there is not much in
+// common.
 class Native {
  public:
     Db *m_db;
@@ -95,6 +98,35 @@ class Native {
 			int qopts,
 			Xapian::docid docid,
 			const list<string>& terms);
+
+    /** Compute list of subdocuments for a given path (given by hash) */
+    bool subDocs(const string &hash, vector<Xapian::docid>& docids) {
+
+	docids.clear();
+	string qterm = "Q"+ hash + "|";
+	Xapian::Database db = m_iswritable ? wdb: db;
+	Xapian::TermIterator it = db.allterms_begin(); 
+	it.skip_to(qterm);
+	string ermsg;
+	try {
+	    for (;it != db.allterms_end(); it++) {
+		// If current term does not begin with qterm or has
+		// another |, not the same file
+		if ((*it).find(qterm) != 0 || 
+		    (*it).find_last_of("|") != qterm.length() -1)
+		    break;
+		docids.push_back(*(db.postlist_begin(*it)));
+	    }
+	    return true;
+	} catch (const Xapian::Error &e) {
+	    ermsg = e.get_msg().c_str();
+	} catch (...) {
+	    ermsg= "Unknown error";
+	}
+	LOGERR(("Rcl::Db::subDocs: %s\n", ermsg.c_str()));
+	return false;
+    }
+
 
     Native(Db *db) 
 	: m_db(db),
@@ -655,7 +687,6 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
     pathHash(filename, hash, PATHHASHLEN);
     string pterm  = "P" + hash;
     const char *ermsg;
-    string qterm = "Q"+ hash + "|";
 
     // Look for all documents with this path. We need to look at all
     // to set their existence flag.  We check the update time on the
@@ -697,20 +728,16 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 	m_ndb->updated[*docid] = true;
 
 	// Set the existence flag for all the subdocs (if any)
-	Xapian::TermIterator it = m_ndb->wdb.allterms_begin(); 
-	it.skip_to(qterm);
-	LOGDEB2(("First qterm: [%s]\n", (*it).c_str()));
-	for (;it != m_ndb->wdb.allterms_end(); it++) {
-	    // If current term does not begin with qterm or has another |, not
-	    // the same file
-	    if ((*it).find(qterm) != 0 || 
-		(*it).find_last_of("|") != qterm.length() -1)
-		break;
-	    docid = m_ndb->wdb.postlist_begin(*it);
-	    if (*docid < m_ndb->updated.size()) {
-		LOGDEB2(("Db::needUpdate: set exist flag for docid %d [%s]\n", 
-			*docid, (*it).c_str()));
-		m_ndb->updated[*docid] = true;
+	vector<Xapian::docid> docids;
+	if (!m_ndb->subDocs(hash, docids)) {
+	    LOGERR(("Rcl::Db::needUpdate: can't get subdocs list\n"));
+	    return true;
+	}
+	for (vector<Xapian::docid>::iterator it = docids.begin();
+	     it != docids.end(); it++) {
+	    if (*it < m_ndb->updated.size()) {
+		LOGDEB2(("Db::needUpdate: set flag for docid %d\n", *it));
+		m_ndb->updated[*it] = true;
 	    }
 	}
 	return false;
@@ -764,7 +791,9 @@ bool Db::createStemDb(const string& lang)
 
 /**
  * This is called at the end of an indexing session, to delete the
- * documents for files that are no longer there. 
+ * documents for files that are no longer there. This can ONLY be called
+ * after a full file-system tree walk, else the file existence flags will 
+ * be wrong.
  */
 bool Db::purge()
 {
@@ -804,6 +833,47 @@ bool Db::purge()
 	LOGDEB(("Db::purge: 2nd flush failed\n"));
     }
     return true;
+}
+
+/** Delete document(s) for given filename */
+bool Db::purgeFile(const string &fn)
+{
+    LOGDEB(("Db:purgeFile: [%s]\n", fn.c_str()));
+    if (m_ndb == 0)
+	return false;
+    Xapian::WritableDatabase db = m_ndb->wdb;
+    string hash;
+    pathHash(fn, hash, PATHHASHLEN);
+    string pterm  = "P" + hash;
+    const char *ermsg = "";
+    try {
+	Xapian::PostingIterator docid = db.postlist_begin(pterm);
+	if (docid == db.postlist_end(pterm))
+	    return true;
+	LOGDEB(("purgeFile: delete docid %d\n", *docid));
+	db.delete_document(*docid);
+	vector<Xapian::docid> docids;
+	m_ndb->subDocs(hash, docids);
+	LOGDEB(("purgeFile: subdocs cnt %d\n", docids.size()));
+	for (vector<Xapian::docid>::iterator it = docids.begin();
+	     it != docids.end(); it++) {
+	    LOGDEB2(("Db::purgeFile: delete subdoc %d\n", *it));
+	    db.delete_document(*it);
+	}
+	return true;
+    } catch (const Xapian::Error &e) {
+	ermsg = e.get_msg().c_str();
+    } catch (const string &s) {
+	ermsg = s.c_str();
+    } catch (const char *s) {
+	ermsg = s;
+    } catch (...) {
+	ermsg = "Caught unknown exception";
+    }
+    if (*ermsg) {
+	LOGERR(("Db::purgeFile: %s\n", ermsg));
+    }
+    return false;
 }
 
 // Splitter callback for breaking query into terms
@@ -1377,6 +1447,7 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
     getQueryTerms(terms);
     return m_ndb->dbDataToRclDoc(data, doc, m_qOpts, docid, terms);
 }
+
 
 // Retrieve document defined by file name and internal path. 
 bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)

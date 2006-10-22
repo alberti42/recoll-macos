@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.38 2006-10-16 15:33:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.39 2006-10-22 14:47:13 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -223,13 +223,13 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
 	if (m_config->getConfParam("idxabsmlen", &abslen))
 	    m_db.setAbstractParams(abslen, -1, -1);
 	struct stat stb;
-	if (stat(it->c_str(), &stb) != 0) {
-	    LOGERR(("DbIndexer::indexFiles: stat(%s): %s", it->c_str(),
+	if (lstat(it->c_str(), &stb) != 0) {
+	    LOGERR(("DbIndexer::indexFiles: lstat(%s): %s", it->c_str(),
 		    strerror(errno)));
 	    continue;
 	}
 	if (!S_ISREG(stb.st_mode)) {
-	    LOGERR(("DbIndexer::indexFiles: %s: not a regular file\n", 
+	    LOGDEB2(("DbIndexer::indexFiles: %s: not a regular file\n", 
 		    it->c_str()));
 	    continue;
 	}
@@ -257,7 +257,7 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
 
 	if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
 	    FsTreeWalker::FtwOk) {
-	    LOGERR(("DbIndexer::indexFiles: Database error\n"));
+	    LOGERR(("DbIndexer::indexFiles: processone failed\n"));
 	    return false;
 	}
     skipped: 
@@ -272,6 +272,31 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
     }
     return true;
 }
+
+
+/** Purge docs for given files out of the database */
+bool DbIndexer::purgeFiles(const list<string> &filenames)
+{
+    if (!init())
+	return false;
+
+    list<string>::const_iterator it;
+    for (it = filenames.begin(); it != filenames.end(); it++) {
+	if (!m_db.purgeFile(*it)) {
+	    LOGERR(("DbIndexer::purgeFiles: Database error\n"));
+	    return false;
+	}
+    }
+
+    // The close would be done in our destructor, but we want status here
+    if (!m_db.close()) {
+	LOGERR(("DbIndexer::purgefiles: error closing database in %s\n", 
+		m_dbdir.c_str()));
+	return false;
+    }
+    return true;
+}
+
 
 /// This method gets called for every file and directory found by the
 /// tree walker. 
@@ -308,7 +333,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     // without mime type will not be purged from the db, resulting
     // in possible 'cannot intern file' messages at query time...
     if (!m_db.needUpdate(fn, stp)) {
-	LOGDEB(("indexfile: up to date: %s\n", fn.c_str()));
+	LOGDEB(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {
 	    m_updater->status.fn = fn;
 	    if (!m_updater->update()) {

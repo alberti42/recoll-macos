@@ -9,7 +9,8 @@ all: depend $(PROGS) $(BIGLIB)
 RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o $(BIGLIB) $(MIMELIB)
 recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
-	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) -lfam $(LIBSYS)
+	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
+	       $(LIBFAM) $(LIBSYS)
 recollindex.o : recollindex.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c -o recollindex.o $<
 rclmonrcv.o : rclmonrcv.cpp 

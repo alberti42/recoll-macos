@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.37 2006-10-09 16:37:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.38 2006-10-22 14:47:13 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -123,16 +123,35 @@ class Db {
     bool close();
     bool isopen();
 
-    int  docCnt(); /// Return total docs in db
+    /** Return total docs in db */
+    int  docCnt(); 
 
-    // Update-related functions
+
+    /* Update-related functions */
+
+    /** Add document. The Doc class should have been filled as much as
+       possible depending on the document type */
     bool add(const string &filename, const Doc &doc, const struct stat *stp);
+
+    /** Test if the db entry for the given filename/stat is up to date */
     bool needUpdate(const string &filename, const struct stat *stp);
+
+    /** Remove documents that no longer exist in the file system. This
+	depends on the update map, which is built during
+	indexation. This should only be called after a full walk of
+	the file system, else the update map will not be complete, and
+	many documents will be deleted that shouldn't */
     bool purge();
+
+    /** Delete document(s) for given filename */
+    bool purgeFile(const string &filename);
+
+    /** Create stem expansion database for given language. */
     bool createStemDb(const string &lang);
+    /** Delete stem expansion database for given language. */
     bool deleteStemDb(const string &lang);
 
-    // Query-related functions
+    /* Query-related functions */
 
     // Parse query string and initialize query
     bool setQuery(AdvSearchData &q, int opts = QO_NONE,
@@ -144,11 +163,11 @@ class Db {
     // Stem expansion is performed if lang is not empty
     list<string> completions(const string &s, const string &lang, int max=20);
 
-    /// Add extra database for querying
+    /** Add extra database for querying */
     bool addQueryDb(const string &dir);
-    /// Remove extra database. if dir == "", remove all.
+    /** Remove extra database. if dir == "", remove all. */
     bool rmQueryDb(const string &dir);
-    /// Tell if directory seems to hold xapian db
+    /** Tell if directory seems to hold xapian db */
     static bool testDbDir(const string &dir);
 
     /** Get document at rank i in current query. 

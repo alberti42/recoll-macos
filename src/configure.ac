@@ -55,29 +55,32 @@ fi
 # Real time monitoring with FAM
 AC_ARG_WITH(fam, 
     AC_HELP_STRING([--with-fam],
-   [Use File Alteration Monitor for almost real time indexing of modified files. Give directory where fam library lives as argument if this is not found by configure.]),
+   [Use File Alteration Monitor for almost real time indexing of modified files. Give the fam/gamin library as argument (ie: /usr/lib/libfam.so) if configure does not find the right one.]),
         withFam=$withval, withFam=no)
 case $withFam in
      no);;
      yes)
 	for dir in /usr/local/lib /usr/lib;do 
-	 if test -f $dir/libfam.so ; then famLibDir=$dir;break;fi
+	 if test -f $dir/libfam.so ; then famLib=$dir/libfam.so;break;fi
 	done
      ;;
      *) # The argument should be the path to the fam library
-     famLibDir=$withFam
+     famLib=$withFam
      ;;
 esac
 
 if test X$withFam != Xno ; then
    AC_DEFINE(RCL_MONITOR, 1, [Real time monitoring option])
    AC_DEFINE(RCL_USE_FAM, 1, [Compile the fam interface])
-   if test X$famLibDir != X ; then
+   if test X$famLib != X ; then
+      famLibDir=`dirname $famLib`
       famBase=`dirname $famLibDir`
+      famBLib=`basename $famLib .so | sed -e s/lib//`
       if test ! -f $famBase/include/fam.h ; then
 	 AC_MSG_ERROR([fam.h not found in $famBase/include. Specify --with-fam=no to disable fam support])
       fi
-      LIBFAM="-L$famLibDir -lfam"
+      LIBFAM="-L$famLibDir -l$famBLib"
+      AC_MSG_NOTICE([fam library directive: $LIBFAM])
       AC_DEFINE_UNQUOTED(FAM_INCLUDE, "$famBase/include/fam.h",
 	[Path to the fam api include file])
    else

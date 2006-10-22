@@ -791,9 +791,9 @@ Optional Packages:
   --with-aspell           Use aspell spelling package to provide term
                           expansion to other spellings
   --with-fam              Use File Alteration Monitor for almost real time
-                          indexing of modified files. Give directory where fam
-                          library lives as argument if this is not found by
-                          configure.
+                          indexing of modified files. Give the fam/gamin
+                          library as argument (ie: /usr/lib/libfam.so) if
+                          configure does not find the right one.
 
 Some influential environment variables:
   CC          C compiler command
@@ -1286,11 +1286,11 @@ case $withFam in
      no);;
      yes)
 	for dir in /usr/local/lib /usr/lib;do
-	 if test -f $dir/libfam.so ; then famLibDir=$dir;break;fi
+	 if test -f $dir/libfam.so ; then famLib=$dir/libfam.so;break;fi
 	done
      ;;
      *) # The argument should be the path to the fam library
-     famLibDir=$withFam
+     famLib=$withFam
      ;;
 esac
 
@@ -1305,14 +1305,18 @@ cat >>confdefs.h <<\_ACEOF
 #define RCL_USE_FAM 1
 _ACEOF
 
-   if test X$famLibDir != X ; then
+   if test X$famLib != X ; then
+      famLibDir=`dirname $famLib`
       famBase=`dirname $famLibDir`
+      famBLib=`basename $famLib .so | sed -e s/lib//`
       if test ! -f $famBase/include/fam.h ; then
 	 { { echo "$as_me:$LINENO: error: fam.h not found in $famBase/include. Specify --with-fam=no to disable fam support" >&5
 echo "$as_me: error: fam.h not found in $famBase/include. Specify --with-fam=no to disable fam support" >&2;}
    { (exit 1); exit 1; }; }
       fi
-      LIBFAM="-L$famLibDir -lfam"
+      LIBFAM="-L$famLibDir -l$famBLib"
+      { echo "$as_me:$LINENO: fam library directive: $LIBFAM" >&5
+echo "$as_me: fam library directive: $LIBFAM" >&6;}
 
 cat >>confdefs.h <<_ACEOF
 #define FAM_INCLUDE "$famBase/include/fam.h"

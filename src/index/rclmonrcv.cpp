@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.2 2006-10-17 14:41:59 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.3 2006-10-22 14:47:13 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -35,71 +35,92 @@ static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.2 2006-10-17 14:41:59 dockes Ex
  */
 
 
-/** A small virtual interface for monitors. Suitable to let either of
-    fam/gamin/ or raw imonitor hide behind */
+
+/** A small virtual interface for monitors. Probably suitable to let
+    either of fam/gamin or raw imonitor hide behind */
 class RclMonitor {
 public:
     RclMonitor(){}
     virtual ~RclMonitor() {}
     virtual bool addWatch(const string& path, const struct stat&) = 0;
-    virtual bool getEvent(RclMonEvent& ev) = 0;
+    virtual bool getEvent(RclMonEvent& ev, int secs = -1) = 0;
     virtual bool ok() = 0;
 };
-// Monitor factory
+
+// Monitor factory. We only have one compiled-in kind at a time, no
+// need for a 'kind' parameter
 static RclMonitor *makeMonitor();
 
-/** Class used to create the directory watches */
+/** This class is a callback for the file system tree walker
+    class. The callback method alternatively creates the directory
+    watches and flushes the event queue (to avoid a possible overflow
+    while we create the watches)*/
 class WalkCB : public FsTreeWalkerCB {
 public:
-    WalkCB(RclConfig *conf, RclMonitor *mon)
-	: m_conf(conf), m_mon(mon) 
+    WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue)
+	: m_conf(conf), m_mon(mon), m_queue(queue)
     {}
     virtual ~WalkCB() 
     {}
 
     virtual FsTreeWalker::Status 
-    processone(const string &fn, const struct stat *st, 
-	       FsTreeWalker::CbFlag flg)
+    processone(const string &fn, const struct stat *st, FsTreeWalker::CbFlag flg)
     {
 	LOGDEB2(("rclMonRcvRun: processone %s m_mon %p m_mon->ok %d\n", 
 		 fn.c_str(), m_mon, m_mon?m_mon->ok():0));
+	// Create watch when entering directory
 	if (flg == FsTreeWalker::FtwDirEnter) {
+	    // Empty whatever events we may already have on queue
+	    while (m_queue->ok() && m_mon->ok()) {
+		RclMonEvent ev;
+		if (m_mon->getEvent(ev, 0)) {
+		    m_queue->pushEvent(ev);
+		} else {
+		    break;
+		}
+	    }
 	    if (!m_mon || !m_mon->ok() || !m_mon->addWatch(fn, *st))
 		return FsTreeWalker::FtwError;
 	}
 	return FsTreeWalker::FtwOk;
     }
+
 private:
-    RclConfig  *m_conf;
-    RclMonitor *m_mon;
+    RclConfig         *m_conf;
+    RclMonitor        *m_mon;
+    RclMonEventQueue  *m_queue;
 };
 
-/** Main thread routine: create watches, then wait for events an queue them */
+/** Main thread routine: create watches, then forever wait for and queue events */
 void *rclMonRcvRun(void *q)
 {
     RclMonEventQueue *queue = (RclMonEventQueue *)q;
-    RclMonitor *mon;
 
     LOGDEB(("rclMonRcvRun: running\n"));
 
+    // Create the fam/whatever interface object
+    RclMonitor *mon;
     if ((mon = makeMonitor()) == 0) {
 	LOGERR(("rclMonRcvRun: makeMonitor failed\n"));
-	rclEQ.setTerminate();
+	queue->setTerminate();
 	return 0;
     }
 
-    // Get top directories from config and walk trees to add watches
-    FsTreeWalker walker;
-    WalkCB walkcb(queue->getConfig(), mon);
+    // Get top directories from config 
     list<string> tdl = queue->getConfig()->getTopdirs();
     if (tdl.empty()) {
 	LOGERR(("rclMonRcvRun:: top directory list (topdirs param.) not"
 		"found in config or Directory list parse error"));
-	rclEQ.setTerminate();
+	queue->setTerminate();
 	return 0;
     }
+
+    // Walk the directory trees to add watches
+    FsTreeWalker walker;
+    WalkCB walkcb(queue->getConfig(), mon, queue);
     for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	queue->getConfig()->setKeyDir(*it);
+	// Adjust the skipped names according to config
 	walker.clearSkippedNames();
 	string skipped; 
 	if (queue->getConfig()->getConfParam("skippedNames", skipped)) {
@@ -112,19 +133,16 @@ void *rclMonRcvRun(void *q)
     }
 
     // Forever wait for monitoring events and add them to queue:
-    LOGDEB2(("rclMonRcvRun: waiting for events. rclEQ.ok() %d\n", rclEQ.ok()));
-    while (rclEQ.ok()) {
-	if (!mon->ok())
-	    break;
+    LOGDEB2(("rclMonRcvRun: waiting for events. queue->ok() %d\n", queue->ok()));
+    while (queue->ok() && mon->ok()) {
 	RclMonEvent ev;
 	if (mon->getEvent(ev)) {
-	    rclEQ.pushEvent(ev);
+	    queue->pushEvent(ev);
 	}
-	if (!mon->ok())
-	    break;
     }
+
     LOGDEB(("rclMonRcvRun: exiting\n"));
-    rclEQ.setTerminate();
+    queue->setTerminate();
     return 0;
 }
 
@@ -133,6 +151,7 @@ void *rclMonRcvRun(void *q)
 #include <fam.h>
 #include <sys/select.h>
 
+// Translate event code to string (debug)
 static const char *event_name(int code)
 {
     static const char *famevent[] = {
@@ -149,21 +168,22 @@ static const char *event_name(int code)
     };
     static char unknown_event[20];
  
-    if (code < FAMChanged || code > FAMEndExist)
-    {
+    if (code < FAMChanged || code > FAMEndExist) {
         sprintf(unknown_event, "unknown (%d)", code);
         return unknown_event;
     }
     return famevent[code];
 }
 
-// FAM based monitor class
+/** FAM based monitor class. We have to keep a record of FAM watch
+    request numbers to directory names as the event only contain the
+    request number and file name, not the full path */
 class RclFAM : public RclMonitor {
 public:
     RclFAM();
     virtual ~RclFAM();
     virtual bool addWatch(const string& path, const struct stat& st);
-    virtual bool getEvent(RclMonEvent& ev);
+    virtual bool getEvent(RclMonEvent& ev, int secs = -1);
     bool ok() {return m_ok;}
 
 private:
@@ -213,7 +233,7 @@ bool RclFAM::addWatch(const string& path, const struct stat& st)
     return true;
 }
 
-bool RclFAM::getEvent(RclMonEvent& ev)
+bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 {
     if (!ok())
 	return false;
@@ -224,16 +244,22 @@ bool RclFAM::getEvent(RclMonEvent& ev)
     FD_ZERO(&readfds);
     FD_SET(fam_fd, &readfds);
 
-    // Note: can't see a reason to set a timeout. Only reason we might
-    // want out is signal which will break the select call anyway (I
-    // don't think that there is any system still using the old bsd-type
-    // syscall re-entrance after signal).
     LOGDEB(("RclFAM::getEvent: select\n"));
-    if (select(fam_fd + 1, &readfds, 0, 0, 0) < 0) {
+    struct timeval timeout;
+    if (secs >= 0) {
+	memset(&timeout, 0, sizeof(timeout));
+	timeout.tv_sec = secs;
+    }
+    int ret;
+    if ((ret=select(fam_fd + 1, &readfds, 0, 0, secs >= 0 ? &timeout : 0)) < 0) {
 	LOGERR(("RclFAM::getEvent: select failed, errno %d\n", errno));
 	close();
 	return false;
+    } else if (ret == 0) {
+	// timeout
+	return false;
     }
+
     if (!FD_ISSET(fam_fd, &readfds))
 	return false;
 
@@ -243,8 +269,10 @@ bool RclFAM::getEvent(RclMonEvent& ev)
 	close();
 	return false;
     }
+    
     map<int,string>::const_iterator it;
-    if ((it = m_reqtodir.find(fe.fr.reqnum)) != m_reqtodir.end()) {
+    if ((fe.filename[0] != '/') && 
+	(it = m_reqtodir.find(fe.fr.reqnum)) != m_reqtodir.end()) {
 	ev.m_path = path_cat(it->second, fe.filename);
     } else {
 	ev.m_path = fe.filename;
@@ -279,7 +307,7 @@ bool RclFAM::getEvent(RclMonEvent& ev)
     return true;
 }
 
-// The monitor factory
+// The monitor 'factory'
 static RclMonitor *makeMonitor()
 {
     return new RclFAM;

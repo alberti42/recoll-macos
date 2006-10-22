@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.2 2006-10-17 14:41:59 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.3 2006-10-22 14:47:13 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -117,11 +117,13 @@ RclConfig *RclMonEventQueue::getConfig()
     return m_data->m_config;
 }
 
+extern int stopindexing;
+
 bool RclMonEventQueue::ok()
 {
     if (m_data == 0)
 	return false;
-    return m_data->m_ok;
+    return !stopindexing && m_data->m_ok;
 }
 
 void RclMonEventQueue::setTerminate()
@@ -143,11 +145,9 @@ bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
     return true;
 }
 
-
 pthread_t rcv_thrid;
 void *rcv_result;
 extern void *rclMonRcvRun(void *);
-extern int stopindexing;
 
 bool startMonitor(RclConfig *conf, bool nofork)
 {
@@ -163,7 +163,7 @@ bool startMonitor(RclConfig *conf, bool nofork)
     LOGDEB(("start_monitoring: entering main loop\n"));
     while (rclEQ.wait()) {
 	LOGDEB2(("startMonitor: wait returned\n"));
-	if (stopindexing || !rclEQ.ok())
+	if (!rclEQ.ok())
 	    break;
 	list<string> modified;
 	list<string> deleted;
@@ -191,11 +191,13 @@ bool startMonitor(RclConfig *conf, bool nofork)
 	// Unlock queue before processing lists
 	rclEQ.unlock();
 	// Process
-	indexfiles(conf, modified);
+	if (!indexfiles(conf, modified))
+	    break;
+	if (!purgefiles(conf, deleted))
+	    break;
 	// Lock queue before waiting again
 	rclEQ.lock();
     }
-    LOGERR(("start_monitoring: rclEQ::wait() failed\n"));
-    return false;
+    return true;
 }
 #endif // RCL_MONITOR

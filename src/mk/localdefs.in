@@ -5,6 +5,8 @@ XAPIANCXXFLAGS=@XAPIANCXXFLAGS@
 LIBICONV=@LIBICONV@
 INCICONV=@INCICONV@
 
+LIBFAM = @LIBFAM@
+
 prefix = @prefix@
 datadir = @datadir@
 RECOLL_DATADIR = ${datadir}/recoll

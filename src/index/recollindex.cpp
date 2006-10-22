@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.24 2006-10-17 14:41:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.25 2006-10-22 14:47:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,27 @@ using namespace std;
 ConfIndexer *confindexer;
 DbIndexer *dbindexer;
 
+int stopindexing;
+// Mainly used to request indexing stop, we currently do not use the
+// current file name
+class MyUpdater : public DbIxStatusUpdater {
+ public:
+    virtual bool update() {
+	if (stopindexing) {
+	    return false;
+	}
+	return true;
+    }
+};
+MyUpdater updater;
+
+static void sigcleanup(int sig)
+{
+    fprintf(stderr, "sigcleanup\n");
+    LOGDEB(("sigcleanup\n"));
+    stopindexing = 1;
+}
+
 static bool makeDbIndexer(RclConfig *config)
 {
     string dbdir = config->getDbDir();
@@ -57,7 +78,7 @@ static bool makeDbIndexer(RclConfig *config)
     }
 
     if (!dbindexer)
-	dbindexer = new DbIndexer(config, dbdir);
+	dbindexer = new DbIndexer(config, dbdir, &updater);
 
     return true;
 }
@@ -116,6 +137,40 @@ bool indexfiles(RclConfig *config, const list<string> &filenames)
 	return dbindexer->indexFiles(myfiles);
 }
 
+// Delete a list of files.
+bool purgefiles(RclConfig *config, const list<string> &filenames)
+{
+    if (filenames.empty())
+	return true;
+    
+    if (o_tdl.empty()) {
+	o_tdl = config->getTopdirs();
+	if (o_tdl.empty()) {
+	    fprintf(stderr, "Top directory list (topdirs param.) "
+		    "not found in config or Directory list parse error");
+	    return false;
+	}
+    }
+
+    list<string> myfiles;
+    for (list<string>::const_iterator it = filenames.begin(); 
+	 it != filenames.end(); it++) {
+	myfiles.push_back(path_canon(*it));
+    }
+
+    // Note: we should sort the file names against the topdirs here
+    // and check for different databases. But we can for now only have
+    // one database per config, so we set the keydir from the first
+    // file (which is not really needed...), create the indexer/db and
+    // go:
+    config->setKeyDir(path_getfather(*myfiles.begin()));
+
+    if (!makeDbIndexer(config) || !dbindexer)
+	return false;
+    else
+	return dbindexer->purgeFiles(myfiles);
+}
+
 // Create additional stem database 
 static bool createstemdb(RclConfig *config, const string &lang)
 {
@@ -132,26 +187,6 @@ static void cleanup()
     confindexer = 0;
     delete dbindexer;
     dbindexer = 0;
-}
-
-int stopindexing;
-// Mainly used to request indexing stop, we currently do not use the
-// current file name
-class MyUpdater : public DbIxStatusUpdater {
- public:
-    virtual bool update() {
-	if (stopindexing) {
-	    return false;
-	}
-	return true;
-    }
-};
-MyUpdater updater;
-
-static void sigcleanup(int sig)
-{
-    fprintf(stderr, "sigcleanup\n");
-    stopindexing = 1;
 }
 
 static const char *thisprog;
