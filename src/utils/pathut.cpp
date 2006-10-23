@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.10 2006-03-29 11:18:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.11 2006-10-23 15:00:31 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -187,6 +187,16 @@ list<std::string> path_dirglob(const std::string &dir,
     }
     globfree(&mglob);
     return res;
+}
+
+bool path_isdir(const string& path)
+{
+    struct stat st;
+    if (lstat(path.c_str(), &st) < 0) 
+	return false;
+    if (S_ISDIR(st.st_mode))
+	return true;
+    return false;
 }
 
 std::string url_encode(const std::string url, string::size_type offs)
