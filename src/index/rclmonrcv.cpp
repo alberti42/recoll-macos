@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.4 2006-10-23 14:29:49 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.5 2006-10-23 15:01:12 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ class RclMonitor {
 public:
     RclMonitor(){}
     virtual ~RclMonitor() {}
-    virtual bool addWatch(const string& path, const struct stat&) = 0;
+    virtual bool addWatch(const string& path, bool isDir) = 0;
     virtual bool getEvent(RclMonEvent& ev, int secs = -1) = 0;
     virtual bool ok() = 0;
     // Does this monitor generate 'exist' events at startup?
@@ -79,7 +79,7 @@ public:
 		    break;
 		}
 	    }
-	    if (!m_mon || !m_mon->ok() || !m_mon->addWatch(fn, *st))
+	    if (!m_mon || !m_mon->ok() || !m_mon->addWatch(fn, true))
 		return FsTreeWalker::FtwError;
 	} else if (!m_mon->generatesExist() && 
 		   flg == FsTreeWalker::FtwRegular) {
@@ -156,6 +156,9 @@ void *rclMonRcvRun(void *q)
 			  -1
 #endif
 			  )) {
+	    if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
+		mon->addWatch(ev.m_path, true);
+	    }
 	    queue->pushEvent(ev);
 	}
     }
@@ -178,7 +181,7 @@ class RclFAM : public RclMonitor {
 public:
     RclFAM();
     virtual ~RclFAM();
-    virtual bool addWatch(const string& path, const struct stat& st);
+    virtual bool addWatch(const string& path, bool isdir);
     virtual bool getEvent(RclMonEvent& ev, int secs = -1);
     bool ok() {return m_ok;}
     virtual bool generatesExist() {return true;}
@@ -234,18 +237,18 @@ RclFAM::~RclFAM()
 	FAMClose(&m_conn);
 }
 
-bool RclFAM::addWatch(const string& path, const struct stat& st)
+bool RclFAM::addWatch(const string& path, bool isdir)
 {
     if (!ok())
 	return false;
     LOGDEB(("RclFAM::addWatch: adding %s\n", path.c_str()));
     FAMRequest req;
-    if (S_ISDIR(st.st_mode)) {
+    if (isdir) {
 	if (FAMMonitorDirectory(&m_conn, path.c_str(), &req, 0) != 0) {
 	    LOGERR(("RclFAM::addWatch: FAMMonitorDirectory failed\n"));
 	    return false;
 	}
-    } else if (S_ISREG(st.st_mode)) {
+    } else {
 	if (FAMMonitorFile(&m_conn, path.c_str(), &req, 0) != 0) {
 	    LOGERR(("RclFAM::addWatch: FAMMonitorFile failed\n"));
 	    return false;
@@ -303,8 +306,13 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 	    event_name(fe.code), ev.m_path.c_str()));
 
     switch (fe.code) {
-    case FAMChanged:
     case FAMCreated:
+	if (path_isdir(ev.m_path)) {
+	    ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
+	    break;
+	}
+	/* FALLTHROUGH */
+    case FAMChanged:
     case FAMExists:
 	// Let the other side sort out the status of this file vs the db
 	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
@@ -341,7 +349,7 @@ class RclIntf : public RclMonitor {
 public:
     RclIntf();
     virtual ~RclIntf();
-    virtual bool addWatch(const string& path, const struct stat& st);
+    virtual bool addWatch(const string& path, bool isdir);
     virtual bool getEvent(RclMonEvent& ev, int secs = -1);
     bool ok() {return m_ok;}
     virtual bool generatesExist() {return false;}
@@ -408,13 +416,13 @@ RclIntf::~RclIntf()
     close();
 }
 
-bool RclIntf::addWatch(const string& path, const struct stat& st)
+bool RclIntf::addWatch(const string& path, bool)
 {
    if (!ok())
         return false;
     LOGDEB(("RclIntf::addWatch: adding %s\n", path.c_str()));
-    // CLOSE_WRITE and CREATE are covered through MODIFY
-    uint32_t mask = IN_MODIFY 
+    // CLOSE_WRITE is covered through MODIFY. CREATE is needed for mkdirs
+    uint32_t mask = IN_MODIFY | IN_CREATE
         | IN_MOVED_FROM | IN_MOVED_TO
 	| IN_DELETE
 #ifdef IN_DONT_FOLLOW
@@ -496,6 +504,13 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
 	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
     } else if (evp->mask & (IN_DELETE | IN_MOVED_FROM)) {
 	ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
+    } else if (evp->mask & (IN_CREATE)) {
+	if (path_isdir(ev.m_path)) {
+	    ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
+	} else {
+	    // Will get modify event
+	    return false;
+	}
     } else {
 	LOGDEB(("RclIntf::getEvent: unhandled event %s 0x%x %s\n", 
 		event_name(evp->mask), evp->mask, ev.m_path.c_str()));

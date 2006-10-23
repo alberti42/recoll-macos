@@ -2,7 +2,7 @@
 #define _RCLMON_H_INCLUDED_
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
-/* @(#$Id: rclmon.h,v 1.2 2006-10-17 14:41:59 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rclmon.h,v 1.3 2006-10-23 15:01:12 dockes Exp $  (C) 2006 J.F.Dockes */
 /**
  * Definitions for the real-time monitoring recoll. 
  * We're interested in file modifications, deletions and renaming.
@@ -26,7 +26,8 @@ using std::multimap;
 
 class RclMonEvent {
  public: 
-    enum EvType {RCLEVT_NONE, RCLEVT_MODIFY, RCLEVT_DELETE, RCLEVT_RENAME};
+    enum EvType {RCLEVT_NONE, RCLEVT_MODIFY, RCLEVT_DELETE, 
+		 RCLEVT_DIRCREATE, RCLEVT_RENAME};
     string m_path;
     string m_opath;
     EvType m_etyp;
