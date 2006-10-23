@@ -88,6 +88,17 @@ if test X$withFam != Xno ; then
    fi
 fi
 
+# Real time monitoring with inotify
+AC_ARG_WITH(inotify, 
+    AC_HELP_STRING([--with-inotify],
+   [Use inotify for almost real time indexing of modified files.]),
+        withInotify=$withval, withInotify=no)
+
+if test X$withInotify != Xno ; then
+   AC_DEFINE(RCL_MONITOR, 1, [Real time monitoring option])
+   AC_DEFINE(RCL_USE_INOTIFY, 1, [Compile the inotify interface])
+fi
+
 ##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
 ##    then in libc (Linux, solaris)
 AC_LANG(C)

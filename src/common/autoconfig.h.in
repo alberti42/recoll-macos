@@ -18,3 +18,5 @@
 /* Path to the fam api include file */
 #undef FAM_INCLUDE
 
+/* Compile the inotify interface */
+#undef RCL_USE_INOTIFY

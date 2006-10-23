@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.3 2006-10-22 14:47:13 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.4 2006-10-23 14:29:49 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -31,10 +31,8 @@ static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.3 2006-10-22 14:47:13 dockes Ex
 
 /**
  * Recoll real time monitor event receiver. This file has code to interface 
- * to FAM and place events on the event queue.
+ * to FAM or inotify and place events on the event queue.
  */
-
-
 
 /** A small virtual interface for monitors. Probably suitable to let
     either of fam/gamin or raw imonitor hide behind */
@@ -45,6 +43,8 @@ public:
     virtual bool addWatch(const string& path, const struct stat&) = 0;
     virtual bool getEvent(RclMonEvent& ev, int secs = -1) = 0;
     virtual bool ok() = 0;
+    // Does this monitor generate 'exist' events at startup?
+    virtual bool generatesExist() = 0; 
 };
 
 // Monitor factory. We only have one compiled-in kind at a time, no
@@ -81,6 +81,14 @@ public:
 	    }
 	    if (!m_mon || !m_mon->ok() || !m_mon->addWatch(fn, *st))
 		return FsTreeWalker::FtwError;
+	} else if (!m_mon->generatesExist() && 
+		   flg == FsTreeWalker::FtwRegular) {
+	    // Have to synthetize events for regular files existence
+	    // at startup because the monitor does not do it
+	    RclMonEvent ev;
+	    ev.m_path = fn;
+	    ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+	    m_queue->pushEvent(ev);
 	}
 	return FsTreeWalker::FtwOk;
     }
@@ -136,7 +144,18 @@ void *rclMonRcvRun(void *q)
     LOGDEB2(("rclMonRcvRun: waiting for events. queue->ok() %d\n", queue->ok()));
     while (queue->ok() && mon->ok()) {
 	RclMonEvent ev;
-	if (mon->getEvent(ev)) {
+	// Note: under Linux, I could find no way to get the select
+	// call to return when a signal is delivered to the process
+	// (it goes to the main thread, from which I tried to close or
+	// write to the select fd, with no effect. So set a 
+	// timeout so that an intr will be detected
+	if (mon->getEvent(ev, 
+#ifdef linux
+			  2
+#else
+			  -1
+#endif
+			  )) {
 	    queue->pushEvent(ev);
 	}
     }
@@ -146,13 +165,37 @@ void *rclMonRcvRun(void *q)
     return 0;
 }
 
+#ifdef RCL_USE_FAM
 //////////////////////////////////////////////////////////////////////////
 /** Fam/gamin -based monitor class */
 #include <fam.h>
 #include <sys/select.h>
 
+/** FAM based monitor class. We have to keep a record of FAM watch
+    request numbers to directory names as the event only contain the
+    request number and file name, not the full path */
+class RclFAM : public RclMonitor {
+public:
+    RclFAM();
+    virtual ~RclFAM();
+    virtual bool addWatch(const string& path, const struct stat& st);
+    virtual bool getEvent(RclMonEvent& ev, int secs = -1);
+    bool ok() {return m_ok;}
+    virtual bool generatesExist() {return true;}
+
+private:
+    bool m_ok;
+    FAMConnection m_conn;
+    void close() {
+	FAMClose(&m_conn);
+	m_ok = false;
+    }
+    map<int,string> m_reqtopath;
+    const char *event_name(int code);
+};
+
 // Translate event code to string (debug)
-static const char *event_name(int code)
+const char *RclFAM::event_name(int code)
 {
     static const char *famevent[] = {
         "",
@@ -174,27 +217,6 @@ static const char *event_name(int code)
     }
     return famevent[code];
 }
-
-/** FAM based monitor class. We have to keep a record of FAM watch
-    request numbers to directory names as the event only contain the
-    request number and file name, not the full path */
-class RclFAM : public RclMonitor {
-public:
-    RclFAM();
-    virtual ~RclFAM();
-    virtual bool addWatch(const string& path, const struct stat& st);
-    virtual bool getEvent(RclMonEvent& ev, int secs = -1);
-    bool ok() {return m_ok;}
-
-private:
-    bool m_ok;
-    FAMConnection m_conn;
-    void close() {
-	FAMClose(&m_conn);
-	m_ok = false;
-    }
-    map<int,string> m_reqtodir;
-};
 
 RclFAM::RclFAM()
     : m_ok(false)
@@ -223,13 +245,13 @@ bool RclFAM::addWatch(const string& path, const struct stat& st)
 	    LOGERR(("RclFAM::addWatch: FAMMonitorDirectory failed\n"));
 	    return false;
 	}
-	m_reqtodir[req.reqnum] = path;
     } else if (S_ISREG(st.st_mode)) {
 	if (FAMMonitorFile(&m_conn, path.c_str(), &req, 0) != 0) {
 	    LOGERR(("RclFAM::addWatch: FAMMonitorFile failed\n"));
 	    return false;
 	}
     }
+    m_reqtopath[req.reqnum] = path;
     return true;
 }
 
@@ -244,7 +266,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     FD_ZERO(&readfds);
     FD_SET(fam_fd, &readfds);
 
-    LOGDEB(("RclFAM::getEvent: select\n"));
+    LOGDEB2(("RclFAM::getEvent: select\n"));
     struct timeval timeout;
     if (secs >= 0) {
 	memset(&timeout, 0, sizeof(timeout));
@@ -272,7 +294,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     
     map<int,string>::const_iterator it;
     if ((fe.filename[0] != '/') && 
-	(it = m_reqtodir.find(fe.fr.reqnum)) != m_reqtodir.end()) {
+	(it = m_reqtopath.find(fe.fr.reqnum)) != m_reqtopath.end()) {
 	ev.m_path = path_cat(it->second, fe.filename);
     } else {
 	ev.m_path = fe.filename;
@@ -306,10 +328,195 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     }
     return true;
 }
+#endif // RCL_USE_FAM
 
+
+#ifdef RCL_USE_INOTIFY
+//////////////////////////////////////////////////////////////////////////
+/** Inotify-based monitor class */
+#include <sys/inotify.h>
+#include <sys/select.h>
+
+class RclIntf : public RclMonitor {
+public:
+    RclIntf();
+    virtual ~RclIntf();
+    virtual bool addWatch(const string& path, const struct stat& st);
+    virtual bool getEvent(RclMonEvent& ev, int secs = -1);
+    bool ok() {return m_ok;}
+    virtual bool generatesExist() {return false;}
+
+private:
+    bool m_ok;
+    int m_fd;
+    map<int,string> m_wdtopath; // Watch descriptor to name
+#define EVBUFSIZE (32*1024)
+    char m_evbuf[EVBUFSIZE]; // Event buffer
+    char *m_evp; // Pointer to next event or 0
+    char *m_ep;  // Pointer to end of events
+    const char *event_name(int code);
+    void close() {
+	if (m_fd >= 0) {
+	    ::close(m_fd);
+	    m_fd = -1;
+	}
+	m_ok = false;
+    }
+};
+
+const char *RclIntf::event_name(int code) 
+{
+    code &= ~(IN_ISDIR|IN_ONESHOT);
+    switch (code) {
+    case IN_ACCESS: return "IN_ACCESS";
+    case IN_MODIFY: return "IN_MODIFY";
+    case IN_ATTRIB: return "IN_ATTRIB";
+    case IN_CLOSE_WRITE: return "IN_CLOSE_WRITE";
+    case IN_CLOSE_NOWRITE: return "IN_CLOSE_NOWRITE";
+    case IN_CLOSE: return "IN_CLOSE";
+    case IN_OPEN: return "IN_OPEN";
+    case IN_MOVED_FROM: return "IN_MOVED_FROM";
+    case IN_MOVED_TO: return "IN_MOVED_TO";
+    case IN_MOVE: return "IN_MOVE";
+    case IN_CREATE: return "IN_CREATE";
+    case IN_DELETE: return "IN_DELETE";
+    case IN_DELETE_SELF: return "IN_DELETE_SELF";
+    case IN_MOVE_SELF: return "IN_MOVE_SELF";
+    case IN_UNMOUNT: return "IN_UNMOUNT";
+    case IN_Q_OVERFLOW: return "IN_Q_OVERFLOW";
+    case IN_IGNORED: return "IN_IGNORED";
+    default: {
+	static char msg[50];
+	sprintf(msg, "Unknown event 0x%x", code);
+	return msg;
+    }
+    };
+}
+
+RclIntf::RclIntf()
+    : m_ok(false), m_fd(-1), m_evp(0), m_ep(0)
+{
+    if ((m_fd = inotify_init()) < 0) {
+	LOGERR(("RclIntf::RclIntf: inotify_init failed, errno %d\n", errno));
+	return;
+    }
+    m_ok = true;
+}
+
+RclIntf::~RclIntf()
+{
+    close();
+}
+
+bool RclIntf::addWatch(const string& path, const struct stat& st)
+{
+   if (!ok())
+        return false;
+    LOGDEB(("RclIntf::addWatch: adding %s\n", path.c_str()));
+    // CLOSE_WRITE and CREATE are covered through MODIFY
+    uint32_t mask = IN_MODIFY 
+        | IN_MOVED_FROM | IN_MOVED_TO
+	| IN_DELETE
+#ifdef IN_DONT_FOLLOW
+	| IN_DONT_FOLLOW
+#endif
+;
+    int wd;
+    if ((wd = inotify_add_watch(m_fd, path.c_str(), mask)) < 0) {
+        LOGERR(("RclIntf::addWatch: inotify_add_watch failed\n"));
+	return false;
+    }
+    m_wdtopath[wd] = path;
+    return true;
+}
+
+bool RclIntf::getEvent(RclMonEvent& ev, int secs)
+{
+    if (!ok())
+	return false;
+    LOGDEB2(("RclIntf::getEvent:\n"));
+
+    if (m_evp == 0) {
+	fd_set readfds;
+	FD_ZERO(&readfds);
+	FD_SET(m_fd, &readfds);
+	struct timeval timeout;
+	if (secs >= 0) {
+	    memset(&timeout, 0, sizeof(timeout));
+	    timeout.tv_sec = secs;
+	}
+	int ret;
+	LOGDEB2(("RclIntf::getEvent: select\n"));
+	if ((ret=select(m_fd + 1, &readfds, 0, 0, secs >= 0 ? &timeout : 0)) < 0) {
+	    LOGERR(("RclIntf::getEvent: select failed, errno %d\n", errno));
+	    close();
+	    return false;
+	} else if (ret == 0) {
+	    LOGDEB2(("RclIntf::getEvent: select timeout\n"));
+	    // timeout
+	    return false;
+	}
+	LOGDEB(("RclIntf::getEvent: select returned\n"));
+
+	if (!FD_ISSET(m_fd, &readfds))
+	    return false;
+	int rret;
+	if ((rret=read(m_fd, m_evbuf, sizeof(m_evbuf))) <= 0) {
+	    LOGERR(("RclIntf::getEvent: read failed, %d->%d errno %d\n", 
+		    sizeof(m_evbuf), rret, errno));
+	    close();
+	    return false;
+	}
+	m_evp = m_evbuf;
+	m_ep = m_evbuf + rret;
+    }
+
+    struct inotify_event *evp = (struct inotify_event *)m_evp;
+    m_evp += sizeof(struct inotify_event);
+    if (evp->len > 0)
+	m_evp += evp->len;
+    if (m_evp >= m_ep)
+	m_evp = m_ep = 0;
+    
+    map<int,string>::const_iterator it;
+    if ((it = m_wdtopath.find(evp->wd)) == m_wdtopath.end()) {
+	LOGERR(("RclIntf::getEvent: unknown wd\n"));
+	return false;
+    }
+    ev.m_path = it->second;
+
+    if (evp->len > 0) {
+	ev.m_path = path_cat(ev.m_path, evp->name);
+    }
+
+    LOGDEB(("RclIntf::getEvent: %-12s %s\n", 
+	    event_name(evp->mask), ev.m_path.c_str()));
+
+    if (evp->mask & (IN_MODIFY | IN_MOVED_TO)) {
+	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
+    } else if (evp->mask & (IN_DELETE | IN_MOVED_FROM)) {
+	ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
+    } else {
+	LOGDEB(("RclIntf::getEvent: unhandled event %s 0x%x %s\n", 
+		event_name(evp->mask), evp->mask, ev.m_path.c_str()));
+	return false;
+    }
+    return true;
+}
+
+#endif // RCL_USE_INOTIFY
+
+
+///////////////////////////////////////////////////////////////////////
 // The monitor 'factory'
 static RclMonitor *makeMonitor()
 {
+#ifdef RCL_USE_FAM    
     return new RclFAM;
+#endif
+#ifdef RCL_USE_INOTIFY
+    return new RclIntf;
+#endif
+    return 0;
 }
 #endif // RCL_MONITOR
