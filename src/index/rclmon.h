@@ -2,7 +2,7 @@
 #define _RCLMON_H_INCLUDED_
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
-/* @(#$Id: rclmon.h,v 1.4 2006-10-24 12:48:08 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rclmon.h,v 1.5 2006-10-24 14:28:38 dockes Exp $  (C) 2006 J.F.Dockes */
 /**
  * Definitions for the real-time monitoring recoll. 
  * We're interested in file modifications, deletions and renaming.
@@ -49,7 +49,7 @@ class RclMonEventQueue {
     ~RclMonEventQueue();
     /** Unlock queue and wait until there are new events. 
      *  Returns with the queue locked */
-    bool wait();
+    bool wait(int secs = -1, bool *timedout = 0);
     /** Unlock queue */
     bool unlock();
     /** Lock queue. */

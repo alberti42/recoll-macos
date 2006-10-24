@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.4 2006-10-24 12:48:09 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.5 2006-10-24 14:28:38 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -89,13 +89,34 @@ RclMonEvent RclMonEventQueue::pop()
 /** Wait until there is something to process on the queue.
  *  Must be called with the queue locked 
  */
-bool RclMonEventQueue::wait() 
+bool RclMonEventQueue::wait(int seconds, bool *top)
 {
     if (!empty())
 	return true;
-    if (pthread_cond_wait(&m_data->m_cond, &m_data->m_mutex)) {
-	LOGERR(("RclMonEventQueue::wait: pthread_cond_wait failed\n"));
-	return false;
+
+    int err;
+    if (seconds > 0) {
+	struct timespec to;
+	to.tv_sec = time(0L) + seconds;
+	to.tv_nsec = 0;
+	if (top)
+	    *top = false;
+	if ((err = 
+	     pthread_cond_timedwait(&m_data->m_cond, &m_data->m_mutex, &to))) {
+	    if (err == ETIMEDOUT) {
+		*top = true;
+		return true;
+	    }
+	    LOGERR(("RclMonEventQueue::wait:pthread_cond_timedwait failed"
+		    "with err %d\n", err));
+	    return false;
+	}
+    } else {
+	if ((err = pthread_cond_wait(&m_data->m_cond, &m_data->m_mutex))) {
+	    LOGERR(("RclMonEventQueue::wait: pthread_cond_wait failed"
+		    "with err %d\n", err));
+	    return false;
+	}
     }
     return true;
 }
@@ -240,7 +261,13 @@ bool startMonitor(RclConfig *conf, bool nofork)
 	return false;
     }
     LOGDEB(("start_monitoring: entering main loop\n"));
-    while (rclEQ.wait()) {
+    bool timedout;
+    bool didsomething = false;
+
+    // We set a timeout of 10mn. If we do timeout, and there have been some
+    // indexing activity since the last such operation, we'll update the 
+    // auxiliary data (stemming and spelling)
+    while (rclEQ.wait(10 * 60, &timedout)) {
 	LOGDEB2(("startMonitor: wait returned\n"));
 	if (!rclEQ.ok())
 	    break;
@@ -270,10 +297,29 @@ bool startMonitor(RclConfig *conf, bool nofork)
 	// Unlock queue before processing lists
 	rclEQ.unlock();
 	// Process
-	if (!indexfiles(conf, modified))
-	    break;
-	if (!purgefiles(conf, deleted))
-	    break;
+	if (!modified.empty()) {
+	    if (!indexfiles(conf, modified))
+		break;
+	    didsomething = true;
+	}
+	if (!deleted.empty()) {
+	    if (!purgefiles(conf, deleted))
+		break;
+	    didsomething = true;
+	}
+
+	if (timedout) {
+	    LOGDEB2(("Monitor: queue wait timed out\n"));
+	    // Timed out. there must not be much activity around here. 
+	    // If anything was modified, process the end-of-indexing
+	    // tasks: stemming and spelling database creations.
+	    if (didsomething) {
+		didsomething = false;
+		if (!createAuxDbs(conf))
+		    break;
+	    }
+	}
+
 	// Lock queue before waiting again
 	rclEQ.lock();
     }

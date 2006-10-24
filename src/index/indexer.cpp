@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.40 2006-10-24 09:09:36 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.41 2006-10-24 14:28:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -115,8 +115,27 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
     // filesystem anymore.
     m_db.purge();
 
-    // Create stemming databases. We also remove those which are not
-    // configured.
+    createStemmingDatabases();
+    createAspellDict();
+
+    // The close would be done in our destructor, but we want status here
+    if (m_updater) {
+	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
+	m_updater->status.fn.erase();
+	m_updater->update();
+    }
+    if (!m_db.close()) {
+	LOGERR(("DbIndexer::index: error closing database in %s\n", 
+		m_dbdir.c_str()));
+	return false;
+    }
+    return true;
+}
+
+// Create stemming databases. We also remove those which are not
+// configured.
+bool DbIndexer::createStemmingDatabases()
+{
     string slangs;
     if (m_config->getConfParam("indexstemminglanguages", slangs)) {
 	list<string> langs;
@@ -138,20 +157,6 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 	    }
 	    m_db.createStemDb(*it);
 	}
-    }
-
-    createAspellDict();
-
-    // The close would be done in our destructor, but we want status here
-    if (m_updater) {
-	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
-	m_updater->status.fn.erase();
-	m_updater->update();
-    }
-    if (!m_db.close()) {
-	LOGERR(("DbIndexer::index: error closing database in %s\n", 
-		m_dbdir.c_str()));
-	return false;
     }
     return true;
 }

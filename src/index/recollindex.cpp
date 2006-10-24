@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.25 2006-10-22 14:47:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.26 2006-10-24 14:28:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -169,6 +169,21 @@ bool purgefiles(RclConfig *config, const list<string> &filenames)
 	return false;
     else
 	return dbindexer->purgeFiles(myfiles);
+}
+
+// Create stemming and spelling databases
+bool createAuxDbs(RclConfig *config)
+{
+    if (!makeDbIndexer(config) || !dbindexer)
+	return false;
+
+    if (!dbindexer->createStemmingDatabases())
+	return false;
+
+    if (!dbindexer->createAspellDict())
+	return false;
+
+    return true;
 }
 
 // Create additional stem database 

@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.20 2006-10-22 14:47:13 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.21 2006-10-24 14:28:38 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -119,6 +119,9 @@ class DbIndexer : public FsTreeWalkerCB {
     /** Purge a list of files. */
     bool purgeFiles(const std::list<string> &files);
 
+    /** Stemming reset to config: create needed, delete unconfigured */
+    bool createStemmingDatabases();
+
     /** Create stem database for given language */
     bool createStemDb(const string &lang);
 
@@ -148,5 +151,6 @@ class DbIndexer : public FsTreeWalkerCB {
  * a list of files (either from the monitor or the command line) */
 extern bool indexfiles(RclConfig *config, const list<string> &filenames);
 extern bool purgefiles(RclConfig *config, const list<string> &filenames);
+extern bool createAuxDbs(RclConfig *config);
 
 #endif /* _INDEXER_H_INCLUDED_ */
