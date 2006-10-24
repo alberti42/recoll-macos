@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.39 2006-10-22 14:47:13 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.40 2006-10-24 09:09:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -96,13 +96,7 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 
 	// Set up skipped patterns for this subtree. This probably should be
 	// done in the directory change code in processone() instead.
-	m_walker.clearSkippedNames();
-	string skipped; 
-	if (m_config->getConfParam("skippedNames", skipped)) {
-	    list<string> skpl;
-	    stringToStrings(skipped, skpl);
-	    m_walker.setSkippedNames(skpl);
-	}
+	m_walker.setSkippedNames(m_config->getSkippedNames());
 
 	// Walk the directory tree
 	if (m_walker.walk(*it, *this) != FsTreeWalker::FtwOk) {
@@ -238,11 +232,8 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
 	static list<string> skpl;
 	if (lstdir.compare(dir)) {
 	    LOGDEB(("Recomputing list of skipped names\n"));
-	    string skipped; 
-	    if (m_config->getConfParam("skippedNames", skipped)) {
-		stringToStrings(skipped, skpl);
-		lstdir = dir;
-	    }
+	    skpl = m_config->getSkippedNames();
+	    lstdir = dir;
 	}
 	if (!skpl.empty()) {
 	    list<string>::const_iterator skit;

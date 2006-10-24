@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.5 2006-10-23 15:01:12 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.6 2006-10-24 09:09:36 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -129,13 +129,7 @@ void *rclMonRcvRun(void *q)
     for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	queue->getConfig()->setKeyDir(*it);
 	// Adjust the skipped names according to config
-	walker.clearSkippedNames();
-	string skipped; 
-	if (queue->getConfig()->getConfParam("skippedNames", skipped)) {
-	    list<string> skpl;
-	    stringToStrings(skipped, skpl);
-	    walker.setSkippedNames(skpl);
-	}
+	walker.setSkippedNames(queue->getConfig()->getSkippedNames());
 	LOGDEB(("rclMonRcvRun: walking %s\n", it->c_str()));
 	walker.walk(*it, walkcb);
     }

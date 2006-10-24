@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.23 2006-10-16 15:33:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.24 2006-10-24 09:09:36 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -73,6 +73,9 @@ class RclConfig {
 
     /** Get database directory */
     string getDbDir();
+
+    /** Get list of skipped names for current keydir */
+    list<string> getSkippedNames();
 
     /** 
      * Get list of ignored suffixes from mimemap

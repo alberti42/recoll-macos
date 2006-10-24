@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.31 2006-10-16 15:33:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.32 2006-10-24 09:09:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -311,6 +311,26 @@ string RclConfig::getDbDir()
     }
     LOGDEB1(("RclConfig::getDbDir: dbdir: [%s]\n", dbdir.c_str()));
     return dbdir;
+}
+
+list<string> RclConfig::getSkippedNames()
+{
+    list<string> skpl;
+    string skipped;
+    if (getConfParam("skippedNames", skipped)) {
+	stringToStrings(skipped, skpl);
+    }
+    // If current keydir is dbdir's ancestor, add dbdir name to skipped
+    // This is mainly for the real-time monitor that will otherwise go
+    // into a loop
+    // We'd prefer to do it for the direct ancestor only, but getSkippedNames()
+    // is only called for the topdirs, so this doesn't work
+    string kd = path_canon(getKeyDir());
+    string dbd = path_canon(getDbDir());
+    if (dbd.find(kd) == 0) {
+	skpl.push_back(path_getsimple(dbd));
+    }
+    return skpl;
 }
 
 
