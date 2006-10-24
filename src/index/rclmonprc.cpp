@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.3 2006-10-22 14:47:13 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.4 2006-10-24 12:48:09 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -28,14 +28,22 @@ static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.3 2006-10-22 14:47:13 dockes Ex
  */
 
 #include <pthread.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
+#include <signal.h>
 
 #include "debuglog.h"
 #include "rclmon.h"
 #include "debuglog.h"
 #include "indexer.h"
+#include "pathut.h"
 
 typedef map<string, RclMonEvent> queue_type;
 
+/** Private part of RclEQ: things that we don't wish to exist in the interface
+ *  include file.
+ */
 class RclEQData {
 public:
     queue_type m_queue;
@@ -51,16 +59,18 @@ public:
     }
 };
 
-RclMonEventQueue rclEQ;
+static RclMonEventQueue rclEQ;
 
 RclMonEventQueue::RclMonEventQueue()
 {
     m_data = new RclEQData;
 }
+
 RclMonEventQueue::~RclMonEventQueue()
 {
     delete m_data;
 }
+
 bool RclMonEventQueue::empty()
 {
     return m_data == 0 ? true : m_data->m_queue.empty();
@@ -138,22 +148,91 @@ bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
 {
     LOGDEB2(("RclMonEventQueue::pushEvent for %s\n", ev.m_path.c_str()));
     lock();
-    // It seems that a newer event always override any older. TBVerified ?
+    // It seems that a newer event is always correct to override any
+    // older. TBVerified ?
     m_data->m_queue[ev.m_path] = ev;
     pthread_cond_broadcast(&m_data->m_cond);
     unlock();
     return true;
 }
 
+static string pidfile;
+/** There can only be one real time indexing process running */
+static bool processlock(const string &confdir) 
+{
+    pidfile = path_cat(confdir, RCL_MONITOR_PIDFILENAME);
+    for (int i = 0; i < 2; i++) {
+	int fd = open(pidfile.c_str(), O_RDWR|O_CREAT|O_EXCL, 0644);
+	if (fd < 0) {
+	    if (errno != EEXIST) {
+		LOGERR(("processlock: cant create %s, errno %d\n",
+			pidfile.c_str(), errno));
+		return false;
+	    }
+	    if ((fd = open(pidfile.c_str(), O_RDONLY)) < 0) {
+		LOGERR(("processlock: cant open existing %s, errno %d\n",
+			pidfile.c_str(), errno));
+		return false;
+	    }
+	    char buf[20];
+	    memset(buf, 0, sizeof(buf));
+	    if (read(fd, buf, 19) < 0) {
+		LOGERR(("processlock: cant read existing %s, errno %d\n",
+			pidfile.c_str(), errno));
+		close(fd);
+		return false;
+	    }
+	    close(fd);
+	    int pid = atoi(buf);
+	    if (pid <= 0 || (kill(pid, 0) < 0 && errno == ESRCH)) {
+		// File exists but no process
+		if (unlink(pidfile.c_str()) < 0) {
+		    LOGERR(("processlock: cant unlink existing %s, errno %d\n",
+			    pidfile.c_str(), errno));
+		    return false;
+		}
+		// Let's retry
+		continue;
+	    } else {
+		// Other process running
+		return false;
+	    }
+	}
+
+	// File could be created, write my pid in there
+	char buf[20];
+	sprintf(buf, "%d\n", getpid());
+	if (write(fd, buf, strlen(buf)+1) != int(strlen(buf)+1)) {
+	    LOGERR(("processlock: cant write to %s, errno %d\n",
+		    pidfile.c_str(), errno));
+	    close(fd);
+	    return false;
+	}
+	close(fd);
+	// Ok
+	break;
+    }
+    return true;
+}
+
+static void processunlock()
+{
+    unlink(pidfile.c_str());
+}
+
 pthread_t rcv_thrid;
-void *rcv_result;
-extern void *rclMonRcvRun(void *);
 
 bool startMonitor(RclConfig *conf, bool nofork)
 {
+    if (!processlock(conf->getConfDir())) {
+	LOGERR(("startMonitor: lock error. Other process running ?\n"));
+	return false;
+    }
+    atexit(processunlock);
+
     rclEQ.setConfig(conf);
     if (pthread_create(&rcv_thrid, 0, &rclMonRcvRun, &rclEQ) != 0) {
-	LOGERR(("start_monitoring: cant create event-receiving thread\n"));
+	LOGERR(("startMonitor: cant create event-receiving thread\n"));
 	return false;
     }
 

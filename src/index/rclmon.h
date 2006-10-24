@@ -2,7 +2,7 @@
 #define _RCLMON_H_INCLUDED_
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
-/* @(#$Id: rclmon.h,v 1.3 2006-10-23 15:01:12 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rclmon.h,v 1.4 2006-10-24 12:48:08 dockes Exp $  (C) 2006 J.F.Dockes */
 /**
  * Definitions for the real-time monitoring recoll. 
  * We're interested in file modifications, deletions and renaming.
@@ -24,6 +24,9 @@ using std::string;
 using std::multimap;
 #endif
 
+/**
+ * Monitoring event: something changed in the filesystem
+ */
 class RclMonEvent {
  public: 
     enum EvType {RCLEVT_NONE, RCLEVT_MODIFY, RCLEVT_DELETE, 
@@ -34,8 +37,12 @@ class RclMonEvent {
     RclMonEvent() : m_etyp(RCLEVT_NONE) {}
 };
 
+/**
+ * Monitoring event queue. This is the shared object between the main thread 
+ * (which does the actual indexing work), and the monitoring thread which 
+ * receives events from FAM / inotify / etc.
+ */
 class RclEQData;
-
 class RclMonEventQueue {
  public:
     RclMonEventQueue();
@@ -62,7 +69,15 @@ class RclMonEventQueue {
     RclEQData *m_data;
 };
 
-extern RclMonEventQueue rclEQ;
+/** Start monitoring on the topdirs described in conf */
 extern bool startMonitor(RclConfig *conf, bool nofork);
+
+/** Main routine for the event receiving thread */
+extern void *rclMonRcvRun(void *);
+
+/** There can only be one of us. Name of the lock file inside the config
+ * directory. We write our pid in there */
+#define RCL_MONITOR_PIDFILENAME "rclmonpid"
+
 #endif // RCL_MONITOR
 #endif /* _RCLMON_H_INCLUDED_ */
