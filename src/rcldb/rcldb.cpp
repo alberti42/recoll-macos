@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.82 2006-10-22 15:54:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.83 2006-10-24 09:28:30 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -53,6 +53,9 @@ using namespace std;
 #ifndef MIN
 #define MIN(A,B) (A<B?A:B)
 #endif
+
+#undef MTIME_IN_VALUE
+
 #ifndef NO_NAMESPACES
 namespace Rcl {
 #endif
@@ -76,15 +79,9 @@ class Native {
     Db *m_db;
     bool m_isopen;
     bool m_iswritable;
-    Db::OpenMode m_mode;
-    string m_basedir;
-
-    // List of directories for additional databases to query
-    list<string> m_extraDbs;
 
     // Indexing
     Xapian::WritableDatabase wdb;
-    vector<bool> updated;
 
     // Querying
     Xapian::Database db;
@@ -93,48 +90,34 @@ class Native {
     Xapian::Enquire *enquire; // Open query descriptor.
     Xapian::MSet     mset;    // Partial result set
 
+    Native(Db *db) 
+	: m_db(db),
+	  m_isopen(false), m_iswritable(false), enquire(0) 
+    { }
+
+    ~Native() {
+	delete enquire;
+    }
+
     string makeAbstract(Xapian::docid id, const list<string>& terms);
+
     bool dbDataToRclDoc(std::string &data, Doc &doc, 
 			int qopts,
 			Xapian::docid docid,
 			const list<string>& terms);
 
-    /** Compute list of subdocuments for a given path (given by hash) */
-    bool subDocs(const string &hash, vector<Xapian::docid>& docids) {
+    /** Compute list of subdocuments for a given path (given by hash) 
+     *  We look for all Q terms beginning with the path/hash
+     *  As suggested by James Aylett, a better method would be to add 
+     *  a single term (ie: XP/path/to/file) to all subdocs, then finding
+     *  them would be a simple matter of retrieving the posting list for the
+     *  term. There would still be a need for the current Qterm though, as a
+     *  unique term for replace_document, and for retrieving by
+     *  path/ipath (history)
+     */
+    bool subDocs(const string &hash, vector<Xapian::docid>& docids);
 
-	docids.clear();
-	string qterm = "Q"+ hash + "|";
-	Xapian::Database db = m_iswritable ? wdb: db;
-	Xapian::TermIterator it = db.allterms_begin(); 
-	it.skip_to(qterm);
-	string ermsg;
-	try {
-	    for (;it != db.allterms_end(); it++) {
-		// If current term does not begin with qterm or has
-		// another |, not the same file
-		if ((*it).find(qterm) != 0 || 
-		    (*it).find_last_of("|") != qterm.length() -1)
-		    break;
-		docids.push_back(*(db.postlist_begin(*it)));
-	    }
-	    return true;
-	} catch (const Xapian::Error &e) {
-	    ermsg = e.get_msg().c_str();
-	} catch (...) {
-	    ermsg= "Unknown error";
-	}
-	LOGERR(("Rcl::Db::subDocs: %s\n", ermsg.c_str()));
-	return false;
-    }
-
-
-    Native(Db *db) 
-	: m_db(db),
-	  m_isopen(false), m_iswritable(false), m_mode(Db::DbRO), enquire(0) 
-    { }
-    ~Native() {
-	delete enquire;
-    }
+    /** Keep this inline */
     bool filterMatch(Db *rdb, Xapian::Document &xdoc) {
 	// Parse xapian document's data and populate doc fields
 	string data = xdoc.get_data();
@@ -150,32 +133,50 @@ class Native {
 	    return true;
 	return false;
     }
-
-    /// Perform stem expansion across all dbs configured for searching
-    list<string> stemExpand(const string& lang,
-			    const string& term) 
-    {
-	list<string> dirs = m_extraDbs;
-	dirs.push_front(m_basedir);
-	list<string> exp;
-	for (list<string>::iterator it = dirs.begin();
-	     it != dirs.end(); it++) {
-	    list<string> more = StemDb::stemExpand(*it, lang, term);
-	    LOGDEB1(("Native::stemExpand: Got %d from %s\n", 
-		    more.size(), it->c_str()));
-	    exp.splice(exp.end(), more);
-	}
-	exp.sort();
-	exp.unique();
-	LOGDEB1(("Native::stemExpand: final count %d \n", exp.size()));
-	return exp;
-    }
-
 };
 
+    /* See comment in class declaration */
+bool Native::subDocs(const string &hash, vector<Xapian::docid>& docids) 
+{
+    docids.clear();
+    string qterm = "Q"+ hash + "|";
+    string ermsg;
+
+    for (int tries = 0; tries < 2; tries++) {
+	try {
+	    Xapian::TermIterator it = db.allterms_begin(); 
+	    it.skip_to(qterm);
+	    for (;it != db.allterms_end(); it++) {
+		// If current term does not begin with qterm or has
+		// another |, not the same file
+		if ((*it).find(qterm) != 0 || 
+		    (*it).find_last_of("|") != qterm.length() -1)
+		    break;
+		docids.push_back(*(db.postlist_begin(*it)));
+	    }
+	    return true;
+	} catch (const Xapian::DatabaseModifiedError &e) {
+	    LOGDEB(("Db::subDocs: got modified error. reopen/retry\n"));
+	    // Can't use reOpen here, it would delete *me*
+	    db = Xapian::Database(m_db->m_basedir);
+	} catch (const Xapian::Error &e) {
+	    ermsg = e.get_msg().c_str();
+	    break;
+	} catch (...) {
+	    ermsg= "Unknown error";
+	    break;
+	}
+    }
+    LOGERR(("Rcl::Db::subDocs: %s\n", ermsg.c_str()));
+    return false;
+}
+
+
+/* Rcl::Db methods ///////////////////////////////// */
+
 Db::Db() 
-    : m_qOpts(QO_NONE), m_idxAbsTruncLen(250), m_synthAbsLen(250),
-      m_synthAbsWordCtxLen(4)
+    : m_ndb(0), m_qOpts(QO_NONE), m_idxAbsTruncLen(250), m_synthAbsLen(250),
+      m_synthAbsWordCtxLen(4), m_mode(Db::DbRO)
 {
     m_ndb = new Native(this);
 }
@@ -187,14 +188,9 @@ Db::~Db()
 	return;
     LOGDEB(("Db::~Db: isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
 	    m_ndb->m_iswritable));
-    if (m_ndb->m_isopen == false)
-	return;
     const char *ermsg = "Unknown error";
     try {
-	LOGDEB(("Db::~Db: closing native database\n"));
-	if (m_ndb->m_iswritable == true) {
-	    m_ndb->wdb.flush();
-	}
+	// Used to do a flush here, but doesnt seem necessary
 	delete m_ndb;
 	m_ndb = 0;
 	return;
@@ -212,6 +208,9 @@ Db::~Db()
 
 bool Db::open(const string& dir, OpenMode mode, int qops)
 {
+    bool keep_updated = (qops & QO_KEEP_UPDATED) != 0;
+    qops &= ~QO_KEEP_UPDATED;
+
     if (m_ndb == 0)
 	return false;
     LOGDEB(("Db::open: m_isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
@@ -231,20 +230,28 @@ bool Db::open(const string& dir, OpenMode mode, int qops)
 		int action = (mode == DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
 		    Xapian::DB_CREATE_OR_OVERWRITE;
 		m_ndb->wdb = Xapian::WritableDatabase(dir, action);
+		m_ndb->m_iswritable = true;
+		// We open a readonly object in addition to the r/w
+		// one because some operations are faster when
+		// performed through a Database (no forced flushes on
+		// allterms_begin(), ie, used in subDocs()
+		m_ndb->db = Xapian::Database(dir);
 		LOGDEB(("Db::open: lastdocid: %d\n", 
 			m_ndb->wdb.get_lastdocid()));
-		m_ndb->updated.resize(m_ndb->wdb.get_lastdocid() + 1);
-		for (unsigned int i = 0; i < m_ndb->updated.size(); i++)
-		    m_ndb->updated[i] = false;
-		m_ndb->m_iswritable = true;
+		if (!keep_updated) {
+		    LOGDEB2(("Db::open: resetting updated\n"));
+		    updated.resize(m_ndb->wdb.get_lastdocid() + 1);
+		    for (unsigned int i = 0; i < updated.size(); i++)
+			updated[i] = false;
+		}
 	    }
 	    break;
 	case DbRO:
 	default:
 	    m_ndb->m_iswritable = false;
 	    m_ndb->db = Xapian::Database(dir);
-	    for (list<string>::iterator it = m_ndb->m_extraDbs.begin();
-		 it != m_ndb->m_extraDbs.end(); it++) {
+	    for (list<string>::iterator it = m_extraDbs.begin();
+		 it != m_extraDbs.end(); it++) {
 		string aerr;
 		LOGDEB(("Db::Open: adding query db [%s]\n", it->c_str()));
 		aerr.erase();
@@ -266,10 +273,9 @@ bool Db::open(const string& dir, OpenMode mode, int qops)
 	    }
 	    break;
 	}
-	m_qOpts = qops;
-	m_ndb->m_mode = mode;
+	m_mode = mode;
 	m_ndb->m_isopen = true;
-	m_ndb->m_basedir = dir;
+	m_basedir = dir;
 	return true;
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
@@ -287,9 +293,7 @@ bool Db::open(const string& dir, OpenMode mode, int qops)
 
 string Db::getDbDir()
 {
-    if (m_ndb == 0)
-	return "";
-    return m_ndb->m_basedir;
+    return m_basedir;
 }
 
 // Note: xapian has no close call, we delete and recreate the db
@@ -303,10 +307,7 @@ bool Db::close()
 	return true;
     const char *ermsg = "Unknown";
     try {
-	if (m_ndb->m_iswritable == true) {
-	    m_ndb->wdb.flush();
-	    LOGDEB(("Rcl:Db: Called xapian flush\n"));
-	}
+	// Used to do a flush here. Cant see why it should be necessary.
 	delete m_ndb;
 	m_ndb = new Native(this);
 	if (m_ndb)
@@ -329,7 +330,7 @@ bool Db::reOpen()
     if (m_ndb && m_ndb->m_isopen) {
 	if (!close())
 	    return false;
-	if (!open(m_ndb->m_basedir, m_ndb->m_mode, m_qOpts)) {
+	if (!open(m_basedir, m_mode, m_qOpts | QO_KEEP_UPDATED)) {
 	    return false;
 	}
     }
@@ -353,9 +354,8 @@ bool Db::addQueryDb(const string &dir)
 	return false;
     if (m_ndb->m_iswritable)
 	return false;
-    if (find(m_ndb->m_extraDbs.begin(), m_ndb->m_extraDbs.end(), dir) == 
-	m_ndb->m_extraDbs.end()) {
-	m_ndb->m_extraDbs.push_back(dir);
+    if (find(m_extraDbs.begin(), m_extraDbs.end(), dir) == m_extraDbs.end()) {
+	m_extraDbs.push_back(dir);
     }
     return reOpen();
 }
@@ -367,12 +367,12 @@ bool Db::rmQueryDb(const string &dir)
     if (m_ndb->m_iswritable)
 	return false;
     if (dir.empty()) {
-	m_ndb->m_extraDbs.clear();
+	m_extraDbs.clear();
     } else {
-	list<string>::iterator it = find(m_ndb->m_extraDbs.begin(), 
-					 m_ndb->m_extraDbs.end(), dir);
-	if (it != m_ndb->m_extraDbs.end()) {
-	    m_ndb->m_extraDbs.erase(it);
+	list<string>::iterator it = find(m_extraDbs.begin(), 
+					 m_extraDbs.end(), dir);
+	if (it != m_extraDbs.end()) {
+	    m_extraDbs.erase(it);
 	}
     }
     return reOpen();
@@ -600,6 +600,9 @@ bool Db::add(const string &fn, const Doc &idoc,
     string uniterm;
     if (doc.ipath.empty()) {
 	uniterm = "P" + hash;
+#ifdef MTIME_IN_VALUE
+	newdocument.add_value(1, doc.fmtime);
+#endif
     } else {
 	uniterm = "Q" + hash + "|" + doc.ipath;
     }
@@ -655,8 +658,8 @@ bool Db::add(const string &fn, const Doc &idoc,
     try {
 	Xapian::docid did = 
 	    m_ndb->wdb.replace_document(uniterm, newdocument);
-	if (did < m_ndb->updated.size()) {
-	    m_ndb->updated[did] = true;
+	if (did < updated.size()) {
+	    updated[did] = true;
 	    LOGDEB(("Db::add: docid %d updated [%s , %s]\n", did, fnc,
 		    doc.ipath.c_str()));
 	} else {
@@ -687,68 +690,82 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
     string hash;
     pathHash(filename, hash, PATHHASHLEN);
     string pterm  = "P" + hash;
-    const char *ermsg;
+    string ermsg;
 
     // Look for all documents with this path. We need to look at all
     // to set their existence flag.  We check the update time on the
     // fmtime field which will be identical for all docs inside a
     // multi-document file (we currently always reindex all if the
     // file changed)
-    Xapian::PostingIterator doc;
-    try {
-	// Check the date using the Pterm doc or pseudo-doc
-	Xapian::PostingIterator docid = m_ndb->wdb.postlist_begin(pterm);
-	if (docid == m_ndb->wdb.postlist_end(pterm)) {
-	    // If no document exist with this path, we do need update
-	    LOGDEB2(("Db::needUpdate: no such path: [%s]\n", pterm.c_str()));
-	    return true;
-	}
-	Xapian::Document doc = m_ndb->wdb.get_document(*docid);
-	string data = doc.get_data();
-	const char *cp = strstr(data.c_str(), "fmtime=");
-	if (cp) {
-	    cp += 7;
-	} else {
-	    cp = strstr(data.c_str(), "mtime=");
-	    if (cp)
-		cp+= 6;
-	}
-	long mtime = cp ? atol(cp) : 0;
-	if (mtime < stp->st_mtime) {
-	    LOGDEB2(("Db::needUpdate: yes: mtime: Db %ld file %ld\n", 
-		     (long)mtime, (long)stp->st_mtime));
-	    // Db is not up to date. Let's index the file
-	    return true;
-	} 
-
-	LOGDEB2(("Db::needUpdate: uptodate: [%s]\n", pterm.c_str()));
-
-	// Up to date. 
-
-	// Set the uptodate flag for doc / pseudo doc
-	m_ndb->updated[*docid] = true;
-
-	// Set the existence flag for all the subdocs (if any)
-	vector<Xapian::docid> docids;
-	if (!m_ndb->subDocs(hash, docids)) {
-	    LOGERR(("Rcl::Db::needUpdate: can't get subdocs list\n"));
-	    return true;
-	}
-	for (vector<Xapian::docid>::iterator it = docids.begin();
-	     it != docids.end(); it++) {
-	    if (*it < m_ndb->updated.size()) {
-		LOGDEB2(("Db::needUpdate: set flag for docid %d\n", *it));
-		m_ndb->updated[*it] = true;
+    for (int tries = 0; tries < 2; tries++) {
+	try {
+	    // Check the date using the Pterm doc or pseudo-doc
+	    Xapian::PostingIterator docid = m_ndb->db.postlist_begin(pterm);
+	    if (docid == m_ndb->db.postlist_end(pterm)) {
+		// If no document exist with this path, we do need update
+		LOGDEB2(("Db::needUpdate: no path: [%s]\n", pterm.c_str()));
+		return true;
 	    }
+	    Xapian::Document doc = m_ndb->db.get_document(*docid);
+#ifdef MTIME_IN_VALUE
+	    // This is slightly faster, but we'd need to setup a conversion
+	    // for old dbs, and it's not really worth it
+	    string value = doc.get_value(1);
+	    const char *cp = value.c_str();
+#else
+	    string data = doc.get_data();
+	    const char *cp = strstr(data.c_str(), "fmtime=");
+	    if (cp) {
+		cp += 7;
+	    } else {
+		cp = strstr(data.c_str(), "mtime=");
+		if (cp)
+		    cp+= 6;
+	    }
+#endif
+	    long mtime = cp ? atol(cp) : 0;
+	    if (mtime < stp->st_mtime) {
+		LOGDEB2(("Db::needUpdate: yes: mtime: Db %ld file %ld\n", 
+			 (long)mtime, (long)stp->st_mtime));
+		// Db is not up to date. Let's index the file
+		return true;
+	    } 
+
+	    LOGDEB2(("Db::needUpdate: uptodate: [%s]\n", pterm.c_str()));
+
+	    // Up to date. 
+
+	    // Set the uptodate flag for doc / pseudo doc
+	    updated[*docid] = true;
+
+	    // Set the existence flag for all the subdocs (if any)
+	    vector<Xapian::docid> docids;
+	    if (!m_ndb->subDocs(hash, docids)) {
+		LOGERR(("Rcl::Db::needUpdate: can't get subdocs list\n"));
+		return true;
+	    }
+	    for (vector<Xapian::docid>::iterator it = docids.begin();
+		 it != docids.end(); it++) {
+		if (*it < updated.size()) {
+		    LOGDEB2(("Db::needUpdate: set flag for docid %d\n", *it));
+		    updated[*it] = true;
+		}
+	    }
+	    //	    LOGDEB(("Db::needUpdate: used %d mS\n", chron.millis()));
+	    return false;
+	} catch (const Xapian::DatabaseModifiedError &e) {
+	    LOGDEB(("Db::needUpdate: got modified error. reopen/retry\n"));
+	    reOpen();
+	} catch (const Xapian::Error &e) {
+	    ermsg = e.get_msg();
+	    break;
+	} catch (...) {
+	    ermsg= "Unknown error";
+	    break;
 	}
-	//	LOGDEB(("Db::needUpdate: used %d mS\n", chron.millis()));
-	return false;
-    } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg().c_str();
-    } catch (...) {
-	ermsg= "Unknown error";
     }
-    LOGERR(("Db::needUpdate: error while checking existence: %s\n", ermsg));
+    LOGERR(("Db::needUpdate: error while checking existence: %s\n", 
+	    ermsg.c_str()));
     return true;
 }
 
@@ -760,7 +777,7 @@ list<string> Db::getStemLangs()
     list<string> dirs;
     if (m_ndb == 0 || m_ndb->m_isopen == false)
 	return dirs;
-    dirs = StemDb::getLangs(m_ndb->m_basedir);
+    dirs = StemDb::getLangs(m_basedir);
     return dirs;
 }
 
@@ -772,7 +789,7 @@ bool Db::deleteStemDb(const string& lang)
     LOGDEB(("Db::deleteStemDb(%s)\n", lang.c_str()));
     if (m_ndb == 0 || m_ndb->m_isopen == false)
 	return false;
-    return StemDb::deleteDb(m_ndb->m_basedir, lang);
+    return StemDb::deleteDb(m_basedir, lang);
 }
 
 /**
@@ -788,7 +805,7 @@ bool Db::createStemDb(const string& lang)
 	return false;
 
     return StemDb:: createDb(m_ndb->m_iswritable ? m_ndb->wdb : m_ndb->db, 
-			     m_ndb->m_basedir, lang);
+			     m_basedir, lang);
 }
 
 /**
@@ -804,7 +821,7 @@ bool Db::purge()
 	return false;
     LOGDEB(("Db::purge: m_isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
 	    m_ndb->m_iswritable));
-    if (m_ndb->m_isopen == false || m_ndb->m_iswritable == false)
+    if (m_ndb->m_isopen == false || m_ndb->m_iswritable == false) 
 	return false;
 
     // There seems to be problems with the document delete code, when
@@ -819,8 +836,8 @@ bool Db::purge()
     } catch (...) {
 	LOGDEB(("Db::purge: 1st flush failed\n"));
     }
-    for (Xapian::docid docid = 1; docid < m_ndb->updated.size(); ++docid) {
-	if (!m_ndb->updated[docid]) {
+    for (Xapian::docid docid = 1; docid < updated.size(); ++docid) {
+	if (!updated[docid]) {
 	    try {
 		m_ndb->wdb.delete_document(docid);
 		LOGDEB(("Db::purge: deleted document #%d\n", docid));
@@ -914,7 +931,7 @@ class wsQData : public TextSplitCB {
 //     phrase terms (no stem expansion in this case)
 static void stringToXapianQueries(const string &iq,
 				  const string& stemlang,
-				  Native *m_ndb,
+				  Db *db,
 				  list<Xapian::Query> &pqueries,
 				  unsigned int opts = Db::QO_NONE)
 {
@@ -962,7 +979,7 @@ static void stringToXapianQueries(const string &iq,
 		dumb_string(term, term1);
 		// Possibly perform stem compression/expansion
 		if (!nostemexp && (opts & Db::QO_STEM)) {
-		    exp = m_ndb->stemExpand(stemlang, term1);
+		    exp = db->stemExpand(stemlang, term1);
 		} else {
 		    exp.push_back(term1);
 		}
@@ -1061,7 +1078,7 @@ bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
     }
 
     if (!sdata.allwords.empty()) {
-	stringToXapianQueries(sdata.allwords, stemlang, m_ndb, pqueries, m_qOpts);
+	stringToXapianQueries(sdata.allwords, stemlang, this,pqueries,m_qOpts);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq = 
 		Xapian::Query(Xapian::Query::OP_AND, pqueries.begin(),
@@ -1073,7 +1090,7 @@ bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
     }
 
     if (!sdata.orwords.empty()) {
-	stringToXapianQueries(sdata.orwords, stemlang, m_ndb, pqueries, m_qOpts);
+	stringToXapianQueries(sdata.orwords, stemlang, this,pqueries,m_qOpts);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq = 
 		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
@@ -1085,7 +1102,7 @@ bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
     }
 
     if (!sdata.orwords1.empty()) {
-	stringToXapianQueries(sdata.orwords1, stemlang, m_ndb, pqueries, m_qOpts);
+	stringToXapianQueries(sdata.orwords1, stemlang, this,pqueries,m_qOpts);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq = 
 		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
@@ -1099,7 +1116,7 @@ bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
     if (!sdata.phrase.empty()) {
 	Xapian::Query nq;
 	string s = string("\"") + sdata.phrase + string("\"");
-	stringToXapianQueries(s, stemlang, m_ndb, pqueries);
+	stringToXapianQueries(s, stemlang, this, pqueries);
 	if (!pqueries.empty()) {
 	    // There should be a single list element phrase query.
 	    xq = xq.empty() ? *pqueries.begin() : 
@@ -1124,7 +1141,7 @@ bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
     // the only term in the query.  We do no stem expansion on 'No'
     // words. Should we ?
     if (!sdata.nowords.empty()) {
-	stringToXapianQueries(sdata.nowords, stemlang, m_ndb, pqueries);
+	stringToXapianQueries(sdata.nowords, stemlang, this, pqueries);
 	if (!pqueries.empty()) {
 	    Xapian::Query nq;
 	    nq = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
@@ -1172,7 +1189,7 @@ list<string> Db::completions(const string &root, const string &lang, int max)
 	    res.push_back(*it);
 	    ++n;
 	} else {
-	    list<string> stemexps = m_ndb->stemExpand(lang, *it);
+	    list<string> stemexps = stemExpand(lang, *it);
 	    unsigned int cnt = 
 		(int)stemexps.size() > max - n ? max - n : stemexps.size();
 	    list<string>::iterator sit = stemexps.begin();
@@ -1229,6 +1246,24 @@ bool Db::termExists(const string& word)
     if (!db.term_exists(word))
 	return false;
     return true;
+}
+
+list<string> Db::stemExpand(const string& lang, const string& term) 
+{
+    list<string> dirs = m_extraDbs;
+    dirs.push_front(m_basedir);
+    list<string> exp;
+    for (list<string>::iterator it = dirs.begin();
+	 it != dirs.end(); it++) {
+	list<string> more = StemDb::stemExpand(*it, lang, term);
+	LOGDEB1(("Db::stemExpand: Got %d from %s\n", 
+		 more.size(), it->c_str()));
+	exp.splice(exp.end(), more);
+    }
+    exp.sort();
+    exp.unique();
+    LOGDEB1(("Db:::stemExpand: final count %d \n", exp.size()));
+    return exp;
 }
 
 bool Db::stemDiffers(const string& lang, const string& word, 

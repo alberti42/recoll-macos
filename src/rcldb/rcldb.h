@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.38 2006-10-22 14:47:13 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.39 2006-10-24 09:28:31 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -116,8 +116,9 @@ class Db {
     ~Db();
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
+    // KEEP_UPDATED is internal use by reOpen() only
     enum QueryOpts {QO_NONE=0, QO_STEM = 1, QO_BUILD_ABSTRACT = 2,
-		    QO_REPLACE_ABSTRACT = 4};
+		    QO_REPLACE_ABSTRACT = 4, QO_KEEP_UPDATED = 8};
 
     bool open(const string &dbdir, OpenMode mode, int qops = QO_NONE);
     bool close();
@@ -205,6 +206,9 @@ class Db {
     /** Test if terms stem to different roots. */
     bool stemDiffers(const string& lang, const string& term, 
 		     const string& base);
+    
+    /** Perform stem expansion across all dbs configured for searching */
+    list<string> stemExpand(const string& lang, const string& term);
 
 private:
 
@@ -229,6 +233,16 @@ private:
     // This is how many words (context size) we keep around query terms
     // when building the abstract
     int          m_synthAbsWordCtxLen;
+
+    // Database directory
+    string m_basedir;
+
+    // List of directories for additional databases to query
+    list<string> m_extraDbs;
+
+    OpenMode m_mode;
+
+    vector<bool> updated;
 
     bool reOpen(); // Close/open, same mode/opts
     /* Copyconst and assignemt private and forbidden */
