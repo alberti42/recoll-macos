@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.7 2006-09-29 07:13:22 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.8 2006-10-24 11:42:13 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@ static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.7 2006-09-29 07:13:22 dockes Ex
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
+#include <qmessagebox.h>
 
 #include "debuglog.h"
 #include "guiutils.h"
@@ -163,8 +164,12 @@ void SSearch::completion()
     // Query database
     const int max = 100;
     list<string> strs = rcldb->completions(s, prefs.queryStemLang.ascii(),max);
-    if (strs.size() == 0 || strs.size() == (unsigned int)max) {
+    if (strs.size() == 0) {
 	QApplication::beep();
+	return;
+    }
+    if (strs.size() == (unsigned int)max) {
+	QMessageBox::warning(0, "Recoll", tr("Too many completions"));
 	return;
     }
 
