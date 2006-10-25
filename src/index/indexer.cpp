@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.42 2006-10-25 10:52:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.43 2006-10-25 11:50:49 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -163,10 +163,11 @@ bool DbIndexer::createStemmingDatabases()
 
 bool DbIndexer::init(bool resetbefore)
 {
-    if (!maketmpdir(m_tmpdir)) {
-	LOGERR(("DbIndexer: cannot create temporary directory\n"));
-	return false;
-    }
+    if (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0)
+	if (!maketmpdir(m_tmpdir)) {
+	    LOGERR(("DbIndexer: cannot create temporary directory\n"));
+	    return false;
+	}
     if (!m_db.open(m_dbdir, resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd)) {
 	LOGERR(("DbIndexer: error opening database in %s\n", m_dbdir.c_str()));
 	return false;
@@ -217,8 +218,7 @@ bool DbIndexer::createAspellDict()
  */
 bool DbIndexer::indexFiles(const list<string> &filenames)
 {
-    if (!init())
-	return false;
+    bool called_init = false;
 
     list<string>::const_iterator it;
     for (it = filenames.begin(); it != filenames.end(); it++) {
@@ -233,6 +233,9 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
 		    strerror(errno)));
 	    continue;
 	}
+
+	// If we get to indexing directory names one day, will need to test 
+	// against dbdir here to avoid modification loops (with rclmon).
 	if (!S_ISREG(stb.st_mode)) {
 	    LOGDEB2(("DbIndexer::indexFiles: %s: not a regular file\n", 
 		    it->c_str()));
@@ -256,7 +259,12 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
 		}
 	    }
 	}
-
+	// Defer opening db until really needed.
+	if (!called_init) {
+	    if (!init())
+		return false;
+	    called_init = true;
+	}
 	if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("DbIndexer::indexFiles: processone failed\n"));
