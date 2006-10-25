@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.6 2006-10-24 09:09:36 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.7 2006-10-25 10:52:02 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,14 +68,17 @@ public:
     {
 	LOGDEB2(("rclMonRcvRun: processone %s m_mon %p m_mon->ok %d\n", 
 		 fn.c_str(), m_mon, m_mon?m_mon->ok():0));
-	// Create watch when entering directory
+
 	if (flg == FsTreeWalker::FtwDirEnter) {
-	    // Empty whatever events we may already have on queue
+	    // Create watch when entering directory, but first empty
+	    // whatever events we may already have on queue
 	    while (m_queue->ok() && m_mon->ok()) {
 		RclMonEvent ev;
 		if (m_mon->getEvent(ev, 0)) {
-		    m_queue->pushEvent(ev);
+		    if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
+			m_queue->pushEvent(ev);
 		} else {
+		    LOGDEB(("rclMonRcvRun: no event pending\n"));
 		    break;
 		}
 	    }
@@ -135,29 +138,24 @@ void *rclMonRcvRun(void *q)
     }
 
     // Forever wait for monitoring events and add them to queue:
-    LOGDEB2(("rclMonRcvRun: waiting for events. queue->ok() %d\n", queue->ok()));
+    LOGDEB2(("rclMonRcvRun: waiting for events. q->ok() %d\n", queue->ok()));
     while (queue->ok() && mon->ok()) {
 	RclMonEvent ev;
-	// Note: under Linux, I could find no way to get the select
+	// Note: I could find no way to get the select
 	// call to return when a signal is delivered to the process
 	// (it goes to the main thread, from which I tried to close or
-	// write to the select fd, with no effect. So set a 
+	// write to the select fd, with no effect). So set a 
 	// timeout so that an intr will be detected
-	if (mon->getEvent(ev, 
-#ifdef linux
-			  2
-#else
-			  -1
-#endif
-			  )) {
+	if (mon->getEvent(ev, 2)) {
 	    if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
 		mon->addWatch(ev.m_path, true);
 	    }
-	    queue->pushEvent(ev);
+	    if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
+		queue->pushEvent(ev);
 	}
     }
 
-    LOGDEB(("rclMonRcvRun: exiting\n"));
+    LOGINFO(("rclMonRcvRun: exiting\n"));
     queue->setTerminate();
     return 0;
 }
@@ -252,6 +250,8 @@ bool RclFAM::addWatch(const string& path, bool isdir)
     return true;
 }
 
+// Note: return false only for queue empty or error 
+// Return EVT_NONE for bad event to keep queue processing going
 bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 {
     if (!ok())
@@ -263,31 +263,36 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     FD_ZERO(&readfds);
     FD_SET(fam_fd, &readfds);
 
-    LOGDEB2(("RclFAM::getEvent: select\n"));
+    LOGDEB(("RclFAM::getEvent: select\n"));
     struct timeval timeout;
     if (secs >= 0) {
 	memset(&timeout, 0, sizeof(timeout));
 	timeout.tv_sec = secs;
     }
     int ret;
-    if ((ret=select(fam_fd + 1, &readfds, 0, 0, secs >= 0 ? &timeout : 0)) < 0) {
+    if ((ret=select(fam_fd+1, &readfds, 0, 0, secs >= 0 ? &timeout : 0)) < 0) {
 	LOGERR(("RclFAM::getEvent: select failed, errno %d\n", errno));
 	close();
 	return false;
     } else if (ret == 0) {
 	// timeout
+	LOGDEB(("RclFAM::getEvent: select timeout\n"));
 	return false;
     }
+
+    LOGDEB(("RclFAM::getEvent: select return\n"));
 
     if (!FD_ISSET(fam_fd, &readfds))
 	return false;
 
+    LOGDEB(("RclFAM::getEvent: call FAMNextEvent\n"));
     FAMEvent fe;
     if (FAMNextEvent(&m_conn, &fe) < 0) {
 	LOGERR(("RclFAM::getEvent: FAMNextEvent failed, errno %d\n", errno));
 	close();
 	return false;
     }
+    LOGDEB(("RclFAM::getEvent: FAMNextEvent returned\n"));
     
     map<int,string>::const_iterator it;
     if ((fe.filename[0] != '/') && 
@@ -326,7 +331,11 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     case FAMAcknowledge:
     case FAMEndExist:
     default:
-	return false;
+	// Have to return something, this is different from an empty queue,
+	// esp if we are trying to empty it...
+	LOGDEB(("RclFAM::getEvent: got move event !\n"));
+	ev.m_etyp = RclMonEvent::RCLEVT_NONE;
+	break;
     }
     return true;
 }
@@ -432,10 +441,13 @@ bool RclIntf::addWatch(const string& path, bool)
     return true;
 }
 
+// Note: return false only for queue empty or error 
+// Return EVT_NONE for bad event to keep queue processing going
 bool RclIntf::getEvent(RclMonEvent& ev, int secs)
 {
     if (!ok())
 	return false;
+    ev.m_etyp = RclMonEvent::RCLEVT_NONE;
     LOGDEB2(("RclIntf::getEvent:\n"));
 
     if (m_evp == 0) {
@@ -483,7 +495,7 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
     map<int,string>::const_iterator it;
     if ((it = m_wdtopath.find(evp->wd)) == m_wdtopath.end()) {
 	LOGERR(("RclIntf::getEvent: unknown wd\n"));
-	return false;
+	return true;
     }
     ev.m_path = it->second;
 
@@ -502,13 +514,13 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
 	if (path_isdir(ev.m_path)) {
 	    ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
 	} else {
-	    // Will get modify event
-	    return false;
+	    // Return null event. Will get modify event later
+	    return true;
 	}
     } else {
 	LOGDEB(("RclIntf::getEvent: unhandled event %s 0x%x %s\n", 
 		event_name(evp->mask), evp->mask, ev.m_path.c_str()));
-	return false;
+	return true;
     }
     return true;
 }

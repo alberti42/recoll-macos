@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.5 2006-10-24 14:28:38 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.6 2006-10-25 10:52:02 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -76,6 +76,7 @@ bool RclMonEventQueue::empty()
     return m_data == 0 ? true : m_data->m_queue.empty();
 }
 
+// Must be called with the queue locked
 RclMonEvent RclMonEventQueue::pop()
 {
     RclMonEvent ev;
@@ -91,8 +92,11 @@ RclMonEvent RclMonEventQueue::pop()
  */
 bool RclMonEventQueue::wait(int seconds, bool *top)
 {
-    if (!empty())
+    LOGDEB(("RclMonEventQueue::wait\n"));
+    if (!empty()) {
+	LOGDEB(("RclMonEventQueue:: imm return\n"));
 	return true;
+    }
 
     int err;
     if (seconds > 0) {
@@ -105,6 +109,7 @@ bool RclMonEventQueue::wait(int seconds, bool *top)
 	     pthread_cond_timedwait(&m_data->m_cond, &m_data->m_mutex, &to))) {
 	    if (err == ETIMEDOUT) {
 		*top = true;
+		LOGDEB(("RclMonEventQueue:: timeout\n"));
 		return true;
 	    }
 	    LOGERR(("RclMonEventQueue::wait:pthread_cond_timedwait failed"
@@ -118,19 +123,23 @@ bool RclMonEventQueue::wait(int seconds, bool *top)
 	    return false;
 	}
     }
+    LOGDEB(("RclMonEventQueue:: normal return\n"));
     return true;
 }
 
 bool RclMonEventQueue::lock()
 {
+    LOGDEB(("RclMonEventQueue:: lock\n"));
     if (pthread_mutex_lock(&m_data->m_mutex)) {
 	LOGERR(("RclMonEventQueue::lock: pthread_mutex_lock failed\n"));
 	return false;
     }
+    LOGDEB(("RclMonEventQueue:: lock return\n"));
     return true;
 }
 bool RclMonEventQueue::unlock()
 {
+    LOGDEB(("RclMonEventQueue:: unlock\n"));
     if (pthread_mutex_unlock(&m_data->m_mutex)) {
 	LOGERR(("RclMonEventQueue::lock: pthread_mutex_unlock failed\n"));
 	return false;
@@ -159,6 +168,7 @@ bool RclMonEventQueue::ok()
 
 void RclMonEventQueue::setTerminate()
 {
+    LOGDEB(("RclMonEventQueue:: setTerminate\n"));
     lock();
     m_data->m_ok = false;
     pthread_cond_broadcast(&m_data->m_cond);
@@ -167,7 +177,7 @@ void RclMonEventQueue::setTerminate()
 
 bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
 {
-    LOGDEB2(("RclMonEventQueue::pushEvent for %s\n", ev.m_path.c_str()));
+    LOGDEB(("RclMonEventQueue::pushEvent for %s\n", ev.m_path.c_str()));
     lock();
     // It seems that a newer event is always correct to override any
     // older. TBVerified ?
@@ -268,7 +278,8 @@ bool startMonitor(RclConfig *conf, bool nofork)
     // indexing activity since the last such operation, we'll update the 
     // auxiliary data (stemming and spelling)
     while (rclEQ.wait(10 * 60, &timedout)) {
-	LOGDEB2(("startMonitor: wait returned\n"));
+	// Queue is locked.
+
 	if (!rclEQ.ok())
 	    break;
 	list<string> modified;
@@ -287,15 +298,13 @@ bool startMonitor(RclConfig *conf, bool nofork)
 		LOGDEB(("Monitor: Delete on %s\n", ev.m_path.c_str()));
 		deleted.push_back(ev.m_path);
 		break;
-	    case RclMonEvent::RCLEVT_RENAME:
-		LOGDEB(("Monitor: Rename on %s\n", ev.m_path.c_str()));
-		break;
 	    default:
 		LOGDEB(("Monitor: got Other on %s\n", ev.m_path.c_str()));
 	    }
 	}
 	// Unlock queue before processing lists
 	rclEQ.unlock();
+
 	// Process
 	if (!modified.empty()) {
 	    if (!indexfiles(conf, modified))
@@ -309,7 +318,7 @@ bool startMonitor(RclConfig *conf, bool nofork)
 	}
 
 	if (timedout) {
-	    LOGDEB2(("Monitor: queue wait timed out\n"));
+	    LOGDEB(("Monitor: queue wait timed out\n"));
 	    // Timed out. there must not be much activity around here. 
 	    // If anything was modified, process the end-of-indexing
 	    // tasks: stemming and spelling database creations.
@@ -323,6 +332,7 @@ bool startMonitor(RclConfig *conf, bool nofork)
 	// Lock queue before waiting again
 	rclEQ.lock();
     }
+    LOGDEB(("Monitor: returning\n"));
     return true;
 }
 #endif // RCL_MONITOR

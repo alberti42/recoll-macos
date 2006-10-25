@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.41 2006-10-24 14:28:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.42 2006-10-25 10:52:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -133,7 +133,7 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 }
 
 // Create stemming databases. We also remove those which are not
-// configured.
+// configured. 
 bool DbIndexer::createStemmingDatabases()
 {
     string slangs;
@@ -200,6 +200,12 @@ bool DbIndexer::createAspellDict()
     if (!aspell.buildDict(m_db, reason)) {
 	LOGERR(("DbIndexer::createAspellDict: aspell buildDict failed: %s\n", 
 		reason.c_str()));
+	return false;
+    }
+    // The close would be done in our destructor, but we want status here
+    if (!m_db.close()) {
+	LOGERR(("DbIndexer::indexfiles: error closing database in %s\n", 
+		m_dbdir.c_str()));
 	return false;
     }
 #endif
