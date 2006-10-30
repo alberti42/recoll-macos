@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.13 2006-09-23 07:39:55 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.14 2006-10-30 12:59:44 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -91,6 +91,9 @@ class PrefsPack {
     int sortWidth;
     int sortSpec;
 
+    // Remembered term match mode
+    int termMatchType;
+
     PrefsPack() :
 	showicons(true), 
 	respagesize(8), 
@@ -99,7 +102,8 @@ class PrefsPack {
 	queryBuildAbstract(true),
 	queryReplaceAbstract(false),
 	startWithAdvSearchOpen(false),
-	startWithSortToolOpen(false)
+	    startWithSortToolOpen(false),
+	    termMatchType(0)
 	    {
 	    }
 };

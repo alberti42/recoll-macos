@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.8 2006-10-24 11:42:13 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.9 2006-10-30 12:59:44 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -158,13 +158,16 @@ void SSearch::completion()
 	QApplication::beep();
 	return;
     }
-    string s = txt.substr(cs);
+    string s = txt.substr(cs) + "*";
     LOGDEB(("Completing: [%s]\n", s.c_str()));
 
     // Query database
     const int max = 100;
-    list<string> strs = rcldb->completions(s, prefs.queryStemLang.ascii(),max);
-    if (strs.size() == 0) {
+    list<string> strs;
+    
+    if (!rcldb->termMatch(Rcl::Db::ET_WILD, s, strs, 
+			    prefs.queryStemLang.ascii(),max)
+	|| strs.size() == 0) {
 	QApplication::beep();
 	return;
     }

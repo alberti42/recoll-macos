@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.2 2006-10-15 13:07:45 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.3 2006-10-30 12:59:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -30,10 +30,12 @@ static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.2 2006-10-15 13:07:45 dockes Exp 
 #include <qlineedit.h>
 #include <qlayout.h>
 #include <qtooltip.h>
+#include <qcombobox.h>
 
 #include "debuglog.h"
 #include "recoll.h"
 #include "spell_w.h"
+#include "guiutils.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -41,62 +43,95 @@ static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.2 2006-10-15 13:07:45 dockes Exp 
 
 void SpellW::init()
 {
+    expTypeCMB->insertItem(tr("Wildcards"));
+    expTypeCMB->insertItem(tr("Regexp"));
+    int maxtyp = 1;
+#ifdef RCL_USE_ASPELL
+    expTypeCMB->insertItem(tr("Spelling/Phonetic"));
+    maxtyp = 2;
+#endif
+    int typ = prefs.termMatchType;
+    if (typ < 0 || typ > maxtyp)
+	typ = 0;
+    expTypeCMB->setCurrentItem(typ);
+
     // signals and slots connections
     connect(baseWordLE, SIGNAL(textChanged(const QString&)), 
 	    this, SLOT(wordChanged(const QString&)));
     connect(baseWordLE, SIGNAL(returnPressed()), this, SLOT(doExpand()));
     connect(expandPB, SIGNAL(clicked()), this, SLOT(doExpand()));
-    connect(clearPB, SIGNAL(clicked()), baseWordLE, SLOT(clear()));
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
     connect(suggsTE, SIGNAL(doubleClicked(int, int)), 
 	    this, SLOT(textDoubleClicked(int, int)));
 }
 
+/* Expand term according to current mode */
 void SpellW::doExpand()
 {
-#ifdef RCL_USE_ASPELL
+    if (baseWordLE->text().isEmpty()) 
+	return;
+
     string reason;
-    if (!aspell || !maybeOpenDb(reason)) {
-	LOGDEB(("SpellW::doExpand: error aspell %p db: %s\n", aspell,
-		reason.c_str()));
+    if (!maybeOpenDb(reason)) {
+	LOGDEB(("SpellW::doExpand: db error: %s\n", reason.c_str()));
 	return;
     }
-    if (!baseWordLE->text().isEmpty()) {
-	list<string> suggs;
-	string word = string((const char *)baseWordLE->text().utf8());
-	if (!aspell->suggest(*rcldb, word, suggs, reason)) {
+
+    string expr = string((const char *)baseWordLE->text().utf8());
+    list<string> suggs;
+    prefs.termMatchType = expTypeCMB->currentItem();
+    Rcl::Db::MatchType mt = Rcl::Db::ET_WILD;
+    switch (expTypeCMB->currentItem()) {
+    case 1: mt = Rcl::Db::ET_REGEXP;
+	/* FALLTHROUGH */
+    case 0: 
+	if (!rcldb->termMatch(mt, expr, suggs, prefs.queryStemLang.ascii(),
+			      200)) {
+	    LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));
+	    return;
+	}
+	break;
+#ifdef RCL_USE_ASPELL
+    case 2: {
+	if (!aspell) {
+	    LOGDEB(("SpellW::doExpand: aspell init error\n"));
+	    return;
+	}
+	if (!aspell->suggest(*rcldb, expr, suggs, reason)) {
 	    LOGERR(("SpellW::doExpand:suggest failed: %s\n", reason.c_str()));
 	    return;
 	}
-	suggsTE->clear();
-	if (suggs.empty()) {
-	    suggsTE->append(tr("No spelling expansion found"));
-	} else {
-	    for (list<string>::iterator it = suggs.begin(); 
-		 it != suggs.end(); it++) {
-		suggsTE->append(QString::fromUtf8(it->c_str()));
-	    }
-	    suggsTE->setCursorPosition(0,0);
-	    suggsTE->ensureCursorVisible();
-	}
+	return;
     }
 #endif
+    }
+
+    suggsTE->clear();
+    if (suggs.empty()) {
+	suggsTE->append(tr("No spelling expansion found"));
+    } else {
+	for (list<string>::iterator it = suggs.begin(); 
+	     it != suggs.end(); it++) {
+	    suggsTE->append(QString::fromUtf8(it->c_str()));
+	}
+	suggsTE->setCursorPosition(0,0);
+	suggsTE->ensureCursorVisible();
+    }
 }
 
 void SpellW::wordChanged(const QString &text)
 {
     if (text.isEmpty()) {
 	expandPB->setEnabled(false);
-	clearPB->setEnabled(false);
 	suggsTE->clear();
     } else {
 	expandPB->setEnabled(true);
-	clearPB->setEnabled(true);
     }
 }
 
-void SpellW::textDoubleClicked(int, int)
+void SpellW::textDoubleClicked(int para, int)
 {
+    suggsTE->setSelection(para, 0, para+1, 0);
     if (suggsTE->hasSelectedText())
 	emit(wordSelect(suggsTE->selectedText()));
 }

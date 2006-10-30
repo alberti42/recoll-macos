@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.84 2006-10-25 10:52:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.85 2006-10-30 12:59:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@ static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.84 2006-10-25 10:52:02 dockes Exp $
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fnmatch.h>
+#include <regex.h>
 
 #include <iostream>
 #include <string>
@@ -1173,20 +1174,63 @@ bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
     return true;
 }
 
-list<string> Db::completions(const string &root, const string &lang, int max) 
+// Characters that can begin a wildcard or regexp expression. We use skipto
+// to begin the allterms search with terms that begin with the portion of
+// the input string prior to these chars.
+const string wildSpecChars = "*?[";
+const string regSpecChars = "(.[{^";
+
+// Find all index terms that match a wildcard or regular expression
+bool Db::termMatch(MatchType typ, const string &root, list<string>& res,
+		     const string &lang, int max)
 {
-    Xapian::Database db;
-    list<string> res;
     if (!m_ndb || !m_ndb->m_isopen)
-	return res;
+	return false;
+    Xapian::Database db = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
+    res.clear();
+    // Get rid of capitals and accents
     string droot;
     dumb_string(root, droot);
-    db = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
+    string nochars = typ == ET_WILD ? wildSpecChars : regSpecChars;
+
+    regex_t reg;
+    int errcode;
+    if (typ == ET_REGEXP && (errcode=regcomp(&reg, droot.c_str(), 0))) {
+	char errbuf[200];
+	regerror(errcode, &reg, errbuf, 199);
+	LOGERR(("termMatch: regcomp failed: %s\n", errbuf));
+	res.push_back(errbuf);
+	regfree(&reg);
+	return false;
+    }
+
+    // Find the initial section before any special char
+    string::size_type es = droot.find_first_of(nochars);
+    string is;
+    switch (es) {
+    case string::npos: is = droot;break;
+    case 0: break;
+    default: is = droot.substr(0, es);break;
+    }
+    LOGDEB(("termMatch: initsec: [%s]\n", is.c_str()));
+
     Xapian::TermIterator it = db.allterms_begin(); 
-    it.skip_to(droot.c_str());
+    if (!is.empty())
+	it.skip_to(is.c_str());
     for (int n = 0;it != db.allterms_end(); it++) {
-	if ((*it).find(droot) != 0)
+        // If we're beyond the terms matching the initial string, end
+	if (!is.empty() && (*it).find(is) != 0)
 	    break;
+	// Don't match special internal terms beginning with uppercase ascii
+	if ((*it).at(0) >= 'A' && (*it).at(0) <= 'Z')
+	    continue;
+	if (typ == ET_WILD) {
+	    if (fnmatch(droot.c_str(), (*it).c_str(), 0) == FNM_NOMATCH)
+		continue;
+	} else {
+	    if (regexec(&reg, (*it).c_str(), 0, 0, 0))
+		continue;
+	}
 	if (lang.empty()) {
 	    res.push_back(*it);
 	    ++n;
@@ -1205,7 +1249,10 @@ list<string> Db::completions(const string &root, const string &lang, int max)
     }
     res.sort();
     res.unique();
-    return res;
+    if (typ == ET_REGEXP) {
+	regfree(&reg);
+    }
+    return true;
 }
 
 /** Term list walking. */

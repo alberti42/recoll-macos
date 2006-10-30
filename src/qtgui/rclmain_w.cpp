@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.3 2006-10-15 13:07:45 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.4 2006-10-30 12:59:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -83,6 +83,7 @@ void RclMain::init()
     asearchform = 0;
     sortform = 0;
     uiprefs = 0;
+    spellform = 0;
     m_searchId = 0;
     // Set the focus to the search terms entry:
     sSearch->queryText->setFocus();

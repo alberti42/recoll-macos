@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.39 2006-10-24 09:28:31 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.40 2006-10-30 12:59:44 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -160,9 +160,12 @@ class Db {
     bool getQueryTerms(list<string>& terms);
     bool getMatchTerms(const Doc& doc, list<string>& terms);
 
-    // Return a list of database terms that begin with the input string
-    // Stem expansion is performed if lang is not empty
-    list<string> completions(const string &s, const string &lang, int max=20);
+    /** Return a list of index terms that match the input string
+     * Expansion is performed either with either wildcard or regexp processing
+     * Stem expansion is performed if lang is not empty */
+    enum MatchType {ET_WILD, ET_REGEXP};
+    bool termMatch(MatchType typ, const string &s, list<string>& result,
+		   const string &lang, int max=20);
 
     /** Add extra database for querying */
     bool addQueryDb(const string &dir);
