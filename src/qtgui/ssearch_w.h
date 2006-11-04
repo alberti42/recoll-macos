@@ -1,4 +1,4 @@
-/* @(#$Id: ssearch_w.h,v 1.1 2006-09-04 15:13:02 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: ssearch_w.h,v 1.2 2006-11-04 14:49:46 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ public:
     virtual void init();
     virtual void setAnyTermMode();
     virtual void completion();
-    virtual bool event( QEvent * evt );
+    virtual bool eventFilter(QObject *target, QEvent *event);
 
 public slots:
     virtual void searchTextChanged( const QString & text );
@@ -45,6 +45,8 @@ public slots:
 signals:
     void startSearch(Rcl::AdvSearchData);
     void clearSearch();
+ private:
+    bool m_escape;
 };
 
 

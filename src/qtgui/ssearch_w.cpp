@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.9 2006-10-30 12:59:44 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.10 2006-11-04 14:49:46 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,9 @@ void SSearch::init()
     connect(clearqPB, SIGNAL(clicked()), 
 	    queryText->lineEdit(), SLOT(clear()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(startSimpleSearch()));
+
+    queryText->lineEdit()->installEventFilter(this);
+    m_escape = false;
 }
 
 void SSearch::searchTextChanged( const QString & text )
@@ -201,18 +204,28 @@ void SSearch::completion()
     }
 }
 
-// Handle CTRL-TAB to mean completion
-bool SSearch::event( QEvent *evt ) 
+
+bool SSearch::eventFilter(QObject *target, QEvent *event)
 {
-    if ( evt->type() == QEvent::KeyPress ) {
-	QKeyEvent *ke = (QKeyEvent *)evt;
-	if ( ke->key() == Key_Tab  && (ke->state() & Qt::ControlButton)) {
-	    // special tab handling here
-	    completion();
+    if (event->type() == QEvent::KeyPress)  {
+	QKeyEvent *ke = (QKeyEvent *)event;
+	LOGDEB1(("SSearch::eventFilter: keyPress escape %d key %d\n", 
+		 m_escape, ke->key()));
+	if (ke->key() == Key_Escape) {
+	    LOGDEB(("Escape\n"));
+	    m_escape = true;
+	    return true;
+	} else if (m_escape && ke->key() == Key_Space) {
+	    LOGDEB(("Escape space\n"));
 	    ke->accept();
-	    return TRUE;
+	    completion();
+	    m_escape = false;
+	    return true;
+	} else {
+	    m_escape = false;
 	}
     }
-    return QWidget::event( evt );
+    return QWidget::eventFilter(target, event);
 }
+
 
