@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.3 2006-10-30 12:59:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.4 2006-11-04 17:09:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,6 +68,7 @@ void SpellW::init()
 /* Expand term according to current mode */
 void SpellW::doExpand()
 {
+    suggsTE->clear();
     if (baseWordLE->text().isEmpty()) 
 	return;
 
@@ -93,6 +94,7 @@ void SpellW::doExpand()
 	break;
 #ifdef RCL_USE_ASPELL
     case 2: {
+	LOGDEB(("SpellW::doExpand: aspelling\n"));
 	if (!aspell) {
 	    LOGDEB(("SpellW::doExpand: aspell init error\n"));
 	    return;
@@ -101,12 +103,10 @@ void SpellW::doExpand()
 	    LOGERR(("SpellW::doExpand:suggest failed: %s\n", reason.c_str()));
 	    return;
 	}
-	return;
     }
 #endif
     }
 
-    suggsTE->clear();
     if (suggs.empty()) {
 	suggsTE->append(tr("No spelling expansion found"));
     } else {
