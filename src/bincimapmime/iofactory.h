@@ -28,8 +28,9 @@
 #include <map>
 #include <string>
 
+#include "iodevice.h"
+
 namespace Binc {
-  class IODevice;
   class IOFactory {
   public:
     ~IOFactory(void);
@@ -55,14 +56,14 @@ namespace Binc {
 #define bincDebug if (false) std::cout
 #else
 #define bincError \
-  IOFactory::getLogger().setOutputLevel(0);IOFactory::getLogger()
+  IOFactory::getLogger().setOutputLevel(IODevice::ErrorLevel);IOFactory::getLogger()
 #define bincWarning \
-  IOFactory::getLogger().setOutputLevel(2);IOFactory::getLogger()
+  IOFactory::getLogger().setOutputLevel(IODevice::WarningLevel);IOFactory::getLogger()
 #define bincDebug \
-  IOFactory::getLogger().setOutputLevel(3);IOFactory::getLogger()
+  IOFactory::getLogger().setOutputLevel(IODevice::DebugLevel);IOFactory::getLogger()
 #endif
 
 #define bincInfo \
-  IOFactory::getLogger().setOutputLevel(1);IOFactory::getLogger()
+  IOFactory::getLogger().setOutputLevel(IODevice::InfoLevel);IOFactory::getLogger()
 
 #endif

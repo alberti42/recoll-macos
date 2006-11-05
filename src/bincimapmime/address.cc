@@ -1,4 +1,4 @@
-/* -*- Mode: c++; -*- */
+/* -*- mode:c++;c-basic-offset:2 -*- */
 /*  --------------------------------------------------------------------
  *  Filename:
  *    address.cc
@@ -6,7 +6,7 @@
  *  Description:
  *    Implementation of the Address class.
  *  --------------------------------------------------------------------
- *  Copyright 2002-2004 Andreas Aardal Hanssen
+ *  Copyright 2002-2005 Andreas Aardal Hanssen
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

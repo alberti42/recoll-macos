@@ -1,4 +1,4 @@
-/* -*- Mode: c++; -*- */
+/* -*- mode:c++;c-basic-offset:2 -*- */
 /*  --------------------------------------------------------------------
  *  Filename:
  *    src/util/convert.h
@@ -6,7 +6,7 @@
  *  Description:
  *    Declaration of miscellaneous convertion functions.
  *  --------------------------------------------------------------------
- *  Copyright 2002-2004 Andreas Aardal Hanssen
+ *  Copyright 2002-2005 Andreas Aardal Hanssen
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
 #include <sys/stat.h>
 
 #include "address.h"
-#include "depot.h"
+//#include "depot.h"
 
 namespace Binc {
 
@@ -264,6 +264,9 @@ namespace Binc {
       } else if (*i == '*')
 	regex += ".*?";
        else if (*i == '%') {
+        regex += "(\\";
+        regex += delimiter;
+        regex += "){0,1}";
 	regex += "[^\\";
 	regex += delimiter;
 	regex += "]*?";

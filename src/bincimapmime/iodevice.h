@@ -1,4 +1,4 @@
-/*-*-mode:c++-*-*/
+/*-*-mode:c++;c-basic-offset:2-*-*/
 /*  --------------------------------------------------------------------
  *  Filename:
  *    src/iodevice.h
@@ -151,6 +151,13 @@ namespace Binc {
     */
     unsigned int getTimeout(void) const;
 
+    enum LogLevel {
+      ErrorLevel,
+      InfoLevel,
+      WarningLevel,
+      DebugLevel
+    };
+    
     /*!
       Sets the output level for the following write operations on this
       device.
@@ -172,14 +179,14 @@ namespace Binc {
       \param level The output level
       \sa getOutputLevel(), setOutputLevelLimit()
     */
-    void setOutputLevel(unsigned int level);
+    void setOutputLevel(LogLevel level);
 
     /*!
       Returns the current output level.
 
       \sa setOutputLevel()
     */
-    unsigned int getOutputLevel(void) const;
+    LogLevel getOutputLevel(void) const;
 
     /*!
       Sets the current output level limit. Write operations with a
@@ -188,14 +195,14 @@ namespace Binc {
       \param level The output level limit
       \sa setOutputLevel()
     */
-    void setOutputLevelLimit(unsigned int level);
+    void setOutputLevelLimit(LogLevel level);
 
     /*!
       Returns the current output level limit.
 
       \sa setOutputLevelLimit()
     */
-    unsigned int getOutputLevelLimit(void) const;
+    LogLevel getOutputLevelLimit(void) const;
 
     /*!
       Returns the number of bytes that have been read from this device
@@ -209,6 +216,11 @@ namespace Binc {
     */
     unsigned int getWriteCount(void) const;
 
+    /*!
+      Calling this function enables the built-in protocol dumping feature in
+      the device. All input and output to this device will be dumped to a file
+      in /tmp.
+    */
     void enableProtocolDumping(void);
 
     /*!
@@ -356,11 +368,11 @@ namespace Binc {
     unsigned int readCount;
     unsigned int writeCount;
 
-    unsigned int outputLevel;
-    unsigned int outputLevelLimit;
+    LogLevel outputLevel;
+    LogLevel outputLevelLimit;
 
-    Error error;
-    std::string errorString;
+    mutable Error error;
+    mutable std::string errorString;
 
     int dumpfd;
   };

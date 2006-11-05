@@ -41,7 +41,8 @@ IODevice::IODevice(int f) : flags(f | IsEnabled),
 			      maxOutputBufferSize(0),
 			      timeout(0), 
 			      readCount(0), writeCount(0),
-			      outputLevel(0), outputLevelLimit(0),
+			      outputLevel(ErrorLevel),
+			      outputLevelLimit(ErrorLevel),
 			      error(Unknown), errorString("Unknown error"),
 			      dumpfd(0)
 {
@@ -161,25 +162,25 @@ unsigned int IODevice::getTimeout(void) const
 }
 
 //------------------------------------------------------------------------
-void IODevice::setOutputLevel(unsigned int level)
+void IODevice::setOutputLevel(LogLevel level)
 {
   outputLevel = level;
 }
 
 //------------------------------------------------------------------------
-unsigned int IODevice::getOutputLevel(void) const
+IODevice::LogLevel IODevice::getOutputLevel(void) const
 {
   return outputLevel;
 }
 
 //------------------------------------------------------------------------
-void IODevice::setOutputLevelLimit(unsigned int level)
+void IODevice::setOutputLevelLimit(LogLevel level)
 {
   outputLevelLimit = level;
 }
 
 //------------------------------------------------------------------------
-unsigned int IODevice::getOutputLevelLimit(void) const
+IODevice::LogLevel IODevice::getOutputLevelLimit(void) const
 {
   return outputLevelLimit;
 }
