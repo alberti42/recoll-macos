@@ -641,6 +641,10 @@ static void parseSinglePart(const string &toboundary,
       mimeSource->ungetChar();
       mimeSource->ungetChar();
     }
+  } else {
+    // Recoll: in the case of a null boundary (probably illegal but wtf), eof
+    // was not set and multipart went into a loop until bad alloc.
+    *eof = true;
   }
 
   // make sure bodylength doesn't overflow    
