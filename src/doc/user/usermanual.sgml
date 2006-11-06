@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.22 2006-10-12 08:39:55 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.23 2006-11-06 17:37:22 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -609,6 +609,67 @@ recoll
 
     </sect1>
 
+    <sect1 id="rcl.search.termexplorer">
+      <title>The term explorer tool</title>
+
+      <para>&RCL; automatically manages the expansion of search terms
+      to their derivatives (ie: plural/singular, verb
+      inflections). But there are other cases where the exact search
+      term is not known. For example, you may not remember the exact
+      spelling, or only know the beginning of the name.</para>
+
+      <para>The term explorer tool (started from the toolbar icon or
+      from the <guilabel>Term explorer</guilabel> entry of the
+      <guilabel>Tools</guilabel> menu) can be used to search the full index
+      terms list. It has three modes of operations:</para>
+        <variablelist>
+
+          <varlistentry>
+	    <term>Wildcard</term>
+            <listitem><para>In this mode of operation, you can enter a
+            search string with shell-like wildcards (*, ?). ie:
+            <replaceable>xapi*</replaceable> .</para></listitem>
+          </varlistentry>
+
+          <varlistentry>
+	  <term>Regular expression</term>
+	  <listitem><para>This mode will accept a regular expression
+            as input. Example:
+            <replaceable>word[0-9]+</replaceable> . The regular
+            expression is anchored by enclosing in
+            <literal>^</literal> and <literal>$</literal> before
+            execution.</para></listitem>
+          </varlistentry>
+
+          <varlistentry>
+	    <term>Spelling/Phonetic</term> <listitem><para>In this
+            mode, you enter the term as you think it is spelled, and
+            &RCL; will do its best to find index terms that sound like
+            your entry. This mode uses the
+            <application>Aspell</application> spelling application,
+            which must be installed on your system for things to
+            work. The language which is used to build the dictionary
+            out of the index terms (which is done at the end of an
+            indexing pass) is the one defined by your NLS
+            environment. Weird things will probably happen if
+            languages are mixed up.</para></listitem>
+          </varlistentry>
+      </variablelist>
+
+      <para>Note that in cases where &RCL; does not know the beginning
+      of the string to search for (ie a wildcard expression like
+      <replaceable>*coll</replaceable>), the expansion can take quite
+      a long time because the full index term list will have to be
+      processed. The expansion is currently limited at 200 results for
+      wildcards and regular expressions.</para>
+      
+      <para>Double-clicking on a term in the result list will insert
+      it into the simple search entry field. You can also cut/paste
+      between the result list and any entry field (the end of lines
+      will be taken care of).</para>
+
+    </sect1>
+
     <sect1 id="rcl.search.multidb">
       <title>Multiple databases</title>
 
@@ -969,12 +1030,12 @@ recoll
       </sect1>
 
     <sect1 id="rcl.install.external">
-      <title>Packages needed for external file types</title>
+      <title>Supporting packages</title>
 
-	<para>&RCL; uses external applications 
-        to index some file types. You need to install them for the
-        file types that you wish to have indexed (these are run-time
-        dependencies. None is needed for building &RCL;):</para>
+	<para>&RCL; uses external applications to index some file
+        types. You need to install them for the file types that you wish to
+        have indexed (these are run-time dependencies. None is needed for
+        building &RCL;):</para>
 
       <itemizedlist>
 

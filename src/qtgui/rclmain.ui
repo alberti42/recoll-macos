@@ -240,10 +240,10 @@
             <iconset>spell.png</iconset>
         </property>
         <property name="menuText">
-            <string>Spelling &amp;expansion</string>
+            <string>Term &amp;explorer</string>
         </property>
         <property name="toolTip">
-            <string>Spelling expansion tool</string>
+            <string>Term explorer tool</string>
         </property>
     </action>
     <action>

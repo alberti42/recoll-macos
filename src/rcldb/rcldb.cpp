@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.85 2006-10-30 12:59:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.86 2006-11-06 17:37:22 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1178,7 +1178,7 @@ bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
 // to begin the allterms search with terms that begin with the portion of
 // the input string prior to these chars.
 const string wildSpecChars = "*?[";
-const string regSpecChars = "(.[{^";
+const string regSpecChars = "(.[{";
 
 // Find all index terms that match a wildcard or regular expression
 bool Db::termMatch(MatchType typ, const string &root, list<string>& res,
@@ -1195,13 +1195,21 @@ bool Db::termMatch(MatchType typ, const string &root, list<string>& res,
 
     regex_t reg;
     int errcode;
-    if (typ == ET_REGEXP && (errcode=regcomp(&reg, droot.c_str(), 0))) {
-	char errbuf[200];
-	regerror(errcode, &reg, errbuf, 199);
-	LOGERR(("termMatch: regcomp failed: %s\n", errbuf));
-	res.push_back(errbuf);
-	regfree(&reg);
-	return false;
+    // Compile regexp. We anchor the input by enclosing it in ^ and $
+    if (typ == ET_REGEXP) {
+	string mroot = droot;
+	if (mroot.at(0) != '^')
+	    mroot = string("^") + mroot;
+	if (mroot.at(mroot.length()-1) != '$')
+	    mroot += "$";
+	if ((errcode = regcomp(&reg, mroot.c_str(), REG_EXTENDED|REG_NOSUB))) {
+	    char errbuf[200];
+	    regerror(errcode, &reg, errbuf, 199);
+	    LOGERR(("termMatch: regcomp failed: %s\n", errbuf));
+	    res.push_back(errbuf);
+	    regfree(&reg);
+	    return false;
+	}
     }
 
     // Find the initial section before any special char
@@ -1231,7 +1239,8 @@ bool Db::termMatch(MatchType typ, const string &root, list<string>& res,
 	    if (regexec(&reg, (*it).c_str(), 0, 0, 0))
 		continue;
 	}
-	if (lang.empty()) {
+	// Do we want stem expansion here? We don't do it for now
+	if (1 || lang.empty()) {
 	    res.push_back(*it);
 	    ++n;
 	} else {

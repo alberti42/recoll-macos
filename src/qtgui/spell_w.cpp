@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.4 2006-11-04 17:09:08 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.5 2006-11-06 17:37:22 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -96,12 +96,16 @@ void SpellW::doExpand()
     case 2: {
 	LOGDEB(("SpellW::doExpand: aspelling\n"));
 	if (!aspell) {
+	    QMessageBox::warning(0, "Recoll",
+				 tr("Aspell init failed. "
+				    "Aspell not installed?"));
 	    LOGDEB(("SpellW::doExpand: aspell init error\n"));
 	    return;
 	}
 	if (!aspell->suggest(*rcldb, expr, suggs, reason)) {
+	    QMessageBox::warning(0, "Recoll",
+				 tr("Aspell expansion error. "));
 	    LOGERR(("SpellW::doExpand:suggest failed: %s\n", reason.c_str()));
-	    return;
 	}
     }
 #endif
@@ -131,7 +135,7 @@ void SpellW::wordChanged(const QString &text)
 
 void SpellW::textDoubleClicked(int para, int)
 {
-    suggsTE->setSelection(para, 0, para+1, 0);
+    suggsTE->setSelection(para, 0, para, 1000);
     if (suggsTE->hasSelectedText())
 	emit(wordSelect(suggsTE->selectedText()));
 }
