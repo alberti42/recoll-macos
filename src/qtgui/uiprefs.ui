@@ -257,7 +257,8 @@
                                     <string>Automatically add phrase to simple searches</string>
                                 </property>
                                 <property name="toolTip" stdset="0">
-                                    <string>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)].</string>
+                                    <string>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
+This should give higher precedence to the results where the search terms appear exactly as entered.</string>
                                 </property>
                             </widget>
                             <widget class="Line">
