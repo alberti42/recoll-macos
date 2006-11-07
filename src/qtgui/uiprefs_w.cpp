@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.7 2006-09-22 10:46:26 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.8 2006-11-07 08:57:11 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,27 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.7 2006-09-22 10:46:26 dockes Ex
 
 void UIPrefsDialog::init()
 {
+    
+    connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
+    connect(helpBrowserPB, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
+    connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
+    connect(extraDbLE,SIGNAL(textChanged(const QString&)), this, 
+	    SLOT(extraDbTextChanged(const QString&)));
+    connect(addAADbPB, SIGNAL(clicked()), this, SLOT(addAADbPB_clicked()));
+    connect(addADbPB, SIGNAL(clicked()), this, SLOT(addADbPB_clicked()));
+    connect(delADbPB, SIGNAL(clicked()), this, SLOT(delADbPB_clicked()));
+    connect(delAADbPB, SIGNAL(clicked()), this, SLOT(delAADbPB_clicked()));
+    connect(addExtraDbPB, SIGNAL(clicked()), this, SLOT(addExtraDbPB_clicked()));
+    connect(browseDbPB, SIGNAL(clicked()), this, SLOT(browseDbPB_clicked()));
+    connect(buttonOk, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(buildAbsCB, SIGNAL(toggled(bool)), 
+	    replAbsCB, SLOT(setEnabled(bool)));
+}
+
+// Update dialog state from stored prefs
+void UIPrefsDialog::setFromPrefs()
+{
     // Entries per result page spinbox
     pageLenSB->setValue(prefs.respagesize);
     // Show icons checkbox
@@ -72,7 +93,9 @@ void UIPrefsDialog::init()
 			       s.setNum(reslistFontSize));
     }
     helpBrowserLE->setText(prefs.htmlBrowser);
+
     // Stemming language combobox
+    stemLangCMB->clear();
     stemLangCMB->insertItem(tr("(no stemming)"));
     list<string> langs;
     string reason;
@@ -81,7 +104,6 @@ void UIPrefsDialog::init()
 	exit(1);
     }
     langs = rcldb->getStemLangs();
-
     int i = 0, cur = -1;
     for (list<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
@@ -100,9 +122,7 @@ void UIPrefsDialog::init()
     autoPhraseCB->setChecked(prefs.ssearchAutoPhrase);
 
     buildAbsCB->setChecked(prefs.queryBuildAbstract);
-    if (!prefs.queryBuildAbstract) {
-	replAbsCB->setEnabled(false);
-    }
+    replAbsCB->setEnabled(prefs.queryBuildAbstract);
     replAbsCB->setChecked(prefs.queryReplaceAbstract);
 
     // Initialize the extra indexes listboxes
@@ -111,30 +131,16 @@ void UIPrefsDialog::init()
 	 it != prefs.allExtraDbs.end(); it++) {
 	ql.append(QString::fromLocal8Bit(it->c_str()));
     }
+    allDbsLB->clear();
     allDbsLB->insertStringList(ql);
     ql.clear();
     for (list<string>::iterator it = prefs.activeExtraDbs.begin(); 
 	 it != prefs.activeExtraDbs.end(); it++) {
 	ql.append(QString::fromLocal8Bit(it->c_str()));
     }
+    actDbsLB->clear();
     actDbsLB->insertStringList(ql);
     ql.clear();
-    
-    connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
-    connect(helpBrowserPB, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
-    connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
-    connect(extraDbLE,SIGNAL(textChanged(const QString&)), this, 
-	    SLOT(extraDbTextChanged(const QString&)));
-    connect(addAADbPB, SIGNAL(clicked()), this, SLOT(addAADbPB_clicked()));
-    connect(addADbPB, SIGNAL(clicked()), this, SLOT(addADbPB_clicked()));
-    connect(delADbPB, SIGNAL(clicked()), this, SLOT(delADbPB_clicked()));
-    connect(delAADbPB, SIGNAL(clicked()), this, SLOT(delAADbPB_clicked()));
-    connect(addExtraDbPB, SIGNAL(clicked()), this, SLOT(addExtraDbPB_clicked()));
-    connect(browseDbPB, SIGNAL(clicked()), this, SLOT(browseDbPB_clicked()));
-    connect(buttonOk, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(buildAbsCB, SIGNAL(toggled(bool)), 
-	    replAbsCB, SLOT(setEnabled(bool)));
 }
 
 void UIPrefsDialog::accept()
@@ -183,6 +189,11 @@ void UIPrefsDialog::accept()
     maybeOpenDb(reason, true);
     emit uiprefsDone();
     QDialog::accept();
+}
+void UIPrefsDialog::reject()
+{
+    setFromPrefs();
+    QDialog::reject();
 }
 
 void UIPrefsDialog::showFontDialog()

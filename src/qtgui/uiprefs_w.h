@@ -1,4 +1,4 @@
-/* @(#$Id: uiprefs_w.h,v 1.1 2006-09-04 15:13:02 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.2 2006-11-07 08:57:11 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 #ifndef _UIPREFS_W_H_INCLUDED_
 #define _UIPREFS_W_H_INCLUDED_
-/* @(#$Id: uiprefs_w.h,v 1.1 2006-09-04 15:13:02 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.2 2006-11-07 08:57:11 dockes Exp $  (C) 2005 J.F.Dockes */
 #include <qvariant.h>
 #include <qdialog.h>
 
@@ -53,6 +53,9 @@ signals:
 
 protected slots:
     virtual void accept();
+    virtual void reject();
+ private:
+    void setFromPrefs();
 };
 
 
