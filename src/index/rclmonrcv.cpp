@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.7 2006-10-25 10:52:02 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.8 2006-11-07 16:51:45 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ public:
 		    if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
 			m_queue->pushEvent(ev);
 		} else {
-		    LOGDEB(("rclMonRcvRun: no event pending\n"));
+		    MONDEB(("rclMonRcvRun: no event pending\n"));
 		    break;
 		}
 	    }
@@ -138,7 +138,7 @@ void *rclMonRcvRun(void *q)
     }
 
     // Forever wait for monitoring events and add them to queue:
-    LOGDEB2(("rclMonRcvRun: waiting for events. q->ok() %d\n", queue->ok()));
+    MONDEB(("rclMonRcvRun: waiting for events. q->ok() %d\n", queue->ok()));
     while (queue->ok() && mon->ok()) {
 	RclMonEvent ev;
 	// Note: I could find no way to get the select
@@ -233,7 +233,7 @@ bool RclFAM::addWatch(const string& path, bool isdir)
 {
     if (!ok())
 	return false;
-    LOGDEB(("RclFAM::addWatch: adding %s\n", path.c_str()));
+    MONDEB(("RclFAM::addWatch: adding %s\n", path.c_str()));
     FAMRequest req;
     if (isdir) {
 	if (FAMMonitorDirectory(&m_conn, path.c_str(), &req, 0) != 0) {
@@ -256,14 +256,14 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 {
     if (!ok())
 	return false;
-    LOGDEB2(("RclFAM::getEvent:\n"));
+    MONDEB(("RclFAM::getEvent:\n"));
 
     fd_set readfds;
     int fam_fd = FAMCONNECTION_GETFD(&m_conn);
     FD_ZERO(&readfds);
     FD_SET(fam_fd, &readfds);
 
-    LOGDEB(("RclFAM::getEvent: select\n"));
+    MONDEB(("RclFAM::getEvent: select\n"));
     struct timeval timeout;
     if (secs >= 0) {
 	memset(&timeout, 0, sizeof(timeout));
@@ -276,23 +276,23 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 	return false;
     } else if (ret == 0) {
 	// timeout
-	LOGDEB(("RclFAM::getEvent: select timeout\n"));
+	MONDEB(("RclFAM::getEvent: select timeout\n"));
 	return false;
     }
 
-    LOGDEB(("RclFAM::getEvent: select return\n"));
+    MONDEB(("RclFAM::getEvent: select return\n"));
 
     if (!FD_ISSET(fam_fd, &readfds))
 	return false;
 
-    LOGDEB(("RclFAM::getEvent: call FAMNextEvent\n"));
+    MONDEB(("RclFAM::getEvent: call FAMNextEvent\n"));
     FAMEvent fe;
     if (FAMNextEvent(&m_conn, &fe) < 0) {
 	LOGERR(("RclFAM::getEvent: FAMNextEvent failed, errno %d\n", errno));
 	close();
 	return false;
     }
-    LOGDEB(("RclFAM::getEvent: FAMNextEvent returned\n"));
+    MONDEB(("RclFAM::getEvent: FAMNextEvent returned\n"));
     
     map<int,string>::const_iterator it;
     if ((fe.filename[0] != '/') && 
@@ -301,7 +301,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     } else {
 	ev.m_path = fe.filename;
     }
-    LOGDEB(("RclFAM::getEvent: %-12s %s\n", 
+    MONDEB(("RclFAM::getEvent: %-12s %s\n", 
 	    event_name(fe.code), ev.m_path.c_str()));
 
     switch (fe.code) {
@@ -322,7 +322,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 	break;
 
     case FAMMoved: /* Never generated it seems */
-	LOGDEB(("RclFAM::getEvent: got move event !\n"));
+	LOGINFO(("RclFAM::getEvent: got move event !\n"));
 	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
 	break;
 
@@ -333,7 +333,8 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     default:
 	// Have to return something, this is different from an empty queue,
 	// esp if we are trying to empty it...
-	LOGDEB(("RclFAM::getEvent: got move event !\n"));
+	if (fe.code != FAMEndExist)
+	    LOGDEB(("RclFAM::getEvent: got other event %d!\n", fe.code));
 	ev.m_etyp = RclMonEvent::RCLEVT_NONE;
 	break;
     }
@@ -423,7 +424,7 @@ bool RclIntf::addWatch(const string& path, bool)
 {
    if (!ok())
         return false;
-    LOGDEB(("RclIntf::addWatch: adding %s\n", path.c_str()));
+   MONDEB(("RclIntf::addWatch: adding %s\n", path.c_str()));
     // CLOSE_WRITE is covered through MODIFY. CREATE is needed for mkdirs
     uint32_t mask = IN_MODIFY | IN_CREATE
         | IN_MOVED_FROM | IN_MOVED_TO
@@ -448,7 +449,7 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
     if (!ok())
 	return false;
     ev.m_etyp = RclMonEvent::RCLEVT_NONE;
-    LOGDEB2(("RclIntf::getEvent:\n"));
+    MONDEB(("RclIntf::getEvent:\n"));
 
     if (m_evp == 0) {
 	fd_set readfds;
@@ -460,17 +461,17 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
 	    timeout.tv_sec = secs;
 	}
 	int ret;
-	LOGDEB2(("RclIntf::getEvent: select\n"));
+	MONDEB(("RclIntf::getEvent: select\n"));
 	if ((ret=select(m_fd + 1, &readfds, 0, 0, secs >= 0 ? &timeout : 0)) < 0) {
 	    LOGERR(("RclIntf::getEvent: select failed, errno %d\n", errno));
 	    close();
 	    return false;
 	} else if (ret == 0) {
-	    LOGDEB2(("RclIntf::getEvent: select timeout\n"));
+	    MONDEB(("RclIntf::getEvent: select timeout\n"));
 	    // timeout
 	    return false;
 	}
-	LOGDEB(("RclIntf::getEvent: select returned\n"));
+	MONDEB(("RclIntf::getEvent: select returned\n"));
 
 	if (!FD_ISSET(m_fd, &readfds))
 	    return false;
@@ -503,7 +504,7 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
 	ev.m_path = path_cat(ev.m_path, evp->name);
     }
 
-    LOGDEB(("RclIntf::getEvent: %-12s %s\n", 
+    MONDEB(("RclIntf::getEvent: %-12s %s\n", 
 	    event_name(evp->mask), ev.m_path.c_str()));
 
     if (evp->mask & (IN_MODIFY | IN_MOVED_TO)) {

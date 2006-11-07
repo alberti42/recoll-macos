@@ -2,7 +2,7 @@
 #define _RCLMON_H_INCLUDED_
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
-/* @(#$Id: rclmon.h,v 1.6 2006-10-25 10:52:02 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rclmon.h,v 1.7 2006-11-07 16:51:45 dockes Exp $  (C) 2006 J.F.Dockes */
 /**
  * Definitions for the real-time monitoring recoll. 
  * We're interested in file modifications, deletions and renaming.
@@ -78,6 +78,10 @@ extern void *rclMonRcvRun(void *);
 /** There can only be one of us. Name of the lock file inside the config
  * directory. We write our pid in there */
 #define RCL_MONITOR_PIDFILENAME "rclmonpid"
+
+// Specific debug macro for monitor synchronization events
+#define MONDEB LOGDEB2
+
 
 #endif // RCL_MONITOR
 #endif /* _RCLMON_H_INCLUDED_ */
