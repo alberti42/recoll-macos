@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.86 2006-11-06 17:37:22 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.87 2006-11-07 12:02:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -710,6 +710,8 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 		return true;
 	    }
 	    Xapian::Document doc = m_ndb->db.get_document(*docid);
+
+	    // Retrieve file modification time from db stored value
 #ifdef MTIME_IN_VALUE
 	    // This is slightly faster, but we'd need to setup a conversion
 	    // for old dbs, and it's not really worth it
@@ -726,10 +728,19 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 		    cp+= 6;
 	    }
 #endif
-	    long mtime = cp ? atol(cp) : 0;
-	    if (mtime < stp->st_mtime) {
-		LOGDEB2(("Db::needUpdate: yes: mtime: Db %ld file %ld\n", 
-			 (long)mtime, (long)stp->st_mtime));
+	    time_t mtime = cp ? atoll(cp) : 0;
+
+	    // Retrieve file size as stored in db data
+	    cp = strstr(data.c_str(), "fbytes=");
+	    if (cp)
+		cp += 7; 
+	    off_t fbytes = cp ? atoll(cp) : 0;
+
+	    // Compare db time and size data to filesystem's
+	    if (mtime != stp->st_mtime || fbytes != stp->st_size) {
+		LOGDEB2(("Db::needUpdate:yes: mtime: D %ld F %ld."
+			 "sz D %ld F %ld\n", long(mtime), long(stp->st_mtime),
+			 long(fbytes), long(stp->st_size)));
 		// Db is not up to date. Let's index the file
 		return true;
 	    } 
