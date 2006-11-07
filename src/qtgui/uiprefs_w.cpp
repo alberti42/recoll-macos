@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.8 2006-11-07 08:57:11 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.9 2006-11-07 09:04:28 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,7 @@ void UIPrefsDialog::init()
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(buildAbsCB, SIGNAL(toggled(bool)), 
 	    replAbsCB, SLOT(setEnabled(bool)));
+    setFromPrefs();
 }
 
 // Update dialog state from stored prefs
