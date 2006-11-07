@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.43 2006-10-25 11:50:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.44 2006-11-07 06:41:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -367,7 +367,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     bool hadNullIpath = false;
     Rcl::Doc doc;
     char ascdate[20];
-    sprintf(ascdate, "%ld", long(stp->st_ctime));
+    sprintf(ascdate, "%ld", long(stp->st_mtime));
     while (fis == FileInterner::FIAgain) {
 	doc.erase();
 
