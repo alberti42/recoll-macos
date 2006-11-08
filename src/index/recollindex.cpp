@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.26 2006-10-24 14:28:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.27 2006-11-08 07:22:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -285,7 +285,10 @@ int main(int argc, const char **argv)
 	Usage();
 
     string reason;
-    RclConfig *config = recollinit(cleanup, sigcleanup, reason, &a_config);
+    RclInitFlags flags = (op_flags & OPT_m) && !(op_flags&OPT_D) ? 
+	RCLINIT_DAEMON : RCLINIT_NONE;
+    RclConfig *config = 
+	recollinit(flags, cleanup, sigcleanup, reason, &a_config);
     if (config == 0 || !config->ok()) {
 	cerr << "Configuration problem: " << reason << endl;
 	exit(1);

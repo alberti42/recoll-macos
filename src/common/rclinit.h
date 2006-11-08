@@ -16,14 +16,35 @@
  */
 #ifndef _RCLINIT_H_INCLUDED_
 #define _RCLINIT_H_INCLUDED_
-/* @(#$Id: rclinit.h,v 1.4 2006-09-08 09:02:47 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclinit.h,v 1.5 2006-11-08 07:22:14 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+#ifndef NO_NAMESPACES
+using std::string;
+#endif
 
 class RclConfig;
-
-extern RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int), 
-			     std::string &reason, 
-			     const std::string *argcnf = 0);
+/**
+ * Initialize by reading configuration, opening log file, etc.
+ *
+ * @param flags   misc modifiers
+ * @param cleanup function to call before exiting (atexit)
+ * @param sigcleanup function to call on terminal signal (INT/HUP...) This 
+ *       should typically set a flag which tells the program (recoll, 
+ *       recollindex etc.. to exit as soon as possible (after closing the db, 
+ *       etc.). cleanup will then be called by exit().
+ * @param reason in case of error: output string explaining things
+ * @param argcnf Configuration directory name from the command line (overriding
+ *               default and environment
+ * @return the parsed configuration.
+ */
+enum RclInitFlags {RCLINIT_NONE=0, RCLINIT_DAEMON=1};
+extern RclConfig *recollinit(RclInitFlags flags,
+			     void (*cleanup)(void), void (*sigcleanup)(int), 
+			     string &reason, const string *argcnf = 0);
+inline RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int), 
+			     string &reason, const string *argcnf = 0) {
+    return recollinit(RCLINIT_NONE, cleanup, sigcleanup, reason, argcnf);
+}
 
 #endif /* _RCLINIT_H_INCLUDED_ */

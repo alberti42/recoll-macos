@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.6 2006-09-08 09:02:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.7 2006-11-08 07:22:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,22 +25,23 @@ static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.6 2006-09-08 09:02:47 dockes Exp 
 #include "debuglog.h"
 #include "rclconfig.h"
 #include "rclinit.h"
+#include "pathut.h"
 
-RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int), 
+static const int catchedSigs[] = {SIGHUP, SIGINT, SIGQUIT, SIGTERM};
+
+RclConfig *recollinit(RclInitFlags flags, 
+		      void (*cleanup)(void), void (*sigcleanup)(int), 
 		      string &reason, const string *argcnf)
 {
     if (cleanup)
 	atexit(cleanup);
+
     if (sigcleanup) {
-	if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
-	    signal(SIGHUP, sigcleanup);
-	if (signal(SIGINT, SIG_IGN) != SIG_IGN)
-	    signal(SIGINT, sigcleanup);
-	if (signal(SIGQUIT, SIG_IGN) != SIG_IGN)
-	    signal(SIGQUIT, sigcleanup);
-	if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
-	    signal(SIGTERM, sigcleanup);
+	for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
+	    if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN)
+		signal(catchedSigs[i], sigcleanup);
     }
+
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     RclConfig *config = new RclConfig(argcnf);
@@ -53,10 +54,27 @@ RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int),
 	return 0;
     }
 
+    // Retrieve the log file name and level
     string logfilename, loglevel;
-    if (config->getConfParam(string("logfilename"), logfilename))
+    if (flags & RCLINIT_DAEMON) {
+	config->getConfParam(string("daemlogfilename"), logfilename);
+	config->getConfParam(string("daemloglevel"), loglevel);
+    }
+    if (logfilename.empty())
+	config->getConfParam(string("logfilename"), logfilename);
+    if (loglevel.empty())
+	config->getConfParam(string("loglevel"), loglevel);
+
+    // Initialize logging
+    if (!logfilename.empty()) {
+	logfilename = path_tildexpand(logfilename);
+	// If not an absolute path, compute relative to config dir
+	if (logfilename.at(0) != '/') {
+	    logfilename = path_cat(config->getConfDir(), logfilename);
+	}
 	DebugLog::setfilename(logfilename.c_str());
-    if (config->getConfParam(string("loglevel"), loglevel)) {
+    }
+    if (!loglevel.empty()) {
 	int lev = atoi(loglevel.c_str());
 	DebugLog::getdbl()->setloglevel(lev);
     }
