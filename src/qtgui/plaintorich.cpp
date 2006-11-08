@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.11 2006-09-13 14:57:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.12 2006-11-08 13:04:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,9 @@ static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.11 2006-09-13 14:57:56 dockes
 #include <utility>
 #include <list>
 #include <set>
+#include <vector>
 #ifndef NO_NAMESPACES
+using std::vector;
 using std::list;
 using std::pair;
 using std::set;
@@ -43,11 +45,14 @@ using std::set;
 // inside the result text. This is then used to post highlight tags. 
 class myTextSplitCB : public TextSplitCB {
  public:
+    // in: user query terms
+    set<string>    terms; 
+    // Out: begin and end byte positions of query terms in text
+    vector<pair<int, int> > tboffs;  
+    // Out: first term found in text
     string firstTerm;
-    set<string>    terms;          // in: user query terms
-    list<pair<int, int> > tboffs;  // out: begin and end positions of
-                                   // query terms in text
 
+    vector int
     myTextSplitCB(const list<string>& its) {
 	for (list<string>::const_iterator it = its.begin(); it != its.end();
 	     it++) {
@@ -112,7 +117,7 @@ bool plaintorich(const string& in, string& out, const list<string>& terms,
     // Iterator for the list of input term positions. We use it to
     // output highlight tags and to compute term positions in the
     // output text
-    list<pair<int, int> >::iterator tPosIt = cb.tboffs.begin();
+    vector<pair<int, int> >::iterator tPosIt = cb.tboffs.begin();
 
     // Input character iterator
     Utf8Iter chariter(in);
