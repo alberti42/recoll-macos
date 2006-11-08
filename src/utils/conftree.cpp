@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.6 2006-03-22 14:25:46 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.7 2006-11-08 06:56:41 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -125,6 +125,13 @@ void ConfSimple::parseinput(istream &input)
     }
 }
 
+
+ConfSimple::ConfSimple(int readonly, bool tildexp)
+{
+    data = 0;
+    dotildexpand = tildexp;
+    status = readonly ? STATUS_RO : STATUS_RW;
+}
 
 ConfSimple::ConfSimple(string *d, int readonly, bool tildexp)
 {
@@ -265,8 +272,8 @@ int ConfSimple::set(const std::string &nm, const std::string &value,
 	}
 	return 1;
     } else {
-	// ??
-	return 0;
+	// No backing store, no writing
+	return 1;
     }
 }
 
@@ -298,8 +305,7 @@ int ConfSimple::erase(const string &nm, const string &sk)
 	}
 	return 1;
     } else {
-	// ??
-	return 0;
+	return 1;
     }
 }
 
@@ -422,10 +428,8 @@ const char *longvalue =
 "0123456789012345678901234567890123456789012345678901234567890123456789FIN"
     ;
 
-void stringtest() 
+void memtest(ConfSimple &c) 
 {
-    string s;
-    ConfSimple c(&s);
     cout << "Initial:" << endl;
     c.list();
     if (c.set("nom", "avec nl \n 2eme ligne", "")) {
@@ -456,6 +460,7 @@ static char usage [] =
     "[-q] nm sect : subsection test: look for nm in 'sect' which can be ''\n"
     "[-d] nm sect : delete nm in 'sect' which can be ''\n"
     "[-S] : string io test. No filename in this case\n"
+    "[-V] : volatile config test. No filename in this case\n"
     ;
 
 void Usage() {
@@ -469,6 +474,7 @@ static int     op_flags;
 #define OPT_s     0x8
 #define OPT_S     0x10
 #define OPT_d     0x20
+#define OPT_V     0x40
 
 int main(int argc, char **argv)
 {
@@ -485,9 +491,6 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'w':	op_flags |= OPT_w; break;
-	    case 's':   op_flags |= OPT_s; break;
-	    case 'S':   op_flags |= OPT_S; break;
 	    case 'd':   
 		op_flags |= OPT_d;
 		if (argc < 3)  
@@ -502,6 +505,10 @@ int main(int argc, char **argv)
 		nm = *(++argv);argc--;
 		sub = *(++argv);argc--;		  
 		goto b1;
+	    case 's':   op_flags |= OPT_s; break;
+	    case 'S':   op_flags |= OPT_S; break;
+	    case 'V':   op_flags |= OPT_S; break;
+	    case 'w':	op_flags |= OPT_w; break;
 
 	    default: Usage();	break;
 	    }
@@ -511,7 +518,15 @@ int main(int argc, char **argv)
     if ((op_flags & OPT_S)) {
 	if (argc != 0)
 	    Usage();
-	stringtest();
+	string s;
+	ConfSimple c(&s);
+	memtest(c);
+    } else if  ((op_flags & OPT_V)) {
+	if (argc != 0)
+	    Usage();
+	string s;
+	ConfSimple c;
+	memtest(c);
     } else {
 	if (argc < 1)
 	    Usage();

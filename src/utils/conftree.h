@@ -27,10 +27,16 @@
  *
  * Whitespace around name and value is insignificant.
  *
- * Values can be queried for, or set. (the file is then rewritten).
- * The names are case-sensitive but don't count on it either.
+ * The names are case-sensitive but don't count on it.
+ *
+ * Values can be queried for, or set. 
  * Any line without a '=' is discarded when rewriting the file.
- * All 'set' calls currently cause an immediate file rewrite.
+ * A configuration object can be created empty or by reading from a file or
+ * a string.
+ * All 'set' calls cause an immediate rewrite of the backing object if any 
+ * (file or string) 
+ * 
+ * Config objects can be stacked (overlayed).
  */
 
 #include <string>
@@ -71,6 +77,13 @@ class ConfSimple {
      * @param tildexp  try tilde (home dir) expansion for subsection names
      */
     ConfSimple(string *data, int readonly = 0, bool tildexp = false);
+
+    /**
+     * Build an empty object. This will be memory only, with no backing store.
+     * @param readonly if true open read only, else rw
+     * @param tildexp  try tilde (home dir) expansion for subsection names
+     */
+    ConfSimple(int readonly = 0, bool tildexp = false);
 
     virtual ~ConfSimple() {};
 
