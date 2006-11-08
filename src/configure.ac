@@ -20,8 +20,8 @@ fi
 # we do compile the aspell module using an internal copy of aspell.h
 # Only --with-aspell=no will completely disable aspell support
 AC_ARG_WITH(aspell, 
-    AC_HELP_STRING([--with-aspell],
-   [Use aspell spelling package to provide term expansion to other spellings]),
+    AC_HELP_STRING([--without-aspell],
+   [Disable use of aspell spelling package to provide term expansion to other spellings]),
         withAspell=$withval, withAspell=yes)
 case $withAspell in
      no);;
