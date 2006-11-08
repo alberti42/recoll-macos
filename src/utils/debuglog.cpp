@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: debuglog.cpp,v 1.3 2006-01-23 13:32:28 dockes Exp $  (C) 2002 OKYZ";
+static char rcsid [] = "@(#$Id: debuglog.cpp,v 1.4 2006-11-08 15:34:20 dockes Exp $  (C) 2002 OKYZ";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,11 @@ using namespace std;
 namespace DebugLog {
 
 #endif // NO_NAMESPACES
+
+bool DebugLog::isspecialname(const char *logname) 
+{
+    return !strcmp(logname, "stdout") || !strcmp(logname, "stderr");
+}
 
 class DebugLogWriter {
   public:

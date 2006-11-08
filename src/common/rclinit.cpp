@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.7 2006-11-08 07:22:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.8 2006-11-08 15:34:20 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,8 +68,9 @@ RclConfig *recollinit(RclInitFlags flags,
     // Initialize logging
     if (!logfilename.empty()) {
 	logfilename = path_tildexpand(logfilename);
-	// If not an absolute path, compute relative to config dir
-	if (logfilename.at(0) != '/') {
+	// If not an absolute path or , compute relative to config dir
+	if (logfilename.at(0) != '/' && 
+	    !DebugLog::DebugLog::isspecialname(logfilename.c_str())) {
 	    logfilename = path_cat(config->getConfDir(), logfilename);
 	}
 	DebugLog::setfilename(logfilename.c_str());

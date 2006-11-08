@@ -61,6 +61,7 @@ class DebugLog {
     virtual void pushlevel(int lev);
     virtual void poplevel();
     virtual void logdate(int onoff) {dodate = onoff;}
+    static bool isspecialname(const char *logname);
 };
 
 extern DebugLog *getdbl();
