@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.4 2006-09-23 07:39:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.5 2006-11-09 19:04:28 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -427,10 +427,17 @@ class LoadThread : public QThread {
 	}
 	FileInterner interner(filename, rclconfig, tmpdir, mtype);
 	try {
-	    if (interner.internfile(*out, ipath) != FileInterner::FIDone) {
-		*statusp = -1;
-	    } else {
+	    FileInterner::Status ret = interner.internfile(*out, ipath);
+	    if (ret == FileInterner::FIDone || ret == FileInterner::FIAgain) {
+		// FIAgain is actually not nice here. It means that the record
+		// for the *file* of a multidoc was selected. Actually this
+		// shouldn't have had a preview link at all, but we don't know
+		// how to handle it now. Better to show the first doc than
+		// a mysterious error. Happens when the file name matches a
+		// a search term of course.
 		*statusp = 0;
+	    } else {
+		*statusp = -1;
 	    }
 	} catch (CancelExcept) {
 	    *statusp = -1;
