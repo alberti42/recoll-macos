@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.6 2006-11-10 13:32:08 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.7 2006-11-10 17:53:54 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -376,7 +376,6 @@ void ResList::resultPageNext()
 	// Abstract
 	string abst;
 	plaintorich(doc.abstract, abst, qTerms, 0, true);
-	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
 
 	// Links;
 	string linksbuf;
@@ -406,7 +405,7 @@ void ResList::resultPageNext()
 
 	// Configurable stuff
 	map<char,string> subs;
-	subs['A'] = !doc.abstract.empty() ? doc.abstract + "<br>" : "";
+	subs['A'] = !abst.empty() ? abst + "<br>" : "";
 	subs['D'] = datebuf;
 	subs['K'] = !doc.keywords.empty() ? doc.keywords + "<br>" : "";
 	subs['L'] = linksbuf;
@@ -422,6 +421,7 @@ void ResList::resultPageNext()
 
 	result += "</p>\n";
 
+	LOGDEB2(("Chunk: [%s]\n", result.c_str()));
 	QString str = QString::fromUtf8(result.c_str(), result.length());
 	append(str);
 	setCursorPosition(0,0);
