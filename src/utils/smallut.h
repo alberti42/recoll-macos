@@ -16,13 +16,15 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.17 2006-10-11 14:16:26 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.18 2006-11-10 13:30:03 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
+#include <map>
 
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
+using std::map;
 #endif /* NO_NAMESPACES */
 
 extern int stringicmp(const string& s1, const string& s2);
@@ -66,6 +68,9 @@ extern string neutchars(const string &str, string chars);
 /** Truncate a string to a given maxlength, avoiding cutting off midword
  *  if reasonably possible. */
 extern string truncate_to_word(string &input, string::size_type maxlen);
+
+/** Small utility to substitute printf-like percents cmds in a string */
+bool pcSubst(const string& in, string& out, map<char, string>& subs);
 
 class Chrono {
  public:
