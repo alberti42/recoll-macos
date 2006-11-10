@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.88 2006-11-09 17:37:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.89 2006-11-10 17:18:01 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1642,23 +1642,21 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 
     Chrono chron;
 
-    // The terms array that we populate with the document terms, at
-    // their position:
-    vector<string> termsVec;
-
     // For each of the query terms, query xapian for its positions
     // list in the document. For each position entry, remember it in qtermposs
     // and insert it and its neighbours in the set of 'interesting' positions
+
+    // The terms 'array' that we partially populate with the document
+    // terms, at their positions around the search terms positions:
+    map<unsigned int, string> sparseDoc;
 
     // All the query term positions. We remember this mainly because we are
     // going to random-shuffle it for selecting the chunks that we actually 
     // print.
     vector<unsigned int> qtermposs; 
-    // The set of all the positions we shall populate with the query terms and
-    // their neighbour words.
-    set<unsigned int> chunkposs; 
+
     // Limit the total number of slots we populate.
-    const unsigned int maxtotaloccs = 200;
+    const unsigned int maxtotaloccs = 300;
     // Max occurrences per term. We initially know nothing about the
     // occurrences repartition (it would be possible that only one
     // term in the list occurs, or that all do). So this is a rather
@@ -1670,24 +1668,24 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	 qit++) {
 	Xapian::PositionIterator pos;
 	// There may be query terms not in this doc. This raises an
-	// exception when requesting the position list, we just catch it.
+	// exception when requesting the position list, we catch it.
+	string emptys;
 	try {
 	    unsigned int occurrences = 0;
 	    for (pos = db.positionlist_begin(docid, *qit); 
 		 pos != db.positionlist_end(docid, *qit); pos++) {
 		unsigned int ipos = *pos;
 		LOGDEB2(("Abstract: [%s] at %d\n", qit->c_str(), ipos));
-		// Possibly extend the array. Do it in big chunks
-		if (ipos + m_db->m_synthAbsWordCtxLen >= termsVec.size()) {
-		    termsVec.resize(ipos + m_db->m_synthAbsWordCtxLen + 1000);
-		}
 		// Remember the term position
 		qtermposs.push_back(ipos);
 		// Add adjacent slots to the set to populate at next step
-		for (unsigned int ii = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
-		 ii <= MIN(ipos+m_db->m_synthAbsWordCtxLen, termsVec.size()-1);
-		     ii++) {
-		    chunkposs.insert(ii);
+		unsigned int sta = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
+		unsigned int sto = ipos+m_db->m_synthAbsWordCtxLen;
+		for (unsigned int ii = sta; ii <= sto;  ii++) {
+		    if (ii == ipos)
+			sparseDoc[ii] = *qit;
+		    else
+			sparseDoc[ii] = emptys;
 		}
 		// Limit the number of occurences we keep for each
 		// term. The abstract has a finite length anyway !
@@ -1705,10 +1703,10 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     LOGDEB(("Abstract:%d:chosen number of positions %d. Populating\n", 
 	    chron.millis(), qtermposs.size()));
 
-    // Walk the full document position list and populate slots around
-    // the query terms. We arbitrarily truncate the list to avoid
-    // taking forever. If we do cutoff, the abstract may be
-    // inconsistant, which is bad...
+    // Walk the full document position list (for each term walk
+    // position list) and populate slots around the query terms. We
+    // arbitrarily truncate the list to avoid taking forever. If we do
+    // cutoff, the abstract may be inconsistant, which is bad...
     { 
 	Xapian::TermIterator term;
 	int cutoff = 500 * 1000;
@@ -1727,16 +1725,16 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 		    LOGDEB(("Abstract: max term count cutoff\n"));
 		    break;
 		}
-		unsigned int ipos = *pos;
-		if (chunkposs.find(ipos) != chunkposs.end()) {
+		map<unsigned int, string>::iterator vit;
+		if ((vit=sparseDoc.find(*pos)) != sparseDoc.end()) {
 		    // Don't replace a term: the terms list is in
 		    // alphabetic order, and we may have several terms
 		    // at the same position, we want to keep only the
 		    // first one (ie: dockes and dockes@wanadoo.fr)
-		    if (termsVec[ipos].empty()) {
+		    if (vit->second.empty()) {
 			LOGDEB2(("Abstract: populating: [%s] at %d\n", 
-				(*term).c_str(), ipos));
-			termsVec[ipos] = *term;
+				(*term).c_str(), *pos));
+			sparseDoc[*pos] = *term;
 		    }
 		}
 	    }
@@ -1747,7 +1745,8 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     // Debug only: output the full term[position] vector
     bool epty = false;
     int ipos = 0;
-    for (vector<string>::iterator it = termsVec.begin(); it != termsVec.end();
+    for (map<unsigned int, string>::iterator it = sparseDoc.begin(); 
+	 it != sparseDoc.end();
 	 it++, ipos++) {
 	if (it->empty()) {
 	    if (!epty)
@@ -1770,50 +1769,48 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     map<unsigned int, string> mabs;
     unsigned int abslen = 0;
 
-    // Extract data around the first (in random order) query term
+    // Extract data around the N first (in random order) query term
     // positions, and store the terms in the map. Don't concatenate
     // immediately into chunks because there might be overlaps
-    for (vector<unsigned int>::const_iterator it = qtermposs.begin();
-	 it != qtermposs.end(); it++) {
+    for (vector<unsigned int>::const_iterator pos = qtermposs.begin();
+	 pos != qtermposs.end(); pos++) {
 
 	if (int(abslen) > m_db->m_synthAbsLen)
 	    break;
 
-	unsigned int ipos = *it;
-	unsigned int beg = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
-	unsigned int fin = MIN(ipos+m_db->m_synthAbsWordCtxLen, 
-			       termsVec.size()-1);
-	LOGDEB2(("Abstract: %d<-%d->%d\n", beg, ipos, fin));
+	unsigned int sta = MAX(0, *pos - m_db->m_synthAbsWordCtxLen);
+	unsigned int sto = *pos + m_db->m_synthAbsWordCtxLen;
 
-	for (unsigned int ii = beg; ii <= fin; ii++) {
+	LOGDEB2(("Abstract: %d<-%d->%d\n", sta, *pos, sto));
+
+	for (unsigned int ii = sta; ii <= sto; ii++) {
 
 	    if (int(abslen) > m_db->m_synthAbsLen)
 		break;
-
-	    if (!termsVec[ii].empty()) {
+	    map<unsigned int, string>::const_iterator vit = 
+		sparseDoc.find(ii);
+	    if (vit != sparseDoc.end() && !vit->second.empty()) {
 		LOGDEB2(("Abstract: position %d -> [%s]\n", 
-			ii, termsVec[ii].c_str()));
-		mabs[ii] = termsVec[ii];
-		abslen += termsVec[ii].length();
+			 ii, vit->second.c_str()));
+		mabs[ii] = vit->second;
+		abslen += vit->second.length();
 	    } else {
 		LOGDEB2(("Abstract: empty position at %d\n", ii));
 	    }
 	}
 
 	// Possibly add a ... at the end of chunk if it's not
-	// overlapping and not at the end of doc
-	if (fin != termsVec.size()-1) {
-	    if (mabs.find(fin+1) == mabs.end())
-		mabs[fin+1] = "...";
-	}
+	// overlapping
+	if (mabs.find(sto+1) == mabs.end())
+	    mabs[sto+1] = "...";
     }
 
     // Build the abstract by walking the map (in order of position)
     string abstract;
     for (map<unsigned int, string>::const_iterator it = mabs.begin();
 	 it != mabs.end(); it++) {
-	LOGDEB2(("Abtract: output [%s]\n", (*it).second.c_str()));
-	abstract += (*it).second + " ";
+	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
+	abstract += it->second + " ";
     }
     LOGDEB(("Abtract: done in %d mS\n", chron.millis()));
     return abstract;
