@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.4 2006-10-30 12:59:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.5 2006-11-10 13:32:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -635,23 +635,10 @@ void RclMain::startNativeViewer(int docnum)
 
     // Substitute %u (url) and %f (file name) inside prototype command
     string ncmd;
-    string::const_iterator it1;
-    for (it1 = cmd.begin(); it1 != cmd.end();it1++) {
-	if (*it1 == '%') {
-	    if (++it1 == cmd.end()) {
-		ncmd += '%';
-		break;
-	    }
-	    if (*it1 == '%')
-		ncmd += '%';
-	    if (*it1 == 'u')
-		ncmd += "'" + url + "'";
-	    if (*it1 == 'f')
-		ncmd += "'" + fn + "'";
-	} else {
-	    ncmd += *it1;
-	}
-    }
+    map<char, string> subs;
+    subs['u'] = string("'") + url + "'";
+    subs['f'] = string("'") + fn + "'";
+    pcSubst(cmd, ncmd, subs);
 
     ncmd += " &";
     QStatusBar *stb = statusBar();

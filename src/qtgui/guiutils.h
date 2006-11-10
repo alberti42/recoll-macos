@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.14 2006-10-30 12:59:44 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.15 2006-11-10 13:32:08 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -60,6 +60,8 @@ class PrefsPack {
     int respagesize;
     QString reslistfontfamily;
     int reslistfontsize;
+    // Result list format string
+    QString reslistformat;
     QString queryStemLang;
     int mainwidth;
     int mainheight;

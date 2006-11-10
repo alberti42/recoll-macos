@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.22 2006-10-30 12:59:44 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.23 2006-11-10 13:32:08 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -157,7 +157,13 @@ void rwSettings(bool writing)
 	       "");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Num, 
 	       0);
-
+    QString rlfDflt =QString::fromAscii(
+	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+	"%A %K");
+    SETTING_RW(prefs.reslistformat, "/Recoll/prefs/reslist/format", , rlfDflt);
+    if (prefs.reslistformat.stripWhiteSpace().isEmpty())
+	prefs.reslistformat = rlfDflt;
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", ,
 	       "english");
     SETTING_RW(prefs.queryBuildAbstract, 

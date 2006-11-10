@@ -22,164 +22,236 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QTabWidget">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>tabWidget2</cstring>
+                <cstring>layout21</cstring>
             </property>
-            <widget class="QWidget">
+            <vbox>
                 <property name="name">
-                    <cstring>tab</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <attribute name="title">
-                    <string>User interface</string>
-                </attribute>
-                <vbox>
+                <widget class="QTabWidget">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>tabWidget2</cstring>
                     </property>
-                    <widget class="QLayoutWidget">
+                    <widget class="QWidget">
                         <property name="name">
-                            <cstring>layout10</cstring>
+                            <cstring>tab</cstring>
                         </property>
+                        <attribute name="title">
+                            <string>User interface</string>
+                        </attribute>
                         <vbox>
                             <property name="name">
                                 <cstring>unnamed</cstring>
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout1</cstring>
+                                    <cstring>layout20</cstring>
                                 </property>
-                                <hbox>
+                                <vbox>
                                     <property name="name">
                                         <cstring>unnamed</cstring>
                                     </property>
-                                    <widget class="QLabel">
+                                    <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>textLabel1</cstring>
+                                            <cstring>layout1</cstring>
                                         </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>5</hsizetype>
-                                                <vsizetype>5</vsizetype>
-                                                <horstretch>1</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="text">
-                                            <string>Number of entries in a result page</string>
-                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabel1</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>5</hsizetype>
+                                                        <vsizetype>5</vsizetype>
+                                                        <horstretch>1</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Number of entries in a result page</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>pageLenSB</cstring>
+                                                </property>
+                                                <property name="minValue">
+                                                    <number>1</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>8</number>
+                                                </property>
+                                            </widget>
+                                        </hbox>
                                     </widget>
-                                    <widget class="QSpinBox">
+                                    <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>pageLenSB</cstring>
+                                            <cstring>layout19</cstring>
                                         </property>
-                                        <property name="minValue">
-                                            <number>1</number>
-                                        </property>
-                                        <property name="value">
-                                            <number>8</number>
-                                        </property>
+                                        <vbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLayoutWidget">
+                                                <property name="name">
+                                                    <cstring>layout4</cstring>
+                                                </property>
+                                                <hbox>
+                                                    <property name="name">
+                                                        <cstring>unnamed</cstring>
+                                                    </property>
+                                                    <widget class="QLabel">
+                                                        <property name="name">
+                                                            <cstring>textLabel4</cstring>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string>Result list font</string>
+                                                        </property>
+                                                    </widget>
+                                                    <widget class="QPushButton">
+                                                        <property name="name">
+                                                            <cstring>reslistFontPB</cstring>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string>Helvetica-10</string>
+                                                        </property>
+                                                        <property name="toolTip" stdset="0">
+                                                            <string>Opens a dialog to select the result list font</string>
+                                                        </property>
+                                                    </widget>
+                                                    <widget class="QPushButton">
+                                                        <property name="name">
+                                                            <cstring>resetFontPB</cstring>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string>Reset</string>
+                                                        </property>
+                                                        <property name="toolTip" stdset="0">
+                                                            <string>Resets the result list font to the system default</string>
+                                                        </property>
+                                                    </widget>
+                                                </hbox>
+                                            </widget>
+                                            <widget class="QLayoutWidget">
+                                                <property name="name">
+                                                    <cstring>layout18</cstring>
+                                                </property>
+                                                <hbox>
+                                                    <property name="name">
+                                                        <cstring>unnamed</cstring>
+                                                    </property>
+                                                    <widget class="QLabel">
+                                                        <property name="name">
+                                                            <cstring>textLabel1_4</cstring>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string>Result paragraph&lt;br&gt;format string</string>
+                                                        </property>
+                                                        <property name="toolTip" stdset="0">
+                                                            <string>Defines the format for each result list paragraph. Use qt html format.&lt;br&gt;See manual for the significance of the %xx substitutions.</string>
+                                                        </property>
+                                                    </widget>
+                                                    <widget class="QTextEdit">
+                                                        <property name="name">
+                                                            <cstring>rlfTE</cstring>
+                                                        </property>
+                                                        <property name="sizePolicy">
+                                                            <sizepolicy>
+                                                                <hsizetype>7</hsizetype>
+                                                                <vsizetype>0</vsizetype>
+                                                                <horstretch>0</horstretch>
+                                                                <verstretch>0</verstretch>
+                                                            </sizepolicy>
+                                                        </property>
+                                                        <property name="minimumSize">
+                                                            <size>
+                                                                <width>200</width>
+                                                                <height>20</height>
+                                                            </size>
+                                                        </property>
+                                                        <property name="textFormat">
+                                                            <enum>PlainText</enum>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string></string>
+                                                        </property>
+                                                        <property name="tabChangesFocus">
+                                                            <bool>true</bool>
+                                                        </property>
+                                                        <property name="autoFormatting">
+                                                            <set>AutoNone</set>
+                                                        </property>
+                                                    </widget>
+                                                </hbox>
+                                            </widget>
+                                            <widget class="QLayoutWidget">
+                                                <property name="name">
+                                                    <cstring>layout9</cstring>
+                                                </property>
+                                                <hbox>
+                                                    <property name="name">
+                                                        <cstring>unnamed</cstring>
+                                                    </property>
+                                                    <widget class="QLabel">
+                                                        <property name="name">
+                                                            <cstring>textLabel1_3</cstring>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string>HTML help browser</string>
+                                                        </property>
+                                                    </widget>
+                                                    <widget class="QLineEdit">
+                                                        <property name="name">
+                                                            <cstring>helpBrowserLE</cstring>
+                                                        </property>
+                                                        <property name="minimumSize">
+                                                            <size>
+                                                                <width>200</width>
+                                                                <height>0</height>
+                                                            </size>
+                                                        </property>
+                                                    </widget>
+                                                    <widget class="QPushButton">
+                                                        <property name="name">
+                                                            <cstring>helpBrowserPB</cstring>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string>Select file</string>
+                                                        </property>
+                                                    </widget>
+                                                </hbox>
+                                            </widget>
+                                            <widget class="QCheckBox">
+                                                <property name="name">
+                                                    <cstring>useIconsCB</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Show document type icons in result list.</string>
+                                                </property>
+                                                <property name="checked">
+                                                    <bool>true</bool>
+                                                </property>
+                                            </widget>
+                                            <widget class="QCheckBox">
+                                                <property name="name">
+                                                    <cstring>autoSearchCB</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Auto-start simple search on whitespace entry.</string>
+                                                </property>
+                                                <property name="checked">
+                                                    <bool>false</bool>
+                                                </property>
+                                            </widget>
+                                        </vbox>
                                     </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout4</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel4</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Result list font</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                            <cstring>reslistFontPB</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Helvetica-10</string>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>Opens a dialog to select the result list font</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                            <cstring>resetFontPB</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Reset</string>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>Resets the result list font to the system default</string>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout9</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel1_3</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>HTML help browser</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QLineEdit">
-                                        <property name="name">
-                                            <cstring>helpBrowserLE</cstring>
-                                        </property>
-                                        <property name="minimumSize">
-                                            <size>
-                                                <width>200</width>
-                                                <height>0</height>
-                                            </size>
-                                        </property>
-                                    </widget>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                            <cstring>helpBrowserPB</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Select file</string>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>useIconsCB</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Show document type icons in result list.</string>
-                                </property>
-                                <property name="checked">
-                                    <bool>true</bool>
-                                </property>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>autoSearchCB</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Auto-start simple search on whitespace entry.</string>
-                                </property>
-                                <property name="checked">
-                                    <bool>false</bool>
-                                </property>
+                                </vbox>
                             </widget>
                             <widget class="QCheckBox">
                                 <property name="name">
@@ -205,495 +277,495 @@
                             </widget>
                         </vbox>
                     </widget>
-                </vbox>
-            </widget>
-            <widget class="QWidget">
-                <property name="name">
-                    <cstring>tab</cstring>
-                </property>
-                <attribute name="title">
-                    <string>Search parameters</string>
-                </attribute>
-                <vbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QLayoutWidget">
+                    <widget class="QWidget">
                         <property name="name">
-                            <cstring>layout7</cstring>
+                            <cstring>tab</cstring>
                         </property>
+                        <attribute name="title">
+                            <string>Search parameters</string>
+                        </attribute>
                         <vbox>
                             <property name="name">
                                 <cstring>unnamed</cstring>
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout6</cstring>
+                                    <cstring>layout7</cstring>
                                 </property>
-                                <hbox>
+                                <vbox>
                                     <property name="name">
                                         <cstring>unnamed</cstring>
                                     </property>
-                                    <widget class="QLabel">
+                                    <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>textLabel1_2</cstring>
+                                            <cstring>layout6</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabel1_2</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Stemming language</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QComboBox">
+                                                <property name="name">
+                                                    <cstring>stemLangCMB</cstring>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>autoPhraseCB</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Stemming language</string>
+                                            <string>Automatically add phrase to simple searches</string>
                                         </property>
-                                    </widget>
-                                    <widget class="QComboBox">
-                                        <property name="name">
-                                            <cstring>stemLangCMB</cstring>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>autoPhraseCB</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Automatically add phrase to simple searches</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
+                                        <property name="toolTip" stdset="0">
+                                            <string>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</string>
-                                </property>
-                            </widget>
-                            <widget class="Line">
-                                <property name="name">
-                                    <cstring>line2</cstring>
-                                </property>
-                                <property name="frameShape">
-                                    <enum>HLine</enum>
-                                </property>
-                                <property name="frameShadow">
-                                    <enum>Sunken</enum>
-                                </property>
-                                <property name="orientation">
-                                    <enum>Horizontal</enum>
-                                </property>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>buildAbsCB</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Dynamically build abstracts</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Do we try to build abstracts for result list entries by using the context of query terms ? 
+                                        </property>
+                                    </widget>
+                                    <widget class="Line">
+                                        <property name="name">
+                                            <cstring>line2</cstring>
+                                        </property>
+                                        <property name="frameShape">
+                                            <enum>HLine</enum>
+                                        </property>
+                                        <property name="frameShadow">
+                                            <enum>Sunken</enum>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>buildAbsCB</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Dynamically build abstracts</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</string>
-                                </property>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>replAbsCB</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Replace abstracts from documents</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Do we synthetize an abstract even if the document seemed to have one?</string>
-                                </property>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout16</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel2</cstring>
                                         </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>5</hsizetype>
-                                                <vsizetype>5</vsizetype>
-                                                <horstretch>2</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>replAbsCB</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Synthetic abstract size (characters)</string>
+                                            <string>Replace abstracts from documents</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Do we synthetize an abstract even if the document seemed to have one?</string>
                                         </property>
                                     </widget>
-                                    <widget class="QSpinBox">
+                                    <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>syntlenSB</cstring>
+                                            <cstring>layout16</cstring>
                                         </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>7</hsizetype>
-                                                <vsizetype>0</vsizetype>
-                                                <horstretch>1</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="lineStep">
-                                            <number>10</number>
-                                        </property>
-                                        <property name="minValue">
-                                            <number>80</number>
-                                        </property>
-                                        <property name="maxValue">
-                                            <number>100000</number>
-                                        </property>
-                                        <property name="value">
-                                            <number>250</number>
-                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabel2</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>5</hsizetype>
+                                                        <vsizetype>5</vsizetype>
+                                                        <horstretch>2</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Synthetic abstract size (characters)</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>syntlenSB</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>7</hsizetype>
+                                                        <vsizetype>0</vsizetype>
+                                                        <horstretch>1</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>100000</number>
+                                                </property>
+                                                <property name="minValue">
+                                                    <number>80</number>
+                                                </property>
+                                                <property name="lineStep">
+                                                    <number>10</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>250</number>
+                                                </property>
+                                            </widget>
+                                        </hbox>
                                     </widget>
-                                </hbox>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout17</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabel3</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>5</hsizetype>
+                                                        <vsizetype>5</vsizetype>
+                                                        <horstretch>1</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Synthetic abstract context words</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>syntctxSB</cstring>
+                                                </property>
+                                                <property name="maxValue">
+                                                    <number>20000</number>
+                                                </property>
+                                                <property name="minValue">
+                                                    <number>2</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>4</number>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Vertical</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>20</width>
+                                                <height>70</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </vbox>
                             </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout17</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel3</cstring>
-                                        </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>5</hsizetype>
-                                                <vsizetype>5</vsizetype>
-                                                <horstretch>1</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="text">
-                                            <string>Synthetic abstract context words</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QSpinBox">
-                                        <property name="name">
-                                            <cstring>syntctxSB</cstring>
-                                        </property>
-                                        <property name="maxValue">
-                                            <number>20000</number>
-                                        </property>
-                                        <property name="minValue">
-                                            <number>2</number>
-                                        </property>
-                                        <property name="value">
-                                            <number>4</number>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <spacer>
-                                <property name="name">
-                                    <cstring>spacer2</cstring>
-                                </property>
-                                <property name="orientation">
-                                    <enum>Vertical</enum>
-                                </property>
-                                <property name="sizeType">
-                                    <enum>Expanding</enum>
-                                </property>
-                                <property name="sizeHint">
-                                    <size>
-                                        <width>20</width>
-                                        <height>70</height>
-                                    </size>
-                                </property>
-                            </spacer>
                         </vbox>
                     </widget>
-                </vbox>
-            </widget>
-            <widget class="QWidget">
-                <property name="name">
-                    <cstring>ExtraDb</cstring>
-                </property>
-                <attribute name="title">
-                    <string>External Indexes</string>
-                </attribute>
-                <vbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QLayoutWidget">
+                    <widget class="QWidget">
                         <property name="name">
-                            <cstring>layout15</cstring>
+                            <cstring>ExtraDb</cstring>
                         </property>
-                        <hbox>
-                            <property name="name">
-                                <cstring>unnamed</cstring>
-                            </property>
-                            <widget class="QPushButton">
-                                <property name="name">
-                                    <cstring>addExtraDbPB</cstring>
-                                </property>
-                                <property name="enabled">
-                                    <bool>false</bool>
-                                </property>
-                                <property name="text">
-                                    <string>Add index</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
-                                </property>
-                            </widget>
-                            <widget class="QLineEdit">
-                                <property name="name">
-                                    <cstring>extraDbLE</cstring>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>200</width>
-                                        <height>0</height>
-                                    </size>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
-                                </property>
-                            </widget>
-                            <widget class="QPushButton">
-                                <property name="name">
-                                    <cstring>browseDbPB</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Browse</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
-                                </property>
-                            </widget>
-                        </hbox>
-                    </widget>
-                    <widget class="QLayoutWidget">
-                        <property name="name">
-                            <cstring>layout12</cstring>
-                        </property>
-                        <hbox>
+                        <attribute name="title">
+                            <string>External Indexes</string>
+                        </attribute>
+                        <vbox>
                             <property name="name">
                                 <cstring>unnamed</cstring>
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout13</cstring>
+                                    <cstring>layout15</cstring>
                                 </property>
-                                <vbox>
+                                <hbox>
                                     <property name="name">
                                         <cstring>unnamed</cstring>
                                     </property>
-                                    <widget class="QLabel">
+                                    <widget class="QPushButton">
                                         <property name="name">
-                                            <cstring>textLabel2_2</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>All indexes</string>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>Indexes currently not used</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QListBox">
-                                        <property name="name">
-                                            <cstring>allDbsLB</cstring>
+                                            <cstring>addExtraDbPB</cstring>
                                         </property>
                                         <property name="enabled">
-                                            <bool>true</bool>
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>Add index</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QLineEdit">
+                                        <property name="name">
+                                            <cstring>extraDbLE</cstring>
                                         </property>
                                         <property name="minimumSize">
                                             <size>
                                                 <width>200</width>
-                                                <height>200</height>
+                                                <height>0</height>
                                             </size>
-                                        </property>
-                                        <property name="selectionMode">
-                                            <enum>Extended</enum>
-                                        </property>
-                                    </widget>
-                                </vbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout11</cstring>
-                                </property>
-                                <vbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                            <cstring>addAADbPB</cstring>
-                                        </property>
-                                        <property name="enabled">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="text">
-                                            <string>All ----&gt;</string>
-                                        </property>
-                                        <property name="autoDefault">
-                                            <bool>false</bool>
-                                        </property>
-                                    </widget>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                            <cstring>addADbPB</cstring>
-                                        </property>
-                                        <property name="enabled">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="text">
-                                            <string>Sel -----&gt;</string>
-                                        </property>
-                                        <property name="autoDefault">
-                                            <bool>false</bool>
-                                        </property>
-                                    </widget>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                            <cstring>delADbPB</cstring>
-                                        </property>
-                                        <property name="enabled">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="text">
-                                            <string>&lt;----- Sel</string>
-                                        </property>
-                                        <property name="autoDefault">
-                                            <bool>false</bool>
-                                        </property>
-                                    </widget>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                            <cstring>delAADbPB</cstring>
-                                        </property>
-                                        <property name="enabled">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="text">
-                                            <string>&lt;----- All</string>
-                                        </property>
-                                        <property name="autoDefault">
-                                            <bool>false</bool>
-                                        </property>
-                                    </widget>
-                                </vbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout14</cstring>
-                                </property>
-                                <vbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel5</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Active indexes</string>
                                         </property>
                                         <property name="toolTip" stdset="0">
-                                            <string>Indexes that will be searched in addition to the main one</string>
+                                            <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
                                         </property>
                                     </widget>
-                                    <widget class="QListBox">
+                                    <widget class="QPushButton">
                                         <property name="name">
-                                            <cstring>actDbsLB</cstring>
+                                            <cstring>browseDbPB</cstring>
                                         </property>
-                                        <property name="enabled">
-                                            <bool>true</bool>
+                                        <property name="text">
+                                            <string>Browse</string>
                                         </property>
-                                        <property name="minimumSize">
-                                            <size>
-                                                <width>200</width>
-                                                <height>200</height>
-                                            </size>
-                                        </property>
-                                        <property name="selectionMode">
-                                            <enum>Extended</enum>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
                                         </property>
                                     </widget>
-                                </vbox>
+                                </hbox>
                             </widget>
-                        </hbox>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout12</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout13</cstring>
+                                        </property>
+                                        <vbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabel2_2</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>All indexes</string>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>Indexes currently not used</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QListBox">
+                                                <property name="name">
+                                                    <cstring>allDbsLB</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>200</width>
+                                                        <height>200</height>
+                                                    </size>
+                                                </property>
+                                                <property name="selectionMode">
+                                                    <enum>Extended</enum>
+                                                </property>
+                                            </widget>
+                                        </vbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout11</cstring>
+                                        </property>
+                                        <vbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>addAADbPB</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>All ----&gt;</string>
+                                                </property>
+                                                <property name="autoDefault">
+                                                    <bool>false</bool>
+                                                </property>
+                                            </widget>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>addADbPB</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Sel -----&gt;</string>
+                                                </property>
+                                                <property name="autoDefault">
+                                                    <bool>false</bool>
+                                                </property>
+                                            </widget>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>delADbPB</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>&lt;----- Sel</string>
+                                                </property>
+                                                <property name="autoDefault">
+                                                    <bool>false</bool>
+                                                </property>
+                                            </widget>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>delAADbPB</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>&lt;----- All</string>
+                                                </property>
+                                                <property name="autoDefault">
+                                                    <bool>false</bool>
+                                                </property>
+                                            </widget>
+                                        </vbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
+                                            <cstring>layout14</cstring>
+                                        </property>
+                                        <vbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabel5</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Active indexes</string>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>Indexes that will be searched in addition to the main one</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QListBox">
+                                                <property name="name">
+                                                    <cstring>actDbsLB</cstring>
+                                                </property>
+                                                <property name="enabled">
+                                                    <bool>true</bool>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>200</width>
+                                                        <height>200</height>
+                                                    </size>
+                                                </property>
+                                                <property name="selectionMode">
+                                                    <enum>Extended</enum>
+                                                </property>
+                                            </widget>
+                                        </vbox>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
                     </widget>
-                </vbox>
-            </widget>
-        </widget>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>Layout1</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
-                <property name="spacing">
-                    <number>6</number>
-                </property>
-                <spacer>
-                    <property name="name">
-                        <cstring>Horizontal Spacing2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>20</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>buttonOk</cstring>
-                    </property>
-                    <property name="text">
-                        <string>&amp;OK</string>
-                    </property>
-                    <property name="accel">
-                        <string></string>
-                    </property>
-                    <property name="autoDefault">
-                        <bool>true</bool>
-                    </property>
-                    <property name="default">
-                        <bool>true</bool>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Apply changes</string>
-                    </property>
                 </widget>
-                <widget class="QPushButton">
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>buttonCancel</cstring>
+                        <cstring>Layout1</cstring>
                     </property>
-                    <property name="text">
-                        <string>&amp;Cancel</string>
-                    </property>
-                    <property name="accel">
-                        <string></string>
-                    </property>
-                    <property name="autoDefault">
-                        <bool>true</bool>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Discard changes</string>
-                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <spacer>
+                            <property name="name">
+                                <cstring>Horizontal Spacing2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>buttonOk</cstring>
+                            </property>
+                            <property name="text">
+                                <string>&amp;OK</string>
+                            </property>
+                            <property name="accel">
+                                <string></string>
+                            </property>
+                            <property name="autoDefault">
+                                <bool>true</bool>
+                            </property>
+                            <property name="default">
+                                <bool>true</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Apply changes</string>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>buttonCancel</cstring>
+                            </property>
+                            <property name="text">
+                                <string>&amp;Cancel</string>
+                            </property>
+                            <property name="accel">
+                                <string></string>
+                            </property>
+                            <property name="autoDefault">
+                                <bool>true</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Discard changes</string>
+                            </property>
+                        </widget>
+                    </hbox>
                 </widget>
-            </hbox>
+            </vbox>
         </widget>
     </vbox>
 </widget>

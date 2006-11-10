@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.5 2006-11-09 17:37:58 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.6 2006-11-10 13:32:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -269,6 +269,10 @@ void ResList::resultPageNext()
     list<string> qTerms;
     m_docsource->getTerms(qTerms);
 
+    // Result paragraph format
+    string sformat = string(prefs.reslistformat.utf8());
+    LOGDEB(("resultPageNext: format: [%s]\n", sformat.c_str()));
+
     // Insert results if any in result list window. We have to send
     // the text to the widgets, because we need the paragraph number
     // each time we add a result paragraph (its diffult and
@@ -372,43 +376,49 @@ void ResList::resultPageNext()
 	// Abstract
 	string abst;
 	plaintorich(doc.abstract, abst, qTerms, 0, true);
-	//string abst = escapeHtml(doc.abstract);
 	LOGDEB1(("Abstract: {%s}\n", abst.c_str()));
+
+	// Links;
+	string linksbuf;
+	char vlbuf[100];
+	if (canIntern(doc.mimetype, rclconfig)) { 
+	    sprintf(vlbuf, "\"P%d\"", m_winfirst+i);
+	    linksbuf += string("<a href=") + vlbuf + ">" + "Preview" + "</a>" 
+		+ "&nbsp;&nbsp;";
+	}
+	if (!rclconfig->getMimeViewerDef(doc.mimetype).empty()) {
+	    sprintf(vlbuf, "E%d", m_winfirst+i);
+	    linksbuf += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
+	}
 
 	// Concatenate chunks to build the result list paragraph:
 	string result;
+
+	// Subheader: this is used by history
 	if (!sh.empty())
 	    result += string("<p><b>") + sh + "</p>\n<p>";
 	else
 	    result += "<p>";
 
-	// Percent relevant + size + preview/edit links + title
-	result += string(perbuf) + sizebuf;
-	char vlbuf[100];
-	if (canIntern(doc.mimetype, rclconfig)) { 
-	    sprintf(vlbuf, "\"P%d\"", m_winfirst+i);
-	    result += string("<a href=") + vlbuf + ">" + "Preview" + "</a>" 
-		+ "&nbsp;&nbsp;";
-	}
-	if (!rclconfig->getMimeViewerDef(doc.mimetype).empty()) {
-	    sprintf(vlbuf, "E%d", m_winfirst+i);
-	    result += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
-	}
-	result += "&nbsp;&nbsp;<b>" + doc.title + "</b><br>";
-
-	// Mime type, date modified, url
-	result += doc.mimetype + "&nbsp;";
-	result += string(datebuf) + "&nbsp;&nbsp;&nbsp;";
 	if (!img_name.empty()) {
 	    result += "<img source=\"" + img_name + "\" align=\"left\">";
 	}
-	result += "<i>" + url + +"</i><br>";
 
-	// Text: abstract and keywords
-	if (!abst.empty())
-	    result +=  abst + "<br>";
-	if (!doc.keywords.empty())
-	    result += doc.keywords + "<br>";
+	// Configurable stuff
+	map<char,string> subs;
+	subs['A'] = !doc.abstract.empty() ? doc.abstract + "<br>" : "";
+	subs['D'] = datebuf;
+	subs['K'] = !doc.keywords.empty() ? doc.keywords + "<br>" : "";
+	subs['L'] = linksbuf;
+	subs['M'] = doc.mimetype;
+	subs['R'] = perbuf;
+	subs['S'] = sizebuf;
+	subs['T'] = doc.title;
+	subs['U'] = url;
+
+	string formatted;
+	pcSubst(sformat, formatted, subs);
+	result += formatted;
 
 	result += "</p>\n";
 

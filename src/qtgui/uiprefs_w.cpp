@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.9 2006-11-07 09:04:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.10 2006-11-10 13:32:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,7 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.9 2006-11-07 09:04:28 dockes Ex
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
+#include <qtextedit.h>
 
 #include "recoll.h"
 #include "guiutils.h"
@@ -93,6 +94,7 @@ void UIPrefsDialog::setFromPrefs()
 	reslistFontPB->setText(reslistFontFamily + "-" +
 			       s.setNum(reslistFontSize));
     }
+    rlfTE->setText(prefs.reslistformat);
     helpBrowserLE->setText(prefs.htmlBrowser);
 
     // Stemming language combobox
@@ -152,6 +154,7 @@ void UIPrefsDialog::accept()
 
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
+    prefs.reslistformat =  rlfTE->text();
 
     prefs.htmlBrowser =  helpBrowserLE->text();
 
