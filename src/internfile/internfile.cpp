@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.16 2006-03-20 16:05:41 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.17 2006-11-10 13:29:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -172,8 +172,10 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 
 FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 {
-    if (!m_handler)
+    if (!m_handler) {
+	LOGERR(("FileInterner::internfile: no handler !!\n"));
 	return FIError;
+    }
 
     // Turn file into a document. The document has fields for title, body 
     // etc.,  all text converted to utf8
