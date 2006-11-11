@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.7 2006-11-10 17:53:54 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.8 2006-11-11 15:30:48 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -229,9 +229,6 @@ void ResList::resultPageNext()
     if (!m_docsource)
 	return;
 
-    int percent;
-    Rcl::Doc doc;
-
     int resCnt = m_docsource->getResCnt();
     m_pageParaToReldocnums.clear();
 
@@ -283,8 +280,8 @@ void ResList::resultPageNext()
     //      setUpdatesEnabled(false);
     for (int i = 0; i < last; i++) {
 	string sh;
-	doc.erase();
-
+	Rcl::Doc doc;
+	int percent;
 	if (!m_docsource->getDoc(m_winfirst + i, doc, &percent, &sh)) {
 	    // Error or end of docs, stop.
 	    break;
@@ -299,22 +296,27 @@ void ResList::resultPageNext()
 	    // Display list header
 	    // We could use a <title> but the textedit doesnt display
 	    // it prominently
-	    append("<qt><head></head><body>");
 	    // Note: have to append text in chunks that make sense
 	    // html-wise. If we break things up to much, the editor
 	    // gets confused. Hence the use of the 'chunk' text
 	    // accumulator
-	    QString chunk = "<p><font size=+1><b>";
+	    QString chunk = "<qt><head></head><body><p>";
+
+	    chunk += "<font size=+1><b>";
 	    chunk += QString::fromUtf8(m_docsource->title().c_str());
-	    chunk += "</b></font><br>";
-	    chunk += "<a href=\"H-1\">";
-	    chunk += tr("Show query details");
-	    chunk += "</a><br>";
-	    append(chunk);
-	    chunk = tr("<b>Displaying results starting at index"
-		      " %1 (maximum set size %2)</b></p>\n")
+	    chunk += ".</b></font>";
+
+	    chunk += "&nbsp;&nbsp;&nbsp;";
+
+	    chunk += tr("Documents <b>%1-%2</b> out of <b>%3</b> for ")
 		.arg(m_winfirst+1)
+		.arg(m_winfirst+last)
 		.arg(resCnt);
+
+	    chunk += "<a href=\"H-1\">";
+	    chunk += tr("(show query)");
+	    chunk += "</a>";
+
 	    append(chunk);
 	}
 	   
@@ -347,7 +349,11 @@ void ResList::resultPageNext()
 	if (doc.title.empty()) {
 	    doc.title = path_getsimple(url);
 	}
-	
+
+	// Result number
+	char numbuf[20];
+	sprintf(numbuf, "%.2d", m_winfirst+1+i);
+
 	// Document date: either doc or file modification time
 	char datebuf[100];
 	datebuf[0] = 0;
@@ -409,6 +415,7 @@ void ResList::resultPageNext()
 	subs['D'] = datebuf;
 	subs['K'] = !doc.keywords.empty() ? doc.keywords + "<br>" : "";
 	subs['L'] = linksbuf;
+	subs['N'] = numbuf;
 	subs['M'] = doc.mimetype;
 	subs['R'] = perbuf;
 	subs['S'] = sizebuf;
