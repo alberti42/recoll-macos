@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.23 2006-09-21 05:59:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.24 2006-11-12 08:35:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -144,7 +144,8 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 #endif
 
     // Emit span. When splitting for query, we only emit final spans
-    if (spanerase) {
+    bool spanemitted = false;
+    if (spanerase && !(m_flags & TXTS_NOSPANS)) {
 	// Maybe trim at end These are chars that we would keep inside 
 	// a span, but not at the end
 	while (span.length() > 0) {
@@ -162,13 +163,15 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 	    }
 	}
     breakloop1:
+	spanemitted = true;
 	if (!emitterm(true, span, spanpos, bp-span.length(), bp))
 	    return false;
     }
 
 
-    // Emit word if different from span and not query mode
-    if (!fq && (!spanerase || (word.length() != span.length())))
+    // Emit word if different from span and not 'no words' mode
+    if (!(m_flags & TXTS_ONLYSPANS) && 
+	(!spanemitted || word.length() != span.length()))
 	if (!emitterm(false, word, wordpos, bp-word.length(), bp))
 	    return false;
 
@@ -404,7 +407,8 @@ static string thisprog;
 
 static string usage =
     " textsplit [opts] [filename]\n"
-    "   -q: query mode\n"
+    "   -s:  only spans\n"
+    "   -w:  only words\n"
     " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
     ;
@@ -417,7 +421,8 @@ Usage(void)
 }
 
 static int        op_flags;
-#define OPT_q	  0x1 
+#define OPT_s	  0x1 
+#define OPT_w	  0x2
 
 int main(int argc, char **argv)
 {
@@ -431,7 +436,8 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'q':	op_flags |= OPT_q; break;
+	    case 's':	op_flags |= OPT_s; break;
+	    case 'w':	op_flags |= OPT_w; break;
 	    default: Usage();	break;
 	    }
 	argc--; argv++;
@@ -439,7 +445,12 @@ int main(int argc, char **argv)
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     mySplitterCB cb;
-    TextSplit splitter(&cb, (op_flags&OPT_q) ? true: false);
+    TextSplit::Flags flags = TextSplit::TXTS_NONE;
+    if (op_flags&OPT_s)
+	flags = TextSplit::TXTS_ONLYSPANS;
+    else if (op_flags&OPT_w)
+	flags = TextSplit::TXTS_NOSPANS;
+    TextSplit splitter(&cb,  flags);
     if (argc == 1) {
 	string data;
 	const char *filename = *argv++;	argc--;

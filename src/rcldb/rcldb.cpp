@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.89 2006-11-10 17:18:01 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.90 2006-11-12 08:35:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -961,9 +961,20 @@ static void stringToXapianQueries(const string &iq,
     for (list<string>::iterator it=phrases.begin(); it !=phrases.end(); it++) {
 	LOGDEB(("strToXapianQ: phrase or word: [%s]\n", it->c_str()));
 
-	wsQData splitData;
-	TextSplit splitter(&splitData, true);
-	splitter.text_to_words(*it);
+	// If there are both spans and single words in this element,
+	// we need to use a word split, else a phrase query including
+	// a span would fail if we didn't adjust the proximity to
+	// account for the additional span term which is complicated.
+	wsQData splitDataS, splitDataW;
+	TextSplit splitterS(&splitDataS, TextSplit::TXTS_ONLYSPANS);
+	splitterS.text_to_words(*it);
+	TextSplit splitterW(&splitDataW, TextSplit::TXTS_NOSPANS);
+	splitterW.text_to_words(*it);
+	wsQData& splitData = splitDataS;
+	if (splitDataS.terms.size() > 1 && splitDataS.terms.size() != 
+	    splitDataW.terms.size())
+	    splitData = splitDataW;
+
 	LOGDEB1(("strToXapianQ: splitter term count: %d\n", 
 		splitData.terms.size()));
 	switch(splitData.terms.size()) {

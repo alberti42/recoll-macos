@@ -16,7 +16,7 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.11 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.12 2006-11-12 08:35:11 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -44,18 +44,19 @@ class TextSplitCB {
  */
 class TextSplit {
  public:
+    enum Flags {TXTS_NONE = 0, TXTS_ONLYSPANS = 1, TXTS_NOSPANS = 2};
     /**
      * Constructor: just store callback object
      */
-    TextSplit(TextSplitCB *t, bool forquery = false) 
-	: fq(forquery), cb(t), maxWordLength(40), prevpos(-1) {}
+    TextSplit(TextSplitCB *t, Flags flags = TXTS_NONE) 
+	: m_flags(flags), cb(t), maxWordLength(40), prevpos(-1) {}
     /**
      * Split text, emit words and positions.
      */
     bool text_to_words(const std::string &in);
 
  private:
-    bool fq;        // for query:  Are we splitting for query or index ?
+    Flags m_flags;
     TextSplitCB *cb;
     int maxWordLength;
 
