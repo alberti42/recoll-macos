@@ -8,8 +8,8 @@ LIBS = librcl.a
 
 all: $(LIBS)
 
-OBJS =  conftree.o csguess.o debuglog.o execmd.o idfile.o md5.o wipedir.o fstreewalk.o mh_html.o mh_mail.o mh_exec.o mh_text.o htmlparse.o indexer.o internfile.o mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathhash.o pathut.o rclconfig.o rcldb.o rclinit.o stemdb.o base64.o readfile.o smallut.o textsplit.o transcode.o unacpp.o history.o docseq.o sortseq.o copyfile.o rclaspell.o
-DEPS =  conftree.dep.stamp csguess.dep.stamp debuglog.dep.stamp execmd.dep.stamp idfile.dep.stamp md5.dep.stamp wipedir.dep.stamp fstreewalk.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_exec.dep.stamp mh_text.dep.stamp htmlparse.dep.stamp indexer.dep.stamp internfile.dep.stamp mimehandler.dep.stamp mimeparse.dep.stamp mimetype.dep.stamp myhtmlparse.dep.stamp pathhash.dep.stamp pathut.dep.stamp rclconfig.dep.stamp rcldb.dep.stamp rclinit.dep.stamp stemdb.dep.stamp base64.dep.stamp readfile.dep.stamp smallut.dep.stamp textsplit.dep.stamp transcode.dep.stamp unacpp.dep.stamp history.dep.stamp docseq.dep.stamp sortseq.dep.stamp copyfile.dep.stamp rclaspell.dep.stamp
+OBJS =  conftree.o csguess.o debuglog.o execmd.o idfile.o md5.o wipedir.o fstreewalk.o mh_html.o mh_mail.o searchdata.o mh_exec.o mh_text.o htmlparse.o indexer.o internfile.o mimehandler.o mimeparse.o mimetype.o myhtmlparse.o pathhash.o pathut.o rclconfig.o rcldb.o rclinit.o stemdb.o base64.o readfile.o smallut.o textsplit.o transcode.o unacpp.o history.o docseq.o sortseq.o copyfile.o rclaspell.o
+DEPS =  conftree.dep.stamp csguess.dep.stamp debuglog.dep.stamp execmd.dep.stamp idfile.dep.stamp md5.dep.stamp wipedir.dep.stamp fstreewalk.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp searchdata.dep.stamp mh_exec.dep.stamp mh_text.dep.stamp htmlparse.dep.stamp indexer.dep.stamp internfile.dep.stamp mimehandler.dep.stamp mimeparse.dep.stamp mimetype.dep.stamp myhtmlparse.dep.stamp pathhash.dep.stamp pathut.dep.stamp rclconfig.dep.stamp rcldb.dep.stamp rclinit.dep.stamp stemdb.dep.stamp base64.dep.stamp readfile.dep.stamp smallut.dep.stamp textsplit.dep.stamp transcode.dep.stamp unacpp.dep.stamp history.dep.stamp docseq.dep.stamp sortseq.dep.stamp copyfile.dep.stamp rclaspell.dep.stamp
 
 librcl.a : $(DEPS) $(OBJS) unac.o
 	ar ru librcl.a $(OBJS) unac.o
@@ -37,6 +37,8 @@ mh_html.o : ../common/mh_html.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../common/mh_html.cpp
 mh_mail.o : ../common/mh_mail.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../common/mh_mail.cpp
+searchdata.o : ../common/searchdata.cpp
+	$(CXX) $(ALL_CXXFLAGS) -c ../common/searchdata.cpp
 mh_exec.o : ../common/mh_exec.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../common/mh_exec.cpp
 mh_text.o : ../common/mh_text.cpp
@@ -125,6 +127,9 @@ mh_html.dep.stamp : ../common/mh_html.cpp
 mh_mail.dep.stamp : ../common/mh_mail.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../common/mh_mail.cpp > mh_mail.dep
 	touch mh_mail.dep.stamp
+searchdata.dep.stamp : ../common/searchdata.cpp
+	$(CXX) -M $(ALL_CXXFLAGS) ../common/searchdata.cpp > searchdata.dep
+	touch searchdata.dep.stamp
 mh_exec.dep.stamp : ../common/mh_exec.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../common/mh_exec.cpp > mh_exec.dep
 	touch mh_exec.dep.stamp
@@ -213,6 +218,7 @@ include wipedir.dep
 include fstreewalk.dep
 include mh_html.dep
 include mh_mail.dep
+include searchdata.dep
 include mh_exec.dep
 include mh_text.dep
 include htmlparse.dep

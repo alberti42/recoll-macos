@@ -16,11 +16,13 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.40 2006-10-30 12:59:44 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.41 2006-11-13 08:49:44 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
 #include <vector>
+
+#include "refcntr.h"
 
 #ifndef NO_NAMESPACES
 using std::string;
@@ -103,7 +105,7 @@ class Doc {
     }
 };
 
-class AdvSearchData;
+class SearchData;
 class Native;
 class TermIter;
  
@@ -155,7 +157,7 @@ class Db {
     /* Query-related functions */
 
     // Parse query string and initialize query
-    bool setQuery(AdvSearchData &q, int opts = QO_NONE,
+    bool setQuery(RefCntr<SearchData> q, int opts = QO_NONE,
 		  const string& stemlang = "english");
     bool getQueryTerms(list<string>& terms);
     bool getMatchTerms(const Doc& doc, list<string>& terms);
@@ -213,6 +215,9 @@ class Db {
     /** Perform stem expansion across all dbs configured for searching */
     list<string> stemExpand(const string& lang, const string& term);
 
+    /** Filename wildcard expansion */
+    bool filenameWildExp(const string& exp, list<string>& names);
+
 private:
 
     string m_filterTopDir; // Current query filter on subtree top directory 
@@ -248,6 +253,7 @@ private:
     vector<bool> updated;
 
     bool reOpen(); // Close/open, same mode/opts
+
     /* Copyconst and assignemt private and forbidden */
     Db(const Db &) {}
     Db & operator=(const Db &) {return *this;};

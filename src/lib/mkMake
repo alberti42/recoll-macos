@@ -8,6 +8,7 @@ SRCS="${depth}/utils/conftree.cpp ${depth}/index/csguess.cpp \
      ${depth}/utils/idfile.cpp ${depth}/utils/md5.cpp \
      ${depth}/utils/wipedir.cpp ${depth}/utils/fstreewalk.cpp \
      ${depth}/common/mh_html.cpp ${depth}/common/mh_mail.cpp \
+     ${depth}/common/searchdata.cpp \
      ${depth}/common/mh_exec.cpp ${depth}/common/mh_text.cpp \
      ${depth}/common/htmlparse.cpp ${depth}/index/indexer.cpp \
      ${depth}/common/internfile.cpp ${depth}/common/mimehandler.cpp \

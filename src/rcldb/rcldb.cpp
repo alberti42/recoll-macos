@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.90 2006-11-12 08:35:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.91 2006-11-13 08:49:44 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -174,6 +174,229 @@ bool Native::subDocs(const string &hash, vector<Xapian::docid>& docids)
     return false;
 }
 
+bool Native::dbDataToRclDoc(std::string &data, Doc &doc, 
+			    int qopts,
+			    Xapian::docid docid, const list<string>& terms)
+{
+    LOGDEB1(("Db::dbDataToRclDoc: opts %x data: %s\n", qopts, data.c_str()));
+    ConfSimple parms(&data);
+    if (!parms.ok())
+	return false;
+    parms.get(string("url"), doc.url);
+    parms.get(string("mtype"), doc.mimetype);
+    parms.get(string("fmtime"), doc.fmtime);
+    parms.get(string("dmtime"), doc.dmtime);
+    parms.get(string("origcharset"), doc.origcharset);
+    parms.get(string("caption"), doc.title);
+    parms.get(string("keywords"), doc.keywords);
+    parms.get(string("abstract"), doc.abstract);
+    // Possibly remove synthetic abstract indicator (if it's there, we
+    // used to index the beginning of the text as abstract).
+    bool syntabs = false;
+    if (doc.abstract.find(rclSyntAbs) == 0) {
+	doc.abstract = doc.abstract.substr(rclSyntAbs.length());
+	syntabs = true;
+    }
+    // If the option is set and the abstract is synthetic or empty , build 
+    // abstract from position data. 
+    if ((qopts & Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
+	LOGDEB(("dbDataToRclDoc:: building abstract from position data\n"));
+	if (doc.abstract.empty() || syntabs || 
+	    (qopts & Db::QO_REPLACE_ABSTRACT))
+	    doc.abstract = makeAbstract(docid, terms);
+    } 
+    parms.get(string("ipath"), doc.ipath);
+    parms.get(string("fbytes"), doc.fbytes);
+    parms.get(string("dbytes"), doc.dbytes);
+    doc.xdocid = docid;
+    return true;
+}
+
+// We build a possibly full size but sparsely populated (only around
+// the search term occurrences) reconstruction of the document. It
+// would be possible to compress the array, by having only multiple
+// chunks around the terms, but this would seriously complicate the
+// data structure.
+string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
+{
+    LOGDEB(("Native::makeAbstract: maxlen %d wWidth %d\n",
+	    m_db->m_synthAbsLen, m_db->m_synthAbsWordCtxLen));
+
+    Chrono chron;
+
+    // For each of the query terms, query xapian for its positions
+    // list in the document. For each position entry, remember it in qtermposs
+    // and insert it and its neighbours in the set of 'interesting' positions
+
+    // The terms 'array' that we partially populate with the document
+    // terms, at their positions around the search terms positions:
+    map<unsigned int, string> sparseDoc;
+
+    // All the query term positions. We remember this mainly because we are
+    // going to random-shuffle it for selecting the chunks that we actually 
+    // print.
+    vector<unsigned int> qtermposs; 
+
+    // Limit the total number of slots we populate.
+    const unsigned int maxtotaloccs = 300;
+    // Max occurrences per term. We initially know nothing about the
+    // occurrences repartition (it would be possible that only one
+    // term in the list occurs, or that all do). So this is a rather
+    // arbitrary choice.
+    const unsigned int maxoccperterm = maxtotaloccs / 10;
+    unsigned int totaloccs = 0;
+
+    for (list<string>::const_iterator qit = terms.begin(); qit != terms.end();
+	 qit++) {
+	Xapian::PositionIterator pos;
+	// There may be query terms not in this doc. This raises an
+	// exception when requesting the position list, we catch it.
+	string emptys;
+	try {
+	    unsigned int occurrences = 0;
+	    for (pos = db.positionlist_begin(docid, *qit); 
+		 pos != db.positionlist_end(docid, *qit); pos++) {
+		unsigned int ipos = *pos;
+		LOGDEB2(("Abstract: [%s] at %d\n", qit->c_str(), ipos));
+		// Remember the term position
+		qtermposs.push_back(ipos);
+		// Add adjacent slots to the set to populate at next step
+		unsigned int sta = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
+		unsigned int sto = ipos+m_db->m_synthAbsWordCtxLen;
+		for (unsigned int ii = sta; ii <= sto;  ii++) {
+		    if (ii == ipos)
+			sparseDoc[ii] = *qit;
+		    else
+			sparseDoc[ii] = emptys;
+		}
+		// Limit the number of occurences we keep for each
+		// term. The abstract has a finite length anyway !
+		if (occurrences++ > maxoccperterm)
+		    break;
+	    }
+	} catch (...) {
+	    // Term does not occur. No problem.
+	}
+	// Limit total size
+	if (totaloccs++ > maxtotaloccs)
+	    break;
+    }
+
+    LOGDEB(("Abstract:%d:chosen number of positions %d. Populating\n", 
+	    chron.millis(), qtermposs.size()));
+
+    // Walk the full document position list (for each term walk
+    // position list) and populate slots around the query terms. We
+    // arbitrarily truncate the list to avoid taking forever. If we do
+    // cutoff, the abstract may be inconsistant, which is bad...
+    { 
+	Xapian::TermIterator term;
+	int cutoff = 500 * 1000;
+
+	for (term = db.termlist_begin(docid);
+	     term != db.termlist_end(docid); term++) {
+	    if (cutoff-- < 0) {
+		LOGDEB(("Abstract: max term count cutoff\n"));
+		break;
+	    }
+
+	    Xapian::PositionIterator pos;
+	    for (pos = db.positionlist_begin(docid, *term); 
+		 pos != db.positionlist_end(docid, *term); pos++) {
+		if (cutoff-- < 0) {
+		    LOGDEB(("Abstract: max term count cutoff\n"));
+		    break;
+		}
+		map<unsigned int, string>::iterator vit;
+		if ((vit=sparseDoc.find(*pos)) != sparseDoc.end()) {
+		    // Don't replace a term: the terms list is in
+		    // alphabetic order, and we may have several terms
+		    // at the same position, we want to keep only the
+		    // first one (ie: dockes and dockes@wanadoo.fr)
+		    if (vit->second.empty()) {
+			LOGDEB2(("Abstract: populating: [%s] at %d\n", 
+				(*term).c_str(), *pos));
+			sparseDoc[*pos] = *term;
+		    }
+		}
+	    }
+	}
+    }
+
+#if 0
+    // Debug only: output the full term[position] vector
+    bool epty = false;
+    int ipos = 0;
+    for (map<unsigned int, string>::iterator it = sparseDoc.begin(); 
+	 it != sparseDoc.end();
+	 it++, ipos++) {
+	if (it->empty()) {
+	    if (!epty)
+		LOGDEB(("Abstract:vec[%d]: [%s]\n", ipos, it->c_str()));
+	    epty=true;
+	} else {
+	    epty = false;
+	    LOGDEB(("Abstract:vec[%d]: [%s]\n", ipos, it->c_str()));
+	}
+    }
+#endif
+
+    LOGDEB(("Abstract:%d: randomizing and extracting\n", chron.millis()));
+
+    // We randomize the selection of term positions, from which we
+    // shall pull, starting at the beginning, until the abstract is
+    // big enough. The abstract is finally built in correct position
+    // order, thanks to the position map.
+    random_shuffle(qtermposs.begin(), qtermposs.end());
+    map<unsigned int, string> mabs;
+    unsigned int abslen = 0;
+
+    // Extract data around the N first (in random order) query term
+    // positions, and store the terms in the map. Don't concatenate
+    // immediately into chunks because there might be overlaps
+    for (vector<unsigned int>::const_iterator pos = qtermposs.begin();
+	 pos != qtermposs.end(); pos++) {
+
+	if (int(abslen) > m_db->m_synthAbsLen)
+	    break;
+
+	unsigned int sta = MAX(0, *pos - m_db->m_synthAbsWordCtxLen);
+	unsigned int sto = *pos + m_db->m_synthAbsWordCtxLen;
+
+	LOGDEB2(("Abstract: %d<-%d->%d\n", sta, *pos, sto));
+
+	for (unsigned int ii = sta; ii <= sto; ii++) {
+
+	    if (int(abslen) > m_db->m_synthAbsLen)
+		break;
+	    map<unsigned int, string>::const_iterator vit = 
+		sparseDoc.find(ii);
+	    if (vit != sparseDoc.end() && !vit->second.empty()) {
+		LOGDEB2(("Abstract: position %d -> [%s]\n", 
+			 ii, vit->second.c_str()));
+		mabs[ii] = vit->second;
+		abslen += vit->second.length();
+	    } else {
+		LOGDEB2(("Abstract: empty position at %d\n", ii));
+	    }
+	}
+
+	// Possibly add a ... at the end of chunk if it's not
+	// overlapping
+	if (mabs.find(sto+1) == mabs.end())
+	    mabs[sto+1] = "...";
+    }
+
+    // Build the abstract by walking the map (in order of position)
+    string abstract;
+    for (map<unsigned int, string>::const_iterator it = mabs.begin();
+	 it != mabs.end(); it++) {
+	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
+	abstract += it->second + " ";
+    }
+    LOGDEB(("Abtract: done in %d mS\n", chron.millis()));
+    return abstract;
+}
 
 /* Rcl::Db methods ///////////////////////////////// */
 
@@ -909,279 +1132,67 @@ bool Db::purgeFile(const string &fn)
     return false;
 }
 
-// Splitter callback for breaking query into terms
-class wsQData : public TextSplitCB {
- public:
-    vector<string> terms;
-    string catterms() {
-	string s;
-	for (unsigned int i=0;i<terms.size();i++) {
-	    s += "[" + terms[i] + "] ";
-	}
-	return s;
-    }
-    bool takeword(const std::string &term, int , int, int) {
-	LOGDEB1(("wsQData::takeword: %s\n", term.c_str()));
-	terms.push_back(term);
-	return true;
-    }
-    void dumball() {
-	for (vector<string>::iterator it=terms.begin(); it !=terms.end();it++){
-	    string dumb;
-	    dumb_string(*it, dumb);
-	    *it = dumb;
-	}
-    }
-};
-
-// Turn string into list of xapian queries. There is little
-// interpretation done on the string (no +term -term or filename:term
-// stuff). We just separate words and phrases, and interpret
-// capitalized terms as wanting no stem expansion. 
-// The final list contains one query for each term or phrase
-//   - Elements corresponding to a stem-expanded part are an OP_OR
-//     composition of the stem-expanded terms (or a single term query).
-//   - Elements corresponding to a phrase are an OP_PHRASE composition of the
-//     phrase terms (no stem expansion in this case)
-static void stringToXapianQueries(const string &iq,
-				  const string& stemlang,
-				  Db *db,
-				  list<Xapian::Query> &pqueries,
-				  unsigned int opts = Db::QO_NONE)
+bool Db::filenameWildExp(const string& fnexp, list<string>& names)
 {
-    string qstring = iq;
+    // File name search, with possible wildcards. 
+    // We expand wildcards by scanning the filename terms (prefixed 
+    // with XSFN) from the database. 
+    // We build an OR query with the expanded values if any.
+    string pattern;
+    dumb_string(fnexp, pattern);
 
-    // Split into (possibly single word) phrases ("this is a phrase"):
-    list<string> phrases;
-    stringToStrings(qstring, phrases);
+    // If pattern is not quoted, and has no wildcards, we add * at
+    // each end: match any substring
+    if (pattern[0] == '"' && pattern[pattern.size()-1] == '"') {
+	pattern = pattern.substr(1, pattern.size() -2);
+    } else if (pattern.find_first_of("*?[") == string::npos) {
+	pattern = "*" + pattern + "*";
+    } // else let it be
 
-    // Then process each phrase: split into terms and transform into
-    // appropriate Xapian Query
+    LOGDEB((" pattern: [%s]\n", pattern.c_str()));
 
-    for (list<string>::iterator it=phrases.begin(); it !=phrases.end(); it++) {
-	LOGDEB(("strToXapianQ: phrase or word: [%s]\n", it->c_str()));
-
-	// If there are both spans and single words in this element,
-	// we need to use a word split, else a phrase query including
-	// a span would fail if we didn't adjust the proximity to
-	// account for the additional span term which is complicated.
-	wsQData splitDataS, splitDataW;
-	TextSplit splitterS(&splitDataS, TextSplit::TXTS_ONLYSPANS);
-	splitterS.text_to_words(*it);
-	TextSplit splitterW(&splitDataW, TextSplit::TXTS_NOSPANS);
-	splitterW.text_to_words(*it);
-	wsQData& splitData = splitDataS;
-	if (splitDataS.terms.size() > 1 && splitDataS.terms.size() != 
-	    splitDataW.terms.size())
-	    splitData = splitDataW;
-
-	LOGDEB1(("strToXapianQ: splitter term count: %d\n", 
-		splitData.terms.size()));
-	switch(splitData.terms.size()) {
-	case 0: continue;// ??
-	case 1: // Not a real phrase: one term
-	    {
-		string term = splitData.terms.front();
-		bool nostemexp = false;
-		// Check if the first letter is a majuscule in which
-		// case we do not want to do stem expansion. Note that
-		// the test is convoluted and possibly problematic
-		if (term.length() > 0) {
-		    string noacterm,noaclowterm;
-		    if (unacmaybefold(term, noacterm, "UTF-8", false) &&
-			unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
-			Utf8Iter it1(noacterm);
-			Utf8Iter it2(noaclowterm);
-			if (*it1 != *it2)
-			    nostemexp = true;
-		    }
-		}
-		LOGDEB1(("Term: %s stem expansion: %s\n", 
-			term.c_str(), nostemexp?"no":"yes"));
-
-		list<string> exp;  
-		string term1;
-		dumb_string(term, term1);
-		// Possibly perform stem compression/expansion
-		if (!nostemexp && (opts & Db::QO_STEM)) {
-		    exp = db->stemExpand(stemlang, term1);
-		} else {
-		    exp.push_back(term1);
-		}
-
-		// Push either term or OR of stem-expanded set
-		pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
-						 exp.begin(), exp.end()));
-	    }
+    // Match pattern against all file names in the db
+    Xapian::TermIterator it = m_ndb->db.allterms_begin(); 
+    it.skip_to("XSFN");
+    for (;it != m_ndb->db.allterms_end(); it++) {
+	if ((*it).find("XSFN") != 0)
 	    break;
-
-	default:
-	    // Phrase: no stem expansion
-	    splitData.dumball();
-	    LOGDEB(("Pushing phrase: [%s]\n", splitData.catterms().c_str()));
-	    pqueries.push_back(Xapian::Query(Xapian::Query::OP_PHRASE,
-					     splitData.terms.begin(),
-					     splitData.terms.end()));
+	string fn = (*it).substr(4);
+	LOGDEB2(("Matching [%s] and [%s]\n", pattern.c_str(), fn.c_str()));
+	if (fnmatch(pattern.c_str(), fn.c_str(), 0) != FNM_NOMATCH) {
+	    names.push_back((*it).c_str());
+	}
+	// Limit the match count
+	if (names.size() > 1000) {
+	    LOGERR(("Db::SetQuery: too many matched file names\n"));
+	    break;
 	}
     }
+    if (names.empty()) {
+	// Build an impossible query: we know its impossible because we
+	// control the prefixes!
+	names.push_back("XIMPOSSIBLE");
+    }
+    return true;
 }
 
 // Prepare query out of "advanced search" data
-bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
+bool Db::setQuery(RefCntr<SearchData> sdata, int opts, 
+		  const string& stemlang)
 {
-    LOGDEB(("Db::setQuery: adv:\n"));
-    LOGDEB((" allwords: %s\n", sdata.allwords.c_str()));
-    LOGDEB((" phrase:   %s\n", sdata.phrase.c_str()));
-    LOGDEB((" orwords:  %s\n", sdata.orwords.c_str()));
-    LOGDEB((" orwords1:  %s\n", sdata.orwords1.c_str()));
-    LOGDEB((" nowords:  %s\n", sdata.nowords.c_str()));
-    LOGDEB((" filename:  %s\n", sdata.filename.c_str()));
-
-    string ft;
-    for (list<string>::iterator it = sdata.filetypes.begin(); 
-    	 it != sdata.filetypes.end(); it++) {ft += *it + " ";}
-    if (!ft.empty()) 
-	LOGDEB((" searched file types: %s\n", ft.c_str()));
-    if (!sdata.topdir.empty())
-	LOGDEB((" restricted to: %s\n", sdata.topdir.c_str()));
-    LOGDEB((" Options: 0x%x\n", opts));
-
-    m_filterTopDir = sdata.topdir;
-    m_dbindices.clear();
-
-    if (!m_ndb)
+    if (!m_ndb) {
+	LOGERR(("Db::setQuery: no db!\n"));
 	return false;
-    list<Xapian::Query> pqueries;
-    Xapian::Query xq;
+    }
 
+    LOGDEB(("Db::setQuery:\n"));
+
+    m_filterTopDir = sdata->m_topdir;
+    m_dbindices.clear();
     m_qOpts = opts;
 
-    if (!sdata.filename.empty()) {
-	LOGDEB((" filename search\n"));
-	// File name search, with possible wildcards. 
-	// We expand wildcards by scanning the filename terms (prefixed 
-        // with XSFN) from the database. 
-	// We build an OR query with the expanded values if any.
-	string pattern;
-	dumb_string(sdata.filename, pattern);
-
-	// If pattern is not quoted, and has no wildcards, we add * at
-	// each end: match any substring
-	if (pattern[0] == '"' && pattern[pattern.size()-1] == '"') {
-	    pattern = pattern.substr(1, pattern.size() -2);
-	} else if (pattern.find_first_of("*?[") == string::npos) {
-	    pattern = "*" + pattern + "*";
-	} // else let it be
-
-	LOGDEB((" pattern: [%s]\n", pattern.c_str()));
-
-	// Match pattern against all file names in the db
-	Xapian::TermIterator it = m_ndb->db.allterms_begin(); 
-	it.skip_to("XSFN");
-	list<string> names;
-	for (;it != m_ndb->db.allterms_end(); it++) {
-	    if ((*it).find("XSFN") != 0)
-		break;
-	    string fn = (*it).substr(4);
-	    LOGDEB2(("Matching [%s] and [%s]\n", pattern.c_str(), fn.c_str()));
-	    if (fnmatch(pattern.c_str(), fn.c_str(), 0) != FNM_NOMATCH) {
-		names.push_back((*it).c_str());
-	    }
-	    // Limit the match count
-	    if (names.size() > 1000) {
-		LOGERR(("Db::SetQuery: too many matched file names\n"));
-		break;
-	    }
-	}
-	if (names.empty()) {
-	    // Build an impossible query: we know its impossible because we
-	    // control the prefixes!
-	    names.push_back("XIMPOSSIBLE");
-	}
-	// Build a query out of the matching file name terms.
-	xq = Xapian::Query(Xapian::Query::OP_OR, names.begin(), names.end());
-    }
-
-    if (!sdata.allwords.empty()) {
-	stringToXapianQueries(sdata.allwords, stemlang, this,pqueries,m_qOpts);
-	if (!pqueries.empty()) {
-	    Xapian::Query nq = 
-		Xapian::Query(Xapian::Query::OP_AND, pqueries.begin(),
-			      pqueries.end());
-	    xq = xq.empty() ? nq :
-		Xapian::Query(Xapian::Query::OP_AND, xq, nq);
-	    pqueries.clear();
-	}
-    }
-
-    if (!sdata.orwords.empty()) {
-	stringToXapianQueries(sdata.orwords, stemlang, this,pqueries,m_qOpts);
-	if (!pqueries.empty()) {
-	    Xapian::Query nq = 
-		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
-			       pqueries.end());
-	    xq = xq.empty() ? nq :
-		Xapian::Query(Xapian::Query::OP_AND, xq, nq);
-	    pqueries.clear();
-	}
-    }
-
-    if (!sdata.orwords1.empty()) {
-	stringToXapianQueries(sdata.orwords1, stemlang, this,pqueries,m_qOpts);
-	if (!pqueries.empty()) {
-	    Xapian::Query nq = 
-		Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
-			       pqueries.end());
-	    xq = xq.empty() ? nq :
-		Xapian::Query(Xapian::Query::OP_AND, xq, nq);
-	    pqueries.clear();
-	}
-    }
-
-    if (!sdata.phrase.empty()) {
-	Xapian::Query nq;
-	string s = string("\"") + sdata.phrase + string("\"");
-	stringToXapianQueries(s, stemlang, this, pqueries);
-	if (!pqueries.empty()) {
-	    // There should be a single list element phrase query.
-	    xq = xq.empty() ? *pqueries.begin() : 
-		Xapian::Query(Xapian::Query::OP_AND, xq, *pqueries.begin());
-	    pqueries.clear();
-	}
-    }
-
-    if (!sdata.filetypes.empty()) {
-	Xapian::Query tq;
-	for (list<string>::iterator it = sdata.filetypes.begin(); 
-	     it != sdata.filetypes.end(); it++) {
-	    string term = "T" + *it;
-	    LOGDEB(("Adding file type term: [%s]\n", term.c_str()));
-	    tq = tq.empty() ? Xapian::Query(term) : 
-		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
-	}
-	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_FILTER, xq, tq);
-    }
-
-    // "And not" part. Must come last, as we have to check it's not
-    // the only term in the query.  We do no stem expansion on 'No'
-    // words. Should we ?
-    if (!sdata.nowords.empty()) {
-	stringToXapianQueries(sdata.nowords, stemlang, this, pqueries);
-	if (!pqueries.empty()) {
-	    Xapian::Query nq;
-	    nq = Xapian::Query(Xapian::Query::OP_OR, pqueries.begin(),
-			       pqueries.end());
-	    if (xq.empty()) {
-		// Xapian cant do this currently. Have to have a positive 
-		// part!
-		sdata.description = "Error: pure negative query\n";
-		LOGERR(("Rcl::Db::setQuery: error: pure negative query\n"));
-		return false;
-	    }
-	    xq = Xapian::Query(Xapian::Query::OP_AND_NOT, xq, nq);
-	    pqueries.clear();
-	}
-    }
+    Xapian::Query xq;
+    sdata->toNativeQuery(*this, &xq, (opts & Db::QO_STEM) ? stemlang : "");
 
     m_ndb->query = xq;
     delete m_ndb->enquire;
@@ -1189,10 +1200,11 @@ bool Db::setQuery(AdvSearchData &sdata, int opts, const string& stemlang)
     m_ndb->enquire->set_query(m_ndb->query);
     m_ndb->mset = Xapian::MSet();
     // Get the query description and trim the "Xapian::Query"
-    sdata.description = m_ndb->query.get_description();
-    if (sdata.description.find("Xapian::Query") == 0)
-	sdata.description = sdata.description.substr(strlen("Xapian::Query"));
-    LOGDEB(("Db::SetQuery: Q: %s\n", sdata.description.c_str()));
+    sdata->m_description = m_ndb->query.get_description();
+    if (sdata->m_description.find("Xapian::Query") == 0)
+	sdata->m_description = 
+	    sdata->m_description.substr(strlen("Xapian::Query"));
+    LOGDEB(("Db::SetQuery: Q: %s\n", sdata->m_description.c_str()));
     return true;
 }
 
@@ -1422,43 +1434,6 @@ int Db::getResCnt()
     return m_ndb->mset.get_matches_lower_bound();
 }
 
-bool Native::dbDataToRclDoc(std::string &data, Doc &doc, 
-			    int qopts,
-			    Xapian::docid docid, const list<string>& terms)
-{
-    LOGDEB1(("Db::dbDataToRclDoc: opts %x data: %s\n", qopts, data.c_str()));
-    ConfSimple parms(&data);
-    if (!parms.ok())
-	return false;
-    parms.get(string("url"), doc.url);
-    parms.get(string("mtype"), doc.mimetype);
-    parms.get(string("fmtime"), doc.fmtime);
-    parms.get(string("dmtime"), doc.dmtime);
-    parms.get(string("origcharset"), doc.origcharset);
-    parms.get(string("caption"), doc.title);
-    parms.get(string("keywords"), doc.keywords);
-    parms.get(string("abstract"), doc.abstract);
-    // Possibly remove synthetic abstract indicator (if it's there, we
-    // used to index the beginning of the text as abstract).
-    bool syntabs = false;
-    if (doc.abstract.find(rclSyntAbs) == 0) {
-	doc.abstract = doc.abstract.substr(rclSyntAbs.length());
-	syntabs = true;
-    }
-    // If the option is set and the abstract is synthetic or empty , build 
-    // abstract from position data. 
-    if ((qopts & Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
-	LOGDEB(("dbDataToRclDoc:: building abstract from position data\n"));
-	if (doc.abstract.empty() || syntabs || 
-	    (qopts & Db::QO_REPLACE_ABSTRACT))
-	    doc.abstract = makeAbstract(docid, terms);
-    } 
-    parms.get(string("ipath"), doc.ipath);
-    parms.get(string("fbytes"), doc.fbytes);
-    parms.get(string("dbytes"), doc.dbytes);
-    doc.xdocid = docid;
-    return true;
-}
 
 // Get document at rank i in query (i is the index in the whole result
 // set, as in the enquire class. We check if the current mset has the
@@ -1641,191 +1616,6 @@ list<string> Db::expand(const Doc &doc)
 }
 
 
-// We build a possibly full size but sparsely populated (only around
-// the search term occurrences) reconstruction of the document. It
-// would be possible to compress the array, by having only multiple
-// chunks around the terms, but this would seriously complicate the
-// data structure.
-string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
-{
-    LOGDEB(("Native::makeAbstract: maxlen %d wWidth %d\n",
-	    m_db->m_synthAbsLen, m_db->m_synthAbsWordCtxLen));
-
-    Chrono chron;
-
-    // For each of the query terms, query xapian for its positions
-    // list in the document. For each position entry, remember it in qtermposs
-    // and insert it and its neighbours in the set of 'interesting' positions
-
-    // The terms 'array' that we partially populate with the document
-    // terms, at their positions around the search terms positions:
-    map<unsigned int, string> sparseDoc;
-
-    // All the query term positions. We remember this mainly because we are
-    // going to random-shuffle it for selecting the chunks that we actually 
-    // print.
-    vector<unsigned int> qtermposs; 
-
-    // Limit the total number of slots we populate.
-    const unsigned int maxtotaloccs = 300;
-    // Max occurrences per term. We initially know nothing about the
-    // occurrences repartition (it would be possible that only one
-    // term in the list occurs, or that all do). So this is a rather
-    // arbitrary choice.
-    const unsigned int maxoccperterm = maxtotaloccs / 10;
-    unsigned int totaloccs = 0;
-
-    for (list<string>::const_iterator qit = terms.begin(); qit != terms.end();
-	 qit++) {
-	Xapian::PositionIterator pos;
-	// There may be query terms not in this doc. This raises an
-	// exception when requesting the position list, we catch it.
-	string emptys;
-	try {
-	    unsigned int occurrences = 0;
-	    for (pos = db.positionlist_begin(docid, *qit); 
-		 pos != db.positionlist_end(docid, *qit); pos++) {
-		unsigned int ipos = *pos;
-		LOGDEB2(("Abstract: [%s] at %d\n", qit->c_str(), ipos));
-		// Remember the term position
-		qtermposs.push_back(ipos);
-		// Add adjacent slots to the set to populate at next step
-		unsigned int sta = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
-		unsigned int sto = ipos+m_db->m_synthAbsWordCtxLen;
-		for (unsigned int ii = sta; ii <= sto;  ii++) {
-		    if (ii == ipos)
-			sparseDoc[ii] = *qit;
-		    else
-			sparseDoc[ii] = emptys;
-		}
-		// Limit the number of occurences we keep for each
-		// term. The abstract has a finite length anyway !
-		if (occurrences++ > maxoccperterm)
-		    break;
-	    }
-	} catch (...) {
-	    // Term does not occur. No problem.
-	}
-	// Limit total size
-	if (totaloccs++ > maxtotaloccs)
-	    break;
-    }
-
-    LOGDEB(("Abstract:%d:chosen number of positions %d. Populating\n", 
-	    chron.millis(), qtermposs.size()));
-
-    // Walk the full document position list (for each term walk
-    // position list) and populate slots around the query terms. We
-    // arbitrarily truncate the list to avoid taking forever. If we do
-    // cutoff, the abstract may be inconsistant, which is bad...
-    { 
-	Xapian::TermIterator term;
-	int cutoff = 500 * 1000;
-
-	for (term = db.termlist_begin(docid);
-	     term != db.termlist_end(docid); term++) {
-	    if (cutoff-- < 0) {
-		LOGDEB(("Abstract: max term count cutoff\n"));
-		break;
-	    }
-
-	    Xapian::PositionIterator pos;
-	    for (pos = db.positionlist_begin(docid, *term); 
-		 pos != db.positionlist_end(docid, *term); pos++) {
-		if (cutoff-- < 0) {
-		    LOGDEB(("Abstract: max term count cutoff\n"));
-		    break;
-		}
-		map<unsigned int, string>::iterator vit;
-		if ((vit=sparseDoc.find(*pos)) != sparseDoc.end()) {
-		    // Don't replace a term: the terms list is in
-		    // alphabetic order, and we may have several terms
-		    // at the same position, we want to keep only the
-		    // first one (ie: dockes and dockes@wanadoo.fr)
-		    if (vit->second.empty()) {
-			LOGDEB2(("Abstract: populating: [%s] at %d\n", 
-				(*term).c_str(), *pos));
-			sparseDoc[*pos] = *term;
-		    }
-		}
-	    }
-	}
-    }
-
-#if 0
-    // Debug only: output the full term[position] vector
-    bool epty = false;
-    int ipos = 0;
-    for (map<unsigned int, string>::iterator it = sparseDoc.begin(); 
-	 it != sparseDoc.end();
-	 it++, ipos++) {
-	if (it->empty()) {
-	    if (!epty)
-		LOGDEB(("Abstract:vec[%d]: [%s]\n", ipos, it->c_str()));
-	    epty=true;
-	} else {
-	    epty = false;
-	    LOGDEB(("Abstract:vec[%d]: [%s]\n", ipos, it->c_str()));
-	}
-    }
-#endif
-
-    LOGDEB(("Abstract:%d: randomizing and extracting\n", chron.millis()));
-
-    // We randomize the selection of term positions, from which we
-    // shall pull, starting at the beginning, until the abstract is
-    // big enough. The abstract is finally built in correct position
-    // order, thanks to the position map.
-    random_shuffle(qtermposs.begin(), qtermposs.end());
-    map<unsigned int, string> mabs;
-    unsigned int abslen = 0;
-
-    // Extract data around the N first (in random order) query term
-    // positions, and store the terms in the map. Don't concatenate
-    // immediately into chunks because there might be overlaps
-    for (vector<unsigned int>::const_iterator pos = qtermposs.begin();
-	 pos != qtermposs.end(); pos++) {
-
-	if (int(abslen) > m_db->m_synthAbsLen)
-	    break;
-
-	unsigned int sta = MAX(0, *pos - m_db->m_synthAbsWordCtxLen);
-	unsigned int sto = *pos + m_db->m_synthAbsWordCtxLen;
-
-	LOGDEB2(("Abstract: %d<-%d->%d\n", sta, *pos, sto));
-
-	for (unsigned int ii = sta; ii <= sto; ii++) {
-
-	    if (int(abslen) > m_db->m_synthAbsLen)
-		break;
-	    map<unsigned int, string>::const_iterator vit = 
-		sparseDoc.find(ii);
-	    if (vit != sparseDoc.end() && !vit->second.empty()) {
-		LOGDEB2(("Abstract: position %d -> [%s]\n", 
-			 ii, vit->second.c_str()));
-		mabs[ii] = vit->second;
-		abslen += vit->second.length();
-	    } else {
-		LOGDEB2(("Abstract: empty position at %d\n", ii));
-	    }
-	}
-
-	// Possibly add a ... at the end of chunk if it's not
-	// overlapping
-	if (mabs.find(sto+1) == mabs.end())
-	    mabs[sto+1] = "...";
-    }
-
-    // Build the abstract by walking the map (in order of position)
-    string abstract;
-    for (map<unsigned int, string>::const_iterator it = mabs.begin();
-	 it != mabs.end(); it++) {
-	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
-	abstract += it->second + " ";
-    }
-    LOGDEB(("Abtract: done in %d mS\n", chron.millis()));
-    return abstract;
-}
 #ifndef NO_NAMESPACES
 }
 #endif
