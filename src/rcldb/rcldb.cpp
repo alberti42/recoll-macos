@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.92 2006-11-13 14:48:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.93 2006-11-13 14:51:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ class Native {
     Xapian::MSet     mset;    // Partial result set
 
     // Term frequencies for current query. See makeAbstract, not used yet.
-    //    map<string, int>  m_termfreqs; 
+    map<string, int>  m_termfreqs; 
     
     Native(Db *db) 
 	: m_db(db),
