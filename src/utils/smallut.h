@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.18 2006-11-10 13:30:03 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.19 2006-11-13 11:59:11 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <map>
@@ -86,6 +86,7 @@ class Chrono {
    * chrono objects, like when examining timeouts in a queue)
    */
   long millis(int frozen = 0);
+  long ms() {return millis();}
   long micros(int frozen = 0);
   float secs(int frozen = 0);
  private:
