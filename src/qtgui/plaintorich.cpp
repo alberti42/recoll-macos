@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.12 2006-11-08 13:04:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.13 2006-11-13 08:15:57 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,6 @@ class myTextSplitCB : public TextSplitCB {
     // Out: first term found in text
     string firstTerm;
 
-    vector int
     myTextSplitCB(const list<string>& its) {
 	for (list<string>::const_iterator it = its.begin(); it != its.end();
 	     it++) {
@@ -99,7 +98,7 @@ bool plaintorich(const string& in, string& out, const list<string>& terms,
     // and compare the words to the search terms, which yields the
     // query terms positions inside the text
     myTextSplitCB cb(terms);
-    TextSplit splitter(&cb, true);
+    TextSplit splitter(&cb, TextSplit::TXTS_ONLYSPANS);
     // Note that splitter returns the term locations in byte, not
     // character offset
     splitter.text_to_words(in);
