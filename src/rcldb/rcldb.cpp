@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.91 2006-11-13 08:49:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.92 2006-11-13 14:48:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@ static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.91 2006-11-13 08:49:44 dockes Exp $
 #include <sys/stat.h>
 #include <fnmatch.h>
 #include <regex.h>
+#include <math.h>
 
 #include <iostream>
 #include <string>
@@ -91,6 +92,9 @@ class Native {
     Xapian::Enquire *enquire; // Open query descriptor.
     Xapian::MSet     mset;    // Partial result set
 
+    // Term frequencies for current query. See makeAbstract, not used yet.
+    //    map<string, int>  m_termfreqs; 
+    
     Native(Db *db) 
 	: m_db(db),
 	  m_isopen(false), m_iswritable(false), enquire(0) 
@@ -200,7 +204,6 @@ bool Native::dbDataToRclDoc(std::string &data, Doc &doc,
     // If the option is set and the abstract is synthetic or empty , build 
     // abstract from position data. 
     if ((qopts & Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
-	LOGDEB(("dbDataToRclDoc:: building abstract from position data\n"));
 	if (doc.abstract.empty() || syntabs || 
 	    (qopts & Db::QO_REPLACE_ABSTRACT))
 	    doc.abstract = makeAbstract(docid, terms);
@@ -212,17 +215,63 @@ bool Native::dbDataToRclDoc(std::string &data, Doc &doc,
     return true;
 }
 
-// We build a possibly full size but sparsely populated (only around
-// the search term occurrences) reconstruction of the document. It
-// would be possible to compress the array, by having only multiple
-// chunks around the terms, but this would seriously complicate the
-// data structure.
+// Build a document abstract by extracting text chunks around the query terms
+// This uses the db termlists, not the original document.
 string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 {
-    LOGDEB(("Native::makeAbstract: maxlen %d wWidth %d\n",
+    Chrono chron;
+    LOGDEB(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
 	    m_db->m_synthAbsLen, m_db->m_synthAbsWordCtxLen));
 
-    Chrono chron;
+    if (terms.empty()) {
+	return "";
+    }
+
+    // We may want to use the db-wide freqs to tune the abstracts one
+    // day but we currently don't
+#if 0 
+    if (m_termfreqs.empty()) {
+	for (list<string>::const_iterator qit = terms.begin(); 
+	     qit != terms.end(); qit++) {
+	    m_termfreqs[*qit] = db.get_termfreq(*qit);
+	    LOGDEB2(("makeAbstract: [%s] db freq %d\n", qit->c_str(), 
+		     m_termfreqs[*qit]));
+	}
+	LOGDEB2(("makeAbstract:%d: got termfreqs\n", chron.ms()));
+    }
+#endif
+
+    // Retrieve the term Within Document Frequencies. We are going to try 
+    // and show text around the less common search terms.
+    map<string, int> termwdfs;
+    int totalqtermoccs = 0;
+    for (list<string>::const_iterator qit = terms.begin(); 
+	 qit != terms.end(); qit++) {
+	Xapian::TermIterator term = db.termlist_begin(docid);
+	term.skip_to(*qit);
+	if (term != db.termlist_end(docid) && *term == *qit) {
+	    int f = term.get_wdf();
+	    termwdfs[*qit] = f;
+	    totalqtermoccs += f;
+	    LOGDEB2(("makeAbstract: [%s] wdf %d\n", qit->c_str(), 
+		     termwdfs[*qit]));
+	}
+    }    
+    LOGDEB2(("makeAbstract:%d: got wdfs totalqtermoccs %d\n", 
+	    chron.ms(), totalqtermoccs));
+    if (totalqtermoccs == 0) {
+	LOGERR(("makeAbstract: no term occurrences !\n"));
+	return "";
+    }
+
+    // Build a sorted by frequency term list: it seems reasonable to
+    // prefer sampling around the less frequent terms:
+    multimap<int, string> bywdf;
+    for (list<string>::const_iterator qit = terms.begin(); 
+	 qit != terms.end(); qit++) {
+	if (termwdfs.find(*qit) != termwdfs.end())
+	    bywdf.insert(pair<int,string>(termwdfs[*qit], *qit));
+    }
 
     // For each of the query terms, query xapian for its positions
     // list in the document. For each position entry, remember it in qtermposs
@@ -238,26 +287,43 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     vector<unsigned int> qtermposs; 
 
     // Limit the total number of slots we populate.
-    const unsigned int maxtotaloccs = 300;
-    // Max occurrences per term. We initially know nothing about the
-    // occurrences repartition (it would be possible that only one
-    // term in the list occurs, or that all do). So this is a rather
-    // arbitrary choice.
-    const unsigned int maxoccperterm = maxtotaloccs / 10;
-    unsigned int totaloccs = 0;
+    const unsigned int maxtotaloccs = 
+	MAX(50, m_db->m_synthAbsLen /(4 * (m_db->m_synthAbsWordCtxLen+1)));
+    LOGDEB2(("makeAbstract:%d: ttlqtrms %d mxttloccs %d\n", 
+	    chron.ms(), totalqtermoccs,  maxtotaloccs));
+#if 0
+    for (multimap<int, string>::iterator qit = bywdf.begin(); 
+	 qit != bywdf.end(); qit++) {
+	LOGDEB(("%d->[%s]\n", qit->first, qit->second.c_str()));
+    }
+#endif
 
-    for (list<string>::const_iterator qit = terms.begin(); qit != terms.end();
-	 qit++) {
+    // Find the text positions which we will have to fill with terms
+    unsigned int totaloccs = 0;
+    for (multimap<int, string>::iterator qit = bywdf.begin(); 
+	 qit != bywdf.end(); qit++) {
+	string qterm = qit->second;
+	unsigned int maxoccs;
+	if (bywdf.size() == 1) {
+	    maxoccs = maxtotaloccs;
+	} else {
+	    float q = (1 - float(termwdfs[qterm]) / float(totalqtermoccs)) /
+		(bywdf.size() - 1);
+	    maxoccs = int(ceil(maxtotaloccs * q));
+	    LOGDEB2(("makeAbstract: [%s] %d max occs (coef %.2f)\n", 
+		    qterm.c_str(), maxoccs, q));
+	}
+		
 	Xapian::PositionIterator pos;
 	// There may be query terms not in this doc. This raises an
 	// exception when requesting the position list, we catch it.
 	string emptys;
 	try {
 	    unsigned int occurrences = 0;
-	    for (pos = db.positionlist_begin(docid, *qit); 
-		 pos != db.positionlist_end(docid, *qit); pos++) {
+	    for (pos = db.positionlist_begin(docid, qterm); 
+		 pos != db.positionlist_end(docid, qterm); pos++) {
 		unsigned int ipos = *pos;
-		LOGDEB2(("Abstract: [%s] at %d\n", qit->c_str(), ipos));
+		LOGDEB2(("makeAbstract: [%s] at %d\n", qit->c_str(), ipos));
 		// Remember the term position
 		qtermposs.push_back(ipos);
 		// Add adjacent slots to the set to populate at next step
@@ -265,13 +331,13 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 		unsigned int sto = ipos+m_db->m_synthAbsWordCtxLen;
 		for (unsigned int ii = sta; ii <= sto;  ii++) {
 		    if (ii == ipos)
-			sparseDoc[ii] = *qit;
+			sparseDoc[ii] = qterm;
 		    else
 			sparseDoc[ii] = emptys;
 		}
 		// Limit the number of occurences we keep for each
 		// term. The abstract has a finite length anyway !
-		if (occurrences++ > maxoccperterm)
+		if (occurrences++ > maxoccs)
 		    break;
 	    }
 	} catch (...) {
@@ -282,7 +348,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	    break;
     }
 
-    LOGDEB(("Abstract:%d:chosen number of positions %d. Populating\n", 
+    LOGDEB2(("makeAbstract:%d:chosen number of positions %d\n", 
 	    chron.millis(), qtermposs.size()));
 
     // Walk the full document position list (for each term walk
@@ -296,7 +362,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	for (term = db.termlist_begin(docid);
 	     term != db.termlist_end(docid); term++) {
 	    if (cutoff-- < 0) {
-		LOGDEB(("Abstract: max term count cutoff\n"));
+		LOGDEB(("makeAbstract: max term count cutoff\n"));
 		break;
 	    }
 
@@ -304,7 +370,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	    for (pos = db.positionlist_begin(docid, *term); 
 		 pos != db.positionlist_end(docid, *term); pos++) {
 		if (cutoff-- < 0) {
-		    LOGDEB(("Abstract: max term count cutoff\n"));
+		    LOGDEB(("makeAbstract: max term count cutoff\n"));
 		    break;
 		}
 		map<unsigned int, string>::iterator vit;
@@ -314,7 +380,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 		    // at the same position, we want to keep only the
 		    // first one (ie: dockes and dockes@wanadoo.fr)
 		    if (vit->second.empty()) {
-			LOGDEB2(("Abstract: populating: [%s] at %d\n", 
+			LOGDEB2(("makeAbstract: populating: [%s] at %d\n", 
 				(*term).c_str(), *pos));
 			sparseDoc[*pos] = *term;
 		    }
@@ -332,16 +398,16 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	 it++, ipos++) {
 	if (it->empty()) {
 	    if (!epty)
-		LOGDEB(("Abstract:vec[%d]: [%s]\n", ipos, it->c_str()));
+		LOGDEB(("makeAbstract:vec[%d]: [%s]\n", ipos, it->c_str()));
 	    epty=true;
 	} else {
 	    epty = false;
-	    LOGDEB(("Abstract:vec[%d]: [%s]\n", ipos, it->c_str()));
+	    LOGDEB(("makeAbstract:vec[%d]: [%s]\n", ipos, it->c_str()));
 	}
     }
 #endif
 
-    LOGDEB(("Abstract:%d: randomizing and extracting\n", chron.millis()));
+    LOGDEB2(("makeAbstract:%d: randomizing and extracting\n", chron.millis()));
 
     // We randomize the selection of term positions, from which we
     // shall pull, starting at the beginning, until the abstract is
@@ -363,7 +429,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	unsigned int sta = MAX(0, *pos - m_db->m_synthAbsWordCtxLen);
 	unsigned int sto = *pos + m_db->m_synthAbsWordCtxLen;
 
-	LOGDEB2(("Abstract: %d<-%d->%d\n", sta, *pos, sto));
+	LOGDEB2(("makeAbstract: %d<-%d->%d\n", sta, *pos, sto));
 
 	for (unsigned int ii = sta; ii <= sto; ii++) {
 
@@ -372,12 +438,12 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	    map<unsigned int, string>::const_iterator vit = 
 		sparseDoc.find(ii);
 	    if (vit != sparseDoc.end() && !vit->second.empty()) {
-		LOGDEB2(("Abstract: position %d -> [%s]\n", 
+		LOGDEB2(("makeAbstract: position %d -> [%s]\n", 
 			 ii, vit->second.c_str()));
 		mabs[ii] = vit->second;
 		abslen += vit->second.length();
 	    } else {
-		LOGDEB2(("Abstract: empty position at %d\n", ii));
+		LOGDEB2(("makeAbstract: empty position at %d\n", ii));
 	    }
 	}
 
@@ -394,7 +460,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
 	abstract += it->second + " ";
     }
-    LOGDEB(("Abtract: done in %d mS\n", chron.millis()));
+    LOGDEB(("makeAbtract: done in %d mS\n", chron.millis()));
     return abstract;
 }
 
@@ -1164,7 +1230,7 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
 	}
 	// Limit the match count
 	if (names.size() > 1000) {
-	    LOGERR(("Db::SetQuery: too many matched file names\n"));
+	    LOGERR(("Db::filenameWildExp: too many matched file names\n"));
 	    break;
 	}
     }
@@ -1190,6 +1256,7 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
     m_filterTopDir = sdata->m_topdir;
     m_dbindices.clear();
     m_qOpts = opts;
+    m_ndb->m_termfreqs.clear();
 
     Xapian::Query xq;
     sdata->toNativeQuery(*this, &xq, (opts & Db::QO_STEM) ? stemlang : "");
