@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.4 2006-04-28 07:54:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.5 2006-11-13 08:49:57 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -97,7 +97,7 @@ void RecollProtocol::get(const KURL & url)
     QString path = url.path();
     fprintf(stderr, "RecollProtocol::get:path [%s]\n", path.latin1());
 
-    Rcl::AdvSearchData sdata;
+    Rcl::SearchData sdata;
 
     QCString u8 =  path.utf8();
     sdata.orwords = u8;
