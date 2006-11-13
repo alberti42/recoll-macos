@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.4 2006-09-13 08:13:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.5 2006-11-13 08:58:47 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -161,7 +161,6 @@ void AdvSearch::addAFiltypPB_clicked()
     addFiltypPB_clicked();
 }
 
-
 // Activate file type selection
 void AdvSearch::restrictFtCB_toggled(bool on)
 {
@@ -173,37 +172,60 @@ void AdvSearch::restrictFtCB_toggled(bool on)
     noFiltypsLB->setEnabled(on);
 }
 
+using namespace Rcl;
 void AdvSearch::searchPB_clicked()
 {
-    Rcl::AdvSearchData mydata;
+    RefCntr<SearchData> sdata(new SearchData(SCLT_AND));
+    bool hasnotnot = false;
+    bool hasnot = false;
+    if (!andWordsLE->text().isEmpty()) {
+	sdata->addClause(new SearchDataClauseSimple(SCLT_AND,
+				    (const char *)andWordsLE->text().utf8()));
+	hasnotnot = true;
+    }
+    if (!orWordsLE->text().isEmpty()) {
+	sdata->addClause(new SearchDataClauseSimple(SCLT_OR,
+				    (const char *)orWordsLE->text().utf8()));
+	hasnotnot = true;
+    }
+    if (!orWords1LE->text().isEmpty()) {
+	sdata->addClause(new SearchDataClauseSimple(SCLT_OR,
+				    (const char *)orWords1LE->text().utf8()));
+	hasnotnot = true;
+    }
+    if (!noWordsLE->text().isEmpty()) {
+	sdata->addClause(new SearchDataClauseSimple(SCLT_EXCL,
+				    (const char *)noWordsLE->text().utf8()));
+	hasnot = true;
+    }
+    if (!fileNameLE->text().isEmpty()) {
+	sdata->addClause(new SearchDataClauseFilename(
+				     (const char *)fileNameLE->text().utf8()));
+	hasnotnot = true;
+    }
+    if (!phraseLE->text().isEmpty()) {
+	sdata->addClause(new SearchDataClauseDist(SCLT_PHRASE,
+				  (const char *)phraseLE->text().utf8(), 0));
+	hasnotnot = true;
+    }
 
-    mydata.allwords = string((const char*)(andWordsLE->text().utf8()));
-    mydata.phrase  = string((const char*)(phraseLE->text().utf8()));
-    mydata.orwords = string((const char*)(orWordsLE->text().utf8()));
-    mydata.orwords1 = string((const char*)(orWords1LE->text().utf8()));
-    mydata.nowords = string((const char*)(noWordsLE->text().utf8()));
-    mydata.filename = string((const char*)(fileNameLE->text().utf8()));
-
-    if (mydata.allwords.empty() && mydata.phrase.empty() && 
-	mydata.orwords.empty() && mydata.orwords1.empty() && 
-	mydata.filename.empty()) {
-	if (mydata.nowords.empty())
+    if (!hasnotnot) {
+	if (!hasnot)
 	    return;
 	QMessageBox::warning(0, "Recoll",
 			     tr("Cannot execute pure negative query. "
 				"Please enter common terms in the 'any words' field")); 
 	return;
     }
-
     if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
 	for (unsigned int i = 0; i < yesFiltypsLB->count(); i++) {
 	    QCString ctext = yesFiltypsLB->item(i)->text().utf8();
-	    mydata.filetypes.push_back(string((const char *)ctext));
+	    sdata->m_filetypes.push_back(string((const char *)ctext));
 	}
     }
 
     if (!subtreeCMB->currentText().isEmpty()) {
-	mydata.topdir = 
+	sdata->m_topdir = 
 	    string((const char*)(subtreeCMB->currentText().utf8()));
 	// The listbox is set for no insertion, do it. Have to check
 	// for dups as the internal feature seems to only work for
@@ -217,7 +239,7 @@ void AdvSearch::searchPB_clicked()
 	for (int index = 0; index < subtreeCMB->count(); index++)
 	    prefs.asearchSubdirHist.push_back(subtreeCMB->text(index));
     }
-    emit startSearch(mydata);
+    emit startSearch(sdata);
 }
 
 

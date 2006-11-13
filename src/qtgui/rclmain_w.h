@@ -28,6 +28,7 @@
 #include "rcldb.h"
 #include "searchdata.h"
 #include "spell_w.h"
+#include "refcntr.h"
 
 #include "rclmain.h"
 
@@ -49,7 +50,7 @@ public slots:
     virtual void fileExit();
     virtual void periodic100();
     virtual void startIndexing();
-    virtual void startAdvSearch(Rcl::AdvSearchData sdata);
+    virtual void startAdvSearch(RefCntr<Rcl::SearchData> sdata);
     virtual void previewClosed(QWidget * w);
     virtual void showAdvSearchDialog();
     virtual void showSortDialog();

@@ -135,7 +135,7 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
-        <signal>startSearch(Rcl::AdvSearchData)</signal>
+        <signal>startSearch(RefCntr&lt;Rcl::AdvSearchData&gt;)</signal>
     </customwidget>
     <customwidget>
         <class>ResList</class>
@@ -292,6 +292,7 @@
 <includes>
     <include location="local" impldecl="in declaration">ssearch_w.h</include>
     <include location="local" impldecl="in declaration">reslist.h</include>
+    <include location="local" impldecl="in declaration">refcntr.h</include>
 </includes>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>

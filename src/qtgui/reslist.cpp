@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.8 2006-11-11 15:30:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.9 2006-11-13 08:58:47 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -23,6 +23,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.8 2006-11-11 15:30:48 dockes Exp 
 #include "pathut.h"
 #include "mimehandler.h"
 #include "plaintorich.h"
+#include "refcntr.h"
 
 #include "reslist.h"
 #include "moc_reslist.cpp"
@@ -32,7 +33,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.8 2006-11-11 15:30:48 dockes Exp 
 #endif
 
 ResList::ResList(QWidget* parent, const char* name)
-    : QTextBrowser(parent, name) 
+    : QTextBrowser(parent, name)
 {
     if (!name)
 	setName("resList");
@@ -68,7 +69,8 @@ void ResList::languageChange()
 }
 
 // Acquire new docsource
-void ResList::setDocSource(DocSequence *docsource, Rcl::AdvSearchData& sdt)
+void ResList::setDocSource(DocSequence *docsource, 
+			   RefCntr<Rcl::SearchData> sdt)
 {
     if (m_docsource)
 	delete m_docsource;
@@ -607,7 +609,7 @@ void ResList::menuExpand()
 
 QString ResList::getDescription()
 {
-    return QString::fromUtf8(m_queryData.description.c_str());
+    return QString::fromUtf8(m_queryData->m_description.c_str());
 }
 
 /** Show detailed expansion of a query */
@@ -617,7 +619,7 @@ void ResList::showQueryDetails()
     // Also limit the total number of lines. 
     const unsigned int ll = 100;
     const unsigned int maxlines = 50;
-    string query = m_queryData.description;
+    string query = m_queryData->m_description;
     string oq;
     unsigned int nlines = 0;
     while (query.length() > 0) {

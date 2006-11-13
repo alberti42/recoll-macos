@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.5 2006-11-10 13:32:08 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.6 2006-11-13 08:58:47 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -61,6 +61,7 @@ using std::pair;
 #include "guiutils.h"
 #include "reslist.h"
 #include "transcode.h"
+#include "refcntr.h"
 
 #include "rclmain_w.h"
 #include "moc_rclmain_w.cpp"
@@ -93,8 +94,8 @@ void RclMain::init()
 	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
 	resList->setFont(nfont);
     }
-    connect(sSearch, SIGNAL(startSearch(Rcl::AdvSearchData)), 
-		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
+    connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
+		this, SLOT(startAdvSearch(RefCntr<Rcl::SearchData>)));
 
     // signals and slots connections
     connect(sSearch, SIGNAL(clearSearch()),
@@ -318,7 +319,7 @@ static string urltolocalpath(string url)
 
 // Execute an advanced search query. The parameters normally come from
 // the advanced search dialog
-void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
+void RclMain::startAdvSearch(RefCntr<Rcl::SearchData> sdata)
 {
     LOGDEB(("RclMain::startAdvSearch\n"));
     // The db may have been closed at the end of indexing
@@ -331,7 +332,7 @@ void RclMain::startAdvSearch(Rcl::AdvSearchData sdata)
     resList->resetSearch();
 
     int qopts = 0;
-    if (prefs.queryBuildAbstract && !sdata.fileNameOnly()) {
+    if (prefs.queryBuildAbstract && !sdata->fileNameOnly()) {
 	qopts |= Rcl::Db::QO_BUILD_ABSTRACT;
 	if (prefs.queryReplaceAbstract)
 	    qopts |= Rcl::Db::QO_REPLACE_ABSTRACT;
@@ -362,8 +363,8 @@ void RclMain::showAdvSearchDialog()
 	asearchform = new AdvSearch(0, tr("Advanced search"), FALSE,
 				    WStyle_Customize | WStyle_NormalBorder | 
 				    WStyle_Title | WStyle_SysMenu);
-	connect(asearchform, SIGNAL(startSearch(Rcl::AdvSearchData)), 
-		this, SLOT(startAdvSearch(Rcl::AdvSearchData)));
+	connect(asearchform, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
+		this, SLOT(startAdvSearch(RefCntr<Rcl::SearchData>)));
 	asearchform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
@@ -715,8 +716,8 @@ void RclMain::showDocHistory()
 	docsource = new DocSequenceHistory(rcldb, g_dynconf, 
 					   string(tr("Document history").utf8()));
     }
-    Rcl::AdvSearchData sdata;
-    sdata.description = tr("History data").utf8();
+    RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_AND));
+    sdata->m_description = tr("History data").utf8();
     m_searchId++;
     resList->setDocSource(docsource, sdata);
 }

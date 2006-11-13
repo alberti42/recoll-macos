@@ -1,4 +1,4 @@
-/* @(#$Id: ssearch_w.h,v 1.2 2006-11-04 14:49:46 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: ssearch_w.h,v 1.3 2006-11-13 08:58:47 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include "recoll.h"
 #include "searchdata.h"
 #include "ssearchb.h"
+#include "refcntr.h"
 
 class SSearch : public SSearchBase
 {
@@ -43,7 +44,7 @@ public slots:
     virtual void startSimpleSearch();
 
 signals:
-    void startSearch(Rcl::AdvSearchData);
+    void startSearch(RefCntr<Rcl::SearchData>);
     void clearSearch();
  private:
     bool m_escape;

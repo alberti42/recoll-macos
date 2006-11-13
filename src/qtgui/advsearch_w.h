@@ -1,6 +1,6 @@
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-/* @(#$Id: advsearch_w.h,v 1.2 2006-09-13 08:13:36 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: advsearch_w.h,v 1.3 2006-11-13 08:58:47 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include <qvariant.h>
 #include <qdialog.h>
 #include "advsearch.h"
+#include "refcntr.h"
 
 #include "recoll.h"
 #include "searchdata.h"
@@ -43,7 +44,7 @@ public slots:
     virtual void saveFileTypes();
 
 signals:
-    void startSearch(Rcl::AdvSearchData);
+    void startSearch(RefCntr<Rcl::SearchData>);
 
 private:
     virtual void init();
