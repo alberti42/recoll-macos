@@ -64,6 +64,14 @@
                                     <property name="name">
                                         <cstring>textLabel2</cstring>
                                     </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>0</hsizetype>
+                                            <vsizetype>5</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
                                     <property name="frameShape">
                                         <enum>NoFrame</enum>
                                     </property>
@@ -85,14 +93,14 @@
                                         <cstring>conjunctCMB</cstring>
                                     </property>
                                     <property name="sizePolicy">
-                                         <sizepolicy>
-                                            <hsizetype>7</hsizetype>
-					    <vsizetype>0</vsizetype>
-					    <horstretch>8</horstretch>
-					    <verstretch>0</verstretch>
-                                         </sizepolicy>
-                                     </property>
-				 </widget>
+                                        <sizepolicy>
+                                            <hsizetype>0</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>8</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                </widget>
                                 <spacer>
                                     <property name="name">
                                         <cstring>spacer2</cstring>
@@ -113,6 +121,14 @@
                                 <widget class="QPushButton">
                                     <property name="name">
                                         <cstring>addClausePB</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>0</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
                                     </property>
                                     <property name="text">
                                         <string>Add clause</string>
