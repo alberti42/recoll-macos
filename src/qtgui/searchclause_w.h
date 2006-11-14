@@ -45,10 +45,10 @@ public:
 protected:
     QVBoxLayout* searchClauseLayout;
     QHBoxLayout* hLayout;
-
+public slots:
+    virtual void tpChange(int);
 protected slots:
     virtual void languageChange();
-    virtual void tpChange(int);
 };
 
 #endif // SEARCHCLAUSE_H

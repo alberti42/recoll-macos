@@ -1,6 +1,6 @@
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-/* @(#$Id: advsearch_w.h,v 1.4 2006-11-14 13:55:43 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: advsearch_w.h,v 1.5 2006-11-14 17:41:12 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -31,9 +31,18 @@ class AdvSearch : public AdvSearchBase
     Q_OBJECT
 
 public:
-    AdvSearch(QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0) : AdvSearchBase(parent,name,modal,fl)
-	{init();}
-	~AdvSearch(){}
+    AdvSearch(QWidget* parent = 0, const char* name = 0, bool modal = FALSE, 
+	      WFlags fl = 0) 
+	: AdvSearchBase(parent,name,modal,fl)
+    {init();}
+    ~AdvSearch(){}
+    SearchClauseW* andWords;
+    SearchClauseW* phrase;
+    SearchClauseW* orWords;
+    SearchClauseW* orWords1;
+    SearchClauseW* noWords;
+    SearchClauseW* fileName;
+
 public slots:
     virtual void delFiltypPB_clicked();
     virtual void delAFiltypPB_clicked();

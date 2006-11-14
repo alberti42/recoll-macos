@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.2 2006-11-14 13:55:43 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.3 2006-11-14 17:41:12 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -146,6 +146,7 @@ class wsQData : public TextSplitCB {
 static void maybeStemExp(Db& db, const string& stemlang, const string& term, 
 			 list<string>& exp)
 {
+    LOGDEB(("maybeStemExp: [%s]\n", term.c_str()));
     string term1;
     dumb_string(term, term1);
     if (!stemlang.empty()) {
@@ -242,10 +243,16 @@ static bool stringToXapianQueries(const string &iq,
 		Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
 		Xapian::Query::OP_PHRASE;
 		list<Xapian::Query> orqueries;
+		bool hadmultiple = false;
+		string nolang, lang;
 		for (vector<string>::iterator it = splitData.terms.begin();
 		     it != splitData.terms.end(); it++) {
 		    list<string>exp;
-		    maybeStemExp(db, stemlang, *it, exp);
+		    lang = (op == Xapian::Query::OP_PHRASE || hadmultiple) ?
+			nolang : stemlang;
+		    maybeStemExp(db, lang, *it, exp);
+		    if (exp.size() > 1)
+			hadmultiple = true;
 		    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 						      exp.begin(), exp.end()));
 		}

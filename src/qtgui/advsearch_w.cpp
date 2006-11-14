@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.7 2006-11-14 15:13:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.8 2006-11-14 17:41:12 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -59,13 +59,7 @@ void AdvSearch::init()
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
     connect(browsePB, SIGNAL(clicked()), this, SLOT(browsePB_clicked()));
     connect(addFiltypPB, SIGNAL(clicked()), this, SLOT(addFiltypPB_clicked()));
-    connect(andWordsLE, SIGNAL(returnPressed()), 
-	    this, SLOT(searchPB_clicked()));
-    connect(orWordsLE, SIGNAL(returnPressed()), 
-	    this, SLOT(searchPB_clicked()));
-    connect(noWordsLE, SIGNAL(returnPressed()), 
-	    this, SLOT(searchPB_clicked()));
-    connect(phraseLE, SIGNAL(returnPressed()), this, SLOT(searchPB_clicked()));
+
     connect(subtreeCMB->lineEdit(), SIGNAL(returnPressed()), 
 	    this, SLOT(searchPB_clicked()));
     connect(delAFiltypPB, SIGNAL(clicked()), 
@@ -75,6 +69,31 @@ void AdvSearch::init()
     connect(saveFileTypesPB, SIGNAL(clicked()), 
 	    this, SLOT(saveFileTypes()));
     connect(addClausePB, SIGNAL(clicked()), this, SLOT(addClause()));
+
+    // Create preconfigured clauses
+    andWords = new SearchClauseW(this);
+    andWords->tpChange(1);
+    clauseVBox->addWidget(andWords);
+
+    phrase  = new SearchClauseW(this);
+    phrase->tpChange(3);
+    clauseVBox->addWidget(phrase);
+
+    orWords = new SearchClauseW(this);
+    orWords->tpChange(0);
+    clauseVBox->addWidget(orWords);
+
+    orWords1 = new SearchClauseW(this);
+    orWords1->tpChange(0);
+    clauseVBox->addWidget(orWords1);
+
+    noWords = new SearchClauseW(this);
+    noWords->tpChange(2);
+    clauseVBox->addWidget(noWords);
+
+    fileName = new SearchClauseW(this);
+    fileName->tpChange(5);
+    clauseVBox->addWidget(fileName);
 
     // Initialize lists of accepted and ignored mime types from config
     // and settings
@@ -145,7 +164,7 @@ void AdvSearch::addClause()
     m_clauseWins.push_back(w);
     connect(w->wordsLE, SIGNAL(returnPressed()),
 	    this, SLOT(searchPB_clicked()));
-    clauseVBox->insertWidget(-1, w);
+    clauseVBox->addWidget(w);
     w->show();
     // Have to adjust the size else we lose the bottom buttons! Why?
     QSize sz = AdvSearchBaseLayout->sizeHint();
@@ -198,39 +217,52 @@ void AdvSearch::searchPB_clicked()
     RefCntr<SearchData> sdata(new SearchData(SCLT_AND));
     bool hasnotnot = false;
     bool hasnot = false;
-    if (!andWordsLE->text().isEmpty()) {
-	sdata->addClause(new SearchDataClauseSimple(SCLT_AND,
-				    (const char *)andWordsLE->text().utf8()));
-	hasnotnot = true;
+    SearchDataClause *cl;
+
+    if ((cl = andWords->getClause())) {
+	switch (cl->m_tp) {
+	case SCLT_EXCL: hasnot = true; break;
+	default: hasnotnot = true; break;
+	}
+	sdata->addClause(cl);
     }
-    if (!orWordsLE->text().isEmpty()) {
-	sdata->addClause(new SearchDataClauseSimple(SCLT_OR,
-				    (const char *)orWordsLE->text().utf8()));
-	hasnotnot = true;
+    if ((cl = phrase->getClause())) {
+	switch (cl->m_tp) {
+	case SCLT_EXCL: hasnot = true; break;
+	default: hasnotnot = true; break;
+	}
+	sdata->addClause(cl);
     }
-    if (!orWords1LE->text().isEmpty()) {
-	sdata->addClause(new SearchDataClauseSimple(SCLT_OR,
-				    (const char *)orWords1LE->text().utf8()));
-	hasnotnot = true;
+    if ((cl = orWords->getClause())) {
+	switch (cl->m_tp) {
+	case SCLT_EXCL: hasnot = true; break;
+	default: hasnotnot = true; break;
+	}
+	sdata->addClause(cl);
     }
-    if (!noWordsLE->text().isEmpty()) {
-	sdata->addClause(new SearchDataClauseSimple(SCLT_EXCL,
-				    (const char *)noWordsLE->text().utf8()));
-	hasnot = true;
+    if ((cl = orWords1->getClause())) {
+	switch (cl->m_tp) {
+	case SCLT_EXCL: hasnot = true; break;
+	default: hasnotnot = true; break;
+	}
+	sdata->addClause(cl);
     }
-    if (!fileNameLE->text().isEmpty()) {
-	sdata->addClause(new SearchDataClauseFilename(
-				     (const char *)fileNameLE->text().utf8()));
-	hasnotnot = true;
+    if ((cl = noWords->getClause())) {
+	switch (cl->m_tp) {
+	case SCLT_EXCL: hasnot = true; break;
+	default: hasnotnot = true; break;
+	}
+	sdata->addClause(cl);
     }
-    if (!phraseLE->text().isEmpty()) {
-	sdata->addClause(new SearchDataClauseDist(SCLT_PHRASE,
-				  (const char *)phraseLE->text().utf8(), 0));
-	hasnotnot = true;
+    if ((cl = fileName->getClause())) {
+	switch (cl->m_tp) {
+	case SCLT_EXCL: hasnot = true; break;
+	default: hasnotnot = true; break;
+	}
+	sdata->addClause(cl);
     }
     for (list<SearchClauseW*>::iterator it = m_clauseWins.begin();
 	 it != m_clauseWins.end(); it++) {
-	SearchDataClause *cl;
 	if ((cl = (*it)->getClause())) {
 	    switch (cl->m_tp) {
 	    case SCLT_EXCL: hasnot = true; break;

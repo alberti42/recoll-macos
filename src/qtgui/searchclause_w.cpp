@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.1 2006-11-14 13:55:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.2 2006-11-14 17:41:12 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -130,14 +130,19 @@ SearchClauseW::getClause()
 // Handle combobox change: may need to enable/disable the distance spinbox
 void SearchClauseW::tpChange(int index)
 {
+    if (index < 0 || index > 5)
+	return;
+    if (sTpCMB->currentItem() != index)
+	sTpCMB->setCurrentItem(index);
     switch (index) {
     case 3:
     case 4:
+	proxSlackSB->show();
 	proxSlackSB->setEnabled(true);
 	if (index == 4)
 	    proxSlackSB->setValue(10);
 	break;
     default:
-	proxSlackSB->setEnabled(false);
+	proxSlackSB->close();
     }
 }
