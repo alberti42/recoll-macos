@@ -235,13 +235,13 @@
                                 </widget>
                                 <widget class="Line">
                                     <property name="name">
-                                        <cstring>line4</cstring>
+                                        <cstring>clauseline</cstring>
                                     </property>
                                     <property name="frameShape">
                                         <enum>HLine</enum>
                                     </property>
                                     <property name="frameShadow">
-                                        <enum>Sunken</enum>
+                                        <enum>Plain</enum>
                                     </property>
                                     <property name="orientation">
                                         <enum>Horizontal</enum>

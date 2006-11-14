@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.6 2006-11-14 13:55:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.7 2006-11-14 15:13:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -90,6 +90,12 @@ void AdvSearch::init()
 
     subtreeCMB->insertStringList(prefs.asearchSubdirHist);
     subtreeCMB->setEditText("");
+
+    // The clauseline frame is needed to force designer to accept a
+    // vbox to englobe the base clauses grid and 'something else' (the
+    // vbox is so that we can then insert SearchClauseWs), but we
+    // don't want to see it.
+    clauseline->close();
 }
 
 
