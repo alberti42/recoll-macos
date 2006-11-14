@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.5 2006-11-13 08:58:47 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.6 2006-11-14 13:55:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -74,6 +74,7 @@ void AdvSearch::init()
 	    this, SLOT(addAFiltypPB_clicked()));
     connect(saveFileTypesPB, SIGNAL(clicked()), 
 	    this, SLOT(saveFileTypes()));
+    connect(addClausePB, SIGNAL(clicked()), this, SLOT(addClause()));
 
     // Initialize lists of accepted and ignored mime types from config
     // and settings
@@ -130,6 +131,19 @@ void AdvSearch::saveFileTypes()
 	prefs.asearchIgnFilTyps.append(item->text());
     }
     rwSettings(true);
+}
+
+void AdvSearch::addClause()
+{
+    SearchClauseW *w = new SearchClauseW(this);
+    m_clauseWins.push_back(w);
+    connect(w->wordsLE, SIGNAL(returnPressed()),
+	    this, SLOT(searchPB_clicked()));
+    clauseVBox->insertWidget(-1, w);
+    w->show();
+    // Have to adjust the size else we lose the bottom buttons! Why?
+    QSize sz = AdvSearchBaseLayout->sizeHint();
+    resize(QSize(sz.width()+20, sz.height()+40));
 }
 
 // Move selected file types from the ignored to the searched box
@@ -208,7 +222,17 @@ void AdvSearch::searchPB_clicked()
 				  (const char *)phraseLE->text().utf8(), 0));
 	hasnotnot = true;
     }
-
+    for (list<SearchClauseW*>::iterator it = m_clauseWins.begin();
+	 it != m_clauseWins.end(); it++) {
+	SearchDataClause *cl;
+	if ((cl = (*it)->getClause())) {
+	    switch (cl->m_tp) {
+	    case SCLT_EXCL: hasnot = true; break;
+	    default: hasnotnot = true; break;
+	    }
+	    sdata->addClause(cl);
+	}
+    }
     if (!hasnotnot) {
 	if (!hasnot)
 	    return;
@@ -248,4 +272,3 @@ void AdvSearch::browsePB_clicked()
     QString dir = QFileDialog::getExistingDirectory();
     subtreeCMB->setEditText(dir);
 }
-

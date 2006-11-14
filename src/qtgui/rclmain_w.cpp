@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.6 2006-11-13 08:58:47 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.7 2006-11-14 13:55:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -317,8 +317,7 @@ static string urltolocalpath(string url)
     return url.substr(7, string::npos);
 }
 
-// Execute an advanced search query. The parameters normally come from
-// the advanced search dialog
+// Start a db query and set the reslist docsource
 void RclMain::startAdvSearch(RefCntr<Rcl::SearchData> sdata)
 {
     LOGDEB(("RclMain::startAdvSearch\n"));
@@ -340,8 +339,11 @@ void RclMain::startAdvSearch(RefCntr<Rcl::SearchData> sdata)
     if (!prefs.queryStemLang.length() == 0)
 	qopts |= Rcl::Db::QO_STEM;
 
-    if (!rcldb->setQuery(sdata, qopts, prefs.queryStemLang.ascii()))
+    if (!rcldb->setQuery(sdata, qopts, prefs.queryStemLang.ascii())) {
+	QMessageBox::warning(0, "Recoll", tr("Cant start query: ") +
+			     QString::fromAscii(rcldb->getReason().c_str()));
 	return;
+    }
     curPreview = 0;
 
     DocSequence *docsource;

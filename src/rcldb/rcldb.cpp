@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.93 2006-11-13 14:51:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.94 2006-11-14 13:55:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1250,7 +1250,7 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
 	LOGERR(("Db::setQuery: no db!\n"));
 	return false;
     }
-
+    m_reason.erase();
     LOGDEB(("Db::setQuery:\n"));
 
     m_filterTopDir = sdata->m_topdir;
@@ -1259,7 +1259,11 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
     m_ndb->m_termfreqs.clear();
 
     Xapian::Query xq;
-    sdata->toNativeQuery(*this, &xq, (opts & Db::QO_STEM) ? stemlang : "");
+    if (!sdata->toNativeQuery(*this, &xq, 
+			      (opts & Db::QO_STEM) ? stemlang : "")) {
+	m_reason += sdata->getReason();
+	return false;
+    }
 
     m_ndb->query = xq;
     delete m_ndb->enquire;

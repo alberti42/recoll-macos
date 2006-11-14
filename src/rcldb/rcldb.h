@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.41 2006-11-13 08:49:44 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.42 2006-11-14 13:55:43 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -217,13 +217,14 @@ class Db {
 
     /** Filename wildcard expansion */
     bool filenameWildExp(const string& exp, list<string>& names);
-
+    string getReason(){return m_reason;}
 private:
 
     string m_filterTopDir; // Current query filter on subtree top directory 
     vector<int> m_dbindices; // In case there is a postq filter: sequence of 
                              // db indices that match
 
+    string m_reason; // Error explanation
     // Things we don't want to have here.
     friend class Native;
     Native *m_ndb; // Pointer to private data. We don't want db(ie

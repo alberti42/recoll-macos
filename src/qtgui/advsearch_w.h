@@ -1,6 +1,6 @@
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-/* @(#$Id: advsearch_w.h,v 1.3 2006-11-13 08:58:47 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: advsearch_w.h,v 1.4 2006-11-14 13:55:43 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,12 +17,13 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include <list>
 #include <qvariant.h>
 #include <qdialog.h>
 #include "advsearch.h"
-#include "refcntr.h"
-
+#include "searchclause_w.h"
 #include "recoll.h"
+#include "refcntr.h"
 #include "searchdata.h"
 
 class AdvSearch : public AdvSearchBase
@@ -30,7 +31,7 @@ class AdvSearch : public AdvSearchBase
     Q_OBJECT
 
 public:
-    AdvSearch( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 ) : AdvSearchBase(parent,name,modal,fl)
+    AdvSearch(QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0) : AdvSearchBase(parent,name,modal,fl)
 	{init();}
 	~AdvSearch(){}
 public slots:
@@ -38,17 +39,18 @@ public slots:
     virtual void delAFiltypPB_clicked();
     virtual void addFiltypPB_clicked();
     virtual void addAFiltypPB_clicked();
-    virtual void restrictFtCB_toggled( bool on );
+    virtual void restrictFtCB_toggled(bool on);
     virtual void searchPB_clicked();
     virtual void browsePB_clicked();
     virtual void saveFileTypes();
+    virtual void addClause();
 
 signals:
     void startSearch(RefCntr<Rcl::SearchData>);
 
 private:
     virtual void init();
-
+    std::list<SearchClauseW *> m_clauseWins;
 };
 
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.1 2006-11-13 08:49:44 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.2 2006-11-14 13:55:43 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,16 +43,21 @@ typedef  list<SearchDataClause *>::iterator qlist_it_t;
 bool SearchData::toNativeQuery(Rcl::Db &db, void *d, const string& stemlang)
 {
     Xapian::Query xq;
+    m_reason.erase();
 
     // Walk the clause list translating each in turn and building the 
     // Xapian query tree
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
 	Xapian::Query nq;
-	(*it)->toNativeQuery(db, &nq, stemlang);
-	Xapian::Query::op op;
+	if (!(*it)->toNativeQuery(db, &nq, stemlang)) {
+	    LOGERR(("SearchData::toNativeQuery: failed\n"));
+	    m_reason = (*it)->getReason();
+	    return false;
+	}	    
 
 	// If this structure is an AND list, must use AND_NOT for excl clauses.
 	// Else this is an OR list, and there can't be excl clauses
+	Xapian::Query::op op;
 	if (m_tp == SCLT_AND) {
 	    op = (*it)->m_tp == SCLT_EXCL ? 
 		Xapian::Query::OP_AND_NOT: Xapian::Query::OP_AND;
@@ -137,97 +142,133 @@ class wsQData : public TextSplitCB {
     }
 };
 
+/** Possibly expand term into its stem siblings, make them dumb strings */
+static void maybeStemExp(Db& db, const string& stemlang, const string& term, 
+			 list<string>& exp)
+{
+    string term1;
+    dumb_string(term, term1);
+    if (!stemlang.empty()) {
+	bool nostemexp = false;
+	// Check if the first letter is a majuscule in which
+	// case we do not want to do stem expansion. Note that
+	// the test is convoluted and possibly problematic
+	if (term.length() > 0) {
+	    string noacterm,noaclowterm;
+	    if (unacmaybefold(term, noacterm, "UTF-8", false) &&
+		unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
+		Utf8Iter it1(noacterm);
+		Utf8Iter it2(noaclowterm);
+		if (*it1 != *it2)
+		    nostemexp = true;
+	    }
+	}
+	LOGDEB1(("Term: %s stem expansion: %s\n", 
+		 term.c_str(), nostemexp?"no":"yes"));
+	if (!nostemexp) {
+	    exp = db.stemExpand(stemlang, term1);
+	    return;
+	}
+    }
 
-// Turn string into list of xapian queries. There is little
-// interpretation done on the string (no +term -term or filename:term
-// stuff). We just separate words and phrases, and interpret
-// capitalized terms as wanting no stem expansion. 
-// The final list contains one query for each term or phrase
-//   - Elements corresponding to a stem-expanded part are an OP_OR
-//     composition of the stem-expanded terms (or a single term query).
-//   - Elements corresponding to a phrase are an OP_PHRASE composition of the
-//     phrase terms (no stem expansion in this case)
-static void stringToXapianQueries(const string &iq,
+    exp.push_back(term1);
+}
+
+/** Turn string into list of xapian queries. There is little
+ * interpretation done on the string (no +term -term or filename:term
+ * stuff). We just separate words and phrases, and interpret
+ * capitalized terms as wanting no stem expansion. 
+ * The final list contains one query for each term or phrase
+ *   - Elements corresponding to a stem-expanded part are an OP_OR
+ *    composition of the stem-expanded terms (or a single term query).
+ *   - Elements corresponding to a phrase are an OP_PHRASE composition of the
+ *     phrase terms (no stem expansion in this case)
+ * @return the subquery count (either or'd stem-expanded terms or phrase word
+ *   count)
+ */
+static bool stringToXapianQueries(const string &iq,
 				  const string& stemlang,
 				  Db& db,
-				  list<Xapian::Query> &pqueries)
+				  string &ermsg,
+				  list<Xapian::Query> &pqueries,
+				  int slack = 0, bool useNear = false)
 {
     string qstring = iq;
     bool opt_stemexp = !stemlang.empty();
+    ermsg.erase();
 
-    // Split into (possibly single word) phrases ("this is a phrase"):
+    // Split into words and phrases (word1 word2 "this is a phrase"):
     list<string> phrases;
     stringToStrings(qstring, phrases);
 
     // Then process each phrase: split into terms and transform into
     // appropriate Xapian Query
+    try {
+	for (list<string>::iterator it = phrases.begin(); 
+	     it != phrases.end(); it++) {
+	    LOGDEB(("strToXapianQ: phrase or word: [%s]\n", it->c_str()));
 
-    for (list<string>::iterator it=phrases.begin(); it !=phrases.end(); it++) {
-	LOGDEB(("strToXapianQ: phrase or word: [%s]\n", it->c_str()));
+	    // If there are both spans and single words in this element,
+	    // we need to use a word split, else a phrase query including
+	    // a span would fail if we didn't adjust the proximity to
+	    // account for the additional span term which is complicated.
+	    wsQData splitDataS, splitDataW;
+	    TextSplit splitterS(&splitDataS, TextSplit::TXTS_ONLYSPANS);
+	    splitterS.text_to_words(*it);
+	    TextSplit splitterW(&splitDataW, TextSplit::TXTS_NOSPANS);
+	    splitterW.text_to_words(*it);
+	    wsQData& splitData = splitDataS;
+	    if (splitDataS.terms.size() > 1 && splitDataS.terms.size() != 
+		splitDataW.terms.size())
+		splitData = splitDataW;
 
-	// If there are both spans and single words in this element,
-	// we need to use a word split, else a phrase query including
-	// a span would fail if we didn't adjust the proximity to
-	// account for the additional span term which is complicated.
-	wsQData splitDataS, splitDataW;
-	TextSplit splitterS(&splitDataS, TextSplit::TXTS_ONLYSPANS);
-	splitterS.text_to_words(*it);
-	TextSplit splitterW(&splitDataW, TextSplit::TXTS_NOSPANS);
-	splitterW.text_to_words(*it);
-	wsQData& splitData = splitDataS;
-	if (splitDataS.terms.size() > 1 && splitDataS.terms.size() != 
-	    splitDataW.terms.size())
-	    splitData = splitDataW;
-
-	LOGDEB1(("strToXapianQ: splitter term count: %d\n", 
-		splitData.terms.size()));
-	switch(splitData.terms.size()) {
-	case 0: continue;// ??
-	case 1: // Not a real phrase: one term
-	    {
-		string term = splitData.terms.front();
-		bool nostemexp = false;
-		// Check if the first letter is a majuscule in which
-		// case we do not want to do stem expansion. Note that
-		// the test is convoluted and possibly problematic
-		if (term.length() > 0) {
-		    string noacterm,noaclowterm;
-		    if (unacmaybefold(term, noacterm, "UTF-8", false) &&
-			unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
-			Utf8Iter it1(noacterm);
-			Utf8Iter it2(noaclowterm);
-			if (*it1 != *it2)
-			    nostemexp = true;
-		    }
+	    LOGDEB1(("strToXapianQ: splitter term count: %d\n", 
+		     splitData.terms.size()));
+	    switch(splitData.terms.size()) {
+	    case 0: continue;// ??
+	    case 1: // Not a real phrase: one term
+		{
+		    string term = splitData.terms.front();
+		    list<string> exp;  
+		    maybeStemExp(db, stemlang, term, exp);
+		    // Push either term or OR of stem-expanded set
+		    pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
+						     exp.begin(), exp.end()));
 		}
-		LOGDEB1(("Term: %s stem expansion: %s\n", 
-			term.c_str(), nostemexp?"no":"yes"));
+		break;
 
-		list<string> exp;  
-		string term1;
-		dumb_string(term, term1);
-		// Possibly perform stem compression/expansion
-		if (!nostemexp && opt_stemexp) {
-		    exp = db.stemExpand(stemlang, term1);
-		} else {
-		    exp.push_back(term1);
+	    default:
+		// Phrase/near
+		Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
+		Xapian::Query::OP_PHRASE;
+		list<Xapian::Query> orqueries;
+		for (vector<string>::iterator it = splitData.terms.begin();
+		     it != splitData.terms.end(); it++) {
+		    list<string>exp;
+		    maybeStemExp(db, stemlang, *it, exp);
+		    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
+						      exp.begin(), exp.end()));
 		}
-
-		// Push either term or OR of stem-expanded set
-		pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
-						 exp.begin(), exp.end()));
+		pqueries.push_back(Xapian::Query(op,
+						 orqueries.begin(),
+						 orqueries.end(),
+					 splitData.terms.size() + slack));
 	    }
-	    break;
-
-	default:
-	    // Phrase: no stem expansion
-	    splitData.dumball();
-	    LOGDEB(("Pushing phrase: [%s]\n", splitData.catterms().c_str()));
-	    pqueries.push_back(Xapian::Query(Xapian::Query::OP_PHRASE,
-					     splitData.terms.begin(),
-					     splitData.terms.end()));
 	}
+    } catch (const Xapian::Error &e) {
+	ermsg = e.get_msg();
+    } catch (const string &s) {
+	ermsg = s;
+    } catch (const char *s) {
+	ermsg = s;
+    } catch (...) {
+	ermsg = "Caught unknown exception";
     }
+    if (!ermsg.empty()) {
+	LOGERR(("stringToXapianQueries: %s\n", ermsg.c_str()));
+	return false;
+    }
+    return true;
 }
 
 // Translate a simple OR, AND, or EXCL search clause. 
@@ -247,7 +288,8 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	return false;
     }
     list<Xapian::Query> pqueries;
-    stringToXapianQueries(m_text, stemlang, db, pqueries);
+    if (!stringToXapianQueries(m_text, stemlang, db, m_reason, pqueries))
+	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
 	return true;
@@ -277,17 +319,17 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
 {
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
-    
-    Xapian::Query::op op = m_tp == SCLT_PHRASE ? Xapian::Query::OP_PHRASE :
-	Xapian::Query::OP_NEAR;
 
     list<Xapian::Query> pqueries;
     Xapian::Query nq;
     string s = string("\"") + m_text + string("\"");
+    bool useNear = m_tp == SCLT_NEAR;
 
     // Use stringToXapianQueries anyway to lowercase and simplify the
     // phrase terms etc. The result should be a single element list
-    stringToXapianQueries(s, stemlang, db, pqueries);
+    if (!stringToXapianQueries(s, stemlang, db, m_reason, pqueries,
+			       m_slack, useNear))
+	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseDist: resolved to null query\n"));
 	return true;

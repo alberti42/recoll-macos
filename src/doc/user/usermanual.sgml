@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.23 2006-11-06 17:37:22 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.24 2006-11-14 13:55:43 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -152,8 +152,8 @@
         giving &RCL; a try, but you may want to adjust it
         later.</para>
 
-      <para><link linkend="rcl.indexing.exec">Indexing</link> is started
-      automatically the first time you execute the
+      <para><link linkend="rcl.indexing.periodic.exec">Indexing</link>
+      is started automatically the first time you execute the
       <command>recoll</command> search graphical user interface, or by
       executing the <command>recollindex</command> command.</para>
 
@@ -180,21 +180,41 @@
       later on by specifying an option to the indexing command
       (<command>recollindex -z</command>).</para> 
 
-      <para>&RCL; indexing takes place at discrete times. There is
-      currently no interface to real time file modification
-      monitors. The typical usage is to have a nightly indexing run
-      <link linkend="rcl.indexing.automat">programmed</link> into your
-      <command>cron</command> file.</para>
+      <para>&RCL; indexing can be performed with two different
+       methods:</para>
 
-      <sidebar><para>There is nothing in &RCL; and &XAP;
-      that would prevent interfacing with a real time file
-      modification monitor, but this would tend to consume significant
-      system resources for dubious gain, because you rarely need a
-      full text search to find documents you just
-      modified. <command>recollindex -i</command>  can be used to add
-      individual files to the index if you want to play with this, see
-      the manual page.</para>
-      </sidebar>
+      <itemizedlist>
+
+	<listitem>
+	  <formalpara><title>Periodic indexing:</title>
+	    <para>indexing takes place at discrete
+	times, by executing the <command>recollindex</command>
+	command. The typical usage is to have a nightly indexing run 
+      <link linkend="rcl.indexing.periodic.automat">programmed</link> into your
+      <command>cron</command> file.</para>
+	  </formalpara>
+	</listitem>
+
+	<listitem>
+	  <formalpara><title>Real time indexing:</title>
+	    <para>indexing takes place as soon as a file is created or
+	    changed. <command>recollindex</command> runs as a daemon
+	    and uses a file system alteration monitor such as
+	    <application>Fam</application>, 
+	    <application>Gamin</application> or
+	    <application>inotify</application> do detect file changes.
+            Monitoring a big directory tree can consume significant
+            system resources.</para>
+	  </formalpara>
+	</listitem>
+      </itemizedlist>
+
+      <para>The choice between the two methods is mostly a matter of
+      preference, and they can be combined by setting up multiple
+      indexes (ie: use periodic indexing on a big documentation
+      directory, and real time indexing on a small home
+      directory). Monitoring a big file system tree can consume
+      significant system resources, for dubious gains. <para>
 
       <para>&RCL; knows about quite a few different document
       types. The parameters for document types recognition and
@@ -345,10 +365,13 @@ recoll
 
     </sect1>
 
-    <sect1 id="rcl.indexing.exec">
-      <title>Starting indexing</title>
+    <sect1 id="rcl.indexing.periodic">
+      <title>Periodic indexing</title>
 
-      <para>Indexing is performed either by the
+      <sect2 id="rcl.indexing.periodic.exec">
+	<title>Starting indexing</title>
+
+	<para>Indexing is performed either by the
         <command>recollindex</command> program, or by the
         indexing thread inside the <command>recoll</command>
         program (use the <guimenu>File</guimenu> menu). Both programs
@@ -357,11 +380,11 @@ recoll
         <replaceable>confdir</replaceable> option to specify the
         configuration directory to be used.</para>
 
-      <para>If the <command>recoll</command> program finds no index
+	<para>If the <command>recoll</command> program finds no index
        when it starts, it will automatically start indexing (except
        if canceled).</para>
 
-      <para>It is best to avoid interrupting the indexing process, as
+	<para>It is best to avoid interrupting the indexing process, as
         this may sometimes leave the index in a bad state.  This is
         not a serious problem, as you then just need to delete 
         the index files and restart the indexing. The index files are
@@ -371,24 +394,83 @@ recoll
         <literal>-z</literal>, which will reset the database before
         indexing.</para> 
 
-    </sect1>
+      </sect2>
 
-    <sect1 id="rcl.indexing.automat">
-      <title>Using <command>cron</command> to automate
+      <sect2 id="rcl.indexing.periodic.automat">
+	<title>Using <command>cron</command> to automate
       indexing</title>
 
-      <para>The most common way to set up indexing is to have a cron
+	<para>The most common way to set up indexing is to have a cron
       task execute it every night. For example the following
       <filename>crontab</filename> entry would do it every day at
       3:30AM (supposing <command>recollindex</command> is in your PATH):</para>
 
-      <programlisting>30 3 * * * recollindex > /tmp/recolltrace 2>&1</programlisting>
+	<programlisting>30 3 * * * recollindex > /tmp/recolltrace 2>&1</programlisting>
 
-      <para>The usual command to edit your
+	<para>The usual command to edit your
       <filename>crontab</filename> is 
         <userinput>crontab -e</userinput> (which will usually start the
       <command>vi</command> editor to edit the file). You may have
       more sophisticated tools available on your system.</para>
+
+      </sect2>
+    </sect1>
+
+    <sect1 id="rcl.indexing.monitor">
+      <title>Real time indexing</title>
+
+      <para>Real time monitoring/indexing is performed by starting the
+      <command>recollindex -m</command> command. With this option,
+      <command>recollindex</command> will detach from the terminal and
+      become a daemon, forever monitoring file changes and updating
+      the index.</para>
+
+      <para>The package must have been 
+       <link linkend="rcl.install.building.build">configured</link>
+      with option <literal>--with-fam</literal> or
+      <literal>--with-inotify</literal> for the monitoring
+      code and option to be enabled in
+      <command>recollindex</command>. This is not currently the
+      default.</para>
+
+      <para>The <filename>rclmon.sh</filename> script can be used to
+      easily start and stop the daemon. It can be found in the
+      <filename>examples</filename> directory (typically
+      <filename>/usr/local/[share/]recoll/examples</filename>).</para>
+
+      <para>Starting and stopping the daemon could be performed, for
+      example, as part of the user session script. For example, my
+      out of fashion xdm-based session has an .xsession script with
+      the following lines at the end:</para> 
+
+      <programlisting>recollconf=$HOME/.recoll-home
+recolldata=/usr/local/share/recoll
+RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
+
+fvwm 
+
+RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
+</programlisting>
+
+      <para>The indexing daemon gets started, then the window manager,
+      for which the session waits. When the window manager exits, the
+      indexing daemon is stopped, then the session ends (at script
+      exit). This should be adjusted for your flavour of session
+      management, and of course, there are other possibilities.</para>
+
+      <para>By default, the indexing daemon will write its messages to
+      a file inside the configuration directory (this is controlled by
+      the <literal>daemlogfilename</literal> and
+      <literal>daemloglevel</literal> configuration parameters). You
+      may want to change this. Also the log file will only be truncated
+      when the daemon starts. If the daemon runs permanently, the log
+      file may grow quite big, depending on the log level.</para>
+
+      <para>The real time indexing code is relatively young, and there
+      are still a few quirks. File deletions occurring while the
+      monitor is not running will not be detected. You'll have to run
+      a normal incremental indexing pass from time to time to purge
+      the database. There may still be other problems.</para>
 
     </sect1>
 
@@ -446,11 +528,10 @@ recoll
         text field). Please note, however, that only the search texts
         are remembered, not the mode (all/any/file name).</para>
 
-      <para>Hitting <keycap>^Tab</keycap> (<keycap>Ctrl</keycap> +
-        <keycap>Tab</keycap>) while entering a word in the 
-        simple search entry will open a window with possible completions
-        for the word. The completions are extracted from the
-        database.</para>
+      <para>Typing <keycap>Esc</keycap> <keycap>Space</keycap>) while
+        entering a word in the simple search entry will open a window
+        with possible completions for the word. The completions are
+        extracted from the database.</para>
 
       <para>Double-clicking on a word in the result list or a preview
       window will insert it into the simple search entry field.</para>
@@ -762,11 +843,11 @@ recoll
       <title>Search tips, shortcuts</title>
 
       <formalpara><title>Term completion</title>
-	<para>Typing <keycap>^TAB</keycap> (<keycap>Control</keycap> +
-	<keycap>Tab</keycap>) in the simple
-	search entry field while entering a word will either complete
-	the current word if its beginning matches a unique term in the
-	index, or open a window to propose a list of completions</para>
+	<para>Typing <keycap>Esc</keycap> <keycap>Space</keycap> in
+	the simple search entry field while entering a word will
+	either complete the current word if its beginning matches a
+	unique term in the index, or open a window to propose a list
+	of completions.</para>
       </formalpara>
 
       <formalpara><title>Picking up new terms from result or preview 
@@ -881,6 +962,54 @@ recoll
 	you may want to customize the font and/or font size. The rest
 	of the fonts used by &RCL; are determined by your generic QT
 	config (try the <command>qtconfig</command> command.</para>
+	</listitem>
+
+	<listitem><para><guilabel>Result paragraph format
+	string</guilabel>: allows you to change the presentation of
+	each result list entry. This is a qt-html string where the
+	following printf-like <literal>%</literal> substitutions will
+	be performed:
+        <itemizedlist>
+          <listitem>
+	    <formalpara><title>%A</title><para>Abstract</para></formalpara>
+	  </listitem>
+	  <listitem><formalpara><title>%D</title><para>Date</para></formalpara>
+	  </listitem>
+	  <listitem><formalpara><title>%K</title><para>Keywords (if
+	  any)</para></formalpara> 
+	  </listitem>
+	  <listitem><formalpara><title>%L</title><para>Preview and
+	  Edit links</para></formalpara> 
+	  </listitem>
+	  <listitem><formalpara><title>%M</title><para>Mime
+		  type</para></formalpara> 
+	  </listitem>
+	  <listitem><formalpara><title>%N</title><para>result Number
+		  </para></formalpara> 
+	  </listitem>
+	  <listitem><formalpara><title>%R</title><para>Relevance
+	  percentage</para></formalpara> 
+	  </listitem>
+	  <listitem><formalpara><title>%S</title><para>Size
+	  information</para></formalpara> 
+	  </listitem>
+	  <listitem><formalpara><title>%T</title><para>Title</para>
+		    </formalpara> 
+	  </listitem>
+	  <listitem><formalpara><title>%U</title><para>Url</para></formalpara>
+	  </listitem>
+	</itemizedlist>
+        The default value for the string is:
+        <programlisting>%R %S %L &amp;nbsp;&amp;nbsp;&lt;b>%T&lt;/b>&lt;br>
+%M&amp;nbsp;%D&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i>%U&lt;/i>&lt;br>
+%A %K
+        </programlisting>
+        You may, for example, try the following for a more web-like
+        experience (but the document title will not act as a link):
+        <programlisting>&lt;u>&lt;b>&lt;font size=+1 color=#1111cf>%T&lt;/font>&lt;/b>&lt;/u>&lt;br>
+%A&lt;font color=#008000>%U - %S&lt;/font> - %L
+        </programlisting>
+	</para>
 	</listitem>
 
 	<listitem><para><guilabel>HTML help browser</guilabel>: this
@@ -1119,7 +1248,7 @@ recoll
         <title>Building</title>
 
       <para>&RCL; has been built on
-        Linux (redhat7.3, mandriva 2005, Fedora Core 3), FreeBSD and
+        Linux (redhat7.3, mandriva 2005/6, Fedora Core 3/4/5), FreeBSD and
         Solaris 8. If you build on another system, <ulink
         url="mailto:jean-francois.dockes@wanadoo.fr">I would very much
         welcome patches</ulink>.</para>
@@ -1131,7 +1260,9 @@ recoll
         <itemizedlist>
           <listitem><para><literal>QTDIR</literal> should point to the
           directory above the one that holds the qt include files (ie:
-          qt.h).</para>
+          if <filename>qt.h</filename> is
+          <filename>/usr/local/qt/include/qt.h</filename>, QTDIR
+          should be <filename>/usr/local/qt</filename>).</para>
           </listitem>
           <listitem><para><literal>QMAKESPECS</literal> should
           be set to the name of one of the
@@ -1145,13 +1276,13 @@ recoll
         needed because there is a <filename>default</filename> link in
         <filename>mkspecs/</filename>.</para>
 
-        <para>The &RCL; <command>configure</command> script does a
-        better job of checking these variables after release
-        1.1.1. Before this, unexplained errors will occur during
-        compilation if the environment is not set up. Also, for 1.1.0 the
-        <command>qmake</command> command should be in your PATH (later
-        releases can also find it in
-        <filename>$QTDIR/bin</filename>).</para> 
+	<formalpara><title>Configure
+	options:</title><para><literal>--without-aspell</literal> 
+	will disable the code for phonetic matching of search
+	terms. <literal>--with-fam</literal> or
+	<literal>--with-inotify</literal> will enable the code for
+	real time indexing. Refer to <literal>configure
+	--help</literal> output for details.</para>
 
       <para>Normal procedure:</para>
       <screen>
@@ -1338,16 +1469,21 @@ recoll
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>loglevel</literal></term>
+          <varlistentry><term><literal>loglevel,daemloglevel</literal></term>
             <listitem><para>Verbosity level for recoll and
             recollindex. A value of 4 lists quite a lot of
-            debug/information messages. 2 only lists errors. </para>
+            debug/information messages. 2 only lists errors. The
+            <literal>daem</literal>version is specific to the indexing monitor
+            daemon.</para>
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>logfilename</literal></term>
+          <varlistentry><term><literal>logfilename,
+          daemlogfilename</literal></term> 
             <listitem><para>Where the messages should go. 'stderr' can
-            be used as a special value, and is the default. </para>
+            be used as a special value, and is the default. The
+            <literal>daem</literal>version is specific to the indexing monitor
+            daemon.</para>
             </listitem>
           </varlistentry>
 

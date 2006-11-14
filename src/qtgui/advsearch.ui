@@ -21,7 +21,7 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout12</cstring>
+                <cstring>layout18</cstring>
             </property>
             <vbox>
                 <property name="name">
@@ -29,146 +29,225 @@
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout11</cstring>
+                        <cstring>layout17</cstring>
                     </property>
                     <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel2</cstring>
-                            </property>
-                            <property name="frameShape">
-                                <enum>NoFrame</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>Plain</enum>
-                            </property>
-                            <property name="margin">
-                                <number>7</number>
-                            </property>
-                            <property name="text">
-                                <string>Search for files&lt;br&gt;having all of:</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except "exact phrase" can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;There are two &lt;em&gt;Any of these&lt;/em&gt; fields so you can search for things like: &lt;br&gt;&lt;em&gt;(apple OR pear) AND (green OR sour)&lt;/em&gt;</string>
-                            </property>
-                        </widget>
                         <widget class="QLayoutWidget">
                             <property name="name">
-                                <cstring>layout10</cstring>
+                                <cstring>layout16</cstring>
                             </property>
-                            <grid>
+                            <vbox>
                                 <property name="name">
                                     <cstring>unnamed</cstring>
                                 </property>
-                                <property name="margin">
-                                    <number>8</number>
-                                </property>
-                                <widget class="QLabel" row="0" column="0">
+                                <spacer>
                                     <property name="name">
-                                        <cstring>andWordsTL</cstring>
+                                        <cstring>spacer1</cstring>
                                     </property>
-                                    <property name="text">
-                                        <string>All of these</string>
+                                    <property name="orientation">
+                                        <enum>Vertical</enum>
                                     </property>
-                                </widget>
-                                <widget class="QLineEdit" row="0" column="1">
-                                    <property name="name">
-                                        <cstring>andWordsLE</cstring>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
                                     </property>
-                                    <property name="minimumSize">
+                                    <property name="sizeHint">
                                         <size>
-                                            <width>300</width>
-                                            <height>0</height>
+                                            <width>20</width>
+                                            <height>40</height>
                                         </size>
                                     </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Enter words, and/or quoted phrases.</string>
-                                    </property>
-                                </widget>
-                                <widget class="QLabel" row="1" column="0">
+                                </spacer>
+                                <widget class="QLabel">
                                     <property name="name">
-                                        <cstring>phraseTL</cstring>
+                                        <cstring>textLabel2</cstring>
+                                    </property>
+                                    <property name="frameShape">
+                                        <enum>NoFrame</enum>
+                                    </property>
+                                    <property name="frameShadow">
+                                        <enum>Plain</enum>
+                                    </property>
+                                    <property name="margin">
+                                        <number>7</number>
                                     </property>
                                     <property name="text">
-                                        <string>This exact phrase</string>
-                                    </property>
-                                </widget>
-                                <widget class="QLineEdit" row="1" column="1">
-                                    <property name="name">
-                                        <cstring>phraseLE</cstring>
+                                        <string>Search for files&lt;br&gt;having all of:</string>
                                     </property>
                                     <property name="toolTip" stdset="0">
-                                        <string>Enter words.</string>
+                                        <string>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except "exact phrase" can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;There are two &lt;em&gt;Any of these&lt;/em&gt; fields so you can search for things like: &lt;br&gt;&lt;em&gt;(apple OR pear) AND (green OR sour)&lt;/em&gt;</string>
                                     </property>
                                 </widget>
-                                <widget class="QLabel" row="2" column="0">
+                                <spacer>
                                     <property name="name">
-                                        <cstring>orWordsTL</cstring>
+                                        <cstring>spacer2</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Vertical</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>20</width>
+                                            <height>16</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                                <widget class="QPushButton">
+                                    <property name="name">
+                                        <cstring>addClausePB</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>Any of these</string>
+                                        <string>Add clause</string>
+                                    </property>
+                                    <property name="autoDefault">
+                                        <bool>false</bool>
                                     </property>
                                 </widget>
-                                <widget class="QLineEdit" row="2" column="1">
+                            </vbox>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>clauseVBox</cstring>
+                            </property>
+                            <vbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLayoutWidget">
                                     <property name="name">
-                                        <cstring>orWordsLE</cstring>
+                                        <cstring>layout10</cstring>
                                     </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Enter words, and/or quoted phrases.</string>
-                                    </property>
+                                    <grid>
+                                        <property name="name">
+                                            <cstring>unnamed</cstring>
+                                        </property>
+                                        <property name="margin">
+                                            <number>8</number>
+                                        </property>
+                                        <widget class="QLabel" row="0" column="0">
+                                            <property name="name">
+                                                <cstring>andWordsTL</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>All of these</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLineEdit" row="0" column="1">
+                                            <property name="name">
+                                                <cstring>andWordsLE</cstring>
+                                            </property>
+                                            <property name="minimumSize">
+                                                <size>
+                                                    <width>300</width>
+                                                    <height>0</height>
+                                                </size>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Enter words, and/or quoted phrases.</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLabel" row="1" column="0">
+                                            <property name="name">
+                                                <cstring>phraseTL</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>This exact phrase</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLineEdit" row="1" column="1">
+                                            <property name="name">
+                                                <cstring>phraseLE</cstring>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Enter words.</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLabel" row="2" column="0">
+                                            <property name="name">
+                                                <cstring>orWordsTL</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Any of these</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLineEdit" row="2" column="1">
+                                            <property name="name">
+                                                <cstring>orWordsLE</cstring>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Enter words, and/or quoted phrases.</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLabel" row="3" column="0">
+                                            <property name="name">
+                                                <cstring>orWords1TL</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>Any of these</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLineEdit" row="3" column="1">
+                                            <property name="name">
+                                                <cstring>orWords1LE</cstring>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Enter words, and/or quoted phrases.</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLabel" row="4" column="0">
+                                            <property name="name">
+                                                <cstring>noWordsTL</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>None of these</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLineEdit" row="4" column="1">
+                                            <property name="name">
+                                                <cstring>noWordsLE</cstring>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Enter words, and/or quoted phrases.</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLabel" row="5" column="0">
+                                            <property name="name">
+                                                <cstring>textLabel1_2</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>File name matching</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QLineEdit" row="5" column="1">
+                                            <property name="name">
+                                                <cstring>fileNameLE</cstring>
+                                            </property>
+                                            <property name="toolTip" stdset="0">
+                                                <string>Enter file name. * and ? are wildcards.</string>
+                                            </property>
+                                        </widget>
+                                    </grid>
                                 </widget>
-                                <widget class="QLabel" row="3" column="0">
+                                <widget class="Line">
                                     <property name="name">
-                                        <cstring>orWords1TL</cstring>
+                                        <cstring>line4</cstring>
                                     </property>
-                                    <property name="text">
-                                        <string>Any of these</string>
+                                    <property name="frameShape">
+                                        <enum>HLine</enum>
                                     </property>
-                                </widget>
-                                <widget class="QLineEdit" row="3" column="1">
-                                    <property name="name">
-                                        <cstring>orWords1LE</cstring>
+                                    <property name="frameShadow">
+                                        <enum>Sunken</enum>
                                     </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Enter words, and/or quoted phrases.</string>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
                                     </property>
                                 </widget>
-                                <widget class="QLabel" row="4" column="0">
-                                    <property name="name">
-                                        <cstring>noWordsTL</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>None of these</string>
-                                    </property>
-                                </widget>
-                                <widget class="QLineEdit" row="4" column="1">
-                                    <property name="name">
-                                        <cstring>noWordsLE</cstring>
-                                    </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Enter words, and/or quoted phrases.</string>
-                                    </property>
-                                </widget>
-                                <widget class="QLabel" row="5" column="0">
-                                    <property name="name">
-                                        <cstring>textLabel1_2</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>File name matching</string>
-                                    </property>
-                                </widget>
-                                <widget class="QLineEdit" row="5" column="1">
-                                    <property name="name">
-                                        <cstring>fileNameLE</cstring>
-                                    </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>Enter file name. * and ? are wildcards.</string>
-                                    </property>
-                                </widget>
-                            </grid>
+                            </vbox>
                         </widget>
                     </hbox>
                 </widget>
@@ -385,7 +464,7 @@
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout18</cstring>
+                        <cstring>layoutFT</cstring>
                     </property>
                     <grid>
                         <property name="name">
@@ -465,7 +544,7 @@
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout25</cstring>
+                        <cstring>layout26</cstring>
                     </property>
                     <hbox>
                         <property name="name">

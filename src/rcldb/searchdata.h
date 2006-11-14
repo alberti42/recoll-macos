@@ -1,6 +1,6 @@
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.3 2006-11-13 08:49:45 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.4 2006-11-14 13:55:43 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -36,6 +36,7 @@ class SearchData {
     // Printable expanded version of the complete query, obtained from Xapian
     // valid after setQuery() call
     string m_description; 
+    string m_reason;
 
     SearchData(SClType tp) : m_tp(tp) {}
     ~SearchData() {erase();}
@@ -52,6 +53,8 @@ class SearchData {
     /** We become the owner of cl and will delete it */
     bool addClause(SearchDataClause *cl);
 
+    string getReason() {return m_reason;}
+
  private:
     /* Copyconst and assignment private and forbidden */
     SearchData(const SearchData &) {}
@@ -66,6 +69,9 @@ class SearchDataClause {
     virtual ~SearchDataClause() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string&) = 0;
     virtual bool isFileName() {return m_tp == SCLT_FILENAME ? true : false;}
+    string getReason() {return m_reason;}
+ protected:
+    string m_reason;
 };
 
 class SearchDataClauseSimple : public SearchDataClause {
@@ -81,20 +87,20 @@ protected:
 class SearchDataClauseFilename : public SearchDataClauseSimple {
  public:
     SearchDataClauseFilename(string txt)
-	: SearchDataClauseSimple(SCLT_FILENAME, m_text) {}
+	: SearchDataClauseSimple(SCLT_FILENAME, txt) {}
     virtual ~SearchDataClauseFilename() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
 };
 
 class SearchDataClauseDist : public SearchDataClauseSimple {
 public:
-    SearchDataClauseDist(SClType tp, string txt, int dist) 
-	: SearchDataClauseSimple(tp, txt), m_distance(dist) {}
+    SearchDataClauseDist(SClType tp, string txt, int slack) 
+	: SearchDataClauseSimple(tp, txt), m_slack(slack) {}
     virtual ~SearchDataClauseDist() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
 
 protected:
-    int     m_distance;
+    int     m_slack;
 };
 
 class SearchDataClauseSub : public SearchDataClause {
