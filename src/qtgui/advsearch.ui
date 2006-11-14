@@ -74,12 +74,25 @@
                                         <number>7</number>
                                     </property>
                                     <property name="text">
-                                        <string>Search for files&lt;br&gt;having all of:</string>
+                                        <string>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</string>
                                     </property>
                                     <property name="toolTip" stdset="0">
                                         <string>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except "exact phrase" can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;There are two &lt;em&gt;Any of these&lt;/em&gt; fields so you can search for things like: &lt;br&gt;&lt;em&gt;(apple OR pear) AND (green OR sour)&lt;/em&gt;</string>
                                     </property>
                                 </widget>
+                                <widget class="QComboBox">
+                                    <property name="name">
+                                        <cstring>conjunctCMB</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                         <sizepolicy>
+                                            <hsizetype>7</hsizetype>
+					    <vsizetype>0</vsizetype>
+					    <horstretch>8</horstretch>
+					    <verstretch>0</verstretch>
+                                         </sizepolicy>
+                                     </property>
+				 </widget>
                                 <spacer>
                                     <property name="name">
                                         <cstring>spacer2</cstring>

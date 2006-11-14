@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.8 2006-11-14 17:41:12 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.9 2006-11-14 17:56:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -69,6 +69,9 @@ void AdvSearch::init()
     connect(saveFileTypesPB, SIGNAL(clicked()), 
 	    this, SLOT(saveFileTypes()));
     connect(addClausePB, SIGNAL(clicked()), this, SLOT(addClause()));
+
+    conjunctCMB->insertItem(tr("All clauses"));
+    conjunctCMB->insertItem(tr("Any clause"));
 
     // Create preconfigured clauses
     andWords = new SearchClauseW(this);
@@ -214,7 +217,8 @@ void AdvSearch::restrictFtCB_toggled(bool on)
 using namespace Rcl;
 void AdvSearch::searchPB_clicked()
 {
-    RefCntr<SearchData> sdata(new SearchData(SCLT_AND));
+    RefCntr<SearchData> sdata(new SearchData(conjunctCMB->currentItem() == 0 ?
+					     SCLT_AND : SCLT_OR));
     bool hasnotnot = false;
     bool hasnot = false;
     SearchDataClause *cl;
