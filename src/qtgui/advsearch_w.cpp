@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.9 2006-11-14 17:56:40 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.10 2006-11-14 18:29:09 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,8 @@ using std::string;
 
 extern RclConfig *rclconfig;
 
+static const int initclausetypes[] = {1, 3, 0, 0, 2, 5};
+
 void AdvSearch::init()
 {
     // signals and slots connections
@@ -74,29 +76,9 @@ void AdvSearch::init()
     conjunctCMB->insertItem(tr("Any clause"));
 
     // Create preconfigured clauses
-    andWords = new SearchClauseW(this);
-    andWords->tpChange(1);
-    clauseVBox->addWidget(andWords);
-
-    phrase  = new SearchClauseW(this);
-    phrase->tpChange(3);
-    clauseVBox->addWidget(phrase);
-
-    orWords = new SearchClauseW(this);
-    orWords->tpChange(0);
-    clauseVBox->addWidget(orWords);
-
-    orWords1 = new SearchClauseW(this);
-    orWords1->tpChange(0);
-    clauseVBox->addWidget(orWords1);
-
-    noWords = new SearchClauseW(this);
-    noWords->tpChange(2);
-    clauseVBox->addWidget(noWords);
-
-    fileName = new SearchClauseW(this);
-    fileName->tpChange(5);
-    clauseVBox->addWidget(fileName);
+    for (unsigned int i = 0; i < sizeof(initclausetypes) / sizeof(int); i++) {
+	addClause(initclausetypes[i]);
+    }
 
     // Initialize lists of accepted and ignored mime types from config
     // and settings
@@ -160,8 +142,11 @@ void AdvSearch::saveFileTypes()
     }
     rwSettings(true);
 }
-
 void AdvSearch::addClause()
+{
+    addClause(0);
+}
+void AdvSearch::addClause(int tp)
 {
     SearchClauseW *w = new SearchClauseW(this);
     m_clauseWins.push_back(w);
@@ -169,9 +154,10 @@ void AdvSearch::addClause()
 	    this, SLOT(searchPB_clicked()));
     clauseVBox->addWidget(w);
     w->show();
+    w->tpChange(tp);
     // Have to adjust the size else we lose the bottom buttons! Why?
     QSize sz = AdvSearchBaseLayout->sizeHint();
-    resize(QSize(sz.width()+20, sz.height()+40));
+    resize(QSize(sz.width()+40, sz.height()+80));
 }
 
 // Move selected file types from the ignored to the searched box
@@ -221,52 +207,10 @@ void AdvSearch::searchPB_clicked()
 					     SCLT_AND : SCLT_OR));
     bool hasnotnot = false;
     bool hasnot = false;
-    SearchDataClause *cl;
 
-    if ((cl = andWords->getClause())) {
-	switch (cl->m_tp) {
-	case SCLT_EXCL: hasnot = true; break;
-	default: hasnotnot = true; break;
-	}
-	sdata->addClause(cl);
-    }
-    if ((cl = phrase->getClause())) {
-	switch (cl->m_tp) {
-	case SCLT_EXCL: hasnot = true; break;
-	default: hasnotnot = true; break;
-	}
-	sdata->addClause(cl);
-    }
-    if ((cl = orWords->getClause())) {
-	switch (cl->m_tp) {
-	case SCLT_EXCL: hasnot = true; break;
-	default: hasnotnot = true; break;
-	}
-	sdata->addClause(cl);
-    }
-    if ((cl = orWords1->getClause())) {
-	switch (cl->m_tp) {
-	case SCLT_EXCL: hasnot = true; break;
-	default: hasnotnot = true; break;
-	}
-	sdata->addClause(cl);
-    }
-    if ((cl = noWords->getClause())) {
-	switch (cl->m_tp) {
-	case SCLT_EXCL: hasnot = true; break;
-	default: hasnotnot = true; break;
-	}
-	sdata->addClause(cl);
-    }
-    if ((cl = fileName->getClause())) {
-	switch (cl->m_tp) {
-	case SCLT_EXCL: hasnot = true; break;
-	default: hasnotnot = true; break;
-	}
-	sdata->addClause(cl);
-    }
     for (list<SearchClauseW*>::iterator it = m_clauseWins.begin();
 	 it != m_clauseWins.end(); it++) {
+	SearchDataClause *cl;
 	if ((cl = (*it)->getClause())) {
 	    switch (cl->m_tp) {
 	    case SCLT_EXCL: hasnot = true; break;
