@@ -59,7 +59,8 @@ unix {
             $(BSTATIC) @LIBXAPIAN@ @LIBICONV@ $(BDYNAMIC) \
            -lz
 
-  INCLUDEPATH += ../common ../index ../query ../unac ../utils ../aspell
+  INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
+	      ../utils ../aspell ../rcldb
   POST_TARGETDEPS = ../lib/librcl.a
 }
 

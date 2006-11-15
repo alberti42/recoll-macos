@@ -1,6 +1,6 @@
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.4 2006-11-14 13:55:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.5 2006-11-15 14:57:53 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -10,9 +10,9 @@
 #ifndef NO_NAMESPACES
 using std::list;
 using std::string;
-#endif
 
 namespace Rcl {
+#endif // NO_NAMESPACES
 
 /** Search clause types */
 enum SClType {

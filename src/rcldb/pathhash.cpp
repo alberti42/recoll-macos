@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathhash.cpp,v 1.3 2006-01-23 13:32:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathhash.cpp,v 1.4 2006-11-15 14:57:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@ static char rcsid[] = "@(#$Id: pathhash.cpp,v 1.3 2006-01-23 13:32:28 dockes Exp
 
 #ifndef NO_NAMESPACES
 using std::string;
+namespace Rcl {
 #endif /* NO_NAMESPACES */
 
 #ifdef PATHHASH_HEX
@@ -85,6 +86,9 @@ void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
     // Truncate path and append hash
     phash = path.substr(0, maxlen - HASHLEN) + hash;
 }
+#ifndef NO_NAMESPACES
+}
+#endif // NO_NAMESPACES
 
 #ifdef TEST_PATHHASH
 #include <stdio.h>

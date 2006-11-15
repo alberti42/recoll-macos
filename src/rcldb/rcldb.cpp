@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.94 2006-11-14 13:55:43 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.95 2006-11-15 14:57:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,6 @@ static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.94 2006-11-14 13:55:43 dockes Exp $
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
-#define RCLDB_INTERNAL
 
 #include "rcldb.h"
 #include "stemdb.h"

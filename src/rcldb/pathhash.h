@@ -16,12 +16,20 @@
  */
 #ifndef _PATHHASH_H_INCLUDED_
 #define _PATHHASH_H_INCLUDED_
-/* @(#$Id: pathhash.h,v 1.2 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: pathhash.h,v 1.3 2006-11-15 14:57:53 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
-extern void pathHash(const std::string &path, std::string &hash, 
+#ifndef NO_NAMESPACES
+using std::string;
+namespace Rcl {
+#endif
+
+extern void pathHash(const string &path, string &hash, 
 		     unsigned int len);
 
 
+#ifndef NO_NAMESPACES
+}
+#endif
 #endif /* _PATHHASH_H_INCLUDED_ */

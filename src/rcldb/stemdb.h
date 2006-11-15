@@ -1,7 +1,6 @@
 #ifndef _STEMDB_H_INCLUDED_
 #define _STEMDB_H_INCLUDED_
-/* @(#$Id: stemdb.h,v 1.1 2006-04-13 09:50:03 dockes Exp $  (C) 2004 J.F.Dockes */
-#ifdef RCLDB_INTERNAL
+/* @(#$Id: stemdb.h,v 1.2 2006-11-15 14:57:53 dockes Exp $  (C) 2004 J.F.Dockes */
 /// Stem database code
 /// 
 /// Stem databases list stems and the set of index terms they expand to. They 
@@ -14,9 +13,12 @@
 #include <string>
 
 #include <xapian.h>
-
+#ifndef NO_NAMESPACES
+using std::string;
+using std::list;
 namespace Rcl {
 namespace StemDb {
+#endif // NO_NAMESPACES
 
 /// Get languages of existing stem databases
 extern std::list<std::string> getLangs(const std::string& dbdir);
@@ -30,8 +32,9 @@ extern std::list<std::string> stemExpand(const std::string& dbdir,
 					 const std::string& lang,
 					 const std::string& term);
 
+#ifndef NO_NAMESPACES
 }
 }
+#endif // NO_NAMESPACES
 
-#endif // RCLDB_INTERNAL
 #endif /* _STEMDB_H_INCLUDED_ */
