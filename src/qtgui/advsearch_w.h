@@ -1,6 +1,6 @@
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-/* @(#$Id: advsearch_w.h,v 1.6 2006-11-14 18:29:09 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: advsearch_w.h,v 1.7 2006-11-17 15:26:40 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -46,8 +46,11 @@ public slots:
     virtual void searchPB_clicked();
     virtual void browsePB_clicked();
     virtual void saveFileTypes();
+    virtual void delClause();
     virtual void addClause();
     virtual void addClause(int);
+    virtual bool close();
+    virtual void polish();
 
 signals:
     void startSearch(RefCntr<Rcl::SearchData>);
@@ -55,6 +58,7 @@ signals:
 private:
     virtual void init();
     std::list<SearchClauseW *> m_clauseWins;
+    void saveCnf();
 };
 
 

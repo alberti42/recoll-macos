@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.23 2006-11-10 13:32:08 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.24 2006-11-17 15:26:40 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -147,6 +147,27 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
     SETTING_RW(prefs.startWithSortToolOpen, 
 	       "/Recoll/prefs/startWithSortToolOpen", Bool, false);
+
+    QString advSearchClauses;
+    QString ascdflt = QString::fromAscii("1 3 0 0 2 5 ");
+    if (writing) {
+	for (vector<int>::iterator it = prefs.advSearchClauses.begin();
+	     it != prefs.advSearchClauses.end(); it++) {
+	    char buf[20];
+	    sprintf(buf, "%d ", *it);
+	    advSearchClauses += QString::fromAscii(buf);
+	}
+    }
+    SETTING_RW(advSearchClauses, "/Recoll/prefs/adv/clauseList", , ascdflt);
+    if (!writing) {
+	list<string> clauses;
+	stringToStrings(advSearchClauses, clauses);
+	for (list<string>::iterator it = clauses.begin(); 
+	     it != clauses.end(); it++) {
+	    prefs.advSearchClauses.push_back(atoi(it->c_str()));
+	}
+    }
+
     SETTING_RW(prefs.showicons, "/Recoll/prefs/reslist/showicons", Bool, true);
     SETTING_RW(prefs.autoSearchOnWS, "/Recoll/prefs/reslist/autoSearchOnWS", 
 	       Bool, false);
@@ -157,10 +178,10 @@ void rwSettings(bool writing)
 	       "");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Num, 
 	       0);
-    QString rlfDflt =QString::fromAscii(
-	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
-	"%A %K");
+    QString rlfDflt = 
+	QString::fromAscii("%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+			   "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+			   "%A %K");
     SETTING_RW(prefs.reslistformat, "/Recoll/prefs/reslist/format", , rlfDflt);
     if (prefs.reslistformat.stripWhiteSpace().isEmpty())
 	prefs.reslistformat = rlfDflt;

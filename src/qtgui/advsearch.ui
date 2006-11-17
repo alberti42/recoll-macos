@@ -120,6 +120,25 @@
                                 </spacer>
                                 <widget class="QPushButton">
                                     <property name="name">
+                                        <cstring>delClausePB</cstring>
+                                    </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>0</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="text">
+                                        <string>Delete clause</string>
+                                    </property>
+                                    <property name="autoDefault">
+                                        <bool>false</bool>
+                                    </property>
+                                </widget>
+                                <widget class="QPushButton">
+                                    <property name="name">
                                         <cstring>addClausePB</cstring>
                                     </property>
                                     <property name="sizePolicy">

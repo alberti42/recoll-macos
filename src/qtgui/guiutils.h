@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.15 2006-11-10 13:32:08 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.16 2006-11-17 15:26:40 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -38,12 +38,15 @@
 
 #include <string>
 #include <list>
+#include <vector>
+
 #include <qstring.h>
 #include <qstringlist.h>
 
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
+using std::vector;
 #endif
 
 /** Start a browser on the help document */
@@ -95,6 +98,9 @@ class PrefsPack {
 
     // Remembered term match mode
     int termMatchType;
+
+    // Advanced search window clause list state
+    vector<int> advSearchClauses;
 
     PrefsPack() :
 	showicons(true), 

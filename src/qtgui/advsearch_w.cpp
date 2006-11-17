@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.11 2006-11-17 10:08:12 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.12 2006-11-17 15:26:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,7 @@ using std::string;
 extern RclConfig *rclconfig;
 
 static const int initclausetypes[] = {1, 3, 0, 0, 2, 5};
+static const unsigned int iclausescnt = sizeof(initclausetypes) / sizeof(int);
 
 void AdvSearch::init()
 {
@@ -71,15 +72,29 @@ void AdvSearch::init()
     connect(saveFileTypesPB, SIGNAL(clicked()), 
 	    this, SLOT(saveFileTypes()));
     connect(addClausePB, SIGNAL(clicked()), this, SLOT(addClause()));
+    connect(delClausePB, SIGNAL(clicked()), this, SLOT(delClause()));
 
     conjunctCMB->insertItem(tr("All clauses"));
     conjunctCMB->insertItem(tr("Any clause"));
 
     // Create preconfigured clauses
-    for (unsigned int i = 0; i < sizeof(initclausetypes) / sizeof(int); i++) {
+    for (unsigned int i = 0; i < iclausescnt; i++) {
 	addClause(initclausetypes[i]);
     }
-
+    // Tune initial state according to last saved
+    {
+	std::list<SearchClauseW *>::iterator cit = m_clauseWins.begin();
+	for (vector<int>::iterator it = prefs.advSearchClauses.begin(); 
+	     it != prefs.advSearchClauses.end(); it++) {
+	    if (cit != m_clauseWins.end()) {
+		(*cit)->tpChange(*it);
+		cit++;
+	    } else {
+		addClause(*it);
+	    }
+	}
+    }
+    
     // Initialize lists of accepted and ignored mime types from config
     // and settings
     list<string> types = rclconfig->getAllMimeTypes();
@@ -102,6 +117,21 @@ void AdvSearch::init()
     clauseline->close();
 }
 
+void AdvSearch::saveCnf()
+{
+    // Save my state
+    prefs.advSearchClauses.clear(); 
+    for (std::list<SearchClauseW *>::iterator cit = m_clauseWins.begin();
+	 cit != m_clauseWins.end(); cit++) {
+	prefs.advSearchClauses.push_back((*cit)->sTpCMB->currentItem());
+    }
+}
+
+bool AdvSearch::close()
+{
+    saveCnf();
+    return AdvSearchBase::close();
+}
 
 // Move selected file types from the searched to the ignored box
 void AdvSearch::delFiltypPB_clicked()
@@ -155,9 +185,36 @@ void AdvSearch::addClause(int tp)
     clauseVBox->addWidget(w);
     w->show();
     w->tpChange(tp);
+    if (m_clauseWins.size() > iclausescnt) {
+	delClausePB->setEnabled(true);
+    } else {
+	delClausePB->setEnabled(false);
+    }
     // Have to adjust the size else we lose the bottom buttons! Why?
     QSize sz = AdvSearchBaseLayout->sizeHint();
     resize(QSize(sz.width()+40, sz.height()+80));
+}
+
+void AdvSearch::delClause()
+{
+    if (m_clauseWins.size() <= iclausescnt)
+	return;
+    delete m_clauseWins.back();
+    m_clauseWins.pop_back();
+    if (m_clauseWins.size() > iclausescnt) {
+	delClausePB->setEnabled(true);
+    } else {
+	delClausePB->setEnabled(false);
+    }
+    QSize sz = AdvSearchBaseLayout->sizeHint();
+    resize(QSize(sz.width()+40, sz.height()+80));
+}
+
+void AdvSearch::polish()
+{
+    QSize sz = AdvSearchBaseLayout->sizeHint();
+    resize(QSize(sz.width()+40, sz.height()+80));
+    AdvSearchBase::polish();
 }
 
 // Move selected file types from the ignored to the searched box
@@ -248,9 +305,10 @@ void AdvSearch::searchPB_clicked()
 	for (int index = 0; index < subtreeCMB->count(); index++)
 	    prefs.asearchSubdirHist.push_back(subtreeCMB->text(index));
     }
+    saveCnf();
+    
     emit startSearch(sdata);
 }
-
 
 void AdvSearch::browsePB_clicked()
 {
