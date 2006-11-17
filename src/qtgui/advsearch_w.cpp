@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.10 2006-11-14 18:29:09 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.11 2006-11-17 10:08:12 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -212,7 +212,7 @@ void AdvSearch::searchPB_clicked()
 	 it != m_clauseWins.end(); it++) {
 	SearchDataClause *cl;
 	if ((cl = (*it)->getClause())) {
-	    switch (cl->m_tp) {
+	    switch (cl->getTp()) {
 	    case SCLT_EXCL: hasnot = true; break;
 	    default: hasnotnot = true; break;
 	    }
@@ -222,21 +222,20 @@ void AdvSearch::searchPB_clicked()
     if (!hasnotnot) {
 	if (!hasnot)
 	    return;
-	QMessageBox::warning(0, "Recoll",
-			     tr("Cannot execute pure negative query. "
-				"Please enter common terms in the 'any words' field")); 
+	QMessageBox::warning(0, "Recoll", tr("Cannot execute pure negative"
+					     "query. Please enter common terms"
+					     " in the 'any words' field")); 
 	return;
     }
     if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
 	for (unsigned int i = 0; i < yesFiltypsLB->count(); i++) {
 	    QCString ctext = yesFiltypsLB->item(i)->text().utf8();
-	    sdata->m_filetypes.push_back(string((const char *)ctext));
+	    sdata->addFiletype((const char *)ctext);
 	}
     }
 
     if (!subtreeCMB->currentText().isEmpty()) {
-	sdata->m_topdir = 
-	    string((const char*)(subtreeCMB->currentText().utf8()));
+	sdata->setTopdir((const char*)subtreeCMB->currentText().utf8());
 	// The listbox is set for no insertion, do it. Have to check
 	// for dups as the internal feature seems to only work for
 	// user-inserted strings
