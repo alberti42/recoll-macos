@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.3 2006-09-21 12:56:57 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.4 2006-11-17 10:09:07 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include <qwidget.h>
 #include "rcldb.h"
 #include "preview.h"
+#include "refcntr.h"
+#include "searchdata.h"
 
 // We keep a list of data associated to each tab
 class TabData {
@@ -45,7 +47,11 @@ public:
 	
     ~Preview(){}
 
-    virtual void setSId(int sid) {m_searchId = sid;}
+    virtual void setSId(int sid, RefCntr<Rcl::SearchData> sdata) 
+    {
+	m_searchId = sid;
+	m_searchData = sdata;
+    }
     virtual void closeEvent( QCloseEvent *e );
     virtual bool eventFilter( QObject *target, QEvent *event );
     virtual bool makeDocCurrent( const string & fn, const Rcl::Doc & doc );
@@ -56,7 +62,8 @@ public:
 
 public slots:
     virtual void searchTextLine_textChanged( const QString & text );
-    virtual void doSearch( const QString &str, bool next, bool reverse );
+    virtual void doSearch(const QString &str, bool next, bool reverse,
+			   bool wo = false);
     virtual void nextPressed();
     virtual void prevPressed();
     virtual void currentChanged( QWidget * tw );
@@ -72,7 +79,7 @@ signals:
     void showPrev(int sid, int docnum);
     void previewExposed(int sid, int docnum);
 
-protected:
+private:
     int m_searchId; // Identifier of search in main window. This is so that
                   // we make sense when requesting the next document when 
                   // browsing successive search results in a tab.
@@ -82,8 +89,7 @@ protected:
     bool canBeep;
     list<TabData> tabData;
     QWidget *currentW;
-
-private:
+    RefCntr<Rcl::SearchData> m_searchData;
     void init();
     virtual void destroy();
     TabData *tabDataForCurrent(); // Return auxiliary data pointer for cur tab

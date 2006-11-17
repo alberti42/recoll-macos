@@ -16,9 +16,11 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.7 2006-09-13 14:57:56 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.8 2006-11-17 10:09:07 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+
+#include "searchdata.h"
 
 /**
  * Transform plain text into qt rich text for the preview window.
@@ -33,7 +35,7 @@
  * @param noHeader    if true don't output header (<qt><title>...)
  */
 extern bool plaintorich(const string &in, string &out,
-			const list<string>& terms,
+			RefCntr<Rcl::SearchData> sdata,
 			string* firstTerm, bool noHeader = false);
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

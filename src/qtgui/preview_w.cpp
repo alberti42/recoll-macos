@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.5 2006-11-09 19:04:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.6 2006-11-17 10:09:07 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -171,7 +171,8 @@ QTextEdit *Preview::getCurrentEditor()
 // current search, trying to advance and possibly wrapping around. If next is
 // false, the search string has been modified, we search for the new string, 
 // starting from the current position
-void Preview::doSearch(const QString &text, bool next, bool reverse)
+void Preview::doSearch(const QString &text, bool next, bool reverse, 
+		       bool wo)
 {
     LOGDEB1(("Preview::doSearch: next %d rev %d\n", int(next), int(reverse)));
     QTextEdit *edit = getCurrentEditor();
@@ -203,7 +204,7 @@ void Preview::doSearch(const QString &text, bool next, bool reverse)
 	}
     }
 
-    bool found = edit->find(text, matchCase, false, 
+    bool found = edit->find(text, matchCase, wo, 
 			      !reverse, &mspara, &msindex);
     LOGDEB(("Found at para: %d index %d\n", mspara, msindex));
 
@@ -448,14 +449,14 @@ class LoadThread : public QThread {
 /* A thread to convert to rich text (mark search terms) */
 class ToRichThread : public QThread {
     string &in;
-    list<string> &terms;
+    RefCntr<Rcl::SearchData> m_searchData;
     string& firstTerm;
     QString &out;
     int loglevel;
  public:
-    ToRichThread(string &i, list<string> &trms, 
+    ToRichThread(string &i, RefCntr<Rcl::SearchData> searchData,
 		 string& ft, QString &o) 
-	: in(i), terms(trms), firstTerm(ft), out(o)
+	: in(i), m_searchData(searchData), firstTerm(ft), out(o)
     {
 	    loglevel = DebugLog::getdbl()->getlevel();
     }
@@ -464,7 +465,7 @@ class ToRichThread : public QThread {
 	DebugLog::getdbl()->setloglevel(loglevel);
 	string rich;
 	try {
-	    plaintorich(in, rich, terms, &firstTerm);
+	    plaintorich(in, rich, m_searchData, &firstTerm);
 	} catch (CancelExcept) {
 	}
 	out = QString::fromUtf8(rich.c_str(), rich.length());
@@ -546,11 +547,9 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     QString richTxt;
     bool highlightTerms = fdoc.text.length() < 1000 *1024;
     string firstTerm;
-    list<string> terms;
-    rcldb->getMatchTerms(idoc, terms);
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
-	ToRichThread rthr(fdoc.text, terms, firstTerm, richTxt);
+	ToRichThread rthr(fdoc.text, m_searchData, firstTerm, richTxt);
 	rthr.start();
 
 	for (;;prog++) {
@@ -630,11 +629,10 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	if (!firstTerm.empty()) {
 	    bool wasC = matchCheck->isChecked();
 	    matchCheck->setChecked(false);
-	    doSearch(QString::fromUtf8(terms.begin()->c_str()), true, false);
+	    doSearch(QString::fromUtf8(firstTerm.c_str()), true, false, true);
 	    matchCheck->setChecked(wasC);
 	}
     }
     emit(previewExposed(m_searchId, docnum));
     return true;
 }
-

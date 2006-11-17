@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.9 2006-11-13 08:58:47 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.10 2006-11-17 10:09:07 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -76,7 +76,7 @@ void ResList::setDocSource(DocSequence *docsource,
 	delete m_docsource;
     m_winfirst = -1;
     m_docsource = docsource;
-    m_queryData = sdt;
+    m_searchData = sdt;
     m_curPvDoc = -1;
 
     resultPageNext();
@@ -264,9 +264,7 @@ void ResList::resultPageNext()
     QStyleSheetItem *item = 
 	new QStyleSheetItem(styleSheet(), "termtag" );
     item->setColor("blue");
-    //    item->setFontWeight(QFont::Bold);
-    list<string> qTerms;
-    m_docsource->getTerms(qTerms);
+    // item->setFontWeight(QFont::Bold);
 
     // Result paragraph format
     string sformat = string(prefs.reslistformat.utf8());
@@ -383,7 +381,7 @@ void ResList::resultPageNext()
 
 	// Abstract
 	string abst;
-	plaintorich(doc.abstract, abst, qTerms, 0, true);
+	plaintorich(doc.abstract, abst, m_searchData, 0, true);
 
 	// Links;
 	string linksbuf;
@@ -609,7 +607,7 @@ void ResList::menuExpand()
 
 QString ResList::getDescription()
 {
-    return QString::fromUtf8(m_queryData->m_description.c_str());
+    return QString::fromUtf8(m_searchData->getDescription().c_str());
 }
 
 /** Show detailed expansion of a query */
@@ -619,7 +617,7 @@ void ResList::showQueryDetails()
     // Also limit the total number of lines. 
     const unsigned int ll = 100;
     const unsigned int maxlines = 50;
-    string query = m_queryData->m_description;
+    string query = m_searchData->getDescription();
     string oq;
     unsigned int nlines = 0;
     while (query.length() > 0) {

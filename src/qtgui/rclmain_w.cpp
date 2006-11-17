@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.7 2006-11-14 13:55:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.8 2006-11-17 10:09:07 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -472,7 +472,7 @@ void RclMain::startPreview(int docnum)
 				 QMessageBox::NoButton);
 	    return;
 	}
-	curPreview->setSId(m_searchId);
+	curPreview->setSId(m_searchId, resList->getSearchData());
 	curPreview->setCaption(resList->getDescription());
 	connect(curPreview, SIGNAL(previewClosed(QWidget *)), 
 		this, SLOT(previewClosed(QWidget *)));
@@ -712,14 +712,17 @@ void RclMain::showDocHistory()
     if (sortspecs.sortwidth > 0) {
 	DocSequenceHistory myseq(rcldb, g_dynconf, 
 				 string(tr("Document history").utf8()));
-	docsource = new DocSeqSorted(myseq, sortspecs,
-				     string(tr("Document history (sorted)").utf8()));
+	docsource = new 
+	    DocSeqSorted(myseq, sortspecs,
+			 string(tr("Document history (sorted)").utf8()));
     } else {
-	docsource = new DocSequenceHistory(rcldb, g_dynconf, 
-					   string(tr("Document history").utf8()));
+	docsource = new 
+	    DocSequenceHistory(rcldb, g_dynconf, 
+			       string(tr("Document history").utf8()));
     }
+    // Construct a bogus SearchData
     RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_AND));
-    sdata->m_description = tr("History data").utf8();
+    sdata->setDescription((const char *)tr("History data").utf8());
     m_searchId++;
     resList->setDocSource(docsource, sdata);
 }
