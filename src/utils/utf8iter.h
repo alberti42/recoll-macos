@@ -16,7 +16,7 @@
  */
 #ifndef _UTF8ITER_H_INCLUDED_
 #define _UTF8ITER_H_INCLUDED_
-/* @(#$Id: utf8iter.h,v 1.6 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: utf8iter.h,v 1.7 2006-11-17 12:31:34 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * A small helper class to iterate over utf8 strings. This is not an
@@ -27,7 +27,6 @@ class Utf8Iter {
     unsigned int cl; // Char length at current position if known
     const string &s; // String we're working with
     string::size_type pos; // Current position in string
-    bool bad; // Status
     unsigned int m_charpos; // Current character posiiton
 
     // Get character byte length at specified position
@@ -55,11 +54,8 @@ class Utf8Iter {
     // Update current char length in object state. Assumes pos is inside string
     inline int compute_cl() {
 	cl = 0;
-	if (bad)
-	    return -1;
 	cl = get_cl(pos);
 	if (!poslok(pos, cl)) {
-	    bad = true;
 	    pos = s.length();
 	    cl = 0;
 	    return -1;
@@ -96,10 +92,14 @@ class Utf8Iter {
     }
  public:
     Utf8Iter(const string &in) 
-	: cl(0), s(in), pos(0), bad(false), m_charpos(0) {}
+	: cl(0), s(in), pos(0), m_charpos(0) 
+	{
+	    // Ensure state is ok if appendchartostring is called at once
+	    compute_cl();
+	}
 
     void rewind() {
-	cl=0; pos=0; bad=false; m_charpos=0;
+	cl=0; pos=0; m_charpos=0;
     }
     /** operator* returns the ucs4 value as a machine integer*/
     unsigned int operator*() {
@@ -107,7 +107,6 @@ class Utf8Iter {
 	    return (unsigned int)-1;
 	unsigned int val = getvalueat(pos, cl);
 	if (val == (unsigned int)-1) {
-	    bad = true;
 	    pos = s.length();
 	    cl = 0;
 	}
@@ -137,7 +136,7 @@ class Utf8Iter {
 
     /** Set current position before next utf-8 character */
     string::size_type operator++(int) {
-	if (bad || (!cl && compute_cl() < 0)) {
+	if (!cl && compute_cl() < 0) {
 	    return pos = string::npos;
 	}
 	pos += cl;
@@ -145,16 +144,12 @@ class Utf8Iter {
 	cl = 0;
 	return pos;
     }
-
-    bool appendchartostring(string &out) {
-	if (bad || (!cl && compute_cl() < 0)) {
-	    return false;
-	}
-	out += s.substr(pos, cl);
-	return true;
+    /** This needs to be fast. No error checking. */
+    void appendchartostring(string &out) {
+	out.append(&s[pos], cl);
     }
     operator string() {
-	if (bad || (!cl && compute_cl() < 0)) {
+	if (!cl && compute_cl() < 0) {
 	    return std::string("");
 	}
 	return s.substr(pos, cl);
@@ -165,7 +160,7 @@ class Utf8Iter {
 	return pos == s.length();
     }
     bool error() {
-	return bad;
+	return compute_cl() < 0;
     }
     string::size_type getBpos() const {
 	return pos;
