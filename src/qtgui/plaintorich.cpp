@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.14 2006-11-17 10:09:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.15 2006-11-17 12:32:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ using std::set;
 #include "plaintorich.h"
 #include "cancelcheck.h"
 
-
+// For debug printing
 static string vecStringToString(const vector<string>& t)
 {
     string sterms;
@@ -58,36 +58,26 @@ static string vecStringToString(const vector<string>& t)
 // inside the result text. This is then used to insert highlight tags. 
 class myTextSplitCB : public TextSplitCB {
  public:
-    // In: user query terms
-    set<string>    terms; 
-    // 
-    const vector<vector<string> >& m_groups;
-    const vector<int>& m_slacks;
-    set<string> gterms;
 
-    // Out: first term found in text
+    // Out: first query term found in text
     string firstTerm;
-    int firstTermPos;
 
     // Out: begin and end byte positions of query terms/groups in text
     vector<pair<int, int> > tboffs;  
 
-    // group/near terms word positions.
-    map<string, vector<int> > m_plists;
-    map<int, pair<int, int> > m_gpostobytes;
-
     myTextSplitCB(const vector<string>& its, vector<vector<string> >&groups, 
-		  vector<int>& slacks) : m_groups(groups), m_slacks(slacks)
+		  vector<int>& slacks) 
+	:  m_wcount(0), m_groups(groups), m_slacks(slacks)
     {
 	for (vector<string>::const_iterator it = its.begin(); 
 	     it != its.end(); it++) {
-	    terms.insert(*it);
+	    m_terms.insert(*it);
 	}
 	for (vector<vector<string> >::const_iterator vit = m_groups.begin(); 
 	     vit != m_groups.end(); vit++) {
 	    for (vector<string>::const_iterator it = (*vit).begin(); 
 		 it != (*vit).end(); it++) {
-		gterms.insert(*it);
+		m_gterms.insert(*it);
 	    }
 	}
     }
@@ -96,34 +86,52 @@ class myTextSplitCB : public TextSplitCB {
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
 	string dumb;
 	Rcl::dumb_string(term, dumb);
-	//LOGDEB(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
+	//LOGDEB2(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
 	// pos, bts, bte));
 
-	// Single search term highlighting: if this word is a search term,
-	// Note its byte-offset span. 
-	if (terms.find(dumb) != terms.end()) {
+	// If this word is a search term, remember its byte-offset span. 
+	if (m_terms.find(dumb) != m_terms.end()) {
 	    tboffs.push_back(pair<int, int>(bts, bte));
 	    if (firstTerm.empty()) {
 		firstTerm = term;
-		firstTermPos = pos;
+		m_firstTermPos = pos;
 	    }
 	}
 	
-	if (gterms.find(dumb) != gterms.end()) {
+	if (m_gterms.find(dumb) != m_gterms.end()) {
 	    // Term group (phrase/near) handling
 	    m_plists[dumb].push_back(pos);
 	    m_gpostobytes[pos] = pair<int,int>(bts, bte);
-	    LOGDEB2(("Recorded bpos for %d: %d %d\n", pos, bts, bte));
+	    //LOGDEB2(("Recorded bpos for %d: %d %d\n", pos, bts, bte));
 	}
-
-	CancelCheck::instance().checkCancel();
+	if ((m_wcount++ & 0xfff) == 0)
+	    CancelCheck::instance().checkCancel();
 	return true;
     }
-    virtual bool matchGroup(const vector<string>& terms, int dist);
+
+    // Must be called after the split to find the phrase/near match positions
     virtual bool matchGroups();
+
+private:
+    virtual bool matchGroup(const vector<string>& terms, int dist);
+
+    int m_wcount;
+    int m_firstTermPos;
+
+    // In: user query terms
+    set<string>    m_terms; 
+
+    // In: user query groups, for near/phrase searches.
+    const vector<vector<string> >& m_groups;
+    const vector<int>&             m_slacks;
+    set<string>                    m_gterms;
+
+    // group/near terms word positions.
+    map<string, vector<int> > m_plists;
+    map<int, pair<int, int> > m_gpostobytes;
 };
 
-// Code for checking for a NEAR match comes out of xapian phrasepostlist.cc
+
 /** Sort by shorter comparison class */
 class VecIntCmpShorter {
     public:
@@ -134,8 +142,13 @@ class VecIntCmpShorter {
         }
 };
 
-bool do_test(int window, vector<vector<int>* >& plists, 
-	     unsigned int i, int min, int max, int *sp, int *ep)
+#define SETMINMAX(POS, STA, STO)  {if ((POS) < (STA)) (STA) = (POS); \
+	if ((POS) > (STO)) (STO) = (POS);}
+
+// Recursively check that each term is inside the window (which is readjusted
+// as the successive terms are found)
+static bool do_proximity_test(int window, vector<vector<int>* >& plists, 
+		    unsigned int i, int min, int max, int *sp, int *ep)
 {
     int tmp = max + 1;
     // take care to avoid underflow
@@ -155,16 +168,18 @@ bool do_test(int window, vector<vector<int>* >& plists,
 	if (pos > min + window - 1) 
 	    return false;
 	if (i + 1 == plists.size()) {
-	    *sp = min;
-	    *ep = max;
+	    SETMINMAX(pos, *sp, *ep);
 	    return true;
 	}
-	if (pos < min) 
+	if (pos < min) {
 	    min = pos;
-	else if (pos > max) 
+	} else if (pos > max) {
 	    max = pos;
-	if (do_test(window, plists, i + 1, min, max, sp, ep)) 
+	}
+	if (do_proximity_test(window, plists, i + 1, min, max, sp, ep)) {
+	    SETMINMAX(pos, *sp, *ep);
 	    return true;
+	}
 	it++;
     }
     return false;
@@ -173,7 +188,7 @@ bool do_test(int window, vector<vector<int>* >& plists,
 // Check if there is a NEAR match for the group of terms
 bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 {
-    LOGDEB(("myTextSplitCB::matchGroup:d %d: %s\n", window,
+    LOGDEB0(("myTextSplitCB::matchGroup:d %d: %s\n", window,
 	    vecStringToString(terms).c_str()));
     vector<vector<int>* > plists;
     // Check that each of the group terms has a position list
@@ -192,18 +207,19 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
     std::sort(plists.begin(), plists.end(), VecIntCmpShorter());
 
     // Walk the shortest plist and look for matches
-    int sta, sto;
+    int sta = int(10E9), sto = 0;
     int pos;
     vector<int>::iterator it = plists[0]->begin();
     do {
 	if (it == plists[0]->end())
 	    return false;
 	pos = *it++;
-    } while (!do_test(window, plists, 1, pos, pos, &sta, &sto));
+    } while (!do_proximity_test(window, plists, 1, pos, pos, &sta, &sto));
+    SETMINMAX(pos, sta, sto);
 
-    LOGDEB(("myTextSplitCB::matchGroup: MATCH [%d,%d]\n", sta, sto)); 
+    LOGDEB0(("myTextSplitCB::matchGroup: MATCH [%d,%d]\n", sta, sto)); 
 
-    if (firstTerm.empty() || firstTermPos > sta) {
+    if (firstTerm.empty() || m_firstTermPos > sta) {
 	// firsTerm is used to try an position the preview window over
 	// the match. As it's difficult to divine byte/word positions,
 	// we use a string search. Try to use the shortest plist for
@@ -216,7 +232,6 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	    map<string, vector<int> >::iterator pl = m_plists.find(*it);
 	    if (pl != m_plists.end() && pl->second.size() < minl) {
 		firstTerm = *it;
-		LOGDEB(("Firstterm->%s\n", firstTerm.c_str()));
 		minl = pl->second.size();
 	    }
 	}
@@ -225,8 +240,8 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
     map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
     map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
     if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
-	LOGDEB(("myTextSplitCB::matchGroup: pushing %d %d\n",
-		i1->second.first, i2->second.second));
+	LOGDEB1(("myTextSplitCB::matchGroup: pushing %d %d\n",
+		 i1->second.first, i2->second.second));
 	tboffs.push_back(pair<int, int>(i1->second.first, i2->second.second));
     } else {
 	LOGDEB(("myTextSplitCB::matchGroup: no bpos found for %d or %d\n", 
@@ -235,10 +250,9 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
     return true;
 }
 
+/** Sort integer pairs by their first value */
 class PairIntCmpFirst {
 public:
-    /** Return true if and only if a is strictly shorter than b.
-     */
     bool operator()(pair<int,int> a, pair<int, int>b) {
 	return a.first < b.first;
     }
@@ -277,18 +291,18 @@ bool plaintorich(const string& in, string& out,
 
     sdata->getTerms(terms, groups, slacks);
 
-    {
-	LOGDEB(("plaintorich: terms: \n"));
+    if (DebugLog::getdbl()->getlevel() >= DEBDEB0) {
+	LOGDEB0(("plaintorich: terms: \n"));
 	string sterms = vecStringToString(terms);
-	LOGDEB(("  %s\n", sterms.c_str()));
+	LOGDEB0(("  %s\n", sterms.c_str()));
 	sterms = "\n";
-	LOGDEB(("plaintorich: groups: \n"));
+	LOGDEB0(("plaintorich: groups: \n"));
 	for (vector<vector<string> >::iterator vit = groups.begin(); 
 	     vit != groups.end(); vit++) {
 	    sterms += vecStringToString(*vit);
 	    sterms += "\n";
 	}
-	LOGDEB(("  %s", sterms.c_str()));
+	LOGDEB0(("  %s", sterms.c_str()));
     }
 
     // We first use the text splitter to break the text into words,
@@ -299,11 +313,12 @@ bool plaintorich(const string& in, string& out,
     // Note that splitter returns the term locations in byte, not
     // character offset
     splitter.text_to_words(in);
+    LOGDEB(("plaintorich: split done %d mS\n", chron.millis()));
+
     cb.matchGroups();
 
     if (firstTerm)
 	*firstTerm = cb.firstTerm;
-    LOGDEB(("plaintorich: split done %d mS\n", chron.millis()));
 
     // Rich text output
     if (noHeader)
@@ -315,11 +330,15 @@ bool plaintorich(const string& in, string& out,
     // output highlight tags and to compute term positions in the
     // output text
     vector<pair<int, int> >::iterator tPosIt = cb.tboffs.begin();
+    vector<pair<int, int> >::iterator tboffsend = cb.tboffs.end();
 
+#if 0
     for (vector<pair<int, int> >::const_iterator it = cb.tboffs.begin();
 	 it != cb.tboffs.end(); it++) {
-	LOGDEB(("plaintorich: region: %d %d\n", it->first, it->second));
+	LOGDEB2(("plaintorich: region: %d %d\n", it->first, it->second));
     }
+#endif
+
     // Input character iterator
     Utf8Iter chariter(in);
     // State variable used to limitate the number of consecutive empty lines 
@@ -328,11 +347,11 @@ bool plaintorich(const string& in, string& out,
     // consecutive blank chars
     int atblank = 0;
     for (string::size_type pos = 0; pos != string::npos; pos = chariter++) {
-	if (pos && (pos % 1000) == 0) {
+	if ((pos & 0xfff) == 0) {
 	    CancelCheck::instance().checkCancel();
 	}
 	// If we still have terms positions, check (byte) position
-	if (tPosIt != cb.tboffs.end()) {
+	if (tPosIt != tboffsend) {
 	    int ibyteidx = chariter.getBpos();
 	    if (ibyteidx == tPosIt->first) {
 		out += "<termtag>";
