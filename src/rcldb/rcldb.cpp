@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.95 2006-11-15 14:57:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.96 2006-11-17 10:06:33 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1252,7 +1252,7 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
     m_reason.erase();
     LOGDEB(("Db::setQuery:\n"));
 
-    m_filterTopDir = sdata->m_topdir;
+    m_filterTopDir = sdata->getTopdir();
     m_dbindices.clear();
     m_qOpts = opts;
     m_ndb->m_termfreqs.clear();
@@ -1270,11 +1270,11 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
     m_ndb->enquire->set_query(m_ndb->query);
     m_ndb->mset = Xapian::MSet();
     // Get the query description and trim the "Xapian::Query"
-    sdata->m_description = m_ndb->query.get_description();
-    if (sdata->m_description.find("Xapian::Query") == 0)
-	sdata->m_description = 
-	    sdata->m_description.substr(strlen("Xapian::Query"));
-    LOGDEB(("Db::SetQuery: Q: %s\n", sdata->m_description.c_str()));
+    string d = m_ndb->query.get_description();
+    if (d.find("Xapian::Query") == 0)
+	d.erase(0, strlen("Xapian::Query"));
+    sdata->setDescription(d);
+    LOGDEB(("Db::SetQuery: Q: %s\n", sdata->getDescription().c_str()));
     return true;
 }
 

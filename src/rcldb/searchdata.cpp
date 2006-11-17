@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.3 2006-11-14 17:41:12 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.4 2006-11-17 10:06:34 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -21,10 +21,7 @@ static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.3 2006-11-14 17:41:12 dockes E
 // Handle translation from rcl's SearchData structures to Xapian Queries
 
 #include <string>
-#include <list>
-#ifndef NO_NAMESPACES
-using namespace std;
-#endif
+#include <vector>
 
 #include "xapian.h"
 
@@ -36,9 +33,13 @@ using namespace std;
 #include "unacpp.h"
 #include "utf8iter.h"
 
+#ifndef NO_NAMESPACES
+using namespace std;
 namespace Rcl {
+#endif
 
-typedef  list<SearchDataClause *>::iterator qlist_it_t;
+typedef  vector<SearchDataClause *>::iterator qlist_it_t;
+typedef  vector<SearchDataClause *>::const_iterator qlist_cit_t;
 
 bool SearchData::toNativeQuery(Rcl::Db &db, void *d, const string& stemlang)
 {
@@ -71,7 +72,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d, const string& stemlang)
     if (!m_filetypes.empty()) {
 	list<Xapian::Query> pqueries;
 	Xapian::Query tq;
-	for (list<string>::iterator it = m_filetypes.begin(); 
+	for (vector<string>::iterator it = m_filetypes.begin(); 
 	     it != m_filetypes.end(); it++) {
 	    string term = "T" + *it;
 	    LOGDEB(("Adding file type term: [%s]\n", term.c_str()));
@@ -90,6 +91,7 @@ bool SearchData::addClause(SearchDataClause* cl)
 {
     if (m_tp == SCLT_OR && (cl->m_tp == SCLT_EXCL)) {
 	LOGERR(("SearchData::addClause: cant add EXCL to OR list\n"));
+	m_reason = "No Negative (AND_NOT) clauses allowed in OR queries";
 	return false;
     }
     m_query.push_back(cl);
@@ -98,33 +100,46 @@ bool SearchData::addClause(SearchDataClause* cl)
 
 // Make me all new
 void SearchData::erase() {
+    LOGDEB(("SearchData::erase\n"));
+    m_tp = SCLT_AND;
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
 	delete *it;
     m_query.clear();
     m_filetypes.clear();
     m_topdir.erase();
     m_description.erase();
+    m_reason.erase();
 }
 
 // Am I a file name only search ? This is to turn off term highlighting
-bool SearchData::fileNameOnly() {
+bool SearchData::fileNameOnly() 
+{
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
 	if (!(*it)->isFileName())
 	    return false;
     return true;
 }
 
+// Extract all terms and term groups
+bool SearchData::getTerms(vector<string>& terms, 
+			  vector<vector<string> >& groups,
+			  vector<int>& gslks) const
+{
+    for (qlist_cit_t it = m_query.begin(); it != m_query.end(); it++)
+	(*it)->getTerms(terms, groups, gslks);
+    return true;
+}
+
 // Splitter callback for breaking a user query string into simple
-// terms and phrases
+// terms and phrases. 
 class wsQData : public TextSplitCB {
  public:
     vector<string> terms;
     // Debug
     string catterms() {
 	string s;
-	for (unsigned int i = 0; i < terms.size(); i++) {
+	for (unsigned int i = 0; i < terms.size(); i++)
 	    s += "[" + terms[i] + "] ";
-	}
 	return s;
     }
     bool takeword(const std::string &term, int , int, int) {
@@ -132,71 +147,97 @@ class wsQData : public TextSplitCB {
 	terms.push_back(term);
 	return true;
     }
-    // Decapital + deaccent all terms 
-    void dumball() {
-	for (vector<string>::iterator it=terms.begin(); it !=terms.end();it++){
-	    string dumb;
-	    dumb_string(*it, dumb);
-	    *it = dumb;
-	}
-    }
 };
 
-/** Possibly expand term into its stem siblings, make them dumb strings */
-static void maybeStemExp(Db& db, const string& stemlang, const string& term, 
-			 list<string>& exp)
+// This used to be a static function, but we couldn't just keep adding
+// parameters to the interface!
+class StringToXapianQ {
+public:
+    StringToXapianQ(Db& db) : m_db(db) { }
+    bool translate(const string &iq,
+		   const string& stemlang,
+		   string &ermsg,
+		   list<Xapian::Query> &pqueries,
+		   int slack = 0, bool useNear = false);
+    bool getTerms(vector<string>& terms, 
+		  vector<vector<string> >& groups) 
+    {
+	terms.insert(terms.end(), m_terms.begin(), m_terms.end());
+	groups.insert(groups.end(), m_groups.begin(), m_groups.end());
+	return true;
+    }
+private:
+    void maybeStemExp(const string& stemlang, const string& term, 
+		      list<string>& exp);
+
+    Db& m_db;
+    // Single terms and phrases resulting from breaking up text;
+    vector<string>          m_terms;
+    vector<vector<string> > m_groups; 
+};
+
+/** Make term dumb and possibly expand it into its stem siblings */
+void StringToXapianQ::maybeStemExp(const string& stemlang, 
+				   const string& term, 
+				   list<string>& exp)
 {
-    LOGDEB(("maybeStemExp: [%s]\n", term.c_str()));
+    LOGDEB2(("maybeStemExp: [%s]\n", term.c_str()));
+    if (term.empty()) {
+	exp.clear();
+	return;
+    }
+
     string term1;
     dumb_string(term, term1);
-    if (!stemlang.empty()) {
-	bool nostemexp = false;
+
+    bool nostemexp = stemlang.empty() ? true : false;
+    if (!nostemexp) {
 	// Check if the first letter is a majuscule in which
 	// case we do not want to do stem expansion. Note that
 	// the test is convoluted and possibly problematic
-	if (term.length() > 0) {
-	    string noacterm,noaclowterm;
-	    if (unacmaybefold(term, noacterm, "UTF-8", false) &&
-		unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
-		Utf8Iter it1(noacterm);
-		Utf8Iter it2(noaclowterm);
-		if (*it1 != *it2)
-		    nostemexp = true;
-	    }
+
+	string noacterm,noaclowterm;
+	if (unacmaybefold(term, noacterm, "UTF-8", false) &&
+	    unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
+	    Utf8Iter it1(noacterm);
+	    Utf8Iter it2(noaclowterm);
+	    if (*it1 != *it2)
+		nostemexp = true;
 	}
-	LOGDEB1(("Term: %s stem expansion: %s\n", 
-		 term.c_str(), nostemexp?"no":"yes"));
-	if (!nostemexp) {
-	    exp = db.stemExpand(stemlang, term1);
-	    return;
-	}
+	LOGDEB1(("Term: %s stem expansion: %s\n", term.c_str()));
     }
 
-    exp.push_back(term1);
+    if (nostemexp) {
+	exp = list<string>(1, term1);
+    } else {
+	exp = m_db.stemExpand(stemlang, term1);
+    }
 }
 
-/** Turn string into list of xapian queries. There is little
+/** 
+ * Turn string into list of xapian queries. There is little
  * interpretation done on the string (no +term -term or filename:term
  * stuff). We just separate words and phrases, and interpret
  * capitalized terms as wanting no stem expansion. 
  * The final list contains one query for each term or phrase
  *   - Elements corresponding to a stem-expanded part are an OP_OR
- *    composition of the stem-expanded terms (or a single term query).
+ *     composition of the stem-expanded terms (or a single term query).
  *   - Elements corresponding to a phrase are an OP_PHRASE composition of the
  *     phrase terms (no stem expansion in this case)
  * @return the subquery count (either or'd stem-expanded terms or phrase word
  *   count)
  */
-static bool stringToXapianQueries(const string &iq,
-				  const string& stemlang,
-				  Db& db,
-				  string &ermsg,
-				  list<Xapian::Query> &pqueries,
-				  int slack = 0, bool useNear = false)
+bool StringToXapianQ::translate(const string &iq,
+				const string& stemlang,
+				string &ermsg,
+				list<Xapian::Query> &pqueries,
+				int slack, bool useNear)
 {
     string qstring = iq;
     bool opt_stemexp = !stemlang.empty();
     ermsg.erase();
+    m_terms.clear();
+    m_groups.clear();
 
     // Split into words and phrases (word1 word2 "this is a phrase"):
     list<string> phrases;
@@ -231,10 +272,11 @@ static bool stringToXapianQueries(const string &iq,
 		{
 		    string term = splitData.terms.front();
 		    list<string> exp;  
-		    maybeStemExp(db, stemlang, term, exp);
+		    maybeStemExp(stemlang, term, exp);
 		    // Push either term or OR of stem-expanded set
 		    pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 						     exp.begin(), exp.end()));
+		    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
 		}
 		break;
 
@@ -245,14 +287,18 @@ static bool stringToXapianQueries(const string &iq,
 		list<Xapian::Query> orqueries;
 		bool hadmultiple = false;
 		string nolang, lang;
+		vector<string> dumbterms;
 		for (vector<string>::iterator it = splitData.terms.begin();
 		     it != splitData.terms.end(); it++) {
 		    list<string>exp;
 		    lang = (op == Xapian::Query::OP_PHRASE || hadmultiple) ?
 			nolang : stemlang;
-		    maybeStemExp(db, lang, *it, exp);
-		    if (exp.size() > 1)
+		    maybeStemExp(lang, *it, exp);
+		    dumbterms.insert(dumbterms.end(), exp.begin(), exp.end());
+#ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
+		    if (exp.size() > 1) 
 			hadmultiple = true;
+#endif
 		    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 						      exp.begin(), exp.end()));
 		}
@@ -260,6 +306,7 @@ static bool stringToXapianQueries(const string &iq,
 						 orqueries.begin(),
 						 orqueries.end(),
 					 splitData.terms.size() + slack));
+		m_groups.push_back(dumbterms);
 	    }
 	}
     } catch (const Xapian::Error &e) {
@@ -282,12 +329,15 @@ static bool stringToXapianQueries(const string &iq,
 bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p, 
 					   const string& stemlang)
 {
+    m_terms.clear();
+    m_groups.clear();
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
     Xapian::Query::op op;
     switch (m_tp) {
     case SCLT_AND: op = Xapian::Query::OP_AND; break;
+	// EXCL will be set with AND_NOT in the list. So it's an OR list here
     case SCLT_OR: 
     case SCLT_EXCL: op = Xapian::Query::OP_OR; break;
     default:
@@ -295,12 +345,14 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	return false;
     }
     list<Xapian::Query> pqueries;
-    if (!stringToXapianQueries(m_text, stemlang, db, m_reason, pqueries))
+    StringToXapianQ tr(db);
+    if (!tr.translate(m_text, stemlang, m_reason, pqueries))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
 	return true;
     }
+    tr.getTerms(m_terms, m_groups);
     *qp = Xapian::Query(op, pqueries.begin(), pqueries.end());
     return true;
 }
@@ -319,28 +371,31 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
     return true;
 }
 
-// Translate NEAR or PHRASE clause. We're not handling the distance parameter
-// yet.
+// Translate NEAR or PHRASE clause. 
 bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p, 
 					 const string& stemlang)
 {
+    m_terms.clear();
+    m_groups.clear();
+
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
     list<Xapian::Query> pqueries;
     Xapian::Query nq;
+
+    // Use stringToXapianQueries to lowercase and simplify the phrase
+    // terms etc. The result should be a single element list
     string s = string("\"") + m_text + string("\"");
     bool useNear = m_tp == SCLT_NEAR;
-
-    // Use stringToXapianQueries anyway to lowercase and simplify the
-    // phrase terms etc. The result should be a single element list
-    if (!stringToXapianQueries(s, stemlang, db, m_reason, pqueries,
-			       m_slack, useNear))
+    StringToXapianQ tr(db);
+    if (!tr.translate(s, stemlang, m_reason, pqueries, m_slack, useNear))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseDist: resolved to null query\n"));
 	return true;
     }
+    tr.getTerms(m_terms, m_groups);
     *qp = *pqueries.begin();
     return true;
 }
