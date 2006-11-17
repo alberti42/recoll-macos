@@ -65,7 +65,7 @@ public slots:
     virtual void enablePrevPage(bool);
     virtual void docExpand(int);
     virtual void ssearchAddTerm(QString);
-    virtual void startPreview(int docnum);
+    virtual void startPreview(int docnum, int);
     virtual void startNativeViewer(int docnum);
     virtual void previewNextInTab(int sid, int docnum);
     virtual void previewPrevInTab(int sid, int docnum);

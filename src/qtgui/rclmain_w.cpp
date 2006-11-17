@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.8 2006-11-17 10:09:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.9 2006-11-17 12:55:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -114,8 +114,8 @@ void RclMain::init()
 	    this, SLOT(enablePrevPage(bool)));
     connect(resList, SIGNAL(docEditClicked(int)), 
 	    this, SLOT(startNativeViewer(int)));
-    connect(resList, SIGNAL(docPreviewClicked(int)), 
-	    this, SLOT(startPreview(int)));
+    connect(resList, SIGNAL(docPreviewClicked(int, int)), 
+	    this, SLOT(startPreview(int, int)));
 
     connect(fileExitAction, SIGNAL(activated() ), this, SLOT(fileExit() ) );
     connect(fileStart_IndexingAction, SIGNAL(activated()), 
@@ -443,8 +443,9 @@ void RclMain::previewClosed(QWidget *w)
  * existing window.
  *
  * @param docnum db query index
+ * @param mod keyboards modifiers like ControlButton, ShiftButton
  */
-void RclMain::startPreview(int docnum)
+void RclMain::startPreview(int docnum, int mod)
 {
     Rcl::Doc doc;
     if (!resList->getDoc(docnum, doc)) {
@@ -462,7 +463,10 @@ void RclMain::startPreview(int docnum)
 			     fn.c_str());
 	return;
     }
-
+    if (mod & Qt::ShiftButton) {
+	// User wants new preview window
+	curPreview = 0;
+    }
     if (curPreview == 0) {
 	curPreview = new Preview(0, tr("Preview"));
 	if (curPreview == 0) {

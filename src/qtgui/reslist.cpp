@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.10 2006-11-17 10:09:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.11 2006-11-17 12:55:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -46,8 +46,8 @@ ResList::ResList(QWidget* parent, const char* name)
 
     // signals and slots connections
     connect(this, SIGNAL(clicked(int, int)), this, SLOT(clicked(int,int)));
-    connect(this, SIGNAL(linkClicked(const QString &)), 
-	    this, SLOT(linkWasClicked(const QString &)));
+    connect(this, SIGNAL(linkClicked(const QString &, int)), 
+	    this, SLOT(linkWasClicked(const QString &, int)));
     connect(this, SIGNAL(headerClicked()), this, SLOT(showQueryDetails()));
     connect(this, SIGNAL(doubleClicked(int,int)), 
 	    this, SLOT(doubleClicked(int, int)));
@@ -532,7 +532,7 @@ void ResList::doubleClicked(int, int)
 	emit(wordSelect(selectedText()));
 }
 
-void ResList::linkWasClicked(const QString &s)
+void ResList::linkWasClicked(const QString &s, int clkmod)
 {
     LOGDEB(("ResList::linkClicked: [%s]\n", s.ascii()));
     int i = atoi(s.ascii()+1);
@@ -542,7 +542,7 @@ void ResList::linkWasClicked(const QString &s)
 	emit headerClicked(); 
 	break;
     case 'P': 
-	emit docPreviewClicked(i); 
+	emit docPreviewClicked(i, clkmod); 
 	break;
     case 'E': 
 	emit docEditClicked(i);
@@ -573,7 +573,7 @@ QPopupMenu *ResList::createPopupMenu(const QPoint& pos)
 
 void ResList::menuPreview()
 {
-    emit docPreviewClicked(m_popDoc);
+    emit docPreviewClicked(m_popDoc, 0);
 }
 void ResList::menuEdit()
 {

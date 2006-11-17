@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.3 2006-11-17 10:09:07 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.4 2006-11-17 12:55:59 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -56,10 +56,11 @@ class ResList : public QTextBrowser
     void nextPageAvailable(bool);
     void prevPageAvailable(bool);
     void docEditClicked(int);
-    void docPreviewClicked(int);
+    void docPreviewClicked(int, int);
     void headerClicked();
     void docExpand(int);
     void wordSelect(QString);
+    void linkClicked(const QString&, int);
 
  protected:
     void keyPressEvent(QKeyEvent *e);
@@ -67,7 +68,7 @@ class ResList : public QTextBrowser
 
  protected slots:
     virtual void languageChange();
-    virtual void linkWasClicked(const QString &);
+    virtual void linkWasClicked(const QString &, int);
     virtual void showQueryDetails();
 
  private:
@@ -86,7 +87,7 @@ class ResList : public QTextBrowser
 
     // Don't know why this is necessary but it is
     void emitLinkClicked(const QString &s) {
-	emit linkClicked(s);
+	emit linkClicked(s, m_lstClckMod);
     };
 };
 
