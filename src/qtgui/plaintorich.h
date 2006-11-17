@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.8 2006-11-17 10:09:07 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.9 2006-11-17 12:31:50 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -25,8 +25,9 @@
 /**
  * Transform plain text into qt rich text for the preview window.
  *
- * We mainly escape characters like < or &, and add qt rich text tags to 
- * colorize the query terms.
+ * We escape characters like < or &, and add qt rich text tags to 
+ * colorize the query terms. The latter is a quite complicated matter because
+ * of phrase/near searches. We treat all such searches as "near", not "phrase"
  * 
  * @param in          raw text out of internfile.
  * @param out         rich text output
