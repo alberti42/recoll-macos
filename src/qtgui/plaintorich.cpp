@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.15 2006-11-17 12:32:40 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.16 2006-11-18 12:31:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -61,6 +61,7 @@ class myTextSplitCB : public TextSplitCB {
 
     // Out: first query term found in text
     string firstTerm;
+    int    firstTermOcc;
 
     // Out: begin and end byte positions of query terms/groups in text
     vector<pair<int, int> > tboffs;  
@@ -190,30 +191,49 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 {
     LOGDEB0(("myTextSplitCB::matchGroup:d %d: %s\n", window,
 	    vecStringToString(terms).c_str()));
+
+    // The position lists we are going to work with. We extract them from the 
+    // (string->plist) map
     vector<vector<int>* > plists;
-    // Check that each of the group terms has a position list
-    for (vector<string>::const_iterator it = terms.begin(); it != terms.end();
-	 it++) {
-	map<string, vector<int> >::iterator pl;
-	if ((pl = m_plists.find(*it)) == m_plists.end()) {
-	    LOGDEB(("myTextSplitCB::matchGroup: [%s] not found in m_plists\n",
+    // A revert plist->term map. This is so that we can find who is who after
+    // sorting the plists by length.
+    map<vector<int>*, string> plistToTerm;
+    // For traces
+    vector<string> realgroup;
+
+    // Find the position list for each term in the group. Not all
+    // necessarily exist (esp for NEAR where terms have been
+    // stem-expanded: we don't know which matched)
+    for (vector<string>::const_iterator it = terms.begin(); 
+	 it != terms.end(); it++) {
+	map<string, vector<int> >::iterator pl = m_plists.find(*it);
+	if (pl == m_plists.end()) {
+	    LOGDEB1(("myTextSplitCB::matchGroup: [%s] not found in m_plists\n",
 		    (*it).c_str()));
-	    return false;
+	    continue;
 	}
 	plists.push_back(&(pl->second));
+	plistToTerm[&(pl->second)] = *it;
+	realgroup.push_back(*it);
     }
-
+    LOGDEB0(("myTextSplitCB::matchGroup:d %d:real group %s\n", window,
+	     vecStringToString(realgroup).c_str()));
+    if (plists.size() < 2)
+	return false;
     // Sort the positions lists so that the shorter is first
     std::sort(plists.begin(), plists.end(), VecIntCmpShorter());
 
     // Walk the shortest plist and look for matches
     int sta = int(10E9), sto = 0;
     int pos;
+    // Occurrences are from 1->N
+    firstTermOcc = 0;
     vector<int>::iterator it = plists[0]->begin();
     do {
 	if (it == plists[0]->end())
 	    return false;
 	pos = *it++;
+	firstTermOcc++;
     } while (!do_proximity_test(window, plists, 1, pos, pos, &sta, &sto));
     SETMINMAX(pos, sta, sto);
 
@@ -221,22 +241,20 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 
     if (firstTerm.empty() || m_firstTermPos > sta) {
 	// firsTerm is used to try an position the preview window over
-	// the match. As it's difficult to divine byte/word positions,
-	// we use a string search. Try to use the shortest plist for
-	// this, which hopefully gives a better chance for the group
-	// to be found (it's hopeless to try and match the whole
-	// group)
-	unsigned int minl = (unsigned int)10E9;
-	for (vector<string>::const_iterator it = terms.begin(); 
-	     it != terms.end(); it++) {
-	    map<string, vector<int> >::iterator pl = m_plists.find(*it);
-	    if (pl != m_plists.end() && pl->second.size() < minl) {
-		firstTerm = *it;
-		minl = pl->second.size();
-	    }
-	}
+	// the match. As it's difficult to divine byte/word positions
+	// in qtextedit, we use a string search. Use the
+	// shortest plist for this, which hopefully gives a better
+	// chance for the group to be found (it's hopeless to try and
+	// match the whole group)
+	map<vector<int>*, string>::iterator it = 
+	    plistToTerm.find(plists.front());
+	if (it != plistToTerm.end())
+	    firstTerm = it->second;
+	LOGDEB(("myTextSplitCB:: best group term %s, firstTermOcc %d\n",
+		firstTerm.c_str(), firstTermOcc));
     }
 
+    // Translate the position window into a byte offset window
     map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
     map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
     if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
@@ -247,6 +265,7 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	LOGDEB(("myTextSplitCB::matchGroup: no bpos found for %d or %d\n", 
 		sta, sto));
     }
+
     return true;
 }
 
@@ -281,7 +300,9 @@ bool myTextSplitCB::matchGroups()
 // editor's find() function to position on it
 bool plaintorich(const string& in, string& out, 
 		 RefCntr<Rcl::SearchData> sdata,
-		 string *firstTerm, bool noHeader)
+		 string *firstTerm, 
+		 int *firstTermOcc,
+		 bool noHeader)
 {
     Chrono chron;
     out.erase();
@@ -319,6 +340,8 @@ bool plaintorich(const string& in, string& out,
 
     if (firstTerm)
 	*firstTerm = cb.firstTerm;
+    if (firstTermOcc)
+	*firstTermOcc = cb.firstTermOcc;
 
     // Rich text output
     if (noHeader)

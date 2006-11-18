@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.6 2006-11-17 10:09:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.7 2006-11-18 12:31:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -172,7 +172,7 @@ QTextEdit *Preview::getCurrentEditor()
 // false, the search string has been modified, we search for the new string, 
 // starting from the current position
 void Preview::doSearch(const QString &text, bool next, bool reverse, 
-		       bool wo)
+		       bool wordOnly)
 {
     LOGDEB1(("Preview::doSearch: next %d rev %d\n", int(next), int(reverse)));
     QTextEdit *edit = getCurrentEditor();
@@ -204,7 +204,7 @@ void Preview::doSearch(const QString &text, bool next, bool reverse,
 	}
     }
 
-    bool found = edit->find(text, matchCase, wo, 
+    bool found = edit->find(text, matchCase, wordOnly, 
 			      !reverse, &mspara, &msindex);
     LOGDEB(("Found at para: %d index %d\n", mspara, msindex));
 
@@ -451,12 +451,14 @@ class ToRichThread : public QThread {
     string &in;
     RefCntr<Rcl::SearchData> m_searchData;
     string& firstTerm;
+    int& firstTermOcc;
     QString &out;
     int loglevel;
  public:
     ToRichThread(string &i, RefCntr<Rcl::SearchData> searchData,
-		 string& ft, QString &o) 
-	: in(i), m_searchData(searchData), firstTerm(ft), out(o)
+		 string& ft, int& fto, QString &o) 
+	: in(i), m_searchData(searchData), firstTerm(ft), firstTermOcc(fto),
+	  out(o)
     {
 	    loglevel = DebugLog::getdbl()->getlevel();
     }
@@ -465,7 +467,7 @@ class ToRichThread : public QThread {
 	DebugLog::getdbl()->setloglevel(loglevel);
 	string rich;
 	try {
-	    plaintorich(in, rich, m_searchData, &firstTerm);
+	    plaintorich(in, rich, m_searchData, &firstTerm, &firstTermOcc);
 	} catch (CancelExcept) {
 	}
 	out = QString::fromUtf8(rich.c_str(), rich.length());
@@ -547,9 +549,11 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     QString richTxt;
     bool highlightTerms = fdoc.text.length() < 1000 *1024;
     string firstTerm;
+    int firstTermOcc;
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
-	ToRichThread rthr(fdoc.text, m_searchData, firstTerm, richTxt);
+	ToRichThread rthr(fdoc.text, m_searchData, firstTerm, firstTermOcc,
+			  richTxt);
 	rthr.start();
 
 	for (;;prog++) {
@@ -629,7 +633,10 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	if (!firstTerm.empty()) {
 	    bool wasC = matchCheck->isChecked();
 	    matchCheck->setChecked(false);
-	    doSearch(QString::fromUtf8(firstTerm.c_str()), true, false, true);
+	    for (int i = 0; i < firstTermOcc; i++) {
+		doSearch(QString::fromUtf8(firstTerm.c_str()), i, 
+			 false, true);
+	    }
 	    matchCheck->setChecked(wasC);
 	}
     }

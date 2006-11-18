@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.9 2006-11-17 12:31:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.10 2006-11-18 12:31:16 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -33,10 +33,12 @@
  * @param out         rich text output
  * @param terms       list of query terms. These are out of Rcl::Db and dumb
  * @param firstTerm   out: value of the first search term in text.
+ * @param frsttocc    out: occurrence of 1st term to look for
  * @param noHeader    if true don't output header (<qt><title>...)
  */
 extern bool plaintorich(const string &in, string &out,
 			RefCntr<Rcl::SearchData> sdata,
-			string* firstTerm, bool noHeader = false);
+			string* firstTerm, int *frsttocc, 
+			bool noHeader = false);
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */
