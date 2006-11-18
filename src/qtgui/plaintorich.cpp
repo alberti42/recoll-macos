@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.16 2006-11-18 12:31:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.17 2006-11-18 12:56:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ class myTextSplitCB : public TextSplitCB {
 
     myTextSplitCB(const vector<string>& its, vector<vector<string> >&groups, 
 		  vector<int>& slacks) 
-	:  m_wcount(0), m_groups(groups), m_slacks(slacks)
+	:  firstTermOcc(1), m_wcount(0), m_groups(groups), m_slacks(slacks)
     {
 	for (vector<string>::const_iterator it = its.begin(); 
 	     it != its.end(); it++) {
