@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.4 2006-11-17 10:06:34 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.5 2006-11-18 12:30:14 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -135,13 +135,6 @@ bool SearchData::getTerms(vector<string>& terms,
 class wsQData : public TextSplitCB {
  public:
     vector<string> terms;
-    // Debug
-    string catterms() {
-	string s;
-	for (unsigned int i = 0; i < terms.size(); i++)
-	    s += "[" + terms[i] + "] ";
-	return s;
-    }
     bool takeword(const std::string &term, int , int, int) {
 	LOGDEB1(("wsQData::takeword: %s\n", term.c_str()));
 	terms.push_back(term);
@@ -149,16 +142,22 @@ class wsQData : public TextSplitCB {
     }
 };
 
+/// Translate user string (ie: term1 "a phrase" term3) into a xapian
+/// query tree
 // This used to be a static function, but we couldn't just keep adding
 // parameters to the interface!
 class StringToXapianQ {
 public:
-    StringToXapianQ(Db& db) : m_db(db) { }
+    StringToXapianQ(Db& db, const string &stmlng) 
+	: m_db(db), m_stemlang(stmlng) 
+    { }
+
+
     bool translate(const string &iq,
-		   const string& stemlang,
 		   string &ermsg,
 		   list<Xapian::Query> &pqueries,
 		   int slack = 0, bool useNear = false);
+
     bool getTerms(vector<string>& terms, 
 		  vector<vector<string> >& groups) 
     {
@@ -166,18 +165,20 @@ public:
 	groups.insert(groups.end(), m_groups.begin(), m_groups.end());
 	return true;
     }
-private:
-    void maybeStemExp(const string& stemlang, const string& term, 
-		      list<string>& exp);
 
-    Db& m_db;
+private:
+    void maybeStemExp(bool dont, const string& term, list<string>& exp);
+
+    Db&           m_db;
+    const string& m_stemlang;
+
     // Single terms and phrases resulting from breaking up text;
     vector<string>          m_terms;
     vector<vector<string> > m_groups; 
 };
 
-/** Make term dumb and possibly expand it into its stem siblings */
-void StringToXapianQ::maybeStemExp(const string& stemlang, 
+/** Make term dumb and possibly expand it into its stem siblings. */
+void StringToXapianQ::maybeStemExp(bool nostemexp, 
 				   const string& term, 
 				   list<string>& exp)
 {
@@ -190,8 +191,7 @@ void StringToXapianQ::maybeStemExp(const string& stemlang,
     string term1;
     dumb_string(term, term1);
 
-    bool nostemexp = stemlang.empty() ? true : false;
-    if (!nostemexp) {
+    if (!m_stemlang.empty() && !nostemexp) {
 	// Check if the first letter is a majuscule in which
 	// case we do not want to do stem expansion. Note that
 	// the test is convoluted and possibly problematic
@@ -210,7 +210,41 @@ void StringToXapianQ::maybeStemExp(const string& stemlang,
     if (nostemexp) {
 	exp = list<string>(1, term1);
     } else {
-	exp = m_db.stemExpand(stemlang, term1);
+	exp = m_db.stemExpand(m_stemlang, term1);
+    }
+}
+
+// Do distribution of string vectors: a,b c,d -> a,c a,d b,c b,d
+void multiply_groups(vector<vector<string> >::const_iterator vvit,
+		     vector<vector<string> >::const_iterator vvend, 
+		     vector<string>& comb,
+		     vector<vector<string> >&allcombs)
+{
+    // Remember my string vector and compute next, for recursive calls.
+    vector<vector<string> >::const_iterator myvit = vvit++;
+
+    // Walk the string vector I'm called upon and, for each string,
+    // add it to current result, an call myself recursively on the
+    // next string vector. The last call (last element of the vector of
+    // vectors), adds the elementary result to the output
+
+    // Walk my string vector
+    for (vector<string>::const_iterator strit = (*myvit).begin();
+	 strit != (*myvit).end(); strit++) {
+
+	// Add my current value to the string vector we're building
+	comb.push_back(*strit);
+
+	if (vvit == vvend) {
+	    // Last call: store current result
+	    allcombs.push_back(comb);
+	} else {
+	    // Call recursively on next string vector
+	    multiply_groups(vvit, vvend, comb, allcombs);
+	}
+	// Pop the value I just added (make room for the next element in my
+	// vector)
+	comb.pop_back();
     }
 }
 
@@ -228,13 +262,11 @@ void StringToXapianQ::maybeStemExp(const string& stemlang,
  *   count)
  */
 bool StringToXapianQ::translate(const string &iq,
-				const string& stemlang,
 				string &ermsg,
 				list<Xapian::Query> &pqueries,
 				int slack, bool useNear)
 {
     string qstring = iq;
-    bool opt_stemexp = !stemlang.empty();
     ermsg.erase();
     m_terms.clear();
     m_groups.clear();
@@ -243,8 +275,8 @@ bool StringToXapianQ::translate(const string &iq,
     list<string> phrases;
     stringToStrings(qstring, phrases);
 
-    // Then process each phrase: split into terms and transform into
-    // appropriate Xapian Query
+    // Then process each word/phrase: split into terms and transform
+    // into appropriate Xapian Query
     try {
 	for (list<string>::iterator it = phrases.begin(); 
 	     it != phrases.end(); it++) {
@@ -272,7 +304,7 @@ bool StringToXapianQ::translate(const string &iq,
 		{
 		    string term = splitData.terms.front();
 		    list<string> exp;  
-		    maybeStemExp(stemlang, term, exp);
+		    maybeStemExp(false, term, exp);
 		    // Push either term or OR of stem-expanded set
 		    pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 						     exp.begin(), exp.end()));
@@ -286,27 +318,38 @@ bool StringToXapianQ::translate(const string &iq,
 		Xapian::Query::OP_PHRASE;
 		list<Xapian::Query> orqueries;
 		bool hadmultiple = false;
-		string nolang, lang;
-		vector<string> dumbterms;
+		vector<vector<string> >groups;
 		for (vector<string>::iterator it = splitData.terms.begin();
 		     it != splitData.terms.end(); it++) {
+		    // Some version of xapian will accept only one OR clause
+		    // inside NEAR, all others must be leafs
+		    bool nostemexp = 
+			(op == Xapian::Query::OP_PHRASE || hadmultiple) ?
+			true : false;
+
 		    list<string>exp;
-		    lang = (op == Xapian::Query::OP_PHRASE || hadmultiple) ?
-			nolang : stemlang;
-		    maybeStemExp(lang, *it, exp);
-		    dumbterms.insert(dumbterms.end(), exp.begin(), exp.end());
+		    maybeStemExp(nostemexp, *it, exp);
+
+		    groups.push_back(vector<string>(exp.begin(), exp.end()));
+		    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
+						      exp.begin(), exp.end()));
 #ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
 		    if (exp.size() > 1) 
 			hadmultiple = true;
 #endif
-		    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
-						      exp.begin(), exp.end()));
 		}
+
 		pqueries.push_back(Xapian::Query(op,
 						 orqueries.begin(),
 						 orqueries.end(),
 					 splitData.terms.size() + slack));
-		m_groups.push_back(dumbterms);
+		// Add NEAR/PHRASE groups to the highlighting data. Must
+		// push all combinations
+		vector<vector<string> > allcombs;
+		vector<string> comb;
+		multiply_groups(groups.begin(), groups.end(), comb, allcombs);
+		m_groups.insert(m_groups.end(), allcombs.begin(), 
+				allcombs.end());
 	    }
 	}
     } catch (const Xapian::Error &e) {
@@ -345,8 +388,8 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	return false;
     }
     list<Xapian::Query> pqueries;
-    StringToXapianQ tr(db);
-    if (!tr.translate(m_text, stemlang, m_reason, pqueries))
+    StringToXapianQ tr(db, stemlang);
+    if (!tr.translate(m_text, m_reason, pqueries))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
@@ -388,8 +431,8 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     // terms etc. The result should be a single element list
     string s = string("\"") + m_text + string("\"");
     bool useNear = m_tp == SCLT_NEAR;
-    StringToXapianQ tr(db);
-    if (!tr.translate(s, stemlang, m_reason, pqueries, m_slack, useNear))
+    StringToXapianQ tr(db, stemlang);
+    if (!tr.translate(s, m_reason, pqueries, m_slack, useNear))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseDist: resolved to null query\n"));
