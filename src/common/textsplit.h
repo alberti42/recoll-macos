@@ -16,7 +16,7 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.12 2006-11-12 08:35:11 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.13 2006-11-19 18:37:37 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -70,7 +70,7 @@ class TextSplit {
     // It may happen that our cleanup would result in emitting the
     // same term twice. We try to avoid this
     int prevpos;
-    string prevterm;
+    unsigned int prevlen;
 
     bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
     bool doemit(bool spanerase, int bp);

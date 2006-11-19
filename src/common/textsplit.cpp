@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.24 2006-11-12 08:35:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.25 2006-11-19 18:37:37 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ static void setcharclasses()
 inline bool TextSplit::emitterm(bool isspan, string &w, int pos, 
 			 int btstart, int btend)
 {
-    LOGDEB2(("TextSplit::emitterm: '%s' pos %d\n", w.c_str(), pos));
+    LOGDEB3(("TextSplit::emitterm: [%s] pos %d\n", w.c_str(), pos));
 
     unsigned int l = w.length();
     if (l > 0 && l < (unsigned)maxWordLength) {
@@ -107,12 +107,13 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 		return true;
 	    }
 	}
-	if (pos != prevpos || l != prevterm.length() || w != prevterm) {
+	if (pos != prevpos || l != prevlen) {
 	    bool ret = cb->takeword(w, pos, btstart, btend);
-	    prevterm = w;
+	    prevlen = w.length();
 	    prevpos = pos;
 	    return ret;
 	}
+	LOGDEB2(("TextSplit::emitterm:dup: [%s] pos %d\n", w.c_str(), pos));
     }
     return true;
 }
@@ -137,11 +138,8 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
  */
 inline bool TextSplit::doemit(bool spanerase, int bp)
 {
-#if 0
-    cerr << "doemit: " << "w: '" << word << "' wp: "<< wordpos << " s: '" <<
-	span << "' sp: " << spanpos << " spe: " << spanerase << " bp: " << bp 
-	 << endl;
-#endif
+    LOGDEB3(("TextSplit::doemit: wrd [%s] wp %d spn [%s] sp %d spe %d bp %d\n",
+	    word.c_str(), wordpos, span.c_str(), spanpos, spanerase, bp));
 
     // Emit span. When splitting for query, we only emit final spans
     bool spanemitted = false;
@@ -214,8 +212,7 @@ bool TextSplit::text_to_words(const string &in)
     span.erase();
     word.erase(); // Current word: no punctuation at all in there
     number = false;
-    prevpos = wordpos = spanpos = charpos = 0;
-    prevterm.erase();
+    prevpos = prevlen = wordpos = spanpos = charpos = 0;
 
     Utf8Iter it(in);
 
@@ -228,15 +225,15 @@ bool TextSplit::text_to_words(const string &in)
 	int cc = whatcc(c);
 	switch (cc) {
 	case LETTER:
-	    word += it;
-	    span += it;
+	    it.appendchartostring(word);
+	    it.appendchartostring(span);
 	    break;
 
 	case DIGIT:
 	    if (word.length() == 0)
 		number = true;
-	    word += it;
-	    span += it;
+	    it.appendchartostring(word);
+	    it.appendchartostring(span);
 	    break;
 
 	case SPACE:
@@ -252,15 +249,15 @@ bool TextSplit::text_to_words(const string &in)
 	    if (word.length() == 0) {
 		if (whatcc(it[charpos+1]) == DIGIT) {
 		    number = true;
-		    word += it;
-		    span += it;
+		    it.appendchartostring(word);
+		    it.appendchartostring(span);
 		} else
-		    span += it;
+		    it.appendchartostring(span);
 	    } else {
 		if (!doemit(false, it.getBpos()))
 		    return false;
 		number = false;
-		span += it;
+		it.appendchartostring(span);
 	    }
 	    break;
 	case '.':
@@ -269,8 +266,8 @@ bool TextSplit::text_to_words(const string &in)
 		// 132.jpg ?
 		if (whatcc(it[charpos+1]) != DIGIT)
 		    goto SPACE;
-		word += it;
-		span += it;
+		it.appendchartostring(word);
+		it.appendchartostring(span);
 		break;
 	    } else {
 		// If . inside a word, keep it, else, this is whitespace. 
@@ -286,10 +283,10 @@ bool TextSplit::text_to_words(const string &in)
 			// span length could have been adjusted by trimming
 			// inside doemit
 			if (span.length())
-			    span += it;
+			    it.appendchartostring(span);
 			break;
 		    } else {
-			span += it;
+			it.appendchartostring(span);
 			break;
 		    }
 		}
@@ -302,7 +299,7 @@ bool TextSplit::text_to_words(const string &in)
 		    return false;
 		number = false;
 	    }
-	    span += it;
+	    it.appendchartostring(span);
 	    break;
 	case '\'':
 	    // If in word, potential span: o'brien, else, this is more 
@@ -311,7 +308,7 @@ bool TextSplit::text_to_words(const string &in)
 		if (!doemit(false, it.getBpos()))
 		    return false;
 		number = false;
-		span += it;
+		it.appendchartostring(span);
 	    }
 	    break;
 	case '#': 
@@ -319,8 +316,8 @@ bool TextSplit::text_to_words(const string &in)
 	    if (word.length() > 0) {
 		int w = whatcc(it[charpos+1]);
 		if (w == SPACE || w == '\n' || w == '\r') {
-		    word += it;
-		    span += it;
+		    it.appendchartostring(word);
+		    it.appendchartostring(span);
 		    break;
 		}
 	    }
@@ -343,8 +340,8 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 
 	default:
-	    word += it;
-	    span += it;
+	    it.appendchartostring(word);
+	    it.appendchartostring(span);
 	    break;
 	}
     }
@@ -373,10 +370,13 @@ using namespace std;
 // A small class to hold state while splitting text
 class mySplitterCB : public TextSplitCB {
     int first;
+    bool nooutput;
  public:
-    mySplitterCB() : first(1) {}
-
+    mySplitterCB() : first(1), nooutput(false) {}
+    void setNoOut(bool val) {nooutput = val;}
     bool takeword(const std::string &term, int pos, int bs, int be) {
+	if (nooutput)
+	    return true;
 	if (first) {
 	    printf("%3s %-20s %4s %4s\n", "pos", "Term", "bs", "be");
 	    first = 0;
@@ -406,9 +406,10 @@ static string teststring1 = " 124, ";
 static string thisprog;
 
 static string usage =
-    " textsplit [opts] [filename]\n"
-    "   -s:  only spans\n"
-    "   -w:  only words\n"
+	    " textsplit [opts] [filename]\n"
+	    "   -S: no output\n"
+	    "   -s:  only spans\n"
+	    "   -w:  only words\n"
     " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
     ;
@@ -423,6 +424,7 @@ Usage(void)
 static int        op_flags;
 #define OPT_s	  0x1 
 #define OPT_w	  0x2
+#define OPT_S	  0x4
 
 int main(int argc, char **argv)
 {
@@ -437,6 +439,7 @@ int main(int argc, char **argv)
 	while (**argv)
 	    switch (*(*argv)++) {
 	    case 's':	op_flags |= OPT_s; break;
+	    case 'S':	op_flags |= OPT_S; break;
 	    case 'w':	op_flags |= OPT_w; break;
 	    default: Usage();	break;
 	    }
@@ -444,8 +447,13 @@ int main(int argc, char **argv)
     }
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
+
     mySplitterCB cb;
     TextSplit::Flags flags = TextSplit::TXTS_NONE;
+
+    if (op_flags&OPT_S)
+	cb.setNoOut(true);
+
     if (op_flags&OPT_s)
 	flags = TextSplit::TXTS_ONLYSPANS;
     else if (op_flags&OPT_w)
