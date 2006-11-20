@@ -16,7 +16,7 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.13 2006-11-19 18:37:37 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.14 2006-11-20 11:17:53 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -61,11 +61,11 @@ class TextSplit {
     int maxWordLength;
 
     string span; // Current span. Might be jf.dockes@wanadoo.f
-    string word; // Current word: no punctuation at all in there
+    int wordStart; // Current word: no punctuation at all in there
+    unsigned int wordLen;
     bool number;
     int wordpos; // Term position of current word
     int spanpos; // Term position of current span
-    int charpos; // Character position
 
     // It may happen that our cleanup would result in emitting the
     // same term twice. We try to avoid this

@@ -1,9 +1,9 @@
-# @(#$Id: Makefile,v 1.13 2006-11-15 14:57:53 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.14 2006-11-20 11:17:53 dockes Exp $  (C) 2005 J.F.Dockes
 depth = ..
 include $(depth)/mk/sysconf
 
 # Only test executables get build in here
-PROGS = internfile unacpp textsplit rclconfig
+PROGS = unacpp textsplit rclconfig
 
 all: $(BIGLIB) $(PROGS) 
 

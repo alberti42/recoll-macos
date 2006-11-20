@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.25 2006-11-19 18:37:37 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.26 2006-11-20 11:17:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,10 @@ static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.25 2006-11-19 18:37:37 dockes E
 #include <set>
 #include "textsplit.h"
 #include "debuglog.h"
+
+//#define UTF8ITER_CHECK
 #include "utf8iter.h"
+
 #include "uproplist.h"
 
 #ifndef NO_NAMESPACES
@@ -128,18 +131,13 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
  * text_to_words(). 
  * 
  * @return true if ok, false for error. Splitting should stop in this case.
- * @param word      Word value. This will be empty on return in ALL non-error
- *                   cases
- * @param wordpos   Term position for word. Always ++ by us.
- * @param span      Span value
- * @param spanpos   Term position for the current span
  * @param spanerase Set if the current span is at its end. Reset it.
  * @param bp        The current BYTE position in the stream
  */
 inline bool TextSplit::doemit(bool spanerase, int bp)
 {
-    LOGDEB3(("TextSplit::doemit: wrd [%s] wp %d spn [%s] sp %d spe %d bp %d\n",
-	    word.c_str(), wordpos, span.c_str(), spanpos, spanerase, bp));
+    LOGDEB3(("TextSplit::doemit:spn [%s] sp %d wrdS %d wrdL %d spe %d bp %d\n",
+	     span.c_str(), spanpos, wordStart, wordLen, spanerase, bp));
 
     // Emit span. When splitting for query, we only emit final spans
     bool spanemitted = false;
@@ -166,19 +164,23 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 	    return false;
     }
 
-
     // Emit word if different from span and not 'no words' mode
-    if (!(m_flags & TXTS_ONLYSPANS) && 
-	(!spanemitted || word.length() != span.length()))
-	if (!emitterm(false, word, wordpos, bp-word.length(), bp))
+    if (!(m_flags & TXTS_ONLYSPANS) && wordLen && 
+	(!spanemitted || wordLen != span.length())) {
+	string s(span.substr(wordStart, wordLen));
+	if (!emitterm(false, s, wordpos, bp-wordLen, bp))
 	    return false;
+    }
 
     // Adjust state
     wordpos++;
-    word.erase();
+    wordLen = 0;
     if (spanerase) {
 	span.erase();
 	spanpos = wordpos;
+	wordStart = 0;
+    } else {
+	wordStart = span.length();
     }
 
     return true;
@@ -210,14 +212,14 @@ bool TextSplit::text_to_words(const string &in)
     setcharclasses();
 
     span.erase();
-    word.erase(); // Current word: no punctuation at all in there
     number = false;
-    prevpos = prevlen = wordpos = spanpos = charpos = 0;
+    wordStart = wordLen = prevpos = prevlen = wordpos = spanpos = 0;
 
     Utf8Iter it(in);
 
-    for (; !it.eof(); it++, charpos++) {
+    for (; !it.eof(); it++) {
 	unsigned int c = *it;
+
 	if (c == (unsigned int)-1) {
 	    LOGERR(("Textsplit: error occured while scanning UTF-8 string\n"));
 	    return false;
@@ -225,20 +227,18 @@ bool TextSplit::text_to_words(const string &in)
 	int cc = whatcc(c);
 	switch (cc) {
 	case LETTER:
-	    it.appendchartostring(word);
-	    it.appendchartostring(span);
+	    wordLen += it.appendchartostring(span);
 	    break;
 
 	case DIGIT:
-	    if (word.length() == 0)
+	    if (wordLen == 0)
 		number = true;
-	    it.appendchartostring(word);
-	    it.appendchartostring(span);
+	    wordLen += it.appendchartostring(span);
 	    break;
 
 	case SPACE:
 	SPACE:
-	    if (word.length() || span.length()) {
+	    if (wordLen || span.length()) {
 		if (!doemit(true, it.getBpos()))
 		    return false;
 		number = false;
@@ -246,28 +246,27 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 	case '-':
 	case '+':
-	    if (word.length() == 0) {
-		if (whatcc(it[charpos+1]) == DIGIT) {
+	    if (wordLen == 0) {
+		if (whatcc(it[it.getCpos()+1]) == DIGIT) {
 		    number = true;
-		    it.appendchartostring(word);
-		    it.appendchartostring(span);
-		} else
-		    it.appendchartostring(span);
+		    wordLen += it.appendchartostring(span);
+		} else {
+		    wordStart += it.appendchartostring(span);
+		}
 	    } else {
 		if (!doemit(false, it.getBpos()))
 		    return false;
 		number = false;
-		it.appendchartostring(span);
+		wordStart += it.appendchartostring(span);
 	    }
 	    break;
 	case '.':
 	case ',':
 	    if (number) {
 		// 132.jpg ?
-		if (whatcc(it[charpos+1]) != DIGIT)
+		if (whatcc(it[it.getCpos()+1]) != DIGIT)
 		    goto SPACE;
-		it.appendchartostring(word);
-		it.appendchartostring(span);
+		wordLen += it.appendchartostring(span);
 		break;
 	    } else {
 		// If . inside a word, keep it, else, this is whitespace. 
@@ -277,16 +276,16 @@ bool TextSplit::text_to_words(const string &in)
 		// will be split as .x-errs, x, errs but not x-errs
 		// A final comma in a word will be removed by doemit
 		if (cc == '.') {
-		    if (word.length()) {
+		    if (wordLen) {
 			if (!doemit(false, it.getBpos()))
 			    return false;
 			// span length could have been adjusted by trimming
 			// inside doemit
 			if (span.length())
-			    it.appendchartostring(span);
+			    wordStart += it.appendchartostring(span);
 			break;
 		    } else {
-			it.appendchartostring(span);
+			wordStart += it.appendchartostring(span);
 			break;
 		    }
 		}
@@ -294,30 +293,29 @@ bool TextSplit::text_to_words(const string &in)
 	    goto SPACE;
 	    break;
 	case '@':
-	    if (word.length()) {
+	    if (wordLen) {
 		if (!doemit(false, it.getBpos()))
 		    return false;
 		number = false;
 	    }
-	    it.appendchartostring(span);
+	    wordStart += it.appendchartostring(span);
 	    break;
 	case '\'':
 	    // If in word, potential span: o'brien, else, this is more 
 	    // whitespace
-	    if (word.length()) {
+	    if (wordLen) {
 		if (!doemit(false, it.getBpos()))
 		    return false;
 		number = false;
-		it.appendchartostring(span);
+		wordStart += it.appendchartostring(span);
 	    }
 	    break;
 	case '#': 
-	    // Keep it only at end of word... Special case for c# you see...
-	    if (word.length() > 0) {
-		int w = whatcc(it[charpos+1]);
+	    // Keep it only at end of word ... Special case for c# you see...
+	    if (wordLen > 0) {
+		int w = whatcc(it[it.getCpos()+1]);
 		if (w == SPACE || w == '\n' || w == '\r') {
-		    it.appendchartostring(word);
-		    it.appendchartostring(span);
+		    wordLen += it.appendchartostring(span);
 		    break;
 		}
 	    }
@@ -340,12 +338,11 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 
 	default:
-	    it.appendchartostring(word);
-	    it.appendchartostring(span);
+	    wordLen += it.appendchartostring(span);
 	    break;
 	}
     }
-    if (word.length() || span.length()) {
+    if (wordLen || span.length()) {
 	if (!doemit(true, it.getBpos()))
 	    return false;
     }
@@ -401,7 +398,7 @@ static string teststring =
 	    " -wl,--export-dynamic "
 	    " ~/.xsession-errors "
 ;
-static string teststring1 = " 124, ";
+static string teststring1 = " nouvel-an ";
 
 static string thisprog;
 
