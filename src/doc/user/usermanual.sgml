@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.24 2006-11-14 13:55:43 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.25 2006-11-20 17:46:11 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -554,10 +554,17 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
 
       <para>Clicking on the
        <literal>Preview</literal> link for an entry will open an
-       internal preview window for the document. Clicking the
-       <literal>Edit</literal> link will attempt to start an external
-       viewer (have a look at the <filename>mimeconf</filename>
-       configuration file to see how these are configured).</para>
+       internal preview window for the document. Further
+       <literal>Preview</literal> clicks for the same search will open
+       tabs in the existing preview window. You can use
+       <keycap>Shift</keycap>+Click to force the creation of another
+       preview window, which may be useful to view the documents side
+       by side.</para>
+
+      <para>Clicking the <literal>Edit</literal> link will attempt to 
+       start an external viewer (have a look at the
+       <filename>mimeconf</filename> configuration file to see how
+       these are configured).</para>
 
       <para>The <literal>Preview</literal> and <literal>Edit</literal>
        edit links may not be present for all entries, meaning that
@@ -660,15 +667,37 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
       <title>Complex/advanced search</title>
 
       <para>The advanced search dialog has fields that will allow a more
-        refined search, looking for documents with all given elements, a
-        given exact phrase, none of the given elements, or a given file
-        name (with wildcard expansion). All relevant fields will be
-        combined by an implicit AND clause. All fields except "Exact
-        phrase" can accept a mix of single words and phrases enclosed
-        in double quotes.</para>
+        refined search. It has a number of entry fields, each of which
+        is configurable for the following modes:
+        <itemizedlist>
+	  <listitem><para>All terms.</para>
+	  </listitem>
+	  <listitem><para>Any term.</para>
+	  </listitem>
+	  <listitem><para>None of the terms.</para>
+	  </listitem>
+	  <listitem><para>Phrase (exact terms in order within an
+	  adjustable window).</para>
+	  </listitem>
+	  <listitem><para>Proximity (terms in any order within an
+	  adjustable window).</para>
+	  </listitem>
+	  <listitem><para>Filename search with wildcards.</para>
+	  </listitem>
+	</itemizedlist>
+       </para>
+      <para>Additional entry fields can be created by clicking the
+      <guilabel>Add clause</guilabel> button.</para>
 
-      <para>Advanced search will let you search for documents of specific mime
-        types (ie: only <literal>text/plain</literal>, or
+      <para>All relevant fields will be combined by an implicit AND
+        or OR conjunction. All types of clauses except "phrase" and
+        "near" can accept a mix of single words and phrases enclosed
+        in double quotes. Stemming expansion will be performed for all
+        terms not beginning with a capital letter, except for "phrase"
+        clauses.</para>
+
+      <para>Advanced search will also let you search for documents of
+       specific mime types (ie: only <literal>text/plain</literal>, or
         <literal>text/HTML</literal> or
         <literal>application/pdf</literal> etc...). The state of the
         file type selection can be saved as the default (the file type
@@ -885,6 +914,12 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
        display the next or the previous document from the result
        list. Any secondary search currently active will be executed on
        the new document.</para>
+      </formalpara>
+
+      <formalpara><title>Forced opening of a preview window (1.6)</title>
+       <para>You can use <keycap>Shift</keycap>+Click on a result list
+       <literal>Preview</literal> link to force the creation of a
+       preview window instead of a new tab in the existing one.</para>
       </formalpara>
 
       <formalpara><title>AutoPhrases (1.5)</title>
