@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.8 2006-04-28 07:23:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.9 2006-11-20 15:29:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -102,7 +102,8 @@ bool transcode(const string &in, string &out, const string &icode,
 	iconv_close(ic);
     //fprintf(stderr, "TRANSCODE OUT:\n%s\n", out.c_str());
     if (mecnt)
-	LOGDEB(("transcode: %d errors\n", mecnt));
+	LOGINFO(("transcode: [%s]->[%s] %d errors\n", 
+		 icode.c_str(), ocode.c_str(), mecnt));
     if (ecnt)
 	*ecnt = mecnt;
     return ret;
