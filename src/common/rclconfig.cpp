@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.32 2006-10-24 09:09:36 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.33 2006-11-20 15:28:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -200,6 +200,8 @@ const string& RclConfig::getDefCharset(bool filename)
 	    // iso-8859. Some won't take iso8859
 	    localecharset = string("ISO-8859-1");
 	}
+	LOGDEB(("RclConfig::getDefCharset: localecharset [%s]\n",
+		localecharset.c_str()));
     }
 
     if (defcharset.empty()) {
@@ -481,22 +483,80 @@ using namespace std;
 #include "rclinit.h"
 #include "rclconfig.h"
 
-int main(int, const char **)
+static char *thisprog;
+
+static char usage [] =
+"  \n\n"
+;
+static void
+Usage(void)
 {
+    fprintf(stderr, "%s: usage:\n%s [-s subkey] [-q param]", thisprog, usage);
+    exit(1);
+}
+
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_s	  0x2 
+#define OPT_q	  0x4 
+
+int main(int argc, char **argv)
+{
+    string pname, skey;
+    
+    thisprog = argv[0];
+    argc--; argv++;
+
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    /* Cas du "adb - core" */
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
+		skey = *(++argv);
+		argc--; 
+		goto b1;
+	    case 'q':	op_flags |= OPT_q; if (argc < 2)  Usage();
+		pname = *(++argv);
+		argc--; 
+		goto b1;
+	    default: Usage();	break;
+	    }
+    b1: argc--; argv++;
+    }
+
+    if (argc != 0)
+	Usage();
+
     string reason;
     RclConfig *config = recollinit(0, 0, reason);
     if (config == 0 || !config->ok()) {
 	cerr << "Configuration problem: " << reason << endl;
 	exit(1);
     }
-    list<string> names = config->getConfNames("");
-    names.sort();
-    names.unique();
-    for (list<string>::iterator it = names.begin(); it != names.end();it++) {
+    if (op_flags & OPT_s)
+	config->setKeyDir(skey);
+    if (op_flags & OPT_q) {
 	string value;
-	config->getConfParam(*it, value);
-	cout << *it << " -> [" << value << "]" << endl;
+	if (!config->getConfParam(pname, value)) {
+	    fprintf(stderr, "getConfParam failed for [%s]\n", pname.c_str());
+	    exit(1);
+	}
+	printf("[%s] -> [%s]\n", pname.c_str(), value.c_str());
+    } else {
+	list<string> names = config->getConfNames("");
+	names.sort();
+	names.unique();
+	for (list<string>::iterator it = names.begin(); 
+	     it != names.end();it++) {
+	    string value;
+	    config->getConfParam(*it, value);
+	    cout << *it << " -> [" << value << "]" << endl;
+	}
     }
+    exit(0);
 }
 
 #endif // TEST_RCLCONFIG
