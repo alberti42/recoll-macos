@@ -1,4 +1,4 @@
-.\" $Id: recollindex.1,v 1.2 2006-09-08 09:02:47 dockes Exp $ (C) 2005 J.F.Dockes\$
+.\" $Id: recollindex.1,v 1.3 2006-11-20 18:07:02 dockes Exp $ (C) 2005 J.F.Dockes\$
 .TH RECOLLINDEX 1 "8 January 2006"
 .SH NAME
 recollindex \- indexing command for the Recoll full text search system
@@ -12,6 +12,12 @@ recollindex \- indexing command for the Recoll full text search system
 ]
 [
 .B -z
+]
+[
+.B -m
+]
+[
+.B -D
 ]
 .br
 .B recollindex 
@@ -29,6 +35,14 @@ recollindex \- indexing command for the Recoll full text search system
 ]
 .B -s 
 <lang>
+.br
+.B recollindex
+[
+.B -c
+<configdir>
+]
+.B -S
+
 .SH DESCRIPTION
 The
 .B recollindex
@@ -49,6 +63,19 @@ This will incrementally update the database with files that changed since
 the last run. If option 
 .B -z 
 is given, the database will be erased before starting.
+.PP
+If option 
+.B
+-m 
+is given, then recollindex is started for real time monitoring, using the
+package it was configured for (either fam, gamin, or inotify). This mode
+must have been explicitely configured when building the package, it is not
+available by default. The program will normally detach from the controlling
+terminal and become a daemon. If option 
+.B
+-D 
+is given, it will stay in foreground.
+
 .PP
 The two other modes are useful mainly for testing.
 .PP
@@ -92,6 +119,11 @@ spanish (es)
 .IP \(bu
 swedish (sv)
 .RE
+
+.B recollindex -S
+will rebuild the phonetic/orthographic index. This feature uses the 
+.B aspell
+package, which must be installed on the system.
 
 .SH SEE ALSO
 .PP 
