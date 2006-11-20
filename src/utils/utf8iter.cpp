@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: utf8iter.cpp,v 1.4 2006-01-23 13:32:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: utf8iter.cpp,v 1.5 2006-11-20 11:16:54 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -22,15 +22,18 @@ static char rcsid[] = "@(#$Id: utf8iter.cpp,v 1.4 2006-01-23 13:32:28 dockes Exp
 #include <iostream>
 #include <list>
 #include <vector>
+
+
 #include "debuglog.h"
+#include "transcode.h"
+
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+#define UTF8ITER_CHECK
 #include "utf8iter.h"
 #include "readfile.h"
-
-
 
 int main(int argc, char **argv)
 {
@@ -54,6 +57,7 @@ int main(int argc, char **argv)
 	fprintf(stderr, "cant create %s\n", outfile);
 	exit(1);
     }
+
     int nchars = 0;
     for (;!it.eof(); it++) {
 	unsigned int value = *it;
@@ -61,15 +65,24 @@ int main(int argc, char **argv)
 	    fprintf(stderr, "Conversion error occurred\n");
 	    exit(1);
 	}
+	// UTF-32LE or BE array
 	ucsout1.push_back(value);
+	// UTF-32LE or BE file
 	fwrite(&value, 4, 1, fp);
+
+	// Reconstructed utf8 strings (2 methods)
 	if (!it.appendchartostring(out))
 	    break;
+	// conversion to string
 	out1 += it;
+	
+	// fprintf(stderr, "%s", string(it).c_str());
 	nchars++;
     }
-    fprintf(stderr, "nchars1 %d\n", nchars);
-    if (in != out) {
+    fclose(fp);
+
+    fprintf(stderr, "nchars %d\n", nchars);
+    if (in.compare(out)) {
 	fprintf(stderr, "error: out != in\n");
 	exit(1);
     }
@@ -78,6 +91,7 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
+    // Rewind and do it a second time
     vector<unsigned int>ucsout2;
     it.rewind();
     for (int i = 0; ; i++) {
@@ -95,7 +109,35 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
-    fclose(fp);
+    ucsout2.clear();
+    int ercnt;
+    const char *encoding = "UTF-32LE"; // note : use BE on high-endian machine
+    string ucs, ucs1;
+    for (vector<unsigned int>::iterator it = ucsout1.begin(); 
+	 it != ucsout1.end(); it++) {
+	unsigned int i = *it;
+	ucs.append((const char *)&i, 4);
+    }
+    if (!transcode(ucs, ucs1, 
+		   encoding, encoding, &ercnt) || ercnt) {
+	fprintf(stderr, "Transcode check failed, ercount: %d\n", ercnt);
+	exit(1);
+    }
+    if (ucs.compare(ucs1)) {
+	fprintf(stderr, "error: ucsout1 != ucsout2 after iconv\n");
+	exit(1);
+    }
+
+    if (!transcode(ucs, ucs1, 
+		   encoding, "UTF-8", &ercnt) || ercnt) {
+	fprintf(stderr, "Transcode back to utf-8 check failed, ercount: %d\n",
+		ercnt);
+	exit(1);
+    }
+    if (ucs1.compare(in)) {
+	fprintf(stderr, "Transcode back to utf-8 compare to in failed\n");
+	exit(1);
+    }
     exit(0);
 }
 

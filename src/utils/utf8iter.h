@@ -16,158 +16,230 @@
  */
 #ifndef _UTF8ITER_H_INCLUDED_
 #define _UTF8ITER_H_INCLUDED_
-/* @(#$Id: utf8iter.h,v 1.7 2006-11-17 12:31:34 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: utf8iter.h,v 1.8 2006-11-20 11:16:54 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * A small helper class to iterate over utf8 strings. This is not an
- * STL iterator and this is not well designed, just convenient for
-   some specific uses
+ * STL iterator and does not much error checking. It is designed purely
+ * for recoll usage, where the utf-8 string comes out of iconv in most cases
+ * and is assumed legal. We just try to catch cases where there would be 
+ * a risk of crash.
  */
 class Utf8Iter {
-    unsigned int cl; // Char length at current position if known
-    const string &s; // String we're working with
-    string::size_type pos; // Current position in string
-    unsigned int m_charpos; // Current character posiiton
-
-    // Get character byte length at specified position
-    inline int get_cl(string::size_type p) const {
-	unsigned int z = (unsigned char)s[p];
-	if (z <= 127) {
-	    return 1;
-	} else if (z>=192 && z <= 223) {
-	    return 2;
-	} else if (z >= 224 && z <= 239) {
-	    return 3;
-	} else if (z >= 240 && z <= 247) {
-	    return 4;
-	} else if (z >= 248 && z <= 251) {
-	    return 5;
-	} else if (z >= 252 && z <= 253) {
-	    return 6;
-	} 
-	return -1;
-    }
-    // Check position and cl against string length
-    bool poslok(string::size_type p, int l) const {
-	return p != string::npos && l > 0 && p + l <= s.length();
-    }
-    // Update current char length in object state. Assumes pos is inside string
-    inline int compute_cl() {
-	cl = 0;
-	cl = get_cl(pos);
-	if (!poslok(pos, cl)) {
-	    pos = s.length();
-	    cl = 0;
-	    return -1;
-	}
-	return 0;
-    }
-    // Compute value at given position
-    inline unsigned int getvalueat(string::size_type p, int l) const {
-	switch (l) {
-	case 1: return (unsigned char)s[p];
-	case 2: return ((unsigned char)s[p] - 192) * 64 + 
-		(unsigned char)s[p+1] - 128 ;
-	case 3: return ((unsigned char)s[p]-224)*4096 + 
-		((unsigned char)s[p+1]-128)*64 + 
-		(unsigned char)s[p+2]-128;
-	case 4: return ((unsigned char)s[p]-240)*262144 + 
-		((unsigned char)s[p+1]-128)*4096 + 
-		((unsigned char)s[p+2]-128)*64 + 
-		(unsigned char)s[p+3]-128;
-	case 5: return ((unsigned char)s[p]-248)*16777216 + 
-		((unsigned char)s[p+1]-128)*262144 + 
-		((unsigned char)s[p+2]-128)*4096 + 
-		((unsigned char)s[p+3]-128)*64 + 
-		(unsigned char)s[p+4]-128;
-	case 6: return  ((unsigned char)s[p]-252)*1073741824 + 
-		((unsigned char)s[p+1]-128)*16777216 + 
-		((unsigned char)s[p+2]-128)*262144 + 
-		((unsigned char)s[p+3]-128)*4096 + 
-		((unsigned char)s[p+4]-128)*64 + 
-		(unsigned char)s[p+5]-128;
-	default:
-	    return (unsigned int)-1;
-	}
-    }
- public:
+public:
     Utf8Iter(const string &in) 
-	: cl(0), s(in), pos(0), m_charpos(0) 
-	{
-	    // Ensure state is ok if appendchartostring is called at once
-	    compute_cl();
-	}
+	: m_s(in), m_cl(0), m_pos(0), m_charpos(0), m_error(false)
+    {
+	compute_cl();
+    }
 
-    void rewind() {
-	cl=0; pos=0; m_charpos=0;
+    void rewind() 
+    {
+	m_cl = 0; 
+	m_pos = 0; 
+	m_charpos = 0; 
+	m_error = false;
+	compute_cl();
     }
-    /** operator* returns the ucs4 value as a machine integer*/
-    unsigned int operator*() {
-	if (!cl && compute_cl() < 0)
-	    return (unsigned int)-1;
-	unsigned int val = getvalueat(pos, cl);
-	if (val == (unsigned int)-1) {
-	    pos = s.length();
-	    cl = 0;
-	}
-	return val;
-    }
+
     /** "Direct" access. Awfully inefficient as we skip from start or current
      * position at best. This can only be useful for a lookahead from the
      * current position */
-    unsigned int operator[](unsigned int charpos) const {
+    unsigned int operator[](unsigned int charpos) const 
+    {
 	string::size_type mypos = 0;
-	unsigned int mycp = 0;;
+	unsigned int mycp = 0;
 	if (charpos >= m_charpos) {
-	    mypos = pos;
+	    mypos = m_pos;
 	    mycp = m_charpos;
 	}
-	while (mypos < s.length() && mycp != charpos) {
-	    mypos += get_cl(mypos);
+	int l;
+	while (mypos < m_s.length() && mycp != charpos) {
+	    l = get_cl(mypos);
+	    if (l < 0)
+		return (unsigned int)-1;
+	    mypos += l;
 	    ++mycp;
 	}
-	if (mypos < s.length() && mycp == charpos) {
-	    int l = get_cl(mypos);
+	if (mypos < m_s.length() && mycp == charpos) {
+	    l = get_cl(mypos);
 	    if (poslok(mypos, l))
 		return getvalueat(mypos, get_cl(mypos));
 	}
 	return (unsigned int)-1;
     }
 
-    /** Set current position before next utf-8 character */
-    string::size_type operator++(int) {
-	if (!cl && compute_cl() < 0) {
-	    return pos = string::npos;
-	}
-	pos += cl;
+    /** Increment current position to next utf-8 char */
+    string::size_type operator++(int) 
+    {
+	// Note: m_cl may be zero at eof if user's test not right
+	// this shouldn't crash the program until actual data access
+#ifdef UTF8ITER_CHECK
+	assert(m_cl != 0);
+#endif
+	if (m_cl == 0) 
+	    return string::npos;
+
+	m_pos += m_cl;
 	m_charpos++;
-	cl = 0;
-	return pos;
+	compute_cl();
+	return m_pos;
     }
-    /** This needs to be fast. No error checking. */
-    void appendchartostring(string &out) {
-	out.append(&s[pos], cl);
+
+    /** operator* returns the ucs4 value as a machine integer*/
+    unsigned int operator*() 
+    {
+#ifdef UTF8ITER_CHECK
+	assert(m_cl != 0);
+#endif
+	return getvalueat(m_pos, m_cl);
     }
+
+    /** Append current utf-8 possibly multi-byte character to string param.
+	This needs to be fast. No error checking. */
+    unsigned int appendchartostring(string &out) {
+#ifdef UTF8ITER_CHECK
+	assert(m_cl != 0);
+#endif
+	out.append(&m_s[m_pos], m_cl);
+	return m_cl;
+    }
+
+    /** Return current character as string */
     operator string() {
-	if (!cl && compute_cl() < 0) {
-	    return std::string("");
-	}
-	return s.substr(pos, cl);
+#ifdef UTF8ITER_CHECK
+	assert(m_cl != 0);
+#endif
+	return m_s.substr(m_pos, m_cl);
     }
+
     bool eof() {
-	// Note: we always ensure that pos == s.length() when setting bad to 
-	// true
-	return pos == s.length();
+	return m_pos == m_s.length();
     }
+
     bool error() {
-	return compute_cl() < 0;
+	return m_error;
     }
+
     string::size_type getBpos() const {
-	return pos;
+	return m_pos;
     }
+
     string::size_type getCpos() const {
 	return m_charpos;
     }
+
+private:
+    // String we're working with
+    const string&     m_s; 
+    // Character length at current position. A value of zero indicates
+    // unknown or error.
+    unsigned int      m_cl; 
+    // Current byte offset in string.
+    string::size_type m_pos; 
+    // Current character position
+    unsigned int      m_charpos; 
+    mutable bool      m_error;
+
+    // Check position and cl against string length
+    bool poslok(string::size_type p, int l) const {
+#ifdef UTF8ITER_CHECK
+	assert(p != string::npos && l > 0 && p + l <= m_s.length());
+#endif
+	return p != string::npos && l > 0 && p + l <= m_s.length();
+    }
+
+    // Update current char length in object state, minimum checking for 
+    // errors
+    inline int compute_cl() 
+    {
+	m_cl = 0;
+	if (m_pos == m_s.length())
+	    return -1;
+	m_cl = get_cl(m_pos);
+	if (!poslok(m_pos, m_cl)) {
+	    m_pos = m_s.length();
+	    m_cl = 0;
+	    m_error = true;
+	    return -1;
+	}
+	return 0;
+    }
+
+    // Get character byte length at specified position
+    inline int get_cl(string::size_type p) const 
+    {
+	unsigned int z = (unsigned char)m_s[p];
+	if (z <= 127) {
+	    return 1;
+	} else if ((z & 224) == 192) {
+	    return 2;
+	} else if ((z & 240) == 224) {
+	    return 3;
+	} else if ((z & 248) == 240) {
+	    return 4;
+	}
+#ifdef UTF8ITER_CHECK
+	assert(z <= 127 || (z & 224) == 192 || (z & 240) == 224 ||
+	       (z & 248) == 240);
+#endif
+	return -1;
+    }
+
+    // Compute value at given position. No error checking.
+    inline unsigned int getvalueat(string::size_type p, int l) const
+    {
+	switch (l) {
+	case 1: 
+#ifdef UTF8ITER_CHECK
+	    assert((unsigned char)m_s[p] < 128);
+#endif
+	    return (unsigned char)m_s[p];
+	case 2: 
+#ifdef UTF8ITER_CHECK
+	    assert(
+		   ((unsigned char)m_s[p] & 224) == 192
+		   && ((unsigned char)m_s[p+1] & 192) ==  128
+		   );
+#endif
+	    return ((unsigned char)m_s[p] - 192) * 64 + 
+		(unsigned char)m_s[p+1] - 128 ;
+	case 3: 
+#ifdef UTF8ITER_CHECK
+	    assert(
+		   (((unsigned char)m_s[p]) & 240) == 224
+		   && (((unsigned char)m_s[p+1]) & 192) ==  128
+		   && (((unsigned char)m_s[p+2]) & 192) ==  128
+		   );
+#endif
+
+	    return ((unsigned char)m_s[p] - 224) * 4096 + 
+		((unsigned char)m_s[p+1] - 128) * 64 + 
+		(unsigned char)m_s[p+2] - 128;
+	case 4: 
+#ifdef UTF8ITER_CHECK
+	    assert(
+		   (((unsigned char)m_s[p]) & 248) == 240
+		   && (((unsigned char)m_s[p+1]) & 192) ==  128
+		   && (((unsigned char)m_s[p+2]) & 192) ==  128
+		   && (((unsigned char)m_s[p+3]) & 192) ==  128
+		   );
+#endif
+
+	    return ((unsigned char)m_s[p]-240)*262144 + 
+		((unsigned char)m_s[p+1]-128)*4096 + 
+		((unsigned char)m_s[p+2]-128)*64 + 
+		(unsigned char)m_s[p+3]-128;
+
+	default:
+#ifdef UTF8ITER_CHECK
+	    assert(l <= 4);
+#endif
+	    m_error = true;
+	    return (unsigned int)-1;
+	}
+    }
+
 };
 
 

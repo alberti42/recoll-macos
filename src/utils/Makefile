@@ -65,9 +65,9 @@ trwipedir.o : wipedir.cpp
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_WIPEDIR -c -o trwipedir.o \
 	       wipedir.cpp
 
-UTF8ITER_OBJS= trutf8iter.o  $(BIGLIB)
+UTF8ITER_OBJS= trutf8iter.o 
 utf8iter : $(UTF8ITER_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o utf8iter $(UTF8ITER_OBJS) $(LIBICONV)
+	$(CXX) $(ALL_CXXFLAGS) -o utf8iter $(UTF8ITER_OBJS) $(BIGLIB) $(LIBICONV) 
 trutf8iter.o : utf8iter.cpp utf8iter.h
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_UTF8ITER -c -o trutf8iter.o \
 	       utf8iter.cpp
