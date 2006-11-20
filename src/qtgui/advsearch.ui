@@ -85,7 +85,7 @@
                                         <string>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</string>
                                     </property>
                                     <property name="toolTip" stdset="0">
-                                        <string>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except "exact phrase" can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;There are two &lt;em&gt;Any of these&lt;/em&gt; fields so you can search for things like: &lt;br&gt;&lt;em&gt;(apple OR pear) AND (green OR sour)&lt;/em&gt;</string>
+                                        <string>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;"Any" "All" and "None" field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</string>
                                     </property>
                                 </widget>
                                 <widget class="QComboBox">
