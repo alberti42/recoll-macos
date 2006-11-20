@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.24 2006-10-24 09:09:36 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.25 2006-11-20 15:28:04 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -41,7 +41,8 @@ class RclConfig {
     void setKeyDir(const string &dir) 
     {
 	m_keydir = dir;
-	m_conf->get("defaultcharset", defcharset, m_keydir);
+	if (!m_conf->get("defaultcharset", defcharset, m_keydir))
+	    defcharset.erase();
 	string str;
 	m_conf->get("guesscharset", str, m_keydir);
 	guesscharset = stringToBool(str);
