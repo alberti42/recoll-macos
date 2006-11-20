@@ -3,7 +3,19 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
+        <translation type="obsolete">Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
+    </message>
+    <message>
+        <source>All clauses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any clause</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -14,43 +26,43 @@
     </message>
     <message>
         <source>Search for files&lt;br&gt;having all of:</source>
-        <translation>Шукати&lt;br&gt;файли:</translation>
+        <translation type="obsolete">Шукати&lt;br&gt;файли:</translation>
     </message>
     <message>
         <source>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except &quot;exact phrase&quot; can accept a mix of simple words, and phrases enclosed in double quotes.</source>
-        <translation>Вісі непусті поля будуть поєднані логічним ТА.&lt;br&gt;Всі поля, окрім &quot;точної фрази&quot;, приймають суміш простих слів та фраз у подвійних лапках.</translation>
+        <translation type="obsolete">Вісі непусті поля будуть поєднані логічним ТА.&lt;br&gt;Всі поля, окрім &quot;точної фрази&quot;, приймають суміш простих слів та фраз у подвійних лапках.</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation>з усіма словами</translation>
+        <translation type="obsolete">з усіма словами</translation>
     </message>
     <message>
         <source>Enter words, and/or quoted phrases.</source>
-        <translation>Введіть слова та/або фрази у лапках.</translation>
+        <translation type="obsolete">Введіть слова та/або фрази у лапках.</translation>
     </message>
     <message>
         <source>This exact phrase</source>
-        <translation>із точною фразою</translation>
+        <translation type="obsolete">із точною фразою</translation>
     </message>
     <message>
         <source>Enter words.</source>
-        <translation>Введіть слова.</translation>
+        <translation type="obsolete">Введіть слова.</translation>
     </message>
     <message>
         <source>Any of these</source>
-        <translation>з усіма словами</translation>
+        <translation type="obsolete">з усіма словами</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation>без цих слів</translation>
+        <translation type="obsolete">без цих слів</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>з ім&apos;ям</translation>
+        <translation type="obsolete">з ім&apos;ям</translation>
     </message>
     <message>
         <source>Enter file name. * and ? are wildcards.</source>
-        <translation>Введіть ім&apos;я файлу. * та ? є шаблонами.</translation>
+        <translation type="obsolete">Введіть ім&apos;я файлу. * та ? є шаблонами.</translation>
     </message>
     <message>
         <source>Restrict file types</source>
@@ -103,6 +115,22 @@
     <message>
         <source>Dismiss</source>
         <translation>Відмінити</translation>
+    </message>
+    <message>
+        <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete clause</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add clause</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -339,6 +367,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>This search is not active any more</source>
         <translation>Цей пошук вже неактивний</translation>
     </message>
+    <message>
+        <source>Cant start query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -372,7 +408,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Exit</source>
-        <translation>Вихід</translation>
+        <translation type="obsolete">Вихід</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
@@ -392,7 +428,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>About Recoll</source>
-        <translation>Про Recoll</translation>
+        <translation type="obsolete">Про Recoll</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
@@ -400,7 +436,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>User manual</source>
-        <translation>Довідник користувача</translation>
+        <translation type="obsolete">Довідник користувача</translation>
     </message>
     <message>
         <source>&amp;User manual</source>
@@ -416,7 +452,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Advanced Search</source>
-        <translation>Складний пошук</translation>
+        <translation type="obsolete">Складний пошук</translation>
     </message>
     <message>
         <source>&amp;Advanced Search</source>
@@ -456,11 +492,19 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Update index</source>
-        <translation>Поновити індекс</translation>
+        <translation type="obsolete">Поновити індекс</translation>
     </message>
     <message>
         <source>Update &amp;index</source>
         <translation>Поновити &amp;індекс</translation>
+    </message>
+    <message>
+        <source>Term &amp;explorer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Term explorer tool</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -529,7 +573,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
 </source>
-        <translation>&lt;b&gt;Результати починаючи з %1 (не більше за %2)&lt;/b&gt;&lt;/p&gt;
+        <translation type="obsolete">&lt;b&gt;Результати починаючи з %1 (не більше за %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
     </message>
     <message>
@@ -568,6 +612,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Query details</source>
         <translation>Деталі запиту</translation>
     </message>
+    <message>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of &lt;b&gt;%3&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>(show query)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearch</name>
@@ -590,6 +642,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Select an item:</source>
         <translation>Оберіть:</translation>
+    </message>
+    <message>
+        <source>Too many completions</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -652,6 +708,45 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
 </context>
 <context>
+    <name>SearchClauseW</name>
+    <message>
+        <source>SearchClauseW</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any of these</source>
+        <translation type="unfinished">з усіма словами</translation>
+    </message>
+    <message>
+        <source>All of these</source>
+        <translation type="unfinished">з усіма словами</translation>
+    </message>
+    <message>
+        <source>None of these</source>
+        <translation type="unfinished">без цих слів</translation>
+    </message>
+    <message>
+        <source>This phrase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Terms in proximity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File name matching</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select the type of query that will be performed with the words</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of additional words that may be interspersed with the chosen ones</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SortForm</name>
     <message>
         <source>Sort Criteria</source>
@@ -703,6 +798,60 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Close</source>
         <translation>Закрити</translation>
+    </message>
+</context>
+<context>
+    <name>SpellBase</name>
+    <message>
+        <source>Term Explorer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter word to expand</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Expand </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alt+E</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Alt+C</source>
+        <translation type="unfinished">Alt+C</translation>
+    </message>
+</context>
+<context>
+    <name>SpellW</name>
+    <message>
+        <source>Wildcards</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Regexp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spelling/Phonetic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Aspell init failed. Aspell not installed?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Aspell expansion error. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No spelling expansion found</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -950,11 +1099,11 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Automatically add phrase to simple searchs</source>
-        <translation>Автоматично додавати фразу до простого пошуку</translation>
+        <translation type="obsolete">Автоматично додавати фразу до простого пошуку</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)].</source>
-        <translation>Пошук [rolling stones] (2 terms) буде замінено на [rolling or stones or (rolling phrase 2 stones)].</translation>
+        <translation type="obsolete">Пошук [rolling stones] (2 terms) буде замінено на [rolling or stones or (rolling phrase 2 stones)].</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
@@ -1045,6 +1194,23 @@ May be slow for big documents.</source>
     <message>
         <source>Discard changes</source>
         <translation>Відмінити зміни</translation>
+    </message>
+    <message>
+        <source>Result paragraph&lt;br&gt;format string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically add phrase to simple searches</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
+This should give higher precedence to the results where the search terms appear exactly as entered.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

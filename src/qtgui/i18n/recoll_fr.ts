@@ -3,7 +3,19 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Impossible d&apos;exécuter une requête purement négative. Essayez d&apos;entrer des termes courants dans un champ &apos;ou&apos;</translation>
+        <translation type="obsolete">Impossible d&apos;exécuter une requête purement négative. Essayez d&apos;entrer des termes courants dans un champ &apos;ou&apos;</translation>
+    </message>
+    <message>
+        <source>All clauses</source>
+        <translation>Toutes les clauses</translation>
+    </message>
+    <message>
+        <source>Any clause</source>
+        <translation>Une des clauses</translation>
+    </message>
+    <message>
+        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
+        <translation>Requete négative pure impossible. Entrer un terme dans un des autres champs</translation>
     </message>
 </context>
 <context>
@@ -14,43 +26,43 @@
     </message>
     <message>
         <source>Search for files&lt;br&gt;having all of:</source>
-        <translation>Rechercher les fichiers&lt;br&gt;vérifiant:</translation>
+        <translation type="obsolete">Rechercher les fichiers&lt;br&gt;vérifiant:</translation>
     </message>
     <message>
         <source>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except &quot;exact phrase&quot; can accept a mix of simple words, and phrases enclosed in double quotes.</source>
-        <translation>Tous les champs renseignés seront combinées avec des &quot;ET&quot;.&lt;br&gt;Tous les champs sauf &quot;phrase&quot; peuvent accepter un mélange de mots et de phrases entourées d&apos;apostrophes doubles. </translation>
+        <translation type="obsolete">Tous les champs renseignés seront combinées avec des &quot;ET&quot;.&lt;br&gt;Tous les champs sauf &quot;phrase&quot; peuvent accepter un mélange de mots et de phrases entourées d&apos;apostrophes doubles. </translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation>Tous ces mots</translation>
+        <translation type="obsolete">Tous ces mots</translation>
     </message>
     <message>
         <source>Enter words, and/or quoted phrases.</source>
-        <translation>Entrer des mots, et/ou des phrases entre doubles apostrophes.</translation>
+        <translation type="obsolete">Entrer des mots, et/ou des phrases entre doubles apostrophes.</translation>
     </message>
     <message>
         <source>This exact phrase</source>
-        <translation>Cette phrase exactement</translation>
+        <translation type="obsolete">Cette phrase exactement</translation>
     </message>
     <message>
         <source>Enter words.</source>
-        <translation>Entrer des mots.</translation>
+        <translation type="obsolete">Entrer des mots.</translation>
     </message>
     <message>
         <source>Any of these</source>
-        <translation>Un de ces mots</translation>
+        <translation type="obsolete">Un de ces mots</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation>Aucun de ces mots</translation>
+        <translation type="obsolete">Aucun de ces mots</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>Modèle de nom de fichier</translation>
+        <translation type="obsolete">Modèle de nom de fichier</translation>
     </message>
     <message>
         <source>Enter file name. * and ? are wildcards.</source>
-        <translation>Entrer un nom de fichier. * et ? peuvent être utilisés comme jokers.</translation>
+        <translation type="obsolete">Entrer un nom de fichier. * et ? peuvent être utilisés comme jokers.</translation>
     </message>
     <message>
         <source>Restrict file types</source>
@@ -103,6 +115,22 @@
     <message>
         <source>Dismiss</source>
         <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
+        <translation>Rechercher les &lt;br&gt;documents&lt;br&gt;vérifiant:</translation>
+    </message>
+    <message>
+        <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
+        <translation>Tous les champs renseignés seront combinés avec des conjonctions OU ou ET.&lt;br&gt;Les champs &quot;Un de ces mots&quot;, &quot;Tous ces mots&quot;, ou &quot;Aucun de ces mots&quot; peuvent accepter des mots et des phrases entre guillemets (&quot;).&lt;br&gt;Les champs non renseignés sont ignorés.</translation>
+    </message>
+    <message>
+        <source>Delete clause</source>
+        <translation>Enlever une clause</translation>
+    </message>
+    <message>
+        <source>Add clause</source>
+        <translation>Ajouter une clause</translation>
     </message>
 </context>
 <context>
@@ -355,6 +383,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>This search is not active any more</source>
         <translation>Cette recherche n&apos;est plus active</translation>
     </message>
+    <message>
+        <source>Cant start query: </source>
+        <translation>Impossible de démarrer la recherche:</translation>
+    </message>
+    <message>
+        <source>Spell expansion</source>
+        <translation>Approximation orthographique</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -384,7 +420,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Exit</source>
-        <translation>Quitter</translation>
+        <translation type="obsolete">Quitter</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
@@ -460,7 +496,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Advanced Search</source>
-        <translation>Recherche avancée</translation>
+        <translation type="obsolete">Recherche avancée</translation>
     </message>
     <message>
         <source>&amp;Advanced Search</source>
@@ -492,7 +528,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>User manual</source>
-        <translation>Manuel</translation>
+        <translation type="obsolete">Manuel</translation>
     </message>
     <message>
         <source>&amp;User manual</source>
@@ -504,7 +540,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>About Recoll</source>
-        <translation>À propos de Recoll</translation>
+        <translation type="obsolete">À propos de Recoll</translation>
     </message>
     <message>
         <source>Ctrl+Q</source>
@@ -512,11 +548,19 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Update index</source>
-        <translation>MIse à jour index</translation>
+        <translation type="obsolete">MIse à jour index</translation>
     </message>
     <message>
         <source>Update &amp;index</source>
         <translation>&amp;Indexer</translation>
+    </message>
+    <message>
+        <source>Term &amp;explorer</source>
+        <translation>&amp;Exploration de l&apos;index</translation>
+    </message>
+    <message>
+        <source>Term explorer tool</source>
+        <translation>Outil d&apos;exploration de l&apos;index</translation>
     </message>
 </context>
 <context>
@@ -585,7 +629,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
 </source>
-        <translation>&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
+        <translation type="obsolete">&lt;b&gt;Affichage des résultats à partir de l&apos;index %1 (nombre maximum %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
     </message>
     <message>
@@ -623,6 +667,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Query details</source>
         <translation>Détail de la recherche</translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of &lt;b&gt;%3&lt;/b&gt; for </source>
+        <translation>Documents &lt;b&gt;%1-%2&lt;/b&gt; parmi &lt;b&gt;%3&lt;/b&gt; pour </translation>
+    </message>
+    <message>
+        <source>(show query)</source>
+        <translation>(requête)</translation>
     </message>
 </context>
 <context>
@@ -663,6 +715,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Select an item:</source>
         <translation>Sélectionner un élément:</translation>
+    </message>
+    <message>
+        <source>Too many completions</source>
+        <translation>Trop de complétions possibles</translation>
     </message>
 </context>
 <context>
@@ -741,6 +797,45 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
 </context>
 <context>
+    <name>SearchClauseW</name>
+    <message>
+        <source>SearchClauseW</source>
+        <translation>SearchClauseW</translation>
+    </message>
+    <message>
+        <source>Any of these</source>
+        <translation>Un de ces mots</translation>
+    </message>
+    <message>
+        <source>All of these</source>
+        <translation>Tous ces mots</translation>
+    </message>
+    <message>
+        <source>None of these</source>
+        <translation>Aucun de ces mots</translation>
+    </message>
+    <message>
+        <source>This phrase</source>
+        <translation>Cette phrase</translation>
+    </message>
+    <message>
+        <source>Terms in proximity</source>
+        <translation>Termes en proximité</translation>
+    </message>
+    <message>
+        <source>File name matching</source>
+        <translation>Modèle de nom de fichier</translation>
+    </message>
+    <message>
+        <source>Select the type of query that will be performed with the words</source>
+        <translation>Sélectionner le type de requête à effectuer avec les mots</translation>
+    </message>
+    <message>
+        <source>Number of additional words that may be interspersed with the chosen ones</source>
+        <translation>Nombre de mots additionnels qui peuvent se trouver entre les termes recherchés</translation>
+    </message>
+</context>
+<context>
     <name>SortForm</name>
     <message>
         <source>Sort Criteria</source>
@@ -792,6 +887,60 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Close</source>
         <translation>Fermer</translation>
+    </message>
+</context>
+<context>
+    <name>SpellBase</name>
+    <message>
+        <source>Term Explorer</source>
+        <translation>Explorateur d&apos;index</translation>
+    </message>
+    <message>
+        <source>Enter word to expand</source>
+        <translation>Entrer le mot à dériver</translation>
+    </message>
+    <message>
+        <source>&amp;Expand </source>
+        <translation>&amp;Dérivés</translation>
+    </message>
+    <message>
+        <source>Alt+E</source>
+        <translation>Alt+D</translation>
+    </message>
+    <message>
+        <source>&amp;Close</source>
+        <translation>&amp;Fermer</translation>
+    </message>
+    <message>
+        <source>Alt+C</source>
+        <translation>Alt+F</translation>
+    </message>
+</context>
+<context>
+    <name>SpellW</name>
+    <message>
+        <source>Wildcards</source>
+        <translation>Wildcards</translation>
+    </message>
+    <message>
+        <source>Regexp</source>
+        <translation>Expression régulière</translation>
+    </message>
+    <message>
+        <source>Spelling/Phonetic</source>
+        <translation>Orthographe/Phonétique</translation>
+    </message>
+    <message>
+        <source>Aspell init failed. Aspell not installed?</source>
+        <translation>Erreur d&apos;initialisation aspell. Il n&apos;est peut-être pas installé?</translation>
+    </message>
+    <message>
+        <source>Aspell expansion error. </source>
+        <translation>Erreur aspell.</translation>
+    </message>
+    <message>
+        <source>No spelling expansion found</source>
+        <translation>Pas de dérivés trouvés</translation>
     </message>
 </context>
 <context>
@@ -1035,11 +1184,11 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searchs</source>
-        <translation>Générer automatiquement une phrase ajoutée aux critères de la recherche simple</translation>
+        <translation type="obsolete">Générer automatiquement une phrase ajoutée aux critères de la recherche simple</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)].</source>
-        <translation>Une recherche de  [rolling stones] (2 termes) sera changée en [rolling or stones or (rolling phrase 2 stones)].</translation>
+        <translation type="obsolete">Une recherche de  [rolling stones] (2 termes) sera changée en [rolling or stones or (rolling phrase 2 stones)].</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
@@ -1130,6 +1279,24 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     <message>
         <source>Discard changes</source>
         <translation>Suivant</translation>
+    </message>
+    <message>
+        <source>Result paragraph&lt;br&gt;format string</source>
+        <translation>Chaîne de formatage&lt;br&gt;des paragraphes résultats</translation>
+    </message>
+    <message>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation>Définit the format pour chaque paragraphe de la liste de résultats. Utilise le format html qt et des remplacements à la printf:&lt;br&gt;%A Résumé&lt;br&gt; %D Date&lt;br&gt; %K Mots clefs (s&apos;il y en a)&lt;br&gt; %L Liens aperçu et édition&lt;br&gt; %M Type Mime&lt;br&gt; %N Numéro de résultat&lt;br&gt; %R Pertinence&lt;br&gt; %S Taille&lt;br&gt; %T Titre&lt;br&gt; %U Url&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>Automatically add phrase to simple searches</source>
+        <translation>Ajouter automatiquement une phrase aux recherches simples</translation>
+    </message>
+    <message>
+        <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
+This should give higher precedence to the results where the search terms appear exactly as entered.</source>
+        <translation>Une recherche pour [vin rouge] (2 mots) sera complétée comme [vin OU rouge OU (vin PHRASE 2 rouge)].&lt;br&gt;
+Ceci devrait donner une meilleure pertinence aux résultats où les termes recherchés apparaissent exactement et dans l&apos;ordre.</translation>
     </message>
 </context>
 <context>
