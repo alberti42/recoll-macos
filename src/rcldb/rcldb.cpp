@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.96 2006-11-17 10:06:33 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.97 2006-11-20 15:28:57 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -459,6 +459,12 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
 	abstract += it->second + " ";
     }
+
+    // This happens for docs with no terms (only filename) indexed. I'll fix 
+    // one day (yeah)
+    if (!abstract.compare("... "))
+	abstract.clear();
+
     LOGDEB(("makeAbtract: done in %d mS\n", chron.millis()));
     return abstract;
 }
