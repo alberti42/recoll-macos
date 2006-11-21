@@ -17,7 +17,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    4.1. Installing a prebuilt copy
 
-   4.2. Packages needed for external file types
+   4.2. Supporting packages
 
    4.3. Building from source
 
@@ -59,9 +59,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    --------------------------------------------------------------------------
 
-   Prev                             Home                                 Next 
-   Customizing the search interface         Packages needed for external file 
-                                                                        types 
+   Prev                                   Home                           Next 
+   Customizing the search interface                       Supporting packages 
    Link: HOME
    Link: UP
    Link: PREVIOUS
@@ -72,7 +71,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    --------------------------------------------------------------------------
 
-                  4.2. Packages needed for external file types
+                            4.2. Supporting packages
 
    Recoll uses external applications to index some file types. You need to
    install them for the file types that you wish to have indexed (these are
@@ -131,15 +130,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 4.3.2. Building
 
-   Recoll has been built on Linux (redhat7.3, mandriva 2005, Fedora Core 3),
-   FreeBSD and Solaris 8. If you build on another system, I would very much
-   welcome patches.
+   Recoll has been built on Linux (redhat7.3, mandriva 2005/6, Fedora Core
+   3/4/5), FreeBSD and Solaris 8. If you build on another system, I would
+   very much welcome patches.
 
    Depending on the qt configuration on your system, you may have to set the
    QTDIR and QMAKESPECS variables in your environment:
 
      * QTDIR should point to the directory above the one that holds the qt
-       include files (ie: qt.h).
+       include files (ie: if qt.h is /usr/local/qt/include/qt.h, QTDIR should
+       be /usr/local/qt).
 
      * QMAKESPECS should be set to the name of one of the qt mkspecs
        sub-directories (ie: linux-g++).
@@ -147,11 +147,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
    is not needed because there is a default link in mkspecs/.
 
-   The Recoll configure script does a better job of checking these variables
-   after release 1.1.1. Before this, unexplained errors will occur during
-   compilation if the environment is not set up. Also, for 1.1.0 the qmake
-   command should be in your PATH (later releases can also find it in
-   $QTDIR/bin).
+   Configure options: --without-aspell will disable the code for phonetic
+   matching of search terms. --with-fam or --with-inotify will enable the
+   code for real time indexing. Refer to configure --help output for details.
 
    Normal procedure:
 
@@ -182,8 +180,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    --------------------------------------------------------------------------
 
-   Prev                                      Home                        Next 
-   Packages needed for external file types    Up       Configuration overview 
+   Prev                               Home                               Next 
+   Supporting packages                 Up              Configuration overview 
    Link: HOME
    Link: UP
    Link: PREVIOUS
@@ -194,6 +192,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    --------------------------------------------------------------------------
 
                           4.4. Configuration overview
+
+   Most of the parameters specific to the recoll GUI are set through the
+   Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
+   You probably do not want to edit this by hand.
+
+   For other options, Recoll uses text configuration files. You will have to
+   edit them by hand for now (there is still some hope for a GUI
+   configuration tool in the future). The most accurate documentation for the
+   configuration parameters is given by comments inside the default files,
+   and we will just give a general overview here.
 
    There are two sets of configuration files. The system-wide files are kept
    in a directory named like /usr/[local/]share/recoll/examples, they define
@@ -206,16 +214,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    started, it will be created with a set of empty configuration files.
    recoll will give you a chance to edit the configuration file before
    starting indexing. recollindex will proceed immediately.
-
-   Most of the parameters specific to the recoll GUI are set through the
-   Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
-   You probably do not want to edit this by hand.
-
-   For other options, Recoll uses text configuration files. You will have to
-   edit them by hand for now (there is still some hope for a GUI
-   configuration tool in the future). The most accurate documentation for the
-   configuration parameters is given by comments inside the default files,
-   and we will just give a general overview here.
 
    All configuration files share the same format. For example, a short
    extract of the main configuration file might look as follows:
@@ -235,10 +233,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Section definition ([somedirname]).
 
-   Section lines allow redefining some parameters for a directory sub-tree.
-   Some of the parameters used for indexing are looked up hierarchically from
-   the more to the less specific. Not all parameters can be meaningfully
-   redefined, this is specified for each in the next section.
+   Section definitions allow redefining some parameters for a directory
+   sub-tree. They stay in effect until another section definition, or the end
+   of file, is encountered. Some of the parameters used for indexing are
+   looked up hierarchically from the current directory location upwards. Not
+   all parameters can be meaningfully redefined, this is specified for each
+   in the next section.
 
    The tilde character (~) is expanded in file names to the name of the
    user's home directory.
@@ -295,15 +295,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            solution is to have .* in skippedNames, and add things like
            ~/.thunderbird or ~/.evolution in topdirs.
 
-   loglevel
+   loglevel,daemloglevel
 
            Verbosity level for recoll and recollindex. A value of 4 lists
            quite a lot of debug/information messages. 2 only lists errors.
+           The daemversion is specific to the indexing monitor daemon.
 
-   logfilename
+   logfilename, daemlogfilename
 
            Where the messages should go. 'stderr' can be used as a special
-           value, and is the default.
+           value, and is the default. The daemversion is specific to the
+           indexing monitor daemon.
 
    filtersdir
 

@@ -37,9 +37,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 2.3. The indexing configuration
 
-                2.4. Starting indexing
+                2.4. Periodic indexing
 
-                2.5. Using cron to automate indexing
+                             2.4.1. Starting indexing
+
+                             2.4.2. Using cron to automate indexing
+
+                2.5. Real time indexing
 
    3. Search
 
@@ -53,15 +57,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.4. Complex/advanced search
 
-                3.5. Multiple databases
+                3.5. The term explorer tool
 
-                3.6. Document history
+                3.6. Multiple databases
 
-                3.7. Sorting search results
+                3.7. Document history
 
-                3.8. Search tips, shortcuts
+                3.8. Sorting search results
 
-                3.9. Customizing the search interface
+                3.9. Search tips, shortcuts
+
+                3.10. Customizing the search interface
 
    4. Installation
 
@@ -71,7 +77,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              4.1.2. Installing a prebuilt Recoll
 
-                4.2. Packages needed for external file types
+                4.2. Supporting packages
 
                 4.3. Building from source
 
@@ -140,7 +146,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    stem). This expansion can be disabled at search time.
 
    Stemming, by itself, does not accommodate for misspellings or phonetic
-   searches. Recoll currently does not support these features.
+   searches. Recoll supports these features through a specific tool (the term
+   explorer) which will let you explore the set of index terms along
+   different modes.
 
      ----------------------------------------------------------------------
 
@@ -202,18 +210,25 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    build can be forced later on by specifying an option to the indexing
    command (recollindex -z).
 
-   Recoll indexing takes place at discrete times. There is currently no
-   interface to real time file modification monitors. The typical usage is to
-   have a nightly indexing run programmed into your cron file.
+   Recoll indexing can be performed with two different methods:
 
-   +------------------------------------------------------------------------+
-   | There is nothing in Recoll and Xapian that would prevent interfacing   |
-   | with a real time file modification monitor, but this would tend to     |
-   | consume significant system resources for dubious gain, because you     |
-   | rarely need a full text search to find documents you just modified.    |
-   | recollindex -i can be used to add individual files to the index if you |
-   | want to play with this, see the manual page.                           |
-   +------------------------------------------------------------------------+
+     * Periodic indexing: indexing takes place at discrete times, by
+       executing the recollindex command. The typical usage is to have a
+       nightly indexing run programmed into your cron file.
+
+     * Real time indexing: indexing takes place as soon as a file is created
+       or changed. recollindex runs as a daemon and uses a file system
+       alteration monitor such as Fam, Gamin or inotify do detect file
+       changes. Monitoring a big directory tree can consume significant
+       system resources.
+
+   The choice between the two methods is mostly a matter of preference, and
+   they can be combined by setting up multiple indexes (ie: use periodic
+   indexing on a big documentation directory, and real time indexing on a
+   small home directory). Monitoring a big file system tree can consume
+   significant system resources, for dubious gains.
+
+   
 
    Recoll knows about quite a few different document types. The parameters
    for document types recognition and processing are set in configuration
@@ -231,19 +246,42 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    In some cases, it may be interesting to index different areas of the file
    system to separate databases. You can do this by using multiple
    configuration directories, each indexing a file system area to a specific
-   database. You would use the RECOLL_CONFDIR environment variable or the -c
-   confdir option to recollindex to indicate which configuration to process.
-   The recoll search program can use any selection of the existing databases
-   for each search, this is configurable inside the user interface.
+   database. See the section about using multiple databases for more
+   information on multiple configurations and indexes.
 
      ----------------------------------------------------------------------
 
 2.2. Index storage
 
-   The default location for the index data is the $HOME/.recoll/xapiandb/
-   directory. This can be changed by setting the RECOLL_CONFDIR environment
-   variable, or by specifying the dbdir parameter in the configuration file
-   (see the configuration section).
+   The default location for the index data is the xapiandb subdirectory of
+   the Recoll configuration directory, typically $HOME/.recoll/xapiandb/.
+   This can be changed via two different methods (with different purposes):
+
+     * You can specify a different configuration directory by setting the
+       RECOLL_CONFDIR environment variable, or using the -c option to the
+       Recoll commands. This method would typically be used to index
+       different areas of the file system to different indexes. For example,
+       if you were to issue the following commands:
+
+ export RECOLL_CONFDIR=~/.indexes-email
+ recoll
+         
+
+       Then Recoll would use configuration files stored in ~/.indexes-email/
+       and, (unless specified otherwise in recoll.conf) would look for the
+       index in ~/.indexes-email/xapiandb/.
+
+       Using multiple configuration directories and configuration options
+       allows you to tailor multiple configurations and indexes to handle
+       whatever subset of the available data that you wish to make
+       searchable.
+
+     * You can also specify a different storage location for the index by
+       setting the dbdir parameter in the configuration file (see the
+       configuration section). This method would mainly be of use if you
+       wanted to keep the configuration directory in its default location,
+       but desired another location for the index, typically out of disk
+       occupation concerns.
 
    The size of the index is determined by the size of the set of documents,
    but the ratio can vary a lot. For a typical mixed set of documents, the
@@ -257,8 +295,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    means that it will be quite typical nowadays (2006), that even a big index
    will be negligible against the total amount of data on the computer.
 
-   The index data directory (xapiandb) only contains data that will be
-   rebuilt by an index run, and it can always be destroyed safely.
+   The index data directory (xapiandb) only contains data that can be
+   completely rebuilt by an index run, and it can always be destroyed safely.
 
      ----------------------------------------------------------------------
 
@@ -282,19 +320,23 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 2.3. The indexing configuration
 
-   Values set in the system-wide configuration file (named like
-   /usr/[local/]share/recoll/examples/recoll.conf) can be overridden by those
-   set in the personal one, named $HOME/.recoll/recoll.conf by default or
-   $RECOLL_CONFDIR/recoll.conf if RECOLL_CONFDIR is set.
+   You can control which areas of the file system are indexed, and how files
+   are processed, by setting variables inside the Recoll configuration files.
 
-   The most accurate documentation for editing the file is given by comments
-   inside the central one. If you want to adjust the configuration before
-   indexing, just click Cancel when the program asks if it should start
-   initial indexing. This will have created a .recoll directory containing
-   empty configuration files.
+   You can also use multiple indexes defined by separate configurations,
+   typically to separate personal and shared indexes, or to take advantage of
+   the organization of your data to improve search precision.
 
-   The configuration is also documented inside the installation chapter of
-   this document, or in the recoll.conf(5) man page.
+   The first time you start recoll, you will be asked whether or not you
+   would like recoll to build the index. If you want to adjust the
+   configuration before indexing, just click Cancel at this point. That way,
+   recoll will have created a ~/.recoll directory containing empty
+   configuration files.
+
+   The configuration is documented inside the installation chapter of this
+   document, or in the recoll.conf(5) man page. The most immediately useful
+   variable you may interested in is probably topdirs, which determines what
+   subtrees get indexed.
 
    The applications needed to index file types other than text, HTML or email
    (ie: pdf, postscript, ms-word...) are described in the external packages
@@ -302,7 +344,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-2.4. Starting indexing
+2.4. Periodic indexing
+
+  2.4.1. Starting indexing
 
    Indexing is performed either by the recollindex program, or by the
    indexing thread inside the recoll program (use the File menu). Both
@@ -314,14 +358,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    It is best to avoid interrupting the indexing process, as this may
    sometimes leave the index in a bad state. This is not a serious problem,
-   as you then just need to clear everything and restart the indexing: the
-   index files are normally stored in the $HOME/.recoll/xapiandb directory,
-   which you can just delete if needed. Alternatively, you can start
-   recollindex with option -z, which will reset the database before indexing.
+   as you then just need to delete the index files and restart the indexing.
+   The index files are normally stored in the $HOME/.recoll/xapiandb
+   directory, which you can just delete if needed. Alternatively, you can
+   start recollindex with option -z, which will reset the database before
+   indexing.
 
      ----------------------------------------------------------------------
 
-2.5. Using cron to automate indexing
+  2.4.2. Using cron to automate indexing
 
    The most common way to set up indexing is to have a cron task execute it
    every night. For example the following crontab entry would do it every day
@@ -332,6 +377,52 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The usual command to edit your crontab is crontab -e (which will usually
    start the vi editor to edit the file). You may have more sophisticated
    tools available on your system.
+
+     ----------------------------------------------------------------------
+
+2.5. Real time indexing
+
+   Real time monitoring/indexing is performed by starting the recollindex -m
+   command. With this option, recollindex will detach from the terminal and
+   become a daemon, forever monitoring file changes and updating the index.
+
+   The package must have been configured with option --with-fam or
+   --with-inotify for the monitoring code and option to be enabled in
+   recollindex. This is not currently the default.
+
+   The rclmon.sh script can be used to easily start and stop the daemon. It
+   can be found in the examples directory (typically
+   /usr/local/[share/]recoll/examples).
+
+   Starting and stopping the daemon could be performed, for example, as part
+   of the user session script. For example, my out of fashion xdm-based
+   session has an .xsession script with the following lines at the end:
+
+ recollconf=$HOME/.recoll-home
+ recolldata=/usr/local/share/recoll
+ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
+
+ fvwm
+
+ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
+
+   The indexing daemon gets started, then the window manager, for which the
+   session waits. When the window manager exits, the indexing daemon is
+   stopped, then the session ends (at script exit). This should be adjusted
+   for your flavour of session management, and of course, there are other
+   possibilities.
+
+   By default, the indexing daemon will write its messages to a file inside
+   the configuration directory (this is controlled by the daemlogfilename and
+   daemloglevel configuration parameters). You may want to change this. Also
+   the log file will only be truncated when the daemon starts. If the daemon
+   runs permanently, the log file may grow quite big, depending on the log
+   level.
+
+   The real time indexing code is relatively young, and there are still a few
+   quirks. File deletions occurring while the monitor is not running will not
+   be detected. You'll have to run a normal incremental indexing pass from
+   time to time to purge the database. There may still be other problems.
 
      ----------------------------------------------------------------------
 
@@ -372,9 +463,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    thing at the right of the text field). Please note, however, that only the
    search texts are remembered, not the mode (all/any/file name).
 
-   Hitting ^Tab (Ctrl + Tab) while entering a word in the simple search entry
-   will open a window with possible completions for the word. The completions
-   are extracted from the database.
+   Typing Esc Space) while entering a word in the simple search entry will
+   open a window with possible completions for the word. The completions are
+   extracted from the database.
 
    Double-clicking on a word in the result list or a preview window will
    insert it into the simple search entry field.
@@ -393,9 +484,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    a different ordering by using the Tools / Sort parameters dialog.
 
    Clicking on the Preview link for an entry will open an internal preview
-   window for the document. Clicking the Edit link will attempt to start an
-   external viewer (have a look at the mimeconf configuration file to see how
-   these are configured).
+   window for the document. Further Preview clicks for the same search will
+   open tabs in the existing preview window. You can use Shift+Click to force
+   the creation of another preview window, which may be useful to view the
+   documents side by side.
+
+   Clicking the Edit link will attempt to start an external viewer (have a
+   look at the mimeconf configuration file to see how these are configured).
 
    The Preview and Edit edit links may not be present for all entries,
    meaning that Recoll has no configured way to preview a given file type
@@ -481,17 +576,34 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 3.4. Complex/advanced search
 
    The advanced search dialog has fields that will allow a more refined
-   search, looking for documents with all given elements, a given exact
-   phrase, none of the given elements, or a given file name (with wildcard
-   expansion). All relevant fields will be combined by an implicit AND
-   clause. All fields except "Exact phrase" can accept a mix of single words
-   and phrases enclosed in double quotes.
+   search. It has a number of entry fields, each of which is configurable for
+   the following modes:
 
-   Advanced search will let you search for documents of specific mime types
-   (ie: only text/plain, or text/HTML or application/pdf etc...). The state
-   of the file type selection can be saved as the default (the file type
-   filter will not be activated at program start-up, but the lists will be in
-   the restored state).
+     * All terms.
+
+     * Any term.
+
+     * None of the terms.
+
+     * Phrase (exact terms in order within an adjustable window).
+
+     * Proximity (terms in any order within an adjustable window).
+
+     * Filename search with wildcards.
+
+   Additional entry fields can be created by clicking the Add clause button.
+
+   All relevant fields will be combined by an implicit AND or OR conjunction.
+   All types of clauses except "phrase" and "near" can accept a mix of single
+   words and phrases enclosed in double quotes. Stemming expansion will be
+   performed for all terms not beginning with a capital letter, except for
+   "phrase" clauses.
+
+   Advanced search will also let you search for documents of specific mime
+   types (ie: only text/plain, or text/HTML or application/pdf etc...). The
+   state of the file type selection can be saved as the default (the file
+   type filter will not be activated at program start-up, but the lists will
+   be in the restored state).
 
    You can also restrict the search results to a sub-tree of the indexed
    area. If you need to do this often, you may think of setting up multiple
@@ -506,7 +618,58 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.5. Multiple databases
+3.5. The term explorer tool
+
+   Recoll automatically manages the expansion of search terms to their
+   derivatives (ie: plural/singular, verb inflections). But there are other
+   cases where the exact search term is not known. For example, you may not
+   remember the exact spelling, or only know the beginning of the name.
+
+   The term explorer tool (started from the toolbar icon or from the Term
+   explorer entry of the Tools menu) can be used to search the full index
+   terms list. It has three modes of operations:
+
+   Wildcard
+
+           In this mode of operation, you can enter a search string with
+           shell-like wildcards (*, ?). ie: xapi* .
+
+   Regular expression
+
+           This mode will accept a regular expression as input. Example:
+           word[0-9]+ . The regular expression is anchored by enclosing in ^
+           and $ before execution.
+
+   Stem expansion
+
+           This mode will perform the usual stem expansion normally done as
+           part user input processing. As such it is probably mostly useful
+           to demonstrate the process.
+
+   Spelling/Phonetic
+
+           In this mode, you enter the term as you think it is spelled, and
+           Recoll will do its best to find index terms that sound like your
+           entry. This mode uses the Aspell spelling application, which must
+           be installed on your system for things to work. The language which
+           is used to build the dictionary out of the index terms (which is
+           done at the end of an indexing pass) is the one defined by your
+           NLS environment. Weird things will probably happen if languages
+           are mixed up.
+
+   Note that in cases where Recoll does not know the beginning of the string
+   to search for (ie a wildcard expression like *coll), the expansion can
+   take quite a long time because the full index term list will have to be
+   processed. The expansion is currently limited at 200 results for wildcards
+   and regular expressions.
+
+   Double-clicking on a term in the result list will insert it into the
+   simple search entry field. You can also cut/paste between the result list
+   and any entry field (the end of lines will be taken care of).
+
+     ----------------------------------------------------------------------
+
+3.6. Multiple databases
 
    Multiple Recoll databases or indexes can be created by using several
    configuration directories which are usually set to index different areas
@@ -552,7 +715,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.6. Document history
+3.7. Document history
 
    Documents that you actually view (with the internal preview or an external
    tool) are entered into the document history, which is remembered. You can
@@ -560,7 +723,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.7. Sorting search results
+3.8. Sorting search results
 
    The documents in a result list are normally sorted in order of relevance.
    It is possible to specify different sort parameters by using the Sort
@@ -575,12 +738,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.8. Search tips, shortcuts
+3.9. Search tips, shortcuts
 
-   Term completion. Typing ^TAB (Control + Tab) in the simple search entry
-   field while entering a word will either complete the current word if its
-   beginning matches a unique term in the index, or open a window to propose
-   a list of completions
+   Term completion. Typing Esc Space in the simple search entry field while
+   entering a word will either complete the current word if its beginning
+   matches a unique term in the index, or open a window to propose a list of
+   completions.
 
    Picking up new terms from result or preview text. Double-clicking on a
    word in the result list or in a preview window will copy it to the simple
@@ -603,6 +766,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Shift-Down or Shift-Up (Shift + an arrow key) in a preview window will
    display the next or the previous document from the result list. Any
    secondary search currently active will be executed on the new document.
+
+   Forced opening of a preview window (1.6). You can use Shift+Click on a
+   result list Preview link to force the creation of a preview window instead
+   of a new tab in the existing one.
 
    AutoPhrases (1.5). This option can be set in the preferences dialog. If it
    is set, a phrase will be automatically built and added to simple searches
@@ -637,7 +804,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.9. Customizing the search interface
+3.10. Customizing the search interface
 
    It is possible to customize some aspects of the search interface by using
    Query configuration entry in the Preferences menu.
@@ -653,6 +820,44 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        result list, and you may want to customize the font and/or font size.
        The rest of the fonts used by Recoll are determined by your generic QT
        config (try the qtconfig command.
+
+     * Result paragraph format string: allows you to change the presentation
+       of each result list entry. This is a qt-html string where the
+       following printf-like % substitutions will be performed:
+
+          * %A. Abstract
+
+          * %D. Date
+
+          * %K. Keywords (if any)
+
+          * %L. Preview and Edit links
+
+          * %M. Mime type
+
+          * %N. result Number
+
+          * %R. Relevance percentage
+
+          * %S. Size information
+
+          * %T. Title
+
+          * %U. Url
+
+       The default value for the string is:
+
+ %R %S %L &nbsp;&nbsp;<b>%T</b><br>
+ %M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>
+ %A %K
+       
+
+       You may, for example, try the following for a more web-like experience
+       (but the document title will not act as a link):
+
+ <u><b><font size=+1 color=#1111cf>%T</font></b></u><br>
+ %A<font color=#008000>%U - %S</font> - %L
+       
 
      * HTML help browser: this will let you chose your preferred browser
        which will be started from the Help menu to read the user manual. You
@@ -750,7 +955,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-4.2. Packages needed for external file types
+4.2. Supporting packages
 
    Recoll uses external applications to index some file types. You need to
    install them for the file types that you wish to have indexed (these are
@@ -799,15 +1004,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   4.3.2. Building
 
-   Recoll has been built on Linux (redhat7.3, mandriva 2005, Fedora Core 3),
-   FreeBSD and Solaris 8. If you build on another system, I would very much
-   welcome patches.
+   Recoll has been built on Linux (redhat7.3, mandriva 2005/6, Fedora Core
+   3/4/5), FreeBSD and Solaris 8. If you build on another system, I would
+   very much welcome patches.
 
    Depending on the qt configuration on your system, you may have to set the
    QTDIR and QMAKESPECS variables in your environment:
 
      * QTDIR should point to the directory above the one that holds the qt
-       include files (ie: qt.h).
+       include files (ie: if qt.h is /usr/local/qt/include/qt.h, QTDIR should
+       be /usr/local/qt).
 
      * QMAKESPECS should be set to the name of one of the qt mkspecs
        sub-directories (ie: linux-g++).
@@ -815,11 +1021,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
    is not needed because there is a default link in mkspecs/.
 
-   The Recoll configure script does a better job of checking these variables
-   after release 1.1.1. Before this, unexplained errors will occur during
-   compilation if the environment is not set up. Also, for 1.1.0 the qmake
-   command should be in your PATH (later releases can also find it in
-   $QTDIR/bin).
+   Configure options: --without-aspell will disable the code for phonetic
+   matching of search terms. --with-fam or --with-inotify will enable the
+   code for real time indexing. Refer to configure --help output for details.
 
    Normal procedure:
 
@@ -854,6 +1058,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 4.4. Configuration overview
 
+   Most of the parameters specific to the recoll GUI are set through the
+   Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
+   You probably do not want to edit this by hand.
+
+   For other options, Recoll uses text configuration files. You will have to
+   edit them by hand for now (there is still some hope for a GUI
+   configuration tool in the future). The most accurate documentation for the
+   configuration parameters is given by comments inside the default files,
+   and we will just give a general overview here.
+
    There are two sets of configuration files. The system-wide files are kept
    in a directory named like /usr/[local/]share/recoll/examples, they define
    default values for the system. A parallel set of files exists by default
@@ -865,16 +1079,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    started, it will be created with a set of empty configuration files.
    recoll will give you a chance to edit the configuration file before
    starting indexing. recollindex will proceed immediately.
-
-   Most of the parameters specific to the recoll GUI are set through the
-   Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
-   You probably do not want to edit this by hand.
-
-   For other options, Recoll uses text configuration files. You will have to
-   edit them by hand for now (there is still some hope for a GUI
-   configuration tool in the future). The most accurate documentation for the
-   configuration parameters is given by comments inside the default files,
-   and we will just give a general overview here.
 
    All configuration files share the same format. For example, a short
    extract of the main configuration file might look as follows:
@@ -894,10 +1098,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Section definition ([somedirname]).
 
-   Section lines allow redefining some parameters for a directory sub-tree.
-   Some of the parameters used for indexing are looked up hierarchically from
-   the more to the less specific. Not all parameters can be meaningfully
-   redefined, this is specified for each in the next section.
+   Section definitions allow redefining some parameters for a directory
+   sub-tree. They stay in effect until another section definition, or the end
+   of file, is encountered. Some of the parameters used for indexing are
+   looked up hierarchically from the current directory location upwards. Not
+   all parameters can be meaningfully redefined, this is specified for each
+   in the next section.
 
    The tilde character (~) is expanded in file names to the name of the
    user's home directory.
@@ -956,15 +1162,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            solution is to have .* in skippedNames, and add things like
            ~/.thunderbird or ~/.evolution in topdirs.
 
-   loglevel
+   loglevel,daemloglevel
 
            Verbosity level for recoll and recollindex. A value of 4 lists
            quite a lot of debug/information messages. 2 only lists errors.
+           The daemversion is specific to the indexing monitor daemon.
 
-   logfilename
+   logfilename, daemlogfilename
 
            Where the messages should go. 'stderr' can be used as a special
-           value, and is the default.
+           value, and is the default. The daemversion is specific to the
+           indexing monitor daemon.
 
    filtersdir
 
