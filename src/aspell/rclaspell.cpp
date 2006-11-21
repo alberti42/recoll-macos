@@ -1,6 +1,6 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.4 2006-10-11 16:09:45 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.5 2006-11-21 13:05:16 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
@@ -69,13 +69,20 @@ static AspellApi aapi;
 	badnames += #NM + string(" ");					\
     }
 
-const char *aspell_progs[] = {
+static const char *aspell_progs[] = {
 #ifdef ASPELL_PROG
     ASPELL_PROG ,
 #endif
     "/usr/local/bin/aspell",
     "/usr/bin/aspell"
 };
+static const unsigned int naspellprogs = sizeof(aspell_progs) / sizeof(char*);
+static const char *aspell_lib_suffixes[] = {
+  ".so",
+  ".so.15",
+  ".so.16"
+};
+static const unsigned int nlibsuffs  = sizeof(aspell_lib_suffixes) / sizeof(char *);
 
 bool Aspell::init(string &reason)
 {
@@ -87,9 +94,9 @@ bool Aspell::init(string &reason)
     if (!m_config->getConfParam("aspellLanguage", m_lang)) {
 	string lang = "en";
 	const char *cp;
-	if (cp = getenv("LC_ALL"))
+	if ((cp = getenv("LC_ALL")))
 	    lang = cp;
-	else if (cp = getenv("LANG"))
+	else if ((cp = getenv("LANG")))
 	    lang = cp;
 	if (!lang.compare("C"))
 	    lang = "en";
@@ -102,7 +109,7 @@ bool Aspell::init(string &reason)
     }
 
     m_data = new AspellData;
-    for (unsigned int i = 0; i < sizeof(aspell_progs) / sizeof(char*); i++) {
+    for (unsigned int i = 0; i < naspellprogs; i++) {
 	if (access(aspell_progs[i], X_OK) == 0) {
 	    m_data->m_exec = aspell_progs[i];
 	    break;
@@ -116,13 +123,23 @@ bool Aspell::init(string &reason)
     // For now, the aspell library has to live under the same prefix as the 
     // aspell program.
     string aspellPrefix = path_getfather(path_getfather(m_data->m_exec));
-    string lib = path_cat(aspellPrefix, "lib");
-    lib = path_cat(lib, "libaspell.so");
-    if ((m_data->m_handle = dlopen(lib.c_str(), RTLD_LAZY)) == 0) {
-	reason = "Could not open shared library [";
-	reason += lib + "] : " + dlerror();
-	return false;
+    string libbase = path_cat(aspellPrefix, "lib");
+    libbase = path_cat(libbase, "libaspell");
+    string lib;
+    reason = "Could not open shared library [";
+    for (unsigned int i = 0; i < nlibsuffs; i++) {
+      lib = libbase + aspell_lib_suffixes[i];
+      reason += lib + "]";
+      if ((m_data->m_handle = dlopen(lib.c_str(), RTLD_LAZY)) != 0) {
+	reason.erase();
+	break;
+      }
     }
+    if (m_data->m_handle == 0) {
+      reason += string(" : ") + dlerror();
+      return false;
+    }
+
     string badnames;
     NMTOPTR(new_aspell_config, (struct AspellConfig *(*)()));
     NMTOPTR(aspell_config_replace, (int (*)(struct AspellConfig *, 

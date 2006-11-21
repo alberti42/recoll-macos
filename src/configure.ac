@@ -32,19 +32,22 @@ case $withAspell in
      aspellProg=$withAspell
      ;;
 esac
-# if 
+echo withAspell = $withAspell
+
 if test X$withAspell != Xno ; then
    AC_DEFINE(RCL_USE_ASPELL, 1, [Compile the aspell interface])
    if test X$aspellProg != X ; then
       aspellBase=`dirname $aspellProg`
       aspellBase=`dirname $aspellBase`
-      if test ! -f $aspellBase/include/aspell.h ; then
-	 AC_MSG_ERROR([aspell.h not found in $aspellBase/include. Specify --with-aspell=no to disable aspell support])
-      fi
       AC_DEFINE_UNQUOTED(ASPELL_PROG, "$aspellProg",
 	[Path to the aspell program])
-      AC_DEFINE_UNQUOTED(ASPELL_INCLUDE, "$aspellBase/include/aspell.h",
-	[Path to the aspell api include file])
+      if test -f $aspellBase/include/aspell.h ; then	
+          AC_DEFINE_UNQUOTED(ASPELL_INCLUDE, "$aspellBase/include/aspell.h",
+	    [Path to the aspell api include file])
+      else
+	AC_MSG_NOTICE([aspell support enabled but aspell package not found. Compiling with internal aspell interface file])
+	 AC_DEFINE(ASPELL_INCLUDE, ["aspell-local.h"])
+      fi
    else
      # aspell support enabled but no aspell install yet
 	AC_MSG_NOTICE([aspell support enabled but aspell package not found. Compiling with internal aspell interface file])
