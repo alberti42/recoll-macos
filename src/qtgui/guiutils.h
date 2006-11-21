@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.16 2006-11-17 15:26:40 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.17 2006-11-21 08:47:51 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,9 @@ using std::string;
 using std::list;
 using std::vector;
 #endif
+
+/** Retrieve configured stemming languages */
+bool getStemLangs(list<string>& langs);
 
 /** Start a browser on the help document */
 extern bool startHelpBrowser(const string& url = "");

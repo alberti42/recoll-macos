@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.10 2006-11-10 13:32:08 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.11 2006-11-21 08:47:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -101,12 +101,10 @@ void UIPrefsDialog::setFromPrefs()
     stemLangCMB->clear();
     stemLangCMB->insertItem(tr("(no stemming)"));
     list<string> langs;
-    string reason;
-    if (!maybeOpenDb(reason)) {
-	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	exit(1);
+    if (!getStemLangs(langs)) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("error retrieving stemming languages"));
     }
-    langs = rcldb->getStemLangs();
     int i = 0, cur = -1;
     for (list<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {

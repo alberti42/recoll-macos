@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.5 2006-11-06 17:37:22 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.6 2006-11-21 08:47:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,17 +43,32 @@ static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.5 2006-11-06 17:37:22 dockes Exp 
 
 void SpellW::init()
 {
-    expTypeCMB->insertItem(tr("Wildcards"));
-    expTypeCMB->insertItem(tr("Regexp"));
-    int maxtyp = 1;
+    // Don't change the order, or fix the rest of the code...
+    /*0*/expTypeCMB->insertItem(tr("Wildcards"));
+    /*1*/expTypeCMB->insertItem(tr("Regexp"));
+    /*2*/expTypeCMB->insertItem(tr("Stem expansion"));
 #ifdef RCL_USE_ASPELL
-    expTypeCMB->insertItem(tr("Spelling/Phonetic"));
-    maxtyp = 2;
+    /*3*/expTypeCMB->insertItem(tr("Spelling/Phonetic"));
 #endif
+
     int typ = prefs.termMatchType;
-    if (typ < 0 || typ > maxtyp)
+    if (typ < 0 || typ > expTypeCMB->count())
 	typ = 0;
     expTypeCMB->setCurrentItem(typ);
+
+    // Stemming language combobox
+    stemLangCMB->clear();
+    list<string> langs;
+    if (!getStemLangs(langs)) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("error retrieving stemming languages"));
+    }
+    for (list<string>::const_iterator it = langs.begin(); 
+	 it != langs.end(); it++) {
+	stemLangCMB->
+	    insertItem(QString::fromAscii(it->c_str(), it->length()));
+    }
+    stemLangCMB->setEnabled(false);
 
     // signals and slots connections
     connect(baseWordLE, SIGNAL(textChanged(const QString&)), 
@@ -63,6 +78,8 @@ void SpellW::init()
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
     connect(suggsTE, SIGNAL(doubleClicked(int, int)), 
 	    this, SLOT(textDoubleClicked(int, int)));
+    connect(expTypeCMB, SIGNAL(activated(int)), 
+	    this, SLOT(modeSet(int)));
 }
 
 /* Expand term according to current mode */
@@ -81,6 +98,7 @@ void SpellW::doExpand()
     string expr = string((const char *)baseWordLE->text().utf8());
     list<string> suggs;
     prefs.termMatchType = expTypeCMB->currentItem();
+
     Rcl::Db::MatchType mt = Rcl::Db::ET_WILD;
     switch (expTypeCMB->currentItem()) {
     case 1: mt = Rcl::Db::ET_REGEXP;
@@ -92,8 +110,17 @@ void SpellW::doExpand()
 	    return;
 	}
 	break;
+
+
+    case 2: 
+	{
+	    string stemlang = (const char *)stemLangCMB->currentText().utf8();
+	    suggs = rcldb->stemExpand(stemlang,expr);
+	}
+	break;
+
 #ifdef RCL_USE_ASPELL
-    case 2: {
+    case 3: {
 	LOGDEB(("SpellW::doExpand: aspelling\n"));
 	if (!aspell) {
 	    QMessageBox::warning(0, "Recoll",
@@ -112,7 +139,7 @@ void SpellW::doExpand()
     }
 
     if (suggs.empty()) {
-	suggsTE->append(tr("No spelling expansion found"));
+	suggsTE->append(tr("No expansion found"));
     } else {
 	for (list<string>::iterator it = suggs.begin(); 
 	     it != suggs.end(); it++) {
@@ -138,4 +165,12 @@ void SpellW::textDoubleClicked(int para, int)
     suggsTE->setSelection(para, 0, para, 1000);
     if (suggsTE->hasSelectedText())
 	emit(wordSelect(suggsTE->selectedText()));
+}
+
+void SpellW::modeSet(int mode)
+{
+    if (mode == 2)
+	stemLangCMB->setEnabled(true);
+    else
+	stemLangCMB->setEnabled(false);
 }

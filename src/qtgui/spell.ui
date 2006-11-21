@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>-1</width>
-            <height>-1</height>
+            <width>298</width>
+            <height>295</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -35,7 +35,7 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout5</cstring>
+                <cstring>layout4</cstring>
             </property>
             <vbox>
                 <property name="name">
@@ -43,36 +43,19 @@
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout4</cstring>
+                        <cstring>layout3</cstring>
                     </property>
-                    <hbox>
+                    <grid>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>Label1</cstring>
-                            </property>
-                            <property name="frameShape">
-                                <enum>NoFrame</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>Plain</enum>
-                            </property>
-                            <property name="text">
-                                <string>Enter word to expand</string>
-                            </property>
-                            <property name="buddy" stdset="0">
-                                <cstring>baseWordLE</cstring>
-                            </property>
-                        </widget>
-                        <widget class="QLineEdit">
+                        <widget class="QLineEdit" row="0" column="1" rowspan="1" colspan="2">
                             <property name="name">
                                 <cstring>baseWordLE</cstring>
                             </property>
                             <property name="minimumSize">
                                 <size>
-                                    <width>200</width>
+                                    <width>100</width>
                                     <height>0</height>
                                 </size>
                             </property>
@@ -83,17 +66,15 @@
                                 <enum>Sunken</enum>
                             </property>
                         </widget>
-                        <widget class="QComboBox">
-                            <property name="name">
-                                <cstring>expTypeCMB</cstring>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
+                        <widget class="QPushButton" row="1" column="1">
                             <property name="name">
                                 <cstring>expandPB</cstring>
                             </property>
                             <property name="enabled">
                                 <bool>false</bool>
+                            </property>
+                            <property name="focusPolicy">
+                                <enum>NoFocus</enum>
                             </property>
                             <property name="text">
                                 <string>&amp;Expand </string>
@@ -102,12 +83,25 @@
                                 <string>Alt+E</string>
                             </property>
                         </widget>
-                        <widget class="QPushButton">
+                        <widget class="QComboBox" row="1" column="0">
+                            <property name="name">
+                                <cstring>stemLangCMB</cstring>
+                            </property>
+                        </widget>
+                        <widget class="QComboBox" row="0" column="0">
+                            <property name="name">
+                                <cstring>expTypeCMB</cstring>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton" row="1" column="2">
                             <property name="name">
                                 <cstring>dismissPB</cstring>
                             </property>
                             <property name="enabled">
                                 <bool>true</bool>
+                            </property>
+                            <property name="focusPolicy">
+                                <enum>NoFocus</enum>
                             </property>
                             <property name="text">
                                 <string>&amp;Close</string>
@@ -116,7 +110,7 @@
                                 <string>Alt+C</string>
                             </property>
                         </widget>
-                    </hbox>
+                    </grid>
                 </widget>
                 <widget class="QTextEdit">
                     <property name="name">
@@ -128,10 +122,33 @@
                             <height>200</height>
                         </size>
                     </property>
+                    <property name="focusPolicy">
+                        <enum>TabFocus</enum>
+                    </property>
+                    <property name="textFormat">
+                        <enum>PlainText</enum>
+                    </property>
+                    <property name="readOnly">
+                        <bool>true</bool>
+                    </property>
+                    <property name="undoRedoEnabled">
+                        <bool>false</bool>
+                    </property>
+                    <property name="tabChangesFocus">
+                        <bool>true</bool>
+                    </property>
                 </widget>
             </vbox>
         </widget>
     </vbox>
 </widget>
+<tabstops>
+    <tabstop>baseWordLE</tabstop>
+    <tabstop>expandPB</tabstop>
+    <tabstop>suggsTE</tabstop>
+    <tabstop>dismissPB</tabstop>
+    <tabstop>expTypeCMB</tabstop>
+    <tabstop>stemLangCMB</tabstop>
+</tabstops>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>

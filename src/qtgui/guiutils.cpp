@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.24 2006-11-17 15:26:40 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.25 2006-11-21 08:47:51 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -21,17 +21,27 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.24 2006-11-17 15:26:40 dockes Ex
 
 #include <algorithm>
 
+#include "recoll.h"
 #include "debuglog.h"
 #include "smallut.h"
-#include "recoll.h"
 #include "guiutils.h"
 #include "pathut.h"
 #include "base64.h"
-#include "rcldb.h"
 #include "transcode.h"
 
 #include <qsettings.h>
 #include <qstringlist.h>
+
+bool getStemLangs(list<string>& langs)
+{
+    string reason;
+    if (!maybeOpenDb(reason)) {
+	LOGERR(("getStemLangs: %s\n", reason.c_str()));
+	return false;
+    }
+    langs = rcldb->getStemLangs();
+    return true;
+}
 
 static const char *htmlbrowserlist = 
     "opera konqueror firefox mozilla netscape";
