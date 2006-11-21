@@ -11,6 +11,43 @@ values, and the user ones only for overrides. Your old configuration files
 will still work, but, you may want to remove them if they are unmodified,
 or keep only the modified parameters.
 
+
+1.6.0
+ - Real time monitoring/indexing support.
+ - Term explorer: a multimode wildcard-regexp-spell/phonetic tool to search
+   the index for terms.
+ - The advanced search window has been made more dynamic. You now have a
+   choice of the top level conjunction (OR/AND) and of any number of
+   clauses, including NEAR and PHRASE clauses with an adjustable proximity
+   parameter. 
+ - The format of the result-list entries is now user-settable, as an HTML
+   string with %xx printf-like replacement (accessible from the user
+   preferences). 
+ - Improved phrase/group highlighting in abstracts and preview
+ - Better sample selection for synthetic abstracts.
+ - Improved performance of the text splitter, good for indexing and previewing.
+ - Shift+click link to open new preview window instead of tab in existing
+   window.
+ - The key sequence for term completion in the simple search entry was
+   changed from CTRL+TAB to "Escape Space" to avoid interaction with window
+   managers.
+ - Improved recall for phrases with composite words like email addresses.
+
+1.5.9 
+- Fix bad timezone conversion in email dates. Display timezone in result
+  list dates.
+
+1.5.8
+- Fix stored and displayed dates which used to come from the file's ctime,
+  now use mtime (which was already used for deciding re-indexing).
+- Fix problem with some weird MIME messages (with null boundaries) which
+  crashed the indexer.
+
+1.5.[23456]
+- Small fixes dealing with the build process or compiler issues. 
+  1.5.6 has updated ukrainian and russian messages.
+  Otherwise no functional changes, and no need to upgrade from 1.5.1
+
 1.5.1
 - Fix serious bug with non ascii strings in simple search history
 - Improve synthetic abstracts: remove size limitations, handle overlapping

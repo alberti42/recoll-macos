@@ -897,7 +897,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Enter word to expand</source>
-        <translation>Entrer le mot à dériver</translation>
+        <translation type="obsolete">Entrer le mot à dériver</translation>
     </message>
     <message>
         <source>&amp;Expand </source>
@@ -940,7 +940,19 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>No spelling expansion found</source>
-        <translation>Pas de dérivés trouvés</translation>
+        <translation type="obsolete">Pas de dérivés trouvés</translation>
+    </message>
+    <message>
+        <source>Stem expansion</source>
+        <translation>Expansion grammaticale</translation>
+    </message>
+    <message>
+        <source>error retrieving stemming languages</source>
+        <translation>Impossible de former la liste des langages d&apos;expansion</translation>
+    </message>
+    <message>
+        <source>No expansion found</source>
+        <translation>Pas de résultats</translation>
     </message>
 </context>
 <context>
@@ -1114,6 +1126,10 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
         <translation>Sélectionner un répertoire contenant un index Xapian (ex: /home/monAmi/.recoll/xapiandb)</translation>
+    </message>
+    <message>
+        <source>error retrieving stemming languages</source>
+        <translation>Impossible de former la liste des langues pour l&apos;expansion grammaticale</translation>
     </message>
 </context>
 <context>

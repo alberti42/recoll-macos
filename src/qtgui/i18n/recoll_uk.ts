@@ -807,10 +807,6 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter word to expand</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Expand </source>
         <translation type="unfinished"></translation>
     </message>
@@ -850,7 +846,15 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No spelling expansion found</source>
+        <source>Stem expansion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>error retrieving stemming languages</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No expansion found</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1029,6 +1033,10 @@ May be slow for big documents.</source>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
         <translation>Оберіть теку із індексом Xapian (наприклад, /home/приятель/.recoll/xapiandb)</translation>
+    </message>
+    <message>
+        <source>error retrieving stemming languages</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

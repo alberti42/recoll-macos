@@ -38,21 +38,29 @@
 	<a href="usermanual/rcl.install.html">installation manual</a> for
 	building and/or installation instructions.</p>
 
-      <p>You will need an installation of xapian-core for source
-	builds. You will find source and binary packages on  the 
+      <p><i>For building from source</i>, you will need a xapian-core
+	installation. You will find source and binary packages on  the 
 	<a href="http://www.xapian.org/download.php">xapian download
 	  page</a></p>
 
       <p>You need qt 3.3 in all cases</p>
 
+      <p>Recoll relies on external packages for some
+	of its functionality (ie: for many of the non text file
+	types). These are not listed as strict dependencies, because
+	the base application can be sufficient in some cases, but you
+	should have a look at the 
+	<a href="usermanual/index.html#RCL.INSTALL.EXTERNAL">list</a> to
+	decide what you may want to install.</p>
+
       <h3>Source</h3>
 
-      <p>Current version: 1.5.1:
-	<a href="recoll-1.5.1.tar.gz">recoll-1.5.1.tar.gz</a>. 
+      <p>Current version: 1.5.11:
+	<a href="recoll-1.5.11.tar.gz">recoll-1.5.11.tar.gz</a>. 
 	See the <a href="BUGS.txt">known bugs and issues</a> and <a
-	  href="CHANGES.txt">changes</a>.</p>  
-
+	  href="CHANGES.txt">changes</a>.</p> 
       <p>Older recoll releases:
+	<a href="recoll-1.5.6.tar.gz">1.5.6</a>. 
 	<a href="recoll-1.4.3.tar.gz">1.4.3</a>. 
 	<a href="recoll-1.3.3.tar.gz">1.3.3</a>.
 	<a href="recoll-1.2.3.tar.gz">1.2.3</a>.
@@ -62,25 +70,37 @@
 
       <h3>RPMS</h3>
       <p>The executables inside the binary rpms have a static link to
-	xapian, there is no dependency except Qt. Of course you need
+	xapian, there is no dependency except Qt 3.3. Of course you need
 	xapian-core installed to use the source rpm.</p>
 
-      <p>Fedora Core 4 
-	RPM: <a href="recoll-1.4.3-1.i386.rpm">recoll-1.4.3-1.i386.rpm</a>. 
-	Source: <a
-	  href="recoll-1.4.3-1.src.rpm">recoll-1.4.3-1.src.rpm</a></p>
+      <p><b>Fedora Core 5</b>
+	RPM: <a href="recoll-1.5.11-1.i386.rpm">recoll-1.5.11-1.i386.rpm</a>. 
+	Source: 
+	<a href="recoll-1.5.11-1.src.rpm">recoll-1.5.11-1.src.rpm</a></p>
 
-      <p>Mandriva 2006 
+      <p><b>Mandriva 2006</b>  (also works on 2005 and 2007)
 	RPM: <a
-	  href="recoll-1.4.3-0.1.20060mdk.i586.rpm">recoll-1.4.3-0.1.20060mdk.i586.rpm</a>. 
+	  href="recoll-1.5.11-0.1.20060mdk.i586.rpm">recoll-1.5.11-0.1.20060mdk.i586.rpm</a>. 
 	Source: <a
-	  href="recoll-1.4.3-0.1.20060mdk.src.rpm">recoll-1.4.3-0.1.20060mdk.src.rpm</a></p> 
+	  href="recoll-1.5.11-0.1.20060mdk.src.rpm">recoll-1.5.11-0.1.20060mdk.src.rpm</a></p> 
+
+      <p><b>Suse 10.1</b> It seems that the binaries in previous set of
+      rpms, which were built with the xapian packages from opensuse had a
+      serious tendancy to segfault on exceptions. I hope that the
+      current ones, with a local xapian build will work better. If
+      there are still problems, please compile from source.
+
+	RPM: <a
+	  href="recoll-1.5.11-0.i586.rpm">recoll-1.5.11-0.i586.rpm</a>. 
+	Source: <a
+	  href="recoll-1.5.11-0.src.rpm">recoll-1.5.11-0.src.rpm</a></p> 
+    </p>
 
 
       <h3>Binary bundles</h3>
 
       <p>These are just prebuilt trees (without the source files).
-	The executables were built with xapian 0.9.6 and libiconv
+	The executables were built with xapian 0.9.[6-9] and libiconv
 	1.9.2 (where relevant) as static libraries. They depend on qt
 	3.3. For Solaris, you should be able to find a qt package <a
 	  href="http://www.sunfreeware.com/">here</a>.</p> 
@@ -89,18 +109,12 @@
 	  href="usermanual/rcl.install.binary.html"> there</a>.</p>
 
       <p><span class="application">FreeBSD</span> 5.5 i386: <a
-	  href="recoll-1.4.3-FreeBSD-5.5-PRERELEASE.tgz">
-	  recoll-1.4.3-FreeBSD-5.5-PRERELEASE.tgz</a></p>
-
-      <p><span class="application">Linux</span> (redhat 7.3, i386). I expect
-	this to also run on more recent systems. The recoll version is
-	a bit old but this may give you an idea	<a
-	  href="recoll-1.2.2-Linux-2.4.18-3.tgz">
-	  recoll-1.2.2-Linux-2.4.18-3.tgz</a>.</p> 
+	  href="recoll-1.5.11-FreeBSD-5.5-RELEASE.tgz">
+	  recoll-1.5.11-FreeBSD-5.5-RELEASE.tgz</a></p>
 
       <p><span class="application">Solaris 8</span> sparc.
-	<a href="recoll-1.4.3-SunOS-5.8.tgz">
-	  recoll-1.4.3-SunOS-5.8.tgz</a>.</p>
+	<a href="recoll-1.5.4-SunOS-5.8.tgz">
+	  recoll-1.5.4-SunOS-5.8.tgz</a>.</p>
 
       <h3>FreeBSD ports</h3> 
 

@@ -1,11 +1,31 @@
 Known bugs in current version and older versions:
 
-1.5.0
-- Under some conditions, recoll startup and exit could be very slow: the
-  simple search history list had serious problems with non-ascii strings,
-  whose size sometimes doubled at each program startup/stop.
-  
-1.4.2 - 1.5.0
+Bugs that are listed in an older version section are supposedly fixed in
+later versions. Bugs listed in the topmost section may also exist in older
+versions. 
+
+Latest:
+
+- 1.6 has added NEAR searches. Unlike what recoll did with PHRASES,
+  stemming expansion is performed on terms inside NEAR clauses (except if
+  prevented by a capitalized entry of course). There is a bug in Xapian at
+  least up to 0.9.9, where NEAR does not support multiple OR subclauses, as
+  would result from a multiple expansion. This manifests itself by a 'not
+  implemented' xapian exception and a recoll crash.
+  Workarounds:
+      - Prevent expansion of NEAR terms (possibly except one) by
+        capitalizing them.
+      - Apply the following patch to xapian 0.9.9, inside the "api/"
+        directory: 
+         http://www.recoll.org/xapian/xapNearDistrib.patch
+	 then recompile, and install.
+  I hope that the fix will make it into xapian at some point.
+- If you are seeing a delay of a few seconds before the result list
+  displays for the first query of a recoll instance, try changing the
+  result list font in the query preferences. This is not a recoll problem,
+  I don't know the exact cause (I've seen it happen with "Sans Serif" and
+  go away with Helvetica or Arial).
+
 - When a mime type has an external viewer defined, but the actual file is
   compressed (ie: xxx.txt.gz), recoll will try to start the external viewer
   on the compressed file, which will not work in most cases.
@@ -13,6 +33,27 @@ Known bugs in current version and older versions:
 - There are problems which have been reported indexing big mailstores
   (several hundreds of thousands of messages): resulting in a very big
   database and even crashes during indexation.
+
+- Under some versions of KDE (ie: Fedora FC5 KDE 3.5.4-0.5.fc5), there is a
+  problem with the window stacking order. Opening the "browse" file
+  selection dialog from the advanced search dialog will stack the latter
+  under the main window, possibly making it invisible. This is quite
+  probably a Kwin bug, possibly related to 
+  http://bugs.kde.org/show_bug.cgi?id=79183 or a correction thereof.
+
+1.5.10
+- If a defaultcharset was set in the configuration file for a subdirectory,
+  it would stay in effect for all subsequent files/directories (except if
+  explicitely overridden), potentially causing many transcoding errors.
+
+1.5.[1-7]
+- Dates in result list come from the file's ctimes, which may be confusing
+- Some rare MIME messages with null boundaries can crash the indexer.
+
+1.5.0
+- Under some conditions, recoll startup and exit could be very slow: the
+  simple search history list had serious problems with non-ascii strings,
+  whose size sometimes doubled at each program startup/stop.
 
 1.3.3
 

@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.26 2006-11-20 18:07:02 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.27 2006-11-21 09:18:21 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -750,6 +750,14 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
             expression is anchored by enclosing in
             <literal>^</literal> and <literal>$</literal> before
             execution.</para></listitem>
+          </varlistentry>
+          <varlistentry>
+
+	  <term>Stem expansion</term>
+	  <listitem><para>This mode will perform the usual stem expansion
+	  normally done as part user input processing. As such it is
+	  probably mostly useful to demonstrate the process.
+	  </para></listitem>
           </varlistentry>
 
           <varlistentry>

@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.5.3
+%define version 1.6.0
 %define release 0
 
 Name:           %{name}
