@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.12 2006-11-18 12:31:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.13 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -352,7 +352,8 @@ void ResList::resultPageNext()
 
 	// Result number
 	char numbuf[20];
-	sprintf(numbuf, "%.2d", m_winfirst+1+i);
+	int docnumforlinks = m_winfirst+1+i;
+	sprintf(numbuf, "%d", docnumforlinks);
 
 	// Document date: either doc or file modification time
 	char datebuf[100];
@@ -361,7 +362,11 @@ void ResList::resultPageNext()
 	    time_t mtime = doc.dmtime.empty() ?
 		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	    struct tm *tm = localtime(&mtime);
+#ifndef sun
 	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z", tm);
+#else
+	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%Z", tm);
+#endif
 	}
 
 	// Size information. We print both doc and file if they differ a lot
@@ -381,18 +386,18 @@ void ResList::resultPageNext()
 
 	// Abstract
 	string abst;
-	plaintorich(doc.abstract, abst, m_searchData, 0, 0, true);
+	plaintorich(doc.abstract, abst, m_searchData, true);
 
 	// Links;
 	string linksbuf;
 	char vlbuf[100];
 	if (canIntern(doc.mimetype, rclconfig)) { 
-	    sprintf(vlbuf, "\"P%d\"", m_winfirst+i);
+	    sprintf(vlbuf, "\"P%d\"", docnumforlinks);
 	    linksbuf += string("<a href=") + vlbuf + ">" + "Preview" + "</a>" 
 		+ "&nbsp;&nbsp;";
 	}
 	if (!rclconfig->getMimeViewerDef(doc.mimetype).empty()) {
-	    sprintf(vlbuf, "E%d", m_winfirst+i);
+	    sprintf(vlbuf, "E%d", docnumforlinks);
 	    linksbuf += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
 	}
 
@@ -432,6 +437,7 @@ void ResList::resultPageNext()
 	QString str = QString::fromUtf8(result.c_str(), result.length());
 	append(str);
 	setCursorPosition(0,0);
+	ensureCursorVisible();
 
         m_pageParaToReldocnums[paragraphs()-1] = i;
 	m_curDocs.push_back(doc);
@@ -535,7 +541,7 @@ void ResList::doubleClicked(int, int)
 void ResList::linkWasClicked(const QString &s, int clkmod)
 {
     LOGDEB(("ResList::linkClicked: [%s]\n", s.ascii()));
-    int i = atoi(s.ascii()+1);
+    int i = atoi(s.ascii()+1) -1;
     int what = s.ascii()[0];
     switch (what) {
     case 'H': 

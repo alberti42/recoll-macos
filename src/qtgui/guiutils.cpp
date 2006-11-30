@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.25 2006-11-21 08:47:51 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.26 2006-11-30 13:38:44 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -149,8 +149,10 @@ void rwSettings(bool writing)
     QSettings settings;
     settings.setPath("Recoll.org", "Recoll", QSettings::User);
 #endif
-    SETTING_RW(prefs.mainwidth, "/Recoll/geometry/width", Num, 500);
-    SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Num, 400);
+    SETTING_RW(prefs.mainwidth, "/Recoll/geometry/width", Num, 0);
+    SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Num, 0);
+    SETTING_RW(prefs.pvwidth, "/Recoll/geometry/pvwidth", Num, 0);
+    SETTING_RW(prefs.pvheight, "/Recoll/geometry/pvheight", Num, 0);
     SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Num, 0);
     SETTING_RW(prefs.htmlBrowser, "/Recoll/prefs/htmlBrowser", , "");
     SETTING_RW(prefs.startWithAdvSearchOpen, 
@@ -159,7 +161,7 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/startWithSortToolOpen", Bool, false);
 
     QString advSearchClauses;
-    QString ascdflt = QString::fromAscii("1 3 0 0 2 5 ");
+    QString ascdflt;
     if (writing) {
 	for (vector<int>::iterator it = prefs.advSearchClauses.begin();
 	     it != prefs.advSearchClauses.end(); it++) {
@@ -185,9 +187,9 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/ssearchAutoPhrase", Bool, false);
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Num, 8);
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", ,
-	       "");
+	       "Helvetica");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Num, 
-	       0);
+	       10);
     QString rlfDflt = 
 	QString::fromAscii("%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
 			   "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"

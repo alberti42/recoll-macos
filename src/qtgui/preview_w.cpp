@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.7 2006-11-18 12:31:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.8 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,18 @@ using std::pair;
 
 void Preview::init()
 {
+#if 0
+    // Couldn't get a small button really in the corner. stays on the left of
+    // the button area and looks ugly
+    QPixmap px = QPixmap::fromMimeSource("cancel.png");
+    QPushButton * bt = new QPushButton(px, "", this);
+    bt->setFixedSize(px.size());
+#else
+    QPushButton * bt = new QPushButton(tr("Close Tab"), this);
+#endif
+
+    pvTab->setCornerWidget(bt);
+
     // signals and slots connections
     connect(searchTextLine, SIGNAL(textChanged(const QString&)), 
 	    this, SLOT(searchTextLine_textChanged(const QString&)));
@@ -66,12 +78,16 @@ void Preview::init()
     connect(clearPB, SIGNAL(clicked()), searchTextLine, SLOT(clear()));
     connect(pvTab, SIGNAL(currentChanged(QWidget *)), 
 	    this, SLOT(currentChanged(QWidget *)));
+    connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
 
     searchTextLine->installEventFilter(this);
     dynSearchActive = false;
     canBeep = true;
     tabData.push_back(TabData(pvTab->currentPage()));
     currentW = 0;
+    if (prefs.pvwidth > 100) {
+	resize(prefs.pvwidth, prefs.pvheight);
+    }
 }
 
 void Preview::destroy()
@@ -80,6 +96,8 @@ void Preview::destroy()
 
 void Preview::closeEvent(QCloseEvent *e)
 {
+    prefs.pvwidth = width();
+    prefs.pvheight = height();
     emit previewExposed(m_searchId, -1);
     emit previewClosed((QWidget *)this);
     QWidget::closeEvent(e);
@@ -450,15 +468,11 @@ class LoadThread : public QThread {
 class ToRichThread : public QThread {
     string &in;
     RefCntr<Rcl::SearchData> m_searchData;
-    string& firstTerm;
-    int& firstTermOcc;
     QString &out;
     int loglevel;
  public:
-    ToRichThread(string &i, RefCntr<Rcl::SearchData> searchData,
-		 string& ft, int& fto, QString &o) 
-	: in(i), m_searchData(searchData), firstTerm(ft), firstTermOcc(fto),
-	  out(o)
+    ToRichThread(string &i, RefCntr<Rcl::SearchData> searchData, QString &o) 
+	: in(i), m_searchData(searchData), out(o)
     {
 	    loglevel = DebugLog::getdbl()->getlevel();
     }
@@ -467,7 +481,7 @@ class ToRichThread : public QThread {
 	DebugLog::getdbl()->setloglevel(loglevel);
 	string rich;
 	try {
-	    plaintorich(in, rich, m_searchData, &firstTerm, &firstTermOcc);
+	    plaintorich(in, rich, m_searchData, false, true);
 	} catch (CancelExcept) {
 	}
 	out = QString::fromUtf8(rich.c_str(), rich.length());
@@ -548,12 +562,9 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     // Create preview text: highlight search terms (if not too big):
     QString richTxt;
     bool highlightTerms = fdoc.text.length() < 1000 *1024;
-    string firstTerm;
-    int firstTermOcc;
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
-	ToRichThread rthr(fdoc.text, m_searchData, firstTerm, firstTermOcc,
-			  richTxt);
+	ToRichThread rthr(fdoc.text, m_searchData, richTxt);
 	rthr.start();
 
 	for (;;prog++) {
@@ -618,6 +629,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	    editor->setCursorPosition(0,0);
 	    editor->ensureCursorVisible();
 	}
+
 	if (progress.wasCanceled()) {
 	    cancel = true;
             editor->append("<b>Cancelled !</b>");
@@ -630,15 +642,16 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	canBeep = true;
 	doSearch(searchTextLine->text(), true, false);
     } else {
-	if (!firstTerm.empty()) {
-	    bool wasC = matchCheck->isChecked();
-	    matchCheck->setChecked(false);
-	    for (int i = 0; i < firstTermOcc; i++) {
-		doSearch(QString::fromUtf8(firstTerm.c_str()), i, 
-			 false, true);
-	    }
-	    matchCheck->setChecked(wasC);
-	}
+	QString aname = QString::fromUtf8(firstTermAnchorName);
+	LOGDEB2(("Calling scrolltoanchor [%s]\n", (const char *)aname.utf8()));
+	editor->scrollToAnchor(aname);
+#ifdef QT_SCROLL_TO_ANCHOR_BUG
+	bool wasC = matchCheck->isChecked();
+	matchCheck->setChecked(false);
+	doSearch(QString::fromUtf8(firstTermBeacon), 0, false, false);
+	editor->del();
+	matchCheck->setChecked(wasC);
+#endif
     }
     emit(previewExposed(m_searchId, docnum));
     return true;

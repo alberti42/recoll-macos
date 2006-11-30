@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: makesrcdist.sh,v 1.11 2006-10-09 16:37:08 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: makesrcdist.sh,v 1.12 2006-11-30 13:38:43 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
 #set -x
@@ -61,6 +61,7 @@ cvs commit -m '' README INSTALL
 # Clean up this dir and copy the dist-specific files 
 make clean
 yes | clean.O
+rm -f lib/*.dep
 $TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
 
 # Fix the single/multiple page link in the header (we dont deliver the

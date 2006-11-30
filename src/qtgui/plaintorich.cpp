@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.17 2006-11-18 12:56:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.18 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -62,6 +62,8 @@ class myTextSplitCB : public TextSplitCB {
     // Out: first query term found in text
     string firstTerm;
     int    firstTermOcc;
+    int m_firstTermPos;
+    int m_firstTermBPos;
 
     // Out: begin and end byte positions of query terms/groups in text
     vector<pair<int, int> > tboffs;  
@@ -96,6 +98,7 @@ class myTextSplitCB : public TextSplitCB {
 	    if (firstTerm.empty()) {
 		firstTerm = term;
 		m_firstTermPos = pos;
+		m_firstTermBPos = bts;
 	    }
 	}
 	
@@ -117,7 +120,6 @@ private:
     virtual bool matchGroup(const vector<string>& terms, int dist);
 
     int m_wcount;
-    int m_firstTermPos;
 
     // In: user query terms
     set<string>    m_terms; 
@@ -239,6 +241,20 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 
     LOGDEB0(("myTextSplitCB::matchGroup: MATCH [%d,%d]\n", sta, sto)); 
 
+    // Translate the position window into a byte offset window
+    int bs = 0;
+    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
+    map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
+    if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
+	LOGDEB1(("myTextSplitCB::matchGroup: pushing %d %d\n",
+		 i1->second.first, i2->second.second));
+	tboffs.push_back(pair<int, int>(i1->second.first, i2->second.second));
+	bs = i1->second.first;
+    } else {
+	LOGDEB(("myTextSplitCB::matchGroup: no bpos found for %d or %d\n", 
+		sta, sto));
+    }
+
     if (firstTerm.empty() || m_firstTermPos > sta) {
 	// firsTerm is used to try an position the preview window over
 	// the match. As it's difficult to divine byte/word positions
@@ -252,31 +268,24 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	    firstTerm = it->second;
 	LOGDEB(("myTextSplitCB:: best group term %s, firstTermOcc %d\n",
 		firstTerm.c_str(), firstTermOcc));
-    }
-
-    // Translate the position window into a byte offset window
-    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
-    map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
-    if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
-	LOGDEB1(("myTextSplitCB::matchGroup: pushing %d %d\n",
-		 i1->second.first, i2->second.second));
-	tboffs.push_back(pair<int, int>(i1->second.first, i2->second.second));
-    } else {
-	LOGDEB(("myTextSplitCB::matchGroup: no bpos found for %d or %d\n", 
-		sta, sto));
+	m_firstTermPos = sta;
+	m_firstTermBPos = bs;
     }
 
     return true;
 }
 
-/** Sort integer pairs by their first value */
+/** Sort integer pairs by increasing first value and decreasing width */
 class PairIntCmpFirst {
 public:
     bool operator()(pair<int,int> a, pair<int, int>b) {
-	return a.first < b.first;
+	if (a.first != b.first)
+	    return a.first < b.first;
+	return a.second > b.second;
     }
 };
 
+// Do the phrase match thing, then merge the highlight lists
 bool myTextSplitCB::matchGroups()
 {
     vector<vector<string> >::const_iterator vit = m_groups.begin();
@@ -285,9 +294,17 @@ bool myTextSplitCB::matchGroups()
 	matchGroup(*vit, *sit + (*vit).size());
     }
 
+    // Sort by start and end offsets. The merging of overlapping entries
+    // will be handled during output.
     std::sort(tboffs.begin(), tboffs.end(), PairIntCmpFirst());
     return true;
 }
+
+const char *firstTermAnchorName = "FIRSTTERM";
+
+#ifdef QT_SCROLL_TO_ANCHOR_BUG
+const char *firstTermBeacon = "\xe2\xa0\x91\xe2\x96\x9f\x20\x01\x9a";
+#endif
 
 // Fix result text for display inside the gui text window.
 //
@@ -300,9 +317,7 @@ bool myTextSplitCB::matchGroups()
 // editor's find() function to position on it
 bool plaintorich(const string& in, string& out, 
 		 RefCntr<Rcl::SearchData> sdata,
-		 string *firstTerm, 
-		 int *firstTermOcc,
-		 bool noHeader)
+		 bool noHeader, bool fft)
 {
     Chrono chron;
     out.erase();
@@ -338,11 +353,6 @@ bool plaintorich(const string& in, string& out,
 
     cb.matchGroups();
 
-    if (firstTerm)
-	*firstTerm = cb.firstTerm;
-    if (firstTermOcc)
-	*firstTermOcc = cb.firstTermOcc;
-
     // Rich text output
     if (noHeader)
 	out = "";
@@ -376,12 +386,24 @@ bool plaintorich(const string& in, string& out,
 	// If we still have terms positions, check (byte) position
 	if (tPosIt != tboffsend) {
 	    int ibyteidx = chariter.getBpos();
+
+	    if (fft && ibyteidx == cb.m_firstTermBPos) {
+		out += string("<a name=\"") + firstTermAnchorName + "\"> "
+#ifdef QT_SCROLL_TO_ANCHOR_BUG
+		    + "<font color=\"white\"> " + firstTermBeacon + " </font> "
+#endif
+		    + "</a>";
+	    }
+
 	    if (ibyteidx == tPosIt->first) {
 		out += "<termtag>";
 	    } else if (ibyteidx == tPosIt->second) {
-		if (tPosIt != cb.tboffs.end())
-		    tPosIt++;
+		// Output end tag, then skip all highlight areas that
+		// would overlap this one
 		out += "</termtag>";
+		int crend = tPosIt->second;
+		while (tPosIt != cb.tboffs.end() && tPosIt->first < crend)
+		    tPosIt++;
 	    }
 	}
 	switch(*chariter) {
@@ -414,7 +436,7 @@ bool plaintorich(const string& in, string& out,
     }
 #if 0
     {
-	FILE *fp = fopen("/tmp/debugplaintorich", "w");
+	FILE *fp = fopen("/tmp/debugplaintorich", "a");
 	fprintf(fp, "%s\n", out.c_str());
 	fclose(fp);
     }
