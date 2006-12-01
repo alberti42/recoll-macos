@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.11 2006-09-19 14:18:57 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.12 2006-12-01 10:05:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -39,10 +39,11 @@ static string usage =
     " -i docid -D : get document data for docid\n"
     " -i docid -b : 'rebuild' document from term positions\n"
     " -t term -E  : term existence test\n"
-    " -t term -F  : retrieve term frequency data\n"
+    " -t term -F  : retrieve term frequency data for given term\n"
     " -t term -P  : retrieve postings for term\n"
     " -i docid -T : term list for doc docid\n"
     " -T          : list all terms\n"
+    "    -f       : precede each term in the list with its occurrence count\n"
     " -s          : special mode to dump recoll stem db\n"
     "  \n\n"
     ;
@@ -66,6 +67,7 @@ static int        op_flags;
 #define OPT_E     0x100
 #define OPT_b     0x200
 #define OPT_s     0x400
+#define OPT_f     0x800
 
 Xapian::Database *db;
 
@@ -98,25 +100,26 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'D':	op_flags |= OPT_D; break;
-	    case 'E':	op_flags |= OPT_E; break;
-	    case 'F':   op_flags |= OPT_F; break;
-	    case 'P':	op_flags |= OPT_P; break;
-	    case 's':	op_flags |= OPT_s; break;
-	    case 'T':	op_flags |= OPT_T; break;
 	    case 'b':   op_flags |= OPT_b; break;
+	    case 'D':	op_flags |= OPT_D; break;
 	    case 'd':	op_flags |= OPT_d; if (argc < 2)  Usage();
 		dbdir = *(++argv);
 		argc--; 
 		goto b1;
+	    case 'E':	op_flags |= OPT_E; break;
 	    case 'e':	op_flags |= OPT_d; if (argc < 2)  Usage();
 		outencoding = *(++argv);
 		argc--; 
 		goto b1;
+	    case 'F':   op_flags |= OPT_F; break;
+	    case 'f':   op_flags |= OPT_f; break;
 	    case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
 		if (sscanf(*(++argv), "%d", &docid) != 1) Usage();
 		argc--; 
 		goto b1;
+	    case 'P':	op_flags |= OPT_P; break;
+	    case 's':	op_flags |= OPT_s; break;
+	    case 'T':	op_flags |= OPT_T; break;
 	    case 't':	op_flags |= OPT_t; if (argc < 2)  Usage();
 		aterm = *(++argv);
 		argc--; 
@@ -155,6 +158,8 @@ int main(int argc, char **argv)
 	    } else {
 		for (term = db->allterms_begin(); 
 		     term != db->allterms_end();term++) {
+		    if (op_flags & OPT_f)
+			cout << term.get_termfreq() << " ";
 		    cout << "[" << *term << "]" << endl;
 		}
 	    }
