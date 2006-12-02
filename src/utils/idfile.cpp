@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: idfile.cpp,v 1.4 2006-01-23 13:32:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: idfile.cpp,v 1.5 2006-12-02 07:32:13 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,13 @@ static char rcsid[] = "@(#$Id: idfile.cpp,v 1.4 2006-01-23 13:32:28 dockes Exp $
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+/** 
+ * This code is currently ONLY used to identify mbox and mail message files
+ * which are badly handled by standard mime type identifiers
+ * There is a very old (circa 1990) mbox format using blocks of ^A (0x01) chars
+ * to separate messages, that we don't recognize currently
+ */
+
 std::list<string> idFileAllTypes()
 {
     std::list<string> lst;
@@ -41,8 +48,9 @@ std::list<string> idFileAllTypes()
 
 // Mail headers we compare to:
 static const char *mailhs[] = {"From: ", "Received: ", "Message-Id: ", "To: ", 
-			       "Date: ", "Subject: ", "Status: "};
-static const int mailhsl[] = {6, 10, 12, 4, 6, 9, 8};
+			       "Date: ", "Subject: ", "Status: ", 
+			       "In-Reply-To: "};
+static const int mailhsl[] = {6, 10, 12, 4, 6, 9, 8, 13};
 static const int nmh = sizeof(mailhs) / sizeof(char *);
 
 const int wantnhead = 3;
@@ -57,12 +65,14 @@ string idFile(const char *fn)
     }	    
 
     bool line1HasFrom = false;
+    bool gotnonempty = false;
     int lookslikemail = 0;
 
     // emacs VM sometimes inserts very long lines with continuations or
     // not (for folder information). This forces us to look at many
     // lines and long ones
-    for (int lnum = 1; lnum < 200; lnum++) {
+    int lnum = 1;
+    for (int loop = 1; loop < 200; loop++, lnum++) {
 
 #define LL 1024
 	char cline[LL+1];
@@ -77,13 +87,45 @@ string idFile(const char *fn)
 	    break;
 	}
 
-	LOGDEB2(("idfile: lnum %d : [%s]\n", lnum, cline));
-	// Check for a few things that can't be found in a mail file,
-	// (optimization to get a quick negative
+	// gcount includes the \n
+	int ll = input.gcount() - 1; 
+	if (ll > 0)
+	    gotnonempty = true;
 
-	// Lines must begin with whitespace or have a colon in the
-	// first 50 chars (hope no one comes up with a longer header
-	// name !
+	LOGDEB2(("idfile: lnum %d ll %d: [%s]\n", lnum, ll, cline));
+
+	// Check for a few things that can't be found in a mail file,
+	// (optimization to get a quick negative)
+
+	// Empty lines
+	if (ll <= 0) {
+	    // Accept a few empty lines at the beginning of the file,
+	    // otherwise this is the end of headers
+	    if (gotnonempty || lnum > 10) {
+		LOGDEB2(("Got empty line\n"));
+		break;
+	    } else {
+		// Don't increment the line counter for initial empty lines.
+		lnum--;
+		continue;
+	    }
+	}
+
+	// emacs vm can insert VERY long header lines.
+	if (ll > 800) {
+	    LOGDEB2(("idFile: Line too long\n"));
+	    return string("");
+	}
+
+	// Check for mbox 'From ' line
+	if (lnum == 1 && !strncmp("From ", cline, 5)) {
+	    line1HasFrom = true;
+	    continue;
+	} 
+
+	// Except for a possible first line with 'From ', lines must
+	// begin with whitespace or have a colon 
+	// (hope no one comes up with a longer header name !
 	if (!isspace(cline[0])) {
 	    char *cp = strchr(cline, ':');
 	    if (cp == 0 || (cp - cline) > 70) {
@@ -91,19 +133,8 @@ string idFile(const char *fn)
 		break;
 	    }
 	}
- 
-	int ll = strlen(cline);
-	if (ll > 1000) {
-	    LOGDEB2(("idFile: Line too long\n"));
-	    return string("");
-	}
-	if (lnum == 1) {
-	    if (!strncmp("From ", cline, 5)) {
-		line1HasFrom = true;
-		continue;
-	    }
-	}
 
+	// Compare to known headers
 	for (int i = 0; i < nmh; i++) {
 	    if (!strncasecmp(mailhs[i], cline, mailhsl[i])) {
 		//fprintf(stderr, "Got [%s]\n", mailhs[i]);
@@ -139,14 +170,16 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    if (argc != 2) {
+    if (argc < 2) {
 	cerr << "Usage: idfile filename" << endl;
 	exit(1);
     }
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
-    string mime = idFile(argv[1]);
-    cout << argv[1] << " : " << mime << endl;
+    for (int i = 1; i < argc; i++) {
+	string mime = idFile(argv[i]);
+	cout << argv[i] << " : " << mime << endl;
+    }
     exit(0);
 }
 
