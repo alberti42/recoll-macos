@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.14 2006-12-04 06:19:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.15 2006-12-04 08:17:24 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -26,10 +26,11 @@ static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.14 2006-12-04 06:19:10 dockes
 #include <qframe.h>
 #include <qcheckbox.h>
 
-#include <qcombobox.h>
 #if (QT_VERSION < 0x040000)
+#include <qcombobox.h>
 #include <qlistbox.h>
 #else
+#include <q3combobox.h>
 #include <q3listbox.h>
 #endif
 
@@ -194,11 +195,11 @@ void AdvSearch::addClause()
 
 void AdvSearch::addClause(int tp)
 {
-    SearchClauseW *w = new SearchClauseW(this);
+    SearchClauseW *w = new SearchClauseW(clauseFRM);
     m_clauseWins.push_back(w);
     connect(w->wordsLE, SIGNAL(returnPressed()),
 	    this, SLOT(searchPB_clicked()));
-    clauseVBox->addWidget(w);
+    ((QVBoxLayout *)(clauseFRM->layout()))->addWidget(w);
     w->show();
     w->tpChange(tp);
     if (m_clauseWins.size() > iclausescnt) {
@@ -207,7 +208,7 @@ void AdvSearch::addClause(int tp)
 	delClausePB->setEnabled(false);
     }
     // Have to adjust the size else we lose the bottom buttons! Why?
-    QSize sz = AdvSearchBaseLayout->sizeHint();
+    QSize sz = layout()->sizeHint();
     resize(QSize(sz.width()+HORADJ, sz.height()+VERTADJ));
 }
 
@@ -222,7 +223,7 @@ void AdvSearch::delClause()
     } else {
 	delClausePB->setEnabled(false);
     }
-    QSize sz = AdvSearchBaseLayout->sizeHint();
+    QSize sz = layout()->sizeHint();
     resize(QSize(sz.width()+HORADJ, sz.height()+VERTADJ));
 }
 
@@ -310,15 +311,23 @@ void AdvSearch::searchPB_clicked()
     }
 
     if (!subtreeCMB->currentText().isEmpty()) {
+	QString current = subtreeCMB->currentText();
 	sdata->setTopdir((const char*)subtreeCMB->currentText().utf8());
-	// The listbox is set for no insertion, do it. Have to check
-	// for dups as the internal feature seems to only work for
-	// user-inserted strings
-	if (!subtreeCMB->listBox()->findItem(subtreeCMB->currentText(),
-					     Qt::CaseSensitive|Qt::ExactMatch))
-	    subtreeCMB->insertItem(subtreeCMB->currentText(), 0);
-	// And keep it sorted
-	subtreeCMB->listBox()->sort();
+	// Keep history list clean and sorted. Maybe there would be a
+	// simpler way to do this
+	list<QString> entries;
+	for (int i = 0; i < subtreeCMB->count(); i++) {
+	    entries.push_back(subtreeCMB->text(i));
+	}
+	entries.push_back(subtreeCMB->currentText());
+	entries.sort();
+	unique(entries.begin(), entries.end());
+	subtreeCMB->clear();
+	for (list<QString>::iterator it = entries.begin(); 
+	     it != entries.end(); it++) {
+	    subtreeCMB->insertItem(*it);
+	}
+	subtreeCMB->setCurrentText(current);
 	prefs.asearchSubdirHist.clear();
 	for (int index = 0; index < subtreeCMB->count(); index++)
 	    prefs.asearchSubdirHist.push_back(subtreeCMB->text(index));

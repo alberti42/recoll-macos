@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.8 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.9 2006-12-04 08:17:24 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -27,12 +27,19 @@ using std::pair;
 #endif /* NO_NAMESPACES */
 
 #include <qmessagebox.h>
-#include <qprogressdialog.h>
 #include <qthread.h>
 #include <qvariant.h>
 #include <qpushbutton.h>
 #include <qtabwidget.h>
+#if (QT_VERSION < 0x040000)
 #include <qtextedit.h>
+#include <qprogressdialog.h>
+#else
+#include <q3textedit.h>
+#include <q3progressdialog.h>
+#include <q3stylesheet.h>
+#endif
+#include <qevent.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
@@ -110,33 +117,34 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     
     LOGDEB1(("Preview::eventFilter: keyEvent\n"));
     QKeyEvent *keyEvent = (QKeyEvent *)event;
-    if (keyEvent->key() == Key_Q && (keyEvent->state() & ControlButton)) {
+    if (keyEvent->key() == Qt::Key_Q && 
+	(keyEvent->state() & Qt::ControlButton)) {
 	recollNeedsExit = 1;
 	return true;
-    } else if (keyEvent->key() == Key_Escape) {
+    } else if (keyEvent->key() == Qt::Key_Escape) {
 	close();
 	return true;
     } else if (keyEvent->key() == Qt::Key_Down &&
-	       (keyEvent->state() & ShiftButton)) {
+	       (keyEvent->state() & Qt::ShiftButton)) {
 	// LOGDEB(("Preview::eventFilter: got Shift-Up\n"));
 	TabData *d = tabDataForCurrent();
 	if (d) 
 	    emit(showNext(m_searchId, d->docnum));
 	return true;
     } else if (keyEvent->key() == Qt::Key_Up &&
-	       (keyEvent->state() & ShiftButton)) {
+	       (keyEvent->state() & Qt::ShiftButton)) {
 	// LOGDEB(("Preview::eventFilter: got Shift-Down\n"));
 	TabData *d = tabDataForCurrent();
 	if (d) 
 	    emit(showPrev(m_searchId, d->docnum));
 	return true;
-    } else if (keyEvent->key() == Key_W &&
-	       (keyEvent->state() & ControlButton)) {
+    } else if (keyEvent->key() == Qt::Key_W &&
+	       (keyEvent->state() & Qt::ControlButton)) {
 	// LOGDEB(("Preview::eventFilter: got ^W\n"));
 	closeCurrentTab();
 	return true;
     } else if (dynSearchActive) {
-	if (keyEvent->key() == Key_F3) {
+	if (keyEvent->key() == Qt::Key_F3) {
 	    doSearch(searchTextLine->text(), true, false);
 	    return true;
 	}
@@ -146,9 +154,9 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	QWidget *tw = pvTab->currentPage();
 	QWidget *e = 0;
 	if (tw)
-	    e = (QTextEdit *)tw->child("pvEdit");
+	    e = (QWidget *)tw->child("pvEdit");
 	LOGDEB1(("Widget: %p, edit %p, target %p\n", tw, e, target));
-	if (e && target == tw && keyEvent->key() == Key_Slash) {
+	if (e && target == tw && keyEvent->key() == Qt::Key_Slash) {
 	    searchTextLine->setFocus();
 	    dynSearchActive = true;
 	    return true;
@@ -174,6 +182,12 @@ void Preview::searchTextLine_textChanged(const QString & text)
 	doSearch(text, false, false);
     }
 }
+
+#if (QT_VERSION >= 0x040000)
+#define QTextEdit Q3TextEdit
+#define QProgressDialog Q3ProgressDialog
+#define QStyleSheetItem Q3StyleSheetItem
+#endif
 
 QTextEdit *Preview::getCurrentEditor()
 {
@@ -537,8 +551,13 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     for (prog = 1;;prog++) {
 	waiter.start();
 	waiter.wait();
+#if (QT_VERSION < 0x040000)
 	if (lthr.finished())
 	    break;
+#else
+	if (lthr.isFinished())
+	    break;
+#endif
 	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
 	qApp->processEvents();
 	if (progress.wasCanceled()) {
@@ -569,8 +588,13 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 
 	for (;;prog++) {
 	    waiter.start();	waiter.wait();
-	    if (rthr.finished())
-		break;
+#if (QT_VERSION < 0x040000)
+	if (rthr.finished())
+	    break;
+#else
+	if (rthr.isFinished())
+	    break;
+#endif
 	    progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
 	    qApp->processEvents();
 	    if (progress.wasCanceled()) {
@@ -609,7 +633,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     progress.setLabelText(tr("Loading preview text into editor"));
     qApp->processEvents();
     int l = 0;
-    for (unsigned int pos = 0; pos < richTxt.length(); pos += l, prog++) {
+    for (int pos = 0; pos < (int)richTxt.length(); pos += l, prog++) {
 	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
 	qApp->processEvents();
 	

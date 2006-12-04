@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.2 2006-09-21 09:37:28 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.3 2006-12-04 08:17:24 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -31,13 +31,18 @@ static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.2 2006-09-21 09:37:28 dockes Exp $
 
 void SortForm::init()
 {
-    const char *labels[5];
-    labels[0] = "";
-    labels[1] = "Date";
-    labels[2] = "Mime type";
-    labels[3] = 0;
-    fldCMB1->insertStrList(labels, 3);
-    fldCMB2->insertStrList(labels, 3); 
+    QStringList slabs;
+    slabs += QString();
+    slabs += tr("Date");
+    slabs += tr("Mime type");
+
+#if QT_VERSION < 0x040000
+    fldCMB1->insertStringList(slabs);
+    fldCMB2->insertStringList(slabs); 
+#else
+    fldCMB1->addItems(slabs);
+    fldCMB2->addItems(slabs); 
+#endif
 
     // Initialize values from prefs:
     mcntSB->setValue(prefs.sortWidth);

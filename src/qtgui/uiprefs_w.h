@@ -1,4 +1,4 @@
-/* @(#$Id: uiprefs_w.h,v 1.3 2006-12-04 06:19:11 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.4 2006-12-04 08:17:24 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 #ifndef _UIPREFS_W_H_INCLUDED_
 #define _UIPREFS_W_H_INCLUDED_
-/* @(#$Id: uiprefs_w.h,v 1.3 2006-12-04 06:19:11 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.4 2006-12-04 08:17:24 dockes Exp $  (C) 2005 J.F.Dockes */
 #include <qvariant.h>
 #include <qdialog.h>
 
@@ -37,7 +37,7 @@ class DummyUIPrefsDialogBase : public UIPrefsDialogBase
 	: UIPrefsDialogBase(parent) {}
 };
 #else
-class DummyUIPrefsDialogBase : public QWidget, protected Ui::UIPrefsDialogBase
+class DummyUIPrefsDialogBase : public QDialog, protected Ui::UIPrefsDialogBase
 {
  public: DummyUIPrefsDialogBase(QDialog *parent) {setupUi(parent);}
 };

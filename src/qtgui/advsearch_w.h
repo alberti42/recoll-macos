@@ -1,6 +1,6 @@
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-/* @(#$Id: advsearch_w.h,v 1.8 2006-12-04 06:19:10 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: advsearch_w.h,v 1.9 2006-12-04 08:17:24 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -73,7 +73,9 @@ public slots:
     virtual void addClause();
     virtual void addClause(int);
     virtual bool close();
+#if (QT_VERSION < 0x040000)
     virtual void polish();
+#endif
 
 signals:
     void startSearch(RefCntr<Rcl::SearchData>);

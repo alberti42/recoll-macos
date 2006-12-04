@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.5 2006-12-04 06:19:11 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.6 2006-12-04 08:17:24 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "preview.h"
 #else
 #include "ui_preview.h"
+#define QTextEdit Q3TextEdit
 #endif
 #include "refcntr.h"
 #include "searchdata.h"

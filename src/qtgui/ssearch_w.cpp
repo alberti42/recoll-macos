@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.12 2006-11-30 13:38:44 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.13 2006-12-04 08:17:24 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@ static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.12 2006-11-30 13:38:44 dockes E
 #include <qtooltip.h>
 #include <qwhatsthis.h>
 #include <qmessagebox.h>
+#include <qevent.h>
 
 #include "debuglog.h"
 #include "guiutils.h"
@@ -210,11 +211,11 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	QKeyEvent *ke = (QKeyEvent *)event;
 	LOGDEB1(("SSearch::eventFilter: keyPress escape %d key %d\n", 
 		 m_escape, ke->key()));
-	if (ke->key() == Key_Escape) {
+	if (ke->key() == Qt::Key_Escape) {
 	    LOGDEB(("Escape\n"));
 	    m_escape = true;
 	    return true;
-	} else if (m_escape && ke->key() == Key_Space) {
+	} else if (m_escape && ke->key() == Qt::Key_Space) {
 	    LOGDEB(("Escape space\n"));
 	    ke->accept();
 	    completion();

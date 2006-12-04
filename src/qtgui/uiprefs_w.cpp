@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.11 2006-11-21 08:47:51 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.12 2006-12-04 08:17:24 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,6 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.11 2006-11-21 08:47:51 dockes E
 #include <list>
 
 #include <qfontdialog.h>
-#include <qfiledialog.h>
 #include <qspinbox.h>
 #include <qmessagebox.h>
 #include <qvariant.h>
@@ -36,7 +35,16 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.11 2006-11-21 08:47:51 dockes E
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
+#if QT_VERSION < 0x040000
 #include <qlistbox.h>
+#include <qfiledialog.h>
+#else
+#include <q3listbox.h>
+#include <q3filedialog.h>
+#define QListBox Q3ListBox
+#define QListBoxItem Q3ListBoxItem
+#define QFileDialog  Q3FileDialog
+#endif
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
@@ -241,7 +249,7 @@ void UIPrefsDialog::showBrowserDialog()
 					     this,
 					     "open file dialog",
 					     "Choose a file");
-    if (s) 
+    if (!s.isEmpty()) 
 	helpBrowserLE->setText(s);
 }
 
@@ -268,7 +276,12 @@ void UIPrefsDialog::addADbPB_clicked()
 	if (item && item->isSelected()) {
 	    allDbsLB->setSelected(i, false);
 	    if (!actDbsLB->findItem(item->text(), 
-				    Qt::CaseSensitive|Qt::ExactMatch)) {
+#if QT_VERSION < 0x040000
+			    Qt::CaseSensitive|Qt::ExactMatch
+#else
+			    Q3ListBox::CaseSensitive|Q3ListBox::ExactMatch
+#endif
+				    )) {
 		actDbsLB->insertItem(item->text());
 	    }
 	}
@@ -343,7 +356,12 @@ void UIPrefsDialog::addExtraDbPB_clicked()
 	return;
     }
     if (allDbsLB->findItem(extraDbLE->text(), 
-			    Qt::CaseSensitive|Qt::ExactMatch)) {
+#if QT_VERSION < 0x040000
+			    Qt::CaseSensitive|Qt::ExactMatch
+#else
+			    Q3ListBox::CaseSensitive|Q3ListBox::ExactMatch
+#endif
+				    )) {
 	QMessageBox::warning(0, "Recoll", 
 		 tr("The selected directory is already in the index list"));
 	return;
@@ -361,6 +379,6 @@ void UIPrefsDialog::browseDbPB_clicked()
        tr("Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)"));
 
     fdia.setShowHiddenFiles(savedh);
-    if (s) 
+    if (!s.isEmpty()) 
 	extraDbLE->setText(s);
 }
