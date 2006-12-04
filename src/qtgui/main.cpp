@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.53 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.54 2006-12-04 06:19:11 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,7 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.53 2006-11-30 13:38:44 dockes Exp $ 
 #include "rclversion.h"
 #endif
 #include "rclmain_w.h"
+#include "ssearch_w.h"
 #include "guiutils.h"
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -67,7 +68,6 @@ static KCmdLineOptions options[] =
     KCmdLineLastOption
 };
 #endif
-
 
 const string recoll_datadir = RECOLL_DATADIR;
 

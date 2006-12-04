@@ -289,14 +289,6 @@
         </property>
     </action>
 </actions>
-<includes>
-    <include location="local" impldecl="in declaration">ssearch_w.h</include>
-    <include location="local" impldecl="in declaration">reslist.h</include>
-    <include location="local" impldecl="in declaration">refcntr.h</include>
-</includes>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
-<includehints>
-    <includehint>reslist.h</includehint>
-</includehints>
 </UI>

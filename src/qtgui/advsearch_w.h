@@ -1,6 +1,6 @@
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-/* @(#$Id: advsearch_w.h,v 1.7 2006-11-17 15:26:40 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: advsearch_w.h,v 1.8 2006-12-04 06:19:10 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,21 +20,44 @@
 #include <list>
 #include <qvariant.h>
 #include <qdialog.h>
-#include "advsearch.h"
+
 #include "searchclause_w.h"
 #include "recoll.h"
 #include "refcntr.h"
 #include "searchdata.h"
 
-class AdvSearch : public AdvSearchBase
+class QDialog;
+
+//MOC_SKIP_BEGIN
+#if QT_VERSION < 0x040000
+
+#include "advsearch.h"
+class DummyAdvSearchBase : public AdvSearchBase
+{
+ public: DummyAdvSearchBase(QWidget* parent = 0) : AdvSearchBase(parent) {}
+};
+
+#else
+
+#include "ui_advsearch.h"
+class DummyAdvSearchBase : public QWidget, public Ui::AdvSearchBase
+{
+ public: DummyAdvSearchBase(QDialog *parent) {setupUi(parent);}
+};
+
+#endif
+//MOC_SKIP_END
+
+class AdvSearch : public DummyAdvSearchBase
 {
     Q_OBJECT
 
 public:
-    AdvSearch(QWidget* parent = 0, const char* name = 0, bool modal = FALSE, 
-	      WFlags fl = 0) 
-	: AdvSearchBase(parent,name,modal,fl)
-    {init();}
+    AdvSearch(QDialog* parent = 0) 
+	: DummyAdvSearchBase(parent)
+    {
+	init();
+    }
     ~AdvSearch(){}
 
 public slots:

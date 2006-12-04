@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.4 2006-11-17 12:55:59 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.5 2006-12-04 06:19:11 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -8,15 +8,25 @@
 using std::list;
 #endif
 
+#if (QT_VERSION < 0x040000)
 #include <qtextbrowser.h>
-#include <qpopupmenu.h>
+class QPopupMenu;
+#define RCLPOPUP QPopupMenu
+#define QTEXTBROWSER QTextBrowser
+#else
+#include <q3textbrowser.h>
+class Q3PopupMenu;
+#define RCLPOPUP Q3PopupMenu
+#define QTEXTBROWSER Q3TextBrowser
+#endif
 
 #include "rcldb.h"
 #include "docseq.h"
 #include "searchdata.h"
 #include "refcntr.h"
 
-class ResList : public QTextBrowser
+
+class ResList : public QTEXTBROWSER
 {
     Q_OBJECT;
 
@@ -32,7 +42,7 @@ class ResList : public QTextBrowser
 
     virtual void setDocSource(DocSequence *, 
 			      RefCntr<Rcl::SearchData> qdata);
-    virtual QPopupMenu *createPopupMenu(const QPoint& pos);
+    virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
     virtual QString getDescription(); // Printable actual query performed on db
     virtual int getResCnt(); // Return total result list size
     virtual RefCntr<Rcl::SearchData> getSearchData() {return m_searchData;}

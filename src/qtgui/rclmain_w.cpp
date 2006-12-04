@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.9 2006-11-17 12:55:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.10 2006-12-04 06:19:11 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,9 @@ using std::pair;
 
 #include <qapplication.h>
 #include <qmessagebox.h>
+#if (QT_VERSION < 0x040000)
 #include <qcstring.h>
+#endif
 #include <qtabwidget.h>
 #include <qtimer.h>
 #include <qstatusbar.h>
@@ -54,14 +56,15 @@ using std::pair;
 #include "mimehandler.h"
 #include "pathut.h"
 #include "smallut.h"
-#include "advsearch.h"
+#include "advsearch_w.h"
 #include "rclversion.h"
 #include "sortseq.h"
-#include "uiprefs.h"
+#include "uiprefs_w.h"
 #include "guiutils.h"
 #include "reslist.h"
 #include "transcode.h"
 #include "refcntr.h"
+#include "ssearch_w.h"
 
 #include "rclmain_w.h"
 #include "moc_rclmain_w.cpp"
@@ -69,17 +72,20 @@ using std::pair;
 extern "C" int XFlush(void *);
 
 // Taken from qt designer. Don't know why it's needed.
-static QIconSet createIconSet( const QString &name )
+#if (QT_VERSION < 0x040000)
+static QIconSet createIconSet(const QString &name)
 {
-    QIconSet ic( QPixmap::fromMimeSource( name ) );
+    QIconSet ic(QPixmap::fromMimeSource(name));
     QString iname = "d_" + name;
     ic.setPixmap(QPixmap::fromMimeSource(iname),
 		 QIconSet::Small, QIconSet::Disabled );
     return ic;
 }
+#endif
 
 void RclMain::init()
 {
+
     curPreview = 0;
     asearchform = 0;
     sortform = 0;
@@ -129,7 +135,6 @@ void RclMain::init()
 	    this, SLOT(showAdvSearchDialog()));
     connect(toolsSort_parametersAction, SIGNAL(activated()), 
 	    this, SLOT(showSortDialog()));
-    toolsSpellAction->setIconSet(createIconSet("spell.png"));
 #ifdef RCL_USE_ASPELL
     connect(toolsSpellAction, SIGNAL(activated()), 
 	    this, SLOT(showSpellDialog()));
@@ -140,8 +145,16 @@ void RclMain::init()
     connect(preferencesQuery_PrefsAction, SIGNAL(activated()), 
 	    this, SLOT(showUIPrefs()));
 
+
+#if (QT_VERSION < 0x040000)
+    toolsSpellAction->setIconSet(createIconSet("spell.png"));
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
+#else
+    toolsSpellAction->setIcon(QIcon(":spell.png"));
+    nextPageAction->setIcon(QIcon(":nextpage.png"));
+    prevPageAction->setIcon(QIcon(":prevpage.png"));
+#endif
 }
 
 // We also want to get rid of the advanced search form and previews
@@ -362,9 +375,7 @@ void RclMain::startAdvSearch(RefCntr<Rcl::SearchData> sdata)
 void RclMain::showAdvSearchDialog()
 {
     if (asearchform == 0) {
-	asearchform = new AdvSearch(0, tr("Advanced search"), FALSE,
-				    WStyle_Customize | WStyle_NormalBorder | 
-				    WStyle_Title | WStyle_SysMenu);
+	asearchform = new AdvSearch(0);
 	connect(asearchform, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 		this, SLOT(startAdvSearch(RefCntr<Rcl::SearchData>)));
 	asearchform->show();
@@ -378,9 +389,7 @@ void RclMain::showAdvSearchDialog()
 void RclMain::showSortDialog()
 {
     if (sortform == 0) {
-	sortform = new SortForm(0, tr("Sort criteria"), FALSE,
-				    WStyle_Customize | WStyle_NormalBorder | 
-				    WStyle_Title | WStyle_SysMenu);
+	sortform = new SortForm(0);
 	connect(sortform, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
 		this, SLOT(sortDataChanged(DocSeqSortSpec)));
 	sortform->show();
@@ -395,9 +404,7 @@ void RclMain::showSortDialog()
 void RclMain::showSpellDialog()
 {
     if (spellform == 0) {
-	spellform = new SpellW(0, tr("Spell expansion"), 
-				    WStyle_Customize | WStyle_NormalBorder | 
-				    WStyle_Title | WStyle_SysMenu);
+	spellform = new SpellW(0);
 	connect(spellform, SIGNAL(wordSelect(QString)),
 		this, SLOT(ssearchAddTerm(QString)));
 	spellform->show();
@@ -412,9 +419,7 @@ void RclMain::showSpellDialog()
 void RclMain::showUIPrefs()
 {
     if (uiprefs == 0) {
-	uiprefs = new UIPrefsDialog(0, tr("User interface preferences"), FALSE,
-				    WStyle_Customize | WStyle_NormalBorder | 
-				    WStyle_Title | WStyle_SysMenu);
+	uiprefs = new UIPrefsDialog(0);
 	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
 	uiprefs->show();
     } else {
@@ -468,7 +473,7 @@ void RclMain::startPreview(int docnum, int mod)
 	curPreview = 0;
     }
     if (curPreview == 0) {
-	curPreview = new Preview(0, tr("Preview"));
+	curPreview = new Preview(0);
 	if (curPreview == 0) {
 	    QMessageBox::warning(0, tr("Warning"), 
 				 tr("Can't create preview window"),

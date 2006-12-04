@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.13 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.14 2006-12-04 06:19:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,14 @@ static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.13 2006-11-30 13:38:44 dockes
 #include <qlineedit.h>
 #include <qframe.h>
 #include <qcheckbox.h>
+
 #include <qcombobox.h>
+#if (QT_VERSION < 0x040000)
 #include <qlistbox.h>
+#else
+#include <q3listbox.h>
+#endif
+
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
@@ -130,8 +136,14 @@ void AdvSearch::saveCnf()
 bool AdvSearch::close()
 {
     saveCnf();
-    return AdvSearchBase::close();
+    return QWidget::close();
 }
+
+#if (QT_VERSION >= 0x040000)
+#define QListBoxItem Q3ListBoxItem
+#define clauseVBox Ui::AdvSearchBase::clauseVBox
+#define AdvSearchBaseLayout Ui::AdvSearchBase::AdvSearchBaseLayout
+#endif
 
 // Move selected file types from the searched to the ignored box
 void AdvSearch::delFiltypPB_clicked()
@@ -214,12 +226,14 @@ void AdvSearch::delClause()
     resize(QSize(sz.width()+HORADJ, sz.height()+VERTADJ));
 }
 
+#if (QT_VERSION < 0x040000)
 void AdvSearch::polish()
 {
     AdvSearchBase::polish();
     QSize sz = sizeHint();
     resize(QSize(sz.width()+HORADJ+10, sz.height()+VERTADJ-20));
 }
+#endif
 
 // Move selected file types from the ignored to the searched box
 void AdvSearch::addFiltypPB_clicked()
@@ -291,8 +305,7 @@ void AdvSearch::searchPB_clicked()
     }
     if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
 	for (unsigned int i = 0; i < yesFiltypsLB->count(); i++) {
-	    QCString ctext = yesFiltypsLB->item(i)->text().utf8();
-	    sdata->addFiletype((const char *)ctext);
+	    sdata->addFiletype((const char *)yesFiltypsLB->item(i)->text().utf8());
 	}
     }
 

@@ -428,9 +428,6 @@
                             <property name="editable">
                                 <bool>true</bool>
                             </property>
-                            <property name="sizeLimit">
-                                <number>10</number>
-                            </property>
                             <property name="maxCount">
                                 <number>20</number>
                             </property>

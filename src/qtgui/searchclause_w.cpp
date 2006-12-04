@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.3 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.4 2006-12-04 06:19:11 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -33,11 +33,9 @@ static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.3 2006-11-30 13:38:44 dock
  *  Constructs a SearchClauseW as a child of 'parent', with the
  *  name 'name' and widget flags set to 'f'.
  */
-SearchClauseW::SearchClauseW(QWidget* parent, const char* name, WFlags fl)
-    : QWidget(parent, name, fl)
+SearchClauseW::SearchClauseW(QWidget* parent)
+    : QWidget(parent)
 {
-    if (!name)
-	setName("SearchClauseW");
     searchClauseLayout = new QVBoxLayout(this);
 
     hLayout = new QHBoxLayout(0, 0, 3, "hLayout"); 
@@ -54,7 +52,6 @@ SearchClauseW::SearchClauseW(QWidget* parent, const char* name, WFlags fl)
     searchClauseLayout->addLayout(hLayout);
     languageChange();
     resize(QSize(0, 0).expandedTo(minimumSizeHint()));
-    clearWState(WState_Polished);
 
     connect(sTpCMB, SIGNAL(activated(int)), this, SLOT(tpChange(int)));
 }

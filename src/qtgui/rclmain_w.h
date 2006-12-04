@@ -30,16 +30,36 @@
 #include "spell_w.h"
 #include "refcntr.h"
 
+#if QT_VERSION < 0x040000
 #include "rclmain.h"
+#else
+#include "ui_rclmain.h"
+#endif
 
-class RclMain : public RclMainBase
+//MOC_SKIP_BEGIN
+#if QT_VERSION < 0x040000
+class DummyRclMainBase : public RclMainBase
+{
+ public: DummyRclMainBase(QWidget* parent = 0) : RclMainBase(parent) {}
+};
+#define RCLMAINPARENT QWidget
+#else
+class DummyRclMainBase : public QMainWindow, public Ui::RclMainBase
+{
+public: DummyRclMainBase(Q3MainWindow*parent) {setupUi(parent);}
+#define RCLMAINPARENT Q3MainWindow
+};
+#endif
+//MOC_SKIP_END
+
+class RclMain : public DummyRclMainBase
 {
     Q_OBJECT
 
 public:
-    RclMain(QWidget* parent = 0, const char* name = 0, 
-	    WFlags fl = WType_TopLevel) 
-	: RclMainBase(parent,name,fl) {
+    RclMain(RCLMAINPARENT * parent = 0) 
+	: DummyRclMainBase(parent) 
+    {
 	init();
     }
     ~RclMain() {}

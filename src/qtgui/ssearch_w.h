@@ -1,4 +1,4 @@
-/* @(#$Id: ssearch_w.h,v 1.3 2006-11-13 08:58:47 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: ssearch_w.h,v 1.4 2006-12-04 06:19:11 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,16 +22,37 @@
 #include <qwidget.h>
 #include "recoll.h"
 #include "searchdata.h"
-#include "ssearchb.h"
 #include "refcntr.h"
+#if (QT_VERSION < 0x040000)
+#include "ssearchb.h"
+#else
+#include "ui_ssearchb.h"
+#endif
 
-class SSearch : public SSearchBase
+//MOC_SKIP_BEGIN
+#if QT_VERSION < 0x040000
+class DummySSearchBase : public SSearchBase
+{
+ public: DummySSearchBase(QWidget* parent = 0) : SSearchBase(parent) {}
+};
+#else
+class DummySSearchBase : public QWidget, public Ui::SSearchBase
+{
+ public: DummySSearchBase(QWidget* parent) {setupUi(parent);}
+};
+#endif
+//MOC_SKIP_END
+
+class SSearch : public DummySSearchBase
 {
     Q_OBJECT
 
 public:
-    SSearch( QWidget* parent = 0, const char* name = 0, WFlags fl = 0 )
-	: SSearchBase(parent,name,fl) {init();}
+    SSearch(QWidget* parent = 0, const char * = 0)
+	: DummySSearchBase(parent) 
+    {
+	init();
+    }
     ~SSearch(){}
 
     virtual void init();

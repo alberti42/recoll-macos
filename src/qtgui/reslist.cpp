@@ -1,10 +1,12 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.13 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.14 2006-12-04 06:19:11 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
 
+#include <qapplication.h>
 #include <qvariant.h>
+#include <qevent.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qtooltip.h>
@@ -13,6 +15,17 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.13 2006-11-30 13:38:44 dockes Exp
 #include <qmessagebox.h>
 #include <qimage.h>
 #include <qclipboard.h>
+#include <qscrollbar.h>
+
+#if (QT_VERSION < 0x040000)
+#include <qpopupmenu.h>
+#else
+#include <q3popupmenu.h>
+#include <q3stylesheet.h>
+#include <q3mimefactory.h>
+#define QStyleSheetItem Q3StyleSheetItem
+#define QMimeSourceFactory Q3MimeSourceFactory
+#endif
 
 #include "debuglog.h"
 #include "recoll.h"
@@ -33,7 +46,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.13 2006-11-30 13:38:44 dockes Exp
 #endif
 
 ResList::ResList(QWidget* parent, const char* name)
-    : QTextBrowser(parent, name)
+    : QTEXTBROWSER(parent, name)
 {
     if (!name)
 	setName("resList");
@@ -41,7 +54,7 @@ ResList::ResList(QWidget* parent, const char* name)
     setReadOnly(TRUE);
     setUndoRedoEnabled(FALSE);
     languageChange();
-    clearWState(WState_Polished);
+
     setTabChangesFocus(true);
 
     // signals and slots connections
@@ -144,29 +157,29 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 
 void ResList::keyPressEvent(QKeyEvent * e)
 {
-    if (e->key() == Key_Q && (e->state() & ControlButton)) {
+    if (e->key() == Qt::Key_Q && (e->state() & Qt::ControlButton)) {
 	recollNeedsExit = 1;
 	return;
-    } else if (e->key() == Key_Prior) {
+    } else if (e->key() == Qt::Key_Prior) {
 	resPageUpOrBack();
 	return;
-    } else if (e->key() == Key_Next) {
+    } else if (e->key() == Qt::Key_Next) {
 	resPageDownOrNext();
 	return;
     }
-    QTextBrowser::keyPressEvent(e);
+    QTEXTBROWSER::keyPressEvent(e);
 }
 
 void ResList::contentsMouseReleaseEvent(QMouseEvent *e)
 {
     m_lstClckMod = 0;
-    if (e->state() & ControlButton) {
-	m_lstClckMod |= ControlButton;
+    if (e->state() & Qt::ControlButton) {
+	m_lstClckMod |= Qt::ControlButton;
     } 
-    if (e->state() & ShiftButton) {
-	m_lstClckMod |= ShiftButton;
+    if (e->state() & Qt::ShiftButton) {
+	m_lstClckMod |= Qt::ShiftButton;
     }
-    QTextBrowser::contentsMouseReleaseEvent(e);
+    QTEXTBROWSER::contentsMouseReleaseEvent(e);
 }
 
 // Return total result list count
@@ -177,24 +190,31 @@ int ResList::getResCnt()
     return m_docsource->getResCnt();
 }
 
+
+#if 1 || (QT_VERSION < 0x040000)
+#define SCROLLYPOS contentsY()
+#else
+#define SCROLLYPOS verticalScrollBar()->value()
+#endif
+
 // Page Up/Down: we don't try to check if current paragraph is last or
 // first. We just page up/down and check if viewport moved. If it did,
 // fair enough, else we go to next/previous result page.
 void ResList::resPageUpOrBack()
 {
-    int vpos = contentsY();
-    moveCursor(QTextEdit::MovePgUp, false);
-    if (vpos == contentsY())
+    int vpos = SCROLLYPOS;
+    moveCursor(QTEXTBROWSER::MovePgUp, false);
+    if (vpos == SCROLLYPOS)
 	resultPageBack();
 }
 
 void ResList::resPageDownOrNext()
 {
-    int vpos = contentsY();
-    moveCursor(QTextEdit::MovePgDown, false);
+    int vpos = SCROLLYPOS;
+    moveCursor(QTEXTBROWSER::MovePgDown, false);
     LOGDEB(("ResList::resPageDownOrNext: vpos before %d, after %d\n",
-	    vpos, contentsY()));
-    if (vpos == contentsY()) 
+	    vpos, SCROLLYPOS));
+    if (vpos == SCROLLYPOS) 
 	resultPageNext();
 }
 
@@ -500,8 +520,8 @@ void ResList::clicked(int par, int)
 	return;
     }
     LOGDEB(("click at par %d (with %s %s)\n", par, 
-	    (m_lstClckMod & ControlButton) ? "Ctrl" : "",
-	    (m_lstClckMod & ShiftButton) ? "Shft" : ""));
+	    (m_lstClckMod & Qt::ControlButton) ? "Ctrl" : "",
+	    (m_lstClckMod & Qt::ShiftButton) ? "Shft" : ""));
 
 }
 
@@ -563,12 +583,12 @@ void ResList::linkWasClicked(const QString &s, int clkmod)
     }
 }
 
-QPopupMenu *ResList::createPopupMenu(const QPoint& pos)
+RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
 {
     int para = paragraphAt(pos);
     clicked(para, 0);
     m_popDoc = docnumfromparnum(para);
-    QPopupMenu *popup = new QPopupMenu(this, "qt_edit_menu");
+    RCLPOPUP *popup = new RCLPOPUP(this);
     popup->insertItem(tr("&Preview"), this, SLOT(menuPreview()));
     popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
     popup->insertItem(tr("&Copy File Name"), this, SLOT(menuCopyFN()));

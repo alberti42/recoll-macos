@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.4 2006-11-17 10:09:07 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.5 2006-12-04 06:19:11 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,8 +20,13 @@
 
 #include <qvariant.h>
 #include <qwidget.h>
+
 #include "rcldb.h"
+#if (QT_VERSION < 0x040000)
 #include "preview.h"
+#else
+#include "ui_preview.h"
+#endif
 #include "refcntr.h"
 #include "searchdata.h"
 
@@ -37,14 +42,30 @@ class TabData {
     TabData(QWidget *wi) : w(wi) {}
 };
 
-class Preview : public PreviewBase
+class QTextEdit;
+
+//MOC_SKIP_BEGIN
+#if QT_VERSION < 0x040000
+class DummyPreviewBase : public PreviewBase
+{
+ public: DummyPreviewBase(QWidget* parent = 0) : PreviewBase(parent)	{}
+};
+#else
+class DummyPreviewBase : public QWidget, public Ui::PreviewBase
+{
+ public: DummyPreviewBase(QWidget* parent) {setupUi(parent);}
+};
+#endif
+//MOC_SKIP_END
+
+class Preview : public DummyPreviewBase
 {
     Q_OBJECT
 
 public:
-    Preview(QWidget* parent = 0, const char* name = 0, WFlags fl = 0) :
-	PreviewBase(parent,name,fl) {init();}
-	
+    Preview(QWidget* parent = 0) 
+	: DummyPreviewBase(parent) {init();}
+
     ~Preview(){}
 
     virtual void setSId(int sid, RefCntr<Rcl::SearchData> sdata) 

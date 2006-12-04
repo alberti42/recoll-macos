@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.26 2006-11-30 13:38:44 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.27 2006-12-04 06:19:11 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -173,7 +173,7 @@ void rwSettings(bool writing)
     SETTING_RW(advSearchClauses, "/Recoll/prefs/adv/clauseList", , ascdflt);
     if (!writing) {
 	list<string> clauses;
-	stringToStrings(advSearchClauses, clauses);
+	stringToStrings((const char *)advSearchClauses.utf8(), clauses);
 	for (list<string>::iterator it = clauses.begin(); 
 	     it != clauses.end(); it++) {
 	    prefs.advSearchClauses.push_back(atoi(it->c_str()));

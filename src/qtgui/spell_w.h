@@ -1,6 +1,6 @@
 #ifndef _ASPELL_W_H_INCLUDED_
 #define _ASPELL_W_H_INCLUDED_
-/* @(#$Id: spell_w.h,v 1.3 2006-11-21 08:47:51 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: spell_w.h,v 1.4 2006-12-04 06:19:11 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,15 +21,33 @@
 #include <qvariant.h>
 #include <qwidget.h>
 #include "rcldb.h"
-#include "spell.h"
 
-class SpellW : public SpellBase
+//MOC_SKIP_BEGIN
+#if QT_VERSION < 0x040000
+#include "spell.h"
+class DummySpellBase : public SpellBase
+{
+ public: DummySpellBase(QWidget* parent = 0) : SpellBase(parent) {}
+};
+#else
+#include "ui_spell.h"
+class DummySpellBase : public QWidget, public Ui::SpellBase
+{
+ public: DummySpellBase(QWidget* parent) {setupUi(parent);}
+};
+#endif
+//MOC_SKIP_END
+
+class SpellW : public DummySpellBase
 {
     Q_OBJECT
 
 public:
-    SpellW(QWidget* parent = 0, const char* name = 0, WFlags fl = 0) :
-	SpellBase(parent,name,fl) {init();}
+    SpellW(QWidget* parent = 0) 
+	: DummySpellBase(parent) 
+    {
+	init();
+    }
 	
     ~SpellW(){}
 

@@ -1,4 +1,4 @@
-/* @(#$Id: uiprefs_w.h,v 1.2 2006-11-07 08:57:11 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.3 2006-12-04 06:19:11 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,18 +17,43 @@
  */
 #ifndef _UIPREFS_W_H_INCLUDED_
 #define _UIPREFS_W_H_INCLUDED_
-/* @(#$Id: uiprefs_w.h,v 1.2 2006-11-07 08:57:11 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.3 2006-12-04 06:19:11 dockes Exp $  (C) 2005 J.F.Dockes */
 #include <qvariant.h>
 #include <qdialog.h>
 
+#if (QT_VERSION < 0x040000)
 #include "uiprefs.h"
+#else
+#include "ui_uiprefs.h"
+#endif
 
-class UIPrefsDialog : public UIPrefsDialogBase
+class QDialog;
+
+//MOC_SKIP_BEGIN
+#if QT_VERSION < 0x040000
+class DummyUIPrefsDialogBase : public UIPrefsDialogBase
+{
+ public: DummyUIPrefsDialogBase(QWidget* parent = 0) 
+	: UIPrefsDialogBase(parent) {}
+};
+#else
+class DummyUIPrefsDialogBase : public QWidget, protected Ui::UIPrefsDialogBase
+{
+ public: DummyUIPrefsDialogBase(QDialog *parent) {setupUi(parent);}
+};
+#endif
+//MOC_SKIP_END
+
+class UIPrefsDialog : public DummyUIPrefsDialogBase
 {
     Q_OBJECT
 
 public:
-    UIPrefsDialog( QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 ): UIPrefsDialogBase(parent,name,modal,fl) {init();}
+    UIPrefsDialog(QDialog* parent = 0)
+	: DummyUIPrefsDialogBase(parent) 
+	{
+	    init();
+	}
 	~UIPrefsDialog(){};
 
     QString reslistFontFamily;

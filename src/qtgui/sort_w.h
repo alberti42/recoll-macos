@@ -1,4 +1,4 @@
-/* @(#$Id: sort_w.h,v 1.2 2006-09-21 09:37:28 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: sort_w.h,v 1.3 2006-12-04 06:19:11 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,17 +21,39 @@
 #include <qvariant.h>
 #include <qdialog.h>
 #include "sortseq.h"
+#if (QT_VERSION < 0x040000)
 #include "sort.h"
+#else
+#include "ui_sort.h"
+#endif
 
-class SortForm : public SortFormBase
+class QDialog;
+
+//MOC_SKIP_BEGIN
+#if QT_VERSION < 0x040000
+class DummySortFormBase : public SortFormBase
+{
+ public: DummySortFormBase(QWidget* parent = 0) : SortFormBase(parent) {}
+};
+#else
+class DummySortFormBase : public QWidget, public Ui::SortFormBase
+{
+public: DummySortFormBase(QDialog* parent) {setupUi(parent);}
+};
+#endif
+//MOC_SKIP_END
+
+class SortForm : public DummySortFormBase
 {
     Q_OBJECT
 
 public:
-    SortForm(QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0 ) : SortFormBase(parent, name, modal, fl) {
+    SortForm(QDialog* parent = 0) 
+	: DummySortFormBase(parent) 
+    {
 	init();
     }
-	~SortForm() {}
+    ~SortForm() {}
 
 
 public slots:
