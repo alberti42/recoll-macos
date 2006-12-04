@@ -3,42 +3,56 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on thread release debug
 
-HEADERS	+= rclmain.h rclreslist.h uiprefs.h recollmain.h 
-HEADERS += preview/preview.h advsearch.h sort.h ssearchb.h
+HEADERS	+= \
+	../qtgui/advsearch_w.h \
+	../qtgui/spell_w.h \
+	../qtgui/preview_w.h \
+	../qtgui/rclmain_w.h \
+	../qtgui/reslist.h \
+	../qtgui/sort_w.h \
+	../qtgui/searchclause_w.h \
+	../qtgui/ssearch_w.h \
+	../qtgui/uiprefs_w.h
 
-SOURCES	+= main.cpp \
-	rclmain.cpp \
-	idxthread.cpp \
-	plaintorich.cpp \
-	guiutils.cpp \
-	rclreslist.cpp \
-        uiprefs.cpp \
-        recollmain.cpp \
-        preview/preview.cpp \
-        advsearch.cpp \
-        sort.cpp \
-        ssearchb.cpp
 
-FORMS =  sort.ui \
-        advsearch.ui \
-        recollmain.ui \
-        preview/preview.ui \
-        uiprefs.ui \
-        ssearchb.ui
+SOURCES	+= \
+	../qtgui/guiutils.cpp \
+	../qtgui/idxthread.cpp \
+	../qtgui/main.cpp \
+	../qtgui/plaintorich.cpp \
+	../qtgui/rclmain_w.cpp \
+	../qtgui/reslist.cpp \
+        ../qtgui/advsearch_w.cpp \
+	../qtgui/spell_w.cpp \
+        ../qtgui/preview_w.cpp \
+        ../qtgui/sort_w.cpp \
+	../qtgui/searchclause_w.cpp \
+        ../qtgui/ssearch_w.cpp \
+        ../qtgui/uiprefs_w.cpp
 
-RESOURCES += icons.qrc
+FORMS	= \
+	advsearch.ui \
+	spell.ui \
+	preview.ui \
+	rclmain.ui \
+	sort.ui \
+	ssearchb.ui \
+	uiprefs.ui 
+
+RESOURCES = recoll.qrc
 
 unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 
-  DEFINES += RECOLL_DATADIR=\"@QTRECOLL_DATADIR@\"
+  DEFINES += RECOLL_DATADIR='\\"@QTRECOLL_DATADIR@\\"'
   LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
             $(BSTATIC) @LIBXAPIAN@ @LIBICONV@ $(BDYNAMIC) \
            -lz
 
-  INCLUDEPATH += ../common ../index ../query ../unac ../utils 
+  INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
+	      ../utils ../aspell ../rcldb ../qt4gui/.ui ../qtgui ../../qtgui
   POST_TARGETDEPS = ../lib/librcl.a
 }
 
@@ -46,7 +60,9 @@ UNAME = $$system(uname -s)
 contains( UNAME, [lL]inux ) {
           LIBS -= -liconv
 }
+contains( UNAME, SunOS ) {
+          LIBS += -ldl
+}
 
 TRANSLATIONS = i18n/recoll_fr.ts i18n/recoll_ru.ts i18n/recoll_uk.ts
-#The following line was inserted by qt3to4
-QT +=  qt3support 
+QT += qt3support 
