@@ -1,4 +1,4 @@
-/* @(#$Id: sort_w.h,v 1.3 2006-12-04 06:19:11 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: sort_w.h,v 1.4 2006-12-04 09:56:26 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,9 +36,9 @@ class DummySortFormBase : public SortFormBase
  public: DummySortFormBase(QWidget* parent = 0) : SortFormBase(parent) {}
 };
 #else
-class DummySortFormBase : public QWidget, public Ui::SortFormBase
+class DummySortFormBase : public QDialog, public Ui::SortFormBase
 {
-public: DummySortFormBase(QDialog* parent) {setupUi(parent);}
+public: DummySortFormBase(QWidget* parent):QDialog(parent){setupUi(this);}
 };
 #endif
 //MOC_SKIP_END

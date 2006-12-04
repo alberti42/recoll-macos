@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.54 2006-12-04 06:19:11 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.55 2006-12-04 09:56:26 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -118,11 +118,6 @@ bool maybeOpenDb(string &reason, bool force)
 static void recollCleanup()
 {
     LOGDEB(("recollCleanup: writing settings\n"));
-    if (mainWindow) {
-	prefs.mainwidth = mainWindow->width();
-	prefs.mainheight = mainWindow->height();
-	prefs.ssearchTyp = mainWindow->sSearch->searchTypCMB->currentItem();
-    }
     rwSettings(true);
     LOGDEB2(("recollCleanup: stopping idx thread\n"));
     stop_idxthread();

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.10 2006-12-04 06:19:11 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.11 2006-12-04 09:56:26 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -151,9 +151,12 @@ void RclMain::init()
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
 #else
-    toolsSpellAction->setIcon(QIcon(":spell.png"));
-    nextPageAction->setIcon(QIcon(":nextpage.png"));
-    prevPageAction->setIcon(QIcon(":prevpage.png"));
+    toolsSpellAction->setIcon(QIcon(":/images/spell.png"));
+    nextPageAction->setIcon(QIcon(":/images/nextpage.png"));
+    prevPageAction->setIcon(QIcon(":/images/prevpage.png"));
+    toolsDoc_HistoryAction->setIcon(QIcon(":/images/history.png"));
+    toolsAdvanced_SearchAction->setIcon(QIcon(":/images/asearch.png"));
+    toolsSort_parametersAction->setIcon(QIcon(":/images/sortparms.png"));
 #endif
 }
 
@@ -162,6 +165,9 @@ void RclMain::init()
 // created over the main form). 
 bool RclMain::close(bool)
 {
+    prefs.mainwidth = width();
+    prefs.mainheight = height();
+    prefs.ssearchTyp = sSearch->searchTypCMB->currentItem();
     fileExit();
     return false;
 }

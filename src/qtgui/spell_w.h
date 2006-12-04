@@ -1,6 +1,6 @@
 #ifndef _ASPELL_W_H_INCLUDED_
 #define _ASPELL_W_H_INCLUDED_
-/* @(#$Id: spell_w.h,v 1.4 2006-12-04 06:19:11 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: spell_w.h,v 1.5 2006-12-04 09:56:26 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ class DummySpellBase : public SpellBase
 #include "ui_spell.h"
 class DummySpellBase : public QWidget, public Ui::SpellBase
 {
- public: DummySpellBase(QWidget* parent) {setupUi(parent);}
+public: DummySpellBase(QWidget* parent):QWidget(parent){setupUi(this);}
 };
 #endif
 //MOC_SKIP_END

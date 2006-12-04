@@ -44,9 +44,9 @@ class DummyRclMainBase : public RclMainBase
 };
 #define RCLMAINPARENT QWidget
 #else
-class DummyRclMainBase : public QMainWindow, public Ui::RclMainBase
+class DummyRclMainBase : public Q3MainWindow, public Ui::RclMainBase
 {
-public: DummyRclMainBase(Q3MainWindow*parent) {setupUi(parent);}
+public: DummyRclMainBase(QWidget *parent) :Q3MainWindow(parent){setupUi(this);}
 #define RCLMAINPARENT Q3MainWindow
 };
 #endif

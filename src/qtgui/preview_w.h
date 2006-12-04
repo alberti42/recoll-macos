@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.6 2006-12-04 08:17:24 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.7 2006-12-04 09:56:26 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ class DummyPreviewBase : public PreviewBase
 #else
 class DummyPreviewBase : public QWidget, public Ui::PreviewBase
 {
- public: DummyPreviewBase(QWidget* parent) {setupUi(parent);}
+public: DummyPreviewBase(QWidget* parent):QWidget(parent){setupUi(this);}
 };
 #endif
 //MOC_SKIP_END

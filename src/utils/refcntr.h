@@ -7,7 +7,7 @@ template <class X> class RefCntr {
   int *pcount;
  public:
   X * operator->() {return rep;}
-  RefCntr() : rep(0), pcount(0) {}
+  RefCntr() : rep(0), pcount(new int(1)) {}
   RefCntr(X *pp) : rep(pp), pcount(new int(1)) {}
   RefCntr(const RefCntr &r) :rep(r.rep), pcount(r.pcount) { (*pcount)++;}
   RefCntr& operator=(const RefCntr& r) {
