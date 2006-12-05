@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.97 2006-11-20 15:28:57 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.98 2006-12-05 15:17:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -107,10 +107,7 @@ class Native {
 
     string makeAbstract(Xapian::docid id, const list<string>& terms);
 
-    bool dbDataToRclDoc(std::string &data, Doc &doc, 
-			int qopts,
-			Xapian::docid docid,
-			const list<string>& terms);
+    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
 
     /** Compute list of subdocuments for a given path (given by hash) 
      *  We look for all Q terms beginning with the path/hash
@@ -177,11 +174,10 @@ bool Native::subDocs(const string &hash, vector<Xapian::docid>& docids)
     return false;
 }
 
-bool Native::dbDataToRclDoc(std::string &data, Doc &doc, 
-			    int qopts,
-			    Xapian::docid docid, const list<string>& terms)
+// Turn data record from db into document fields
+bool Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc)
 {
-    LOGDEB1(("Db::dbDataToRclDoc: opts %x data: %s\n", qopts, data.c_str()));
+    LOGDEB1(("Db::dbDataToRclDoc: data: %s\n", data.c_str()));
     ConfSimple parms(&data);
     if (!parms.ok())
 	return false;
@@ -195,18 +191,11 @@ bool Native::dbDataToRclDoc(std::string &data, Doc &doc,
     parms.get(string("abstract"), doc.abstract);
     // Possibly remove synthetic abstract indicator (if it's there, we
     // used to index the beginning of the text as abstract).
-    bool syntabs = false;
+    doc.syntabs = false;
     if (doc.abstract.find(rclSyntAbs) == 0) {
 	doc.abstract = doc.abstract.substr(rclSyntAbs.length());
-	syntabs = true;
+	doc.syntabs = true;
     }
-    // If the option is set and the abstract is synthetic or empty , build 
-    // abstract from position data. 
-    if ((qopts & Db::QO_BUILD_ABSTRACT) && !terms.empty()) {
-	if (doc.abstract.empty() || syntabs || 
-	    (qopts & Db::QO_REPLACE_ABSTRACT))
-	    doc.abstract = makeAbstract(docid, terms);
-    } 
     parms.get(string("ipath"), doc.ipath);
     parms.get(string("fbytes"), doc.fbytes);
     parms.get(string("dbytes"), doc.dbytes);
@@ -1611,11 +1600,21 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
 
     // Parse xapian document's data and populate doc fields
     string data = xdoc.get_data();
-    list<string> terms;
-    getQueryTerms(terms);
-    return m_ndb->dbDataToRclDoc(data, doc, m_qOpts, docid, terms);
+    return m_ndb->dbDataToRclDoc(docid, data, doc);
 }
 
+bool Db::makeDocAbstract(Doc &doc, string& abstract)
+{
+    LOGDEB1(("Db::makeDocAbstract: exti %d\n", exti));
+    if (!m_ndb || !m_ndb->enquire) {
+	LOGERR(("Db::makeDocAbstract: no query opened\n"));
+	return false;
+    }
+    list<string> terms;
+    getQueryTerms(terms);
+    abstract = m_ndb->makeAbstract(doc.xdocid, terms);
+    return true;
+}
 
 // Retrieve document defined by file name and internal path. 
 bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
@@ -1651,7 +1650,7 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 	Xapian::Document xdoc = m_ndb->db.get_document(*docid);
 	string data = xdoc.get_data();
 	list<string> terms;
-	return m_ndb->dbDataToRclDoc(data, doc, QO_NONE, *docid, terms);
+	return m_ndb->dbDataToRclDoc(*docid, data, doc);
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
     } catch (const string &s) {

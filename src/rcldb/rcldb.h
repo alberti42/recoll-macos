@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.42 2006-11-14 13:55:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.43 2006-12-05 15:17:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -74,6 +74,8 @@ class Doc {
     string title;        // Possibly set by handler
     string keywords;     // Possibly set by handler
     string abstract;     // Possibly set by handler
+    bool   syntabs;      // true if abstract is just the top of doc, not an 
+                         // explicit document attribute
     string fbytes;       // File size. Set by Db::Add
     string dbytes;       // Doc size. Set by Db::Add from text length
 
@@ -96,6 +98,7 @@ class Doc {
 	title.erase();
 	keywords.erase();
 	abstract.erase();
+	syntabs = false;
 	fbytes.erase();
 	dbytes.erase();
 
@@ -119,8 +122,7 @@ class Db {
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
     // KEEP_UPDATED is internal use by reOpen() only
-    enum QueryOpts {QO_NONE=0, QO_STEM = 1, QO_BUILD_ABSTRACT = 2,
-		    QO_REPLACE_ABSTRACT = 4, QO_KEEP_UPDATED = 8};
+    enum QueryOpts {QO_NONE=0, QO_STEM = 1, QO_KEEP_UPDATED = 8};
 
     bool open(const string &dbdir, OpenMode mode, int qops = QO_NONE);
     bool close();
@@ -183,6 +185,9 @@ class Db {
 	experiment with the GUI. i is sequential from 0 to some value.
     */
     bool getDoc(int i, Doc &doc, int *percent = 0);
+
+    /* Build synthetic abstract out of query terms and term position data */
+    bool makeDocAbstract(Doc &doc, string& abstract);
 
     /** Get document for given filename and ipath */
     bool getDoc(const string &fn, const string &ipath, Doc &doc, int *percent);
