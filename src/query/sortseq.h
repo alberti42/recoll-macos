@@ -16,11 +16,12 @@
  */
 #ifndef _SORTSEQ_H_INCLUDED_
 #define _SORTSEQ_H_INCLUDED_
-/* @(#$Id: sortseq.h,v 1.7 2006-09-21 09:37:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: sortseq.h,v 1.8 2006-12-05 15:18:48 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <vector>
 #include <string>
 
+#include "refcntr.h"
 #include "docseq.h"
 
 class DocSeqSortSpec {
@@ -42,7 +43,7 @@ class DocSeqSortSpec {
  */
 class DocSeqSorted : public DocSequence {
  public:
-    DocSeqSorted(DocSequence &iseq, DocSeqSortSpec &sortspec, 
+    DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec, 
 		 const std::string &t);
     virtual ~DocSeqSorted() {}
     virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0);
