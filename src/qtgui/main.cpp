@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.55 2006-12-04 09:56:26 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.56 2006-12-05 15:23:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -91,11 +91,6 @@ bool maybeOpenDb(string &reason, bool force)
     }
 
     int qopts = Rcl::Db::QO_NONE;
-    if (prefs.queryBuildAbstract) {
-	qopts |= Rcl::Db::QO_BUILD_ABSTRACT;
-	if (prefs.queryReplaceAbstract)
-	    qopts |= Rcl::Db::QO_REPLACE_ABSTRACT;
-    }
     if (prefs.queryStemLang.length() > 0)
 	qopts |= Rcl::Db::QO_STEM;
     if (force)

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.14 2006-12-04 06:19:11 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.15 2006-12-05 15:23:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -65,15 +65,18 @@ ResList::ResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(doubleClicked(int,int)), 
 	    this, SLOT(doubleClicked(int, int)));
     m_winfirst = -1;
-    m_docsource = 0;
     m_curPvDoc = -1;
     m_lstClckMod = 0;
 }
 
 ResList::~ResList()
 {
-    if (m_docsource) 
-	delete m_docsource;
+}
+
+void ResList::resetSearch() 
+{
+    m_winfirst = -1;
+    clear();
 }
 
 void ResList::languageChange()
@@ -82,13 +85,11 @@ void ResList::languageChange()
 }
 
 // Acquire new docsource
-void ResList::setDocSource(DocSequence *docsource, 
+void ResList::setDocSource(RefCntr<DocSequence> docsource, 
 			   RefCntr<Rcl::SearchData> sdt)
 {
-    if (m_docsource)
-	delete m_docsource;
     m_winfirst = -1;
-    m_docsource = docsource;
+    m_docSource = docsource;
     m_searchData = sdt;
     m_curPvDoc = -1;
 
@@ -185,9 +186,9 @@ void ResList::contentsMouseReleaseEvent(QMouseEvent *e)
 // Return total result list count
 int ResList::getResCnt()
 {
-    if (!m_docsource)
+    if (m_docSource.getcnt() == 0)
 	return -1;
-    return m_docsource->getResCnt();
+    return m_docSource->getResCnt();
 }
 
 
@@ -248,10 +249,10 @@ static string displayableBytes(long size)
 // Fill up result list window with next screen of hits
 void ResList::resultPageNext()
 {
-    if (!m_docsource)
+    if (m_docSource.getcnt() == 0)
 	return;
 
-    int resCnt = m_docsource->getResCnt();
+    int resCnt = m_docSource->getResCnt();
     m_pageParaToReldocnums.clear();
 
     LOGDEB(("resultPageNext: rescnt %d, winfirst %d\n", resCnt,
@@ -302,7 +303,7 @@ void ResList::resultPageNext()
 	string sh;
 	Rcl::Doc doc;
 	int percent;
-	if (!m_docsource->getDoc(m_winfirst + i, doc, &percent, &sh)) {
+	if (!m_docSource->getDoc(m_winfirst + i, doc, &percent, &sh)) {
 	    // Error or end of docs, stop.
 	    break;
 	}
@@ -323,7 +324,7 @@ void ResList::resultPageNext()
 	    QString chunk = "<qt><head></head><body><p>";
 
 	    chunk += "<font size=+1><b>";
-	    chunk += QString::fromUtf8(m_docsource->title().c_str());
+	    chunk += QString::fromUtf8(m_docSource->title().c_str());
 	    chunk += ".</b></font>";
 
 	    chunk += "&nbsp;&nbsp;&nbsp;";
@@ -404,9 +405,21 @@ void ResList::resultPageNext()
 	    sizebuf = displayableBytes(fsize);
 	}
 
-	// Abstract
-	string abst;
-	plaintorich(doc.abstract, abst, m_searchData, true);
+	// Abstract. The docsequence should deal with this as we don't
+	// know if a query is open or if we're displaying
+	// history. OTOH, if the docsequence does it, we're going to
+	// generate a lot of unneeded abstracts for sorted sequences
+	// (for all the queried for but undisplayed entries)
+	string richabst;
+	string abstract;
+	if (m_searchData->clauseCount() > 0 && prefs.queryBuildAbstract && 
+	    (doc.syntabs || prefs.queryReplaceAbstract)) {
+	    rcldb->makeDocAbstract(doc, abstract);
+	} else {
+	    abstract = doc.abstract;
+	}
+	plaintorich(doc.abstract, richabst, m_searchData, true);
+
 
 	// Links;
 	string linksbuf;
@@ -436,7 +449,7 @@ void ResList::resultPageNext()
 
 	// Configurable stuff
 	map<char,string> subs;
-	subs['A'] = !abst.empty() ? abst + "<br>" : "";
+	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
 	subs['D'] = datebuf;
 	subs['K'] = !doc.keywords.empty() ? doc.keywords + "<br>" : "";
 	subs['L'] = linksbuf;
@@ -489,7 +502,7 @@ void ResList::resultPageNext()
     } else {
 	// Restore first in win parameter that we shouln't have incremented
 	QString chunk = "<p><font size=+1><b>";
-	chunk += QString::fromUtf8(m_docsource->title().c_str());
+	chunk += QString::fromUtf8(m_docSource->title().c_str());
 	chunk += "</b></font><br>";
 	chunk += "<a href=\"H-1\">";
 	chunk += tr("Show query details");

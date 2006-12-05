@@ -506,7 +506,7 @@
                                 <cstring>dismissPB</cstring>
                             </property>
                             <property name="text">
-                                <string>Dismiss</string>
+                                <string>Close</string>
                             </property>
                             <property name="autoDefault">
                                 <bool>false</bool>

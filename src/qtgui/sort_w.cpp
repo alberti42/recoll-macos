@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.3 2006-12-04 08:17:24 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.4 2006-12-05 15:23:50 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -67,7 +67,7 @@ void SortForm::init()
     sortCB->setChecked(false);
 
     // signals and slots connections
-    connect(resetPB, SIGNAL(clicked()), this, SLOT(reset()));
+    connect(applyPB, SIGNAL(clicked()), this, SLOT(apply()));
     connect(closePB, SIGNAL(clicked()), this, SLOT(close()));
     connect(mcntSB, SIGNAL(valueChanged(int)), this, SLOT(setData()));
     connect(fldCMB1, SIGNAL(activated(const QString&)), this, SLOT(setData()));
@@ -77,15 +77,10 @@ void SortForm::init()
     connect(sortCB, SIGNAL(toggled(bool)), this, SLOT(setData()));
 }
 
-void SortForm::reset()
+void SortForm::apply()
 {
-    mcntSB->setValue(100);
-    fldCMB1->setCurrentItem(0);
-    fldCMB2->setCurrentItem(0);
-    descCB1->setChecked(false);
-    descCB1->setChecked(false);
-    sortCB->setChecked(false);
     setData();
+    emit applySortData();
 }
 
 void SortForm::setData()

@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.5 2006-12-04 06:19:11 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.6 2006-12-05 15:23:50 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -40,7 +40,7 @@ class ResList : public QTEXTBROWSER
     // num is inside the current page or its immediate neighbours.
     virtual bool getDoc(int docnum, Rcl::Doc &);
 
-    virtual void setDocSource(DocSequence *, 
+    virtual void setDocSource(RefCntr<DocSequence> source, 
 			      RefCntr<Rcl::SearchData> qdata);
     virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
     virtual QString getDescription(); // Printable actual query performed on db
@@ -48,7 +48,7 @@ class ResList : public QTEXTBROWSER
     virtual RefCntr<Rcl::SearchData> getSearchData() {return m_searchData;}
 
  public slots:
-    virtual void resetSearch() {m_winfirst = -1;clear();}
+    virtual void resetSearch();
     virtual void clicked(int, int);
     virtual void doubleClicked(int, int);
     virtual void resPageUpOrBack(); // Page up pressed
@@ -82,10 +82,10 @@ class ResList : public QTEXTBROWSER
     virtual void showQueryDetails();
 
  private:
-    std::map<int,int>  m_pageParaToReldocnums;
+    std::map<int,int>        m_pageParaToReldocnums;
     RefCntr<Rcl::SearchData> m_searchData;
-    DocSequence       *m_docsource;
-    std::vector<Rcl::Doc> m_curDocs;
+    RefCntr<DocSequence>     m_docSource;
+    std::vector<Rcl::Doc>    m_curDocs;
     int                m_winfirst;
     int                m_popDoc; // Docnum for the popup menu.
     int                m_curPvDoc;// Docnum for current preview

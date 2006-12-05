@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.11 2006-12-04 09:56:26 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.12 2006-12-05 15:23:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -101,11 +101,11 @@ void RclMain::init()
 	resList->setFont(nfont);
     }
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
-		this, SLOT(startAdvSearch(RefCntr<Rcl::SearchData>)));
+		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
 
     // signals and slots connections
     connect(sSearch, SIGNAL(clearSearch()),
-	    resList, SLOT(resetSearch()));
+	    this, SLOT(resetSearch()));
     connect(prevPageAction, SIGNAL(activated()), 
 	    resList, SLOT(resultPageBack()));
     connect(nextPageAction, SIGNAL(activated()),
@@ -165,9 +165,7 @@ void RclMain::init()
 // created over the main form). 
 bool RclMain::close(bool)
 {
-    prefs.mainwidth = width();
-    prefs.mainheight = height();
-    prefs.ssearchTyp = sSearch->searchTypCMB->currentItem();
+    LOGDEB(("RclMain::close\n"));
     fileExit();
     return false;
 }
@@ -261,6 +259,9 @@ static const char *eventTypeToStr(int tp)
 void RclMain::fileExit()
 {
     LOGDEB1(("RclMain: fileExit\n"));
+    prefs.mainwidth = width();
+    prefs.mainheight = height();
+    prefs.ssearchTyp = sSearch->searchTypCMB->currentItem();
     if (asearchform)
 	delete asearchform;
     // Let the exit handler clean up things
@@ -337,9 +338,9 @@ static string urltolocalpath(string url)
 }
 
 // Start a db query and set the reslist docsource
-void RclMain::startAdvSearch(RefCntr<Rcl::SearchData> sdata)
+void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 {
-    LOGDEB(("RclMain::startAdvSearch\n"));
+    LOGDEB(("RclMain::startSearch\n"));
     // The db may have been closed at the end of indexing
     string reason;
     if (!maybeOpenDb(reason)) {
@@ -350,11 +351,6 @@ void RclMain::startAdvSearch(RefCntr<Rcl::SearchData> sdata)
     resList->resetSearch();
 
     int qopts = 0;
-    if (prefs.queryBuildAbstract && !sdata->fileNameOnly()) {
-	qopts |= Rcl::Db::QO_BUILD_ABSTRACT;
-	if (prefs.queryReplaceAbstract)
-	    qopts |= Rcl::Db::QO_REPLACE_ABSTRACT;
-    }
     if (!prefs.queryStemLang.length() == 0)
 	qopts |= Rcl::Db::QO_STEM;
 
@@ -364,17 +360,31 @@ void RclMain::startAdvSearch(RefCntr<Rcl::SearchData> sdata)
 	return;
     }
     curPreview = 0;
+    m_searchData = sdata;
+    m_docSource = RefCntr<DocSequence>(new DocSequenceDb(rcldb, string(tr("Query results").utf8())));
+    setDocSequence();
+}
 
-    DocSequence *docsource;
-    if (sortspecs.sortwidth > 0) {
-	DocSequenceDb myseq(rcldb, string(tr("Query results").utf8()));
-	docsource = new DocSeqSorted(myseq, sortspecs,
-				     string(tr("Query results (sorted)").utf8()));
+void RclMain::resetSearch()
+{
+    resList->resetSearch();
+    m_searchData = RefCntr<Rcl::SearchData>();
+}
+
+void RclMain::setDocSequence()
+{
+    if (m_searchData.getcnt() == 0)
+	return;
+    RefCntr<DocSequence> docsource;
+    if (m_sortspecs.sortwidth > 0) {
+	docsource = RefCntr<DocSequence>(new DocSeqSorted(m_docSource, 
+							  m_sortspecs,
+			  string(tr("Query results (sorted)").utf8())));
     } else {
-	docsource = new DocSequenceDb(rcldb, string(tr("Query results").utf8()));
+	docsource = m_docSource;
     }
     m_searchId++;
-    resList->setDocSource(docsource, sdata);
+    resList->setDocSource(docsource, m_searchData);
 }
 
 // Open advanced search dialog.
@@ -383,7 +393,7 @@ void RclMain::showAdvSearchDialog()
     if (asearchform == 0) {
 	asearchform = new AdvSearch(0);
 	connect(asearchform, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
-		this, SLOT(startAdvSearch(RefCntr<Rcl::SearchData>)));
+		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
 	asearchform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
@@ -398,6 +408,8 @@ void RclMain::showSortDialog()
 	sortform = new SortForm(0);
 	connect(sortform, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
 		this, SLOT(sortDataChanged(DocSeqSortSpec)));
+	connect(sortform, SIGNAL(applySortData()), 
+		this, SLOT(setDocSequence()));
 	sortform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
@@ -722,31 +734,24 @@ void RclMain::showDocHistory()
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
 	exit(1);
     }
+    // Construct a bogus SearchData structure
+    m_searchData = 
+	RefCntr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND));
+    m_searchData->setDescription((const char *)tr("History data").utf8());
 
-    DocSequence *docsource;
-    if (sortspecs.sortwidth > 0) {
-	DocSequenceHistory myseq(rcldb, g_dynconf, 
-				 string(tr("Document history").utf8()));
-	docsource = new 
-	    DocSeqSorted(myseq, sortspecs,
-			 string(tr("Document history (sorted)").utf8()));
-    } else {
-	docsource = new 
-	    DocSequenceHistory(rcldb, g_dynconf, 
-			       string(tr("Document history").utf8()));
-    }
-    // Construct a bogus SearchData
-    RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_AND));
-    sdata->setDescription((const char *)tr("History data").utf8());
     m_searchId++;
-    resList->setDocSource(docsource, sdata);
+
+    m_docSource = RefCntr<DocSequence>(new DocSequenceHistory(rcldb, 
+							      g_dynconf, 
+			      string(tr("Document history").utf8())));
+    setDocSequence();
 }
 
 
 void RclMain::sortDataChanged(DocSeqSortSpec spec)
 {
     LOGDEB(("RclMain::sortDataChanged\n"));
-    sortspecs = spec;
+    m_sortspecs = spec;
 }
 
 // Called when the uiprefs dialog is ok'd

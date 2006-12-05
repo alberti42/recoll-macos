@@ -70,7 +70,8 @@ public slots:
     virtual void fileExit();
     virtual void periodic100();
     virtual void startIndexing();
-    virtual void startAdvSearch(RefCntr<Rcl::SearchData> sdata);
+    virtual void startSearch(RefCntr<Rcl::SearchData> sdata);
+    virtual void setDocSequence();
     virtual void previewClosed(QWidget * w);
     virtual void showAdvSearchDialog();
     virtual void showSortDialog();
@@ -90,6 +91,7 @@ public slots:
     virtual void previewNextInTab(int sid, int docnum);
     virtual void previewPrevInTab(int sid, int docnum);
     virtual void previewExposed(int sid, int docnum);
+    virtual void resetSearch();
 
 private:
     Preview *curPreview;
@@ -98,9 +100,13 @@ private:
     UIPrefsDialog *uiprefs;
     SpellW *spellform;
 
-    DocSeqSortSpec sortspecs;
-    int m_searchId; // Serial number of current search for this process.
-                  // Used to match to preview windows
+    RefCntr<Rcl::SearchData> m_searchData;
+    DocSeqSortSpec           m_sortspecs;
+    RefCntr<DocSequence>     m_docSource;
+
+    // Serial number of current search for this process.
+    // Used to match to preview windows
+    int                      m_searchId; 
     virtual void init();
 };
 

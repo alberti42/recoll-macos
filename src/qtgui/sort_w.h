@@ -1,4 +1,4 @@
-/* @(#$Id: sort_w.h,v 1.4 2006-12-04 09:56:26 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: sort_w.h,v 1.5 2006-12-05 15:23:50 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -57,12 +57,12 @@ public:
 
 
 public slots:
-    virtual void reset();
+    virtual void apply();
     virtual void setData();
 
 signals:
     void sortDataChanged(DocSeqSortSpec);
-
+    void applySortData();
 private:
     virtual void init();
 };

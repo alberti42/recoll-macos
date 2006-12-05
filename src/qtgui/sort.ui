@@ -135,13 +135,13 @@
                         </property>
                         <widget class="QPushButton">
                             <property name="name">
-                                <cstring>resetPB</cstring>
+                                <cstring>applyPB</cstring>
                             </property>
                             <property name="enabled">
                                 <bool>true</bool>
                             </property>
                             <property name="text">
-                                <string>Reset</string>
+                                <string>Apply</string>
                             </property>
                         </widget>
                         <widget class="QPushButton">
