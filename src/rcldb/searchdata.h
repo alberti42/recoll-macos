@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.6 2006-11-17 10:06:34 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.7 2006-12-05 15:17:13 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -88,6 +88,8 @@ public:
     string getTopdir() {return m_topdir;}
     void setTopdir(const string& t) {m_topdir = t;}
     void addFiletype(const string& ft) {m_filetypes.push_back(ft);}
+    int  clauseCount() {return m_query.size();}
+
 private:
     SClType                    m_tp; // Only SCLT_AND or SCLT_OR here
     vector<SearchDataClause *> m_query;
