@@ -16,7 +16,7 @@
  */
 #ifndef _MIME_H_INCLUDED_
 #define _MIME_H_INCLUDED_
-/* @(#$Id: mimeparse.h,v 1.9 2006-09-22 07:42:55 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimeparse.h,v 1.10 2006-12-07 07:07:18 dockes Exp $  (C) 2004 J.F.Dockes */
 /*
 Mime definitions RFC to 4-9-2006:
 
@@ -73,9 +73,12 @@ class MimeHeaderValue {
  */
 extern bool parseMimeHeaderValue(const string& in, MimeHeaderValue& psd);
 
-/** Quoted printable decoding. Doubles up as rfc2231 decoder, hence the esc */
-extern bool qp_decode(const string& in, string &out, 
-		      char esc = '=');
+/** 
+ * Quoted printable decoding. Doubles up as rfc2231 decoder, hence the esc 
+ * RFC2045 Quoted printable uses '=' , rfc2331 uses '%'. The two encodings are
+ * otherwise similar.
+ */
+extern bool qp_decode(const string& in, string &out, char esc = '=');
 
 /** Decode an Internet mail field value encoded according to rfc2047 
  *

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.19 2006-11-30 13:38:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.20 2006-12-07 07:07:18 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -402,6 +402,36 @@ string escapeHtml(const string &in)
     }
     return out;
 }
+
+string escapeShell(const string &in)
+{
+    string out;
+    out += "\"";
+    for (string::size_type pos = 0; pos < in.length(); pos++) {
+	switch(in.at(pos)) {
+	case '$':
+	    out += "\\$";
+	    break;
+	case '`':
+	    out += "\\`";
+	    break;
+	case '"':
+	    out += "\\\"";
+	    break;
+	case '\n':
+	    out += "\\\n";
+	    break;
+	case '\\':
+	    out += "\\\\";
+	    break;
+	default:
+	    out += in.at(pos);
+	}
+    }
+    out += "\"";
+    return out;
+}
+
 
 // Small utility to substitute printf-like percents cmds in a string
 bool pcSubst(const string& in, string& out, map<char, string>& subs)
