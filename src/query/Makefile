@@ -14,16 +14,6 @@ xadump : $(XADUMP_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o xadump $(XADUMP_OBJS) \
 	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
 
-QXTRY_OBJS= qxtry.o  $(BIGLIB)
-qxtry : $(QXTRY_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o qxtry $(QXTRY_OBJS) \
-	       $(LIBICONV) $(LIBXAPIAN)
-
-QTRY_OBJS= qtry.o  $(BIGLIB) $(MIMELIB)
-qtry : $(QTRY_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o qtry $(QTRY_OBJS) \
-	       $(LIBICONV) $(LIBXAPIAN)
-
 HISTORY_OBJS= trhist.o  $(BIGLIB) $(MIMELIB)
 trhist : $(HISTORY_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trhist $(HISTORY_OBJS) \

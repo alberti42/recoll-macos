@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.12 2006-12-01 10:05:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.13 2006-12-07 16:38:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,7 @@ static string usage =
     " -T          : list all terms\n"
     "    -f       : precede each term in the list with its occurrence count\n"
     " -s          : special mode to dump recoll stem db\n"
+    " -q term [term ...] : perform AND query\n"
     "  \n\n"
     ;
 
@@ -68,6 +69,7 @@ static int        op_flags;
 #define OPT_b     0x200
 #define OPT_s     0x400
 #define OPT_f     0x800
+#define OPT_q     0x1000
 
 Xapian::Database *db;
 
@@ -118,6 +120,7 @@ int main(int argc, char **argv)
 		argc--; 
 		goto b1;
 	    case 'P':	op_flags |= OPT_P; break;
+	    case 'q':	op_flags |= OPT_q; break;
 	    case 's':	op_flags |= OPT_s; break;
 	    case 'T':	op_flags |= OPT_T; break;
 	    case 't':	op_flags |= OPT_t; if (argc < 2)  Usage();
@@ -129,8 +132,20 @@ int main(int argc, char **argv)
     b1: argc--; argv++;
     }
 
+    vector<string> qterms;
+    if (op_flags & OPT_q) {
+	fprintf(stderr, "q argc %d\n", argc);
+	if (argc < 1)
+	    Usage();
+	while (argc > 0) {
+	    qterms.push_back(*argv++); argc--;
+	}
+    }
+
+    fprintf(stderr, "argc %d\n", argc);
     if (argc != 0)
 	Usage();
+
     atexit(cleanup);
     if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
 	signal(SIGHUP, sigcleanup);
@@ -218,10 +233,26 @@ int main(int argc, char **argv)
 	} else if (op_flags & OPT_E) {
 	    cout << "Exists [" << aterm << "] : " <<
 		db->term_exists(aterm) << endl;
-	} 
+	}  else if (op_flags & OPT_q) {
+	    Xapian::Enquire enquire(*db);
 
+	    Xapian::Query query(Xapian::Query::OP_AND, qterms.begin(), 
+				qterms.end());
+	    cout << "Performing query `" <<
+		query.get_description() << "'" << endl;
+	    enquire.set_query(query);
 
-
+	    Xapian::MSet matches = enquire.get_mset(0, 10);
+	    cout << "Estimated results: " << 
+		matches.get_matches_lower_bound() << endl;
+	    Xapian::MSetIterator i;
+	    for (i = matches.begin(); i != matches.end(); ++i) {
+		cout << "Document ID " << *i << "\t";
+		cout << i.get_percent() << "% ";
+		Xapian::Document doc = i.get_document();
+		cout << "[" << doc.get_data() << "]" << endl;
+	    }
+	}
     } catch (const Xapian::Error &e) {
 	cout << "Exception: " << e.get_msg() << endl;
     } catch (const string &s) {
