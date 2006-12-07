@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.98 2006-12-05 15:17:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.99 2006-12-07 13:02:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -56,6 +56,13 @@ using namespace std;
 #endif
 
 #undef MTIME_IN_VALUE
+#ifdef MTIME_IN_VALUE
+// Omega compatible values
+#define enum value_slot {
+    VALUE_LASTMOD = 0,	// 4 byte big endian value - seconds since 1970.
+    VALUE_MD5 = 1	// 16 byte MD5 checksum of original document.
+};
+#endif
 
 #ifndef NO_NAMESPACES
 namespace Rcl {
@@ -887,7 +894,8 @@ bool Db::add(const string &fn, const Doc &idoc,
     if (doc.ipath.empty()) {
 	uniterm = "P" + hash;
 #ifdef MTIME_IN_VALUE
-	newdocument.add_value(1, doc.fmtime);
+#error need to fix fmtime to be stored as omega does it (bin net order str)
+	newdocument.add_value(VALUE_LASTMOD, doc.fmtime);
 #endif
     } else {
 	uniterm = "Q" + hash + "|" + doc.ipath;
@@ -998,7 +1006,8 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 #ifdef MTIME_IN_VALUE
 	    // This is slightly faster, but we'd need to setup a conversion
 	    // for old dbs, and it's not really worth it
-	    string value = doc.get_value(1);
+	    string value = doc.get_value(VALUE_LASTMOD);
+#error fixme make storage format compatible with omega
 	    const char *cp = value.c_str();
 #else
 	    string data = doc.get_data();
