@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.99 2006-12-07 13:02:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.100 2006-12-07 13:24:19 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -72,6 +72,9 @@ namespace Rcl {
 // longer path and uniquize with hash. The goal for this is to avoid
 // xapian max term length limitations, not to gain space (we gain very
 // little even with very short maxlens like 30)
+// Note that Q terms add the ipath to this, and that the xapian max
+// key length seems to be around 250
+// The value for PATHHASHLEN includes the length of the hash part.
 #define PATHHASHLEN 150
 
 // Synthetic abstract marker (to discriminate from abstract actually
