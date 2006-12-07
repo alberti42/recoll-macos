@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Recoll Index format</title>
+  </head>
+
+  <body>
+    <h1>Recoll index format details</h1>
+
+    <p>Special (capitalized) terms:</p>
+    <ul>
+      <li>Ddate: modification date of file, like YYYYMMDD</li>
+
+      <li>Mmonth: YYYYMM</li>
+
+      <li>Ppathhash truncated/hashed version of file path. For
+	single-document files, and for the file part of a
+	multi-document file. Used for up-to-date checks and for
+	retrieving a document by path. omega uses U for the equivalent
+	term used for up to date checks.</li>
+
+      <li>Qpathhash+ipath same + internal path for documents inside
+	multi-document files. Used to set the existence flag for
+	subdocs when a multi-document file is found to be up to date,
+	or for deleting all subdocs for a file, or for retrieving a
+	document by path+ipath. No real omega equivalent. Compatible
+	with Q definition in termprefixes.txt: unique identifier.</li>
+
+      <li>Tmimetype: document mime type.</li>
+
+      <li>Wweak: 10 days period (not used any more by omega)</li>
+
+      <li>Yyear YYYY</li>
+
+      <li>XSFNfilename utf8 version of file name. Used for specific
+	file name searches</li>
+
+    </ul>
+
+    <p>Omega prefixes with no equivalents in Recoll: P, R, U</p>
+    <p>None of the "date" terms are currently used by recoll queries</p>
+
+    <p>Values: Recoll currently stores no document values.</p>
+
+    <p>Document data record format<p>
+    <ul>
+      <li>url= Full url. Always file://abspath. The path is not
+	encoded to utf-8, this is the system file name ,usable as an
+	argument to open(). (omega: sort of same)</li>
+      <li>mtype= mime type (omega: type)</li>
+      <li>fmtime= file modification date (omega: modtime)</li>
+      <li>dmtime= document modification date (omega: none)</li>
+      <li>origcharset= character set the text was converted from
+	(omega: none)</li>
+      <li>fbytes= file size in bytes (omega: size)</li>
+      <li>dbytes= document size in bytes (omega: none)</li>
+      <li>ipath= internal path for docs in multidoc files. (omega: none)</li>
+      <li>caption= title of document, utf8 (omega: same)</li>
+      <li>keywords= key words, utf8 (omega: none)</li>
+      <li>abstract= document abstract, utf8 (omega: sample)</li>
+    </ul>
+
+    <hr>
+    <address><a href="mailto:jean-francois.dockes@wanadoo.fr">Jean-Francois Dockes</a></address>
+<!-- Created: Thu Dec  7 13:07:40 CET 2006 -->
+<!-- hhmts start -->
+Last modified: Thu Dec  7 14:13:36 CET 2006
+<!-- hhmts end -->
+  </body>
+</html>
