@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.21 2006-12-05 15:25:17 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.22 2006-12-07 07:06:28 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -173,22 +173,23 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 		    iseof = true;
 		break;
 	    }
-	    if (line[0] == '\n') {
-		hademptyline = true;
-		continue;
-	    }
 	    if (hademptyline && !regexec(&fromregex, line, 0, 0, 0)) {
 		break;
 	    }
 	    if (mtarg <= 0 || m_msgnum == mtarg) {
 		msgtxt += line;
 	    }
-	    hademptyline = false;
+	    if (line[0] == '\n') {
+		hademptyline = true;
+	    } else {
+		hademptyline = false;
+	    }
 	}
 	fseek(fp, end, SEEK_SET);
     } while (mtarg > 0 && m_msgnum < mtarg);
 
     stringstream s(msgtxt);
+    LOGDEB2(("Message text: [%s]\n", msgtxt.c_str()));
     Binc::MimeDocument doc;
     doc.parseFull(s);
     if (!doc.isHeaderParsed() && !doc.isAllParsed()) {
@@ -196,9 +197,9 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 		fn.c_str()));
 	return MimeHandler::MHError;
     }
-    LOGDEB2(("Calling processMsg with msgnum %d\n", m_msgnum));
+
     MimeHandler::Status ret = processMsg(docout, doc, 0);
-    LOGDEB2(("msgnum %d: [%s]\n", m_msgnum, docout.text.c_str()));
+
     if (ret == MimeHandler::MHError)
 	return ret;
     char buf[20];
