@@ -16,7 +16,7 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.14 2006-11-20 11:17:53 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.15 2006-12-08 07:11:17 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -27,9 +27,9 @@ using std::string;
  * Function class whose takeword method is called for every detected word while * splitting text.
  */
 class TextSplitCB {
- public:
+public:
     virtual ~TextSplitCB() {}
-    virtual bool takeword(const std::string& term, 
+    virtual bool takeword(const string& term, 
 			  int pos,  // term pos
 			  int bts,  // byte offset of first char in term
 			  int bte   // byte offset of first char after term
@@ -43,7 +43,7 @@ class TextSplitCB {
  * but 'ts much simpler this way...
  */
 class TextSplit {
- public:
+public:
     enum Flags {TXTS_NONE = 0, TXTS_ONLYSPANS = 1, TXTS_NOSPANS = 2};
     /**
      * Constructor: just store callback object
@@ -53,9 +53,13 @@ class TextSplit {
     /**
      * Split text, emit words and positions.
      */
-    bool text_to_words(const std::string &in);
+    bool text_to_words(const string &in);
 
- private:
+    // Utility functions : these does not need the user to setup a callback 
+    // etc.
+    static int countWords(const string &in, Flags flgs = TXTS_ONLYSPANS);
+
+private:
     Flags m_flags;
     TextSplitCB *cb;
     int maxWordLength;
@@ -72,8 +76,10 @@ class TextSplit {
     int prevpos;
     unsigned int prevlen;
 
-    bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
+    bool emitterm(bool isspan, string &term, int pos, int bs, int be);
     bool doemit(bool spanerase, int bp);
+
 };
+
 
 #endif /* _TEXTSPLIT_H_INCLUDED_ */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.14 2006-12-08 06:45:05 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.15 2006-12-08 07:11:17 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@ static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.14 2006-12-08 06:45:05 dockes E
 #include "searchdata.h"
 #include "ssearch_w.h"
 #include "refcntr.h"
+#include "textsplit.h"
 
 enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2};
 
@@ -82,7 +83,8 @@ void SSearch::startSimpleSearch()
     SSearchType tp = (SSearchType)searchTypCMB->currentItem();
 
     if (prefs.ssearchAutoPhrase && (tp == SST_ANY || tp == SST_ALL) &&
-	u8.find_first_of("\"") == string::npos) {
+	u8.find_first_of("\"") == string::npos && 
+	TextSplit::countWords(u8) > 1) {
 	sdata->addClause(new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
 						       u8, 0));
     }

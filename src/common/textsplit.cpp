@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.26 2006-11-20 11:17:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.27 2006-12-08 07:11:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -349,6 +349,25 @@ bool TextSplit::text_to_words(const string &in)
     return true;
 }
 
+// Callback class for utility function usage
+class utSplitterCB : public TextSplitCB {
+ public:
+    int wcnt;
+    utSplitterCB() : wcnt(0) {}
+    bool takeword(const string &term, int pos, int bs, int be) {
+	wcnt++;
+	return true;
+    }
+};
+
+int TextSplit::countWords(const string& s, TextSplit::Flags flgs)
+{
+    utSplitterCB cb;
+    TextSplit splitter(&cb, flgs);
+    splitter.text_to_words(s);
+    return cb.wcnt;
+}
+
 #else  // TEST driver ->
 
 #include <unistd.h>
@@ -371,7 +390,7 @@ class mySplitterCB : public TextSplitCB {
  public:
     mySplitterCB() : first(1), nooutput(false) {}
     void setNoOut(bool val) {nooutput = val;}
-    bool takeword(const std::string &term, int pos, int bs, int be) {
+    bool takeword(const string &term, int pos, int bs, int be) {
 	if (nooutput)
 	    return true;
 	if (first) {
@@ -403,10 +422,11 @@ static string teststring1 = " nouvel-an ";
 static string thisprog;
 
 static string usage =
-	    " textsplit [opts] [filename]\n"
-	    "   -S: no output\n"
-	    "   -s:  only spans\n"
-	    "   -w:  only words\n"
+    " textsplit [opts] [filename]\n"
+    "   -S: no output\n"
+    "   -s:  only spans\n"
+    "   -w:  only words\n"
+    "   -c: just count words\n"
     " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
     ;
@@ -422,6 +442,7 @@ static int        op_flags;
 #define OPT_s	  0x1 
 #define OPT_w	  0x2
 #define OPT_S	  0x4
+#define OPT_c     0x8
 
 int main(int argc, char **argv)
 {
@@ -435,6 +456,7 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
+	    case 'c':	op_flags |= OPT_c; break;
 	    case 's':	op_flags |= OPT_s; break;
 	    case 'S':	op_flags |= OPT_S; break;
 	    case 'w':	op_flags |= OPT_w; break;
@@ -455,9 +477,9 @@ int main(int argc, char **argv)
 	flags = TextSplit::TXTS_ONLYSPANS;
     else if (op_flags&OPT_w)
 	flags = TextSplit::TXTS_NOSPANS;
-    TextSplit splitter(&cb,  flags);
+
+    string data;
     if (argc == 1) {
-	string data;
 	const char *filename = *argv++;	argc--;
 	if (!strcmp(filename, "stdin")) {
 	    char buf[1024];
@@ -467,11 +489,16 @@ int main(int argc, char **argv)
 	    }
 	} else if (!file_to_string(filename, data)) 
 	    exit(1);
-	splitter.text_to_words(data);
     } else {
 	cout << endl << teststring << endl << endl;  
-	splitter.text_to_words(teststring);
+	data = teststring;
     }
-    
+    if (op_flags & OPT_c) {
+	int n = TextSplit::countWords(data, flags);
+	cout << n << " words" << endl;
+    } else {
+	TextSplit splitter(&cb,  flags);
+	splitter.text_to_words(data);
+    }    
 }
 #endif // TEST
