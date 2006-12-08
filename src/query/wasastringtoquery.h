@@ -1,6 +1,6 @@
 #ifndef _WASASTRINGTOQUERY_H_INCLUDED_
 #define _WASASTRINGTOQUERY_H_INCLUDED_
-/* @(#$Id: wasastringtoquery.h,v 1.1 2006-11-30 18:12:16 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: wasastringtoquery.h,v 1.2 2006-12-08 10:54:38 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,12 @@
 using std::string;
 using std::vector;
 
-// A simple class to represent a parsed wasabi query string.
+/** 
+ * A simple class to represent a parsed wasabiSimple query
+ * string. Can hold a string value or an array of subqueries.
+ * The value can hold one or several words. In the latter case, it should 
+ * be interpreted as a phrase (comes from a user-entered "quoted string").
+ */
 class WasaQuery {
 public:
     enum Op {OP_NULL, OP_LEAF, OP_EXCL, OP_OR, OP_AND};
@@ -33,17 +38,23 @@ public:
     WasaQuery() :  m_op(OP_NULL) {}
     ~WasaQuery();
 
-    // Get string describing this query
+    // Get string describing the query tree from this point
     void describe(string &desc) const;
 
     WasaQuery::Op            m_op;
     string                   m_fieldspec;
-    vector<WasaQuery*>       m_subs;
+    /* Valid for op == OP_LEAF */
     string                   m_value;
+    /* Valid for conjunctions */
+    vector<WasaQuery*>       m_subs;
 };
 
 
-// Wasabi query string parser class.
+/**
+ * Wasabi query string parser class. Could be a simple function
+ * really, but there might be some parser initialization work done in
+ * the constructor.
+ */
 class StringToWasaQuery {
 public:
     StringToWasaQuery();

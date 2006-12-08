@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.1 2006-11-30 18:12:16 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.2 2006-12-08 10:54:38 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -135,8 +135,7 @@ public:
 	if (m_rxneedsfree)
 	    regfree(&m_rx);
     }
-    bool StringToWasaQuery::Internal::checkSubMatch(int i, char *match, 
-						    string& reason)
+    bool checkSubMatch(int i, char *match, string& reason)
     {
 	if (i < 0 || i >= int(NMATCH) || m_pmatch[i].rm_so == -1)
 	    return false;
@@ -170,7 +169,6 @@ StringToWasaQuery::~StringToWasaQuery()
 {
     delete internal;
 }
-
 
 WasaQuery *
 StringToWasaQuery::stringToQuery(const string& str, string& reason)
