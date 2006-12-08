@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.13 2006-12-04 08:17:24 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.14 2006-12-08 06:45:05 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,8 @@ static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.13 2006-12-04 08:17:24 dockes E
 #include "searchdata.h"
 #include "ssearch_w.h"
 #include "refcntr.h"
+
+enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2};
 
 void SSearch::init()
 {
@@ -72,26 +74,28 @@ void SSearch::startSimpleSearch()
 {
     if (queryText->currentText().length() == 0)
 	return;
-    RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_AND));
-    string u8 = (const char *)queryText->currentText().utf8();
 
+    string u8 = (const char *)queryText->currentText().utf8();
     LOGDEB(("SSearch::startSimpleSearch: [%s]\n", u8.c_str()));
 
-    switch (searchTypCMB->currentItem()) {
-    case 0:
+    RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_OR));
+    SSearchType tp = (SSearchType)searchTypCMB->currentItem();
+
+    if (prefs.ssearchAutoPhrase && (tp == SST_ANY || tp == SST_ALL) &&
+	u8.find_first_of("\"") == string::npos) {
+	sdata->addClause(new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
+						       u8, 0));
+    }
+
+    switch (tp) {
+    case SST_ANY:
     default: 
-	// If this is an or and we're set for autophrase and there are
-	// no quotes in the query, add a phrase search
-	if (prefs.ssearchAutoPhrase && 
-	    u8.find_first_of("\"") == string::npos) {
-	    u8 += string(" \"") + u8 + "\"";
-	}
 	sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, u8));
 	break;
-    case 1:
+    case SST_ALL:
 	sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, u8));
 	break;
-    case 2:
+    case SST_FNM:
 	sdata->addClause(new Rcl::SearchDataClauseFilename(u8));
 	break;
     }
@@ -137,7 +141,7 @@ void SSearch::startSimpleSearch()
 
 void SSearch::setAnyTermMode()
 {
-    searchTypCMB->setCurrentItem(0);
+    searchTypCMB->setCurrentItem(SST_ANY);
 }
 
 // Complete last word in input by querying db for all possible terms.
@@ -145,7 +149,7 @@ void SSearch::completion()
 {
     if (!rcldb)
 	return;
-    if (searchTypCMB->currentItem() == 2) {
+    if (searchTypCMB->currentItem() == SST_FNM) {
 	// Filename: no completion
 	QApplication::beep();
 	return;
