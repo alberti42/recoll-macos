@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.2 2006-12-08 10:54:38 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.3 2006-12-10 17:03:08 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,30 @@ WasaQuery::~WasaQuery()
 
 void WasaQuery::describe(string &desc) const
 {
+    if (!m_types.empty()) {
+	desc += "type_restrict(";
+	for (vector<string>::const_iterator it = m_types.begin();
+	     it != m_types.end(); it++) {
+	    desc += *it + ", ";
+	}
+	desc.erase(desc.size() - 2);
+	desc += ")";
+    }
+    if (m_sortSpec.size() > 1 || 
+	(m_sortSpec.size() == 1 && m_sortSpec[0] != WQSK_REL)) {
+	desc += "sort_by(";
+	for (vector<SortKind>::const_iterator it = m_sortSpec.begin();
+	     it != m_sortSpec.end(); it++) {
+	    switch (*it) {
+	    case WQSK_DATE: desc += string("date") + ", ";break;
+	    case WQSK_ALPHA: desc += string("name") + ", ";break;
+	    case WQSK_GROUP: desc += string("group") + ", ";break;
+	    case WQSK_REL: default: desc += string("relevance") + ", ";break;
+	    }
+	}
+	desc.erase(desc.size() - 2);
+	desc += ")";
+    }
     desc += "(";
     switch (m_op) {
     case OP_NULL: 
@@ -268,7 +292,49 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		// Isolated +- or fieldname: without a value. Ignore until
 		// told otherwise.
 		delete nclause;
-		return 0;
+		goto nextfield;
+	    }
+
+	    // Field indicator ?
+	    if (checkSubMatch(SMI_FIELD, match, reason)) {
+		// Check for special fields
+		if (match == string("mime")) {
+		    if (query->m_typeKind == WasaQuery::WQTK_NONE)
+			query->m_typeKind = WasaQuery::WQTK_MIME;
+		    if (query->m_typeKind == WasaQuery::WQTK_MIME)
+			query->m_types.push_back(nclause->m_value);
+		    delete nclause;
+		    goto nextfield;
+		} else if (match == string("group")) {
+		    if (query->m_typeKind == WasaQuery::WQTK_NONE)
+			query->m_typeKind = WasaQuery::WQTK_GROUP;
+		    if (query->m_typeKind == WasaQuery::WQTK_GROUP)
+			query->m_types.push_back(nclause->m_value);
+		    delete nclause;
+		    goto nextfield;
+		} else if (match == string("filetype") || 
+			   match == string("ext")) {
+		    if (query->m_typeKind == WasaQuery::WQTK_NONE)
+			query->m_typeKind = WasaQuery::WQTK_EXT;
+		    if (query->m_typeKind == WasaQuery::WQTK_EXT)
+			query->m_types.push_back(nclause->m_value);
+		    delete nclause;
+		    goto nextfield;
+		} else if (match == string("sort")) {
+		    if (nclause->m_value == "score") {
+			query->m_sortSpec.push_back(WasaQuery::WQSK_REL);
+		    } else if (nclause->m_value == "date") {
+			query->m_sortSpec.push_back(WasaQuery::WQSK_DATE);
+		    } else if (nclause->m_value == "alpha") {
+			query->m_sortSpec.push_back(WasaQuery::WQSK_ALPHA);
+		    } else if (nclause->m_value == "group") {
+			query->m_sortSpec.push_back(WasaQuery::WQSK_GROUP);
+		    }
+		    delete nclause;
+		    goto nextfield;
+		} else {
+		    nclause->m_fieldspec = match;
+		}
 	    }
 
 	    // +- indicator ?
@@ -278,10 +344,6 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		nclause->m_op = WasaQuery::OP_LEAF;
 	    }
 
-	    // Field indicator ?
-	    if (checkSubMatch(SMI_FIELD, match, reason)) {
-		nclause->m_fieldspec = match;
-	    }
 
 	    if (prev_or) {
 		// We're in an OR subquery, add new subquery
@@ -298,6 +360,7 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    prev_or = false;
 	}
 
+    nextfield:
 	// Advance current string position. We checked earlier that
 	// the increment is strictly positive, so we won't loop
 	// forever

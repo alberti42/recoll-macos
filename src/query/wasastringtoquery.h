@@ -1,6 +1,6 @@
 #ifndef _WASASTRINGTOQUERY_H_INCLUDED_
 #define _WASASTRINGTOQUERY_H_INCLUDED_
-/* @(#$Id: wasastringtoquery.h,v 1.2 2006-12-08 10:54:38 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: wasastringtoquery.h,v 1.3 2006-12-10 17:03:08 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -35,20 +35,31 @@ public:
     enum Op {OP_NULL, OP_LEAF, OP_EXCL, OP_OR, OP_AND};
     typedef vector<WasaQuery*> subqlist_t;
 
-    WasaQuery() :  m_op(OP_NULL) {}
+    WasaQuery() 
+	: m_op(OP_NULL), m_typeKind(WQTK_NONE)
+    {}
     ~WasaQuery();
 
     // Get string describing the query tree from this point
     void describe(string &desc) const;
 
-    WasaQuery::Op            m_op;
-    string                   m_fieldspec;
+    WasaQuery::Op      m_op;
+    string             m_fieldspec;
     /* Valid for op == OP_LEAF */
-    string                   m_value;
+    string             m_value;
     /* Valid for conjunctions */
-    vector<WasaQuery*>       m_subs;
-};
+    vector<WasaQuery*> m_subs;
+    
+    /* Restrict results to some file type, defined by either mime, app group, 
+     * or extension */
+    enum TypeKind {WQTK_NONE, WQTK_MIME, WQTK_GROUP, WQTK_EXT};
+    TypeKind           m_typeKind;
+    vector<string>     m_types;
 
+    /* Sort on relevance, date, name or group */
+    enum SortKind {WQSK_REL, WQSK_DATE, WQSK_ALPHA, WQSK_GROUP};
+    vector<SortKind>   m_sortSpec;
+};
 
 /**
  * Wasabi query string parser class. Could be a simple function

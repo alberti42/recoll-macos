@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.1 2006-11-30 18:12:16 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.2 2006-12-10 17:03:08 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifndef TEST_WASATORCL
 
@@ -8,7 +8,7 @@ static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.1 2006-11-30 18:12:16 dockes Ex
 #include "searchdata.h"
 #include "wasatorcl.h"
 
-Rcl::SearchData *wasatorcl(WasaQuery *wasa)
+Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 {
     if (wasa == 0)
 	return 0;
@@ -60,6 +60,13 @@ Rcl::SearchData *wasatorcl(WasaQuery *wasa)
 	}
     }
 
+    // File type and sort specs. We only know about mime types for now.
+    if (wasa->m_typeKind == WasaQuery::WQTK_MIME) {
+	for (vector<string>::const_iterator it = wasa->m_types.begin();
+	     it != wasa->m_types.end(); it++) {
+	    sdata->addFiletype(*it);
+	}
+    }
     return sdata;
 }
 
