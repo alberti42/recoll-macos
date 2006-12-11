@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.17 2006-03-21 11:04:39 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.18 2006-12-11 14:50:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -109,15 +109,11 @@ string mimetype(const string &fn, RclConfig *cfg, bool usfc)
     if (cfg == 0)
 	return "";
 
-    list<string> stoplist;
-    cfg->getStopSuffixes(stoplist);
-    if (!stoplist.empty()) {
-	for (list<string>::const_iterator it = stoplist.begin();
-	     it != stoplist.end(); it++) {
-	    if (it->length() > fn.length())
-		continue;
-	    if (!stringicmp(fn.substr(fn.length() - it->length(),
-				      string::npos), *it)) {
+    const list<string>* stoplist = cfg->getStopSuffixes();
+    if (stoplist && !stoplist->empty()) {
+	for (list<string>::const_iterator it = stoplist->begin();
+	     it != stoplist->end(); it++) {
+	    if (!stringisuffcmp(fn, *it)) {
 		LOGDEB(("mimetype: fn %s in stoplist (%s)\n", fn.c_str(), 
 			it->c_str()));
 		return "";

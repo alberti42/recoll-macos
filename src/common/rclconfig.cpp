@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.33 2006-11-20 15:28:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.34 2006-12-11 14:50:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -230,7 +230,7 @@ std::list<string> RclConfig::getAllMimeTypes()
     return lst;
 }
 
-bool RclConfig::getStopSuffixes(list<string>& sufflist)
+const list<string>* RclConfig::getStopSuffixes()
 {
     if (stopsuffixes == 0 && (stopsuffixes = new list<string>) != 0) {
 	string stp;
@@ -239,11 +239,7 @@ bool RclConfig::getStopSuffixes(list<string>& sufflist)
 	}
     }
 
-    if (stopsuffixes) {
-	sufflist = *stopsuffixes;
-	return true;
-    }
-    return false;
+    return stopsuffixes;
 }
 
 string RclConfig::getMimeTypeFromSuffix(const string &suff)

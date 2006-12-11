@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.20 2006-12-07 07:07:18 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.21 2006-12-11 14:50:53 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <map>
@@ -30,6 +30,9 @@ using std::map;
 extern int stringicmp(const string& s1, const string& s2);
 extern int stringlowercmp(const string& alreadylower, const string& s2);
 extern int stringuppercmp(const string& alreadyupper, const string& s2); 
+
+// Is one string the end part of the other ?
+extern int stringisuffcmp(const string& s1, const string& s2);
 
 // Compare charset names, removing the more common spelling variations
 extern bool samecharset(const string &cs1, const string &cs2);

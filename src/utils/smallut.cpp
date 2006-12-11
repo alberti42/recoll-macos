@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.20 2006-12-07 07:07:18 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.21 2006-12-11 14:50:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -118,6 +118,21 @@ int stringicmp(const string & s1, const string& s2)
 	}
 	return size1 == size2 ? 0 : -1;
     }
+}
+
+extern int stringisuffcmp(const string& s1, const string& s2)
+{
+    string::const_reverse_iterator r1 = s1.rbegin(), re1 = s1.rend(),
+	r2 = s2.rbegin(), re2 = s2.rend();
+    while (r1 != re1 && r2 != re2) {
+	char c1 = ::toupper(*r1);
+	char c2 = ::toupper(*r2);
+	if (c1 != c2) {
+	    return c1 > c2 ? 1 : -1;
+	}
+	++r1; ++r2;
+    }
+    return 0;
 }
 
 //  s1 is already lowercase
@@ -570,9 +585,22 @@ struct spair pairs[] = {
     {"a", "Ab"},
 };
 int npairs = sizeof(pairs) / sizeof(struct spair);
+struct spair suffpairs[] = {
+    {"", ""},
+    {"", "a"},
+    {"a", ""},
+    {"a", "a"},
+    {"toto.txt", ".txt"},
+    {"TXT", "toto.txt"},
+    {"toto.txt", ".txt1"},
+    {"toto.txt1", ".txt"},
+};
+int nsuffpairs = sizeof(suffpairs) / sizeof(struct spair);
+
 
 int main(int argc, char **argv)
 {
+#if 0
     for (int i = 0; i < npairs; i++) {
 	{
 	    int c = stringicmp(pairs[i].s1, pairs[i].s2);
@@ -591,6 +619,14 @@ int main(int argc, char **argv)
 	}
 	printf("\n");
     }
+#else
+    for (int i = 0; i < nsuffpairs; i++) {
+	int c = stringisuffcmp(suffpairs[i].s1, suffpairs[i].s2);
+	printf("[%s] %s [%s] \n", suffpairs[i].s1, 
+	       c == 0 ? "matches" : c < 0 ? "<" : ">", suffpairs[i].s2);
+    }
+#endif
+
 }
 
 #endif

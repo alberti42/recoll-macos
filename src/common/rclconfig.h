@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.25 2006-11-20 15:28:04 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.26 2006-12-11 14:50:53 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -84,7 +84,7 @@ class RclConfig {
      * The list is initialized on first call, and not changed for subsequent
      * setKeydirs.
      */
-    bool getStopSuffixes(list<string>& sufflist);
+    const list<string>* getStopSuffixes();
 
     /** 
      * Check in mimeconf if input mime type is a compressed one, and
