@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.18 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.19 2006-12-11 14:56:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -266,8 +266,8 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	    plistToTerm.find(plists.front());
 	if (it != plistToTerm.end())
 	    firstTerm = it->second;
-	LOGDEB(("myTextSplitCB:: best group term %s, firstTermOcc %d\n",
-		firstTerm.c_str(), firstTermOcc));
+	LOGDEB0(("myTextSplitCB:: best group term %s, firstTermOcc %d\n",
+		 firstTerm.c_str(), firstTermOcc));
 	m_firstTermPos = sta;
 	m_firstTermBPos = bs;
     }
@@ -345,11 +345,11 @@ bool plaintorich(const string& in, string& out,
     // and compare the words to the search terms, which yields the
     // query terms positions inside the text
     myTextSplitCB cb(terms, groups, slacks);
-    TextSplit splitter(&cb, TextSplit::TXTS_ONLYSPANS);
+    TextSplit splitter(&cb);
     // Note that splitter returns the term locations in byte, not
     // character offset
     splitter.text_to_words(in);
-    LOGDEB(("plaintorich: split done %d mS\n", chron.millis()));
+    LOGDEB0(("plaintorich: split done %d mS\n", chron.millis()));
 
     cb.matchGroups();
 
@@ -441,6 +441,6 @@ bool plaintorich(const string& in, string& out,
 	fclose(fp);
     }
 #endif
-    LOGDEB(("plaintorich: done %d mS\n", chron.millis()));
+    LOGDEB0(("plaintorich: done %d mS\n", chron.millis()));
     return true;
 }
