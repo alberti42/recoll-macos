@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.18 2006-03-29 13:08:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.19 2006-12-13 09:13:18 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,20 +68,20 @@ MimeHandler *getMimeHandler(const string &mtype, RclConfig *cfg)
 	}
 
 	// Retrieve handler function according to type
-	if (!stringlowercmp("internal", toks.front())) {
+	list<string>::iterator it = toks.begin();
+	if (!stringlowercmp("internal", *it)) {
 	    return mhFactory(mtype);
-	} else if (!stringlowercmp("dll", toks.front())) {
-	} else if (!stringlowercmp("exec", toks.front())) {
+	} else if (!stringlowercmp("dll", *it)) {
+	} else if (!stringlowercmp("exec", *it)) {
 	    if (toks.size() < 2) {
 		LOGERR(("getMimeHandler: bad line for %s: %s\n", 
 			mtype.c_str(), hs.c_str()));
 		return 0;
 	    }
 	    MimeHandlerExec *h = new MimeHandlerExec;
-	    list<string>::const_iterator it1 = toks.begin();
-	    it1++;
-	    for (;it1 != toks.end();it1++)
-		h->params.push_back(*it1);
+	    it++;
+	    h->params.push_back(cfg->findFilter(*it++));
+	    h->params.insert(h->params.end(), it, toks.end());
 	    return h;
 	}
     }

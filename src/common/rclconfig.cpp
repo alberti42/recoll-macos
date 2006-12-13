@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.34 2006-12-11 14:50:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.35 2006-12-13 09:13:18 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -389,10 +389,14 @@ bool RclConfig::getUncompressor(const string &mtype, list<string>& cmd)
 	LOGERR(("getUncompressor: empty spec for mtype %s\n", mtype.c_str()));
 	return false;
     }
-    if (stringlowercmp("uncompress", tokens.front())) 
-	return false;
     list<string>::iterator it = tokens.begin();
-    cmd.assign(++it, tokens.end());
+    if (tokens.size() < 2)
+	return false;
+    if (stringlowercmp("uncompress", *it++)) 
+	return false;
+    cmd.clear();
+    cmd.push_back(findFilter(*it++));
+    cmd.insert(cmd.end(), it, tokens.end());
     return true;
 }
 

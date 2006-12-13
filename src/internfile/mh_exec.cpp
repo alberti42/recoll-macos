@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.6 2006-01-26 17:59:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.7 2006-12-13 09:13:18 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -47,8 +47,9 @@ MimeHandlerExec::mkDoc(RclConfig *conf, const string &fn,
 		mtype.c_str()));
 	return MimeHandler::MHError;
     }
+
     // Command name
-    string cmd = conf->findFilter(params.front());
+    string cmd = params.front();
     
     // Build parameter list: delete cmd name and add the file name
     list<string>::iterator it = params.begin();
