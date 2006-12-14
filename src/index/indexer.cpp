@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.45 2006-11-30 13:38:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.46 2006-12-14 13:53:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -163,11 +163,14 @@ bool DbIndexer::createStemmingDatabases()
 
 bool DbIndexer::init(bool resetbefore, bool rdonly)
 {
-    if (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0)
-	if (!maketmpdir(m_tmpdir)) {
-	    LOGERR(("DbIndexer: cannot create temporary directory\n"));
+    if (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0) {
+	string reason;
+	if (!maketmpdir(m_tmpdir, reason)) {
+	    LOGERR(("DbIndexer: cannot create temporary directory: %s\n",
+		    reason.c_str()));
 	    return false;
 	}
+    }
     Rcl::Db::OpenMode mode = rdonly ? Rcl::Db::DbRO :
 	resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
     if (!m_db.open(m_dbdir, mode)) {

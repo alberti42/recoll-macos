@@ -78,8 +78,12 @@ ${INSTALL} -m 0755 filters/rcl* ${datadir}/recoll/filters/ || exit 1
 
 # Clean up possible old filters in examples
 rm -f ${datadir}/recoll/examples/rcl*
-${INSTALL} -m 0444 sampleconf/recoll.conf sampleconf/mimeconf \
-	           sampleconf/mimemap ${datadir}/recoll/examples/ || exit 1
+${INSTALL} -m 0444 \
+	   sampleconf/mimeconf \
+	   sampleconf/mimeview \
+	   sampleconf/recoll.conf \
+           sampleconf/mimemap \
+	   ${datadir}/recoll/examples/ || exit 1
 ${INSTALL} -m 0755 index/rclmon.sh ${datadir}/recoll/examples/ || exit 1
 
 

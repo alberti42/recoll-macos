@@ -16,13 +16,15 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-/* @(#$Id: execmd.h,v 1.10 2006-10-11 16:09:45 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: execmd.h,v 1.11 2006-12-14 13:53:43 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
+#include <vector>
 #ifndef NO_NAMESPACES
 using std::list;
 using std::string;
+using std::vector;
 #endif
 
 /** Callback function object to advise of new data arrival (or just heartbeat)  * if cnt is 0 */
@@ -117,13 +119,19 @@ class ExecCmd {
 	: m_advise(0), m_provide(0), m_cancelRequest(false), m_timeoutMs(1000)
 	{}
 
+    /**
+     * Utility routine: check if/where a command is found according to the
+     * current PATH
+     */
+    static bool which(const string& cmd, string& path);
+
  private:
-    list<string>   m_env;
-    ExecCmdAdvise *m_advise;
-    ExecCmdProvide *m_provide;
-    bool           m_cancelRequest;
-    int            m_timeoutMs;
-    string         m_stderrFile;
+    vector<string>   m_env;
+    ExecCmdAdvise   *m_advise;
+    ExecCmdProvide  *m_provide;
+    bool             m_cancelRequest;
+    int              m_timeoutMs;
+    string           m_stderrFile;
 };
 
 

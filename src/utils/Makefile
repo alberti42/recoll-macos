@@ -73,7 +73,7 @@ trutf8iter.o : utf8iter.cpp utf8iter.h
 	       utf8iter.cpp
 
 
-CONFTREE_OBJS= trconftree.o  $(BIGLIB) 
+CONFTREE_OBJS= trconftree.o  ../lib/pathut.o ../lib/smallut.o ../lib/conftree.o
 trconftree : $(CONFTREE_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trconftree $(CONFTREE_OBJS)
 trconftree.o : conftree.cpp 

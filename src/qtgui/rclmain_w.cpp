@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.13 2006-12-07 07:07:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.14 2006-12-14 13:53:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,7 @@ using std::pair;
 #include "transcode.h"
 #include "refcntr.h"
 #include "ssearch_w.h"
+#include "execmd.h"
 
 #include "rclmain_w.h"
 #include "moc_rclmain_w.cpp"
@@ -658,6 +659,31 @@ void RclMain::startNativeViewer(int docnum)
 			     tr("No external viewer configured for mime type ")
 			     + doc.mimetype.c_str());
 	return;
+    }
+    list<string> lcmd;
+    if (!stringToStrings(cmd, lcmd)) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("Bad viewer command line for %1: [%2]\n"
+				"Please check the mimeconf file")
+			     .arg(QString::fromAscii(doc.mimetype.c_str()))
+			     .arg(QString::fromLocal8Bit(cmd.c_str())));
+	return;
+    }
+    string cmdpath;
+    if (!ExecCmd::which(lcmd.front(), cmdpath)) {
+	QString message = tr("The viewer specified in mimeconf for %1: %2"
+			     " is not found.\nDo you want to start the "
+			     " preferences dialog ?")
+	    .arg(QString::fromAscii(doc.mimetype.c_str()))
+	    .arg(QString::fromLocal8Bit(lcmd.front().c_str()));
+
+	switch(QMessageBox::warning(0, "Recoll", message, 
+				    "Yes", "No", 0, 0, 1)) {
+	case 0: showUIPrefs();break;
+	case 1:
+	    
+	    return;
+	}
     }
 
     string fn = urltolocalpath(doc.url);

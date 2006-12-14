@@ -42,6 +42,7 @@
 #include <string>
 #include <map>
 #include <list>
+
 // rh7.3 likes iostream better...
 #if defined(__GNUC__) && __GNUC__ < 3
 #include <iostream>
@@ -53,13 +54,16 @@
 using std::string;
 using std::list;
 using std::map;
+using std::istream;
 #endif // NO_NAMESPACES
+
+#include "pathut.h"
 
 /** 
  * Manages a simple configuration file with subsections.
  */
 class ConfSimple {
- public:
+public:
     enum StatusCode {STATUS_ERROR=0, STATUS_RO=1, STATUS_RW=2};
 
     /**
@@ -92,7 +96,7 @@ class ConfSimple {
      * global space if sk is empty).
      * @return 0 if name not found, 1 else
      */
-    virtual int get(const std::string &name, string &value, 
+    virtual int get(const string &name, string &value, 
 		    const string &sk = string(""));
     /* Note: the version returning char* was buggy and has been removed */
 
@@ -100,14 +104,14 @@ class ConfSimple {
      * Set value for named parameter in specified subsection (or global)
      * @return 0 for error, 1 else
      */
-    virtual int set(const std::string &nm, const std::string &val, 
-	    const std::string &sk);
+    virtual int set(const string &nm, const string &val, 
+		    const string &sk);
     virtual int set(const char *name, const char *value, const char *sk = 0);
 
     /**
      * Remove name and value from config
      */
-    virtual int erase(const std::string &name, const std::string &sk);
+    virtual int erase(const string &name, const string &sk);
 
     virtual StatusCode getStatus(); 
     virtual bool ok() {return getStatus() != STATUS_ERROR;}
@@ -121,17 +125,17 @@ class ConfSimple {
      */
     enum WalkerCode {WALK_STOP, WALK_CONTINUE};
     virtual WalkerCode sortwalk(WalkerCode 
-				(*wlkr)(void *cldata, const std::string &nm, 
-					const std::string &val),
+				(*wlkr)(void *cldata, const string &nm, 
+					const string &val),
 				void *clidata);
-    virtual void list();
+    virtual void listall();
 
     /**
      * Return all names in given submap
      */
-    virtual std::list<string> getNames(const string &sk);
+    virtual list<string> getNames(const string &sk);
 
-    virtual std::string getFilename() {return filename;}
+    virtual string getFilename() {return filename;}
 
     /**
      * Copy constructor. Expensive but less so than a full rebuild
@@ -158,15 +162,15 @@ class ConfSimple {
 	return *this;
     }
 
- protected:
+protected:
     bool dotildexpand;
     StatusCode status;
- private:
+private:
     string filename; // set if we're working with a file
     string *data;    // set if we're working with an in-memory string
     map<string, map<string, string> > submaps;
 
-    void parseinput(std::istream &input);
+    void parseinput(istream &input);
 };
 
 /**
@@ -185,7 +189,7 @@ class ConfSimple {
  */
 class ConfTree : public ConfSimple {
 
- public:
+public:
     /**
      * Build the object by reading content from file.
      */
@@ -203,7 +207,7 @@ class ConfTree : public ConfSimple {
      * parents.
      * @return 0 if name not found, 1 else
      */
-    virtual int get(const std::string &name, string &value, const string &sk);
+    virtual int get(const string &name, string &value, const string &sk);
 
     virtual int get(const char *name, string &value, const char *sk) {
 	return get(string(name), value, sk ? string(sk) : string(""));
@@ -219,15 +223,20 @@ class ConfTree : public ConfSimple {
  * one must or we generate an error. We open all trees readonly.
  */
 template <class T> class ConfStack {
- public:
-    ConfStack(const std::list<string> &fns, bool ro = true) {
+public:
+    /// Construct from list of configuration file names
+    ConfStack(const list<string> &fns, bool ro = true) {
 	construct(fns, ro);
     }
-
-    ConfStack(const char *nm, bool ro = true) {
-	std::list<string> fns;
-	fns.push_back(string(nm));
-	construct(fns, ro);
+    // Construct out of one name
+    // Construct out of name and list of directories
+    ConfStack(const string& nm, const list<string>& dirs, bool ro = true) {
+	list<string> fns;
+	for (list<string>::const_iterator it = dirs.begin(); 
+	     it != dirs.end(); it++){
+	    fns.push_back(path_cat(*it, nm));
+	}
+	ConfStack::construct(fns, ro);
     }
 
     ~ConfStack() {
@@ -249,8 +258,8 @@ template <class T> class ConfStack {
 	return *this;
     }
 
-    int get(const std::string &name, string &value, const string &sk) {
-	typename std::list<T*>::iterator it;
+    int get(const string &name, string &value, const string &sk) {
+	typename list<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    if ((*it)->get(name, value, sk))
 		return true;
@@ -262,25 +271,27 @@ template <class T> class ConfStack {
 	return get(string(name), value, sk ? string(sk) : string(""));
     }
 
-    std::list<string> getNames(const string &sk) {
-	std::list<string> nms;
-	typename std::list<T*>::iterator it;
-	for (it = m_confs.begin();it != m_confs.end();it++) {
-	    std::list<string> lst;
+    list<string> getNames(const string &sk) {
+	list<string> nms;
+	typename list<T*>::iterator it;
+	for (it = m_confs.begin();it != m_confs.end(); it++) {
+	    list<string> lst;
 	    lst = (*it)->getNames(sk);
 	    nms.splice(nms.end(), lst);
 	}
+	nms.sort();
+	nms.unique();
 	return nms;
     }
 
     bool ok() {return m_ok;}
 
- private:
+private:
     bool m_ok;
-    std::list<T*> m_confs;
+    list<T*> m_confs;
     
     void erase() {
-	typename std::list<T*>::iterator it;
+	typename list<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    delete (*it);
 	}
@@ -290,7 +301,7 @@ template <class T> class ConfStack {
     /// Common code to initialize from existing object
     void init_from(const ConfStack &rhs) {
 	if ((m_ok = rhs.m_ok)) {
-	    typename std::list<T*>::const_iterator it;
+	    typename list<T*>::const_iterator it;
 	    for (it = rhs.m_confs.begin();it != rhs.m_confs.end();it++) {
 		m_confs.push_back(new T(**it));
 	    }
@@ -298,12 +309,12 @@ template <class T> class ConfStack {
     }
 
     /// Common constructor code
-    void construct(const std::list<string> &fns, bool ro) {
+    void construct(const list<string> &fns, bool ro) {
 	if (!ro) {
 	    m_ok = false;
 	    return;
 	}
-	std::list<std::string>::const_iterator it;
+	list<string>::const_iterator it;
 	bool lastok = false;
 	for (it = fns.begin();it != fns.end();it++) {
 	    T* p = new T(it->c_str(), true);

@@ -1,4 +1,4 @@
-/* @(#$Id: uiprefs_w.h,v 1.5 2006-12-04 09:56:27 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.6 2006-12-14 13:53:43 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 #ifndef _UIPREFS_W_H_INCLUDED_
 #define _UIPREFS_W_H_INCLUDED_
-/* @(#$Id: uiprefs_w.h,v 1.5 2006-12-04 09:56:27 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.6 2006-12-14 13:53:43 dockes Exp $  (C) 2005 J.F.Dockes */
 #include <qvariant.h>
 #include <qdialog.h>
 
@@ -44,6 +44,8 @@ class DummyUIPrefsDialogBase : public QDialog, protected Ui::UIPrefsDialogBase
 #endif
 //MOC_SKIP_END
 
+class ViewAction;
+
 class UIPrefsDialog : public DummyUIPrefsDialogBase
 {
     Q_OBJECT
@@ -63,6 +65,7 @@ public:
 
 public slots:
     virtual void showFontDialog();
+    virtual void showViewAction();
     virtual void resetReslistFont();
     virtual void showBrowserDialog();
     virtual void extraDbTextChanged( const QString & text );
@@ -79,8 +82,10 @@ signals:
 protected slots:
     virtual void accept();
     virtual void reject();
- private:
+private:
     void setFromPrefs();
+    ViewAction *m_viewAction;
+
 };
 
 

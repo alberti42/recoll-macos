@@ -16,7 +16,7 @@
  */
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
-/* @(#$Id: pathut.h,v 1.9 2006-10-23 15:00:31 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: pathut.h,v 1.10 2006-12-14 13:53:43 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -50,5 +50,8 @@ extern string url_encode(const string url,
 			      string::size_type offs);
 /// Stat parameter and check if it's a directory
 extern bool path_isdir(const string& path);
+
+/// Create temporary directory
+extern bool maketmpdir(string& tdir, string& reason);
 
 #endif /* _PATHUT_H_INCLUDED_ */

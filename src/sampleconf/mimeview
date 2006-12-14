@@ -1,0 +1,31 @@
+# @(#$Id: mimeview,v 1.1 2006-12-14 13:53:43 dockes Exp $  (C) 2004 J.F.Dockes
+
+## ##########################################
+# External viewers, launched by the recoll GUI when you click on a result
+# 'edit' link
+
+[view]
+application/msword = openoffice %f
+application/pdf  = xpdf %f
+application/postscript = gv %f
+application/vnd.ms-excel = openoffice %f
+application/vnd.ms-powerpoint = openoffice %f
+application/vnd.sun.xml.calc = openoffice %f
+application/vnd.sun.xml.calc.template = openoffice %f
+application/vnd.sun.xml.draw = openoffice %f
+application/vnd.sun.xml.draw.template = openoffice %f
+application/vnd.sun.xml.impress = openoffice %f
+application/vnd.sun.xml.impress.template = openoffice %f
+application/vnd.sun.xml.math = openoffice %f
+application/vnd.sun.xml.writer = openoffice %f
+application/vnd.sun.xml.writer.global = openoffice %f
+application/vnd.sun.xml.writer.template = openoffice %f
+application/x-dvi = xdvi %f
+audio/mpeg = xmms %f
+image/jpeg = xv %f
+image/png = xv %f
+image/vnd.djvu = djview %f
+# Or firefox -remote "openFile(%u)"
+text/html = firefox %u
+text/plain = gnuclient -q %f
+text/x-c = gnuclient -q %f

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.11 2006-10-23 15:00:31 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.12 2006-12-14 13:53:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -26,13 +26,52 @@ static char rcsid[] = "@(#$Id: pathut.cpp,v 1.11 2006-10-23 15:00:31 dockes Exp 
 #include <iostream>
 #include <list>
 #include <stack>
-
-#include "pathut.h"
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
 using std::stack;
 #endif /* NO_NAMESPACES */
+
+#include "pathut.h"
+
+bool maketmpdir(string& tdir, string& reason)
+{
+    const char *tmpdir = getenv("RECOLL_TMPDIR");
+    if (!tmpdir)
+	tmpdir = getenv("TMPDIR");
+    if (!tmpdir)
+	tmpdir = "/tmp";
+    tdir = path_cat(tmpdir, "rcltmpXXXXXX");
+
+    {
+	char *cp = strdup(tdir.c_str());
+	if (!cp) {
+	    reason = "maketmpdir: out of memory (for file name !)\n";
+	    tdir.erase();
+	    return false;
+	}
+#ifdef HAVE_MKDTEMP
+	if (!mkdtemp(cp)) {
+#else
+	if (!mktemp(cp)) {
+#endif // HAVE_MKDTEMP
+	    free(cp);
+	    reason = "maketmpdir: mktemp failed\n";
+	    tdir.erase();
+	    return false;
+	}	
+	tdir = cp;
+	free(cp);
+    }
+#ifndef HAVE_MKDTEMP
+    if (mkdir(tdir.c_str(), 0700) < 0) {
+	reason = string("maketmpdir: mkdir ) + tdir : " failed";
+	tdir.erase();
+	return false;
+    }
+#endif
+    return true;
+}
 
 void path_catslash(std::string &s) {
     if (s.empty() || s[s.length() - 1] != '/')

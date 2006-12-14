@@ -12,7 +12,8 @@ HEADERS	+= \
 	sort_w.h \
 	searchclause_w.h \
 	ssearch_w.h \
-	uiprefs_w.h
+	uiprefs_w.h \
+        viewaction_w.h
 
 
 SOURCES	+= \
@@ -28,7 +29,8 @@ SOURCES	+= \
         sort_w.cpp \
 	searchclause_w.cpp \
         ssearch_w.cpp \
-        uiprefs_w.cpp
+        uiprefs_w.cpp \
+        viewaction_w.cpp
 
 FORMS	= \
 	advsearch.ui \
@@ -37,7 +39,8 @@ FORMS	= \
 	rclmain.ui \
 	sort.ui \
 	ssearchb.ui \
-	uiprefs.ui 
+	uiprefs.ui \
+	viewaction.ui
 
 IMAGES	= images/asearch.png \
 	images/history.png \

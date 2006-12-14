@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.12 2006-12-04 08:17:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.13 2006-12-14 13:53:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -55,10 +55,13 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.12 2006-12-04 08:17:24 dockes E
 #include "rcldb.h"
 #include "pathut.h"
 #include "uiprefs_w.h"
+#include "viewaction_w.h"
 
 void UIPrefsDialog::init()
 {
-    
+    m_viewAction = 0;
+
+    connect(viewActionPB, SIGNAL(clicked()), this, SLOT(showViewAction()));
     connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
     connect(helpBrowserPB, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
@@ -251,6 +254,18 @@ void UIPrefsDialog::showBrowserDialog()
 					     "Choose a file");
     if (!s.isEmpty()) 
 	helpBrowserLE->setText(s);
+}
+
+void UIPrefsDialog::showViewAction()
+{
+    if (m_viewAction== 0) {
+	m_viewAction = new ViewAction(0);
+	m_viewAction->show();
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	m_viewAction->close();
+	m_viewAction->show();
+    }
 }
 
 ////////////////////////////////////////////

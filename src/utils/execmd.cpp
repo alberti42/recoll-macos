@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.20 2006-11-30 13:38:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.21 2006-12-14 13:53:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.20 2006-11-30 13:38:44 dockes Exp 
  */
 #ifndef TEST_EXECMD
 #include <unistd.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/select.h>
@@ -30,6 +31,7 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.20 2006-11-30 13:38:44 dockes Exp 
 #endif
 
 #include <list>
+#include <vector>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -37,12 +39,59 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.20 2006-11-30 13:38:44 dockes Exp 
 #include "execmd.h"
 #include "pathut.h"
 #include "debuglog.h"
-
+#include "smallut.h"
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
 
 #define MAX(A,B) ((A) > (B) ? (A) : (B))
+
+/* From FreeBSD's which command */
+static bool
+exec_is_there(const char *candidate)
+{
+    struct stat fin;
+
+    /* XXX work around access(2) false positives for superuser */
+    if (access(candidate, X_OK) == 0 &&
+	stat(candidate, &fin) == 0 &&
+	S_ISREG(fin.st_mode) &&
+	(getuid() != 0 ||
+	 (fin.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) != 0)) {
+	return true;
+    }
+    return false;
+}
+
+bool ExecCmd::which(const string& cmd, string& path)
+{
+    if (cmd.empty()) 
+	return false;
+    if (cmd[0] == '/') {
+	if (exec_is_there(cmd.c_str())) {
+	    path = cmd;
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
+    const char *pp = getenv("PATH");
+    if (pp == 0)
+	return false;
+    list<string> pels;
+    stringToTokens(pp, pels, ":");
+    for (list<string>::iterator it = pels.begin(); it != pels.end(); it++) {
+	if (it->empty())
+	    *it = ".";
+	string candidate = (it->empty() ? string(".") : *it) + "/" + cmd;
+	if (exec_is_there(candidate.c_str())) {
+	    path = candidate;
+	    return true;
+	}
+    }
+    return false;
+}
 
 void  ExecCmd::putenv(const string &ea)
 {
@@ -299,7 +348,8 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	    while (argv[i]) cerr << argv[i++] << endl;}
 #endif
 
-	for (it = m_env.begin(); it != m_env.end(); it++) {
+	for (vector<string>::const_iterator it = m_env.begin(); 
+	     it != m_env.end(); it++) {
 #ifdef PUTENV_ARG_NOT_CONST
 	    ::putenv(strdup(it->c_str()));
 #else
@@ -382,11 +432,10 @@ static int     op_flags;
 #define OPT_MOINS 0x1
 #define OPT_s	  0x2 
 #define OPT_b	  0x4 
-
+#define OPT_w     0x8
 int main(int argc, char **argv)
 {
     int count = 10;
-    
     thisprog = argv[0];
     argc--; argv++;
 
@@ -397,12 +446,13 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 's':	op_flags |= OPT_s; break;
 	    case 'b':	op_flags |= OPT_b; if (argc < 2)  Usage();
 		if ((sscanf(*(++argv), "%d", &count)) != 1) 
 		    Usage(); 
 		argc--; 
 		goto b1;
+	    case 's':	op_flags |= OPT_s; break;
+	    case 'w':	op_flags |= OPT_w; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
@@ -420,6 +470,14 @@ int main(int argc, char **argv)
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
 
+    if (op_flags & OPT_w) {
+	string path;
+	if (ExecCmd::which(cmd, path)) {
+	    cout << path << endl;
+	    exit(0);
+	} 
+	exit(1);
+    }
     ExecCmd mexec;
     MEAdv adv;
     adv.cmd = &mexec;

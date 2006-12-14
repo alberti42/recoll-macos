@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.9 2006-12-04 08:17:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.10 2006-12-14 13:53:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -452,9 +452,11 @@ class LoadThread : public QThread {
     }
     virtual void run() {
 	DebugLog::getdbl()->setloglevel(loglevel);
-	if (!maketmpdir(tmpdir)) {
+	string reason;
+	if (!maketmpdir(tmpdir, reason)) {
 	    QMessageBox::critical(0, "Recoll",
 				  Preview::tr("Cannot create temporary directory"));
+	    LOGERR(("Preview: %s\n", reason.c_str()));
 	    *statusp = -1;
 	    return;
 	}
@@ -639,7 +641,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	
 	l = MIN(CHUNKL, richTxt.length() - pos);
 	// Avoid breaking inside a tag. Our tags are short (ie: <br>)
-	if (pos + l != richTxt.length()) {
+	if (pos + l != (int)richTxt.length()) {
 	    for (int i = -15; i < 0; i++) {
 		if (richTxt[pos+l+i] == '<') {
 		    l = l+i;

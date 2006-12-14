@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.21 2006-12-11 14:50:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.22 2006-12-14 13:53:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -31,53 +31,12 @@ static char rcsid[] = "@(#$Id: smallut.cpp,v 1.21 2006-12-11 14:50:53 dockes Exp
 #include <string>
 
 #include "smallut.h"
-#include "debuglog.h"
-#include "pathut.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
 
 #define MIN(A,B) ((A)<(B)?(A):(B))
-
-bool maketmpdir(string& tdir)
-{
-    const char *tmpdir = getenv("RECOLL_TMPDIR");
-    if (!tmpdir)
-	tmpdir = getenv("TMPDIR");
-    if (!tmpdir)
-	tmpdir = "/tmp";
-    tdir = path_cat(tmpdir, "rcltmpXXXXXX");
-
-    {
-	char *cp = strdup(tdir.c_str());
-	if (!cp) {
-	    LOGERR(("maketmpdir: out of memory (for file name !)\n"));
-	    tdir.erase();
-	    return false;
-	}
-#ifdef HAVE_MKDTEMP
-	if (!mkdtemp(cp)) {
-#else
-	if (!mktemp(cp)) {
-#endif // HAVE_MKDTEMP
-	    free(cp);
-	    LOGERR(("maketmpdir: mktemp failed\n"));
-	    tdir.erase();
-	    return false;
-	}	
-	tdir = cp;
-	free(cp);
-    }
-#ifndef HAVE_MKDTEMP
-    if (mkdir(tdir.c_str(), 0700) < 0) {
-	LOGERR(("maketmpdir: mkdir %s failed\n", tdir.c_str()));
-	tdir.erase();
-	return false;
-    }
-#endif
-    return true;
-}
 
 string stringlistdisp(const list<string>& sl)
 {
@@ -88,7 +47,6 @@ string stringlistdisp(const list<string>& sl)
 	s.erase(s.length()-1);
     return s;
 }
-	    
 
 int stringicmp(const string & s1, const string& s2) 
 {

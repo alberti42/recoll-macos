@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.35 2006-12-13 09:13:18 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.36 2006-12-14 13:53:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.35 2006-12-13 09:13:18 dockes E
  */
 #ifndef TEST_RCLCONFIG
 #include <unistd.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
 #include <langinfo.h>
@@ -70,50 +71,30 @@ RclConfig::RclConfig(const string *argcnf)
 	    return;
     }
 
-    list<string>cfns;
-    string cpath;
+    list<string> cdirs;
+    cdirs.push_back(m_confdir);
+    cdirs.push_back(path_cat(m_datadir, "examples"));
 
-    cpath = path_cat(m_confdir, "recoll.conf");
-    cfns.push_back(cpath);
-    cpath = path_cat(m_datadir, "examples/recoll.conf");
-    cfns.push_back(cpath);
-    m_conf = new ConfStack<ConfTree>(cfns, true);
+    m_conf = new ConfStack<ConfTree>("recoll.conf", cdirs, true);
     if (m_conf == 0 || !m_conf->ok()) {
-	m_reason = string("No main configuration file: ");
-	for (list<string>::const_iterator it = cfns.begin(); it != cfns.end();
-	     it++) 
-	    m_reason += "[" + *it + "] ";
-	m_reason += " do not exist or cannot be parsed";
+	m_reason = string("No/bad main configuration file in: ") + m_confdir;
 	return;
     }
 
-    cfns.clear();
-    cpath  = path_cat(m_confdir, "mimemap");
-    cfns.push_back(cpath);
-    cpath = path_cat(m_datadir, "examples/mimemap");
-    cfns.push_back(cpath);
-    mimemap = new ConfStack<ConfTree>(cfns, true);
+    mimemap = new ConfStack<ConfTree>("mimemap", cdirs, true);
     if (mimemap == 0 || !mimemap->ok()) {
-	m_reason = string("No mime map configuration file: ");
-	for (list<string>::const_iterator it = cfns.begin(); it != cfns.end();
-	     it++) 
-	    m_reason += "[" + *it + "] ";
-	m_reason += " do not exist or cannot be parsed";
+	m_reason = string("No or bad mimemap file in: ") + m_confdir;
 	return;
     }
 
-    cfns.clear();
-    cpath = path_cat(m_confdir, "mimeconf");
-    cfns.push_back(cpath);
-    cpath = path_cat(m_datadir, "examples/mimeconf");
-    cfns.push_back(cpath);
-    mimeconf = new ConfStack<ConfTree>(cfns, true);
+    mimeconf = new ConfStack<ConfTree>("mimeconf", cdirs, true);
     if (mimeconf == 0 || !mimeconf->ok()) {
-	m_reason = string("No mime configuration file: ");
-	for (list<string>::const_iterator it = cfns.begin(); it != cfns.end();
-	     it++) 
-	    m_reason += "[" + *it + "] ";
-	m_reason += " do not exist or cannot be parsed";
+	m_reason = string("No/bad mimeconf in: ") + m_confdir;
+	return;
+    }
+    mimeview = new ConfStack<ConfTree>("mimeview", cdirs, true);
+    if (mimeconf == 0 || !mimeconf->ok()) {
+	m_reason = string("No/bad mimeview in: ") + m_confdir;
 	return;
     }
 
@@ -200,7 +181,7 @@ const string& RclConfig::getDefCharset(bool filename)
 	    // iso-8859. Some won't take iso8859
 	    localecharset = string("ISO-8859-1");
 	}
-	LOGDEB(("RclConfig::getDefCharset: localecharset [%s]\n",
+	LOGDEB1(("RclConfig::getDefCharset: localecharset [%s]\n",
 		localecharset.c_str()));
     }
 
@@ -215,9 +196,9 @@ const string& RclConfig::getDefCharset(bool filename)
     }
 }
 
-// Get all known document mime values. We get them from the mimeconf
-// 'index' submap: values not in there (ie from mimemap or idfile) can't
-// possibly belong to documents in the database.
+// Get all known document mime values (for indexing). We get them from
+// the mimeconf 'index' submap: values not in there (ie from mimemap
+// or idfile) can't possibly belong to documents in the database.
 std::list<string> RclConfig::getAllMimeTypes()
 {
     std::list<string> lst;
@@ -261,8 +242,44 @@ string RclConfig::getMimeHandlerDef(const std::string &mtype)
 string RclConfig::getMimeViewerDef(const string &mtype)
 {
     string hs;
-    mimeconf->get(mtype, hs, "view");
+    mimeview->get(mtype, hs, "view");
     return hs;
+}
+
+bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs)
+{
+    if (mimeview == 0)
+	return false;
+    list<string>tps = mimeview->getNames("view");
+    for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
+	defs.push_back(pair<string, string>(*it, getMimeViewerDef(*it)));
+    }
+    return true;
+}
+
+bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
+{
+    string pconfname = path_cat(m_confdir, "mimeview");
+    // Make sure this exists 
+    close(open(pconfname.c_str(), O_CREAT|O_WRONLY, 0600));
+    ConfTree tree(pconfname.c_str());
+    if (!tree.set(mt, def, "view")) {
+	m_reason = string("RclConfig::setMimeViewerDef: cant set value in ")
+	    + pconfname;
+	return false;
+    }
+
+    list<string> cdirs;
+    cdirs.push_back(m_confdir);
+    cdirs.push_back(path_cat(m_datadir, "examples"));
+
+    delete mimeview;
+    mimeview = new ConfStack<ConfTree>("mimeview", cdirs, true);
+    if (mimeconf == 0 || !mimeconf->ok()) {
+	m_reason = string("No/bad mimeview in: ") + m_confdir;
+	return false;
+    }
+    return true;
 }
 
 /**
@@ -412,7 +429,8 @@ static const char blurb0[] =
     ;
 
 // Create initial user config by creating commented empty files
-static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf"};
+static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf", 
+				    "mimeview"};
 static int ncffiles = sizeof(configfiles) / sizeof(char *);
 bool RclConfig::initUserConfig()
 {
@@ -461,6 +479,8 @@ void RclConfig::initFrom(const RclConfig& r)
 	mimemap = new ConfStack<ConfTree>(*(r.mimemap));
     if (r.mimeconf)
 	mimeconf = new ConfStack<ConfTree>(*(r.mimeconf));
+    if (r.mimeview)
+	mimeview = new ConfStack<ConfTree>(*(r.mimeview));
     if (r.stopsuffixes)
 	stopsuffixes = new std::list<std::string>(*(r.stopsuffixes));
     defcharset = r.defcharset;

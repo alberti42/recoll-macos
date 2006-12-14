@@ -16,13 +16,17 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.26 2006-12-11 14:50:53 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.27 2006-12-14 13:53:42 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
+#include <vector>
+#include <utility>
 #ifndef NO_NAMESPACES
 using std::list;
 using std::string;
+using std::vector;
+using std::pair;
 #endif
 
 #include "conftree.h"
@@ -103,6 +107,8 @@ class RclConfig {
 
     /** Get external viewer exec string from mimeconf for mimetype */
     string getMimeViewerDef(const string &mimetype);
+    bool getMimeViewerDefs(vector<pair<string, string> >&);
+    bool setMimeViewerDef(const string& mimetype, const string& cmd);
 
     /** Get icon name from mimeconf for mimetype */
     string getMimeIconName(const string &mtype, string *path = 0);
@@ -140,8 +146,9 @@ class RclConfig {
     string m_keydir;    // Current directory used for parameter fetches.
 
     ConfStack<ConfTree> *m_conf;   // Parsed configuration files
-    ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, but their
-    ConfStack<ConfTree> *mimeconf; // content may depend on it.
+    ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, 
+    ConfStack<ConfTree> *mimeconf; // but their content may depend on it.
+    ConfStack<ConfTree> *mimeview; // 
 
     list<string> *stopsuffixes;
 
@@ -160,6 +167,7 @@ class RclConfig {
 	m_conf = 0; 
 	mimemap = 0; 
 	mimeconf = 0; 
+	mimeview = 0; 
 	stopsuffixes = 0;
     }
     /** Free data then zero pointers */
@@ -167,6 +175,7 @@ class RclConfig {
 	delete m_conf;
 	delete mimemap;
 	delete mimeconf; 
+	delete mimeview; 
 	delete stopsuffixes;
 	// just in case
 	zeroMe();

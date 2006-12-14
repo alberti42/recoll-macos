@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.15 2006-12-08 07:11:17 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.16 2006-12-14 13:53:43 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -65,9 +65,6 @@ void SSearch::searchTextChanged( const QString & text )
     } else {
 	searchPB->setEnabled(true);
 	clearqPB->setEnabled(true);
-	string u8 =  (const char *)queryText->currentText().utf8();
-	if (prefs.autoSearchOnWS && !u8.empty() && u8[u8.length()-1] == ' ')
-	    startSimpleSearch();
     }
 }
 
@@ -227,11 +224,11 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	    completion();
 	    m_escape = false;
 	    return true;
-	} else {
-	    m_escape = false;
+	} else if (ke->key() == Qt::Key_Space) {
+	    if (prefs.autoSearchOnWS)
+		startSimpleSearch();
 	}
+	m_escape = false;
     }
     return QWidget::eventFilter(target, event);
 }
-
-

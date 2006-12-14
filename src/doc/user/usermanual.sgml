@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.28 2006-11-30 13:38:43 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.29 2006-12-14 13:53:42 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -575,9 +575,9 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
        by side.</para>
 
       <para>Clicking the <literal>Edit</literal> link will attempt to 
-       start an external viewer (have a look at the
-       <filename>mimeconf</filename> configuration file to see how
-       these are configured).</para>
+       start an external viewer. The viewers can be configured through the
+       user preferences dialog, or by editing the
+       <filename>mimeview</filename> configuration file.</para>
 
       <para>The <literal>Preview</literal> and <literal>Edit</literal>
        edit links may not be present for all entries, meaning that
@@ -586,8 +586,9 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
        the file type. This can sometimes be adjusted simply by tweaking
        the <link linkend="rclinstall.config.mimemap">
              <filename>mimemap</filename></link> and  
-       <link linkend="rclinstall.config.mimeconf">
-       <filename>mimeconf</filename></link> configuration files.</para> 
+       <link linkend="rclinstall.config.mimeview">
+       <filename>mimeview</filename></link> configuration files (the latter
+       can be modified with the user preferences dialog).</para> 
 
       <para>You can click on the <literal>Query details</literal> link
         at the top of the results page to see the query actually 
@@ -1664,26 +1665,42 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
         <title>The mimeconf file</title>
 
         <para><filename>mimeconf</filename> specifies how the
-         different mime types are handled for indexing, and for
-         display.</para>
+         different mime types are handled for indexing, and which icons
+	 are displayed in the <command>recoll</command> result lists.</para>
 
         <para>Changing the indexing parameters is probably not a
          good idea except if you are a &RCL; developers.</para>
 
-        <para>You may want to adjust the external viewers defined in
-         (ie: HTML is either previewed internally or displayed using
-         <application>firefox</application>, but you may prefer
-         <application>mozilla</application>, your
-         <application>openoffice.org</application> 
-         program might be named <command>oofice</command> instead of
-         <command>openoffice</command> ...). Look
-         for the <literal>[view]</literal> section.</para>
-
-        <para>You can also change the icons which are displayed by
+        <para>You can change the icons which are displayed by
          <command>recoll</command> in the result lists (the values are
          the basenames of the png images inside the
          <filename>iconsdir</filename> directory (specified in
          <filename>recoll.conf</filename>).</para> 
+
+      </sect2>
+      <sect2 id="rclinstall.config.mimeview">
+        <title>The mimeview file</title>
+
+        <para><filename>mimeview</filename> specifies which programs
+        are started when you click on an <guilabel>Edit</guilabel>
+        link in a result list. Ie: HTML is normally displayed using
+         <application>firefox</application>, but you may prefer
+         <application>Konqueror</application>, your
+         <application>openoffice.org</application> 
+         program might be named <command>oofice</command> instead of
+         <command>openoffice</command> etc. 
+         </para>
+
+        <para>Changes to this file can be done by direct editing, or
+        through the <command>recoll</command> user preferences dialog.</para>
+
+	<para>As for the other configuration files, the normal usage
+	is to have a <filename>mimeview</filename> inside your own
+	configuration directory, with just the non-default entries,
+	which will override those from the central configuration
+	file.</para>
+	<para>Please note that these entries must be placed under a
+	<literal>[view]</literal> section.</para>
 
       </sect2>
 

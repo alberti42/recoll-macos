@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.7 2006-11-08 06:56:41 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.8 2006-12-14 13:53:43 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@ static char rcsid [] = "@(#$Id: conftree.cpp,v 1.7 2006-11-08 06:56:41 dockes Ex
 
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 #include "conftree.h"
 #include "pathut.h"
@@ -342,7 +343,7 @@ ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
 }
 
 #include <iostream>
-void ConfSimple::list()
+void ConfSimple::listall()
 {
     if (!ok())
 	return;
@@ -362,6 +363,8 @@ list<string> ConfSimple::getNames(const string &sk)
     for (it = ss->second.begin();it != ss->second.end();it++) {
 	mylist.push_back(it->first);
     }
+    mylist.sort();
+    mylist.unique();
     return mylist;
 }
 
@@ -431,7 +434,7 @@ const char *longvalue =
 void memtest(ConfSimple &c) 
 {
     cout << "Initial:" << endl;
-    c.list();
+    c.listall();
     if (c.set("nom", "avec nl \n 2eme ligne", "")) {
 	fprintf(stderr, "set with embedded nl succeeded !\n");
 	exit(1);
@@ -450,7 +453,7 @@ void memtest(ConfSimple &c)
     }
 
     cout << "Final:" << endl;
-    c.list();
+    c.listall();
 }
 
 static char usage [] =
@@ -616,7 +619,7 @@ int main(int argc, char **argv)
 		exit(1);
 	    }
 	    printf("LIST\n");
-	    parms.list();
+	    parms.listall();
 	    //printf("WALK\n");parms.sortwalk(mywalker, 0);
 	    printf("\nNAMES in global space:\n");
 	    list<string> names = parms.getNames("");
