@@ -16,13 +16,14 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.43 2006-12-05 15:17:59 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.44 2006-12-14 14:54:13 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
 #include <vector>
 
 #include "refcntr.h"
+#include "rcldoc.h"
 
 #ifndef NO_NAMESPACES
 using std::string;
@@ -48,65 +49,6 @@ struct stat;
 #ifndef NO_NAMESPACES
 namespace Rcl {
 #endif
-
-/**
- * Dumb holder for document attributes and data
- */
-class Doc {
- public:
-    // These fields potentially go into the document data record
-    // We indicate the routine that sets them up during indexing
-    string url;          // This is just "file://" + binary filename. 
-                         // No transcoding: this is used to access files
-                         // Computed from fn by Db::add
-    string utf8fn;       // Transcoded version of the simple file name for
-                         // SFN-prefixed specific file name indexation
-                         // Set by DbIndexer::processone
-    string ipath;        // Internal path for multi-doc files. Ascii
-                         // Set by DbIndexer::processone
-    string mimetype;     // Set by FileInterner::internfile
-    string fmtime;       // File modification time as decimal ascii unix time
-                         // Set by DbIndexer::processone
-    string dmtime;       // Data reference date (same format). Ie: mail date
-                         // Possibly set by handler
-    string origcharset;  // Charset we transcoded from (in case we want back)
-                         // Possibly set by handler
-    string title;        // Possibly set by handler
-    string keywords;     // Possibly set by handler
-    string abstract;     // Possibly set by handler
-    bool   syntabs;      // true if abstract is just the top of doc, not an 
-                         // explicit document attribute
-    string fbytes;       // File size. Set by Db::Add
-    string dbytes;       // Doc size. Set by Db::Add from text length
-
-    // The following fields don't go to the db record
-    
-    string text; // During indexing only: text returned by input handler will
-                 // be split and indexed 
-
-    int pc; // used by sortseq, convenience
-    unsigned long xdocid; // Opaque: rcldb doc identifier.
-
-    void erase() {
-	url.erase();
-	utf8fn.erase();
-	ipath.erase();
-	mimetype.erase();
-	fmtime.erase();
-	dmtime.erase();
-	origcharset.erase();
-	title.erase();
-	keywords.erase();
-	abstract.erase();
-	syntabs = false;
-	fbytes.erase();
-	dbytes.erase();
-
-	text.erase();
-	pc = 0;
-	xdocid = 0;
-    }
-};
 
 class SearchData;
 class Native;
