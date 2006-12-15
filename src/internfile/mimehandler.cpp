@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.19 2006-12-13 09:13:18 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.20 2006-12-15 12:40:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -20,37 +20,40 @@ static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.19 2006-12-13 09:13:18 dockes
 
 #include <iostream>
 #include <string>
-#ifndef NO_NAMESPACES
+
 using namespace std;
-#endif /* NO_NAMESPACES */
 
 #include "mimehandler.h"
 #include "debuglog.h"
+#include "rclconfig.h"
 #include "smallut.h"
+
+#include "mh_exec.h"
 #include "mh_html.h"
 #include "mh_mail.h"
+#include "mh_mbox.h"
 #include "mh_text.h"
-#include "mh_exec.h"
 #include "mh_unknown.h"
   
 /** Create internal handler object appropriate for given mime type */
-static MimeHandler *mhFactory(const string &mime)
+static Dijon::Filter *mhFactory(const string &mime)
 {
     if (!stringlowercmp("text/plain", mime))
-	return new MimeHandlerText;
+	return new MimeHandlerText("text/plain");
     else if (!stringlowercmp("text/html", mime))
-	return new MimeHandlerHtml;
+	return new MimeHandlerHtml("text/html");
     else if (!stringlowercmp("text/x-mail", mime))
-	return new MimeHandlerMail;
+	return new MimeHandlerMbox("text/x-mail");
     else if (!stringlowercmp("message/rfc822", mime))
-	return new MimeHandlerMail;
-    return 0;
+	return new MimeHandlerMail("message/rfc822");
+    else 
+	return new MimeHandlerUnknown("application/octet-stream");
 }
 
 /**
  * Return handler object for given mime type:
  */
-MimeHandler *getMimeHandler(const string &mtype, RclConfig *cfg)
+Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg)
 {
     // Get handler definition for mime type
     string hs;
@@ -78,7 +81,7 @@ MimeHandler *getMimeHandler(const string &mtype, RclConfig *cfg)
 			mtype.c_str(), hs.c_str()));
 		return 0;
 	    }
-	    MimeHandlerExec *h = new MimeHandlerExec;
+	    MimeHandlerExec *h = new MimeHandlerExec(mtype.c_str());
 	    it++;
 	    h->params.push_back(cfg->findFilter(*it++));
 	    h->params.insert(h->params.end(), it, toks.end());
@@ -93,7 +96,8 @@ MimeHandler *getMimeHandler(const string &mtype, RclConfig *cfg)
     bool indexunknown = false;
     cfg->getConfParam("indexallfilenames", &indexunknown);
     if (indexunknown) {
-	return new MimeHandlerUnknown;
+	LOGDEB(("getMimeHandler: returning MimeHandlerUnknown\n"));
+	return new MimeHandlerUnknown("application/octet-stream");
     } else {
 	return 0;
     }

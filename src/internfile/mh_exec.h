@@ -16,7 +16,7 @@
  */
 #ifndef _MH_EXEC_H_INCLUDED_
 #define _MH_EXEC_H_INCLUDED_
-/* @(#$Id: mh_exec.h,v 1.2 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_exec.h,v 1.3 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -29,14 +29,19 @@
     Turn external document into internal one by executing an external filter.
     The command to execute, and its parameters, come from the mimeconf file
 */
-class MimeHandlerExec : public MimeHandler {
+class MimeHandlerExec : public RecollFilter {
  public:
     std::list<std::string> params;
+    MimeHandlerExec(const string& mt) : RecollFilter(mt) {}
     virtual ~MimeHandlerExec() {}
-    virtual MimeHandler::Status 
-	mkDoc(RclConfig *conf, const std::string &fn, 
-	      const std::string &mtype, Rcl::Doc &docout, std::string&);
-
+    virtual bool set_document_file(const string &file_path) {
+	m_fn = file_path;
+	m_havedoc = true;
+	return true;
+    }
+    virtual bool next_document();
+private:
+    string m_fn;
 };
 
 #endif /* _MH_EXEC_H_INCLUDED_ */

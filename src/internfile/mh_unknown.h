@@ -16,24 +16,33 @@
  */
 #ifndef _MH_UNKNOWN_H_INCLUDED_
 #define _MH_UNKNOWN_H_INCLUDED_
-/* @(#$Id: mh_unknown.h,v 1.1 2006-03-28 09:36:53 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_unknown.h,v 1.2 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
-#include "rclconfig.h"
-#include "rcldb.h"
 #include "mimehandler.h"
 
 /**
  * Handler for files with no content handler: does nothing.
  *
  */
-class MimeHandlerUnknown : public MimeHandler {
+class MimeHandlerUnknown : public RecollFilter {
  public:
-    MimeHandler::Status mkDoc(RclConfig *conf, const std::string &fn, 
-			      const std::string &mtype, Rcl::Doc &docout, 
-			      std::string&) {
-	return MimeHandler::MHDone;
+    MimeHandlerUnknown(const string& mt) : RecollFilter(mt) {}
+    virtual ~MimeHandlerUnknown() {}
+    virtual bool set_document_string(const string&) {
+	return m_havedoc = true;
+    }
+    virtual bool set_document_file(const string&) {
+	return m_havedoc = true;
+    }
+    virtual bool next_document() {
+	if (m_havedoc == false)
+	    return false;
+	m_havedoc = false; 
+	m_metaData["content"] = "";
+	m_metaData["mimetype"] = "text/plain";
+	return true;
     }
 };
 

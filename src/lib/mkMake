@@ -13,13 +13,14 @@ ${depth}/index/csguess.cpp \
 ${depth}/index/indexer.cpp \
 ${depth}/index/mimetype.cpp \
 ${depth}/internfile/htmlparse.cpp \
+${depth}/internfile/myhtmlparse.cpp \
+${depth}/internfile/mimehandler.cpp \
 ${depth}/internfile/internfile.cpp \
 ${depth}/internfile/mh_exec.cpp \
 ${depth}/internfile/mh_html.cpp \
 ${depth}/internfile/mh_mail.cpp \
+${depth}/internfile/mh_mbox.cpp \
 ${depth}/internfile/mh_text.cpp \
-${depth}/internfile/mimehandler.cpp \
-${depth}/internfile/myhtmlparse.cpp \
 ${depth}/query/docseq.cpp \
 ${depth}/query/history.cpp \
 ${depth}/query/sortseq.cpp \

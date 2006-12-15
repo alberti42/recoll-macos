@@ -16,14 +16,19 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.6 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.7 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+#include <vector>
+using std::string;
+using std::vector;
 
-#include "rclconfig.h"
-#include "rcldb.h"
+#include "Filter.h"
 
-class MimeHandler;
+class RclConfig;
+namespace Rcl {
+class Doc;
+}
 
 /// Turn external file into internal representation, according to mime
 /// type etc
@@ -43,8 +48,8 @@ class FileInterner {
      *   mime type for the uncompressed version. This currently doubles up 
      *   to indicate that this object is for previewing (not indexing).
      */
-    FileInterner(const std::string &fn, RclConfig *cnf, const string& td,
-		 const std::string *mtype = 0);
+    FileInterner(const string &fn, RclConfig *cnf, const string& td,
+		 const string *mtype = 0);
 
     ~FileInterner();
 
@@ -67,15 +72,16 @@ class FileInterner {
     Status internfile(Rcl::Doc& doc, string &ipath);
 
  private:
-    string m_fn;
-    RclConfig *m_cfg;
-    const string &m_tdir;
-    MimeHandler *m_handler;
-
-    string m_tfile;
-    string m_mime;
+    RclConfig             *m_cfg;
+    string                 m_fn;
+    bool                   m_forPreview;
+    // m_tdir and m_tfile are used only for decompressing input file if needed
+    const string&          m_tdir; 
+    string                 m_tfile;
+    vector<Dijon::Filter*> m_handlers;
 
     void tmpcleanup();
+    static bool dijontorcl(Dijon::Filter *, Rcl::Doc&);
 };
 
 #endif /* _INTERNFILE_H_INCLUDED_ */

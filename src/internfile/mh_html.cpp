@@ -41,36 +41,31 @@ using namespace std;
 #endif /* NO_NAMESPACES */
 
 
-MimeHandler::Status 
-MimeHandlerHtml::mkDoc(RclConfig *conf, const string &fn, 
-			const string &mtype, Rcl::Doc &docout, string&)
+bool MimeHandlerHtml::set_document_file(const string &fn)
 {
     LOGDEB(("textHtmlToDoc: %s\n", fn.c_str()));
     string otext;
     if (!file_to_string(fn, otext)) {
 	LOGINFO(("textHtmlToDoc: cant read: %s\n", fn.c_str()));
-	return MimeHandler::MHError;
+	return false;
     }
-    return mkDoc(conf, fn, otext, mtype, docout);
+    return set_document_string(otext);
 }
 
-MimeHandler::Status 
-MimeHandlerHtml::mkDoc(RclConfig *conf, const string &, 
-			 const string& htext,
-			 const string &mtype, Rcl::Doc &docout)
+bool MimeHandlerHtml::set_document_string(const string& htext) 
 {
-    //LOGDEB(("textHtmlToDoc: htext: %s\n", htext.c_str()));
-    // Character set handling: the initial guessed charset depends on
-    // external factors: possible hint (ie mime charset in a mail
-    // message), charset guessing, or default configured charset.
-    string charset;
-    if (!charsethint.empty()) {
-	charset = charsethint;
-    } else if (conf->getGuessCharset()) {
-	charset = csguess(htext, conf->getDefCharset());
-    } else
-	charset = conf->getDefCharset();
+    m_html = htext;
+    m_havedoc = true;
+    return true;
+}
 
+bool MimeHandlerHtml::next_document()
+{
+    if (m_havedoc == false)
+	return false;
+    m_havedoc = false;
+    LOGDEB(("textHtmlToDoc: next_document\n"));
+    string charset = m_defcharset;
 
     // - We first try to convert from the default configured charset
     //   (which may depend of the current directory) to utf-8. If this
@@ -80,16 +75,16 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
     //   instead of the configuration one.
     LOGDEB(("textHtmlToDoc: charset before parsing: [%s]\n", charset.c_str()));
 
-    MyHtmlParser result;
+
+    MyHtmlParser p(m_metaData["content"]);
     for (int pass = 0; pass < 2; pass++) {
 	string transcoded;
 	LOGDEB(("Html::mkDoc: pass %d\n", pass));
-	MyHtmlParser p;
 	// Try transcoding. If it fails, use original text.
-	if (!transcode(htext, transcoded, charset, "UTF-8")) {
+	if (!transcode(m_html, transcoded, charset, "UTF-8")) {
 	    LOGERR(("textHtmlToDoc: transcode failed from cs '%s' to UTF-8\n",
 		    charset.c_str()));
-	    transcoded = htext;
+	    transcoded = m_html;
 	    // We don't know the charset, at all
 	    p.ocharset = p.charset = charset = "";
 	} else {
@@ -102,31 +97,29 @@ MimeHandlerHtml::mkDoc(RclConfig *conf, const string &,
 	try {
 	    p.parse_html(transcoded);
 	    // No exception: ok?
-	    result = p;
 	    break;
 	} catch (bool diag) {
-	    result = p;
 	    if (diag == true)
 		break;
 	    LOGDEB(("textHtmlToDoc: charset [%s] doc charset [%s]\n",
-		    charset.c_str(),result.doccharset.c_str()));
-	    if (!result.doccharset.empty() && 
-		!samecharset(result.doccharset, result.ocharset)) {
+		    charset.c_str(), p.doccharset.c_str()));
+	    if (!p.doccharset.empty() && 
+		!samecharset(p.doccharset, p.ocharset)) {
 		LOGDEB(("textHtmlToDoc: reparse for charsets\n"));
-		charset = result.doccharset;
+		charset = p.doccharset;
 	    } else {
 		LOGERR(("textHtmlToDoc:: error: non charset exception\n"));
-		return MimeHandler::MHError;
+		return false;
 	    }
 	}
     }
 
-    docout.origcharset = charset;
-    docout.text = result.dump;
-    //LOGDEB(("textHtmlToDoc: dump : %s\n", result.dump.c_str()));
-    docout.title = result.title;
-    docout.keywords = result.keywords;
-    docout.abstract = result.sample;
-    docout.dmtime = result.dmtime;
-    return MimeHandler::MHDone;
+    m_metaData["origcharset"] = m_defcharset;
+    m_metaData["charset"] = "utf-8";
+    m_metaData["title"] = p.title;
+    m_metaData["keywords"] = p.keywords;
+    m_metaData["modificationdate"] = p.dmtime;
+    m_metaData["sample"] = p.sample;
+    m_metaData["mimetype"] = "text/plain";
+    return true;
 }

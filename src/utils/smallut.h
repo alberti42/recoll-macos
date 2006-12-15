@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.22 2006-12-14 13:53:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.23 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <map>
@@ -51,7 +51,7 @@ extern bool stringToStrings(const string &s, list<string> &tokens);
  * Split input string. No handling of quoting
  */
 extern void stringToTokens(const string &s, list<string> &tokens, 
-			   const string &delims = " \t");
+			   const string &delims = " \t", bool skipinit=true);
 
 /** Convert string to boolean */
 extern bool stringToBool(const string &s);

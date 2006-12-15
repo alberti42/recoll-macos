@@ -16,12 +16,11 @@
  */
 #ifndef _MH_TEXT_H_INCLUDED_
 #define _MH_TEXT_H_INCLUDED_
-/* @(#$Id: mh_text.h,v 1.2 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_text.h,v 1.3 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+using std::string;
 
-#include "rclconfig.h"
-#include "rcldb.h"
 #include "mimehandler.h"
 
 /**
@@ -29,12 +28,15 @@
  *
  * Maybe try to guess charset, or use default, then transcode to utf8
  */
-class MimeHandlerText : public MimeHandler {
+class MimeHandlerText : public RecollFilter {
  public:
-    MimeHandler::Status mkDoc(RclConfig *conf, const std::string &fn, 
-			      const std::string &mtype, Rcl::Doc &docout, 
-			      std::string&);
-    
+    MimeHandlerText(const string& mt) : RecollFilter(mt) {}
+    virtual ~MimeHandlerText() {}
+    virtual bool set_document_file(const string &file_path);
+    virtual bool set_document_string(const string&);
+    virtual bool next_document();
+private:
+    string m_text;
 };
 
 #endif /* _MH_TEXT_H_INCLUDED_ */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.22 2006-12-14 13:53:43 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.23 2006-12-15 12:40:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -260,13 +260,14 @@ bool stringToStrings(const string &s, std::list<string> &tokens)
 }
 
 void stringToTokens(const string& str, list<string>& tokens,
-		    const string& delims)
+		    const string& delims, bool skipinit)
 {
-    string::size_type startPos, pos;
+    string::size_type startPos = 0, pos;
 
     for (pos = 0;;) { 
         // Skip initial delims, break if this eats all.
-        if ((startPos = str.find_first_not_of(delims, pos)) == string::npos)
+        if (skipinit && 
+	    (startPos = str.find_first_not_of(delims, pos)) == string::npos)
 	    break;
         // Find next delimiter or end of string (end of token)
         pos = str.find_first_of(delims, startPos);

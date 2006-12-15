@@ -14,38 +14,38 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef _MAIL_H_INCLUDED_
-#define _MAIL_H_INCLUDED_
-/* @(#$Id: mh_mail.h,v 1.9 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
+#ifndef _MBOX_H_INCLUDED_
+#define _MBOX_H_INCLUDED_
+/* @(#$Id: mh_mbox.h,v 1.1 2006-12-15 12:40:24 dockes Exp $  (C) 2004 J.F.Dockes */
 
-#include <sstream>
+#include <string>
+using std::string;
+
 #include "mimehandler.h"
-
-namespace Binc {
-    class MimeDocument;
-    class MimePart;
-}
 
 /** 
  * Translate a mail folder file into internal documents (also works
  * for maildir files). This has to keep state while parsing a mail folder
  * file. 
  */
-class MimeHandlerMail : public RecollFilter {
+class MimeHandlerMbox : public RecollFilter {
  public:
-    MimeHandlerMail(const string &mt) 
-	: RecollFilter(mt), m_bincdoc(0), m_fd(-1), m_stream(0) 
+    MimeHandlerMbox(const string& mime) 
+	: RecollFilter(mime), m_vfp(0), m_msgnum(0) 
     {}
-    virtual ~MimeHandlerMail();
+    virtual ~MimeHandlerMbox();
     virtual bool set_document_file(const string &file_path);
-    virtual bool set_document_string(const string &data);
     virtual bool next_document();
+    virtual bool skip_to_document(const string& ipath) {
+	m_ipath = ipath;
+	return true;
+    }
+
  private:
-    Binc::MimeDocument *m_bincdoc;
-    bool processMsg(Binc::MimePart *doc, int depth);
-    void walkmime(Binc::MimePart* doc, int depth);
-    int m_fd;
-    std::stringstream *m_stream;
+    string     m_fn;     // File name
+    void      *m_vfp;    // File pointer for folder
+    int        m_msgnum; // Current message number in folder. Starts at 1
+    string     m_ipath;
 };
 
-#endif /* _MAIL_H_INCLUDED_ */
+#endif /* _MBOX_H_INCLUDED_ */

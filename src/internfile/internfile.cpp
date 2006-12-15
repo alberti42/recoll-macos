@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.18 2006-12-13 09:13:18 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.19 2006-12-15 12:40:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,12 +32,14 @@ using namespace std;
 #endif /* NO_NAMESPACES */
 
 #include "internfile.h"
+#include "rcldoc.h"
 #include "mimetype.h"
 #include "debuglog.h"
 #include "mimehandler.h"
 #include "execmd.h"
 #include "pathut.h"
 #include "wipedir.h"
+#include "rclconfig.h"
 
 // Execute the command to uncompress a file into a temporary one.
 static bool uncompressfile(RclConfig *conf, const string& ifn, 
@@ -106,98 +108,262 @@ void FileInterner::tmpcleanup()
 // internfile
 FileInterner::FileInterner(const std::string &f, RclConfig *cnf, 
 			   const string& td, const string *imime)
-    : m_fn(f), m_cfg(cnf), m_tdir(td), m_handler(0)
+    : m_cfg(cnf), m_fn(f), m_forPreview(imime?true:false), m_tdir(td)
 {
-    // We are actually going to access the file, so it's ok
-    // performancewise to check this config variable at every call
-    // even if it can only change when we change directories
-    string usfc;
-    int usfci;
-    if (!cnf->getConfParam("usesystemfilecommand", usfc)) 
-	usfci = 0;
-    else 
-	usfci = atoi(usfc.c_str()) ? 1 : 0;
+    bool usfci = false;
+    cnf->getConfParam("usesystemfilecommand", &usfci);
     LOGDEB1(("FileInterner::FileInterner: usfci now %d\n", usfci));
-
-    bool forPreview = imime ? true : false;
 
     // We need to run mime type identification in any case to check
     // for a compressed file.
-    m_mime = mimetype(m_fn, m_cfg, usfci);
+    string l_mime = mimetype(m_fn, m_cfg, usfci);
 
     // If identification fails, try to use the input parameter. This
     // is then normally not a compressed type (it's the mime type from
     // the db), and is only set when previewing, not for indexing
-    if (m_mime.empty() && imime)
-	m_mime = *imime;
+    if (l_mime.empty() && imime)
+	l_mime = *imime;
 
-    if (!m_mime.empty()) {
+    if (!l_mime.empty()) {
 	// Has mime: check for a compressed file. If so, create a
 	// temporary uncompressed file, and rerun the mime type
 	// identification, then do the rest with the temp file.
 	list<string>ucmd;
-	if (m_cfg->getUncompressor(m_mime, ucmd)) {
+	if (m_cfg->getUncompressor(l_mime, ucmd)) {
 	    if (!uncompressfile(m_cfg, m_fn, ucmd, m_tdir, m_tfile)) {
 		return;
 	    }
 	    LOGDEB(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
 		    m_tdir.c_str(), m_tfile.c_str()));
 	    m_fn = m_tfile;
-	    m_mime = mimetype(m_fn, m_cfg, usfci);
-	    if (m_mime.empty() && imime)
-		m_mime = *imime;
+	    l_mime = mimetype(m_fn, m_cfg, usfci);
+	    if (l_mime.empty() && imime)
+		l_mime = *imime;
 	}
     }
 
-    if (m_mime.empty()) {
+    if (l_mime.empty()) {
 	// No mime type. We let it through as config may warrant that
 	// we index all file names
 	LOGDEB(("internfile: (no mime) [%s]\n", m_fn.c_str()));
     }
 
     // Look for appropriate handler (might still return empty)
-    m_handler = getMimeHandler(m_mime, m_cfg);
+    Dijon::Filter *df = getMimeHandler(l_mime, m_cfg);
 
-    if (!m_handler) {
+    if (!df) {
 	// No handler for this type, for now :( if indexallfilenames
 	// is set in the config, this normally wont happen (we get mh_unknown)
-	LOGDEB(("FileInterner::FileInterner: %s: no handler\n", 
-		m_mime.c_str()));
+	LOGDEB(("FileInterner:: no handler for %s\n", l_mime.c_str()));
 	return;
     }
-    m_handler->setForPreview(forPreview);
-    LOGDEB(("FileInterner::FileInterner: %s [%s]\n", m_mime.c_str(), 
+    df->set_property(Dijon::Filter::OPERATING_MODE, 
+			    m_forPreview ? "view" : "index");
+
+    string charset = m_cfg->getDefCharset();
+    df->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
+    if (!df->set_document_file(m_fn)) {
+	LOGERR(("FileInterner:: error parsing %s\n", m_fn.c_str()));
+	return;
+    }
+    m_handlers.reserve(20);
+    m_handlers.push_back(df);
+    LOGDEB(("FileInterner::FileInterner: %s [%s]\n", l_mime.c_str(), 
 	    m_fn.c_str()));
 }
 
+static const unsigned int MAXHANDLERS = 20;
+
 FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 {
-    if (!m_handler) {
-	LOGERR(("FileInterner::internfile: no handler !!\n"));
+    if (m_handlers.size() != 1) {
+	LOGERR(("FileInterner::internfile: bad stack size %d !!\n", 
+		m_handlers.size()));
 	return FIError;
     }
 
-    // Turn file into a document. The document has fields for title, body 
-    // etc.,  all text converted to utf8
-    MimeHandler::Status mhs = 
-	m_handler->mkDoc(m_cfg, m_fn, m_mime, doc, ipath);
-    FileInterner::Status ret = FIError;
-    switch (mhs) {
-    case MimeHandler::MHError: 
-	LOGERR(("FileInterner::internfile: error parsing %s\n", m_fn.c_str()));
-	break;
-    case MimeHandler::MHDone: ret = FIDone;break;
-    case MimeHandler::MHAgain: ret = FIAgain;break;
+    // Note that the vector is big enough for the maximum stack. All values
+    // over the last significant one are ""
+    vector<string> vipath(MAXHANDLERS);
+    int vipathidx = 0;
+    if (!ipath.empty()) {
+	list<string> lipath;
+	stringToTokens(ipath, lipath, "|", true);
+	vipath.insert(vipath.begin(), lipath.begin(), lipath.end());
+	if (!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
+	    LOGERR(("FileInterner::internfile: can't skip\n"));
+	    return FIError;
+	}
     }
 
-    doc.mimetype = m_mime;
-    return ret;
+
+    /* Try to get doc from the topmost filter */
+    while (!m_handlers.empty()) {
+	if (!vipath.empty()) {
+	    
+	}
+	if (!m_handlers.back()->has_documents()) {
+	    // No docs at the current top level. Pop and see if there
+	    // is something at the previous one
+	    delete m_handlers.back();
+	    m_handlers.pop_back();
+	    continue;
+	}
+
+	if (!m_handlers.back()->next_document()) {
+	    LOGERR(("FileInterner::internfile: next_document failed\n"));
+	    return FIError;
+	}
+
+	// Look at what we've got
+	const std::map<std::string, std::string> *docdata = 
+	    &m_handlers.back()->get_meta_data();
+	map<string,string>::const_iterator it;
+	string charset;
+	it = docdata->find("charset");
+	if (it != docdata->end())
+	    charset = it->second;
+	string mimetype;
+	it = docdata->find("mimetype");
+	if (it != docdata->end())
+	    mimetype = it->second;
+
+	LOGDEB(("FileInterner::internfile:next_doc is %s\n",mimetype.c_str()));
+	// If we find a text/plain doc, we're done
+	if (!strcmp(mimetype.c_str(), "text/plain"))
+	    break;
+
+	// Got a non text/plain doc. We need to stack another
+	// filter. Check current size
+	if (m_handlers.size() > MAXHANDLERS) {
+	    // Stack too big. Skip this and go on to check if there is
+	    // something else in the current back()
+	    LOGDEB(("FileInterner::internfile: stack too high\n"));
+	    continue;
+	}
+
+	Dijon::Filter *again = getMimeHandler(mimetype, m_cfg);
+	if (!again) {
+	    // If we can't find a filter, this doc can't be handled
+	    // but there can be other ones so we go on
+	    LOGERR(("FileInterner::internfile: no filter for [%s]\n",
+		    mimetype.c_str()));
+	    continue;
+	}
+	again->set_property(Dijon::Filter::OPERATING_MODE, 
+			    m_forPreview ? "view" : "index");
+	again->set_property(Dijon::Filter::DEFAULT_CHARSET, 
+			    charset);
+	string ns;
+	const string *txt = &ns;
+	it = docdata->find("content");
+	if (it != docdata->end())
+	    txt = &it->second;
+	if (!again->set_document_string(*txt)) {
+	    LOGERR(("FileInterner::internfile: error reparsing for %s\n", 
+		    m_fn.c_str()));
+	    delete again;
+	    continue;
+	}
+	// add filter and go on
+	m_handlers.push_back(again);
+	if (!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
+	    LOGERR(("FileInterner::internfile: can't skip\n"));
+	    return FIError;
+	}
+    }
+
+    if (m_handlers.empty()) {
+	LOGERR(("FileInterner::internfile: stack empty\n"));
+	return FIError;
+    }
+    if (!m_forPreview) {
+	string &ipath = doc.ipath;
+	bool hasipath = false;
+	for (vector<Dijon::Filter*>::const_iterator it = m_handlers.begin();
+	     it != m_handlers.end(); it++) {
+	    map<string,string>::const_iterator iti = 
+		(*it)->get_meta_data().find("ipath");
+	    if (iti != (*it)->get_meta_data().end()) {
+		if (!iti->second.empty())
+		    hasipath = true;
+		ipath += iti->second + "|";
+	    } else {
+		ipath += "|";
+	    }
+	}
+	if (hasipath) {
+	    LOGDEB(("IPATH [%s]\n", ipath.c_str()));
+	    string::size_type sit = ipath.find_last_not_of("|");
+	    if (sit == string::npos)
+		ipath.erase();
+	    else if (sit < ipath.length() -1)
+		ipath.erase(sit+1);
+	} else {
+	    ipath.erase();
+	}
+    }
+
+    dijontorcl(m_handlers.back(), doc);
+
+    // Destack what can be
+    while (!m_handlers.empty() && !m_handlers.back()->has_documents()) {
+	delete m_handlers.back();
+	m_handlers.pop_back();
+    }
+    if (m_handlers.empty() || !m_handlers.back()->has_documents())
+	return FIDone;
+    else 
+	return FIAgain;
+}
+
+
+bool FileInterner::dijontorcl(Dijon::Filter *df, Rcl::Doc& doc)
+{
+    const std::map<std::string, std::string> *docdata = &df->get_meta_data();
+    map<string,string>::const_iterator it;
+
+    it = docdata->find("mimetype");
+    if (it != docdata->end())
+	doc.mimetype = it->second;
+
+    it = docdata->find("origcharset");
+    if (it != docdata->end())
+	doc.origcharset = it->second;
+
+    it = docdata->find("content");
+    if (it != docdata->end())
+	doc.text = it->second;
+
+    it = docdata->find("title");
+    if (it != docdata->end())
+	doc.title = it->second;
+ 
+    it = docdata->find("keywords");
+    if (it != docdata->end())
+	doc.keywords = it->second;
+
+    it = docdata->find("modificationdate");
+    if (it != docdata->end())
+	doc.dmtime = it->second;
+
+    it = docdata->find("abstract");
+    if (it != docdata->end()) {
+	doc.abstract = it->second;
+    } else {
+	it = docdata->find("sample");
+	if (it != docdata->end()) 
+	    doc.abstract = it->second;
+    }
+    return true;
 }
 
 FileInterner::~FileInterner()
 {
-    delete m_handler; 
-    m_handler = 0;
+    while (!m_handlers.empty()) {
+	delete m_handlers.back();
+	m_handlers.pop_back(); 
+    }
     tmpcleanup();
 }
 
@@ -212,6 +378,8 @@ using namespace std;
 #include "debuglog.h"
 #include "rclinit.h"
 #include "internfile.h"
+#include "rclconfig.h"
+#include "rcldoc.h"
 
 static string thisprog;
 

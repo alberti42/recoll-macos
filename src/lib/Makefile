@@ -8,8 +8,8 @@ LIBS = librcl.a
 
 all: $(LIBS)
 
-OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o csguess.o indexer.o mimetype.o htmlparse.o internfile.o mh_exec.o mh_html.o mh_mail.o mh_text.o mimehandler.o myhtmlparse.o docseq.o history.o sortseq.o pathhash.o rcldb.o searchdata.o stemdb.o base64.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o md5.o mimeparse.o pathut.o readfile.o smallut.o transcode.o wipedir.o
-DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp csguess.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_text.dep.stamp mimehandler.dep.stamp myhtmlparse.dep.stamp docseq.dep.stamp history.dep.stamp sortseq.dep.stamp pathhash.dep.stamp rcldb.dep.stamp searchdata.dep.stamp stemdb.dep.stamp base64.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp md5.dep.stamp mimeparse.dep.stamp pathut.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp
+OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o csguess.o indexer.o mimetype.o htmlparse.o myhtmlparse.o mimehandler.o internfile.o mh_exec.o mh_html.o mh_mail.o mh_mbox.o mh_text.o docseq.o history.o sortseq.o pathhash.o rcldb.o searchdata.o stemdb.o base64.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o md5.o mimeparse.o pathut.o readfile.o smallut.o transcode.o wipedir.o
+DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp csguess.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp myhtmlparse.dep.stamp mimehandler.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp docseq.dep.stamp history.dep.stamp sortseq.dep.stamp pathhash.dep.stamp rcldb.dep.stamp searchdata.dep.stamp stemdb.dep.stamp base64.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp md5.dep.stamp mimeparse.dep.stamp pathut.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp
 
 librcl.a : $(DEPS) $(OBJS) unac.o
 	ar ru librcl.a $(OBJS) unac.o
@@ -35,6 +35,10 @@ mimetype.o : ../index/mimetype.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../index/mimetype.cpp
 htmlparse.o : ../internfile/htmlparse.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/htmlparse.cpp
+myhtmlparse.o : ../internfile/myhtmlparse.cpp
+	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/myhtmlparse.cpp
+mimehandler.o : ../internfile/mimehandler.cpp
+	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/mimehandler.cpp
 internfile.o : ../internfile/internfile.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/internfile.cpp
 mh_exec.o : ../internfile/mh_exec.cpp
@@ -43,12 +47,10 @@ mh_html.o : ../internfile/mh_html.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/mh_html.cpp
 mh_mail.o : ../internfile/mh_mail.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/mh_mail.cpp
+mh_mbox.o : ../internfile/mh_mbox.cpp
+	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/mh_mbox.cpp
 mh_text.o : ../internfile/mh_text.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/mh_text.cpp
-mimehandler.o : ../internfile/mimehandler.cpp
-	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/mimehandler.cpp
-myhtmlparse.o : ../internfile/myhtmlparse.cpp
-	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/myhtmlparse.cpp
 docseq.o : ../query/docseq.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../query/docseq.cpp
 history.o : ../query/history.cpp
@@ -124,6 +126,12 @@ mimetype.dep.stamp : ../index/mimetype.cpp
 htmlparse.dep.stamp : ../internfile/htmlparse.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/htmlparse.cpp > htmlparse.dep
 	touch htmlparse.dep.stamp
+myhtmlparse.dep.stamp : ../internfile/myhtmlparse.cpp
+	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/myhtmlparse.cpp > myhtmlparse.dep
+	touch myhtmlparse.dep.stamp
+mimehandler.dep.stamp : ../internfile/mimehandler.cpp
+	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/mimehandler.cpp > mimehandler.dep
+	touch mimehandler.dep.stamp
 internfile.dep.stamp : ../internfile/internfile.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/internfile.cpp > internfile.dep
 	touch internfile.dep.stamp
@@ -136,15 +144,12 @@ mh_html.dep.stamp : ../internfile/mh_html.cpp
 mh_mail.dep.stamp : ../internfile/mh_mail.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/mh_mail.cpp > mh_mail.dep
 	touch mh_mail.dep.stamp
+mh_mbox.dep.stamp : ../internfile/mh_mbox.cpp
+	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/mh_mbox.cpp > mh_mbox.dep
+	touch mh_mbox.dep.stamp
 mh_text.dep.stamp : ../internfile/mh_text.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/mh_text.cpp > mh_text.dep
 	touch mh_text.dep.stamp
-mimehandler.dep.stamp : ../internfile/mimehandler.cpp
-	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/mimehandler.cpp > mimehandler.dep
-	touch mimehandler.dep.stamp
-myhtmlparse.dep.stamp : ../internfile/myhtmlparse.cpp
-	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/myhtmlparse.cpp > myhtmlparse.dep
-	touch myhtmlparse.dep.stamp
 docseq.dep.stamp : ../query/docseq.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../query/docseq.cpp > docseq.dep
 	touch docseq.dep.stamp
@@ -217,13 +222,14 @@ include csguess.dep
 include indexer.dep
 include mimetype.dep
 include htmlparse.dep
+include myhtmlparse.dep
+include mimehandler.dep
 include internfile.dep
 include mh_exec.dep
 include mh_html.dep
 include mh_mail.dep
+include mh_mbox.dep
 include mh_text.dep
-include mimehandler.dep
-include myhtmlparse.dep
 include docseq.dep
 include history.dep
 include sortseq.dep

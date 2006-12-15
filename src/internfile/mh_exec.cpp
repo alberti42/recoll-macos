@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.7 2006-12-13 09:13:18 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.8 2006-12-15 12:40:02 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -37,15 +37,15 @@ public:
 
 // Execute an external program to translate a file from its native format
 // to html. Then call the html parser to do the actual indexing
-MimeHandler::Status 
-MimeHandlerExec::mkDoc(RclConfig *conf, const string &fn, 
-		       const string &mtype, Rcl::Doc &docout, string&)
+bool MimeHandlerExec::next_document()
 {
+    if (m_havedoc == false)
+	return false;
+    m_havedoc = false;
     if (params.empty()) {
 	// Hu ho
-	LOGERR(("MimeHandlerExec::mkDoc: empty params for mime %s\n",
-		mtype.c_str()));
-	return MimeHandler::MHError;
+	LOGERR(("MimeHandlerExec::mkDoc: empty params\n"));
+	return false;
     }
 
     // Command name
@@ -54,10 +54,10 @@ MimeHandlerExec::mkDoc(RclConfig *conf, const string &fn,
     // Build parameter list: delete cmd name and add the file name
     list<string>::iterator it = params.begin();
     list<string>myparams(++it, params.end());
-    myparams.push_back(fn);
+    myparams.push_back(m_fn);
 
     // Execute command and store the result text, which is supposedly html
-    string html;
+    string& html = m_metaData["content"];
     ExecCmd mexec;
     MEAdv adv;
     mexec.setAdvise(&adv);
@@ -67,10 +67,12 @@ MimeHandlerExec::mkDoc(RclConfig *conf, const string &fn,
     if (status) {
 	LOGERR(("MimeHandlerExec: command status 0x%x: %s\n", 
 		status, cmd.c_str()));
-	return MimeHandler::MHError;
+	return false;
     }
 
-    // Process/index  the html
-    MimeHandlerHtml hh;
-    return hh.mkDoc(conf, fn, html, mtype, docout);
+    m_metaData["origcharset"] = m_defcharset;
+    // All recoll filters output utf-8
+    m_metaData["charset"] = "utf-8";
+    m_metaData["mimetype"] = "text/html";
+    return true;
 }

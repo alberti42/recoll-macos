@@ -16,7 +16,7 @@
  */
 #ifndef _HTML_H_INCLUDED_
 #define _HTML_H_INCLUDED_
-/* @(#$Id: mh_html.h,v 1.7 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_html.h,v 1.8 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -24,26 +24,16 @@
 
 /**
  Translate html document to internal one. 
-
- There are 2 interfaces, depending if we're working on a file, or
- on a string. The string form is applied to the output of external
- handlers for foreign formats: they return a result in html, which
- has the advantage to be text (easy to use in shell-scripts), and
- semi-structured (can carry titles, abstracts, whatever)
 */
-class MimeHandlerHtml : public MimeHandler {
+class MimeHandlerHtml : public RecollFilter {
  public:
-    std::string charsethint;
-
-    /** Create internal document from html file (standard interface) */
-    virtual MimeHandler::Status 
-	mkDoc(RclConfig *conf, const std::string &fn, 
-	      const std::string &mtype, Rcl::Doc &docout, std::string&);
-
-    /** Create internal doc from html string (postfilter for external ones) */
-    virtual MimeHandler::Status 
-	mkDoc(RclConfig *conf, const std::string &fn, const std::string& htext,
-	      const std::string &mtype, Rcl::Doc &docout);
+    MimeHandlerHtml(const string& mt) : RecollFilter(mt) {}
+    virtual ~MimeHandlerHtml() {}
+    virtual bool set_document_file(const string &file_path);
+    virtual bool set_document_string(const string &data);
+    virtual bool next_document();
+private:
+    string m_html;
 };
 
 #endif /* _HTML_H_INCLUDED_ */
