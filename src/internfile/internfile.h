@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.7 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.8 2006-12-15 16:33:15 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -70,10 +70,12 @@ class FileInterner {
      * should be called again to get the following one(s).
      */
     Status internfile(Rcl::Doc& doc, string &ipath);
+    const string&  get_mimetype() {return m_mimetype;}
 
  private:
     RclConfig             *m_cfg;
     string                 m_fn;
+    string                 m_mimetype; // Mime type for [uncompressed] file
     bool                   m_forPreview;
     // m_tdir and m_tfile are used only for decompressing input file if needed
     const string&          m_tdir; 
@@ -81,7 +83,7 @@ class FileInterner {
     vector<Dijon::Filter*> m_handlers;
 
     void tmpcleanup();
-    static bool dijontorcl(Dijon::Filter *, Rcl::Doc&);
+    bool dijontorcl(Rcl::Doc&);
 };
 
 #endif /* _INTERNFILE_H_INCLUDED_ */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.24 2006-12-15 12:40:02 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.25 2006-12-15 16:33:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -94,9 +94,22 @@ bool MimeHandlerMail::next_document()
 {
     if (!m_havedoc)
 	return false;
-    m_havedoc = false;
-    m_metaData["mimetype"] = "text/plain";
-    return processMsg(m_bincdoc, 0);
+    bool res = false;
+
+    if (m_idx == -1) {
+	m_metaData["mimetype"] = "text/plain";
+	res =processMsg(m_bincdoc, 0);
+    } else {
+	res = processAttach();
+    }
+    m_idx++;
+    m_havedoc = m_idx < (int)m_attachments.size();
+    return res;
+}
+
+bool MimeHandlerMail::processAttach()
+{
+    return false;
 }
 
 // Transform a single message into a document. The subject becomes the
@@ -301,6 +314,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 		out += "]";
 	    out += "\n\n";
 	}
+	// m_attachments.push_back(&doc);
 	// We're done with this part
 	return;
     }
@@ -373,19 +387,18 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	map<string, string>::const_iterator it = 
 	    mh.get_meta_data().find("content");
 	if (it != mh.get_meta_data().end())
-	    putf8 = &it->second;
+	    out += it->second;
     } else {
 	// Transcode to utf-8 
 	if (!transcode(body, utf8, charset, "UTF-8")) {
 	    LOGERR(("walkmime: transcode failed from cs '%s' to UTF-8\n",
 		    charset.c_str()));
-	    putf8 = &body;
+	    out += body;
 	} else {
-	    putf8 = &utf8;
+	    out += utf8;
 	}
     }
-    if (putf8)
-	out += *putf8;
+
     if (out.length() && out[out.length()-1] != '\n')
 	out += '\n';
     

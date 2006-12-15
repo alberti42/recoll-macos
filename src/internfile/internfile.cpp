@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.19 2006-12-15 12:40:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.20 2006-12-15 16:33:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -149,6 +149,7 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
     }
 
     // Look for appropriate handler (might still return empty)
+    m_mimetype = l_mime;
     Dijon::Filter *df = getMimeHandler(l_mime, m_cfg);
 
     if (!df) {
@@ -172,6 +173,66 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 	    m_fn.c_str()));
 }
 
+FileInterner::~FileInterner()
+{
+    while (!m_handlers.empty()) {
+	delete m_handlers.back();
+	m_handlers.pop_back(); 
+    }
+    tmpcleanup();
+}
+
+static const string string_empty;
+static const string get_mimetype(Dijon::Filter* df)
+{
+    const std::map<std::string, std::string> *docdata = &df->get_meta_data();
+    map<string,string>::const_iterator it;
+    it = docdata->find("mimetype");
+    if (it != docdata->end()) {
+	return it->second;
+    } else {
+	return string_empty;
+    }
+}
+
+bool FileInterner::dijontorcl(Rcl::Doc& doc)
+{
+    Dijon::Filter *df = m_handlers.back();
+    const std::map<std::string, std::string> *docdata = &df->get_meta_data();
+    map<string,string>::const_iterator it;
+
+    it = docdata->find("origcharset");
+    if (it != docdata->end())
+	doc.origcharset = it->second;
+
+    it = docdata->find("content");
+    if (it != docdata->end())
+	doc.text = it->second;
+
+    it = docdata->find("title");
+    if (it != docdata->end())
+	doc.title = it->second;
+ 
+    it = docdata->find("keywords");
+    if (it != docdata->end())
+	doc.keywords = it->second;
+
+    it = docdata->find("modificationdate");
+    if (it != docdata->end())
+	doc.dmtime = it->second;
+
+    it = docdata->find("abstract");
+    if (it != docdata->end()) {
+	doc.abstract = it->second;
+    } else {
+	it = docdata->find("sample");
+	if (it != docdata->end()) 
+	    doc.abstract = it->second;
+    }
+    return true;
+}
+
+
 static const unsigned int MAXHANDLERS = 20;
 
 FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
@@ -182,8 +243,11 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	return FIError;
     }
 
+    // Ipath vector.
     // Note that the vector is big enough for the maximum stack. All values
     // over the last significant one are ""
+    // We set the ipath for the first handler here, others are set
+    // when they're pushed on the stack
     vector<string> vipath(MAXHANDLERS);
     int vipathidx = 0;
     if (!ipath.empty()) {
@@ -196,12 +260,8 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	}
     }
 
-
     /* Try to get doc from the topmost filter */
     while (!m_handlers.empty()) {
-	if (!vipath.empty()) {
-	    
-	}
 	if (!m_handlers.back()->has_documents()) {
 	    // No docs at the current top level. Pop and see if there
 	    // is something at the previous one
@@ -277,23 +337,42 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	LOGERR(("FileInterner::internfile: stack empty\n"));
 	return FIError;
     }
+
+    // If indexing, we have to collect the ipath stack. 
+
+    // While we're at it, we also set the mimetype, which is a special 
+    // property:we want to get it from the topmost doc
+    // with an ipath, not the last one which is always text/html
+    // Note that ipath is returned through the parameter not doc.ipath
     if (!m_forPreview) {
-	string &ipath = doc.ipath;
 	bool hasipath = false;
-	for (vector<Dijon::Filter*>::const_iterator it = m_handlers.begin();
-	     it != m_handlers.end(); it++) {
-	    map<string,string>::const_iterator iti = 
-		(*it)->get_meta_data().find("ipath");
-	    if (iti != (*it)->get_meta_data().end()) {
-		if (!iti->second.empty())
+	doc.mimetype = m_mimetype;
+	LOGDEB2(("INITIAL mimetype: %s\n", doc.mimetype.c_str()));
+	map<string,string>::const_iterator titi;
+
+	for (vector<Dijon::Filter*>::const_iterator hit = m_handlers.begin();
+	     hit != m_handlers.end(); hit++) {
+
+	    const map<string, string>& docdata = (*hit)->get_meta_data();
+	    map<string, string>::const_iterator iti = docdata.find("ipath");
+
+	    if (iti != docdata.end()) {
+		if (!iti->second.empty()) {
+		    // We have a non-empty ipath
 		    hasipath = true;
+		    titi = docdata.find("mimetype");
+		    if (titi != docdata.end())
+			doc.mimetype = titi->second;
+		}
 		ipath += iti->second + "|";
 	    } else {
 		ipath += "|";
 	    }
 	}
+
+	// Walk done, transform the list into a string
 	if (hasipath) {
-	    LOGDEB(("IPATH [%s]\n", ipath.c_str()));
+	    LOGDEB2(("IPATH [%s]\n", ipath.c_str()));
 	    string::size_type sit = ipath.find_last_not_of("|");
 	    if (sit == string::npos)
 		ipath.erase();
@@ -304,7 +383,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	}
     }
 
-    dijontorcl(m_handlers.back(), doc);
+    dijontorcl(doc);
 
     // Destack what can be
     while (!m_handlers.empty() && !m_handlers.back()->has_documents()) {
@@ -315,56 +394,6 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	return FIDone;
     else 
 	return FIAgain;
-}
-
-
-bool FileInterner::dijontorcl(Dijon::Filter *df, Rcl::Doc& doc)
-{
-    const std::map<std::string, std::string> *docdata = &df->get_meta_data();
-    map<string,string>::const_iterator it;
-
-    it = docdata->find("mimetype");
-    if (it != docdata->end())
-	doc.mimetype = it->second;
-
-    it = docdata->find("origcharset");
-    if (it != docdata->end())
-	doc.origcharset = it->second;
-
-    it = docdata->find("content");
-    if (it != docdata->end())
-	doc.text = it->second;
-
-    it = docdata->find("title");
-    if (it != docdata->end())
-	doc.title = it->second;
- 
-    it = docdata->find("keywords");
-    if (it != docdata->end())
-	doc.keywords = it->second;
-
-    it = docdata->find("modificationdate");
-    if (it != docdata->end())
-	doc.dmtime = it->second;
-
-    it = docdata->find("abstract");
-    if (it != docdata->end()) {
-	doc.abstract = it->second;
-    } else {
-	it = docdata->find("sample");
-	if (it != docdata->end()) 
-	    doc.abstract = it->second;
-    }
-    return true;
-}
-
-FileInterner::~FileInterner()
-{
-    while (!m_handlers.empty()) {
-	delete m_handlers.back();
-	m_handlers.pop_back(); 
-    }
-    tmpcleanup();
 }
 
 #else

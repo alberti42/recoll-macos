@@ -51,7 +51,7 @@ namespace Dijon
     {
     public:
 	/// Builds an empty filter.
-	Filter(const std::string &mime_type) {}
+	Filter(const std::string & /*mime_type */) {}
 	/// Destroys the filter.
 	virtual ~Filter() {}
 

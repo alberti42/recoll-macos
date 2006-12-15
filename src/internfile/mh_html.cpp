@@ -64,8 +64,8 @@ bool MimeHandlerHtml::next_document()
     if (m_havedoc == false)
 	return false;
     m_havedoc = false;
-    LOGDEB(("textHtmlToDoc: next_document\n"));
     string charset = m_defcharset;
+    LOGDEB(("textHtmlToDoc: next_document. defcharset: %s\n",charset.c_str()));
 
     // - We first try to convert from the default configured charset
     //   (which may depend of the current directory) to utf-8. If this
@@ -76,10 +76,11 @@ bool MimeHandlerHtml::next_document()
     LOGDEB(("textHtmlToDoc: charset before parsing: [%s]\n", charset.c_str()));
 
 
-    MyHtmlParser p(m_metaData["content"]);
+    MyHtmlParser result;
     for (int pass = 0; pass < 2; pass++) {
 	string transcoded;
 	LOGDEB(("Html::mkDoc: pass %d\n", pass));
+	MyHtmlParser p;
 	// Try transcoding. If it fails, use original text.
 	if (!transcode(m_html, transcoded, charset, "UTF-8")) {
 	    LOGERR(("textHtmlToDoc: transcode failed from cs '%s' to UTF-8\n",
@@ -97,16 +98,18 @@ bool MimeHandlerHtml::next_document()
 	try {
 	    p.parse_html(transcoded);
 	    // No exception: ok?
+	    result = p;
 	    break;
 	} catch (bool diag) {
+	    result = p;
 	    if (diag == true)
 		break;
 	    LOGDEB(("textHtmlToDoc: charset [%s] doc charset [%s]\n",
-		    charset.c_str(), p.doccharset.c_str()));
-	    if (!p.doccharset.empty() && 
-		!samecharset(p.doccharset, p.ocharset)) {
+		    charset.c_str(),result.doccharset.c_str()));
+	    if (!result.doccharset.empty() && 
+		!samecharset(result.doccharset, result.ocharset)) {
 		LOGDEB(("textHtmlToDoc: reparse for charsets\n"));
-		charset = p.doccharset;
+		charset = result.doccharset;
 	    } else {
 		LOGERR(("textHtmlToDoc:: error: non charset exception\n"));
 		return false;
@@ -115,11 +118,12 @@ bool MimeHandlerHtml::next_document()
     }
 
     m_metaData["origcharset"] = m_defcharset;
+    m_metaData["content"] = result.dump;
     m_metaData["charset"] = "utf-8";
-    m_metaData["title"] = p.title;
-    m_metaData["keywords"] = p.keywords;
-    m_metaData["modificationdate"] = p.dmtime;
-    m_metaData["sample"] = p.sample;
+    m_metaData["title"] = result.title;
+    m_metaData["keywords"] = result.keywords;
+    m_metaData["modificationdate"] = result.dmtime;
+    m_metaData["sample"] = result.sample;
     m_metaData["mimetype"] = "text/plain";
     return true;
 }

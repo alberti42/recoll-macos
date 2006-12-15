@@ -37,13 +37,11 @@ class MyHtmlParser : public HtmlParser {
     bool in_body_tag; 
     bool in_pre_tag;
     bool pending_space;
-    bool indexing_allowed;
-    string title, sample, keywords, dmtime;
-    string localdump;
-    string &dump;
+    string title, sample, keywords, dump, dmtime;
     string ocharset; // This is the charset our user thinks the doc was
     string charset; // This is the charset it was supposedly converted to
     string doccharset; // Set this to value of charset parameter in header
+    bool indexing_allowed;
     void process_text(const string &text);
     void opening_tag(const string &tag, const map<string,string> &p);
     void closing_tag(const string &tag);
@@ -54,16 +52,5 @@ class MyHtmlParser : public HtmlParser {
 	in_body_tag(false),
 	in_pre_tag(false),
 	pending_space(false),
-	indexing_allowed(true),
-	dump(localdump)
-    { }
-    MyHtmlParser(string& buf) :
-	in_script_tag(false),
-	in_style_tag(false),
-	in_body_tag(false),
-	in_pre_tag(false),
-	pending_space(false),
-	indexing_allowed(true),
-	dump(buf)
-    { }
+	indexing_allowed(true) { }
 };
