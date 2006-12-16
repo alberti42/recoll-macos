@@ -16,10 +16,11 @@
  */
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
-/* @(#$Id: pathut.h,v 1.10 2006-12-14 13:53:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: pathut.h,v 1.11 2006-12-16 15:31:51 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
+#include "refcntr.h"
 
 #ifndef NO_NAMESPACES
 using std::string;
@@ -53,5 +54,20 @@ extern bool path_isdir(const string& path);
 
 /// Create temporary directory
 extern bool maketmpdir(string& tdir, string& reason);
+
+/// Temporary file class
+class TempFileInternal {
+public:
+    TempFileInternal(const string& suffix);
+    ~TempFileInternal();
+    const char *filename() {return m_filename.c_str();}
+    const string &getreason() {return m_reason;}
+    bool ok() {return !m_filename.empty();}
+private:
+    string m_filename;
+    string m_reason;
+};
+
+typedef RefCntr<TempFileInternal> TempFile;
 
 #endif /* _PATHUT_H_INCLUDED_ */

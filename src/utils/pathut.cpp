@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.12 2006-12-14 13:53:43 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.13 2006-12-16 15:31:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@ static char rcsid[] = "@(#$Id: pathut.cpp,v 1.12 2006-12-14 13:53:43 dockes Exp 
 
 #ifndef TEST_PATHUT
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/param.h>
 #include <pwd.h>
 
@@ -34,44 +35,84 @@ using std::stack;
 
 #include "pathut.h"
 
-bool maketmpdir(string& tdir, string& reason)
+static const char *tmplocation()
 {
     const char *tmpdir = getenv("RECOLL_TMPDIR");
     if (!tmpdir)
 	tmpdir = getenv("TMPDIR");
     if (!tmpdir)
 	tmpdir = "/tmp";
-    tdir = path_cat(tmpdir, "rcltmpXXXXXX");
+    return tmpdir;
+}
 
-    {
-	char *cp = strdup(tdir.c_str());
-	if (!cp) {
-	    reason = "maketmpdir: out of memory (for file name !)\n";
-	    tdir.erase();
-	    return false;
-	}
-#ifdef HAVE_MKDTEMP
-	if (!mkdtemp(cp)) {
-#else
-	if (!mktemp(cp)) {
-#endif // HAVE_MKDTEMP
-	    free(cp);
-	    reason = "maketmpdir: mktemp failed\n";
-	    tdir.erase();
-	    return false;
-	}	
-	tdir = cp;
-	free(cp);
+bool maketmpdir(string& tdir, string& reason)
+{
+    tdir = path_cat(tmplocation(), "rcltmpXXXXXX");
+
+    char *cp = strdup(tdir.c_str());
+    if (!cp) {
+	reason = "maketmpdir: out of memory (for file name !)\n";
+	tdir.erase();
+	return false;
     }
+
+    if (!
+#ifdef HAVE_MKDTEMP
+	mkdtemp(cp)
+#else
+	mktemp(cp)
+#endif // HAVE_MKDTEMP
+	) {
+	free(cp);
+	reason = "maketmpdir: mktemp failed\n";
+	tdir.erase();
+	return false;
+    }	
+    tdir = cp;
+    free(cp);
+
 #ifndef HAVE_MKDTEMP
     if (mkdir(tdir.c_str(), 0700) < 0) {
-	reason = string("maketmpdir: mkdir ) + tdir : " failed";
+	reason = string("maketmpdir: mkdir ") + tdir + " failed";
 	tdir.erase();
 	return false;
     }
 #endif
+
     return true;
 }
+
+TempFileInternal::TempFileInternal(const string& suffix)
+{
+    string filename = path_cat(tmplocation(), "rcltmpfXXXXXX");
+    char *cp = strdup(filename.c_str());
+    if (!cp) {
+	m_reason = "Out of memory (for file name !)\n";
+	return;
+    }
+
+    if (!mktemp(cp)) {
+	free(cp);
+	m_reason = "maketmpdir: mktemp failed\n";
+	return;
+    }	
+    filename = cp;
+    free(cp);
+
+    // Yea not right
+    m_filename = filename + suffix;
+    if (close(open(m_filename.c_str(), O_CREAT|O_EXCL, 0600)) != 0) {
+	m_reason = string("Could not open/create") + m_filename;
+	m_filename.erase();
+    }
+}
+
+TempFileInternal::~TempFileInternal()
+{
+    if (!m_filename.empty())
+	unlink(m_filename.c_str());
+}
+
 
 void path_catslash(std::string &s) {
     if (s.empty() || s[s.length() - 1] != '/')
