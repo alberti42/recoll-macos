@@ -16,7 +16,7 @@
  */
 #ifndef _MAIL_H_INCLUDED_
 #define _MAIL_H_INCLUDED_
-/* @(#$Id: mh_mail.h,v 1.10 2006-12-15 16:33:15 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_mail.h,v 1.11 2006-12-16 15:39:54 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <sstream>
 #include <vector>
@@ -29,6 +29,8 @@ namespace Binc {
     class MimePart;
 }
 
+class MHMailAttach;
+
 /** 
  * Translate a mail folder file into internal documents (also works
  * for maildir files). This has to keep state while parsing a mail folder
@@ -40,9 +42,15 @@ class MimeHandlerMail : public RecollFilter {
 	: RecollFilter(mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
     {}
     virtual ~MimeHandlerMail();
-    virtual bool set_document_file(const string &file_path);
-    virtual bool set_document_string(const string &data);
+    virtual bool set_document_file(const string& file_path);
+    virtual bool set_document_string(const string& data);
+    virtual bool is_data_input_ok(DataInput input) const {
+	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
+	    return true;
+	return false;
+    }
     virtual bool next_document();
+    virtual bool skip_to_document(const string& ipath);
 
  private:
     bool processMsg(Binc::MimePart *doc, int depth);
@@ -53,7 +61,16 @@ class MimeHandlerMail : public RecollFilter {
     std::stringstream       *m_stream;
     int                      m_idx; // starts at -1 for self, then index into
                                     // attachments;
-    vector<Binc::MimePart *> m_attachments;
+    vector<MHMailAttach *>   m_attachments;
+};
+
+class MHMailAttach {
+public:
+    string          m_contentType;
+    string          m_filename;
+    string          m_charset;
+    string          m_contentTransferEncoding;
+    Binc::MimePart *m_part;
 };
 
 #endif /* _MAIL_H_INCLUDED_ */

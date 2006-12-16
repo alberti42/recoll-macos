@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.20 2006-12-15 16:33:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.21 2006-12-16 15:39:54 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@ static char rcsid[] = "@(#$Id: internfile.cpp,v 1.20 2006-12-15 16:33:15 dockes 
 #ifndef TEST_INTERNFILE
 
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
@@ -40,6 +41,10 @@ using namespace std;
 #include "pathut.h"
 #include "wipedir.h"
 #include "rclconfig.h"
+
+// The internal path element separator. This can't be the same as the rcldb 
+// file to ipath separator : "|"
+static const string isep(":");
 
 // Execute the command to uncompress a file into a temporary one.
 static bool uncompressfile(RclConfig *conf, const string& ifn, 
@@ -133,7 +138,7 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 	    if (!uncompressfile(m_cfg, m_fn, ucmd, m_tdir, m_tfile)) {
 		return;
 	    }
-	    LOGDEB(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
+	    LOGDEB1(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
 		    m_tdir.c_str(), m_tfile.c_str()));
 	    m_fn = m_tfile;
 	    l_mime = mimetype(m_fn, m_cfg, usfci);
@@ -167,77 +172,151 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 	LOGERR(("FileInterner:: error parsing %s\n", m_fn.c_str()));
 	return;
     }
-    m_handlers.reserve(20);
+    m_handlers.reserve(MAXHANDLERS);
+    for (unsigned int i = 0; i < MAXHANDLERS; i++)
+	m_tmpflgs[i] = false;
     m_handlers.push_back(df);
     LOGDEB(("FileInterner::FileInterner: %s [%s]\n", l_mime.c_str(), 
-	    m_fn.c_str()));
+	     m_fn.c_str()));
+    m_targetMType = "text/plain";
 }
 
 FileInterner::~FileInterner()
 {
-    while (!m_handlers.empty()) {
-	delete m_handlers.back();
-	m_handlers.pop_back(); 
-    }
     tmpcleanup();
+    for (vector<Dijon::Filter*>::iterator it = m_handlers.begin();
+	 it != m_handlers.end(); it++)
+	delete *it;
+    // m_tempfiles will take care of itself
 }
 
-static const string string_empty;
-static const string get_mimetype(Dijon::Filter* df)
+bool FileInterner::dataToTempFile(const string& dt, const string& mt, 
+				  string& fn)
 {
-    const std::map<std::string, std::string> *docdata = &df->get_meta_data();
-    map<string,string>::const_iterator it;
-    it = docdata->find("mimetype");
-    if (it != docdata->end()) {
-	return it->second;
+    // Find appropriate suffix for mime type
+    TempFile temp(new TempFileInternal(m_cfg->getSuffixFromMimeType(mt)));
+    if (temp->ok()) {
+	m_tmpflgs[m_handlers.size()-1] = true;
+	m_tempfiles.push_back(temp);
     } else {
-	return string_empty;
+	LOGERR(("FileInterner::dataToTempFile: cant create tempfile\n"));
+	return false;
     }
+
+    int fd = open(temp->filename(), O_WRONLY);
+    if (fd < 0) {
+	LOGERR(("FileInterner::dataToTempFile: open(%s) failed errno %d\n",
+		temp->filename(), errno));
+	return false;
+    }
+    if (write(fd, dt.c_str(), dt.length()) != (int)dt.length()) {
+	close(fd);
+	LOGERR(("FileInterner::dataToTempFile: write to %s failed errno %d\n",
+		temp->filename(), errno));
+	return false;
+    }
+    close(fd);
+    fn = temp->filename();
+    return true;
 }
+
+static inline bool getKeyValue(const map<string, string>& docdata, 
+			       const string& key, string& value)
+{
+    map<string,string>::const_iterator it;
+    it = docdata.find(key);
+    if (it != docdata.end()) {
+	value = it->second;
+	return true;
+    }
+    return false;
+}
+
+static const string keyab("abstract");
+static const string keycs("charset");
+static const string keyct("content");
+static const string keyfn("filename");
+static const string keykw("keywords");
+static const string keymd("modificationdate");
+static const string keymt("mimetype");
+static const string keyoc("origcharset");
+static const string keysm("sample");
+static const string keytt("title");
 
 bool FileInterner::dijontorcl(Rcl::Doc& doc)
 {
     Dijon::Filter *df = m_handlers.back();
-    const std::map<std::string, std::string> *docdata = &df->get_meta_data();
-    map<string,string>::const_iterator it;
+    const std::map<std::string, std::string>& docdata = df->get_meta_data();
 
-    it = docdata->find("origcharset");
-    if (it != docdata->end())
-	doc.origcharset = it->second;
-
-    it = docdata->find("content");
-    if (it != docdata->end())
-	doc.text = it->second;
-
-    it = docdata->find("title");
-    if (it != docdata->end())
-	doc.title = it->second;
- 
-    it = docdata->find("keywords");
-    if (it != docdata->end())
-	doc.keywords = it->second;
-
-    it = docdata->find("modificationdate");
-    if (it != docdata->end())
-	doc.dmtime = it->second;
-
-    it = docdata->find("abstract");
-    if (it != docdata->end()) {
-	doc.abstract = it->second;
-    } else {
-	it = docdata->find("sample");
-	if (it != docdata->end()) 
-	    doc.abstract = it->second;
-    }
+    getKeyValue(docdata, keyoc, doc.origcharset);
+    getKeyValue(docdata, keyct, doc.text);    
+    getKeyValue(docdata, keytt, doc.title);
+    getKeyValue(docdata, keykw, doc.keywords);
+    getKeyValue(docdata, keymd, doc.dmtime);
+    if (!getKeyValue(docdata, keyab, doc.abstract))
+	getKeyValue(docdata, keysm, doc.abstract);
+    LOGDEB1(("FILENAME: %s\n", doc.utf8fn.c_str()));
     return true;
 }
 
+// Collect the ipath stack. 
+// While we're at it, we also set the mimetype and filename, which are special 
+// properties: we want to get them from the topmost doc
+// with an ipath, not the last one which is usually text/plain
+void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath)
+{
+    bool hasipath = false;
 
-static const unsigned int MAXHANDLERS = 20;
+    // If there is no ipath stack, the mimetype is the one from the file
+    doc.mimetype = m_mimetype;
+    LOGDEB2(("INITIAL mimetype: %s\n", doc.mimetype.c_str()));
+
+    string ipathel;
+    for (vector<Dijon::Filter*>::const_iterator hit = m_handlers.begin();
+	 hit != m_handlers.end(); hit++) {
+	const map<string, string>& docdata = (*hit)->get_meta_data();
+	if (getKeyValue(docdata, "ipath", ipathel)) {
+	    if (!ipathel.empty()) {
+		// We have a non-empty ipath
+		hasipath = true;
+		getKeyValue(docdata, keymt, doc.mimetype);
+		getKeyValue(docdata, keyfn, doc.utf8fn);
+	    }
+	    ipath += ipathel + isep;
+	} else {
+	    ipath += isep;
+	}
+    }
+
+    // Trim empty tail elements in ipath.
+    if (hasipath) {
+	LOGDEB2(("IPATH [%s]\n", ipath.c_str()));
+	string::size_type sit = ipath.find_last_not_of(isep);
+	if (sit == string::npos)
+	    ipath.erase();
+	else if (sit < ipath.length() -1)
+	    ipath.erase(sit+1);
+    } else {
+	ipath.erase();
+    }
+}
+
+// Remove handler from stack. Clean up temp file if needed.
+void FileInterner::popHandler()
+{
+    int i = m_handlers.size()-1;
+    if (m_tmpflgs[i]) {
+	m_tempfiles.pop_back();
+	m_tmpflgs[i] = false;
+    }
+    delete m_handlers.back();
+    m_handlers.pop_back();
+}
 
 FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 {
-    if (m_handlers.size() != 1) {
+    LOGDEB(("FileInterner::internfile. ipath [%s]\n", ipath.c_str()));
+    if (m_handlers.size() < 1) {
 	LOGERR(("FileInterner::internfile: bad stack size %d !!\n", 
 		m_handlers.size()));
 	return FIError;
@@ -252,7 +331,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     int vipathidx = 0;
     if (!ipath.empty()) {
 	list<string> lipath;
-	stringToTokens(ipath, lipath, "|", true);
+	stringToTokens(ipath, lipath, isep, true);
 	vipath.insert(vipath.begin(), lipath.begin(), lipath.end());
 	if (!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
 	    LOGERR(("FileInterner::internfile: can't skip\n"));
@@ -261,12 +340,17 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     }
 
     /* Try to get doc from the topmost filter */
+    // Security counter: we try not to loop but ...
+    int loop = 0;
     while (!m_handlers.empty()) {
+	if (loop++ > 30) {
+	    LOGERR(("FileInterner:: looping!\n"));
+	    return FIError;
+	}
 	if (!m_handlers.back()->has_documents()) {
 	    // No docs at the current top level. Pop and see if there
 	    // is something at the previous one
-	    delete m_handlers.back();
-	    m_handlers.pop_back();
+	    popHandler();
 	    continue;
 	}
 
@@ -276,21 +360,16 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	}
 
 	// Look at what we've got
-	const std::map<std::string, std::string> *docdata = 
-	    &m_handlers.back()->get_meta_data();
-	map<string,string>::const_iterator it;
-	string charset;
-	it = docdata->find("charset");
-	if (it != docdata->end())
-	    charset = it->second;
-	string mimetype;
-	it = docdata->find("mimetype");
-	if (it != docdata->end())
-	    mimetype = it->second;
+	const std::map<std::string, std::string>& docdata = 
+	    m_handlers.back()->get_meta_data();
+	string charset, mimetype;
+	getKeyValue(docdata, keycs, charset);
+	getKeyValue(docdata, keymt, mimetype);
 
-	LOGDEB(("FileInterner::internfile:next_doc is %s\n",mimetype.c_str()));
+	LOGDEB(("FileInterner::internfile: next_doc is %s\n",
+		mimetype.c_str()));
 	// If we find a text/plain doc, we're done
-	if (!strcmp(mimetype.c_str(), "text/plain"))
+	if (!stringicmp(mimetype, m_targetMType))
 	    break;
 
 	// Got a non text/plain doc. We need to stack another
@@ -298,7 +377,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	if (m_handlers.size() > MAXHANDLERS) {
 	    // Stack too big. Skip this and go on to check if there is
 	    // something else in the current back()
-	    LOGDEB(("FileInterner::internfile: stack too high\n"));
+	    LOGINFO(("FileInterner::internfile: stack too high\n"));
 	    continue;
 	}
 
@@ -306,7 +385,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	if (!again) {
 	    // If we can't find a filter, this doc can't be handled
 	    // but there can be other ones so we go on
-	    LOGERR(("FileInterner::internfile: no filter for [%s]\n",
+	    LOGINFO(("FileInterner::internfile: no filter for [%s]\n",
 		    mimetype.c_str()));
 	    continue;
 	}
@@ -316,18 +395,37 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 			    charset);
 	string ns;
 	const string *txt = &ns;
-	it = docdata->find("content");
-	if (it != docdata->end())
+	map<string,string>::const_iterator it;
+	it = docdata.find("content");
+	if (it != docdata.end())
 	    txt = &it->second;
-	if (!again->set_document_string(*txt)) {
-	    LOGERR(("FileInterner::internfile: error reparsing for %s\n", 
+
+	bool setres = false;
+	if (again->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
+	    setres = again->set_document_string(*txt);
+	} else if (again->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
+	    setres = again->set_document_data(txt->c_str(), txt->length());
+	}else if(again->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
+	    string filename;
+	    if (dataToTempFile(*txt, mimetype, filename)) {
+		if (!(setres = again->set_document_file(filename))) {
+		    m_tmpflgs[m_handlers.size()-1] = false;
+		    m_tempfiles.pop_back();
+		}
+	    }
+	}
+	if (!setres) {
+	    LOGINFO(("FileInterner::internfile: set_doc failed inside %s\n", 
 		    m_fn.c_str()));
 	    delete again;
+	    if (m_forPreview)
+		return FIError;
 	    continue;
 	}
-	// add filter and go on
+	// add filter and go on, maybe this one will give us text...
 	m_handlers.push_back(again);
-	if (!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
+	if (!ipath.empty() &&
+	    !m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
 	    LOGERR(("FileInterner::internfile: can't skip\n"));
 	    return FIError;
 	}
@@ -338,63 +436,78 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	return FIError;
     }
 
-    // If indexing, we have to collect the ipath stack. 
-
-    // While we're at it, we also set the mimetype, which is a special 
-    // property:we want to get it from the topmost doc
-    // with an ipath, not the last one which is always text/html
+    // If indexing compute ipath and significant mimetype
     // Note that ipath is returned through the parameter not doc.ipath
-    if (!m_forPreview) {
-	bool hasipath = false;
-	doc.mimetype = m_mimetype;
-	LOGDEB2(("INITIAL mimetype: %s\n", doc.mimetype.c_str()));
-	map<string,string>::const_iterator titi;
-
-	for (vector<Dijon::Filter*>::const_iterator hit = m_handlers.begin();
-	     hit != m_handlers.end(); hit++) {
-
-	    const map<string, string>& docdata = (*hit)->get_meta_data();
-	    map<string, string>::const_iterator iti = docdata.find("ipath");
-
-	    if (iti != docdata.end()) {
-		if (!iti->second.empty()) {
-		    // We have a non-empty ipath
-		    hasipath = true;
-		    titi = docdata.find("mimetype");
-		    if (titi != docdata.end())
-			doc.mimetype = titi->second;
-		}
-		ipath += iti->second + "|";
-	    } else {
-		ipath += "|";
-	    }
-	}
-
-	// Walk done, transform the list into a string
-	if (hasipath) {
-	    LOGDEB2(("IPATH [%s]\n", ipath.c_str()));
-	    string::size_type sit = ipath.find_last_not_of("|");
-	    if (sit == string::npos)
-		ipath.erase();
-	    else if (sit < ipath.length() -1)
-		ipath.erase(sit+1);
-	} else {
-	    ipath.erase();
-	}
-    }
+    if (!m_forPreview)
+	collectIpathAndMT(doc, ipath);
 
     dijontorcl(doc);
 
     // Destack what can be
     while (!m_handlers.empty() && !m_handlers.back()->has_documents()) {
-	delete m_handlers.back();
-	m_handlers.pop_back();
+	popHandler();
     }
-    if (m_handlers.empty() || !m_handlers.back()->has_documents())
+    if (m_handlers.empty())
 	return FIDone;
     else 
 	return FIAgain;
 }
+
+
+class DirWiper {
+ public:
+    string dir;
+    bool do_it;
+    DirWiper(string d) : dir(d), do_it(true) {}
+    ~DirWiper() {
+	if (do_it) {
+	    wipedir(dir);
+	    rmdir(dir.c_str());
+	}
+    }
+};
+
+bool FileInterner::idocTempFile(TempFile& otemp, RclConfig *cnf, 
+				const string& fn, const string& ipath,
+				const string& mtype)
+{
+    string tmpdir, reason;
+    if (!maketmpdir(tmpdir, reason))
+	return false;
+    DirWiper wiper(tmpdir);
+
+    FileInterner interner(fn, cnf, tmpdir, &mtype);
+    interner.setTargetMType(mtype);
+    Rcl::Doc doc;
+    string mipath = ipath;
+    Status ret = interner.internfile(doc, mipath);
+    if (ret == FileInterner::FIError) {
+	LOGERR(("FileInterner::idocTempFile: internfile() failed\n"));
+	return false;
+    }
+    TempFile temp(new TempFileInternal(cnf->getSuffixFromMimeType(mtype)));
+    if (!temp->ok()) {
+	LOGERR(("FileInterner::idocTempFile: cannot create temporary file"));
+	return false;
+    }
+    int fd = open(temp->filename(), O_WRONLY);
+    if (fd < 0) {
+	LOGERR(("FileInterner::idocTempFile: open(%s) failed errno %d\n",
+		temp->filename(), errno));
+	return false;
+    }
+    const string& dt = doc.text;
+    if (write(fd, dt.c_str(), dt.length()) != (int)dt.length()) {
+	close(fd);
+	LOGERR(("FileInterner::idocTempFile: write to %s failed errno %d\n",
+		temp->filename(), errno));
+	return false;
+    }
+    close(fd);
+    otemp = temp;
+    return true;
+}
+
 
 #else
 

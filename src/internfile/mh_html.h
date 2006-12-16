@@ -16,7 +16,7 @@
  */
 #ifndef _HTML_H_INCLUDED_
 #define _HTML_H_INCLUDED_
-/* @(#$Id: mh_html.h,v 1.8 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_html.h,v 1.9 2006-12-16 15:39:54 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -31,6 +31,11 @@ class MimeHandlerHtml : public RecollFilter {
     virtual ~MimeHandlerHtml() {}
     virtual bool set_document_file(const string &file_path);
     virtual bool set_document_string(const string &data);
+    virtual bool is_data_input_ok(DataInput input) const {
+	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
+	    return true;
+	return false;
+    }
     virtual bool next_document();
 private:
     string m_html;

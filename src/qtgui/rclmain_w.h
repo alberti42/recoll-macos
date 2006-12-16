@@ -29,6 +29,7 @@
 #include "searchdata.h"
 #include "spell_w.h"
 #include "refcntr.h"
+#include "pathut.h"
 
 #if QT_VERSION < 0x040000
 #include "rclmain.h"
@@ -64,9 +65,9 @@ public:
     }
     ~RclMain() {}
 
-    virtual bool close( bool );
 
 public slots:
+    virtual bool close();
     virtual void fileExit();
     virtual void periodic100();
     virtual void startIndexing();
@@ -103,7 +104,8 @@ private:
     RefCntr<Rcl::SearchData> m_searchData;
     DocSeqSortSpec           m_sortspecs;
     RefCntr<DocSequence>     m_docSource;
-
+    
+    vector<TempFile>         m_tempfiles;
     // Serial number of current search for this process.
     // Used to match to preview windows
     int                      m_searchId; 

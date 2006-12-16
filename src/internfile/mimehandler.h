@@ -16,7 +16,7 @@
  */
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-/* @(#$Id: mimehandler.h,v 1.13 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimehandler.h,v 1.14 2006-12-16 15:39:54 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -66,8 +66,12 @@ public:
 	return false;
     }
 
-    virtual DataInput get_required_data_input() const 
-    {return DOCUMENT_FILE_NAME;}
+    virtual bool is_data_input_ok(DataInput input) const {
+	if (input == DOCUMENT_FILE_NAME)
+	    return true;
+	return false;
+    }
+
     virtual string get_error() const {
 	return m_reason;
     }

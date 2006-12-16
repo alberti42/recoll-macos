@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.14 2006-12-14 13:53:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.15 2006-12-16 15:39:54 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -66,6 +66,7 @@ using std::pair;
 #include "refcntr.h"
 #include "ssearch_w.h"
 #include "execmd.h"
+#include "internfile.h"
 
 #include "rclmain_w.h"
 #include "moc_rclmain_w.cpp"
@@ -161,15 +162,6 @@ void RclMain::init()
 #endif
 }
 
-// We also want to get rid of the advanced search form and previews
-// when we exit (not our children so that it's not systematically
-// created over the main form). 
-bool RclMain::close(bool)
-{
-    LOGDEB(("RclMain::close\n"));
-    fileExit();
-    return false;
-}
 
 //#define SHOWEVENTS
 #if defined(SHOWEVENTS)
@@ -257,9 +249,20 @@ static const char *eventTypeToStr(int tp)
 }
 #endif
 
+// We also want to get rid of the advanced search form and previews
+// when we exit (not our children so that it's not systematically
+// created over the main form). 
+bool RclMain::close()
+{
+    LOGDEB(("RclMain::close\n"));
+    fileExit();
+    return false;
+}
+
 void RclMain::fileExit()
 {
-    LOGDEB1(("RclMain: fileExit\n"));
+    LOGDEB(("RclMain: fileExit\n"));
+    m_tempfiles.clear();
     prefs.mainwidth = width();
     prefs.mainheight = height();
     prefs.ssearchTyp = sSearch->searchTypCMB->currentItem();
@@ -686,15 +689,38 @@ void RclMain::startNativeViewer(int docnum)
 	}
     }
 
-    string fn = urltolocalpath(doc.url);
-    string url = url_encode(doc.url, 7);
-    string ipath = doc.ipath;
-    // Substitute %u (url) and %f (file name) inside prototype command
+    // For files with an ipath, we do things differently depending if the 
+    // configured command seems to be able to grok it or not.
+    bool wantsipath = cmd.find("%i") != string::npos;
+    bool istempfile = false;
+    string fn, url;
+    if (doc.ipath.empty() || wantsipath) {
+	fn = urltolocalpath(doc.url);
+	url = url_encode(doc.url, 7);
+    } else {
+	// There is an ipath and the command does not know about
+	// them. We need a temp file.
+	TempFile temp;
+	if (!FileInterner::idocTempFile(temp, rclconfig, 
+					urltolocalpath(doc.url), 
+					doc.ipath, doc.mimetype)) {
+	    QMessageBox::warning(0, "Recoll",
+				 tr("Cannot extract document or create "
+				    "temporary file"));
+	    return;
+	}
+	istempfile = true;
+	m_tempfiles.push_back(temp);
+	fn = temp->filename();
+	url = string("file://") + fn;
+    }
+
+    // Substitute %xx inside prototype command
     string ncmd;
     map<char, string> subs;
     subs['u'] = escapeShell(url);
     subs['f'] = escapeShell(fn);
-    subs['i'] = escapeShell(ipath);
+    subs['i'] = escapeShell(doc.ipath);
     pcSubst(cmd, ncmd, subs);
 
     ncmd += " &";
@@ -707,7 +733,10 @@ void RclMain::startNativeViewer(int docnum)
 	    QString::fromUtf8(prcmd.c_str()) + "]";
 	stb->message(msg, 5000);
     }
-    g_dynconf->enterDoc(fn, doc.ipath);
+    if (!istempfile)
+	g_dynconf->enterDoc(fn, doc.ipath);
+    // We should actually monitor these processes so that we can
+    // delete the temp files when they exit
     system(ncmd.c_str());
 }
 

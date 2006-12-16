@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.56 2006-12-05 15:23:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.57 2006-12-16 15:39:54 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -281,6 +281,7 @@ int main(int argc, char **argv)
 
     // Connect exit handlers etc..
     app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
+    app.connect(&app, SIGNAL(aboutToQuit()), mainWindow, SLOT(close()));
     QTimer *timer = new QTimer(&app);
     mainWindow->connect(timer, SIGNAL(timeout()), 
 			mainWindow, SLOT(periodic100()));

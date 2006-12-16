@@ -16,13 +16,14 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.8 2006-12-15 16:33:15 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.9 2006-12-16 15:39:54 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
 using std::string;
 using std::vector;
 
+#include "pathut.h"
 #include "Filter.h"
 
 class RclConfig;
@@ -30,10 +31,13 @@ namespace Rcl {
 class Doc;
 }
 
-/// Turn external file into internal representation, according to mime
-/// type etc
+/** 
+ * A class to convert a file into possibly multiple documents in internal 
+ * representation.
+ */
 class FileInterner {
  public:
+
     /**
      * Identify and possibly decompress file, create adequate
      * handler. The mtype parameter is only set when the object is
@@ -70,20 +74,39 @@ class FileInterner {
      * should be called again to get the following one(s).
      */
     Status internfile(Rcl::Doc& doc, string &ipath);
+
+    /** Return the file's mimetype (useful for container files) */
     const string&  get_mimetype() {return m_mimetype;}
 
+    /** We normally always return text/plain data. A caller can request
+     *  that we stop conversion at the native document type (ie: text/html) 
+     */
+    void setTargetMType(const string& tp) {m_targetMType = tp;}
+
+    /** Utility function: extract internal document and make temporary file */
+    static bool idocTempFile(TempFile& temp, RclConfig *cnf, const string& fn, 
+			     const string& ipath, const string& mtype);
+
  private:
+    static const unsigned int MAXHANDLERS = 20;
     RclConfig             *m_cfg;
     string                 m_fn;
     string                 m_mimetype; // Mime type for [uncompressed] file
     bool                   m_forPreview;
+    string                 m_targetMType;
     // m_tdir and m_tfile are used only for decompressing input file if needed
     const string&          m_tdir; 
     string                 m_tfile;
     vector<Dijon::Filter*> m_handlers;
+    bool                   m_tmpflgs[MAXHANDLERS];
+    vector<TempFile>       m_tempfiles;
 
     void tmpcleanup();
     bool dijontorcl(Rcl::Doc&);
+    void collectIpathAndMT(Rcl::Doc&, string& ipath);
+    bool dataToTempFile(const string& data, const string& mt, string& fn);
+    void popHandler();
 };
 
+ 
 #endif /* _INTERNFILE_H_INCLUDED_ */
