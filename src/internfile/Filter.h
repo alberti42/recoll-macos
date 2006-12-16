@@ -36,7 +36,7 @@ namespace Dijon
      * The aim is to let the client application know before-hand whether
      * it should load documents or not.
      */
-    typedef int (get_filter_data_input_func)(void);
+    typedef bool (check_filter_data_input_func)(int);
     /** Returns a Filter that handles the given MIME type.
      * The Filter object is allocated with new.
      * This function is exported by dynamically loaded filter libraries
@@ -51,7 +51,7 @@ namespace Dijon
     {
     public:
 	/// Builds an empty filter.
-	Filter(const std::string & /*mime_type */) {}
+	Filter(const std::string &mime_type) : m_mimeType(mime_type) {}
 	/// Destroys the filter.
 	virtual ~Filter() {}
 
@@ -64,7 +64,7 @@ namespace Dijon
 	typedef enum { DOCUMENT_DATA=0, DOCUMENT_STRING, DOCUMENT_FILE_NAME, DOCUMENT_URI } DataInput;
 
 	/** Input properties supported by the filter.
-	 * - PREFERRED_CHARSET is the charset preferred by the client application.
+	 * - DEFAULT_CHARSET is the charset preferred by the client application.
 	 * The filter will convert document's content to this charset if possible.
 	 * - OPERATING_MODE can be set to either view or index.
 	 */
@@ -73,8 +73,14 @@ namespace Dijon
 
 	// Information.
 
+	/// Returns the MIME type handled by the filter.
+	std::string get_mime_type(void) const
+	{
+		return m_mimeType;
+	}
+
 	/// Returns what data the filter requires as input.
-	virtual DataInput get_required_data_input(void) const = 0;
+	virtual bool is_data_input_ok(DataInput input) const = 0;
 
 
 	// Initialization.
@@ -88,17 +94,25 @@ namespace Dijon
 	 * Caller should ensure the given pointer is valid until the
 	 * Filter object is destroyed, as some filters may not need to
 	 * do a deep copy of the data.
+	 * Call next_document() to position the filter onto the first document.
 	 * Returns false if this input is not supported or an error occured.
 	 */
 	virtual bool set_document_data(const char *data_ptr, unsigned int data_length) = 0;
-	virtual bool set_document_string(const string&) = 0;
+
+	/** (Re)initializes the filter with the given data.
+	 * Call next_document() to position the filter onto the first document.
+	 * Returns false if this input is not supported or an error occured.
+	 */
+	virtual bool set_document_string(const std::string &data_str) = 0;
 
 	/** (Re)initializes the filter with the given file.
+	 * Call next_document() to position the filter onto the first document.
 	 * Returns false if this input is not supported or an error occured.
 	 */
 	virtual bool set_document_file(const std::string &file_path) = 0;
 
 	/** (Re)initializes the filter with the given URI.
+	 * Call next_document() to position the filter onto the first document.
 	 * Returns false if this input is not supported or an error occured.
 	 */
 	virtual bool set_document_uri(const std::string &uri) = 0;
@@ -149,6 +163,8 @@ namespace Dijon
 	}
 
     protected:
+	/// The MIME type handled by the filter.
+	std::string m_mimeType;
 	/// Metadata dictionary.
 	std::map<std::string, std::string> m_metaData;
 
