@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.27 2006-12-14 13:53:42 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.28 2006-12-16 15:30:02 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -101,6 +101,9 @@ class RclConfig {
 
     /** Use mimemap to compute mimetype */
     string getMimeTypeFromSuffix(const string &suffix);
+
+    /** Get appropriate suffix for mime type. This is inefficient */
+    string getSuffixFromMimeType(const string &mt);
 
     /** Get input filter from mimeconf for mimetype */
     string getMimeHandlerDef(const string &mimetype);

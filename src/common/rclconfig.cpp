@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.36 2006-12-14 13:53:42 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.37 2006-12-16 15:30:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -228,6 +228,20 @@ string RclConfig::getMimeTypeFromSuffix(const string &suff)
     string mtype;
     mimemap->get(suff, mtype, m_keydir);
     return mtype;
+}
+
+string RclConfig::getSuffixFromMimeType(const string &mt)
+{
+    string suffix;
+    list<string>sfs = mimemap->getNames("");
+    string mt1;
+    for (list<string>::const_iterator it = sfs.begin(); 
+	 it != sfs.end(); it++) {
+	if (mimemap->get(*it, mt1, ""))
+	    if (!stringicmp(mt, mt1))
+		return *it;
+    }
+    return "";
 }
 
 string RclConfig::getMimeHandlerDef(const std::string &mtype)
