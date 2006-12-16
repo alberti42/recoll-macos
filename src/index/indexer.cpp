@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.47 2006-12-15 16:33:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.48 2006-12-16 15:30:32 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -398,8 +398,11 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	    hadNullIpath = true;
 	else
 	    doc.ipath = ipath;
-	
-	doc.utf8fn = utf8fn;
+
+	// Note that the filter may have its own idea of the file name 
+	// (ie: mail attachment)
+	if (doc.utf8fn.empty())
+	    doc.utf8fn = utf8fn;
 
 	// Add document to database
 	if (!m_db.add(fn, doc, stp)) 
