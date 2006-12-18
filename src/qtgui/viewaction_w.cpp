@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.2 2006-12-18 12:05:29 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.3 2006-12-18 16:45:52 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -23,12 +23,18 @@ static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.2 2006-12-18 12:05:29 dockes
 
 using namespace std;
 
-#include <qcombobox.h>
-#include <qspinbox.h>
-#include <qcheckbox.h>
 #include <qpushbutton.h>
+#include <qtimer.h>
+
+#if (QT_VERSION < 0x040000)
 #include <qlistview.h>
-#include <qlayout.h>
+#else
+#include <q3listview.h>
+#define QListView Q3ListView
+#define QListViewItem Q3ListViewItem
+#define QListViewItemIterator Q3ListViewItemIterator
+#endif
+
 #include <qmessagebox.h>
 #include <qinputdialog.h>
 
@@ -42,13 +48,24 @@ void ViewAction::init()
 {
     connect(closePB, SIGNAL(clicked()), this, SLOT(close()));
     connect(chgActPB, SIGNAL(clicked()), this, SLOT(editAction()));
-   connect(actionsLV,SIGNAL(doubleClicked(QListViewItem *,const QPoint &,int)),
+    connect(actionsLV,
+#if (QT_VERSION < 0x040000)
+	   SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),
+#else
+	   SIGNAL(doubleClicked(Q3ListViewItem *, const QPoint &, int)),
+#endif
 	   this, SLOT(editAction()));
+
+    // Note: could get the column width setting to work in qt4
+    actionsLV->setColumnWidthMode(0, QListView::Manual);
+    actionsLV->setColumnWidth(0, 300);
+    actionsLV->setColumnWidthMode(1, QListView::Manual);
+    actionsLV->setColumnWidth(1, 120);
+
     fillLists();
-    actionsLV->setColumnWidth(0, 150);
-    actionsLV->setColumnWidth(1, 150);
-    resize(550,350);
+    resize(QSize(450, 250).expandedTo(minimumSizeHint()) );
 }
+
 void ViewAction::fillLists()
 {
     actionsLV->clear();
@@ -61,6 +78,13 @@ void ViewAction::fillLists()
 			  QString::fromAscii(it->second.c_str()));
     }
 
+}
+
+// To avoid modifying the listview state from the dbl click signal, as
+// advised by the manual
+void ViewAction::listDblClicked()
+{
+    QTimer::singleShot(0, this, SLOT(editAction()));
 }
 
 void ViewAction::editAction()

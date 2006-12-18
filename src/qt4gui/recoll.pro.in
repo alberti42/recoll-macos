@@ -12,7 +12,8 @@ HEADERS	+= \
 	../qtgui/sort_w.h \
 	../qtgui/searchclause_w.h \
 	../qtgui/ssearch_w.h \
-	../qtgui/uiprefs_w.h
+	../qtgui/uiprefs_w.h \
+	../qtgui/viewaction_w.h
 
 
 SOURCES	+= \
@@ -28,7 +29,8 @@ SOURCES	+= \
         ../qtgui/sort_w.cpp \
 	../qtgui/searchclause_w.cpp \
         ../qtgui/ssearch_w.cpp \
-        ../qtgui/uiprefs_w.cpp
+        ../qtgui/uiprefs_w.cpp \
+	../qtgui/viewaction_w.cpp
 
 FORMS	= \
 	advsearch.ui \
@@ -37,7 +39,8 @@ FORMS	= \
 	rclmain.ui \
 	sort.ui \
 	ssearchb.ui \
-	uiprefs.ui 
+	uiprefs.ui \
+	viewaction.ui
 
 RESOURCES = recoll.qrc
 
