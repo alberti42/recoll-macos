@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.1 2006-12-14 13:53:43 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.2 2006-12-18 12:05:29 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,8 @@ void ViewAction::init()
 {
     connect(closePB, SIGNAL(clicked()), this, SLOT(close()));
     connect(chgActPB, SIGNAL(clicked()), this, SLOT(editAction()));
+   connect(actionsLV,SIGNAL(doubleClicked(QListViewItem *,const QPoint &,int)),
+	   this, SLOT(editAction()));
     fillLists();
     actionsLV->setColumnWidth(0, 150);
     actionsLV->setColumnWidth(1, 150);

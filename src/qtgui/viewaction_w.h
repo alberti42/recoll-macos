@@ -1,6 +1,6 @@
 #ifndef _VIEWACTION_W_H_INCLUDED_
 #define _VIEWACTION_W_H_INCLUDED_
-/* @(#$Id: viewaction_w.h,v 1.1 2006-12-14 13:53:43 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: viewaction_w.h,v 1.2 2006-12-18 12:05:29 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #endif
 
 class QDialog;
+class QMouseEvent;
 
 //MOC_SKIP_BEGIN
 #if QT_VERSION < 0x040000

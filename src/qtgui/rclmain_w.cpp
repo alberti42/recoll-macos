@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.15 2006-12-16 15:39:54 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.16 2006-12-18 12:05:29 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -248,6 +248,11 @@ static const char *eventTypeToStr(int tp)
     }
 }
 #endif
+
+void RclMain::closeEvent( QCloseEvent * )
+{
+    fileExit();
+}
 
 // We also want to get rid of the advanced search form and previews
 // when we exit (not our children so that it's not systematically

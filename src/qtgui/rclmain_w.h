@@ -93,6 +93,8 @@ public slots:
     virtual void previewPrevInTab(int sid, int docnum);
     virtual void previewExposed(int sid, int docnum);
     virtual void resetSearch();
+protected:
+    virtual void closeEvent( QCloseEvent * );
 
 private:
     Preview *curPreview;
