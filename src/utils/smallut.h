@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.23 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.24 2006-12-18 12:06:11 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <map>
@@ -27,10 +27,11 @@ using std::list;
 using std::map;
 #endif /* NO_NAMESPACES */
 
+// Note these are all ascii routines
 extern int stringicmp(const string& s1, const string& s2);
 extern int stringlowercmp(const string& alreadylower, const string& s2);
 extern int stringuppercmp(const string& alreadyupper, const string& s2); 
-
+extern void stringtolower(string& io);
 // Is one string the end part of the other ?
 extern int stringisuffcmp(const string& s1, const string& s2);
 

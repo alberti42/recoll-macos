@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.23 2006-12-15 12:40:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.24 2006-12-18 12:06:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,15 @@ int stringicmp(const string & s1, const string& s2)
 	    ++it1; ++it2;
 	}
 	return size1 == size2 ? 0 : -1;
+    }
+}
+void stringtolower(string& io)
+{
+    string::iterator it = io.begin();
+    string::iterator ite = io.end();
+    while (it != ite) {
+	*it = ::tolower(*it);
+	it++;
     }
 }
 

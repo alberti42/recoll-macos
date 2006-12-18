@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.26 2006-12-16 15:39:54 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.27 2006-12-18 12:06:11 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -424,6 +424,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	    return;
 	}
 	att->m_contentType = content_type.value;
+	stringtolower(att->m_contentType);
 	att->m_filename = filename;
 	att->m_charset = charset;
 	att->m_contentTransferEncoding = cte;

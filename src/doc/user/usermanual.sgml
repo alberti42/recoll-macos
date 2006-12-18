@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.29 2006-12-14 13:53:42 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.30 2006-12-18 12:06:11 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1230,6 +1230,10 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
         building &RCL;):</para>
 
       <itemizedlist>
+
+        <listitem><para>Openoffice: supported natively, but needs the
+        <command>unzip</command> command to be installed.</para>
+          </listitem>
 
         <listitem><para>PDF: pdftotext is part of the <ulink
             url="http://www.foolabs.com/xpdf/">Xpdf</ulink> package.</para>
