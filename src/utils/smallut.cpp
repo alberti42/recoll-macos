@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.24 2006-12-18 12:06:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.25 2006-12-19 12:11:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -37,16 +37,6 @@ using namespace std;
 #endif /* NO_NAMESPACES */
 
 #define MIN(A,B) ((A)<(B)?(A):(B))
-
-string stringlistdisp(const list<string>& sl)
-{
-    string s;
-    for (list<string>::const_iterator it = sl.begin(); it!= sl.end(); it++)
-	s += "[" + *it + "] ";
-    if (!s.empty())
-	s.erase(s.length()-1);
-    return s;
-}
 
 int stringicmp(const string & s1, const string& s2) 
 {

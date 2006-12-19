@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.100 2006-12-07 13:24:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.101 2006-12-19 12:11:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1285,6 +1285,42 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
     return true;
 }
 
+class TermMatchCmpByWcf {
+public:
+    int operator()(const TermMatchEntry& l, const TermMatchEntry& r) {
+	return r.wcf - l.wcf < 0;
+    }
+};
+class TermMatchCmpByTerm {
+public:
+    int operator()(const TermMatchEntry& l, const TermMatchEntry& r) {
+	return l.term.compare(r.term) > 0;
+    }
+};
+class TermMatchTermEqual {
+public:
+    int operator()(const TermMatchEntry& l, const TermMatchEntry& r) {
+	return !l.term.compare(r.term);
+    }
+};
+
+bool Db::stemExpand(const string &lang, const string &term, 
+		    list<TermMatchEntry>& result, int max)
+{
+    list<string> dirs = m_extraDbs;
+    dirs.push_front(m_basedir);
+    for (list<string>::iterator it = dirs.begin();
+	 it != dirs.end(); it++) {
+	list<string> more;
+	StemDb::stemExpand(*it, lang, term, more);
+	LOGDEB1(("Db::stemExpand: Got %d from %s\n", 
+		 more.size(), it->c_str()));
+	result.insert(result.end(), more.begin(), more.end());
+    }
+    LOGDEB1(("Db:::stemExpand: final count %d \n", result.size()));
+    return true;
+}
+
 // Characters that can begin a wildcard or regexp expression. We use skipto
 // to begin the allterms search with terms that begin with the portion of
 // the input string prior to these chars.
@@ -1292,85 +1328,97 @@ const string wildSpecChars = "*?[";
 const string regSpecChars = "(.[{";
 
 // Find all index terms that match a wildcard or regular expression
-bool Db::termMatch(MatchType typ, const string &root, list<string>& res,
-		     const string &lang, int max)
+bool Db::termMatch(MatchType typ, const string &lang,
+		   const string &root, 
+		   list<TermMatchEntry>& res,
+		   int max)
 {
     if (!m_ndb || !m_ndb->m_isopen)
 	return false;
+
     Xapian::Database db = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
+
     res.clear();
+
     // Get rid of capitals and accents
     string droot;
     dumb_string(root, droot);
     string nochars = typ == ET_WILD ? wildSpecChars : regSpecChars;
 
-    regex_t reg;
-    int errcode;
-    // Compile regexp. We anchor the input by enclosing it in ^ and $
-    if (typ == ET_REGEXP) {
-	string mroot = droot;
-	if (mroot.at(0) != '^')
-	    mroot = string("^") + mroot;
-	if (mroot.at(mroot.length()-1) != '$')
-	    mroot += "$";
-	if ((errcode = regcomp(&reg, mroot.c_str(), REG_EXTENDED|REG_NOSUB))) {
-	    char errbuf[200];
-	    regerror(errcode, &reg, errbuf, 199);
-	    LOGERR(("termMatch: regcomp failed: %s\n", errbuf));
-	    res.push_back(errbuf);
-	    regfree(&reg);
+    if (typ == ET_STEM) {
+	if (!stemExpand(lang, root, res, max))
 	    return false;
+	for (list<TermMatchEntry>::iterator it = res.begin(); 
+	     it != res.end(); it++) {
+	    it->wcf = db.get_collection_freq(it->term);
+	    LOGDEB(("termMatch: %d [%s]\n", it->wcf, it->term.c_str()));
 	}
-    }
-
-    // Find the initial section before any special char
-    string::size_type es = droot.find_first_of(nochars);
-    string is;
-    switch (es) {
-    case string::npos: is = droot;break;
-    case 0: break;
-    default: is = droot.substr(0, es);break;
-    }
-    LOGDEB(("termMatch: initsec: [%s]\n", is.c_str()));
-
-    Xapian::TermIterator it = db.allterms_begin(); 
-    if (!is.empty())
-	it.skip_to(is.c_str());
-    for (int n = 0;it != db.allterms_end(); it++) {
-        // If we're beyond the terms matching the initial string, end
-	if (!is.empty() && (*it).find(is) != 0)
-	    break;
-	// Don't match special internal terms beginning with uppercase ascii
-	if ((*it).at(0) >= 'A' && (*it).at(0) <= 'Z')
-	    continue;
-	if (typ == ET_WILD) {
-	    if (fnmatch(droot.c_str(), (*it).c_str(), 0) == FNM_NOMATCH)
-		continue;
-	} else {
-	    if (regexec(&reg, (*it).c_str(), 0, 0, 0))
-		continue;
-	}
-	// Do we want stem expansion here? We don't do it for now
-	if (1 || lang.empty()) {
-	    res.push_back(*it);
-	    ++n;
-	} else {
-	    list<string> stemexps = stemExpand(lang, *it);
-	    unsigned int cnt = 
-		(int)stemexps.size() > max - n ? max - n : stemexps.size();
-	    list<string>::iterator sit = stemexps.begin();
-	    while (cnt--) {
-		res.push_back(*sit++);
-		n++;
+    } else {
+	regex_t reg;
+	int errcode;
+	if (typ == ET_REGEXP) {
+	    // Compile regexp. We anchor the input by enclosing it in ^ and $
+	    string mroot = droot;
+	    if (mroot.at(0) != '^')
+		mroot = string("^") + mroot;
+	    if (mroot.at(mroot.length()-1) != '$')
+		mroot += "$";
+	    if ((errcode = regcomp(&reg, mroot.c_str(), 
+				   REG_EXTENDED|REG_NOSUB))) {
+		char errbuf[200];
+		regerror(errcode, &reg, errbuf, 199);
+		LOGERR(("termMatch: regcomp failed: %s\n", errbuf));
+		res.push_back(string(errbuf));
+		regfree(&reg);
+		return false;
 	    }
 	}
-	if (n >= max)
-	    break;
+
+	// Find the initial section before any special char
+	string::size_type es = droot.find_first_of(nochars);
+	string is;
+	switch (es) {
+	case string::npos: is = droot;break;
+	case 0: break;
+	default: is = droot.substr(0, es);break;
+	}
+	LOGDEB(("termMatch: initsec: [%s]\n", is.c_str()));
+
+	Xapian::TermIterator it = db.allterms_begin(); 
+	if (!is.empty())
+	    it.skip_to(is.c_str());
+	for (int n = 0;it != db.allterms_end(); it++) {
+	    // If we're beyond the terms matching the initial string, end
+	    if (!is.empty() && (*it).find(is) != 0)
+		break;
+	    // Don't match special internal terms beginning with uppercase ascii
+	    if ((*it).at(0) >= 'A' && (*it).at(0) <= 'Z')
+		continue;
+	    if (typ == ET_WILD) {
+		if (fnmatch(droot.c_str(), (*it).c_str(), 0) == FNM_NOMATCH)
+		    continue;
+	    } else {
+		if (regexec(&reg, (*it).c_str(), 0, 0, 0))
+		    continue;
+	    }
+	    // Do we want stem expansion here? We don't do it for now
+	    res.push_back(TermMatchEntry(*it, it.get_termfreq()));
+	    ++n;
+	}
+	if (typ == ET_REGEXP) {
+	    regfree(&reg);
+	}
+
     }
-    res.sort();
-    res.unique();
-    if (typ == ET_REGEXP) {
-	regfree(&reg);
+
+    TermMatchCmpByTerm tcmp;
+    res.sort(tcmp);
+    TermMatchTermEqual teq;
+    res.unique(teq);
+    TermMatchCmpByWcf wcmp;
+    res.sort(wcmp);
+    if (max > 0) {
+	res.resize(MIN(res.size(), (unsigned int)max));
     }
     return true;
 }
@@ -1417,23 +1465,6 @@ bool Db::termExists(const string& word)
     return true;
 }
 
-list<string> Db::stemExpand(const string& lang, const string& term) 
-{
-    list<string> dirs = m_extraDbs;
-    dirs.push_front(m_basedir);
-    list<string> exp;
-    for (list<string>::iterator it = dirs.begin();
-	 it != dirs.end(); it++) {
-	list<string> more = StemDb::stemExpand(*it, lang, term);
-	LOGDEB1(("Db::stemExpand: Got %d from %s\n", 
-		 more.size(), it->c_str()));
-	exp.splice(exp.end(), more);
-    }
-    exp.sort();
-    exp.unique();
-    LOGDEB1(("Db:::stemExpand: final count %d \n", exp.size()));
-    return exp;
-}
 
 bool Db::stemDiffers(const string& lang, const string& word, 
 		     const string& base)

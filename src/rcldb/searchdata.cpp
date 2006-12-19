@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.6 2006-11-30 13:38:44 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.7 2006-12-19 12:11:21 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -214,7 +214,12 @@ void StringToXapianQ::maybeStemExp(bool nostemexp,
     if (nostemexp) {
 	exp = list<string>(1, term1);
     } else {
-	exp = m_db.stemExpand(m_stemlang, term1);
+	list<TermMatchEntry> l;
+	m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term1, l);
+	for (list<TermMatchEntry>::const_iterator it = l.begin(); 
+	     it != l.end(); it++) {
+	    exp.push_back(it->term);
+	}
     }
 }
 

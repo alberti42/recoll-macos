@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.24 2006-12-18 12:06:11 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.25 2006-12-19 12:11:21 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <map>
@@ -37,8 +37,6 @@ extern int stringisuffcmp(const string& s1, const string& s2);
 
 // Compare charset names, removing the more common spelling variations
 extern bool samecharset(const string &cs1, const string &cs2);
-
-extern string stringlistdisp(const list<string>& strs);
 
 /**
  * Parse input string into list of strings. 

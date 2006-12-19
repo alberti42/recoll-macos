@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.3 2006-12-18 16:45:52 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.4 2006-12-19 12:11:21 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,7 @@ using namespace std;
 
 #include <qmessagebox.h>
 #include <qinputdialog.h>
+#include <qlayout.h>
 
 #include "recoll.h"
 #include "debuglog.h"
@@ -55,13 +56,6 @@ void ViewAction::init()
 	   SIGNAL(doubleClicked(Q3ListViewItem *, const QPoint &, int)),
 #endif
 	   this, SLOT(editAction()));
-
-    // Note: could get the column width setting to work in qt4
-    actionsLV->setColumnWidthMode(0, QListView::Manual);
-    actionsLV->setColumnWidth(0, 300);
-    actionsLV->setColumnWidthMode(1, QListView::Manual);
-    actionsLV->setColumnWidth(1, 120);
-
     fillLists();
     resize(QSize(450, 250).expandedTo(minimumSizeHint()) );
 }

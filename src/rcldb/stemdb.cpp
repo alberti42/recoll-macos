@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.5 2006-10-09 16:37:08 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.6 2006-12-19 12:11:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -206,13 +206,24 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
     return true;
 }
 
+static string stringlistdisp(const list<string>& sl)
+{
+    string s;
+    for (list<string>::const_iterator it = sl.begin(); it!= sl.end(); it++)
+	s += "[" + *it + "] ";
+    if (!s.empty())
+	s.erase(s.length()-1);
+    return s;
+}
+
 /**
  * Expand term to list of all terms which stem to the same term.
  */
-list<string> stemExpand(const string& dbdir, const string& lang,
-			const string& term)
+bool stemExpand(const std::string& dbdir, 
+		const std::string& lang,
+		const std::string& term,
+		list<string>& result)
 {
-    list<string> explist;
     try {
 	Xapian::Stem stemmer(lang);
 	string stem = stemmer.stem_word(term);
@@ -224,14 +235,14 @@ list<string> stemExpand(const string& dbdir, const string& lang,
 		stemdbdir.c_str(), sdb.get_lastdocid()));
 	if (!sdb.term_exists(stem)) {
 	    LOGDEB1(("Db::stemExpand: no term for %s\n", stem.c_str()));
-	    explist.push_back(term);
-	    return explist;
+	    result.push_back(term);
+	    return true;
 	}
 	Xapian::PostingIterator did = sdb.postlist_begin(stem);
 	if (did == sdb.postlist_end(stem)) {
 	    LOGDEB1(("stemExpand: no term(1) for %s\n",stem.c_str()));
-	    explist.push_back(term);
-	    return explist;
+	    result.push_back(term);
+	    return true;
 	}
 	Xapian::Document doc = sdb.get_document(*did);
 	string data = doc.get_data();
@@ -242,24 +253,24 @@ list<string> stemExpand(const string& dbdir, const string& lang,
 	++pos;
 	string::size_type pos1 = data.find_last_of("\n");
 	if (pos == string::npos || pos1 == string::npos ||pos1 <= pos) { // ??
-	    explist.push_back(term);
-	    return explist;
+	    result.push_back(term);
+	    return true;
 	}
-	stringToStrings(data.substr(pos, pos1-pos), explist);
+	stringToStrings(data.substr(pos, pos1-pos), result);
 
 	// If the user term itself is not in the list, add it.
-	if (find(explist.begin(), explist.end(), term) == explist.end()) {
-	    explist.push_back(term);
+	if (find(result.begin(), result.end(), term) == result.end()) {
+	    result.push_back(term);
 	}
 	LOGDEB(("stemExpand: %s ->  %s\n", stem.c_str(),
-		stringlistdisp(explist).c_str()));
+		stringlistdisp(result).c_str()));
     } catch (...) {
 	LOGERR(("stemExpand: error accessing stem db. dbdir [%s] lang [%s]\n",
 		dbdir.c_str(), lang.c_str()));
-	explist.push_back(term);
-	return explist;
+	result.push_back(term);
+	return false;
     }
-    return explist;
+    return true;
 }
 
 }

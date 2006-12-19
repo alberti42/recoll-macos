@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.44 2006-12-14 14:54:13 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.45 2006-12-19 12:11:21 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -53,7 +53,16 @@ namespace Rcl {
 class SearchData;
 class Native;
 class TermIter;
- 
+
+class TermMatchEntry {
+public:
+    TermMatchEntry() : wcf(0) {}
+    TermMatchEntry(const string&t, int f) : term(t), wcf(f) {}
+    TermMatchEntry(const string&t) : term(t), wcf(0) {}
+    string term;
+    int    wcf; // Within collection frequency
+};
+
 /**
  * Wrapper class for the native database.
  */
@@ -109,9 +118,9 @@ class Db {
     /** Return a list of index terms that match the input string
      * Expansion is performed either with either wildcard or regexp processing
      * Stem expansion is performed if lang is not empty */
-    enum MatchType {ET_WILD, ET_REGEXP};
-    bool termMatch(MatchType typ, const string &s, list<string>& result,
-		   const string &lang, int max=20);
+    enum MatchType {ET_WILD, ET_REGEXP, ET_STEM};
+    bool termMatch(MatchType typ, const string &lang, const string &s, 
+		   list<TermMatchEntry>& result, int max = -1);
 
     /** Add extra database for querying */
     bool addQueryDb(const string &dir);
@@ -159,12 +168,11 @@ class Db {
     bool stemDiffers(const string& lang, const string& term, 
 		     const string& base);
     
-    /** Perform stem expansion across all dbs configured for searching */
-    list<string> stemExpand(const string& lang, const string& term);
-
     /** Filename wildcard expansion */
     bool filenameWildExp(const string& exp, list<string>& names);
     string getReason(){return m_reason;}
+
+
 private:
 
     string m_filterTopDir; // Current query filter on subtree top directory 
@@ -201,6 +209,8 @@ private:
     vector<bool> updated;
 
     bool reOpen(); // Close/open, same mode/opts
+    bool stemExpand(const string &lang, const string &s, 
+		    list<TermMatchEntry>& result, int max = -1);
 
     /* Copyconst and assignemt private and forbidden */
     Db(const Db &) {}

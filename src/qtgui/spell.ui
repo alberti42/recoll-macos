@@ -106,30 +106,40 @@
                         </widget>
                     </grid>
                 </widget>
-                <widget class="QTextEdit">
+                <widget class="QListView">
+                    <column>
+                        <property name="text">
+                            <string>Term</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>true</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>true</bool>
+                        </property>
+                    </column>
+                    <column>
+                        <property name="text">
+                            <string>Count</string>
+                        </property>
+                        <property name="clickable">
+                            <bool>true</bool>
+                        </property>
+                        <property name="resizable">
+                            <bool>true</bool>
+                        </property>
+                    </column>
                     <property name="name">
-                        <cstring>suggsTE</cstring>
+                        <cstring>suggsLV</cstring>
                     </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>0</width>
-                            <height>200</height>
-                        </size>
+                    <property name="selectionMode">
+                        <enum>Extended</enum>
                     </property>
-                    <property name="focusPolicy">
-                        <enum>TabFocus</enum>
-                    </property>
-                    <property name="textFormat">
-                        <enum>PlainText</enum>
-                    </property>
-                    <property name="readOnly">
+                    <property name="showSortIndicator">
                         <bool>true</bool>
                     </property>
-                    <property name="undoRedoEnabled">
-                        <bool>false</bool>
-                    </property>
-                    <property name="tabChangesFocus">
-                        <bool>true</bool>
+                    <property name="resizeMode">
+                        <enum>NoColumn</enum>
                     </property>
                 </widget>
             </vbox>
@@ -139,7 +149,6 @@
 <tabstops>
     <tabstop>baseWordLE</tabstop>
     <tabstop>expandPB</tabstop>
-    <tabstop>suggsTE</tabstop>
     <tabstop>dismissPB</tabstop>
     <tabstop>expTypeCMB</tabstop>
     <tabstop>stemLangCMB</tabstop>

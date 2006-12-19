@@ -59,9 +59,6 @@
                     <property name="frameShadow">
                         <enum>Sunken</enum>
                     </property>
-                    <property name="resizePolicy">
-                        <enum>Manual</enum>
-                    </property>
                     <property name="selectionMode">
                         <enum>Extended</enum>
                     </property>
@@ -70,9 +67,6 @@
                     </property>
                     <property name="showSortIndicator">
                         <bool>true</bool>
-                    </property>
-                    <property name="resizeMode">
-                        <enum>LastColumn</enum>
                     </property>
                     <property name="toolTip" stdset="0">
                         <string>Select one or several file types, then click Change Action to modify the program used to open them</string>

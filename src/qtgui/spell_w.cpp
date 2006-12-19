@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.7 2006-11-30 13:38:44 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.8 2006-12-19 12:11:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,17 +25,22 @@ static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.7 2006-11-30 13:38:44 dockes Exp 
 
 #include <qmessagebox.h>
 #include <qpushbutton.h>
-#include <qtextedit.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qcombobox.h>
+#if (QT_VERSION < 0x040000)
+#include <qlistview.h>
+#else
+#include <q3listview.h>
+#endif
 
 #include "debuglog.h"
 #include "recoll.h"
 #include "spell_w.h"
 #include "guiutils.h"
+#include "rcldb.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -79,16 +84,47 @@ void SpellW::init()
     connect(baseWordLE, SIGNAL(returnPressed()), this, SLOT(doExpand()));
     connect(expandPB, SIGNAL(clicked()), this, SLOT(doExpand()));
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
-    connect(suggsTE, SIGNAL(doubleClicked(int, int)), 
-	    this, SLOT(textDoubleClicked(int, int)));
+
+    connect(suggsLV,
+#if (QT_VERSION < 0x040000)
+	   SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),
+#else
+	   SIGNAL(doubleClicked(Q3ListViewItem *, const QPoint &, int)),
+#endif
+	   this, SLOT(textDoubleClicked()));
+
     connect(expTypeCMB, SIGNAL(activated(int)), 
 	    this, SLOT(modeSet(int)));
+
+    suggsLV->setColumnWidth(0, 200);
+    suggsLV->setColumnWidth(1, 100);
+    // No initial sorting: user can choose to establish one
+    suggsLV->setSorting(100, false);
 }
+
+// Subclass qlistviewitem for numeric sorting on column 1
+class MyListViewItem : public QListViewItem
+{
+public:
+    MyListViewItem(QListView *listView, const QString& s1, const QString& s2)
+        : QListViewItem(listView, s1, s2)
+    { }
+
+    int compare(QListViewItem * i, int col, bool ascending) const {
+	if (col == 0)
+	    return i->text(0).compare(text(0));
+	if (col == 1)
+	    return i->text(1).toInt() - text(1).toInt();
+	// ??
+	return 0;
+    }
+};
+
 
 /* Expand term according to current mode */
 void SpellW::doExpand()
 {
-    suggsTE->clear();
+    suggsLV->clear();
     if (baseWordLE->text().isEmpty()) 
 	return;
 
@@ -100,26 +136,27 @@ void SpellW::doExpand()
 
     string expr = string((const char *)baseWordLE->text().utf8());
     list<string> suggs;
+
     prefs.termMatchType = expTypeCMB->currentItem();
 
     Rcl::Db::MatchType mt = Rcl::Db::ET_WILD;
+    switch(expTypeCMB->currentItem()) {
+    case 0: mt = Rcl::Db::ET_WILD; break;
+    case 1:mt = Rcl::Db::ET_REGEXP; break;
+    case 2:mt = Rcl::Db::ET_STEM; break;
+    }
+
+    list<Rcl::TermMatchEntry> entries;
     switch (expTypeCMB->currentItem()) {
-    case 1: mt = Rcl::Db::ET_REGEXP;
-	/* FALLTHROUGH */
     case 0: 
-	if (!rcldb->termMatch(mt, expr, suggs, prefs.queryStemLang.ascii(),
+    case 1:
+    case 2: {
+	if (!rcldb->termMatch(mt, prefs.queryStemLang.ascii(), expr, entries, 
 			      200)) {
 	    LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));
 	    return;
 	}
-	break;
-
-
-    case 2: 
-	{
-	    string stemlang = (const char *)stemLangCMB->currentText().utf8();
-	    suggs = rcldb->stemExpand(stemlang,expr);
-	}
+    }
 	break;
 
 #ifdef RCL_USE_ASPELL
@@ -132,24 +169,37 @@ void SpellW::doExpand()
 	    LOGDEB(("SpellW::doExpand: aspell init error\n"));
 	    return;
 	}
+	list<string> suggs;
 	if (!aspell->suggest(*rcldb, expr, suggs, reason)) {
 	    QMessageBox::warning(0, "Recoll",
 				 tr("Aspell expansion error. "));
 	    LOGERR(("SpellW::doExpand:suggest failed: %s\n", reason.c_str()));
 	}
+	for (list<string>::const_iterator it = suggs.begin(); 
+	     it != suggs.end(); it++) 
+	    entries.push_back(Rcl::TermMatchEntry(*it));
     }
 #endif
     }
 
-    if (suggs.empty()) {
-	suggsTE->append(tr("No expansion found"));
+
+    if (entries.empty()) {
+	new MyListViewItem(suggsLV, tr("No expansion found"), "");
     } else {
-	for (list<string>::iterator it = suggs.begin(); 
-	     it != suggs.end(); it++) {
-	    suggsTE->append(QString::fromUtf8(it->c_str()));
+	// Seems that need to use a reverse iterator to get same order in 
+	// listview and input list ??
+	for (list<Rcl::TermMatchEntry>::reverse_iterator it = entries.rbegin(); 
+	     it != entries.rend(); it++) {
+	    LOGDEB(("SpellW::expand: %6d [%s]\n", it->wcf, it->term.c_str()));
+	    char num[20];
+	    if (it->wcf)
+		sprintf(num, "%d", it->wcf);
+	    else
+		num[0] = 0;
+	    new MyListViewItem(suggsLV, 
+			      QString::fromUtf8(it->term.c_str()),
+			      QString::fromAscii(num));
 	}
-	suggsTE->setCursorPosition(0,0);
-	suggsTE->ensureCursorVisible();
     }
 }
 
@@ -157,17 +207,24 @@ void SpellW::wordChanged(const QString &text)
 {
     if (text.isEmpty()) {
 	expandPB->setEnabled(false);
-	suggsTE->clear();
+	suggsLV->clear();
     } else {
 	expandPB->setEnabled(true);
     }
 }
 
-void SpellW::textDoubleClicked(int para, int)
+void SpellW::textDoubleClicked()
 {
-    suggsTE->setSelection(para, 0, para, 1000);
-    if (suggsTE->hasSelectedText())
-	emit(wordSelect(suggsTE->selectedText()));
+    QListViewItemIterator it(suggsLV);
+    while (it.current()) {
+	QListViewItem *item = it.current();
+	if (!item->isSelected()) {
+	    ++it;
+	    continue;
+	}
+	emit(wordSelect((const char *)item->text(0)));
+	++it;
+    }
 }
 
 void SpellW::modeSet(int mode)

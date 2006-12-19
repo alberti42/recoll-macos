@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.16 2006-12-14 13:53:43 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.17 2006-12-19 12:11:21 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -169,11 +169,9 @@ void SSearch::completion()
 
     // Query database
     const int max = 100;
-    list<string> strs;
-    
-    if (!rcldb->termMatch(Rcl::Db::ET_WILD, s, strs, 
-			    prefs.queryStemLang.ascii(),max)
-	|| strs.size() == 0) {
+    list<Rcl::TermMatchEntry> strs;
+    if (!rcldb->termMatch(Rcl::Db::ET_WILD, prefs.queryStemLang.ascii(),
+			  s, strs, max) || strs.size() == 0) {
 	QApplication::beep();
 	return;
     }
@@ -186,12 +184,14 @@ void SSearch::completion()
     QString res;
     bool ok = false;
     if (strs.size() == 1) {
-	res = QString::fromUtf8(strs.begin()->c_str());
+	res = QString::fromUtf8(strs.begin()->term.c_str());
 	ok = true;
     } else {
 	QStringList lst;
-	for (list<string>::iterator it=strs.begin(); it != strs.end(); it++) 
-	    lst.push_back(QString::fromUtf8(it->c_str()));
+	for (list<Rcl::TermMatchEntry>::iterator it=strs.begin(); 
+	     it != strs.end(); it++) {
+	    lst.push_back(QString::fromUtf8(it->term.c_str()));
+	}
 	res = QInputDialog::getItem(tr("Completions"),
 				    tr("Select an item:"), lst, 0, 
 				    FALSE, &ok, this);
