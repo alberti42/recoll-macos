@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.48 2006-12-16 15:30:32 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.49 2006-12-19 08:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -344,7 +344,8 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
 	    m_db.setAbstractParams(abslen, -1, -1);
-	return FsTreeWalker::FtwOk;
+	if (flg == FsTreeWalker::FtwDirReturn)
+	    return FsTreeWalker::FtwOk;
     }
 
     // Check db up to date ? Doing this before file type
@@ -363,7 +364,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	return FsTreeWalker::FtwOk;
     }
 
-    FileInterner interner(fn, m_config, m_tmpdir);
+    FileInterner interner(fn, stp, m_config, m_tmpdir);
 
     // File name transcoded to utf8 for indexation. 
     string charset = m_config->getDefCharset(true);
@@ -427,8 +428,8 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     if (hadNullIpath == false) {
 	LOGDEB1(("Creating empty doc for file\n"));
 	Rcl::Doc fileDoc;
-	fileDoc.fmtime = doc.fmtime;
-	fileDoc.utf8fn = doc.utf8fn;
+	fileDoc.fmtime = ascdate;
+	fileDoc.utf8fn = utf8fn;
 	fileDoc.mimetype = interner.get_mimetype();
 	if (!m_db.add(fn, fileDoc, stp)) 
 	    return FsTreeWalker::FtwError;

@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.19 2006-12-14 13:53:43 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.20 2006-12-19 08:40:50 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -67,6 +67,7 @@ application/vnd.sun.xml.impress.template = presentation
 application/vnd.sun.xml.writer = wordprocessing
 application/vnd.sun.xml.writer.global = wordprocessing
 application/vnd.sun.xml.writer.template = wordprocessing
+application/x-fsdirectory = folder
 application/x-dvi = document
 audio/mpeg = sownd
 image/jpeg = image

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.10 2006-12-14 13:53:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.11 2006-12-19 08:40:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.10 2006-12-14 13:53:43 dockes E
  */
 #include <unistd.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #include <list>
 #include <utility>
@@ -460,7 +461,16 @@ class LoadThread : public QThread {
 	    *statusp = -1;
 	    return;
 	}
-	FileInterner interner(filename, rclconfig, tmpdir, mtype);
+	struct stat st;
+	if (stat(filename.c_str(), &st) < 0) {
+	    LOGERR(("Preview: can't stat [%s]\n", filename.c_str()));
+	    QMessageBox::critical(0, "Recoll",
+				  Preview::tr("File does not exist"));
+	    *statusp = -1;
+	    return;
+	}
+	    
+	FileInterner interner(filename, &st, rclconfig, tmpdir, mtype);
 	try {
 	    FileInterner::Status ret = interner.internfile(*out, ipath);
 	    if (ret == FileInterner::FIDone || ret == FileInterner::FIAgain) {

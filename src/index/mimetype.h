@@ -16,18 +16,19 @@
  */
 #ifndef _MIMETYPE_H_INCLUDED_
 #define _MIMETYPE_H_INCLUDED_
-/* @(#$Id: mimetype.h,v 1.5 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimetype.h,v 1.6 2006-12-19 08:40:50 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
 class RclConfig;
-
+struct stat;
 /**
  * Try to determine a mime type for filename. 
  * This may imply more than matching the suffix, the name must be usable
  * to actually access file data.
  */
-string mimetype(const std::string &filename, RclConfig *cfg, bool usfc);
+string mimetype(const std::string &filename, const struct stat *stp,
+		RclConfig *cfg, bool usfc);
 
 
 #endif /* _MIMETYPE_H_INCLUDED_ */

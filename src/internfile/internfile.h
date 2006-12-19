@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.9 2006-12-16 15:39:54 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.10 2006-12-19 08:40:50 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -30,6 +30,8 @@ class RclConfig;
 namespace Rcl {
 class Doc;
 }
+
+struct stat;
 
 /** 
  * A class to convert a file into possibly multiple documents in internal 
@@ -52,7 +54,8 @@ class FileInterner {
      *   mime type for the uncompressed version. This currently doubles up 
      *   to indicate that this object is for previewing (not indexing).
      */
-    FileInterner(const string &fn, RclConfig *cnf, const string& td,
+    FileInterner(const string &fn, const struct stat *stp, 
+		 RclConfig *cnf, const string& td,
 		 const string *mtype = 0);
 
     ~FileInterner();

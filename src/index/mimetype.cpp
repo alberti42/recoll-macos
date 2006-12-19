@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.18 2006-12-11 14:50:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.19 2006-12-19 08:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@ static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.18 2006-12-11 14:50:53 dockes Ex
  */
 
 #ifndef TEST_MIMETYPE
+#include <sys/stat.h>
+
 #include <ctype.h>
 #include <string>
 #include <list>
@@ -104,8 +106,14 @@ static string mimetypefromdata(const string &fn, bool usfc)
 /// Guess mime type, first from suffix, then from file data. We also
 /// have a list of suffixes that we don't touch at all (ie: .jpg,
 /// etc...)
-string mimetype(const string &fn, RclConfig *cfg, bool usfc)
+string mimetype(const string &fn, const struct stat *stp,
+		RclConfig *cfg, bool usfc)
 {
+    if (S_ISDIR(stp->st_mode))
+	return "application/x-fsdirectory";
+    if (!S_ISREG(stp->st_mode))
+	return "application/x-fsspecial";
+
     if (cfg == 0)
 	return "";
 
@@ -140,7 +148,10 @@ string mimetype(const string &fn, RclConfig *cfg, bool usfc)
 
 
 #else // TEST->
+
 #include <stdio.h>
+#include <sys/stat.h>
+
 #include <iostream>
 
 #include "debuglog.h"
@@ -163,8 +174,13 @@ int main(int argc, const char **argv)
 
     while (--argc > 0) {
 	string filename = *++argv;
+	struct stat st;
+	if (stat(filename.c_str(), &st)) {
+	    fprintf(stderr, "Can't stat %s\n", filename.c_str());
+	    continue;
+	}
 	cout << filename << " -> " << 
-	    mimetype(filename, config, true) << endl;
+	    mimetype(filename, &st, config, true) << endl;
 
     }
     return 0;

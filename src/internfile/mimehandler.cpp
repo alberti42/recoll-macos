@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.20 2006-12-15 12:40:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.21 2006-12-19 08:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -38,16 +38,18 @@ using namespace std;
 /** Create internal handler object appropriate for given mime type */
 static Dijon::Filter *mhFactory(const string &mime)
 {
-    if (!stringlowercmp("text/plain", mime))
-	return new MimeHandlerText("text/plain");
-    else if (!stringlowercmp("text/html", mime))
-	return new MimeHandlerHtml("text/html");
-    else if (!stringlowercmp("text/x-mail", mime))
-	return new MimeHandlerMbox("text/x-mail");
-    else if (!stringlowercmp("message/rfc822", mime))
-	return new MimeHandlerMail("message/rfc822");
+    string lmime(mime);
+    stringtolower(lmime);
+    if ("text/plain" == lmime)
+	return new MimeHandlerText(lmime);
+    else if ("text/html" == lmime)
+	return new MimeHandlerHtml(lmime);
+    else if ("text/x-mail" == lmime)
+	return new MimeHandlerMbox(lmime);
+    else if ("message/rfc822" == lmime)
+	return new MimeHandlerMail(lmime);
     else 
-	return new MimeHandlerUnknown("application/octet-stream");
+	return new MimeHandlerUnknown(lmime);
 }
 
 /**

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.21 2006-12-16 15:39:54 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.22 2006-12-19 08:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -111,7 +111,8 @@ void FileInterner::tmpcleanup()
 
 // Handler==0 on return says we're in error, will be handled when calling
 // internfile
-FileInterner::FileInterner(const std::string &f, RclConfig *cnf, 
+FileInterner::FileInterner(const std::string &f, const struct stat *stp,
+			   RclConfig *cnf, 
 			   const string& td, const string *imime)
     : m_cfg(cnf), m_fn(f), m_forPreview(imime?true:false), m_tdir(td)
 {
@@ -121,7 +122,7 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 
     // We need to run mime type identification in any case to check
     // for a compressed file.
-    string l_mime = mimetype(m_fn, m_cfg, usfci);
+    string l_mime = mimetype(m_fn, stp, m_cfg, usfci);
 
     // If identification fails, try to use the input parameter. This
     // is then normally not a compressed type (it's the mime type from
@@ -141,7 +142,8 @@ FileInterner::FileInterner(const std::string &f, RclConfig *cnf,
 	    LOGDEB1(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
 		    m_tdir.c_str(), m_tfile.c_str()));
 	    m_fn = m_tfile;
-	    l_mime = mimetype(m_fn, m_cfg, usfci);
+	    // Note: still using the original file's stat. right ?
+	    l_mime = mimetype(m_fn, stp, m_cfg, usfci);
 	    if (l_mime.empty() && imime)
 		l_mime = *imime;
 	}
@@ -468,15 +470,20 @@ class DirWiper {
 };
 
 bool FileInterner::idocTempFile(TempFile& otemp, RclConfig *cnf, 
-				const string& fn, const string& ipath,
+				const string& fn,
+				const string& ipath,
 				const string& mtype)
 {
     string tmpdir, reason;
     if (!maketmpdir(tmpdir, reason))
 	return false;
     DirWiper wiper(tmpdir);
-
-    FileInterner interner(fn, cnf, tmpdir, &mtype);
+    struct stat st;
+    if (stat(fn.c_str(), &st) < 0) {
+	LOGERR(("FileInterner::idocTempFile: can't stat [%s]\n", fn.c_str()));
+	return false;
+    }
+    FileInterner interner(fn, &st, cnf, tmpdir, &mtype);
     interner.setTargetMType(mtype);
     Rcl::Doc doc;
     string mipath = ipath;
