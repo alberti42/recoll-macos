@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.8 2006-12-19 12:11:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.9 2006-12-19 12:38:18 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,9 @@ static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.8 2006-12-19 12:11:21 dockes Exp 
 #if (QT_VERSION < 0x040000)
 #include <qlistview.h>
 #else
+#define QListView Q3ListView
+#define QListViewItem Q3ListViewItem
+#define QListViewItemIterator Q3ListViewItemIterator
 #include <q3listview.h>
 #endif
 
