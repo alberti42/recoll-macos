@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.30 2006-12-18 12:06:11 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.31 2006-12-20 09:54:17 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1528,7 +1528,7 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
                 agents like <application>thunderbird</application>
                 usually store messages in hidden directories, and you
                 probably want this indexed. One possible solution is to
-                have <userinput>.*</userinput> in
+                have <filename>.*</filename> in
                 <literal>skippedNames</literal>, and add things like
                 <filename>~/.thunderbird</filename> or
                 <filename>~/.evolution</filename> in
@@ -1656,12 +1656,19 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
 
         <para><filename>mimemap</filename> also has a
         <literal>recoll_noindex</literal> variable which is a list of
-        suffixes. Matching files will be skipped (avoids unnecessary
-        decompressions or <command>file</command> executions). This is
-        partially redundant with <literal>skippedNames</literal> in
-        the main configuration file, with two differences: it will not
-        affect directories, and it can be changed for any
-        sub-directory.</para>
+        suffixes. Matching files will be skipped (which avoids
+        unnecessary decompressions or <command>file</command>
+        executions). This is partially redundant with
+        <literal>skippedNames</literal> in the main configuration
+        file, with two differences: it will not affect directories,
+        and it cannot be made dependant on the file-system location
+        (it is a configuration-wide parameter). You could accomplish
+        with <literal>skippedNames</literal> anything that
+        <literal>recoll_noindex</literal> does. The latter is used
+        mostly for things known to be unindexable by a given &RCL;
+        version. Having it there avoids cluttering the more
+        user-oriented and locally customized
+        <literal>skippedNames</literal>.</para>
 
       </sect2>
 
@@ -1672,14 +1679,15 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
          different mime types are handled for indexing, and which icons
 	 are displayed in the <command>recoll</command> result lists.</para>
 
-        <para>Changing the indexing parameters is probably not a
-         good idea except if you are a &RCL; developers.</para>
+        <para>Changing the parameters in the [index] section is
+         probably not a good idea except if you are a &RCL;
+         developer.</para> 
 
-        <para>You can change the icons which are displayed by
-         <command>recoll</command> in the result lists (the values are
-         the basenames of the png images inside the
-         <filename>iconsdir</filename> directory (specified in
-         <filename>recoll.conf</filename>).</para> 
+        <para>The [icons] section allows you to change the icons which
+         are displayed by <command>recoll</command> in the result
+         lists (the values are the basenames of the png images inside
+         the <filename>iconsdir</filename> directory (specified in
+         <filename>recoll.conf</filename>).</para>
 
       </sect2>
       <sect2 id="rclinstall.config.mimeview">

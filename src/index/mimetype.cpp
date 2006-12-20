@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.19 2006-12-19 08:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.20 2006-12-20 09:54:18 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -117,19 +117,12 @@ string mimetype(const string &fn, const struct stat *stp,
     if (cfg == 0)
 	return "";
 
-    const list<string>* stoplist = cfg->getStopSuffixes();
-    if (stoplist && !stoplist->empty()) {
-	for (list<string>::const_iterator it = stoplist->begin();
-	     it != stoplist->end(); it++) {
-	    if (!stringisuffcmp(fn, *it)) {
-		LOGDEB(("mimetype: fn %s in stoplist (%s)\n", fn.c_str(), 
-			it->c_str()));
-		return "";
-	    }
-	}
+    if (cfg->inStopSuffixes(fn)) {
+	LOGDEB(("mimetype: fn [%s] in stopsuffixes\n", fn.c_str()));
+	return "";
     }
 
-    // Look for suffix in mimetype map
+    // First look for suffix in mimetype map
     string::size_type dot = fn.find_last_of(".");
     string suff;
     if (dot != string::npos) {
@@ -142,6 +135,7 @@ string mimetype(const string &fn, const struct stat *stp,
 	    return mtype;
     }
 
+    // Then examine data
     return mimetypefromdata(fn, usfc);
 }
 

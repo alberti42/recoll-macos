@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.28 2006-12-16 15:30:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.29 2006-12-20 09:54:17 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -35,7 +35,7 @@ using std::pair;
 class RclConfig {
  public:
 
-    RclConfig(const string *argcnf=0);
+    RclConfig(const string *argcnf = 0);
     bool ok() {return m_ok;}
     const string &getReason() {return m_reason;}
     /** Return the directory where this config is stored */
@@ -83,12 +83,12 @@ class RclConfig {
     list<string> getSkippedNames();
 
     /** 
-     * Get list of ignored suffixes from mimemap
+     * Check if file name should be ignored because of suffix
      *
-     * The list is initialized on first call, and not changed for subsequent
-     * setKeydirs.
+     * The list of ignored suffixes is initialized on first call, and
+     * not changed for subsequent setKeydirs.
      */
-    const list<string>* getStopSuffixes();
+    bool inStopSuffixes(const string& fn);
 
     /** 
      * Check in mimeconf if input mime type is a compressed one, and
@@ -153,7 +153,8 @@ class RclConfig {
     ConfStack<ConfTree> *mimeconf; // but their content may depend on it.
     ConfStack<ConfTree> *mimeview; // 
 
-    list<string> *stopsuffixes;
+    void        *m_stopsuffixes;
+    unsigned int m_maxsufflen;
 
     // Parameters auto-fetched on setkeydir
     string defcharset;   // These are stored locally to avoid 
@@ -171,18 +172,11 @@ class RclConfig {
 	mimemap = 0; 
 	mimeconf = 0; 
 	mimeview = 0; 
-	stopsuffixes = 0;
+	m_stopsuffixes = 0;
+	m_maxsufflen = 0;
     }
     /** Free data then zero pointers */
-    void freeAll() {
-	delete m_conf;
-	delete mimemap;
-	delete mimeconf; 
-	delete mimeview; 
-	delete stopsuffixes;
-	// just in case
-	zeroMe();
-    }
+    void freeAll();
 };
 
 

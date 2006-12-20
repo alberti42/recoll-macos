@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.38 2006-12-19 08:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.39 2006-12-20 09:54:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,8 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.38 2006-12-19 08:40:50 dockes E
 #include <errno.h>
 #include <langinfo.h>
 
+#include <set>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef __FreeBSD__
@@ -41,6 +43,13 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.38 2006-12-19 08:40:50 dockes E
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
+
+#ifndef MIN
+#define MIN(A,B) (((A)<(B)) ? (A) : (B))
+#endif
+#ifndef MAX
+#define MAX(A,B) (((A)>(B)) ? (A) : (B))
+#endif
 
 RclConfig::RclConfig(const string *argcnf)
 {
@@ -211,16 +220,81 @@ std::list<string> RclConfig::getAllMimeTypes()
     return lst;
 }
 
-const list<string>* RclConfig::getStopSuffixes()
+// Things for suffix comparison. We define a string class and string 
+// comparison with suffix-only sensitivity
+class SfString {
+public:
+    SfString(const string& s) : m_str(s) {}
+    bool operator==(const SfString& s2) {
+	string::const_reverse_iterator r1 = m_str.rbegin(), re1 = m_str.rend(),
+	    r2 = s2.m_str.rbegin(), re2 = s2.m_str.rend();
+	while (r1 != re1 && r2 != re2) {
+	    if (*r1 != *r2) {
+		return 0;
+	    }
+	    ++r1; ++r2;
+	}
+	return 1;
+    }
+    string m_str;
+};
+
+class SuffCmp {
+public:
+    int operator()(const SfString& s1, const SfString& s2) {
+	//cout << "Comparing " << s1.m_str << " and " << s2.m_str << endl;
+	string::const_reverse_iterator 
+	    r1 = s1.m_str.rbegin(), re1 = s1.m_str.rend(),
+	    r2 = s2.m_str.rbegin(), re2 = s2.m_str.rend();
+	while (r1 != re1 && r2 != re2) {
+	    if (*r1 != *r2) {
+		return *r1 < *r2 ? 1 : 0;
+	    }
+	    ++r1; ++r2;
+	}
+	return 0;
+    }
+};
+typedef multiset<SfString, SuffCmp> SuffixStore;
+
+#define STOPSUFFIXES ((SuffixStore *)m_stopsuffixes)
+
+bool RclConfig::inStopSuffixes(const string& fni)
 {
-    if (stopsuffixes == 0 && (stopsuffixes = new list<string>) != 0) {
+    if (m_stopsuffixes == 0) {
+	// Need to initialize the suffixes
+	if ((m_stopsuffixes = new SuffixStore) == 0) {
+	    LOGERR(("RclConfig::inStopSuffixes: out of memory\n"));
+	    return false;
+	}
 	string stp;
+	list<string> stoplist;
 	if (mimemap && mimemap->get("recoll_noindex", stp, m_keydir)) {
-	    stringToStrings(stp, *stopsuffixes);
+	    stringToStrings(stp, stoplist);
+	}
+	for (list<string>::const_iterator it = stoplist.begin(); 
+	     it != stoplist.end(); it++) {
+	    string lower(*it);
+	    stringtolower(lower);
+	    STOPSUFFIXES->insert(SfString(lower));
+	    if (m_maxsufflen < lower.length())
+		m_maxsufflen = lower.length();
 	}
     }
 
-    return stopsuffixes;
+    string fn(fni, 
+	      MAX(0, fni.length() - m_maxsufflen), 
+	      MIN(fni.length(), m_maxsufflen));
+    stringtolower(fn);
+    SuffixStore::const_iterator it = STOPSUFFIXES->find(fn);
+    if (it != STOPSUFFIXES->end()) {
+	LOGDEB2(("RclConfig::inStopSuffixes: Found (%s) [%s]\n", 
+		fni.c_str(), (*it).m_str.c_str()));
+	return true;
+    } else {
+	LOGDEB2(("RclConfig::inStopSuffixes: not found [%s]\n", fni.c_str()));
+	return false;
+    }
 }
 
 string RclConfig::getMimeTypeFromSuffix(const string &suff)
@@ -242,6 +316,17 @@ string RclConfig::getSuffixFromMimeType(const string &mt)
 		return *it;
     }
     return "";
+}
+
+void RclConfig::freeAll() 
+{
+    delete m_conf;
+    delete mimemap;
+    delete mimeconf; 
+    delete mimeview; 
+    delete STOPSUFFIXES;
+    // just in case
+    zeroMe();
 }
 
 string RclConfig::getMimeHandlerDef(const std::string &mtype)
@@ -495,8 +580,9 @@ void RclConfig::initFrom(const RclConfig& r)
 	mimeconf = new ConfStack<ConfTree>(*(r.mimeconf));
     if (r.mimeview)
 	mimeview = new ConfStack<ConfTree>(*(r.mimeview));
-    if (r.stopsuffixes)
-	stopsuffixes = new std::list<std::string>(*(r.stopsuffixes));
+    if (r.m_stopsuffixes)
+	m_stopsuffixes = new SuffixStore(*((SuffixStore*)r.m_stopsuffixes));
+    m_maxsufflen = r.m_maxsufflen;
     defcharset = r.defcharset;
     guesscharset = r.guesscharset;
 }
