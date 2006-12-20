@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.15 2006-12-04 08:17:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.16 2006-12-20 13:12:49 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -42,10 +42,12 @@ static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.15 2006-12-04 08:17:24 dockes
 
 #include <list>
 #include <string>
+#include <map>
 
 #ifndef NO_NAMESPACES
 using std::list;
 using std::string;
+using std::map;
 #endif /* NO_NAMESPACES */
 
 #include "recoll.h"
@@ -66,6 +68,8 @@ void AdvSearch::init()
     connect(searchPB, SIGNAL(clicked()), this, SLOT(searchPB_clicked()));
     connect(restrictFtCB, SIGNAL(toggled(bool)), 
 	    this, SLOT(restrictFtCB_toggled(bool)));
+    connect(restrictCtCB, SIGNAL(toggled(bool)), 
+	    this, SLOT(restrictCtCB_toggled(bool)));
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
     connect(browsePB, SIGNAL(clicked()), this, SLOT(browsePB_clicked()));
     connect(addFiltypPB, SIGNAL(clicked()), this, SLOT(addFiltypPB_clicked()));
@@ -101,18 +105,12 @@ void AdvSearch::init()
 	    }
 	}
     }
-    
+
     // Initialize lists of accepted and ignored mime types from config
     // and settings
-    list<string> types = rclconfig->getAllMimeTypes();
-    noFiltypsLB->insertStringList(prefs.asearchIgnFilTyps); 
-
-    QStringList ql;
-    for (list<string>::iterator it = types.begin(); it != types.end(); it++) {
-	if (prefs.asearchIgnFilTyps.findIndex(it->c_str())<0)
-	    ql.append(it->c_str());
-    }
-    yesFiltypsLB->insertStringList(ql);
+    restrictCtCB->setChecked(prefs.fileTypesByCats);
+    restrictCtCB->setEnabled(false);
+    fillFileTypes();
 
     subtreeCMB->insertStringList(prefs.asearchSubdirHist);
     subtreeCMB->setEditText("");
@@ -268,6 +266,7 @@ void AdvSearch::addAFiltypPB_clicked()
 // Activate file type selection
 void AdvSearch::restrictFtCB_toggled(bool on)
 {
+    restrictCtCB->setEnabled(on);
     yesFiltypsLB->setEnabled(on);
     delFiltypPB->setEnabled(on);
     addFiltypPB->setEnabled(on);
@@ -275,6 +274,75 @@ void AdvSearch::restrictFtCB_toggled(bool on)
     addAFiltypPB->setEnabled(on);
     noFiltypsLB->setEnabled(on);
     saveFileTypesPB->setEnabled(on);
+}
+
+void AdvSearch::restrictCtCB_toggled(bool on)
+{
+    prefs.fileTypesByCats = on;
+    fillFileTypes();
+}
+
+static map<QString,QString> cat_translations;
+static map<QString,QString> cat_rtranslations;
+
+void AdvSearch::fillFileTypes()
+{
+    noFiltypsLB->clear();
+    yesFiltypsLB->clear();
+
+    if (prefs.fileTypesByCats == false) {
+	list<string> types = rclconfig->getAllMimeTypes();
+	noFiltypsLB->insertStringList(prefs.asearchIgnFilTyps); 
+
+	QStringList ql;
+	for (list<string>::iterator it = types.begin(); 
+	     it != types.end(); it++) {
+	    if (prefs.asearchIgnFilTyps.findIndex(it->c_str())<0)
+		ql.append(it->c_str());
+	}
+	yesFiltypsLB->insertStringList(ql);
+    } else {
+	cat_translations.clear();
+	// Make sure we have entries for all defined categories
+	// Translations for known cats
+	cat_translations[QString::fromUtf8("texts")] = tr("texts");
+	cat_rtranslations[tr("texts")] = QString::fromUtf8("texts"); 
+
+	cat_translations[QString::fromUtf8("spreadsheets")] = 
+	    tr("spreadsheets");
+	cat_rtranslations[tr("spreadsheets")] = 
+	    QString::fromUtf8("spreadsheets");
+
+	cat_translations[QString::fromUtf8("presentations")] = 
+	    tr("presentations");
+	cat_rtranslations[tr("presentations")] = 
+	    QString::fromUtf8("presentations");
+
+	cat_translations[QString::fromUtf8("media")] = tr("media");
+	cat_rtranslations[tr("media")] = QString::fromUtf8("media"); 
+
+	cat_translations[QString::fromUtf8("messages")] = tr("messages");
+	cat_rtranslations[tr("messages")] = QString::fromUtf8("messages"); 
+
+	cat_translations[QString::fromUtf8("other")] = tr("other");
+	cat_rtranslations[tr("other")] = QString::fromUtf8("other"); 
+
+	list<string> cats;
+	rclconfig->getMimeCategories(cats);
+	QStringList ql;
+	for (list<string>::const_iterator it = cats.begin();
+	     it != cats.end(); it++) {
+	    map<QString, QString>::const_iterator it1;
+	    if ((it1 = 
+		 cat_translations.find(QString::fromUtf8((*it).c_str())))
+		!= cat_translations.end()) {
+		ql.append(it1->second);
+	    } else {
+		ql.append(QString::fromUtf8((*it).c_str()));
+	    } 
+	}
+	yesFiltypsLB->insertStringList(ql);
+    }
 }
 
 using namespace Rcl;
@@ -306,7 +374,26 @@ void AdvSearch::searchPB_clicked()
     }
     if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
 	for (unsigned int i = 0; i < yesFiltypsLB->count(); i++) {
-	    sdata->addFiletype((const char *)yesFiltypsLB->item(i)->text().utf8());
+	    if (restrictCtCB->isOn()) {
+		QString qcat = yesFiltypsLB->item(i)->text();
+		map<QString,QString>::const_iterator qit;
+		string cat;
+		if ((qit = cat_rtranslations.find(qcat)) != 
+		    cat_rtranslations.end()) {
+		    cat = (const char *)qit->second.utf8();
+		} else {
+		    cat = (const char *)qcat.utf8();
+		}
+		list<string> types;
+		rclconfig->getMimeCatTypes(cat, types);
+		for (list<string>::const_iterator it = types.begin();
+		     it != types.end(); it++) {
+		    sdata->addFiletype(*it);
+		}
+	    } else {
+		sdata->addFiletype((const char *)
+				   yesFiltypsLB->item(i)->text().utf8());
+	    }
 	}
     }
 

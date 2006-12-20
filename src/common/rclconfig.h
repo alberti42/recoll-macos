@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.29 2006-12-20 09:54:17 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.30 2006-12-20 13:12:49 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -115,6 +115,11 @@ class RclConfig {
 
     /** Get icon name from mimeconf for mimetype */
     string getMimeIconName(const string &mtype, string *path = 0);
+
+    /** Get list of file categories from mimeconf */
+    bool getMimeCategories(list<string>&);
+    /** Get list of mime types for category from mimeconf */
+    bool getMimeCatTypes(const string& cat, list<string>&);
 
     /** Get a list of all indexable mime types defined in mimemap */
     list<string> getAllMimeTypes();

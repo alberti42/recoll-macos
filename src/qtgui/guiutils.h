@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.18 2006-11-30 13:38:44 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.19 2006-12-20 13:12:49 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -92,7 +92,8 @@ class PrefsPack {
     bool ssearchAutoPhrase;
     // Ignored file types in adv search (startup default)
     QStringList asearchIgnFilTyps;
-    
+    bool        fileTypesByCats;
+
     // Synthetized abstract length and word context size
     int syntAbsLen;
     int syntAbsCtx;

@@ -1,6 +1,6 @@
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-/* @(#$Id: advsearch_w.h,v 1.10 2006-12-04 09:56:26 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: advsearch_w.h,v 1.11 2006-12-20 13:12:49 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -65,7 +65,8 @@ public slots:
     virtual void delAFiltypPB_clicked();
     virtual void addFiltypPB_clicked();
     virtual void addAFiltypPB_clicked();
-    virtual void restrictFtCB_toggled(bool on);
+    virtual void restrictFtCB_toggled(bool);
+    virtual void restrictCtCB_toggled(bool);
     virtual void searchPB_clicked();
     virtual void browsePB_clicked();
     virtual void saveFileTypes();
@@ -84,6 +85,7 @@ private:
     virtual void init();
     std::list<SearchClauseW *> m_clauseWins;
     void saveCnf();
+    void fillFileTypes();
 };
 
 

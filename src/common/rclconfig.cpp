@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.39 2006-12-20 09:54:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.40 2006-12-20 13:12:49 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -318,15 +318,27 @@ string RclConfig::getSuffixFromMimeType(const string &mt)
     return "";
 }
 
-void RclConfig::freeAll() 
+/** Get list of file categories from mimeconf */
+bool RclConfig::getMimeCategories(list<string>& cats) 
 {
-    delete m_conf;
-    delete mimemap;
-    delete mimeconf; 
-    delete mimeview; 
-    delete STOPSUFFIXES;
-    // just in case
-    zeroMe();
+    if (!mimeconf)
+	return false;
+    cats = mimeconf->getNames("categories");
+    return true;
+}
+
+/** Get list of mime types for category from mimeconf */
+bool RclConfig::getMimeCatTypes(const string& cat, list<string>& tps)
+{
+    tps.clear();
+    if (!mimeconf)
+	return false;
+    string slist;
+    if (!mimeconf->get(cat, slist, "categories"))
+	return false;
+
+    stringToStrings(slist, tps);
+    return true;
 }
 
 string RclConfig::getMimeHandlerDef(const std::string &mtype)
@@ -374,7 +386,7 @@ bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
 
     delete mimeview;
     mimeview = new ConfStack<ConfTree>("mimeview", cdirs, true);
-    if (mimeconf == 0 || !mimeconf->ok()) {
+    if (mimeview == 0 || !mimeview->ok()) {
 	m_reason = string("No/bad mimeview in: ") + m_confdir;
 	return false;
     }
@@ -560,6 +572,17 @@ bool RclConfig::initUserConfig()
 	}
     }
     return true;
+}
+
+void RclConfig::freeAll() 
+{
+    delete m_conf;
+    delete mimemap;
+    delete mimeconf; 
+    delete mimeview; 
+    delete STOPSUFFIXES;
+    // just in case
+    zeroMe();
 }
 
 void RclConfig::initFrom(const RclConfig& r)

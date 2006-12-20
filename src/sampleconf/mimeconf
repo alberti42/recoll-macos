@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.20 2006-12-19 08:40:50 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.21 2006-12-20 13:12:49 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -78,3 +78,40 @@ text/html = html
 text/plain = txt
 text/x-mail = message
 text/x-c = source
+
+
+[categories]
+
+texts = application/msword \
+      application/pdf \
+      application/postscript \
+      application/vnd.sun.xml.writer \
+      application/vnd.sun.xml.writer.global \
+      application/vnd.sun.xml.writer.template \
+      application/x-dvi \
+      image/vnd.djvu \
+      text/html \
+      text/plain \
+      text/rtf
+
+spreadsheets = application/vnd.ms-excel \
+	     application/vnd.sun.xml.calc \
+	     application/vnd.sun.xml.calc.template
+
+presentations = application/vnd.ms-powerpoint \
+	      application/vnd.sun.xml.impress \
+	      application/vnd.sun.xml.impress.template
+
+media = audio/mpeg \
+      image/jpeg \
+      image/png \
+
+messages = message/rfc822 \
+	 text/x-gaim-log \
+	 text/x-mail \
+
+other = application/vnd.sun.xml.draw \
+      application/vnd.sun.xml.draw.template \
+      application/vnd.sun.xml.math \
+      application/x-fsdirectory 
+

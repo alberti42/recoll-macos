@@ -223,6 +223,25 @@
                                 <string>Restrict file types</string>
                             </property>
                         </widget>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>restrictCtCB</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>1</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>1</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>By categories</string>
+                            </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
+                        </widget>
                         <widget class="QPushButton">
                             <property name="name">
                                 <cstring>saveFileTypesPB</cstring>
