@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.27 2006-11-08 07:22:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.28 2006-12-20 09:41:37 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -215,6 +215,7 @@ static int     op_flags;
 #define OPT_S     0x40
 #define OPT_m     0x80
 #define OPT_D     0x100
+#define OPT_e     0x200
 
 static const char usage [] =
 "\n"
@@ -227,6 +228,8 @@ static const char usage [] =
 "recollindex -m [-D]\n"
 "    Perform real time indexation. Don't become a daemon if -D is set\n"
 #endif
+"recollindex -e <filename [filename ...]>\n"
+"    Purge data for individual files. No stem database updates\n"
 "recollindex -i <filename [filename ...]>\n"
 "    Index individual files. No database purge or stem database updates\n"
 "recollindex -s <lang>\n"
@@ -265,6 +268,7 @@ int main(int argc, const char **argv)
 #ifdef RCL_MONITOR
 	    case 'D': op_flags |= OPT_D; break;
 #endif
+	    case 'e': op_flags |= OPT_e; break;
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
 #ifdef RCL_MONITOR
@@ -281,7 +285,7 @@ int main(int argc, const char **argv)
     }
     if (op_flags & OPT_h)
 	Usage();
-    if ((op_flags & OPT_z) && (op_flags & OPT_i))
+    if ((op_flags & OPT_z) && (op_flags & (OPT_i|OPT_e)))
 	Usage();
 
     string reason;
@@ -294,8 +298,9 @@ int main(int argc, const char **argv)
 	exit(1);
     }
     
-    if (op_flags & OPT_i) {
+    if (op_flags & (OPT_i|OPT_e)) {
 	list<string> filenames;
+
 	if (argc == 0) {
 	    // Read from stdin
 	    char line[1024];
@@ -309,7 +314,12 @@ int main(int argc, const char **argv)
 		filenames.push_back(*argv++);
 	    }
 	}
-	exit(!indexfiles(config, filenames));
+
+	if (op_flags & OPT_i)
+	    exit(!indexfiles(config, filenames));
+	else 
+	    exit(!purgefiles(config, filenames));
+
     } else if (op_flags & OPT_s) {
 	if (argc != 1) 
 	    Usage();
