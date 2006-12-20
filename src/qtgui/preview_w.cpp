@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.12 2006-12-20 13:55:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.13 2006-12-20 14:09:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -485,6 +485,7 @@ class LoadThread : public QThread {
 		// a search term of course.
 		*statusp = 0;
 	    } else {
+		out->mimetype = interner.get_mimetype();
 		*statusp = -1;
 	    }
 	} catch (CancelExcept) {
@@ -587,7 +588,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     if (status != 0) {
 	QMessageBox::warning(0, "Recoll",
 			     tr("Can't turn doc into internal rep for ") +
-			     doc.mimetype.c_str());
+			     fdoc.mimetype.c_str());
 	return false;
     }
     // Reset config just in case.
