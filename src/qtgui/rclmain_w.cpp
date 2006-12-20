@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.16 2006-12-18 12:05:29 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.17 2006-12-20 13:55:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -124,6 +124,9 @@ void RclMain::init()
 	    this, SLOT(startNativeViewer(int)));
     connect(resList, SIGNAL(docPreviewClicked(int, int)), 
 	    this, SLOT(startPreview(int, int)));
+
+    connect(resList, SIGNAL(previewRequested(Rcl::Doc)), 
+	    this, SLOT(startPreview(Rcl::Doc)));
 
     connect(fileExitAction, SIGNAL(activated() ), this, SLOT(fileExit() ) );
     connect(fileStart_IndexingAction, SIGNAL(activated()), 
@@ -532,6 +535,41 @@ void RclMain::startPreview(int docnum, int mod)
     g_dynconf->enterDoc(fn, doc.ipath);
     if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc, docnum))
 	curPreview->closeCurrentTab();
+}
+
+/** 
+ * Open a preview window for a given document, no linking to result list
+ *
+ * This is used to show ie parent documents, which have no corresponding
+ * entry in the result list.
+ * 
+ */
+void RclMain::startPreview(Rcl::Doc doc)
+{
+    // Check file exists in file system
+    string fn = urltolocalpath(doc.url);
+    struct stat st;
+    if (stat(fn.c_str(), &st) < 0) {
+	QMessageBox::warning(0, "Recoll", tr("Cannot access document file: ") +
+			     fn.c_str());
+	return;
+    }
+    Preview *preview = new Preview(0);
+    if (preview == 0) {
+	QMessageBox::warning(0, tr("Warning"), 
+			     tr("Can't create preview window"),
+			     QMessageBox::Ok, 
+			     QMessageBox::NoButton);
+	return;
+    }
+    RefCntr<Rcl::SearchData> searchdata(new Rcl::SearchData(Rcl::SCLT_AND));
+    preview->setSId(0, searchdata);
+    connect(preview, SIGNAL(wordSelect(QString)),
+	    this, SLOT(ssearchAddTerm(QString)));
+    g_dynconf->enterDoc(fn, doc.ipath);
+    preview->show();
+    if (!preview->loadFileInCurrentTab(fn, st.st_size, doc, 0))
+	preview->closeCurrentTab();
 }
 
 // Show next document from result list in current preview tab

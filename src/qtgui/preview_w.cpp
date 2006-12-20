@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.11 2006-12-19 08:40:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.12 2006-12-20 13:55:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -207,7 +207,10 @@ QTextEdit *Preview::getCurrentEditor()
 void Preview::doSearch(const QString &text, bool next, bool reverse, 
 		       bool wordOnly)
 {
-    LOGDEB1(("Preview::doSearch: next %d rev %d\n", int(next), int(reverse)));
+    LOGDEB1(("Preview::doSearch: [%s] next %d rev %d\n", 
+	    (const char *)text.utf8(), int(next), int(reverse)));
+    if (text.isEmpty())
+	return;
     QTextEdit *edit = getCurrentEditor();
     if (edit == 0) {
 	// ??
@@ -684,7 +687,10 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
 	bool wasC = matchCheck->isChecked();
 	matchCheck->setChecked(false);
+	bool ocanbeep = canBeep;
+	canBeep = false;
 	doSearch(QString::fromUtf8(firstTermBeacon), 0, false, false);
+	canBeep = ocanbeep;
 	editor->del();
 	matchCheck->setChecked(wasC);
 #endif

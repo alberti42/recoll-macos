@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.15 2006-12-05 15:23:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.16 2006-12-20 13:55:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -604,15 +604,46 @@ RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
     RCLPOPUP *popup = new RCLPOPUP(this);
     popup->insertItem(tr("&Preview"), this, SLOT(menuPreview()));
     popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
-    popup->insertItem(tr("&Copy File Name"), this, SLOT(menuCopyFN()));
+    popup->insertItem(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
     popup->insertItem(tr("Copy &Url"), this, SLOT(menuCopyURL()));
     popup->insertItem(tr("Find &similar documents"), this, SLOT(menuExpand()));
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc)) {
+	if (!doc.ipath.empty())
+	    popup->insertItem(tr("P&arent document"), 
+			      this, SLOT(menuSeeParent()));
+    }
     return popup;
 }
 
 void ResList::menuPreview()
 {
     emit docPreviewClicked(m_popDoc, 0);
+}
+void ResList::menuSeeParent()
+{
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc)) {
+	if (doc.ipath.empty())
+	    return;
+	Rcl::Doc doc1;
+	doc1.url = doc.url;
+	doc1.ipath = doc.ipath;
+	string::size_type colon;
+	LOGDEB(("Ipath: [%s]\n", doc1.ipath.c_str()));
+	if ((colon=doc1.ipath.find_last_of(":")) != string::npos) {
+	    doc1.ipath.erase(colon);
+	} else {
+	    doc1.ipath.erase();
+	}
+	LOGDEB(("Ipath after: [%s]\n", doc1.ipath.c_str()));
+
+	list<string> lipath;
+	stringToTokens(doc.ipath, lipath, ":");
+	if (lipath.size() >= 1)
+	    lipath.pop_back();
+	emit previewRequested(doc1);
+    }
 }
 void ResList::menuEdit()
 {

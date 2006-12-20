@@ -88,6 +88,7 @@ public slots:
     virtual void docExpand(int);
     virtual void ssearchAddTerm(QString);
     virtual void startPreview(int docnum, int);
+    virtual void startPreview(Rcl::Doc doc);
     virtual void startNativeViewer(int docnum);
     virtual void previewNextInTab(int sid, int docnum);
     virtual void previewPrevInTab(int sid, int docnum);

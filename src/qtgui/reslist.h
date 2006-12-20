@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.6 2006-12-05 15:23:50 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.7 2006-12-20 13:55:46 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -60,6 +60,7 @@ class ResList : public QTEXTBROWSER
     virtual void menuCopyFN();
     virtual void menuCopyURL();
     virtual void menuExpand();
+    virtual void menuSeeParent();
     virtual void previewExposed(int);
 
  signals:
@@ -67,6 +68,7 @@ class ResList : public QTEXTBROWSER
     void prevPageAvailable(bool);
     void docEditClicked(int);
     void docPreviewClicked(int, int);
+    void previewRequested(Rcl::Doc);
     void headerClicked();
     void docExpand(int);
     void wordSelect(QString);
