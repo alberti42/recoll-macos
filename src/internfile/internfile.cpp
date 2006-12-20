@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.22 2006-12-19 08:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.23 2006-12-20 14:28:35 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -118,7 +118,8 @@ FileInterner::FileInterner(const std::string &f, const struct stat *stp,
 {
     bool usfci = false;
     cnf->getConfParam("usesystemfilecommand", &usfci);
-    LOGDEB1(("FileInterner::FileInterner: usfci now %d\n", usfci));
+    LOGDEB(("FileInterner::FileInterner: [%s] mime [%s] preview %d\n", 
+	    f.c_str(), imime?imime->c_str() : "(null)", m_forPreview));
 
     // We need to run mime type identification in any case to check
     // for a compressed file.
