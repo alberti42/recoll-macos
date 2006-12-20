@@ -95,6 +95,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              4.4.3. The mimeconf file
 
+                             4.4.4. The mimeview file
+
      ----------------------------------------------------------------------
 
                             Chapter 1. Introduction
@@ -498,14 +500,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    the creation of another preview window, which may be useful to view the
    documents side by side.
 
-   Clicking the Edit link will attempt to start an external viewer (have a
-   look at the mimeconf configuration file to see how these are configured).
+   Clicking the Edit link will attempt to start an external viewer. The
+   viewers can be configured through the user preferences dialog, or by
+   editing the mimeview configuration file.
 
    The Preview and Edit edit links may not be present for all entries,
    meaning that Recoll has no configured way to preview a given file type
    (which was indexed by name only), or no configured external viewer for the
    file type. This can sometimes be adjusted simply by tweaking the mimemap
-   and mimeconf configuration files.
+   and mimeview configuration files (the latter can be modified with the user
+   preferences dialog).
 
    You can click on the Query details link at the top of the results page to
    see the query actually performed, after stem expansion and other
@@ -974,6 +978,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    install them for the file types that you wish to have indexed (these are
    run-time dependencies. None is needed for building Recoll):
 
+     * Openoffice: supported natively, but needs the unzip command to be
+       installed.
+
      * PDF: pdftotext is part of the Xpdf package.
 
      * Postscript: pstotext.
@@ -1263,28 +1270,47 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    in one place.
 
    mimemap also has a recoll_noindex variable which is a list of suffixes.
-   Matching files will be skipped (avoids unnecessary decompressions or file
-   executions). This is partially redundant with skippedNames in the main
-   configuration file, with two differences: it will not affect directories,
-   and it can be changed for any sub-directory.
+   Matching files will be skipped (which avoids unnecessary decompressions or
+   file executions). This is partially redundant with skippedNames in the
+   main configuration file, with two differences: it will not affect
+   directories, and it cannot be made dependant on the file-system location
+   (it is a configuration-wide parameter). You could accomplish with
+   skippedNames anything that recoll_noindex does. The latter is used mostly
+   for things known to be unindexable by a given Recoll version. Having it
+   there avoids cluttering the more user-oriented and locally customized
+   skippedNames.
 
      ----------------------------------------------------------------------
 
   4.4.3. The mimeconf file
 
    mimeconf specifies how the different mime types are handled for indexing,
-   and for display.
+   and which icons are displayed in the recoll result lists.
 
-   Changing the indexing parameters is probably not a good idea except if you
-   are a Recoll developers.
+   Changing the parameters in the [index] section is probably not a good idea
+   except if you are a Recoll developer.
 
-   You may want to adjust the external viewers defined in (ie: HTML is either
-   previewed internally or displayed using firefox, but you may prefer
-   mozilla, your openoffice.org program might be named oofice instead of
-   openoffice ...). Look for the [view] section.
+   The [icons] section allows you to change the icons which are displayed by
+   recoll in the result lists (the values are the basenames of the png images
+   inside the iconsdir directory (specified in recoll.conf).
 
-   You can also change the icons which are displayed by recoll in the result
-   lists (the values are the basenames of the png images inside the iconsdir
-   directory (specified in recoll.conf).
+     ----------------------------------------------------------------------
+
+  4.4.4. The mimeview file
+
+   mimeview specifies which programs are started when you click on an Edit
+   link in a result list. Ie: HTML is normally displayed using firefox, but
+   you may prefer Konqueror, your openoffice.org program might be named
+   oofice instead of openoffice etc.
+
+   Changes to this file can be done by direct editing, or through the recoll
+   user preferences dialog.
+
+   As for the other configuration files, the normal usage is to have a
+   mimeview inside your own configuration directory, with just the
+   non-default entries, which will override those from the central
+   configuration file.
+
+   Please note that these entries must be placed under a [view] section.
 
      ----------------------------------------------------------------------
