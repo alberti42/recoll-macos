@@ -16,7 +16,7 @@
  */
 #ifndef _FSTREEWALK_H_INCLUDED_
 #define _FSTREEWALK_H_INCLUDED_
-/* @(#$Id: fstreewalk.h,v 1.5 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: fstreewalk.h,v 1.6 2006-12-21 08:22:35 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -56,6 +56,7 @@ class FsTreeWalker {
     /** Get explanation for error */
     string getReason();
     int getErrCnt();
+
     /**
      * Add a pattern to the list of things (file or dir) to be ignored
      * (ie: #* , *~)
@@ -63,10 +64,15 @@ class FsTreeWalker {
     bool addSkippedName(const string &pattern); 
     /** Set the ignored patterns list */
     bool setSkippedNames(const list<string> &patlist);
-    /** Clear the ignored patterns list */
-    void clearSkippedNames();
+
+    /** Same for skipped paths: this are paths, not names, under which we
+	do not descend (ie: /home/me/.recoll) */
+    bool addSkippedPath(const string &path); 
+    /** Set the ignored paths list */
+    bool setSkippedPaths(const list<string> &pathlist);
 
  private:
+    Status iwalk(const string &dir, FsTreeWalkerCB& cb);
     class Internal;
     Internal *data;
 };

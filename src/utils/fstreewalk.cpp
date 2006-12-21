@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.8 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.9 2006-12-21 08:22:35 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,7 @@ class FsTreeWalker::Internal {
     Options options;
     stringstream reason;
     list<string> skippedNames;
+    list<string> skippedPaths;
     int errors;
     void logsyserr(const char *call, const string &param) 
     {
@@ -84,13 +85,28 @@ bool FsTreeWalker::setSkippedNames(const list<string> &patterns)
     data->skippedNames = patterns;
     return true;
 }
-void FsTreeWalker::clearSkippedNames()
+
+bool FsTreeWalker::addSkippedPath(const string& path)
 {
-    data->skippedNames.clear();
+    data->skippedPaths.push_back(path_canon(path));
+    return true;
+}
+bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
+{
+    data->skippedPaths = paths;
+    for (list<string>::iterator it = data->skippedPaths.begin();
+	 it != data->skippedPaths.end(); it++)
+	*it = path_canon(*it);
+    return true;
 }
 
-
 FsTreeWalker::Status FsTreeWalker::walk(const string &top, 
+					FsTreeWalkerCB& cb)
+{
+    return iwalk(path_canon(top), cb);
+}
+
+FsTreeWalker::Status FsTreeWalker::iwalk(const string &top, 
 					FsTreeWalkerCB& cb)
 {
     Status status = FtwOk;
@@ -158,10 +174,19 @@ FsTreeWalker::Status FsTreeWalker::walk(const string &top,
 		continue;
 	    }
 	    if (S_ISDIR(st.st_mode)) {
+		if (!data->skippedPaths.empty()) {
+		    list<string>::const_iterator it;
+		    for (it = data->skippedPaths.begin(); 
+			 it != data->skippedPaths.end(); it++) {
+			if (fn == *it)
+			    goto skip;
+		    }
+		}
+
 		if (data->options & FtwNoRecurse) {
 		    status = cb.processone(fn, &st, FtwDirEnter);
 		} else {
-		    status=walk(fn, cb);
+		    status = iwalk(fn, cb);
 		}
 		if (status & (FtwStop|FtwError))
 		    goto out;
@@ -213,24 +238,61 @@ class myCB : public FsTreeWalkerCB {
     }
 };
 
+static const char *thisprog;
+
+static char usage [] =
+"trfstreewalk [-p pattern] [-P ignpath] topdir\n\n"
+;
+static void
+Usage(void)
+{
+    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    exit(1);
+}
+
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_p	  0x2 
+#define OPT_P	  0x4 
+
 int main(int argc, const char **argv)
 {
-    if (argc < 2) {
-	cerr << "Usage: fstreewalk <topdir> [ignpat [ignpat] ...]" << endl;
-	exit(1);
-    }
-    argv++;argc--;
-    string topdir = *argv++;argc--;
-    list<string> ignpats;
-    while (argc > 0) {
-	ignpats.push_back(*argv++);argc--;
-    }
-    FsTreeWalker walker;
-    walker.setSkippedNames(ignpats);
-    myCB cb;
-    walker.walk(topdir, cb);
-    if (walker.getErrCnt() > 0)
-	cout << walker.getReason();
+    list<string> patterns;
+    list<string> paths;
+    thisprog = argv[0];
+    argc--; argv++;
+
+  while (argc > 0 && **argv == '-') {
+    (*argv)++;
+    if (!(**argv))
+      /* Cas du "adb - core" */
+      Usage();
+    while (**argv)
+      switch (*(*argv)++) {
+      case 'p':	op_flags |= OPT_p; if (argc < 2)  Usage();
+	  patterns.push_back(*(++argv));
+	  argc--; 
+	  goto b1;
+      case 'P':	op_flags |= OPT_P; if (argc < 2)  Usage();
+	  paths.push_back(*(++argv));
+	argc--; 
+	goto b1;
+      default: Usage();	break;
+      }
+  b1: argc--; argv++;
+  }
+
+  if (argc != 1)
+    Usage();
+  string topdir = *argv++;argc--;
+
+  FsTreeWalker walker;
+  walker.setSkippedNames(patterns);
+  walker.setSkippedPaths(paths);
+  myCB cb;
+  walker.walk(topdir, cb);
+  if (walker.getErrCnt() > 0)
+      cout << walker.getReason();
 }
 
 #endif // TEST_FSTREEWALK
