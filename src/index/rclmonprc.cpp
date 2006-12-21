@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.7 2006-11-07 16:51:45 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.8 2006-12-21 10:08:07 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -272,12 +272,11 @@ bool startMonitor(RclConfig *conf, bool nofork)
     }
     LOGDEB(("start_monitoring: entering main loop\n"));
     bool timedout;
+    time_t lastauxtime = time(0);
     bool didsomething = false;
 
-    // We set a timeout of 10mn. If we do timeout, and there have been some
-    // indexing activity since the last such operation, we'll update the 
-    // auxiliary data (stemming and spelling)
-    while (rclEQ.wait(10 * 60, &timedout)) {
+    // Set a relatively short timeout for better monitoring of exit requests
+    while (rclEQ.wait(2, &timedout)) {
 	// Queue is locked.
 
 	if (!rclEQ.ok())
@@ -317,16 +316,12 @@ bool startMonitor(RclConfig *conf, bool nofork)
 	    didsomething = true;
 	}
 
-	if (timedout) {
-	    MONDEB(("Monitor: queue wait timed out\n"));
-	    // Timed out. there must not be much activity around here. 
-	    // If anything was modified, process the end-of-indexing
-	    // tasks: stemming and spelling database creations.
-	    if (didsomething) {
-		didsomething = false;
-		if (!createAuxDbs(conf))
-		    break;
-	    }
+	// Recreate the auxiliary dbs every hour.
+	if (time(0) - lastauxtime > 60 *60) {
+	    lastauxtime = time(0);
+	    didsomething = false;
+	    if (!createAuxDbs(conf))
+		break;
 	}
 
 	// Lock queue before waiting again
