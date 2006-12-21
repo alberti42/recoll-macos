@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.9 2006-12-21 08:22:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.10 2006-12-21 09:22:31 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -77,18 +77,24 @@ int FsTreeWalker::getErrCnt()
 
 bool FsTreeWalker::addSkippedName(const string& pattern)
 {
-    data->skippedNames.push_back(pattern);
+    if (find(data->skippedNames.begin(), 
+	     data->skippedNames.end(), pattern) == data->skippedNames.end())
+	data->skippedNames.push_back(pattern);
     return true;
 }
 bool FsTreeWalker::setSkippedNames(const list<string> &patterns)
 {
     data->skippedNames = patterns;
+    data->skippedNames.sort();
+    data->skippedNames.unique();
     return true;
 }
 
 bool FsTreeWalker::addSkippedPath(const string& path)
 {
-    data->skippedPaths.push_back(path_canon(path));
+    if (find(data->skippedPaths.begin(), 
+	     data->skippedPaths.end(), path) == data->skippedPaths.end())
+	data->skippedPaths.push_back(path_canon(path));
     return true;
 }
 bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
@@ -97,6 +103,8 @@ bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
     for (list<string>::iterator it = data->skippedPaths.begin();
 	 it != data->skippedPaths.end(); it++)
 	*it = path_canon(*it);
+    data->skippedPaths.sort();
+    data->skippedPaths.unique();
     return true;
 }
 

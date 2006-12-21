@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.28 2006-12-20 09:41:37 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.29 2006-12-21 09:22:31 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -216,6 +216,7 @@ static int     op_flags;
 #define OPT_m     0x80
 #define OPT_D     0x100
 #define OPT_e     0x200
+#define OPT_w     0x400
 
 static const char usage [] =
 "\n"
@@ -253,6 +254,9 @@ Usage(void)
 int main(int argc, const char **argv)
 {
     string a_config;
+#ifdef RCL_MONITOR
+    int sleepsecs = 60;
+#endif
     thisprog = argv[0];
     argc--; argv++;
 
@@ -278,6 +282,12 @@ int main(int argc, const char **argv)
 #ifdef RCL_USE_ASPELL
 	    case 'S': op_flags |= OPT_S; break;
 #endif
+#ifdef RCL_MONITOR
+	    case 'w':	op_flags |= OPT_w; if (argc < 2)  Usage();
+		if ((sscanf(*(++argv), "%d", &sleepsecs)) != 1) 
+		    Usage(); 
+		argc--; goto b1;
+#endif
 	    case 'z': op_flags |= OPT_z; break;
 	    default: Usage(); break;
 	    }
@@ -297,6 +307,7 @@ int main(int argc, const char **argv)
 	cerr << "Configuration problem: " << reason << endl;
 	exit(1);
     }
+    bool rezero(op_flags & OPT_z);
     
     if (op_flags & (OPT_i|OPT_e)) {
 	list<string> filenames;
@@ -331,9 +342,16 @@ int main(int argc, const char **argv)
 	if (argc != 0) 
 	    Usage();
 	if (!(op_flags&OPT_D)) {
-	    LOGDEB(("Daemonizing\n"));
+	    LOGDEB(("recollindex: daemonizing\n"));
 	    daemon(0,0);
 	}
+	if (sleepsecs > 0) {
+	    LOGDEB(("recollindex: sleeping %d\n", sleepsecs));
+	    sleep(sleepsecs);
+	}
+	confindexer = new ConfIndexer(config, &updater);
+	confindexer->index(rezero);
+	delete confindexer;
 	if (startMonitor(config, (op_flags&OPT_D)!=0))
 	    exit(0);
 	exit(1);
@@ -350,7 +368,6 @@ int main(int argc, const char **argv)
 
     } else {
 	confindexer = new ConfIndexer(config, &updater);
-	bool rezero(op_flags & OPT_z);
 	exit(!confindexer->index(rezero));
     }
 }

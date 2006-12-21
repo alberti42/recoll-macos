@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.8 2006-11-07 16:51:45 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.9 2006-12-21 09:22:31 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -128,11 +128,14 @@ void *rclMonRcvRun(void *q)
 
     // Walk the directory trees to add watches
     FsTreeWalker walker;
+    walker.addSkippedPath(queue->getConfig()->getConfDir());
     WalkCB walkcb(queue->getConfig(), mon, queue);
     for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	queue->getConfig()->setKeyDir(*it);
-	// Adjust the skipped names according to config
+	// Adjust the skipped names according to config, and add the dbdir to
+	// skipped paths
 	walker.setSkippedNames(queue->getConfig()->getSkippedNames());
+	walker.addSkippedPath(queue->getConfig()->getDbDir());
 	LOGDEB(("rclMonRcvRun: walking %s\n", it->c_str()));
 	walker.walk(*it, walkcb);
     }
