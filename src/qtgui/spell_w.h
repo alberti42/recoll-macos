@@ -1,6 +1,6 @@
 #ifndef _ASPELL_W_H_INCLUDED_
 #define _ASPELL_W_H_INCLUDED_
-/* @(#$Id: spell_w.h,v 1.6 2006-12-19 12:11:21 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: spell_w.h,v 1.7 2006-12-22 11:01:28 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 #include <qvariant.h>
 #include <qwidget.h>
-#include "rcldb.h"
 
 //MOC_SKIP_BEGIN
 #if QT_VERSION < 0x040000

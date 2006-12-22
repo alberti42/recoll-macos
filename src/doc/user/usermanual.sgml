@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.31 2006-12-20 09:54:17 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.32 2006-12-22 11:01:28 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -439,11 +439,10 @@ recoll
       <filename>examples</filename> directory (typically
       <filename>/usr/local/[share/]recoll/examples</filename>).</para>
 
-      <para>Starting and stopping the daemon could be performed, for
-      example, as part of the user session script. For example, my
-      out of fashion xdm-based session has a
-      <filename>.xsession</filename> script with the following lines 
-      at the end:</para> 
+      <para>Starting and stopping the daemon can be performed as part
+      of the user session script. For example, my out of fashion
+      xdm-based session has a <filename>.xsession</filename> script
+      with the following lines at the end:</para>
 
       <programlisting>recollconf=$HOME/.recoll-home
 recolldata=/usr/local/share/recoll
@@ -616,6 +615,8 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
 	  <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
 	  <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
 	  <listitem><para><guilabel>Find similar</guilabel></para></listitem>
+	  <listitem><para><guilabel>Find similar</guilabel></para></listitem>
+	  <listitem><para><guilabel>Parent document</guilabel></para></listitem>
 	</itemizedlist>
 
 	<para>The <guilabel>Preview</guilabel> and
@@ -629,6 +630,21 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
           them into the simple search field. You can then start a simple
           search, with a good chance of finding documents related to the
          current result.</para>
+
+	<para>The <guilabel>Copy File Name</guilabel> and
+	<guilabel>Copy Url</guilabel> copy the relevant data to the
+	clipboard, for later pasting.</para> 
+
+        <para>The <guilabel>Parent document</guilabel> entry will
+          appear for documents which are not actually files but are
+          part of, or attached to, a higher level document. This entry
+          is mainly useful for email attachments and permits viewing
+          the message to which the document is attached. Note that the
+          entry will also appear for an email which is part of an mbox
+          folder file, but that you can't actually visualize the
+          folder (there will be an error dialog if you try). &RCL; is
+          unfortunately not yet smart enough to disable the entry in
+          this case.</para>
 
       </sect2>
     </sect1>
