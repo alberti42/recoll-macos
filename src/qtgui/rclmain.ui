@@ -194,9 +194,6 @@
         <property name="name">
             <cstring>toolsDoc_HistoryAction</cstring>
         </property>
-        <property name="iconSet">
-            <iconset>history.png</iconset>
-        </property>
         <property name="menuText">
             <string>Document &amp;History</string>
         </property>
@@ -207,9 +204,6 @@
     <action>
         <property name="name">
             <cstring>toolsAdvanced_SearchAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>asearch.png</iconset>
         </property>
         <property name="menuText">
             <string>&amp;Advanced Search</string>
@@ -222,9 +216,6 @@
         <property name="name">
             <cstring>toolsSort_parametersAction</cstring>
         </property>
-        <property name="iconSet">
-            <iconset>sortparms.png</iconset>
-        </property>
         <property name="menuText">
             <string>&amp;Sort parameters</string>
         </property>
@@ -235,9 +226,6 @@
     <action>
         <property name="name">
             <cstring>toolsSpellAction</cstring>
-        </property>
-        <property name="iconSet">
-            <iconset>spell.png</iconset>
         </property>
         <property name="menuText">
             <string>Term &amp;explorer</string>
@@ -253,9 +241,6 @@
         <property name="enabled">
             <bool>false</bool>
         </property>
-        <property name="iconSet">
-            <iconset>nextpage.png</iconset>
-        </property>
         <property name="text">
             <string>Next page</string>
         </property>
@@ -269,9 +254,6 @@
         </property>
         <property name="enabled">
             <bool>false</bool>
-        </property>
-        <property name="iconSet">
-            <iconset>prevpage.png</iconset>
         </property>
         <property name="text">
             <string>Previous page</string>

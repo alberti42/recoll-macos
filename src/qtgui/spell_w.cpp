@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.9 2006-12-19 12:38:18 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.10 2006-12-22 16:48:05 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -113,7 +113,7 @@ public:
         : QListViewItem(listView, s1, s2)
     { }
 
-    int compare(QListViewItem * i, int col, bool ascending) const {
+    int compare(QListViewItem * i, int col, bool) const {
 	if (col == 0)
 	    return i->text(0).compare(text(0));
 	if (col == 1)

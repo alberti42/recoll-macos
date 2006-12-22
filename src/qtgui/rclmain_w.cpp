@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.17 2006-12-20 13:55:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.18 2006-12-22 16:48:05 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -155,6 +155,9 @@ void RclMain::init()
     toolsSpellAction->setIconSet(createIconSet("spell.png"));
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
+    toolsDoc_HistoryAction->setIconSet(createIconSet("history.png"));
+    toolsAdvanced_SearchAction->setIconSet(createIconSet("asearch.png"));
+    toolsSort_parametersAction->setIconSet(createIconSet("sortparms.png"));
 #else
     toolsSpellAction->setIcon(QIcon(":/images/spell.png"));
     nextPageAction->setIcon(QIcon(":/images/nextpage.png"));
