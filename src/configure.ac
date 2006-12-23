@@ -226,6 +226,10 @@ cd ..
 
 ##################### End QT detection
 
+### X11: this is needed for the session monitoring code (in recollindex -m)
+AC_PATH_XTRA
+#echo X_CFLAGS "'$X_CFLAGS'" X_PRE_LIBS "'$X_PRE_LIBS'" X_LIBS "'$X_LIBS'" X_EXTRA_LIBS "'$X_EXTRA_LIBS'"
+
 # We have to expand prefix in here, couldn't find a way to do it inside 
 # the qt gui .pro file or Makefile. This just means that you can't change
 # prefix at build time. It works at install time because we dont' use the
@@ -235,6 +239,10 @@ test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
 QTRECOLL_DATADIR=${m_datadir}/recoll
 
+AC_SUBST(X_CFLAGS)
+AC_SUBST(X_PRE_LIBS)
+AC_SUBST(X_LIBS)
+AC_SUBST(X_EXTRA_LIBS)
 AC_SUBST(INCICONV)
 AC_SUBST(LIBICONV)
 AC_SUBST(LIBXAPIAN)

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.13 2006-12-16 15:31:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.14 2006-12-23 13:07:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -91,15 +91,20 @@ TempFileInternal::TempFileInternal(const string& suffix)
 	return;
     }
 
-    if (!mktemp(cp)) {
+    // Yes using mkstemp this way is awful (bot the suffix adding and
+    // using mkstemp() just to avoid the warnings)
+    int fd;
+    if ((fd = mkstemp(cp)) < 0) {
 	free(cp);
-	m_reason = "maketmpdir: mktemp failed\n";
+	m_reason = "maketmpdir: mkstemp failed\n";
 	return;
-    }	
+    }
+    close(fd);
+    unlink(cp);
+    
     filename = cp;
     free(cp);
 
-    // Yea not right
     m_filename = filename + suffix;
     if (close(open(m_filename.c_str(), O_CREAT|O_EXCL, 0600)) != 0) {
 	m_reason = string("Could not open/create") + m_filename;

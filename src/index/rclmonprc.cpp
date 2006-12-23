@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.8 2006-12-21 10:08:07 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.9 2006-12-23 13:07:21 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@ static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.8 2006-12-21 10:08:07 dockes Ex
 #include "debuglog.h"
 #include "indexer.h"
 #include "pathut.h"
+#include "x11mon.h"
 
 typedef map<string, RclMonEvent> queue_type;
 
@@ -161,9 +162,23 @@ extern int stopindexing;
 
 bool RclMonEventQueue::ok()
 {
-    if (m_data == 0)
+    if (m_data == 0) {
+	LOGDEB(("RclMonEventQueue: not ok: bad state\n"));
 	return false;
-    return !stopindexing && m_data->m_ok;
+    }
+    if (!x11IsAlive()) {
+	LOGDEB(("RclMonEventQueue: not ok: x11\n"));
+	return false;
+    }
+    if (stopindexing) {
+	LOGDEB(("RclMonEventQueue: not ok: stop request\n"));
+	return false;
+    }
+    if (!m_data->m_ok) {
+	LOGDEB(("RclMonEventQueue: not ok: end from rcv\n"));
+	return false;
+    }
+    return true;
 }
 
 void RclMonEventQueue::setTerminate()

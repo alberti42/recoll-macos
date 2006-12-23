@@ -10,7 +10,9 @@ RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o $(BIGLIB) $(MIMELIB)
 recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
 	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
-	       $(LIBFAM) $(LIBSYS)
+	       $(LIBFAM) \
+	       $(X_LIBS) $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS) \
+	       $(LIBSYS)
 recollindex.o : recollindex.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c -o recollindex.o $<
 rclmonrcv.o : rclmonrcv.cpp 
