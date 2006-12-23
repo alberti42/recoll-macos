@@ -80,6 +80,13 @@ trconftree.o : conftree.cpp
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_CONFTREE -c -o trconftree.o \
 	       conftree.cpp
 
+X11MON_OBJS= trx11mon.o x11mon.o
+trx11mon : $(X11MON_OBJS)
+	$(CXX) $(ALL_CXXFLAGS) -o trx11mon $(X11MON_OBJS)  -L/usr/X11R6/lib -lX11
+trx11mon.o : x11mon.cpp x11mon.h
+	$(CXX) -o trx11mon.o -c $(ALL_CXXFLAGS) -DTEST_X11MON x11mon.cpp
+x11mon.o: x11mon.cpp
+	$(CXX) -c -I/usr/X11R6/include $(ALL_CXXFLAGS) x11mon.cpp
 clean:
 	rm -f *.o $(PROGS)
 
