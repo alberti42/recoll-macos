@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.33 2006-12-24 07:40:26 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.34 2006-12-24 07:52:52 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -426,20 +426,19 @@ recoll
       become a daemon, permanently monitoring file changes and updating
       the index.</para>
 
-      <para>The package must have been 
-       <link linkend="rcl.install.building.build">configured</link>
-      with option <literal>--with-fam</literal> or
-      <literal>--with-inotify</literal> for the monitoring
-      code and option to be enabled in
-      <command>recollindex</command>. The default is currently to
-      include inotify monitoring on systems that support it.</para>
+      <para>The real time indexing support can be customised during package 
+       <link linkend="rcl.install.building.build">configuration</link>
+      with the <literal>--with[out]-fam</literal> or
+      <literal>--with[out]-inotify</literal> options.  The default is
+      currently to include inotify monitoring on systems that support
+      it.</para>
 
       <para>The <filename>rclmon.sh</filename> script can be used to
       easily start and stop the daemon. It can be found in the
       <filename>examples</filename> directory (typically
       <filename>/usr/local/[share/]recoll/examples</filename>).</para>
 
-      <para>Starting and stopping the daemon can be performed as part
+      <para>Starting the daemon is normally performed as part
       of the user session script. For example, my out of fashion
       xdm-based session has a <filename>.xsession</filename> script
       with the following lines at the end:</para>
@@ -450,25 +449,23 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
 
 fvwm 
 
-RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
 </programlisting>
 
       <para>The indexing daemon gets started, then the window manager,
-      for which the session waits. When the window manager exits, the
-      indexing daemon is stopped, then the session ends (at script
-      exit). This should be adjusted for your flavour of session
-      management, and of course, there are other possibilities.</para>
+      for which the session waits.</para> <para>By default the
+      indexing daemon will monitor the state of the X11 session, and
+      exit when it finishes, it is not necessary to kill it
+      explicitely. (The X11 server monitoring can be disabled with option
+      <literal>-x</literal> to <command>recollindex</command>).
+      </para>
 
       <para>Under KDE, you can place a small script to start
       <command>recollindex -m</command> under
       <filename>$HOME/.kde/Autostart</filename>. This will be executed
-      when the session begins, and the process seems to get a SIGHUP
-      signal and be terminated when the session ends.</para>
+      when the session begins.</para>
       
       <para>There is a similar mechanism under Gnome (find the session
-      control tool in the menus and use the "Startup programs" tab). I
-      could find an easy way to stop <command>recollindex</command> at
-      the end of the session though.</para>
+      control tool in the menus and use the "Startup programs" tab).</para>
 
       <para>By default, the indexing daemon will write its messages to
       a file inside the configuration directory (this is controlled by
@@ -478,11 +475,11 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
       when the daemon starts. If the daemon runs permanently, the log
       file may grow quite big, depending on the log level.</para>
 
-      <para>The real time indexing code is relatively young, and there
-      are still a few quirks. File deletions occurring while the
-      monitor is not running will not be detected. You'll have to run
-      a normal incremental indexing pass from time to time to purge
-      the database. There may still be other problems.</para>
+      <para>While it is convenient that data is indexed in real time,
+      repeated indexing can generate a significant load on the system
+      when files such as email folders change. You probably do not
+      want to enable it if your system is short on resources. Periodic
+      indexing is adequate in most cases.</para>
 
     </sect1>
 
@@ -1364,8 +1361,8 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
 	will disable the code for phonetic matching of search
 	terms. <literal>--with-fam</literal> or
 	<literal>--with-inotify</literal> will enable the code for
-	real time indexing. Refer to <literal>configure
-	--help</literal> output for details.</para>
+	real time indexing. Inotify support is enabled by default on
+	recent Linux systems.</para>
 
       <para>Normal procedure:</para>
       <screen>

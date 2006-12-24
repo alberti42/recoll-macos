@@ -386,42 +386,40 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Real time monitoring/indexing is performed by starting the recollindex -m
    command. With this option, recollindex will detach from the terminal and
-   become a daemon, forever monitoring file changes and updating the index.
+   become a daemon, permanently monitoring file changes and updating the
+   index.
 
-   The package must have been configured with option --with-fam or
-   --with-inotify for the monitoring code and option to be enabled in
-   recollindex. This is not currently the default.
+   The real time indexing support can be customised during package
+   configuration with the --with[out]-fam or --with[out]-inotify options. The
+   default is currently to include inotify monitoring on systems that support
+   it.
 
    The rclmon.sh script can be used to easily start and stop the daemon. It
    can be found in the examples directory (typically
    /usr/local/[share/]recoll/examples).
 
-   Starting and stopping the daemon could be performed, for example, as part
-   of the user session script. For example, my out of fashion xdm-based
-   session has a .xsession script with the following lines at the end:
+   Starting the daemon is normally performed as part of the user session
+   script. For example, my out of fashion xdm-based session has a .xsession
+   script with the following lines at the end:
 
  recollconf=$HOME/.recoll-home
  recolldata=/usr/local/share/recoll
  RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh start
 
- fvwm
-
- RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
+ fvwm 
 
    The indexing daemon gets started, then the window manager, for which the
-   session waits. When the window manager exits, the indexing daemon is
-   stopped, then the session ends (at script exit). This should be adjusted
-   for your flavour of session management, and of course, there are other
-   possibilities.
+   session waits.
+
+   By default the indexing daemon will monitor the state of the X11 session,
+   and exit when it finishes, it is not necessary to kill it explicitely.
+   (The X11 server monitoring can be disabled with option -x to recollindex).
 
    Under KDE, you can place a small script to start recollindex -m under
-   $HOME/.kde/Autostart. This will be executed when the session begins, and
-   the process seems to get a SIGHUP signal and be terminated when the
-   session ends.
+   $HOME/.kde/Autostart. This will be executed when the session begins.
 
    There is a similar mechanism under Gnome (find the session control tool in
-   the menus and use the "Startup programs" tab). I could find an easy way to
-   stop recollindex at the end of the session though.
+   the menus and use the "Startup programs" tab).
 
    By default, the indexing daemon will write its messages to a file inside
    the configuration directory (this is controlled by the daemlogfilename and
@@ -430,10 +428,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    runs permanently, the log file may grow quite big, depending on the log
    level.
 
-   The real time indexing code is relatively young, and there are still a few
-   quirks. File deletions occurring while the monitor is not running will not
-   be detected. You'll have to run a normal incremental indexing pass from
-   time to time to purge the database. There may still be other problems.
+   While it is convenient that data is indexed in real time, repeated
+   indexing can generate a significant load on the system when files such as
+   email folders change. You probably do not want to enable it if your system
+   is short on resources. Periodic indexing is adequate in most cases.
 
      ----------------------------------------------------------------------
 
@@ -540,6 +538,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Find similar
 
+     * Find similar
+
+     * Parent document
+
    The Preview and Edit entries do the same thing as the corresponding links.
    The two following entries will copy either an URL or the file path to the
    clipboard, for pasting into another application.
@@ -548,6 +550,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    current document and enter them into the simple search field. You can then
    start a simple search, with a good chance of finding documents related to
    the current result.
+
+   The Copy File Name and Copy Url copy the relevant data to the clipboard,
+   for later pasting.
+
+   The Parent document entry will appear for documents which are not actually
+   files but are part of, or attached to, a higher level document. This entry
+   is mainly useful for email attachments and permits viewing the message to
+   which the document is attached. Note that the entry will also appear for
+   an email which is part of an mbox folder file, but that you can't actually
+   visualize the folder (there will be an error dialog if you try). Recoll is
+   unfortunately not yet smart enough to disable the entry in this case.
 
      ----------------------------------------------------------------------
 
@@ -1043,7 +1056,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Configure options: --without-aspell will disable the code for phonetic
    matching of search terms. --with-fam or --with-inotify will enable the
-   code for real time indexing. Refer to configure --help output for details.
+   code for real time indexing. Inotify support is enabled by default on
+   recent Linux systems.
 
    Normal procedure:
 
