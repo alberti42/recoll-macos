@@ -2,7 +2,7 @@
 #define _RCLMON_H_INCLUDED_
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
-/* @(#$Id: rclmon.h,v 1.7 2006-11-07 16:51:45 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rclmon.h,v 1.8 2006-12-24 07:40:26 dockes Exp $  (C) 2006 J.F.Dockes */
 /**
  * Definitions for the real-time monitoring recoll. 
  * We're interested in file modifications, deletions and renaming.
@@ -37,6 +37,8 @@ class RclMonEvent {
     RclMonEvent() : m_etyp(RCLEVT_NONE) {}
 };
 
+enum RclMonitorOption {RCLMON_NONE=0, RCLMON_NOFORK=1, RCLMON_NOX11=2};
+
 /**
  * Monitoring event queue. This is the shared object between the main thread 
  * (which does the actual indexing work), and the monitoring thread which 
@@ -60,6 +62,7 @@ class RclMonEventQueue {
     bool ok();
     bool empty();
     RclMonEvent pop();
+    void setopts(int opts);
 
     // Convenience function for initially communicating config to mon thr
     void setConfig(RclConfig *conf);
@@ -70,7 +73,7 @@ class RclMonEventQueue {
 };
 
 /** Start monitoring on the topdirs described in conf */
-extern bool startMonitor(RclConfig *conf, bool nofork);
+extern bool startMonitor(RclConfig *conf, int flags);
 
 /** Main routine for the event receiving thread */
 extern void *rclMonRcvRun(void *);

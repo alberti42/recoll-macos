@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.29 2006-12-21 09:22:31 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.30 2006-12-24 07:40:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -217,6 +217,7 @@ static int     op_flags;
 #define OPT_D     0x100
 #define OPT_e     0x200
 #define OPT_w     0x400
+#define OPT_x     0x800
 
 static const char usage [] =
 "\n"
@@ -226,8 +227,10 @@ static const char usage [] =
 "    Index everything according to configuration file\n"
 "    -z : reset database before starting indexation\n"
 #ifdef RCL_MONITOR
-"recollindex -m [-D]\n"
-"    Perform real time indexation. Don't become a daemon if -D is set\n"
+"recollindex -m [-w <secs>] -x [-D]\n"
+"    Perform real time indexation. Don't become a daemon if -D is set.\n"
+"    -w sets number of seconds to wait before starting.\n"
+"    -x disables exit on end of x11 session\n"
 #endif
 "recollindex -e <filename [filename ...]>\n"
 "    Purge data for individual files. No stem database updates\n"
@@ -288,6 +291,7 @@ int main(int argc, const char **argv)
 		    Usage(); 
 		argc--; goto b1;
 #endif
+	    case 'x': op_flags |= OPT_x; break;
 	    case 'z': op_flags |= OPT_z; break;
 	    default: Usage(); break;
 	    }
@@ -352,7 +356,12 @@ int main(int argc, const char **argv)
 	confindexer = new ConfIndexer(config, &updater);
 	confindexer->index(rezero);
 	delete confindexer;
-	if (startMonitor(config, (op_flags&OPT_D)!=0))
+	int opts = RCLMON_NONE;
+	if (op_flags & OPT_D)
+	    opts |= RCLMON_NOFORK;
+	if (op_flags & OPT_x)
+	    opts |= RCLMON_NOX11;
+	if (startMonitor(config, opts))
 	    exit(0);
 	exit(1);
 #endif // MONITOR

@@ -1454,6 +1454,12 @@ echo "$as_me: error: fam library not found" >&2;}
    fi
 fi
 
+if test -f /usr/include/sys/inotify.h -a X$withFam = Xno ; then
+   inot_default=yes
+else
+   inot_default=no
+fi
+
 # Real time monitoring with inotify
 
 # Check whether --with-inotify or --without-inotify was given.
@@ -1461,10 +1467,12 @@ if test "${with_inotify+set}" = set; then
   withval="$with_inotify"
   withInotify=$withval
 else
-  withInotify=no
+  withInotify=$inot_default
 fi;
 
 if test X$withInotify != Xno ; then
+   { echo "$as_me:$LINENO: Enabled support for inotify monitoring" >&5
+echo "$as_me: Enabled support for inotify monitoring" >&6;}
 
 cat >>confdefs.h <<\_ACEOF
 #define RCL_MONITOR 1
@@ -1475,6 +1483,9 @@ cat >>confdefs.h <<\_ACEOF
 #define RCL_USE_INOTIFY 1
 _ACEOF
 
+else
+   { echo "$as_me:$LINENO: inotify monitoring disabled" >&5
+echo "$as_me: inotify monitoring disabled" >&6;}
 fi
 
 ##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib

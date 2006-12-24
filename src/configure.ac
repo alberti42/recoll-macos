@@ -91,15 +91,24 @@ if test X$withFam != Xno ; then
    fi
 fi
 
+if test -f /usr/include/sys/inotify.h -a X$withFam = Xno ; then
+   inot_default=yes
+else
+   inot_default=no
+fi
+
 # Real time monitoring with inotify
 AC_ARG_WITH(inotify, 
     AC_HELP_STRING([--with-inotify],
    [Use inotify for almost real time indexing of modified files.]),
-        withInotify=$withval, withInotify=no)
+        withInotify=$withval, withInotify=$inot_default)
 
 if test X$withInotify != Xno ; then
+   AC_MSG_NOTICE([enabled support for inotify monitoring])
    AC_DEFINE(RCL_MONITOR, 1, [Real time monitoring option])
    AC_DEFINE(RCL_USE_INOTIFY, 1, [Compile the inotify interface])
+else
+   AC_MSG_NOTICE([inotify monitoring disabled])
 fi
 
 ##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib

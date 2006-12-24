@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.9 2006-12-23 13:07:21 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.10 2006-12-24 07:40:26 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,7 @@ typedef map<string, RclMonEvent> queue_type;
  */
 class RclEQData {
 public:
+    int        m_opts;
     queue_type m_queue;
     RclConfig *m_config;
     bool       m_ok;
@@ -75,6 +76,12 @@ RclMonEventQueue::~RclMonEventQueue()
 bool RclMonEventQueue::empty()
 {
     return m_data == 0 ? true : m_data->m_queue.empty();
+}
+
+void RclMonEventQueue::setopts(int opts)
+{
+    if (m_data)
+	m_data->m_opts = opts;
 }
 
 // Must be called with the queue locked
@@ -166,7 +173,7 @@ bool RclMonEventQueue::ok()
 	LOGDEB(("RclMonEventQueue: not ok: bad state\n"));
 	return false;
     }
-    if (!x11IsAlive()) {
+    if (!(m_data->m_opts & RCLMON_NOX11) && !x11IsAlive()) {
 	LOGDEB(("RclMonEventQueue: not ok: x11\n"));
 	return false;
     }
@@ -268,7 +275,7 @@ static void processunlock()
 
 pthread_t rcv_thrid;
 
-bool startMonitor(RclConfig *conf, bool nofork)
+bool startMonitor(RclConfig *conf, int opts)
 {
     if (!processlock(conf->getConfDir())) {
 	LOGERR(("startMonitor: lock error. Other process running ?\n"));
@@ -277,6 +284,7 @@ bool startMonitor(RclConfig *conf, bool nofork)
     atexit(processunlock);
 
     rclEQ.setConfig(conf);
+    rclEQ.setopts(opts);
     if (pthread_create(&rcv_thrid, 0, &rclMonRcvRun, &rclEQ) != 0) {
 	LOGERR(("startMonitor: cant create event-receiving thread\n"));
 	return false;

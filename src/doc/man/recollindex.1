@@ -1,4 +1,4 @@
-.\" $Id: recollindex.1,v 1.4 2006-12-22 11:01:28 dockes Exp $ (C) 2005 J.F.Dockes\$
+.\" $Id: recollindex.1,v 1.5 2006-12-24 07:40:26 dockes Exp $ (C) 2005 J.F.Dockes\$
 .TH RECOLLINDEX 1 "8 January 2006"
 .SH NAME
 recollindex \- indexing command for the Recoll full text search system
@@ -22,6 +22,9 @@ recollindex \- indexing command for the Recoll full text search system
 ]
 [
 .B -D
+]
+[
+.B -x
 ]
 .br
 .B recollindex 
@@ -90,7 +93,13 @@ is given, it will stay in the foreground. Option
 .B
 -w 
 <seconds> can be used to specify that the program should sleep for the
-specified time before indexing. The default value is 60.
+specified time before indexing begins. The default value is 60. The daemon
+normally monitors the X11 session and exits when it is reset.
+Option 
+.B
+-x
+disables this X11 session monitoring (daemon will stay alive even if it
+cannot connect to the X11 server).
 
 .PP
 The other modes are useful mainly for testing.
