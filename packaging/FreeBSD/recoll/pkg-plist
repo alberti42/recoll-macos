@@ -22,6 +22,7 @@ share/icons/hicolor/48x48/apps/recoll.png
 %%DATADIR%%/filters/rclxls
 %%DATADIR%%/images/document.png
 %%DATADIR%%/images/drawing.png
+%%DATADIR%%/images/folder.png
 %%DATADIR%%/images/html.png
 %%DATADIR%%/images/image.png
 %%DATADIR%%/images/message.png

@@ -4,8 +4,7 @@ Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest (1.6.2):
-
+Latest (1.6.3):
 - 1.6 NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is
@@ -53,6 +52,11 @@ Latest (1.6.2):
   exception handling (recoll catches an exception while trying the
   yest inexistant db).
 
+1.6.2
+ - Relatively unfrequent issue with message boundary detection in mbox
+   files, could cause miscellaneous problems.
+ - Executing an external viewer for a file with single-quotes in the name
+   would not work.
 ***************************************************************************
 1.5.10
 - If a defaultcharset was set in the configuration file for a subdirectory,

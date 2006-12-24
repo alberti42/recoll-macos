@@ -59,7 +59,7 @@
                 <li><var class="literal">html</var>.</li>
 
                 <li><span class="application">OpenOffice</span>
-                files.</li>
+                files (needs <b>unzip</b> command).</li>
 
                 <li><var class="literal">maildir</var> and <var
 		    class="literal">mailbox</var> (<span class=
@@ -122,8 +122,8 @@
 	    <li>Support for multiple charsets. Internal processing and
 	      storage uses Unicode UTF-8.</li>
 
-	    <li>Stemming performed at query time (can switch stemming
-	      language after indexing).</li>
+	    <li><a href="#Stemming">Stemming</a> performed at query
+	      time (can switch stemming language after indexing).</li>
 
 	    <li>Easy installation. No database daemon, web server or
 	      exotic language necessary.</li>
@@ -134,7 +134,47 @@
 	</dd>
       </ul>
 
+      <h2><a name="#stemming"></a>Stemming</h2>
 
+      <p>Stemming is a process which transforms inflected words into
+      their most basic form. For exemple, <i>flooring</i>,
+      <i>floors</i>, <i>floored</i> would probably all be transformed
+      to <i>floor</i> by a stemmer for the English language.</p>
+
+      <p>In many search engines, the stemming process occurs during
+      indexing. The index will only contain the stemmed form of words,
+      with exceptions for terms which are detected as being probably
+      proper nouns (ie: capitalized). At query time, the terms entered
+      by the user are stemmed, then matched against the index.</p>
+
+      <p>This process results into a smaller index, but it has the
+	grave inconvenient of irrevocably losing information during
+	indexing.</p>
+
+      <p>Recoll works in a different way. No stemming is performed at
+	query time, so that all information gets into the index. The
+	resulting index is bigger, but most people probably don't care
+	much about this nowadays, because they have a 100Gb disk 95%
+	full of binary data <em>which does not get indexed</em>.</p>
+      <p>At the end of an indexing pass, Recoll builds one or several
+	stemming dictionaries, where all word stems are listed in
+	correspondence to the list of their derivatives.</p>
+
+      <p>At query time, by default, user-entered terms are stemmed,
+	then matched against the stem database, and the query is
+	expanded to include all derivatives. This will yield search
+	results analogous to those obtained by a classical engine.
+	The benefits of this approach is that stem expansion can be
+	controlled instantly at query time in several ways:
+	<ul>
+	<li>It can be selectively turned-off for any query term by
+	  capitalizing it (<i>Floor</i>).</li>
+	<li>The stemming language (ie: english, french...) can be
+	  selected (this supposes that several stemming databases have
+	  been built, which can be configured as part of the indexing,
+	  or done later, in a reasonably fast way).</li>
+      </ul>
+	
     </div>
   </body>
 </html>

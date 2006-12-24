@@ -28,4 +28,5 @@ qtgui/recoll.pro
 recollinstall
 sampleconf/recoll.conf
 sysconf
+wasabi
 wxgui
