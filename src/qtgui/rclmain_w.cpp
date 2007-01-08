@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.18 2006-12-22 16:48:05 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.19 2007-01-08 07:02:25 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -78,9 +78,9 @@ extern "C" int XFlush(void *);
 static QIconSet createIconSet(const QString &name)
 {
     QIconSet ic(QPixmap::fromMimeSource(name));
-    QString iname = "d_" + name;
-    ic.setPixmap(QPixmap::fromMimeSource(iname),
-		 QIconSet::Small, QIconSet::Disabled );
+        QString iname = "d_" + name;
+        ic.setPixmap(QPixmap::fromMimeSource(iname),
+    		 QIconSet::Small, QIconSet::Disabled );
     return ic;
 }
 #endif
@@ -152,12 +152,12 @@ void RclMain::init()
 
 
 #if (QT_VERSION < 0x040000)
-    toolsSpellAction->setIconSet(createIconSet("spell.png"));
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
-    toolsDoc_HistoryAction->setIconSet(createIconSet("history.png"));
-    toolsAdvanced_SearchAction->setIconSet(createIconSet("asearch.png"));
-    toolsSort_parametersAction->setIconSet(createIconSet("sortparms.png"));
+    toolsSpellAction->setIconSet(QPixmap("images/spell.png"));
+    toolsDoc_HistoryAction->setIconSet(QPixmap("images/history.png"));
+    toolsAdvanced_SearchAction->setIconSet(QPixmap("images/asearch.png"));
+    toolsSort_parametersAction->setIconSet(QPixmap("images/sortparms.png"));
 #else
     toolsSpellAction->setIcon(QIcon(":/images/spell.png"));
     nextPageAction->setIcon(QIcon(":/images/nextpage.png"));
