@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.20 2007-01-08 10:01:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.21 2007-01-08 10:11:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -156,10 +156,10 @@ void RclMain::init()
 #if (QT_VERSION < 0x040000)
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
-    toolsSpellAction->setIconSet(QPixmap("images/spell.png"));
-    toolsDoc_HistoryAction->setIconSet(QPixmap("images/history.png"));
-    toolsAdvanced_SearchAction->setIconSet(QPixmap("images/asearch.png"));
-    toolsSort_parametersAction->setIconSet(QPixmap("images/sortparms.png"));
+    toolsSpellAction->setIconSet(QPixmap::fromMimeSource("spell.png"));
+    toolsDoc_HistoryAction->setIconSet(QPixmap::fromMimeSource("history.png"));
+    toolsAdvanced_SearchAction->setIconSet(QPixmap::fromMimeSource("asearch.png"));
+    toolsSort_parametersAction->setIconSet(QPixmap::fromMimeSource("sortparms.png"));
 #else
     toolsSpellAction->setIcon(QIcon(":/images/spell.png"));
     nextPageAction->setIcon(QIcon(":/images/nextpage.png"));
