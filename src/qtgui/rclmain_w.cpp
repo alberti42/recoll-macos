@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.19 2007-01-08 07:02:25 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.20 2007-01-08 10:01:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -122,9 +122,11 @@ void RclMain::init()
 	    this, SLOT(enablePrevPage(bool)));
     connect(resList, SIGNAL(docEditClicked(int)), 
 	    this, SLOT(startNativeViewer(int)));
+    connect(resList, SIGNAL(editRequested(Rcl::Doc)), 
+	    this, SLOT(startNativeViewer(Rcl::Doc)));
+
     connect(resList, SIGNAL(docPreviewClicked(int, int)), 
 	    this, SLOT(startPreview(int, int)));
-
     connect(resList, SIGNAL(previewRequested(Rcl::Doc)), 
 	    this, SLOT(startPreview(Rcl::Doc)));
 
@@ -700,7 +702,11 @@ void RclMain::startNativeViewer(int docnum)
 				" from database"));
 	return;
     }
-    
+    startNativeViewer(doc);
+}
+
+void RclMain::startNativeViewer(Rcl::Doc doc)
+{
     // Look for appropriate viewer
     string cmd = rclconfig->getMimeViewerDef(doc.mimetype);
     if (cmd.length() == 0) {

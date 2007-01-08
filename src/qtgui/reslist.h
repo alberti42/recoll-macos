@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.7 2006-12-20 13:55:46 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.8 2007-01-08 10:01:55 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -69,6 +69,7 @@ class ResList : public QTEXTBROWSER
     void docEditClicked(int);
     void docPreviewClicked(int, int);
     void previewRequested(Rcl::Doc);
+    void editRequested(Rcl::Doc);
     void headerClicked();
     void docExpand(int);
     void wordSelect(QString);

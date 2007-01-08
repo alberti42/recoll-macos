@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.17 2007-01-08 07:01:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.18 2007-01-08 10:01:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -610,12 +610,8 @@ RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
     popup->insertItem(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
     popup->insertItem(tr("Copy &Url"), this, SLOT(menuCopyURL()));
     popup->insertItem(tr("Find &similar documents"), this, SLOT(menuExpand()));
-    Rcl::Doc doc;
-    if (getDoc(m_popDoc, doc)) {
-	if (!doc.ipath.empty())
-	    popup->insertItem(tr("P&arent document"), 
-			      this, SLOT(menuSeeParent()));
-    }
+    popup->insertItem(tr("P&arent document/folder"), 
+		      this, SLOT(menuSeeParent()));
     return popup;
 }
 
@@ -623,31 +619,39 @@ void ResList::menuPreview()
 {
     emit docPreviewClicked(m_popDoc, 0);
 }
+
 void ResList::menuSeeParent()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc)) {
-	if (doc.ipath.empty())
-	    return;
 	Rcl::Doc doc1;
-	doc1.url = doc.url;
-	doc1.ipath = doc.ipath;
-	string::size_type colon;
-	LOGDEB(("Ipath: [%s]\n", doc1.ipath.c_str()));
-	if ((colon=doc1.ipath.find_last_of(":")) != string::npos) {
-	    doc1.ipath.erase(colon);
+	if (doc.ipath.empty()) {
+	    // No parent doc: show enclosing folder with app configured for
+	    // directories
+	    doc1.url = path_getfather(doc.url);
+	    doc1.mimetype = "application/x-fsdirectory";
+	    emit editRequested(doc1);
 	} else {
-	    doc1.ipath.erase();
-	}
-	LOGDEB(("Ipath after: [%s]\n", doc1.ipath.c_str()));
+	    doc1.url = doc.url;
+	    doc1.ipath = doc.ipath;
+	    string::size_type colon;
+	    LOGDEB(("Ipath: [%s]\n", doc1.ipath.c_str()));
+	    if ((colon=doc1.ipath.find_last_of(":")) != string::npos) {
+		doc1.ipath.erase(colon);
+	    } else {
+		doc1.ipath.erase();
+	    }
+	    LOGDEB(("Ipath after: [%s]\n", doc1.ipath.c_str()));
 
-	list<string> lipath;
-	stringToTokens(doc.ipath, lipath, ":");
-	if (lipath.size() >= 1)
-	    lipath.pop_back();
-	emit previewRequested(doc1);
+	    list<string> lipath;
+	    stringToTokens(doc.ipath, lipath, ":");
+	    if (lipath.size() >= 1)
+		lipath.pop_back();
+	    emit previewRequested(doc1);
+	}
     }
 }
+
 void ResList::menuEdit()
 {
     emit docEditClicked(m_popDoc);
