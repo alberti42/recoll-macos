@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.57 2006-12-16 15:39:54 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.58 2007-01-08 15:21:32 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -279,14 +279,6 @@ int main(int argc, char **argv)
 
     rcldb = new Rcl::Db;
 
-    // Connect exit handlers etc..
-    app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
-    app.connect(&app, SIGNAL(aboutToQuit()), mainWindow, SLOT(close()));
-    QTimer *timer = new QTimer(&app);
-    mainWindow->connect(timer, SIGNAL(timeout()), 
-			mainWindow, SLOT(periodic100()));
-    timer->start(100);
-
     if (!maybeOpenDb(reason)) {
 	startindexing = 1;
 
@@ -302,21 +294,32 @@ int main(int argc, char **argv)
 		 app.translate("Main", 
 			       ".\n"
 			       "Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed."),
-		 "Ok",
-		 "Cancel", 0, 0, 1 )) {
+		 "Ok", "Cancel", 0,   0)) {
+
 	case 0: // Ok
 	    break;
+
 	case 1: // Cancel
 	    exit(0);
 	}
     }
-    //    fprintf(stderr, "Db opened\n");
 
     mainWindow->show();
+
     if (prefs.startWithAdvSearchOpen)
 	mainWindow->showAdvSearchDialog();
     if (prefs.startWithSortToolOpen)
 	mainWindow->showSortDialog();
+
+    // Connect exit handlers etc.. Beware, apparently this must come
+    // after mainWindow->show() , else the QMessageBox above never
+    // returns.
+    app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
+    QTimer *timer = new QTimer(&app);
+    mainWindow->connect(timer, SIGNAL(timeout()), 
+			mainWindow, SLOT(periodic100()));
+    timer->start(100);
+    app.connect(&app, SIGNAL(aboutToQuit()), mainWindow, SLOT(close()));
 
     start_idxthread(*rclconfig);
 
