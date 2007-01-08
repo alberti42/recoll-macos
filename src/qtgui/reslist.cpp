@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.16 2006-12-20 13:55:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.17 2007-01-08 07:01:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -412,13 +412,16 @@ void ResList::resultPageNext()
 	// (for all the queried for but undisplayed entries)
 	string richabst;
 	string abstract;
+	LOGDEB2(("Abstract: clcnt %d prfs.build %d syntabs %d prfs.repl %d\n",
+		m_searchData->clauseCount(), prefs.queryBuildAbstract,
+		doc.syntabs, prefs.queryReplaceAbstract));
 	if (m_searchData->clauseCount() > 0 && prefs.queryBuildAbstract && 
 	    (doc.syntabs || prefs.queryReplaceAbstract)) {
 	    rcldb->makeDocAbstract(doc, abstract);
 	} else {
 	    abstract = doc.abstract;
 	}
-	plaintorich(doc.abstract, richabst, m_searchData, true);
+	plaintorich(abstract, richabst, m_searchData, true);
 
 
 	// Links;
