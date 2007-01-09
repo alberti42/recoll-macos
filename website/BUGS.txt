@@ -4,8 +4,8 @@ Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest (1.6.3):
-- 1.6 NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
+Latest (1.7.3):
+- 1.6/1.7 NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is
   a bug in Xapian at least up to 0.9.9, where NEAR does not support
@@ -51,6 +51,8 @@ Latest (1.6.3):
   the database). Don't know the reason. Only idea I have is problem with
   exception handling (recoll catches an exception while trying the
   yest inexistant db).
+
+
 
 1.6.2
  - Relatively unfrequent issue with message boundary detection in mbox

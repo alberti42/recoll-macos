@@ -1,9 +1,11 @@
 CHANGES 
 
-1.7.0 2006-12-20
+1.7.3 2007-01-09
  - Email attachments are now indexed.
  - Right-click menu option to access the parent document of an embedded
-   result (ie from mail attachment to parent message).
+   result (ie from mail attachment to parent message), or the parent folder
+   of a given file (which is opened with the application configured for
+   directories) 
  - The sort tool has been improved: no need to restart the query after sort
    criteria change. 
  - Support for real-time indexing with inotify is now enabled by default
@@ -17,6 +19,8 @@ CHANGES
  - Improved highlighting (again...)
  - Display term frequencies in term explorer.
  - Recollindex -e to remove data from index for listed files.
+ - Directory names now indexed. Directories can be 'edited' with the
+   configured application (rox by default)
 
 1.6.3
  - Fixed problem with bad detection of mbox message boundaries.
@@ -25,7 +29,6 @@ CHANGES
    the new version.
  - Fixed problem with execution of external viewer for files with
    single-quotes in the name.
-
 1.6.2
  - Minor solaris compilation glitches only.
 1.6.1
