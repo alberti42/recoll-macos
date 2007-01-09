@@ -17,6 +17,30 @@
         <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
         <translation>Requete négative pure impossible. Entrer un terme dans un des autres champs</translation>
     </message>
+    <message>
+        <source>texts</source>
+        <translation>textes</translation>
+    </message>
+    <message>
+        <source>spreadsheets</source>
+        <translation>feuilles de calcul</translation>
+    </message>
+    <message>
+        <source>presentations</source>
+        <translation>presentations</translation>
+    </message>
+    <message>
+        <source>media</source>
+        <translation>multimedia</translation>
+    </message>
+    <message>
+        <source>messages</source>
+        <translation>messages</translation>
+    </message>
+    <message>
+        <source>other</source>
+        <translation>autres</translation>
+    </message>
 </context>
 <context>
     <name>AdvSearchBase</name>
@@ -114,7 +138,7 @@
     </message>
     <message>
         <source>Dismiss</source>
-        <translation>Annuler</translation>
+        <translation type="obsolete">Annuler</translation>
     </message>
     <message>
         <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
@@ -131,6 +155,22 @@
     <message>
         <source>Add clause</source>
         <translation>Ajouter une clause</translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on file types</source>
+        <translation>Cocher pour permettre le filtrage des types de fichiers</translation>
+    </message>
+    <message>
+        <source>By categories</source>
+        <translation>Par catégories</translation>
+    </message>
+    <message>
+        <source>Check this to use file categories instead of raw mime types</source>
+        <translation>Cocher pour utiliser les catégories de fichiers au lieu des types mimes</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Fermer</translation>
     </message>
 </context>
 <context>
@@ -227,6 +267,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Close Tab</source>
         <translation>Fermer l&apos;onglet</translation>
     </message>
+    <message>
+        <source>File does not exist</source>
+        <translation>Le fichier n&apos;existe pas</translation>
+    </message>
 </context>
 <context>
     <name>PreviewBase</name>
@@ -275,7 +319,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>RclMain</name>
     <message>
         <source>Advanced search</source>
-        <translation>Recherche avancée</translation>
+        <translation type="obsolete">Recherche avancée</translation>
     </message>
     <message>
         <source>About Recoll</source>
@@ -303,7 +347,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Preview</source>
-        <translation>Previsualisation</translation>
+        <translation type="obsolete">Previsualisation</translation>
     </message>
     <message>
         <source>Warning</source>
@@ -321,11 +365,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Sort criteria</source>
-        <translation>Critères de tri</translation>
+        <translation type="obsolete">Critères de tri</translation>
     </message>
     <message>
         <source>User interface preferences</source>
-        <translation>Préférences pour l&apos;interface utilisateur</translation>
+        <translation type="obsolete">Préférences pour l&apos;interface utilisateur</translation>
     </message>
     <message>
         <source>Query results</source>
@@ -341,7 +385,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Document history (sorted)</source>
-        <translation>Historique des documents consultés (trié)</translation>
+        <translation type="obsolete">Historique des documents consultés (trié)</translation>
     </message>
     <message>
         <source>Query details</source>
@@ -393,7 +437,23 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Spell expansion</source>
-        <translation>Approximation orthographique</translation>
+        <translation type="obsolete">Approximation orthographique</translation>
+    </message>
+    <message>
+        <source>Bad viewer command line for %1: [%2]
+Please check the mimeconf file</source>
+        <translation>Mauvaise commande pour %1: [%2]
+Vérifier le fichier mimeconf</translation>
+    </message>
+    <message>
+        <source>The viewer specified in mimeconf for %1: %2 is not found.
+Do you want to start the  preferences dialog ?</source>
+        <translation>L&apos;application spécifiée dans mimeconf pour %1: %2 n&apos;est pas trouvée.
+Voulez vous ouvrir le dialogue de paramétrage ?</translation>
+    </message>
+    <message>
+        <source>Cannot extract document or create temporary file</source>
+        <translation>Impossible d&apos;extraire le document ou de créer le fichier temporaire</translation>
     </message>
 </context>
 <context>
@@ -658,7 +718,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>&amp;Copy File Name</source>
-        <translation>&amp;Copier le nom de fichier</translation>
+        <translation type="obsolete">&amp;Copier le nom de fichier</translation>
     </message>
     <message>
         <source>Copy &amp;Url</source>
@@ -679,6 +739,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>(show query)</source>
         <translation>(requête)</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation>Copier le nom de &amp;Fichier</translation>
+    </message>
+    <message>
+        <source>P&amp;arent document/folder</source>
+        <translation>Document ou répertoire P&amp;arent</translation>
     </message>
 </context>
 <context>
@@ -797,7 +865,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Enter search terms here. CTRL-TAB for completions of current term.</source>
-        <translation>Entrer les mots recherchés. CTRL-TAB pour obtenir une liste de terminaisons pour l&apos;entrée en cours.</translation>
+        <translation type="obsolete">Entrer les mots recherchés. CTRL-TAB pour obtenir une liste de terminaisons pour l&apos;entrée en cours.</translation>
+    </message>
+    <message>
+        <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
+        <translation>Entrer les termes recherchés ici. Taper ESC SPC pour afficher les mots commençant par l&apos;entrée en cours.</translation>
     </message>
 </context>
 <context>
@@ -865,6 +937,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Close</source>
         <translation type="obsolete">Fermer</translation>
     </message>
+    <message>
+        <source>Date</source>
+        <translation>Date</translation>
+    </message>
+    <message>
+        <source>Mime type</source>
+        <translation>Type Mime</translation>
+    </message>
 </context>
 <context>
     <name>SortFormBase</name>
@@ -886,11 +966,15 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Reset</source>
-        <translation>Réinitialiser</translation>
+        <translation type="obsolete">Réinitialiser</translation>
     </message>
     <message>
         <source>Close</source>
         <translation>Fermer</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation>Appliquer</translation>
     </message>
 </context>
 <context>
@@ -918,6 +1002,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Alt+C</source>
         <translation>Alt+F</translation>
+    </message>
+    <message>
+        <source>Term</source>
+        <translation>Terme</translation>
+    </message>
+    <message>
+        <source>Count</source>
+        <translation>Compte</translation>
     </message>
 </context>
 <context>
@@ -1317,6 +1409,48 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
         <translation>Une recherche pour [vin rouge] (2 mots) sera complétée comme [vin OU rouge OU (vin PHRASE 2 rouge)].&lt;br&gt;
 Ceci devrait donner une meilleure pertinence aux résultats où les termes recherchés apparaissent exactement et dans l&apos;ordre.</translation>
+    </message>
+    <message>
+        <source>Choose external viewer applications</source>
+        <translation>Choisir les applications externes de visualisation</translation>
+    </message>
+    <message>
+        <source>Manage</source>
+        <translation>Choisir</translation>
+    </message>
+</context>
+<context>
+    <name>ViewAction</name>
+    <message>
+        <source>Changing actions with differentcurrent values</source>
+        <translation>Changement d&apos;action avec des valeurs actuelles différentes</translation>
+    </message>
+</context>
+<context>
+    <name>ViewActionBase</name>
+    <message>
+        <source>Form1</source>
+        <translation>Form1</translation>
+    </message>
+    <message>
+        <source>File type</source>
+        <translation>Type de fichier</translation>
+    </message>
+    <message>
+        <source>Action</source>
+        <translation>Action</translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
+        <translation>Sélectionner une ou plusieurs types de fichiers, puis cliquer Changer pour modifier le programme utiliser pour les ouvrir</translation>
+    </message>
+    <message>
+        <source>Change Action</source>
+        <translation>Changer</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Fermer</translation>
     </message>
 </context>
 <context>

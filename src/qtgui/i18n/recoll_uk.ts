@@ -17,6 +17,30 @@
         <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>texts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>spreadsheets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>presentations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>media</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>messages</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>other</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AdvSearchBase</name>
@@ -114,7 +138,7 @@
     </message>
     <message>
         <source>Dismiss</source>
-        <translation>Відмінити</translation>
+        <translation type="obsolete">Відмінити</translation>
     </message>
     <message>
         <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
@@ -131,6 +155,22 @@
     <message>
         <source>Add clause</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on file types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>By categories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check this to use file categories instead of raw mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">Закрити</translation>
     </message>
 </context>
 <context>
@@ -225,6 +265,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Close Tab</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>File does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PreviewBase</name>
@@ -285,15 +329,15 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Advanced search</source>
-        <translation>Складний пошук</translation>
+        <translation type="obsolete">Складний пошук</translation>
     </message>
     <message>
         <source>Sort criteria</source>
-        <translation>Критерії пошуку</translation>
+        <translation type="obsolete">Критерії пошуку</translation>
     </message>
     <message>
         <source>User interface preferences</source>
-        <translation>Налаштування інтерфейсу</translation>
+        <translation type="obsolete">Налаштування інтерфейсу</translation>
     </message>
     <message>
         <source>Cannot retrieve document info from database</source>
@@ -305,7 +349,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Preview</source>
-        <translation>Перегляд</translation>
+        <translation type="obsolete">Перегляд</translation>
     </message>
     <message>
         <source>Warning</source>
@@ -337,7 +381,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Document history (sorted)</source>
-        <translation>Історія документів (сортована)</translation>
+        <translation type="obsolete">Історія документів (сортована)</translation>
     </message>
     <message>
         <source>History data</source>
@@ -376,7 +420,17 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Spell expansion</source>
+        <source>Bad viewer command line for %1: [%2]
+Please check the mimeconf file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The viewer specified in mimeconf for %1: %2 is not found.
+Do you want to start the  preferences dialog ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot extract document or create temporary file</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -602,7 +656,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>&amp;Copy File Name</source>
-        <translation>&amp;Копіювати ім&apos;я файлу</translation>
+        <translation type="obsolete">&amp;Копіювати ім&apos;я файлу</translation>
     </message>
     <message>
         <source>Copy &amp;Url</source>
@@ -622,6 +676,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>(show query)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>P&amp;arent document/folder</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -708,7 +770,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Enter search terms here. CTRL-TAB for completions of current term.</source>
-        <translation>Введіть слова для пошуку. Ctrl-Tab доповнює поточне.</translation>
+        <translation type="obsolete">Введіть слова для пошуку. Ctrl-Tab доповнює поточне.</translation>
+    </message>
+    <message>
+        <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -776,6 +842,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Close</source>
         <translation type="obsolete">Закрити</translation>
     </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime type</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SortFormBase</name>
@@ -797,11 +871,15 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Reset</source>
-        <translation>Скинути</translation>
+        <translation type="obsolete">Скинути</translation>
     </message>
     <message>
         <source>Close</source>
         <translation>Закрити</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -825,6 +903,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Alt+C</source>
         <translation type="unfinished">Alt+C</translation>
+    </message>
+    <message>
+        <source>Term</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Count</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1223,6 +1309,48 @@ May be slow for big documents.</source>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose external viewer applications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Manage</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ViewAction</name>
+    <message>
+        <source>Changing actions with differentcurrent values</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ViewActionBase</name>
+    <message>
+        <source>Form1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Change Action</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished">Закрити</translation>
     </message>
 </context>
 <context>
