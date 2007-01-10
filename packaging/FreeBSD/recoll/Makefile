@@ -2,7 +2,7 @@
 # Date created:        5 December 2005
 # Whom:                J.F. Dockes <jean-francois.dockes@wanadoo.fr>
 #
-# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.10 2006/11/21 19:45:14 miwi Exp $
+# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.12 2007/01/10 11:48:14 itetcu Exp $
 #
 
 PORTNAME=	recoll
@@ -24,6 +24,8 @@ GNU_CONFIGURE=	yes
 CONFIGURE_TARGET=	--build=${MACHINE_ARCH}-portbld-freebsd${OSREL}
 USE_GMAKE=	yes
 USE_ICONV=	yes
+USE_XLIB=	yes
+INSTALLS_ICONS=	yes
 
 MAN1=		recoll.1 recollindex.1
 MAN5=		recoll.conf.5
