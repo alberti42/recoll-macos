@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.18 2007-01-08 10:01:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.19 2007-01-12 09:01:11 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -418,6 +418,8 @@ void ResList::resultPageNext()
 	if (m_searchData->clauseCount() > 0 && prefs.queryBuildAbstract && 
 	    (doc.syntabs || prefs.queryReplaceAbstract)) {
 	    rcldb->makeDocAbstract(doc, abstract);
+	    if (abstract.empty())
+		abstract = doc.abstract;
 	} else {
 	    abstract = doc.abstract;
 	}
