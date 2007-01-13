@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.21 2007-01-08 10:11:53 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.22 2007-01-13 15:21:41 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -151,6 +151,7 @@ void RclMain::init()
 
     connect(preferencesQuery_PrefsAction, SIGNAL(activated()), 
 	    this, SLOT(showUIPrefs()));
+    connect(extIdxAction, SIGNAL(activated()), this, SLOT(showExtIdxDialog()));
 
 
 #if (QT_VERSION < 0x040000)
@@ -456,12 +457,24 @@ void RclMain::showUIPrefs()
     if (uiprefs == 0) {
 	uiprefs = new UIPrefsDialog(0);
 	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
-	uiprefs->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
 	uiprefs->close();
-        uiprefs->show();
     }
+    uiprefs->show();
+}
+
+void RclMain::showExtIdxDialog()
+{
+    if (uiprefs == 0) {
+	uiprefs = new UIPrefsDialog(0);
+	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	uiprefs->close();
+    }
+    uiprefs->tabWidget->setCurrentPage(2);
+    uiprefs->show();
 }
 
 // If a preview (toplevel) window gets closed by the user, we need to

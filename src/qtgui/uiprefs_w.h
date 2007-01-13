@@ -1,4 +1,4 @@
-/* @(#$Id: uiprefs_w.h,v 1.6 2006-12-14 13:53:43 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.7 2007-01-13 15:21:41 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 #ifndef _UIPREFS_W_H_INCLUDED_
 #define _UIPREFS_W_H_INCLUDED_
-/* @(#$Id: uiprefs_w.h,v 1.6 2006-12-14 13:53:43 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.7 2007-01-13 15:21:41 dockes Exp $  (C) 2005 J.F.Dockes */
 #include <qvariant.h>
 #include <qdialog.h>
 
@@ -69,12 +69,12 @@ public slots:
     virtual void resetReslistFont();
     virtual void showBrowserDialog();
     virtual void extraDbTextChanged( const QString & text );
-    virtual void addAADbPB_clicked();
-    virtual void addADbPB_clicked();
-    virtual void delADbPB_clicked();
-    virtual void delAADbPB_clicked();
     virtual void addExtraDbPB_clicked();
+    virtual void delExtraDbPB_clicked();
     virtual void browseDbPB_clicked();
+    virtual void togExtraDbPB_clicked();
+    virtual void actAllExtraDbPB_clicked();
+    virtual void unacAllExtraDbPB_clicked();
 
 signals:
     void uiprefsDone();

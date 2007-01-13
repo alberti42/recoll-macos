@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.13 2006-12-14 13:53:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.14 2007-01-13 15:21:41 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -37,13 +37,17 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.13 2006-12-14 13:53:43 dockes E
 #include <qcombobox.h>
 #if QT_VERSION < 0x040000
 #include <qlistbox.h>
+#include <qlistview.h>
 #include <qfiledialog.h>
 #else
 #include <q3listbox.h>
+#include <q3listview.h>
 #include <q3filedialog.h>
-#define QListBox Q3ListBox
-#define QListBoxItem Q3ListBoxItem
+#include <
+#define QListView Q3ListView
+#define QCheckListItem Q3CheckListItem
 #define QFileDialog  Q3FileDialog
+#define QListViewItemIterator Q3ListViewItemIterator
 #endif
 #include <qlayout.h>
 #include <qtooltip.h>
@@ -67,16 +71,24 @@ void UIPrefsDialog::init()
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
     connect(extraDbLE,SIGNAL(textChanged(const QString&)), this, 
 	    SLOT(extraDbTextChanged(const QString&)));
-    connect(addAADbPB, SIGNAL(clicked()), this, SLOT(addAADbPB_clicked()));
-    connect(addADbPB, SIGNAL(clicked()), this, SLOT(addADbPB_clicked()));
-    connect(delADbPB, SIGNAL(clicked()), this, SLOT(delADbPB_clicked()));
-    connect(delAADbPB, SIGNAL(clicked()), this, SLOT(delAADbPB_clicked()));
-    connect(addExtraDbPB, SIGNAL(clicked()), this, SLOT(addExtraDbPB_clicked()));
+
+    connect(addExtraDbPB, SIGNAL(clicked()), 
+	    this, SLOT(addExtraDbPB_clicked()));
+    connect(delExtraDbPB, SIGNAL(clicked()), 
+	    this, SLOT(delExtraDbPB_clicked()));
+    connect(togExtraDbPB, SIGNAL(clicked()), 
+	    this, SLOT(togExtraDbPB_clicked()));
+    connect(actAllExtraDbPB, SIGNAL(clicked()), 
+	    this, SLOT(actAllExtraDbPB_clicked()));
+    connect(unacAllExtraDbPB, SIGNAL(clicked()), 
+	    this, SLOT(unacAllExtraDbPB_clicked()));
+
     connect(browseDbPB, SIGNAL(clicked()), this, SLOT(browseDbPB_clicked()));
     connect(buttonOk, SIGNAL(clicked()), this, SLOT(accept()));
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(buildAbsCB, SIGNAL(toggled(bool)), 
 	    replAbsCB, SLOT(setEnabled(bool)));
+
     setFromPrefs();
 }
 
@@ -138,21 +150,22 @@ void UIPrefsDialog::setFromPrefs()
     replAbsCB->setChecked(prefs.queryReplaceAbstract);
 
     // Initialize the extra indexes listboxes
-    QStringList ql;
+    idxLV->clear();
     for (list<string>::iterator it = prefs.allExtraDbs.begin(); 
 	 it != prefs.allExtraDbs.end(); it++) {
-	ql.append(QString::fromLocal8Bit(it->c_str()));
+	QCheckListItem *item = 
+	    new QCheckListItem(idxLV, QString::fromLocal8Bit(it->c_str()), 
+			       QCheckListItem::CheckBox);
+	if (item) item->setOn(false);
     }
-    allDbsLB->clear();
-    allDbsLB->insertStringList(ql);
-    ql.clear();
     for (list<string>::iterator it = prefs.activeExtraDbs.begin(); 
 	 it != prefs.activeExtraDbs.end(); it++) {
-	ql.append(QString::fromLocal8Bit(it->c_str()));
+	QCheckListItem *item;
+	if ((item = (QCheckListItem *)
+	     idxLV->findItem (QString::fromLocal8Bit(it->c_str()), 0))) {
+	    item->setOn(true);
+	}
     }
-    actDbsLB->clear();
-    actDbsLB->insertStringList(ql);
-    ql.clear();
 }
 
 void UIPrefsDialog::accept()
@@ -183,19 +196,18 @@ void UIPrefsDialog::accept()
     prefs.syntAbsLen = syntlenSB->value();
     prefs.syntAbsCtx = syntctxSB->value();
 
-    prefs.activeExtraDbs.clear();
-    for (unsigned int i = 0; i < actDbsLB->count(); i++) {
-	QListBoxItem *item = actDbsLB->item(i);
-	if (item)
-	    prefs.activeExtraDbs.push_back((const char *)item->text().local8Bit());
-    }
+    QListViewItemIterator it(idxLV);
     prefs.allExtraDbs.clear();
-    for (unsigned int i = 0; i < allDbsLB->count(); i++) {
-	QListBoxItem *item = allDbsLB->item(i);
-	if (item)
-	    prefs.allExtraDbs.push_back((const char *)item->text().local8Bit());
+    prefs.activeExtraDbs.clear();
+    while (it.current()) {
+	QCheckListItem *item = (QCheckListItem *)it.current();
+	prefs.allExtraDbs.push_back((const char *)item->text().local8Bit());
+	if (item->isOn()) {
+	    prefs.activeExtraDbs.push_back((const char *)
+					   item->text().local8Bit());
+	}
+	++it;
     }
-
 
     rwSettings(true);
     string reason;
@@ -203,6 +215,7 @@ void UIPrefsDialog::accept()
     emit uiprefsDone();
     QDialog::accept();
 }
+
 void UIPrefsDialog::reject()
 {
     setFromPrefs();
@@ -235,7 +248,6 @@ void UIPrefsDialog::showFontDialog()
 	}
     }
 }
-
 
 void UIPrefsDialog::resetReslistFont()
 {
@@ -272,75 +284,34 @@ void UIPrefsDialog::showViewAction()
 // External / extra search indexes setup
 // TBD: a way to remove entry from 'all' list (del button?)
 
-void UIPrefsDialog::extraDbTextChanged(const QString &text)
+void UIPrefsDialog::togExtraDbPB_clicked()
 {
-    if (text.isEmpty()) {
-	addExtraDbPB->setEnabled(false);
-    } else {
-	addExtraDbPB->setEnabled(true);
-    }
-}
-
-/** 
- * Add the selected extra dbs to the active list
- */
-void UIPrefsDialog::addADbPB_clicked()
-{
-    for (unsigned int i = 0; i < allDbsLB->count();i++) {
-	QListBoxItem *item = allDbsLB->item(i);
-	if (item && item->isSelected()) {
-	    allDbsLB->setSelected(i, false);
-	    if (!actDbsLB->findItem(item->text(), 
-#if QT_VERSION < 0x040000
-			    Qt::CaseSensitive|Qt::ExactMatch
-#else
-			    Q3ListBox::CaseSensitive|Q3ListBox::ExactMatch
-#endif
-				    )) {
-		actDbsLB->insertItem(item->text());
-	    }
+    QListViewItemIterator it(idxLV);
+    while (it.current()) {
+	QCheckListItem *item = (QCheckListItem *)it.current();
+	if (item->isSelected()) {
+	    item->setOn(!item->isOn());
 	}
-    }
-    actDbsLB->sort();
-}
-
-/**
- * Make all extra dbs active
- */
-void UIPrefsDialog::addAADbPB_clicked()
-{
-    for (unsigned int i = 0; i < allDbsLB->count();i++) {
-	allDbsLB->setSelected(i, true);
-    }
-    addADbPB_clicked();
-}
-
-/**
- * Remove the selected entries from the list of active extra search dbs
- */
-void UIPrefsDialog::delADbPB_clicked()
-{
-    list<int> rmi;
-    for (unsigned int i = 0; i < actDbsLB->count(); i++) {
-	QListBoxItem *item = actDbsLB->item(i);
-	if (item && item->isSelected()) {
-	    rmi.push_front(i);
-	}
-    }
-    for (list<int>::iterator ii = rmi.begin(); ii != rmi.end(); ii++) {
-	actDbsLB->removeItem(*ii);
+	++it;
     }
 }
-
-/**
- * Remove all extra search indexes from the active list
- */
-void UIPrefsDialog::delAADbPB_clicked()
+void UIPrefsDialog::actAllExtraDbPB_clicked()
 {
-    for (unsigned int i = 0; i < actDbsLB->count(); i++) {
-	actDbsLB->setSelected(i, true);
+    QListViewItemIterator it(idxLV);
+    while (it.current()) {
+	QCheckListItem *item = (QCheckListItem *)it.current();
+	item->setOn(true);
+	++it;
     }
-    delADbPB_clicked();
+}
+void UIPrefsDialog::unacAllExtraDbPB_clicked()
+{
+    QListViewItemIterator it(idxLV);
+    while (it.current()) {
+	QCheckListItem *item = (QCheckListItem *)it.current();
+	item->setOn(false);
+	++it;
+    }
 }
 
 /** 
@@ -370,19 +341,44 @@ void UIPrefsDialog::addExtraDbPB_clicked()
 			     tr("This is the main/local index!"));
 	return;
     }
-    if (allDbsLB->findItem(extraDbLE->text(), 
+    if (idxLV->findItem(extraDbLE->text(), 
 #if QT_VERSION < 0x040000
 			    Qt::CaseSensitive|Qt::ExactMatch
 #else
-			    Q3ListBox::CaseSensitive|Q3ListBox::ExactMatch
+			    Q3ListView::CaseSensitive|Q3ListView::ExactMatch
 #endif
 				    )) {
 	QMessageBox::warning(0, "Recoll", 
 		 tr("The selected directory is already in the index list"));
 	return;
     }
-    allDbsLB->insertItem(extraDbLE->text());
-    allDbsLB->sort();
+    new QCheckListItem(idxLV, extraDbLE->text(), QCheckListItem::CheckBox);
+    idxLV->sort();
+}
+
+void UIPrefsDialog::delExtraDbPB_clicked()
+{
+    list<QCheckListItem*> dlt;
+    QListViewItemIterator it(idxLV);
+    while (it.current()) {
+	QCheckListItem *item = (QCheckListItem *)it.current();
+	if (item->isSelected()) {
+	    dlt.push_back(item);
+	}
+	++it;
+    }
+    for (list<QCheckListItem*>::iterator it = dlt.begin(); 
+	 it != dlt.end(); it++) 
+	delete *it;
+}
+
+void UIPrefsDialog::extraDbTextChanged(const QString &text)
+{
+    if (text.isEmpty()) {
+	addExtraDbPB->setEnabled(false);
+    } else {
+	addExtraDbPB->setEnabled(true);
+    }
 }
 
 void UIPrefsDialog::browseDbPB_clicked()

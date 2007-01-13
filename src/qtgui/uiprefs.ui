@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>558</width>
-            <height>534</height>
+            <width>523</width>
+            <height>530</height>
         </rect>
     </property>
     <property name="caption">
@@ -24,7 +24,7 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout17</cstring>
+                <cstring>layout16</cstring>
             </property>
             <vbox>
                 <property name="name">
@@ -32,7 +32,7 @@
                 </property>
                 <widget class="QTabWidget">
                     <property name="name">
-                        <cstring>tabWidget2</cstring>
+                        <cstring>tabWidget</cstring>
                     </property>
                     <widget class="QWidget">
                         <property name="name">
@@ -41,13 +41,13 @@
                         <attribute name="title">
                             <string>User interface</string>
                         </attribute>
-                        <hbox>
+                        <vbox>
                             <property name="name">
                                 <cstring>unnamed</cstring>
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout20</cstring>
+                                    <cstring>layout39</cstring>
                                 </property>
                                 <vbox>
                                     <property name="name">
@@ -55,7 +55,7 @@
                                     </property>
                                     <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>layout1</cstring>
+                                            <cstring>layout23</cstring>
                                         </property>
                                         <hbox>
                                             <property name="name">
@@ -92,7 +92,7 @@
                                     </widget>
                                     <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>layout4</cstring>
+                                            <cstring>layout24</cstring>
                                         </property>
                                         <hbox>
                                             <property name="name">
@@ -132,7 +132,7 @@
                                     </widget>
                                     <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>layout18</cstring>
+                                            <cstring>layout35</cstring>
                                         </property>
                                         <hbox>
                                             <property name="name">
@@ -141,6 +141,14 @@
                                             <widget class="QLabel">
                                                 <property name="name">
                                                     <cstring>textLabel1_4</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>7</hsizetype>
+                                                        <vsizetype>7</vsizetype>
+                                                        <horstretch>0</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
                                                 </property>
                                                 <property name="text">
                                                     <string>Result paragraph&lt;br&gt;format string</string>
@@ -156,16 +164,19 @@
                                                 <property name="sizePolicy">
                                                     <sizepolicy>
                                                         <hsizetype>7</hsizetype>
-                                                        <vsizetype>0</vsizetype>
-                                                        <horstretch>0</horstretch>
+                                                        <vsizetype>7</vsizetype>
+                                                        <horstretch>1</horstretch>
                                                         <verstretch>0</verstretch>
                                                     </sizepolicy>
                                                 </property>
                                                 <property name="minimumSize">
                                                     <size>
-                                                        <width>200</width>
-                                                        <height>5</height>
+                                                        <width>0</width>
+                                                        <height>0</height>
                                                     </size>
+                                                </property>
+                                                <property name="resizePolicy">
+                                                    <enum>Manual</enum>
                                                 </property>
                                                 <property name="textFormat">
                                                     <enum>PlainText</enum>
@@ -184,7 +195,7 @@
                                     </widget>
                                     <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>layout9</cstring>
+                                            <cstring>layout36</cstring>
                                         </property>
                                         <hbox>
                                             <property name="name">
@@ -221,7 +232,7 @@
                                     </widget>
                                     <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>layout18</cstring>
+                                            <cstring>layout37</cstring>
                                         </property>
                                         <hbox>
                                             <property name="name">
@@ -299,7 +310,7 @@
                                     </widget>
                                 </vbox>
                             </widget>
-                        </hbox>
+                        </vbox>
                     </widget>
                     <widget class="QWidget">
                         <property name="name">
@@ -517,221 +528,171 @@ May be slow for big documents.</string>
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout15</cstring>
+                                    <cstring>layout16</cstring>
                                 </property>
-                                <hbox>
+                                <vbox>
                                     <property name="name">
                                         <cstring>unnamed</cstring>
                                     </property>
-                                    <widget class="QPushButton">
+                                    <widget class="QListView">
+                                        <column>
+                                            <property name="text">
+                                                <string>External indexes</string>
+                                            </property>
+                                            <property name="clickable">
+                                                <bool>true</bool>
+                                            </property>
+                                            <property name="resizable">
+                                                <bool>true</bool>
+                                            </property>
+                                        </column>
                                         <property name="name">
-                                            <cstring>addExtraDbPB</cstring>
+                                            <cstring>idxLV</cstring>
                                         </property>
-                                        <property name="enabled">
-                                            <bool>false</bool>
+                                        <property name="selectionMode">
+                                            <enum>Extended</enum>
                                         </property>
-                                        <property name="text">
-                                            <string>Add index</string>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
+                                        <property name="resizeMode">
+                                            <enum>AllColumns</enum>
                                         </property>
                                     </widget>
-                                    <widget class="QLineEdit">
+                                    <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>extraDbLE</cstring>
+                                            <cstring>layout15</cstring>
                                         </property>
-                                        <property name="minimumSize">
-                                            <size>
-                                                <width>200</width>
-                                                <height>0</height>
-                                            </size>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>togExtraDbPB</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Toggle selected</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>actAllExtraDbPB</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Activate All</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>unacAllExtraDbPB</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Desactivate All</string>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="Line">
+                                        <property name="name">
+                                            <cstring>line2_2</cstring>
                                         </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
+                                        <property name="frameShape">
+                                            <enum>HLine</enum>
+                                        </property>
+                                        <property name="frameShadow">
+                                            <enum>Sunken</enum>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
                                         </property>
                                     </widget>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                            <cstring>browseDbPB</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Browse</string>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout12</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
                                     <widget class="QLayoutWidget">
                                         <property name="name">
                                             <cstring>layout13</cstring>
                                         </property>
-                                        <vbox>
+                                        <hbox>
                                             <property name="name">
                                                 <cstring>unnamed</cstring>
                                             </property>
-                                            <widget class="QLabel">
+                                            <widget class="QPushButton">
                                                 <property name="name">
-                                                    <cstring>textLabel2_2</cstring>
+                                                    <cstring>delExtraDbPB</cstring>
                                                 </property>
                                                 <property name="text">
-                                                    <string>All indexes</string>
+                                                    <string>Remove selected</string>
                                                 </property>
                                                 <property name="toolTip" stdset="0">
-                                                    <string>Indexes currently not used</string>
+                                                    <string>Remove from list. This has no effect on the disk index.</string>
                                                 </property>
                                             </widget>
-                                            <widget class="QListBox">
+                                            <spacer>
                                                 <property name="name">
-                                                    <cstring>allDbsLB</cstring>
+                                                    <cstring>spacer3</cstring>
+                                                </property>
+                                                <property name="orientation">
+                                                    <enum>Horizontal</enum>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>Expanding</enum>
+                                                </property>
+                                                <property name="sizeHint">
+                                                    <size>
+                                                        <width>16</width>
+                                                        <height>20</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                            <widget class="QPushButton">
+                                                <property name="name">
+                                                    <cstring>addExtraDbPB</cstring>
                                                 </property>
                                                 <property name="enabled">
-                                                    <bool>true</bool>
+                                                    <bool>false</bool>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Add index</string>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QLineEdit">
+                                                <property name="name">
+                                                    <cstring>extraDbLE</cstring>
                                                 </property>
                                                 <property name="minimumSize">
                                                     <size>
-                                                        <width>200</width>
-                                                        <height>200</height>
+                                                        <width>150</width>
+                                                        <height>0</height>
                                                     </size>
-                                                </property>
-                                                <property name="selectionMode">
-                                                    <enum>Extended</enum>
-                                                </property>
-                                            </widget>
-                                        </vbox>
-                                    </widget>
-                                    <widget class="QLayoutWidget">
-                                        <property name="name">
-                                            <cstring>layout11</cstring>
-                                        </property>
-                                        <vbox>
-                                            <property name="name">
-                                                <cstring>unnamed</cstring>
-                                            </property>
-                                            <widget class="QPushButton">
-                                                <property name="name">
-                                                    <cstring>addAADbPB</cstring>
-                                                </property>
-                                                <property name="enabled">
-                                                    <bool>true</bool>
-                                                </property>
-                                                <property name="text">
-                                                    <string>All ----&gt;</string>
-                                                </property>
-                                                <property name="autoDefault">
-                                                    <bool>false</bool>
-                                                </property>
-                                            </widget>
-                                            <widget class="QPushButton">
-                                                <property name="name">
-                                                    <cstring>addADbPB</cstring>
-                                                </property>
-                                                <property name="enabled">
-                                                    <bool>true</bool>
-                                                </property>
-                                                <property name="text">
-                                                    <string>Sel -----&gt;</string>
-                                                </property>
-                                                <property name="autoDefault">
-                                                    <bool>false</bool>
-                                                </property>
-                                            </widget>
-                                            <widget class="QPushButton">
-                                                <property name="name">
-                                                    <cstring>delADbPB</cstring>
-                                                </property>
-                                                <property name="enabled">
-                                                    <bool>true</bool>
-                                                </property>
-                                                <property name="text">
-                                                    <string>&lt;----- Sel</string>
-                                                </property>
-                                                <property name="autoDefault">
-                                                    <bool>false</bool>
-                                                </property>
-                                            </widget>
-                                            <widget class="QPushButton">
-                                                <property name="name">
-                                                    <cstring>delAADbPB</cstring>
-                                                </property>
-                                                <property name="enabled">
-                                                    <bool>true</bool>
-                                                </property>
-                                                <property name="text">
-                                                    <string>&lt;----- All</string>
-                                                </property>
-                                                <property name="autoDefault">
-                                                    <bool>false</bool>
-                                                </property>
-                                            </widget>
-                                        </vbox>
-                                    </widget>
-                                    <widget class="QLayoutWidget">
-                                        <property name="name">
-                                            <cstring>layout14</cstring>
-                                        </property>
-                                        <vbox>
-                                            <property name="name">
-                                                <cstring>unnamed</cstring>
-                                            </property>
-                                            <widget class="QLabel">
-                                                <property name="name">
-                                                    <cstring>textLabel5</cstring>
-                                                </property>
-                                                <property name="text">
-                                                    <string>Active indexes</string>
                                                 </property>
                                                 <property name="toolTip" stdset="0">
-                                                    <string>Indexes that will be searched in addition to the main one</string>
+                                                    <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
                                                 </property>
                                             </widget>
-                                            <widget class="QListBox">
+                                            <widget class="QPushButton">
                                                 <property name="name">
-                                                    <cstring>actDbsLB</cstring>
+                                                    <cstring>browseDbPB</cstring>
                                                 </property>
-                                                <property name="enabled">
-                                                    <bool>true</bool>
+                                                <property name="text">
+                                                    <string>Browse</string>
                                                 </property>
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>200</width>
-                                                        <height>200</height>
-                                                    </size>
-                                                </property>
-                                                <property name="selectionMode">
-                                                    <enum>Extended</enum>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
                                                 </property>
                                             </widget>
-                                        </vbox>
+                                        </hbox>
                                     </widget>
-                                </hbox>
+                                </vbox>
                             </widget>
                         </vbox>
                     </widget>
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>Layout1</cstring>
+                        <cstring>layout38</cstring>
                     </property>
                     <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
-                        </property>
-                        <property name="margin">
-                            <number>0</number>
-                        </property>
-                        <property name="spacing">
-                            <number>6</number>
                         </property>
                         <spacer>
                             <property name="name">
@@ -745,7 +706,7 @@ May be slow for big documents.</string>
                             </property>
                             <property name="sizeHint">
                                 <size>
-                                    <width>20</width>
+                                    <width>210</width>
                                     <height>20</height>
                                 </size>
                             </property>

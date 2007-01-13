@@ -80,6 +80,7 @@ public slots:
     virtual void showAboutDialog();
     virtual void startManual();
     virtual void showDocHistory();
+    virtual void showExtIdxDialog();
     virtual void sortDataChanged(DocSeqSortSpec spec);
     virtual void showUIPrefs();
     virtual void setUIPrefs();

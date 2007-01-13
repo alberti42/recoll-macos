@@ -27,12 +27,12 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-         <property name="margin">
-             <number>4</number>
-         </property>
-         <property name="spacing">
-             <number>2</number>
-         </property>
+        <property name="margin">
+            <number>4</number>
+        </property>
+        <property name="spacing">
+            <number>2</number>
+        </property>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>unnamed</cstring>
@@ -88,6 +88,7 @@
     </item>
     <item text="&amp;Preferences" name="Preferences">
         <action name="preferencesQuery_PrefsAction"/>
+        <action name="extIdxAction"/>
     </item>
     <separator/>
     <item text="&amp;Help" name="Help">
@@ -151,7 +152,6 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
-        <pixmap>image0</pixmap>
     </customwidget>
 </customwidgets>
 <actions>
@@ -268,6 +268,17 @@
         </property>
         <property name="menuText">
             <string>&amp;Query configuration</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>extIdxAction</cstring>
+        </property>
+        <property name="text">
+            <string>External index dialog</string>
+        </property>
+        <property name="menuText">
+            <string>External index dialog</string>
         </property>
     </action>
 </actions>
