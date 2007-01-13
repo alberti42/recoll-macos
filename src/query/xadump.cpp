@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.13 2006-12-07 16:38:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.14 2007-01-13 14:41:40 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,7 @@ static string usage =
     " -i docid -T : term list for doc docid\n"
     " -T          : list all terms\n"
     "    -f       : precede each term in the list with its occurrence count\n"
+    "    -n : raw data (no [])\n"
     " -s          : special mode to dump recoll stem db\n"
     " -q term [term ...] : perform AND query\n"
     "  \n\n"
@@ -70,6 +71,7 @@ static int        op_flags;
 #define OPT_s     0x400
 #define OPT_f     0x800
 #define OPT_q     0x1000
+#define OPT_n     0x2000
 
 Xapian::Database *db;
 
@@ -119,6 +121,7 @@ int main(int argc, char **argv)
 		if (sscanf(*(++argv), "%d", &docid) != 1) Usage();
 		argc--; 
 		goto b1;
+	    case 'n':	op_flags |= OPT_n; break;
 	    case 'P':	op_flags |= OPT_P; break;
 	    case 'q':	op_flags |= OPT_q; break;
 	    case 's':	op_flags |= OPT_s; break;
@@ -142,7 +145,6 @@ int main(int argc, char **argv)
 	}
     }
 
-    fprintf(stderr, "argc %d\n", argc);
     if (argc != 0)
 	Usage();
 
@@ -165,17 +167,19 @@ int main(int argc, char **argv)
 	if (op_flags & OPT_T) {
 	    Xapian::TermIterator term;
 	    string printable;
+	    string op = (op_flags & OPT_n) ? "": "[";
+	    string cl = (op_flags & OPT_n) ? "": "]";
 	    if (op_flags & OPT_i) {
 		for (term = db->termlist_begin(docid); 
 		     term != db->termlist_end(docid);term++) {
-		    cout << "[" << *term << "]" << endl;
+		    cout << op << *term << cl << endl;
 		}
 	    } else {
 		for (term = db->allterms_begin(); 
 		     term != db->allterms_end();term++) {
 		    if (op_flags & OPT_f)
 			cout << term.get_termfreq() << " ";
-		    cout << "[" << *term << "]" << endl;
+		    cout << op << *term << cl << endl;
 		}
 	    }
 	} else if (op_flags & OPT_s) {
