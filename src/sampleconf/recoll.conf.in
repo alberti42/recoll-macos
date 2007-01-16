@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.13 2006-11-30 13:38:44 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.14 2007-01-16 10:58:42 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This should be copied to
 #   ~/.recoll/recoll.conf 
@@ -9,7 +9,9 @@ topdirs = ~
 # Wildcard expressions for names of files and directories that we should
 # ignore. If you need index mozilla/thunderbird mail folders, don't put
 # ".*" in there (as was the case with an older sample config)
-skippedNames = *~ #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn
+# These are simple names, not paths (must contain no / )
+skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
+	     *~ recollrc
 
 # Debug messages. 3 is errors/warnings only. 4 would be quite verbose.
 loglevel = 3
