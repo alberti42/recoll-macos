@@ -2,11 +2,11 @@
 # Date created:        5 December 2005
 # Whom:                J.F. Dockes <jean-francois.dockes@wanadoo.fr>
 #
-# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.12 2007/01/10 11:48:14 itetcu Exp $
+# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.13 2007/01/10 18:50:41 itetcu Exp $
 #
 
 PORTNAME=	recoll
-PORTVERSION=	1.7.3
+PORTVERSION=	1.7.5
 CATEGORIES=	deskutils
 MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 
@@ -34,4 +34,10 @@ post-patch:
 	${REINPLACE_CMD} -e 's/^CXXFLAGS =/CXXFLAGS ?=/' \
 		${WRKSRC}/mk/localdefs.in
 
-.include <bsd.port.mk>
+.include <bsd.port.pre.mk>
+
+.if ${OSVERSION} < 500000
+BROKEN=	doesn't build
+.endif
+
+.include <bsd.port.post.mk>
