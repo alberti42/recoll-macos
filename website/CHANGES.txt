@@ -1,4 +1,9 @@
 CHANGES 
+1.7.5 2007-01-15
+ - Fixes two email indexing bugs in 1.7.3, which would bail out from an
+   mbox folder on the first attachment filtering error, and would decline
+   to handle multipart/signed bodies. You may need to run a full indexing
+   pass (recollindex -z), to force reindexing of old folders.
 
 1.7.3 2007-01-09
  - Email attachments are now indexed.

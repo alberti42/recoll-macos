@@ -43,7 +43,7 @@
 	<a href="http://www.xapian.org/download.php">xapian download
 	  page</a></p>
 
-      <p>You need qt 3.3 in all cases</p>
+      <p>You need qt 3.3 (or qt 4) in all cases</p>
 
       <p>Recoll relies on external packages for some
 	of its functionality (ie: for many of the non text file
@@ -53,14 +53,43 @@
 	<a href="usermanual/index.html#RCL.INSTALL.EXTERNAL">list</a> to
 	decide what you may want to install.</p>
 
+      <p>If you find problems with the package or its
+	installation, <em>please</em> 
+	<a href="mailto:jean-francois.dockes@wanadoo.fr">
+	  report them</a>.</p>
+
+      <h4>What do the release numbers mean?</h4>
+      <p>The recoll releases are numbered X.Y.Z. </p>
+
+      <p>The first number would only change for really major
+	modifications like a big change in the index format. It is
+	quite possible that X will not actually ever change.</p>
+      <p>The second number (Y) is for functional
+	modifications. These may bring bugs, so if you're satisfied
+	with the previous version, and don't need the new features,
+	you may want to wait a little, and especially skip the first
+	release (X.Y.0).</p>
+      <p>The third number (Z) changes for bug fixes. A maintenance
+	branch is kept for each X.Y version, and we try to make
+	minimal changes on this. So, moving from X.Y.Z to X.Y.Z+u
+	should in general involve little risk of regression. But,
+	<em>any</em> change can bring problems, if you are not
+	affected by the corrected bugs (check the <a
+	href="CHANGES.txt">changes file</a>), there is probably no
+	necessity to upgrade anyway.</p>
+
       <h3>Source</h3>
 
       <p><b>Current version:</b> 
-	1.7.3: <a href="recoll-1.7.3.tar.gz">recoll-1.7.3.tar.gz</a>
+
+	<p>1.7.5: <a href="recoll-1.7.5.tar.gz">recoll-1.7.5.tar.gz</a>
+	This version fixes a nasty mail indexing bug in 1.7.3 (sorry
+	about the back-to-back releases).
 	See the <a href="BUGS.txt">known bugs and issues</a> and 
 	<a href="CHANGES.txt">changes</a>.</p>
 
       <p>Older recoll releases:
+	<a href="recoll-1.7.3.tar.gz">1.7.3</a>
 	<a href="recoll-1.6.3.tar.gz">1.6.3</a>
 	<a href="recoll-1.6.1.tar.gz">1.6.1</a>
 	<a href="recoll-1.5.11.tar.gz">1.5.11</a>. 
@@ -79,30 +108,37 @@
 
       <p><b>Fedora Core 5</b>
 	RPM: 
-	<a href="recoll-1.7.3-1.i386.rpm">
-	  recoll-1.7.3-1.i386.rpm</a>. 
+	<a href="recoll-1.7.5-1.i386.rpm">
+	  recoll-1.7.5-1.i386.rpm</a>. 
 	Source: 
-	<a href="recoll-1.7.3-1.src.rpm">
-	  recoll-1.7.3-1.src.rpm</a>
+	<a href="recoll-1.7.5-1.src.rpm">
+	  recoll-1.7.5-1.src.rpm</a>
       </p>
 
       <p><b>Mandriva 2006</b>  (also works on 2005 and 2007)
 	RPM: 
-	<a href="recoll-1.7.3-0.1.20060mdk.i586.rpm">
-	  recoll-1.7.3-0.1.20060mdk.i586.rpm</a>. 
+	<a href="recoll-1.7.5-0.1.20060mdk.i586.rpm">
+	  recoll-1.7.5-0.1.20060mdk.i586.rpm</a>. 
 	Source: 
-	<a href="recoll-1.7.3-0.1.20060mdk.src.rpm">
-	  recoll-1.7.3-0.1.20060mdk.src.rpm</a>
+	<a href="recoll-1.7.5-0.1.20060mdk.src.rpm">
+	  recoll-1.7.5-0.1.20060mdk.src.rpm</a>
       </p>
 
       <p><b>Suse 10.1</b> 
-
 	RPM: 
-	<a href="recoll-1.7.3-0.i586.rpm">
-	  recoll-1.7.3-0.i586.rpm</a>. 
+	<a href="recoll-1.7.5-0.i586.rpm">
+	  recoll-1.7.5-0.i586.rpm</a>. 
 	Source: 
-	<a href="recoll-1.7.3-0.src.rpm">
-	  recoll-1.7.3-0.src.rpm</a></p> 
+	<a href="recoll-1.7.5-0.src.rpm">
+	  recoll-1.7.5-0.src.rpm</a></p> 
+    </p>
+
+      <p><b>Ubuntu 6.10 edgy</b> 
+	binary package:
+	<a href="debian/edgy/recoll_1.7.5-1_i386.deb">
+	  recoll_1.7.5-1_i386.deb</a>. 
+	Source package directory:
+	<a href="debian/edgy/">debian/edgy</a></p>
     </p>
 
 

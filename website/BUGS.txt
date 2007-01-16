@@ -4,7 +4,7 @@ Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest (1.7.3):
+Latest (1.7.5):
 - 1.6/1.7 NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is
@@ -52,7 +52,14 @@ Latest (1.7.3):
   exception handling (recoll catches an exception while trying the
   yest inexistant db).
 
-
+1.7.3
+- Processing will stop on first error while indexing an mbox file. This
+  could happen just because an attachment could not be decoded, and can
+  cause non-indexing of many messages. The most probable cause of error is
+  a missing filter (ie for ms-word files), so the temporary workaround
+  would be to install the missing filters. This bug is specific to 1.7 and
+  1.6 users need not worry. A correction will be issued very soon.
+- Messages of type multipart/signed are not indexed. 
 
 1.6.2
  - Relatively unfrequent issue with message boundary detection in mbox
