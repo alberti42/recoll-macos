@@ -1,7 +1,7 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = xadump rclqlang #trhist qtry qxtry 
+PROGS = xadump wasatorcl #trhist qtry qxtry 
 
 all: $(PROGS)
 
@@ -12,11 +12,6 @@ SRCS = xadump.cpp rclqlang.cpp
 XADUMP_OBJS= xadump.o $(BIGLIB)
 xadump : $(XADUMP_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o xadump $(XADUMP_OBJS) \
-	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
-
-RCLQLANG_OBJS= rclqlang.o $(BIGLIB)
-rclqlang : $(RCLQLANG_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o rclqlang $(RCLQLANG_OBJS) \
 	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
 
 HISTORY_OBJS= trhist.o  $(BIGLIB) $(MIMELIB)
@@ -33,6 +28,14 @@ trwasastrtoq : $(WASASTRINGTOQUERY_OBJS)
 trwasastrtoq.o : wasastringtoquery.cpp wasastringtoquery.h
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_WASASTRINGTOQUERY -c \
 	       -o trwasastrtoq.o wasastringtoquery.cpp
+
+WASATORCL_OBJS= trwasatorcl.o  $(BIGLIB) $(MIMELIB)
+wasatorcl : $(WASATORCL_OBJS)
+	$(CXX) $(ALL_CXXFLAGS) -o wasatorcl $(WASATORCL_OBJS) \
+	       $(LIBICONV) $(LIBXAPIAN)
+trwasatorcl.o : wasatorcl.cpp wasatorcl.h
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_WASATORCL -c \
+	       -o trwasatorcl.o wasatorcl.cpp
 
 $(BIGLIB): force
 	cd $(depth)/lib;$(MAKE)
