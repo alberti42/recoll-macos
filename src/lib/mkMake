@@ -24,6 +24,8 @@ ${depth}/internfile/mh_text.cpp \
 ${depth}/query/docseq.cpp \
 ${depth}/query/history.cpp \
 ${depth}/query/sortseq.cpp \
+${depth}/query/wasastringtoquery.cpp \
+${depth}/query/wasatorcl.cpp \
 ${depth}/rcldb/pathhash.cpp \
 ${depth}/rcldb/rcldb.cpp \
 ${depth}/rcldb/searchdata.cpp \

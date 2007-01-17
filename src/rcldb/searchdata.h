@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.7 2006-12-05 15:17:13 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.8 2007-01-17 13:53:41 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -46,11 +46,22 @@ enum SClType {
 class SearchDataClause;
 
 /** 
- * Holder for a list of search clauses. Some of the clauses may be be reference
- * to other subqueries in the future. For now, they just reflect user entry in 
- * a query field: type, some text and possibly a distance. Each clause may
- * hold several queries in the Xapian sense, for exemple several terms
- * and phrases as would result from ["this is a phrase" term1 term2]
+  Data structure representing A Recoll query.
+  This is currently simply a list of search clauses. 
+
+  For now, clauses in the list just reflect user entry in a query
+  field: some text, a clause type (AND/OR/NEAR etc.) and possibly a
+  distance. Each clause may hold several queries in the Xapian sense,
+  for exemple several terms and phrases as would result from 
+  ["this is a phrase" term1 term2]
+
+  This means that SearchData will be translated into a Xapian
+  Query tree of depth 2.
+
+  The structure might be extended in the future so that some of the
+  clauses may be references to other subqueries (there doesn't seem to
+  be an urgent need for this)
+
  */
 class SearchData {
 public:
@@ -134,15 +145,19 @@ protected:
  */
 class SearchDataClauseSimple : public SearchDataClause {
 public:
-    SearchDataClauseSimple(SClType tp, string txt)
-	: SearchDataClause(tp), m_text(txt), m_slack(0) {}
+    SearchDataClauseSimple(SClType tp, const string& txt, 
+			   const string& fld = "")
+	: SearchDataClause(tp), m_text(txt), m_field(fld), m_slack(0) {}
+
     virtual ~SearchDataClauseSimple() {}
 
+    /** Translate to Xapian query */
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
 
-    virtual bool getTerms(vector<string>& terms, 
-			  vector<vector<string> >& groups,
-			  vector<int>& gslks) const
+    /** Retrieve query terms and term groups. This is used for highlighting */
+    virtual bool getTerms(vector<string>& terms, /* Single terms */
+			  vector<vector<string> >& groups, /* Prox grps */
+			  vector<int>& gslks) const        /* Prox slacks */
     {
 	terms.insert(terms.end(), m_terms.begin(), m_terms.end());
 	groups.insert(groups.end(), m_groups.begin(), m_groups.end());
@@ -151,7 +166,8 @@ public:
     }
 
 protected:
-    string  m_text;
+    string  m_text;  // Raw user entry text.
+    string  m_field; // Field specification if any
     // Single terms and phrases resulting from breaking up m_text;
     // valid after toNativeQuery() call
     vector<string>          m_terms;
@@ -161,10 +177,10 @@ protected:
     int m_slack;
 };
 
-/** Filename search. */
+/** Filename search clause. */
 class SearchDataClauseFilename : public SearchDataClauseSimple {
 public:
-    SearchDataClauseFilename(string txt)
+    SearchDataClauseFilename(const string& txt)
 	: SearchDataClauseSimple(SCLT_FILENAME, txt) {}
     virtual ~SearchDataClauseFilename() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
@@ -176,8 +192,9 @@ public:
  */
 class SearchDataClauseDist : public SearchDataClauseSimple {
 public:
-    SearchDataClauseDist(SClType tp, string txt, int slack) 
-	: SearchDataClauseSimple(tp, txt) {m_slack = slack;}
+    SearchDataClauseDist(SClType tp, const string& txt, int slack, 
+			 const string& fld = "")
+	: SearchDataClauseSimple(tp, txt, fld) {m_slack = slack;}
     virtual ~SearchDataClauseDist() {}
 
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);

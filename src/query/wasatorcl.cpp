@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.2 2006-12-10 17:03:08 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.3 2007-01-17 13:53:41 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifndef TEST_WASATORCL
 
@@ -27,11 +27,13 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    if ((*it)->m_value.find_first_of(" \t\n\r") != string::npos) {
 		sdata->addClause
 		    (new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
-						     (*it)->m_value, 0));
+						   (*it)->m_value, 0, 
+						   (*it)->m_fieldspec));
 	    } else {
 		sdata->addClause
 		    (new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 
-						     (*it)->m_value));
+						     (*it)->m_value, 
+						     (*it)->m_fieldspec));
 	    }
 	    break;
 	case WasaQuery::OP_EXCL:
@@ -41,7 +43,8 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    sdata->addClause
 		(new Rcl::SearchDataClauseSimple(Rcl::SCLT_EXCL, 
 						 string("\"") + 
-						 (*it)->m_value + "\""));
+						 (*it)->m_value + "\"",
+						 (*it)->m_fieldspec));
 	    break;
 	case WasaQuery::OP_OR:
 	    // Concatenate all OR values as phrases. Hope there are no
@@ -55,7 +58,8 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 		}
 		sdata->addClause
 		    (new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, 
-						     orvalue));
+						     orvalue,
+						     (*it)->m_fieldspec));
 	    }
 	}
     }
@@ -105,7 +109,7 @@ int main(int argc, char *argv[])
 
     if (argc != 1) {
 	fprintf(stderr, "need one arg\n");
-	exit(1);
+	return 1;
     }
     const string str = *argv++;argc--;
     string reason;
@@ -113,14 +117,12 @@ int main(int argc, char *argv[])
     RclConfig *config = recollinit(RCLINIT_NONE, 0, 0, reason, 0);
     if (config == 0 || !config->ok()) {
         cerr << "Configuration problem: " << reason << endl;
-        exit(1);
+	return 1;
     }
     string dbdir = config->getDbDir();
     if (dbdir.empty()) {
-	// Note: this will have to be replaced by a call to a
-	// configuration buildin dialog for initial configuration
         cerr << "Configuration problem: " << "No dbdir" << endl;
-	exit(1);
+	return 1;
     }
     Rcl::Db rcldb;
     if (!rcldb.open(dbdir, Rcl::Db::DbRO, 0)) {

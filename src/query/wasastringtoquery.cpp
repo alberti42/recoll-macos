@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.3 2006-12-10 17:03:08 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.4 2007-01-17 13:53:41 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,13 +17,20 @@ static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.3 2006-12-10 17:03:08 d
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef TEST_STRINGTOQUERY
+#ifndef TEST_WASASTRINGTOQUERY
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h>
 
 #include "wasastringtoquery.h"
+
+//#define DEB_WASASTRINGTOQ 1
+#ifdef DEB_WASASTRINGTOQ
+#define DPRINT(X) fprintf X
+#else
+#define DPRINT(X)
+#endif
 
 WasaQuery::~WasaQuery()
 {
@@ -61,16 +68,16 @@ void WasaQuery::describe(string &desc) const
 	desc += ")";
     }
     desc += "(";
+    string fieldspec = m_fieldspec.empty() ? "" : m_fieldspec + ": ";
     switch (m_op) {
     case OP_NULL: 
 	desc += "NULL"; 
 	break;
     case OP_LEAF: 
-	desc += m_fieldspec.empty() ?
-	    m_value : m_fieldspec + ":" + m_value;
+	desc += fieldspec + m_value;
 	break;
     case OP_EXCL: 
-	desc += string("NOT (" ) + m_value + ") ";
+	desc += string("NOT (" ) + fieldspec + m_value + ") ";
 	break;
     case OP_OR: 
     case OP_AND:
@@ -84,6 +91,8 @@ void WasaQuery::describe(string &desc) const
 	}
 	break;
     }
+    if (desc[desc.length() - 1] == ' ')
+	desc.erase(desc.length() - 1);
     desc += ") "; 
 }
 
@@ -111,7 +120,7 @@ void WasaQuery::describe(string &desc) const
  * parenthesis increases the index, but we're not interested in all
  */
 static const char * parserExpr = 
-    "([oO][rR])"                     //1 OR is a special word
+    "([oO][rR])[[:space:]]*"        //1 OR is a special word
     "|"
     "("                              //2
       "([+-])?"                      //3 Force or exclude indicator
@@ -125,7 +134,7 @@ static const char * parserExpr =
         "|"
         "([^[:space:]]+)"            //9 ANormalTerm
       ")"
-    ")"
+    ")[[:space:]]*"
 ;
 
 // For debugging the parser. But see also NMATCH
@@ -236,17 +245,18 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    reason = "Internal regular expression handling error";
 	    return 0;
 	}
-#if 0
-	if (loop) printf("Next part:\n");
-	for (i = 0; i < NMATCH; i++) {
+
+#ifdef DEB_WASASTRINGTOQ
+	if (loop) DPRINT((stderr, "Next part:\n"));
+	for (unsigned int i = 0; i < NMATCH; i++) {
 	    if (m_pmatch[i].rm_so == -1) 	continue;
 	    char match[maxmatchlen+1];
 	    memcpy(match, m_cp + m_pmatch[i].rm_so,
 		   m_pmatch[i].rm_eo - m_pmatch[i].rm_so);
 	    match[m_pmatch[i].rm_eo - m_pmatch[i].rm_so] = 0;
 	    if (matchNames[i][0])
-		printf("%10s: [%s] (%d->%d)\n", matchNames[i], match, 
-		       (int)m_pmatch[i].rm_so, (int)m_pmatch[i].rm_eo);
+		DPRINT((stderr, "%10s: [%s] (%d->%d)\n", matchNames[i], match, 
+			(int)m_pmatch[i].rm_so, (int)m_pmatch[i].rm_eo));
 	}
 #endif
 	char match[maxmatchlen+1];
@@ -348,14 +358,17 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    if (prev_or) {
 		// We're in an OR subquery, add new subquery
 		orClause->m_subs.push_back(nclause);
+		DPRINT((stderr, "Adding to OR chain\n"));
 	    } else {
 		if (orClause) {
 		    // Getting out of OR. Add the OR subquery to the main one
 		    query->m_subs.push_back(orClause);
+		    DPRINT((stderr, "Adding OR chain to main\n"));
 		    orClause = 0;
 		}
 		// Add new subquery to main one.
 		query->m_subs.push_back(nclause);
+		DPRINT((stderr, "Adding to main chain\n"));
 	    }
 	    prev_or = false;
 	}
@@ -367,6 +380,12 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	m_cp += m_pmatch[0].rm_eo;
 	if (m_cp >= cpe)
 	    break;
+    }
+
+    if (orClause) {
+	// Getting out of OR. Add the OR subquery to the main one
+	query->m_subs.push_back(orClause);
+	DPRINT((stderr, "Adding OR chain to main\n"));
     }
 
     regfree(&m_rx);
@@ -404,4 +423,4 @@ int main(int argc, char **argv)
     exit(0);
 }
 
-#endif // TEST_STRINGTOQUERY
+#endif // TEST_WASASTRINGTOQUERY

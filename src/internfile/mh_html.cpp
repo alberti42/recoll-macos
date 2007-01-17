@@ -122,6 +122,7 @@ bool MimeHandlerHtml::next_document()
     m_metaData["charset"] = "utf-8";
     m_metaData["title"] = result.title;
     m_metaData["keywords"] = result.keywords;
+    m_metaData["author"] = result.author;
     m_metaData["modificationdate"] = result.dmtime;
     m_metaData["sample"] = result.sample;
     m_metaData["mimetype"] = "text/plain";

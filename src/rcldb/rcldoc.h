@@ -16,7 +16,7 @@
  */
 #ifndef _RCLDOC_H_INCLUDED_
 #define _RCLDOC_H_INCLUDED_
-/* @(#$Id: rcldoc.h,v 1.1 2006-12-14 14:54:13 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rcldoc.h,v 1.2 2007-01-17 13:53:41 dockes Exp $  (C) 2006 J.F.Dockes */
 
 #include <string>
 
@@ -48,6 +48,7 @@ class Doc {
     string origcharset;  // Charset we transcoded from (in case we want back)
                          // Possibly set by handler
     string title;        // Possibly set by handler
+    string author;       // Possibly set by handler
     string keywords;     // Possibly set by handler
     string abstract;     // Possibly set by handler
     bool   syntabs;      // true if abstract is just the top of doc, not an 

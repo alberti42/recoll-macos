@@ -154,6 +154,11 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 			    string tmp = i->second;
 			    decode_entities(tmp);
 			    keywords += tmp;
+			} else if (name == "author") {
+			    if (!author.empty()) author += ' ';
+			    string tmp = i->second;
+			    decode_entities(tmp);
+			    author += tmp;
 			} else if (name == "date") {
 			    // Yes this doesnt exist. It's output by filters
 			    // And the format isn't even standard http/html
@@ -168,19 +173,6 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 				dmtime = ascuxtime;
 			    }
 			} 
-#if 0 // We're not a robot, so we don't care about robots metainfo
-			else if (name == "robots") {
-			    string val = i->second;
-			    decode_entities(val);
-			    lowercase_term(val);
-			    if (val.find("none") != string::npos ||
-				val.find("noindex") != string::npos) {
-				indexing_allowed = false;
-				LOGDEB1(("myhtmlparse: robots/noindex\n"));
-				throw false;
-			    }
-			}
-#endif // 0
 		    } else if ((j = p.find("http-equiv")) != p.end()) {
 			string hequiv = j->second;
 			lowercase_term(hequiv);

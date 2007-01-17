@@ -8,8 +8,8 @@ LIBS = librcl.a
 
 all: $(LIBS)
 
-OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o csguess.o indexer.o mimetype.o htmlparse.o myhtmlparse.o mimehandler.o internfile.o mh_exec.o mh_html.o mh_mail.o mh_mbox.o mh_text.o docseq.o history.o sortseq.o pathhash.o rcldb.o searchdata.o stemdb.o base64.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o md5.o mimeparse.o pathut.o readfile.o smallut.o transcode.o wipedir.o x11mon.o
-DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp csguess.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp myhtmlparse.dep.stamp mimehandler.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp docseq.dep.stamp history.dep.stamp sortseq.dep.stamp pathhash.dep.stamp rcldb.dep.stamp searchdata.dep.stamp stemdb.dep.stamp base64.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp md5.dep.stamp mimeparse.dep.stamp pathut.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp
+OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o csguess.o indexer.o mimetype.o htmlparse.o myhtmlparse.o mimehandler.o internfile.o mh_exec.o mh_html.o mh_mail.o mh_mbox.o mh_text.o docseq.o history.o sortseq.o wasastringtoquery.o wasatorcl.o pathhash.o rcldb.o searchdata.o stemdb.o base64.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o md5.o mimeparse.o pathut.o readfile.o smallut.o transcode.o wipedir.o x11mon.o
+DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp csguess.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp myhtmlparse.dep.stamp mimehandler.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp docseq.dep.stamp history.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp pathhash.dep.stamp rcldb.dep.stamp searchdata.dep.stamp stemdb.dep.stamp base64.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp md5.dep.stamp mimeparse.dep.stamp pathut.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp
 
 librcl.a : $(DEPS) $(OBJS) unac.o
 	ar ru librcl.a $(OBJS) unac.o
@@ -57,6 +57,10 @@ history.o : ../query/history.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../query/history.cpp
 sortseq.o : ../query/sortseq.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../query/sortseq.cpp
+wasastringtoquery.o : ../query/wasastringtoquery.cpp
+	$(CXX) $(ALL_CXXFLAGS) -c ../query/wasastringtoquery.cpp
+wasatorcl.o : ../query/wasatorcl.cpp
+	$(CXX) $(ALL_CXXFLAGS) -c ../query/wasatorcl.cpp
 pathhash.o : ../rcldb/pathhash.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../rcldb/pathhash.cpp
 rcldb.o : ../rcldb/rcldb.cpp
@@ -161,6 +165,12 @@ history.dep.stamp : ../query/history.cpp
 sortseq.dep.stamp : ../query/sortseq.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../query/sortseq.cpp > sortseq.dep
 	touch sortseq.dep.stamp
+wasastringtoquery.dep.stamp : ../query/wasastringtoquery.cpp
+	$(CXX) -M $(ALL_CXXFLAGS) ../query/wasastringtoquery.cpp > wasastringtoquery.dep
+	touch wasastringtoquery.dep.stamp
+wasatorcl.dep.stamp : ../query/wasatorcl.cpp
+	$(CXX) -M $(ALL_CXXFLAGS) ../query/wasatorcl.cpp > wasatorcl.dep
+	touch wasatorcl.dep.stamp
 pathhash.dep.stamp : ../rcldb/pathhash.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../rcldb/pathhash.cpp > pathhash.dep
 	touch pathhash.dep.stamp
@@ -238,6 +248,8 @@ include mh_text.dep
 include docseq.dep
 include history.dep
 include sortseq.dep
+include wasastringtoquery.dep
+include wasatorcl.dep
 include pathhash.dep
 include rcldb.dep
 include searchdata.dep

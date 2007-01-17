@@ -37,7 +37,7 @@ class MyHtmlParser : public HtmlParser {
     bool in_body_tag; 
     bool in_pre_tag;
     bool pending_space;
-    string title, sample, keywords, dump, dmtime;
+    string title, sample, keywords, dump, dmtime, author;
     string ocharset; // This is the charset our user thinks the doc was
     string charset; // This is the charset it was supposedly converted to
     string doccharset; // Set this to value of charset parameter in header

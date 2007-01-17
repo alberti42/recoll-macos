@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.7 2006-12-19 12:11:21 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.8 2007-01-17 13:53:41 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -154,6 +154,7 @@ public:
 
 
     bool translate(const string &iq,
+		   const string &prefix,
 		   string &ermsg,
 		   list<Xapian::Query> &pqueries,
 		   int slack = 0, bool useNear = false);
@@ -257,6 +258,14 @@ void multiply_groups(vector<vector<string> >::const_iterator vvit,
     }
 }
 
+static void addPrefix(list<string>& terms, const string& prefix)
+{
+    if (prefix.empty())
+	return;
+    for (list<string>::iterator it = terms.begin(); it != terms.end(); it++)
+	it->insert(0, prefix);
+}
+
 /** 
  * Turn string into list of xapian queries. There is little
  * interpretation done on the string (no +term -term or filename:term
@@ -271,6 +280,7 @@ void multiply_groups(vector<vector<string> >::const_iterator vvit,
  *   count)
  */
 bool StringToXapianQ::translate(const string &iq,
+				const string &prefix,
 				string &ermsg,
 				list<Xapian::Query> &pqueries,
 				int slack, bool useNear)
@@ -301,24 +311,25 @@ bool StringToXapianQ::translate(const string &iq,
 	    splitterS.text_to_words(*it);
 	    TextSplit splitterW(&splitDataW, TextSplit::TXTS_NOSPANS);
 	    splitterW.text_to_words(*it);
-	    wsQData& splitData = splitDataS;
-	    if (splitDataS.terms.size() > 1 && splitDataS.terms.size() != 
-		splitDataW.terms.size())
-		splitData = splitDataW;
+	    wsQData *splitData = &splitDataS;
+	    if (splitDataS.terms.size() > 1 && 
+		splitDataS.terms.size() != splitDataW.terms.size())
+		splitData = &splitDataW;
 
 	    LOGDEB1(("strToXapianQ: splitter term count: %d\n", 
-		     splitData.terms.size()));
-	    switch(splitData.terms.size()) {
+		     splitData->terms.size()));
+	    switch(splitData->terms.size()) {
 	    case 0: continue;// ??
 	    case 1: // Not a real phrase: one term
 		{
-		    string term = splitData.terms.front();
+		    string term = splitData->terms.front();
 		    list<string> exp;  
 		    maybeStemExp(false, term, exp);
+		    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
 		    // Push either term or OR of stem-expanded set
+		    addPrefix(exp, prefix);
 		    pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 						     exp.begin(), exp.end()));
-		    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
 		}
 		break;
 
@@ -329,8 +340,8 @@ bool StringToXapianQ::translate(const string &iq,
 		list<Xapian::Query> orqueries;
 		bool hadmultiple = false;
 		vector<vector<string> >groups;
-		for (vector<string>::iterator it = splitData.terms.begin();
-		     it != splitData.terms.end(); it++) {
+		for (vector<string>::iterator it = splitData->terms.begin();
+		     it != splitData->terms.end(); it++) {
 		    // Some version of xapian will accept only one OR clause
 		    // inside NEAR, all others must be leafs
 		    bool nostemexp = 
@@ -341,6 +352,7 @@ bool StringToXapianQ::translate(const string &iq,
 		    maybeStemExp(nostemexp, *it, exp);
 
 		    groups.push_back(vector<string>(exp.begin(), exp.end()));
+		    addPrefix(exp, prefix);
 		    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 						      exp.begin(), exp.end()));
 #ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
@@ -352,7 +364,7 @@ bool StringToXapianQ::translate(const string &iq,
 		pqueries.push_back(Xapian::Query(op,
 						 orqueries.begin(),
 						 orqueries.end(),
-					 splitData.terms.size() + slack));
+					 splitData->terms.size() + slack));
 		// Add NEAR/PHRASE groups to the highlighting data. Must
 		// push all combinations
 		vector<vector<string> > allcombs;
@@ -378,6 +390,28 @@ bool StringToXapianQ::translate(const string &iq,
     return true;
 }
 
+// Try to translate field specification into field prefix. This should
+// probably be an Rcl::Db method and much more configurable (store
+// prefix translation list in config ?)
+static string fieldToPrefix(const string& i_field)
+{
+    static map<string, string> fldToPrefs;
+    if (fldToPrefs.empty()) {
+	fldToPrefs["title"] = "S";
+	fldToPrefs["caption"] = "S";
+	fldToPrefs["subject"] = "S";
+	fldToPrefs["author"] = "A";
+	fldToPrefs["from"] = "A";
+	fldToPrefs["keyword"] = "K";
+    }
+    string fld(i_field); 
+    stringtolower(fld);
+    map<string, string>::const_iterator it = fldToPrefs.find(fld);
+    if (it != fldToPrefs.end())
+	return it->second;
+    return "";
+}
+
 // Translate a simple OR, AND, or EXCL search clause. 
 bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p, 
 					   const string& stemlang)
@@ -397,9 +431,12 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	LOGERR(("SearchDataClauseSimple: bad m_tp %d\n", m_tp));
 	return false;
     }
+    string prefix;
+    if (!m_field.empty())
+	prefix = fieldToPrefix(m_field);
     list<Xapian::Query> pqueries;
     StringToXapianQ tr(db, stemlang);
-    if (!tr.translate(m_text, m_reason, pqueries))
+    if (!tr.translate(m_text, prefix, m_reason, pqueries))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
@@ -437,12 +474,16 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     list<Xapian::Query> pqueries;
     Xapian::Query nq;
 
+    string prefix;
+    if (!m_field.empty())
+	prefix = fieldToPrefix(m_field);
+
     // Use stringToXapianQueries to lowercase and simplify the phrase
     // terms etc. The result should be a single element list
     string s = string("\"") + m_text + string("\"");
     bool useNear = m_tp == SCLT_NEAR;
     StringToXapianQ tr(db, stemlang);
-    if (!tr.translate(s, m_reason, pqueries, m_slack, useNear))
+    if (!tr.translate(s, prefix, m_reason, pqueries, m_slack, useNear))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseDist: resolved to null query\n"));

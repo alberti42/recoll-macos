@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.28 2007-01-13 10:28:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.29 2007-01-17 13:53:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -217,6 +217,9 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     if (doc->h.getFirstHeader("From", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
 	text += string("From: ") + transcoded + string("\n");
+	if (depth == 1) {
+	    m_metaData["author"] = transcoded;
+	}
     }
     if (doc->h.getFirstHeader("To", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
@@ -245,7 +248,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     }
     text += '\n';
 
-    LOGDEB2(("MimeHandlerMail::rocessMsg:ismultipart %d mime subtype '%s'\n",
+    LOGDEB2(("MimeHandlerMail::processMsg:ismultipart %d mime subtype '%s'\n",
 	    doc->isMultipart(), doc->getSubType().c_str()));
     walkmime(doc, depth);
 

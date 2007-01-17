@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.101 2006-12-19 12:11:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.102 2007-01-17 13:53:41 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -80,6 +80,7 @@ namespace Rcl {
 // Synthetic abstract marker (to discriminate from abstract actually
 // found in doc)
 const static string rclSyntAbs = "?!#@";
+const static string emptystring;
 
 // A class for data and methods that would have to expose
 // Xapian-specific stuff if they were in Rcl::Db. There could actually be
@@ -703,15 +704,24 @@ bool Db::isopen()
     return m_ndb->m_isopen;
 }
 
-// A small class to hold state while splitting text
+// The text splitter callback class which receives words from the
+// splitter and adds postings to the Xapian document.
 class mySplitterCB : public TextSplitCB {
  public:
-    Xapian::Document &doc;
+    Xapian::Document &doc;   // Xapian document 
     Xapian::termpos basepos; // Base for document section
-    Xapian::termpos curpos;  // Last position sent to callback
-    mySplitterCB(Xapian::Document &d) : doc(d), basepos(1), curpos(0)
+    Xapian::termpos curpos;  // Current position. Used to set basepos for the
+                             // following section
+    mySplitterCB(Xapian::Document &d) 
+	: doc(d), basepos(1), curpos(0)
     {}
     bool takeword(const std::string &term, int pos, int, int);
+    void setprefix(const string& pref) {prefix = pref;}
+
+private:
+    // If prefix is set, we also add a posting for the prefixed terms
+    // (ie: for titles, add postings for both "term" and "Sterm")
+    string  prefix; 
 };
 
 // Callback for the document to word splitting class during indexation
@@ -731,7 +741,11 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 	// be possible to assign different weigths to doc parts (ie title)
 	// by using a higher value
 	curpos = pos;
-	doc.add_posting(term, basepos + curpos, 1);
+	pos += basepos;
+	doc.add_posting(term, pos, 1);
+	if (!prefix.empty()) {
+	    doc.add_posting(prefix + term, pos, 1);
+	}
 	return true;
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
@@ -804,8 +818,9 @@ bool Db::add(const string &fn, const Doc &idoc,
 	doc.abstract = truncate_to_word(doc.abstract, m_idxAbsTruncLen);
     }
     doc.abstract = neutchars(doc.abstract, "\n\r");
-    doc.title = truncate_to_word(doc.title, 100);
-    doc.keywords = truncate_to_word(doc.keywords, 300);
+    doc.title = neutchars(truncate_to_word(doc.title, 150), "\n\r");
+    doc.author = neutchars(truncate_to_word(doc.author, 150), "\n\r");
+    doc.keywords = neutchars(truncate_to_word(doc.keywords, 300), "\n\r");
 
     Xapian::Document newdocument;
 
@@ -824,13 +839,30 @@ bool Db::add(const string &fn, const Doc &idoc,
     }
 
     // Split and index title
-    LOGDEB2(("Db::add: split title [%s]\n", doc.title.c_str()));
-    if (!dumb_string(doc.title, noacc)) {
-	LOGERR(("Db::add: dumb_string failed\n"));
-	return false;
+    if (!doc.title.empty()) {
+	LOGDEB2(("Db::add: split title [%s]\n", doc.title.c_str()));
+	if (!dumb_string(doc.title, noacc)) {
+	    LOGERR(("Db::add: dumb_string failed\n"));
+	    return false;
+	}
+	splitData.setprefix("S"); // Subject
+	splitter.text_to_words(noacc);
+	splitData.setprefix(emptystring);
+	splitData.basepos += splitData.curpos + 100;
     }
-    splitter.text_to_words(noacc);
-    splitData.basepos += splitData.curpos + 100;
+
+    // Split and index author
+    if (!doc.author.empty()) {
+	LOGDEB2(("Db::add: split author [%s]\n", doc.author.c_str()));
+	if (!dumb_string(doc.author, noacc)) {
+	    LOGERR(("Db::add: dumb_string failed\n"));
+	    return false;
+	}
+	splitData.setprefix("A"); 
+	splitter.text_to_words(noacc);
+	splitData.setprefix(emptystring);
+	splitData.basepos += splitData.curpos + 100;
+    }
 
     // Split and index body
     LOGDEB2(("Db::add: split body\n"));
@@ -842,13 +874,17 @@ bool Db::add(const string &fn, const Doc &idoc,
     splitData.basepos += splitData.curpos + 100;
 
     // Split and index keywords
-    LOGDEB2(("Db::add: split kw [%s]\n", doc.keywords.c_str()));
-    if (!dumb_string(doc.keywords, noacc)) {
-	LOGERR(("Db::add: dumb_string failed\n"));
-	return false;
+    if (!doc.keywords.empty()) {
+	LOGDEB2(("Db::add: split kw [%s]\n", doc.keywords.c_str()));
+	if (!dumb_string(doc.keywords, noacc)) {
+	    LOGERR(("Db::add: dumb_string failed\n"));
+	    return false;
+	}
+	splitData.setprefix("K");
+	splitter.text_to_words(noacc);
+	splitData.setprefix(emptystring);
+	splitData.basepos += splitData.curpos + 100;
     }
-    splitter.text_to_words(noacc);
-    splitData.basepos += splitData.curpos + 100;
 
     // Split and index abstract. We don't do this if it is synthetic
     // any more (this used to give a relevance boost to the beginning
@@ -946,6 +982,9 @@ bool Db::add(const string &fn, const Doc &idoc,
     record += "\ncaption=" + doc.title;
     record += "\nkeywords=" + doc.keywords;
     record += "\nabstract=" + doc.abstract;
+    if (!doc.author.empty()) {
+	record += "\nauthor=" + doc.author;
+    }
     record += "\n";
     LOGDEB1(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.24 2007-01-15 13:06:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.25 2007-01-17 13:53:40 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -236,6 +236,7 @@ static inline bool getKeyValue(const map<string, string>& docdata,
 }
 
 static const string keyab("abstract");
+static const string keyau("author");
 static const string keycs("charset");
 static const string keyct("content");
 static const string keyfn("filename");
@@ -251,6 +252,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
     Dijon::Filter *df = m_handlers.back();
     const std::map<std::string, std::string>& docdata = df->get_meta_data();
 
+    getKeyValue(docdata, keyau, doc.author);
     getKeyValue(docdata, keyoc, doc.origcharset);
     getKeyValue(docdata, keyct, doc.text);    
     getKeyValue(docdata, keytt, doc.title);
