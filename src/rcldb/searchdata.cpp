@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.8 2007-01-17 13:53:41 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.9 2007-01-18 12:09:58 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -152,7 +152,6 @@ public:
 	: m_db(db), m_stemlang(stmlng) 
     { }
 
-
     bool translate(const string &iq,
 		   const string &prefix,
 		   string &ermsg,
@@ -168,7 +167,8 @@ public:
     }
 
 private:
-    void maybeStemExp(bool dont, const string& term, list<string>& exp);
+    void maybeStemExp(bool dont, const string& term, list<string>& exp, 
+		      string& sterm);
 
     Db&           m_db;
     const string& m_stemlang;
@@ -178,22 +178,37 @@ private:
     vector<vector<string> > m_groups; 
 };
 
-/** Make term dumb and possibly expand it into its stem siblings. */
+/** Unaccent and lowercase term, possibly expand stem and wildcards
+ *
+ * @param nostemexp don't perform stem expansion. This is mainly used to
+ *   prevent stem expansion inside phrases. 2 other factors can turn
+ *   stem expansion off: a null stemlang, resulting from a global user
+ *   preference, or a capitalized term.
+ * @param term input single word
+ * @param exp output expansion list
+ * @param sterm output lower-cased+unaccented version of the input term 
+ *              (only if stem expansion actually occured, else empty)
+ */
 void StringToXapianQ::maybeStemExp(bool nostemexp, 
 				   const string& term, 
-				   list<string>& exp)
+				   list<string>& exp,
+				   string &sterm)
 {
     LOGDEB2(("maybeStemExp: term [%s] stemlang [%s] nostemexp %d\n", 
 	    term.c_str(), m_stemlang.c_str(), nostemexp));
+    sterm.erase();
     if (term.empty()) {
 	exp.clear();
 	return;
     }
-
+    // term1 is lowercase and without diacritics
     string term1;
     dumb_string(term, term1);
 
-    if (m_stemlang.empty())
+    bool haswild = term.find_first_of("*?") != string::npos;
+
+    // No stemming if there are wildcards or prevented globally.
+    if (haswild || m_stemlang.empty())
 	nostemexp = true;
 
     if (!nostemexp) {
@@ -201,7 +216,7 @@ void StringToXapianQ::maybeStemExp(bool nostemexp,
 	// case we do not want to do stem expansion. Note that
 	// the test is convoluted and possibly problematic
 
-	string noacterm,noaclowterm;
+	string noacterm, noaclowterm;
 	if (unacmaybefold(term, noacterm, "UTF-8", false) &&
 	    unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
 	    Utf8Iter it1(noacterm);
@@ -209,14 +224,20 @@ void StringToXapianQ::maybeStemExp(bool nostemexp,
 	    if (*it1 != *it2)
 		nostemexp = true;
 	}
-	LOGDEB1(("Term: %s stem expansion: %s\n", term.c_str()));
     }
 
-    if (nostemexp) {
-	exp = list<string>(1, term1);
+    if (nostemexp && !haswild) {
+	// Neither stemming nor wildcard expansion: just the word
+	exp.push_front(term1);
+	exp.resize(1);
     } else {
 	list<TermMatchEntry> l;
-	m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term1, l);
+	if (haswild) {
+	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term1, l);
+	} else {
+	    sterm = term1;
+	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term1, l);
+	}
 	for (list<TermMatchEntry>::const_iterator it = l.begin(); 
 	     it != l.end(); it++) {
 	    exp.push_back(it->term);
@@ -285,7 +306,6 @@ bool StringToXapianQ::translate(const string &iq,
 				list<Xapian::Query> &pqueries,
 				int slack, bool useNear)
 {
-    string qstring = iq;
     LOGDEB2(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
     ermsg.erase();
     m_terms.clear();
@@ -293,7 +313,7 @@ bool StringToXapianQ::translate(const string &iq,
 
     // Split into words and phrases (word1 word2 "this is a phrase"):
     list<string> phrases;
-    stringToStrings(qstring, phrases);
+    stringToStrings(iq, phrases);
 
     // Then process each word/phrase: split into terms and transform
     // into appropriate Xapian Query
@@ -307,9 +327,13 @@ bool StringToXapianQ::translate(const string &iq,
 	    // a span would fail if we didn't adjust the proximity to
 	    // account for the additional span term which is complicated.
 	    wsQData splitDataS, splitDataW;
-	    TextSplit splitterS(&splitDataS, TextSplit::TXTS_ONLYSPANS);
+	    TextSplit splitterS(&splitDataS, (TextSplit::Flags)
+				(TextSplit::TXTS_ONLYSPANS | 
+				 TextSplit::TXTS_KEEPWILD));
 	    splitterS.text_to_words(*it);
-	    TextSplit splitterW(&splitDataW, TextSplit::TXTS_NOSPANS);
+	    TextSplit splitterW(&splitDataW, (TextSplit::Flags)
+				(TextSplit::TXTS_NOSPANS | 
+				 TextSplit::TXTS_KEEPWILD));
 	    splitterW.text_to_words(*it);
 	    wsQData *splitData = &splitDataS;
 	    if (splitDataS.terms.size() > 1 && 
@@ -324,12 +348,19 @@ bool StringToXapianQ::translate(const string &iq,
 		{
 		    string term = splitData->terms.front();
 		    list<string> exp;  
-		    maybeStemExp(false, term, exp);
+		    string sterm;
+		    maybeStemExp(false, term, exp, sterm);
 		    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
 		    // Push either term or OR of stem-expanded set
 		    addPrefix(exp, prefix);
-		    pqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
-						     exp.begin(), exp.end()));
+		    Xapian::Query xq(Xapian::Query::OP_OR, 
+				     exp.begin(), exp.end());
+		    // Give a relevance boost to the original term
+		    if (!sterm.empty()) {
+			xq = Xapian::Query(Xapian::Query::OP_OR, 
+					   xq, Xapian::Query(sterm, 10));
+		    }
+		    pqueries.push_back(xq);
 		}
 		break;
 
@@ -347,9 +378,9 @@ bool StringToXapianQ::translate(const string &iq,
 		    bool nostemexp = 
 			(op == Xapian::Query::OP_PHRASE || hadmultiple) ?
 			true : false;
-
+		    string sterm;
 		    list<string>exp;
-		    maybeStemExp(nostemexp, *it, exp);
+		    maybeStemExp(nostemexp, *it, exp, sterm);
 
 		    groups.push_back(vector<string>(exp.begin(), exp.end()));
 		    addPrefix(exp, prefix);

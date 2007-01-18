@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.27 2006-12-08 07:11:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.28 2007-01-18 12:09:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,7 @@ using namespace std;
 // The array is actually a remnant of the original version which did no utf8
 // It could be reduced to 128, because real (over 128) utf8 chars are now 
 // handled with a set holding all the separator values.
-enum CharClass {LETTER=256, SPACE=257, DIGIT=258};
+enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259};
 static int charclasses[256];
 
 static set<unsigned int> unicign;
@@ -76,9 +76,13 @@ static void setcharclasses()
     for (i = 0; i < strlen(blankspace); i++)
 	charclasses[int(blankspace[i])] = SPACE;
 
-    char seps[] = "!\"$%&()/<=>[\\]^{|}~:;*`?";
+    char seps[] = "!\"$%&()/<=>[\\]^{|}~:;`";
     for (i = 0; i  < strlen(seps); i++)
 	charclasses[int(seps[i])] = SPACE;
+
+    char wild[] = "*?";
+    for (i = 0; i  < strlen(wild); i++)
+	charclasses[int(wild[i])] = WILD;
 
     char special[] = ".@+-,#'\n\r";
     for (i = 0; i  < strlen(special); i++)
@@ -244,6 +248,12 @@ bool TextSplit::text_to_words(const string &in)
 		number = false;
 	    }
 	    break;
+	case WILD:
+	    if (m_flags & TXTS_KEEPWILD)
+		goto NORMALCHAR;
+	    else
+		goto SPACE;
+	    break;
 	case '-':
 	case '+':
 	    if (wordLen == 0) {
@@ -338,6 +348,7 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 
 	default:
+	NORMALCHAR:
 	    wordLen += it.appendchartostring(span);
 	    break;
 	}
@@ -426,6 +437,7 @@ static string usage =
     "   -S: no output\n"
     "   -s:  only spans\n"
     "   -w:  only words\n"
+    "   -k:  preserve wildcards (?*)\n"
     "   -c: just count words\n"
     " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
@@ -443,6 +455,7 @@ static int        op_flags;
 #define OPT_w	  0x2
 #define OPT_S	  0x4
 #define OPT_c     0x8
+#define OPT_k     0x10
 
 int main(int argc, char **argv)
 {
@@ -457,6 +470,7 @@ int main(int argc, char **argv)
 	while (**argv)
 	    switch (*(*argv)++) {
 	    case 'c':	op_flags |= OPT_c; break;
+	    case 'k':	op_flags |= OPT_k; break;
 	    case 's':	op_flags |= OPT_s; break;
 	    case 'S':	op_flags |= OPT_S; break;
 	    case 'w':	op_flags |= OPT_w; break;
@@ -477,6 +491,8 @@ int main(int argc, char **argv)
 	flags = TextSplit::TXTS_ONLYSPANS;
     else if (op_flags&OPT_w)
 	flags = TextSplit::TXTS_NOSPANS;
+    if (op_flags & OPT_k) 
+	flags = (TextSplit::Flags)(flags | TextSplit::TXTS_KEEPWILD); 
 
     string data;
     if (argc == 1) {

@@ -16,7 +16,7 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.15 2006-12-08 07:11:17 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.16 2007-01-18 12:09:58 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -44,7 +44,8 @@ public:
  */
 class TextSplit {
 public:
-    enum Flags {TXTS_NONE = 0, TXTS_ONLYSPANS = 1, TXTS_NOSPANS = 2};
+    enum Flags {TXTS_NONE = 0, TXTS_ONLYSPANS = 1, TXTS_NOSPANS = 2, 
+		TXTS_KEEPWILD = 4};
     /**
      * Constructor: just store callback object
      */
