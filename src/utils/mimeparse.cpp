@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.17 2006-11-30 13:38:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.18 2007-01-18 14:23:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,13 @@ static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.17 2006-11-30 13:38:44 dockes E
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
+
+//#define DEBUG_MIMEPARSE 
+#ifdef DEBUG_MIMEPARSE
+#define DPRINT(X) fprintf X
+#else
+#define DPRINT(X)
+#endif
 
 // Parsing a header value. Only content-type and content-disposition
 // have parameters, but others are compatible with content-type
@@ -426,15 +433,15 @@ static bool rfc2047_decodeParsed(const std::string& charset,
 				 const std::string& value, 
 				 std::string &utf8)
 {
-    //    fprintf(stderr, "DecodeParsed: charset [%s] enc [%s] val [%s]\n",
-    //	    charset.c_str(), encoding.c_str(), value.c_str());
+    DPRINT((stderr, "DecodeParsed: charset [%s] enc [%s] val [%s]\n",
+	    charset.c_str(), encoding.c_str(), value.c_str()));
     utf8 = "";
 
     string decoded;
     if (!stringlowercmp("b", encoding)) {
 	if (!base64_decode(value, decoded))
 	    return false;
-	//	fprintf(stderr, "FromB64: [%s]\n", decoded.c_str());
+	DPRINT((stderr, "FromB64: [%s]\n", decoded.c_str()));
     } else if (!stringlowercmp("q", encoding)) {
 	if (!qp_decode(value, decoded))
 	    return false;
@@ -446,14 +453,14 @@ static bool rfc2047_decodeParsed(const std::string& charset,
 	    else 
 		temp += decoded[pos];
 	decoded = temp;
-	//	fprintf(stderr, "FromQP: [%s]\n", decoded.c_str());
+	DPRINT((stderr, "FromQP: [%s]\n", decoded.c_str()));
     } else {
-	//	fprintf(stderr, "Bad encoding [%s]\n", encoding.c_str());
+	DPRINT((stderr, "Bad encoding [%s]\n", encoding.c_str()));
 	return false;
     }
 
     if (!transcode(decoded, utf8, charset, "UTF-8")) {
-	//	fprintf(stderr, "Transcode failed\n");
+	DPRINT((stderr, "Transcode failed\n"));
 	return false;
     }
     return true;
@@ -471,6 +478,8 @@ typedef enum  {rfc2047base, rfc2047ready, rfc2047open_eq,
 
 bool rfc2047_decode(const std::string& in, std::string &out) 
 {
+    DPRINT((stderr, "rfc2047_decode: [%s]\n", in.c_str()));
+
     Rfc2047States state = rfc2047ready;
     string encoding, charset, value, utf8;
 
