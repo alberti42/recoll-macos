@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.6 2006-12-19 12:11:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.7 2007-01-19 15:19:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -228,48 +228,56 @@ bool stemExpand(const std::string& dbdir,
 	Xapian::Stem stemmer(lang);
 	string stem = stemmer.stem_word(term);
 	LOGDEB(("stemExpand: [%s] stem-> [%s]\n", term.c_str(), stem.c_str()));
-	// Try to fetch the doc from the stem db
+
+	// Open stem database
 	string stemdbdir = stemdbname(dbdir, lang);
 	Xapian::Database sdb(stemdbdir);
-	LOGDEB1(("stemExpand: %s lastdocid: %d\n", 
+	LOGDEB0(("stemExpand: %s lastdocid: %d\n", 
 		stemdbdir.c_str(), sdb.get_lastdocid()));
+
+	// Try to fetch the doc from the stem db
 	if (!sdb.term_exists(stem)) {
-	    LOGDEB1(("Db::stemExpand: no term for %s\n", stem.c_str()));
-	    result.push_back(term);
-	    return true;
-	}
-	Xapian::PostingIterator did = sdb.postlist_begin(stem);
-	if (did == sdb.postlist_end(stem)) {
-	    LOGDEB1(("stemExpand: no term(1) for %s\n",stem.c_str()));
-	    result.push_back(term);
-	    return true;
-	}
-	Xapian::Document doc = sdb.get_document(*did);
-	string data = doc.get_data();
+	    LOGDEB0(("Db::stemExpand: no term for %s\n", stem.c_str()));
+	} else {
+	    Xapian::PostingIterator did = sdb.postlist_begin(stem);
+	    if (did == sdb.postlist_end(stem)) {
+		LOGDEB0(("stemExpand: no term(1) for %s\n",stem.c_str()));
+	    } else {
+		Xapian::Document doc = sdb.get_document(*did);
+		string data = doc.get_data();
 
-	// Build expansion list from database data
-	// No need for a conftree, but we need to massage the data a little
-	string::size_type pos = data.find_first_of("=");
-	++pos;
-	string::size_type pos1 = data.find_last_of("\n");
-	if (pos == string::npos || pos1 == string::npos ||pos1 <= pos) { // ??
-	    result.push_back(term);
-	    return true;
+		// Build expansion list from database data No need for
+		// a conftree, but we need to massage the data a
+		// little
+		string::size_type pos = data.find_first_of("=");
+		++pos;
+		string::size_type pos1 = data.find_last_of("\n");
+		if (pos == string::npos || pos1 == string::npos || 
+		    pos1 <= pos) {
+		    // ??
+		} else {
+		    stringToStrings(data.substr(pos, pos1-pos), result);
+		}
+	    }
 	}
-	stringToStrings(data.substr(pos, pos1-pos), result);
 
-	// If the user term itself is not in the list, add it.
+	// If the user term or stem are not in the list, add them
 	if (find(result.begin(), result.end(), term) == result.end()) {
 	    result.push_back(term);
 	}
-	LOGDEB(("stemExpand: %s ->  %s\n", stem.c_str(),
-		stringlistdisp(result).c_str()));
+	if (find(result.begin(), result.end(), stem) == result.end()) {
+	    result.push_back(stem);
+	}
+	LOGDEB0(("stemExpand: %s ->  %s\n", stem.c_str(),
+		 stringlistdisp(result).c_str()));
+
     } catch (...) {
 	LOGERR(("stemExpand: error accessing stem db. dbdir [%s] lang [%s]\n",
 		dbdir.c_str(), lang.c_str()));
 	result.push_back(term);
 	return false;
     }
+
     return true;
 }
 
