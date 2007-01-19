@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.102 2007-01-17 13:53:41 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.103 2007-01-19 10:23:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -214,29 +214,49 @@ bool Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc)
     return true;
 }
 
+static list<string> noPrefixList(const list<string>& in) 
+{
+    list<string> out;
+    for (list<string>::const_iterator qit = in.begin(); 
+	 qit != in.end(); qit++) {
+	if ('A' <= qit->at(0) && qit->at(0) <= 'Z') {
+	    string term = *qit;
+	    while (term.length() && 'A' <= term.at(0) && term.at(0) <= 'Z')
+		term.erase(0, 1);
+	    if (term.length())
+		out.push_back(term);
+	    continue;
+	} else {
+	    out.push_back(*qit);
+	}
+    }
+    return out;
+}
+
 // Build a document abstract by extracting text chunks around the query terms
 // This uses the db termlists, not the original document.
-string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
+string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 {
     Chrono chron;
-    LOGDEB(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
-	    m_db->m_synthAbsLen, m_db->m_synthAbsWordCtxLen));
+    LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
+	     m_db->m_synthAbsLen, m_db->m_synthAbsWordCtxLen));
 
+    list<string> terms = noPrefixList(iterms);
     if (terms.empty()) {
 	return "";
     }
 
     // We may want to use the db-wide freqs to tune the abstracts one
     // day but we currently don't
-#if 0 
+#if 0
     if (m_termfreqs.empty()) {
 	for (list<string>::const_iterator qit = terms.begin(); 
 	     qit != terms.end(); qit++) {
 	    m_termfreqs[*qit] = db.get_termfreq(*qit);
-	    LOGDEB2(("makeAbstract: [%s] db freq %d\n", qit->c_str(), 
+	    LOGDEB(("makeAbstract: [%s] db freq %d\n", qit->c_str(), 
 		     m_termfreqs[*qit]));
 	}
-	LOGDEB2(("makeAbstract:%d: got termfreqs\n", chron.ms()));
+	LOGDEB(("makeAbstract:%d: got termfreqs\n", chron.ms()));
     }
 #endif
 
@@ -360,6 +380,9 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
 
 	for (term = db.termlist_begin(docid);
 	     term != db.termlist_end(docid); term++) {
+	    // Ignore prefixed terms
+	    if ('A' <= (*term).at(0) && (*term).at(0) <= 'Z')
+		continue;
 	    if (cutoff-- < 0) {
 		LOGDEB(("makeAbstract: max term count cutoff\n"));
 		break;
