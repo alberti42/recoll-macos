@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.22 2007-01-13 15:21:41 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.23 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -67,6 +67,8 @@ using std::pair;
 #include "ssearch_w.h"
 #include "execmd.h"
 #include "internfile.h"
+#include "docseqdb.h"
+#include "docseqhist.h"
 
 #include "rclmain_w.h"
 #include "moc_rclmain_w.cpp"
@@ -825,11 +827,15 @@ void RclMain::startManual()
 // Search for document 'like' the selected one.
 void RclMain::docExpand(int docnum)
 {
+    if (!rcldb)
+	return;
     Rcl::Doc doc;
     if (!resList->getDoc(docnum, doc))
 	return;
     list<string> terms;
     terms = rcldb->expand(doc);
+    if (terms.empty())
+	return;
     // Do we keep the original query. I think we'd better not.
     // rcldb->expand is set to keep the original query terms instead.
     QString text;// = sSearch->queryText->currentText();

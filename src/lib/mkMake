@@ -22,6 +22,8 @@ ${depth}/internfile/mh_mail.cpp \
 ${depth}/internfile/mh_mbox.cpp \
 ${depth}/internfile/mh_text.cpp \
 ${depth}/query/docseq.cpp \
+${depth}/query/docseqdb.cpp \
+${depth}/query/docseqhist.cpp \
 ${depth}/query/history.cpp \
 ${depth}/query/sortseq.cpp \
 ${depth}/query/wasastringtoquery.cpp \

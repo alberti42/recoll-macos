@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.9 2006-12-05 15:18:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.10 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -84,7 +84,7 @@ public:
 
 DocSeqSorted::DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec,
 			   const std::string &t)
-    : DocSequence(t)
+    :  DocSequence(t), m_seq(iseq)
 {
     m_spec = sortspec;
     LOGDEB(("DocSeqSorted:: count %d\n", m_spec.sortwidth));
@@ -119,4 +119,9 @@ bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, int *percent, string *)
 	*percent = (*m_docsp[num]).pc;
     doc = *m_docsp[num];
     return true;
+}
+
+string DocSeqSorted::getAbstract(Rcl::Doc& doc)
+{
+    return m_seq->getAbstract(doc);
 }

@@ -16,28 +16,37 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.9 2006-09-13 14:57:56 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.10 2007-01-19 10:32:39 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
-
+#include <vector>
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
+using std::vector;
 #endif
 
-#include "rcldb.h"
-#include "history.h"
+#include "rcldoc.h"
+
+// A result list entry. 
+struct ResListEntry {
+    Rcl::Doc doc;
+    int percent;
+    string subHeader;
+    ResListEntry() : percent(0) {}
+};
 
 /** Interface for a list of documents coming from some source.
 
     The result list display data may come from different sources (ie:
-    history or Db query). We have an interface to make things cleaner.
+    history or Db query), and be post-processed (DocSeqSorted).
 */
 class DocSequence {
  public:
     DocSequence(const string &t) : m_title(t) {}
     virtual ~DocSequence() {}
-    /** Get document at given rank 
+
+    /** Get document at given rank. 
      *
      * @param num document rank in sequence
      * @param doc return data
@@ -52,49 +61,30 @@ class DocSequence {
      */
     virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0) 
 	= 0;
+
+    /** Get next page of documents. This accumulates entries into the result
+     *  list (doesn't reset it). */
+    virtual int getSeqSlice(int offs, int cnt, vector<ResListEntry>& result);
+
+    /** Get abstract for document. This is special because it may take time.
+     *  The default is to return the input doc's abstract fields, but some 
+     *  sequences can compute a better value (ie: docseqdb) */
+    virtual string getAbstract(Rcl::Doc& doc) {
+	return doc.abstract;
+    }
+
+    /** Get estimated total count in results */
     virtual int getResCnt() = 0;
+
+    /** Get title for result list */
     virtual string title() {return m_title;}
+
+    /** Get search terms (for highlighting abstracts). Some sequences
+     * may have no associated search terms. Implement this for them. */
     virtual void getTerms(list<string>& t) {t.clear();}
 
  private:
     string m_title;
-};
-
-
-/** A DocSequence from a Db query (there should be one active for this
-    to make sense */
-class DocSequenceDb : public DocSequence {
- public:
-    DocSequenceDb(Rcl::Db *d, const string &t) : 
-	DocSequence(t), m_db(d), m_rescnt(-1) 
-	{}
-    virtual ~DocSequenceDb() {}
-    virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string * = 0);
-    virtual int getResCnt();
-    virtual void getTerms(list<string>&);
-
- private:
-    Rcl::Db *m_db;
-    int m_rescnt;
-};
-
-/** A DocSequence coming from the history file */
-class DocSequenceHistory : public DocSequence {
- public:
-    DocSequenceHistory(Rcl::Db *d, RclHistory *h, const string &t) 
-	: DocSequence(t), m_db(d), m_hist(h), m_prevnum(-1), m_prevtime(-1) {}
-    virtual ~DocSequenceHistory() {}
-
-    virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0);
-    virtual int getResCnt();
- private:
-    Rcl::Db *m_db;
-    RclHistory *m_hist;
-    int m_prevnum;
-    long m_prevtime;
-
-    list<RclDHistoryEntry> m_hlist;
-    list<RclDHistoryEntry>::const_iterator m_it;
 };
 
 #endif /* _DOCSEQ_H_INCLUDED_ */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseq.cpp,v 1.10 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.1 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,38 @@ static char rcsid[] = "@(#$Id: docseq.cpp,v 1.10 2007-01-19 10:32:39 dockes Exp 
 #include <math.h>
 #include <time.h>
 
-#include "docseq.h"
+#include "docseqdb.h"
+#include "rcldb.h"
 
-int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
+bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, int *percent, string *sh)
 {
-    int ret = 0;
-    for (int num = offs; num < offs + cnt; num++, ret++) {
-	result.push_back(ResListEntry());
-	if (!getDoc(num, result.back().doc, &result.back().percent, 
-		    &result.back().subHeader)) {
-	    result.pop_back();
-	    return ret;
-	}
+    if (sh) sh->erase();
+    return m_db ? m_db->getDoc(num, doc, percent) : false;
+}
+
+int DocSequenceDb::getResCnt()
+{
+    if (!m_db)
+	return -1;
+    if (m_rescnt < 0) {
+	m_rescnt= m_db->getResCnt();
     }
-    return ret;
+    return m_rescnt;
+}
+
+void DocSequenceDb::getTerms(list<string> &terms)
+{
+    if (!m_db)
+	return;
+    m_db->getQueryTerms(terms);
+}
+
+string DocSequenceDb::getAbstract(Rcl::Doc &doc)
+{
+    if (!m_db)
+	return doc.abstract;
+    string abstract;
+    m_db->makeDocAbstract(doc, abstract);
+    return abstract.empty() ? doc.abstract : abstract;
 }
 

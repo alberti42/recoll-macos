@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.17 2006-12-19 12:11:21 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.18 2007-01-19 10:32:39 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -34,14 +34,18 @@ static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.17 2006-12-19 12:11:21 dockes E
 #include "ssearch_w.h"
 #include "refcntr.h"
 #include "textsplit.h"
+#include "wasatorcl.h"
 
-enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2};
+enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2, SST_LANG};
 
 void SSearch::init()
 {
+    // See enum above and keep in order !
     searchTypCMB->insertItem(tr("Any term"));
     searchTypCMB->insertItem(tr("All terms"));
     searchTypCMB->insertItem(tr("File name"));
+    searchTypCMB->insertItem(tr("Query language"));
+    
     queryText->insertStringList(prefs.ssearchHistory);
     queryText->setEditText("");
     connect(queryText->lineEdit(), SIGNAL(returnPressed()),
@@ -76,27 +80,44 @@ void SSearch::startSimpleSearch()
     string u8 = (const char *)queryText->currentText().utf8();
     LOGDEB(("SSearch::startSimpleSearch: [%s]\n", u8.c_str()));
 
-    RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_OR));
     SSearchType tp = (SSearchType)searchTypCMB->currentItem();
+    Rcl::SearchData *sdata = 0;
 
-    if (prefs.ssearchAutoPhrase && (tp == SST_ANY || tp == SST_ALL) &&
-	u8.find_first_of("\"") == string::npos && 
-	TextSplit::countWords(u8) > 1) {
-	sdata->addClause(new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
-						       u8, 0));
-    }
+    if (tp == SST_LANG) {
+	string reason;
+	sdata = wasaStringToRcl(u8, reason);
+	if (sdata == 0) {
+	    QMessageBox::warning(0, "Recoll", tr("Bad query string") +
+				 QString::fromAscii(reason.c_str()));
+	    return;
+	}
+    } else {
+	sdata = new Rcl::SearchData(Rcl::SCLT_OR);
+	if (sdata == 0) {
+	    QMessageBox::warning(0, "Recoll", tr("Out of memory"));
+	    return;
+	}
 
-    switch (tp) {
-    case SST_ANY:
-    default: 
-	sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, u8));
-	break;
-    case SST_ALL:
-	sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, u8));
-	break;
-    case SST_FNM:
-	sdata->addClause(new Rcl::SearchDataClauseFilename(u8));
-	break;
+	// Maybe add automatic phrase? 
+	if (prefs.ssearchAutoPhrase && (tp == SST_ANY || tp == SST_ALL) &&
+	    u8.find_first_of("\"") == string::npos && 
+	    TextSplit::countWords(u8) > 1) {
+	    sdata->addClause(new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
+							   u8, 0));
+	}
+
+	switch (tp) {
+	case SST_ANY:
+	default: 
+	    sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR,u8));
+	    break;
+	case SST_ALL:
+	   sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND,u8));
+	    break;
+	case SST_FNM:
+	    sdata->addClause(new Rcl::SearchDataClauseFilename(u8));
+	    break;
+	}
     }
 
     // Search terms history
@@ -135,7 +156,10 @@ void SSearch::startSimpleSearch()
     for (int index = 0; index < queryText->count(); index++) {
 	prefs.ssearchHistory.push_back(queryText->text(index));
     }
-    emit startSearch(sdata);
+
+
+    RefCntr<Rcl::SearchData> rsdata(sdata);
+    emit startSearch(rsdata);
 }
 
 void SSearch::setAnyTermMode()

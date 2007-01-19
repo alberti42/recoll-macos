@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.19 2007-01-12 09:01:11 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.20 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -125,16 +125,20 @@ int ResList::parnumfromdocnum(int docnum)
     return -1;
 }
 
-// Return doc from current or adjacent result pages
+// Return doc from current or adjacent result pages. We can get called
+// for a document not in the current page if the user browses through
+// results inside a result window (with shift-arrow). This can only
+// result in a one-page change.
 bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 {
+    LOGDEB(("ResList::getDoc: docnum %d m_winfirst %d\n", docnum, m_winfirst));
     if (docnum < 0)
 	return false;
     // Is docnum in current page ? Then all Ok
     if (docnum >= int(m_winfirst) && 
 	docnum < int(m_winfirst + m_curDocs.size())) {
 	doc = m_curDocs[docnum - m_winfirst];
-	goto found;
+	return true;
     }
 
     // Else we accept to page down or up but not further
@@ -148,12 +152,9 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
     if (docnum >= int(m_winfirst) && 
 	docnum < int(m_winfirst + m_curDocs.size())) {
 	doc = m_curDocs[docnum - m_winfirst];
-	goto found;
+	return true;
     }
     return false;
-
- found:
-    return true;
 }
 
 void ResList::keyPressEvent(QKeyEvent * e)
@@ -249,6 +250,7 @@ static string displayableBytes(long size)
 // Fill up result list window with next screen of hits
 void ResList::resultPageNext()
 {
+    // This checks that the RefCntr pseudo-pointer is not holding a null.
     if (m_docSource.getcnt() == 0)
 	return;
 
@@ -258,91 +260,118 @@ void ResList::resultPageNext()
     LOGDEB(("resultPageNext: rescnt %d, winfirst %d\n", resCnt,
 	    m_winfirst));
 
-    // If we are already on the last page, nothing to do:
-    if (m_winfirst >= 0 && 
-	(m_winfirst + prefs.respagesize > resCnt)) {
-	emit nextPageAvailable(false);
-	return;
-    }
-
     bool hasPrev = false;
     if (m_winfirst < 0) {
 	m_winfirst = 0;
     } else {
-	hasPrev = true;
 	m_winfirst += prefs.respagesize;
     }
+    if (m_winfirst)
+	hasPrev = true;
     emit prevPageAvailable(hasPrev);
 
-    bool gotone = false;
+    // Get the next page of results.
+    vector<ResListEntry> respage;
+    int pagelen = m_docSource->getSeqSlice(m_winfirst, 
+					   prefs.respagesize, respage);
+
+    // If page was truncated, there is no next
+    bool hasNext = pagelen == prefs.respagesize;
+    emit nextPageAvailable(hasNext);
+
+    if (pagelen <= 0) {
+	// No results ? This can only happen on the first page or if the
+	// actual result list size is a multiple of the page pref (else
+	// there would have been no Next on the last page)
+	if (m_winfirst) {
+	    // Have already results. Let them show, just disable the
+	    // Next button. We'd need to remove the Next link from the page
+	    // too.
+	    // Restore the m_winfirst value
+	    m_winfirst -= prefs.respagesize;
+	    return;
+	}
+	clear();
+	QString chunk = "<qt><head></head><body><p>";
+	chunk += "<p><font size=+1><b>";
+	chunk += QString::fromUtf8(m_docSource->title().c_str());
+	chunk += "</b></font><br>";
+	chunk += "<a href=\"H-1\">";
+	chunk += tr("Show query details");
+	chunk += "</a><br>";
+	append(chunk);
+	append(tr("<p><b>No results found</b><br>"));
+	if (m_winfirst < 0)
+	    m_winfirst = -1;
+	return;
+    }
+
     clear();
-
-    int last = MIN(resCnt - m_winfirst, prefs.respagesize);
-
     m_curDocs.clear();
 
     // Query term colorization
-    QStyleSheetItem *item = 
-	new QStyleSheetItem(styleSheet(), "termtag" );
+    QStyleSheetItem *item = new QStyleSheetItem(styleSheet(), "termtag" );
     item->setColor("blue");
-    // item->setFontWeight(QFont::Bold);
 
     // Result paragraph format
     string sformat = string(prefs.reslistformat.utf8());
     LOGDEB(("resultPageNext: format: [%s]\n", sformat.c_str()));
 
-    // Insert results if any in result list window. We have to send
-    // the text to the widgets, because we need the paragraph number
-    // each time we add a result paragraph (its diffult and
-    // error-prone to compute the paragraph numbers in parallel). We
-    // would like to disable updates while we're doing this, but
-    // couldn't find a way to make it work, the widget seems to become
-    // confused if appended while updates are disabled
+    // Display list header
+    // We could use a <title> but the textedit doesnt display
+    // it prominently
+    // Note: have to append text in chunks that make sense
+    // html-wise. If we break things up to much, the editor
+    // gets confused. Hence the use of the 'chunk' text
+    // accumulator
+    // Also note that there can be results beyond the estimated resCnt.
+    QString chunk = "<qt><head></head><body><p>";
+
+    chunk += "<font size=+1><b>";
+    chunk += QString::fromUtf8(m_docSource->title().c_str());
+    chunk += ".</b></font>";
+
+    chunk += "&nbsp;&nbsp;&nbsp;";
+
+    if (m_winfirst + pagelen < resCnt) {
+	chunk +=
+	    tr("Documents <b>%1-%2</b> out of at least <b>%3</b> for ")
+	    .arg(m_winfirst+1)
+	    .arg(m_winfirst+pagelen)
+	    .arg(resCnt);
+    } else {
+	chunk += tr("Documents <b>%1-%2</b> for ")
+	    .arg(m_winfirst+1)
+	    .arg(m_winfirst+pagelen);
+    }
+
+    chunk += "<a href=\"H-1\">";
+    chunk += tr("(show query)");
+    chunk += "</a>";
+
+    append(chunk);
+
+    // Insert results in result list window. We have to actually send
+    // the text to the widget (instead of setting the whole at the
+    // end), because we need the paragraph number each time we add a
+    // result paragraph (its diffult and error-prone to compute the
+    // paragraph numbers in parallel). We would like to disable
+    // updates while we're doing this, but couldn't find a way to make
+    // it work, the widget seems to become confused if appended while
+    // updates are disabled
     //      setUpdatesEnabled(false);
-    for (int i = 0; i < last; i++) {
-	string sh;
-	Rcl::Doc doc;
-	int percent;
-	if (!m_docSource->getDoc(m_winfirst + i, doc, &percent, &sh)) {
-	    // Error or end of docs, stop.
-	    break;
-	}
+    for (int i = 0; i < pagelen; i++) {
+
+	int &percent(respage[i].percent);
+	Rcl::Doc &doc(respage[i].doc);
+	string& sh(respage[i].subHeader);
+
 	if (percent == -1) {
 	    percent = 0;
 	    // Document not available, maybe other further, will go on.
 	    doc.abstract = string(tr("Unavailable document").utf8());
 	}
 
-	if (i == 0) {
-	    // Display list header
-	    // We could use a <title> but the textedit doesnt display
-	    // it prominently
-	    // Note: have to append text in chunks that make sense
-	    // html-wise. If we break things up to much, the editor
-	    // gets confused. Hence the use of the 'chunk' text
-	    // accumulator
-	    QString chunk = "<qt><head></head><body><p>";
-
-	    chunk += "<font size=+1><b>";
-	    chunk += QString::fromUtf8(m_docSource->title().c_str());
-	    chunk += ".</b></font>";
-
-	    chunk += "&nbsp;&nbsp;&nbsp;";
-
-	    chunk += tr("Documents <b>%1-%2</b> out of <b>%3</b> for ")
-		.arg(m_winfirst+1)
-		.arg(m_winfirst+last)
-		.arg(resCnt);
-
-	    chunk += "<a href=\"H-1\">";
-	    chunk += tr("(show query)");
-	    chunk += "</a>";
-
-	    append(chunk);
-	}
-	   
-	gotone = true;
-	
 	// Determine icon to display if any
 	string img_name;
 	if (prefs.showicons) {
@@ -373,7 +402,7 @@ void ResList::resultPageNext()
 
 	// Result number
 	char numbuf[20];
-	int docnumforlinks = m_winfirst+1+i;
+	int docnumforlinks = m_winfirst + 1 + i;
 	sprintf(numbuf, "%d", docnumforlinks);
 
 	// Document date: either doc or file modification time
@@ -405,26 +434,16 @@ void ResList::resultPageNext()
 	    sizebuf = displayableBytes(fsize);
 	}
 
-	// Abstract. The docsequence should deal with this as we don't
-	// know if a query is open or if we're displaying
-	// history. OTOH, if the docsequence does it, we're going to
-	// generate a lot of unneeded abstracts for sorted sequences
-	// (for all the queried for but undisplayed entries)
-	string richabst;
 	string abstract;
-	LOGDEB2(("Abstract: clcnt %d prfs.build %d syntabs %d prfs.repl %d\n",
-		m_searchData->clauseCount(), prefs.queryBuildAbstract,
-		doc.syntabs, prefs.queryReplaceAbstract));
-	if (m_searchData->clauseCount() > 0 && prefs.queryBuildAbstract && 
+	if (prefs.queryBuildAbstract && 
 	    (doc.syntabs || prefs.queryReplaceAbstract)) {
-	    rcldb->makeDocAbstract(doc, abstract);
-	    if (abstract.empty())
-		abstract = doc.abstract;
+	    abstract = m_docSource->getAbstract(doc);
 	} else {
 	    abstract = doc.abstract;
 	}
-	plaintorich(abstract, richabst, m_searchData, true);
 
+	string richabst;
+	plaintorich(abstract, richabst, m_searchData, true);
 
 	// Links;
 	string linksbuf;
@@ -439,7 +458,7 @@ void ResList::resultPageNext()
 	    linksbuf += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
 	}
 
-	// Concatenate chunks to build the result list paragraph:
+	// Build the result list paragraph:
 	string result;
 
 	// Subheader: this is used by history
@@ -481,47 +500,27 @@ void ResList::resultPageNext()
 	m_curDocs.push_back(doc);
     }
 
-    bool hasNext = false;
-    if (m_winfirst >= 0 && m_winfirst + prefs.respagesize < resCnt) {
-	hasNext = true;
-    }
-
-    if (gotone) {
-	QString chunk = "<p align=\"center\">";
-	if (hasPrev || hasNext) {
-	    if (hasPrev) {
-		chunk += "<a href=\"p-1\"><b>";
-		chunk += tr("Previous");
-		chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
-	    }
-	    if (hasNext) {
-		chunk += "<a href=\"n-1\"><b>";
-		chunk += tr("Next");
-		chunk += "</b></a>";
-	    }
-	    chunk += "</p>\n";
-	    append(chunk);
+    // Footer
+    chunk = "<p align=\"center\">";
+    if (hasPrev || hasNext) {
+	if (hasPrev) {
+	    chunk += "<a href=\"p-1\"><b>";
+	    chunk += tr("Previous");
+	    chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
 	}
-	append("</body></qt>");
-	ensureCursorVisible();
-    } else {
-	// Restore first in win parameter that we shouln't have incremented
-	QString chunk = "<p><font size=+1><b>";
-	chunk += QString::fromUtf8(m_docSource->title().c_str());
-	chunk += "</b></font><br>";
-	chunk += "<a href=\"H-1\">";
-	chunk += tr("Show query details");
-	chunk += "</a><br>";
+	if (hasNext) {
+	    chunk += "<a href=\"n-1\"><b>";
+	    chunk += tr("Next");
+	    chunk += "</b></a>";
+	}
+	chunk += "</p>\n";
 	append(chunk);
-	append(tr("<p><b>No results found</b><br>"));
-	m_winfirst -= prefs.respagesize;
-	if (m_winfirst < 0)
-	    m_winfirst = -1;
-	hasNext = false;
     }
+    append("</body></qt>");
+
     // Possibly color paragraph of current preview if any
     previewExposed(m_curPvDoc);
-    emit nextPageAvailable(hasNext);
+    ensureCursorVisible();
 }
 
 // Single click in result list use this for document selection, if no
@@ -678,10 +677,7 @@ void ResList::menuCopyURL()
 }
 void ResList::menuExpand()
 {
-    Rcl::Doc doc;
-    if (rcldb && getDoc(m_popDoc, doc)) {
-	emit docExpand(m_popDoc);
-    }
+    emit docExpand(m_popDoc);
 }
 
 QString ResList::getDescription()
