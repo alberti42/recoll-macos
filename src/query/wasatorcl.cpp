@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.4 2007-01-17 14:06:22 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.5 2007-01-19 10:22:06 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifndef TEST_WASATORCL
 
@@ -7,6 +7,20 @@ static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.4 2007-01-17 14:06:22 dockes Ex
 #include "rcldb.h"
 #include "searchdata.h"
 #include "wasatorcl.h"
+
+Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason)
+{
+    StringToWasaQuery parser;
+    WasaQuery *wq = parser.stringToQuery(qs, reason);
+    if (wq == 0) 
+	return 0;
+    Rcl::SearchData *rq = wasaQueryToRcl(wq);
+    if (rq == 0) {
+	reason = "Failed translating wasa query structure to recoll";
+	return 0;
+    }
+    return rq;
+}
 
 Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 {
@@ -148,14 +162,14 @@ int main(int argc, char **argv)
 
 bool runQuery(Rcl::Db &rcldb, const string &qs)
 {
-    StringToWasaQuery parser;
     string reason;
-    WasaQuery *wq = parser.stringToQuery(qs, reason);
-    RefCntr<Rcl::SearchData> rq(wasaQueryToRcl(wq));
-    if (!rq.getptr())
+    RefCntr<Rcl::SearchData> rq(wasaStringToRcl(qs, reason));
+    if (!rq.getptr()) {
+	cerr << "Query string interpretation failed: " << reason << endl;
 	return false;
+    }
 
-    rcldb.setQuery(rq);
+    rcldb.setQuery(rq, Rcl::Db::QO_STEM);
     int offset = 0;
     int limit = 100;
     cout << "Recoll query: " << rq->getDescription() << endl;
