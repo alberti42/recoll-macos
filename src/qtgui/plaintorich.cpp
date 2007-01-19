@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.19 2006-12-11 14:56:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.20 2007-01-19 15:22:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,8 +68,9 @@ class myTextSplitCB : public TextSplitCB {
     // Out: begin and end byte positions of query terms/groups in text
     vector<pair<int, int> > tboffs;  
 
-    myTextSplitCB(const vector<string>& its, vector<vector<string> >&groups, 
-		  vector<int>& slacks) 
+    myTextSplitCB(const vector<string>& its, 
+		  const vector<vector<string> >&groups, 
+		  const vector<int>& slacks) 
 	:  firstTermOcc(1), m_wcount(0), m_groups(groups), m_slacks(slacks)
     {
 	for (vector<string>::const_iterator it = its.begin(); 
@@ -316,16 +317,14 @@ const char *firstTermBeacon = "\xe2\xa0\x91\xe2\x96\x9f\x20\x01\x9a";
 // we return the first term encountered, and the caller will use the
 // editor's find() function to position on it
 bool plaintorich(const string& in, string& out, 
-		 RefCntr<Rcl::SearchData> sdata,
+		 const HiliteData& hdata,
 		 bool noHeader, bool fft)
 {
     Chrono chron;
     out.erase();
-    vector<string> terms;
-    vector<vector<string> > groups;
-    vector<int> slacks;
-
-    sdata->getTerms(terms, groups, slacks);
+    const vector<string>& terms(hdata.terms);
+    const vector<vector<string> >& groups(hdata.groups);
+    const vector<int>& slacks(hdata.gslks);
 
     if (DebugLog::getdbl()->getlevel() >= DEBDEB0) {
 	LOGDEB0(("plaintorich: terms: \n"));
@@ -333,7 +332,7 @@ bool plaintorich(const string& in, string& out,
 	LOGDEB0(("  %s\n", sterms.c_str()));
 	sterms = "\n";
 	LOGDEB0(("plaintorich: groups: \n"));
-	for (vector<vector<string> >::iterator vit = groups.begin(); 
+	for (vector<vector<string> >::const_iterator vit = groups.begin(); 
 	     vit != groups.end(); vit++) {
 	    sterms += vecStringToString(*vit);
 	    sterms += "\n";

@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.10 2007-01-19 10:32:39 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.11 2007-01-19 15:22:50 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -79,9 +79,16 @@ class DocSequence {
     /** Get title for result list */
     virtual string title() {return m_title;}
 
+    /** Get description for underlying query */
+    virtual string getDescription() = 0;
+
     /** Get search terms (for highlighting abstracts). Some sequences
      * may have no associated search terms. Implement this for them. */
-    virtual void getTerms(list<string>& t) {t.clear();}
+    virtual bool getTerms(vector<string>& terms, 
+			  vector<vector<string> >& groups, 
+			  vector<int>& gslks) const {
+	terms.clear(); groups.clear(); gslks.clear(); return true;
+    }
 
  private:
     string m_title;

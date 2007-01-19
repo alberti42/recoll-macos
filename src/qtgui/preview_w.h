@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.7 2006-12-04 09:56:26 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.8 2007-01-19 15:22:50 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #define QTextEdit Q3TextEdit
 #endif
 #include "refcntr.h"
-#include "searchdata.h"
+#include "plaintorich.h"
 
 // We keep a list of data associated to each tab
 class TabData {
@@ -69,10 +69,10 @@ public:
 
     ~Preview(){}
 
-    virtual void setSId(int sid, RefCntr<Rcl::SearchData> sdata) 
+    virtual void setSId(int sid, const HiliteData& hdata) 
     {
 	m_searchId = sid;
-	m_searchData = sdata;
+	m_hData = hdata;
     }
     virtual void closeEvent( QCloseEvent *e );
     virtual bool eventFilter( QObject *target, QEvent *event );
@@ -111,7 +111,7 @@ private:
     bool canBeep;
     list<TabData> tabData;
     QWidget *currentW;
-    RefCntr<Rcl::SearchData> m_searchData;
+    HiliteData m_hData;
     void init();
     virtual void destroy();
     TabData *tabDataForCurrent(); // Return auxiliary data pointer for cur tab

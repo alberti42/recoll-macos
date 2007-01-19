@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.8 2007-01-08 10:01:55 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.9 2007-01-19 15:22:50 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -20,11 +20,8 @@ class Q3PopupMenu;
 #define QTEXTBROWSER Q3TextBrowser
 #endif
 
-#include "rcldb.h"
 #include "docseq.h"
-#include "searchdata.h"
 #include "refcntr.h"
-
 
 class ResList : public QTEXTBROWSER
 {
@@ -40,12 +37,10 @@ class ResList : public QTEXTBROWSER
     // num is inside the current page or its immediate neighbours.
     virtual bool getDoc(int docnum, Rcl::Doc &);
 
-    virtual void setDocSource(RefCntr<DocSequence> source, 
-			      RefCntr<Rcl::SearchData> qdata);
+    virtual void setDocSource(RefCntr<DocSequence> source);
     virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
     virtual QString getDescription(); // Printable actual query performed on db
     virtual int getResCnt(); // Return total result list size
-    virtual RefCntr<Rcl::SearchData> getSearchData() {return m_searchData;}
 
  public slots:
     virtual void resetSearch();
@@ -86,7 +81,6 @@ class ResList : public QTEXTBROWSER
 
  private:
     std::map<int,int>        m_pageParaToReldocnums;
-    RefCntr<Rcl::SearchData> m_searchData;
     RefCntr<DocSequence>     m_docSource;
     std::vector<Rcl::Doc>    m_curDocs;
     int                m_winfirst;

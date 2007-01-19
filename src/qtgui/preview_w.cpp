@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.13 2006-12-20 14:09:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.14 2007-01-19 15:22:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -497,12 +497,12 @@ class LoadThread : public QThread {
 /* A thread to convert to rich text (mark search terms) */
 class ToRichThread : public QThread {
     string &in;
-    RefCntr<Rcl::SearchData> m_searchData;
+    const HiliteData &hdata;
     QString &out;
     int loglevel;
  public:
-    ToRichThread(string &i, RefCntr<Rcl::SearchData> searchData, QString &o) 
-	: in(i), m_searchData(searchData), out(o)
+    ToRichThread(string &i, const HiliteData& hd, QString &o) 
+	: in(i), hdata(hd), out(o)
     {
 	    loglevel = DebugLog::getdbl()->getlevel();
     }
@@ -511,7 +511,7 @@ class ToRichThread : public QThread {
 	DebugLog::getdbl()->setloglevel(loglevel);
 	string rich;
 	try {
-	    plaintorich(in, rich, m_searchData, false, true);
+	    plaintorich(in, rich, hdata, false, true);
 	} catch (CancelExcept) {
 	}
 	out = QString::fromUtf8(rich.c_str(), rich.length());
@@ -599,7 +599,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     bool highlightTerms = fdoc.text.length() < 1000 *1024;
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
-	ToRichThread rthr(fdoc.text, m_searchData, richTxt);
+	ToRichThread rthr(fdoc.text, m_hData, richTxt);
 	rthr.start();
 
 	for (;;prog++) {

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.10 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.11 2007-01-19 15:22:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -119,9 +119,4 @@ bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, int *percent, string *)
 	*percent = (*m_docsp[num]).pc;
     doc = *m_docsp[num];
     return true;
-}
-
-string DocSeqSorted::getAbstract(Rcl::Doc& doc)
-{
-    return m_seq->getAbstract(doc);
 }

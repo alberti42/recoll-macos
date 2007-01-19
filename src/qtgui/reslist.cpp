@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.20 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.21 2007-01-19 15:22:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -85,12 +85,10 @@ void ResList::languageChange()
 }
 
 // Acquire new docsource
-void ResList::setDocSource(RefCntr<DocSequence> docsource, 
-			   RefCntr<Rcl::SearchData> sdt)
+void ResList::setDocSource(RefCntr<DocSequence> docsource)
 {
     m_winfirst = -1;
     m_docSource = docsource;
-    m_searchData = sdt;
     m_curPvDoc = -1;
 
     resultPageNext();
@@ -351,6 +349,9 @@ void ResList::resultPageNext()
 
     append(chunk);
 
+    HiliteData hdata;
+    m_docSource->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+
     // Insert results in result list window. We have to actually send
     // the text to the widget (instead of setting the whole at the
     // end), because we need the paragraph number each time we add a
@@ -443,7 +444,7 @@ void ResList::resultPageNext()
 	}
 
 	string richabst;
-	plaintorich(abstract, richabst, m_searchData, true);
+	plaintorich(abstract, richabst, hdata, true);
 
 	// Links;
 	string linksbuf;
@@ -682,7 +683,7 @@ void ResList::menuExpand()
 
 QString ResList::getDescription()
 {
-    return QString::fromUtf8(m_searchData->getDescription().c_str());
+    return QString::fromUtf8(m_docSource->getDescription().c_str());
 }
 
 /** Show detailed expansion of a query */
@@ -692,7 +693,7 @@ void ResList::showQueryDetails()
     // Also limit the total number of lines. 
     const unsigned int ll = 100;
     const unsigned int maxlines = 50;
-    string query = m_searchData->getDescription();
+    string query = m_docSource->getDescription();
     string oq;
     unsigned int nlines = 0;
     while (query.length() > 0) {

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.23 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.24 2007-01-19 15:22:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -380,8 +380,10 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 	return;
     }
     curPreview = 0;
+    DocSequenceDb *src = 
+	new DocSequenceDb(rcldb, string(tr("Query results").utf8()), sdata);
+    m_docSource = RefCntr<DocSequence>(src);
     m_searchData = sdata;
-    m_docSource = RefCntr<DocSequence>(new DocSequenceDb(rcldb, string(tr("Query results").utf8())));
     setDocSequence();
 }
 
@@ -404,7 +406,7 @@ void RclMain::setDocSequence()
 	docsource = m_docSource;
     }
     m_searchId++;
-    resList->setDocSource(docsource, m_searchData);
+    resList->setDocSource(docsource);
 }
 
 // Open advanced search dialog.
@@ -531,7 +533,9 @@ void RclMain::startPreview(int docnum, int mod)
 				 QMessageBox::NoButton);
 	    return;
 	}
-	curPreview->setSId(m_searchId, resList->getSearchData());
+	HiliteData hdata;
+	m_searchData->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+	curPreview->setSId(m_searchId, hdata);
 	curPreview->setCaption(resList->getDescription());
 	connect(curPreview, SIGNAL(previewClosed(QWidget *)), 
 		this, SLOT(previewClosed(QWidget *)));
@@ -582,8 +586,7 @@ void RclMain::startPreview(Rcl::Doc doc)
 			     QMessageBox::NoButton);
 	return;
     }
-    RefCntr<Rcl::SearchData> searchdata(new Rcl::SearchData(Rcl::SCLT_AND));
-    preview->setSId(0, searchdata);
+    preview->setSId(0, HiliteData());
     connect(preview, SIGNAL(wordSelect(QString)),
 	    this, SLOT(ssearchAddTerm(QString)));
     g_dynconf->enterDoc(fn, doc.ipath);
@@ -868,9 +871,11 @@ void RclMain::showDocHistory()
 
     m_searchId++;
 
-    m_docSource = RefCntr<DocSequence>(new DocSequenceHistory(rcldb, 
-							      g_dynconf, 
-			      string(tr("Document history").utf8())));
+    DocSequenceHistory *src = 
+	new DocSequenceHistory(rcldb, g_dynconf, 
+			       string(tr("Document history").utf8()));
+    src->setDescription((const char *)tr("History data").utf8());
+    m_docSource = RefCntr<DocSequence>(src);
     setDocSequence();
 }
 

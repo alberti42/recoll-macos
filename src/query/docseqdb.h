@@ -16,35 +16,35 @@
  */
 #ifndef _DOCSEQDB_H_INCLUDED_
 #define _DOCSEQDB_H_INCLUDED_
-/* @(#$Id: docseqdb.h,v 1.1 2007-01-19 10:32:39 dockes Exp $  (C) 2004 J.F.Dockes */
-#include <string>
-#include <list>
-#ifndef NO_NAMESPACES
-using std::string;
-using std::list;
-#endif
-
+/* @(#$Id: docseqdb.h,v 1.2 2007-01-19 15:22:50 dockes Exp $  (C) 2004 J.F.Dockes */
 #include "docseq.h"
-namespace Rcl {
-class Db;
-}
+#include "refcntr.h"
+
+#include "searchdata.h"
 
 /** A DocSequence from a Db query (there should be one active for this
-    to make sense */
+    to make sense) */
 class DocSequenceDb : public DocSequence {
  public:
-    DocSequenceDb(Rcl::Db *d, const string &t) : 
-	DocSequence(t), m_db(d), m_rescnt(-1) 
+    DocSequenceDb(Rcl::Db *d, const string &t, RefCntr<Rcl::SearchData> sdata) 
+	: DocSequence(t), m_db(d), m_sdata(sdata), m_rescnt(-1) 
 	{}
     virtual ~DocSequenceDb() {}
     virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string * = 0);
     virtual int getResCnt();
-    virtual void getTerms(list<string>&);
+    virtual bool getTerms(vector<string>& terms, 
+			  vector<vector<string> >& groups, 
+			  vector<int>& gslks) const {
+	return m_sdata.getptr()->getTerms(terms, groups, gslks);
+    }
+
     virtual string getAbstract(Rcl::Doc &doc);
+    virtual string getDescription() {return m_sdata->getDescription();}
 
  private:
-    Rcl::Db *m_db;
-    int      m_rescnt;
+    Rcl::Db                 *m_db;
+    RefCntr<Rcl::SearchData> m_sdata;
+    int                      m_rescnt;
 };
 
 #endif /* _DOCSEQDB_H_INCLUDED_ */

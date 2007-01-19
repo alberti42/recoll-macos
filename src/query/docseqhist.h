@@ -16,20 +16,14 @@
  */
 #ifndef _DOCSEQHIST_H_INCLUDED_
 #define _DOCSEQHIST_H_INCLUDED_
-/* @(#$Id: docseqhist.h,v 1.1 2007-01-19 10:32:39 dockes Exp $  (C) 2004 J.F.Dockes */
-#include <string>
-#include <list>
-#ifndef NO_NAMESPACES
-using std::string;
-using std::list;
-#endif
+/* @(#$Id: docseqhist.h,v 1.2 2007-01-19 15:22:50 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "docseq.h"
 #include "history.h"
+
 namespace Rcl {
-class Db;
+    class Db;
 }
-class RclHistory;
 
 /** A DocSequence coming from the history file. 
  *  History is kept as a list of urls. This queries the db to fetch
@@ -42,12 +36,14 @@ class DocSequenceHistory : public DocSequence {
 
     virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0);
     virtual int getResCnt();
+    virtual string getDescription() {return m_description;}
+    void setDescription(const string& desc) {m_description = desc;}
  private:
     Rcl::Db    *m_db;
     RclHistory *m_hist;
     int         m_prevnum;
     long        m_prevtime;
-
+    string      m_description; // This is just an nls translated 'doc history'
     list<RclDHistoryEntry> m_hlist;
     list<RclDHistoryEntry>::const_iterator m_it;
 };

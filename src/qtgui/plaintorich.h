@@ -16,11 +16,16 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.11 2006-11-30 13:38:44 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.12 2007-01-19 15:22:50 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
-#include "searchdata.h"
+// A data struct to hold words and groups of words to be highlighted
+struct HiliteData {
+    vector<string> terms;
+    vector<vector<string> > groups;
+    vector<int> gslks; // group slacks (number of permitted non-matched words)
+};
 
 /**
  * Transform plain text into qt rich text for the preview window.
@@ -31,13 +36,13 @@
  * 
  * @param in          raw text out of internfile.
  * @param out         rich text output
- * @param terms       list of query terms. These are out of Rcl::Db and dumb
- * @param firstTerm   out: value of the first search term in text.
- * @param frsttocc    out: occurrence of 1st term to look for
+ * @param hdata       terms and groups to be highlighted. These are
+ *                     lowercase and unaccented.
  * @param noHeader    if true don't output header (<qt><title>...)
+ * @param fft         If true mark the first term position in the text
  */
 extern bool plaintorich(const string &in, string &out,
-			RefCntr<Rcl::SearchData> sdata,
+			const HiliteData& hdata,
 			bool noHeader = false,
 			bool fft = false);
 
