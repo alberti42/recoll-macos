@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.9 2007-01-18 12:09:58 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.10 2007-01-19 10:23:26 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -195,7 +195,7 @@ void StringToXapianQ::maybeStemExp(bool nostemexp,
 				   string &sterm)
 {
     LOGDEB2(("maybeStemExp: term [%s] stemlang [%s] nostemexp %d\n", 
-	    term.c_str(), m_stemlang.c_str(), nostemexp));
+	     term.c_str(), m_stemlang.c_str(), nostemexp));
     sterm.erase();
     if (term.empty()) {
 	exp.clear();
@@ -356,9 +356,9 @@ bool StringToXapianQ::translate(const string &iq,
 		    Xapian::Query xq(Xapian::Query::OP_OR, 
 				     exp.begin(), exp.end());
 		    // Give a relevance boost to the original term
-		    if (!sterm.empty()) {
+		    if (exp.size() > 1 && !sterm.empty()) {
 			xq = Xapian::Query(Xapian::Query::OP_OR, 
-					   xq, Xapian::Query(sterm, 10));
+					   xq, Xapian::Query(prefix+sterm, 10));
 		    }
 		    pqueries.push_back(xq);
 		}
