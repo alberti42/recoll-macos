@@ -13,7 +13,7 @@
         </rect>
     </property>
     <property name="caption">
-        <string>Form1</string>
+        <string>Native Viewers</string>
     </property>
     <hbox>
         <property name="name">
