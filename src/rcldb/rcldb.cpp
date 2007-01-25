@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.103 2007-01-19 10:23:26 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.104 2007-01-25 15:47:23 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1419,12 +1419,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	regex_t reg;
 	int errcode;
 	if (typ == ET_REGEXP) {
-	    // Compile regexp. We anchor the input by enclosing it in ^ and $
 	    string mroot = droot;
-	    if (mroot.at(0) != '^')
-		mroot = string("^") + mroot;
-	    if (mroot.at(mroot.length()-1) != '$')
-		mroot += "$";
 	    if ((errcode = regcomp(&reg, mroot.c_str(), 
 				   REG_EXTENDED|REG_NOSUB))) {
 		char errbuf[200];
