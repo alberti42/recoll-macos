@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.35 2007-01-15 13:03:35 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.36 2007-01-25 15:47:45 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -178,7 +178,7 @@
       is normally incremental: documents will only be processed if
       they have been modified. On the first execution, of course, all
       documents will need processing. A full index build can be forced
-      later on by specifying an option to the indexing command
+      later by specifying an option to the indexing command
       (<command>recollindex -z</command>).</para> 
 
       <para>&RCL; indexing can be performed with two different
@@ -486,7 +486,7 @@ fvwm
   </chapter>
 
   <chapter id="rcl.search">
-    <title>Search</title>
+    <title>Searching</title>
 
     <para>The <command>recoll</command> program provides the user
     interface for searching. It is based on the
@@ -510,19 +510,27 @@ fvwm
 	</step>
       </procedure>
 
-      <para>The initial default search mode is <guilabel>Any
-        term</guilabel>. This will look for documents with any of the
-        search terms (the ones with more terms will get better scores). 
-        <guilabel>All terms</guilabel> will ensure
-        that only documents with all the terms will be
-        returned. <guilabel>File name</guilabel> will specifically
-        look for file names, and allows using wildcards
-        (<literal>*</literal>, <literal>?</literal> ,
-        <literal>[]</literal>). </para>
+      <para>The initial default search mode is <guilabel>All
+        terms</guilabel>. This will look for documents containing all
+        of the search terms (the ones with more terms will get better
+        scores). <guilabel>Any term</guilabel> will search for
+        documents where at least one of the terms appear. <guilabel>File
+        name</guilabel> will specifically look for file names.</para>
+
+      <para>The fourth entry (<guilabel>Query Language</guilabel>) is
+      described in <link linkend="rcl.search.lang">its own
+      section</link>.</para> 
+
+      <para>All search modes allow wildcards inside terms
+        (<literal>*</literal>, <literal>?</literal>,
+        <literal>[]</literal>). You may want to have a look at the
+        <link linkend="rcl.search.wildcards">section about wildcards</link>
+        for more information about this.</para>
 
       <para>You can search for exact phrases (adjacent words in a
       given order) by enclosing the input inside double quotes. Ex:
      <literal>"virtual reality"</literal>.</para>
+
       <para>Character case has no influence on search, except that you
       can disable stem expansion for any term by capitalizing it. Ie:
       a search for <literal>floor</literal> will also normally look for 
@@ -537,7 +545,7 @@ fvwm
         text field). Please note, however, that only the search texts
         are remembered, not the mode (all/any/file name).</para>
 
-      <para>Typing <keycap>Esc</keycap> <keycap>Space</keycap>) while
+      <para>Typing <keycap>Esc</keycap> <keycap>Space</keycap> while
         entering a word in the simple search entry will open a window
         with possible completions for the word. The completions are
         extracted from the database.</para>
@@ -568,7 +576,10 @@ fvwm
        tabs in the existing preview window. You can use
        <keycap>Shift</keycap>+Click to force the creation of another
        preview window, which may be useful to view the documents side
-       by side.</para>
+       by side. (You can also browse successive results in a single
+       preview window by typing
+       <keycap>Shift</keycap>+<keycap>ArrowUp/Down</keycap> in the
+       window).</para> 
 
       <para>Clicking the <literal>Edit</literal> link will attempt to 
        start an external viewer. The viewers can be configured through the
@@ -618,19 +629,17 @@ fvwm
 
 	<para>The <guilabel>Preview</guilabel> and
           <guilabel>Edit</guilabel> entries do the same thing as the 
-          corresponding links. The two following entries will copy either
-          an URL or the file path to the clipboard, for pasting into
-          another application.</para>
+          corresponding links.</para>
+
+	<para>The <guilabel>Copy File Name</guilabel> and
+	<guilabel>Copy Url</guilabel> copy the relevant data to the
+	clipboard, for later pasting.</para> 
 
         <para>The <guilabel>Find similar</guilabel> entry will select
           a number of relevant term from the current document and enter
           them into the simple search field. You can then start a simple
           search, with a good chance of finding documents related to the
          current result.</para>
-
-	<para>The <guilabel>Copy File Name</guilabel> and
-	<guilabel>Copy Url</guilabel> copy the relevant data to the
-	clipboard, for later pasting.</para> 
 
         <para>The <guilabel>Parent document</guilabel> entry will
           appear for documents which are not actually files but are
@@ -653,7 +662,9 @@ fvwm
       <literal>Preview</literal> link inside the result list.</para>
 
       <para>Subsequent preview requests for a given search open new
-      tabs in the existing window.</para>
+      tabs in the existing window (except if you hold the
+      <keycap>Shift</keycap> key while clicking which will open a new
+      window for side by side viewing).</para>
       
       <para>Starting another search and requesting a preview will
       create a new preview window. The old one stays open until you
@@ -690,12 +701,93 @@ fvwm
 
     </sect1>
 
+    <sect1 id="rcl.search.lang">
+      <title>The query language</title>
+
+      <para>The query language processor is activated on the
+      simple search entry when the search mode selector is set to
+      <guilabel>Query Language</guilabel>.</para>
+
+      <para>Here follows a sample request that we are going to
+      explain:</para>
+      <programlisting>
+          mime:message/rfc822 author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
+      </programlisting>
+
+      <para>This would search for all email messages with 
+      <replaceable>John Doe</replaceable>
+      appearing as a phrase in the <literal>From:</literal> header,
+      and containing either <replaceable>beatles</replaceable> or
+      <replaceable>lennon</replaceable> and either
+      <replaceable>live</replaceable> or
+      <replaceable>unplugged</replaceable> but not
+      <replaceable>potatoes</replaceable>.</para>
+
+      <para>The first element, <literal>mime:message/rfc822</literal>
+      is a special switch that restricts the results to be email
+      messages. There could be several such switches, which would form
+      a list of allowed types.</para>
+
+      <para>The second element <literal>author:"john doe"</literal> is
+      a phrase search limited to a specific field. Phrase searches are
+      specified as usual by enclosing the words in double quotes. The
+      field specification appears before the colon. &RCL; currently
+      manages the following fields:</para>
+      <itemizedlist>
+	<listitem><para><literal>title</literal>,
+	<literal>subject</literal> or <literal>caption</literal> are
+	synonyms which specify data to be searched for in the
+	document title or subject.</para>
+	</listitem>
+	<listitem><para><literal>author</literal> or
+	<literal>from</literal> for searching the documents originators.</para>
+	</listitem>
+	<listitem><para><literal>keyword</literal> for searching the
+	document specified keywords (few documents actually have any).</para>
+	</listitem>
+      </itemizedlist>
+
+      <para>The query language is currently the only way to use the
+      &RCL; field search capability.</para>
+
+      <para>All elements in the search entry are normally combined
+      with an implicit AND. It is possible to specify that elements be
+      OR'ed instead, as in <replaceable>Beatles</replaceable>
+      <literal>OR</literal> <replaceable>Lennon</replaceable>. The
+      <literal>OR</literal> must be entered literally (capitals), and
+      it has priority over the AND associations:
+      <replaceable>word1</replaceable>
+      <replaceable>word2</replaceable> <literal>OR</literal>
+      <replaceable>word3</replaceable> 
+      means 
+      <replaceable>word1</replaceable> AND 
+      (<replaceable>word2</replaceable> <literal>OR</literal>
+      <replaceable>word3</replaceable>)
+      not 
+      (<replaceable>word1</replaceable> AND
+      <replaceable>word2</replaceable>) <literal>OR</literal>
+      <replaceable>word3</replaceable>. Do not enter explicit
+      parenthesis, they are not supported for now.</para>
+
+      <para>An entry preceded by a <literal>-</literal> specifies a
+      term that should <emphasis>not</emphasis> appear.</para>
+
+      <para>Words inside phrases and capitalized words are not
+      stem-expanded. Wildcards may be used anywhere.</para>
+
+      <para>You can use the <literal>show query</literal> link at the
+      top of the result list to check the exact query which was
+      finally executed by Xapian.</para>
+
+    </sect1>
+
     <sect1 id="rcl.search.complex">
       <title>Complex/advanced search</title>
 
-      <para>The advanced search dialog has fields that will allow a more
-        refined search. It has a number of entry fields, each of which
-        is configurable for the following modes:
+      <para>The advanced search dialog has a number of fields that
+        will allow a more refined search. Each entry field is
+        configurable for the following modes:</para>
+
         <itemizedlist>
 	  <listitem><para>All terms.</para>
 	  </listitem>
@@ -712,16 +804,17 @@ fvwm
 	  <listitem><para>Filename search with wildcards.</para>
 	  </listitem>
 	</itemizedlist>
-       </para>
+
       <para>Additional entry fields can be created by clicking the
       <guilabel>Add clause</guilabel> button.</para>
 
-      <para>All relevant fields will be combined by an implicit AND
-        or OR conjunction. All types of clauses except "phrase" and
-        "near" can accept a mix of single words and phrases enclosed
-        in double quotes. Stemming expansion will be performed for all
-        terms not beginning with a capital letter, except for "phrase"
-        clauses.</para>
+      <para>You can choose that all relevant fields will be combined
+      by either an AND or an OR conjunction. All types of clauses
+      except "phrase" and "near" can accept a mix of single words and
+      phrases enclosed in double quotes. Stemming expansion will be
+      performed for all terms not beginning with a capital letter,
+      except for terms inside "phrase" clauses. Wildcards will be
+      processed everywhere.</para>
 
       <para>Advanced search will also let you search for documents of
        specific mime types (ie: only <literal>text/plain</literal>, or
@@ -764,18 +857,26 @@ fvwm
           <varlistentry>
 	    <term>Wildcard</term>
             <listitem><para>In this mode of operation, you can enter a
-            search string with shell-like wildcards (*, ?). ie:
-            <replaceable>xapi*</replaceable> .</para></listitem>
+            search string with shell-like wildcards (*, ?, []). ie:
+            <replaceable>xapi*</replaceable> would display all index terms
+            beginning with <replaceable>xapi</replaceable>. (More
+            about wildcards <link
+            linkend="rcl.search.wildcards">here</link>).</para></listitem> 
           </varlistentry>
 
           <varlistentry>
 	  <term>Regular expression</term>
 	  <listitem><para>This mode will accept a regular expression
             as input. Example:
-            <replaceable>word[0-9]+</replaceable> . The regular
-            expression is anchored by enclosing in
-            <literal>^</literal> and <literal>$</literal> before
-            execution.</para></listitem>
+            <replaceable>word[0-9]+</replaceable>. The expression is
+            implicitely anchored at the beginning. Ie:
+            <replaceable>press</replaceable> will match
+            <replaceable>pression</replaceable> but not
+            <replaceable>expression</replaceable>. You can use
+            <replaceable>.*press</replaceable> to match the latter,
+            but be aware that this will cause a full index term list
+            scan, which can be quite long.</para>
+	  </listitem>
           </varlistentry>
           <varlistentry>
 
@@ -812,6 +913,53 @@ fvwm
       it into the simple search entry field. You can also cut/paste
       between the result list and any entry field (the end of lines
       will be taken care of).</para>
+
+    </sect1>
+
+    <sect1 id="rcl.search.wildcards">
+      <title>More about wildcards</title>
+      <para>All words entered in &RCL; search fields will be processed
+      for wildcard expansion before the request is finally
+      executed.</para>
+
+      <para>The wildcard characters are:</para>
+
+      <itemizedlist>
+       <listitem><para><literal>*</literal> which matches 0 or more 
+        characters.</para>
+	</listitem>
+	<listitem><para><literal>?</literal> which matches
+           a single character.</para>
+	</listitem>
+        <listitem><para><literal>[]</literal> which allow
+         defining sets of characters to be matched (ex:
+         <literal>[</literal><userinput>abc</userinput><literal>]</literal> 
+          matches a single character which may be 'a' or 'b' or 'c',
+         <literal>[</literal><userinput>0-9</userinput><literal>]</literal>
+         matches any number.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para>You should be aware of a few things before using
+	wildcards.</para>
+
+      <itemizedlist>
+	<listitem><para>Using a wildcard character at the beginning of
+	a word can make for a slow search because &RCL; will have to
+	scan the whole index term list to find the matches.</para>
+	</listitem>
+	<listitem><para>Using a <literal>*</literal> at the end of a
+	word can produce more matches than you would think, and
+	strange search results. You can use the <link
+	linkend="rcl.search.termexplorer">term explorer</link> tool to
+	check what completions exist for a given term. You can also
+	see exactly what search was performed by clicking on the link
+	at the top of the result list. In general, for natural
+	language terms, stem expansion will produce better results
+	than an ending <literal>*</literal> (stem expansion is turned
+	off when any wildcard character appears in the term).</para>
+	</listitem>
+      </itemizedlist>
 
     </sect1>
 
@@ -861,14 +1009,14 @@ fvwm
 
       <para>A typical usage scenario for the multiple index feature
       would be for a system administrator to set up a central index
-      for shared data, that you may choose to search, or not, in
-      addition to your personal data. Of course, there are other
+      for shared data, that you choose to search or not in addition to
+      your personal data. Of course, there are other
       possibilities. There are many cases where you know the subset of
-      files that you want to be searched for a given query, and where
-      restricting the query will much improve the precision of the
-      results. This can also be performed with the directory filter in
-      advanced search, but multiple indexes will have much better
-      performance and may be worth the trouble.</para>
+      files that should be searched, and where narrowing the search
+      can improve the results. You can achieve approximately the same
+      effect with the directory filter in advanced search, but
+      multiple indexes will have much better performance and may be
+      worth the trouble.</para>
 
     </sect1>
 
@@ -1167,10 +1315,10 @@ fvwm
       <filename>/usr/local/recollglobal/xapiandb</filename>).</para>
 
       <para>Once entered, the indexes will appear in the
-	<guilabel>All indexes</guilabel> list, and you can
-	chose which ones you want to use at any moment by transferring
-	them to/from the <guilabel>Active indexes</guilabel>
-	list.</para> 
+	<guilabel>External indexes</guilabel> list, and you can
+	chose which ones you want to use at any moment by checking or
+	unchecking their entries.</para> 
+
       <para>Your main database (the one the current configuration
       indexes to), is always implicitly active. If this is not
       desirable, you can set up your configuration so that it indexes,
@@ -1292,8 +1440,11 @@ fvwm
           </listitem>
         </itemizedlist>
 
-	<para>Text, HTML, mail folders and Openoffice files are
-	processed internally.</para>
+	<para>Text, HTML, mail folders Openoffice and Scribus files
+	are processed internally. Lyx is used to index Lyx files. Many
+	filters need <command>sed</command> and <command>awk</command>.
+	</para>
+
     </sect1>
 
 
