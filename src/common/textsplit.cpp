@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.28 2007-01-18 12:09:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.29 2007-01-25 15:40:55 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -76,11 +76,11 @@ static void setcharclasses()
     for (i = 0; i < strlen(blankspace); i++)
 	charclasses[int(blankspace[i])] = SPACE;
 
-    char seps[] = "!\"$%&()/<=>[\\]^{|}~:;`";
+    char seps[] = "!\"$%&()/<=>\\^{|}~:;`";
     for (i = 0; i  < strlen(seps); i++)
 	charclasses[int(seps[i])] = SPACE;
 
-    char wild[] = "*?";
+    char wild[] = "*?[]";
     for (i = 0; i  < strlen(wild); i++)
 	charclasses[int(wild[i])] = WILD;
 
