@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.8 2007-01-17 13:53:41 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.9 2007-01-25 15:50:54 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -65,7 +65,7 @@ class SearchDataClause;
  */
 class SearchData {
 public:
-    SearchData(SClType tp) : m_tp(tp) {}
+    SearchData(SClType tp) : m_tp(tp), m_haveWildCards(false) {}
     ~SearchData() {erase();}
 
     /** Make pristine */
@@ -73,6 +73,9 @@ public:
 
     /** Is there anything but a file name search in here ? */
     bool fileNameOnly();
+
+    /** Do we have wildcards anywhere apart from filename searches ? */
+    bool haveWildCards() {return m_haveWildCards;}
 
     /** Translate to Xapian query. rcldb knows about the void*  */
     bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
@@ -110,7 +113,7 @@ private:
     // from rcldb after the Xapian::setQuery() call
     string m_description; 
     string m_reason;
-
+    bool   m_haveWildCards;
     /* Copyconst and assignment private and forbidden */
     SearchData(const SearchData &) {}
     SearchData& operator=(const SearchData&) {return *this;};
@@ -118,7 +121,7 @@ private:
 
 class SearchDataClause {
 public:
-    SearchDataClause(SClType tp) : m_tp(tp) {}
+    SearchDataClause(SClType tp) : m_tp(tp), m_parentSearch(0) {}
     virtual ~SearchDataClause() {}
 
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string&) = 0;
@@ -132,11 +135,14 @@ public:
     {return true;}
     virtual SClType getTp() {return m_tp;}
 
+    virtual void setParent(SearchData *p) {m_parentSearch = p;}
     friend class SearchData;
 
 protected:
-    string m_reason;
+    string  m_reason;
     SClType m_tp;
+    SearchData *m_parentSearch;
+    bool    m_haveWildCards;
 };
     
 /**
@@ -147,7 +153,9 @@ class SearchDataClauseSimple : public SearchDataClause {
 public:
     SearchDataClauseSimple(SClType tp, const string& txt, 
 			   const string& fld = "")
-	: SearchDataClause(tp), m_text(txt), m_field(fld), m_slack(0) {}
+	: SearchDataClause(tp), m_text(txt), m_field(fld), m_slack(0) {
+	m_haveWildCards = (txt.find_first_of("*?[") != string::npos);
+    }
 
     virtual ~SearchDataClauseSimple() {}
 
@@ -181,7 +189,10 @@ protected:
 class SearchDataClauseFilename : public SearchDataClauseSimple {
 public:
     SearchDataClauseFilename(const string& txt)
-	: SearchDataClauseSimple(SCLT_FILENAME, txt) {}
+	: SearchDataClauseSimple(SCLT_FILENAME, txt) {
+	// File name searches don't count when looking for wild cards.
+	m_haveWildCards = false;
+    }
     virtual ~SearchDataClauseFilename() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
 };

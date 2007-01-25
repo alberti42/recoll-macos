@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.10 2007-01-19 10:23:26 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.11 2007-01-25 15:50:54 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -94,6 +94,8 @@ bool SearchData::addClause(SearchDataClause* cl)
 	m_reason = "No Negative (AND_NOT) clauses allowed in OR queries";
 	return false;
     }
+    cl->setParent(this);
+    m_haveWildCards = m_haveWildCards || cl->m_haveWildCards;
     m_query.push_back(cl);
     return true;
 }
@@ -142,17 +144,20 @@ class wsQData : public TextSplitCB {
     }
 };
 
-/// Translate user string (ie: term1 "a phrase" term3) into a xapian
-/// query tree
-// This used to be a static function, but we couldn't just keep adding
-// parameters to the interface!
+/** 
+ * Translate a user compound string as may be entered in recoll's
+ * search entry fields, ex: [term1 "a phrase" term3] into a xapian
+ * query tree.
+ * The object keeps track of the query terms and term groups while 
+ * translating.
+ */
 class StringToXapianQ {
 public:
-    StringToXapianQ(Db& db, const string &stmlng) 
-	: m_db(db), m_stemlang(stmlng) 
+    StringToXapianQ(Db& db, const string &stmlng, bool boostUser)
+	: m_db(db), m_stemlang(stmlng), m_doBoostUserTerms(boostUser)
     { }
 
-    bool translate(const string &iq,
+    bool processUserString(const string &iq,
 		   const string &prefix,
 		   string &ermsg,
 		   list<Xapian::Query> &pqueries,
@@ -167,12 +172,12 @@ public:
     }
 
 private:
-    void maybeStemExp(bool dont, const string& term, list<string>& exp, 
+    void stripExpandTerm(bool dont, const string& term, list<string>& exp, 
 		      string& sterm);
 
     Db&           m_db;
     const string& m_stemlang;
-
+    bool          m_doBoostUserTerms;
     // Single terms and phrases resulting from breaking up text;
     vector<string>          m_terms;
     vector<vector<string> > m_groups; 
@@ -181,31 +186,33 @@ private:
 /** Unaccent and lowercase term, possibly expand stem and wildcards
  *
  * @param nostemexp don't perform stem expansion. This is mainly used to
- *   prevent stem expansion inside phrases. 2 other factors can turn
- *   stem expansion off: a null stemlang, resulting from a global user
- *   preference, or a capitalized term.
+ *   prevent stem expansion inside phrases (because the user probably
+ *   does not expect it). This does NOT prevent wild card expansion.
+ *   Other factors than nostemexp can prevent stem expansion: 
+ *   a null stemlang, resulting from a global user preference, a
+ *   capitalized term, or wildcard(s)
  * @param term input single word
  * @param exp output expansion list
  * @param sterm output lower-cased+unaccented version of the input term 
- *              (only if stem expansion actually occured, else empty)
+ *              (only for stem expansion, not wildcards)
  */
-void StringToXapianQ::maybeStemExp(bool nostemexp, 
-				   const string& term, 
-				   list<string>& exp,
-				   string &sterm)
+void StringToXapianQ::stripExpandTerm(bool nostemexp, 
+				      const string& term, 
+				      list<string>& exp,
+				      string &sterm)
 {
-    LOGDEB2(("maybeStemExp: term [%s] stemlang [%s] nostemexp %d\n", 
+    LOGDEB2(("stripExpandTerm: term [%s] stemlang [%s] nostemexp %d\n", 
 	     term.c_str(), m_stemlang.c_str(), nostemexp));
     sterm.erase();
+    exp.clear();
     if (term.empty()) {
-	exp.clear();
 	return;
     }
     // term1 is lowercase and without diacritics
     string term1;
     dumb_string(term, term1);
 
-    bool haswild = term.find_first_of("*?") != string::npos;
+    bool haswild = term.find_first_of("*?[") != string::npos;
 
     // No stemming if there are wildcards or prevented globally.
     if (haswild || m_stemlang.empty())
@@ -228,6 +235,7 @@ void StringToXapianQ::maybeStemExp(bool nostemexp,
 
     if (nostemexp && !haswild) {
 	// Neither stemming nor wildcard expansion: just the word
+	sterm = term1;
 	exp.push_front(term1);
 	exp.resize(1);
     } else {
@@ -279,6 +287,7 @@ void multiply_groups(vector<vector<string> >::const_iterator vvit,
     }
 }
 
+/** Add prefix to all strings in list */
 static void addPrefix(list<string>& terms, const string& prefix)
 {
     if (prefix.empty())
@@ -300,23 +309,27 @@ static void addPrefix(list<string>& terms, const string& prefix)
  * @return the subquery count (either or'd stem-expanded terms or phrase word
  *   count)
  */
-bool StringToXapianQ::translate(const string &iq,
+bool StringToXapianQ::processUserString(const string &iq,
 				const string &prefix,
 				string &ermsg,
 				list<Xapian::Query> &pqueries,
 				int slack, bool useNear)
 {
-    LOGDEB2(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
+    LOGDEB(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
     ermsg.erase();
     m_terms.clear();
     m_groups.clear();
 
-    // Split into words and phrases (word1 word2 "this is a phrase"):
+    // Split input into user-level words and double-quoted phrases:
+    // word1 word2 "this is a phrase". The text splitter may still
+    // decide that the resulting "words" are really phrases, this
+    // depends on separators: [paul@dom.net] would still be a word
+    // (span), but [about:me] will probably be handled as a phrase.
     list<string> phrases;
     stringToStrings(iq, phrases);
 
-    // Then process each word/phrase: split into terms and transform
-    // into appropriate Xapian Query
+    // Process each element: textsplit into terms, handle stem/wildcard 
+    // expansion and transform into an appropriate Xapian::Query
     try {
 	for (list<string>::iterator it = phrases.begin(); 
 	     it != phrases.end(); it++) {
@@ -340,32 +353,43 @@ bool StringToXapianQ::translate(const string &iq,
 		splitDataS.terms.size() != splitDataW.terms.size())
 		splitData = &splitDataW;
 
-	    LOGDEB1(("strToXapianQ: splitter term count: %d\n", 
+	    LOGDEB(("strToXapianQ: splitter term count: %d\n", 
 		     splitData->terms.size()));
-	    switch(splitData->terms.size()) {
+	    switch (splitData->terms.size()) {
 	    case 0: continue;// ??
-	    case 1: // Not a real phrase: one term
+	    case 1: 
+		// Not a real phrase: one term. Still may be expanded
+		// (stem or wildcard)
 		{
 		    string term = splitData->terms.front();
 		    list<string> exp;  
 		    string sterm;
-		    maybeStemExp(false, term, exp, sterm);
+		    stripExpandTerm(false, term, exp, sterm);
 		    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
 		    // Push either term or OR of stem-expanded set
 		    addPrefix(exp, prefix);
 		    Xapian::Query xq(Xapian::Query::OP_OR, 
 				     exp.begin(), exp.end());
-		    // Give a relevance boost to the original term
-		    if (exp.size() > 1 && !sterm.empty()) {
-			xq = Xapian::Query(Xapian::Query::OP_OR, 
-					   xq, Xapian::Query(prefix+sterm, 10));
+
+		    // If sterm is not null, give a relevance boost to
+		    // the original term. We do this even if no
+		    // expansion occurred (else the non-expanded terms
+		    // in a term list would end-up with even less
+		    // wqf). This does not happen if there are
+		    // wildcards anywhere in the search.
+		    if (m_doBoostUserTerms && !sterm.empty()) {
+			xq = Xapian::Query(Xapian::Query::OP_OR, xq, 
+					   Xapian::Query(prefix+sterm, 10));
 		    }
 		    pqueries.push_back(xq);
 		}
 		break;
 
 	    default:
-		// Phrase/near
+		// Phrase/near: transform into a PHRASE or NEAR xapian
+		// query, the element of which can themselves be OR
+		// queries if the terms get expanded by stemming or
+		// wildcards (we don't do stemming for PHRASE though)
 		Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
 		Xapian::Query::OP_PHRASE;
 		list<Xapian::Query> orqueries;
@@ -380,8 +404,7 @@ bool StringToXapianQ::translate(const string &iq,
 			true : false;
 		    string sterm;
 		    list<string>exp;
-		    maybeStemExp(nostemexp, *it, exp, sterm);
-
+		    stripExpandTerm(nostemexp, *it, exp, sterm);
 		    groups.push_back(vector<string>(exp.begin(), exp.end()));
 		    addPrefix(exp, prefix);
 		    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
@@ -466,8 +489,15 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
     if (!m_field.empty())
 	prefix = fieldToPrefix(m_field);
     list<Xapian::Query> pqueries;
-    StringToXapianQ tr(db, stemlang);
-    if (!tr.translate(m_text, prefix, m_reason, pqueries))
+
+    // We normally boost the original term in the stem expansion list. Don't
+    // do it if there are wildcards anywhere, this would skew the results.
+    bool doBoostUserTerm = 
+	(m_parentSearch && !m_parentSearch->haveWildCards()) || 
+	(m_parentSearch == 0 && !m_haveWildCards);
+
+    StringToXapianQ tr(db, stemlang, doBoostUserTerm);
+    if (!tr.processUserString(m_text, prefix, m_reason, pqueries))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
@@ -496,6 +526,7 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
 bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p, 
 					 const string& stemlang)
 {
+    LOGDEB(("SearchDataClauseDist::toNativeQuery\n"));
     m_terms.clear();
     m_groups.clear();
 
@@ -509,12 +540,24 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     if (!m_field.empty())
 	prefix = fieldToPrefix(m_field);
 
-    // Use stringToXapianQueries to lowercase and simplify the phrase
-    // terms etc. The result should be a single element list
+    // We normally boost the original term in the stem expansion list. Don't
+    // do it if there are wildcards anywhere, this would skew the results.
+    bool doBoostUserTerm = 
+	(m_parentSearch && !m_parentSearch->haveWildCards()) || 
+	(m_parentSearch == 0 && !m_haveWildCards);
+
+    // We produce a single phrase out of the user entry (there should be
+    // no dquotes in there), then use stringToXapianQueries() to
+    // lowercase and simplify the phrase terms etc. This will result
+    // into a single (complex) Xapian::Query.
+    if (m_text.find_first_of("\"") != string::npos) {
+	LOGDEB(("Double quotes inside phrase/near field\n"));
+	return false;
+    }
     string s = string("\"") + m_text + string("\"");
-    bool useNear = m_tp == SCLT_NEAR;
-    StringToXapianQ tr(db, stemlang);
-    if (!tr.translate(s, prefix, m_reason, pqueries, m_slack, useNear))
+    bool useNear = (m_tp == SCLT_NEAR);
+    StringToXapianQ tr(db, stemlang, doBoostUserTerm);
+    if (!tr.processUserString(s, prefix, m_reason, pqueries, m_slack, useNear))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseDist: resolved to null query\n"));
