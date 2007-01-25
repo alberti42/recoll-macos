@@ -177,11 +177,11 @@
     <name>Main</name>
     <message>
         <source>Configuration problem: </source>
-        <translation>Problème de configuration: </translation>
+        <translation>Problemi di configurazione:  </translation>
     </message>
     <message>
         <source>No db directory in configuration</source>
-        <translation>Répertoire de la base de données non défini dans la configuration</translation>
+        <translation>Nessuna directory per il DB di base nella configurazione</translation>
     </message>
     <message>
         <source>Cannot create temporary directory</source>
@@ -189,16 +189,17 @@
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation>Impossibile aprire il database in(sp)</translation>
+        <translation>Impossibile aprire il database in </translation>
     </message>
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
-        <translation>Click Cancel se vuoi editare il file di configurazione prima di iniziare a costruire l&apos;indice, oppure OK per procedere.</translation>
+        <translation>
+Click Cancel se vuoi editare il file di configurazione prima di iniziare a costruire l&apos;indice, oppure OK per procedere.</translation>
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation>Problema di configurazione (dynconf)</translation>
+        <translation>Problema di configurazione (dynconf</translation>
     </message>
 </context>
 <context>
@@ -245,7 +246,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Can&apos;t turn doc into internal rep for </source>
-        <translation>Impossibile creare una rappresentazione interna per  (sp)</translation>
+        <translation>Impossibile creare una rappresentazione interna per  </translation>
     </message>
     <message>
         <source>Creating preview text</source>
@@ -331,7 +332,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>No external viewer configured for mime type </source>
-        <translation>Pas de visualiseur défini pour le type mime </translation>
+        <translation>Pas de visualiseur défini pour le type mime  </translation>
     </message>
     <message>
         <source>Executing: [</source>
@@ -343,7 +344,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Cannot access document file: </source>
-        <translation>Impossible d&apos;accéder au fichier du document: </translation>
+        <translation>Impossible d&apos;accéder au fichier du document:  </translation>
     </message>
     <message>
         <source>Preview</source>
@@ -869,7 +870,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Metti la parola da cercare qui. Premi ESC SPC per completarla..</translation>
+        <translation>Metti la parola da cercare qui. Premi ESC SPC per completarla.</translation>
     </message>
 </context>
 <context>
@@ -981,7 +982,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <name>SpellBase</name>
     <message>
         <source>Term Explorer</source>
-        <translation>Esplora indice</translation>
+        <translation>Terminale esplorazione</translation>
     </message>
     <message>
         <source>Enter word to expand</source>
@@ -1005,7 +1006,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Term</source>
-        <translation>Termine</translation>
+        <translation>Terminale</translation>
     </message>
     <message>
         <source>Count</source>
@@ -1408,6 +1409,7 @@ Può essere lento per grossi documenti..</translation>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
         <translation>Una ricerca per [vino rosso] (2 parole) sarà completata come [vino O rosso O (vino FRASE 2 rosso)].&lt;br&gt;
+
 Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattamente come sono stati scritti.</translation>
     </message>
     <message>
