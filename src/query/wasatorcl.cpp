@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.5 2007-01-19 10:22:06 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.6 2007-01-25 15:45:44 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifndef TEST_WASATORCL
 
@@ -53,7 +53,9 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	case WasaQuery::OP_EXCL:
 	    // Note: have to add dquotes which will be translated to
 	    // phrase if there are several words in there. Not pretty
-	    // but should work
+	    // but should work. If there is actually a single
+	    // word, it will not be taken as a phrase, and
+	    // stem-expansion will work normally
 	    sdata->addClause
 		(new Rcl::SearchDataClauseSimple(Rcl::SCLT_EXCL, 
 						 string("\"") + 
@@ -68,7 +70,7 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 		WasaQuery::subqlist_t::iterator orit;
 		for (orit = (*it)->m_subs.begin(); 
 		     orit != (*it)->m_subs.end(); orit++) {
-		    orvalue += string("\"") + (*orit)->m_value + "\"";
+		    orvalue += string("\"") + (*orit)->m_value + "\" ";
 		}
 		sdata->addClause
 		    (new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, 
