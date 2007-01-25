@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.18 2007-01-19 10:32:39 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.19 2007-01-25 15:46:38 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.18 2007-01-19 10:32:39 dockes E
 #include "textsplit.h"
 #include "wasatorcl.h"
 
-enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2, SST_LANG};
+enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2, SST_LANG = 3};
 
 void SSearch::init()
 {
@@ -98,9 +98,10 @@ void SSearch::startSimpleSearch()
 	    return;
 	}
 
-	// Maybe add automatic phrase? 
+	// Maybe add automatic phrase ? For ALL and ANY, and not if
+	// there is already a phrase or wildcard terms.
 	if (prefs.ssearchAutoPhrase && (tp == SST_ANY || tp == SST_ALL) &&
-	    u8.find_first_of("\"") == string::npos && 
+	    u8.find_first_of("\"*[]?") == string::npos && 
 	    TextSplit::countWords(u8) > 1) {
 	    sdata->addClause(new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
 							   u8, 0));
