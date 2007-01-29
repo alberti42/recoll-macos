@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.11 2007-01-25 15:50:54 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.12 2007-01-29 13:51:08 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -454,9 +454,15 @@ static string fieldToPrefix(const string& i_field)
 	fldToPrefs["title"] = "S";
 	fldToPrefs["caption"] = "S";
 	fldToPrefs["subject"] = "S";
+
 	fldToPrefs["author"] = "A";
+	fldToPrefs["creator"] = "A";
 	fldToPrefs["from"] = "A";
+
 	fldToPrefs["keyword"] = "K";
+	fldToPrefs["tag"] = "K";
+	fldToPrefs["keywords"] = "K";
+	fldToPrefs["tags"] = "K";
     }
     string fld(i_field); 
     stringtolower(fld);
@@ -501,7 +507,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
-	return true;
+	return false;
     }
     tr.getTerms(m_terms, m_groups);
     *qp = Xapian::Query(op, pqueries.begin(), pqueries.end());
