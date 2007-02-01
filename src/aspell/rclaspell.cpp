@@ -1,6 +1,6 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.6 2006-11-30 13:38:43 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.7 2007-02-01 15:01:08 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
@@ -11,6 +11,8 @@ static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.6 2006-11-30 13:38:43 dockes Ex
 #include <unistd.h>
 #include <dlfcn.h>
 #include <iostream>
+
+#include <vector>
 
 #include ASPELL_INCLUDE
 
@@ -115,21 +117,39 @@ bool Aspell::init(string &reason)
 	return false;
     }
 
-    // For now, the aspell library has to live under the same prefix as the 
+    // We first look for the aspell library in libdir, and also try to
+    // be clever with ASPELL_PROG.
+    vector<string> libdirs;
+    libdirs.push_back(LIBDIR);
+#ifdef ASPELL_PROG
+    // The aspell library has to live under the same prefix as the 
     // aspell program.
-    string aspellPrefix = path_getfather(path_getfather(m_data->m_exec));
-    string libbase = path_cat(aspellPrefix, "lib");
-    libbase = path_cat(libbase, "libaspell");
-    string lib;
-    reason = "Could not open shared library [";
-    for (unsigned int i = 0; i < nlibsuffs; i++) {
-      lib = libbase + aspell_lib_suffixes[i];
-      reason += lib + "]";
-      if ((m_data->m_handle = dlopen(lib.c_str(), RTLD_LAZY)) != 0) {
-	reason.erase();
-	break;
-      }
+    {
+	string aspellPrefix = path_getfather(path_getfather(m_data->m_exec));
+	// This would probably require some more tweaking on solaris/irix etc.
+	string dir = sizeof(long) > 4 ? "lib64" : "lib";
+	string libaspell = path_cat(aspellPrefix, dir);
+	if (libaspell != LIBDIR)
+	    libdirs.push_back(libaspell);
     }
+#endif
+
+    reason = "Could not open shared library ";
+    for (vector<string>::iterator it = libdirs.begin(); 
+	 it != libdirs.end(); it++) {
+	string libbase = path_cat(*it, "libaspell");
+	string lib;
+	for (unsigned int i = 0; i < nlibsuffs; i++) {
+	    lib = libbase + aspell_lib_suffixes[i];
+	    reason += string("[") + lib + "] ";
+	    if ((m_data->m_handle = dlopen(lib.c_str(), RTLD_LAZY)) != 0) {
+		reason.erase();
+		goto found;
+	    }
+	}
+    }
+    
+ found:
     if (m_data->m_handle == 0) {
       reason += string(" : ") + dlerror();
       return false;

@@ -1,3 +1,6 @@
+# @(#$Id: localdefs.in,v 1.12 2007-02-01 15:01:08 dockes Exp $  (C) 2006 J.F.Dockes
+
+# 'Make' definitions which depend on local configuration.
 
 LIBXAPIAN=@LIBXAPIAN@
 XAPIANCXXFLAGS=@XAPIANCXXFLAGS@
@@ -13,10 +16,15 @@ X_LIBS=@X_LIBS@
 X_EXTRA_LIBS=@X_EXTRA_LIBS@
 
 prefix = @prefix@
+exec_prefix = @exec_prefix@
 datadir = @datadir@
+libdir = @libdir@
+
 RECOLL_DATADIR = ${datadir}/recoll
 
 LOCALCXXFLAGS = $(INCICONV) $(XAPIANCXXFLAGS) $(X_CFLAGS) \
-	      -DRECOLL_DATADIR=\"$(RECOLL_DATADIR)\" @DEFS@
+	      -DRECOLL_DATADIR=\"$(RECOLL_DATADIR)\" \
+	      -DLIBDIR=\"$(libdir)\" \
+	      @DEFS@
 
 CXXFLAGS = -g -O2 -Wall -Wno-unused 
