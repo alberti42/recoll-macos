@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.5 2006-11-13 08:49:57 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.6 2007-02-01 12:43:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -18,8 +18,9 @@ using namespace std;
 #include "rclconfig.h"
 #include "rcldb.h"
 #include "rclinit.h"
-#include "docseq.h"
+#include "docseqdb.h"
 #include "pathut.h"
+#include "searchdata.h"
 
 #include "plaintorich.h"
 
@@ -96,11 +97,12 @@ void RecollProtocol::get(const KURL & url)
 
     QString path = url.path();
     fprintf(stderr, "RecollProtocol::get:path [%s]\n", path.latin1());
-
-    Rcl::SearchData sdata;
-
     QCString u8 =  path.utf8();
-    sdata.orwords = u8;
+
+    RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_OR));
+    sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 
+						    (const char *)u8));
+
     if (!m_rcldb->setQuery(sdata, Rcl::Db::QO_STEM, "english")) {
 	m_reason = "Internal Error: setQuery failed";
 	outputError(m_reason.c_str());
@@ -111,7 +113,7 @@ void RecollProtocol::get(const KURL & url)
     if (m_docsource)
 	delete m_docsource;
 
-    m_docsource = new DocSequenceDb(m_rcldb, "Query results");
+    m_docsource = new DocSequenceDb(m_rcldb, "Query results", sdata);
 
     QByteArray output;
     QTextStream os(output, IO_WriteOnly );

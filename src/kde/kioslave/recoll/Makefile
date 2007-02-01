@@ -7,7 +7,7 @@ DEPS_CXXFLAGS =  -MT pop3.lo -MD -MP -MF .deps/pop3.Tpo
 
 INC_CXXFLAGS = -I. -I/usr/local/include -I/usr/X11R6/include \
 	     -I$(depth)/common -I$(depth)/query -I$(depth)/utils \
-	     -I$(depth)/qtgui
+	     -I$(depth)/qtgui -I$(depth)/rcldb
 
 PIC_CXXFLAGS = -fPIC -DPIC
 DEBUG_CXXFLAGS = -DNDEBUG -DNO_DEBUG -O2 -O
@@ -23,7 +23,7 @@ LDFLAGS = -rpath=/usr/lib:/usr/local/lib \
 	-Wl,-export-dynamic -Wl,-soname -Wl,kio_recoll.so
 THREAD_LDFLAGS = -pthread
 
-kio_recoll.so : kio_recoll.o piclib/librcl.a
+kio_recoll.so : kio_recoll.o libpic
 	c++ -shared $(LDFLAGS) $(THREAD_LDFLAGS) \
 	    -Wl,--no-undefined \
 	    kio_recoll.o piclib/librcl.a \
@@ -39,7 +39,9 @@ kio_recoll.o : kio_recoll.cpp kio_recoll.h
 	$(THREAD_CXXFLAGS) \
 	-o kio_recoll.o
 
-piclib/librcl.a:
-	cd piclib;make
+libpic:
+	cd piclib;test -f Makefile || depth=$(depth)/.. sh $(depth)/../lib/mkMake
+	cd piclib;$(MAKE) CXXFLAGS="$(CXXFLAGS) $(PIC_CXXFLAGS)" \
+	   CFLAGS="$(CFLAGS) $(PIC_CXXFLAGS)"
 
-.PHONY: all
+.PHONY: all libpic
