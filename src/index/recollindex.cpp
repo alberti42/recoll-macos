@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.30 2006-12-24 07:40:26 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.31 2007-02-02 10:09:10 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,7 @@ using namespace std;
 #include "smallut.h"
 #include "pathut.h"
 #include "rclmon.h"
+#include "x11mon.h"
 
 // Globals for exit cleanup
 ConfIndexer *confindexer;
@@ -353,6 +354,10 @@ int main(int argc, const char **argv)
 	    LOGDEB(("recollindex: sleeping %d\n", sleepsecs));
 	    sleep(sleepsecs);
 	}
+	// Check that x11 did not go away while we were sleeping.
+	if (!(op_flags & OPT_x) && !x11IsAlive())
+	    exit(0);
+
 	confindexer = new ConfIndexer(config, &updater);
 	confindexer->index(rezero);
 	delete confindexer;
