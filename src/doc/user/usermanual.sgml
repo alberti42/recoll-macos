@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.37 2007-02-02 10:05:07 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.38 2007-02-02 10:27:44 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1688,7 +1688,8 @@ fvwm
                names of files or directories that should be completely
                ignored. The list defined in the default file is: </para>
 <programlisting>
-*~ #* bin CVS  Cache caughtspam  tmp
+skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
+	     *~ recollrc
 </programlisting>
               <para>The list can be redefined for sub-directories, but is only
                actually changed for the top level ones in
@@ -1708,6 +1709,27 @@ fvwm
                 <filename>~/.thunderbird</filename> or
                 <filename>~/.evolution</filename> in
                 <literal>topdirs</literal>.</para> 
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>skippedPaths</literal> and
+             <literal>daemSkippedPaths</literal> </term>
+            <listitem>
+              <para>A space-separated list of patterns for
+               <emphasis>paths</emphasis> of files or directories that should be skipped.
+               There is no default in the sample configuration file,
+               but the code always adds the configuration and database
+               directories in there.</para>
+	      <para><literal>skippedPaths</literal> is used both by
+	      batch and real time
+	      indexing. <literal>daemSkippedPaths</literal> can be
+	      used to specify things that should be indexed at
+	      startup, but not monitored.</para>
+	      <para>Example of use for skipping text files only in a
+	      specific directory:</para>
+	      <programlisting>
+skippedPaths = ~/somedir/*.txt
+              </programlisting>
             </listitem>
           </varlistentry>
 
