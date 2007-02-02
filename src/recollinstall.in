@@ -76,8 +76,6 @@ ${STRIP} ${bindir}/recoll ${bindir}/recollindex
 
 ${INSTALL} -m 0755 filters/rcl* ${datadir}/recoll/filters/ || exit 1
 
-# Clean up possible old filters in examples
-rm -f ${datadir}/recoll/examples/rcl*
 ${INSTALL} -m 0444 \
 	   sampleconf/mimeconf \
 	   sampleconf/mimeview \
