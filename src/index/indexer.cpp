@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.50 2006-12-21 09:22:31 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.51 2007-02-02 10:12:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -82,10 +82,7 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 	m_updater->status.dbtotdocs = m_db.docCnt();
     }
 
-    // Always add dbdir and confdir to skipped paths.
-    m_walker.setSkippedPaths(list<string>());
-    m_walker.addSkippedPath(m_config->getConfDir());
-    m_walker.addSkippedPath(m_dbdir);
+    m_walker.setSkippedPaths(m_config->getSkippedPaths());
 
     for (list<string>::const_iterator it = topdirs->begin();
 	 it != topdirs->end(); it++) {

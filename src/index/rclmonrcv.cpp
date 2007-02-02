@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.9 2006-12-21 09:22:31 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.10 2007-02-02 10:12:58 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -128,13 +128,18 @@ void *rclMonRcvRun(void *q)
 
     // Walk the directory trees to add watches
     FsTreeWalker walker;
-    walker.addSkippedPath(queue->getConfig()->getConfDir());
+    walker.setSkippedPaths(queue->getConfig()->getDaemSkippedPaths());
     WalkCB walkcb(queue->getConfig(), mon, queue);
     for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	queue->getConfig()->setKeyDir(*it);
-	// Adjust the skipped names according to config, and add the dbdir to
-	// skipped paths
+	// Adjust the skipped names according to config
 	walker.setSkippedNames(queue->getConfig()->getSkippedNames());
+	// Add the dbdir to skipped paths. Note that adding the dbdir
+	// is probably not useful as we'll probably never have
+	// multiple dbs per config file, and the global dbdir is
+	// included by
+	// config->getSkippedPaths(). Still, better to be safe here as
+	// config->including dbdir in the walk will get us into a loop
 	walker.addSkippedPath(queue->getConfig()->getDbDir());
 	LOGDEB(("rclMonRcvRun: walking %s\n", it->c_str()));
 	walker.walk(*it, walkcb);

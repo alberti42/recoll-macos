@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.30 2006-12-20 13:12:49 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.31 2007-02-02 10:12:58 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -81,6 +81,13 @@ class RclConfig {
 
     /** Get list of skipped names for current keydir */
     list<string> getSkippedNames();
+
+    /** Get list of skipped paths patterns. Doesn't depend on the keydir */
+    list<string> getSkippedPaths();
+
+    /** Get list of skipped paths patterns, daemon version (may add some)
+	Doesn't depend on the keydir */
+    list<string> getDaemSkippedPaths();
 
     /** 
      * Check if file name should be ignored because of suffix

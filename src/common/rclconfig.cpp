@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.40 2006-12-20 13:12:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.41 2007-02-02 10:12:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -436,7 +436,7 @@ string RclConfig::getDbDir()
 	}
     }
     LOGDEB1(("RclConfig::getDbDir: dbdir: [%s]\n", dbdir.c_str()));
-    return dbdir;
+    return path_canon(dbdir);
 }
 
 list<string> RclConfig::getSkippedNames()
@@ -446,16 +446,46 @@ list<string> RclConfig::getSkippedNames()
     if (getConfParam("skippedNames", skipped)) {
 	stringToStrings(skipped, skpl);
     }
-    // If current keydir is dbdir's ancestor, add dbdir name to skipped
-    // This is mainly for the real-time monitor that will otherwise go
-    // into a loop
-    // We'd prefer to do it for the direct ancestor only, but getSkippedNames()
-    // is only called for the topdirs, so this doesn't work
-    string kd = path_canon(getKeyDir());
-    string dbd = path_canon(getDbDir());
-    if (dbd.find(kd) == 0) {
-	skpl.push_back(path_getsimple(dbd));
+    return skpl;
+}
+
+list<string> RclConfig::getSkippedPaths()
+{
+    list<string> skpl;
+    string skipped;
+    if (getConfParam("skippedPaths", skipped)) {
+	stringToStrings(skipped, skpl);
     }
+    // Always add the dbdir and confdir to the skipped paths
+    skpl.push_back(getDbDir());
+    skpl.push_back(getConfDir());
+    for (list<string>::iterator it = skpl.begin(); it != skpl.end(); it++) {
+	*it = path_tildexpand(*it);
+	*it = path_canon(*it);
+    }
+    skpl.sort();
+    skpl.unique();
+    return skpl;
+}
+
+list<string> RclConfig::getDaemSkippedPaths()
+{
+    list<string> skpl = getSkippedPaths();
+
+    list<string> dskpl;
+    string skipped;
+    if (getConfParam("daemSkippedPaths", skipped)) {
+	stringToStrings(skipped, dskpl);
+    }
+
+    for (list<string>::iterator it = dskpl.begin(); it != dskpl.end(); it++) {
+	*it = path_tildexpand(*it);
+	*it = path_canon(*it);
+    }
+    dskpl.sort();
+
+    skpl.merge(dskpl);
+    skpl.unique();
     return skpl;
 }
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.10 2006-12-21 09:22:31 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.11 2007-02-02 10:12:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -90,11 +90,12 @@ bool FsTreeWalker::setSkippedNames(const list<string> &patterns)
     return true;
 }
 
-bool FsTreeWalker::addSkippedPath(const string& path)
+bool FsTreeWalker::addSkippedPath(const string& ipath)
 {
+    string path = path_canon(ipath);
     if (find(data->skippedPaths.begin(), 
 	     data->skippedPaths.end(), path) == data->skippedPaths.end())
-	data->skippedPaths.push_back(path_canon(path));
+	data->skippedPaths.push_back(path);
     return true;
 }
 bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
@@ -181,16 +182,16 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 		data->logsyserr("stat", fn);
 		continue;
 	    }
-	    if (S_ISDIR(st.st_mode)) {
-		if (!data->skippedPaths.empty()) {
-		    list<string>::const_iterator it;
-		    for (it = data->skippedPaths.begin(); 
-			 it != data->skippedPaths.end(); it++) {
-			if (fn == *it)
-			    goto skip;
-		    }
+	    if (!data->skippedPaths.empty()) {
+		list<string>::const_iterator it;
+		for (it = data->skippedPaths.begin(); 
+		     it != data->skippedPaths.end(); it++) {
+		    if (fnmatch(it->c_str(), fn.c_str(), FNM_PATHNAME) == 0) 
+			goto skip;
 		}
+	    }
 
+	    if (S_ISDIR(st.st_mode)) {
 		if (data->options & FtwNoRecurse) {
 		    status = cb.processone(fn, &st, FtwDirEnter);
 		} else {
