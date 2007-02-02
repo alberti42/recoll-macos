@@ -122,7 +122,7 @@
     </message>
     <message>
         <source>Enter top directory for search</source>
-        <translation>Scrivi la directory iniziale per la ricerca</translation>
+        <translation>Scrivi la cartella iniziale per la ricerca</translation>
     </message>
     <message>
         <source>Browse</source>
@@ -130,7 +130,7 @@
     </message>
     <message>
         <source>Restrict results to files in subtree:</source>
-        <translation type="unfinished">Limita i risultati alla sotto-directiry:</translation>
+        <translation type="unfinished">Limita i risultati alla sotto-cartella: </translation>
     </message>
     <message>
         <source>Start Search</source>
@@ -146,7 +146,7 @@
     </message>
     <message>
         <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation>Tuutti i campi non vuoti saranno combinati con O e E.Le scelte &lt;br&gt;&quot;Qualsiasi&quot;, &quot;Tuttii&quot;, o &quot;Nessuno&quot; possono accettare un insieme di parole, e frasi racchiuse tra virgolette (&quot;).&lt;br&gt;I campi senza parole saranno ignorati.</translation>
+        <translation>Tutti i campi non vuoti saranno combinati con O e E.Le scelte &lt;br&gt;&quot;Qualsiasi&quot;, &quot;Tutti&quot;, o &quot;Nessuno&quot; possono accettare un insieme di parole, e frasi racchiuse tra virgolette (&quot;).&lt;br&gt;I campi senza parole saranno ignorati.</translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -181,7 +181,7 @@
     </message>
     <message>
         <source>No db directory in configuration</source>
-        <translation>Nessuna directory per il DB di base nella configurazione</translation>
+        <translation>Nessuna cartella per il DB di base nella configurazione</translation>
     </message>
     <message>
         <source>Cannot create temporary directory</source>
@@ -258,7 +258,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation>IImpossibile creare directory temporanea</translation>
+        <translation>IImpossibile creare cartella temporanea</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -309,7 +309,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation type="unfinished">Rispetta &amp;Maiuscole</translation>
+        <translation type="unfinished">Rispetta &amp;Maiuscole/minuscole</translation>
     </message>
     <message>
         <source>Alt+C</source>
@@ -324,7 +324,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>About Recoll</source>
-        <translation>À propos de Recoll</translation>
+        <translation>Notizie su Recoll</translation>
     </message>
     <message>
         <source>Indexing in progress</source>
@@ -332,19 +332,19 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>No external viewer configured for mime type </source>
-        <translation>Pas de visualiseur défini pour le type mime  </translation>
+        <translation>Nessun visualizzatore interno per questo tipo mime  </translation>
     </message>
     <message>
         <source>Executing: [</source>
-        <translation>Exécution de: [</translation>
+        <translation>Esecuzione di: [</translation>
     </message>
     <message>
         <source>Cannot retrieve document info from database</source>
-        <translation>Impossible d&apos;accéder au document dans la base</translation>
+        <translation>Impossibile caricare informazioni del documento dal database</translation>
     </message>
     <message>
         <source>Cannot access document file: </source>
-        <translation>Impossible d&apos;accéder au fichier du document:  </translation>
+        <translation>Impossibile accedere alla cartella del file: :  </translation>
     </message>
     <message>
         <source>Preview</source>
@@ -374,15 +374,15 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Query results</source>
-        <translation>Résultats de la recherche</translation>
+        <translation>Risultati della ricerca</translation>
     </message>
     <message>
         <source>Query results (sorted)</source>
-        <translation>Résultats de la recherche (triés)</translation>
+        <translation>Risultati ricerca (ordinati)</translation>
     </message>
     <message>
         <source>Document history</source>
-        <translation>Historique des documents consultés</translation>
+        <translation>Storico dei documenti</translation>
     </message>
     <message>
         <source>Document history (sorted)</source>
@@ -398,43 +398,43 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>History data</source>
-        <translation>Données d&apos;historique</translation>
+        <translation>Storia dei dati</translation>
     </message>
     <message>
         <source>Starting help browser </source>
-        <translation>Demarrage de l&apos;outil de consultation de l&apos;aide</translation>
+        <translation>Lancio browser per la guida</translation>
     </message>
     <message>
         <source>Indexing in progress: </source>
-        <translation>Indexation en cours: </translation>
+        <translation>Indicizzazione in corso: </translation>
     </message>
     <message>
         <source>Files</source>
-        <translation>Fichiers</translation>
+        <translation>Files</translation>
     </message>
     <message>
         <source>Purge</source>
-        <translation>Nettoyage</translation>
+        <translation>Pulisco</translation>
     </message>
     <message>
         <source>Stemdb</source>
-        <translation>Base radicaux</translation>
+        <translation>Database espansioni</translation>
     </message>
     <message>
         <source>Closing</source>
-        <translation>Fermeture</translation>
+        <translation>Chiusura</translation>
     </message>
     <message>
         <source>Unknown</source>
-        <translation>Inconnue</translation>
+        <translation>Sconosciuto</translation>
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation>Cette recherche n&apos;est plus active</translation>
+        <translation>Questa ricerca non è più attiva</translation>
     </message>
     <message>
         <source>Cant start query: </source>
-        <translation>Impossible de démarrer la recherche:</translation>
+        <translation>Non posso iniziare la ricerca: </translation>
     </message>
     <message>
         <source>Spell expansion</source>
@@ -443,18 +443,18 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation>Mauvaise commande pour %1: [%2]
-Vérifier le fichier mimeconf</translation>
+        <translation>Errata linea di comando per %1: [%2]
+Verifica il file mimeconf</translation>
     </message>
     <message>
         <source>The viewer specified in mimeconf for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>L&apos;application spécifiée dans mimeconf pour %1: %2 n&apos;est pas trouvée.
-Voulez vous ouvrir le dialogue de paramétrage ?</translation>
+        <translation>L&apos;applicazione specificata in mimeconf per  %1: %2 non cìè.
+Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Cannot extract document or create temporary file</source>
-        <translation>Impossible d&apos;extraire le document ou de créer le fichier temporaire</translation>
+        <translation type="unfinished">Rispetta &amp;Maiuscole</translation>
     </message>
 </context>
 <context>
@@ -573,11 +573,11 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
-        <translation type="unfinished">&amp;Ordina parametri</translation>
+        <translation type="unfinished">&amp;Ordina: scegli parametri</translation>
     </message>
     <message>
         <source>Sort parameters</source>
-        <translation>Ordina parametri</translation>
+        <translation>Ordina: scegli parametri</translation>
     </message>
     <message>
         <source>Next page of results</source>
@@ -681,11 +681,11 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <name>ResList</name>
     <message>
         <source>Result list</source>
-        <translation>Liste de résultats</translation>
+        <translation>Lista dei risultati</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation>Document inaccessible</translation>
+        <translation>Documento inaccessible</translation>
     </message>
     <message>
         <source>Show query details</source>
@@ -707,7 +707,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
+        <translation>&lt;p&gt;&lt;b&gt;Nessun risultato&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -747,7 +747,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>P&amp;arent document/folder</source>
-        <translation>&amp;Apri directory del documento</translation>
+        <translation>&amp;Apri cartella del documento</translation>
     </message>
 </context>
 <context>
@@ -783,7 +783,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Completions</source>
-        <translation>Compléta</translation>
+        <translation>Espansione</translation>
     </message>
     <message>
         <source>Select an item:</source>
@@ -791,7 +791,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Too many completions</source>
-        <translation>Troppe possibilità di completamento</translation>
+        <translation>Troppe possibilità di espansione</translation>
     </message>
 </context>
 <context>
@@ -901,7 +901,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>Nome del filer</translation>
+        <translation>Nome del file</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -951,7 +951,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation>Criteri di ricerca</translation>
+        <translation>Ordina risultati</translation>
     </message>
     <message>
         <source>Sort the</source>
@@ -1049,7 +1049,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>No expansion found</source>
-        <translation>Nessun risultato</translation>
+        <translation>Nessun epansione trovata</translation>
     </message>
 </context>
 <context>
@@ -1210,7 +1210,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian index</source>
-        <translation>La directory selezionata non sembra essera un indice Xapian</translation>
+        <translation>La cartella selezionata non sembra essera un indice Xapian</translation>
     </message>
     <message>
         <source>This is the main/local index!</source>
@@ -1218,11 +1218,11 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>The selected directory is already in the index list</source>
-        <translation>La directory selezionata è già nella lista</translation>
+        <translation>La cartella selezionata è già nella lista</translation>
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation>Seleziona la directory indice Xapian (es.: /home/buddy/.recoll/xapiandb)</translation>
+        <translation>Seleziona la cartella indice Xapian (es.: /home/buddy/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
@@ -1293,7 +1293,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>Lingua per la espansione grammaticale</translation>
+        <translation>Lingua per l&apos;espansione grammaticale</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searchs</source>
