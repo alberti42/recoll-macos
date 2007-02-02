@@ -2,7 +2,7 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-UNACCFLAGS = -g -I. -I$(depth)/unac $(INCICONV) -DUNAC_VERSION=\"1.0.7\"
+UNACCFLAGS = $(CFLAGS) -g -I. -I$(depth)/unac $(INCICONV) -DUNAC_VERSION=\"1.0.7\"
 
 LIBS = librcl.a
 
