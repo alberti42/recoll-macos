@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.36 2007-01-25 15:47:45 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.37 2007-02-02 10:05:07 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -552,6 +552,15 @@ fvwm
 
       <para>Double-clicking on a word in the result list or a preview
       window will insert it into the simple search entry field.</para>
+
+      <para>Note that, apart from wildcard characters (single
+      <literal>?</literal> characters are ok), you can cut and paste
+      any text into an <guilabel>All terms</guilabel> or
+      <guilabel>Any term</guilabel> search field, punctuation,
+      newlines and all. &RCL; will process it and produce a meaningful
+      search. This is what most differentiates this mode from the
+      <guilabel>Query Language</guilabel> mode, where you have to care
+      about the syntax.</para>
 
       <para>You can use the <guilabel>Tools</guilabel> / <guilabel>Advanced
         search</guilabel> dialog for more complex searches.</para>
@@ -1879,6 +1888,126 @@ fvwm
 	file.</para>
 	<para>Please note that these entries must be placed under a
 	<literal>[view]</literal> section.</para>
+
+      </sect2>
+
+      <sect2 id="rclinstall.config.examples">
+        <title>Examples of configuration adjustments</title>
+
+	<sect3 id="rclinstall.config.examples.addview">
+	  <title>Adding an external viewer for an non-indexed type</title>
+
+	<para>Imagine that you have some kind of file which does not
+	have indexable content, but for which you would like to have a
+	functional <guilabel>Edit</guilabel> link in the result list
+	(when found by file name). The file names end in
+	<replaceable>.blob</replaceable> and can be displayed by
+	application <replaceable>blobviewer</replaceable>.</para>
+
+	  <para>You need two entries in the configuration files for this
+	to work:</para>
+	  <itemizedlist>
+	  <listitem><para>In <filename>$RECOLL_CONFDIR/mimemap</filename>
+	  (typically <filename>~/.recoll/mimemap</filename>), add the
+	  following line:</para>
+	  <programlisting>
+             application/x-blobapp = .blob
+           </programlisting>
+	  <para>Note that the mime type is made up here, and you could
+	  call it <replaceable>diesel/oil</replaceable> just the
+	  same.</para>
+	    </listitem>
+	  <listitem><para>In
+	  <filename>$RECOLL_CONFDIR/mimeview</filename> under the
+	  <literal>[view]</literal> section:</para>
+	      <programlisting>
+                 application/x-blobapp = blobviewer %f
+              </programlisting>
+
+	      <para>We are supposing that
+	      <replaceable>blobviewer</replaceable> wants a file name
+	      parameter here, you would use <literal>%u</literal> if
+	      it liked URLs better.</para>
+	    </listitem>
+	  </itemizedlist>
+
+	  <para>If you just wanted to change the application used by
+	  &RCL; to display a mime type which it already knows, you
+	  would just need to edit <filename>mimeview</filename>. The
+	  entries you add in your personal file override those in the
+	  central configuration, which you do not need to alter</para>
+
+	</sect3>
+
+	<sect3 id="rclinstall.config.examples.addindex">
+	  <title>Adding indexing support for a new file type</title>
+
+	  <para>Let us now imagine that the above
+	  <replaceable>.blob</replaceable> files actually contain
+	  indexable text and that you know how to extract it with a
+	  command line program. Getting &RCL; to index the files is
+	  easy. You need to perform the above alteration, and also to
+	  add data to the <filename>mimeconf</filename> file
+	  (typically in <filename>~/.recoll/mimeconf</filename>):</para>
+
+	  <itemizedlist>
+	    <listitem><para>Under the <literal>[index]</literal>
+	    section, add the following line (more about the
+	    <replaceable>rclblob</replaceable> indexing script later):</para>
+	      <programlisting>
+                 application/x-blobapp = exec rclblob
+              </programlisting>
+	      <para></para>
+	    </listitem>
+
+	    <listitem><para>Under the <literal>[icons]</literal>
+	    section, you should choose an icon to be displayed for the
+	    files inside the result lists. Icons are normally 64x64
+	    pixels PNG files which live in
+	    <filename>/usr/[local/]share/recoll/images</filename>.
+            </para>
+	    </listitem>
+
+	    <listitem><para>Under the <literal>[categories]</literal>
+	    section, you should add the mime type where it makes sense
+	    (you can also create a category). Categories may be used
+	    for filtering in advanced search.</para>
+	    </listitem>
+
+	  </itemizedlist>
+
+	  <para>The <replaceable>rclblob</replaceable> filter should
+	  be an executable program or script which exists inside
+	  <filename>/usr/[local/]share/recoll/filters</filename>. It
+	  will be given a file name as argument and should output the
+	  text contents in html format on the standard output.</para>
+
+	  <para>The html could be very minimal like the following
+	  example:</para>
+	  <programlisting>&lt;html>&lt;head>
+&lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+&lt/head>
+&lt;body>some text content&lt;/body>&lt;/html>
+          </programlisting>
+
+	  <para>You should take care to escape some characters inside
+	  the text by transforming them into appropriate
+	  entities. "<literal>&amp;</literal>" should be transformed into
+	  "<literal>&amp;amp;</literal>", "<literal>&lt;</literal>"
+	  should be transformed into "<literal>&amp;lt;</literal>".</para>
+
+	  <para>The character set needs to be specified in the
+	  header. It does not need to be UTF-8 (&RCL; will take care
+	  of translating it), but it must be accurate for good
+	  results.</para>
+
+	  <para>&RCL; will also make use of other header fields if
+	  they are present: <literal>title</literal>,
+	  <literal>description</literal>, <literal>keywords</literal>.
+          <para>
+          <para>The easiest way to write a new filter is probably to start
+          from an existing one.</para>
+	</sect3>
 
       </sect2>
 
