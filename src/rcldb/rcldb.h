@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.45 2006-12-19 12:11:21 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.46 2007-02-02 10:10:53 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -59,6 +59,8 @@ public:
     TermMatchEntry() : wcf(0) {}
     TermMatchEntry(const string&t, int f) : term(t), wcf(f) {}
     TermMatchEntry(const string&t) : term(t), wcf(0) {}
+    bool operator==(const TermMatchEntry &o) { return term == o.term;}
+    bool operator<(const TermMatchEntry &o) { return term < o.term;}
     string term;
     int    wcf; // Within collection frequency
 };

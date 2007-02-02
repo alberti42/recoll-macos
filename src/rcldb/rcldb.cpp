@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.104 2007-01-25 15:47:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.105 2007-02-02 10:10:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1410,10 +1410,12 @@ bool Db::termMatch(MatchType typ, const string &lang,
     if (typ == ET_STEM) {
 	if (!stemExpand(lang, root, res, max))
 	    return false;
+	res.sort();
+	res.unique();
 	for (list<TermMatchEntry>::iterator it = res.begin(); 
 	     it != res.end(); it++) {
 	    it->wcf = db.get_collection_freq(it->term);
-	    LOGDEB(("termMatch: %d [%s]\n", it->wcf, it->term.c_str()));
+	    LOGDEB1(("termMatch: %d [%s]\n", it->wcf, it->term.c_str()));
 	}
     } else {
 	regex_t reg;
