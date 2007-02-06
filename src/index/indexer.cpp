@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.51 2007-02-02 10:12:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.52 2007-02-06 18:01:57 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -432,7 +432,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	Rcl::Doc fileDoc;
 	fileDoc.fmtime = ascdate;
 	fileDoc.utf8fn = utf8fn;
-	fileDoc.mimetype = interner.get_mimetype();
+	fileDoc.mimetype = interner.getMimetype();
 	if (!m_db.add(fn, fileDoc, stp)) 
 	    return FsTreeWalker::FtwError;
     }

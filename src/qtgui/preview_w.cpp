@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.14 2007-01-19 15:22:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.15 2007-02-06 18:01:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -443,6 +443,7 @@ class LoadThread : public QThread {
     string tmpdir;
     int loglevel;
  public: 
+    string reason;
     LoadThread(int *stp, Rcl::Doc *odoc, string fn, string ip, string *mt) 
 	: statusp(stp), out(odoc), filename(fn), ipath(ip), mtype(mt) 
 	{
@@ -456,7 +457,6 @@ class LoadThread : public QThread {
     }
     virtual void run() {
 	DebugLog::getdbl()->setloglevel(loglevel);
-	string reason;
 	if (!maketmpdir(tmpdir, reason)) {
 	    QMessageBox::critical(0, "Recoll",
 				  Preview::tr("Cannot create temporary directory"));
@@ -485,7 +485,8 @@ class LoadThread : public QThread {
 		// a search term of course.
 		*statusp = 0;
 	    } else {
-		out->mimetype = interner.get_mimetype();
+		out->mimetype = interner.getMimetype();
+		reason = interner.getReason();
 		*statusp = -1;
 	    }
 	} catch (CancelExcept) {
@@ -586,9 +587,25 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     if (cancel)
 	return false;
     if (status != 0) {
+	QString explain;
+	if (lthr.reason.find("RECFILTERROR") == 0) {
+	    list<string> lerr;
+	    stringToStrings(lthr.reason, lerr);
+	    if (lerr.size() > 2) {
+		list<string>::iterator it = lerr.begin();
+		it++;
+		if (*it == "HELPERNOTFOUND") {
+		    it++;
+		    explain = QString::fromAscii("<br>") +
+			tr("Missing helper program: ") + 
+			QString::fromLocal8Bit(it->c_str());
+		}
+	    }		    
+	}
 	QMessageBox::warning(0, "Recoll",
-			     tr("Can't turn doc into internal rep for ") +
-			     fdoc.mimetype.c_str());
+			     tr("Can't turn doc into internal "
+				"representation for ") +
+			     fdoc.mimetype.c_str() + explain);
 	return false;
     }
     // Reset config just in case.

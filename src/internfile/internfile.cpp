@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.25 2007-01-17 13:53:40 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.26 2007-02-06 18:01:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -367,8 +367,14 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	if (!m_handlers.back()->next_document()) {
 	    Rcl::Doc doc; string ipath;
 	    collectIpathAndMT(doc, ipath);
-	    LOGERR(("FileInterner::internfile: next_document error [%s%s%s]\n",
-		    m_fn.c_str(), ipath.empty()?"":"|", ipath.c_str()));
+	    m_reason = m_handlers.back()->get_error();
+	    LOGERR(("FileInterner::internfile: next_document error [%s%s%s] %s\n",
+		    m_fn.c_str(), ipath.empty()?"":"|", ipath.c_str(), 
+		    m_reason.c_str()));
+	    // If fetching a specific document, this is fatal
+	    if (m_forPreview) {
+		return FIError;
+	    }
 	    popHandler();
 	    continue;
 	}

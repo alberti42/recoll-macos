@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.8 2006-12-15 12:40:02 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.9 2007-02-06 18:01:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,7 @@ bool MimeHandlerExec::next_document()
     if (params.empty()) {
 	// Hu ho
 	LOGERR(("MimeHandlerExec::mkDoc: empty params\n"));
+	m_reason = "RECFILTERROR BADCONFIG";
 	return false;
     }
 
@@ -58,6 +59,7 @@ bool MimeHandlerExec::next_document()
 
     // Execute command and store the result text, which is supposedly html
     string& html = m_metaData["content"];
+    html.erase();
     ExecCmd mexec;
     MEAdv adv;
     mexec.setAdvise(&adv);
@@ -67,6 +69,10 @@ bool MimeHandlerExec::next_document()
     if (status) {
 	LOGERR(("MimeHandlerExec: command status 0x%x: %s\n", 
 		status, cmd.c_str()));
+	// If the output string begins with RECFILTERROR, then it's 
+	// interpretable error information
+	if (html.find("RECFILTERROR") == 0)
+	    m_reason = html;
 	return false;
     }
 

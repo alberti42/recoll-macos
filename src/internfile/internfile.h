@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.11 2007-01-15 13:06:38 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.12 2007-02-06 18:01:58 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -79,7 +79,7 @@ class FileInterner {
     Status internfile(Rcl::Doc& doc, string &ipath);
 
     /** Return the file's mimetype (useful for container files) */
-    const string&  get_mimetype() {return m_mimetype;}
+    const string&  getMimetype() {return m_mimetype;}
 
     /** We normally always return text/plain data. A caller can request
      *  that we stop conversion at the native document type (ie: text/html) 
@@ -89,6 +89,8 @@ class FileInterner {
     /** Utility function: extract internal document and make temporary file */
     static bool idocTempFile(TempFile& temp, RclConfig *cnf, const string& fn, 
 			     const string& ipath, const string& mtype);
+
+    const string& getReason() const {return m_reason;}
 
  private:
     static const unsigned int MAXHANDLERS = 20;
@@ -100,9 +102,14 @@ class FileInterner {
     // m_tdir and m_tfile are used only for decompressing input file if needed
     const string&          m_tdir; 
     string                 m_tfile;
+    // Filter stack, path to the current document from which we're
+    // fetching subdocs
     vector<Dijon::Filter*> m_handlers;
+    // Temporary files used for decoding the current stack
     bool                   m_tmpflgs[MAXHANDLERS];
     vector<TempFile>       m_tempfiles;
+    // Error data if any
+    string                 m_reason;
 
     void tmpcleanup();
     bool dijontorcl(Rcl::Doc&);
