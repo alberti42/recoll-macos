@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.24 2007-01-24 11:00:01 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.25 2007-02-06 18:01:16 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -51,6 +51,7 @@ text/plain = internal
 text/rtf = exec rclrtf
 text/x-gaim-log = exec rclgaim
 text/x-mail = internal
+text/x-man = exec rclman
 
 ## #############################################
 # Icons to be used in the result list if required by gui config

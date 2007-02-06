@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.20 2007-01-24 11:00:01 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.21 2007-02-06 18:01:16 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
 
 .txt = text/plain
@@ -80,3 +80,16 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
 # Special handling of .txt files inside ~/.gaim directory
 [~/.gaim]
 .txt = text/x-gaim-log
+
+# Manual files. You may want to adjust the location for your system
+# We can't use the default text/troff type because this doesn't say
+# what macro set to use (groff -man)
+[/usr/share/man]
+.1 = text/x-man
+.2 = text/x-man
+.3 = text/x-man
+.4 = text/x-man
+.5 = text/x-man
+.6 = text/x-man
+.7 = text/x-man
+.8 = text/x-man
