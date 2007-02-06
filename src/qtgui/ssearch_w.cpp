@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.19 2007-01-25 15:46:38 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.20 2007-02-06 10:19:40 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -80,6 +80,10 @@ void SSearch::startSimpleSearch()
     string u8 = (const char *)queryText->currentText().utf8();
     LOGDEB(("SSearch::startSimpleSearch: [%s]\n", u8.c_str()));
 
+    trimstring(u8);
+    if (u8.length() == 0)
+	return;
+
     SSearchType tp = (SSearchType)searchTypCMB->currentItem();
     Rcl::SearchData *sdata = 0;
 
@@ -98,27 +102,39 @@ void SSearch::startSimpleSearch()
 	    return;
 	}
 
+	// If there is no white space inside the query, then the user
+	// certainly means it as a phrase.
+	bool isreallyaphrase = false;
+	if (u8.find_first_of(" \t") == string::npos)
+	    isreallyaphrase = true;
+
 	// Maybe add automatic phrase ? For ALL and ANY, and not if
 	// there is already a phrase or wildcard terms.
-	if (prefs.ssearchAutoPhrase && (tp == SST_ANY || tp == SST_ALL) &&
+	if (!isreallyaphrase && 
+	    prefs.ssearchAutoPhrase && (tp == SST_ANY || tp == SST_ALL) &&
 	    u8.find_first_of("\"*[]?") == string::npos && 
 	    TextSplit::countWords(u8) > 1) {
 	    sdata->addClause(new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
 							   u8, 0));
 	}
-
+	Rcl::SearchDataClause *clp = 0;
 	switch (tp) {
 	case SST_ANY:
-	default: 
-	    sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR,u8));
+	default:
+	    clp = isreallyaphrase ? 
+		new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, u8, 0) :
+		new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, u8);
 	    break;
 	case SST_ALL:
-	   sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND,u8));
+	    clp = isreallyaphrase ? 
+		new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, u8, 0) :
+		new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, u8);
 	    break;
 	case SST_FNM:
-	    sdata->addClause(new Rcl::SearchDataClauseFilename(u8));
+	    clp = new Rcl::SearchDataClauseFilename(u8);
 	    break;
 	}
+	sdata->addClause(clp);
     }
 
     // Search terms history
