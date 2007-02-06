@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclppt,v 1.1 2006-09-05 09:52:23 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclppt,v 1.2 2007-02-06 15:08:22 dockes Exp $  (C) 2004 J.F.Dockes
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -27,17 +27,28 @@
 # set variables
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
-progname="rclsoff"
+progname="rclppt"
+filetype=powerpoint
 
-# show help message
-if test $# -ne 1 -o "$1" = "--help" 
-then
-  printf 'Process a powerpoint file for recoll indexation.\n'
-  printf 'Usage: %s [infile]\n' "$progname"
-  exit 1
-fi
 
-infile="$1"
+
+#RECFILTCOMMONCODE
+##############################################################################
+# !! Leave the previous line unmodified!! Code imported from the
+# recfiltcommon file
+
+# Utility code common to all shell filters. This could be sourced at run
+# time, but it's slightly more efficient to include the code in the
+# filters at build time (with a sed script).
+
+# Describe error in a way that can be interpreted by our caller
+senderror()
+{
+    echo RECFILTERROR $*
+    # Also alert on stderr just in case
+    echo ":2:$progname::: $*" 1>&2
+    exit 1
+}
 
 iscmd()
 {
@@ -51,25 +62,39 @@ iscmd()
       return 1 ;;
     esac
 }
+
 checkcmds()
 {
-    cmdsok=0
     for cmd in $*;do
       if iscmd $cmd 
       then 
-        cmdsok=1
+        a=1
       else 
-        cmdsok=0
+        senderror HELPERNOTFOUND $cmd
       fi
     done
 }
 
-# check the input file existence
-if test ! -f "$infile"
+# show help message
+if test $# -ne 1 -o "$1" = "--help" 
 then
-  printf '%s: %s: no such file\n' "$progname" "$infile"
+  echo "Convert a $filetype file to HTML text for Recoll indexing."
+  echo "Usage: $progname [infile]"
   exit 1
 fi
+
+infile="$1"
+
+# check the input file existence (may be '-' for stdin)
+if test "X$infile" != X- -a ! -f "$infile"
+then
+  senderror INPUTNOSUCHFILE "$infile"
+fi
+
+##############################################################################
+# !! Leave the following line unmodified !
+#ENDRECFILTCOMMONCODE
+
 checkcmds catppt
 if test X$cmdsok = X0 ; then
    printf "Catppt not found"

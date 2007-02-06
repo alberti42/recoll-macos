@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclpdf,v 1.7 2007-01-30 11:36:02 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclpdf,v 1.8 2007-02-06 15:08:22 dockes Exp $  (C) 2004 J.F.Dockes
 # This is copied almost verbatim from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -31,23 +31,27 @@ optionraw=-raw
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclpdf"
+filetype=pdf
 
-# show help message
-if test $# -ne 1 -o "$1" = "--help" 
-then
-  printf 'Strip a file of PDF and extract its text as HTML.\n'
-  printf 'Usage: %s [infile]\n' "$progname"
-  exit 1
-fi
 
-infile="$1"
 
-# check the input file existence
-if test ! -f "$infile"
-then
-  printf '%s: %s: no such file\n' "$progname" "$infile"
-  exit 1
-fi
+#RECFILTCOMMONCODE
+##############################################################################
+# !! Leave the previous line unmodified!! Code imported from the
+# recfiltcommon file
+
+# Utility code common to all shell filters. This could be sourced at run
+# time, but it's slightly more efficient to include the code in the
+# filters at build time (with a sed script).
+
+# Describe error in a way that can be interpreted by our caller
+senderror()
+{
+    echo RECFILTERROR $*
+    # Also alert on stderr just in case
+    echo ":2:$progname::: $*" 1>&2
+    exit 1
+}
 
 iscmd()
 {
@@ -61,6 +65,7 @@ iscmd()
       return 1 ;;
     esac
 }
+
 checkcmds()
 {
     for cmd in $*;do
@@ -68,11 +73,31 @@ checkcmds()
       then 
         a=1
       else 
-        echo $cmd not found 1>&2 
-	exit 1
+        senderror HELPERNOTFOUND $cmd
       fi
     done
 }
+
+# show help message
+if test $# -ne 1 -o "$1" = "--help" 
+then
+  echo "Convert a $filetype file to HTML text for Recoll indexing."
+  echo "Usage: $progname [infile]"
+  exit 1
+fi
+
+infile="$1"
+
+# check the input file existence (may be '-' for stdin)
+if test "X$infile" != X- -a ! -f "$infile"
+then
+  senderror INPUTNOSUCHFILE "$infile"
+fi
+
+##############################################################################
+# !! Leave the following line unmodified !
+#ENDRECFILTCOMMONCODE
+
 checkcmds pdftotext iconv awk
 
 # Run pdftotext and fix the result (add a charset tag and fix the html escaping
