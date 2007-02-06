@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.21 2007-01-19 15:22:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.22 2007-02-06 10:18:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -73,10 +73,20 @@ ResList::~ResList()
 {
 }
 
+extern "C" int XFlush(void *);
+
 void ResList::resetSearch() 
 {
     m_winfirst = -1;
+    // There should be a progress bar for long searches but there isn't 
+    // We really want the old result list to go away, otherwise, for a
+    // slow search, the user will wonder if anything happened. The
+    // following helps making sure that the textedit is really
+    // blank. Else, there are often icons or text left around
     clear();
+    append(".");
+    clear();
+    XFlush(qt_xdisplay());
 }
 
 void ResList::languageChange()
