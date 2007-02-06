@@ -1,5 +1,12 @@
 #!/bin/sh
+
+# Prepare the qt4 gui directory for compilation. This is called by "configure"
+
+# Convert the uic files from qt3 to qt4. 
 for i in ../qtgui/*.ui ; do
     echo converting $i
     uic3 -convert $i > ../qt4gui/`basename $i`
 done
+
+# Link the images
+ln -s ../qtgui/images .
