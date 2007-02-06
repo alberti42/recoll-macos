@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.41 2007-02-02 10:12:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.42 2007-02-06 14:16:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,12 @@ RclConfig::RclConfig(const string *argcnf)
 
     // Command line config name overrides environment
     if (argcnf && !argcnf->empty()) {
-	m_confdir = *argcnf;
+	m_confdir = path_absolute(*argcnf);
+	if (m_confdir.empty()) {
+	    m_reason = 
+		string("Cant turn [") + *argcnf + "] into absolute path";
+	    return;
+	}
     } else {
 	const char *cp = getenv("RECOLL_CONFDIR");
 	if (cp) {

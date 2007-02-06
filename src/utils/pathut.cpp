@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.14 2006-12-23 13:07:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.15 2007-02-06 14:16:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -215,6 +215,21 @@ extern string path_tildexpand(const string &s)
 	    o.replace(0, l+1, entry->pw_dir);
     }
     return o;
+}
+
+extern std::string path_absolute(const std::string &is)
+{
+    if (is.length() == 0)
+	return is;
+    string s = is;
+    if (s[0] != '/') {
+	char buf[MAXPATHLEN];
+	if (!getcwd(buf, MAXPATHLEN)) {
+	    return "";
+	}
+	s = path_cat(string(buf), s); 
+    }
+    return s;
 }
 
 #include <smallut.h>

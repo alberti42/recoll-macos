@@ -16,7 +16,7 @@
  */
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
-/* @(#$Id: pathut.h,v 1.11 2006-12-16 15:31:51 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: pathut.h,v 1.12 2007-02-06 14:16:43 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -41,7 +41,10 @@ extern string path_getfather(const string &s);
 extern string path_home();
 /// Expand ~ at the beginning of string 
 extern string path_tildexpand(const string &s);
-/// Clean up path by removing duplicated / and resolving ../
+/// Use getcwd() to make absolute path if needed. Beware: ***this can fail***
+/// we return an empty path in this case.
+extern string path_absolute(const string &s);
+/// Clean up path by removing duplicated / and resolving ../ + make it absolute
 extern string path_canon(const string &s);
 /// Use glob(3) to return a list of file names matching pattern inside dir
 extern list<string> path_dirglob(const string &dir, 
