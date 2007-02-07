@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.1 2007-02-07 12:00:17 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.2 2007-02-07 16:31:59 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@ static char rcsid[] = "@(#$Id: recollq.cpp,v 1.1 2007-02-07 12:00:17 dockes Exp 
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include <iostream>
 using namespace std;
@@ -36,6 +37,7 @@ using namespace std;
 #include "debuglog.h"
 #include "wasastringtoquery.h"
 #include "wasatorcl.h"
+#include "internfile.h"
 
 static char *thisprog;
 static char usage [] =
@@ -50,7 +52,7 @@ static char usage [] =
 "  -a Emulate the gui simple search in ALL TERMS mode\n"
 "Common options:\n"
 "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
-
+"    -d also dump file contents\n"
 ;
 static void
 Usage(void)
@@ -64,6 +66,7 @@ static int     op_flags;
 #define OPT_o     0x2 
 #define OPT_a     0x4 
 #define OPT_c     0x8
+#define OPT_d     0x10
 
 int main(int argc, char **argv)
 {
@@ -79,10 +82,11 @@ int main(int argc, char **argv)
         while (**argv)
             switch (*(*argv)++) {
             case 'a':   op_flags |= OPT_a; break;
-            case 'o':   op_flags |= OPT_o; break;
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
+            case 'd':   op_flags |= OPT_d; break;
+            case 'o':   op_flags |= OPT_o; break;
             default: Usage();   break;
             }
     b1: argc--; argv++;
@@ -156,6 +160,22 @@ int main(int argc, char **argv)
 	     << "[" << doc.url.c_str() << "]" << "\t" 
 	     << "[" << doc.title.c_str() << "]"
 	     <<  endl;
+
+	if (op_flags & OPT_d) {
+	    string fn = doc.url.substr(7);
+	    struct stat st;
+	    if (stat(fn.c_str(), &st) != 0) {
+		cout << "No such file: " << fn << endl;
+		continue;
+	    } 
+	    FileInterner interner(fn, &st, rclconfig, "/tmp", &doc.mimetype);
+	    if (interner.internfile(doc, doc.ipath)) {
+		cout << doc.text << endl;
+	    } else {
+		cout << "Cant intern: " << fn << endl;
+	    }
+	}
+
     }
 
     return 0;
