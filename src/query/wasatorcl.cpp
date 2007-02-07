@@ -1,8 +1,22 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.6 2007-01-25 15:45:44 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.7 2007-02-07 12:00:17 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
-#ifndef TEST_WASATORCL
-
+/*
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the
+ *   Free Software Foundation, Inc.,
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 #include "wasastringtoquery.h"
 #include "rcldb.h"
 #include "searchdata.h"
@@ -89,110 +103,3 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
     }
     return sdata;
 }
-
-
-#else // TEST
-
-// Takes a query expressed in wasabi/recoll simple language and run it
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-
-#include <iostream>
-using namespace std;
-
-#include "rcldb.h"
-#include "rclconfig.h"
-#include "pathut.h"
-#include "rclinit.h"
-#include "debuglog.h"
-#include "wasastringtoquery.h"
-#include "wasatorcl.h"
-
-static char *thisprog;
-
-static char usage [] =
-"rclqlang <query>\n"
-" query may be like: \n"
-"  implicit AND, Exclusion, field spec:    t1 -t2 title:t3\n"
-"  OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)\n"
-"  Phrase: \"t1 t2\" (needs additional quoting on cmd line)\n"
-;
-
-static void
-Usage(void)
-{
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
-    exit(1);
-}
-
-extern bool runQuery(Rcl::Db&, const string& qs);
-
-int main(int argc, char **argv)
-{
-    thisprog = argv[0];
-    argc--; argv++;
-
-    if (argc < 1)
-	Usage();
-    string qs;
-    while (argc--) {
-	qs += *argv++;
-	if (argc) 
-	    qs += " ";
-    }
-
-    Rcl::Db rcldb;
-    RclConfig *rclconfig;
-    string dbdir;
-    string reason;
-    rclconfig = recollinit(0, 0, reason, 0);
-    if (!rclconfig || !rclconfig->ok()) {
-	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
-	exit(1);
-    }
-    dbdir = rclconfig->getDbDir();
-
-    rcldb.open(dbdir,  Rcl::Db::DbRO, Rcl::Db::QO_STEM);
-    if (!runQuery(rcldb, qs))
-	exit(1);
-    exit(0);
-}
-
-bool runQuery(Rcl::Db &rcldb, const string &qs)
-{
-    string reason;
-    RefCntr<Rcl::SearchData> rq(wasaStringToRcl(qs, reason));
-    if (!rq.getptr()) {
-	cerr << "Query string interpretation failed: " << reason << endl;
-	return false;
-    }
-
-    rcldb.setQuery(rq, Rcl::Db::QO_STEM);
-    int offset = 0;
-    int limit = 100;
-    cout << "Recoll query: " << rq->getDescription() << endl;
-    cout << rcldb.getResCnt() << " results (printing 100 max):" << endl;
-    for (int i = offset; i < offset + limit; i++) {
-	int pc;
-	Rcl::Doc doc;
-	if (!rcldb.getDoc(i, doc, &pc))
-	    break;
-
-	char cpc[20];
-	sprintf(cpc, "%d", pc);
-	cout << cpc << "% " 
-	     << doc.mimetype.c_str() << " "
-	     << doc.dmtime.c_str() << " "
-	     << doc.fbytes.c_str() << " bytes "
-	     << "[" << doc.url.c_str() << "] " 
-	     << "[" << doc.title.c_str() << "] "
-	     <<  endl;
-    }
-    return true;
-}
-
-#endif // TEST_WASATORCL

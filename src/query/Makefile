@@ -1,7 +1,7 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = xadump wasatorcl #trhist qtry qxtry 
+PROGS = xadump recollq #trhist qtry qxtry 
 
 all: $(PROGS)
 
@@ -14,6 +14,13 @@ xadump : $(XADUMP_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o xadump $(XADUMP_OBJS) \
 	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
 
+RECOLLQ_OBJS= recollq.o  $(BIGLIB) $(MIMELIB)
+recollq : $(RECOLLQ_OBJS)
+	$(CXX) $(ALL_CXXFLAGS) -o recollq $(RECOLLQ_OBJS) \
+	       $(LIBICONV) $(LIBXAPIAN)
+recollq.o : recollq.cpp 
+	$(CXX) $(ALL_CXXFLAGS) -c recollq.cpp
+
 HISTORY_OBJS= trhist.o  $(BIGLIB) $(MIMELIB)
 trhist : $(HISTORY_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trhist $(HISTORY_OBJS) \
@@ -24,18 +31,10 @@ trhist.o : history.cpp history.h
 WASASTRINGTOQUERY_OBJS= trwasastrtoq.o  $(BIGLIB) $(MIMELIB)
 trwasastrtoq : $(WASASTRINGTOQUERY_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trwasastrtoq $(WASASTRINGTOQUERY_OBJS) \
-	       $(LIBICONV) $(LIBXAPIAN)
+             $(LIBICONV) $(LIBXAPIAN)
 trwasastrtoq.o : wasastringtoquery.cpp wasastringtoquery.h
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_WASASTRINGTOQUERY -c \
-	       -o trwasastrtoq.o wasastringtoquery.cpp
-
-WASATORCL_OBJS= trwasatorcl.o  $(BIGLIB) $(MIMELIB)
-wasatorcl : $(WASATORCL_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o wasatorcl $(WASATORCL_OBJS) \
-	       $(LIBICONV) $(LIBXAPIAN)
-trwasatorcl.o : wasatorcl.cpp wasatorcl.h
-	$(CXX) $(ALL_CXXFLAGS) -DTEST_WASATORCL -c \
-	       -o trwasatorcl.o wasatorcl.cpp
+             -o trwasastrtoq.o wasastringtoquery.cpp
 
 $(BIGLIB): force
 	cd $(depth)/lib;$(MAKE)
