@@ -1,6 +1,6 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.7 2007-02-01 15:01:08 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.8 2007-02-07 16:31:42 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
@@ -269,7 +269,9 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
     aspell.setProvide(&pv);
 
     if (aspell.doexec(m_data->m_exec, args, &termbuf)) {
-	reason = string("aspell dictionary creation command failed. Check the language data files for lang = ") + m_lang;
+	reason = string("aspell dictionary creation command failed.\n"
+			"One possible reason might be missing language "
+			"data files for lang = ") + m_lang;
 	return false;
     }
     db.termWalkClose(tit);
