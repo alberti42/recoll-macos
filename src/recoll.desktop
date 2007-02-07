@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=Recoll
-GenericName=Local Search
-Exec=recoll
-Icon=recoll
-Type=Application
-Terminal=false
-Categories=Utility;Filesystem;Database;

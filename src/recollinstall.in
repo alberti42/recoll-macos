@@ -63,11 +63,14 @@ do
     test -d $d || mkdir -p $d || exit 1
 done
 
-${INSTALL} -m 0444 recoll.desktop ${datadir}/applications
-${INSTALL} -m 0444 recoll.png ${datadir}/icons/hicolor/48x48/apps
+# Use the xdg utilies to install the desktop file and icon
+PATH=$PATH:desktop/xdg-utils-1.0.1/scripts
+export PATH
+xdg-desktop-menu install desktop/recoll-searchgui.desktop
+xdg-icon-resource install --size 48 desktop/recoll-searchgui.png
+
 ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 			${datadir}/recoll/doc 
-
 ${INSTALL} -m 0444 doc/man/recoll.1 doc/man/recollindex.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 
