@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.38 2007-02-02 10:27:44 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.39 2007-02-07 17:17:11 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1595,12 +1595,16 @@ fvwm
 
       <para>If the <filename>.recoll</filename> directory does not
       exist when <command>recoll</command> or 
-        <command>recollindex</command> are started, it
-        will be created with a set of empty configuration files.
-        <command>recoll</command> will give you a
-        chance to edit the configuration file before starting
-        indexing. <command>recollindex</command> will
-        proceed immediately.</para>
+        <command>recollindex</command> are started, it will be created
+        with a set of empty configuration files.
+        <command>recoll</command> will give you a chance to edit the
+        configuration file before starting
+        indexing. <command>recollindex</command> will proceed
+        immediately. To avoid mistakes, the automatic directory
+        creation will only occur for the
+       default location, not if <literal>-c</literal> or
+       <literal>RECOLL_CONFDIR</literal> were used (in the latter
+       cases, you will have to create the directory).</para>
       
 
         <para>All configuration files share the same format. For

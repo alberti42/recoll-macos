@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.42 2007-02-06 14:16:43 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.43 2007-02-07 17:17:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -63,6 +63,10 @@ RclConfig::RclConfig(const string *argcnf)
 	m_datadir = cdatadir;
     }
 
+    // We only do the automatic configuration creation thing for the default
+    // config dir, not if it was specified through -c or RECOLL_CONFDIR
+    bool autoconfdir = false;
+
     // Command line config name overrides environment
     if (argcnf && !argcnf->empty()) {
 	m_confdir = path_absolute(*argcnf);
@@ -76,12 +80,25 @@ RclConfig::RclConfig(const string *argcnf)
 	if (cp) {
 	    m_confdir = cp;
 	} else {
+	    autoconfdir = true;
 	    m_confdir = path_home();
 	    m_confdir += ".recoll/";
 	}
     }
+
+    if (!autoconfdir) {
+	// We want a recoll.conf file to exist in this case to avoid
+	// creating indexes all over the place
+	string conffile = path_cat(m_confdir, "recoll.conf");
+	if (access(conffile.c_str(), 0) < 0) {
+	    m_reason = "Explicitely specified configuration must exist"
+		" (won't be automatically created)";
+	    return;
+	}
+    }
+
     if (access(m_confdir.c_str(), 0) < 0) {
-	if (!initUserConfig())
+	if (!initUserConfig()) 
 	    return;
     }
 
