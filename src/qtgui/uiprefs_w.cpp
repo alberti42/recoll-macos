@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.14 2007-01-13 15:21:41 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.15 2007-02-08 09:03:29 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,6 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.14 2007-01-13 15:21:41 dockes E
 #include <q3listbox.h>
 #include <q3listview.h>
 #include <q3filedialog.h>
-#include <
 #define QListView Q3ListView
 #define QCheckListItem Q3CheckListItem
 #define QFileDialog  Q3FileDialog
