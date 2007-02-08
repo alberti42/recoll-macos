@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rcldvi,v 1.4 2007-02-06 15:08:22 dockes Exp $  (C) 2006 J.F.Dockes
+# @(#$Id: rcldvi,v 1.5 2007-02-08 17:03:12 dockes Exp $  (C) 2006 J.F.Dockes
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ rclps=`dirname $0`/rclps
 decoder=""
 if iscmd dvips -a iscmd pstotext ; then
   decoder=dvips
-elsif iscmd catdvi
+elif iscmd catdvi ; then
   decoder=catdvi
 fi
 
