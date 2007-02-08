@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.52 2007-02-06 18:01:57 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.53 2007-02-08 17:05:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -130,6 +130,12 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 	LOGERR(("DbIndexer::index: error closing database in %s\n", 
 		m_dbdir.c_str()));
 	return false;
+    }
+    if (!m_missingExternal.empty()) {
+	string missing;
+	stringsToString(m_missingExternal, missing);
+	LOGERR(("DbIndexer::index missing helper program(s): %s\n", 
+		missing.c_str()));
     }
     return true;
 }
@@ -387,6 +393,9 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	string ipath;
 	fis = interner.internfile(doc, ipath);
 	if (fis == FileInterner::FIError) {
+	    list<string> ext = interner.getMissingExternal();
+	    m_missingExternal.merge(ext);
+	    m_missingExternal.unique();
 	    // We dont stop indexing for one bad doc
 	    return FsTreeWalker::FtwOk;
 	}

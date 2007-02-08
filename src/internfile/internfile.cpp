@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.26 2007-02-06 18:01:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.27 2007-02-08 17:05:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -223,6 +223,37 @@ bool FileInterner::dataToTempFile(const string& dt, const string& mt,
     return true;
 }
 
+// See if the error string is formatted as a missing helper message,
+// accumulate helper name if it is
+void FileInterner::maybeExternalMissing(const string& msg)
+{
+    if (msg.find("RECFILTERROR") == 0) {
+	list<string> lerr;
+	stringToStrings(msg, lerr);
+	if (lerr.size() > 2) {
+	    list<string>::iterator it = lerr.begin();
+	    it++;
+	    if (*it == "HELPERNOTFOUND") {
+		it++;
+		m_missingExternal.push_back(it->c_str());
+	    }
+	}		    
+    }
+}
+
+const list<string>& FileInterner::getMissingExternal() 
+{
+    m_missingExternal.sort();
+    m_missingExternal.unique();
+    return m_missingExternal;
+}
+void FileInterner::getMissingExternal(string& out) 
+{
+    m_missingExternal.sort();
+    m_missingExternal.unique();
+    stringsToString(m_missingExternal, out);
+}
+
 static inline bool getKeyValue(const map<string, string>& docdata, 
 			       const string& key, string& value)
 {
@@ -368,6 +399,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	    Rcl::Doc doc; string ipath;
 	    collectIpathAndMT(doc, ipath);
 	    m_reason = m_handlers.back()->get_error();
+	    maybeExternalMissing(m_reason);
 	    LOGERR(("FileInterner::internfile: next_document error [%s%s%s] %s\n",
 		    m_fn.c_str(), ipath.empty()?"":"|", ipath.c_str(), 
 		    m_reason.c_str()));

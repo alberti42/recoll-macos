@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.25 2006-12-19 12:11:21 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.26 2007-02-08 17:05:12 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <map>
@@ -45,6 +45,10 @@ extern bool samecharset(const string &cs1, const string &cs2);
  * dquotes can be escaped with \ etc...
  */
 extern bool stringToStrings(const string &s, list<string> &tokens);
+/**
+ * Inverse operation:
+ */
+extern void stringsToString(const list<string> &tokens, string &s);
 
 /**
  * Split input string. No handling of quoting

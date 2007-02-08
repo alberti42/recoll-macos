@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.13 2007-02-08 12:25:49 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.14 2007-02-08 17:05:12 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -91,6 +91,8 @@ class FileInterner {
 			     const string& ipath, const string& mtype);
 
     const string& getReason() const {return m_reason;}
+    const list<string>& getMissingExternal();
+    void getMissingExternal(string& missing);
 
  private:
     static const unsigned int MAXHANDLERS = 20;
@@ -110,12 +112,15 @@ class FileInterner {
     vector<TempFile>       m_tempfiles;
     // Error data if any
     string                 m_reason;
+    // Missing external programs
+    list<string>           m_missingExternal;
 
     void tmpcleanup();
     bool dijontorcl(Rcl::Doc&);
     void collectIpathAndMT(Rcl::Doc&, string& ipath) const;
     bool dataToTempFile(const string& data, const string& mt, string& fn);
     void popHandler();
+    void maybeExternalMissing(const string& msg);
 };
 
  

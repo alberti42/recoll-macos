@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.25 2006-12-19 12:11:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.26 2007-02-08 17:05:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -256,6 +256,31 @@ bool stringToStrings(const string &s, std::list<string> &tokens)
 	return false;
     }
     return true;
+}
+
+void stringsToString(const list<string> &tokens, string &s) 
+{
+    for (list<string>::const_iterator it = tokens.begin();
+	 it != tokens.end(); it++) {
+	bool hasblanks = false;
+	if (it->find_first_of(" \t\n") != string::npos)
+	    hasblanks = true;
+	if (it != tokens.begin())
+	    s.append(1, ' ');
+	if (hasblanks)
+	    s.append(1, '"');
+	for (unsigned int i = 0; i < it->length(); i++) {
+	    char car = it->at(i);
+	    if (car == '"') {
+		s.append(1, '\\');
+		s.append(1, car);
+	    } else {
+		s.append(1, car);
+	    }
+	}
+	if (hasblanks)
+	    s.append(1, '"');
+    }
 }
 
 void stringToTokens(const string& str, list<string>& tokens,
