@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.12 2007-02-06 18:01:58 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.13 2007-02-08 12:25:49 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -49,7 +49,7 @@ class FileInterner {
      * @param fn file name 
      * @param cnf Recoll configuration
      * @param td  temporary directory to use as working space if 
-     *            decompression needed.
+     *   decompression needed. Must be private and will be wiped clean.
      * @param mtype mime type if known. For a compressed file this is the 
      *   mime type for the uncompressed version. This currently doubles up 
      *   to indicate that this object is for previewing (not indexing).

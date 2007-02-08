@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.2 2007-02-07 16:31:59 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.3 2007-02-08 12:25:49 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@ using namespace std;
 #include "wasastringtoquery.h"
 #include "wasatorcl.h"
 #include "internfile.h"
+#include "wipedir.h"
 
 static char *thisprog;
 static char usage [] =
@@ -145,6 +146,7 @@ int main(int argc, char **argv)
     int cnt = rcldb.getResCnt();
     cout << cnt << " results " << 
 	(cnt <= limit ? "" : "(printing 100 max):") << endl;
+    string tmpdir;
     for (int i = offset; i < offset + limit; i++) {
 	int pc;
 	Rcl::Doc doc;
@@ -168,14 +170,31 @@ int main(int argc, char **argv)
 		cout << "No such file: " << fn << endl;
 		continue;
 	    } 
-	    FileInterner interner(fn, &st, rclconfig, "/tmp", &doc.mimetype);
+	    if (tmpdir.empty() || access(tmpdir.c_str(), 0) < 0) {
+		string reason;
+		if (!maketmpdir(tmpdir, reason)) {
+		    fprintf(stderr, "cannot create temporary directory: %s\n",
+			    reason.c_str());
+		    return 1;
+		}
+	    }
+	    wipedir(tmpdir);
+	    FileInterner interner(fn, &st, rclconfig, tmpdir, &doc.mimetype);
 	    if (interner.internfile(doc, doc.ipath)) {
 		cout << doc.text << endl;
 	    } else {
 		cout << "Cant intern: " << fn << endl;
 	    }
 	}
+	
+    }
 
+    // Maybe clean up temporary directory
+    if (tmpdir.length()) {
+	wipedir(tmpdir);
+	if (rmdir(tmpdir.c_str()) < 0) {
+	    fprintf(stderr, "cannot clear temp dir %s\n", tmpdir.c_str());
+	}
     }
 
     return 0;
