@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.4 2007-01-17 13:53:41 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.5 2007-02-12 18:16:08 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,30 +43,6 @@ WasaQuery::~WasaQuery()
 
 void WasaQuery::describe(string &desc) const
 {
-    if (!m_types.empty()) {
-	desc += "type_restrict(";
-	for (vector<string>::const_iterator it = m_types.begin();
-	     it != m_types.end(); it++) {
-	    desc += *it + ", ";
-	}
-	desc.erase(desc.size() - 2);
-	desc += ")";
-    }
-    if (m_sortSpec.size() > 1 || 
-	(m_sortSpec.size() == 1 && m_sortSpec[0] != WQSK_REL)) {
-	desc += "sort_by(";
-	for (vector<SortKind>::const_iterator it = m_sortSpec.begin();
-	     it != m_sortSpec.end(); it++) {
-	    switch (*it) {
-	    case WQSK_DATE: desc += string("date") + ", ";break;
-	    case WQSK_ALPHA: desc += string("name") + ", ";break;
-	    case WQSK_GROUP: desc += string("group") + ", ";break;
-	    case WQSK_REL: default: desc += string("relevance") + ", ";break;
-	    }
-	}
-	desc.erase(desc.size() - 2);
-	desc += ")";
-    }
     desc += "(";
     string fieldspec = m_fieldspec.empty() ? "" : m_fieldspec + ": ";
     switch (m_op) {
@@ -93,7 +69,22 @@ void WasaQuery::describe(string &desc) const
     }
     if (desc[desc.length() - 1] == ' ')
 	desc.erase(desc.length() - 1);
-    desc += ") "; 
+    desc += ")"; 
+    if (m_modifiers != 0) {
+	if (m_modifiers & WQM_CASESENS)  desc += "CASESENS|";
+	if (m_modifiers & WQM_DIACSENS)  desc += "DIACSENS|";
+	if (m_modifiers & WQM_NOSTEM)    desc += "NOSTEM|";
+	if (m_modifiers & WQM_BOOST)     desc += "BOOST|";
+	if (m_modifiers & WQM_PROX)      desc += "PROX|";
+	if (m_modifiers & WQM_SLOPPY)    desc += "SLOPPY|";
+	if (m_modifiers & WQM_WORDS)     desc += "WORDS|";
+	if (m_modifiers & WQM_PHRASESLACK) desc += "PHRASESLACK|";
+	if (m_modifiers & WQM_REGEX)     desc += "REGEX|";
+	if (m_modifiers & WQM_FUZZY)     desc += "FUZZY|";
+	if (desc.length() > 0 && desc[desc.length()-1] == '|')
+	    desc = desc.substr(0, desc.length()-1);
+    }
+    desc += " ";
 }
 
 // The string query parser code:
@@ -101,7 +92,7 @@ void WasaQuery::describe(string &desc) const
 /* Shamelessly lifted from Beagle:			
  * This is our regular Expression Pattern:
  * we expect something like this:
- * -key:"Value String"
+ * -key:"Value String"modifiers
  * key:Value
  * or
  * Value
@@ -125,14 +116,15 @@ static const char * parserExpr =
     "("                              //2
       "([+-])?"                      //3 Force or exclude indicator
       "("                            //4
-        "([[:alpha:]][[:alnum:]]+)"  //5 Field spec: "fieldname:"
+        "([[:alpha:]][[:alnum:]]*)"  //5 Field spec: "fieldname:"
       ":)?"
       "("                            //6
         "(\""                        //7
           "([^\"]+)"                 //8 "A quoted term"
         "\")"                        
+        "([a-zA-Z0-9]*)"             //9 modifiers
         "|"
-        "([^[:space:]]+)"            //9 ANormalTerm
+        "([^[:space:]\"]+)"          //10 ANormalTerm
       ")"
     ")[[:space:]]*"
 ;
@@ -148,12 +140,14 @@ static const char *matchNames[] = {
      /*6*/   "",
      /*7*/   "",
      /*8*/   "QUOTEDTERM",
-     /*9*/   "TERM",
+     /*9*/   "MODIIFIERS",
+     /*10*/   "TERM",
 };
 #define NMATCH (sizeof(matchNames) / sizeof(char *))
 
 // Symbolic names for the interesting submatch indices
-enum SbMatchIdx {SMI_OR=1, SMI_PM=3, SMI_FIELD=5, SMI_QUOTED=8, SMI_TERM=9};
+enum SbMatchIdx {SMI_OR=1, SMI_PM=3, SMI_FIELD=5, SMI_QUOTED=8, 
+		 SMI_MODIF=9, SMI_TERM=10};
 
 static const int maxmatchlen = 1024;
 static const int errbuflen = 300;
@@ -170,13 +164,18 @@ public:
     }
     bool checkSubMatch(int i, char *match, string& reason)
     {
-	if (i < 0 || i >= int(NMATCH) || m_pmatch[i].rm_so == -1)
+	if (i < 0 || i >= int(NMATCH) || m_pmatch[i].rm_so == -1) {
+	    //DPRINT((stderr, "checkSubMatch: no match: i %d rm_so %d\n", 
+	    //i, m_pmatch[i].rm_so));
 	    return false;
+	}
 	if (m_pmatch[i].rm_eo - m_pmatch[i].rm_so <= 0) {
 	    // weird and fatal
 	    reason = "Internal regular expression handling error";
 	    return false;
 	}
+	//DPRINT((stderr, "checkSubMatch: so %d eo %d\n", m_pmatch[i].rm_so, 
+	//m_pmatch[i].rm_eo));
 	memcpy(match, m_cp + m_pmatch[i].rm_so, 
 	       m_pmatch[i].rm_eo - m_pmatch[i].rm_so);
 	match[m_pmatch[i].rm_eo - m_pmatch[i].rm_so] = 0;
@@ -230,7 +229,7 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 
     WasaQuery *query = new WasaQuery;
     query->m_op = WasaQuery::OP_AND;
-    WasaQuery *orClause = 0;
+    WasaQuery *orChain = 0;
     bool prev_or = false;
 
     // Loop on repeated regexp matches on the main string.
@@ -247,7 +246,7 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	}
 
 #ifdef DEB_WASASTRINGTOQ
-	if (loop) DPRINT((stderr, "Next part:\n"));
+	DPRINT((stderr, "Next part:\n"));
 	for (unsigned int i = 0; i < NMATCH; i++) {
 	    if (m_pmatch[i].rm_so == -1) 	continue;
 	    char match[maxmatchlen+1];
@@ -259,6 +258,7 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 			(int)m_pmatch[i].rm_so, (int)m_pmatch[i].rm_eo));
 	}
 #endif
+
 	char match[maxmatchlen+1];
 	if (checkSubMatch(SMI_OR, match, reason)) {
 	    if (prev_or) {
@@ -267,19 +267,19 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		return 0;
 	    }
 
-	    if (orClause == 0) {
+	    if (orChain == 0) {
 		// Fist OR seen: start OR subclause.
-		if ((orClause = new WasaQuery()) == 0) {
+		if ((orChain = new WasaQuery()) == 0) {
 		    reason = "Out of memory";
 		    return 0;
 		}
-		orClause->m_op = WasaQuery::OP_OR;
+		orChain->m_op = WasaQuery::OP_OR;
 	    }
 
 	    // We need to transfer the previous query from the main vector
 	    // to the OR subquery
 	    if (!query->m_subs.empty()) {
-		orClause->m_subs.push_back(query->m_subs.back());
+		orChain->m_subs.push_back(query->m_subs.back());
 		query->m_subs.pop_back();
 	    }
 	    prev_or = true;
@@ -298,53 +298,44 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    } else if (checkSubMatch(SMI_TERM, match, reason)) {
 		nclause->m_value = match;
 	    }
+
 	    if (nclause->m_value.empty()) {
 		// Isolated +- or fieldname: without a value. Ignore until
 		// told otherwise.
+		DPRINT((stderr, "Clause with empty value, skipping\n"));
 		delete nclause;
 		goto nextfield;
+	    }
+	    
+	    if (checkSubMatch(SMI_MODIF, match, reason)) {
+		DPRINT((stderr, "Got modifiers: [%s]\n", match));
+		unsigned int mods = 0;
+		for (unsigned int i = 0; i < strlen(match); i++) {
+		    switch (match[i]) {
+		    case 'C': mods |= WasaQuery::WQM_CASESENS; break;
+		    case 'D': mods |= WasaQuery::WQM_DIACSENS; break;
+		    case 'l': mods |= WasaQuery::WQM_NOSTEM; break;
+		    case 'e': mods |= WasaQuery::WQM_CASESENS |
+			    WasaQuery::WQM_DIACSENS | 
+			    WasaQuery::WQM_NOSTEM; break;
+		    case 'f': mods |= WasaQuery::WQM_FUZZY; break;
+		    case 'b': mods |= WasaQuery::WQM_BOOST; break;
+		    case 'p': mods |= WasaQuery::WQM_PROX; break;
+		    case 's': mods |= WasaQuery::WQM_SLOPPY; break;
+		    case 'w': mods |= WasaQuery::WQM_WORDS; break;
+		    case 'o': mods |= WasaQuery::WQM_PHRASESLACK; break;
+		    case 'r': mods |= WasaQuery::WQM_REGEX; break;
+		    }
+		}
+		nclause->m_modifiers = WasaQuery::Modifier(mods);
 	    }
 
 	    // Field indicator ?
 	    if (checkSubMatch(SMI_FIELD, match, reason)) {
-		// Check for special fields
-		if (match == string("mime")) {
-		    if (query->m_typeKind == WasaQuery::WQTK_NONE)
-			query->m_typeKind = WasaQuery::WQTK_MIME;
-		    if (query->m_typeKind == WasaQuery::WQTK_MIME)
-			query->m_types.push_back(nclause->m_value);
-		    delete nclause;
-		    goto nextfield;
-		} else if (match == string("group")) {
-		    if (query->m_typeKind == WasaQuery::WQTK_NONE)
-			query->m_typeKind = WasaQuery::WQTK_GROUP;
-		    if (query->m_typeKind == WasaQuery::WQTK_GROUP)
-			query->m_types.push_back(nclause->m_value);
-		    delete nclause;
-		    goto nextfield;
-		} else if (match == string("filetype") || 
-			   match == string("ext")) {
-		    if (query->m_typeKind == WasaQuery::WQTK_NONE)
-			query->m_typeKind = WasaQuery::WQTK_EXT;
-		    if (query->m_typeKind == WasaQuery::WQTK_EXT)
-			query->m_types.push_back(nclause->m_value);
-		    delete nclause;
-		    goto nextfield;
-		} else if (match == string("sort")) {
-		    if (nclause->m_value == "score") {
-			query->m_sortSpec.push_back(WasaQuery::WQSK_REL);
-		    } else if (nclause->m_value == "date") {
-			query->m_sortSpec.push_back(WasaQuery::WQSK_DATE);
-		    } else if (nclause->m_value == "alpha") {
-			query->m_sortSpec.push_back(WasaQuery::WQSK_ALPHA);
-		    } else if (nclause->m_value == "group") {
-			query->m_sortSpec.push_back(WasaQuery::WQSK_GROUP);
-		    }
-		    delete nclause;
-		    goto nextfield;
-		} else {
-		    nclause->m_fieldspec = match;
-		}
+		// We used Check for special fields indicating sorting
+		// etc. here but this went away from the spec. See 1.4
+		// if it comes back
+		nclause->m_fieldspec = match;
 	    }
 
 	    // +- indicator ?
@@ -356,20 +347,21 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 
 
 	    if (prev_or) {
-		// We're in an OR subquery, add new subquery
-		orClause->m_subs.push_back(nclause);
-		DPRINT((stderr, "Adding to OR chain\n"));
+		// The precedent token was an OR, add new clause to or chain
+		//DPRINT((stderr, "Adding to OR chain\n"));
+		orChain->m_subs.push_back(nclause);
 	    } else {
-		if (orClause) {
+		if (orChain) {
 		    // Getting out of OR. Add the OR subquery to the main one
-		    query->m_subs.push_back(orClause);
-		    DPRINT((stderr, "Adding OR chain to main\n"));
-		    orClause = 0;
-		}
-		// Add new subquery to main one.
+		    //DPRINT((stderr, "Adding OR chain to main\n"));
+		    query->m_subs.push_back(orChain);
+		    orChain = 0;
+		} 
+		//DPRINT((stderr, "Adding to main chain\n"));
+		// Add new clause to main query
 		query->m_subs.push_back(nclause);
-		DPRINT((stderr, "Adding to main chain\n"));
 	    }
+
 	    prev_or = false;
 	}
 
@@ -382,9 +374,9 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    break;
     }
 
-    if (orClause) {
+    if (orChain) {
 	// Getting out of OR. Add the OR subquery to the main one
-	query->m_subs.push_back(orClause);
+	query->m_subs.push_back(orChain);
 	DPRINT((stderr, "Adding OR chain to main\n"));
     }
 

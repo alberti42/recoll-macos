@@ -1,6 +1,6 @@
 #ifndef _WASASTRINGTOQUERY_H_INCLUDED_
 #define _WASASTRINGTOQUERY_H_INCLUDED_
-/* @(#$Id: wasastringtoquery.h,v 1.4 2007-01-17 13:53:41 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: wasastringtoquery.h,v 1.5 2007-02-12 18:16:08 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,10 +25,17 @@ using std::string;
 using std::vector;
 
 /** 
- * A simple class to represent a parsed wasabiSimple query
- * string. Can hold a string value or an array of subqueries.
- * The value can hold one or several words. In the latter case, it should 
- * be interpreted as a phrase (comes from a user-entered "quoted string").
+ * A simple class to represent a parsed wasabiSimple query element. 
+ * Can hold a string value or an array of subqueries.
+ *
+ * The complete query is represented by a top WasaQuery holding a
+ * chain of ANDed subclauses. Some of the subclauses may be themselves
+ * OR'ed lists (it doesn't go deeper). Entries in the AND list may be
+ * negated (AND NOT).
+ *
+ * For LEAF elements, the value can hold one or several words. In the
+ * latter case, it should be interpreted as a phrase (comes from a
+ * user-entered "quoted string").
  */
 class WasaQuery {
 public:
@@ -36,34 +43,33 @@ public:
     typedef vector<WasaQuery*> subqlist_t;
 
     WasaQuery() 
-	: m_op(OP_NULL), m_typeKind(WQTK_NONE)
+	: m_op(OP_NULL), m_modifiers(0)
     {}
+
     ~WasaQuery();
 
     /** Get string describing the query tree from this point */
     void describe(string &desc) const;
 
-    /** Op to be performed on either value or subqueries */
+    /** Op to be performed on either value (may be LEAF or EXCL, or subqs */
     WasaQuery::Op      m_op;
 
     /** Field specification if any (ie: title, author ...) */
     string             m_fieldspec;
 
-    /* String value. Valid for op == OP_LEAF */
+    /* String value. Valid for op == OP_LEAF or EXCL */
     string             m_value;
 
     /** Subqueries. Valid for conjunctions */
     vector<WasaQuery*> m_subs;
     
-    /** Restrict results to some file type, defined by either mime,
-     *  app group, or extension */
-    enum TypeKind {WQTK_NONE, WQTK_MIME, WQTK_GROUP, WQTK_EXT};
-    TypeKind           m_typeKind;
-    vector<string>     m_types;
-
-    /** Sort on relevance, date, name or group */
-    enum SortKind {WQSK_REL, WQSK_DATE, WQSK_ALPHA, WQSK_GROUP};
-    vector<SortKind>   m_sortSpec;
+    /** Modifiers for term handling: case/diacritics handling,
+	stemming control */
+    enum Modifier {WQM_CASESENS = 1, WQM_DIACSENS = 2, WQM_NOSTEM = 4, 
+		   WQM_BOOST = 8, WQM_PROX = 0x10, WQM_SLOPPY = 0x20, 
+		   WQM_WORDS = 0x40, WQM_PHRASESLACK = 0x80, WQM_REGEX = 0x100,
+		   WQM_FUZZY = 0x200};
+    unsigned int       m_modifiers;
 };
 
 /**
