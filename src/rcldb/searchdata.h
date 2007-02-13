@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.9 2007-01-25 15:50:54 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.10 2007-02-13 10:58:32 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -121,28 +121,37 @@ private:
 
 class SearchDataClause {
 public:
-    SearchDataClause(SClType tp) : m_tp(tp), m_parentSearch(0) {}
+    SearchDataClause(SClType tp) 
+	: m_tp(tp), m_parentSearch(0), m_modifiers(SDCM_NONE)
+    {}
+
     virtual ~SearchDataClause() {}
 
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string&) = 0;
 
-    virtual bool isFileName() const {return m_tp==SCLT_FILENAME ? true: false;}
+    bool isFileName() const {return m_tp==SCLT_FILENAME ? true: false;}
 
     virtual string getReason() const {return m_reason;}
 
     virtual bool getTerms(vector<string>&, vector<vector<string> >&,
 			  vector<int>&) const
     {return true;}
-    virtual SClType getTp() {return m_tp;}
 
-    virtual void setParent(SearchData *p) {m_parentSearch = p;}
+    SClType getTp() {return m_tp;}
+
+    void setParent(SearchData *p) {m_parentSearch = p;}
+
     friend class SearchData;
+    
+    enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=1};
+    virtual void setModifiers(Modifier mod) {m_modifiers = mod;}
 
 protected:
-    string  m_reason;
-    SClType m_tp;
+    string      m_reason;
+    SClType     m_tp;
     SearchData *m_parentSearch;
-    bool    m_haveWildCards;
+    bool        m_haveWildCards;
+    Modifier    m_modifiers;
 };
     
 /**

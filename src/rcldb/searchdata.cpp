@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.12 2007-01-29 13:51:08 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.13 2007-02-13 10:58:31 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -310,10 +310,10 @@ static void addPrefix(list<string>& terms, const string& prefix)
  *   count)
  */
 bool StringToXapianQ::processUserString(const string &iq,
-				const string &prefix,
-				string &ermsg,
-				list<Xapian::Query> &pqueries,
-				int slack, bool useNear)
+					const string &prefix,
+					string &ermsg,
+					list<Xapian::Query> &pqueries,
+					int slack, bool useNear)
 {
     LOGDEB(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
     ermsg.erase();
@@ -400,8 +400,8 @@ bool StringToXapianQ::processUserString(const string &iq,
 		    // Some version of xapian will accept only one OR clause
 		    // inside NEAR, all others must be leafs
 		    bool nostemexp = 
-			(op == Xapian::Query::OP_PHRASE || hadmultiple) ?
-			true : false;
+			op == Xapian::Query::OP_PHRASE || hadmultiple;
+
 		    string sterm;
 		    list<string>exp;
 		    stripExpandTerm(nostemexp, *it, exp, sterm);
@@ -472,10 +472,15 @@ static string fieldToPrefix(const string& i_field)
     return "";
 }
 
+static const string nullstemlang;
+
 // Translate a simple OR, AND, or EXCL search clause. 
 bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p, 
 					   const string& stemlang)
 {
+    const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? nullstemlang:
+	stemlang;
+
     m_terms.clear();
     m_groups.clear();
     Xapian::Query *qp = (Xapian::Query *)p;
@@ -502,7 +507,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	(m_parentSearch && !m_parentSearch->haveWildCards()) || 
 	(m_parentSearch == 0 && !m_haveWildCards);
 
-    StringToXapianQ tr(db, stemlang, doBoostUserTerm);
+    StringToXapianQ tr(db, l_stemlang, doBoostUserTerm);
     if (!tr.processUserString(m_text, prefix, m_reason, pqueries))
 	return false;
     if (pqueries.empty()) {
@@ -516,7 +521,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 
 // Translate a FILENAME search clause. 
 bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p, 
-					     const string& stemlang)
+					     const string&)
 {
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
@@ -532,6 +537,8 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
 bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p, 
 					 const string& stemlang)
 {
+    const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? nullstemlang:
+	stemlang;
     LOGDEB(("SearchDataClauseDist::toNativeQuery\n"));
     m_terms.clear();
     m_groups.clear();
@@ -562,7 +569,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     }
     string s = string("\"") + m_text + string("\"");
     bool useNear = (m_tp == SCLT_NEAR);
-    StringToXapianQ tr(db, stemlang, doBoostUserTerm);
+    StringToXapianQ tr(db, l_stemlang, doBoostUserTerm);
     if (!tr.processUserString(s, prefix, m_reason, pqueries, m_slack, useNear))
 	return false;
     if (pqueries.empty()) {
