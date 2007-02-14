@@ -1,0 +1,3 @@
+Recoll query: (openofficewriter_uniqueterm:(wqf=11))
+1 results 
+application/vnd.sun.xml.writer	[file:///home/dockes/projets/fulltext/testrecoll/ooff/writer.odt]	[writer.odt]	6360	bytes	

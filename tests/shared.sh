@@ -1,4 +1,4 @@
-# @(#$Id: shared.sh,v 1.1 2007-02-14 08:16:47 dockes Exp $  (C) 2006 J.F.Dockes
+# @(#$Id: shared.sh,v 1.2 2007-02-14 11:52:28 dockes Exp $  (C) 2006 J.F.Dockes
 
 # shared code and variables for all tests
 
@@ -7,6 +7,7 @@ export RECOLL_CONFDIR
 
 # Call this with the script's $0 as argument
 initvariables() {
+  tstdata=/home/dockes/projets/fulltext/testrecoll		
   toptmp=${TMPDIR:-/tmp}/recolltsttmp
   myname=`basename $1 .sh`
   mystderr=$toptmp/${myname}.err

@@ -1,0 +1,3 @@
+Recoll query: (equk0401319a:(wqf=11))
+1 results 
+text/rtf	[file:///home/dockes/projets/fulltext/testrecoll/rtf/JO28102004plaisance.rtf]	[J]	117216	bytes	

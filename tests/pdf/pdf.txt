@@ -1,0 +1,4 @@
+Recoll query: (((sequences PHRASE 5 of PHRASE 5 moveto PHRASE 5 and PHRASE 5 lineto) OR ansix3.4:(wqf=11)))
+2 results 
+application/pdf	[file:///home/dockes/projets/fulltext/testrecoll/pdf/ThinkingInPostScript.pdf]	[Thinking In PostScript]	846435	bytes	
+application/pdf	[file:///home/dockes/projets/fulltext/testrecoll/pdf/linux unicode.pdf]	[developerWorks: Linux | Unicode : Linux Unicode programming]	72669	bytes	

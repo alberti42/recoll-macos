@@ -1,0 +1,3 @@
+Recoll query: ((udi PHRASE 5 manber PHRASE 5 and PHRASE 5 sun PHRASE 5 wu))
+1 results 
+application/postscript	[file:///home/dockes/projets/fulltext/testrecoll/postscript/glimpse.ps]	[glimpse.ps]	118970	bytes	

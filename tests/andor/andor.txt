@@ -1,4 +1,4 @@
 Recoll query: (((beatles:(wqf=11) OR lennon:(wqf=11)) AND (live:(wqf=11) OR unplugged:(wqf=11))))
 2 results 
-53%	text/plain		18	bytes	[file:///home/dockes/projets/fulltext/testrecoll/andor/bu.txt]	[bu.txt]
-46%	text/plain		12	bytes	[file:///home/dockes/projets/fulltext/testrecoll/andor/leli.txt]	[leli.txt]
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/andor/bu.txt]	[bu.txt]	18	bytes	
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/andor/leli.txt]	[leli.txt]	12	bytes	
