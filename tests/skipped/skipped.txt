@@ -1,0 +1,3 @@
+Recoll query: ((shouldbeskippedunique:(wqf=11) OR shouldbeskippeduniqu))
+1 results 
+61%	text/plain		48	bytes	[file:///home/dockes/projets/fulltext/testrecoll/skipped/rlyskipped/shouldnotbeskipped.txt]	[shouldnotbeskipped.txt]

@@ -1,0 +1,2 @@
+Recoll query: (badsuffixes_unique:(wqf=11))
+0 results 
