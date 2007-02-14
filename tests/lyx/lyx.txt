@@ -2,9 +2,8 @@ Recoll query: ((bienvenue:(wqf=11) AND dans:(wqf=11) AND univers:(wqf=11) AND de
 1 results 
 application/x-lyx	[file:///home/dockes/projets/fulltext/testrecoll/lyx/fr_splash.lyx]	[fr_splash.lyx]	3577	bytes	
 Recoll query: ((welcome:(wqf=11) AND to:(wqf=11) AND lyx:(wqf=11)))
-2 results 
+1 results 
 application/x-lyx	[file:///home/dockes/projets/fulltext/testrecoll/lyx/splash.lyx]	[splash.lyx]	2974	bytes	
-text/plain	[file:///home/dockes/projets/fulltext/testrecoll/filenames/filenames.txt]	[filenames.txt]	8617039	bytes	
 Recoll query: ((udvozli:(wqf=11) AND ont:(wqf=11) AND a:(wqf=11) AND lyx:(wqf=11)))
 1 results 
 application/x-lyx	[file:///home/dockes/projets/fulltext/testrecoll/lyx/hu_splash.lyx]	[hu_splash.lyx]	4773	bytes	

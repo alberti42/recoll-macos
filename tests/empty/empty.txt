@@ -1,0 +1,3 @@
+Recoll query: (emptyuniqueterm:(wqf=11))
+1 results 
+application/x-fsdirectory	[file:///home/dockes/projets/fulltext/testrecoll/emptyUniqueTerm]	[emptyUniqueTerm]	512	bytes	

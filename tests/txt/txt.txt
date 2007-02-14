@@ -1,0 +1,4 @@
+Recoll query: (anemometre:(wqf=11))
+2 results 
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/txt/liste.txt]	[liste.txt]	1165	bytes	
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/txt/liste1.txt]	[liste1.txt]	893	bytes	

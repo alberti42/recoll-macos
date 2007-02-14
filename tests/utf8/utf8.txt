@@ -1,0 +1,3 @@
+Recoll query: (((etonnant OR etonne:(wqf=11) OR etonnement OR etonnes OR etonn) AND (precite:(wqf=11) OR precit)))
+1 results 
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/utf8/frenchUtf.txt]	[frenchUtf.txt]	87	bytes	
