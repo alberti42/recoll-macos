@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.105 2007-02-02 10:10:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.106 2007-02-14 10:09:31 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -861,7 +861,9 @@ bool Db::add(const string &fn, const Doc &idoc,
 	splitData.basepos += splitData.curpos + 100;
     }
 
-    // Split and index title
+    // Split and index title. If title is empty here, use file name
+    if (doc.title.empty())
+	doc.title = doc.utf8fn;
     if (!doc.title.empty()) {
 	LOGDEB2(("Db::add: split title [%s]\n", doc.title.c_str()));
 	if (!dumb_string(doc.title, noacc)) {
