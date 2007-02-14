@@ -308,6 +308,17 @@
                                             <bool>false</bool>
                                         </property>
                                     </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>useDesktopOpenCB</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Use desktop preferences to choose document editor.</string>
+                                        </property>
+                                        <property name="checked">
+                                            <bool>false</bool>
+                                        </property>
+                                    </widget>
                                 </vbox>
                             </widget>
                         </vbox>

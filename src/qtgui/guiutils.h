@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.19 2006-12-20 13:12:49 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.20 2007-02-14 10:10:43 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,7 @@ class PrefsPack {
     int pvheight;
     int ssearchTyp;
     QString htmlBrowser;
+    bool    useDesktopOpen; // typically xdg-open, instead of mimeview settings
     bool queryBuildAbstract;
     bool queryReplaceAbstract;
     bool startWithAdvSearchOpen;

@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.39 2007-02-07 17:17:11 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.40 2007-02-14 10:10:42 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1266,6 +1266,24 @@ fvwm
 	not...</para> 
 	</listitem>
 
+	<listitem><para><guilabel>Start with advanced search dialog open
+	</guilabel> and <guilabel>Start with sort dialog open</guilabel>: 
+          If you use these dialogs all the time, checking these
+          entries will get them to open when recoll starts.</para> 
+	</listitem>
+
+	<listitem><para><guilabel>Use desktop preferences to choose 
+	document editor</guilabel>: if this is checked, the
+	<command>xdg-open</command> 
+	utility will be used to open files when you click the
+	<guilabel>Edit</guilabel> link in the result list, instead of
+	the application defined in
+	<filename>mimeview</filename>. <command>xdg-open</command>
+	will in term use your desktop preferences to choose an
+	appropriate application.</para> 
+	</listitem>
+
+
       </itemizedlist>
       </para>
       </formalpara>
@@ -1915,6 +1933,11 @@ skippedPaths = ~/somedir/*.txt
 	<para>Please note that these entries must be placed under a
 	<literal>[view]</literal> section.</para>
 
+	<para>If <guilabel>Use desktop preferences to choose 
+	document editor</guilabel> is checked in the user preferences,
+        all <filename>mimeview</filename> entries will be ignored
+        except the one labelled <literal>application/x-all</literal>
+        (which is set to use <command>xdg-open</command> by default).</para>
       </sect2>
 
       <sect2 id="rclinstall.config.examples">

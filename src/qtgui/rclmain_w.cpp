@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.24 2007-01-19 15:22:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.25 2007-02-14 10:10:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -726,7 +726,13 @@ void RclMain::startNativeViewer(int docnum)
 void RclMain::startNativeViewer(Rcl::Doc doc)
 {
     // Look for appropriate viewer
-    string cmd = rclconfig->getMimeViewerDef(doc.mimetype);
+    string cmd;
+    if (prefs.useDesktopOpen) {
+	cmd = rclconfig->getMimeViewerDef("application/x-all");
+    } else {
+	cmd = rclconfig->getMimeViewerDef(doc.mimetype);
+    }
+
     if (cmd.length() == 0) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("No external viewer configured for mime type ")
@@ -742,8 +748,23 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 			     .arg(QString::fromLocal8Bit(cmd.c_str())));
 	return;
     }
+
     string cmdpath;
-    if (!ExecCmd::which(lcmd.front(), cmdpath)) {
+    if (prefs.useDesktopOpen) {
+	// Findfilter searches the recoll filters directory in
+	// addition to the path
+	cmdpath = rclconfig->findFilter(lcmd.front());
+	// Substitute path for cmd
+	if (!cmdpath.empty()) {
+	    lcmd.front() = cmdpath;
+	    cmd.erase();
+	    stringsToString(lcmd, cmd);
+	}
+    } else {
+	ExecCmd::which(lcmd.front(), cmdpath);
+    }
+
+    if (cmdpath.empty()) {
 	QString message = tr("The viewer specified in mimeconf for %1: %2"
 			     " is not found.\nDo you want to start the "
 			     " preferences dialog ?")

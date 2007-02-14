@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.30 2007-02-12 18:14:05 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.31 2007-02-14 10:10:43 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -199,6 +199,8 @@ void rwSettings(bool writing)
 	prefs.reslistformat = rlfDflt;
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", ,
 	       "english");
+    SETTING_RW(prefs.useDesktopOpen, 
+	       "/Recoll/prefs/useDesktopOpen", Bool, false);
     SETTING_RW(prefs.queryBuildAbstract, 
 	       "/Recoll/prefs/query/buildAbstract", Bool, true);
     SETTING_RW(prefs.queryReplaceAbstract, 
