@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.3 2007-02-08 12:25:49 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.4 2007-02-14 10:08:05 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -140,14 +140,13 @@ int main(int argc, char **argv)
 
     RefCntr<Rcl::SearchData> rq(sd);
     rcldb.setQuery(rq, Rcl::Db::QO_STEM);
-    int offset = 0;
-    int limit = 1000;
+    int limit = 2000;
     cout << "Recoll query: " << rq->getDescription() << endl;
     int cnt = rcldb.getResCnt();
     cout << cnt << " results " << 
-	(cnt <= limit ? "" : "(printing 100 max):") << endl;
+	(cnt <= limit ? "" : "(printing 2000 max):") << endl;
     string tmpdir;
-    for (int i = offset; i < offset + limit; i++) {
+    for (int i = 0; i < limit; i++) {
 	int pc;
 	Rcl::Doc doc;
 	if (!rcldb.getDoc(i, doc, &pc))
@@ -155,13 +154,12 @@ int main(int argc, char **argv)
 
 	char cpc[20];
 	sprintf(cpc, "%d", pc);
-	cout << cpc << "%"           << "\t"
-	     << doc.mimetype.c_str() << "\t"
-	     << doc.dmtime.c_str()   << "\t"
-	     << doc.fbytes.c_str()   << "\tbytes" << "\t"
-	     << "[" << doc.url.c_str() << "]" << "\t" 
-	     << "[" << doc.title.c_str() << "]"
-	     <<  endl;
+	cout 
+	    << doc.mimetype.c_str() << "\t"
+	    << "[" << doc.url.c_str() << "]" << "\t" 
+	    << "[" << doc.title.c_str() << "]" << "\t"
+	    << doc.fbytes.c_str()   << "\tbytes" << "\t"
+	    <<  endl;
 
 	if (op_flags & OPT_d) {
 	    string fn = doc.url.substr(7);
