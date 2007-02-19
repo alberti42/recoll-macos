@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.8 2007-01-19 15:22:50 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.9 2007-02-19 18:15:14 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -109,6 +109,7 @@ private:
     int matchPara;
     bool dynSearchActive;
     bool canBeep;
+    bool m_loading;
     list<TabData> tabData;
     QWidget *currentW;
     HiliteData m_hData;

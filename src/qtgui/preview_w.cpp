@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.16 2007-02-08 17:05:12 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.17 2007-02-19 18:15:14 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -89,6 +89,7 @@ void Preview::init()
     connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
 
     searchTextLine->installEventFilter(this);
+    pvEdit->installEventFilter(this);
     dynSearchActive = false;
     canBeep = true;
     tabData.push_back(TabData(pvTab->currentPage()));
@@ -96,6 +97,7 @@ void Preview::init()
     if (prefs.pvwidth > 100) {
 	resize(prefs.pvwidth, prefs.pvheight);
     }
+    m_loading = false;
 }
 
 void Preview::destroy()
@@ -116,7 +118,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     if (event->type() != QEvent::KeyPress) 
 	return QWidget::eventFilter(target, event);
     
-    LOGDEB1(("Preview::eventFilter: keyEvent\n"));
+    LOGDEB(("Preview::eventFilter: keyEvent\n"));
     QKeyEvent *keyEvent = (QKeyEvent *)event;
     if (keyEvent->key() == Qt::Key_Q && 
 	(keyEvent->state() & Qt::ControlButton)) {
@@ -311,6 +313,8 @@ void Preview::textDoubleClicked(int, int)
 
 void Preview::closeCurrentTab()
 {
+    if (m_loading)
+	return;
     if (pvTab->count() > 1) {
 	QWidget *tw = pvTab->currentPage();
 	if (!tw) 
@@ -534,10 +538,23 @@ class WaiterThread : public QThread {
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)?(A):(B))
 #endif
+class LoadGuard {
+    bool *m_bp;
+public:
+    LoadGuard(bool *bp) {m_bp = bp ; *m_bp = true;}
+    ~LoadGuard() {*m_bp = false;}
+};
 
 bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 				   int docnum)
 {
+    if (m_loading) {
+	LOGERR(("ALready loading\n"));
+	return false;
+    }
+
+    LoadGuard guard(&m_loading);
+
     Rcl::Doc doc = idoc;
     bool cancel = false;
 
