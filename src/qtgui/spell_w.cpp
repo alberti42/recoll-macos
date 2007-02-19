@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.10 2006-12-22 16:48:05 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.11 2007-02-19 16:28:05 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,7 @@ void SpellW::init()
 	stemLangCMB->
 	    insertItem(QString::fromAscii(it->c_str(), it->length()));
     }
-    stemLangCMB->setEnabled(false);
+    stemLangCMB->setEnabled(expTypeCMB->currentItem()==2);
 
     // signals and slots connections
     connect(baseWordLE, SIGNAL(textChanged(const QString&)), 
@@ -154,8 +154,9 @@ void SpellW::doExpand()
     case 0: 
     case 1:
     case 2: {
-	if (!rcldb->termMatch(mt, prefs.queryStemLang.ascii(), expr, entries, 
-			      200)) {
+	string l_stemlang = stemLangCMB->currentText().ascii();
+
+	if (!rcldb->termMatch(mt, l_stemlang, expr, entries, 200)) {
 	    LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));
 	    return;
 	}
