@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.21 2006-12-14 13:53:43 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.22 2007-02-19 18:14:13 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -142,17 +142,20 @@ public:
     }
 };
 
-
 int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		const string *inputstring, string *output)
 {
+    // Need something to take note of my own errors (apart from the command's)
+    bool haderror = false;
+
     { // Debug and logging
 	string command = cmd + " ";
 	for (list<string>::const_iterator it = args.begin();it != args.end();
 	     it++) {
 	    command += "{" + *it + "} ";
 	}
-	LOGDEB(("ExecCmd::doexec: %s\n", command.c_str()));
+	LOGDEB(("ExecCmd::doexec: (%p|%p) %s\n", 
+		inputstring, output, command.c_str()));
     }
     const char *input = inputstring ? inputstring->data() : 0;
     unsigned int inputlen = inputstring ? inputstring->length() : 0;
@@ -175,9 +178,14 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
     }
 
     if (e.pid) {
-	// Ignore SIGPIPE in here.
+	// Ignore SIGPIPE and block SIGCHLD in here.
 	void (*osig)(int);
 	osig = signal(SIGPIPE, SIG_IGN);
+	sigset_t blkcld;
+	sigemptyset(&blkcld);
+	sigaddset(&blkcld, SIGCHLD);
+	sigprocmask(SIG_BLOCK, &blkcld, 0);
+
 	// Father process
 	if (input) {
 	    close(e.pipein[0]);
@@ -221,6 +229,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		    }
 		    LOGERR(("ExecCmd::doexec: select(2) failed. errno %d\n", 
 			    errno));
+		    haderror = true;
 		    break;
 		}
 		if (e.pipein[1] >= 0 && FD_ISSET(e.pipein[1], &writefds)) {
@@ -229,6 +238,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		    if (n < 0) {
 			LOGERR(("ExecCmd::doexec: write(2) failed. errno %d\n",
 				errno));
+			haderror = true;
 			goto out;
 		    }
 		    nwritten += n;
@@ -258,6 +268,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		    } else if (n < 0) {
 			LOGERR(("ExecCmd::doexec: read(2) failed. errno %d\n",
 				errno));
+			haderror = true;
 			goto out;
 		    } else if (n > 0) {
 			// cerr << "READ: " << n << endl;
@@ -271,13 +282,14 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 
     out:
 	int status = -1;
-	signal(SIGPIPE, osig);
 	if (!m_cancelRequest) {
 	    (void)waitpid(e.pid, &status, 0);
 	    e.pid = -1;
 	}
+	signal(SIGPIPE, osig);
+	sigprocmask(SIG_UNBLOCK, &blkcld, 0);
 	LOGDEB1(("ExecCmd::doexec: father got status 0x%x\n", status));
-	return status;
+	return haderror ? -1 : status;
 
     } else {
 	// In child process. Set up pipes, environment, and exec command
