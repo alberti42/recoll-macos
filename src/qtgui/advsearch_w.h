@@ -1,6 +1,6 @@
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-/* @(#$Id: advsearch_w.h,v 1.11 2006-12-20 13:12:49 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: advsearch_w.h,v 1.12 2007-02-19 16:10:00 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -84,6 +84,8 @@ signals:
 private:
     virtual void init();
     std::list<SearchClauseW *> m_clauseWins;
+    QStringList                m_ignTypes;
+    bool                       m_ignByCats;
     void saveCnf();
     void fillFileTypes();
 };

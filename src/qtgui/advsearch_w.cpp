@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.16 2006-12-20 13:12:49 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.17 2007-02-19 16:10:00 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -60,6 +60,9 @@ extern RclConfig *rclconfig;
 
 static const int initclausetypes[] = {1, 3, 0, 2, 5};
 static const unsigned int iclausescnt = sizeof(initclausetypes) / sizeof(int);
+static map<QString,QString> cat_translations;
+static map<QString,QString> cat_rtranslations;
+
 
 void AdvSearch::init()
 {
@@ -108,8 +111,10 @@ void AdvSearch::init()
 
     // Initialize lists of accepted and ignored mime types from config
     // and settings
-    restrictCtCB->setChecked(prefs.fileTypesByCats);
+    m_ignTypes = prefs.asearchIgnFilTyps;
+    m_ignByCats = prefs.fileTypesByCats;
     restrictCtCB->setEnabled(false);
+    restrictCtCB->setChecked(m_ignByCats);
     fillFileTypes();
 
     subtreeCMB->insertStringList(prefs.asearchSubdirHist);
@@ -120,6 +125,25 @@ void AdvSearch::init()
     // vbox is so that we can then insert SearchClauseWs), but we
     // don't want to see it.
     clauseline->close();
+
+    // Translations for known categories
+    cat_translations[QString::fromUtf8("texts")] = tr("texts");
+    cat_rtranslations[tr("texts")] = QString::fromUtf8("texts"); 
+
+    cat_translations[QString::fromUtf8("spreadsheets")] = tr("spreadsheets");
+    cat_rtranslations[tr("spreadsheets")] = QString::fromUtf8("spreadsheets");
+
+    cat_translations[QString::fromUtf8("presentations")] = tr("presentations");
+    cat_rtranslations[tr("presentations")] =QString::fromUtf8("presentations");
+
+    cat_translations[QString::fromUtf8("media")] = tr("media");
+    cat_rtranslations[tr("media")] = QString::fromUtf8("media"); 
+
+    cat_translations[QString::fromUtf8("messages")] = tr("messages");
+    cat_rtranslations[tr("messages")] = QString::fromUtf8("messages"); 
+
+    cat_translations[QString::fromUtf8("other")] = tr("other");
+    cat_rtranslations[tr("other")] = QString::fromUtf8("other"); 
 }
 
 void AdvSearch::saveCnf()
@@ -144,27 +168,6 @@ bool AdvSearch::close()
 #define AdvSearchBaseLayout Ui::AdvSearchBase::AdvSearchBaseLayout
 #endif
 
-// Move selected file types from the searched to the ignored box
-void AdvSearch::delFiltypPB_clicked()
-{
-    list<int> trl;
-    QStringList moved;
-    for (unsigned int i = 0; i < yesFiltypsLB->count();i++) {
-	QListBoxItem *item = yesFiltypsLB->item(i);
-	if (item && item->isSelected()) {
-	    moved.push_back(item->text());
-	    trl.push_front(i);
-	}
-    }
-    if (!moved.empty()) {
-	noFiltypsLB->insertStringList(moved);
-	for (list<int>::iterator it = trl.begin();it != trl.end(); it++)
-	    yesFiltypsLB->removeItem(*it);
-    }
-    yesFiltypsLB->sort();
-    noFiltypsLB->sort();
-}
-
 void AdvSearch::delAFiltypPB_clicked()
 {
     for (unsigned int i = 0; i < yesFiltypsLB->count();i++) {
@@ -173,16 +176,6 @@ void AdvSearch::delAFiltypPB_clicked()
     delFiltypPB_clicked();
 }
 
-// Save current list of ignored file types to prefs
-void AdvSearch::saveFileTypes()
-{
-    prefs.asearchIgnFilTyps.clear();
-    for (unsigned int i = 0; i < noFiltypsLB->count();i++) {
-	QListBoxItem *item = noFiltypsLB->item(i);
-	prefs.asearchIgnFilTyps.append(item->text());
-    }
-    rwSettings(true);
-}
 void AdvSearch::addClause()
 {
     addClause(0);
@@ -234,6 +227,33 @@ void AdvSearch::polish()
 }
 #endif
 
+
+// Move selected file types from the searched to the ignored box
+void AdvSearch::delFiltypPB_clicked()
+{
+    list<int> trl;
+    QStringList moved;
+    for (unsigned int i = 0; i < yesFiltypsLB->count();i++) {
+	QListBoxItem *item = yesFiltypsLB->item(i);
+	if (item && item->isSelected()) {
+	    moved.push_back(item->text());
+	    trl.push_front(i);
+	}
+    }
+    if (!moved.empty()) {
+	noFiltypsLB->insertStringList(moved);
+	for (list<int>::iterator it = trl.begin();it != trl.end(); it++)
+	    yesFiltypsLB->removeItem(*it);
+    }
+    yesFiltypsLB->sort();
+    noFiltypsLB->sort();
+    m_ignTypes.clear();
+    for (unsigned int i = 0; i < noFiltypsLB->count();i++) {
+	QListBoxItem *item = noFiltypsLB->item(i);
+	m_ignTypes.append(item->text());
+    }
+}
+
 // Move selected file types from the ignored to the searched box
 void AdvSearch::addFiltypPB_clicked()
 {
@@ -253,6 +273,11 @@ void AdvSearch::addFiltypPB_clicked()
     }
     yesFiltypsLB->sort();
     noFiltypsLB->sort();
+    m_ignTypes.clear();
+    for (unsigned int i = 0; i < noFiltypsLB->count();i++) {
+	QListBoxItem *item = noFiltypsLB->item(i);
+	m_ignTypes.append(item->text());
+    }
 }
 
 void AdvSearch::addAFiltypPB_clicked()
@@ -278,71 +303,54 @@ void AdvSearch::restrictFtCB_toggled(bool on)
 
 void AdvSearch::restrictCtCB_toggled(bool on)
 {
-    prefs.fileTypesByCats = on;
+    m_ignByCats = on;
+    // Only reset the list if we're enabled. Else this is init from prefs
+    if (restrictCtCB->isEnabled())
+	m_ignTypes.clear();
     fillFileTypes();
 }
-
-static map<QString,QString> cat_translations;
-static map<QString,QString> cat_rtranslations;
 
 void AdvSearch::fillFileTypes()
 {
     noFiltypsLB->clear();
     yesFiltypsLB->clear();
+    noFiltypsLB->insertStringList(m_ignTypes); 
 
-    if (prefs.fileTypesByCats == false) {
+    QStringList ql;
+    if (m_ignByCats == false) {
 	list<string> types = rclconfig->getAllMimeTypes();
-	noFiltypsLB->insertStringList(prefs.asearchIgnFilTyps); 
-
-	QStringList ql;
 	for (list<string>::iterator it = types.begin(); 
 	     it != types.end(); it++) {
-	    if (prefs.asearchIgnFilTyps.findIndex(it->c_str())<0)
-		ql.append(it->c_str());
+	    QString qs = QString::fromUtf8(it->c_str());
+	    if (m_ignTypes.findIndex(qs) < 0)
+		ql.append(qs);
 	}
-	yesFiltypsLB->insertStringList(ql);
     } else {
-	cat_translations.clear();
-	// Make sure we have entries for all defined categories
-	// Translations for known cats
-	cat_translations[QString::fromUtf8("texts")] = tr("texts");
-	cat_rtranslations[tr("texts")] = QString::fromUtf8("texts"); 
-
-	cat_translations[QString::fromUtf8("spreadsheets")] = 
-	    tr("spreadsheets");
-	cat_rtranslations[tr("spreadsheets")] = 
-	    QString::fromUtf8("spreadsheets");
-
-	cat_translations[QString::fromUtf8("presentations")] = 
-	    tr("presentations");
-	cat_rtranslations[tr("presentations")] = 
-	    QString::fromUtf8("presentations");
-
-	cat_translations[QString::fromUtf8("media")] = tr("media");
-	cat_rtranslations[tr("media")] = QString::fromUtf8("media"); 
-
-	cat_translations[QString::fromUtf8("messages")] = tr("messages");
-	cat_rtranslations[tr("messages")] = QString::fromUtf8("messages"); 
-
-	cat_translations[QString::fromUtf8("other")] = tr("other");
-	cat_rtranslations[tr("other")] = QString::fromUtf8("other"); 
-
 	list<string> cats;
 	rclconfig->getMimeCategories(cats);
-	QStringList ql;
 	for (list<string>::const_iterator it = cats.begin();
 	     it != cats.end(); it++) {
 	    map<QString, QString>::const_iterator it1;
-	    if ((it1 = 
-		 cat_translations.find(QString::fromUtf8((*it).c_str())))
+	    QString cat;
+	    if ((it1 = cat_translations.find(QString::fromUtf8(it->c_str())))
 		!= cat_translations.end()) {
-		ql.append(it1->second);
+		cat = it1->second;
 	    } else {
-		ql.append(QString::fromUtf8((*it).c_str()));
+		cat = QString::fromUtf8(it->c_str());
 	    } 
+	    if (m_ignTypes.findIndex(cat) < 0)
+		ql.append(cat);
 	}
-	yesFiltypsLB->insertStringList(ql);
     }
+    yesFiltypsLB->insertStringList(ql);
+}
+
+// Save current list of ignored file types to prefs
+void AdvSearch::saveFileTypes()
+{
+    prefs.asearchIgnFilTyps = m_ignTypes;
+    prefs.fileTypesByCats = m_ignByCats;
+    rwSettings(true);
 }
 
 using namespace Rcl;
