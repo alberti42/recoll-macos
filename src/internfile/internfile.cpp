@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.27 2007-02-08 17:05:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.28 2007-02-19 18:05:25 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -88,12 +88,12 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     // Execute command and retrieve output file name, check that it exists
     ExecCmd ex;
     int status = ex.doexec(cmd, args, 0, &tfile);
-    if (status) {
+    if (status || tfile.empty()) {
 	LOGERR(("uncompressfile: doexec: status 0x%x\n", status));
 	rmdir(tdir.c_str());
 	return false;
     }
-    if (!tfile.empty() && tfile[tfile.length() - 1] == '\n')
+    if (tfile[tfile.length() - 1] == '\n')
 	tfile.erase(tfile.length() - 1, 1);
     return true;
 }
