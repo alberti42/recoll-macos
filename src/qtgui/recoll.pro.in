@@ -75,4 +75,5 @@ contains( UNAME, SunOS ) {
           LIBS += -ldl
 }
 
-TRANSLATIONS = i18n/recoll_fr.ts i18n/recoll_ru.ts i18n/recoll_uk.ts
+TRANSLATIONS = i18n/recoll_fr.ts i18n/recoll_ru.ts i18n/recoll_uk.ts \
+    i18n/recoll_it.ts
