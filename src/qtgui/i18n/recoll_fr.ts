@@ -245,7 +245,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Can&apos;t turn doc into internal rep for </source>
-        <translation>Impossible de créer une représentation interne pour </translation>
+        <translation type="obsolete">Impossible de créer une représentation interne pour </translation>
     </message>
     <message>
         <source>Creating preview text</source>
@@ -270,6 +270,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>File does not exist</source>
         <translation>Le fichier n&apos;existe pas</translation>
+    </message>
+    <message>
+        <source>Missing helper program: </source>
+        <translation>Programmes filtres externes manquants: </translation>
+    </message>
+    <message>
+        <source>Can&apos;t turn doc into internal representation for </source>
+        <translation>Impossible de traduire le document en représentation interne pour </translation>
     </message>
 </context>
 <context>
@@ -626,6 +634,10 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
         <source>Term explorer tool</source>
         <translation>Outil d&apos;exploration de l&apos;index</translation>
     </message>
+    <message>
+        <source>External index dialog</source>
+        <translation>Index externes</translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -734,7 +746,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation>Documents &lt;b&gt;%1-%2&lt;/b&gt; parmi &lt;b&gt;%3&lt;/b&gt; pour </translation>
+        <translation type="obsolete">Documents &lt;b&gt;%1-%2&lt;/b&gt; parmi &lt;b&gt;%3&lt;/b&gt; pour </translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -747,6 +759,14 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>P&amp;arent document/folder</source>
         <translation>Document ou répertoire P&amp;arent</translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
+        <translation>Résultats  &lt;b&gt;%1-%2&lt;b&gt; (total au moins &lt;b&gt;%3&lt;/b&gt;) pour </translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
+        <translation>Résultats &lt;b&gt;%1-%2&lt;/b&gt; pour </translation>
     </message>
 </context>
 <context>
@@ -791,6 +811,18 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>Too many completions</source>
         <translation>Trop de complétions possibles</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation>Language d&apos;interrogation</translation>
+    </message>
+    <message>
+        <source>Bad query string</source>
+        <translation>Requête non reconnue</translation>
+    </message>
+    <message>
+        <source>Out of memory</source>
+        <translation>Plus de mémoire disponible</translation>
     </message>
 </context>
 <context>
@@ -1232,7 +1264,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     <name>UIPrefsDialogBase</name>
     <message>
         <source>MyDialog</source>
-        <translation>MonDialogue</translation>
+        <translation type="obsolete">MonDialogue</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -1346,35 +1378,35 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>All indexes</source>
-        <translation>Tous les index</translation>
+        <translation type="obsolete">Tous les index</translation>
     </message>
     <message>
         <source>Indexes currently not used</source>
-        <translation>Index inactifs</translation>
+        <translation type="obsolete">Index inactifs</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation>Tout ----&gt;</translation>
+        <translation type="obsolete">Tout ----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
-        <translation>Sel -----&gt;</translation>
+        <translation type="obsolete">Sel -----&gt;</translation>
     </message>
     <message>
         <source>&lt;----- Sel</source>
-        <translation>&lt;----- Sel</translation>
+        <translation type="obsolete">&lt;----- Sel</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation>&lt;----- Tout</translation>
+        <translation type="obsolete">&lt;----- Tout</translation>
     </message>
     <message>
         <source>Active indexes</source>
-        <translation>Index actifs</translation>
+        <translation type="obsolete">Index actifs</translation>
     </message>
     <message>
         <source>Indexes that will be searched in addition to the main one</source>
-        <translation>Index actifs en plus de l&apos;index principal</translation>
+        <translation type="obsolete">Index actifs en plus de l&apos;index principal</translation>
     </message>
     <message>
         <source>&amp;OK</source>
@@ -1418,6 +1450,38 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Manage</source>
         <translation>Choisir</translation>
     </message>
+    <message>
+        <source>User preferences</source>
+        <translation>Préférences utilisateur</translation>
+    </message>
+    <message>
+        <source>Use desktop preferences to choose document editor.</source>
+        <translation>Utiliser les réglages du bureau pour choisir l&apos;application de visualisation.</translation>
+    </message>
+    <message>
+        <source>External indexes</source>
+        <translation>Index externes</translation>
+    </message>
+    <message>
+        <source>Toggle selected</source>
+        <translation>Changer l&apos;état pour les entrées sélectionnées</translation>
+    </message>
+    <message>
+        <source>Activate All</source>
+        <translation>Tout activer</translation>
+    </message>
+    <message>
+        <source>Desactivate All</source>
+        <translation>Tout désactiver</translation>
+    </message>
+    <message>
+        <source>Remove selected</source>
+        <translation>Effacer la sélection</translation>
+    </message>
+    <message>
+        <source>Remove from list. This has no effect on the disk index.</source>
+        <translation>Oter de la liste. Sans effet sur les données stockées.</translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1430,7 +1494,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <name>ViewActionBase</name>
     <message>
         <source>Form1</source>
-        <translation>Form1</translation>
+        <translation type="obsolete">Form1</translation>
     </message>
     <message>
         <source>File type</source>
@@ -1451,6 +1515,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>Close</source>
         <translation>Fermer</translation>
+    </message>
+    <message>
+        <source>Native Viewers</source>
+        <translation>Applications de visualisation</translation>
     </message>
 </context>
 <context>

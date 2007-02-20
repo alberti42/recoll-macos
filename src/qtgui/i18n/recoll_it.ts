@@ -246,7 +246,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Can&apos;t turn doc into internal rep for </source>
-        <translation>Impossibile creare una rappresentazione interna per  </translation>
+        <translation type="obsolete">Impossibile creare una rappresentazione interna per  </translation>
     </message>
     <message>
         <source>Creating preview text</source>
@@ -271,6 +271,14 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     <message>
         <source>File does not exist</source>
         <translation>Il file non esiste</translation>
+    </message>
+    <message>
+        <source>Missing helper program: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t turn doc into internal representation for </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -627,6 +635,10 @@ Vuoi aprire il dialogo di configurazione ?</translation>
         <source>Term explorer tool</source>
         <translation>Strumento di esplorazione indice</translation>
     </message>
+    <message>
+        <source>External index dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -735,7 +747,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation>Documenti &lt;b&gt;%1-%2&lt;/b&gt; di &lt;b&gt;%3&lt;/b&gt; per(sp)</translation>
+        <translation type="obsolete">Documenti &lt;b&gt;%1-%2&lt;/b&gt; di &lt;b&gt;%3&lt;/b&gt; per(sp)</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -748,6 +760,14 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     <message>
         <source>P&amp;arent document/folder</source>
         <translation>&amp;Apri cartella del documento</translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -792,6 +812,18 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     <message>
         <source>Too many completions</source>
         <translation>Troppe possibilità di espansione</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad query string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Out of memory</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1233,7 +1265,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     <name>UIPrefsDialogBase</name>
     <message>
         <source>MyDialog</source>
-        <translation>MioDialogo</translation>
+        <translation type="obsolete">MioDialogo</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -1347,35 +1379,35 @@ Può essere lento per grossi documenti..</translation>
     </message>
     <message>
         <source>All indexes</source>
-        <translation>Tutti gli indici</translation>
+        <translation type="obsolete">Tutti gli indici</translation>
     </message>
     <message>
         <source>Indexes currently not used</source>
-        <translation>Indici attualmente non in uso</translation>
+        <translation type="obsolete">Indici attualmente non in uso</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation>Tutti ----&gt;</translation>
+        <translation type="obsolete">Tutti ----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
-        <translation>Sel -----&gt;</translation>
+        <translation type="obsolete">Sel -----&gt;</translation>
     </message>
     <message>
         <source>&lt;----- Sel</source>
-        <translation>&lt;----- Sel</translation>
+        <translation type="obsolete">&lt;----- Sel</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation>&lt;----- Tutti</translation>
+        <translation type="obsolete">&lt;----- Tutti</translation>
     </message>
     <message>
         <source>Active indexes</source>
-        <translation>Indici attivi</translation>
+        <translation type="obsolete">Indici attivi</translation>
     </message>
     <message>
         <source>Indexes that will be searched in addition to the main one</source>
-        <translation>Indici attivi oltre all&apos;indice principale</translation>
+        <translation type="obsolete">Indici attivi oltre all&apos;indice principale</translation>
     </message>
     <message>
         <source>&amp;OK</source>
@@ -1420,6 +1452,38 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
         <source>Manage</source>
         <translation>Scegli</translation>
     </message>
+    <message>
+        <source>User preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use desktop preferences to choose document editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External indexes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Desactivate All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove from list. This has no effect on the disk index.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1432,7 +1496,7 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     <name>ViewActionBase</name>
     <message>
         <source>Form1</source>
-        <translation>Form1</translation>
+        <translation type="obsolete">Form1</translation>
     </message>
     <message>
         <source>File type</source>
@@ -1453,6 +1517,10 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     <message>
         <source>Close</source>
         <translation>Chiudi</translation>
+    </message>
+    <message>
+        <source>Native Viewers</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

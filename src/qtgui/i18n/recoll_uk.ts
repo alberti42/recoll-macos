@@ -251,7 +251,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Can&apos;t turn doc into internal rep for </source>
-        <translation>Не можу перетворити документ у внутрішній вигляд </translation>
+        <translation type="obsolete">Не можу перетворити документ у внутрішній вигляд </translation>
     </message>
     <message>
         <source>Creating preview text</source>
@@ -267,6 +267,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>File does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing helper program: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t turn doc into internal representation for </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -564,6 +572,10 @@ Do you want to start the  preferences dialog ?</source>
         <source>Term explorer tool</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>External index dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -671,10 +683,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Деталі запиту</translation>
     </message>
     <message>
-        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>(show query)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -684,6 +692,14 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -711,6 +727,18 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Too many completions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad query string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Out of memory</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1133,7 +1161,7 @@ May be slow for big documents.</source>
     <name>UIPrefsDialogBase</name>
     <message>
         <source>MyDialog</source>
-        <translation>MyDialog</translation>
+        <translation type="obsolete">MyDialog</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -1247,35 +1275,35 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>All indexes</source>
-        <translation>Всі індекси</translation>
+        <translation type="obsolete">Всі індекси</translation>
     </message>
     <message>
         <source>Indexes currently not used</source>
-        <translation>Не використовувані</translation>
+        <translation type="obsolete">Не використовувані</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation>Всі -----&gt;</translation>
+        <translation type="obsolete">Всі -----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
-        <translation>Виб -----&gt;</translation>
+        <translation type="obsolete">Виб -----&gt;</translation>
     </message>
     <message>
         <source>&lt;----- Sel</source>
-        <translation>&lt;----- Виб</translation>
+        <translation type="obsolete">&lt;----- Виб</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation>&lt;----- Всі</translation>
+        <translation type="obsolete">&lt;----- Всі</translation>
     </message>
     <message>
         <source>Active indexes</source>
-        <translation>Активні</translation>
+        <translation type="obsolete">Активні</translation>
     </message>
     <message>
         <source>Indexes that will be searched in addition to the main one</source>
-        <translation>Індекси, які будуть використані для пошуку у додаток до основного</translation>
+        <translation type="obsolete">Індекси, які будуть використані для пошуку у додаток до основного</translation>
     </message>
     <message>
         <source>&amp;OK</source>
@@ -1318,6 +1346,38 @@ This should give higher precedence to the results where the search terms appear 
         <source>Manage</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>User preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use desktop preferences to choose document editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External indexes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Desactivate All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove from list. This has no effect on the disk index.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1328,10 +1388,6 @@ This should give higher precedence to the results where the search terms appear 
 </context>
 <context>
     <name>ViewActionBase</name>
-    <message>
-        <source>Form1</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>File type</source>
         <translation type="unfinished"></translation>
@@ -1351,6 +1407,10 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Close</source>
         <translation type="unfinished">Закрити</translation>
+    </message>
+    <message>
+        <source>Native Viewers</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
