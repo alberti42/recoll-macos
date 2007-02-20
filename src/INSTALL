@@ -98,7 +98,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        extract tag information. Without it, only the file names will be
        indexed.
 
-   Text, HTML, mail folders and Openoffice files are processed internally.
+   Text, HTML, mail folders Openoffice and Scribus files are processed
+   internally. Lyx is used to index Lyx files. Many filters need sed and awk.
 
    --------------------------------------------------------------------------
 
@@ -217,7 +218,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    If the .recoll directory does not exist when recoll or recollindex are
    started, it will be created with a set of empty configuration files.
    recoll will give you a chance to edit the configuration file before
-   starting indexing. recollindex will proceed immediately.
+   starting indexing. recollindex will proceed immediately. To avoid
+   mistakes, the automatic directory creation will only occur for the default
+   location, not if -c or RECOLL_CONFDIR were used (in the latter cases, you
+   will have to create the directory).
 
    All configuration files share the same format. For example, a short
    extract of the main configuration file might look as follows:
@@ -247,8 +251,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The tilde character (~) is expanded in file names to the name of the
    user's home directory.
 
-   White space is used for separation inside lists. Elements with embedded
-   spaces can be quoted using double-quotes.
+   White space is used for separation inside lists. List elements with
+   embedded spaces can be quoted using double-quotes.
 
 4.4.1. Main configuration file
 
@@ -275,7 +279,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            The name of the Xapian data directory. It will be created if
            needed when the index is initialized. If this is not an absolute
            path, it will be interpreted relative to the configuration
-           directory.
+           directory. The value can have embedded spaces but starting or
+           trailing spaces will be trimmed. You cannot use quotes here.
 
    skippedNames
 
@@ -283,7 +288,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            directories that should be completely ignored. The list defined in
            the default file is:
 
- *~ #* bin CVS  Cache caughtspam  tmp
+ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
+          *~ recollrc
 
            The list can be redefined for sub-directories, but is only
            actually changed for the top level ones in topdirs.
@@ -298,6 +304,23 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            directories, and you probably want this indexed. One possible
            solution is to have .* in skippedNames, and add things like
            ~/.thunderbird or ~/.evolution in topdirs.
+
+   skippedPaths and daemSkippedPaths
+
+           A space-separated list of patterns for paths of files or
+           directories that should be skipped. There is no default in the
+           sample configuration file, but the code always adds the
+           configuration and database directories in there.
+
+           skippedPaths is used both by batch and real time indexing.
+           daemSkippedPaths can be used to specify things that should be
+           indexed at startup, but not monitored.
+
+           Example of use for skipping text files only in a specific
+           directory:
+
+ skippedPaths = ~/somedir/*.txt
+             
 
    loglevel,daemloglevel
 
@@ -423,6 +446,92 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    configuration file.
 
    Please note that these entries must be placed under a [view] section.
+
+   If Use desktop preferences to choose document editor is checked in the
+   user preferences, all mimeview entries will be ignored except the one
+   labelled application/x-all (which is set to use xdg-open by default).
+
+4.4.5. Examples of configuration adjustments
+
+  4.4.5.1. Adding an external viewer for an non-indexed type
+
+   Imagine that you have some kind of file which does not have indexable
+   content, but for which you would like to have a functional Edit link in
+   the result list (when found by file name). The file names end in .blob and
+   can be displayed by application blobviewer.
+
+   You need two entries in the configuration files for this to work:
+
+     * In $RECOLL_CONFDIR/mimemap (typically ~/.recoll/mimemap), add the
+       following line:
+
+              application/x-blobapp = .blob
+          
+
+       Note that the mime type is made up here, and you could call it
+       diesel/oil just the same.
+
+     * In $RECOLL_CONFDIR/mimeview under the [view] section:
+
+                  application/x-blobapp = blobviewer %f
+             
+
+       We are supposing that blobviewer wants a file name parameter here, you
+       would use %u if it liked URLs better.
+
+   If you just wanted to change the application used by Recoll to display a
+   mime type which it already knows, you would just need to edit mimeview.
+   The entries you add in your personal file override those in the central
+   configuration, which you do not need to alter
+
+  4.4.5.2. Adding indexing support for a new file type
+
+   Let us now imagine that the above .blob files actually contain indexable
+   text and that you know how to extract it with a command line program.
+   Getting Recoll to index the files is easy. You need to perform the above
+   alteration, and also to add data to the mimeconf file (typically in
+   ~/.recoll/mimeconf):
+
+     * Under the [index] section, add the following line (more about the
+       rclblob indexing script later):
+
+                  application/x-blobapp = exec rclblob
+             
+
+     * Under the [icons] section, you should choose an icon to be displayed
+       for the files inside the result lists. Icons are normally 64x64 pixels
+       PNG files which live in /usr/[local/]share/recoll/images.
+
+     * Under the [categories] section, you should add the mime type where it
+       makes sense (you can also create a category). Categories may be used
+       for filtering in advanced search.
+
+   The rclblob filter should be an executable program or script which exists
+   inside /usr/[local/]share/recoll/filters. It will be given a file name as
+   argument and should output the text contents in html format on the
+   standard output.
+
+   The html could be very minimal like the following example:
+
+ <html><head>
+ <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+ </head>
+ <body>some text content</body></html>
+         
+
+   You should take care to escape some characters inside the text by
+   transforming them into appropriate entities. "&" should be transformed
+   into "&amp;", "<" should be transformed into "&lt;".
+
+   The character set needs to be specified in the header. It does not need to
+   be UTF-8 (Recoll will take care of translating it), but it must be
+   accurate for good results.
+
+   Recoll will also make use of other header fields if they are present:
+   title, description, keywords.
+
+   The easiest way to write a new filter is probably to start from an
+   existing one.
 
    --------------------------------------------------------------------------
 
