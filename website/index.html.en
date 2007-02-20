@@ -24,7 +24,7 @@
 	<li><a href="http://www.recoll.org">Home</a></li>
 	<li><a href="pics/index.html">Screenshots</a></li>
 	<li><a href="download.html">Downloads</a></li>
-	<li><a href="usermanual/index.html">User manual</a></li>
+	<li><a href="manuals.html">User manuals</a></li>
 	<li><a href="devel.html">Development</a></li>
       </ul>
       <p class="indexthumb">
@@ -73,7 +73,8 @@
 	    href="features.html#doctypes">document types.</a></li>
 
         <li>Powerful query facilities, with boolean searches,
-	  phrases, filter on file types and directory tree.</li>
+	  phrases, proximity, wildcards, filter on file types and directory
+	  tree.</li>
 
         <li>Multi-language and multi-character set with Unicode based
 	  internals.</li> 

@@ -40,8 +40,7 @@
 	  tested on FreeBSD, Linux, Darwin and Solaris (versions
 	  FreeBSD 5.5, Redhat 7.3, Fedora Core 5, Suse 10.1, Gentoo,
 	  Debian 3.1, Solaris 8/9, but other not too distant releases
-	  should be ok too). You can download the source code and some
-	  precompiled packages <a href="download.html">here</a>.</dd>
+	  should be ok too).</dd>
 
 	<dd>Qt versions from 3.1</dd>
 
@@ -68,8 +67,15 @@
 		    "application">Evolution</span> mail ok).</li>
 
                 <li><span class="application">gaim</span> log files.</li>
+
+                <li><span class="application">Lyx</span> files (needs
+		  <span class="application">Lyx</span> to be installed).</li>
+
+                <li><span class="application">Scribus</span> files.</li>
+
               </ul>
             </dd>
+
             <dt>With external helpers</dt>
 
             <dd>
@@ -83,10 +89,10 @@
                 ghostscript</a> and <a href=
                 "http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">pstotext</a>.</li>
 
-                <li><var class="literal">msword</var> with <a href=
+                <li><span class="application">msword</span> with <a href=
                 "http://www.winfield.demon.nl/">antiword</a>.</li>
-                <li><var class="literal">Powerpoint</var> and 
-		  <var class="literal">Excel</var> with the
+                <li><span class="application">Powerpoint</span> and 
+		  <span class="application">Excel</span> with the
 		  <a href="http://www.45.free.net/~vitus/software/catdoc/">
 		    catdoc</a> utilities.</li>
 
@@ -128,8 +134,10 @@
 	    <li>Easy installation. No database daemon, web server or
 	      exotic language necessary.</li>
 
-	    <li>An indexer which runs either as a thread inside the GUI
-	      or as an external, cron'able program.</li>
+	    <li>An indexer which runs either as a thread inside the GUI,
+	      as an external, batch, cron'able program, or as a
+	      real-time indexing daemon.</li>
+
 	  </ul>
 	</dd>
       </ul>
@@ -137,7 +145,7 @@
       <h2><a name="#stemming"></a>Stemming</h2>
 
       <p>Stemming is a process which transforms inflected words into
-      their most basic form. For exemple, <i>flooring</i>,
+      their most basic form. For example, <i>flooring</i>,
       <i>floors</i>, <i>floored</i> would probably all be transformed
       to <i>floor</i> by a stemmer for the English language.</p>
 

@@ -5,7 +5,17 @@ later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
 Latest (1.7.5):
-- 1.6/1.7 NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
+- Debian and Ubuntu: the rclsoff Openoffice filter doesn't work,
+  because of an incorrect shell syntax (understood by bash but not sh). To
+  fix, you edit /usr[/local]/share/recoll/filters/rclsoff and can change
+  the line:
+trap cleanup EXIT SIGHUP SIGQUIT SIGINT SIGTERM
+  into:
+trap cleanup EXIT HUP QUIT INT TERM
+  or download the updated filter from the filters page: 
+  http://www.recoll.org/filters/filters.html
+
+- NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is
   a bug in Xapian at least up to 0.9.9, where NEAR does not support
@@ -52,6 +62,7 @@ Latest (1.7.5):
   exception handling (recoll catches an exception while trying the
   yest inexistant db).
 
+***************************************************************************
 1.7.3
 - Processing will stop on first error while indexing an mbox file. This
   could happen just because an attachment could not be decoded, and can
@@ -66,7 +77,7 @@ Latest (1.7.5):
    files, could cause miscellaneous problems.
  - Executing an external viewer for a file with single-quotes in the name
    would not work.
-***************************************************************************
+
 1.5.10
 - If a defaultcharset was set in the configuration file for a subdirectory,
   it would stay in effect for all subsequent files/directories (except if

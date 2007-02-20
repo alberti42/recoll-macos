@@ -1,4 +1,26 @@
 CHANGES 
+
+1.8.0 2007-02-20
+- Add a small query language with some field-based searches (author, title,
+  etc.)
+- Add wildcard handling everywhere. *, ?, [] can be used in any
+  search. Warning: using a wild card at the left of a term can make
+  for a very slow search.
+- Allow skipping specific paths during indexing (in addition to file name
+  patterns)
+- Improved external index choice dialog, accessible from the top-level menu.
+- Many small bugs fixed: stemming language choice ignored in term explorer,
+  qt4 preview window reentrancy crashes, issues with saving the default
+  advanced search file, type filter, display more clearly missing helper
+  errors, etc. 
+- Option to use the desktop defaults (with xdg-open) to choose the native
+  viewer for files (instead of recoll's mimeview). Also xdg scripts to
+  install desktop file and icon. 
+
+1.7.6 2007-01-30
+ - Fixes an issue with the openoffice filter on debian systems. 
+ - Adds Scribus and Lyx filters.
+
 1.7.5 2007-01-15
  - Fixes two email indexing bugs in 1.7.3, which would bail out from an
    mbox folder on the first attachment filtering error, and would decline
