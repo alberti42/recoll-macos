@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.7.5
+%define version 1.8.1
 %define release 0
 
 Name:           %{name}
@@ -53,14 +53,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_datadir}/%{name}
-%{_datadir}/applications/recoll.desktop
-%{_datadir}/icons/hicolor/48x48/apps/recoll.png
+%{_datadir}/applications/recoll-searchgui.desktop
+%{_datadir}/icons/hicolor/48x48/apps/recoll-searchgui.png
 %{_mandir}/man1/recoll*
 %{_mandir}/man5/recoll*
 
 # ---------------------------------------------------------------------------
 
 %changelog
+* Tue Mar 6 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.8.1-1
+- Update to release 1.8.1
 * Mon Jan 15 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.7.5-1
 - Update to release 1.7.5
 * Mon Jan 08 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.7.3-1

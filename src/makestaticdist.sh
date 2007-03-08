@@ -35,10 +35,11 @@ rm -f index/recollindex qtgui/recoll
 make static || exit 1
 strip index/recollindex qtgui/recoll
 
-files="COPYING README INSTALL VERSION Makefile recoll.desktop recollinstall
+files="COPYING README INSTALL VERSION Makefile recollinstall
 filters desktop sampleconf doc/user doc/man
 index/recollindex index/rclmon.sh qtgui/recoll qtgui/i18n/*.qm 
-qtgui/mtpics/*.png recoll.png"
+qtgui/mtpics/*.png 
+desktop/recoll-searchgui.png desktop/recoll-searchgui.desktop"
 
 $TAR chf - $files  | (cd $topdir; $TAR xf -)
 

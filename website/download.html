@@ -34,10 +34,18 @@
 
       <h1>Recoll downloads</h1>
 
-      <p><a href="#filters">filters</a> <a href="#source">source</a>
-	<a href="#rpms">rpms</a> <a href="#otherbinary">other binary</a>
-	<a href="#ports">Bsd port</a>
-	<a href=#translations>translations</a></p>
+      <p>
+	<table width=100%><tbody><tr>
+         <td><a href="#rpms">Rpms and Ubuntu packages</a></td>
+	 <td><a href="#otherbinary">Other binary packages</a></td>
+	 <td><a href="#source">Source</a></td>
+	 <td><a href="#ports">Bsd port</a></td>
+	 <td><a href="#filters">Filters</a> </td>
+	 <td><a href="#translations">Translations</a></td>
+	  </tr>
+	</tbody>
+      </table>
+      </p>
 
       <p>You will probably need to have a look at the
 	<a href="usermanual/rcl.install.html">installation manual</a> for
@@ -45,13 +53,15 @@
 
       <p><i>For building from source</i>, you will need a xapian-core
 	installation. You will find source and binary packages on  the 
-	<a href="http://www.xapian.org/download.php">xapian download
-	  page</a></p>
+	<a href="http://www.xapian.org/download.php">Xapian download
+	  page</a>. Recoll should build with any 0.9.x Xapian version
+	  (the current one is 0.9.10).</p>
 
-      <p>You need qt 3.3 (or qt 4) in all cases</p>
+      <p>You need Qt 3.3 (or qt 4) in all cases (configure Recoll with
+      <em>configure --enable-qt4</em> to build with qt4).</p>
 
       <p>Recoll relies on external packages for some
-	of its functionality (ie: for many of the non text file
+	of its functionality (ie: for many of the non-text file
 	types). These are not listed as strict dependencies, because
 	the base application can be sufficient in some cases, but you
 	should have a look at the 
@@ -92,6 +102,11 @@
 
       <h2><a name="source">Source</a></h2>
 
+      <p><a href="recoll-1.8.0.tar.gz">Recoll 1.8.0</a> is out. This
+      mainly brings wildcard suppport, a small query language with
+      some field-based capabilities, and bug fixes. See the
+	  <a href="CHANGES.txt">changes</a> file for more detail.</p> 
+
       <p><b>Current version:</b> 
 
 	<p>1.7.5: <a href="recoll-1.7.5.tar.gz">recoll-1.7.5.tar.gz</a>
@@ -111,7 +126,7 @@
 	<a href="recoll-1.0.16.tar.gz">1.0.16</a>.
       </p>	
 
-      <h2><a name="rpms">RPMS</a></h2>
+      <h2><a name="rpms">Rpms and Ubuntu packages</a></h2>
       <p>The executables inside the binary rpms have a static link to
 	xapian, there is no dependency except Qt 3.3. Of course you need
 	xapian-core installed to use the source rpm. </p>
@@ -155,39 +170,39 @@
 	<a href="debian/edgy/">debian/edgy</a></p>
     </p>
 
-
       <h2><a name="otherbinary">Binary bundles</a></h2>
 
       <p>These are just prebuilt trees (without the source files).
-	The executables were built with xapian 0.9.9 (patched for the
-	NEAR bug) and libiconv
-	1.9.2 (where relevant) as static libraries. They depend on qt
-	3.3. For Solaris, you should be able to find a qt package <a
-	  href="http://www.sunfreeware.com/">here</a>.</p> 
+      The executables were built with xapian 0.9.9 (patched for the
+      NEAR bug) and libiconv
+      1.9.2 (where relevant) as static libraries. They depend on qt
+      3.3. For Solaris, you should be able to find a qt package <a
+        href="http://www.sunfreeware.com/">here</a>.</p> 
 
       <p>The installation instructions are <a
-	  href="usermanual/rcl.install.binary.html"> there</a>.</p>
+        href="usermanual/rcl.install.binary.html"> there</a>.</p>
 
       <p><span class="application">FreeBSD</span> 5.5 i386: 
-	<a href="recoll-1.7.3-FreeBSD-5.5-RELEASE.tgz">
-	  recoll-1.7.3-FreeBSD-5.5-RELEASE.tgz</a>
+      <a href="recoll-1.7.5-FreeBSD-5.5-RELEASE.tgz">
+        recoll-1.7.5-FreeBSD-5.5-RELEASE.tgz</a>
       </p>
 
       <p><span class="application">Solaris 8</span> sparc. 
-	Note to Solaris users: you need to perform the initial
-	indexing pass with "recollindex", not the recoll GUI indexing
-	thread. See <a href="BUGS.txt">errata</a>.
-	<a href="recoll-1.7.3-SunOS-5.8.tgz">
-	  recoll-1.7.3-SunOS-5.8.tgz</a>. Source: 
-	<a href="recoll-1.7.3.tar.gz">recoll-1.7.3.tar.gz</a>
+      Note to Solaris users: you need to perform the initial
+      indexing pass with "recollindex", not the recoll GUI indexing
+      thread. See <a href="BUGS.txt">errata</a>.
+      <a href="recoll-1.7.5-SunOS-5.8.tgz">
+        recoll-1.7.5-SunOS-5.8.tgz</a>. Source: 
+      <a href="recoll-1.7.3.tar.gz">recoll-1.7.5.tar.gz</a>
       </p> 
+
 
       <h2><a name="ports">FreeBSD ports</a></h2> 
 
       <p>There are ports for both xapian-core
 	and recoll in the standard tree, you may just need to update
 	your ports (cvsup, portsnap), or you can get the ports from
-	the FreeBSD site. The ports are not yet updated for the xapian
+	the FreeBSD site. The ports are not updated for the xapian
 	NEAR problem though.
 	<a href="http://cvsweb.freebsd.org/ports/databases/xapian-core">
 	  xapian port</a> 
@@ -195,7 +210,7 @@
 	  recoll port</a>.</p>
 
       <p>Local copies of ports for <a href="port-recoll.tgz">recoll-1.7</a> and
-	<a href="port-xapian-core.tgz">xapian-0.9.9</a> (without the
+	<a href="port-xapian-core.tgz">xapian-0.9.10</a> (without the
 	NEAR patch).</p>
 
 

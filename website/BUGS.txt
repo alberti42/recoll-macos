@@ -4,36 +4,27 @@ Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest (1.7.5):
-- Debian and Ubuntu: the rclsoff Openoffice filter doesn't work,
-  because of an incorrect shell syntax (understood by bash but not sh). To
-  fix, you edit /usr[/local]/share/recoll/filters/rclsoff and can change
-  the line:
-trap cleanup EXIT SIGHUP SIGQUIT SIGINT SIGTERM
-  into:
-trap cleanup EXIT HUP QUIT INT TERM
-  or download the updated filter from the filters page: 
-  http://www.recoll.org/filters/filters.html
-
+Latest (1.8.1):
 - NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is
-  a bug in Xapian at least up to 0.9.9, where NEAR does not support
+  a bug in Xapian at least up to 0.9.10, where NEAR does not support
   multiple OR subclauses, as would result from a multiple expansion. This
   manifests itself by a 'not implemented' Xapian exception. Workarounds:
 
       - Prevent expansion of NEAR terms (possibly except one) by
         capitalizing them.
 
-      - Or apply the following patch to xapian 0.9.9, inside the "api/"
-        directory: 
+      - Or apply the following patch to xapian 0.9.9 or 0.9.10, inside the
+        "api/" directory: 
          http://www.recoll.org/xapian/xapNearDistrib.patch
         or fetch the already patched source:
-	 http://www.recoll.org/xapian/xapian-core-0.9.9-recollNEARpatch.tar.gz
+	 http://www.recoll.org/xapian/xapian-core-0.9.10-recollNEARpatch.tar.gz
 
         then recompile, and install.
 
-  I hope that the fix will make it into xapian at some point.
+  I hope that an equivalent fix will make it into xapian at some point (the
+  current fix is not completely correct but still handles most useful cases).
 
 - If you are seeing a delay of a few seconds before the result list
   displays for the first query of a recoll instance, try changing the
@@ -63,6 +54,17 @@ trap cleanup EXIT HUP QUIT INT TERM
   yest inexistant db).
 
 ***************************************************************************
+1.7.5
+- Debian and Ubuntu: the rclsoff Openoffice filter doesn't work,
+  because of an incorrect shell syntax (understood by bash but not sh). To
+  fix, you edit /usr[/local]/share/recoll/filters/rclsoff and can change
+  the line:
+trap cleanup EXIT SIGHUP SIGQUIT SIGINT SIGTERM
+  into:
+trap cleanup EXIT HUP QUIT INT TERM
+  or download the updated filter from the filters page: 
+  http://www.recoll.org/filters/filters.html
+
 1.7.3
 - Processing will stop on first error while indexing an mbox file. This
   could happen just because an attachment could not be decoded, and can

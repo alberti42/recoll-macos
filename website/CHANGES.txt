@@ -14,8 +14,7 @@ CHANGES
   advanced search file, type filter, display more clearly missing helper
   errors, etc. 
 - Option to use the desktop defaults (with xdg-open) to choose the native
-  viewer for files (instead of recoll's mimeview). Also xdg scripts to
-  install desktop file and icon. 
+  viewer for files (instead of recoll's mimeview). 
 
 1.7.6 2007-01-30
  - Fixes an issue with the openoffice filter on debian systems. 
