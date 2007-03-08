@@ -2,7 +2,7 @@
 # Date created:        5 December 2005
 # Whom:                J.F. Dockes <jean-francois.dockes@wanadoo.fr>
 #
-# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.13 2007/01/10 18:50:41 itetcu Exp $
+# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.15 2007/02/13 00:16:19 pav Exp $
 #
 
 PORTNAME=	recoll
@@ -18,7 +18,7 @@ LIB_DEPENDS=	xapian.13:${PORTSDIR}/databases/xapian-core \
 		qt-mt.3:${PORTSDIR}/x11-toolkits/qt33
 
 USE_QT_VER=	3
-CONFIGURE_ENV=	QTDIR="${QT_PREFIX}" QMAKESPEC="freebsd-g++"
+CONFIGURE_ENV=	QMAKESPEC="freebsd-g++"
 MAKE_ENV=	${CONFIGURE_ENV}
 GNU_CONFIGURE=	yes
 CONFIGURE_TARGET=	--build=${MACHINE_ARCH}-portbld-freebsd${OSREL}
