@@ -5,6 +5,8 @@ later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
 Latest (1.8.1):
+- Doc bug: the manual states that the query language supports a "mime:"
+  switch to filter mime types. There is currently no such thing.
 - NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is
