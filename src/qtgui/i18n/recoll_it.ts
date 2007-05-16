@@ -15,7 +15,7 @@
     </message>
     <message>
         <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="unfinished">Richiesta negativa impossibile. Entra un termine in uno degli altri campi.</translation>
+        <translation>Richiesta negativa impossibile. Entra un termine in uno degli altri campi</translation>
     </message>
     <message>
         <source>texts</source>
@@ -46,7 +46,7 @@
     <name>AdvSearchBase</name>
     <message>
         <source>Advanced search</source>
-        <translation>Ricerca avanzata</translation>
+        <translation>Recherche avancée</translation>
     </message>
     <message>
         <source>Search for files&lt;br&gt;having all of:</source>
@@ -102,7 +102,7 @@
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation>Tutti ----&gt;</translation>
+        <translation>Tout ----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
@@ -114,7 +114,7 @@
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation>&lt;----- Tutti</translation>
+        <translation>&lt;----- Tout</translation>
     </message>
     <message>
         <source>Ignored file types</source>
@@ -142,11 +142,11 @@
     </message>
     <message>
         <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
-        <translation>Cerca tra &lt;br&gt;documenti &lt;br&gt;che contengono::</translation>
+        <translation type="unfinished">Cerca tra &lt;br&gt;documenti &lt;br&gt;che contengono::</translation>
     </message>
     <message>
         <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation>Tutti i campi non vuoti saranno combinati con O e E.Le scelte &lt;br&gt;&quot;Qualsiasi&quot;, &quot;Tutti&quot;, o &quot;Nessuno&quot; possono accettare un insieme di parole, e frasi racchiuse tra virgolette (&quot;).&lt;br&gt;I campi senza parole saranno ignorati.</translation>
+        <translation>Tous les champs renseignés seront combinés avec des conjonctions OU ou ET.&lt;br&gt;Les champs &quot;Un de ces mots&quot;, &quot;Tous ces mots&quot;, ou &quot;Aucun de ces mots&quot; peuvent accepter des mots et des phrases entre guillemets (&quot;).&lt;br&gt;Les champs non renseignés sont ignorés.</translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -154,7 +154,7 @@
     </message>
     <message>
         <source>Add clause</source>
-        <translation>Aggiungi condizione</translation>
+        <translation>Ajouter une clause</translation>
     </message>
     <message>
         <source>Check this to enable filtering on file types</source>
@@ -177,7 +177,7 @@
     <name>Main</name>
     <message>
         <source>Configuration problem: </source>
-        <translation>Problemi di configurazione:  </translation>
+        <translation type="unfinished">Problemi di configurazione:  </translation>
     </message>
     <message>
         <source>No db directory in configuration</source>
@@ -194,8 +194,7 @@
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
-        <translation>
-Click Cancel se vuoi editare il file di configurazione prima di iniziare a costruire l&apos;indice, oppure OK per procedere.</translation>
+        <translation>Clicca Cancel se vuoi editare il file di configurazione prima di iniziare l&apos;indicizzazione, oppure OK se vuoi procedere.</translation>
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
@@ -246,7 +245,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Can&apos;t turn doc into internal rep for </source>
-        <translation type="obsolete">Impossibile creare una rappresentazione interna per  </translation>
+        <translation type="obsolete">Impossible de créer une représentation interne pour </translation>
     </message>
     <message>
         <source>Creating preview text</source>
@@ -258,7 +257,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation>IImpossibile creare cartella temporanea</translation>
+        <translation>Impossibile creare cartella temporanea</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -274,11 +273,11 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Missing helper program: </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Manca il programma di filtro esterno </translation>
     </message>
     <message>
         <source>Can&apos;t turn doc into internal representation for </source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile tradurre il documento per la rappresentazione interna </translation>
     </message>
 </context>
 <context>
@@ -293,7 +292,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>&amp;Search for:</source>
-        <translation>&amp;Cerca per:</translation>
+        <translation type="unfinished">&amp;Cerca per:</translation>
     </message>
     <message>
         <source>&amp;Next</source>
@@ -301,11 +300,11 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Alt+N</source>
-        <translation>Alt+N</translation>
+        <translation>Alt+S</translation>
     </message>
     <message>
         <source>&amp;Previous</source>
-        <translation>&amp;Precedente</translation>
+        <translation type="unfinished">&amp;Precedente</translation>
     </message>
     <message>
         <source>Alt+P</source>
@@ -352,7 +351,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Cannot access document file: </source>
-        <translation>Impossibile accedere alla cartella del file: :  </translation>
+        <translation type="unfinished">Impossibile accedere alla cartella del file: </translation>
     </message>
     <message>
         <source>Preview</source>
@@ -414,7 +413,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Indexing in progress: </source>
-        <translation>Indicizzazione in corso: </translation>
+        <translation type="unfinished">Indicizzazione in corso:  </translation>
     </message>
     <message>
         <source>Files</source>
@@ -442,7 +441,7 @@ Click Cancel se vuoi editare il file di configurazione prima di iniziare a costr
     </message>
     <message>
         <source>Cant start query: </source>
-        <translation>Non posso iniziare la ricerca: </translation>
+        <translation type="unfinished">Non posso iniziare la ricerca: </translation>
     </message>
     <message>
         <source>Spell expansion</source>
@@ -457,12 +456,12 @@ Verifica il file mimeconf</translation>
     <message>
         <source>The viewer specified in mimeconf for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>L&apos;applicazione specificata in mimeconf per  %1: %2 non cìè.
+        <translation type="unfinished">L&apos;applicazione specificata in mimeconf per  %1: %2 non cìè.
 Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Cannot extract document or create temporary file</source>
-        <translation type="unfinished">Rispetta &amp;Maiuscole</translation>
+        <translation>Non posso estrarre il documento o creare il file temporaneo</translation>
     </message>
 </context>
 <context>
@@ -489,7 +488,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>&amp;File</source>
-        <translation>&amp;File</translation>
+        <translation type="unfinished">&amp;File</translation>
     </message>
     <message>
         <source>Exit</source>
@@ -497,7 +496,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation type="unfinished">&amp;Esci</translation>
+        <translation type="unfinished">&amp; Esci</translation>
     </message>
     <message>
         <source>Start Indexing</source>
@@ -557,7 +556,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
-        <translation>&amp;Notizie su Recoll</translation>
+        <translation type="unfinished">&amp;Notizie su Recoll</translation>
     </message>
     <message>
         <source>Document &amp;History</source>
@@ -625,11 +624,11 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Update &amp;index</source>
-        <translation type="unfinished">&amp;Indicizza</translation>
+        <translation type="unfinished">Aggiorna &amp;Indicizza</translation>
     </message>
     <message>
         <source>Term &amp;explorer</source>
-        <translation>&amp;Esplora l&apos;indice</translation>
+        <translation type="unfinished">&amp;Esplora l&apos;indice</translation>
     </message>
     <message>
         <source>Term explorer tool</source>
@@ -637,7 +636,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>External index dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialogo indici esterni</translation>
     </message>
 </context>
 <context>
@@ -723,11 +722,11 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Preview</translation>
+        <translation type="unfinished">&amp;Precedente</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
-        <translation>&amp;Edita</translation>
+        <translation type="unfinished">&amp;Edita</translation>
     </message>
     <message>
         <source>&amp;Copy File Name</source>
@@ -735,7 +734,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Copy &amp;Url</source>
-        <translation>Copia l&apos;&amp;Url</translation>
+        <translation type="unfinished">Copia l&apos;&amp;Url</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -747,7 +746,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation type="obsolete">Documenti &lt;b&gt;%1-%2&lt;/b&gt; di &lt;b&gt;%3&lt;/b&gt; per(sp)</translation>
+        <translation type="obsolete">Documents &lt;b&gt;%1-%2&lt;/b&gt; parmi &lt;b&gt;%3&lt;/b&gt; pour </translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -755,19 +754,19 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Copia il nome del &amp;File</translation>
+        <translation type="unfinished">Copia il nome del &amp;File</translation>
     </message>
     <message>
         <source>P&amp;arent document/folder</source>
-        <translation>&amp;Apri cartella del documento</translation>
+        <translation type="unfinished">&amp;Apri cartella del documento</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
+        <translation>Risultati  &lt;b&gt;%1-%2&lt;b&gt; (totale di almeno &lt;b&gt;%3&lt;/b&gt;) per </translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
+        <translation>Documenti &lt;b&gt;%1-%2&lt;/b&gt; per</translation>
     </message>
 </context>
 <context>
@@ -807,7 +806,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation>Seleziona una voce:</translation>
+        <translation type="unfinished">Seleziona una voce: </translation>
     </message>
     <message>
         <source>Too many completions</source>
@@ -815,15 +814,15 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Query language</source>
-        <translation type="unfinished"></translation>
+        <translation>Linqua di interrogazione</translation>
     </message>
     <message>
         <source>Bad query string</source>
-        <translation type="unfinished"></translation>
+        <translation>Stringa di ricerca malformata</translation>
     </message>
     <message>
         <source>Out of memory</source>
-        <translation type="unfinished"></translation>
+        <translation>Memoria non disponibile</translation>
     </message>
 </context>
 <context>
@@ -902,7 +901,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Metti la parola da cercare qui. Premi ESC SPC per completarla.</translation>
+        <translation type="unfinished">Metti la parola da cercare qui. Premi ESC SPC per completarla.</translation>
     </message>
 </context>
 <context>
@@ -921,7 +920,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation>Nessuna parola</translation>
+        <translation>Nessuna di queste</translation>
     </message>
     <message>
         <source>This phrase</source>
@@ -991,7 +990,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation>risultati più rilevanti per:</translation>
+        <translation type="unfinished">risultati più rilevanti per: </translation>
     </message>
     <message>
         <source>Descending</source>
@@ -1026,7 +1025,7 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Alt+E</source>
-        <translation>Alt+E</translation>
+        <translation>Alt+D</translation>
     </message>
     <message>
         <source>&amp;Close</source>
@@ -1061,11 +1060,11 @@ Vuoi aprire il dialogo di configurazione ?</translation>
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Errore di inizializzazione aspell. Aspell è installato?</translation>
+        <translation type="unfinished">Errore di inizializzazione aspell. Aspell è installato?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Errore di Aspell.</translation>
+        <translation type="unfinished">Errore di Aspell.</translation>
     </message>
     <message>
         <source>No spelling expansion found</source>
@@ -1246,7 +1245,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>This is the main/local index!</source>
-        <translation>Questo è l&apos;indice principale !</translation>
+        <translation type="unfinished">Questo è l&apos;indice principale !</translation>
     </message>
     <message>
         <source>The selected directory is already in the index list</source>
@@ -1254,7 +1253,8 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation>Seleziona la cartella indice Xapian (es.: /home/buddy/.recoll/xapiandb)</translation>
+        <translation>Seleziona la cartella indice Xapian 
+(es.: /home/ciccio/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
@@ -1265,7 +1265,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     <name>UIPrefsDialogBase</name>
     <message>
         <source>MyDialog</source>
-        <translation type="obsolete">MioDialogo</translation>
+        <translation type="obsolete">MonDialogue</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -1309,15 +1309,15 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Inizia la ricerca quando digiti uno spazio..</translation>
+        <translation type="unfinished">Inizia la ricerca quando digiti uno spazio.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation>Inizia aprendo la finestra di ricerca avanzata.</translation>
+        <translation type="unfinished">Inizia aprendo la finestra di ricerca avanzata.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Inizia con la finestra di ordinamento aperta.</translation>
+        <translation type="unfinished">Inizia con la finestra di ordinamento aperta.</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -1325,7 +1325,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>Lingua per l&apos;espansione grammaticale</translation>
+        <translation>Numero di parole del riassunto per ogni termine nel documento</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searchs</source>
@@ -1342,7 +1342,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation>Devo cercare di costruire il riassunto usando il contesto dei termini di ricerca?  (new line)
+        <translation type="unfinished">Devo cercare di costruire il riassunto usando il contesto dei termini di ricerca?  (new line)
 Può essere lento per grossi documenti..</translation>
     </message>
     <message>
@@ -1351,7 +1351,7 @@ Può essere lento per grossi documenti..</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation>Devo sintetizzare un riassunto anche se il documento sembra ne abbia uno?</translation>
+        <translation type="unfinished">Devo sintetizzare un riassunto anche se il documento sembra ne abbia uno?</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
@@ -1359,7 +1359,7 @@ Può essere lento per grossi documenti..</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation>Numero di parole del riassunto per ogni termine nel documento</translation>
+        <translation type="unfinished">Numero di parole del riassunto per ogni termine nel documento</translation>
     </message>
     <message>
         <source>External Indexes</source>
@@ -1379,15 +1379,15 @@ Può essere lento per grossi documenti..</translation>
     </message>
     <message>
         <source>All indexes</source>
-        <translation type="obsolete">Tutti gli indici</translation>
+        <translation type="obsolete">Tous les index</translation>
     </message>
     <message>
         <source>Indexes currently not used</source>
-        <translation type="obsolete">Indici attualmente non in uso</translation>
+        <translation type="obsolete">Index inactifs</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation type="obsolete">Tutti ----&gt;</translation>
+        <translation type="obsolete">Tout ----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
@@ -1399,15 +1399,15 @@ Può essere lento per grossi documenti..</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation type="obsolete">&lt;----- Tutti</translation>
+        <translation type="obsolete">&lt;----- Tout</translation>
     </message>
     <message>
         <source>Active indexes</source>
-        <translation type="obsolete">Indici attivi</translation>
+        <translation type="obsolete">Index actifs</translation>
     </message>
     <message>
         <source>Indexes that will be searched in addition to the main one</source>
-        <translation type="obsolete">Indici attivi oltre all&apos;indice principale</translation>
+        <translation type="obsolete">Index actifs en plus de l&apos;index principal</translation>
     </message>
     <message>
         <source>&amp;OK</source>
@@ -1419,7 +1419,7 @@ Può essere lento per grossi documenti..</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>&amp;Annulla</translation>
+        <translation type="unfinished">&amp;Annulla</translation>
     </message>
     <message>
         <source>Discard changes</source>
@@ -1440,7 +1440,7 @@ Può essere lento per grossi documenti..</translation>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation>Una ricerca per [vino rosso] (2 parole) sarà completata come [vino O rosso O (vino FRASE 2 rosso)].&lt;br&gt;
+        <translation type="unfinished">Una ricerca per [vino rosso] (2 parole) sarà completata come [vino O rosso O (vino FRASE 2 rosso)].&lt;br&gt;
 
 Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattamente come sono stati scritti.</translation>
     </message>
@@ -1454,42 +1454,42 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     </message>
     <message>
         <source>User preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Preferenze utente</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Usa le preferenze del desktop per scegliere l&apos;editor del documento</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation type="unfinished"></translation>
+        <translation>Indici esterni</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Commuta selezionati</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona tutti</translation>
     </message>
     <message>
         <source>Desactivate All</source>
-        <translation type="unfinished"></translation>
+        <translation>Deseleziona tutti</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi selezionati</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Rimuovi dalla lista. Non ha effetto sull&apos;indice del disco</translation>
     </message>
 </context>
 <context>
     <name>ViewAction</name>
     <message>
         <source>Changing actions with differentcurrent values</source>
-        <translation>Cambia l&apos;azione con valori differenti da quelli attuali</translation>
+        <translation type="unfinished">Cambia l&apos;azione con valori differenti da quelli attuali</translation>
     </message>
 </context>
 <context>
@@ -1520,7 +1520,7 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     </message>
     <message>
         <source>Native Viewers</source>
-        <translation type="unfinished"></translation>
+        <translation>Applicazione di visualizzazione</translation>
     </message>
 </context>
 <context>
