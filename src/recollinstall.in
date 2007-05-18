@@ -19,7 +19,8 @@ else
    usage
 fi
 QTGUI=@QTGUI@
-I18N=${QTGUI}/i18n
+# The .qm files are in qtgui/i18n even if qt4 is used
+I18N=qtgui/i18n
 
 test -n "$bindir" || bindir=${PREFIX}/bin
 test -n "$datadir" || datadir=${PREFIX}/share
@@ -93,6 +94,6 @@ ${INSTALL} -m 0444 \
 ${INSTALL} -m 0755 index/rclmon.sh ${datadir}/recoll/examples/ || exit 1
 
 
-${INSTALL} -m 0444 ${QTGUI}/mtpics/*.png ${datadir}/recoll/images || exit 1
+${INSTALL} -m 0444 qtgui/mtpics/*.png ${datadir}/recoll/images || exit 1
 
 ${INSTALL} -m 0444 ${I18N}/recoll*.qm ${datadir}/recoll/translations || exit 1
