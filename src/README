@@ -623,20 +623,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Here follows a sample request that we are going to explain:
 
-           mime:message/rfc822 author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
+           author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
      
 
-   This would search for all email messages with John Doe appearing as a
-   phrase in the From: header, and containing either beatles or lennon and
-   either live or unplugged but not potatoes.
+   This would search for all documents with John Doe appearing as a phrase in
+   the author field (exactly what this is would depend on the document type,
+   ie: the From: header, for an email message), and containing either beatles
+   or lennon and either live or unplugged but not potatoes (in any part of
+   the document).
 
-   The first element, mime:message/rfc822 is a special switch that restricts
-   the results to be email messages. There could be several such switches,
-   which would form a list of allowed types.
-
-   The second element author:"john doe" is a phrase search limited to a
+   The first element author:"john doe" is a phrase search limited to a
    specific field. Phrase searches are specified as usual by enclosing the
-   words in double quotes. The field specification appears before the colon.
+   words in double quotes. The field specification appears before the colon
+   (of course this is not limited to phrases, author:Balzac would be ok too).
    Recoll currently manages the following fields:
 
      * title, subject or caption are synonyms which specify data to be
