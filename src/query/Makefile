@@ -17,7 +17,7 @@ xadump : $(XADUMP_OBJS)
 RECOLLQ_OBJS= recollq.o  $(BIGLIB) $(MIMELIB)
 recollq : $(RECOLLQ_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollq $(RECOLLQ_OBJS) \
-	       $(LIBICONV) $(LIBXAPIAN)
+	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
 recollq.o : recollq.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -c recollq.cpp
 
