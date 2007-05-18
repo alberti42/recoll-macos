@@ -63,7 +63,7 @@ AC_ARG_WITH(fam,
 case $withFam in
      no);;
      yes)
-	for dir in /usr/local/lib /usr/lib;do 
+	for dir in /usr/local/lib ${libdir};do 
 	 if test -f $dir/libfam.so ; then famLib=$dir/libfam.so;break;fi
 	done
      ;;
@@ -121,12 +121,12 @@ LDFLAGS="$S_LDFLAGS -L$dir"
 unset ac_cv_lib_iconv_iconv_open
 AC_CHECK_LIB(iconv, iconv_open, LIBICONV="-L$dir -liconv";INCICONV=-I/usr/local/include)
 if test A"$LIBICONV" = A ; then
-  dir=/usr/lib
+  dir=${libdir}
   LDFLAGS="$S_LDFLAGS -L$dir"
   unset ac_cv_lib_iconv_iconv_open
   AC_CHECK_LIB(iconv, iconv_open, LIBICONV="-L$dir -liconv";INCICONV=-I/usr/include)
   if test A"$LIBICONV" = A; then
-    dir=/usr/lib
+    dir=${libdir}
     LDFLAGS="$S_LDFLAGS -L$dir"
     unset ac_cv_lib_iconv_iconv_open
     AC_CHECK_LIB(c, iconv_open, LIBICONV=NONE;INCICONV=-I/usr/include)
