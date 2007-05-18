@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.106 2007-02-14 10:09:31 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.107 2007-05-18 07:41:03 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1531,7 +1531,7 @@ bool Db::stemDiffers(const string& lang, const string& word,
 		     const string& base)
 {
     Xapian::Stem stemmer(lang);
-    if (!stemmer.stem_word(word).compare(stemmer.stem_word(base))) {
+    if (!stemmer(word).compare(stemmer(base))) {
 	LOGDEB2(("Rcl::Db::stemDiffers: same for %s and %s\n", 
 		word.c_str(), base.c_str()));
 	return false;

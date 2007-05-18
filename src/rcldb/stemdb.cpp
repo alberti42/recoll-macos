@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.7 2007-01-19 15:19:51 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.8 2007-05-18 07:41:03 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -115,7 +115,7 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 		// (*it).c_str(), *sit));
 		continue;
 	    }
-	    string stem = stemmer.stem_word(*it);
+	    string stem = stemmer(*it);
 	    //cerr << "word " << *it << " stem " << stem << endl;
 	    if (stem == *it) {
 		++stemconst;
@@ -226,7 +226,7 @@ bool stemExpand(const std::string& dbdir,
 {
     try {
 	Xapian::Stem stemmer(lang);
-	string stem = stemmer.stem_word(term);
+	string stem = stemmer(term);
 	LOGDEB(("stemExpand: [%s] stem-> [%s]\n", term.c_str(), stem.c_str()));
 
 	// Open stem database
