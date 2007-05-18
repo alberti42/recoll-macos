@@ -36,7 +36,7 @@
 
       <p>
 	<table width=100%><tbody><tr>
-         <td><a href="#rpms">Rpms and Ubuntu packages</a></td>
+         <td><a href="#rpms">Rpm and ubuntu/debian packages</a></td>
 	 <td><a href="#otherbinary">Other binary packages</a></td>
 	 <td><a href="#source">Source</a></td>
 	 <td><a href="#ports">Bsd port</a></td>
@@ -110,64 +110,77 @@
 
       <p>Older recoll releases:
 	<a href="recoll-1.7.6.tar.gz">1.7.6</a>
-	<a href="recoll-1.7.5.tar.gz">1.7.5</a>
-	<a href="recoll-1.6.3.tar.gz">1.6.3</a>
-	<a href="recoll-1.5.11.tar.gz">1.5.11</a>. 
-	<a href="recoll-1.4.3.tar.gz">1.4.3</a>. 
-	<a href="recoll-1.3.3.tar.gz">1.3.3</a>.
-	<a href="recoll-1.2.3.tar.gz">1.2.3</a>.
-	<a href="recoll-1.1.0.tar.gz">1.1.0</a>.
-	<a href="recoll-1.0.16.tar.gz">1.0.16</a>.
+	<a href=""recoll-1.7.5.tar.gz">1.7.5</a>
+	<a href=""recoll-1.6.3.tar.gz">1.6.3</a>
+	<a href=""recoll-1.5.11.tar.gz">1.5.11</a>. 
+	<a href=""recoll-1.4.3.tar.gz">1.4.3</a>. 
+	<a href=""recoll-1.3.3.tar.gz">1.3.3</a>.
+	<a href=""recoll-1.2.3.tar.gz">1.2.3</a>.
+	<a href=""recoll-1.1.0.tar.gz">1.1.0</a>.
+	<a href=""recoll-1.0.16.tar.gz">1.0.16</a>.
       </p>	
 
-      <h2><a name="rpms">Rpms and Ubuntu packages</a></h2>
+      <h2><a name="rpms">Packages</a></h2>
+
       <p>The executables inside the binary rpms have a static link to
 	xapian, there is no dependency except Qt 3.3. Of course you need
 	xapian-core installed to use the source rpm. </p>
 
-      <p><b>Fedora Core 6</b>
-	RPM: 
-	<a href="recoll-1.8.1-1.i386.rpm">
-	  recoll-1.8.1-1.i386.rpm</a>. 
+      <p><b>Fedora Core</b>
+	FC6 RPM: 
+	<a href="fc6/recoll-1.8.1-1.i386.rpm">
+	  fc6/recoll-1.8.1-1.i386.rpm</a>. 
+	FC5:<a href="fc5/recoll-1.8.1-1.i386.rpm">
+	  fc5/recoll-1.8.1-1.i386.rpm</a>. 
 	Source: 
-	<a href="recoll-1.8.1-1.src.rpm">
+	<a href="fc6/recoll-1.8.1-1.src.rpm">
 	  recoll-1.8.1-1.src.rpm</a>
       </p>
 
       <p><b>Mandriva 2006</b>  (also works on 2005 and 2007)
 	RPM: 
-	<a href="recoll-1.8.1-0.1.20060mdk.i586.rpm">
+	<a href="mandriva2006/recoll-1.8.1-0.1.20060mdk.i586.rpm">
 	  recoll-1.8.1-0.1.20060mdk.i586.rpm</a>. 
 	Source: 
-	<a href="recoll-1.8.1-0.1.20060mdk.src.rpm">
+	<a href="mandriva2006/recoll-1.8.1-0.1.20060mdk.src.rpm">
 	  recoll-1.8.1-0.1.20060mdk.src.rpm</a>
       </p>
 
       <p><b>Suse 10.1</b> 
 	RPM: 
-	<a href="recoll-1.8.1-0.i586.rpm">
+	<a href="suse10.1/recoll-1.8.1-0.i586.rpm">
 	  recoll-1.8.1-0.i586.rpm</a>. 
 	Source: 
-	<a href="recoll-1.8.1-0.src.rpm">
-	  recoll-1.8.1-0.src.rpm</a></p> 
-    </p>
+	<a href="suse10.1/recoll-1.8.1-0.src.rpm">
+	  recoll-1.8.1-0.src.rpm</a>
+      </p>
 
       <p><b>Ubuntu 6.10 edgy</b> 
-	Recoll <a href="recoll-1.8.1.tar.gz">1.8.1</a> has a few
-	debian build fixes, and the Openoffice filter was fixed for
-	debian compatibility. <br>
-	
-	binary package:
+	binary package (also works fine on <b>Ubuntu 7.04 feisty</b>):
 	<a href="debian/edgy/recoll_1.8.1-0ubuntu1_i386.deb">
 	  recoll_1.8.1-0ubuntu1_i386.deb</a>. 
 	Source package directory:
-	<a href="debian/edgy/">debian/edgy</a></p>
-    </p>
+	<a href="debian/edgy/">debian/edgy</a>
+      </p>
+
+      <p><b>Debian unstable</b> Recoll is in the package repository,
+      you can install it with the usual <em>apt-get install
+      recoll</em>. <a
+      href="http://packages.qa.debian.org/r/recoll.html">Package page</a></p>
+
+      <p><b>Debian 3.1</b> Thanks to Mario (<img align="top" src="mario.png">)
+      for these: i386: 
+	<a href="debian/sarge/recoll_1.8.1-1_i386.deb">
+	  recoll_1.8.1-1_i386.deb</a>. 
+	amd64 version:
+	<a href="debian/sarge/recoll_1.8.1-1_amd64.deb">
+	  recoll_1.8.1-1_amd64.deb</a>. 
+      </p>
 
       <h2><a name="otherbinary">Binary bundles</a></h2>
 
       <p>These are just prebuilt trees (without the source files).
-      The executables were built with xapian 0.9.9 (patched for the
+      The executables were built with xapian 0.9.10 (patched for the
       NEAR bug) and libiconv
       1.9.2 (where relevant) as static libraries. They depend on qt
       3.3. For Solaris, you should be able to find a qt package <a
@@ -218,14 +231,25 @@
 	earn my gratefulness (and your less multilingual
 	compatriot's)...</p>
 
-      <p>Update tranlations that became available (thank!) after the
-      release follow. The <literal>.qm</literal> file should be
-      copied to 
-      <span class="filename">/usr/[local/]share/recoll/translations</span>.
+      <p>Update tranlations that became available (thanks to Mario and
+      Olaf!) after the release follow. The <literal>.qm</literal> file
+      should be copied to 
+	<span class="filename">/usr/[local/]share/recoll/translations</span>. 
       </p>
+      <p>You can use the <em>.ts</em> file to alter the translations if you
+	wish (use QT's <em>linguist</em> tool to edit the source file, then
+	<em>lrelease</em> to produce the <em>.qm</em> file.).</p>
+      </p>
+      <p>Blank.
+	<a href="translations/recoll_xx.ts">recoll_xx.ts</a> is a blank
+	  message file, handy to work on a new translation.</a>
       <p>Italian. 
 	<a href="translations/recoll_it.ts">recoll_it.ts</a>
 	<a href="translations/recoll_it.qm">recoll_it.qm</a>
+	</p> 
+      <p>German. 
+	<a href="translations/recoll_de.ts">recoll_de.ts</a>
+	<a href="translations/recoll_de.qm">recoll_de.qm</a>
 	</p> 
 
     </div>

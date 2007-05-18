@@ -19,7 +19,7 @@ fi
 dirs=`ls -F | grep / | grep -v CVS`
 
 for dir in $dirs ; do
-    cd $dir
+    cd $dir && echo $dir
     sh `basename $dir`.sh
     cd ..
 done

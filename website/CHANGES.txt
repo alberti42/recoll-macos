@@ -1,6 +1,6 @@
 CHANGES 
 
-1.8.0 2007-02-20
+1.8.1 2007-02-20
 - Add a small query language with some field-based searches (author, title,
   etc.)
 - Add wildcard handling everywhere. *, ?, [] can be used in any
