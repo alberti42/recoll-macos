@@ -5,11 +5,6 @@ later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
 Latest (1.8.1):
-- This is not really a bug but .beagle really should be included in
-  "skippedNames", or you end up indexing the beagle text cache, which is
-  not really desirable.
-- Doc bug: the manual states that the query language supports a "mime:"
-  switch to filter mime types. There is currently no such thing.
 - The dates shown for email attachments in a result list are the email
   folder modification date. This should be inherited from the parent
   message instead.
@@ -60,6 +55,13 @@ Latest (1.8.1):
   the database). Don't know the reason. Only idea I have is problem with
   exception handling (recoll catches an exception while trying the
   yest inexistant db).
+
+1.8.1
+- This is not really a bug but .beagle really should be included in
+  "skippedNames", or you end up indexing the beagle text cache, which is
+  not really desirable.
+- Doc bug: the manual states that the query language supports a "mime:"
+  switch to filter mime types. There is currently no such thing.
 
 ***************************************************************************
 1.7.5

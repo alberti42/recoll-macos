@@ -1,5 +1,12 @@
 CHANGES 
 
+1.8.2 2007-05-19
+- Fixed method name for compatibility with xapian 1.0.0
+- Add .beagle to default list of skipped names (avoids indexing beagle
+  document cache...)
+- Fix configure.ac to use $libdir instead of /usr/lib
+- Fix recollinstall to properly copy translations and pictures for qt4
+
 1.8.1 2007-02-20
 - Add a small query language with some field-based searches (author, title,
   etc.)

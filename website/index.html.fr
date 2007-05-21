@@ -24,7 +24,7 @@
 	<li><a href="http://www.recoll.org">Base</a></li>
 	<li><a href="pics/index.html">Copies d'écrans</a></li>
 	<li><a href="download.html">Téléchargements</a></li>
-	<li><a href="manuals.html">Manuels</a></li>
+	<li><a href="doc.html">Documentation</a></li>
 	<li><a href="devel.html">Développement</a></li>
       </ul>
       <p class="indexthumb">
@@ -48,7 +48,7 @@
       <p><span class="application">Recoll</span> est un logiciel libre
       gratuit, dont le code source est disponible sous licence GPL. 
       La version à jour est 
-      <a class="important" href="download.html">1.8.1</a></p>
+      <a class="important" href="download.html">1.8.2</a></p>
 
       <p><span class="application">Recoll</span> emprunte beaucoup de code
 	d'autres logiciels libres, et accueille volontiers les
