@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.10 2006-12-24 07:40:26 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.11 2007-05-21 09:00:29 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -340,11 +340,16 @@ bool startMonitor(RclConfig *conf, int opts)
 	}
 
 	// Recreate the auxiliary dbs every hour.
-	if (time(0) - lastauxtime > 60 *60) {
+	const int auxinterval = 60 *60;
+	if (didsomething && time(0) - lastauxtime > auxinterval) {
 	    lastauxtime = time(0);
 	    didsomething = false;
-	    if (!createAuxDbs(conf))
-		break;
+	    if (!createAuxDbs(conf)) {
+		// We used to bail out on error here. Not anymore,
+		// because this is most of the time due to a failure
+		// of aspell dictionary generation, which is not
+		// critical.
+	    }
 	}
 
 	// Lock queue before waiting again

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.53 2007-02-08 17:05:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.54 2007-05-21 09:00:28 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -201,8 +201,15 @@ bool DbIndexer::createAspellDict()
 {
     LOGDEB2(("DbIndexer::createAspellDict()\n"));
 #ifdef RCL_USE_ASPELL
-    bool noaspell = false;
-    m_config->getConfParam("noaspell", &noaspell);
+    // For the benefit of the real-time indexer, we only initialize
+    // noaspell from the configuration once. It can then be set to
+    // true if dictionary generation fails, which avoids retrying
+    // it forever.
+    static int noaspell = -12345;
+    if (noaspell == -12345) {
+	noaspell = false;
+	m_config->getConfParam("noaspell", &noaspell);
+    }
     if (noaspell)
 	return true;
 
@@ -213,18 +220,21 @@ bool DbIndexer::createAspellDict()
     if (!aspell.init(reason)) {
 	LOGERR(("DbIndexer::createAspellDict: aspell init failed: %s\n", 
 		reason.c_str()));
+	noaspell = true;
 	return false;
     }
     LOGDEB(("DbIndexer::createAspellDict: creating dictionary\n"));
     if (!aspell.buildDict(m_db, reason)) {
 	LOGERR(("DbIndexer::createAspellDict: aspell buildDict failed: %s\n", 
 		reason.c_str()));
+	noaspell = true;
 	return false;
     }
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("DbIndexer::indexfiles: error closing database in %s\n", 
 		m_dbdir.c_str()));
+	noaspell = true;
 	return false;
     }
 #endif
