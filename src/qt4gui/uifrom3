@@ -9,4 +9,5 @@ for i in ../qtgui/*.ui ; do
 done
 
 # Link the images
+rm -f images
 ln -s ../qtgui/images .

@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.41 2007-05-18 07:41:40 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.42 2007-05-21 07:24:14 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1656,8 +1656,9 @@ fvwm
         upwards. Not all parameters can be meaningfully redefined,
         this is specified for each in the next section. </para>
 
-        <para>The tilde character (~) is expanded in file names to the
-        name of the user's home directory.</para>
+        <para>When found at the beginning of a file path, the tilde
+        character (~) is expanded to the name of the user's home
+        directory, as a shell would do.</para> 
         
         <para>White space is used for separation inside  lists.
         List elements with embedded spaces can be quoted using
@@ -1847,6 +1848,25 @@ skippedPaths = ~/somedir/*.txt
             <command>recoll</command> result list icons are
             stored. You can change this if you want different
             images.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>aspellLanguage</literal></term>
+            <listitem><para>Language definitions to use when creating
+            the aspell dictionary.  The value must match a set of
+            aspell language definition files. You can type "aspell
+            config" to see where these are installed (look for
+            data-dir). The default if the variable is not set is to
+            use your desktop national language environment to guess
+            the value.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>noaspell</literal></term>
+            <listitem><para>If this is set, the aspell dictionary
+            generation is turned off. Useful for cases where you don't
+            need the functionality or when it is unusable because
+            aspell crashes during dictionary generation.</para>
             </listitem>
           </varlistentry>
 

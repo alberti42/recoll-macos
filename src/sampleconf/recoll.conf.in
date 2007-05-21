@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.15 2007-05-18 07:41:22 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.16 2007-05-21 07:24:14 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This should be copied to
 #   ~/.recoll/recoll.conf 
@@ -65,9 +65,15 @@ indexallfilenames = 1
 # Language definitions to use when creating the aspell dictionary. 
 # The value must match a set of aspell language definition files. 
 # You can type "aspell config"  to see where these are installed.
-# The default is english: "en"
-# You can use a value of "disable" to disable aspell support.
+# The default if this is not set is to use the NLS environment to guess the
+# value
 # aspellLanguage = en
+
+# Disabling aspell use. The aspell dictionary generation takes some time,
+# and some combinations of aspell version, language, and local terms,
+# result in aspell dumping core each time. You can disable the aspell
+# dictionary generation by setting the following variable:
+# noaspell = 1
 
 # You could specify different parameters for a subdirectory like this:
 #[~/hungariandocs/plain]

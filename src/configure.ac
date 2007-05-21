@@ -190,16 +190,6 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 # Note about qt4: if --enable-qt4 (enables the qt4gui directory), and the 
 # QTDIR variable are inconsistent, too bad.
 #
-AC_ARG_ENABLE(qt4,
-    AC_HELP_STRING([--enable-qt4],
-        [Use qt version 4]),
-        rcl_cv_qt4=$enableval, rcl_cv_qt4=no)
-AC_MSG_NOTICE(rcl_cv_qt4 $rcl_cv_qt4)
-if test X$rcl_cv_qt4 = Xyes ; then 
-   QTGUI=qt4gui
-else
-   QTGUI=qtgui
-fi
 
 if test X$QTDIR != X ; then
    PATH=$QTDIR/bin:$PATH
@@ -209,7 +199,20 @@ fi
 AC_PATH_PROG([QMAKE], [qmake], NOTFOUND)
 if test X$QMAKE = XNOTFOUND ; then 
    AC_MSG_ERROR([Cannot find the qmake program. Maybe you need to install
-it and/or set the QTDIR environment variable?])
+qt development files and tools and/or set the QTDIR environment variable?])
+fi
+
+# Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
+# depend on this. We try to detect the qt 4 version string instead.
+qmakevers="`qmake --version 2>&1`"
+echo "qmake version: $qmakevers"
+v4=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*4.*'`
+if test X$v4 = X0 ; then 
+   AC_MSG_NOTICE([using qt version 3 user interface])
+   QTGUI=qtgui
+else
+   AC_MSG_NOTICE([using qt version 4 user interface])
+   QTGUI=qt4gui
 fi
 
 cd $QTGUI

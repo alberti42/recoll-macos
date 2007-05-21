@@ -806,11 +806,6 @@ if test -n "$ac_init_help"; then
    esac
   cat <<\_ACEOF
 
-Optional Features:
-  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
-  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --enable-qt4            Use qt version 4
-
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
@@ -1410,7 +1405,7 @@ fi;
 case $withFam in
      no);;
      yes)
-	for dir in /usr/local/lib /usr/lib;do
+	for dir in /usr/local/lib ${libdir};do
 	 if test -f $dir/libfam.so ; then famLib=$dir/libfam.so;break;fi
 	done
      ;;
@@ -1471,8 +1466,8 @@ else
 fi;
 
 if test X$withInotify != Xno ; then
-   { echo "$as_me:$LINENO: Enabled support for inotify monitoring" >&5
-echo "$as_me: Enabled support for inotify monitoring" >&6;}
+   { echo "$as_me:$LINENO: enabled support for inotify monitoring" >&5
+echo "$as_me: enabled support for inotify monitoring" >&6;}
 
 cat >>confdefs.h <<\_ACEOF
 #define RCL_MONITOR 1
@@ -2501,7 +2496,7 @@ if test $ac_cv_lib_iconv_iconv_open = yes; then
 fi
 
 if test A"$LIBICONV" = A ; then
-  dir=/usr/lib
+  dir=${libdir}
   LDFLAGS="$S_LDFLAGS -L$dir"
   unset ac_cv_lib_iconv_iconv_open
   echo "$as_me:$LINENO: checking for iconv_open in -liconv" >&5
@@ -2573,7 +2568,7 @@ if test $ac_cv_lib_iconv_iconv_open = yes; then
 fi
 
   if test A"$LIBICONV" = A; then
-    dir=/usr/lib
+    dir=${libdir}
     LDFLAGS="$S_LDFLAGS -L$dir"
     unset ac_cv_lib_iconv_iconv_open
     echo "$as_me:$LINENO: checking for iconv_open in -lc" >&5
@@ -2748,20 +2743,6 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 # Note about qt4: if --enable-qt4 (enables the qt4gui directory), and the
 # QTDIR variable are inconsistent, too bad.
 #
-# Check whether --enable-qt4 or --disable-qt4 was given.
-if test "${enable_qt4+set}" = set; then
-  enableval="$enable_qt4"
-  rcl_cv_qt4=$enableval
-else
-  rcl_cv_qt4=no
-fi;
-{ echo "$as_me:$LINENO: rcl_cv_qt4 $rcl_cv_qt4" >&5
-echo "$as_me: rcl_cv_qt4 $rcl_cv_qt4" >&6;}
-if test X$rcl_cv_qt4 = Xyes ; then
-   QTGUI=qt4gui
-else
-   QTGUI=qtgui
-fi
 
 if test X$QTDIR != X ; then
    PATH=$QTDIR/bin:$PATH
@@ -2810,10 +2791,25 @@ fi
 
 if test X$QMAKE = XNOTFOUND ; then
    { { echo "$as_me:$LINENO: error: Cannot find the qmake program. Maybe you need to install
-it and/or set the QTDIR environment variable?" >&5
+qt development files and tools and/or set the QTDIR environment variable?" >&5
 echo "$as_me: error: Cannot find the qmake program. Maybe you need to install
-it and/or set the QTDIR environment variable?" >&2;}
+qt development files and tools and/or set the QTDIR environment variable?" >&2;}
    { (exit 1); exit 1; }; }
+fi
+
+# Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
+# depend on this. We try to detect the qt 4 version string instead.
+qmakevers="`qmake --version 2>&1`"
+echo "qmake version: $qmakevers"
+v4=`expr "$qmakevers" : '.*Qt  *version  *4.*'`
+if test X$v4 = X0 ; then
+   { echo "$as_me:$LINENO: using qt version 3 user interface" >&5
+echo "$as_me: using qt version 3 user interface" >&6;}
+   QTGUI=qtgui
+else
+   { echo "$as_me:$LINENO: using qt version 4 user interface" >&5
+echo "$as_me: using qt version 4 user interface" >&6;}
+   QTGUI=qt4gui
 fi
 
 cd $QTGUI
