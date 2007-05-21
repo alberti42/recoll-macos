@@ -16,7 +16,7 @@
  */
 #ifndef _RCLINIT_H_INCLUDED_
 #define _RCLINIT_H_INCLUDED_
-/* @(#$Id: rclinit.h,v 1.5 2006-11-08 07:22:14 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclinit.h,v 1.6 2007-05-21 13:30:21 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -26,6 +26,10 @@ using std::string;
 class RclConfig;
 /**
  * Initialize by reading configuration, opening log file, etc.
+ * 
+ * This must be called from the main thread before starting any others. It sets
+ * up the global signal handling. other threads must call recoll_threadinit()
+ * when starting.
  *
  * @param flags   misc modifiers
  * @param cleanup function to call before exiting (atexit)
@@ -46,5 +50,7 @@ inline RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int),
 			     string &reason, const string *argcnf = 0) {
     return recollinit(RCLINIT_NONE, cleanup, sigcleanup, reason, argcnf);
 }
+// Threads need to call this. The main thread handles all signals.
+extern void recoll_threadinit();
 
 #endif /* _RCLINIT_H_INCLUDED_ */

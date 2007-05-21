@@ -24,6 +24,8 @@
 #include "indexer.h"
 #include "debuglog.h"
 #include "idxthread.h"
+#include "smallut.h"
+#include "rclinit.h"
 
 static QMutex curfile_mutex;
 
@@ -56,9 +58,10 @@ static int stopidxthread;
 void IdxThread::run()
 {
     DebugLog::getdbl()->setloglevel(loglevel);
+    recoll_threadinit();
     for (;;) {
 	if (stopidxthread) {
-	    delete indexer;
+	    deleteZ(indexer);
 	    return;
 	}
 	if (startindexing) {
@@ -85,8 +88,7 @@ void start_idxthread(const RclConfig& cnf)
     // We have to make a copy of the config (setKeydir changes it during 
     // indexation)
     RclConfig *myconf = new RclConfig(cnf);
-    ConfIndexer *ix = new ConfIndexer(myconf, &idxthread);
-    idxthread.indexer = ix;
+    idxthread.indexer = new ConfIndexer(myconf, &idxthread);
     idxthread.loglevel = DebugLog::getdbl()->getlevel();
     idxthread.start();
 }

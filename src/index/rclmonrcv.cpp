@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.10 2007-02-02 10:12:58 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.11 2007-05-21 13:30:21 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@ static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.10 2007-02-02 10:12:58 dockes E
 
 #include "debuglog.h"
 #include "rclmon.h"
+#include "rclinit.h"
 #include "fstreewalk.h"
 #include "indexer.h"
 #include "pathut.h"
@@ -108,6 +109,7 @@ void *rclMonRcvRun(void *q)
     RclMonEventQueue *queue = (RclMonEventQueue *)q;
 
     LOGDEB(("rclMonRcvRun: running\n"));
+    recoll_threadinit();
 
     // Create the fam/whatever interface object
     RclMonitor *mon;
@@ -163,8 +165,8 @@ void *rclMonRcvRun(void *q)
 	}
     }
 
-    LOGINFO(("rclMonRcvRun: exiting\n"));
     queue->setTerminate();
+    LOGINFO(("rclMonRcvRun: monrcv thread routine returning\n"));
     return 0;
 }
 

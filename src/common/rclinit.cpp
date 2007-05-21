@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.8 2006-11-08 15:34:20 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.9 2007-05-21 13:30:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@ static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.8 2006-11-08 15:34:20 dockes Exp 
 #include <stdio.h>
 #include <signal.h>
 #include <locale.h>
+#include <pthread.h>
 
 #include "debuglog.h"
 #include "rclconfig.h"
@@ -35,6 +36,16 @@ RclConfig *recollinit(RclInitFlags flags,
 {
     if (cleanup)
 	atexit(cleanup);
+
+    // We ignore SIGPIPE always. All pieces of code which can write to a pipe
+    // must check write() return values.
+    signal(SIGPIPE, SIG_IGN);
+    
+    // We block SIGCLD globally. We intend to properly wait for our children
+    sigset_t sset;
+    sigemptyset(&sset);
+    sigaddset(&sset, SIGCHLD);
+    pthread_sigmask(SIG_BLOCK, &sset, 0);
 
     if (sigcleanup) {
 	for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
@@ -85,4 +96,16 @@ RclConfig *recollinit(RclInitFlags flags,
     setlocale(LC_CTYPE, "");
 
     return config;
+}
+
+// Signals are handled by the main thread. All others should call this routine
+// to block possible signals
+void recoll_threadinit()
+{
+    sigset_t sset;
+    sigemptyset(&sset);
+
+    for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
+	sigaddset(&sset, catchedSigs[i]);
+    pthread_sigmask(SIG_BLOCK, &sset, 0);
 }

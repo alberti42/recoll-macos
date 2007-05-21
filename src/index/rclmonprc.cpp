@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.11 2007-05-21 09:00:29 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.12 2007-05-21 13:30:21 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -291,6 +291,7 @@ bool startMonitor(RclConfig *conf, int opts)
     }
 
     if (!rclEQ.lock()) {
+	LOGERR(("startMonitor: cant lock queue ???\n"));
 	return false;
     }
     LOGDEB(("start_monitoring: entering main loop\n"));
@@ -302,8 +303,11 @@ bool startMonitor(RclConfig *conf, int opts)
     while (rclEQ.wait(2, &timedout)) {
 	// Queue is locked.
 
-	if (!rclEQ.ok())
+	if (!rclEQ.ok()) {
+	    rclEQ.unlock();
 	    break;
+	}
+	    
 	list<string> modified;
 	list<string> deleted;
 
@@ -339,7 +343,7 @@ bool startMonitor(RclConfig *conf, int opts)
 	    didsomething = true;
 	}
 
-	// Recreate the auxiliary dbs every hour.
+	// Recreate the auxiliary dbs every hour at most.
 	const int auxinterval = 60 *60;
 	if (didsomething && time(0) - lastauxtime > auxinterval) {
 	    lastauxtime = time(0);
@@ -355,6 +359,9 @@ bool startMonitor(RclConfig *conf, int opts)
 	// Lock queue before waiting again
 	rclEQ.lock();
     }
+    rclEQ.setTerminate();
+    // Wait for receiver thread before returning
+    pthread_join(rcv_thrid, 0);
     LOGDEB(("Monitor: returning\n"));
     return true;
 }

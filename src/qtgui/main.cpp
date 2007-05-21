@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.58 2007-01-08 15:21:32 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.59 2007-05-21 13:30:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -57,6 +57,7 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.58 2007-01-08 15:21:32 dockes Exp $ 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
 #endif
+#include "smallut.h"
 
 #ifdef WITH_KDE
 static const char description[] =
@@ -117,20 +118,17 @@ static void recollCleanup()
     LOGDEB2(("recollCleanup: stopping idx thread\n"));
     stop_idxthread();
     LOGDEB2(("recollCleanup: closing database\n"));
-    delete rcldb;
-    rcldb = 0;
-    delete rclconfig;
-    rclconfig = 0;
+    deleteZ(rcldb);
+    deleteZ(rclconfig);
 #ifdef RCL_USE_ASPELL
-    delete aspell;
-    aspell = 0;
+    deleteZ(aspell);
 #endif
     LOGDEB2(("recollCleanup: done\n"));
 }
 
 static void sigcleanup(int)
 {
-    // fprintf(stderr, "sigcleanup\n");
+    fprintf(stderr, "sigcleanup called\n");
     // Cant call exit from here, because the atexit cleanup does some
     // thread stuff that we can't do from signal context.
     // Just set a flag and let the watchdog timer do the work

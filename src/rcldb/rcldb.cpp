@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.107 2007-05-18 07:41:03 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.108 2007-05-21 13:30:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -114,6 +114,8 @@ class Native {
 	if (m_iswritable)
 	    LOGDEB(("Rcl::Db: xapian will close. Flush may take some time\n"));
 	delete enquire;
+	if (m_iswritable)
+	    LOGDEB(("Rcl::Db: xapian close done.\n"));
     }
 
     string makeAbstract(Xapian::docid id, const list<string>& terms);

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.31 2007-02-02 10:09:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.32 2007-05-21 13:30:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -74,8 +74,7 @@ static bool makeDbIndexer(RclConfig *config)
     }
     // Check if there is already an indexer for the right db
     if (dbindexer && dbindexer->getDbDir().compare(dbdir)) {
-	delete dbindexer;
-	dbindexer = 0;
+	deleteZ(dbindexer);
     }
 
     if (!dbindexer)
@@ -199,10 +198,8 @@ static bool createstemdb(RclConfig *config, const string &lang)
 
 static void cleanup()
 {
-    delete confindexer;
-    confindexer = 0;
-    delete dbindexer;
-    dbindexer = 0;
+    deleteZ(confindexer);
+    deleteZ(dbindexer);
 }
 
 static const char *thisprog;
@@ -360,15 +357,15 @@ int main(int argc, const char **argv)
 
 	confindexer = new ConfIndexer(config, &updater);
 	confindexer->index(rezero);
-	delete confindexer;
+	deleteZ(confindexer);
 	int opts = RCLMON_NONE;
 	if (op_flags & OPT_D)
 	    opts |= RCLMON_NOFORK;
 	if (op_flags & OPT_x)
 	    opts |= RCLMON_NOX11;
-	if (startMonitor(config, opts))
-	    exit(0);
-	exit(1);
+	bool monret = startMonitor(config, opts);
+	MONDEB(("Monitor returned %d, exiting\n", monret));
+	exit(monret == false);
 #endif // MONITOR
 
 #ifdef RCL_USE_ASPELL

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.22 2007-02-19 18:14:13 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.23 2007-05-21 13:30:22 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.22 2007-02-19 18:14:13 dockes Exp 
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
+
 #ifdef PUTENV_ARG_NOT_CONST
 #include <string.h>
 #endif
@@ -178,14 +179,6 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
     }
 
     if (e.pid) {
-	// Ignore SIGPIPE and block SIGCHLD in here.
-	void (*osig)(int);
-	osig = signal(SIGPIPE, SIG_IGN);
-	sigset_t blkcld;
-	sigemptyset(&blkcld);
-	sigaddset(&blkcld, SIGCHLD);
-	sigprocmask(SIG_BLOCK, &blkcld, 0);
-
 	// Father process
 	if (input) {
 	    close(e.pipein[0]);
@@ -286,8 +279,6 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	    (void)waitpid(e.pid, &status, 0);
 	    e.pid = -1;
 	}
-	signal(SIGPIPE, osig);
-	sigprocmask(SIG_UNBLOCK, &blkcld, 0);
 	LOGDEB1(("ExecCmd::doexec: father got status 0x%x\n", status));
 	return haderror ? -1 : status;
 

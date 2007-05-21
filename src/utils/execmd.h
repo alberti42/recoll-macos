@@ -16,7 +16,7 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-/* @(#$Id: execmd.h,v 1.11 2006-12-14 13:53:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: execmd.h,v 1.12 2007-05-21 13:30:22 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -55,6 +55,10 @@ class ExecCmdProvide {
  * Output from the command is normally returned in a single string, but a
  * callback can be set to be called whenever new data arrives, in which case
  * it is permissible to consume the data and erase the string.
+ * 
+ * Note that SIGPIPE should be ignored and SIGCLD blocked when calling doexec,
+ * else things might fail randomly. (This is not done inside the class because
+ * of concerns with multithreaded programs).
  *
  */
 class ExecCmd {
