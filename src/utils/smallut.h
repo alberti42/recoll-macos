@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.26 2007-02-08 17:05:12 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.27 2007-05-21 12:03:52 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <map>
@@ -103,5 +103,8 @@ class Chrono {
   long 	m_nsecs; 
 };
 
+#ifndef deleteZ
+#define deleteZ(X) {delete X;X = 0;}
+#endif
 
 #endif /* _SMALLUT_H_INCLUDED_ */
