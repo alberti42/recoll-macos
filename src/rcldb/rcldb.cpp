@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.108 2007-05-21 13:30:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.109 2007-05-22 07:40:00 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -498,7 +498,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 
 Db::Db() 
     : m_ndb(0), m_qOpts(QO_NONE), m_idxAbsTruncLen(250), m_synthAbsLen(250),
-      m_synthAbsWordCtxLen(4), m_mode(Db::DbRO)
+      m_synthAbsWordCtxLen(4), m_flushmb(-1), m_mode(Db::DbRO)
 {
     m_ndb = new Native(this);
 }
@@ -1038,6 +1038,14 @@ bool Db::add(const string &fn, const Doc &idoc,
 	} catch (...) {
 	    LOGERR(("Db::add: failed again after replace_document\n"));
 	    return false;
+	}
+    }
+    if (m_flushmb > 0) {
+	m_curtxtsz += doc.text.length();
+	if (m_curtxtsz / (1024*1024) >= m_flushmb) {
+	    LOGDEB(("Db::add: text size >= %d Mb, flushing\n", m_flushmb));
+	    m_ndb->wdb.flush();
+	    m_curtxtsz = 0;
 	}
     }
     return true;

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.54 2007-05-21 09:00:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.55 2007-05-22 07:40:00 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -185,6 +185,11 @@ bool DbIndexer::init(bool resetbefore, bool rdonly)
 	LOGERR(("DbIndexer: error opening database in %s\n", m_dbdir.c_str()));
 	return false;
     }
+
+    int idxflushmb;
+    if (m_config->getConfParam("idxflushmb", &idxflushmb))
+	m_db.setFlushMb(idxflushmb);
+
     return true;
 }
 

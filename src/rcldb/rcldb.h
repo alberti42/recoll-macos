@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.46 2007-02-02 10:10:53 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.47 2007-05-22 07:40:00 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -174,6 +174,8 @@ class Db {
     bool filenameWildExp(const string& exp, list<string>& names);
     string getReason(){return m_reason;}
 
+    /** Adjust flush threshold */
+    void setFlushMb(int mb) {m_flushmb = mb;}
 
 private:
 
@@ -199,6 +201,11 @@ private:
     // This is how many words (context size) we keep around query terms
     // when building the abstract
     int          m_synthAbsWordCtxLen;
+
+    // Flush threshold. Megabytes of text indexed before we flush.
+    int          m_flushmb;
+    // Text bytes indexed since last flush
+    long long    m_curtxtsz;
 
     // Database directory
     string m_basedir;
