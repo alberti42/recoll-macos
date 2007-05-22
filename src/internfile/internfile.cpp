@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.28 2007-02-19 18:05:25 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.29 2007-05-22 08:33:03 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -299,6 +299,8 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 // While we're at it, we also set the mimetype and filename, which are special 
 // properties: we want to get them from the topmost doc
 // with an ipath, not the last one which is usually text/plain
+// We also set the author and modification time from the last doc
+// which has them.
 void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 {
     bool hasipath = false;
@@ -322,6 +324,9 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 	} else {
 	    ipath += isep;
 	}
+	getKeyValue(docdata, keyau, doc.author);
+	getKeyValue(docdata, keymd, doc.dmtime);
+	LOGDEB(("doc.dmtime now %s\n", doc.dmtime.c_str()));
     }
 
     // Trim empty tail elements in ipath.
@@ -488,11 +493,15 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	return FIError;
     }
 
-    // If indexing compute ipath and significant mimetype
-    // Note that ipath is returned through the parameter not doc.ipath
+    // If indexing compute ipath and significant mimetype Note that
+    // ipath is returned through the parameter not doc.ipath We also
+    // retrieve some metadata fields from the ancesters (like date or
+    // author). This is useful for email attachments. The values will
+    // be replaced by those found by dijontorcl if any, so the order
+    // of calls is important.
     if (!m_forPreview)
 	collectIpathAndMT(doc, ipath);
-
+    // Keep this AFTER collectIpathAndMT
     dijontorcl(doc);
 
     // Destack what can be
