@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.20 2007-01-19 15:22:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.21 2007-05-23 09:19:48 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -301,11 +301,31 @@ bool myTextSplitCB::matchGroups()
     return true;
 }
 
-const char *firstTermAnchorName = "FIRSTTERM";
+// Setting searchable beacons in the text to walk the term list.
+static const char *termAnchorNameBase = "FIRSTTERM";
+string termAnchorName(int i)
+{
+    char acname[sizeof(termAnchorNameBase) + 20];
+    sprintf(acname, "%s%d", termAnchorNameBase, i);
+    return string(acname);
+}
 
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
-const char *firstTermBeacon = "\xe2\xa0\x91\xe2\x96\x9f\x20\x01\x9a";
+// 0xcd8f is utf8 for unicode 034F COMBINING GRAPHEME JOINER
+// Qt doesn't display it, but accepts to search for it.
+const char *firstTermBeacon = "\xcd\x8f\xcd\x8f\xcd\x8f\xcd\x8f";
 #endif
+
+static string termBeacon(int i)
+{
+    return string("<a name=\"") + termAnchorName(i) + "\">"
+#ifdef QT_SCROLL_TO_ANCHOR_BUG
+		    + "<font color=\"white\">" + firstTermBeacon + "</font>"
+#endif
+		    + "</a>";
+
+}
+
 
 // Fix result text for display inside the gui text window.
 //
@@ -318,7 +338,7 @@ const char *firstTermBeacon = "\xe2\xa0\x91\xe2\x96\x9f\x20\x01\x9a";
 // editor's find() function to position on it
 bool plaintorich(const string& in, string& out, 
 		 const HiliteData& hdata,
-		 bool noHeader, bool fft)
+		 bool noHeader, bool)
 {
     Chrono chron;
     out.erase();
@@ -375,26 +395,21 @@ bool plaintorich(const string& in, string& out,
     Utf8Iter chariter(in);
     // State variable used to limitate the number of consecutive empty lines 
     int ateol = 0;
-    // State variable to update the char pos only for the first of
-    // consecutive blank chars
-    int atblank = 0;
+
+    // Stuff for numbered anchors at each term match
+    int anchoridx = 1;
+
     for (string::size_type pos = 0; pos != string::npos; pos = chariter++) {
 	if ((pos & 0xfff) == 0) {
 	    CancelCheck::instance().checkCancel();
 	}
-	// If we still have terms positions, check (byte) position
+
+	// If we still have terms positions, check (byte) position. If
+	// we are at or after a term match, mark.
 	if (tPosIt != tboffsend) {
 	    int ibyteidx = chariter.getBpos();
-
-	    if (fft && ibyteidx == cb.m_firstTermBPos) {
-		out += string("<a name=\"") + firstTermAnchorName + "\"> "
-#ifdef QT_SCROLL_TO_ANCHOR_BUG
-		    + "<font color=\"white\"> " + firstTermBeacon + " </font> "
-#endif
-		    + "</a>";
-	    }
-
 	    if (ibyteidx == tPosIt->first) {
+		out += termBeacon(anchoridx++);
 		out += "<termtag>";
 	    } else if (ibyteidx == tPosIt->second) {
 		// Output end tag, then skip all highlight areas that
@@ -405,6 +420,7 @@ bool plaintorich(const string& in, string& out,
 		    tPosIt++;
 	    }
 	}
+
 	switch(*chariter) {
 	case '\n':
 	    if (ateol < 2) {
@@ -424,11 +440,8 @@ bool plaintorich(const string& in, string& out,
 	    break;
 	default:
 	    // We don't change the eol status for whitespace, want a real line
-	    if (*chariter == ' ' || *chariter == '\t') {
-		atblank = 1;
-	    } else {
+	    if (!(*chariter == ' ' || *chariter == '\t')) {
 		ateol = 0;
-		atblank = 0;
 	    }
 	    chariter.appendchartostring(out);
 	}

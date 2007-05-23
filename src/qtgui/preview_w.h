@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.9 2007-02-19 18:15:14 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.10 2007-05-23 09:19:48 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -39,8 +39,9 @@ class TabData {
     QWidget *w; // widget for setCurrent
     int docnum;  // Index of doc in db search results.
 
-
-    TabData(QWidget *wi) : w(wi) {}
+    TabData(QWidget *wi) 
+	: w(wi), docnum(-1) 
+    {}
 };
 
 class QTextEdit;

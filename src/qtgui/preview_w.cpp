@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.17 2007-02-19 18:15:14 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.18 2007-05-23 09:19:48 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -159,7 +159,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	if (tw)
 	    e = (QWidget *)tw->child("pvEdit");
 	LOGDEB1(("Widget: %p, edit %p, target %p\n", tw, e, target));
-	if (e && target == tw && keyEvent->key() == Qt::Key_Slash) {
+	if (e && target == e && keyEvent->key() == Qt::Key_Slash) {
 	    searchTextLine->setFocus();
 	    dynSearchActive = true;
 	    return true;
@@ -174,13 +174,13 @@ void Preview::searchTextLine_textChanged(const QString & text)
     LOGDEB1(("search line text changed. text: '%s'\n", text.ascii()));
     if (text.isEmpty()) {
 	dynSearchActive = false;
-	nextButton->setEnabled(false);
-	prevButton->setEnabled(false);
+	//	nextButton->setEnabled(false);
+	//	prevButton->setEnabled(false);
 	clearPB->setEnabled(false);
     } else {
 	dynSearchActive = true;
-	nextButton->setEnabled(true);
-	prevButton->setEnabled(true);
+	//	nextButton->setEnabled(true);
+	//	prevButton->setEnabled(true);
 	clearPB->setEnabled(true);
 	doSearch(text, false, false);
     }
@@ -206,54 +206,55 @@ QTextEdit *Preview::getCurrentEditor()
 // current search, trying to advance and possibly wrapping around. If next is
 // false, the search string has been modified, we search for the new string, 
 // starting from the current position
-void Preview::doSearch(const QString &text, bool next, bool reverse, 
+void Preview::doSearch(const QString &_text, bool next, bool reverse, 
 		       bool wordOnly)
 {
-    LOGDEB1(("Preview::doSearch: [%s] next %d rev %d\n", 
-	    (const char *)text.utf8(), int(next), int(reverse)));
-    if (text.isEmpty())
-	return;
+    LOGDEB(("Preview::doSearch: [%s] next %d rev %d\n", 
+	    (const char *)_text.utf8(), int(next), int(reverse)));
+    QString text = _text;
+    if (text.isEmpty()) {
+#ifdef QT_SCROLL_TO_ANCHOR_BUG
+	text = QString::fromUtf8(firstTermBeacon);
+#endif
+    }
     QTextEdit *edit = getCurrentEditor();
     if (edit == 0) {
 	// ??
 	return;
     }
-    bool matchCase = matchCheck->isChecked();
-    int mspara, msindex, mepara, meindex;
-    edit->getSelection(&mspara, &msindex, &mepara, &meindex);
-    if (mspara == -1)
-	mspara = msindex = mepara = meindex = 0;
 
-    if (next) {
-	// We search again, starting from the current match
-	if (reverse) {
-	    // when searching backwards, have to move back one char
-	    if (msindex > 0)
-		msindex --;
-	    else if (mspara > 0) {
-		mspara --;
-		msindex = edit->paragraphLength(mspara);
-	    }
-	} else {
-	    // Forward search: start from end of selection
-	    mspara = mepara;
-	    msindex = meindex;
-	    LOGDEB1(("New para: %d index %d\n", mspara, msindex));
-	}
+    bool matchCase = matchCheck->isChecked();
+
+    LOGDEB(("Preview::doSearch: find: case %d word %d fw %d\n", 
+	     matchCase, wordOnly, !reverse));
+
+    // If the search text changed we need to reset the cursor position
+    // to the start of the previous match, else incremental search is
+    // going to look for the next occurrence instead of trying to
+    // lenghten the current match
+    if (!next) {
+	int ps, is, pe, ie;
+	edit->getSelection(&ps, &is, &pe, &ie);
+	if (is > 0)
+	    is--;
+	else if (ps > 0)
+	    ps--;
+	LOGDEB(("Setting cursor to %d %d\n", ps, is));
+	edit->setCursorPosition(ps, is);
     }
 
-    bool found = edit->find(text, matchCase, wordOnly, 
-			      !reverse, &mspara, &msindex);
-    LOGDEB(("Found at para: %d index %d\n", mspara, msindex));
-
-    if (!found && next && true) { // need a 'canwrap' test here
+    bool found = edit->find(text, matchCase, wordOnly, !reverse, 0, 0);
+    // If not found, try to wrap around. 
+    if (!found && next) { 
+	LOGDEB(("Preview::doSearch: wrapping around\n"));
+	int mspara, msindex;
 	if (reverse) {
 	    mspara = edit->paragraphs();
 	    msindex = edit->paragraphLength(mspara);
 	} else {
 	    mspara = msindex = 0;
 	}
-	found = edit->find(text, matchCase, false, !reverse, &mspara, &msindex);
+	found = edit->find(text,matchCase, false, !reverse, &mspara, &msindex);
     }
 
     if (found) {
@@ -622,7 +623,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 
     // Create preview text: highlight search terms (if not too big):
     QString richTxt;
-    bool highlightTerms = fdoc.text.length() < 1000 *1024;
+    bool highlightTerms = fdoc.text.length() < 2000 * 1024;
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
 	ToRichThread rthr(fdoc.text, m_hData, richTxt);
@@ -657,7 +658,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	    }
 	}
     } else {
-	richTxt = fdoc.text.c_str();
+	richTxt = QString::fromUtf8(fdoc.text.c_str(), fdoc.text.length());
     }
 
     // Load into editor
@@ -708,20 +709,18 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	canBeep = true;
 	doSearch(searchTextLine->text(), true, false);
     } else {
-	QString aname = QString::fromUtf8(firstTermAnchorName);
+	QString aname = QString::fromUtf8(termAnchorName(1).c_str());
 	LOGDEB2(("Calling scrolltoanchor [%s]\n", (const char *)aname.utf8()));
 	editor->scrollToAnchor(aname);
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
-	bool wasC = matchCheck->isChecked();
-	matchCheck->setChecked(false);
 	bool ocanbeep = canBeep;
 	canBeep = false;
-	doSearch(QString::fromUtf8(firstTermBeacon), 0, false, false);
+	QString empty;
+	doSearch(empty, 0, false, false);
 	canBeep = ocanbeep;
-	editor->del();
-	matchCheck->setChecked(wasC);
 #endif
     }
+    editor->setFocus();
     emit(previewExposed(m_searchId, docnum));
     return true;
 }

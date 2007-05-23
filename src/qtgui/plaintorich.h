@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.12 2007-01-19 15:22:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.13 2007-05-23 09:19:48 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -46,7 +46,7 @@ extern bool plaintorich(const string &in, string &out,
 			bool noHeader = false,
 			bool fft = false);
 
-extern const char *firstTermAnchorName;
+extern string termAnchorName(int i);
 
 #define QT_SCROLL_TO_ANCHOR_BUG
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
