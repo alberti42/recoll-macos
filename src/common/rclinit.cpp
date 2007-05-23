@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.9 2007-05-21 13:30:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.10 2007-05-23 08:28:35 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -41,12 +41,10 @@ RclConfig *recollinit(RclInitFlags flags,
     // must check write() return values.
     signal(SIGPIPE, SIG_IGN);
     
-    // We block SIGCLD globally. We intend to properly wait for our children
-    sigset_t sset;
-    sigemptyset(&sset);
-    sigaddset(&sset, SIGCHLD);
-    pthread_sigmask(SIG_BLOCK, &sset, 0);
+    // We would like to block SIGCHLD globally, but we can't because
+    // QT uses it. Have to block it inside execmd.cpp
 
+    // Install signal handler
     if (sigcleanup) {
 	for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
 	    if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN)
