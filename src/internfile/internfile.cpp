@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.29 2007-05-22 08:33:03 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.30 2007-05-23 08:29:04 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -326,7 +326,6 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 	}
 	getKeyValue(docdata, keyau, doc.author);
 	getKeyValue(docdata, keymd, doc.dmtime);
-	LOGDEB(("doc.dmtime now %s\n", doc.dmtime.c_str()));
     }
 
     // Trim empty tail elements in ipath.
