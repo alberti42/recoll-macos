@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.8 2007-05-18 07:41:03 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.9 2007-05-24 09:35:02 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -104,10 +104,11 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 	for (it = xdb.allterms_begin(); 
 	     it != xdb.allterms_end(); it++) {
 	    // Deciding if we try to stem the term. If it has any
-	    // non-lowercase 7bit char, dont. Note that
-	    // as we are dealing with unaccented data, we are still
-	    // processing most of western european languages (where
-	    // most unaccented letters are ascii)
+	    // non-lowercase 7bit char (that is, numbers, capitals and
+	    // punctuation) dont. We're still sending all multibyte
+	    // utf-8 chars to the stemmer, which is not too well
+	    // defined for xapian < 1.0, but seems to work anyway. We don't
+	    // try to look for multibyte non alphabetic data.
 	    string::iterator sit = (*it).begin(), eit = sit + (*it).length();
 	    if ((sit = find_if(sit, eit, p_notlowerascii)) != eit) {
 		++nostem;
