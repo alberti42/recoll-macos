@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>523</width>
-            <height>530</height>
+            <width>0</width>
+            <height>0</height>
         </rect>
     </property>
     <property name="caption">
@@ -314,6 +314,17 @@
                                         </property>
                                         <property name="text">
                                             <string>Use desktop preferences to choose document editor.</string>
+                                        </property>
+                                        <property name="checked">
+                                            <bool>false</bool>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>keepSortCB</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Remember sorting preference between invocations.</string>
                                         </property>
                                         <property name="checked">
                                             <bool>false</bool>

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.4 2006-12-05 15:23:50 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.5 2007-05-24 07:48:19 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,16 @@ void SortForm::init()
     mcntSB->setValue(prefs.sortWidth);
     unsigned int spec = (unsigned int)prefs.sortSpec;
 
+    // Restore active/inactive state only once from prefs, only if requested
+    fprintf(stderr, "sort_w init\n");
+    if (prefs.keepSort) {
+	sortCB->setChecked(prefs.sortActive);
+    } else {
+	sortCB->setChecked(false);
+    }
+
+    // Always start with sort disabled
+
     // We use 4 bits per spec hi is direction, 3 low bits = sort field
     unsigned int v, d;
 
@@ -63,8 +73,6 @@ void SortForm::init()
     fldCMB2->setCurrentItem(v < 3 ? v : 0);
     descCB2->setChecked(d!=0?true:false);
 
-    // Always start with sort disabled
-    sortCB->setChecked(false);
 
     // signals and slots connections
     connect(applyPB, SIGNAL(clicked()), this, SLOT(apply()));
@@ -93,6 +101,8 @@ void SortForm::setData()
     descCB1->setEnabled(sortCB->isChecked());
     fldCMB2->setEnabled(sortCB->isChecked());
     descCB2->setEnabled(sortCB->isChecked());
+
+    prefs.sortActive = sortCB->isChecked();
 
     if (!sortCB->isChecked()) {
 	spec.sortwidth = 0;
