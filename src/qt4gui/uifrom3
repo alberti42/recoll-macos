@@ -1,13 +1,29 @@
-#!/bin/sh
-
-# Prepare the qt4 gui directory for compilation. This is called by "configure"
-
+# Makefile to prepare the qt4 gui directory for compilation. This is called
+# by "configure"
 # Convert the uic files from qt3 to qt4. 
-for i in ../qtgui/*.ui ; do
-    echo converting $i
-    uic3 -convert $i > ../qt4gui/`basename $i`
-done
+
+all: always advsearch.ui preview.ui rclmain.ui sort.ui spell.ui \
+     ssearchb.ui uiprefs.ui viewaction.ui
+
+
+advsearch.ui : ../qtgui/advsearch.ui 
+	uic3 -convert ../qtgui/advsearch.ui > advsearch.ui 
+preview.ui : ../qtgui/preview.ui 
+	uic3 -convert ../qtgui/preview.ui > preview.ui 
+rclmain.ui : ../qtgui/rclmain.ui 
+	uic3 -convert ../qtgui/rclmain.ui > rclmain.ui 
+sort.ui : ../qtgui/sort.ui 
+	uic3 -convert ../qtgui/sort.ui > sort.ui 
+spell.ui : ../qtgui/spell.ui 
+	uic3 -convert ../qtgui/spell.ui > spell.ui 
+ssearchb.ui : ../qtgui/ssearchb.ui 
+	uic3 -convert ../qtgui/ssearchb.ui > ssearchb.ui 
+uiprefs.ui : ../qtgui/uiprefs.ui 
+	uic3 -convert ../qtgui/uiprefs.ui > uiprefs.ui 
+viewaction.ui: ../qtgui/viewaction.ui
+	uic3 -convert ../qtgui/viewaction.ui> viewaction.ui
 
 # Link the images
-rm -f images
-ln -s ../qtgui/images .
+always: 
+	rm -f images
+	ln -s ../qtgui/images .

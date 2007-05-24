@@ -2815,7 +2815,7 @@ fi
 cd $QTGUI
 # We just want a .pro file: no problem with unsubstituted variables at
 # this point.
-test -f uifrom3 && sh uifrom3
+test -f uifrom3 && make -f uifrom3
 test -f recoll.pro && chmod +w recoll.pro
 cp recoll.pro.in recoll.pro
 ${QMAKE} recoll.pro
