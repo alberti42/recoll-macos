@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.23 2007-02-08 09:03:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.24 2007-05-30 12:29:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -29,11 +29,11 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.23 2007-02-08 09:03:28 dockes Exp
 #endif
 
 #include "debuglog.h"
+#include "smallut.h"
 #include "recoll.h"
 #include "guiutils.h"
 #include "pathut.h"
 #include "docseq.h"
-#include "transcode.h"
 #include "pathut.h"
 #include "mimehandler.h"
 #include "plaintorich.h"
@@ -261,6 +261,18 @@ static string displayableBytes(long size)
     return string(sizebuf);
 }
 
+void ResList::append(const QString &text)
+{
+    QTEXTBROWSER::append(text);
+#if 0
+    {
+	FILE *fp = fopen("/tmp/debugreslist", "a");
+	fprintf(fp, "%s\n", (const char *)text.utf8());
+	fclose(fp);
+    }
+#endif
+}
+
 // Fill up result list window with next screen of hits
 void ResList::resultPageNext()
 {
@@ -458,7 +470,7 @@ void ResList::resultPageNext()
 	} else {
 	    abstract = doc.abstract;
 	}
-
+	// No need to call escapeHtml(), plaintorich handles it
 	string richabst;
 	plaintorich(abstract, richabst, hdata, true);
 
@@ -492,13 +504,14 @@ void ResList::resultPageNext()
 	map<char,string> subs;
 	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
 	subs['D'] = datebuf;
-	subs['K'] = !doc.keywords.empty() ? doc.keywords + "<br>" : "";
+	subs['K'] = !doc.keywords.empty() ? escapeHtml(doc.keywords) + "<br>" 
+	    : "";
 	subs['L'] = linksbuf;
 	subs['N'] = numbuf;
 	subs['M'] = doc.mimetype;
 	subs['R'] = perbuf;
 	subs['S'] = sizebuf;
-	subs['T'] = doc.title;
+	subs['T'] = escapeHtml(doc.title);
 	subs['U'] = url;
 
 	string formatted;
