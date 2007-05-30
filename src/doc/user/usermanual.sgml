@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.42 2007-05-21 07:24:14 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.43 2007-05-30 12:30:55 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -309,6 +309,43 @@ recoll
       <para>The index data directory (<filename>xapiandb</filename>)
       only contains data that can be completely rebuilt by an index
       run, and it can always be destroyed safely.</para>
+
+      <sect2 id="rcl.indexing.storage.format">
+	<title>Index formats</title>
+
+	<para>&XAP; has had two possible index formats for quite some
+	time. The "old" one named <literal>Quartz</literal>, and the
+	new one named <literal>Flint</literal>. &XAP; 0.9 used
+	<literal>Quartz</literal> by default, but could use
+	<literal>Flint</literal> if a specific environment variable
+	(<literal>XAPIAN_PREFER_FLINT</literal>) was set. &XAP; 1.0
+	still supports <literal>Quartz</literal> but will use
+        <literal>Flint</literal> by default for new index
+        creations.</para>
+
+	<para>The number of disk accesses performed during indexing
+	has been much optimized in the new <literal>Flint</literal>
+	engine and you may see indexing times improved by 50% in some
+	cases (compared to <literal>Quartz</literal>), typically for
+	big indexes where disk accesses dominate the indexing
+	time. There is also a more modest improvement of index
+	size.</para>
+
+	<para>&XAP; will not convert automatically an existing index
+	from the <literal>Quartz</literal> to the
+	<literal>Flint</literal> format. If you have an older index
+	and want to take advantage of the new format (which can be
+	done without setting the environment variable as of &RCL;
+	1.8.2 and &XAP; 1.0.0), you will have to explicitely delete
+	the old index, then run a normal indexing process.</para>
+
+	<para>Unfortunately, using the <literal>-z</literal> option to
+	<command>recollindex</command> is not sufficient to change the
+	format, you have to delete all files inside the index
+	directory (typically <filename>~/.recoll/xapiandb</filename>)
+	before starting indexing.</para>
+
+      </sect2>
 
       <sect2 id="rcl.indexing.storage.security">
 	<title>Security aspects</title>
