@@ -49,6 +49,7 @@ bool MimeHandlerHtml::set_document_file(const string &fn)
 	LOGINFO(("textHtmlToDoc: cant read: %s\n", fn.c_str()));
 	return false;
     }
+    m_filename = fn;
     return set_document_string(otext);
 }
 
@@ -64,8 +65,13 @@ bool MimeHandlerHtml::next_document()
     if (m_havedoc == false)
 	return false;
     m_havedoc = false;
+    // If set_doc(fn), take note of file name.
+    string fn = m_filename;
+    m_filename.erase();
+
     string charset = m_defcharset;
-    LOGDEB(("textHtmlToDoc: next_document. defcharset: %s\n",charset.c_str()));
+    LOGDEB(("textHtmlToDoc: next_document. defcharset: %s\n", 
+	    charset.c_str()));
 
     // - We first try to convert from the default configured charset
     //   (which may depend of the current directory) to utf-8. If this
@@ -82,13 +88,23 @@ bool MimeHandlerHtml::next_document()
 	LOGDEB(("Html::mkDoc: pass %d\n", pass));
 	MyHtmlParser p;
 	// Try transcoding. If it fails, use original text.
-	if (!transcode(m_html, transcoded, charset, "UTF-8")) {
-	    LOGERR(("textHtmlToDoc: transcode failed from cs '%s' to UTF-8\n",
-		    charset.c_str()));
+	int ecnt;
+	if (!transcode(m_html, transcoded, charset, "UTF-8", &ecnt)) {
+	    LOGDEB(("textHtmlToDoc: transcode failed from cs '%s' to UTF-8 for"
+		    "[%s]", charset.c_str(), fn.empty()?"unknown":fn.c_str()));
 	    transcoded = m_html;
 	    // We don't know the charset, at all
 	    p.ocharset = p.charset = charset = "";
 	} else {
+	    if (ecnt) {
+		if (pass == 0) {
+		    LOGDEB(("textHtmlToDoc: init transcode had %d errors for "
+			    "[%s]", ecnt, fn.empty()?"unknown":fn.c_str()));
+		} else {
+		    LOGERR(("textHtmlToDoc: final transcode had %d errors for "
+			    "[%s]", ecnt, fn.empty()?"unknown":fn.c_str()));
+		}
+	    }
 	    // ocharset has the putative source charset, transcoded is now
 	    // in utf-8
 	    p.ocharset = charset;

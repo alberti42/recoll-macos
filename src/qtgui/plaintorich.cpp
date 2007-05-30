@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.21 2007-05-23 09:19:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.22 2007-05-30 12:31:19 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,6 @@ using std::set;
 #include "debuglog.h"
 #include "textsplit.h"
 #include "utf8iter.h"
-#include "transcode.h"
 #include "smallut.h"
 #include "plaintorich.h"
 #include "cancelcheck.h"

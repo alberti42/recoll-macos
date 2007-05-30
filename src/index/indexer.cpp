@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.55 2007-05-22 07:40:00 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.56 2007-05-30 12:31:19 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -394,8 +394,14 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     // If this fails, the file name won't be indexed, no big deal
     // Note that we used to do the full path here, but I ended up believing
     // that it made more sense to use only the file name
-    string utf8fn;
-    transcode(path_getsimple(fn), utf8fn, charset, "UTF-8");
+    string utf8fn; int ercnt;
+    if (!transcode(path_getsimple(fn), utf8fn, charset, "UTF-8", &ercnt)) {
+	LOGERR(("processone: fn transcode failure from [%s] to UTF-8: %s\n",
+		charset.c_str(), path_getsimple(fn).c_str()));
+    } else if (ercnt) {
+	LOGDEB(("processone: fn transcode %d errors from [%s] to UTF-8: %s\n",
+		ercnt, charset.c_str(), path_getsimple(fn).c_str()));
+    }
 
     FileInterner::Status fis = FileInterner::FIAgain;
     bool hadNullIpath = false;

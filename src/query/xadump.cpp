@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.14 2007-01-13 14:41:40 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.15 2007-05-30 12:31:19 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,6 @@ static char rcsid[] = "@(#$Id: xadump.cpp,v 1.14 2007-01-13 14:41:40 dockes Exp 
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "transcode.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
