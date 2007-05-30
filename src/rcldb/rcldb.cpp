@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.109 2007-05-22 07:40:00 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.110 2007-05-30 12:30:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1017,6 +1017,8 @@ bool Db::add(const string &fn, const Doc &idoc,
     newdocument.set_data(record);
 
     const char *fnc = fn.c_str();
+    string ermsg;
+
     // Add db entry or update existing entry:
     try {
 	Xapian::docid did = 
@@ -1029,25 +1031,58 @@ bool Db::add(const string &fn, const Doc &idoc,
 	    LOGDEB(("Db::add: docid %d added [%s , %s]\n", did, fnc, 
 		    doc.ipath.c_str()));
 	}
+    } catch (const Xapian::Error &e) {
+	ermsg = e.get_msg();
+	if (ermsg.empty()) 
+	    ermsg = "Empty error message";
     } catch (...) {
+	ermsg= "Unknown error";
+    }
+
+    if (!ermsg.empty()) {
+	LOGERR(("Db::add: replace_document failed: %s\n", ermsg.c_str()));
+	ermsg.erase();
 	// FIXME: is this ever actually needed?
 	try {
 	    m_ndb->wdb.add_document(newdocument);
 	    LOGDEB(("Db::add: %s added (failed re-seek for duplicate)\n", 
 		    fnc));
+	} catch (const Xapian::Error &e) {
+	    ermsg = e.get_msg();
+	    if (ermsg.empty()) 
+		ermsg = "Empty error message";
 	} catch (...) {
-	    LOGERR(("Db::add: failed again after replace_document\n"));
+	    ermsg= "Unknown error";
+	}
+	if (!ermsg.empty()) {
+	    LOGERR(("Db::add: add_document failed: %s\n", ermsg.c_str()));
 	    return false;
 	}
     }
+
+    // Test if we're over the flush threshold (limit memory usage):
     if (m_flushmb > 0) {
 	m_curtxtsz += doc.text.length();
 	if (m_curtxtsz / (1024*1024) >= m_flushmb) {
+	    ermsg.erase();
 	    LOGDEB(("Db::add: text size >= %d Mb, flushing\n", m_flushmb));
-	    m_ndb->wdb.flush();
+	    try {
+		m_ndb->wdb.flush();
+	    } catch (const Xapian::Error &e) {
+		ermsg = e.get_msg();
+		if (ermsg.empty()) 
+		    ermsg = "Empty error message";
+	    } catch (...) {
+		ermsg= "Unknown error";
+	    }
+	    if (!ermsg.empty()) {
+		LOGERR(("Db::add: flush() failed: %s\n", ermsg.c_str()));
+		return false;
+	    }
 	    m_curtxtsz = 0;
 	}
     }
+
     return true;
 }
 
