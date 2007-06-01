@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.18 2007-05-23 09:19:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.19 2007-06-01 05:44:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -118,7 +118,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     if (event->type() != QEvent::KeyPress) 
 	return QWidget::eventFilter(target, event);
     
-    LOGDEB(("Preview::eventFilter: keyEvent\n"));
+    LOGDEB1(("Preview::eventFilter: keyEvent\n"));
     QKeyEvent *keyEvent = (QKeyEvent *)event;
     if (keyEvent->key() == Qt::Key_Q && 
 	(keyEvent->state() & Qt::ControlButton)) {
@@ -155,14 +155,22 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	    return QApplication::sendEvent(searchTextLine, event);
     } else {
 	QWidget *tw = pvTab->currentPage();
-	QWidget *e = 0;
+	QTextEdit *e = 0;
 	if (tw)
-	    e = (QWidget *)tw->child("pvEdit");
+	    e = (QTextEdit *)tw->child("pvEdit");
 	LOGDEB1(("Widget: %p, edit %p, target %p\n", tw, e, target));
-	if (e && target == e && keyEvent->key() == Qt::Key_Slash) {
-	    searchTextLine->setFocus();
-	    dynSearchActive = true;
-	    return true;
+	if (e && target == e) {
+	    if (keyEvent->key() == Qt::Key_Slash) {
+		searchTextLine->setFocus();
+		dynSearchActive = true;
+		return true;
+	    } else if (keyEvent->key() == Qt::Key_Space) {
+		e->scrollBy(0, e->visibleHeight());
+		return true;
+	    } else if (keyEvent->key() == Qt::Key_BackSpace) {
+		e->scrollBy(0, -e->visibleHeight());
+		return true;
+	    }
 	}
     }
 
