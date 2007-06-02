@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.47 2007-05-22 07:40:00 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.48 2007-06-02 08:30:42 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -24,6 +24,7 @@
 
 #include "refcntr.h"
 #include "rcldoc.h"
+#include "stoplist.h"
 
 #ifndef NO_NAMESPACES
 using std::string;
@@ -77,7 +78,8 @@ class Db {
     // KEEP_UPDATED is internal use by reOpen() only
     enum QueryOpts {QO_NONE=0, QO_STEM = 1, QO_KEEP_UPDATED = 8};
 
-    bool open(const string &dbdir, OpenMode mode, int qops = QO_NONE);
+    bool open(const string &dbdir, const string &stoplistfn, 
+	      OpenMode mode, int qops = QO_NONE);
     bool close();
     bool isopen();
 
@@ -172,10 +174,12 @@ class Db {
     
     /** Filename wildcard expansion */
     bool filenameWildExp(const string& exp, list<string>& names);
-    string getReason(){return m_reason;}
+    string getReason() const {return m_reason;}
 
     /** Adjust flush threshold */
     void setFlushMb(int mb) {m_flushmb = mb;}
+
+    const StopList& getStopList() const {return m_stops;}
 
 private:
 
@@ -216,6 +220,8 @@ private:
     OpenMode m_mode;
 
     vector<bool> updated;
+
+    StopList m_stops;
 
     bool reOpen(); // Close/open, same mode/opts
     bool stemExpand(const string &lang, const string &s, 

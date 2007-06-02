@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.110 2007-05-30 12:30:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.111 2007-06-02 08:30:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -528,7 +528,7 @@ Db::~Db()
     LOGERR(("Db::~Db: got exception: %s\n", ermsg));
 }
 
-bool Db::open(const string& dir, OpenMode mode, int qops)
+bool Db::open(const string& dir, const string &stops, OpenMode mode, int qops)
 {
     bool keep_updated = (qops & QO_KEEP_UPDATED) != 0;
     qops &= ~QO_KEEP_UPDATED;
@@ -543,6 +543,9 @@ bool Db::open(const string& dir, OpenMode mode, int qops)
 	if (!close())
 	    return false;
     }
+    if (!stops.empty())
+	m_stops.setFile(stops);
+
     const char *ermsg = "Unknown";
     try {
 	switch (mode) {
@@ -652,7 +655,7 @@ bool Db::reOpen()
     if (m_ndb && m_ndb->m_isopen) {
 	if (!close())
 	    return false;
-	if (!open(m_basedir, m_mode, m_qOpts | QO_KEEP_UPDATED)) {
+	if (!open(m_basedir, "", m_mode, m_qOpts | QO_KEEP_UPDATED)) {
 	    return false;
 	}
     }
@@ -737,8 +740,9 @@ class mySplitterCB : public TextSplitCB {
     Xapian::termpos basepos; // Base for document section
     Xapian::termpos curpos;  // Current position. Used to set basepos for the
                              // following section
-    mySplitterCB(Xapian::Document &d) 
-	: doc(d), basepos(1), curpos(0)
+    StopList &stops;
+    mySplitterCB(Xapian::Document &d, StopList &_stops) 
+	: doc(d), basepos(1), curpos(0), stops(_stops)
     {}
     bool takeword(const std::string &term, int pos, int, int);
     void setprefix(const string& pref) {prefix = pref;}
@@ -762,6 +766,10 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 
     const char *ermsg;
     try {
+	if (stops.hasStops() && stops.isStop(term)) {
+	    LOGDEB1(("Db: takeword [%s] in stop list\n", term.c_str()));
+	    return true;
+	}
 	// Note: 1 is the within document frequency increment. It would 
 	// be possible to assign different weigths to doc parts (ie title)
 	// by using a higher value
@@ -849,7 +857,7 @@ bool Db::add(const string &fn, const Doc &idoc,
 
     Xapian::Document newdocument;
 
-    mySplitterCB splitData(newdocument);
+    mySplitterCB splitData(newdocument, m_stops);
 
     TextSplit splitter(&splitData);
 

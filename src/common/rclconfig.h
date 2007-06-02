@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.31 2007-02-02 10:12:58 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.32 2007-06-02 08:30:41 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -78,8 +78,10 @@ class RclConfig {
 
     /** Get database directory */
     string getDbDir();
+    /** Get stoplist file name */
+    string getStopfile();
 
-    /** Get list of skipped names for current keydir */
+    /** Get list of skipped file names for current keydir */
     list<string> getSkippedNames();
 
     /** Get list of skipped paths patterns. Doesn't depend on the keydir */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.43 2007-02-07 17:17:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.44 2007-06-02 08:30:41 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -459,6 +459,11 @@ string RclConfig::getDbDir()
     }
     LOGDEB1(("RclConfig::getDbDir: dbdir: [%s]\n", dbdir.c_str()));
     return path_canon(dbdir);
+}
+
+string RclConfig::getStopfile()
+{
+    return path_cat(getConfDir(), "stoplist.txt");
 }
 
 list<string> RclConfig::getSkippedNames()

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.13 2007-02-13 10:58:31 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.14 2007-06-02 08:30:42 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.13 2007-02-13 10:58:31 dockes 
 #include "textsplit.h"
 #include "unacpp.h"
 #include "utf8iter.h"
+#include "stoplist.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -136,12 +137,23 @@ bool SearchData::getTerms(vector<string>& terms,
 // terms and phrases. 
 class wsQData : public TextSplitCB {
  public:
+    wsQData(const StopList &_stops) 
+	: stops(_stops), alltermcount(0)
+    {}
     vector<string> terms;
     bool takeword(const std::string &term, int , int, int) {
+	alltermcount++;
 	LOGDEB1(("wsQData::takeword: %s\n", term.c_str()));
+	if (stops.hasStops() && stops.isStop(term)) {
+	    LOGDEB1(("wsQData::takeword [%s] in stop list\n", term.c_str()));
+	    return true;
+	}
 	terms.push_back(term);
 	return true;
     }
+    const StopList &stops;
+    int alltermcount; // Count of terms including stopwords: this is
+		      // for adjusting phrase/near slack
 };
 
 /** 
@@ -158,10 +170,11 @@ public:
     { }
 
     bool processUserString(const string &iq,
-		   const string &prefix,
-		   string &ermsg,
-		   list<Xapian::Query> &pqueries,
-		   int slack = 0, bool useNear = false);
+			   const string &prefix,
+			   string &ermsg,
+			   list<Xapian::Query> &pqueries, 
+			   const StopList &stops,
+			   int slack = 0, bool useNear = false);
 
     bool getTerms(vector<string>& terms, 
 		  vector<vector<string> >& groups) 
@@ -313,7 +326,9 @@ bool StringToXapianQ::processUserString(const string &iq,
 					const string &prefix,
 					string &ermsg,
 					list<Xapian::Query> &pqueries,
-					int slack, bool useNear)
+					const StopList& stops,
+					int slack, bool useNear
+					)
 {
     LOGDEB(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
     ermsg.erase();
@@ -339,7 +354,7 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    // we need to use a word split, else a phrase query including
 	    // a span would fail if we didn't adjust the proximity to
 	    // account for the additional span term which is complicated.
-	    wsQData splitDataS, splitDataW;
+	    wsQData splitDataS(stops), splitDataW(stops);
 	    TextSplit splitterS(&splitDataS, (TextSplit::Flags)
 				(TextSplit::TXTS_ONLYSPANS | 
 				 TextSplit::TXTS_KEEPWILD));
@@ -418,7 +433,8 @@ bool StringToXapianQ::processUserString(const string &iq,
 		pqueries.push_back(Xapian::Query(op,
 						 orqueries.begin(),
 						 orqueries.end(),
-					 splitData->terms.size() + slack));
+						 splitData->alltermcount 
+						 + slack));
 		// Add NEAR/PHRASE groups to the highlighting data. Must
 		// push all combinations
 		vector<vector<string> > allcombs;
@@ -508,7 +524,8 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	(m_parentSearch == 0 && !m_haveWildCards);
 
     StringToXapianQ tr(db, l_stemlang, doBoostUserTerm);
-    if (!tr.processUserString(m_text, prefix, m_reason, pqueries))
+    if (!tr.processUserString(m_text, prefix, m_reason, pqueries, 
+			      db.getStopList()))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
@@ -570,7 +587,8 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     string s = string("\"") + m_text + string("\"");
     bool useNear = (m_tp == SCLT_NEAR);
     StringToXapianQ tr(db, l_stemlang, doBoostUserTerm);
-    if (!tr.processUserString(s, prefix, m_reason, pqueries, m_slack, useNear))
+    if (!tr.processUserString(s, prefix, m_reason, pqueries, db.getStopList(),
+			      m_slack, useNear))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseDist: resolved to null query\n"));

@@ -16,7 +16,7 @@
  */
 #ifndef _READFILE_H_INCLUDED_
 #define _READFILE_H_INCLUDED_
-/* @(#$Id: readfile.h,v 1.2 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: readfile.h,v 1.3 2007-06-02 08:30:42 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -24,6 +24,7 @@
  * Read whole file into string. 
  * @return true for ok, false else
  */
-bool file_to_string(const std::string &filename, std::string &data);
+bool file_to_string(const std::string &filename, std::string &data, 
+		    std::string *reason = 0);
 
 #endif /* _READFILE_H_INCLUDED_ */

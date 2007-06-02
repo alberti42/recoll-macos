@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: readfile.cpp,v 1.3 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: readfile.cpp,v 1.4 2007-06-02 08:30:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,20 +32,28 @@ using std::string;
 
 #include "readfile.h"
 
-bool file_to_string(const string &fn, string &data)
+bool file_to_string(const string &fn, string &data, string *reason)
 {
+#define ERRBUFSZ 200    
+    char errbuf[ERRBUFSZ];
     bool ret = false;
 
     int fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
     if (fd < 0) {
-	// perror("open");
+	if (reason) {
+	    strerror_r(errno, errbuf, ERRBUFSZ);
+	    *reason += string("file_to_string: open failed: ") + errbuf;
+	}
 	return false;
     }
     char buf[4096];
     for (;;) {
 	int n = read(fd, buf, 4096);
 	if (n < 0) {
-	    // perror("read");
+	    if (reason) {
+		strerror_r(errno, errbuf, ERRBUFSZ);
+		*reason += string("file_to_string: read failed: ") + errbuf;
+	    }
 	    goto out;
 	}
 	if (n == 0)
@@ -54,7 +62,10 @@ bool file_to_string(const string &fn, string &data)
 	try {
 	    data.append(buf, n);
 	} catch (...) {
-	    //	    fprintf(stderr, "file_to_string: out of memory\n");
+	    if (reason) {
+		strerror_r(errno, errbuf, ERRBUFSZ);
+		*reason += string("file_to_string: out of memory? : ") +errbuf;
+	    }
 	    goto out;
 	}
     }

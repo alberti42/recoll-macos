@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.56 2007-05-30 12:31:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.57 2007-06-02 08:30:41 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -181,7 +181,7 @@ bool DbIndexer::init(bool resetbefore, bool rdonly)
     }
     Rcl::Db::OpenMode mode = rdonly ? Rcl::Db::DbRO :
 	resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
-    if (!m_db.open(m_dbdir, mode)) {
+    if (!m_db.open(m_dbdir, m_config->getStopfile(), mode)) {
 	LOGERR(("DbIndexer: error opening database in %s\n", m_dbdir.c_str()));
 	return false;
     }
