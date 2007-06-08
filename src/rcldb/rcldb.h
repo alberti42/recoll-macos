@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.48 2007-06-02 08:30:42 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.49 2007-06-08 16:05:25 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -71,6 +71,8 @@ public:
  */
 class Db {
  public:
+
+    /* General stuff (valid for query or update) ****************************/
     Db();
     ~Db();
 
@@ -83,11 +85,17 @@ class Db {
     bool close();
     bool isopen();
 
-    /** Return total docs in db */
-    int  docCnt(); 
+    /** Retrieve main database directory */
+    string getDbDir();
+
+    /** Get explanation about last error */
+    string getReason() const {return m_reason;}
+
+    /** Return list of configured stop words */
+    const StopList& getStopList() const {return m_stops;}
 
 
-    /* Update-related functions */
+    /* Update-related methods ******************************************/
 
     /** Add document. The Doc class should have been filled as much as
        possible depending on the document type */
@@ -111,7 +119,14 @@ class Db {
     /** Delete stem expansion database for given language. */
     bool deleteStemDb(const string &lang);
 
-    /* Query-related functions */
+    /** Adjust flush threshold */
+    void setFlushMb(int mb) {m_flushmb = mb;}
+
+
+    /* Query-related methods ************************************/
+
+    /** Return total docs in db */
+    int  docCnt(); 
 
     // Parse query string and initialize query
     bool setQuery(RefCntr<SearchData> q, int opts = QO_NONE,
@@ -156,9 +171,6 @@ class Db {
     /** Get a list of existing stemming databases */
     std::list<std::string> getStemLangs();
 
-    /** Retrieve main database directory */
-    string getDbDir();
-
     /** Set parameters for synthetic abstract generation */
     void setAbstractParams(int idxTrunc, int synthLen, int syntCtxLen);
 
@@ -174,12 +186,6 @@ class Db {
     
     /** Filename wildcard expansion */
     bool filenameWildExp(const string& exp, list<string>& names);
-    string getReason() const {return m_reason;}
-
-    /** Adjust flush threshold */
-    void setFlushMb(int mb) {m_flushmb = mb;}
-
-    const StopList& getStopList() const {return m_stops;}
 
 private:
 
@@ -188,10 +194,10 @@ private:
                              // db indices that match
 
     string m_reason; // Error explanation
-    // Things we don't want to have here.
+
+    // A place for things we don't want visible here.
     friend class Native;
-    Native *m_ndb; // Pointer to private data. We don't want db(ie
-                 // xapian)-specific defs to show in here
+    Native *m_ndb; 
 
     unsigned int m_qOpts;
     
