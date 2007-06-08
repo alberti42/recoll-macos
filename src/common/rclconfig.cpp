@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.44 2007-06-02 08:30:41 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.45 2007-06-08 12:31:54 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -105,27 +105,28 @@ RclConfig::RclConfig(const string *argcnf)
     list<string> cdirs;
     cdirs.push_back(m_confdir);
     cdirs.push_back(path_cat(m_datadir, "examples"));
+    string cnferrloc = m_confdir + " or " + path_cat(m_datadir, "examples");
 
     m_conf = new ConfStack<ConfTree>("recoll.conf", cdirs, true);
     if (m_conf == 0 || !m_conf->ok()) {
-	m_reason = string("No/bad main configuration file in: ") + m_confdir;
+	m_reason = string("No/bad main configuration file in: ") + cnferrloc;
 	return;
     }
 
     mimemap = new ConfStack<ConfTree>("mimemap", cdirs, true);
     if (mimemap == 0 || !mimemap->ok()) {
-	m_reason = string("No or bad mimemap file in: ") + m_confdir;
+	m_reason = string("No or bad mimemap file in: ") + cnferrloc;
 	return;
     }
 
     mimeconf = new ConfStack<ConfTree>("mimeconf", cdirs, true);
     if (mimeconf == 0 || !mimeconf->ok()) {
-	m_reason = string("No/bad mimeconf in: ") + m_confdir;
+	m_reason = string("No/bad mimeconf in: ") + cnferrloc;
 	return;
     }
     mimeview = new ConfStack<ConfTree>("mimeview", cdirs, true);
     if (mimeconf == 0 || !mimeconf->ok()) {
-	m_reason = string("No/bad mimeview in: ") + m_confdir;
+	m_reason = string("No/bad mimeview in: ") + cnferrloc;
 	return;
     }
 
