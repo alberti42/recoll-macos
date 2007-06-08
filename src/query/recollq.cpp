@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.4 2007-02-14 10:08:05 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.5 2007-06-08 12:33:00 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -112,7 +112,8 @@ int main(int argc, char **argv)
 	exit(1);
     }
     dbdir = rclconfig->getDbDir();
-    rcldb.open(dbdir,  Rcl::Db::DbRO, Rcl::Db::QO_STEM);
+    rcldb.open(dbdir,  rclconfig->getStopfile(),
+	       Rcl::Db::DbRO, Rcl::Db::QO_STEM);
 
     Rcl::SearchData *sd = 0;
 
