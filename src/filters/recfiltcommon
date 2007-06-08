@@ -58,6 +58,9 @@ then
   senderror INPUTNOSUCHFILE "$infile"
 fi
 
+# protect access to our temp files and directories
+umask 77
+
 ##############################################################################
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE

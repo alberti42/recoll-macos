@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclpdf,v 1.8 2007-02-06 15:08:22 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclpdf,v 1.9 2007-06-08 13:51:09 dockes Exp $  (C) 2004 J.F.Dockes
 # This is copied almost verbatim from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -32,6 +32,7 @@ LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclpdf"
 filetype=pdf
+
 
 
 
@@ -93,6 +94,9 @@ if test "X$infile" != X- -a ! -f "$infile"
 then
   senderror INPUTNOSUCHFILE "$infile"
 fi
+
+# protect access to our temp files and directories
+umask 77
 
 ##############################################################################
 # !! Leave the following line unmodified !
