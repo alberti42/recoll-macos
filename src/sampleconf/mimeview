@@ -1,4 +1,4 @@
-# @(#$Id: mimeview,v 1.4 2007-02-14 10:10:43 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeview,v 1.5 2007-06-08 13:59:55 dockes Exp $  (C) 2004 J.F.Dockes
 
 ## ##########################################
 # External viewers, launched by the recoll GUI when you click on a result
@@ -7,6 +7,8 @@
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
 application/x-all = xdg-open %f
+
+application/x-kword = kword %f
 
 application/msword = openoffice %f
 application/pdf  = xpdf %f
