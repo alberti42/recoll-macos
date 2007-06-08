@@ -16,7 +16,7 @@
  */
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
-/* @(#$Id: pathut.h,v 1.12 2007-02-06 14:16:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: pathut.h,v 1.13 2007-06-08 15:30:01 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -54,6 +54,12 @@ extern string url_encode(const string url,
 			      string::size_type offs);
 /// Stat parameter and check if it's a directory
 extern bool path_isdir(const string& path);
+
+/** A small wrapper around statfs et al, to return percentage of disk
+    occupation */
+bool fsocc(const string &path, int *pc, // Percent occupied
+	   long *avmbs = 0 // Mbs available to non-superuser
+	   );
 
 /// Create temporary directory
 extern bool maketmpdir(string& tdir, string& reason);

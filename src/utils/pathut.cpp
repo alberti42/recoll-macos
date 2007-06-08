@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.15 2007-02-06 14:16:43 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.16 2007-06-08 15:30:01 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@ static char rcsid[] = "@(#$Id: pathut.cpp,v 1.15 2007-02-06 14:16:43 dockes Exp 
 #include <fcntl.h>
 #include <sys/param.h>
 #include <pwd.h>
+#include <math.h>
 
 #include <iostream>
 #include <list>
@@ -34,6 +35,40 @@ using std::stack;
 #endif /* NO_NAMESPACES */
 
 #include "pathut.h"
+
+#ifndef STATFS_INCLUDE
+#define STATFS_INCLUDE <sys/vfs.h>
+#endif
+
+#include STATFS_INCLUDE
+
+bool fsocc(const string &path, int *pc, long *blocks)
+{
+    struct statfs buf;
+    if (statfs(path.c_str(), &buf) != 0) {
+	return false;
+    }
+    // used blocks
+    double fpc = 0.0;
+#define FSOCC_USED (double(buf.f_blocks - buf.f_bfree))
+#define FSOCC_TOTAVAIL (FSOCC_USED + double(buf.f_bavail))
+    if (FSOCC_TOTAVAIL > 0) {
+	fpc = 100.0 * FSOCC_USED / FSOCC_TOTAVAIL;
+    }
+    *pc = int(fpc);
+    if (blocks) {
+	*blocks = 0;
+#define FSOCC_MB (1024*1024)
+	if (buf.f_bsize > 0) {
+	    int ratio = buf.f_bsize > FSOCC_MB ? buf.f_bsize / FSOCC_MB :
+		FSOCC_MB / buf.f_bsize;
+
+	    *blocks = buf.f_bsize > FSOCC_MB ? long(buf.f_bavail) * ratio :
+		long(buf.f_bavail) / ratio;
+	}
+    }
+    return true;
+}
 
 static const char *tmplocation()
 {
@@ -352,8 +387,12 @@ const string ttvec[] = {"/dir", "", "~", "~/sub", "~root", "~root/sub",
 		 "~nosuch", "~nosuch/sub"};
 int nttvec = sizeof(ttvec) / sizeof(string);
 
+const char *thisprog;
+
 int main(int argc, const char **argv)
 {
+    thisprog = *argv++;argc--;
+
     string s;
     list<string>::const_iterator it;
 #if 0
@@ -388,18 +427,34 @@ int main(int argc, const char **argv)
 	    path_canon(canontst[i]) << "'" << endl;
     }
 #endif    
-#if 1
-    if (argc != 3) {
+#if 0
+    if (argc != 2) {
 	fprintf(stderr, "Usage: trpathut <dir> <pattern>\n");
 	exit(1);
     }
-    string dir=argv[1], pattern=argv[2];
+    string dir = *argv++;argc--;
+    string pattern =  *argv++;argc--;
     list<string> matched = path_dirglob(dir, pattern);
     for (it = matched.begin(); it != matched.end();it++) {
 	cout << *it << endl;
     }
 #endif
 
+#if 1
+    if (argc != 1) {
+	fprintf(stderr, "Usage: fsocc: trpathut <path>\n");
+	exit(1);
+    }
+  string path = *argv++;argc--;
+
+  int pc;
+  long blocks;
+  if (!fsocc(path, &pc, &blocks)) {
+      fprintf(stderr, "fsocc failed\n");
+      return 1;
+  }
+  printf("pc %d, megabytes %ld\n", pc, blocks);
+#endif
     return 0;
 }
 
