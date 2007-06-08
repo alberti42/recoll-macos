@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.43 2007-05-30 12:30:55 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.44 2007-06-08 16:46:53 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -938,10 +938,12 @@ fvwm
             &RCL; will do its best to find index terms that sound like
             your entry. This mode uses the
             <application>Aspell</application> spelling application,
-            which must be installed on your system for things to
-            work. The language which is used to build the dictionary
-            out of the index terms (which is done at the end of an
-            indexing pass) is the one defined by your NLS
+            which must be installed on your system for things to work
+            (if your documents contain non-ascii characters, &RCL;
+            needs an aspell version newer than 0.60 for UTF-8
+            support). The language which is used to build the
+            dictionary out of the index terms (which is done at the
+            end of an indexing pass) is the one defined by your NLS
             environment. Weird things will probably happen if
             languages are mixed up.</para></listitem>
           </varlistentry>
