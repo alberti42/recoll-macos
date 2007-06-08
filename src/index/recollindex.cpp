@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.32 2007-05-21 13:30:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.33 2007-06-08 16:47:19 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -252,6 +252,12 @@ Usage(void)
     exit((op_flags & OPT_h)==0);
 }
 
+static RclConfig *config;
+RclConfig *RclConfig::getMainConfig() 
+{
+    return config;
+}
+
 int main(int argc, const char **argv)
 {
     string a_config;
@@ -303,8 +309,7 @@ int main(int argc, const char **argv)
     string reason;
     RclInitFlags flags = (op_flags & OPT_m) && !(op_flags&OPT_D) ? 
 	RCLINIT_DAEMON : RCLINIT_NONE;
-    RclConfig *config = 
-	recollinit(flags, cleanup, sigcleanup, reason, &a_config);
+    config = recollinit(flags, cleanup, sigcleanup, reason, &a_config);
     if (config == 0 || !config->ok()) {
 	cerr << "Configuration problem: " << reason << endl;
 	exit(1);

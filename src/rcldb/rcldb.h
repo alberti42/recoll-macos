@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.49 2007-06-08 16:05:25 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.50 2007-06-08 16:47:19 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -119,9 +119,6 @@ class Db {
     /** Delete stem expansion database for given language. */
     bool deleteStemDb(const string &lang);
 
-    /** Adjust flush threshold */
-    void setFlushMb(int mb) {m_flushmb = mb;}
-
 
     /* Query-related methods ************************************/
 
@@ -213,12 +210,19 @@ private:
     int          m_synthAbsWordCtxLen;
 
     // Flush threshold. Megabytes of text indexed before we flush.
-    int          m_flushmb;
-    // Text bytes indexed since last flush
+    int          m_flushMb;
+    // Text bytes indexed since beginning
     long long    m_curtxtsz;
+    // Text bytes at last flush
+    long long    m_flushtxtsz;
+    // Text bytes at last fsoccup check
+    long long    m_occtxtsz;
+
+    // Maximum file system occupation percentage
+    int          m_maxFsOccupPc;
 
     // Database directory
-    string m_basedir;
+    string       m_basedir;
 
     // List of directories for additional databases to query
     list<string> m_extraDbs;

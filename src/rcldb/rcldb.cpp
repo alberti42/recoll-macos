@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.111 2007-06-02 08:30:42 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.112 2007-06-08 16:47:19 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@ static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.111 2007-06-02 08:30:42 dockes Exp 
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+#include "rclconfig.h"
 #include "rcldb.h"
 #include "stemdb.h"
 #include "textsplit.h"
@@ -498,9 +499,16 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 
 Db::Db() 
     : m_ndb(0), m_qOpts(QO_NONE), m_idxAbsTruncLen(250), m_synthAbsLen(250),
-      m_synthAbsWordCtxLen(4), m_flushmb(-1), m_mode(Db::DbRO)
+      m_synthAbsWordCtxLen(4), m_flushMb(-1), 
+      m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0),
+      m_maxFsOccupPc(0), m_mode(Db::DbRO)
 {
     m_ndb = new Native(this);
+    RclConfig *config = RclConfig::getMainConfig();
+    if (config) {
+	config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
+	config->getConfParam("idxflushmb", &m_flushMb);
+    }
 }
 
 Db::~Db()
@@ -824,16 +832,29 @@ void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 	m_synthAbsWordCtxLen = syntctxlen;
 }
 
+static const int MB = 1024 * 1024;
+
 // Add document in internal form to the database: index the terms in
 // the title abstract and body and add special terms for file name,
 // date, mime type ... , create the document data record (more
 // metadata), and update database
-bool Db::add(const string &fn, const Doc &idoc, 
-		  const struct stat *stp)
+bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 {
     LOGDEB1(("Db::add: fn %s\n", fn.c_str()));
     if (m_ndb == 0)
 	return false;
+
+    // Check file system full every mbyte of indexed text.
+    if (m_maxFsOccupPc > 0 && (m_curtxtsz - m_occtxtsz) / MB >= 1) {
+	LOGDEB(("Db::add: checking file system usage\n"));
+	int pc;
+	if (fsocc(m_basedir, &pc) && pc >= m_maxFsOccupPc) {
+	    LOGERR(("Db::add: stop indexing: file system "
+		     "%d%% full > max %d%%\n", pc, m_maxFsOccupPc));
+	    return false;
+	}
+	m_occtxtsz = m_curtxtsz;
+    }
 
     Doc doc = idoc;
 
@@ -1069,11 +1090,11 @@ bool Db::add(const string &fn, const Doc &idoc,
     }
 
     // Test if we're over the flush threshold (limit memory usage):
-    if (m_flushmb > 0) {
-	m_curtxtsz += doc.text.length();
-	if (m_curtxtsz / (1024*1024) >= m_flushmb) {
+    m_curtxtsz += doc.text.length();
+    if (m_flushMb > 0) {
+	if ((m_curtxtsz - m_flushtxtsz) / MB >= m_flushMb) {
 	    ermsg.erase();
-	    LOGDEB(("Db::add: text size >= %d Mb, flushing\n", m_flushmb));
+	    LOGDEB(("Db::add: text size >= %d Mb, flushing\n", m_flushMb));
 	    try {
 		m_ndb->wdb.flush();
 	    } catch (const Xapian::Error &e) {
@@ -1087,7 +1108,7 @@ bool Db::add(const string &fn, const Doc &idoc,
 		LOGERR(("Db::add: flush() failed: %s\n", ermsg.c_str()));
 		return false;
 	    }
-	    m_curtxtsz = 0;
+	    m_flushtxtsz = m_curtxtsz;
 	}
     }
 

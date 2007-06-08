@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.32 2007-06-02 08:30:41 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.33 2007-06-08 16:47:19 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -36,6 +36,11 @@ class RclConfig {
  public:
 
     RclConfig(const string *argcnf = 0);
+    // Main programs should implement this, it avoids having to carry
+    // the configuration parameter everywhere. Places where several
+    // instances might be needed will take care of themselves.
+    static RclConfig* getMainConfig();
+
     bool ok() {return m_ok;}
     const string &getReason() {return m_reason;}
     /** Return the directory where this config is stored */
