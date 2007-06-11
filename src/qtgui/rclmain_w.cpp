@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.26 2007-05-21 14:26:19 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.27 2007-06-11 08:33:56 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,8 @@ using std::pair;
 #include <qpushbutton.h>
 #include <qimage.h>
 #include <qiconset.h>
+#include <qapplication.h>
+#include <qcursor.h>
 
 #include "recoll.h"
 #include "debuglog.h"
@@ -374,7 +376,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     int qopts = 0;
     if (!prefs.queryStemLang.length() == 0)
 	qopts |= Rcl::Db::QO_STEM;
-
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     if (!rcldb->setQuery(sdata, qopts, prefs.queryStemLang.ascii())) {
 	QMessageBox::warning(0, "Recoll", tr("Cant start query: ") +
 			     QString::fromAscii(rcldb->getReason().c_str()));
@@ -386,6 +388,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     m_docSource = RefCntr<DocSequence>(src);
     m_searchData = sdata;
     setDocSequence();
+    QApplication::restoreOverrideCursor();
 }
 
 void RclMain::resetSearch()
