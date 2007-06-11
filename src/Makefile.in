@@ -1,4 +1,4 @@
-# @(#$Id: Makefile.in,v 1.10 2007-01-10 16:03:24 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile.in,v 1.11 2007-06-11 05:49:01 dockes Exp $  (C) 2005 J.F.Dockes
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -48,6 +48,7 @@ clean:
 	rm -f common/rclversion.h
 	rm -rf qtgui/.moc qtgui/.ui
 	rm -rf qt4gui/.moc qt4gui/.ui
+	(cd qt4gui; make -f uifrom3 clean)
 
 distclean: clean
 	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf \
