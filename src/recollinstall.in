@@ -69,9 +69,9 @@ done
 #PATH=$PATH:desktop/xdg-utils-1.0.1/scripts
 #export PATH
 #xdg-desktop-menu install desktop/recoll-searchgui.desktop
-#xdg-icon-resource install --size 48 desktop/recoll-searchgui.png
+#xdg-icon-resource install --size 48 desktop/recoll.png
 ${INSTALL} -m 0444 desktop/recoll-searchgui.desktop ${datadir}/applications
-${INSTALL} -m 0444 desktop/recoll-searchgui.png ${datadir}/icons/hicolor/48x48/apps
+${INSTALL} -m 0444 desktop/recoll.png ${datadir}/icons/hicolor/48x48/apps
 
 ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 			${datadir}/recoll/doc 

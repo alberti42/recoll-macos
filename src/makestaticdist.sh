@@ -39,7 +39,7 @@ files="COPYING README INSTALL VERSION Makefile recollinstall
 filters desktop sampleconf doc/user doc/man
 index/recollindex index/rclmon.sh qtgui/recoll qtgui/i18n/*.qm 
 qtgui/mtpics/*.png 
-desktop/recoll-searchgui.png desktop/recoll-searchgui.desktop"
+desktop/recoll.png desktop/recoll-searchgui.desktop"
 
 $TAR chf - $files  | (cd $topdir; $TAR xf -)
 
