@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.22 2007-05-30 12:31:19 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.23 2007-06-12 10:32:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -310,9 +310,14 @@ string termAnchorName(int i)
 }
 
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
-// 0xcd8f is utf8 for unicode 034F COMBINING GRAPHEME JOINER
-// Qt doesn't display it, but accepts to search for it.
-const char *firstTermBeacon = "\xcd\x8f\xcd\x8f\xcd\x8f\xcd\x8f";
+// 0xcd8f is utf8 for unicode 034F COMBINING GRAPHEME JOINER Qt
+// doesn't display it, but accepts to search for it. With QT4 it
+// sometimes seems to create a display bug where two adjacent lines
+// are overstriked, but it shouldn't, see:
+// http://unicode.org/faq/char_combmark.html#17
+// We are counting on the fact that a sequence of two such chars should be 
+// extremely unlikely in normal text and not affecting the display.
+const char *firstTermBeacon = "\xcd\x8f\xcd\x8f";
 #endif
 
 static string termBeacon(int i)
