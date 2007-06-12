@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.20 2007-02-06 10:19:40 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.21 2007-06-12 10:33:48 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -56,7 +56,11 @@ void SSearch::init()
 	    queryText->lineEdit(), SLOT(clear()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(startSimpleSearch()));
 
+#if QT_VERSION >= 0x040000
+    queryText->installEventFilter(this);
+#else
     queryText->lineEdit()->installEventFilter(this);
+#endif
     m_escape = false;
 }
 
@@ -248,12 +252,247 @@ void SSearch::completion()
     }
 }
 
+#undef SHOWEVENTS
+#if defined(SHOWEVENTS)
+#if QT_VERSION < 0x040000
+static const char *eventTypeToStr(int tp)
+{
+    switch (tp) {
+    case 0: return "None";
+    case 1: return "Timer";
+    case 2: return "MouseButtonPress";
+    case 3: return "MouseButtonRelease";
+    case 4: return "MouseButtonDblClick";
+    case 5: return "MouseMove";
+    case 6: return "KeyPress";
+    case 7: return "KeyRelease";
+    case 8: return "FocusIn";
+    case 9: return "FocusOut";
+    case 10: return "Enter";
+    case 11: return "Leave";
+    case 12: return "Paint";
+    case 13: return "Move";
+    case 14: return "Resize";
+    case 15: return "Create";
+    case 16: return "Destroy";
+    case 17: return "Show";
+    case 18: return "Hide";
+    case 19: return "Close";
+    case 20: return "Quit";
+    case 21: return "Reparent";
+    case 22: return "ShowMinimized";
+    case 23: return "ShowNormal";
+    case 24: return "WindowActivate";
+    case 25: return "WindowDeactivate";
+    case 26: return "ShowToParent";
+    case 27: return "HideToParent";
+    case 28: return "ShowMaximized";
+    case 29: return "ShowFullScreen";
+    case 30: return "Accel";
+    case 31: return "Wheel";
+    case 32: return "AccelAvailable";
+    case 33: return "CaptionChange";
+    case 34: return "IconChange";
+    case 35: return "ParentFontChange";
+    case 36: return "ApplicationFontChange";
+    case 37: return "ParentPaletteChange";
+    case 38: return "ApplicationPaletteChange";
+    case 39: return "PaletteChange";
+    case 40: return "Clipboard";
+    case 42: return "Speech";
+    case 50: return "SockAct";
+    case 51: return "AccelOverride";
+    case 52: return "DeferredDelete";
+    case 60: return "DragEnter";
+    case 61: return "DragMove";
+    case 62: return "DragLeave";
+    case 63: return "Drop";
+    case 64: return "DragResponse";
+    case 70: return "ChildInserted";
+    case 71: return "ChildRemoved";
+    case 72: return "LayoutHint";
+    case 73: return "ShowWindowRequest";
+    case 74: return "WindowBlocked";
+    case 75: return "WindowUnblocked";
+    case 80: return "ActivateControl";
+    case 81: return "DeactivateControl";
+    case 82: return "ContextMenu";
+    case 83: return "IMStart";
+    case 84: return "IMCompose";
+    case 85: return "IMEnd";
+    case 86: return "Accessibility";
+    case 87: return "TabletMove";
+    case 88: return "LocaleChange";
+    case 89: return "LanguageChange";
+    case 90: return "LayoutDirectionChange";
+    case 91: return "Style";
+    case 92: return "TabletPress";
+    case 93: return "TabletRelease";
+    case 94: return "OkRequest";
+    case 95: return "HelpRequest";
+    case 96: return "WindowStateChange";
+    case 97: return "IconDrag";
+    case 1000: return "User";
+    case 65535: return "MaxUser";
+    default: return "Unknown";
+    }
+}
+#else
+static const char *eventTypeToStr(int tp)
+{
+    switch (tp) {
+    case  0: return "None";
+    case  1: return "Timer";
+    case  2: return "MouseButtonPress";
+    case  3: return "MouseButtonRelease";
+    case  4: return "MouseButtonDblClick";
+    case  5: return "MouseMove";
+    case  6: return "KeyPress";
+    case  7: return "KeyRelease";
+    case  8: return "FocusIn";
+    case  9: return "FocusOut";
+    case  10: return "Enter";
+    case  11: return "Leave";
+    case  12: return "Paint";
+    case  13: return "Move";
+    case  14: return "Resize";
+    case  15: return "Create";
+    case  16: return "Destroy";
+    case  17: return "Show";
+    case  18: return "Hide";
+    case  19: return "Close";
+    case  20: return "Quit";
+    case  21: return "ParentChange";
+    case  131: return "ParentAboutToChange";
+    case  22: return "ThreadChange";
+    case  24: return "WindowActivate";
+    case  25: return "WindowDeactivate";
+    case  26: return "ShowToParent";
+    case  27: return "HideToParent";
+    case  31: return "Wheel";
+    case  33: return "WindowTitleChange";
+    case  34: return "WindowIconChange";
+    case  35: return "ApplicationWindowIconChange";
+    case  36: return "ApplicationFontChange";
+    case  37: return "ApplicationLayoutDirectionChange";
+    case  38: return "ApplicationPaletteChange";
+    case  39: return "PaletteChange";
+    case  40: return "Clipboard";
+    case  42: return "Speech";
+    case   43: return "MetaCall";
+    case  50: return "SockAct";
+    case  132: return "WinEventAct";
+    case  52: return "DeferredDelete";
+    case  60: return "DragEnter";
+    case  61: return "DragMove";
+    case  62: return "DragLeave";
+    case  63: return "Drop";
+    case  64: return "DragResponse";
+    case  68: return "ChildAdded";
+    case  69: return "ChildPolished";
+    case  70: return "ChildInserted";
+    case  72: return "LayoutHint";
+    case  71: return "ChildRemoved";
+    case  73: return "ShowWindowRequest";
+    case  74: return "PolishRequest";
+    case  75: return "Polish";
+    case  76: return "LayoutRequest";
+    case  77: return "UpdateRequest";
+    case  78: return "UpdateLater";
+    case  79: return "EmbeddingControl";
+    case  80: return "ActivateControl";
+    case  81: return "DeactivateControl";
+    case  82: return "ContextMenu";
+    case  83: return "InputMethod";
+    case  86: return "AccessibilityPrepare";
+    case  87: return "TabletMove";
+    case  88: return "LocaleChange";
+    case  89: return "LanguageChange";
+    case  90: return "LayoutDirectionChange";
+    case  91: return "Style";
+    case  92: return "TabletPress";
+    case  93: return "TabletRelease";
+    case  94: return "OkRequest";
+    case  95: return "HelpRequest";
+    case  96: return "IconDrag";
+    case  97: return "FontChange";
+    case  98: return "EnabledChange";
+    case  99: return "ActivationChange";
+    case  100: return "StyleChange";
+    case  101: return "IconTextChange";
+    case  102: return "ModifiedChange";
+    case  109: return "MouseTrackingChange";
+    case  103: return "WindowBlocked";
+    case  104: return "WindowUnblocked";
+    case  105: return "WindowStateChange";
+    case  110: return "ToolTip";
+    case  111: return "WhatsThis";
+    case  112: return "StatusTip";
+    case  113: return "ActionChanged";
+    case  114: return "ActionAdded";
+    case  115: return "ActionRemoved";
+    case  116: return "FileOpen";
+    case  117: return "Shortcut";
+    case  51: return "ShortcutOverride";
+    case  30: return "Accel";
+    case  32: return "AccelAvailable";
+    case  118: return "WhatsThisClicked";
+    case  120: return "ToolBarChange";
+    case  121: return "ApplicationActivated";
+    case  122: return "ApplicationDeactivated";
+    case  123: return "QueryWhatsThis";
+    case  124: return "EnterWhatsThisMode";
+    case  125: return "LeaveWhatsThisMode";
+    case  126: return "ZOrderChange";
+    case  127: return "HoverEnter";
+    case  128: return "HoverLeave";
+    case  129: return "HoverMove";
+    case  119: return "AccessibilityHelp";
+    case  130: return "AccessibilityDescription";
+    case  150: return "EnterEditFocus";
+    case  151: return "LeaveEditFocus";
+    case  152: return "AcceptDropsChange";
+    case  153: return "MenubarUpdated";
+    case  154: return "ZeroTimerEvent";
+    case  155: return "GraphicsSceneMouseMove";
+    case  156: return "GraphicsSceneMousePress";
+    case  157: return "GraphicsSceneMouseRelease";
+    case  158: return "GraphicsSceneMouseDoubleClick";
+    case  159: return "GraphicsSceneContextMenu";
+    case  160: return "GraphicsSceneHoverEnter";
+    case  161: return "GraphicsSceneHoverMove";
+    case  162: return "GraphicsSceneHoverLeave";
+    case  163: return "GraphicsSceneHelp";
+    case  164: return "GraphicsSceneDragEnter";
+    case  165: return "GraphicsSceneDragMove";
+    case  166: return "GraphicsSceneDragLeave";
+    case  167: return "GraphicsSceneDrop";
+    case  168: return "GraphicsSceneWheel";
+    case  169: return "KeyboardLayoutChange";
+    case  170: return "DynamicPropertyChange";
+    case  171: return "TabletEnterProximity";
+    case  172: return "TabletLeaveProximity";
+    default: return "UnknownEvent";
+    }
+}
+#endif
+#endif
 
 bool SSearch::eventFilter(QObject *target, QEvent *event)
 {
+#if defined(SHOWEVENTS)
+    if (event->type() == QEvent::Timer || 
+	event->type() == QEvent::UpdateRequest ||
+	event->type() == QEvent::Paint)
+	return false;
+    LOGDEB2(("SSearch::eventFilter: target %p (%p) type %s\n", 
+	    target, queryText->lineEdit(),
+	    eventTypeToStr(event->type())));
+#endif
+
     if (event->type() == QEvent::KeyPress)  {
 	QKeyEvent *ke = (QKeyEvent *)event;
-	LOGDEB1(("SSearch::eventFilter: keyPress escape %d key %d\n", 
+	LOGDEB1(("SSearch::eventFilter: keyPress (m_escape %d) key %d\n", 
 		 m_escape, ke->key()));
 	if (ke->key() == Qt::Key_Escape) {
 	    LOGDEB(("Escape\n"));
@@ -271,5 +510,5 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	}
 	m_escape = false;
     }
-    return QWidget::eventFilter(target, event);
+    return false;
 }
