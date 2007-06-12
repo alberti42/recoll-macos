@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.5 2007-06-08 12:33:00 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.6 2007-06-12 08:46:56 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -69,6 +69,13 @@ static int     op_flags;
 #define OPT_c     0x8
 #define OPT_d     0x10
 
+static RclConfig *rclconfig;
+RclConfig *RclConfig::getMainConfig() 
+{
+    return rclconfig;
+}
+
+
 int main(int argc, char **argv)
 {
     string a_config;
@@ -102,7 +109,6 @@ int main(int argc, char **argv)
     }
 
     Rcl::Db rcldb;
-    RclConfig *rclconfig;
     string dbdir;
     string reason;
 
