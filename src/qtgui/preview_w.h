@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.10 2007-05-23 09:19:48 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.11 2007-06-12 13:31:38 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -94,6 +94,9 @@ public slots:
     virtual void setCurTabProps(const string & fn, const Rcl::Doc & doc, 
 				int docnum);
     virtual void textDoubleClicked(int, int);
+
+    virtual void selecChanged();
+
 
 signals:
     void previewClosed(QWidget *);

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.28 2007-06-12 08:50:19 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.29 2007-06-12 13:31:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -600,25 +600,24 @@ void RclMain::previewExposed(int sid, int docnum)
 }
 
 // Add term to simple search. Term comes out of double-click in
-// reslist or preview. The cleanup code is really horrible. Selection
-// out of the reslist will typically look like 
-// <!-- Fragment -->sometext
+// reslist or preview. 
 // It would probably be better to cleanup in preview.ui.h and
 // reslist.cpp and do the proper html stuff in the latter case
-// (which is different because it's format is explicit richtext
+// (which is different because it format is explicit richtext
 // instead of auto as for preview, needed because it's built by
 // fragments?).
-static const char* punct = " \t()<>\"'[]{}!^*,\n\r";
+static const char* punct = " \t()<>\"'[]{}!^*.,:;\n\r";
 void RclMain::ssearchAddTerm(QString term)
 {
+    LOGDEB(("RclMain::ssearchAddTerm: [%s]\n", (const char *)term.utf8()));
     string t = (const char *)term.utf8();
     string::size_type pos = t.find_last_not_of(punct);
     if (pos == string::npos)
 	return;
     t = t.substr(0, pos+1);
-    pos = t.find_last_of(punct);
+    pos = t.find_first_not_of(punct);
     if (pos != string::npos)
-	t = t.substr(pos+1);
+	t = t.substr(pos);
     if (t.empty())
 	return;
     term = QString::fromUtf8(t.c_str());

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.19 2007-06-01 05:44:40 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.20 2007-06-12 13:31:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,8 @@ using std::pair;
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
-#include "qapplication.h"
+#include <qapplication.h>
+#include <qclipboard.h>
 
 #include "debuglog.h"
 #include "pathut.h"
@@ -88,8 +89,6 @@ void Preview::init()
 	    this, SLOT(currentChanged(QWidget *)));
     connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
 
-    searchTextLine->installEventFilter(this);
-    pvEdit->installEventFilter(this);
     dynSearchActive = false;
     canBeep = true;
     tabData.push_back(TabData(pvTab->currentPage()));
@@ -98,6 +97,7 @@ void Preview::init()
 	resize(prefs.pvwidth, prefs.pvheight);
     }
     m_loading = false;
+    currentChanged(pvTab->currentPage());
 }
 
 void Preview::destroy()
@@ -116,7 +116,7 @@ void Preview::closeEvent(QCloseEvent *e)
 bool Preview::eventFilter(QObject *target, QEvent *event)
 {
     if (event->type() != QEvent::KeyPress) 
-	return QWidget::eventFilter(target, event);
+	return false;
     
     LOGDEB1(("Preview::eventFilter: keyEvent\n"));
     QKeyEvent *keyEvent = (QKeyEvent *)event;
@@ -174,7 +174,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	}
     }
 
-    return QWidget::eventFilter(target, event);
+    return false;
 }
 
 void Preview::searchTextLine_textChanged(const QString & text)
@@ -295,20 +295,60 @@ void Preview::currentChanged(QWidget * tw)
     
     if (edit == 0) {
 	LOGERR(("Editor child not found\n"));
-    } else {
-	tw->installEventFilter(this);
-	edit->installEventFilter(this);
-	edit->setFocus();
-	connect(edit, SIGNAL(doubleClicked(int, int)), 
-		this, SLOT(textDoubleClicked(int, int)));
-	TabData *d = tabDataForCurrent();
-	if (d) 
-	    emit(previewExposed(m_searchId, d->docnum));
+	return;
+    }
+    edit->setFocus();
+    // Connect doubleclick but cleanup first just in case this was
+    // already connected.
+    disconnect(edit, SIGNAL(doubleClicked(int, int)), this, 0);
+    connect(edit, SIGNAL(doubleClicked(int, int)), 
+	    this, SLOT(textDoubleClicked(int, int)));
+#if (QT_VERSION >= 0x040000)
+    connect(edit, SIGNAL(selectionChanged()), this, SLOT(selecChanged()));
+#endif
+    tw->installEventFilter(this);
+    edit->installEventFilter(this);
+    TabData *d = tabDataForCurrent();
+    if (d) 
+	emit(previewExposed(m_searchId, d->docnum));
+}
+
+#if (QT_VERSION >= 0x040000)
+// I have absolutely no idea why this nonsense is needed to get
+// q3textedit to copy to x11 primary selection when text is
+// selected. This used to be automatic, and, looking at the code, it
+// should happen inside q3textedit (the code here is copied from the
+// private copyToClipboard method). To be checked again with a later
+// qt version.
+void Preview::selecChanged()
+{
+    LOGDEB1(("Selection changed\n"));
+    if (!currentW)
+	return;
+    QTextEdit *edit = (QTextEdit *)currentW->child("pvEdit");
+    if (edit == 0) {
+	LOGERR(("Editor child not found\n"));
+	return;
+    }
+    QClipboard *clipboard = QApplication::clipboard();
+    if (edit->hasSelectedText()) {
+	LOGDEB1(("Copying [%s] to primary selection.Clipboard sel supp: %d\n", 
+		(const char *)edit->selectedText().ascii(),
+		clipboard->supportsSelection()));
+        disconnect(QApplication::clipboard(), SIGNAL(selectionChanged()), 
+		   edit, 0);
+	clipboard->setText(edit->selectedText(), QClipboard::Selection);
+        connect(QApplication::clipboard(), SIGNAL(selectionChanged()),
+		edit, SLOT(clipboardChanged()));
     }
 }
+#else 
+void Preview::selecChanged(){}
+#endif
 
 void Preview::textDoubleClicked(int, int)
 {
+    LOGDEB2(("Preview::textDoubleClicked\n"));
     if (!currentW)
 	return;
     QTextEdit *edit = (QTextEdit *)currentW->child("pvEdit");

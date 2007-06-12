@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.10 2007-05-30 12:29:38 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.11 2007-06-12 13:31:38 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -44,7 +44,6 @@ class ResList : public QTEXTBROWSER
 
  public slots:
     virtual void resetSearch();
-    virtual void clicked(int, int);
     virtual void doubleClicked(int, int);
     virtual void resPageUpOrBack(); // Page up pressed
     virtual void resPageDownOrNext(); // Page down pressed
@@ -58,6 +57,8 @@ class ResList : public QTEXTBROWSER
     virtual void menuSeeParent();
     virtual void previewExposed(int);
     virtual void append(const QString &text);
+    // Only used for qt ver >=4 but seems we cant undef it
+    virtual void selecChanged();
 
  signals:
     void nextPageAvailable(bool);

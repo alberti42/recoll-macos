@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.24 2007-05-30 12:29:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.25 2007-06-12 13:31:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -51,7 +51,6 @@ ResList::ResList(QWidget* parent, const char* name)
 {
     if (!name)
 	setName("resList");
-    setTextFormat(Qt::RichText);
     setReadOnly(TRUE);
     setUndoRedoEnabled(FALSE);
     languageChange();
@@ -59,12 +58,14 @@ ResList::ResList(QWidget* parent, const char* name)
     setTabChangesFocus(true);
 
     // signals and slots connections
-    connect(this, SIGNAL(clicked(int, int)), this, SLOT(clicked(int,int)));
     connect(this, SIGNAL(linkClicked(const QString &, int)), 
 	    this, SLOT(linkWasClicked(const QString &, int)));
     connect(this, SIGNAL(headerClicked()), this, SLOT(showQueryDetails()));
     connect(this, SIGNAL(doubleClicked(int,int)), 
 	    this, SLOT(doubleClicked(int, int)));
+#if (QT_VERSION >= 0x040000)
+    connect(this, SIGNAL(selectionChanged()), this, SLOT(selecChanged()));
+#endif
     m_winfirst = -1;
     m_curPvDoc = -1;
     m_lstClckMod = 0;
@@ -85,7 +86,7 @@ void ResList::resetSearch()
     // following helps making sure that the textedit is really
     // blank. Else, there are often icons or text left around
     clear();
-    append(".");
+    QTEXTBROWSER::append(".");
     clear();
 #if (QT_VERSION < 0x040000)
     XFlush(qt_xdisplay());
@@ -553,25 +554,6 @@ void ResList::resultPageNext()
     ensureCursorVisible();
 }
 
-// Single click in result list use this for document selection, if no
-// text selection active:
-void ResList::clicked(int par, int)
-{
-    LOGDEB2(("ResList::clicked\n"));
-
-    // It's very ennoying, textBrowser always has selected text. This
-    // is bound to change with qt releases!
-    if (hasSelectedText()&& selectedText().compare("<!--StartFragment-->")) {
-	// Give priority to text selection, do nothing
-	LOGDEB2(("%s\n", (const char *)(selectedText().ascii())));
-	return;
-    }
-    LOGDEB(("click at par %d (with %s %s)\n", par, 
-	    (m_lstClckMod & Qt::ControlButton) ? "Ctrl" : "",
-	    (m_lstClckMod & Qt::ShiftButton) ? "Shft" : ""));
-
-}
-
 // Color paragraph (if any) of currently visible preview
 void ResList::previewExposed(int docnum)
 {
@@ -597,6 +579,32 @@ void ResList::previewExposed(int docnum)
     QColor color("LightBlue");
     setParagraphBackgroundColor(par, color);
 }
+
+// SELECTION BEWARE: these emit simple text if the list format is
+// Auto. If we get back to using Rich for some reason, there will be
+// need to extract the simple text here.
+
+#if (QT_VERSION >= 0x040000)
+// I have absolutely no idea why this nonsense is needed to get
+// q3textedit to copy to x11 primary selection when text is
+// selected. This used to be automatic, and, looking at the code, it
+// should happen inside q3textedit (the code here is copied from the
+// private copyToClipboard method). To be checked again with a later
+// qt version. Seems to be needed at least up to 4.2.3
+void ResList::selecChanged()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    if (hasSelectedText()) {
+        disconnect(QApplication::clipboard(), SIGNAL(selectionChanged()), 
+		   this, 0);
+	clipboard->setText(selectedText(), QClipboard::Selection);
+        connect(QApplication::clipboard(), SIGNAL(selectionChanged()),
+		this, SLOT(clipboardChanged()));
+    }
+}
+#else
+void ResList::selecChanged(){}
+#endif
 
 // Double click in res list: add selection to simple search
 void ResList::doubleClicked(int, int)
