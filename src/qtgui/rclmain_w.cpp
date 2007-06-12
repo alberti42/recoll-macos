@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.27 2007-06-11 08:33:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.28 2007-06-12 08:50:19 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -174,93 +174,6 @@ void RclMain::init()
     toolsSort_parametersAction->setIcon(QIcon(":/images/sortparms.png"));
 #endif
 }
-
-
-//#define SHOWEVENTS
-#if defined(SHOWEVENTS)
-static const char *eventTypeToStr(int tp)
-{
-    switch (tp) {
-    case 0: return "None";
-    case 1: return "Timer";
-    case 2: return "MouseButtonPress";
-    case 3: return "MouseButtonRelease";
-    case 4: return "MouseButtonDblClick";
-    case 5: return "MouseMove";
-    case 6: return "KeyPress";
-    case 7: return "KeyRelease";
-    case 8: return "FocusIn";
-    case 9: return "FocusOut";
-    case 10: return "Enter";
-    case 11: return "Leave";
-    case 12: return "Paint";
-    case 13: return "Move";
-    case 14: return "Resize";
-    case 15: return "Create";
-    case 16: return "Destroy";
-    case 17: return "Show";
-    case 18: return "Hide";
-    case 19: return "Close";
-    case 20: return "Quit";
-    case 21: return "Reparent";
-    case 22: return "ShowMinimized";
-    case 23: return "ShowNormal";
-    case 24: return "WindowActivate";
-    case 25: return "WindowDeactivate";
-    case 26: return "ShowToParent";
-    case 27: return "HideToParent";
-    case 28: return "ShowMaximized";
-    case 29: return "ShowFullScreen";
-    case 30: return "Accel";
-    case 31: return "Wheel";
-    case 32: return "AccelAvailable";
-    case 33: return "CaptionChange";
-    case 34: return "IconChange";
-    case 35: return "ParentFontChange";
-    case 36: return "ApplicationFontChange";
-    case 37: return "ParentPaletteChange";
-    case 38: return "ApplicationPaletteChange";
-    case 39: return "PaletteChange";
-    case 40: return "Clipboard";
-    case 42: return "Speech";
-    case 50: return "SockAct";
-    case 51: return "AccelOverride";
-    case 52: return "DeferredDelete";
-    case 60: return "DragEnter";
-    case 61: return "DragMove";
-    case 62: return "DragLeave";
-    case 63: return "Drop";
-    case 64: return "DragResponse";
-    case 70: return "ChildInserted";
-    case 71: return "ChildRemoved";
-    case 72: return "LayoutHint";
-    case 73: return "ShowWindowRequest";
-    case 74: return "WindowBlocked";
-    case 75: return "WindowUnblocked";
-    case 80: return "ActivateControl";
-    case 81: return "DeactivateControl";
-    case 82: return "ContextMenu";
-    case 83: return "IMStart";
-    case 84: return "IMCompose";
-    case 85: return "IMEnd";
-    case 86: return "Accessibility";
-    case 87: return "TabletMove";
-    case 88: return "LocaleChange";
-    case 89: return "LanguageChange";
-    case 90: return "LayoutDirectionChange";
-    case 91: return "Style";
-    case 92: return "TabletPress";
-    case 93: return "TabletRelease";
-    case 94: return "OkRequest";
-    case 95: return "HelpRequest";
-    case 96: return "WindowStateChange";
-    case 97: return "IconDrag";
-    case 1000: return "User";
-    case 65535: return "MaxUser";
-    default: return "Unknown";
-    }
-}
-#endif
 
 void RclMain::closeEvent( QCloseEvent * )
 {
