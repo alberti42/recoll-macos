@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.25 2007-06-12 13:31:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.26 2007-06-13 17:03:23 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -544,10 +544,10 @@ void ResList::resultPageNext()
 	    chunk += tr("Next");
 	    chunk += "</b></a>";
 	}
-	chunk += "</p>\n";
-	append(chunk);
     }
-    append("</body></qt>");
+    chunk += "</p>\n";
+    chunk += "</body></qt>\n";
+    append(chunk);
 
     // Possibly color paragraph of current preview if any
     previewExposed(m_curPvDoc);
