@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.112 2007-06-08 16:47:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.113 2007-06-14 08:20:13 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1004,9 +1004,6 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
     char buf[9];
     sprintf(buf, "%04d%02d%02d",tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
     newdocument.add_term("D" + string(buf)); // Date (YYYYMMDD)
-    buf[7] = '\0';
-    if (buf[6] == '3') buf[6] = '2';
-    newdocument.add_term("W" + string(buf)); // "Weak" - 10ish day interval
     buf[6] = '\0';
     newdocument.add_term("M" + string(buf)); // Month (YYYYMM)
     buf[4] = '\0';
