@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclabw,v 1.1 2007-06-15 09:25:23 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclabw,v 1.2 2007-06-15 11:41:50 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -97,7 +97,9 @@ encoding=`sed -e  '/<?xml version=/s/"?>$//' \
 if test X$encoding = X ; then encoding=UTF-8;fi
 
 # Note: there can be newlines inside the description field, we don't want
-# them...
+# them... Have 2 use 2 different selectors for the single-line and
+# multiple-line cases because of the generic tag end (</m> for all meta
+# tags)
 descsedprog='
 /<m key="dc.description">\([^<]*\)<\/m>/ {
 s//\1/
@@ -149,7 +151,7 @@ creator=`sed -n -e "$metasedprog" "$infile"`
 # a single line in the xml (no multiple <p> per line, no embedded newlines
 # in text).
 contentsedprog='
-/<p /{
+/<p[ >]/{
 s/<[^>]*>/ /g
 p
 }

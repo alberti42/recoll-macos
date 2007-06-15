@@ -1,4 +1,4 @@
-# @(#$Id: mimeview,v 1.5 2007-06-08 13:59:55 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeview,v 1.6 2007-06-15 11:41:50 dockes Exp $  (C) 2004 J.F.Dockes
 
 ## ##########################################
 # External viewers, launched by the recoll GUI when you click on a result
@@ -9,6 +9,7 @@
 application/x-all = xdg-open %f
 
 application/x-kword = kword %f
+application/x-abiword = abiword %f
 
 application/msword = openoffice %f
 application/pdf  = xpdf %f

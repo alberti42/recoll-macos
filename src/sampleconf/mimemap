@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.22 2007-06-08 13:51:09 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.23 2007-06-15 11:41:50 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
 
 .txt = text/plain
@@ -54,6 +54,7 @@
 .sxg = application/vnd.sun.xml.writer.global
 .stw = application/vnd.sun.xml.writer.template
 
+.abw = application/x-abiword
 .lyx = application/x-lyx
 .sla = application/x-scribus
 .scd = application/x-scribus

@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.27 2007-06-08 13:51:09 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.28 2007-06-15 11:41:50 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -41,6 +41,7 @@ application/vnd.sun.xml.math = exec rclsoff
 application/vnd.sun.xml.writer = exec rclsoff
 application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
+application/x-abiword = exec rclabw
 application/x-dvi = exec rcldvi
 application/x-lyx = exec rcllyx
 application/x-kword = exec rclkwd
@@ -73,6 +74,8 @@ application/vnd.sun.xml.impress.template = presentation
 application/vnd.sun.xml.writer = wordprocessing
 application/vnd.sun.xml.writer.global = wordprocessing
 application/vnd.sun.xml.writer.template = wordprocessing
+application/x-abiword = wordprocessing
+application/x-kword = wordprocessing
 application/x-fsdirectory = folder
 application/x-dvi = document
 audio/mpeg = sownd
@@ -88,13 +91,16 @@ text/x-c = source
 
 [categories]
 
-texts = application/msword \
+texts = \
+      application/msword \
       application/pdf \
       application/postscript \
       application/vnd.sun.xml.writer \
       application/vnd.sun.xml.writer.global \
       application/vnd.sun.xml.writer.template \
+      application/x-abiword \
       application/x-dvi \
+      application/x-kword \
       application/x-lyx \
       application/x-scribus \
       image/vnd.djvu \

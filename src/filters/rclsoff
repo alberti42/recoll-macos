@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclsoff,v 1.10 2007-06-08 13:51:09 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclsoff,v 1.11 2007-06-15 11:41:50 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -127,26 +127,45 @@ cd $tmpdir/rclsofftmp
 descsedprog='/<dc:description>/,/<\/dc:description>/{
 s!.*<dc:description>!!
 s!</dc:description>.*!!
+H
+${
+g
+s/\n/ /g
 p
 }
+}
 '
-description=`sed -n -e "$descsedprog" < meta.xml | tr '\n' ' '`
+description=`sed -n -e "$descsedprog" meta.xml`
+#echo description "$description"
 
-subject=`sed -e "s/\"/'/" -e 's/.*<dc:subject>\([^<]*\).*/\1/p;d' < meta.xml`
+# Takes tag name as parameter and creates sed program to extract single
+# line meta tags values.
+setmetasedprog() {
+metasedprog="s/\"/'/g"'
+/.*<'"$1"'>\([^<]*\).*/s//\1/p
+'
+}
 
-title=`sed -e "s/\"/'/" -e 's/.*<dc:title>\([^<]*\).*/\1/p;d' < meta.xml`
+setmetasedprog dc:subject
+subject=`sed -n -e "$metasedprog" meta.xml`
+#echo subject: $subject
 
-keywords=`sed -e "s/\"/'/" -e 's/.*<meta:keyword>\([^<]*\).*/\1/p;d' \
-	      < meta.xml`
+setmetasedprog dc:title
+title=`sed -n -e "$metasedprog" meta.xml`
+#echo title: $title
+
+setmetasedprog meta:keyword
+keywords=`sed -n -e "$metasedprog" meta.xml`
+#echo keywords: $keywords
+
+setmetasedprog dc:creator
+creator=`sed -n -e "$metasedprog" meta.xml`
+#echo creator: $creator
 
 # Note: next expr inserts a newline at each end of paragraph (for preview)
 content="`sed -e 's!</text:p>!\\
 !g' -e 's/<[^>]*>/ /g' < content.xml`"
 
-#echo description "$description"
-#echo subject "$subject"
-#echo title "$title"
-#echo keywords "$keywords"
 #echo content "$content"
 
 # output the result
@@ -155,6 +174,7 @@ echo '<title>' "$title" '</title>'
 echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
 echo '<meta name="description" content="' "$description $subject" '">'
 echo '<meta name="keywords" content="' "$keywords" '">'
+echo '<meta name="author" content="' "$creator" '">'
 echo '</head><body><p>'
 
 # The strange 'BEGIN' setup is to prevent 'file' from thinking this file
