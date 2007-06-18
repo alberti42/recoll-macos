@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.113 2007-06-14 08:20:13 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.114 2007-06-18 13:04:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -740,6 +740,43 @@ bool Db::isopen()
     return m_ndb->m_isopen;
 }
 
+// Try to translate field specification into field prefix.  We have a
+// default table used if translations are not in the config for some
+// reason (old config not updated ?). We use it only if the config
+// translation fails
+string Db::fieldToPrefix(const string& fldname)
+{
+    // This is the default table
+    static map<string, string> fldToPrefs;
+    if (fldToPrefs.empty()) {
+	fldToPrefs["title"] = "S";
+	fldToPrefs["caption"] = "S";
+	fldToPrefs["subject"] = "S";
+
+	fldToPrefs["author"] = "A";
+	fldToPrefs["creator"] = "A";
+	fldToPrefs["from"] = "A";
+
+	fldToPrefs["keyword"] = "K";
+	fldToPrefs["tag"] = "K";
+	fldToPrefs["keywords"] = "K";
+	fldToPrefs["tags"] = "K";
+    }
+
+    string fld(fldname), pfx;
+    stringtolower(fld);
+    RclConfig *config = RclConfig::getMainConfig();
+    if (config)
+	pfx = config->getFieldPrefix(fld);
+    if (pfx.empty()) {
+	map<string, string>::const_iterator it = fldToPrefs.find(fld);
+	if (it != fldToPrefs.end())
+	    fld = it->second;
+    }
+    return pfx;
+}
+
+
 // The text splitter callback class which receives words from the
 // splitter and adds postings to the Xapian document.
 class mySplitterCB : public TextSplitCB {
@@ -882,7 +919,13 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 
     TextSplit splitter(&splitData);
 
-    // /////// Split and index terms in document body and auxiliary fields
+    // Index the title, document text, keywords and other textual
+    // metadata.  These are all indexed as text with positions, as we
+    // may want to do phrase searches with them (this makes no sense
+    // for keywords by the way, but wtf).
+    /
+    // The order has no importance, and we set a position gap of 100
+    // between fields to avoid false proximity matches.
     string noacc;
 
     // Split and index file name as document term(s)

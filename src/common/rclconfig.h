@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.33 2007-06-08 16:47:19 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.34 2007-06-18 13:04:15 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -35,15 +35,21 @@ using std::pair;
 class RclConfig {
  public:
 
+    // Constructor: we normally look for a configuration file, except
+    // if this was specified on the command line and passed through
+    // argcnf
     RclConfig(const string *argcnf = 0);
-    // Main programs should implement this, it avoids having to carry
+
+    // Main programs must implement this, it avoids having to carry
     // the configuration parameter everywhere. Places where several
-    // instances might be needed will take care of themselves.
+    // RclConfig instances might be needed will take care of
+    // themselves.
     static RclConfig* getMainConfig();
 
     bool ok() {return m_ok;}
     const string &getReason() {return m_reason;}
-    /** Return the directory where this config is stored */
+
+    /** Return the directory where this configuration is stored */
     string getConfDir() {return m_confdir;}
 
     /** Set current directory reference, and fetch automatic parameters. */
@@ -113,30 +119,32 @@ class RclConfig {
      */
     bool getUncompressor(const string &mtpe, list<string>& cmd);
 
-    /** Use mimemap to compute mimetype */
+    /** mimemap: compute mimetype */
     string getMimeTypeFromSuffix(const string &suffix);
-
-    /** Get appropriate suffix for mime type. This is inefficient */
+    /** mimemap: get a list of all indexable mime types defined */
+    list<string> getAllMimeTypes();
+    /** mimemap: Get appropriate suffix for mime type. This is inefficient */
     string getSuffixFromMimeType(const string &mt);
 
-    /** Get input filter from mimeconf for mimetype */
+    /** mimeconf: get input filter for mimetype */
     string getMimeHandlerDef(const string &mimetype);
 
-    /** Get external viewer exec string from mimeconf for mimetype */
+    /** mimeconf: get icon name for mimetype */
+    string getMimeIconName(const string &mtype, string *path = 0);
+
+    /** mimeconf: get list of file categories */
+    bool getMimeCategories(list<string>&);
+    /** mimeconf: get list of mime types for category */
+    bool getMimeCatTypes(const string& cat, list<string>&);
+
+    /** mimeconf: get field prefix from field name */
+    string getFieldPrefix(const string& fldname);
+
+    /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype);
     bool getMimeViewerDefs(vector<pair<string, string> >&);
     bool setMimeViewerDef(const string& mimetype, const string& cmd);
 
-    /** Get icon name from mimeconf for mimetype */
-    string getMimeIconName(const string &mtype, string *path = 0);
-
-    /** Get list of file categories from mimeconf */
-    bool getMimeCategories(list<string>&);
-    /** Get list of mime types for category from mimeconf */
-    bool getMimeCatTypes(const string& cat, list<string>&);
-
-    /** Get a list of all indexable mime types defined in mimemap */
-    list<string> getAllMimeTypes();
 
     /** Find exec file for external filter. cmd is the command name from the
      * command string returned by getMimeHandlerDef */

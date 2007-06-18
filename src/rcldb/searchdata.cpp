@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.14 2007-06-02 08:30:42 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.15 2007-06-18 13:04:15 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@ static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.14 2007-06-02 08:30:42 dockes 
 #include "unacpp.h"
 #include "utf8iter.h"
 #include "stoplist.h"
+#include "rclconfig.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -460,34 +461,6 @@ bool StringToXapianQ::processUserString(const string &iq,
     return true;
 }
 
-// Try to translate field specification into field prefix. This should
-// probably be an Rcl::Db method and much more configurable (store
-// prefix translation list in config ?)
-static string fieldToPrefix(const string& i_field)
-{
-    static map<string, string> fldToPrefs;
-    if (fldToPrefs.empty()) {
-	fldToPrefs["title"] = "S";
-	fldToPrefs["caption"] = "S";
-	fldToPrefs["subject"] = "S";
-
-	fldToPrefs["author"] = "A";
-	fldToPrefs["creator"] = "A";
-	fldToPrefs["from"] = "A";
-
-	fldToPrefs["keyword"] = "K";
-	fldToPrefs["tag"] = "K";
-	fldToPrefs["keywords"] = "K";
-	fldToPrefs["tags"] = "K";
-    }
-    string fld(i_field); 
-    stringtolower(fld);
-    map<string, string>::const_iterator it = fldToPrefs.find(fld);
-    if (it != fldToPrefs.end())
-	return it->second;
-    return "";
-}
-
 static const string nullstemlang;
 
 // Translate a simple OR, AND, or EXCL search clause. 
@@ -514,7 +487,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
     }
     string prefix;
     if (!m_field.empty())
-	prefix = fieldToPrefix(m_field);
+	prefix = db.fieldToPrefix(m_field);
     list<Xapian::Query> pqueries;
 
     // We normally boost the original term in the stem expansion list. Don't
@@ -568,7 +541,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
 
     string prefix;
     if (!m_field.empty())
-	prefix = fieldToPrefix(m_field);
+	prefix = db.fieldToPrefix(m_field);
 
     // We normally boost the original term in the stem expansion list. Don't
     // do it if there are wildcards anywhere, this would skew the results.

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.45 2007-06-08 12:31:54 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.46 2007-06-18 13:04:14 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -369,6 +369,15 @@ string RclConfig::getMimeHandlerDef(const std::string &mtype)
     string hs;
     if (!mimeconf->get(mtype, hs, "index")) {
 	LOGDEB1(("getMimeHandler: no handler for '%s'\n", mtype.c_str()));
+    }
+    return hs;
+}
+
+string RclConfig::getFieldPrefix(const string& fld)
+{
+    string hs;
+    if (!mimeconf->get(fld, hs, "prefixes")) {
+      LOGDEB(("getFieldPrefix: no prefix defined for '%s'\n", fld.c_str()));
     }
     return hs;
 }
