@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.6 2007-06-12 08:46:56 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.7 2007-06-19 15:47:25 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -164,7 +164,7 @@ int main(int argc, char **argv)
 	cout 
 	    << doc.mimetype.c_str() << "\t"
 	    << "[" << doc.url.c_str() << "]" << "\t" 
-	    << "[" << doc.title.c_str() << "]" << "\t"
+	    << "[" << doc.meta["title"].c_str() << "]" << "\t"
 	    << doc.fbytes.c_str()   << "\tbytes" << "\t"
 	    <<  endl;
 
