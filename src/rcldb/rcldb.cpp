@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.115 2007-06-19 08:36:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.116 2007-06-19 15:48:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1316,6 +1316,10 @@ bool Db::purge()
 		LOGDEB(("Db::purge: deleted document #%d\n", docid));
 	    } catch (const Xapian::DocNotFoundError &) {
 		LOGDEB(("Db::purge: document #%d not found\n", docid));
+	    } catch (const Xapian::Error &e) {
+		LOGERR(("Db::purge: document #%d: %s\n", e.get_msg().c_str()));
+	    } catch (...) {
+		LOGERR(("Db::purge: document #%d: unknown error\n"));
 	    }
 	}
     }
