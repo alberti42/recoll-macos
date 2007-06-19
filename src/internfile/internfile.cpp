@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.30 2007-05-23 08:29:04 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.31 2007-06-19 08:36:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -270,12 +270,12 @@ static const string keyab("abstract");
 static const string keyau("author");
 static const string keycs("charset");
 static const string keyct("content");
+static const string keyds("description");
 static const string keyfn("filename");
 static const string keykw("keywords");
 static const string keymd("modificationdate");
 static const string keymt("mimetype");
 static const string keyoc("origcharset");
-static const string keysm("sample");
 static const string keytt("title");
 
 bool FileInterner::dijontorcl(Rcl::Doc& doc)
@@ -283,15 +283,24 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
     Dijon::Filter *df = m_handlers.back();
     const std::map<std::string, std::string>& docdata = df->get_meta_data();
 
-    getKeyValue(docdata, keyau, doc.author);
-    getKeyValue(docdata, keyoc, doc.origcharset);
-    getKeyValue(docdata, keyct, doc.text);    
-    getKeyValue(docdata, keytt, doc.title);
-    getKeyValue(docdata, keykw, doc.keywords);
-    getKeyValue(docdata, keymd, doc.dmtime);
-    if (!getKeyValue(docdata, keyab, doc.abstract))
-	getKeyValue(docdata, keysm, doc.abstract);
-    LOGDEB1(("FILENAME: %s\n", doc.utf8fn.c_str()));
+    for (map<string,string>::const_iterator it = docdata.begin(); 
+	 it != docdata.end(); it++) {
+	if (it->first == keyct) {
+	    doc.text = it->second;
+	} else if (it->first == keymd) {
+	    doc.dmtime = it->second;
+	} else if (it->first == keyoc) {
+	    doc.origcharset = it->second;
+	} else if (it->first == keymt || it->first == keycs) {
+	    // don't need these.
+	} else {
+	    doc.meta[it->first] = it->second;
+	}
+    }
+    if (doc.meta[keyab].empty() && !doc.meta[keyds].empty()) {
+	doc.meta[keyab] = doc.meta[keyds];
+	doc.meta.erase(keyds);
+    }
     return true;
 }
 
@@ -324,7 +333,7 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 	} else {
 	    ipath += isep;
 	}
-	getKeyValue(docdata, keyau, doc.author);
+	getKeyValue(docdata, keyau, doc.meta["author"]);
 	getKeyValue(docdata, keymd, doc.dmtime);
     }
 
@@ -672,7 +681,7 @@ int main(int argc, char **argv)
 	"]]]]\n-----------------------------------------------------\n" <<
 	"doc.keywords [[[[" << doc.keywords <<
 	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.abstract [[[[" << doc.abstract <<
+	"doc.meta["abstract"] [[[[" << doc.meta["abstract"] <<
 	"]]]]\n-----------------------------------------------------\n" <<
 	"doc.text [[[[" << doc.text << "]]]]\n";
 }

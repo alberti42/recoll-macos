@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.34 2007-06-18 13:04:15 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.35 2007-06-19 08:36:24 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -138,7 +138,7 @@ class RclConfig {
     bool getMimeCatTypes(const string& cat, list<string>&);
 
     /** mimeconf: get field prefix from field name */
-    string getFieldPrefix(const string& fldname);
+    bool getFieldPrefix(const string& fldname, string &pfx);
 
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype);

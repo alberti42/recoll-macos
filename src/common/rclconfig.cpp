@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.46 2007-06-18 13:04:14 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.47 2007-06-19 08:36:23 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -373,13 +373,13 @@ string RclConfig::getMimeHandlerDef(const std::string &mtype)
     return hs;
 }
 
-string RclConfig::getFieldPrefix(const string& fld)
+bool RclConfig::getFieldPrefix(const string& fld, string &pfx)
 {
-    string hs;
-    if (!mimeconf->get(fld, hs, "prefixes")) {
+    if (!mimeconf->get(fld, pfx, "prefixes")) {
       LOGDEB(("getFieldPrefix: no prefix defined for '%s'\n", fld.c_str()));
+      return false;
     }
-    return hs;
+    return true;
 }
 
 string RclConfig::getMimeViewerDef(const string &mtype)

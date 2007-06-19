@@ -22,6 +22,8 @@
  * USA
  * -----END-LICENCE-----
  */
+#include <map>
+using std::map;
 
 #include "htmlparse.h"
 
@@ -37,7 +39,8 @@ class MyHtmlParser : public HtmlParser {
     bool in_body_tag; 
     bool in_pre_tag;
     bool pending_space;
-    string title, sample, keywords, dump, dmtime, author;
+    map<string,string> meta;
+    string dump, dmtime;
     string ocharset; // This is the charset our user thinks the doc was
     string charset; // This is the charset it was supposedly converted to
     string doccharset; // Set this to value of charset parameter in header

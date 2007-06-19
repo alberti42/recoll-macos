@@ -16,12 +16,14 @@
  */
 #ifndef _RCLDOC_H_INCLUDED_
 #define _RCLDOC_H_INCLUDED_
-/* @(#$Id: rcldoc.h,v 1.2 2007-01-17 13:53:41 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rcldoc.h,v 1.3 2007-06-19 08:36:24 dockes Exp $  (C) 2006 J.F.Dockes */
 
 #include <string>
+#include <map>
 
 #ifndef NO_NAMESPACES
 using std::string;
+using std::map;
 namespace Rcl {
 #endif
 
@@ -47,12 +49,16 @@ class Doc {
                          // Possibly set by handler
     string origcharset;  // Charset we transcoded from (in case we want back)
                          // Possibly set by handler
-    string title;        // Possibly set by handler
-    string author;       // Possibly set by handler
-    string keywords;     // Possibly set by handler
-    string abstract;     // Possibly set by handler
-    bool   syntabs;      // true if abstract is just the top of doc, not an 
-                         // explicit document attribute
+
+    // A map for textual metadata like, author, keywords, abstract, title
+    // Entries possibly set by handler. If a field-name to prefix translation 
+    // exists, the terms will be indexed with a prefix.
+    map<string, string> meta; 
+
+    // Attribute for the "abstract" entry. true if it is just the top
+    // of doc, not a native document attribute
+    bool   syntabs;      
+
     string fbytes;       // File size. Set by Db::Add
     string dbytes;       // Doc size. Set by Db::Add from text length
 
@@ -72,9 +78,7 @@ class Doc {
 	fmtime.erase();
 	dmtime.erase();
 	origcharset.erase();
-	title.erase();
-	keywords.erase();
-	abstract.erase();
+	meta.clear();
 	syntabs = false;
 	fbytes.erase();
 	dbytes.erase();

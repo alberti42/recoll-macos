@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.51 2007-06-18 13:04:15 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.52 2007-06-19 08:36:24 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -95,7 +95,7 @@ class Db {
     const StopList& getStopList() const {return m_stops;}
 
     /** Field name to prefix translation (ie: author -> 'A') */
-    string fieldToPrefix(const string& fldname);
+    bool fieldToPrefix(const string& fldname, string &pfx);
 
     /* Update-related methods ******************************************/
 

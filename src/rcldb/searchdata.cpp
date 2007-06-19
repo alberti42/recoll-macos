@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.15 2007-06-18 13:04:15 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.16 2007-06-19 08:36:24 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -487,7 +487,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
     }
     string prefix;
     if (!m_field.empty())
-	prefix = db.fieldToPrefix(m_field);
+	db.fieldToPrefix(m_field, prefix);
     list<Xapian::Query> pqueries;
 
     // We normally boost the original term in the stem expansion list. Don't
@@ -541,7 +541,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
 
     string prefix;
     if (!m_field.empty())
-	prefix = db.fieldToPrefix(m_field);
+	db.fieldToPrefix(m_field, prefix);
 
     // We normally boost the original term in the stem expansion list. Don't
     // do it if there are wildcards anywhere, this would skew the results.

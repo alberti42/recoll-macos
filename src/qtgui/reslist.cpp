@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.26 2007-06-13 17:03:23 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.27 2007-06-19 08:36:24 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -399,7 +399,7 @@ void ResList::resultPageNext()
 	if (percent == -1) {
 	    percent = 0;
 	    // Document not available, maybe other further, will go on.
-	    doc.abstract = string(tr("Unavailable document").utf8());
+	    doc.meta["abstract"] = string(tr("Unavailable document").utf8());
 	}
 
 	// Determine icon to display if any
@@ -426,8 +426,8 @@ void ResList::resultPageNext()
 	printableUrl(doc.url, url);
 
 	// Make title out of file name if none yet
-	if (doc.title.empty()) {
-	    doc.title = path_getsimple(url);
+	if (doc.meta["title"].empty()) {
+	    doc.meta["title"] = path_getsimple(url);
 	}
 
 	// Result number
@@ -469,7 +469,7 @@ void ResList::resultPageNext()
 	    (doc.syntabs || prefs.queryReplaceAbstract)) {
 	    abstract = m_docSource->getAbstract(doc);
 	} else {
-	    abstract = doc.abstract;
+	    abstract = doc.meta["abstract"];
 	}
 	// No need to call escapeHtml(), plaintorich handles it
 	string richabst;
@@ -505,14 +505,14 @@ void ResList::resultPageNext()
 	map<char,string> subs;
 	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
 	subs['D'] = datebuf;
-	subs['K'] = !doc.keywords.empty() ? escapeHtml(doc.keywords) + "<br>" 
-	    : "";
+	subs['K'] = !doc.meta["keywords"].empty() ? 
+	    escapeHtml(doc.meta["keywords"]) + "<br>" : "";
 	subs['L'] = linksbuf;
 	subs['N'] = numbuf;
 	subs['M'] = doc.mimetype;
 	subs['R'] = perbuf;
 	subs['S'] = sizebuf;
-	subs['T'] = escapeHtml(doc.title);
+	subs['T'] = escapeHtml(doc.meta["title"]);
 	subs['U'] = url;
 
 	string formatted;

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.20 2007-06-12 13:31:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.21 2007-06-19 08:36:24 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -400,8 +400,12 @@ QTextEdit *Preview::addEditorTab()
 void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
 			     int docnum)
 {
-    QString title = QString::fromUtf8(doc.title.c_str(), 
-				      doc.title.length());
+    QString title;
+    map<string,string>::const_iterator meta_it;
+    if ((meta_it = doc.meta.find("title")) != doc.meta.end()) {
+	    title = QString::fromUtf8(meta_it->second.c_str(), 
+				      meta_it->second.length());
+    }
     if (title.length() > 20) {
 	title = title.left(10) + "..." + title.right(10);
     }
@@ -421,8 +425,8 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
     printableUrl(doc.url, url);
     string tiptxt = url + string("\n");
     tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
-    if (!doc.title.empty())
-	tiptxt += doc.title + "\n";
+    if (meta_it != doc.meta.end() && !meta_it->second.empty())
+	tiptxt += meta_it->second + "\n";
     pvTab->setTabToolTip(w,QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
 
     for (list<TabData>::iterator it = tabData.begin(); 
@@ -607,8 +611,8 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     Rcl::Doc doc = idoc;
     bool cancel = false;
 
-    if (doc.title.empty()) 
-	doc.title = path_getsimple(doc.url);
+    if (doc.meta["title"].empty()) 
+	doc.meta["title"] = path_getsimple(doc.url);
 
     setCurTabProps(fn, doc, docnum);
 

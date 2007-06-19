@@ -144,22 +144,7 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 		    if ((j = p.find("name")) != p.end()) {
 			string name = j->second;
 			lowercase_term(name);
-			if (name == "description") {
-			    if (sample.empty()) {
-				sample = i->second;
-				decode_entities(sample);
-			    }
-			} else if (name == "keywords") {
-			    if (!keywords.empty()) keywords += ' ';
-			    string tmp = i->second;
-			    decode_entities(tmp);
-			    keywords += tmp;
-			} else if (name == "author") {
-			    if (!author.empty()) author += ' ';
-			    string tmp = i->second;
-			    decode_entities(tmp);
-			    author += tmp;
-			} else if (name == "date") {
+			if (name == "date") {
 			    // Yes this doesnt exist. It's output by filters
 			    // And the format isn't even standard http/html
 			    // FIXME
@@ -172,7 +157,14 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 				sprintf(ascuxtime, "%ld", (long)mktime(&tm));
 				dmtime = ascuxtime;
 			    }
-			} 
+			} else if (name == "robots") {
+			} else {
+			    if (!meta[name].empty())
+				meta[name] += ' ';
+			    string tmp = i->second;
+			    decode_entities(tmp);
+			    meta[name] += tmp;
+			}
 		    } else if ((j = p.find("http-equiv")) != p.end()) {
 			string hequiv = j->second;
 			lowercase_term(hequiv);
@@ -309,8 +301,8 @@ MyHtmlParser::closing_tag(const string &tag)
 	    break;
 	case 't':
 	    if (tag == "title") {
-		if (title.empty()) {
-		    title = dump;
+		if (meta["title"].empty()) {
+		    meta["title"] = dump;
 		    dump = "";
 		}
 		break;

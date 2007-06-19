@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.114 2007-06-18 13:04:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.115 2007-06-19 08:36:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -200,14 +200,14 @@ bool Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc)
     parms.get(string("fmtime"), doc.fmtime);
     parms.get(string("dmtime"), doc.dmtime);
     parms.get(string("origcharset"), doc.origcharset);
-    parms.get(string("caption"), doc.title);
-    parms.get(string("keywords"), doc.keywords);
-    parms.get(string("abstract"), doc.abstract);
+    parms.get(string("caption"), doc.meta["title"]);
+    parms.get(string("keywords"), doc.meta["keywords"]);
+    parms.get(string("abstract"), doc.meta["abstract"]);
     // Possibly remove synthetic abstract indicator (if it's there, we
     // used to index the beginning of the text as abstract).
     doc.syntabs = false;
-    if (doc.abstract.find(rclSyntAbs) == 0) {
-	doc.abstract = doc.abstract.substr(rclSyntAbs.length());
+    if (doc.meta["abstract"].find(rclSyntAbs) == 0) {
+	doc.meta["abstract"] = doc.meta["abstract"].substr(rclSyntAbs.length());
 	doc.syntabs = true;
     }
     parms.get(string("ipath"), doc.ipath);
@@ -743,12 +743,15 @@ bool Db::isopen()
 // Try to translate field specification into field prefix.  We have a
 // default table used if translations are not in the config for some
 // reason (old config not updated ?). We use it only if the config
-// translation fails
-string Db::fieldToPrefix(const string& fldname)
+// translation fails. Also we add in there fields which should be
+// indexed with no prefix (ie: abstract)
+bool Db::fieldToPrefix(const string& fldname, string &pfx)
 {
     // This is the default table
     static map<string, string> fldToPrefs;
     if (fldToPrefs.empty()) {
+	fldToPrefs["abstract"] = "";
+
 	fldToPrefs["title"] = "S";
 	fldToPrefs["caption"] = "S";
 	fldToPrefs["subject"] = "S";
@@ -763,17 +766,19 @@ string Db::fieldToPrefix(const string& fldname)
 	fldToPrefs["tags"] = "K";
     }
 
-    string fld(fldname), pfx;
+    string fld(fldname);
     stringtolower(fld);
+
     RclConfig *config = RclConfig::getMainConfig();
-    if (config)
-	pfx = config->getFieldPrefix(fld);
-    if (pfx.empty()) {
-	map<string, string>::const_iterator it = fldToPrefs.find(fld);
-	if (it != fldToPrefs.end())
-	    fld = it->second;
+    if (config && config->getFieldPrefix(fld, pfx))
+	return true;
+
+    map<string, string>::const_iterator it = fldToPrefs.find(fld);
+    if (it != fldToPrefs.end()) {
+	pfx = it->second;
+	return true;
     }
-    return pfx;
+    return false;
 }
 
 
@@ -880,11 +885,12 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
     LOGDEB1(("Db::add: fn %s\n", fn.c_str()));
     if (m_ndb == 0)
 	return false;
-
+    static int first = 1;
     // Check file system full every mbyte of indexed text.
-    if (m_maxFsOccupPc > 0 && (m_curtxtsz - m_occtxtsz) / MB >= 1) {
+    if (m_maxFsOccupPc > 0 && (first || (m_curtxtsz - m_occtxtsz) / MB >= 1)) {
 	LOGDEB(("Db::add: checking file system usage\n"));
 	int pc;
+	first = 0;
 	if (fsocc(m_basedir, &pc) && pc >= m_maxFsOccupPc) {
 	    LOGERR(("Db::add: stop indexing: file system "
 		     "%d%% full > max %d%%\n", pc, m_maxFsOccupPc));
@@ -895,37 +901,38 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 
     Doc doc = idoc;
 
+    // The title, author, abstract and keywords fields are special, they
+    // get stored in the document data record.
     // Truncate abstract, title and keywords to reasonable lengths. If
     // abstract is currently empty, we make up one with the beginning
     // of the document. This is then not indexed, but part of the doc
     // data so that we can return it to a query without having to
     // decode the original file.
     bool syntabs = false;
-    if (doc.abstract.empty()) {
+    // Note that the map accesses by operator[] create empty entries if they
+    // don't exist yet.
+    if (doc.meta["abstract"].empty()) {
 	syntabs = true;
-	doc.abstract = rclSyntAbs + 
-	    truncate_to_word(doc.text, m_idxAbsTruncLen);
+	doc.meta["abstract"] = rclSyntAbs + 
+	    neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), "\n\r");
     } else {
-	doc.abstract = truncate_to_word(doc.abstract, m_idxAbsTruncLen);
+	doc.meta["abstract"] = 
+	    neutchars(truncate_to_word(doc.meta["abstract"], m_idxAbsTruncLen),
+		      "\n\r");
     }
-    doc.abstract = neutchars(doc.abstract, "\n\r");
-    doc.title = neutchars(truncate_to_word(doc.title, 150), "\n\r");
-    doc.author = neutchars(truncate_to_word(doc.author, 150), "\n\r");
-    doc.keywords = neutchars(truncate_to_word(doc.keywords, 300), "\n\r");
+    if (doc.meta["title"].empty())
+	doc.meta["title"] = doc.utf8fn, "\n\r";
+    doc.meta["title"] = 
+	neutchars(truncate_to_word(doc.meta["title"], 150), "\n\r");
+    doc.meta["author"] = 
+	neutchars(truncate_to_word(doc.meta["author"], 150), "\n\r");
+    doc.meta["keywords"] = 
+	neutchars(truncate_to_word(doc.meta["keywords"], 300),"\n\r");
+
 
     Xapian::Document newdocument;
-
     mySplitterCB splitData(newdocument, m_stops);
-
     TextSplit splitter(&splitData);
-
-    // Index the title, document text, keywords and other textual
-    // metadata.  These are all indexed as text with positions, as we
-    // may want to do phrase searches with them (this makes no sense
-    // for keywords by the way, but wtf).
-    /
-    // The order has no importance, and we set a position gap of 100
-    // between fields to avoid false proximity matches.
     string noacc;
 
     // Split and index file name as document term(s)
@@ -935,35 +942,39 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 	splitData.basepos += splitData.curpos + 100;
     }
 
-    // Split and index title. If title is empty here, use file name
-    if (doc.title.empty())
-	doc.title = doc.utf8fn;
-    if (!doc.title.empty()) {
-	LOGDEB2(("Db::add: split title [%s]\n", doc.title.c_str()));
-	if (!dumb_string(doc.title, noacc)) {
-	    LOGERR(("Db::add: dumb_string failed\n"));
-	    return false;
+    // Index textual metadata.  These are all indexed as text with
+    // positions, as we may want to do phrase searches with them (this
+    // makes no sense for keywords by the way).
+    //
+    // The order has no importance, and we set a position gap of 100
+    // between fields to avoid false proximity matches.
+    map<string,string>::iterator meta_it;
+    string pfx;
+    for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
+	if (!meta_it->second.empty()) {
+	    if (meta_it->first == "abstract" && syntabs)
+		continue;
+	    if (!fieldToPrefix(meta_it->first, pfx)) {
+		LOGDEB(("Db::add: no prefix for field [%s], no indexing\n",
+			meta_it->first.c_str()));
+		continue;
+	    }
+	    LOGDEB(("Db::add: field [%s] pfx [%s]: [%s]\n", 
+		    meta_it->first.c_str(), pfx.c_str(), 
+		    meta_it->second.c_str()));
+	    if (!dumb_string(meta_it->second, noacc)) {
+		LOGERR(("Db::add: dumb_string failed\n"));
+		return false;
+	    }
+	    splitData.setprefix(pfx); // Subject
+	    splitter.text_to_words(noacc);
+	    splitData.setprefix(emptystring);
+	    splitData.basepos += splitData.curpos + 100;
 	}
-	splitData.setprefix("S"); // Subject
-	splitter.text_to_words(noacc);
-	splitData.setprefix(emptystring);
-	splitData.basepos += splitData.curpos + 100;
     }
 
-    // Split and index author
-    if (!doc.author.empty()) {
-	LOGDEB2(("Db::add: split author [%s]\n", doc.author.c_str()));
-	if (!dumb_string(doc.author, noacc)) {
-	    LOGERR(("Db::add: dumb_string failed\n"));
-	    return false;
-	}
-	splitData.setprefix("A"); 
-	splitter.text_to_words(noacc);
-	splitData.setprefix(emptystring);
-	splitData.basepos += splitData.curpos + 100;
-    }
 
-    // Split and index body
+    // Split and index body text
     LOGDEB2(("Db::add: split body\n"));
     if (!dumb_string(doc.text, noacc)) {
 	LOGERR(("Db::add: dumb_string failed\n"));
@@ -972,36 +983,8 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
     splitter.text_to_words(noacc);
     splitData.basepos += splitData.curpos + 100;
 
-    // Split and index keywords
-    if (!doc.keywords.empty()) {
-	LOGDEB2(("Db::add: split kw [%s]\n", doc.keywords.c_str()));
-	if (!dumb_string(doc.keywords, noacc)) {
-	    LOGERR(("Db::add: dumb_string failed\n"));
-	    return false;
-	}
-	splitData.setprefix("K");
-	splitter.text_to_words(noacc);
-	splitData.setprefix(emptystring);
-	splitData.basepos += splitData.curpos + 100;
-    }
 
-    // Split and index abstract. We don't do this if it is synthetic
-    // any more (this used to give a relevance boost to the beginning
-    // of text, why ?)
-    LOGDEB2(("Db::add: split abstract [%s]\n", doc.abstract.c_str()));
-    if (!syntabs) {
-	// syntabs indicator test kept here in case we want to go back
-	// to indexing synthetic abstracts one day
-	if (!dumb_string(syntabs ? doc.abstract.substr(rclSyntAbs.length()) : 
-			 doc.abstract, noacc)) {
-	    LOGERR(("Db::add: dumb_string failed\n"));
-	    return false;
-	}
-	splitter.text_to_words(noacc);
-    }
-    splitData.basepos += splitData.curpos + 100;
-
-    ////// Special terms for metadata
+    ////// Special terms for other metadata. No positions for these.
     // Mime type
     newdocument.add_term("T" + doc.mimetype);
 
@@ -1075,11 +1058,14 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
     if (!doc.ipath.empty()) {
 	record += "\nipath=" + doc.ipath;
     }
-    record += "\ncaption=" + doc.title;
-    record += "\nkeywords=" + doc.keywords;
-    record += "\nabstract=" + doc.abstract;
-    if (!doc.author.empty()) {
-	record += "\nauthor=" + doc.author;
+    if (!doc.meta["title"].empty())
+	record += "\ncaption=" + doc.meta["title"];
+    if (!doc.meta["keywords"].empty())
+	record += "\nkeywords=" + doc.meta["keywords"];
+    if (!doc.meta["abstract"].empty())
+	record += "\nabstract=" + doc.meta["abstract"];
+    if (!doc.meta["author"].empty()) {
+	record += "\nauthor=" + doc.meta["author"];
     }
     record += "\n";
     LOGDEB1(("Newdocument data: %s\n", record.c_str()));

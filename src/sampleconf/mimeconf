@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.29 2007-06-18 13:04:15 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.30 2007-06-19 08:36:24 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -144,3 +144,4 @@ keyword = K
 tag = K
 keywords = K
 tags = K
+

@@ -136,15 +136,16 @@ bool MimeHandlerHtml::next_document()
     m_metaData["origcharset"] = m_defcharset;
     m_metaData["content"] = result.dump;
     m_metaData["charset"] = "utf-8";
-    m_metaData["title"] = result.title;
-    m_metaData["keywords"] = result.keywords;
     // Avoid setting empty values which would crush ones possibly inherited
     // from parent (if we're an attachment)
-    if (!result.author.empty())
-	m_metaData["author"] = result.author;
     if (!result.dmtime.empty())
 	m_metaData["modificationdate"] = result.dmtime;
-    m_metaData["sample"] = result.sample;
     m_metaData["mimetype"] = "text/plain";
+
+    for (map<string,string>::const_iterator it = result.meta.begin(); 
+	 it != result.meta.end(); it++) {
+	if (!it->second.empty())
+	    m_metaData[it->first] = it->second;
+    }
     return true;
 }

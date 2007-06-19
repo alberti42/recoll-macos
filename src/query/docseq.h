@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.11 2007-01-19 15:22:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.12 2007-06-19 08:36:24 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -70,7 +70,7 @@ class DocSequence {
      *  The default is to return the input doc's abstract fields, but some 
      *  sequences can compute a better value (ie: docseqdb) */
     virtual string getAbstract(Rcl::Doc& doc) {
-	return doc.abstract;
+	return doc.meta["abstract"];
     }
 
     /** Get estimated total count in results */
