@@ -42,15 +42,32 @@ class MyHtmlParser : public HtmlParser {
     map<string,string> meta;
     static map<string, string> my_named_ents;
     string dump, dmtime;
-    string ocharset; // This is the charset our user thinks the doc was
-    // charset is declared by HtmlParser
-    //string charset; // This is the charset it was supposedly converted to
-    string doccharset; // Set this to value of charset parameter in header
+    // This is the charset our caller thinks the doc used (initially
+    // comes from the environment/configuration, used as source for
+    // conversion to utf-8)
+    string fromcharset; 
+    // This is the charset it was supposedly converted to (always
+    // utf-8 in fact, except if conversion utterly failed)
+    string tocharset; 
+    // charset is declared by HtmlParser. It is the charset from the
+    // document: default, then from html or xml header.
+    // string charset; 
+
     bool indexing_allowed;
+
     void process_text(const string &text);
     void opening_tag(const string &tag, const map<string,string> &p);
     void closing_tag(const string &tag);
     void do_eof();
     void decode_entities(string &s);
+    void reset_charsets() {fromcharset = tocharset = "";}
+    void set_charsets(const string& f, const string& t) 
+    {
+	fromcharset = f;
+	tocharset = t;
+    }
+    // Return charset as determined from html
+    const string& get_charset() {return charset;}
+
     MyHtmlParser();
 };

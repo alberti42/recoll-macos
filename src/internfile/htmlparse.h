@@ -32,7 +32,7 @@ using std::map;
 
 class HtmlParser {
     protected:
-	void decode_entities(string &s);
+        virtual void decode_entities(string &s);
         bool in_script;
         string charset;
 	static map<string, unsigned int> named_ents;

@@ -70,7 +70,7 @@ bool MimeHandlerHtml::next_document()
     m_filename.erase();
 
     string charset = m_defcharset;
-    LOGDEB(("textHtmlToDoc: next_document. defcharset: %s\n", 
+    LOGDEB(("textHtmlToDoc: next_document. defcharset before parsing: [%s]\n", 
 	    charset.c_str()));
 
     // - We first try to convert from the default configured charset
@@ -79,14 +79,13 @@ bool MimeHandlerHtml::next_document()
     // - During parsing, if we find a charset parameter, and it differs from
     //   what we started with, we abort and restart with the parameter value
     //   instead of the configuration one.
-    LOGDEB(("textHtmlToDoc: charset before parsing: [%s]\n", charset.c_str()));
-
 
     MyHtmlParser result;
     for (int pass = 0; pass < 2; pass++) {
 	string transcoded;
 	LOGDEB(("Html::mkDoc: pass %d\n", pass));
 	MyHtmlParser p;
+
 	// Try transcoding. If it fails, use original text.
 	int ecnt;
 	if (!transcode(m_html, transcoded, charset, "UTF-8", &ecnt)) {
@@ -94,21 +93,21 @@ bool MimeHandlerHtml::next_document()
 		    "[%s]", charset.c_str(), fn.empty()?"unknown":fn.c_str()));
 	    transcoded = m_html;
 	    // We don't know the charset, at all
-	    p.ocharset = p.charset = charset = "";
+	    p.reset_charsets();
+	    charset = "";
 	} else {
 	    if (ecnt) {
 		if (pass == 0) {
 		    LOGDEB(("textHtmlToDoc: init transcode had %d errors for "
-			    "[%s]", ecnt, fn.empty()?"unknown":fn.c_str()));
+			    "[%s]\n", ecnt, fn.empty()?"unknown":fn.c_str()));
 		} else {
 		    LOGERR(("textHtmlToDoc: final transcode had %d errors for "
-			    "[%s]", ecnt, fn.empty()?"unknown":fn.c_str()));
+			    "[%s]\n", ecnt, fn.empty()?"unknown":fn.c_str()));
 		}
 	    }
-	    // ocharset has the putative source charset, transcoded is now
+	    // charset has the putative source charset, transcoded is now
 	    // in utf-8
-	    p.ocharset = charset;
-	    p.charset = "utf-8";
+	    p.set_charsets(charset, "utf-8");
 	}
 
 	try {
@@ -118,14 +117,19 @@ bool MimeHandlerHtml::next_document()
 	    break;
 	} catch (bool diag) {
 	    result = p;
-	    if (diag == true)
+	    if (diag == true) {
+		// Parser throws true at end of text. ok
 		break;
+	    }
+
 	    LOGDEB(("textHtmlToDoc: charset [%s] doc charset [%s]\n",
-		    charset.c_str(),result.doccharset.c_str()));
-	    if (!result.doccharset.empty() && 
-		!samecharset(result.doccharset, result.ocharset)) {
+		    charset.c_str(), result.get_charset().c_str()));
+	    if (!result.get_charset().empty() && 
+		!samecharset(result.get_charset(), result.fromcharset)) {
 		LOGDEB(("textHtmlToDoc: reparse for charsets\n"));
-		charset = result.doccharset;
+		// Set the origin charset as specified in document before
+		// transcoding again
+		charset = result.get_charset();
 	    } else {
 		LOGERR(("textHtmlToDoc:: error: non charset exception\n"));
 		return false;
@@ -133,7 +137,7 @@ bool MimeHandlerHtml::next_document()
 	}
     }
 
-    m_metaData["origcharset"] = m_defcharset;
+    m_metaData["origcharset"] = result.get_charset();
     m_metaData["content"] = result.dump;
     m_metaData["charset"] = "utf-8";
     // Avoid setting empty values which would crush ones possibly inherited

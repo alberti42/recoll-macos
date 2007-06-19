@@ -158,6 +158,10 @@ MyHtmlParser::MyHtmlParser()
       pending_space(false),
       indexing_allowed(true)
 {
+    // The default html document charset is iso-8859-1. We'll update
+    // this value from the encoding tag if found.
+    charset = "iso-8859-1";
+
     if (my_named_ents.empty()) {
 	for (int i = 0;;) {
 	    const char *ent;
@@ -175,11 +179,11 @@ MyHtmlParser::MyHtmlParser()
 
 void MyHtmlParser::decode_entities(string &s)
 {
-    LOGDEB(("MyHtmlParser::decode_entities\n"));
+    LOGDEB2(("MyHtmlParser::decode_entities\n"));
     // This has no meaning whatsoever if the character encoding is unknown,
     // so don't do it. If charset known, caller has converted text to utf-8, 
     // and this is also how we translate entities
-    //    if (charset != "utf-8")
+    //    if (tocharset != "utf-8")
     //    	return;
 
     // We need a const_iterator version of s.end() - otherwise the
@@ -378,12 +382,12 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 			    map<string, string>::const_iterator k;
 			    if ((k = p.params.find("charset")) != 
 				p.params.end()) {
-				doccharset = k->second;
-				if (!samecharset(doccharset, ocharset)) {
+				charset = k->second;
+				if (!samecharset(charset, fromcharset)) {
 				    LOGDEB1(("Doc specified charset '%s' "
-					     "differs from announced '%s'\n",
-					     doccharset.c_str(), 
-					     ocharset.c_str()));
+					    "differs from dir deflt '%s'\n",
+					    charset.c_str(), 
+					    fromcharset.c_str()));
 				    throw false;
 				}
 			    }
@@ -504,7 +508,7 @@ MyHtmlParser::closing_tag(const string &tag)
 	    break;
 	case 't':
 	    if (tag == "title") {
-		if (meta["title"].empty()) {
+		if (meta.find("title") == meta.end()|| meta["title"].empty()) {
 		    meta["title"] = dump;
 		    dump = "";
 		}
