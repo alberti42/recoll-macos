@@ -1,10 +1,9 @@
-/* This file was copied from omega-0.8.5 and modified */
+/* This file was copied from xapian-omega-1.0.1 and modified */
 
-/* htmlparse.cc: simple HTML parser for omega indexer
+/* htmlparse.h: simple HTML parser for omega indexer
  *
- * ----START-LICENCE----
  * Copyright 1999,2000,2001 BrightStation PLC
- * Copyright 2002 Olly Betts
+ * Copyright 2002,2006 Olly Betts
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -18,23 +17,25 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
  * USA
- * -----END-LICENCE-----
  */
+
+#ifndef INCLUDED_HTMLPARSE_H
+#define INCLUDED_HTMLPARSE_H
 
 #include <string>
 #include <map>
 
-#ifndef NO_NAMESPACES
 using std::string;
 using std::map;
-#endif /* NO_NAMESPACES */
 
 class HtmlParser {
     protected:
 	void decode_entities(string &s);
-	static map<string, string> named_ents;
+        bool in_script;
+        string charset;
+	static map<string, unsigned int> named_ents;
     public:
 	virtual void process_text(const string &/*text*/) { }
 	virtual void opening_tag(const string &/*tag*/,
@@ -45,3 +46,5 @@ class HtmlParser {
 	HtmlParser();
 	virtual ~HtmlParser() { }
 };
+
+#endif
