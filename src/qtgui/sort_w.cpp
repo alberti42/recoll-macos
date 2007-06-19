@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.5 2007-05-24 07:48:19 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.6 2007-06-19 16:19:24 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -48,15 +48,12 @@ void SortForm::init()
     mcntSB->setValue(prefs.sortWidth);
     unsigned int spec = (unsigned int)prefs.sortSpec;
 
-    // Restore active/inactive state only once from prefs, only if requested
-    fprintf(stderr, "sort_w init\n");
+    // Restore active/inactive state from prefs, only if requested
     if (prefs.keepSort) {
 	sortCB->setChecked(prefs.sortActive);
     } else {
 	sortCB->setChecked(false);
     }
-
-    // Always start with sort disabled
 
     // We use 4 bits per spec hi is direction, 3 low bits = sort field
     unsigned int v, d;
@@ -65,14 +62,13 @@ void SortForm::init()
     d = spec & (1 << 3);
     spec >>= 4;
     fldCMB1->setCurrentItem(v < 3 ? v : 0);
-    descCB1->setChecked(d!=0?true:false);
+    descCB1->setChecked(d != 0 ? true : false);
 
     v = spec & (0xf & ~(1<<3));
     d = spec & (1 << 3);
     spec >>= 4;
     fldCMB2->setCurrentItem(v < 3 ? v : 0);
-    descCB2->setChecked(d!=0?true:false);
-
+    descCB2->setChecked(d !=0 ? true : false);
 
     // signals and slots connections
     connect(applyPB, SIGNAL(clicked()), this, SLOT(apply()));
@@ -83,8 +79,12 @@ void SortForm::init()
     connect(descCB1, SIGNAL(stateChanged(int)), this, SLOT(setData()));
     connect(descCB2, SIGNAL(stateChanged(int)), this, SLOT(setData()));
     connect(sortCB, SIGNAL(toggled(bool)), this, SLOT(setData()));
+
+    // Finalize state
+    setData();
 }
 
+// This is called when the 'apply' button is pressed. We 
 void SortForm::apply()
 {
     setData();
@@ -128,7 +128,7 @@ void SortForm::setData()
 	}
 	spec.sortwidth = mcntSB->value();
 
-	// Set data in prefs;
+	// Save data to prefs;
 	prefs.sortWidth = spec.sortwidth;
 	unsigned int spec = 0, v, d;
 	v = fldCMB1->currentItem() & 0x7;

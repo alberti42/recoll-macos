@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.29 2007-06-12 13:31:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.30 2007-06-19 16:19:24 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -106,6 +106,8 @@ void RclMain::init()
 	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
 	resList->setFont(nfont);
     }
+
+    // Connections
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
 
@@ -173,6 +175,17 @@ void RclMain::init()
     toolsAdvanced_SearchAction->setIcon(QIcon(":/images/asearch.png"));
     toolsSort_parametersAction->setIcon(QIcon(":/images/sortparms.png"));
 #endif
+
+
+    // If requested by prefs, restore sort state. The easiest way is to let
+    // a SortForm do it for us.
+    if (prefs.keepSort && prefs.sortActive) {
+	SortForm sf(0);
+	connect(&sf, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
+		this, SLOT(sortDataChanged(DocSeqSortSpec)));
+	// Have to call setdata again after sig connected...
+	sf.setData();
+    }
 }
 
 void RclMain::closeEvent( QCloseEvent * )
