@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.15 2007-05-30 12:31:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.16 2007-06-19 15:47:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,7 @@ static string thisprog;
 static string usage =
     " -d <dbdir> -e <output encoding>\n"
     " -i docid -D : get document data for docid\n"
+    " -i docid -X : delete document docid\n"
     " -i docid -b : 'rebuild' document from term positions\n"
     " -t term -E  : term existence test\n"
     " -t term -F  : retrieve term frequency data for given term\n"
@@ -70,6 +71,7 @@ static int        op_flags;
 #define OPT_f     0x800
 #define OPT_q     0x1000
 #define OPT_n     0x2000
+#define OPT_X     0x4000
 
 Xapian::Database *db;
 
@@ -128,6 +130,7 @@ int main(int argc, char **argv)
 		aterm = *(++argv);
 		argc--; 
 		goto b1;
+	    case 'X':	op_flags |= OPT_X; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
@@ -197,6 +200,18 @@ int main(int argc, char **argv)
 	    Xapian::Document doc = db->get_document(docid);
 	    string data = doc.get_data();
 	    cout << data << endl;
+	} else if (op_flags & OPT_X) {
+	    Xapian::Document doc = db->get_document(docid);
+	    string data = doc.get_data();
+	    cout << data << endl;
+	    cout << "Really delete xapian document ?" << endl;
+	    string rep;
+	    cin >> rep;
+	    if (!rep.empty() && rep[0] == 'y' || rep[0] == 'Y') {
+		Xapian::WritableDatabase wdb(dbdir,  Xapian::DB_OPEN);
+		cout << "Deleting" << endl;
+		wdb.delete_document(docid);
+	    }
 	} else if (op_flags & OPT_b) {
 	    if (!(op_flags & OPT_i))
 		Usage();
