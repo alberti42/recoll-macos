@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.10 2007-05-30 12:31:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.11 2007-06-19 07:52:33 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,11 +32,12 @@ using std::string;
 
 #include "transcode.h"
 #include "debuglog.h"
+#include "autoconfig.h"
 
-#if !defined(_LIBICONV_VERSION)
-#define CHARPP (char **)
+#ifdef RCL_ICONV_INBUF_CONST
+#define ICV_P2_TYPE const char**
 #else
-#define CHARPP
+#define ICV_P2_TYPE char**
 #endif
 
 bool transcode(const string &in, string &out, const string &icode,
@@ -66,7 +67,7 @@ bool transcode(const string &in, string &out, const string &icode,
 	osiz = OBSIZ;
 	int isiz0=isiz;
 
-	if(iconv(ic, CHARPP&ip, &isiz, &op, &osiz) == (size_t)-1 && 
+	if(iconv(ic, (ICV_P2_TYPE)&ip, &isiz, &op, &osiz) == (size_t)-1 && 
 	   errno != E2BIG) {
 #if 0
 	    out.erase();

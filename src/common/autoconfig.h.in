@@ -20,3 +20,7 @@
 
 /* Compile the inotify interface */
 #undef RCL_USE_INOTIFY
+
+/* iconv parameter 2 is const char** */
+#undef RCL_ICONV_INBUF_CONST
+

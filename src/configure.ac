@@ -113,7 +113,7 @@ fi
 
 ##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
 ##    then in libc (Linux, solaris)
-AC_LANG(C)
+AC_LANG(C++)
 LIBICONV=""
 S_LDFLAGS=$LDFLAGS
 dir=/usr/local/lib
@@ -142,6 +142,18 @@ if test A"$LIBICONV" = ANONE ; then
 fi
 #echo LIBICONV $LIBICONV
 #echo INCICONV $INCICONV
+
+CPPFLAGS="$CPPFLAGS $INCICONV"
+AC_MSG_CHECKING(for type of inbuf parameter to iconv)
+AC_TRY_COMPILE([
+    #include <stddef.h>
+    #include <iconv.h>
+  ],[
+    iconv(0,(const char **)0,(size_t *)0,(char **)0,(size_t *)0);
+  ], rcl_iconv_inbuf_const="1", rcl_iconv_inbuf_const="0")
+if test X$rcl_iconv_inbuf_const = X1 ; then
+  AC_DEFINE(RCL_ICONV_INBUF_CONST, 1, [iconv parameter 2 is const char**])
+fi
 
 #### Look for Xapian
 AC_PATH_PROG(XAPIAN_CONFIG, xapian-config, no)

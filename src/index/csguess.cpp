@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: csguess.cpp,v 1.5 2006-01-23 13:32:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: csguess.cpp,v 1.6 2007-06-19 07:52:33 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,12 @@ using std::string;
 #include <iconv.h>
 
 #include "csguess.h"
+#include "autoconfig.h"
+#ifdef RCL_ICONV_INBUF_CONST
+#define ICV_P2_TYPE const char**
+#else
+#define ICV_P2_TYPE char**
+#endif
 
 // The values from estraier were 32768, 256, 0.001
 const int ICONVCHECKSIZ = 32768;
@@ -73,13 +79,7 @@ static int transcodeErrCnt(const char *ptr, int size,
     while(isiz > 0){
 	osiz = 2*ICONVCHECKSIZ;
 	wp = obuf;
-	if(iconv(ic, 
-#if defined(_LIBICONV_VERSION)
-		 (const char **)&rp, 
-#else
-		 (char **)&rp, 
-#endif
-		 &isiz, &wp, &osiz) == (size_t)-1){
+	if(iconv(ic, (ICV_P2_TYPE)&rp, &isiz, &wp, &osiz) == (size_t)-1){
 	    if(errno == EILSEQ || errno == EINVAL){
 		rp++;
 		isiz--;
