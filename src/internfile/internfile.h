@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.14 2007-02-08 17:05:12 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.15 2007-06-19 12:27:52 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -47,6 +47,7 @@ class FileInterner {
      * different for previewing and indexing.
      *
      * @param fn file name 
+     * @param stp pointer to updated stat struct.
      * @param cnf Recoll configuration
      * @param td  temporary directory to use as working space if 
      *   decompression needed. Must be private and will be wiped clean.

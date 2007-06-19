@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.31 2007-06-19 08:36:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.32 2007-06-19 12:27:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -589,6 +589,8 @@ bool FileInterner::idocTempFile(TempFile& otemp, RclConfig *cnf,
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <sys/stat.h>
+
 using namespace std;
 
 #include "debuglog.h"
@@ -651,8 +653,12 @@ int main(int argc, char **argv)
 	fprintf(stderr, "%s\n", str.c_str());
 	exit(1);
     }
-
-    FileInterner interner(fn, config, "/tmp");
+    struct stat st;
+    if (stat(fn.c_str(), &st)) {
+	perror("stat");
+	exit(1);
+    }
+    FileInterner interner(fn, &st, config, "/tmp");
     Rcl::Doc doc;
     FileInterner::Status status = interner.internfile(doc, ipath);
     switch (status) {
@@ -677,11 +683,11 @@ int main(int argc, char **argv)
 	"]]]]\n-----------------------------------------------------\n" <<
 	"doc.origcharset [[[[" << doc.origcharset <<
 	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.title [[[[" << doc.title <<
+	"doc.meta[title] [[[[" << doc.meta["title"] <<
 	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.keywords [[[[" << doc.keywords <<
+	"doc.meta[keywords] [[[[" << doc.meta["keywords"] <<
 	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.meta["abstract"] [[[[" << doc.meta["abstract"] <<
+	"doc.meta[abstract] [[[[" << doc.meta["abstract"] <<
 	"]]]]\n-----------------------------------------------------\n" <<
 	"doc.text [[[[" << doc.text << "]]]]\n";
 }
