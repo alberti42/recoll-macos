@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: history.cpp,v 1.7 2006-09-11 12:05:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: history.cpp,v 1.8 2007-06-20 13:16:11 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,6 @@ static char rcsid[] = "@(#$Id: history.cpp,v 1.7 2006-09-11 12:05:39 dockes Exp 
 using namespace std;
 #endif
 
-static const char *docSubkey = "docs";
 
 // Encode/decode document history entry: Unix time + base64 of fn +
 // base64 of ipath separated by a space. If ipath is not set, there
@@ -182,6 +181,8 @@ list<string> RclHistory::getStringList(const string sk)
     return sl;
 }
 
+string RclHistory::docSubkey = "docs";
+
 /// *************** History entries specific methods
 bool RclHistory::enterDoc(const string fn, const string ipath)
 {
@@ -213,8 +214,11 @@ using namespace std;
 static string thisprog;
 
 static string usage =
-    " [-e] [-s <subkey>]"
-    "  \n\n"
+    "trhist [opts] <filename>\n"
+    " [-s <subkey>]: specify subkey (default: RclHistory::docSubkey)\n"
+    " [-e] : erase all\n"
+    " [-a <string>] enter string (needs -s, no good for history entries\n"
+    "\n"
     ;
 
 static void
@@ -227,10 +231,12 @@ Usage(void)
 static int        op_flags;
 #define OPT_e     0x2
 #define OPT_s     0x4
+#define OPT_a     0x8
 
 int main(int argc, char **argv)
 {
-    string sk = "docs";
+    string sk = RclHistory::docSubkey;
+    string value;
 
     thisprog = argv[0];
     argc--; argv++;
@@ -242,24 +248,31 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
+	    case 'a':	op_flags |= OPT_a; if (argc < 2)  Usage();
+		value = *(++argv); argc--; 
+		goto b1;
 	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
-		sk = *(++argv);
-		argc--; 
+		sk = *(++argv);	argc--; 
 		goto b1;
 	    case 'e':	op_flags |= OPT_e; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
     }
-    if (argc != 0)
+    if (argc != 1)
 	Usage();
+    string filename = *argv++;argc--;
 
-    RclHistory hist("toto", 5);
+    RclHistory hist(filename, 5);
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
 
     if (op_flags & OPT_e) {
 	hist.eraseAll(sk);
+    } else if (op_flags & OPT_a) {
+	if (!(op_flags & OPT_s)) 
+	    Usage();
+	hist.enterString(sk, value);
     } else {
 	for (int i = 0; i < 10; i++) {
 	    char docname[100];

@@ -78,6 +78,8 @@
     <item text="&amp;File" name="fileMenu">
         <action name="fileStart_IndexingAction"/>
         <separator/>
+        <action name="fileEraseDocHistoryAction"/>
+        <separator/>
         <action name="fileExitAction"/>
     </item>
     <item text="&amp;Tools" name="Tools">
@@ -172,6 +174,14 @@
         </property>
         <property name="menuText">
             <string>Update &amp;index</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileEraseDocHistoryAction</cstring>
+        </property>
+        <property name="menuText">
+            <string>&amp;Erase document history</string>
         </property>
     </action>
     <action>

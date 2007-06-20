@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.21 2007-06-19 08:36:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.22 2007-06-20 13:15:57 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -772,6 +772,9 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	canBeep = ocanbeep;
 #endif
     }
+    // Enter document in document history
+    g_dynconf->enterDoc(fn, doc.ipath);
+
     editor->setFocus();
     emit(previewExposed(m_searchId, docnum));
     return true;

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.30 2007-06-19 16:19:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.31 2007-06-20 13:15:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -139,6 +139,8 @@ void RclMain::init()
     connect(fileExitAction, SIGNAL(activated() ), this, SLOT(fileExit() ) );
     connect(fileStart_IndexingAction, SIGNAL(activated()), 
 	    this, SLOT(startIndexing()));
+    connect(fileEraseDocHistoryAction, SIGNAL(activated()), 
+	    this, SLOT(eraseDocHistory()));
     connect(helpAbout_RecollAction, SIGNAL(activated()), 
 	    this, SLOT(showAboutDialog()));
     connect(userManualAction, SIGNAL(activated()), this, SLOT(startManual()));
@@ -485,8 +487,6 @@ void RclMain::startPreview(int docnum, int mod)
 	}
 	(void)curPreview->addEditorTab();
     }
-    // Enter document in document history
-    g_dynconf->enterDoc(fn, doc.ipath);
     if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc, docnum))
 	curPreview->closeCurrentTab();
 }
@@ -519,7 +519,6 @@ void RclMain::startPreview(Rcl::Doc doc)
     preview->setSId(0, HiliteData());
     connect(preview, SIGNAL(wordSelect(QString)),
 	    this, SLOT(ssearchAddTerm(QString)));
-    g_dynconf->enterDoc(fn, doc.ipath);
     preview->show();
     if (!preview->loadFileInCurrentTab(fn, st.st_size, doc, 0))
 	preview->closeCurrentTab();
@@ -821,6 +820,7 @@ void RclMain::showDocHistory()
 
     m_searchId++;
 
+    // If you change the title, also change it in eraseDocHistory()
     DocSequenceHistory *src = 
 	new DocSequenceHistory(rcldb, g_dynconf, 
 			       string(tr("Document history").utf8()));
@@ -829,6 +829,16 @@ void RclMain::showDocHistory()
     setDocSequence();
 }
 
+void RclMain::eraseDocHistory()
+{
+    g_dynconf->eraseAll(RclHistory::docSubkey);
+    // We want to reset the displayed history if it is currently shown. Using
+    // the title value is an ugly hack
+    if (m_docSource->title() == 
+	string((const char *)tr("Document history").utf8())) {
+	showDocHistory();
+    }
+}
 
 void RclMain::sortDataChanged(DocSeqSortSpec spec)
 {

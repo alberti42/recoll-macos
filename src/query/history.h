@@ -16,7 +16,7 @@
  */
 #ifndef _HISTORY_H_INCLUDED_
 #define _HISTORY_H_INCLUDED_
-/* @(#$Id: history.h,v 1.6 2006-10-02 12:33:13 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: history.h,v 1.7 2007-06-20 13:16:11 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /**
  * Dynamic configuration storage
@@ -94,7 +94,8 @@ class RclHistory {
 	: m_mlen(maxsize), m_data(fn.c_str()) {}
     bool ok() {return m_data.getStatus() == ConfSimple::STATUS_RW;}
 
-    // Specific methods for history entries
+    // Specific methods for history entries. These are for convenience, they 
+    // just call regular methods with key RclHistory::docSubkey;
     bool enterDoc(const string fn, const string ipath);
     list<RclDHistoryEntry> getDocHistory();
 
@@ -103,6 +104,8 @@ class RclHistory {
     list<string> getStringList(const string sk);
     bool eraseAll(const string& sk);
     bool truncate(const string& sk, unsigned int n);
+
+    static string docSubkey;
 
  private:
     unsigned int m_mlen;
