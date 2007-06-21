@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.116 2007-06-19 15:48:26 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.117 2007-06-21 11:56:28 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -112,11 +112,7 @@ class Native {
     { }
 
     ~Native() {
-	if (m_iswritable)
-	    LOGDEB(("Rcl::Db: xapian will close. Flush may take some time\n"));
 	delete enquire;
-	if (m_iswritable)
-	    LOGDEB(("Rcl::Db: xapian close done.\n"));
     }
 
     string makeAbstract(Xapian::docid id, const list<string>& terms);
@@ -518,22 +514,7 @@ Db::~Db()
 	return;
     LOGDEB(("Db::~Db: isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
 	    m_ndb->m_iswritable));
-    const char *ermsg = "Unknown error";
-    try {
-	// Used to do a flush here, but doesnt seem necessary
-	delete m_ndb;
-	m_ndb = 0;
-	return;
-    } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg().c_str();
-    } catch (const string &s) {
-	ermsg = s.c_str();
-    } catch (const char *s) {
-	ermsg = s;
-    } catch (...) {
-	ermsg = "Caught unknown exception";
-    }
-    LOGERR(("Db::~Db: got exception: %s\n", ermsg));
+    i_close(true);
 }
 
 bool Db::open(const string& dir, const string &stops, OpenMode mode, int qops)
@@ -632,19 +613,37 @@ string Db::getDbDir()
 // Note: xapian has no close call, we delete and recreate the db
 bool Db::close()
 {
+    return i_close(false);
+}
+
+bool Db::i_close(bool final)
+{
     if (m_ndb == 0)
 	return false;
-    LOGDEB(("Db::close(): m_isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
-	    m_ndb->m_iswritable));
-    if (m_ndb->m_isopen == false)
+    LOGDEB(("Db::i_close(%d): m_isopen %d m_iswritable %d\n", final,
+	    m_ndb->m_isopen, m_ndb->m_iswritable));
+    if (m_ndb->m_isopen == false && !final) 
 	return true;
+
     const char *ermsg = "Unknown";
     try {
+	bool w = m_ndb->m_iswritable;
+	if (w)
+	    LOGDEB(("Rcl::Db:close: xapian will close. May take some time\n"));
 	// Used to do a flush here. Cant see why it should be necessary.
 	delete m_ndb;
-	m_ndb = new Native(this);
-	if (m_ndb)
+	m_ndb = 0;
+	if (w)
+	    LOGDEB(("Rcl::Db:close() xapian close done.\n"));
+	if (final) {
 	    return true;
+	}
+	m_ndb = new Native(this);
+	if (m_ndb) {
+	    return true;
+	}
+	LOGERR(("Rcl::Db::close(): cant recreate db object\n"));
+	return false;
     } catch (const Xapian::Error &e) {
 	ermsg = e.get_msg().c_str();
     } catch (const string &s) {
@@ -1297,18 +1296,21 @@ bool Db::purge()
     if (m_ndb->m_isopen == false || m_ndb->m_iswritable == false) 
 	return false;
 
-    // There seems to be problems with the document delete code, when
-    // we do this, the database is not actually updated. Especially,
-    // if we delete a bunch of docs, so that there is a hole in the
-    // docids at the beginning, we can't add anything (appears to work
-    // and does nothing). Maybe related to the exceptions below when
-    // trying to delete an unexistant document ?
-    // Flushing before trying the deletes seeems to work around the problem
+    // For xapian versions up to 1.0.1, deleting a non-existant
+    // document would trigger an exception that would discard any
+    // pending update. This could lose both previous added documents
+    // or deletions. Adding the flush before the delete pass ensured
+    // that any added document would go to the index. Kept here
+    // because it doesn't really hurt.
     try {
 	m_ndb->wdb.flush();
     } catch (...) {
-	LOGDEB(("Db::purge: 1st flush failed\n"));
+	LOGERR(("Db::purge: 1st flush failed\n"));
+
     }
+
+    // Walk the document array and delete any xapian document whose
+    // flag is not set (we did not see its source during indexing).
     for (Xapian::docid docid = 1; docid < updated.size(); ++docid) {
 	if (!updated[docid]) {
 	    try {
@@ -1323,10 +1325,11 @@ bool Db::purge()
 	    }
 	}
     }
+
     try {
 	m_ndb->wdb.flush();
     } catch (...) {
-	LOGDEB(("Db::purge: 2nd flush failed\n"));
+	LOGERR(("Db::purge: 2nd flush failed\n"));
     }
     return true;
 }

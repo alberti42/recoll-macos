@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.52 2007-06-19 08:36:24 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.53 2007-06-21 11:56:28 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -187,6 +187,8 @@ class Db {
     bool filenameWildExp(const string& exp, list<string>& names);
 
 private:
+    // Internal form of close, can be called during destruction
+    bool i_close(bool final);
 
     string m_filterTopDir; // Current query filter on subtree top directory 
     vector<int> m_dbindices; // In case there is a postq filter: sequence of 
