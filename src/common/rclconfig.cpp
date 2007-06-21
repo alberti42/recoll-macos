@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.47 2007-06-19 08:36:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.48 2007-06-21 11:14:45 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -305,9 +305,10 @@ bool RclConfig::inStopSuffixes(const string& fni)
 	}
     }
 
-    string fn(fni, 
-	      MAX(0, fni.length() - m_maxsufflen), 
-	      MIN(fni.length(), m_maxsufflen));
+    // Only need a tail as long as the longest suffix.
+    int pos = MAX(0, int(fni.length() - m_maxsufflen));
+    string fn(fni, pos);
+
     stringtolower(fn);
     SuffixStore::const_iterator it = STOPSUFFIXES->find(fn);
     if (it != STOPSUFFIXES->end()) {
