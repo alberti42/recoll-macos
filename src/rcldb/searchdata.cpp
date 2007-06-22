@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.16 2007-06-19 08:36:24 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.17 2007-06-22 06:14:04 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -72,10 +72,25 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d, const string& stemlang)
 
     // Add the file type filtering clause if any
     if (!m_filetypes.empty()) {
-	list<Xapian::Query> pqueries;
-	Xapian::Query tq;
+	vector<string> exptps;
+	exptps.reserve(m_filetypes.size());
+	// Expand categories
+	RclConfig *cfg = RclConfig::getMainConfig();
 	for (vector<string>::iterator it = m_filetypes.begin(); 
 	     it != m_filetypes.end(); it++) {
+	    if (cfg && cfg->isMimeCategory(*it)) {
+		list<string>tps;
+		cfg->getMimeCatTypes(*it, tps);
+		exptps.insert(exptps.end(), tps.begin(), tps.end());
+	    } else {
+		exptps.push_back(*it);
+	    }
+	}
+	    
+	list<Xapian::Query> pqueries;
+	Xapian::Query tq;
+	for (vector<string>::iterator it = exptps.begin(); 
+	     it != exptps.end(); it++) {
 	    string term = "T" + *it;
 	    LOGDEB(("Adding file type term: [%s]\n", term.c_str()));
 	    tq = tq.empty() ? Xapian::Query(term) : 

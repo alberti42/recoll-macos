@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.117 2007-06-21 11:56:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.118 2007-06-22 06:14:04 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -750,6 +750,7 @@ bool Db::fieldToPrefix(const string& fldname, string &pfx)
     static map<string, string> fldToPrefs;
     if (fldToPrefs.empty()) {
 	fldToPrefs["abstract"] = "";
+	fldToPrefs["ext"] = "XE";
 
 	fldToPrefs["title"] = "S";
 	fldToPrefs["caption"] = "S";
@@ -990,7 +991,12 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
     // Simple file name. This is used for file name searches only. We index
     // it with a term prefix. utf8fn used to be the full path, but it's now
     // the simple file name.
+    // We also add a term for the filename extension if any.
     if (dumb_string(doc.utf8fn, noacc) && !noacc.empty()) {
+	string::size_type pos = noacc.rfind('.');
+	if (pos != string::npos && pos != noacc.length() -1) {
+	    newdocument.add_term(string("XE") + noacc.substr(pos+1));
+	}
 	noacc = string("XSFN") + noacc;
 	newdocument.add_term(noacc);
     }

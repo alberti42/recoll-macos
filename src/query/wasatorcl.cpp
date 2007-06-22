@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.8 2007-02-13 10:58:31 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.9 2007-06-22 06:14:04 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@ static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.8 2007-02-13 10:58:31 dockes Ex
 #include "searchdata.h"
 #include "wasatorcl.h"
 #include "debuglog.h"
+#include "smallut.h"
 
 Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason)
 {
@@ -55,6 +56,12 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    // ??
 	    continue;
 	case WasaQuery::OP_LEAF:
+	    // Special case for mime. Not pretty.
+	    if (!stringicmp("mime", (*it)->m_fieldspec)) {
+		sdata->addFiletype((*it)->m_value);
+		break;
+	    } 
+
 	    if ((*it)->m_value.find_first_of(" \t\n\r") != string::npos) {
 		nclause = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
 							(*it)->m_value, 0, 

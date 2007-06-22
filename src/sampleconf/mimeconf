@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.30 2007-06-19 08:36:24 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.31 2007-06-22 06:14:04 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -91,7 +91,7 @@ text/x-c = source
 
 [categories]
 
-texts = \
+text = \
       application/msword \
       application/pdf \
       application/postscript \
@@ -108,11 +108,11 @@ texts = \
       text/plain \
       text/rtf
 
-spreadsheets = application/vnd.ms-excel \
+spreadsheet = application/vnd.ms-excel \
 	       application/vnd.sun.xml.calc \
 	       application/vnd.sun.xml.calc.template
 
-presentations = application/vnd.ms-powerpoint \
+presentation = application/vnd.ms-powerpoint \
 	        application/vnd.sun.xml.impress \
 	        application/vnd.sun.xml.impress.template
 
@@ -120,7 +120,7 @@ media = audio/mpeg \
         image/jpeg \
         image/png \
 
-messages = message/rfc822 \
+message = message/rfc822 \
 	   text/x-gaim-log \
 	   text/x-mail \
 
@@ -132,6 +132,12 @@ other = application/vnd.sun.xml.draw \
 
 [prefixes]
 
+# This allows extending the set of fields that recoll understand/searches. 
+# See the manual for exact usage.
+# Important: 
+#   - the field names MUST be all lowercase here. They can be anycased
+#     in the documents:
+#   - The extension field prefixes MUST begin with X and be all UPPERCASE.
 title = S
 caption = S
 subject = S
@@ -145,3 +151,5 @@ tag = K
 keywords = K
 tags = K
 
+# testing /example :
+recollspecialfield = XRCLSF

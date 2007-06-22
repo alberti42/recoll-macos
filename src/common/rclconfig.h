@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.35 2007-06-19 08:36:24 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.36 2007-06-22 06:14:04 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -134,6 +134,8 @@ class RclConfig {
 
     /** mimeconf: get list of file categories */
     bool getMimeCategories(list<string>&);
+    /** mimeconf: is parameter one of the categories ? */
+    bool isMimeCategory(string&);
     /** mimeconf: get list of mime types for category */
     bool getMimeCatTypes(const string& cat, list<string>&);
 

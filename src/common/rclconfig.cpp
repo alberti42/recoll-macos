@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.48 2007-06-21 11:14:45 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.49 2007-06-22 06:14:04 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -349,6 +349,17 @@ bool RclConfig::getMimeCategories(list<string>& cats)
 	return false;
     cats = mimeconf->getNames("categories");
     return true;
+}
+
+bool RclConfig::isMimeCategory(string& cat) 
+{
+    list<string>cats;
+    getMimeCategories(cats);
+    for (list<string>::iterator it = cats.begin(); it != cats.end(); it++) {
+	if (!stringicmp(*it,cat))
+	    return true;
+    }
+    return false;
 }
 
 /** Get list of mime types for category from mimeconf */
