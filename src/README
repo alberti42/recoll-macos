@@ -33,7 +33,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 2.2. Index storage
 
-                             2.2.1. Security aspects
+                             2.2.1. Index formats
+
+                             2.2.2. Security aspects
 
                 2.3. The indexing configuration
 
@@ -308,7 +310,33 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  2.2.1. Security aspects
+  2.2.1. Index formats
+
+   Xapian has had two possible index formats for quite some time. The "old"
+   one named Quartz, and the new one named Flint. Xapian 0.9 used Quartz by
+   default, but could use Flint if a specific environment variable
+   (XAPIAN_PREFER_FLINT) was set. Xapian 1.0 still supports Quartz but will
+   use Flint by default for new index creations.
+
+   The number of disk accesses performed during indexing has been much
+   optimized in the new Flint engine and you may see indexing times improved
+   by 50% in some cases (compared to Quartz), typically for big indexes where
+   disk accesses dominate the indexing time. There is also a more modest
+   improvement of index size.
+
+   Xapian will not convert automatically an existing index from the Quartz to
+   the Flint format. If you have an older index and want to take advantage of
+   the new format (which can be done without setting the environment variable
+   as of Recoll 1.8.2 and Xapian 1.0.0), you will have to explicitely delete
+   the old index, then run a normal indexing process.
+
+   Unfortunately, using the -z option to recollindex is not sufficient to
+   change the format, you have to delete all files inside the index directory
+   (typically ~/.recoll/xapiandb) before starting indexing.
+
+     ----------------------------------------------------------------------
+
+  2.2.2. Security aspects
 
    The Recoll index does not hold copies of the indexed documents. But it
    does hold enough data to allow for an almost complete reconstruction. If
@@ -747,11 +775,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            In this mode, you enter the term as you think it is spelled, and
            Recoll will do its best to find index terms that sound like your
            entry. This mode uses the Aspell spelling application, which must
-           be installed on your system for things to work. The language which
-           is used to build the dictionary out of the index terms (which is
-           done at the end of an indexing pass) is the one defined by your
-           NLS environment. Weird things will probably happen if languages
-           are mixed up.
+           be installed on your system for things to work (if your documents
+           contain non-ascii characters, Recoll needs an aspell version newer
+           than 0.60 for UTF-8 support). The language which is used to build
+           the dictionary out of the index terms (which is done at the end of
+           an indexing pass) is the one defined by your NLS environment.
+           Weird things will probably happen if languages are mixed up.
 
    Note that in cases where Recoll does not know the beginning of the string
    to search for (ie a wildcard expression like *coll), the expansion can
@@ -1253,8 +1282,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    all parameters can be meaningfully redefined, this is specified for each
    in the next section.
 
-   The tilde character (~) is expanded in file names to the name of the
-   user's home directory.
+   When found at the beginning of a file path, the tilde character (~) is
+   expanded to the name of the user's home directory, as a shell would do.
 
    White space is used for separation inside lists. List elements with
    embedded spaces can be quoted using double-quotes.
@@ -1400,6 +1429,20 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
            The name of the directory where recoll result list icons are
            stored. You can change this if you want different images.
+
+   aspellLanguage
+
+           Language definitions to use when creating the aspell dictionary.
+           The value must match a set of aspell language definition files.
+           You can type "aspell config" to see where these are installed
+           (look for data-dir). The default if the variable is not set is to
+           use your desktop national language environment to guess the value.
+
+   noaspell
+
+           If this is set, the aspell dictionary generation is turned off.
+           Useful for cases where you don't need the functionality or when it
+           is unusable because aspell crashes during dictionary generation.
 
      ----------------------------------------------------------------------
 

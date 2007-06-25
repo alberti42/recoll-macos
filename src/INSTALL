@@ -248,8 +248,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    all parameters can be meaningfully redefined, this is specified for each
    in the next section.
 
-   The tilde character (~) is expanded in file names to the name of the
-   user's home directory.
+   When found at the beginning of a file path, the tilde character (~) is
+   expanded to the name of the user's home directory, as a shell would do.
 
    White space is used for separation inside lists. List elements with
    embedded spaces can be quoted using double-quotes.
@@ -393,6 +393,20 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
            The name of the directory where recoll result list icons are
            stored. You can change this if you want different images.
+
+   aspellLanguage
+
+           Language definitions to use when creating the aspell dictionary.
+           The value must match a set of aspell language definition files.
+           You can type "aspell config" to see where these are installed
+           (look for data-dir). The default if the variable is not set is to
+           use your desktop national language environment to guess the value.
+
+   noaspell
+
+           If this is set, the aspell dictionary generation is turned off.
+           Useful for cases where you don't need the functionality or when it
+           is unusable because aspell crashes during dictionary generation.
 
 4.4.2. The mimemap file
 
