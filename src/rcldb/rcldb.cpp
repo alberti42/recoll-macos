@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.118 2007-06-22 06:14:04 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.119 2007-06-25 10:25:39 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -56,6 +56,10 @@ using namespace std;
 #define MIN(A,B) (A<B?A:B)
 #endif
 
+// This is the word position offset at which we index the body text
+// (abstract, keywords, etc.. are stored before this)
+static const unsigned int baseTextPosition = 100000;
+
 #undef MTIME_IN_VALUE
 #ifdef MTIME_IN_VALUE
 // Omega compatible values
@@ -103,8 +107,8 @@ class Native {
     Xapian::Enquire *enquire; // Open query descriptor.
     Xapian::MSet     mset;    // Partial result set
 
-    // Term frequencies for current query. See makeAbstract, not used yet.
-    map<string, int>  m_termfreqs; 
+    // Term frequencies for current query. See makeAbstract, setQuery
+    map<string, double>  m_termfreqs; 
     
     Native(Db *db) 
 	: m_db(db),
@@ -232,12 +236,19 @@ static list<string> noPrefixList(const list<string>& in)
     return out;
 }
 
+//#define DEBUGABSTRACT 
+#ifdef DEBUGABSTRACT
+#define LOGABS LOGDEB
+#else
+#define LOGABS LOGDEB2
+#endif
+
 // Build a document abstract by extracting text chunks around the query terms
 // This uses the db termlists, not the original document.
 string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 {
     Chrono chron;
-    LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
+    LOGDEB(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
 	     m_db->m_synthAbsLen, m_db->m_synthAbsWordCtxLen));
 
     list<string> terms = noPrefixList(iterms);
@@ -245,90 +256,105 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 	return "";
     }
 
-    // We may want to use the db-wide freqs to tune the abstracts one
-    // day but we currently don't
-#if 0
+    // Retrieve db-wide frequencies for the query terms
     if (m_termfreqs.empty()) {
+	double doccnt = db.get_doccount();
+	if (doccnt == 0) doccnt = 1;
 	for (list<string>::const_iterator qit = terms.begin(); 
 	     qit != terms.end(); qit++) {
-	    m_termfreqs[*qit] = db.get_termfreq(*qit);
-	    LOGDEB(("makeAbstract: [%s] db freq %d\n", qit->c_str(), 
+	    m_termfreqs[*qit] = db.get_termfreq(*qit) / doccnt;
+	    LOGABS(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
 		     m_termfreqs[*qit]));
 	}
-	LOGDEB(("makeAbstract:%d: got termfreqs\n", chron.ms()));
+	LOGABS(("makeAbstract:%d: got termfreqs\n", chron.ms()));
     }
-#endif
 
-    // Retrieve the term Within Document Frequencies. We are going to try 
+    // Compute a term quality coefficient by retrieving the term
+    // Within Document Frequencies and multiplying by overal term
+    // frequency, then using log-based thresholds. We are going to try
     // and show text around the less common search terms.
-    map<string, int> termwdfs;
-    int totalqtermoccs = 0;
+    map<string, double> termQcoefs;
+    double totalweight = 0;
+    double doclen = db.get_doclength(docid);
+    if (doclen == 0) doclen = 1;
     for (list<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
 	Xapian::TermIterator term = db.termlist_begin(docid);
 	term.skip_to(*qit);
 	if (term != db.termlist_end(docid) && *term == *qit) {
-	    int f = term.get_wdf();
-	    termwdfs[*qit] = f;
-	    totalqtermoccs += f;
-	    LOGDEB2(("makeAbstract: [%s] wdf %d\n", qit->c_str(), 
-		     termwdfs[*qit]));
+	    double q = (term.get_wdf() / doclen) * m_termfreqs[*qit];
+	    q = -log10(q);
+	    if (q < 3) {
+		q = 0.05;
+	    } else if (q < 4) {
+		q = 0.3;
+	    } else if (q < 5) {
+		q = 0.7;
+	    } else if (q < 6) {
+		q = 0.8;
+	    } else {
+		q = 1;
+	    }
+	    termQcoefs[*qit] = q;
+	    totalweight += q;
 	}
     }    
-    LOGDEB2(("makeAbstract:%d: got wdfs totalqtermoccs %d\n", 
-	    chron.ms(), totalqtermoccs));
-    if (totalqtermoccs == 0) {
-	LOGERR(("makeAbstract: no term occurrences !\n"));
-	return "";
-    }
+    LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
 
-    // Build a sorted by frequency term list: it seems reasonable to
-    // prefer sampling around the less frequent terms:
-    multimap<int, string> bywdf;
+    // Build a sorted by quality term list.
+    multimap<double, string> byQ;
     for (list<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
-	if (termwdfs.find(*qit) != termwdfs.end())
-	    bywdf.insert(pair<int,string>(termwdfs[*qit], *qit));
+	if (termQcoefs.find(*qit) != termQcoefs.end())
+	    byQ.insert(pair<double,string>(termQcoefs[*qit], *qit));
     }
 
-    // For each of the query terms, query xapian for its positions
-    // list in the document. For each position entry, remember it in qtermposs
-    // and insert it and its neighbours in the set of 'interesting' positions
+#ifdef DEBUGABSTRACT
+    for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
+	 qit != byQ.rend(); qit++) {
+	LOGDEB(("%.1e->[%s]\n", qit->first, qit->second.c_str()));
+    }
+#endif
+
+
+    // For each of the query terms, ask xapian for its positions list
+    // in the document. For each position entry, remember it in
+    // qtermposs and insert it and its neighbours in the set of
+    // 'interesting' positions
 
     // The terms 'array' that we partially populate with the document
     // terms, at their positions around the search terms positions:
     map<unsigned int, string> sparseDoc;
 
-    // All the query term positions. We remember this mainly because we are
-    // going to random-shuffle it for selecting the chunks that we actually 
-    // print.
+    // All the chosen query term positions. 
     vector<unsigned int> qtermposs; 
 
-    // Limit the total number of slots we populate.
+    // Limit the total number of slots we populate. The 7 is taken as
+    // average word size. It was a mistake to have the user max
+    // abstract size parameter in characters, we basically only deal
+    // with words. We used to limit the character size at the end, but
+    // this damaged our careful selection of terms
     const unsigned int maxtotaloccs = 
-	MAX(50, m_db->m_synthAbsLen /(4 * (m_db->m_synthAbsWordCtxLen+1)));
-    LOGDEB2(("makeAbstract:%d: ttlqtrms %d mxttloccs %d\n", 
-	    chron.ms(), totalqtermoccs,  maxtotaloccs));
-#if 0
-    for (multimap<int, string>::iterator qit = bywdf.begin(); 
-	 qit != bywdf.end(); qit++) {
-	LOGDEB(("%d->[%s]\n", qit->first, qit->second.c_str()));
+	m_db->m_synthAbsLen /(7 * (m_db->m_synthAbsWordCtxLen+1));
+    LOGABS(("makeAbstract:%d: mxttloccs %d\n", chron.ms(), maxtotaloccs));
+    // This can't happen, but would crash us
+    if (totalweight == 0.0) {
+	LOGERR(("makeAbstract: 0 totalweight!\n"));
+	return "";
     }
-#endif
 
-    // Find the text positions which we will have to fill with terms
-    unsigned int totaloccs = 0;
-    for (multimap<int, string>::iterator qit = bywdf.begin(); 
-	 qit != bywdf.end(); qit++) {
+    // Let's go populate
+    for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
+	 qit != byQ.rend(); qit++) {
 	string qterm = qit->second;
 	unsigned int maxoccs;
-	if (bywdf.size() == 1) {
+	if (byQ.size() == 1) {
 	    maxoccs = maxtotaloccs;
 	} else {
-	    float q = (1 - float(termwdfs[qterm]) / float(totalqtermoccs)) /
-		(bywdf.size() - 1);
+	    // We give more slots to the better terms
+	    float q = qit->first / totalweight;
 	    maxoccs = int(ceil(maxtotaloccs * q));
-	    LOGDEB2(("makeAbstract: [%s] %d max occs (coef %.2f)\n", 
+	    LOGABS(("makeAbstract: [%s] %d max occs (coef %.2f)\n", 
 		    qterm.c_str(), maxoccs, q));
 	}
 		
@@ -341,7 +367,10 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 	    for (pos = db.positionlist_begin(docid, qterm); 
 		 pos != db.positionlist_end(docid, qterm); pos++) {
 		unsigned int ipos = *pos;
-		LOGDEB2(("makeAbstract: [%s] at %d\n", qit->c_str(), ipos));
+		if (ipos < baseTextPosition) // Not in text body
+		    continue;
+		LOGABS(("makeAbstract: [%s] at %d occurrences %d maxoccs %d\n",
+			qterm.c_str(), ipos, occurrences, maxoccs));
 		// Remember the term position
 		qtermposs.push_back(ipos);
 		// Add adjacent slots to the set to populate at next step
@@ -353,26 +382,30 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 		    else
 			sparseDoc[ii] = emptys;
 		}
-		// Limit the number of occurences we keep for each
-		// term. The abstract has a finite length anyway !
-		if (occurrences++ > maxoccs)
+		// Limit to allocated occurences and total size
+		if (++occurrences >= maxoccs || 
+		    qtermposs.size() >= maxtotaloccs)
 		    break;
 	    }
 	} catch (...) {
 	    // Term does not occur. No problem.
 	}
-	// Limit total size
-	if (totaloccs++ > maxtotaloccs)
+	if (qtermposs.size() >= maxtotaloccs)
 	    break;
     }
-
-    LOGDEB2(("makeAbstract:%d:chosen number of positions %d\n", 
+    LOGABS(("makeAbstract:%d:chosen number of positions %d\n", 
 	    chron.millis(), qtermposs.size()));
 
-    // Walk the full document position list (for each term walk
-    // position list) and populate slots around the query terms. We
-    // arbitrarily truncate the list to avoid taking forever. If we do
-    // cutoff, the abstract may be inconsistant, which is bad...
+    // This can happen if there are term occurences in the keywords
+    // etc. but not elsewhere ?
+    if (qtermposs.size() == 0) 
+	return "";
+
+    // Walk all document's terms position lists and populate slots
+    // around the query terms. We arbitrarily truncate the list to
+    // avoid taking forever. If we do cutoff, the abstract may be
+    // inconsistant (missing words, potentially altering meaning),
+    // which is bad...
     { 
 	Xapian::TermIterator term;
 	int cutoff = 500 * 1000;
@@ -401,7 +434,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 		    // at the same position, we want to keep only the
 		    // first one (ie: dockes and dockes@wanadoo.fr)
 		    if (vit->second.empty()) {
-			LOGDEB2(("makeAbstract: populating: [%s] at %d\n", 
+			LOGABS(("makeAbstract: populating: [%s] at %d\n", 
 				(*term).c_str(), *pos));
 			sparseDoc[*pos] = *term;
 		    }
@@ -428,61 +461,29 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
     }
 #endif
 
-    LOGDEB2(("makeAbstract:%d: randomizing and extracting\n", chron.millis()));
+    LOGDEB(("makeAbstract:%d: extracting\n", chron.millis()));
 
-    // We randomize the selection of term positions, from which we
-    // shall pull, starting at the beginning, until the abstract is
-    // big enough. The abstract is finally built in correct position
-    // order, thanks to the position map.
-    random_shuffle(qtermposs.begin(), qtermposs.end());
-    map<unsigned int, string> mabs;
-    unsigned int abslen = 0;
-
-    // Extract data around the N first (in random order) query term
-    // positions, and store the terms in the map. Don't concatenate
-    // immediately into chunks because there might be overlaps
+    // Add "..." at ends of chunks
     for (vector<unsigned int>::const_iterator pos = qtermposs.begin();
 	 pos != qtermposs.end(); pos++) {
-
-	if (int(abslen) > m_db->m_synthAbsLen)
-	    break;
-
-	unsigned int sta = MAX(0, *pos - m_db->m_synthAbsWordCtxLen);
 	unsigned int sto = *pos + m_db->m_synthAbsWordCtxLen;
-
-	LOGDEB2(("makeAbstract: %d<-%d->%d\n", sta, *pos, sto));
-
-	for (unsigned int ii = sta; ii <= sto; ii++) {
-
-	    if (int(abslen) > m_db->m_synthAbsLen)
-		break;
-	    map<unsigned int, string>::const_iterator vit = 
-		sparseDoc.find(ii);
-	    if (vit != sparseDoc.end() && !vit->second.empty()) {
-		LOGDEB2(("makeAbstract: position %d -> [%s]\n", 
-			 ii, vit->second.c_str()));
-		mabs[ii] = vit->second;
-		abslen += vit->second.length();
-	    } else {
-		LOGDEB2(("makeAbstract: empty position at %d\n", ii));
-	    }
-	}
 
 	// Possibly add a ... at the end of chunk if it's not
 	// overlapping
-	if (mabs.find(sto+1) == mabs.end())
-	    mabs[sto+1] = "...";
+	if (sparseDoc.find(sto) != sparseDoc.end() && 
+	    sparseDoc.find(sto+1) == sparseDoc.end())
+	    sparseDoc[sto+1] = "...";
     }
 
-    // Build the abstract by walking the map (in order of position)
+    // Finally build the abstract by walking the map (in order of position)
     string abstract;
-    for (map<unsigned int, string>::const_iterator it = mabs.begin();
-	 it != mabs.end(); it++) {
+    for (map<unsigned int, string>::const_iterator it = sparseDoc.begin();
+	 it != sparseDoc.end(); it++) {
 	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
 	abstract += it->second + " ";
     }
 
-    // This happens for docs with no terms (only filename) indexed. I'll fix 
+    // This happens for docs with no terms (only filename) indexed? I'll fix 
     // one day (yeah)
     if (!abstract.compare("... "))
 	abstract.clear();
@@ -973,16 +974,18 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 	}
     }
 
+    if (splitData.curpos < baseTextPosition)
+	splitData.basepos = baseTextPosition;
+    else
+	splitData.basepos += splitData.curpos + 100;
 
-    // Split and index body text
+    // Finally: split and index body text
     LOGDEB2(("Db::add: split body\n"));
     if (!dumb_string(doc.text, noacc)) {
 	LOGERR(("Db::add: dumb_string failed\n"));
 	return false;
     }
     splitter.text_to_words(noacc);
-    splitData.basepos += splitData.curpos + 100;
-
 
     ////// Special terms for other metadata. No positions for these.
     // Mime type
@@ -1425,7 +1428,7 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
     return true;
 }
 
-// Prepare query out of "advanced search" data
+// Prepare query out of user search data
 bool Db::setQuery(RefCntr<SearchData> sdata, int opts, 
 		  const string& stemlang)
 {
@@ -1447,7 +1450,6 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
 	m_reason += sdata->getReason();
 	return false;
     }
-
     m_ndb->query = xq;
     delete m_ndb->enquire;
     m_ndb->enquire = new Xapian::Enquire(m_ndb->db);
