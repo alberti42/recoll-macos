@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.27 2007-06-19 08:36:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.28 2007-06-25 10:13:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -473,7 +473,7 @@ void ResList::resultPageNext()
 	}
 	// No need to call escapeHtml(), plaintorich handles it
 	string richabst;
-	plaintorich(abstract, richabst, hdata, true);
+	plaintorich(abstract, richabst, hdata, true, false);
 
 	// Links;
 	string linksbuf;

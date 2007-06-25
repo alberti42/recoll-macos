@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.13 2007-05-23 09:19:48 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.14 2007-06-25 10:13:40 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -39,12 +39,12 @@ struct HiliteData {
  * @param hdata       terms and groups to be highlighted. These are
  *                     lowercase and unaccented.
  * @param noHeader    if true don't output header (<qt><title>...)
- * @param fft         If true mark the first term position in the text
+ * @param needBeacons Need to navigate highlighted terms, mark them.
  */
 extern bool plaintorich(const string &in, string &out,
 			const HiliteData& hdata,
 			bool noHeader = false,
-			bool fft = false);
+			bool needBeacons = true);
 
 extern string termAnchorName(int i);
 

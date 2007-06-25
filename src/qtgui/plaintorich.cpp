@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.24 2007-06-12 13:31:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.25 2007-06-25 10:13:39 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -342,7 +342,7 @@ static string termBeacon(int i)
 // editor's find() function to position on it
 bool plaintorich(const string& in, string& out, 
 		 const HiliteData& hdata,
-		 bool noHeader, bool)
+		 bool noHeader, bool needBeacons)
 {
     Chrono chron;
     out.erase();
@@ -413,7 +413,8 @@ bool plaintorich(const string& in, string& out,
 	if (tPosIt != tboffsend) {
 	    int ibyteidx = chariter.getBpos();
 	    if (ibyteidx == tPosIt->first) {
-		out += termBeacon(anchoridx++);
+		if (needBeacons)
+		    out += termBeacon(anchoridx++);
 		out += "<termtag>";
 	    } else if (ibyteidx == tPosIt->second) {
 		// Output end tag, then skip all highlight areas that
