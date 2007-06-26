@@ -583,6 +583,10 @@ Do you want to start the  preferences dialog ?</source>
         <source>External index dialog</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Erase document history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -1545,6 +1549,10 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remember sorting preference between invocations.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

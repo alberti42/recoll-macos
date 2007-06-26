@@ -638,6 +638,10 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
         <source>External index dialog</source>
         <translation>Index externes</translation>
     </message>
+    <message>
+        <source>&amp;Erase document history</source>
+        <translation>&amp;Effacer l&apos;historique des documents</translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -1481,6 +1485,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
         <translation>Oter de la liste. Sans effet sur les données stockées.</translation>
+    </message>
+    <message>
+        <source>Remember sorting preference between invocations.</source>
+        <translation>Mémoriser l&apos;état des paramètres de tri.</translation>
     </message>
 </context>
 <context>

@@ -638,6 +638,10 @@ Vuoi aprire il dialogo di configurazione ?</translation>
         <source>External index dialog</source>
         <translation>Dialogo indici esterni</translation>
     </message>
+    <message>
+        <source>&amp;Erase document history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -1483,6 +1487,10 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
         <translation type="unfinished">Rimuovi dalla lista. Non ha effetto sull&apos;indice del disco</translation>
+    </message>
+    <message>
+        <source>Remember sorting preference between invocations.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
