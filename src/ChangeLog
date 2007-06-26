@@ -1,0 +1,3483 @@
+2007-06-26 13:59  dockes
+
+	* excludefile, makesrcdist.sh: small mkdist fixes
+
+2007-06-25 12:25  dockes
+
+	* rcldb/rcldb.cpp: simplified and hopefully improved abstract
+	generation
+
+2007-06-25 12:13  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, reslist.cpp: plaintorich:
+	only setup beacons if needed
+
+2007-06-22 08:14  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, query/wasatorcl.cpp,
+	rcldb/rcldb.cpp, rcldb/searchdata.cpp, sampleconf/mimeconf: handle
+	mime: and ext: in qlang
+
+2007-06-21 13:56  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.h: slightly reorganized Db::close/~Db
+	code
+
+2007-06-21 13:14  dockes
+
+	* common/rclconfig.cpp: beware of unsigneds diffs when comparing to
+	0 !
+
+2007-06-20 15:15  dockes
+
+	* qtgui/preview_w.cpp, qtgui/rclmain.ui, qtgui/rclmain_w.cpp,
+	qtgui/rclmain_w.h, query/history.cpp, query/history.h: menu entry
+	to reset document history
+
+2007-06-19 18:19  dockes
+
+	* qtgui/: rclmain_w.cpp, sort_w.cpp: fix sort state restoration
+	which didnt work
+
+2007-06-19 17:48  dockes
+
+	* rcldb/rcldb.cpp: try to better print delete exception messages
+
+2007-06-19 17:47  dockes
+
+	* query/xadump.cpp: option X
+
+2007-06-19 17:47  dockes
+
+	* query/recollq.cpp: compile
+
+2007-06-19 14:27  dockes
+
+	* internfile/: internfile.cpp, internfile.h: get test driver to
+	compile
+
+2007-06-19 14:17  dockes
+
+	* internfile/: htmlparse.h, mh_html.cpp, myhtmlparse.cpp,
+	myhtmlparse.h: renamed the html charset values to stick to omega
+	usage
+
+2007-06-19 12:28  dockes
+
+	* internfile/: htmlparse.cpp, htmlparse.h, myhtmlparse.cpp,
+	myhtmlparse.h: updated html parser to omega 1.0.1 + moved entity
+	decoder to myhtmlparse to minimize amount of diffs
+
+2007-06-19 10:36  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h,
+	internfile/internfile.cpp, internfile/mh_html.cpp,
+	internfile/myhtmlparse.cpp, internfile/myhtmlparse.h,
+	qtgui/preview_w.cpp, qtgui/reslist.cpp, query/docseq.h,
+	query/docseqdb.cpp, rcldb/rcldb.cpp, rcldb/rcldb.h, rcldb/rcldoc.h,
+	rcldb/searchdata.cpp, sampleconf/mimeconf: added open-ended field
+	name handling
+
+2007-06-19 09:52  dockes
+
+	* configure, configure.ac, common/autoconfig.h.in,
+	index/csguess.cpp, utils/transcode.cpp: added test for iconv parm 2
+	constness
+
+2007-06-18 15:04  dockes
+
+	* ChangeLog, common/rclconfig.cpp, common/rclconfig.h,
+	rcldb/rcldb.cpp, rcldb/rcldb.h, rcldb/searchdata.cpp,
+	sampleconf/mimeconf: implement dynamic field name to prefix
+	translation, query side
+
+2007-06-15 13:41  dockes
+
+	* filters/rclabw, filters/rclsoff, sampleconf/mimeconf,
+	sampleconf/mimemap, sampleconf/mimeview: added abiword + some
+	oofice cleanup
+
+2007-06-14 10:20  dockes
+
+	* rcldb/rcldb.cpp: removed the "weak" date, not used and not in
+	omega anymore
+
+2007-06-13 19:03  dockes
+
+	* qtgui/reslist.cpp: textedit autext sometimes switched to plain at
+	eol?
+
+2007-06-12 15:31  dockes
+
+	* qtgui/: plaintorich.cpp, preview_w.cpp, preview_w.h,
+	rclmain_w.cpp, reslist.cpp, reslist.h: somewhat fixed qt4 selection
+	problems
+
+2007-06-12 12:33  dockes
+
+	* qtgui/ssearch_w.cpp: adjust event handling for qt4, get esc-spc
+	to work
+
+2007-06-12 12:32  dockes
+
+	* qtgui/plaintorich.cpp: comments
+
+2007-06-12 10:46  dockes
+
+	* query/recollq.cpp: getMainConfig
+
+2007-06-11 10:33  dockes
+
+	* qtgui/rclmain_w.cpp: set busy cursor while search runs
+
+2007-06-11 07:43  dockes
+
+	* desktop/recoll-searchgui.desktop, desktop/recoll-searchgui.png,
+	desktop/recoll-searchgui.xcf, desktop/recoll.png,
+	desktop/recoll.xcf, makestaticdist.sh, recollinstall.in: icon named
+	recoll.png
+
+2007-06-11 07:38  dockes
+
+	* index/indexer.cpp: changed level of missing helpers message
+
+2007-06-08 18:47  dockes
+
+	* common/rclconfig.h, index/indexer.cpp, index/recollindex.cpp,
+	mk/FreeBSD, qtgui/main.cpp, rcldb/rcldb.cpp, rcldb/rcldb.h: added
+	file system usage check
+
+2007-06-08 18:46  dockes
+
+	* desktop/: recoll-searchgui.desktop, recoll-searchgui.png,
+	recoll-searchgui.xcf: new icon
+
+2007-06-08 18:05  dockes
+
+	* rcldb/rcldb.h: comments and ordering
+
+2007-06-08 17:30  dockes
+
+	* utils/: pathut.cpp, pathut.h: fsocc
+
+2007-06-08 15:59  dockes
+
+	* sampleconf/mimeview, filters/rclkwd: kword support
+
+2007-06-08 15:51  dockes
+
+	* filters/rcldjvu, filters/rcldoc, filters/rcldvi, filters/rclgaim,
+	filters/rcljpeg, filters/rcllyx, filters/rclman, filters/rclmedia,
+	filters/rclpdf, filters/rclppt, filters/rclps, filters/rclrtf,
+	filters/rclscribus, filters/rclsoff, filters/rclxls,
+	filters/recfiltcommon, sampleconf/mimeconf, sampleconf/mimemap:
+	kword support
+
+2007-06-08 14:33  dockes
+
+	* query/recollq.cpp: added stopfile parameter
+
+2007-06-08 14:32  dockes
+
+	* filters/rcljpeg, sampleconf/mimeconf: rcljpeg
+
+2007-06-08 14:31  dockes
+
+	* common/rclconfig.cpp: improve message about bad config
+
+2007-06-02 10:30  dockes
+
+	* ChangeLog, common/rclconfig.cpp, common/rclconfig.h,
+	index/indexer.cpp, lib/Makefile, lib/mkMake, qtgui/main.cpp,
+	rcldb/Makefile, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	rcldb/searchdata.cpp, rcldb/stoplist.cpp, rcldb/stoplist.h,
+	utils/readfile.cpp, utils/readfile.h: minimal experimental stopword
+	functionality
+
+2007-06-01 07:44  dockes
+
+	* qtgui/preview_w.cpp: preview: space and backspace bound to
+	pgdown/pgup
+
+2007-05-30 14:31  dockes
+
+	* index/indexer.cpp, internfile/mh_html.cpp, internfile/mh_html.h,
+	qtgui/plaintorich.cpp, query/xadump.cpp, utils/transcode.cpp:
+	improve transcode error printing
+
+2007-05-30 14:30  dockes
+
+	* rcldb/rcldb.cpp: improve add_document error message printing
+
+2007-05-30 14:29  dockes
+
+	* qtgui/: reslist.cpp, reslist.h: escape possibly not html-safe
+	text
+
+2007-05-24 11:35  dockes
+
+	* rcldb/stemdb.cpp: comment
+
+2007-05-24 09:48  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h, sort_w.cpp, uiprefs.ui,
+	uiprefs_w.cpp: optionally remember sorting state between
+	invocations
+
+2007-05-24 09:47  dockes
+
+	* configure, configure.ac, qt4gui/uifrom3: make uifrom3 a makefile
+
+2007-05-23 11:19  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, preview.ui,
+	preview_w.cpp, preview_w.h: in preview window if search line empty
+	look for search terms
+
+2007-05-23 10:28  dockes
+
+	* common/rclinit.cpp, utils/execmd.cpp: cant block sigcld globally
+	cause qt needs it
+
+2007-05-22 10:33  dockes
+
+	* internfile/: internfile.cpp, mh_html.cpp: let email attachments
+	inherit date and author from parent message
+
+2007-05-22 09:40  dockes
+
+	* index/indexer.cpp, rcldb/rcldb.cpp, rcldb/rcldb.h: implemented
+	adjustable indexing flush threshold
+
+2007-05-21 16:26  dockes
+
+	* qtgui/rclmain_w.cpp: reopen db for each search during query
+
+2007-05-21 15:30  dockes
+
+	* common/rclinit.cpp, common/rclinit.h, index/rclmonprc.cpp,
+	index/rclmonrcv.cpp, index/recollindex.cpp, qtgui/idxthread.cpp,
+	qtgui/main.cpp, rcldb/rcldb.cpp, utils/execmd.cpp, utils/execmd.h:
+	make sure signals are only handled by the main thread. Fix bus
+	error on rclmon exit (double delete)
+
+2007-05-21 11:00  dockes
+
+	* index/: indexer.cpp, rclmonprc.cpp: better handle aspell errors:
+	dont exit from monitor on aux db creation failure, and dont retry
+	forever
+
+2007-05-21 09:24  dockes
+
+	* VERSION, configure, configure.ac, doc/user/usermanual.sgml,
+	qt4gui/uifrom3, sampleconf/recoll.conf.in: removed --enable-qt4,
+	rely on qmake output instead
+
+2007-05-18 14:05  dockes
+
+	* recollinstall.in: qt4 install glitches
+
+2007-05-18 09:49  dockes
+
+	* VERSION: 1.8.2
+
+2007-05-18 09:41  dockes
+
+	* doc/user/usermanual.sgml: doc fix
+
+2007-05-18 09:41  dockes
+
+	* sampleconf/recoll.conf.in: add .beagle to stops
+
+2007-05-18 09:41  dockes
+
+	* rcldb/: rcldb.cpp, stemdb.cpp: change method name deprecated in
+	xap 1.0
+
+2007-05-18 09:40  dockes
+
+	* configure.ac: use $libdir instead of /usr/lib (64bits machs)
+
+2007-03-08 13:04  dockes
+
+	* VERSION, makestaticdist.sh: version 1.8.1 ?
+
+2007-02-20 10:30  dockes
+
+	* recollinstall.in: go back to not using xdg
+
+2007-02-19 19:15  dockes
+
+	* qtgui/: preview_w.cpp, preview_w.h: make shift-arrow in preview
+	work with qt4 and avoid reentrancy while loading a file
+
+2007-02-19 19:14  dockes
+
+	* utils/execmd.cpp: block sigcld, it sometimes causes eintrs during
+	the select() call
+
+2007-02-19 19:05  dockes
+
+	* internfile/internfile.cpp: check file name not empty on return
+	from uncomp exec
+
+2007-02-19 17:28  dockes
+
+	* qtgui/spell_w.cpp: stemming language choice was not observed in
+	term explorer
+
+2007-02-19 17:10  dockes
+
+	* qtgui/: advsearch_w.cpp, advsearch_w.h: cleanup ign file types
+	handling/saving
+
+2007-02-14 11:10  dockes
+
+	* makestaticdist.sh, recollinstall.in, doc/user/usermanual.sgml,
+	qtgui/guiutils.cpp, qtgui/guiutils.h, qtgui/rclmain_w.cpp,
+	qtgui/uiprefs.ui, qtgui/uiprefs_w.cpp, sampleconf/mimeview: add
+	user pref to use xdg-open for all document edits
+
+2007-02-14 11:09  dockes
+
+	* rcldb/rcldb.cpp: during indexing use simple file name as title if
+	this is empty. This allows storing the sfn for subdocs for which
+	the url sfn doesnt make sense as title
+
+2007-02-14 11:08  dockes
+
+	* query/recollq.cpp: adjust format to help the test set scripts
+
+2007-02-13 11:58  dockes
+
+	* query/wasatorcl.cpp, rcldb/searchdata.cpp, rcldb/searchdata.h:
+	propagate wasa nostem modifier
+
+2007-02-12 19:16  dockes
+
+	* query/: wasastringtoquery.cpp, wasastringtoquery.h: add wasabi
+	modifiers
+
+2007-02-12 19:14  dockes
+
+	* qtgui/guiutils.cpp: dont set Helvetica as default font
+
+2007-02-08 18:05  dockes
+
+	* index/indexer.cpp, index/indexer.h, internfile/internfile.cpp,
+	internfile/internfile.h, qtgui/preview_w.cpp, utils/smallut.cpp,
+	utils/smallut.h: improve handling of missing helpers messages
+
+2007-02-08 18:03  dockes
+
+	* filters/rcldvi: typos
+
+2007-02-08 13:25  dockes
+
+	* internfile/internfile.h, query/recollq.cpp: clarify temp dir
+	usage in internfile
+
+2007-02-08 10:03  dockes
+
+	* qtgui/: reslist.cpp, uiprefs_w.cpp, uiprefs_w.h: qt4 compilation
+	glitches
+
+2007-02-07 18:17  dockes
+
+	* recoll.desktop, recoll.png, recoll.xcf, recollinstall.in: use xdg
+	scripts to install desktop file and icon
+
+2007-02-07 18:17  dockes
+
+	* common/rclconfig.cpp, doc/user/usermanual.sgml: dont autocreate
+	config specified with -c or RECOLL_CONFDIR
+
+2007-02-07 17:31  dockes
+
+	* aspell/rclaspell.cpp: improve db creation error message
+
+2007-02-07 13:00  dockes
+
+	* query/: Makefile, recollq.cpp, wasatorcl.cpp, wasatorcl.h:
+	recollq
+
+2007-02-06 19:01  dockes
+
+	* index/indexer.cpp, internfile/internfile.cpp,
+	internfile/internfile.h, internfile/mh_exec.cpp,
+	qtgui/preview_w.cpp: arrange for error info about missing helpers
+	to trickle up to the user
+
+2007-02-06 19:01  dockes
+
+	* sampleconf/: mimeconf, mimemap: added config+filter for man pages
+
+2007-02-06 16:08  dockes
+
+	* filters/: rcldjvu, rcldoc, rcldvi, rclgaim, rcllyx, rclman,
+	rclmedia, rclpdf, rclppt, rclps, rclrtf, rclscribus, rclsoff,
+	rclxls: factored out filter script common code
+
+2007-02-06 15:16  dockes
+
+	* common/rclconfig.cpp, utils/pathut.cpp, utils/pathut.h,
+	common/rclconfig.cpp, utils/pathut.cpp, utils/pathut.h: make sure
+	the -c argument is turned absolute before use
+
+2007-02-06 11:19  dockes
+
+	* qtgui/ssearch_w.cpp: no space in query -> phrase
+
+2007-02-06 11:18  dockes
+
+	* qtgui/reslist.cpp: try to make sure that the old reslist is
+	cleared while searching
+
+2007-02-06 11:17  dockes
+
+	* qt4gui/: uifrom3, uifrom3: link images/ from qtgui to qt4gui
+
+2007-02-02 11:27  dockes
+
+	* doc/user/usermanual.sgml: add skippedPaths and daemSkippedPaths
+	config variables
+
+2007-02-02 11:12  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, index/indexer.cpp,
+	index/rclmonrcv.cpp, utils/fstreewalk.cpp: add skippedPaths and
+	daemSkippedPaths config variables
+
+2007-02-02 11:10  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.h: sort and uniquify termMatch results
+	out of stem expansion
+
+2007-02-02 11:09  dockes
+
+	* index/recollindex.cpp: do x11 check between sleeping and starting
+	in recollindex -m
+
+2007-02-02 11:06  dockes
+
+	* lib/: Makefile, mkMake: fix $(depth) usage for easier kio
+	compilation
+
+2007-02-02 11:05  dockes
+
+	* doc/user/usermanual.sgml: added config examples
+
+2007-02-02 11:01  dockes
+
+	* recollinstall.in: removed old filter in examples cleanup
+
+2007-02-01 16:00  dockes
+
+	* aspell/rclaspell.cpp, mk/localdefs.in, aspell/rclaspell.cpp,
+	mk/localdefs.in: use configure libdir to search for aspell lib
+	(mainly for 64 bits machines)
+
+2007-02-01 13:43  dockes
+
+	* kioslave/recoll/: Makefile, kio_recoll.cpp, piclib/Makefile:
+	fixed kio compilation. Dont know if it works
+
+2007-01-30 13:08  dockes
+
+	* VERSION: release 1.7.6
+
+2007-01-30 12:39  dockes
+
+	* filters/: rcldjvu, rcldoc, rcldvi, rclpdf, rclps, rclrtf,
+	rclscribus, rclsoff: hide awk BEGIN statements - make debian linda
+	happy
+
+2007-01-30 12:36  dockes
+
+	* filters/: rcldjvu, rcldoc, rcldvi, rclpdf, rclps, rclrtf,
+	rclsoff: hide awk BEGIN statements - make debian linda happy
+
+2007-01-29 14:51  dockes
+
+	* rcldb/searchdata.cpp: more field name synonyms
+
+2007-01-25 16:50  dockes
+
+	* rcldb/: searchdata.cpp, searchdata.h: better wildcards handling.
+	Tuning of user term boosting
+
+2007-01-25 16:47  dockes
+
+	* rcldb/rcldb.cpp: dont explicitely anchor regexp in termMatch
+
+2007-01-25 16:46  dockes
+
+	* qtgui/ssearch_w.cpp: Dont add auto phrase if there are wildcards
+
+2007-01-25 16:45  dockes
+
+	* query/wasatorcl.cpp: comment
+
+2007-01-25 16:40  dockes
+
+	* common/textsplit.cpp: [] are also wildcard chars
+
+2007-01-24 13:40  dockes
+
+	* qtgui/guiutils.cpp: make AND the initial default for ssearch
+
+2007-01-24 12:20  dockes
+
+	* qtgui/: uiprefs.ui, viewaction.ui: change MyDialog and Form1
+	dialog captions
+
+2007-01-24 12:15  dockes
+
+	* filters/rclscribus: transate \r to <br> (for older scribus files)
+
+2007-01-24 12:00  dockes
+
+	* sampleconf/: mimeconf, mimemap, mimeconf, mimemap: scribus scd
+	files
+
+2007-01-23 08:14  dockes
+
+	* filters/rcllyx, sampleconf/mimeconf, sampleconf/mimemap,
+	sampleconf/mimeview, filters/rcllyx, sampleconf/mimeconf,
+	sampleconf/mimemap, sampleconf/mimeview: lyx filter
+
+2007-01-22 17:32  dockes
+
+	* filters/rclscribus, sampleconf/mimeconf, sampleconf/mimemap,
+	filters/rclscribus, sampleconf/mimeconf, sampleconf/mimemap: added
+	scribus support
+
+2007-01-21 17:41  dockes
+
+	* filters/: rclsoff, rclsoff: fix shell syntax for debian
+
+2007-01-19 16:22  dockes
+
+	* qtgui/plaintorich.cpp, qtgui/plaintorich.h, qtgui/preview_w.cpp,
+	qtgui/preview_w.h, qtgui/rclmain_w.cpp, qtgui/reslist.cpp,
+	qtgui/reslist.h, query/docseq.h, query/docseqdb.cpp,
+	query/docseqdb.h, query/docseqhist.h, query/sortseq.cpp,
+	query/sortseq.h, wasabi/server/wasabiSimple.xml: try to limit the
+	places which use Rcl:: stuff
+
+2007-01-19 16:19  dockes
+
+	* rcldb/stemdb.cpp: make sure that both the user term and the stem
+	are in the expanded list
+
+2007-01-19 11:32  dockes
+
+	* lib/Makefile, lib/mkMake, qtgui/rclmain_w.cpp, qtgui/reslist.cpp,
+	qtgui/ssearch_w.cpp, query/docseq.cpp, query/docseq.h,
+	query/docseqdb.cpp, query/docseqdb.h, query/docseqhist.cpp,
+	query/docseqhist.h, query/sortseq.cpp, query/sortseq.h: cleanup
+	docseq, arrange things so that we can page reslist past the initial
+	result count estimate if there are more
+
+2007-01-19 11:23  dockes
+
+	* rcldb/rcldb.cpp: adjust makeAbstract for prefixed terms
+
+2007-01-19 11:23  dockes
+
+	* rcldb/searchdata.cpp: the relevance-boosted original term needs a
+	prefix too
+
+2007-01-19 11:22  dockes
+
+	* query/: wasatorcl.cpp, wasatorcl.h: add direct qstring to rcl
+	function
+
+2007-01-18 15:23  dockes
+
+	* utils/mimeparse.cpp: debug msg
+
+2007-01-18 13:09  dockes
+
+	* common/textsplit.cpp, common/textsplit.h, rcldb/searchdata.cpp:
+	handle wildcards in search terms
+
+2007-01-17 14:53  dockes
+
+	* internfile/internfile.cpp, internfile/mh_html.cpp,
+	internfile/mh_mail.cpp, internfile/myhtmlparse.cpp,
+	internfile/myhtmlparse.h, lib/Makefile, lib/mkMake, query/Makefile,
+	query/wasastringtoquery.cpp, query/wasastringtoquery.h,
+	query/wasatorcl.cpp, rcldb/rcldb.cpp, rcldb/rcldoc.h,
+	rcldb/searchdata.cpp, rcldb/searchdata.h: added field/prefixes for
+	author and title + command line query language
+
+2007-01-16 11:58  dockes
+
+	* sampleconf/recoll.conf.in: add recollrc to skipped
+
+2007-01-16 11:58  dockes
+
+	* bincimapmime/trbinc.cc, utils/debuglog.cpp: wrong copyrights
+
+2007-01-15 14:09  dockes
+
+	* VERSION: 1.7.5
+
+2007-01-15 14:07  dockes
+
+	* internfile/mh_mail.cpp: process multipart/signed
+
+2007-01-15 14:06  dockes
+
+	* internfile/: internfile.cpp, internfile.h, internfile.cpp,
+	internfile.h: dont stop processing a complex document on the first
+	next_document error: pop level and go on
+
+2007-01-13 16:21  dockes
+
+	* qtgui/: rclmain.ui, rclmain_w.cpp, rclmain_w.h, uiprefs.ui,
+	uiprefs_w.cpp, uiprefs_w.h: improved external index dialog with
+	listview
+
+2007-01-13 15:41  dockes
+
+	* query/xadump.cpp: add option to dump raw terms
+
+2007-01-13 11:28  dockes
+
+	* internfile/mh_mail.cpp: handle multipart/signed
+
+2007-01-12 10:01  dockes
+
+	* qtgui/reslist.cpp: Use sample from Rcl::Doc if makeAbstract()
+	fails
+
+2007-01-10 16:59  dockes
+
+	* VERSION: debian
+
+2007-01-10 16:59  dockes
+
+	* Makefile.in: improve clean targets
+
+2007-01-09 08:25  dockes
+
+	* qtgui/i18n/: recoll_fr.ts, recoll_ru.ts, recoll_uk.ts: french
+	messages
+
+2007-01-08 16:21  dockes
+
+	* VERSION, qtgui/main.cpp: initial indexation with gui would not
+	work
+
+2007-01-08 14:00  dockes
+
+	* ChangeLog, VERSION: 1.7.1
+
+2007-01-08 13:43  dockes
+
+	* qtgui/advsearch.ui: lost sizers?
+
+2007-01-08 11:11  dockes
+
+	* qtgui/rclmain_w.cpp: fix the previous icon fix
+
+2007-01-08 11:01  dockes
+
+	* qtgui/: rclmain_w.cpp, rclmain_w.h, reslist.cpp, reslist.h:
+	reslist menu openParent opens containing folder if not a subdoc
+
+2007-01-08 10:40  dockes
+
+	* qtgui/uiprefs.ui: fix resizing of prefs dialog
+
+2007-01-08 08:02  dockes
+
+	* qtgui/rclmain_w.cpp: get rid of messages about missing d_xxx
+	images
+
+2007-01-08 08:01  dockes
+
+	* qtgui/reslist.cpp: synthetic abstracts not displayed
+
+2006-12-24 09:07  dockes
+
+	* ChangeLog, Makefile.in: better cleanup -> 1.7.0 NOW
+
+2006-12-24 09:02  dockes
+
+	* excludefile: 1.7.0
+
+2006-12-24 08:40  dockes
+
+	* configure, configure.ac, doc/man/recollindex.1,
+	doc/user/usermanual.sgml, index/rclmon.h, index/rclmonprc.cpp,
+	index/recollindex.cpp: option -x to disable x11 session monitoring
+
+2006-12-23 14:07  dockes
+
+	* configure, configure.ac, index/Makefile, index/rclmonprc.cpp,
+	lib/Makefile, lib/mkMake, mk/localdefs.in, utils/pathut.cpp: x11
+	session end detection
+
+2006-12-22 17:48  dockes
+
+	* qt4gui/recoll.qrc, qtgui/rclmain.ui, qtgui/rclmain_w.cpp,
+	qtgui/spell_w.cpp: get all icons out of .ui files to avoid qt4
+	startup messages
+
+2006-12-22 12:00  dockes
+
+	* wasabi/: client/wasabiSimple_interface.h, client/wasabic.cpp,
+	client/wasabic.h, client/wasabic.pro, server/Makefile,
+	server/main.cpp, server/rclwasabis.cpp, server/rclwasabis.h,
+	server/rclwasabis.pro, server/wasabiSimple.xml,
+	server/wasabiSimple_adaptor.cpp, server/wasabiSimple_adaptor.h: yet
+	another interface version
+
+2006-12-21 11:08  dockes
+
+	* index/rclmonprc.cpp: try to be more responsive to interruptions
+
+2006-12-21 10:22  dockes
+
+	* ChangeLog, index/indexer.cpp, index/rclmonrcv.cpp,
+	index/recollindex.cpp, sampleconf/mimemap, utils/fstreewalk.cpp:
+	always skip indexing of confdir and dbdir. start index monitor with
+	normal indexing pass
+
+2006-12-21 10:21  dockes
+
+	* qtgui/: advsearch.ui, ssearchb.ui: tooltips
+
+2006-12-21 09:22  dockes
+
+	* utils/: fstreewalk.cpp, fstreewalk.h: add skipped paths
+
+2006-12-20 15:28  dockes
+
+	* internfile/internfile.cpp: msg
+
+2006-12-20 15:09  dockes
+
+	* qtgui/preview_w.cpp: try to improve error message for internfile
+	failure
+
+2006-12-20 14:55  dockes
+
+	* qtgui/: preview_w.cpp, rclmain_w.cpp, rclmain_w.h, reslist.cpp,
+	reslist.h: reslist: added menu entry to see parent doc of
+	attachment
+
+2006-12-20 14:12  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, qtgui/advsearch.ui,
+	qtgui/advsearch_w.cpp, qtgui/advsearch_w.h, qtgui/guiutils.cpp,
+	qtgui/guiutils.h, sampleconf/mimeconf: mime categories
+
+2006-12-20 10:54  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h,
+	doc/user/usermanual.sgml, index/mimetype.cpp: changed stopsuffixes
+	processing
+
+2006-12-20 10:41  dockes
+
+	* index/recollindex.cpp: opt -e
+
+2006-12-19 13:38  dockes
+
+	* qtgui/spell_w.cpp: qt4
+
+2006-12-19 13:11  dockes
+
+	* qtgui/spell.ui, qtgui/spell_w.cpp, qtgui/spell_w.h,
+	qtgui/ssearch_w.cpp, qtgui/viewaction.ui, qtgui/viewaction_w.cpp,
+	rcldb/rcldb.cpp, rcldb/rcldb.h, rcldb/searchdata.cpp,
+	rcldb/stemdb.cpp, rcldb/stemdb.h, utils/smallut.cpp,
+	utils/smallut.h: merge stemExpand into termExpand. return term
+	frequencies from there and display in spellW
+
+2006-12-19 09:40  dockes
+
+	* common/rclconfig.cpp, index/indexer.cpp, index/mimetype.cpp,
+	index/mimetype.h, internfile/internfile.cpp,
+	internfile/internfile.h, internfile/mimehandler.cpp,
+	qtgui/preview_w.cpp, sampleconf/mimeconf, sampleconf/mimeview:
+	index directory names
+
+2006-12-18 17:45  dockes
+
+	* qt4gui/recoll.pro.in, qtgui/viewaction.ui,
+	qtgui/viewaction_w.cpp, qtgui/viewaction_w.h: qt4
+
+2006-12-18 13:06  dockes
+
+	* doc/user/usermanual.sgml, internfile/mh_mail.cpp,
+	utils/smallut.cpp, utils/smallut.h: mh_mail needs to lowercase
+	contentypes
+
+2006-12-18 13:05  dockes
+
+	* qtgui/: rclmain_w.cpp, rclmain_w.h, viewaction_w.cpp,
+	viewaction_w.h: dblclick to edit in viewAction
+
+2006-12-16 16:39  dockes
+
+	* internfile/internfile.cpp, internfile/internfile.h,
+	internfile/mh_html.h, internfile/mh_mail.cpp, internfile/mh_mail.h,
+	internfile/mh_text.h, internfile/mimehandler.h, qtgui/main.cpp,
+	qtgui/rclmain_w.cpp, qtgui/rclmain_w.h: mail attachments sort of ok
+
+2006-12-16 16:31  dockes
+
+	* utils/: pathut.cpp, pathut.h: added TempFile class
+
+2006-12-16 16:30  dockes
+
+	* index/indexer.cpp: dont clobber utf8fn from filter
+
+2006-12-16 16:30  dockes
+
+	* common/: rclconfig.cpp, rclconfig.h: added
+	getSuffixFromMimeType()
+
+2006-12-15 17:33  dockes
+
+	* index/indexer.cpp, internfile/Filter.h,
+	internfile/internfile.cpp, internfile/internfile.h,
+	internfile/mh_html.cpp, internfile/mh_mail.cpp,
+	internfile/mh_mail.h, internfile/myhtmlparse.h: test data indexing
+	result same terms as 1.6.3
+
+2006-12-15 13:40  dockes
+
+	* internfile/Makefile, internfile/internfile.cpp,
+	internfile/internfile.h, internfile/mh_exec.cpp,
+	internfile/mh_exec.h, internfile/mh_html.cpp, internfile/mh_html.h,
+	internfile/mh_mail.cpp, internfile/mh_mail.h,
+	internfile/mh_text.cpp, internfile/mh_text.h,
+	internfile/mh_unknown.h, internfile/mimehandler.cpp,
+	internfile/mimehandler.h, internfile/myhtmlparse.h, lib/Makefile,
+	lib/mkMake, utils/smallut.cpp, utils/smallut.h,
+	internfile/Filter.h, internfile/mh_mbox.cpp, internfile/mh_mbox.h:
+	Dijon filters 1st step: mostly working needs check and optim
+
+2006-12-14 15:54  dockes
+
+	* rcldb/: rcldb.h, rcldoc.h: split rcldb.h -> rcldoc.h
+
+2006-12-14 14:53  dockes
+
+	* recollinstall.in, common/rclconfig.cpp, common/rclconfig.h,
+	doc/user/usermanual.sgml, index/indexer.cpp, qtgui/preview_w.cpp,
+	qtgui/rclmain_w.cpp, qtgui/recoll.pro.in, qtgui/ssearch_w.cpp,
+	qtgui/uiprefs.ui, qtgui/uiprefs_w.cpp, qtgui/uiprefs_w.h,
+	qtgui/viewaction.ui, qtgui/viewaction_w.cpp, qtgui/viewaction_w.h,
+	sampleconf/mimeconf, sampleconf/mimeview, utils/Makefile,
+	utils/conftree.cpp, utils/conftree.h, utils/execmd.cpp,
+	utils/execmd.h, utils/pathut.cpp, utils/pathut.h,
+	utils/smallut.cpp, utils/smallut.h: created mimeview and the viewer
+	conf edit dialog
+
+2006-12-13 10:13  dockes
+
+	* common/rclconfig.cpp, internfile/internfile.cpp,
+	internfile/mh_exec.cpp, internfile/mimehandler.cpp: move findFilter
+	usage out of mh_exec
+
+2006-12-11 15:56  dockes
+
+	* qtgui/plaintorich.cpp: not calling textsplit with onlyspans
+	improves highlighting
+
+2006-12-11 15:50  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, index/mimetype.cpp,
+	utils/smallut.cpp, utils/smallut.h: rationalize stopsuffix list
+	usage
+
+2006-12-10 18:03  dockes
+
+	* query/wasastringtoquery.cpp, query/wasastringtoquery.h,
+	query/wasatorcl.cpp, query/wasatorcl.h,
+	wasabi/server/rclwasabis.cpp: added sort and type specs parsing
+
+2006-12-08 18:18  dockes
+
+	* query/wasatorcl.h, wasabi/client/wasabic.cpp,
+	wasabi/client/wasabic.h, wasabi/client/wasabic.ui,
+	wasabi/server/main.cpp, wasabi/server/rclwasabis.cpp: 1st query
+
+2006-12-08 17:05  dockes
+
+	* wasabi/: client/main.cpp, client/wasabiSimple_interface.cpp,
+	client/wasabiSimple_interface.h, client/wasabic.cpp,
+	client/wasabic.h, client/wasabic.pro, client/wasabic.ui,
+	server/main.cpp: first ping
+
+2006-12-08 08:11  dockes
+
+	* common/textsplit.cpp, common/textsplit.h, qtgui/ssearch_w.cpp:
+	only autophrase if query has several terms
+
+2006-12-08 07:45  dockes
+
+	* qtgui/ssearch_w.cpp: make autophrase do the right thing: add a
+	subclause, not modify the query string
+
+2006-12-07 17:38  dockes
+
+	* query/: Makefile, qtry.cpp, qxtry.cpp, xadump.cpp: removed qtry
+	and merged qxtry into xadump
+
+2006-12-07 14:24  dockes
+
+	* rcldb/rcldb.cpp: comment
+
+2006-12-07 14:02  dockes
+
+	* rcldb/rcldb.cpp: comments
+
+2006-12-07 09:06  dockes
+
+	* internfile/: mh_mail.cpp, mh_mail.cpp: fix bug with bad message
+	"From " delimiter detection
+
+2006-12-07 08:08  dockes
+
+	* VERSION: 1.6.3
+
+2006-12-07 08:06  dockes
+
+	* qtgui/rclmain_w.cpp, utils/smallut.cpp, utils/smallut.h,
+	utils/mimeparse.h, utils/smallut.cpp, utils/smallut.h,
+	qtgui/rclmain_w.cpp: fix pb with executing viewer for files with
+	single-quotes in pathnames
+
+2006-12-07 08:05  dockes
+
+	* internfile/: mh_mail.cpp, mh_mail.cpp: fix bug with bad message
+	"From " delimiter detection
+
+2006-12-05 16:25  dockes
+
+	* internfile/mh_mail.cpp: use regexp to better discriminate From
+	delimiter lines in mbox. Avoid reading mboxes twice
+
+2006-12-05 16:23  dockes
+
+	* qtgui/: advsearch.ui, main.cpp, rclmain_w.cpp, rclmain_w.h,
+	reslist.cpp, reslist.h, sort.ui, sort_w.cpp, sort_w.h: avoid
+	generating abstracts before theyre needed (ie: not during sort).
+	have the sort tools redisplay the results when sort criteria are
+	applied
+
+2006-12-05 16:18  dockes
+
+	* query/: sortseq.cpp, sortseq.h: use refcntr to access docsequence
+
+2006-12-05 16:17  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.h: expose abstract synthesis to let
+	users decide when they want it done
+
+2006-12-05 16:17  dockes
+
+	* rcldb/searchdata.h: clauseCount
+
+2006-12-05 16:16  dockes
+
+	* utils/refcntr.h: fix pbs with empty object
+
+2006-12-04 10:56  dockes
+
+	* configure, configure.ac, qtgui/advsearch_w.h, qtgui/main.cpp,
+	qtgui/preview_w.h, qtgui/rclmain_w.cpp, qtgui/rclmain_w.h,
+	qtgui/sort_w.h, qtgui/spell_w.h, qtgui/ssearch_w.h,
+	qtgui/uiprefs_w.h, utils/refcntr.h, wasabi/server/Makefile: qt4
+	compiles and sort of works
+
+2006-12-04 09:17  dockes
+
+	* qtgui/: advsearch.ui, advsearch_w.cpp, advsearch_w.h,
+	preview_w.cpp, preview_w.h, sort_w.cpp, ssearch_w.cpp,
+	uiprefs_w.cpp, uiprefs_w.h: compiles (doesnt work) on qt4
+
+2006-12-04 07:19  dockes
+
+	* qtgui/: advsearch.ui, advsearch_w.cpp, advsearch_w.h,
+	guiutils.cpp, main.cpp, preview.ui, preview_w.h, rclmain.ui,
+	rclmain_w.cpp, rclmain_w.h, reslist.cpp, reslist.h,
+	searchclause_w.cpp, searchclause_w.h, sort_w.h, spell.ui,
+	spell_w.h, ssearch_w.h, ssearchb.ui, uiprefs_w.h: qt4 ckpt
+
+2006-12-02 08:32  dockes
+
+	* utils/idfile.cpp: improved tests to check for mail
+
+2006-11-30 14:38  dockes
+
+	* README, makesrcdist.sh, makestaticdist.sh, recoll.desktop,
+	recollinstall.in, aspell/rclaspell.cpp, doc/user/usermanual.sgml,
+	index/indexer.cpp, index/indexer.h, mk/SunOS, qtgui/advsearch.ui,
+	qtgui/advsearch_w.cpp, qtgui/guiutils.cpp, qtgui/guiutils.h,
+	qtgui/main.cpp, qtgui/plaintorich.cpp, qtgui/plaintorich.h,
+	qtgui/preview.ui, qtgui/preview_w.cpp, qtgui/rclmain.ui,
+	qtgui/recoll.pro.in, qtgui/reslist.cpp, qtgui/searchclause_w.cpp,
+	qtgui/spell_w.cpp, qtgui/ssearch_w.cpp, qtgui/ssearchb.ui,
+	qtgui/i18n/recoll_fr.ts, qtgui/i18n/recoll_ru.ts,
+	qtgui/i18n/recoll_uk.ts, qtgui/images/cancel.png,
+	qtgui/images/close.png, rcldb/searchdata.cpp,
+	sampleconf/recoll.conf.in, utils/execmd.cpp, utils/mimeparse.cpp,
+	utils/smallut.cpp: merged 1.6 maint branch modifs up to
+	MERGED_TO_TRUNK_20061130
+
+2006-11-28 13:45  dockes
+
+	* mk/SunOS, qtgui/recoll.pro.in, qtgui/reslist.cpp,
+	utils/mimeparse.cpp: small solaris porting glitches
+
+2006-11-28 10:34  dockes
+
+	* qtgui/searchclause_w.cpp: removed forgotten fprintf
+
+2006-11-28 09:22  dockes
+
+	* sampleconf/recoll.conf.in: add .svn in skippedNames
+
+2006-11-28 08:12  dockes
+
+	* doc/user/usermanual.sgml, qtgui/i18n/recoll_fr.ts,
+	qtgui/i18n/recoll_ru.ts, qtgui/i18n/recoll_uk.ts: doc+msgs
+
+2006-11-28 08:02  dockes
+
+	* qtgui/reslist.cpp: try to prevent reslist from scrolling during
+	insertion
+
+2006-11-28 07:50  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h, main.cpp, preview.ui,
+	preview_w.cpp, rclmain.ui: more small geom tweaks
+
+2006-11-27 21:57  dockes
+
+	* qtgui/images/close.png: file close.png was initially added on
+	branch RECOLL_1_6_MAINT.
+
+2006-11-27 21:57  dockes
+
+	* qtgui/images/cancel.png: file cancel.png was initially added on
+	branch RECOLL_1_6_MAINT.
+
+2006-11-27 20:04  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, preview_w.cpp,
+	reslist.cpp: solved the preview positionning issue by using an
+	anchor or beacon
+
+2006-11-27 17:15  dockes
+
+	* qtgui/: advsearch.ui, advsearch_w.cpp, guiutils.cpp, rclmain.ui,
+	reslist.cpp, searchclause_w.cpp, ssearchb.ui: polish sizes etc.
+
+2006-11-27 16:15  dockes
+
+	* doc/user/usermanual.sgml: document preview/edit link formats
+
+2006-11-27 11:00  dockes
+
+	* VERSION, aspell/rclaspell.cpp, index/indexer.cpp,
+	index/indexer.h, qtgui/spell_w.cpp, utils/smallut.cpp: open main db
+	ro for stem and spell dic creations. allow disabling aspell with
+	noaspell
+
+2006-11-27 10:18  dockes
+
+	* makestaticdist.sh, recoll.desktop, recollinstall.in: small
+	install issues
+
+2006-11-27 10:18  dockes
+
+	* qtgui/ssearch_w.cpp: cleanup ssearch string handling
+
+2006-11-27 10:16  dockes
+
+	* qtgui/reslist.cpp: no 01 in docnum
+
+2006-11-27 10:16  dockes
+
+	* qtgui/plaintorich.cpp: merge overlapping tagging regions
+
+2006-11-27 10:14  dockes
+
+	* rcldb/searchdata.cpp: fix spurious/benign error with stemlang
+	empty
+
+2006-11-27 10:12  dockes
+
+	* aspell/rclaspell.cpp: ignore a few more words and tell aspell
+	were utf-8
+
+2006-11-27 10:03  dockes
+
+	* utils/execmd.cpp: ignore sigpipe in execmd
+
+2006-11-21 14:05  dockes
+
+	* configure, configure.ac, aspell/rclaspell.cpp: mdk 2006 aspell
+	quirks
+
+2006-11-21 09:47  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h, spell.ui, spell_w.cpp,
+	spell_w.h, uiprefs_w.cpp: added stem expansion mode to term
+	explorer
+
+2006-11-20 19:07  dockes
+
+	* doc/: man/recoll.conf.5, man/recollindex.1, user/usermanual.sgml:
+	doc
+
+2006-11-20 16:35  dockes
+
+	* qtgui/advsearch.ui: tooltip
+
+2006-11-20 16:28  dockes
+
+	* rcldb/rcldb.cpp: clear abstract if its only ...
+
+2006-11-20 16:28  dockes
+
+	* common/rclconfig.cpp: test driver
+
+2006-11-20 16:28  dockes
+
+	* common/rclconfig.h: fix defaultcharset reset
+
+2006-11-20 15:37  dockes
+
+	* VERSION, common/rclconfig.h, lib/Makefile, lib/mkMake,
+	mk/commondefs, qtgui/recoll.pro.in: fix defaultcharset reset
+	problem + dir changes from 1.6
+
+2006-11-20 12:17  dockes
+
+	* common/: Makefile, textsplit.cpp, textsplit.h: improved textsplit
+	speed (needs utf8iter modifs too
+
+2006-11-20 12:16  dockes
+
+	* utils/: Makefile, utf8iter.cpp, utf8iter.h: cleaned and speeded
+	up utf8iter
+
+2006-11-19 19:37  dockes
+
+	* common/: textsplit.cpp, textsplit.h: optim ckpt
+
+2006-11-18 13:56  dockes
+
+	* qtgui/plaintorich.cpp: firsttermocc init was not always done
+
+2006-11-18 13:31  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, preview_w.cpp,
+	reslist.cpp: improve positionning on term groups by storing/passing
+	an occurrence index
+
+2006-11-18 13:30  dockes
+
+	* rcldb/searchdata.cpp: correctly generate highlighting term groups
+	when stem-expanding NEAR queries
+
+2006-11-17 16:26  dockes
+
+	* qtgui/: advsearch.ui, advsearch_w.cpp, advsearch_w.h,
+	guiutils.cpp, guiutils.h: Save adv search clause list + add delete
+	button
+
+2006-11-17 13:55  dockes
+
+	* qtgui/: rclmain_w.cpp, rclmain_w.h, reslist.cpp, reslist.h: get
+	shift+clicklink to open new preview window instead of tab
+
+2006-11-17 13:32  dockes
+
+	* qtgui/plaintorich.cpp: small opts + fixed near region detection
+	code
+
+2006-11-17 13:31  dockes
+
+	* qtgui/plaintorich.h: comments
+
+2006-11-17 13:31  dockes
+
+	* utils/utf8iter.h: removed not strictly needed error checking code
+
+2006-11-17 11:09  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, preview_w.cpp,
+	preview_w.h, rclmain_w.cpp, reslist.cpp, reslist.h: Remember
+	searchData and use it in plaintorich for phrase/group highlighting
+
+2006-11-17 11:08  dockes
+
+	* qtgui/advsearch_w.cpp: better data encap in searchdata
+
+2006-11-17 11:06  dockes
+
+	* rcldb/: rcldb.cpp, searchdata.cpp, searchdata.h: added code to
+	remember search terms and term groups in searchdata
+
+2006-11-15 15:57  dockes
+
+	* common/Makefile, lib/Makefile, lib/mkMake, mk/commondefs,
+	qtgui/recoll.pro.in, rcldb/pathhash.cpp, rcldb/pathhash.h,
+	rcldb/rcldb.cpp, rcldb/searchdata.h, rcldb/stemdb.h: distributed
+	files from common/ into rcld, internfile, common
+
+2006-11-14 19:29  dockes
+
+	* qtgui/: advsearch_w.cpp, advsearch_w.h: got rid of the static
+	clause names
+
+2006-11-14 18:56  dockes
+
+	* qtgui/: advsearch.ui, advsearch_w.cpp: added conjunction choice
+	in advsearch
+
+2006-11-14 18:41  dockes
+
+	* qtgui/advsearch.ui, qtgui/advsearch_w.cpp, qtgui/advsearch_w.h,
+	qtgui/searchclause_w.cpp, qtgui/searchclause_w.h,
+	rcldb/searchdata.cpp: use SearchClauseW for all advsearch fields
+
+2006-11-14 14:55  dockes
+
+	* doc/user/usermanual.sgml, qtgui/advsearch.ui,
+	qtgui/advsearch_w.cpp, qtgui/advsearch_w.h, qtgui/rclmain_w.cpp,
+	qtgui/searchclause_w.cpp, qtgui/searchclause_w.h, rcldb/rcldb.cpp,
+	rcldb/rcldb.h, rcldb/searchdata.cpp, rcldb/searchdata.h: added
+	dynamic clauses to adv search. Still needs work
+
+2006-11-13 15:48  dockes
+
+	* rcldb/rcldb.cpp: use wdfs for better selection of doc extracts in
+	makeAbstract
+
+2006-11-13 09:58  dockes
+
+	* qtgui/: advsearch_w.cpp, advsearch_w.h, rclmain.ui,
+	rclmain_w.cpp, rclmain_w.h, reslist.cpp, reslist.h, ssearch_w.cpp,
+	ssearch_w.h: make searchdata a more flexible struct
+
+2006-11-13 09:49  dockes
+
+	* rcldb/rcldb.cpp, rcldb/rcldb.h, rcldb/searchdata.cpp,
+	rcldb/searchdata.h, lib/Makefile, lib/mkMake: make searchdata a
+	more flexible struct
+
+2006-11-13 09:15  dockes
+
+	* qtgui/plaintorich.cpp: new splitter interface
+
+2006-11-12 09:35  dockes
+
+	* common/textsplit.cpp, common/textsplit.h, rcldb/rcldb.cpp: phrase
+	queries with bot spans and words must be splitted as words only
+
+2006-11-11 16:30  dockes
+
+	* qtgui/: reslist.cpp, uiprefs.ui: have more compact list header +
+	%N
+
+2006-11-10 18:53  dockes
+
+	* qtgui/reslist.cpp: Really use the rich abstracts
+
+2006-11-10 18:18  dockes
+
+	* rcldb/rcldb.cpp: optimized abstract building: bybye big vector
+
+2006-11-10 14:32  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h, rclmain_w.cpp, reslist.cpp,
+	uiprefs.ui, uiprefs_w.cpp: make result list paragraph format
+	user-adjustable
+
+2006-11-10 14:30  dockes
+
+	* utils/: smallut.cpp, smallut.h: pcSubst()
+
+2006-11-10 14:29  dockes
+
+	* internfile/internfile.cpp: errlog
+
+2006-11-09 20:04  dockes
+
+	* qtgui/preview_w.cpp: better handle the situation of mbox file
+	name matching search
+
+2006-11-09 18:37  dockes
+
+	* qtgui/reslist.cpp: nbsp to prevent line date wrap before tz
+
+2006-11-09 18:37  dockes
+
+	* rcldb/rcldb.cpp: dont continue adding ellipsis into the abstract
+	when its maxlen!
+
+2006-11-09 15:47  dockes
+
+	* rcldb/rcldb.cpp: dont continue adding ellipsis into the abstract
+	when its maxlen!
+
+2006-11-09 09:59  dockes
+
+	* utils/mimeparse.cpp: test driver modifs
+
+2006-11-08 16:34  dockes
+
+	* common/rclinit.cpp, utils/debuglog.cpp, utils/debuglog.h: fix pb
+	with special log file names
+
+2006-11-08 16:32  dockes
+
+	* configure, configure.ac: aspell help string
+
+2006-11-08 14:04  dockes
+
+	* qtgui/plaintorich.cpp: use vector instead of list for positions
+
+2006-11-08 08:22  dockes
+
+	* common/rclinit.cpp, common/rclinit.h, index/recollindex.cpp:
+	allow daemon-specific log parameters
+
+2006-11-08 07:56  dockes
+
+	* utils/: conftree.cpp, conftree.h: volatile conf
+
+2006-11-08 07:49  dockes
+
+	* recollinstall.in: install rclmon.sh
+
+2006-11-07 19:28  dockes
+
+	* VERSION, qtgui/reslist.cpp, utils/mimeparse.cpp,
+	utils/mimeparse.cpp, qtgui/reslist.cpp: 1.5.9: fix bad tz
+	correction in email dates + display tz in reslist
+
+2006-11-07 17:51  dockes
+
+	* index/: rclmon.h, rclmonprc.cpp, rclmonrcv.cpp: traces
+
+2006-11-07 13:02  dockes
+
+	* rcldb/rcldb.cpp: use both size and mtime changes as updateneeding
+	indicator
+
+2006-11-07 10:11  dockes
+
+	* qtgui/uiprefs.ui: improved autophrase tooltip
+
+2006-11-07 10:04  dockes
+
+	* qtgui/uiprefs_w.cpp: Cancel did not reset uiprefs dialog to
+	stored state
+
+2006-11-07 09:57  dockes
+
+	* qtgui/: uiprefs_w.cpp, uiprefs_w.h: Cancel did not reset uiprefs
+	dialog to stored state
+
+2006-11-07 07:41  dockes
+
+	* index/indexer.cpp: record/show mtime instead of ctime
+
+2006-11-07 07:41  dockes
+
+	* VERSION, index/indexer.cpp: 1.5.8: record/show mtime instead of
+	ctime
+
+2006-11-06 18:37  dockes
+
+	* ChangeLog, doc/user/usermanual.sgml, qtgui/rclmain.ui,
+	qtgui/spell_w.cpp, rcldb/rcldb.cpp: wrote manual for term explorer
+	and fixed a few problems
+
+2006-11-05 22:09  dockes
+
+	* bincimapmime/mime-parsefull.cc, VERSION,
+	bincimapmime/mime-parsefull.cc: fix binc imap infinite loop on
+	multipart with null boundary
+
+2006-11-05 19:02  dockes
+
+	* bincimapmime/: address.cc, address.h, convert.cc, convert.h,
+	depot.h, iodevice.cc, iodevice.h, iofactory.h, mime-getpart.cc,
+	mime-inputsource.h, mime-parsefull.cc, mime-parseonlyheader.cc,
+	mime-printbody.cc, mime-printdoc.cc, mime-printheader.cc,
+	mime-utils.h, mime.cc, mime.h, session.h: included bincimap 1.3.3
+	to 1.3.4 diffs (mostly cosmetic)
+
+2006-11-04 18:09  dockes
+
+	* qtgui/: spell.ui, spell_w.cpp: fix aspell version of term
+	explorer
+
+2006-11-04 15:49  dockes
+
+	* qtgui/: ssearch_w.cpp, ssearch_w.h: change ctrl-tab to esc-spc
+
+2006-10-30 13:59  dockes
+
+	* qtgui/guiutils.cpp, qtgui/guiutils.h, qtgui/rclmain_w.cpp,
+	qtgui/spell.ui, qtgui/spell_w.cpp, qtgui/ssearch_w.cpp,
+	rcldb/rcldb.cpp, rcldb/rcldb.h: Turn spell tool into multimode
+	spell/wild/regexp
+
+2006-10-25 13:50  dockes
+
+	* index/indexer.cpp: make tmpdir only once
+
+2006-10-25 12:52  dockes
+
+	* index/indexer.cpp, index/rclmon.h, index/rclmonprc.cpp,
+	index/rclmonrcv.cpp, rcldb/rcldb.cpp: added some debugging msgs
+	(too much)
+
+2006-10-24 16:28  dockes
+
+	* index/: indexer.cpp, indexer.h, rclmon.h, rclmonprc.cpp,
+	recollindex.cpp: create stemming db on queue timeout if needed
+
+2006-10-24 14:48  dockes
+
+	* index/: rclmon.h, rclmonprc.cpp: setup lockfile for monitor
+
+2006-10-24 13:42  dockes
+
+	* qtgui/ssearch_w.cpp: explain error for C-TAB too many expansions
+
+2006-10-24 11:28  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.h: fix slowness in needUpdate by using
+	Database instead of WritableDatabase
+
+2006-10-24 11:09  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, index/indexer.cpp,
+	index/rclmonrcv.cpp: centralize skippedNames computation to add
+	dbdir always
+
+2006-10-23 17:01  dockes
+
+	* index/: rclmon.h, rclmonrcv.cpp: handle directory creation
+
+2006-10-23 17:00  dockes
+
+	* utils/: pathut.cpp, pathut.h: add path_isdir()
+
+2006-10-23 16:29  dockes
+
+	* configure, configure.ac, common/autoconfig.h.in,
+	index/rclmonrcv.cpp: raw inotify support
+
+2006-10-22 17:54  dockes
+
+	* rcldb/rcldb.cpp: simplify needUpdate test
+
+2006-10-22 16:47  dockes
+
+	* configure, configure.ac, index/Makefile, index/indexer.cpp,
+	index/indexer.h, index/rclmonprc.cpp, index/rclmonrcv.cpp,
+	rcldb/rcldb.cpp, rcldb/rcldb.h, index/recollindex.cpp,
+	mk/localdefs.in: monitor: purge docs for deleted files from db
+
+2006-10-20 10:56  dockes
+
+	* VERSION: 1.5.6
+
+2006-10-20 10:54  dockes
+
+	* qtgui/i18n/: recoll_ru.ts, recoll_uk.ts: russian and ukrainian
+	translations update
+
+2006-10-20 10:31  dockes
+
+	* qtgui/i18n/: recoll_ru.ts, recoll_uk.ts: new Ukrainian+Russian
+	messages from Michael
+
+2006-10-20 10:29  dockes
+
+	* qtgui/: advsearch.ui, rclmain.ui, uiprefs.ui: small fixes on
+	label strings
+
+2006-10-17 16:41  dockes
+
+	* configure, configure.ac, common/autoconfig.h.in, index/rclmon.h,
+	index/rclmonprc.cpp, index/rclmonrcv.cpp, index/recollindex.cpp:
+	fam autoconfig
+
+2006-10-16 17:33  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, index/Makefile,
+	index/indexer.cpp, index/indexer.h, index/rclmon.h,
+	index/rclmonprc.cpp, index/rclmonrcv.cpp, index/recollindex.cpp:
+	1st version of real time monitor
+
+2006-10-15 15:07  dockes
+
+	* qtgui/: rclmain_w.cpp, spell_w.cpp, spell_w.h: dbl click in spell
+	win to add to ssearch
+
+2006-10-12 16:46  dockes
+
+	* configure.ac, index/indexer.cpp, index/indexer.h,
+	index/recollindex.cpp: recollindex -i now checks that the files are
+	descendants of topdirs
+
+2006-10-12 14:04  dockes
+
+	* VERSION, configure, configure.ac: static link would incorrectly
+	include libc on suse
+
+2006-10-11 18:09  dockes
+
+	* aspell/rclaspell.cpp, utils/execmd.cpp, utils/execmd.h: improve
+	execcmd to avoid allocating an allterms buffer when creating dico
+
+2006-10-11 16:16  dockes
+
+	* configure, configure.ac, aspell/rclaspell.cpp,
+	aspell/rclaspell.h, common/autoconfig.h.in, common/rclconfig.h,
+	index/indexer.cpp, index/indexer.h, index/recollindex.cpp,
+	mk/commondefs, mk/localdefs.in, qtgui/main.cpp, qtgui/rclmain.ui,
+	qtgui/rclmain_w.cpp, qtgui/rclmain_w.h, qtgui/recoll.h,
+	qtgui/recoll.pro.in, qtgui/spell.ui, qtgui/spell_w.cpp,
+	qtgui/spell_w.h, qtgui/images/d_spell.png, qtgui/images/spell.png,
+	sampleconf/recoll.conf.in, utils/smallut.cpp, utils/smallut.h: 1st
+	full version of aspell support
+
+2006-10-09 18:37  dockes
+
+	* VERSION, makesrcdist.sh, aspell/rclaspell.cpp,
+	aspell/rclaspell.h, index/Makefile, lib/Makefile, lib/mkMake,
+	rcldb/rcldb.cpp, rcldb/rcldb.h, rcldb/stemdb.cpp, utils/execmd.cpp,
+	utils/execmd.h: aspell checkpoint
+
+2006-10-02 15:30  dockes
+
+	* VERSION, makestaticdist.sh: small glitches in makestaticdist
+
+2006-10-02 14:33  dockes
+
+	* VERSION, configure, configure.ac, query/history.h: small glitches
+	detected on suse / gcc 4.1
+
+2006-10-02 10:26  dockes
+
+	* sampleconf/mimeconf: added 2 icons
+
+2006-10-02 09:45  dockes
+
+	* VERSION, qtgui/i18n/recoll_ru.ts, qtgui/i18n/recoll_uk.ts: 1.5.1
+
+2006-09-29 13:43  dockes
+
+	* doc/user/usermanual.sgml: aspell pass
+
+2006-09-29 10:26  dockes
+
+	* rcldb/rcldb.cpp: syntabs: remove size limit. Handle overlapping
+	chunks. Make sure we use only one term per position
+
+2006-09-29 10:24  dockes
+
+	* qtgui/reslist.cpp: reset curPvDoc on setDocSource
+
+2006-09-29 10:23  dockes
+
+	* qtgui/uiprefs.ui: bump up limits on max abstract size parameters
+
+2006-09-29 09:13  dockes
+
+	* qtgui/ssearch_w.cpp: bad/unneeded conversion to utf8 while saving
+	ssearch history would cause some string sizes in history to double
+	at each program invocation
+
+2006-09-28 16:32  dockes
+
+	* qtgui/i18n/recoll_fr.ts: 1.5
+
+2006-09-28 16:31  dockes
+
+	* qtgui/ssearchb.ui: improved tip
+
+2006-09-28 16:30  dockes
+
+	* doc/user/usermanual.sgml: reordered the tips
+
+2006-09-28 13:55  dockes
+
+	* qtgui/main.cpp: debug messages
+
+2006-09-23 09:39  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h, preview_w.cpp, reslist.cpp: fix
+	file name display in tooltips
+
+2006-09-23 09:39  dockes
+
+	* internfile/mh_mail.cpp: fix newlines
+
+2006-09-23 09:21  dockes
+
+	* rcldb/rcldb.cpp: message
+
+2006-09-22 16:11  dockes
+
+	* rcldb/rcldb.cpp, qtgui/i18n/recoll_fr.ts: msg
+
+2006-09-22 12:46  dockes
+
+	* qtgui/: uiprefs_w.cpp, i18n/recoll_fr.ts, i18n/recoll_ru.ts,
+	i18n/recoll_uk.ts: messages
+
+2006-09-22 09:51  dockes
+
+	* qtgui/recoll.pro.in: names cleanup
+
+2006-09-22 09:42  dockes
+
+	* utils/mimeparse.h: comment
+
+2006-09-22 09:41  dockes
+
+	* qtgui/: rclmain.ui, rclmain_w.cpp, rclmain_w.h: names cleanup:
+	rclmain, translations
+
+2006-09-22 09:38  dockes
+
+	* recollinstall.in: names cleanup: translations
+
+2006-09-22 09:37  dockes
+
+	* qtgui/: main.cpp, rclmain.cpp, rclmain.h, recoll_fr.ts,
+	recoll_ru.ts, recoll_uk.ts, recollmain.ui, i18n/recoll_fr.ts,
+	i18n/recoll_ru.ts, i18n/recoll_uk.ts: names cleanup: rclmain,
+	translations
+
+2006-09-22 09:29  dockes
+
+	* qtgui/: rclmain.cpp, rclreslist.cpp, rclreslist.h, recollmain.ui,
+	reslist.cpp, reslist.h: names cleanup: reslist
+
+2006-09-22 09:22  dockes
+
+	* qtgui/: rclreslist.cpp, rclreslist.h: clarified preview paragraph
+	coloring in reslist
+
+2006-09-22 09:19  dockes
+
+	* internfile/mh_mail.cpp: clarified depth processing and increased
+	limit
+
+2006-09-21 14:56  dockes
+
+	* qtgui/: preview_w.cpp, preview_w.h, rclmain.cpp, rclmain.h,
+	rclreslist.cpp, rclreslist.h: synchronize preview tab and colored
+	paragraph in result list
+
+2006-09-21 11:37  dockes
+
+	* qtgui/guiutils.cpp, qtgui/guiutils.h, qtgui/rclmain.cpp,
+	qtgui/rclmain.h, qtgui/sort_w.cpp, qtgui/sort_w.h,
+	query/sortseq.cpp, query/sortseq.h: remember sort criteria
+
+2006-09-21 07:59  dockes
+
+	* internfile/myhtmlparse.cpp: dont throw away text even if html is
+	weird
+
+2006-09-21 07:59  dockes
+
+	* common/textsplit.cpp: 132.jpg was not split
+
+2006-09-20 08:21  dockes
+
+	* rcldb/stemdb.cpp: comments
+
+2006-09-19 16:30  dockes
+
+	* internfile/: mh_mail.cpp, mh_mail.h: walk the full mime tree
+	instead of staying at level 1
+
+2006-09-19 16:30  dockes
+
+	* rcldb/stemdb.cpp: Stems with unique parent must be in db too so
+	that one can search on stem (which is not a term)
+
+2006-09-19 16:19  dockes
+
+	* utils/mimeparse.cpp: disable date debug msgs
+
+2006-09-19 16:18  dockes
+
+	* query/xadump.cpp: add option to dump a recoll stemdb
+
+2006-09-15 18:50  dockes
+
+	* VERSION, doc/user/usermanual.sgml, internfile/mh_mail.cpp,
+	utils/mimeparse.cpp, utils/mimeparse.h: Use own code to parse
+	rfc822 dates, strptime() cant do
+
+2006-09-15 18:49  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h, recoll.pro.in, uiprefs.ui,
+	uiprefs_w.cpp: small typo fixes
+
+2006-09-13 17:31  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h, ssearch_w.cpp, uiprefs.ui,
+	uiprefs_w.cpp: autophrase parameter
+
+2006-09-13 16:57  dockes
+
+	* qtgui/plaintorich.cpp, qtgui/plaintorich.h, qtgui/rclreslist.cpp,
+	query/docseq.cpp, query/docseq.h: colorize search terms in
+	abstracts
+
+2006-09-13 15:53  dockes
+
+	* index/indexer.cpp, qtgui/guiutils.cpp, qtgui/guiutils.h,
+	qtgui/main.cpp, qtgui/rclmain.cpp, qtgui/ssearch_w.cpp,
+	qtgui/uiprefs.ui, qtgui/uiprefs_w.cpp, rcldb/rcldb.cpp,
+	rcldb/rcldb.h, sampleconf/recoll.conf.in: make constant lengths for
+	abstracts config params
+
+2006-09-13 10:13  dockes
+
+	* qtgui/: advsearch.ui, advsearch_w.cpp, advsearch_w.h,
+	guiutils.cpp, guiutils.h, main.cpp, rclmain.cpp, uiprefs.ui,
+	uiprefs_w.cpp: add feature to save asearch ignored file types as
+	startup default
+
+2006-09-12 12:11  dockes
+
+	* qtgui/: advsearch.ui, advsearch_w.cpp, preview_w.cpp,
+	preview_w.h, rclmain.cpp, rclmain.h, rclreslist.cpp, rclreslist.h,
+	ssearch_w.cpp, ssearchb.ui: allow paging through results inside a
+	preview window with shift-up shift-down
+
+2006-09-11 16:22  dockes
+
+	* doc/user/usermanual.sgml, qtgui/advsearch.ui: try to make clearer
+	that adv search fields will accept phrases as well as single words
+
+2006-09-11 14:05  dockes
+
+	* qtgui/advsearch.ui, qtgui/advsearch_w.cpp, qtgui/guiutils.cpp,
+	qtgui/guiutils.h, qtgui/ssearch_w.cpp, qtgui/ssearchb.ui,
+	query/history.cpp, query/history.h: remember history of restrict
+	subdirs in adv search
+
+2006-09-11 11:08  dockes
+
+	* qtgui/guiutils.cpp, qtgui/main.cpp, qtgui/rclmain.cpp,
+	qtgui/rclmain.h, qtgui/recoll.h, qtgui/uiprefs.ui, query/docseq.h,
+	query/history.cpp, query/history.h: use the (should be renamed)
+	history file to store external databases lists
+
+2006-09-11 09:10  dockes
+
+	* qtgui/: ssearch_w.cpp, ssearchb.ui: maintain ssearches listbox in
+	mru order
+
+2006-09-11 08:58  dockes
+
+	* qtgui/: advsearch.ui, sort.ui, uiprefs.ui: ensure dialogs are
+	sized according to font size
+
+2006-09-08 11:02  dockes
+
+	* ChangeLog, common/rclconfig.cpp, common/rclconfig.h,
+	common/rclinit.cpp, common/rclinit.h, doc/man/recoll.1,
+	doc/man/recoll.conf.5, doc/man/recollindex.1,
+	doc/user/usermanual.sgml, index/recollindex.cpp,
+	qtgui/guiutils.cpp, qtgui/main.cpp: Add -c <confdir> option to
+	recoll and recollindex
+
+2006-09-08 10:51  dockes
+
+	* sampleconf/recoll.conf.in: The dbdir default value is now
+	relative to the cnf dir
+
+2006-09-06 11:50  dockes
+
+	* qtgui/uiprefs_w.cpp: Used to reset the buildAbstract
+	replaceAbstract options because of setDown instead of setChecked
+
+2006-09-06 11:14  dockes
+
+	* utils/: mimeparse.cpp, mimeparse.h: implement rfc2231 decoding
+	for mime parameter values
+
+2006-09-05 19:09  dockes
+
+	* internfile/mh_mail.cpp: let mimeparse handle decoding or param
+	values
+
+2006-09-05 11:52  dockes
+
+	* filters/rclppt, filters/rclxls, sampleconf/mimeconf,
+	sampleconf/mimemap: added support for ppt and xls via catdoc
+
+2006-09-05 10:05  dockes
+
+	* internfile/: mh_mail.cpp, mh_mail.h: index and display attachment
+	file names
+
+2006-09-05 10:04  dockes
+
+	* utils/: mimeparse.cpp, mimeparse.h: comments only
+
+2006-09-04 17:13  dockes
+
+	* qtgui/: advsearch.ui, advsearch.ui.h, advsearch_w.cpp,
+	advsearch_w.h, guiutils.cpp, main.cpp, preview.ui, preview.ui.h,
+	preview_w.cpp, preview_w.h, rclmain.cpp, rclmain.h, recoll.pro.in,
+	recollmain.ui, recollmain.ui.h, sort.ui, sort.ui.h, sort_w.cpp,
+	sort_w.h, ssearch_w.cpp, ssearch_w.h, ssearchb.ui, ssearchb.ui.h,
+	uiprefs.ui, uiprefs.ui.h, uiprefs_w.cpp, uiprefs_w.h,
+	preview/preview.pro, preview/preview.ui, preview/preview.ui.h,
+	preview/pvmain.cpp: mostly cosmetic changes to prepare for a future
+	qt4 port: better separate form design from code
+
+2006-06-24 11:56  dockes
+
+	* qt4gui/recollmain.ui: qt4 cleanup: merged back rclmainbase and
+	rclmain
+
+2006-06-24 09:40  dockes
+
+	* Makefile.in, VERSION, configure, configure.ac, recollinstall.in,
+	doc/user/usermanual.sgml, qt4gui/recoll.pro.in,
+	qt4gui/recollmain.ui: more qt4, unfinished
+
+2006-06-23 10:07  dockes
+
+	* qt4gui/: recoll.pro.in, recollmain.ui: added qt4gui code from
+	Gennadi Sushko
+
+2006-05-09 12:15  dockes
+
+	* rcldb/rcldb.cpp: perform stem expansion using all active dbs
+
+2006-05-09 09:56  dockes
+
+	* qtgui/: rclreslist.cpp, preview/preview.ui.h: esc quits preview +
+	prev/next links
+
+2006-05-08 09:08  dockes
+
+	* recollinstall.in: install icon
+
+2006-05-07 16:10  dockes
+
+	* VERSION: Release 1.4.3
+
+2006-05-06 19:24  dockes
+
+	* qtgui/: recoll_ru.ts, recoll_uk.ts: new from michael
+
+2006-05-02 11:49  dockes
+
+	* ChangeLog, qtgui/guiutils.cpp, rcldb/stemdb.cpp, unac/unac.c:
+	more fbsd4 tweaks: Release 1.4.2
+
+2006-04-30 09:44  dockes
+
+	* rcldb/rcldb.cpp: fbsd4 tweaks
+
+2006-04-30 09:39  dockes
+
+	* index/indexer.cpp: fbsd4 tweaks
+
+2006-04-30 09:35  dockes
+
+	* VERSION, index/indexer.h, lib/Makefile, lib/mkMake: fbsd4 tweaks
+
+2006-04-30 09:20  dockes
+
+	* qtgui/: recoll_fr.ts, recoll_ru.ts, recoll_uk.ts: lupdate+french
+
+2006-04-28 09:54  dockes
+
+	* ChangeLog, common/rclconfig.cpp, common/rclconfig.h,
+	index/indexer.cpp, index/recollindex.cpp,
+	kioslave/recoll/kio_recoll.cpp, qtgui/main.cpp, query/qtry.cpp:
+	centralize dbdir computation in rclconfig+cat with conffdir if not
+	absolute
+
+2006-04-28 09:23  dockes
+
+	* utils/transcode.cpp: change debug log trace
+
+2006-04-27 11:23  dockes
+
+	* doc/user/usermanual.sgml, qtgui/guiutils.cpp, qtgui/guiutils.h,
+	qtgui/rclmain.cpp, qtgui/ssearchb.ui, qtgui/ssearchb.ui.h: make
+	ssearch a combobox
+
+2006-04-27 08:12  dockes
+
+	* configure, configure.ac, lib/Makefile, lib/mkMake: fix pb with
+	.deps not existing
+
+2006-04-27 08:12  dockes
+
+	* qtgui/rclmain.cpp, qtgui/preview/preview.ui.h, rcldb/rcldb.cpp,
+	rcldb/rcldb.h: use getmatchingterms instead of getqueryterms for
+	highlighting etc. in preview
+
+2006-04-26 13:29  dockes
+
+	* qtgui/: rclmain.cpp, rclreslist.cpp, rclreslist.h: dblclck in
+	reslist adds to search lineedit
+
+2006-04-25 11:59  dockes
+
+	* index/indexer.cpp, rcldb/rcldb.cpp: new way for doc unique terms:
+	only path for monodoc, only path+ipath for doc inside multidoc, add
+	pseudo-doc for file itself
+
+2006-04-25 10:17  dockes
+
+	* common/textsplit.cpp, rcldb/rcldb.cpp: fixed small glitch in
+	abstract text splitting
+
+2006-04-22 08:27  dockes
+
+	* qtgui/main.cpp, qtgui/rclmain.cpp, qtgui/rclmain.h,
+	qtgui/rclreslist.cpp, qtgui/rclreslist.h, qtgui/ssearchb.ui,
+	qtgui/ssearchb.ui.h, qtgui/preview/preview.ui,
+	qtgui/preview/preview.ui.h, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	rcldb/searchdata.h: turn-off abst. build for fname search (no
+	terms) + prototype query expansion (xapian e-set on chosen doc) +
+	dbl-click in preview adds term to ssearch
+
+2006-04-20 11:20  dockes
+
+	* common/rclconfig.cpp, lib/Makefile, qtgui/rclmain.cpp,
+	qtgui/rclmain.h, qtgui/rclreslist.cpp, qtgui/rclreslist.h,
+	qtgui/recollmain.ui, qtgui/recollmain.ui.h, qtgui/sort.ui,
+	qtgui/sort.ui.h, qtgui/ssearchb.ui.h, query/sortseq.cpp,
+	query/sortseq.h: mode 700 on .recoll. move showquerydetails to
+	rclreslist
+
+2006-04-19 10:26  dockes
+
+	* qtgui/advsearch.ui, qtgui/advsearch.ui.h, qtgui/main.cpp,
+	qtgui/rclmain.h, qtgui/rclreslist.cpp, qtgui/ssearchb.ui,
+	qtgui/ssearchb.ui.h, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	rcldb/searchdata.h: compacted res list + completions in ssearch +
+	additional or field
+
+2006-04-18 10:53  dockes
+
+	* index/recollindex.cpp, lib/Makefile, qtgui/advsearch.ui,
+	qtgui/guiutils.cpp, qtgui/guiutils.h, qtgui/rclmain.cpp,
+	qtgui/rclreslist.cpp, qtgui/rclreslist.h, qtgui/recollmain.ui,
+	qtgui/ssearchb.ui, qtgui/ssearchb.ui.h, qtgui/uiprefs.ui,
+	qtgui/uiprefs.ui.h: new libs Makefile+autoSearchOnWS
+
+2006-04-15 19:15  dockes
+
+	* qtgui/main.cpp, query/Makefile: small aix tweaks
+
+2006-04-13 11:50  dockes
+
+	* rcldb/rcldb.cpp, lib/Makefile, rcldb/stemdb.cpp, rcldb/stemdb.h:
+	extracted stem database from rcldb to make it smaller
+
+2006-04-12 12:41  dockes
+
+	* index/indexer.cpp, index/indexer.h, qtgui/idxthread.cpp,
+	qtgui/idxthread.h, qtgui/rclmain.cpp, qtgui/recollmain.ui,
+	rcldb/rcldb.cpp, rcldb/rcldb.h: improve indexing status reporting
+
+2006-04-12 09:26  dockes
+
+	* rcldb/rcldb.cpp, qtgui/rclmain.cpp: Fix history not working after
+	thread index run
+
+2006-04-11 09:14  dockes
+
+	* rcldb/rcldb.cpp: fix rare case where stem itself was forgotten in
+	list of possible derivatives
+
+2006-04-11 08:49  dockes
+
+	* common/textsplit.cpp, rcldb/rcldb.cpp, utils/smallut.cpp,
+	utils/smallut.h: comments and moving some util routines out of
+	rcldb.cpp
+
+2006-04-07 15:08  dockes
+
+	* qtgui/advsearch.ui.h, rcldb/rcldb.cpp: check for and forbid pure
+	negative query
+
+2006-04-07 15:08  dockes
+
+	* qtgui/guiutils.cpp: RECOLL_EXTRA_DBS environment variable
+
+2006-04-07 15:07  dockes
+
+	* doc/user/usermanual.sgml: use indexing instead of indexation
+
+2006-04-07 10:51  dockes
+
+	* internfile/: mh_mail.cpp, mh_mail.h: comments+conventions
+
+2006-04-06 16:28  dockes
+
+	* sampleconf/recoll.conf.in: stem only for english by default
+
+2006-04-06 15:09  dockes
+
+	* VERSION: 1.4.0
+
+2006-04-06 15:08  dockes
+
+	* VERSION, recollinstall.in, rcldb/rcldb.h: rpmlint wants 755 for
+	execs
+
+2006-04-05 17:41  dockes
+
+	* recollinstall.in: fix the installed file perms
+
+2006-04-05 15:39  dockes
+
+	* qtgui/guiutils.cpp, qtgui/uiprefs.ui, qtgui/uiprefs.ui.h,
+	rcldb/rcldb.cpp, rcldb/rcldb.h: small fixes for extra db selection
+
+2006-04-05 15:30  dockes
+
+	* doc/user/usermanual.sgml: small fixes
+
+2006-04-05 14:50  dockes
+
+	* qtgui/guiutils.cpp, qtgui/guiutils.h, qtgui/main.cpp,
+	qtgui/uiprefs.ui, qtgui/uiprefs.ui.h, rcldb/rcldb.cpp,
+	rcldb/rcldb.h: additional search databases
+
+2006-04-05 08:26  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.h: simplified class structure
+
+2006-04-04 18:03  dockes
+
+	* filters/: rcldjvu, rclmedia, rclps, rclsoff: handle paths with
+	embedded spaces
+
+2006-04-04 17:44  dockes
+
+	* filters/rcluncomp: handle paths with embedded spaces
+
+2006-04-04 15:49  dockes
+
+	* index/indexer.cpp, index/indexer.h, index/recollindex.cpp,
+	qtgui/idxthread.cpp, qtgui/idxthread.h, qtgui/rclmain.cpp: make
+	indexation more easily cancellable
+
+2006-04-04 14:37  dockes
+
+	* doc/user/usermanual.sgml, index/indexer.cpp, index/indexer.h:
+	check for symlinks in the topdirs list. Generate diags in
+	confIndexer
+
+2006-04-04 12:38  dockes
+
+	* qtgui/: guiutils.cpp, rclreslist.cpp: setup initial default
+	window size smaller
+
+2006-04-04 11:36  dockes
+
+	* common/unacpp.cpp, unac/unac.c: clarify/clean up mem buffer
+	handling
+
+2006-04-04 11:35  dockes
+
+	* utils/conftree.h: fix potential minor memory leak when copying
+	conftrees
+
+2006-04-04 11:34  dockes
+
+	* index/: indexer.cpp, indexer.h: cosmetic: add m_ prefix to
+	private vars
+
+2006-04-04 09:55  dockes
+
+	* qtgui/: main.cpp, rclmain.cpp, preview/preview.ui.h: Get things
+	to compile with QT_NO_STL
+
+2006-04-03 13:43  dockes
+
+	* VERSION: 1.3.3
+
+2006-04-03 13:43  dockes
+
+	* common/rclconfig.cpp: small port fixes for fbsd4 and solaris
+
+2006-04-03 11:42  dockes
+
+	* utils/execmd.cpp: warning
+
+2006-04-01 23:02  dockes
+
+	* VERSION, qtgui/rclmain.cpp: limit max length of displayed query
+	details. 1.3.2
+
+2006-04-01 11:15  dockes
+
+	* INSTALL, README, qtgui/rclreslist.cpp, qtgui/ssearchb.ui: updated
+	INSTALL+README. Fix tab focus in main window
+
+2006-04-01 10:07  dockes
+
+	* qtgui/rclmain.cpp: urlencode file name before executing ext app
+	with url param
+
+2006-04-01 09:34  dockes
+
+	* sampleconf/: mimeconf, mimemap: Allow ext edit for c/c++ files.
+	1.3.1 2?
+
+2006-03-31 19:19  dockes
+
+	* ChangeLog, VERSION, qtgui/rclmain.cpp, qtgui/rclreslist.cpp,
+	qtgui/recoll_ru.ts, qtgui/recoll_uk.ts: fixed reslist header
+	charset issues. 1.3.1 first
+
+2006-03-30 15:00  dockes
+
+	* common/Makefile: cleanup rclconfig
+
+2006-03-30 12:31  dockes
+
+	* sampleconf/recoll.conf.in: dont set defaultcharset to 8859-1:
+	will let nls info be used
+
+2006-03-30 10:19  dockes
+
+	* qtgui/: recoll_fr.ts, recoll_ru.ts: lupdate
+
+2006-03-30 09:54  dockes
+
+	* qtgui/advsearch.ui: cleaned up layout
+
+2006-03-29 19:31  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h, main.cpp, ssearchb.ui,
+	ssearchb.ui.h: gui: replaced checkboxes for all/filename in simple
+	search with droplist
+
+2006-03-29 15:08  dockes
+
+	* VERSION, common/Makefile, common/rclconfig.cpp,
+	common/rclconfig.h, internfile/mimehandler.cpp,
+	internfile/mimehandler.h, qtgui/rclreslist.cpp,
+	sampleconf/mimeconf, sampleconf/mimemap: result list: show preview
+	and edit links only when they can be used
+
+2006-03-29 13:18  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, common/rclinit.cpp,
+	index/indexer.cpp, qtgui/rclreslist.cpp, qtgui/rclreslist.h,
+	qtgui/preview/preview.ui.h, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	utils/pathut.cpp, utils/pathut.h, utils/transcode.cpp,
+	utils/transcode.h: try to better handle non-ascii file names
+
+2006-03-28 14:49  dockes
+
+	* ChangeLog, recollinstall.in, doc/man/recoll.conf.5,
+	doc/user/usermanual.sgml, qtgui/recoll.pro.in,
+	sampleconf/recoll.conf.in: 1.3.1pre1
+
+2006-03-28 11:38  dockes
+
+	* filters/rclmedia, qtgui/mtpics/sownd.png, sampleconf/mimeconf,
+	sampleconf/mimemap: filter for indexing mp3 tags
+
+2006-03-28 11:36  dockes
+
+	* internfile/mh_unknown.h: added code to specifically index/search
+	file names
+
+2006-03-22 17:24  dockes
+
+	* index/indexer.cpp, index/indexer.h, qtgui/idxthread.cpp,
+	qtgui/idxthread.h, qtgui/rclmain.cpp, qtgui/recollmain.ui: show
+	current filename as feedback during indexation
+
+2006-03-22 15:25  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, utils/conftree.cpp,
+	utils/conftree.h: Replace user config with central values +
+	override
+
+2006-03-22 12:17  dockes
+
+	* qtgui/rclreslist.cpp: fix size display
+
+2006-03-21 16:11  dockes
+
+	* qtgui/: rclreslist.cpp, rclreslist.h: implement right click menu
+	in result list
+
+2006-03-21 14:46  dockes
+
+	* qtgui/: rclmain.cpp, rclreslist.cpp, rclreslist.h: replaced
+	(double)clicks in the result list with links
+
+2006-03-21 14:27  dockes
+
+	* qtgui/rclreslist.cpp: ckpt
+
+2006-03-21 12:04  dockes
+
+	* index/mimetype.cpp: sanity check on file -i return
+
+2006-03-21 10:15  dockes
+
+	* qtgui/: rclmain.cpp, rclmain.h, rclreslist.cpp, rclreslist.h,
+	recollmain.ui, reslistb.ui, reslistb.ui.h: reslistb form replaced
+	by object derived from QTextBrowser
+
+2006-03-20 17:05  dockes
+
+	* VERSION, index/indexer.cpp, internfile/internfile.cpp,
+	internfile/mimehandler.cpp, qtgui/advsearch.ui,
+	qtgui/advsearch.ui.h, qtgui/ssearchb.ui, qtgui/ssearchb.ui.h,
+	rcldb/rcldb.cpp, rcldb/rcldb.h: added code to specifically
+	index/search file names
+
+2006-03-20 16:14  dockes
+
+	* internfile/mh_text.cpp: get rid of unused temp
+
+2006-03-20 10:54  dockes
+
+	* utils/pathut.h: comments
+
+2006-03-20 10:54  dockes
+
+	* sampleconf/mimemap: add # to ignd suffixes
+
+2006-03-20 10:51  dockes
+
+	* common/: rclconfig.cpp, rclconfig.h: try to get default charset
+	from LANG if not in config
+
+2006-03-20 10:50  dockes
+
+	* makestaticdist.sh: desktop file
+
+2006-03-16 15:00  dockes
+
+	* recoll.desktop: initial version from Michael Shigorin
+
+2006-03-16 14:49  dockes
+
+	* qtgui/recoll_ru.ts: initial version from Michael Shigorin
+
+2006-03-04 11:09  dockes
+
+	* ChangeLog, VERSION, doc/user/usermanual.sgml: 1.2.3
+
+2006-02-21 13:56  dockes
+
+	* Makefile.in, configure, configure.ac: ensure Makefile uses same
+	qmake as configure
+
+2006-02-21 13:52  dockes
+
+	* query/: docseq.h, sortseq.h: sorted sequence title would never
+	show
+
+2006-02-07 11:26  dockes
+
+	* qtgui/reslistb.ui.h, query/docseq.cpp, query/docseq.h,
+	rcldb/rcldb.cpp, rcldb/rcldb.h: fix problems with doc fetch
+	sequence (have to know where to stop)
+
+2006-02-07 10:44  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, preview/preview.ui,
+	preview/preview.ui.h: replace computation of term positions in
+	editor text with search for 1st query term
+
+2006-02-03 12:47  dockes
+
+	* filters/rcldvi: option to use catdvi
+
+2006-02-03 11:53  dockes
+
+	* filters/rcldjvu, filters/rcldvi, filters/rclps,
+	sampleconf/mimeconf, sampleconf/mimemap: added dvi and djvu support
+
+2006-02-02 09:58  dockes
+
+	* rcldb/rcldb.cpp, utils/pathut.cpp: suppress 2 compilation
+	warnings (one was actual 64bits bug but inocuous
+
+2006-02-02 09:35  dockes
+
+	* Makefile.in, VERSION, configure, configure.ac, qtgui/main.cpp,
+	qtgui/preview/preview.ui.h: fix small cc glitches: qt3.1,
+	xapian-config
+
+2006-02-01 15:34  dockes
+
+	* qtgui/: guiutils.cpp, reslistb.ui.h: fbsd4 cc
+
+2006-02-01 15:18  dockes
+
+	* common/textsplit.cpp: use string::erase() not clear()
+
+2006-01-31 12:39  dockes
+
+	* qtgui/reslistb.ui.h: Clicking on "No results found" will also
+	display the expanded query
+
+2006-01-31 12:39  dockes
+
+	* qtgui/recoll.h: close/reopen db by default: let us see results of
+	recollindex -i
+
+2006-01-30 11:01  dockes
+
+	* qtgui/preview/preview.ui.h: dont highlight terms in very big
+	docs: too slow
+
+2006-01-30 10:32  dockes
+
+	* mk/localdefs.in: -O2
+
+2006-01-30 10:28  dockes
+
+	* qtgui/: guiutils.cpp, main.cpp, rclmain.cpp, uiprefs.ui,
+	uiprefs.ui.h: help browser selection in prefs
+
+2006-01-30 10:28  dockes
+
+	* common/textsplit.cpp: moved span cleanup where it belonged
+
+2006-01-28 11:23  dockes
+
+	* configure, configure.ac, common/textsplit.cpp,
+	common/textsplit.h, query/xadump.cpp, utils/utf8iter.h: more
+	textsplit tweaking
+
+2006-01-27 14:43  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h: extracted code from main and
+	others
+
+2006-01-27 14:42  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, rclmain.cpp,
+	preview/preview.ui, preview/preview.ui.h: implement cancellation in
+	preview loading
+
+2006-01-27 14:38  dockes
+
+	* internfile/myhtmlparse.cpp: strip whitespace and newlines (as the
+	original version), except in pre tags
+
+2006-01-27 14:37  dockes
+
+	* filters/: rcldoc, rclpdf, rclps, rclsoff: fix to output <br> when
+	needed + other misc pbs
+
+2006-01-27 14:34  dockes
+
+	* rcldb/rcldb.cpp: define some constants and increase abstract
+	context width
+
+2006-01-27 12:25  dockes
+
+	* internfile/htmlparse.cpp: missing amp entity translation
+
+2006-01-26 18:59  dockes
+
+	* internfile/mh_exec.cpp: check for cancellation
+
+2006-01-26 18:59  dockes
+
+	* utils/: execmd.cpp, execmd.h: also test cancel on select timeout
+
+2006-01-26 18:44  dockes
+
+	* utils/: execmd.cpp, execmd.h: make execCmd exception-safe
+
+2006-01-26 15:01  dockes
+
+	* qtgui/: reslistb.ui.h, reslistb.ui: abstracts + doc sizes
+
+2006-01-26 14:59  dockes
+
+	* qtgui/: uiprefs.ui, uiprefs.ui.h, recoll.h, main.cpp,
+	rclmain.cpp: abstract params
+
+2006-01-26 13:30  dockes
+
+	* query/docseq.cpp: let the db do whats needed to get a result
+	count
+
+2006-01-26 13:29  dockes
+
+	* utils/: smallut.cpp, smallut.h: chrono
+
+2006-01-26 13:28  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.h: abstract building from position data
+
+2006-01-26 08:03  dockes
+
+	* qtgui/recoll.pro: replaced by recoll.pro.in
+
+2006-01-26 08:02  dockes
+
+	* index/indexer.cpp: pass size info to db.add
+
+2006-01-25 09:39  dockes
+
+	* internfile/: myhtmlparse.cpp, myhtmlparse.h: reenable stripping
+	newlines
+
+2006-01-25 09:09  dockes
+
+	* query/: Makefile, xadump.cpp: xadump improvements
+
+2006-01-24 13:22  dockes
+
+	* qtgui/rclmain.cpp: fix signal type
+
+2006-01-24 13:22  dockes
+
+	* utils/: execmd.cpp, execmd.h: add feedback and possible
+	cancellation
+
+2006-01-23 18:21  dockes
+
+	* qtgui/: rclmain.cpp, recoll.pro, recollmain.ui,
+	images/d_nextpage.png, images/d_prevpage.png: slightly improved the
+	icon situation
+
+2006-01-23 14:32  dockes
+
+	* common/rclconfig.cpp, common/rclinit.cpp, common/textsplit.cpp,
+	common/unacpp.cpp, index/csguess.cpp, index/indexer.cpp,
+	index/mimetype.cpp, index/recollindex.cpp,
+	internfile/internfile.cpp, internfile/mh_exec.cpp,
+	internfile/mh_mail.cpp, internfile/mh_text.cpp,
+	internfile/mimehandler.cpp, query/docseq.cpp, query/history.cpp,
+	query/qtry.cpp, query/qxtry.cpp, query/sortseq.cpp,
+	query/xadump.cpp, rcldb/pathhash.cpp, rcldb/rcldb.cpp,
+	utils/base64.cpp, utils/conftree.cpp, utils/copyfile.cpp,
+	utils/debuglog.cpp, utils/execmd.cpp, utils/fstreewalk.cpp,
+	utils/idfile.cpp, utils/mimeparse.cpp, utils/pathut.cpp,
+	utils/readfile.cpp, utils/smallut.cpp, utils/transcode.cpp,
+	utils/utf8iter.cpp, utils/wipedir.cpp: reference to GPL in all .cpp
+	files
+
+2006-01-23 14:32  dockes
+
+	* qtgui/: idxthread.cpp, main.cpp, plaintorich.cpp, rclmain.cpp,
+	recoll.h, recoll.pro, reslistb.ui.h, uiprefs.ui.h: more refactoring
+
+2006-01-23 08:07  dockes
+
+	* qtgui/: rclmain.cpp, rclmain.h, reslistb.ui, reslistb.ui.h,
+	ssearchb.ui.h: more modularization
+
+2006-01-22 19:46  dockes
+
+	* qtgui/: main.cpp, rclmain.cpp, rclmain.h, recoll.pro,
+	recoll.pro.in, recollmain.ui, recollmain.ui.h, reslistb.ui,
+	reslistb.ui.h, ssearchb.ui: extract functionality from main window
+
+2006-01-21 16:36  dockes
+
+	* Makefile.in, configure, configure.ac, makesrcdist.sh,
+	qtgui/recoll.pro: enable building from inside qtgui/
+
+2006-01-20 15:58  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, qtgui/main.cpp,
+	qtgui/rclmain.cpp, qtgui/rclmain.h, qtgui/recoll.h,
+	qtgui/preview/preview.ui.h: qt main program cleanup
+
+2006-01-20 13:46  dockes
+
+	* qtgui/: main.cpp, rclmain.cpp, rclmain.h, recoll.pro,
+	recoll_fr.ts, recollmain.ui, recollmain.ui.h: separated code from
+	design by subclassing recollmain
+
+2006-01-20 11:01  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h,
+	kioslave/recoll/00README.txt, mk/commondefs, mk/localdefs.in,
+	qtgui/idxthread.cpp, qtgui/idxthread.h, qtgui/main.cpp,
+	utils/conftree.h, utils/debuglog.h: cleanup
+
+2006-01-19 18:11  dockes
+
+	* Makefile, Makefile.in, configure, configure.ac, recollinstall.in,
+	common/rclconfig.cpp, common/rclconfig.h,
+	internfile/internfile.cpp, internfile/mh_exec.cpp, mk/localdefs.in,
+	qtgui/main.cpp, qtgui/recoll.pro: slight config cleanup
+
+2006-01-19 16:08  dockes
+
+	* kioslave/recoll/00README.txt: end of test, doesnt look very
+	useful
+
+2006-01-19 15:57  dockes
+
+	* kioslave/recoll/: Makefile, kio_recoll.cpp, kio_recoll.h,
+	kio_recoll.la, piclib/Makefile: end of initial experimentation
+
+2006-01-19 13:01  dockes
+
+	* Makefile, VERSION, makestaticdist.sh, bincimapmime/Makefile,
+	common/Makefile, doc/user/usermanual.sgml, index/Makefile,
+	kioslave/recoll/Makefile, kioslave/recoll/kio_recoll.cpp,
+	kioslave/recoll/kio_recoll.h, lib/Makefile, mk/Darwin, mk/FreeBSD,
+	mk/Linux, mk/SunOS, mk/commondefs, mk/localdefs.in,
+	qtgui/plaintorich.cpp, qtgui/plaintorich.h, qtgui/recollmain.ui.h,
+	query/Makefile, utils/Makefile, utils/smallut.cpp, utils/smallut.h:
+	misc small mods to help with building kio_recoll
+
+2006-01-17 11:08  dockes
+
+	* utils/mimeparse.h: comments and clarification
+
+2006-01-17 10:31  dockes
+
+	* index/indexer.cpp, utils/fstreewalk.cpp, utils/fstreewalk.h:
+	cleanup and comments
+
+2006-01-14 14:08  dockes
+
+	* configure, configure.ac, configure, configure.ac: do a better
+	search for qt configuration
+
+2006-01-14 12:47  dockes
+
+	* Makefile, configure, configure.ac, Makefile, configure,
+	configure.ac: do a better search for qt configuration
+
+2006-01-12 10:13  dockes
+
+	* qtgui/recollmain.ui.h, rcldb/rcldb.cpp: handle removed docs in
+	history
+
+2006-01-11 16:08  dockes
+
+	* doc/user/usermanual.sgml, index/Makefile, qtgui/recoll_fr.ts,
+	qtgui/recollmain.ui, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	qtgui/recollmain.ui.h, query/docseq.h, query/sortseq.cpp,
+	query/sortseq.h: translation of result list title. Show query
+	details when clicking on header
+
+2006-01-10 14:16  dockes
+
+	* recollinstall.in: install man pages
+
+2006-01-10 13:58  dockes
+
+	* Makefile, common/rclconfig.cpp: warning
+
+2006-01-10 13:55  dockes
+
+	* rcldb/rcldb.cpp: include unistd
+
+2006-01-10 12:07  dockes
+
+	* common/rclconfig.h, doc/user/usermanual.sgml,
+	index/recollindex.cpp, sampleconf/recoll.conf.in: doc + got rid of
+	unused defaultlanguage config param
+
+2006-01-09 17:53  dockes
+
+	* excludefile, index/indexer.cpp, index/indexer.h,
+	index/recollindex.cpp, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	utils/Makefile, utils/pathut.cpp, utils/pathut.h: allow independant
+	creation / deletion of stem dbs
+
+2006-01-06 14:55  dockes
+
+	* rcldb/rcldb.cpp: do a better test for a capitalized query term
+	(no stem expand)
+
+2006-01-06 14:18  dockes
+
+	* common/Makefile, common/unacpp.cpp, common/unacpp.h,
+	rcldb/rcldb.cpp, unac/unac.c, unac/unac.h, utils/CaseFolding.txt,
+	utils/caseconvert.cpp, utils/caseconvert.h, utils/gencasefold.sh,
+	lib/Makefile, utils/Makefile, rcldb/rcldb.cpp: integrated
+	case-folding into unac for better performance
+
+2006-01-06 08:59  dockes
+
+	* index/Makefile, qtgui/recoll.pro: ensure relink for changed lib
+
+2006-01-05 17:37  dockes
+
+	* common/unacpp.cpp, common/unacpp.h, rcldb/rcldb.cpp,
+	lib/Makefile, utils/Makefile: Use proper unicode lowercasing
+
+2006-01-05 11:24  dockes
+
+	* Makefile, recollinstall.in: install tweaks for rpm compatibility
+
+2006-01-05 11:05  dockes
+
+	* Makefile, VERSION, recollinstall.in: install tweaks for rpm
+	compatibility
+
+2006-01-04 12:33  dockes
+
+	* VERSION, makesrcdist.sh, recollinstall.in, common/rclconfig.h,
+	qtgui/main.cpp, qtgui/recoll.h, qtgui/recoll_fr.ts,
+	qtgui/recollmain.ui, qtgui/recollmain.ui.h, utils/smallut.cpp,
+	utils/smallut.h: add menu entry to start browser on html doc
+
+2005-12-17 08:47  dockes
+
+	* ChangeLog: 1.0.15
+
+2005-12-17 08:45  dockes
+
+	* sampleconf/recoll.conf.in: dont skip .* this precludes
+	thunderbird / mozilla mail indexation
+
+2005-12-16 11:06  dockes
+
+	* Makefile, recollinstall.in, mk/localdefs.in, qtgui/main.cpp,
+	qtgui/recoll.pro: get prefix to really work
+
+2005-12-16 11:06  dockes
+
+	* ChangeLog, internfile/mh_text.cpp, query/xadump.cpp, unac/unac.c,
+	utils/mimeparse.cpp, ChangeLog, query/Makefile, query/xadump.cpp,
+	unac/unac.c, utils/mimeparse.cpp: 64 bits fixes
+
+2005-12-16 10:04  dockes
+
+	* Makefile, VERSION, excludefile, recollinstall.in,
+	mk/localdefs.in, qtgui/main.cpp, qtgui/recoll.pro: get prefix to
+	really work
+
+2005-12-16 09:00  dockes
+
+	* excludefile: dont copy localdefs
+
+2005-12-15 15:39  dockes
+
+	* qtgui/main.cpp, qtgui/recoll.h, qtgui/recollmain.ui,
+	qtgui/recollmain.ui.h, sampleconf/recoll.conf.in: user prefs
+	tweaks. Allow switching stemlang from ui
+
+2005-12-14 17:15  dockes
+
+	* qtgui/: main.cpp, recoll.h, recoll.pro, recollmain.ui,
+	recollmain.ui.h: user interface preferences settable from ui
+
+2005-12-14 12:00  dockes
+
+	* index/indexer.cpp, index/indexer.h, index/recollindex.cpp,
+	internfile/mh_html.cpp, internfile/mh_text.cpp,
+	qtgui/recollmain.ui, qtgui/recollmain.ui.h,
+	qtgui/preview/preview.ui.h, query/Makefile: allow indexing
+	individual files. Fix pb with preview and charsets (local
+	defcharset ignored)
+
+2005-12-13 18:20  dockes
+
+	* qtgui/: main.cpp, recollmain.ui, recollmain.ui.h: add allTerms
+	checkbutton, save state in settings
+
+2005-12-13 18:20  dockes
+
+	* qtgui/advsearch.ui: avoid activating random buttons when typing
+	CR...
+
+2005-12-13 13:42  dockes
+
+	* common/rclconfig.cpp, doc/prog/Doxyfile, doc/prog/Makefile,
+	doc/prog/filters.txt, qtgui/main.cpp, qtgui/recollmain.ui,
+	qtgui/recollmain.ui.h, rcldb/rcldb.cpp, utils/fstreewalk.cpp,
+	utils/pathut.cpp, utils/pathut.h, utils/smallut.cpp,
+	utils/wipedir.cpp: pgup/down in result list
+
+2005-12-08 09:44  dockes
+
+	* common/Makefile, internfile/htmlparse.cpp,
+	internfile/htmlparse.h, internfile/internfile.cpp,
+	internfile/mh_html.cpp, internfile/myhtmlparse.cpp,
+	internfile/myhtmlparse.h: process text from html files without a
+	</body> tag
+
+2005-12-07 16:41  dockes
+
+	* VERSION, internfile/mh_mail.cpp, qtgui/recollmain.ui.h,
+	qtgui/preview/preview.ui.h, query/docseq.cpp, utils/utf8iter.h:
+	freebsd 4 port
+
+2005-12-06 16:41  dockes
+
+	* recollinstall.in: strip execs
+
+2005-12-06 16:10  dockes
+
+	* Makefile, VERSION, recollinstall.in: no recollinstall install
+
+2005-12-06 10:40  dockes
+
+	* internfile/: mh_html.cpp, myhtmlparse.cpp: previous html fix
+	didnt work
+
+2005-12-06 09:35  dockes
+
+	* VERSION, internfile/internfile.cpp, internfile/mh_html.cpp,
+	internfile/myhtmlparse.cpp: fix nasty html parse bug introduced in
+	1.0.9
+
+2005-12-06 08:16  dockes
+
+	* qtgui/recollmain.ui: move search/clear buttons to the left side
+
+2005-12-05 18:47  dockes
+
+	* ChangeLog, VERSION, ChangeLog: 1.0.11?
+
+2005-12-05 17:45  dockes
+
+	* qtgui/recollmain.ui.h: no %F on solaris8
+
+2005-12-05 17:13  dockes
+
+	* query/: docseq.cpp, docseq.h: avoid unneeded getDoc(0) +
+	normalize private var names
+
+2005-12-05 15:09  dockes
+
+	* common/rclconfig.cpp, lib/Makefile, mk/localdefs,
+	mk/localdefs.in, utils/copyfile.cpp, utils/copyfile.h: create
+	personal config if it does not exist
+
+2005-12-05 13:02  dockes
+
+	* qtgui/recollmain.ui, qtgui/recollmain.ui.h, qtgui/sort.ui.h,
+	qtgui/images/asearch.png, qtgui/images/history.png,
+	qtgui/images/nextpage.png, qtgui/images/prevpage.png,
+	qtgui/images/sortparms.png, query/docseq.cpp, query/sortseq.cpp:
+	use toolbar buttons for prev/next + misc cleanups
+
+2005-12-05 11:39  dockes
+
+	* rcldb/rcldb.cpp: also index file path as terms
+
+2005-12-04 18:10  dockes
+
+	* qtgui/recoll.pro: more
+
+2005-12-04 18:10  dockes
+
+	* common/textsplit.cpp: split stdin
+
+2005-12-02 17:18  dockes
+
+	* qtgui/recollmain.ui, qtgui/recollmain.ui.h, qtgui/sort.ui,
+	qtgui/sort.ui.h, qtgui/preview/preview.ui.h, query/sortseq.cpp,
+	query/sortseq.h, rcldb/rcldb.h: 1st version of sorting interface.
+	Needs polishing
+
+2005-12-02 17:17  dockes
+
+	* filters/rclpdf: new version of pdftotext broke us
+
+2005-12-02 17:17  dockes
+
+	* recollinstall.in, common/rclconfig.cpp,
+	sampleconf/recoll.conf.in: install filters to /usr/local
+
+2005-12-01 17:23  dockes
+
+	* lib/Makefile, qtgui/recoll.pro, qtgui/recollmain.ui.h,
+	qtgui/sort.ui, qtgui/sort.ui.h, query/sortseq.cpp, query/sortseq.h:
+	sorting 1st steps
+
+2005-11-30 19:37  dockes
+
+	* configure: make recollinstall executable
+
+2005-11-30 19:28  dockes
+
+	* configure.ac: make recollinstall executable
+
+2005-11-30 19:26  dockes
+
+	* sampleconf/recoll.conf.in: keep log level at 4 for index feedback
+
+2005-11-30 19:20  dockes
+
+	* sampleconf/recoll.conf.in: decrease log level
+
+2005-11-30 18:58  dockes
+
+	* utils/transcode.cpp: try harder to convert bad encodings
+
+2005-11-30 11:35  dockes
+
+	* ChangeLog, VERSION: v1.0.10
+
+2005-11-30 11:25  dockes
+
+	* qtgui/: recollmain.ui, recollmain.ui.h: disable/enable buttons
+	dep. on state
+
+2005-11-30 10:46  dockes
+
+	* index/indexer.cpp, index/indexer.h, index/recollindex.cpp,
+	rcldb/rcldb.cpp: add option to rezero db before index
+
+2005-11-28 16:31  dockes
+
+	* qtgui/main.cpp, qtgui/recoll.h, qtgui/recollmain.ui.h,
+	query/docseq.cpp, query/docseq.h, query/history.cpp,
+	query/history.h: store and display dates in history. Needs more
+	work
+
+2005-11-25 15:36  dockes
+
+	* qtgui/recollmain.ui.h, query/history.cpp, utils/conftree.cpp,
+	utils/smallut.cpp, utils/smallut.h: show history newest first +
+	prune duplicate entries
+
+2005-11-25 11:26  dockes
+
+	* recollinstall.in, qtgui/main.cpp, qtgui/recoll_fr.ts: install
+	translations to share/recoll/translations
+
+2005-11-25 11:02  dockes
+
+	* lib/Makefile, qtgui/main.cpp, qtgui/recoll.h,
+	qtgui/recollmain.ui, qtgui/recollmain.ui.h, query/docseq.cpp,
+	query/docseq.h: 1st version of doc history
+
+2005-11-25 10:13  dockes
+
+	* common/: rclconfig.cpp, rclconfig.h: get all mime list from
+	mimeconf, not mimemap
+
+2005-11-25 10:12  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.h: added method to retrieve doc from
+	path/ipath
+
+2005-11-25 09:50  dockes
+
+	* utils/: conftree.cpp, conftree.h, smallut.cpp, smallut.h: add
+	methods useful for history. move stuff to smallut
+
+2005-11-25 09:49  dockes
+
+	* utils/base64.cpp: Strip extra null byte that we were appending
+
+2005-11-23 11:59  dockes
+
+	* ChangeLog: 1.0.9
+
+2005-11-23 11:57  dockes
+
+	* Makefile: use prefix instead of PREFIX
+
+2005-11-23 11:18  dockes
+
+	* qtgui/: recollmain.ui.h, preview/preview.ui,
+	preview/preview.ui.h: document already shown test was wrong,
+	wouldnt show more docs from same file
+
+2005-11-23 11:17  dockes
+
+	* utils/execmd.cpp: need to do _exit not exit after exec failure
+
+2005-11-23 11:16  dockes
+
+	* internfile/mh_html.cpp, utils/smallut.cpp, utils/smallut.h:
+	improve charset name comparison
+
+2005-11-21 18:18  dockes
+
+	* configure, configure.ac, recollinstall, index/mimetype.cpp,
+	internfile/myhtmlparse.cpp, mk/Linux, mk/SunOS, utils/execmd.cpp:
+	glitches in linux/solaris compil. + install
+
+2005-11-21 17:05  dockes
+
+	* filters/rclrtf, sampleconf/mimeconf, sampleconf/mimemap,
+	sampleconf/recoll.conf: add support for rtf
+
+2005-11-21 17:04  dockes
+
+	* Makefile, makestaticdist.sh, recollinstall: install pics and
+	samples to $PREFIX/local/recoll
+
+2005-11-21 15:32  dockes
+
+	* filters/rclgaim: just needs awk
+
+2005-11-21 15:31  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, index/indexer.cpp,
+	index/mimetype.cpp, index/mimetype.h, internfile/internfile.cpp,
+	internfile/mh_html.cpp, internfile/mimehandler.cpp,
+	internfile/mimehandler.h, internfile/myhtmlparse.cpp,
+	internfile/myhtmlparse.h, lib/Makefile, qtgui/recollmain.ui.h,
+	sampleconf/mimeconf, sampleconf/mimemap, sampleconf/recoll.conf:
+	mimemap processing recentered in rclconfig. Handle directory-local
+	suffix to mime-type definitions. Implement gaim log handling
+
+2005-11-18 16:19  dockes
+
+	* internfile/internfile.cpp, internfile/internfile.h,
+	internfile/mh_exec.cpp, internfile/mimehandler.h, utils/execmd.h:
+	misc cleanup + tell filters if working for preview or index
+
+2005-11-18 14:52  dockes
+
+	* utils/: execmd.cpp, execmd.h: add putenv interface
+
+2005-11-18 14:23  dockes
+
+	* internfile/mh_exec.cpp, internfile/mh_exec.h,
+	internfile/mh_html.cpp, internfile/mh_html.h,
+	internfile/mh_mail.cpp, internfile/mh_mail.h,
+	internfile/mh_text.cpp, internfile/mh_text.h,
+	internfile/mimehandler.cpp, lib/Makefile: restructuring on
+	mimehandler files
+
+2005-11-17 18:36  dockes
+
+	* rcldb/rcldb.cpp: use OP_FILTER instead of OP_AND to filter on
+	file types
+
+2005-11-17 13:47  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, qtgui/main.cpp,
+	qtgui/recollmain.ui, sampleconf/recoll.conf, utils/conftree.cpp,
+	utils/conftree.h: allow tilde expansion for section names in config
+	file
+
+2005-11-16 18:29  dockes
+
+	* mk/localdefs, rcldb/rcldb.cpp: use and_maybe in adv search
+
+2005-11-16 16:07  dockes
+
+	* internfile/mimehandler.cpp, internfile/mimehandler.h,
+	qtgui/main.cpp, qtgui/recoll.h, qtgui/recollmain.ui.h,
+	qtgui/preview/preview.ui, qtgui/preview/preview.ui.h,
+	sampleconf/mimeconf, sampleconf/recoll.conf: Optionnally show mime
+	type icons in result list
+
+2005-11-16 12:22  dockes
+
+	* qtgui/: plaintorich.cpp, recollmain.ui.h, preview/preview.ui,
+	preview/preview.ui.h: Implemented better feedback during preview
+	loading
+
+2005-11-16 09:17  dockes
+
+	* Makefile, VERSION, qtgui/main.cpp, qtgui/recoll_fr.ts,
+	qtgui/recollmain.ui, qtgui/recollmain.ui.h,
+	qtgui/preview/preview.ui, qtgui/preview/preview.ui.h: about dialog,
+	remember previous mainwin geometry
+
+2005-11-14 10:59  dockes
+
+	* internfile/internfile.cpp, internfile/internfile.h,
+	qtgui/recollmain.ui.h: fix rare case where indexed file could not
+	be previewed because of change in file identification config param
+
+2005-11-14 10:57  dockes
+
+	* index/indexer.cpp: comment
+
+2005-11-14 10:56  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.h: stem expansion was never done for adv
+	search
+
+2005-11-12 15:33  dockes
+
+	* mk/localdefs.in: typo
+
+2005-11-12 15:31  dockes
+
+	* Makefile, configure, configure.ac: more config tweaks
+
+2005-11-12 15:24  dockes
+
+	* utils/: conftree.cpp, conftree.h, debuglog.cpp, debuglog.h: local
+	versions of utility files
+
+2005-11-12 15:19  dockes
+
+	* Makefile, configure, configure.ac, mk/Darwin, mk/FreeBSD,
+	mk/Linux, mk/SunOS, mk/commondefs, mk/localdefs, mk/localdefs.in:
+	introduced some autoconf
+
+2005-11-12 12:26  dockes
+
+	* Makefile, bincimapmime/Makefile, common/Makefile, index/Makefile,
+	lib/Makefile, mk/commondefs, qtgui/recoll.pro, query/Makefile,
+	sampleconf/mimemap, utils/Makefile: cleaned-up makes
+
+2005-11-10 09:47  dockes
+
+	* index/Makefile, index/indexer.cpp, index/indexer.h,
+	index/mimetype.cpp, index/mimetype.h, internfile/internfile.cpp,
+	sampleconf/recoll.conf: add config parameter to decide if we use
+	the file command as a final step of mimetype identification
+
+2005-11-10 09:46  dockes
+
+	* sampleconf/: mimemap, mimeconf: add .Z compressed files
+
+2005-11-09 22:40  dockes
+
+	* sampleconf/mimemap: add .odt -> openoffice. Add .php and others
+	to ignored types
+
+2005-11-09 22:39  dockes
+
+	* common/rclinit.cpp: test cleanup and sigcleanup not zero for
+	small uts that dont need this
+
+2005-11-08 22:02  dockes
+
+	* internfile/: internfile.cpp, mh_html.cpp, mh_html.h, mh_mail.cpp,
+	mh_mail.h, mimehandler.cpp, mimehandler.h: renamed
+	MimeHandler::worker to mkDoc + comments for doxygen
+
+2005-11-07 16:06  dockes
+
+	* Makefile, recollinstall, mk/commondefs: fixed installation script
+
+2005-11-06 16:07  dockes
+
+	* qtgui/idxthread.cpp, qtgui/main.cpp, qtgui/recollmain.ui,
+	qtgui/recollmain.ui.h, rcldb/rcldb.cpp, utils/base64.cpp: slightly
+	better status printing while loading preview
+
+2005-11-06 12:16  dockes
+
+	* rcldb/pathhash.cpp, rcldb/pathhash.h, lib/Makefile,
+	rcldb/rcldb.cpp, utils/base64.cpp, utils/base64.h, utils/md5.cpp,
+	utils/md5.h, utils/mimeparse.cpp: limit path therm length through
+	hashing
+
+2005-11-05 16:29  dockes
+
+	* rcldb/rcldb.cpp: debug message
+
+2005-11-05 16:17  dockes
+
+	* mk/commondefs: unused def
+
+2005-11-05 15:40  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, common/rclinit.cpp,
+	common/rclinit.h, index/indexer.cpp, index/recollindex.cpp,
+	internfile/mh_mail.cpp, mk/SunOS, qtgui/main.cpp,
+	qtgui/recollmain.ui.h, qtgui/preview/preview.ui,
+	qtgui/preview/preview.ui.h, rcldb/rcldb.cpp, rcldb/rcldb.h:
+	separate file and document dates (mainly for email folders). Better
+	check configuration at startup
+
+2005-11-02 13:36  dockes
+
+	* lib/Makefile, mk/commondefs: add def for RANLIB
+
+2005-10-31 09:59  dockes
+
+	* internfile/mh_mail.cpp, utils/mimeparse.cpp: fixed base64
+	decoding of email parts: str[x] = ch does not adjust length! and be
+	more lenient with encoding errors
+
+2005-10-22 15:10  dockes
+
+	* VERSION, qtgui/recollmain.ui, qtgui/recollmain.ui.h: update
+	status line when starting lengthy operations
+
+2005-10-22 09:29  dockes
+
+	* qtgui/: recollmain.ui, recollmain.ui.h: get clicks in res list to
+	behave: drag->no click. dblclick->no single click
+
+2005-10-22 07:35  dockes
+
+	* qtgui/: main.cpp, recoll.pro, recoll_fr.ts: i8n
+
+2005-10-21 17:41  dockes
+
+	* makestaticdist.sh, recollinstall: more verbosity in install
+
+2005-10-21 16:11  dockes
+
+	* Makefile, makestaticdist.sh: static bin dists
+
+2005-10-21 15:33  dockes
+
+	* Makefile, excludefile, makesrcdist.sh, index/Makefile,
+	mk/FreeBSD, mk/Linux, mk/SunOS, qtgui/recoll.pro: rearrange make
+	includes+prepare bin static distrib
+
+2005-10-21 14:15  dockes
+
+	* unac/unac.c: fix args to iconv to get rid of warnings
+
+2005-10-21 10:14  dockes
+
+	* Makefile, VERSION, excludefile, mk/FreeBSD, mk/Linux,
+	qtgui/preview/pvmain.cpp, utils/smallut.cpp: more small build
+	tweaks. use mkdtemp if available
+
+2005-10-20 18:20  dockes
+
+	* qtgui/: advsearch.ui, preview/preview.ui, preview/preview.ui.h:
+	CR->search in advanced dialog. ^W close tab in preview
+
+2005-10-20 17:42  dockes
+
+	* filters/rcldoc, filters/rclpdf, filters/rclps, filters/rclsoff,
+	mk/SunOS: small fixes for SunOS
+
+2005-10-20 13:38  dockes
+
+	* sampleconf/recoll.conf: defaultlanguage->english
+
+2005-10-20 13:33  dockes
+
+	* recollinstall, bincimapmime/Makefile, filters/rcldoc,
+	filters/rclpdf, filters/rclps, filters/rclsoff, rcldb/rcldb.cpp,
+	qtgui/recollmain.ui.h, qtgui/preview/preview.ui.h: small
+	installation tweaks
+
+2005-10-20 10:34  dockes
+
+	* Makefile, VERSION, excludefile, bincimapmime/Makefile,
+	lib/Makefile, mk/FreeBSD, qtgui/plaintorich.cpp, qtgui/recoll.pro,
+	qtgui/preview/preview.ui.h: small warning and compilation
+	adjustments
+
+2005-10-19 16:14  dockes
+
+	* common/rclconfig.cpp, qtgui/advsearch.ui.h, qtgui/recollmain.ui,
+	qtgui/recollmain.ui.h, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	utils/idfile.cpp, utils/idfile.h: implemented filtering on file
+	subtree
+
+2005-10-19 12:21  dockes
+
+	* rcldb/rcldb.cpp, rcldb/rcldb.h, common/textsplit.cpp,
+	common/textsplit.h, filters/rcldoc, filters/rclpdf, filters/rclps,
+	filters/rclsoff, qtgui/advsearch.ui, qtgui/advsearch.ui.h,
+	qtgui/main.cpp, qtgui/plaintorich.cpp, qtgui/recoll.h,
+	qtgui/recollmain.ui, qtgui/recollmain.ui.h: most of adv search
+	working. Still need subtree/filename filters
+
+2005-10-17 15:36  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, qtgui/advsearch.ui,
+	qtgui/advsearch.ui.h, qtgui/recoll.h, qtgui/recollmain.ui,
+	qtgui/recollmain.ui.h, qtgui/preview/preview.ui,
+	qtgui/preview/preview.ui.h, qtgui/preview/pvmain.cpp,
+	utils/Makefile: implemented dialog/glue for advanced search
+
+2005-10-15 14:18  dockes
+
+	* index/indexer.cpp, internfile/mh_mail.cpp, utils/mimeparse.cpp,
+	utils/mimeparse.h: decode encoded mail headers, plus use message
+	date instead of file mtime
+
+2005-10-10 15:25  dockes
+
+	* common/textsplit.h: comments
+
+2005-10-10 15:24  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, recollmain.ui,
+	recollmain.ui.h, preview/preview.ui, preview/preview.ui.h: ckpt
+
+2005-10-10 14:29  dockes
+
+	* qtgui/: advsearch.ui, main.cpp, recollmain.ui, recollmain.ui.h,
+	preview/preview.ui, preview/preview.ui.h, preview/pvmain.cpp: ckpt
+
+2005-09-22 16:09  dockes
+
+	* common/textsplit.cpp: adjust start/end of word when trimming
+
+2005-09-22 13:10  dockes
+
+	* common/textsplit.cpp: fix problems with word followed by .
+
+2005-05-17 08:30  dockes
+
+	* qtgui/recollmain.ui.h: escape < to &lt; in rich text
+
+2005-04-08 09:32  dockes
+
+	* ChangeLog, Makefile, mk/SunOS, utils/Makefile: works on solaris8
+
+2005-04-07 11:05  dockes
+
+	* index/mimetype.cpp, lib/Makefile, sampleconf/mimemap,
+	utils/Makefile, utils/idfile.cpp, utils/idfile.h: replaced
+	/usr/bin/file exec with internal code
+
+2005-04-06 12:20  dockes
+
+	* INSTALL, VERSION, makesrcdist.sh, bincimapmime/AUTHORS,
+	bincimapmime/COPYING, bincimapmime/mime-inputsource.h,
+	index/indexer.cpp, internfile/mh_mail.cpp, mk/FreeBSD, mk/Linux,
+	qtgui/main.cpp, rcldb/rcldb.cpp, sampleconf/recoll.conf,
+	utils/smallut.h, utils/wipedir.cpp: re-port to linux
+
+2005-03-31 12:04  dockes
+
+	* bincimapmime/mime-inputsource.h, bincimapmime/mime-parsefull.cc,
+	bincimapmime/mime-parseonlyheader.cc,
+	bincimapmime/mime-printbody.cc, bincimapmime/mime.h,
+	bincimapmime/trbinc.cc, common/rclconfig.cpp,
+	internfile/mh_html.cpp, internfile/mh_html.h,
+	internfile/mh_mail.cpp, internfile/mh_mail.h, rcldb/rcldb.cpp: mail
+	handling 1st working version
+
+2005-03-25 10:40  dockes
+
+	* bincimapmime/00README.recoll, bincimapmime/mime-printbody.cc,
+	bincimapmime/mime.h, bincimapmime/trbinc.cc, common/Makefile,
+	index/Makefile, index/indexer.cpp, index/mimetype.cpp,
+	internfile/internfile.cpp, internfile/internfile.h,
+	internfile/mh_html.cpp, internfile/mh_html.h,
+	internfile/mh_mail.cpp, internfile/mh_mail.h,
+	internfile/mimehandler.cpp, internfile/mimehandler.h,
+	internfile/myhtmlparse.cpp, lib/Makefile, mk/FreeBSD,
+	rcldb/rcldb.h, qtgui/recoll.pro, qtgui/recollmain.ui.h,
+	sampleconf/mimeconf, utils/mimeparse.cpp, utils/mimeparse.h: mail
+	ckpt
+
+2005-03-17 16:35  dockes
+
+	* index/indexer.cpp, index/indexer.h, internfile/internfile.cpp,
+	internfile/mh_html.h: only comments. Before multidoc files
+
+2005-03-17 15:02  dockes
+
+	* bincimapmime/Makefile, bincimapmime/iodevice.cc,
+	index/indexer.cpp, qtgui/recollmain.ui.h, sampleconf/mimeconf,
+	utils/execmd.cpp, utils/execmd.h, utils/mimeparse.cpp,
+	utils/smallut.cpp, utils/smallut.h, utils/utf8iter.h: checkpoint
+	after long pause
+
+2005-03-16 08:35  dockes
+
+	* bincimapmime/: Makefile, address.cc, address.h, config.h,
+	convert.cc, convert.h, depot.h, iodevice.cc, iodevice.h,
+	iofactory.cc, iofactory.h, mime-getpart.cc, mime-inputsource.h,
+	mime-parsefull.cc, mime-parseonlyheader.cc, mime-printbody.cc,
+	mime-printdoc.cc, mime-printheader.cc, mime-utils.h, mime.cc,
+	mime.h, session.h: initial import from bincimap-1.3.3
+
+2005-02-11 12:20  dockes
+
+	* common/textsplit.cpp, common/uproplist.h, utils/Makefile,
+	utils/utf8iter.cpp, utils/utf8iter.h, utils/utf8testin.txt:
+	improved word extraction a bit (unicode punctuation)
+
+2005-02-10 16:21  dockes
+
+	* index/indexer.cpp, qtgui/recollmain.ui.h, rcldb/rcldb.cpp,
+	rcldb/rcldb.h, utils/execmd.cpp, utils/fstreewalk.cpp,
+	utils/fstreewalk.h, utils/smallut.cpp, utils/smallut.h: implemented
+	stem databases
+
+2005-02-09 13:07  dockes
+
+	* VERSION, internfile/internfile.cpp, internfile/internfile.h,
+	internfile/myhtmlparse.cpp, filters/rcldoc, filters/rclsoff,
+	index/indexer.cpp, index/mimetype.cpp, lib/Makefile,
+	qtgui/main.cpp, qtgui/recoll.h, qtgui/recollmain.ui.h,
+	sampleconf/mimeconf, sampleconf/mimemap, utils/Makefile,
+	utils/smallut.cpp, utils/smallut.h, utils/wipedir.cpp,
+	utils/wipedir.h: added support for openoffice and word + optimized
+	decomp temp dir usage
+
+2005-02-08 12:59  dockes
+
+	* common/textsplit.cpp, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	qtgui/recollmain.ui.h: fixed next/prev screen pb + pb with accents
+	when matching in preview
+
+2005-02-08 11:56  dockes
+
+	* rcldb/rcldb.cpp, common/textsplit.cpp, common/textsplit.h:
+	phrases ok except for preview position
+
+2005-02-08 10:34  dockes
+
+	* common/textsplit.cpp, common/textsplit.h, rcldb/rcldb.cpp,
+	qtgui/recoll.pro, qtgui/recollmain.ui.h, query/xadump.cpp,
+	utils/execmd.cpp: fixes in textsplit
+
+2005-02-07 14:17  dockes
+
+	* common/textsplit.cpp, common/textsplit.h, qtgui/recollmain.ui.h,
+	rcldb/rcldb.cpp, rcldb/rcldb.h: simple term highlighting in query
+	preview
+
+2005-02-04 15:21  dockes
+
+	* COPYING, INSTALL, Makefile, README, VERSION, common/Makefile,
+	common/unacpp.cpp, filters/rcluncomp, index/Makefile,
+	index/csguess.cpp, index/indexer.cpp, internfile/internfile.cpp,
+	internfile/internfile.h, internfile/mimehandler.cpp, lib/Makefile,
+	mk/FreeBSD, rcldb/rcldb.cpp, mk/Linux, qtgui/idxthread.cpp,
+	qtgui/recoll.pro, qtgui/recollmain.ui, qtgui/recollmain.ui.h,
+	qtgui/images/editcopy, qtgui/images/editcut,
+	qtgui/images/editpaste, qtgui/images/filenew,
+	qtgui/images/fileopen, qtgui/images/filesave, qtgui/images/print,
+	qtgui/images/redo, qtgui/images/searchfind, qtgui/images/undo,
+	query/Makefile, utils/Makefile, utils/pathut.cpp,
+	utils/transcode.cpp: uncompression+linux port
+
+2005-02-01 18:20  dockes
+
+	* filters/rclpdf, index/indexer.cpp, internfile/mh_html.cpp,
+	internfile/mh_html.h, internfile/mimehandler.cpp,
+	internfile/mimehandler.h, lib/Makefile, mk/FreeBSD,
+	qtgui/idxthread.h, qtgui/recoll.h, qtgui/recollmain.ui.h,
+	rcldb/rcldb.cpp, utils/Makefile, utils/execmd.cpp: added external
+	filters and pdf handling
+
+2005-01-31 15:31  dockes
+
+	* common/rclconfig.cpp, index/indexer.cpp, index/indexer.h,
+	index/recollindex.cpp, lib/Makefile, rcldb/rcldb.cpp,
+	rcldb/rcldb.h, qtgui/idxthread.cpp, qtgui/main.cpp,
+	qtgui/recoll.pro, qtgui/recollmain.ui, qtgui/recollmain.ui.h,
+	query/qtry.cpp, utils/Makefile, utils/pathut.cpp, utils/pathut.h,
+	utils/smallut.cpp, utils/smallut.h: first incarnation of indexing
+	thread
+
+2005-01-29 16:41  dockes
+
+	* index/recollindex.cpp, internfile/mimehandler.cpp,
+	internfile/mimehandler.h, lib/Makefile, qtgui/main.cpp,
+	qtgui/recollmain.ui, qtgui/recollmain.ui.h, rcldb/rcldb.cpp,
+	rcldb/rcldb.h, utils/Makefile: external viewer+ deleted doc purging
+
+2005-01-28 16:25  dockes
+
+	* Makefile, internfile/indextext.h, internfile/myhtmlparse.cpp,
+	qtgui/recollmain.ui, qtgui/recollmain.ui.h, rcldb/rcldb.cpp,
+	rcldb/rcldb.h: ckpt
+
+2005-01-28 10:37  dockes
+
+	* internfile/mh_html.cpp, internfile/myhtmlparse.cpp,
+	internfile/myhtmlparse.h, lib/Makefile, rcldb/rcldb.cpp: merged
+	modifs from xapian/omega 0.8.5
+
+2005-01-28 09:56  dockes
+
+	* internfile/: myhtmlparse.cpp, myhtmlparse.h: import from xapian
+	0.8.5
+
+2005-01-28 09:50  dockes
+
+	* internfile/: htmlparse.cpp, htmlparse.h: Initial recoll modifs
+	for utf8
+
+2005-01-28 09:49  dockes
+
+	* internfile/: htmlparse.cpp, htmlparse.h, myhtmlparse.cpp,
+	myhtmlparse.h: XAPIAN 0.8.5
+
+2005-01-28 09:46  dockes
+
+	* internfile/: myhtmlparse.cpp, myhtmlparse.h: xapian 0.8.3
+
+2005-01-28 09:41  dockes
+
+	* internfile/htmlparse.cpp, internfile/htmlparse.h,
+	internfile/mh_html.cpp, rcldb/rcldb.cpp, internfile/htmlparse.cpp,
+	internfile/htmlparse.h: xapian 0.8.3
+
+2005-01-26 14:03  dockes
+
+	* index/recollindex.cpp, internfile/mh_html.cpp,
+	internfile/mimehandler.cpp, rcldb/rcldb.cpp: sort of indexes html
+
+2005-01-26 12:47  dockes
+
+	* internfile/mh_html.cpp, internfile/mimehandler.cpp,
+	internfile/mimehandler.h, lib/Makefile, qtgui/recollmain.ui,
+	qtgui/recollmain.ui.h, query/qtry.cpp, rcldb/rcldb.cpp,
+	utils/Makefile: ckpt
+
+2005-01-26 12:45  dockes
+
+	* utils/: mimeparse.cpp, mimeparse.h: mime header parsing embryo
+
+2005-01-25 15:37  dockes
+
+	* common/Makefile, common/rclconfig.cpp, index/Makefile,
+	index/indexer.h, index/recollindex.cpp, lib/Makefile,
+	qtgui/main.cpp, qtgui/recollmain.ui, qtgui/recollmain.ui.h,
+	query/Makefile, query/qtry.cpp, query/xadump.cpp, rcldb/rcldb.cpp,
+	rcldb/rcldb.h, utils/Makefile, utils/transcode.h, qtgui/recoll.pro:
+	gui connected to rcldb (init)
+
+2004-12-17 16:50  dockes
+
+	* query/xadump.cpp, rcldb/rcldb.cpp: very basic indexing working
+
+2004-12-17 16:04  dockes
+
+	* unac/: AUTHORS, COPYING, README, README.recoll, unac.c, unac.h:
+	unac 1.7.0
+
+2004-12-15 16:00  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, common/textsplit.cpp,
+	rcldb/rcldb.cpp, rcldb/rcldb.h, index/csguess.cpp, index/csguess.h,
+	index/indexer.h, index/mimetype.cpp, index/recollindex.cpp,
+	utils/transcode.cpp: warnings cleanup
+
+2004-12-15 09:21  dockes
+
+	* index/: csguess.cpp, csguess.h: just converted (indent+comments)
+	from estraier
+
