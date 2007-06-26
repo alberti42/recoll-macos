@@ -25,6 +25,7 @@ qtgui/preview/Makefile
 qtgui/preview/preview.pro
 qtgui/preview/pvmain.cpp
 qtgui/recoll.pro
+qt4gui/images
 recollinstall
 sampleconf/recoll.conf
 sysconf

@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: makesrcdist.sh,v 1.12 2006-11-30 13:38:43 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: makesrcdist.sh,v 1.13 2007-06-26 11:59:42 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
 #set -x
@@ -59,7 +59,7 @@ links -dump ${RECOLLDOC}/rcl.install.config.html >> INSTALL
 cvs commit -m '' README INSTALL
 
 # Clean up this dir and copy the dist-specific files 
-make clean
+make distclean
 yes | clean.O
 rm -f lib/*.dep
 $TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
