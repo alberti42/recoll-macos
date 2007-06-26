@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.32 2007-06-19 12:27:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.33 2007-06-26 16:09:19 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -536,20 +536,26 @@ class DirWiper {
     }
 };
 
+// Extract subdoc out of multidoc into temporary file. 
+// We do the usual internfile stuff: create a temporary directory,
+// then create an interner and call internfile. 
+// We then write the data out of the resulting document into the output file.
 bool FileInterner::idocTempFile(TempFile& otemp, RclConfig *cnf, 
 				const string& fn,
 				const string& ipath,
 				const string& mtype)
 {
-    string tmpdir, reason;
-    if (!maketmpdir(tmpdir, reason))
-	return false;
-    DirWiper wiper(tmpdir);
     struct stat st;
     if (stat(fn.c_str(), &st) < 0) {
 	LOGERR(("FileInterner::idocTempFile: can't stat [%s]\n", fn.c_str()));
 	return false;
     }
+
+    string tmpdir, reason;
+    if (!maketmpdir(tmpdir, reason))
+	return false;
+    DirWiper wiper(tmpdir);
+
     FileInterner interner(fn, &st, cnf, tmpdir, &mtype);
     interner.setTargetMType(mtype);
     Rcl::Doc doc;

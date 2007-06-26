@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.15 2007-06-19 12:27:52 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.16 2007-06-26 16:09:19 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -87,7 +87,17 @@ class FileInterner {
      */
     void setTargetMType(const string& tp) {m_targetMType = tp;}
 
-    /** Utility function: extract internal document and make temporary file */
+    /** Utility function: extract internal document into temporary file. 
+     *  This is used mainly for starting an external viewer for a
+     *  subdocument (ie: mail attachment).
+     * @return true for success.
+     * @param temp output reference-counted temp file object (goes
+     *   away magically)
+     * @param cnf The recoll config
+     * @param fn  The main document from which to extract
+     * @param ipath The internal path to the subdoc
+     * @param mtype The target mime type (we don't want to decode to text!)
+     */
     static bool idocTempFile(TempFile& temp, RclConfig *cnf, const string& fn, 
 			     const string& ipath, const string& mtype);
 
