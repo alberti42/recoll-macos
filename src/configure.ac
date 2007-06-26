@@ -5,7 +5,7 @@ AC_CONFIG_SRCDIR(index/recollindex.cpp)
 
 sys=`uname`
 if test -f mk/$sys ; then
-    (cd mk; test -f sysconf || ln -s $sys sysconf)
+    (cd mk; rm -f sysconf; ln -s $sys sysconf)
 else
    cat <<EOF
     No system configuration file found in mk/ for '$sys'. Maybe you
@@ -208,10 +208,26 @@ if test X$QTDIR != X ; then
    export PATH
 fi
 
+# MacosX stuff: we don't support this (the native search tool is more than
+# good enough), but we make things work just enough so that the program can
+# be compiled and roughly installed (not as a .app, but to /usr/local),
+# basically to enable using a Macbook for development
+if test X$sys = XDarwin ; then
+   # The defaults tends to be macx-xcode, which we cant use
+    QMAKESPEC=macx-g++
+    export QMAKESPEC
+    #QMAKESPEC_SPEC="-spec max-g++"
+    #AC_SUBST(QMAKESPEC_SPEC)
+fi
+
 AC_PATH_PROG([QMAKE], [qmake], NOTFOUND)
 if test X$QMAKE = XNOTFOUND ; then 
    AC_MSG_ERROR([Cannot find the qmake program. Maybe you need to install
 qt development files and tools and/or set the QTDIR environment variable?])
+fi
+
+if test X$sys = XDarwin ; then
+   QMAKE="${QMAKE} -spec macx-g++"
 fi
 
 # Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
@@ -233,6 +249,7 @@ cd $QTGUI
 test -f uifrom3 && make -f uifrom3
 test -f recoll.pro && chmod +w recoll.pro
 cp recoll.pro.in recoll.pro
+echo QMAKE ${QMAKE}
 ${QMAKE} recoll.pro
 if test $? != 0 ; then
    AC_MSG_ERROR([Cannot use qmake to generate a Makefile. Maybe you need to

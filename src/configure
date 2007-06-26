@@ -1283,7 +1283,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 sys=`uname`
 if test -f mk/$sys ; then
-    (cd mk; test -f sysconf || ln -s $sys sysconf)
+    (cd mk; rm -f sysconf; ln -s $sys sysconf)
 else
    cat <<EOF
     No system configuration file found in mk/ for '$sys'. Maybe you
@@ -2283,22 +2283,21 @@ fi
 CPPFLAGS="$CPPFLAGS $INCICONV"
 echo "$as_me:$LINENO: checking for type of inbuf parameter to iconv" >&5
 echo $ECHO_N "checking for type of inbuf parameter to iconv... $ECHO_C" >&6
-if test "x$rcl_iconv_inbuf_const" = "x"; then
-   cat >conftest.$ac_ext <<_ACEOF
+cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-       #include <stddef.h>
-       #include <iconv.h>
+    #include <stddef.h>
+    #include <iconv.h>
 
 int
 main ()
 {
 
-       iconv(0,(const char **)0,(size_t *)0,(char **)0,(size_t *)0);
+    iconv(0,(const char **)0,(size_t *)0,(char **)0,(size_t *)0);
 
   ;
   return 0;
@@ -2334,7 +2333,6 @@ sed 's/^/| /' conftest.$ac_ext >&5
 rcl_iconv_inbuf_const="0"
 fi
 rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
 if test X$rcl_iconv_inbuf_const = X1 ; then
 
 cat >>confdefs.h <<\_ACEOF
@@ -2342,8 +2340,6 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 fi
-
-echo   rcl_iconv_inbuf_const $rcl_iconv_inbuf_const
 
 #### Look for Xapian
 # Extract the first word of "xapian-config", so it can be a program name with args.
@@ -2440,6 +2436,18 @@ if test X$QTDIR != X ; then
    export PATH
 fi
 
+# MacosX stuff: we don't support this (the native search tool is more than
+# good enough), but we make things work just enough so that the program can
+# be compiled and roughly installed (not as a .app, but to /usr/local),
+# basically to enable using a Macbook for development
+if test X$sys = XDarwin ; then
+   # The defaults tends to be macx-xcode, which we cant use
+    QMAKESPEC=macx-g++
+    export QMAKESPEC
+    #QMAKESPEC_SPEC="-spec max-g++"
+    #AC_SUBST(QMAKESPEC_SPEC)
+fi
+
 # Extract the first word of "qmake", so it can be a program name with args.
 set dummy qmake; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -2488,6 +2496,10 @@ qt development files and tools and/or set the QTDIR environment variable?" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
+if test X$sys = XDarwin ; then
+   QMAKE="${QMAKE} -spec macx-g++"
+fi
+
 # Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
 # depend on this. We try to detect the qt 4 version string instead.
 qmakevers="`qmake --version 2>&1`"
@@ -2509,6 +2521,7 @@ cd $QTGUI
 test -f uifrom3 && make -f uifrom3
 test -f recoll.pro && chmod +w recoll.pro
 cp recoll.pro.in recoll.pro
+echo QMAKE ${QMAKE}
 ${QMAKE} recoll.pro
 if test $? != 0 ; then
    { { echo "$as_me:$LINENO: error: Cannot use qmake to generate a Makefile. Maybe you need to

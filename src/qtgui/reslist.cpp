@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.28 2007-06-25 10:13:40 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.29 2007-06-26 16:08:47 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -20,7 +20,9 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.28 2007-06-25 10:13:40 dockes Exp
 #if (QT_VERSION < 0x040000)
 #include <qpopupmenu.h>
 #else
+#ifndef __APPLE__
 #include <qx11info_x11.h>
+#endif
 #include <q3popupmenu.h>
 #include <q3stylesheet.h>
 #include <q3mimefactory.h>
@@ -91,7 +93,9 @@ void ResList::resetSearch()
 #if (QT_VERSION < 0x040000)
     XFlush(qt_xdisplay());
 #else
+#ifndef __APPLE__
     XFlush(QX11Info::display());
+#endif
 #endif
 
 }
