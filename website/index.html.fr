@@ -97,6 +97,15 @@
 
       </ul>
 
+      <h2>Nouvelles: </h1>
+      <p>Il y a de nouveaux filtres d'indexation pour les fichiers
+	<span class="application">kword</span> et 
+	<span class="application">abiword</span>. Ils sont téléchargeables
+	dans la   <a href="filters/filters.html">zone des nouveaux
+	filtres</a>, et sont utilisable avec une installation existante de 
+	<span class="application">Recoll</span> 1.8.</p>
+
+
       <h2><a name="support">Support</a></h3>
 
       <p>Si vous avez un problème quelconque avec le logiciel ou son

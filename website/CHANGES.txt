@@ -1,5 +1,31 @@
 CHANGES 
 
+1.9.0
+- Add option to remember sort tool state between program invocations (it is
+  reset to inactive by default)
+- Improve qt4 build: no more need for --enable-qt4
+- Fixed a number of qt4 glitches: selection and keyboard shortcuts.
+- When searching for an empty string inside the preview window, position
+  the window to the next occurrence of the primary search terms.
+- Have email attachments inherit date and author from their parent message
+- Added an adjustable flush threshold during indexing: should help control
+  memory usage. See the idxflushmb configuration parameter.
+- Added a check for file system free space. Indexing will stop if the
+  threshold is reached. See the maxfsoccuppc configuration parameter.
+- Fix bus error on rclmon exit
+- Better handle aspell errors inside rclmon
+- Added File menu entry to erase document history.
+- Added ext: and mime: selectors to the query language.
+- Added support for arbitrary fields. Filters can now produce any number of
+  fields which will be selectively searchable through the query language.
+- Added abiword and kword support. 
+- Contributed filter: rcljpeg. This should be extended to use the new field
+  support.
+- Changed the icon to an ugly one. The previous one was nicer but looked
+  too much like Xapian's.
+- Added some kind of support for a stopword list.
+- Bound space and backspace to PgUp/PgDown in preview.
+
 1.8.2 2007-05-19
 - Fixed method name for compatibility with xapian 1.0.0
 - Add .beagle to default list of skipped names (avoids indexing beagle

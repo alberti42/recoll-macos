@@ -24,7 +24,7 @@
       <ul>
 	<li><a href="index.html">Home</a></li>
 	<li><b>Downloads</b></li>
-	<li><a href="usermanual/index.html">User manual</a></li>
+	<li><a href="doc.html">Documentation</a></li>
 	<li><a href="usermanual/rcl.install.html">Installation</a></li>
 	<li><a href="index.html#support">Support</a></li>
       </ul>
@@ -47,6 +47,8 @@
       </table>
       </p>
 
+      <h2><a name="source">General information</a></h2>
+
       <p>You will probably need to have a look at the
 	<a href="usermanual/rcl.install.html">installation manual</a> for
 	building and/or installation instructions.</p>
@@ -68,12 +70,17 @@
 	<a href="usermanual/index.html#RCL.INSTALL.EXTERNAL">list</a> to
 	decide what you may want to install.</p>
 
+      <p>In addition, optional functionality in Recoll (the term explorer
+	tool in phonetic mode) uses the <b>aspell</b> package. The
+	installed version should be at least 0.60 (utf-8 support) for
+	this to run smoothly. This function is far from essential.</p>
+
       <p>If you find problems with the package or its
 	installation, <em>please</em> 
 	<a href="mailto:jean-francois.dockes@wanadoo.fr">
 	  report them</a>.</p>
 
-      <h4>What do the release numbers mean?</h4>
+      <h3>What do the release numbers mean?</h3>
 
       <p>The Recoll releases are numbered X.Y.Z. </p>
 
@@ -110,7 +117,16 @@
 	1.8.2 was released purely for fixing a small issue of
 	compatibility with xapian 1.0.0 and small config/install
 	glitches.  There is no functional reason to upgrade from
-	1.8.1, (or update packages).
+	1.8.1, (or update packages).</p>
+
+      <p>Recoll 1.8.2 is the first release that will let you take
+	advantage of the new Xapian 1.0, the main user-visible change
+	of which is the new default index format. In order to take
+	advantage of the new format (which is not mandatory) Recoll
+	users updating from an older release need to delete their old
+	index. There are <a
+	href="usermanual/usermanual.html#RCL.INDEXING.STORAGE.FORMAT">more
+	details in the user manual</a>.</p>
 
       <p>Older recoll releases:
 	<a href="recoll-1.8.1.tar.gz">1.8.1</a>
@@ -128,8 +144,8 @@
       <h2><a name="rpms">Packages</a></h2>
 
       <p>The executables inside the binary rpms have a static link to
-	xapian, there is no dependency except Qt 3.3. Of course you need
-	xapian-core installed to use the source rpm. </p>
+	xapian 0.9.x, there is no dependency except Qt 3.3. Of course
+	you need xapian-core installed to use the source rpm. </p>
 
       <p><b>Fedora Core</b>
 	FC6 RPM: 
@@ -168,10 +184,16 @@
 	<a href="debian/edgy/">debian/edgy</a>
       </p>
 
+      <p><b>Ubuntu 6.06 dapper</b> (the feisty version does not work
+      on dapper). This has a static link on xapian 0.9.10:
+	<a href="debian/dapper/recoll_1.8.2-0ubuntu1_i386.deb">
+	  recoll_1.8.2-0ubuntu1_i386.deb</a> </p>
+
       <p><b>Debian unstable</b> Recoll is in the package repository,
-      you can install it with the usual <em>apt-get install
-      recoll</em>. <a
-      href="http://packages.qa.debian.org/r/recoll.html">Package page</a></p>
+	you can install it with the usual <em>apt-get install
+	  recoll</em>. <a
+	  href="http://packages.qa.debian.org/r/recoll.html">
+	  Package page</a></p>
 
       <p><b>Debian 3.1</b> Thanks to Mario (<img align="top" src="mario.png">)
       for these: i386: 

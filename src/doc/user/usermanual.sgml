@@ -24,11 +24,12 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.44 2007-06-08 16:46:53 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.45 2007-06-26 16:58:25 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
-      and describes the installation and use of the &RCL; application.</para>
+      and describes the installation and use of the &RCL;
+      application. It currently describes &RCL; 1.9.</para>
     </abstract>
 
 
@@ -771,30 +772,6 @@ fvwm
       <replaceable>unplugged</replaceable> but not
       <replaceable>potatoes</replaceable> (in any part of the document).</para>
 
-      <para>The first element <literal>author:"john doe"</literal> is
-      a phrase search limited to a specific field. Phrase searches are
-      specified as usual by enclosing the words in double quotes. The
-      field specification appears before the colon (of course this is
-      not limited to phrases, <literal>author:Balzac</literal> would
-      be ok too). &RCL; currently manages the following fields:</para>
-
-      <itemizedlist>
-	<listitem><para><literal>title</literal>,
-	<literal>subject</literal> or <literal>caption</literal> are
-	synonyms which specify data to be searched for in the
-	document title or subject.</para>
-	</listitem>
-	<listitem><para><literal>author</literal> or
-	<literal>from</literal> for searching the documents originators.</para>
-	</listitem>
-	<listitem><para><literal>keyword</literal> for searching the
-	document specified keywords (few documents actually have any).</para>
-	</listitem>
-      </itemizedlist>
-
-      <para>The query language is currently the only way to use the
-      &RCL; field search capability.</para>
-
       <para>All elements in the search entry are normally combined
       with an implicit AND. It is possible to specify that elements be
       OR'ed instead, as in <replaceable>Beatles</replaceable>
@@ -817,8 +794,54 @@ fvwm
       <para>An entry preceded by a <literal>-</literal> specifies a
       term that should <emphasis>not</emphasis> appear.</para>
 
+      <para>The first element in the above exemple,
+      <literal>author:"john doe"</literal> is a phrase search limited
+      to a specific field. Phrase searches are specified as usual by
+      enclosing the words in double quotes. The field specification
+      appears before the colon (of course this is not limited to
+      phrases, <literal>author:Balzac</literal> would be ok
+      too). &RCL; currently manages the following fields:</para>
+      <itemizedlist>
+	<listitem><para><literal>title</literal>,
+	<literal>subject</literal> or <literal>caption</literal> are
+	synonyms which specify data to be searched for in the
+	document title or subject.</para>
+	</listitem>
+	<listitem><para><literal>author</literal> or
+	<literal>from</literal> for searching the documents originators.</para>
+	</listitem>
+	<listitem><para><literal>keyword</literal> for searching the
+	document specified keywords (few documents actually have any).</para>
+	</listitem>
+      </itemizedlist>
+
+      <para>As of release 1.9, the filters have the possibility to
+      create other fields with arbitrary names. No standard filters
+      use this possibility yet.</para>
+
+      <para>There are two other elements which may be specified
+      through the field syntax, but are somewhat special:</para>
+      <itemizedlist>
+	<listitem><para><literal>ext</literal> for specifying the file
+	name extension (Ex: <literal>ext:html</literal>)</para>
+	</listitem>
+	<listitem><para><literal>mime</literal> for specifying the
+	mime type. This one is quite special because you can specify
+	several values which will be OR'ed (the normal default for the
+	language is AND). Ex: <literal>mime:text/plain
+	mime:text/html</literal>. Specifying an explicit boolean
+	operator or negation (<literal>-</literal>) before a
+	<literal>mime</literal> specification is not supported and
+	will produce strange results.</para>
+	</listitem>
+      </itemizedlist>
+      <para>The query language is currently the only way to use the
+      &RCL; field search capability.</para>
+
       <para>Words inside phrases and capitalized words are not
-      stem-expanded. Wildcards may be used anywhere.</para>
+      stem-expanded. Wildcards may be used anywhere inside a term.
+      Specifying a wild-card on the left of a term can produce a very
+      slow search.</para>
 
       <para>You can use the <literal>show query</literal> link at the
       top of the result list to check the exact query which was
@@ -2089,36 +2112,91 @@ skippedPaths = ~/somedir/*.txt
 	  will be given a file name as argument and should output the
 	  text contents in html format on the standard output.</para>
 
-	  <para>The html could be very minimal like the following
-	  example:</para>
-	  <programlisting>&lt;html>&lt;head>
-&lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-&lt/head>
-&lt;body>some text content&lt;/body>&lt;/html>
-          </programlisting>
-
-	  <para>You should take care to escape some characters inside
-	  the text by transforming them into appropriate
-	  entities. "<literal>&amp;</literal>" should be transformed into
-	  "<literal>&amp;amp;</literal>", "<literal>&lt;</literal>"
-	  should be transformed into "<literal>&amp;lt;</literal>".</para>
-
-	  <para>The character set needs to be specified in the
-	  header. It does not need to be UTF-8 (&RCL; will take care
-	  of translating it), but it must be accurate for good
-	  results.</para>
-
-	  <para>&RCL; will also make use of other header fields if
-	  they are present: <literal>title</literal>,
-	  <literal>description</literal>, <literal>keywords</literal>.
-          <para>
-          <para>The easiest way to write a new filter is probably to start
-          from an existing one.</para>
+	  <para>You can find more details about writing a &RCL; filter
+	  in the <link linkend="rcl.extending.filters">section about
+	  writing filters</link></para>
 	</sect3>
 
       </sect2>
 
     </sect1>
+
+    <sect1 id="rcl.extending">
+      <title>Extending &RCL;</title>
+      
+      <sect2 id="rcl.extending.filters">
+	<title>Writing a document filter</title>
+
+	<para>&RCL; filters are executable programs which 
+	translate from a specific format (ie:
+	<application>openoffice</application>,
+	<application>acrobat</application>, etc.) to the &RCL;
+	indexing input format, which was chosen to be HTML.</para>
+
+	<para>&RCL; filters are usually shell-scripts, but this is in
+	no way necessary. These programs are extremely simple and most
+	of the difficulty lies in extracting the text from the native
+	format, not outputting what is expected by &RCL;. Happily
+	enough, most document formats already have translators or text
+	extractors which handle the difficult part and can be called
+	from the filter.</para>
+
+	<para>Filters are called with a single argument which is the
+	source file name. They should output the result to stdout.</para>
+
+	<para>The <literal>RECOLL_FILTER_FORPREVIEW</literal>
+	environment variable (values <literal>yes</literal>,
+	<literal>no</literal>) tells the filter if the operation is
+	for indexing or previewing. Some filters use this to output a
+	slightly different format. This is not essential.</para>
+
+	<para>The output HTML could be very minimal like the following
+	example:</para>
+
+	<programlisting>&lt;html>&lt;head>
+&lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+&lt/head>
+&lt;body>some text content&lt;/body>&lt;/html>
+          </programlisting>
+
+	<para>You should take care to escape some characters inside
+	  the text by transforming them into appropriate
+	  entities. "<literal>&amp;</literal>" should be transformed into
+	  "<literal>&amp;amp;</literal>", "<literal>&lt;</literal>"
+	  should be transformed into "<literal>&amp;lt;</literal>".</para>
+
+	<para>The character set needs to be specified in the
+	  header. It does not need to be UTF-8 (&RCL; will take care
+	  of translating it), but it must be accurate for good
+	  results.</para>
+
+	<para>&RCL; will also make use of other header fields if
+	  they are present: <literal>title</literal>,
+	  <literal>description</literal>,
+	  <literal>keywords</literal>.</para>
+
+	<para>As of &RCL; release 1.9, filters also have the
+	possibility to "invent" field names. This should be output as
+	meta tags:</para>
+
+	<programlisting>
+&lt;meta name="somefield" content="Some textual data" /&gt;
+</programlisting>
+	
+	<para>In this case, a correspondance between field name and
+	&XAP; prefix should also be added to the
+	<filename>mimeconf</filename> file. See the existing entries
+	for inspiration. The field can then be used inside the query
+	language to narrow searches.</para>
+
+	<para>The easiest way to write a new filter is probably to start
+          from an existing one.</para>
+
+	
+      </sect2>
+
+    </sect1>
+
   </chapter>
 
 </book>

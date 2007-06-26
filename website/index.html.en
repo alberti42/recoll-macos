@@ -81,6 +81,16 @@
 	<li><a class="weak" href="features.html">(more detail)</a></li>
       </ul>
 
+
+      <h2>News: </h1>
+      <p>There are new filters for 
+	<span class="application">kword</span> and 
+	<span class="application">abiword</span> files in the 
+	<a href="filters/filters.html">new filters section</a>. These
+	are usable with an existing <span
+	class="application">Recoll</span> 1.8 installation.</p>
+
+	
       <h2><a name="support">Support</a></h3>
 
       <p>If you have any problem with Recoll, its

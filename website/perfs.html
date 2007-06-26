@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title>RECOLL: a personal text search system for
+    Unix/Linux</title>
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description" content=
+    "recoll is a simple full-text search system for unix and linux based on the powerful and mature xapian engine">
+    <meta name="Keywords" content=
+      "full text search,fulltext,desktop search,unix,linux,solaris,open source,free">
+    <meta http-equiv="Content-language" content="en">
+    <meta http-equiv="content-type" content=
+    "text/html; charset=iso-8859-1">
+    <meta name="robots" content="All,Index,Follow">
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+  </head>
+
+  <body>
+
+    <div class="rightlinks">
+      <ul>
+	<li><a href="index.html">Home</a></li>
+	<li><a href="pics/index.html">Screenshots</a></li>
+	<li><a href="download.html">Downloads</a></li>
+	<li><a href="doc.html">Documentation</a></li>
+      </ul>
+    </div>
+
+    <div class="content">
+
+      <h1 class="intro">Recoll: Indexing performance and index sizes</h1>
+
+      <p>The time needed to index a given set of documents, and the
+	resulting index size depend of many factors, such as file size
+	and proportion of actual text content for the index size, cpu
+	speed, available memory, average file size and format for the
+	speed of indexing.</p>
+
+      <p>We try here to give a number of reference points which can
+	be used to roughly estimate the resources needed to create and
+	store an index. Obviously, your data set will never fit one of
+	the samples, so the results cannot be exactly predicted.</p>
+
+      <p>The following data was obtained on a machine with a 1800 Mhz
+	AMD Duron CPU, 768Mb of Ram, and a 7200 RPM 160 GBytes IDE
+	disk, running Suse 10.1.</p>
+
+      <p><b>recollindex</b> (version 1.8.2 with xapian 1.0.0) is
+	executed with the default flush threshold value. 
+	The process memory usage is the one given by <b>ps</b></p>
+
+      <table border=1>
+	<thead>
+	  <tr>
+	    <th>Data</th>
+	    <th>Data size</th>
+	    <th>Indexing time</th>
+	    <th>Index size</th>
+	    <th>Peak process memory usage</th>
+	  </tr>
+	<tbody>
+	  <tr>
+	    <td>Random pdfs harvested on Google</td>
+	    <td>1.7 GB, 3564 files</td>
+	    <td>27 mn</td>
+	    <td>230 MB</td>
+	    <td>225 MB</td>
+	  </tr>
+	  <tr>
+	    <td>Ietf mailing list archive</td>
+	    <td>211 MB, 44,000 messages</td>
+	    <td>8 mn</td>
+	    <td>350 MB</td>
+	    <td>90 MB</td>
+	  </tr>
+	  <tr>
+	    <td>Partial Wikipedia dump</td>
+	    <td>15 GB, one million files</td>
+	    <td>6H30</td>
+	    <td>10 GB</td>
+	    <td>324 MB</td>
+	  </tr>
+	  <tr>
+	    <!-- DB: ndocs 3564 lastdocid 3564 avglength 6460.71 -->
+	    <td>Random pdfs harvested on Google<br>
+	    Recoll 1.9, <em>idxflushmb</em> set to 10</td>
+	    <td>1.7 GB, 3564 files</td>
+	    <td>25 mn</td>
+	    <td>262 MB</td>
+	    <td>65 MB</td>
+	  </tr>
+	</tbody>
+      </table>
+
+      <p>Notice how the index size for the mail archive is bigger than
+	the data size. Myriads of small pure text documents will do
+	this. The factor of expansion would be even much worse with
+	compressed folders of course (the test was on uncompressed
+	data).</p>
+
+      <p>The last test was performed with Recoll 1.9.0 which has an
+	ajustable flush threshold (<em>idxflushmb</em> parameter), here
+	set to 10 MB. Notice the much lower peak memory usage, with no
+	performance degradation. The resulting index is bigger though,
+	the exact reason is not known to me, possibly because of
+	additional fragmentation </p>
+      </p>
+
+    </div>
+  </body>
+</html>
+

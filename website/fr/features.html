@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title>RECOLL: un outil personnel de recherche textuelle pour 
+    Unix et Linux</title>
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description" content=
+    "recoll est un logiciel personnel de recherche textuelle pour unix et linux basé sur Xapian, un moteur d'indexation puissant et mature.">
+    <meta name="Keywords" content=
+      "recherche textuelle,desktop,unix,linux,solaris,open source,free">
+    <meta http-equiv="Content-language" content="fr">
+    <meta http-equiv="content-type" content=
+    "text/html; charset=iso-8859-1">
+    <meta name="robots" content="All,Index,Follow">
+    <link type="text/css" rel="stylesheet" href="../styles/style.css">
+  </head>
+
+  <body>
+
+    <div class="rightlinks">
+      <ul>
+	<li><a href="../index.html">Base</a></li>
+	<li><a href="../pics/index.html">Copies d'écrans</a></li>
+	<li><a href="../download.html">Téléchargements</a></li>
+	<li><a href="../manuals.html">Documentation</a></li>
+	<li><a href="../index.html#support">Support</a></li>
+	<li><a href="../devel.html">Développement</a></li>
+      </ul>
+    </div>
+
+    <div class="content">
+
+      <h1 class="intro">Caractéristiques de Recoll</h1>
+
+      <dl>
+	<dt><a name="systems">Systèmes</a></dt>
+	<dd><span class="application">Recoll</span> a été compilé et
+	testé sur FreeBSD, Linux, Darwin, Solaris (versions
+	  FreeBSD 5.5, Fedora Core 5, Suse 10.1, Gentoo,
+	  Debian 3.1, Ubuntu Edgy, Solaris 8/9, mais d'autres versions
+	  récentes conviennent sans doute également).</dd>
+
+	<dd>Versions de QT: 3.2, 3.3 et 4.2</dd>
+
+        <dt><a name="doctypes">Types de documents</a></dt>
+	<dd>Recoll peut traiter les types de documents suivants, ainsi
+	que des fichiers compressés du même type: 
+
+          <dl>
+            <dt>En interne</dt>
+
+            <dd>
+              <ul>
+                <li><var class="literal">text</var>.</li>
+
+                <li><var class="literal">html</var>.</li>
+
+                <li><span class="application">OpenOffice</span>
+                (avec l'aide de la commande <b>unzip</b>).</li>
+
+                <li><var class="literal">maildir</var> et <var
+		    class="literal">mailbox</var> (<span class=
+		    "application">Mozilla</span>, <span class=
+		    "application">Thunderbird</span>, <span class=
+		    "application">Evolution</span> et sans doute
+		    d'autres).</li> 
+
+                <li>Fichiers de conversation <span class="application">
+		    gaim</span>.</li>
+
+                <li><span class="application">Scribus</span>.</li>
+
+              </ul>
+            </dd>
+
+            <dt>With external helpers</dt>
+
+            <dd>
+              <ul>
+                <li><var class="literal">pdf</var> avec <a href=
+                "http://www.foolabs.com/xpdf/">xpdf</a>.</li>
+
+                <li><var class="literal">postscript</var> avec 
+           <a href="http://www.gnu.org/software/ghostscript/ghostscript.html">
+                ghostscript</a> et 
+           <a href="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
+		    pstotext</a>.</li>
+
+                <li>Fichiers <span class="application">Lyx</span>
+                (nécessite l'application 
+		  <span class="application">Lyx</span>).</li>
+
+                <li><span class="application">msword</span> avec <a href=
+                "http://www.winfield.demon.nl/">antiword</a>.</li>
+
+                <li><span class="application">Powerpoint</span> et 
+		  <span class="application">Excel</span> avec les utilitaires
+		  <a href="http://www.45.free.net/~vitus/software/catdoc/">
+		    catdoc</a>.</li>
+
+                <li><var class="literal">rtf</var> avec <a href=
+                "http://www.gnu.org/software/unrtf/unrtf.html">unrtf</a>.</li>
+
+		<li><var class="literal">dvi</var> avec 
+		  <a href="http://www.radicaleye.com/dvips.html">dvips</a>.
+		</li>
+
+		<li><var class="literal">djvu</var> avec 
+		  <a href="http://djvulibre.djvuzone.org/doc/index.html">
+		    DjVuLibre</a>. </li>
+
+		<li>Tags <var class="literal">mp3</var> avec 
+		  <a href="http://id3lib.sourceforge.net/">
+		    id3info (id3lib)</a>. </li>
+
+              </ul>
+            </dd>
+          </dl>
+	</dd>
+
+	<dt>Autres caractéristiques</dt>
+	<dd>
+	  <ul>
+	    <li>Index multiples interrogeables ensemble ou séparément.</li>
+
+	    <li>Fonctions de recherche puissantes, avec expressions
+	    booléennes, phrases et proximité, caractères jokers,
+	    filtrage sur les types de fichiers où l'emplacement.</li>
+
+	    <li>Fonction spécifique de recherche de noms de fichiers.</li>
+
+	    <li>Support de jeux de caractères multiples. Les traitements
+	      internes et l'index utilisent l'encodage Unicode UTF-8.</li>
+
+	    <li>L'extraction des racines de mots <a href="#Stemming">
+		Stemming</a> est effectuée au moment de la recherche
+		(permet de changer de langue après l'indexation).</li>
+
+	    <li>Installation facile. Pas de processus permanent, de
+	      serveur web ou environnement exotique.</li>
+
+	    <li>Un indexeur qui peut fonctionner soit comme un
+	      processus léger dans l'interface de consultation, comme un
+	      programme batch externe intégrable par 
+	      <span class="application">cron</span>, ou comme un processus
+	      permanent pour l'indexation au fil de l'eau.</li>
+
+	  </ul>
+	</dd>
+      </ul>
+
+      <h2><a name="#stemming"></a>Lemmatisation</h2>
+
+      <p><em>Note: je serais preneur d'une traduction française
+	agréable pour "stemming".</em></p>
+      <p>La lemmatisation transforme un mot dérivé vers sa racine.
+       Par exemple, <i>aimer</i>, <i>aimerai</i>, <i>aimait</i>,
+	<i>aimez</i> etc. seraient transformés en <i>aim</i> en
+	français. Une recherche de l'un quelconque des dérivés peut
+	automatiquement être étendue vers tous les autres</p>
+
+      <p>Certains moteurs de recherche appliquent la transformation
+      pendant l'indexation. L'index ne stocke que les racines des
+      mots, avec des exceptions pour les termes qui sont reconnus
+      comme des noms propres (capitalisation). Au moment de la
+      recherche, les termes de la requête sont également transformés
+      avant comparaison à l'index.</p>
+      
+      <p>Cette approche permet un index plus petit, mais elle perd
+	irrévocablement de l'information pendant l'indexation.</p>
+
+      <p>Recoll fonctionne différemment. Les termes sont indexés sans
+	transformation. L'index résultant est plus gros, ce qui n'a
+	probablement pas beaucoup d'importance à une époque de disques
+	de 100 Go principalement remplis d'information multimédia
+	<em>non indexée</em>.
+
+      <p>À la fin de l'indexation, Recoll construit un ou plusieurs
+      dictionnaires de transformation (pour différents langages), où
+      toutes les racines sont listées avec leurs transformations
+      possibles.</p>
+
+
+      <p>Au moment de la recherche, par défaut, les termes de
+      l'utilisateurs sont transformés, et étendus aux dérivés par
+      utilisation du dictionnaire.
+	Les résultats obtenus sont analogues à ceux de
+	l'autre méthode. L'avantage est que l'expansion peut être
+	contrôlée au moment de la recherche:
+	<ul>
+	<li>On peut la supprimer pour n'importe quel terme de la
+	  requête, (en le faisant débuter par une capitale:
+	  <em>Aime</em> par exemple pour chercher la ville d'Aime la
+	  Plagne). </li>
+	<li>Le langage de transformation peut également être changé,
+	en supposant que plusieurs dictionnaires de transformation
+	aient été construits lors de l'indexation.</li>
+      </ul>
+	
+    </div>
+  </body>
+</html>
+

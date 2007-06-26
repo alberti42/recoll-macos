@@ -4,10 +4,21 @@ Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest (1.8.1):
+Latest (1.8.2):
+- There are a few problems in the qt4 version of recoll: some accelerators
+  (esc-spc, ctl-arrow) do not work, neither do copy/paste between the
+  result list and preview windows and x11 applications.
 - The dates shown for email attachments in a result list are the email
   folder modification date. This should be inherited from the parent
   message instead.
+- There are sometimes problems with document deletions: the index can
+  get in a state where deleted or moved documents are not purged from the
+  index (the log file says that the doc are deleted, but they aren't
+  actually). When this happens, the only solution currently is to reindex
+  from scratch (recollindex -z). This is due to a xapian bug, which will be
+  fixed in a future release. You can apply the following patch to xapian
+  1.0.1 to fix it:
+      http://www.lesbonscomptes.com/recoll/xapian/xapian-delete-document.patch 
 - NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is
@@ -39,9 +50,9 @@ Latest (1.8.1):
   compressed (ie: xxx.txt.gz), recoll will try to start the external viewer
   on the compressed file, which will not work in most cases.
 
-- There are problems which have been reported indexing big mailstores
-  (several hundreds of thousands of messages): resulting in a very big
-  database and even crashes during indexation.
+- Problems have been reported indexing big mailstores (several hundreds of
+  thousands of messages): resulting in a very big database and even
+  crashes.
 
 - Under some versions of KDE (ie: Fedora FC5 KDE 3.5.4-0.5.fc5), there is a
   problem with the window stacking order. Opening the "browse" file

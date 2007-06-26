@@ -2,72 +2,146 @@
 <html>
   <head>
     <title>Recoll Index format</title>
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description" content=
+    "recoll est un logiciel personnel de recherche textuelle pour unix et linux basé sur Xapian, un moteur d'indexation puissant et mature.">
+    <meta name="Keywords" content=
+      "recherche textuelle,desktop,unix,linux,solaris,open source,free">
+    <meta http-equiv="Content-language" content="fr">
+    <meta http-equiv="content-type" content=
+    "text/html; charset=iso-8859-1">
+    <meta name="robots" content="All,Index,Follow">
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
   </head>
 
   <body>
+    <div class="content">
     <h1>Recoll index format details</h1>
 
-    <p>Terms are not stemmed before being stored. They are turned to
-      all minuscule letters with no accents.</p>
+    <p>A comparison of index formats for recoll 1.8 and omega
+    1.0.1</p>
 
-    <p>Special prefixed terms:</p>
-    <ul>
-      <li>Ddate: modification date of file, like YYYYMMDD</li>
+    <p>Recoll terms are not stemmed before being stored. They are turned to
+      all minuscule letters with no accents. An auxiliary database
+      handles stem expansion. Omega stores both raw
+      terms and stemmed versions (with prefix Z)</p>
 
-      <li>Mmonth: YYYYMM</li>
+    <h2>Special prefixed terms:</h2>
 
-      <li>Ppathhash truncated/hashed version of file path. For
+    <p>A comparison of prefixed term usage between Recoll and
+      omega/xapian. <em>xapian-core</em> in the Omega column means
+      that the prefix is not used by Omega, but mentionned as
+      allocated in the xapian prefix definition document.</p>
+
+    <table border=1 cellspacing=0 width="90%">
+	<thead>
+	<tr><th>Pref.</th><th>Recoll use</th><th>Omega use</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr><td>T</td><td>mime type</td><td>Same</td>
+	</tr>
+
+	<tr><td>P</td><td>Truncated/hashed version of file path. For
 	single-document files, and for the file part of a
 	multi-document file. Used for up-to-date checks and for
-	retrieving a document by path. omega uses U for the equivalent
-	term used for up to date checks.</li>
+	retrieving a document by path. </td><td>Path part of URL (no
+	hashing). Uses U for the equivalent
+	term used for up to date checks.</td> 
+	</tr>
 
-      <li>Qpathhash+ipath same + internal path for documents inside
-	multi-document files. Used to set the existence flag for
-	subdocs when a multi-document file is found to be up to date,
-	or for deleting all subdocs for a file, or for retrieving a
-	document by path+ipath. No real omega equivalent. Compatible
-	with Q definition in termprefixes.txt: unique identifier.</li>
+	<tr><td>Q</td><td>pathhash+ipath same + internal path for
+	documents inside multi-document files. Used to set the
+	existence flag for subdocs when a multi-document file is found
+	to be up to date, or for deleting all subdocs for a file, or
+	for retrieving a document by path+ipath. Compatible
+	with Q definition in xapian/termprefixes.txt: unique
+	identifier.</td><td>None</td> 
+	</tr>
 
-      <li>Tmimetype: document mime type.</li>
+	<tr><td>D</td><td>date: modification date of file, like
+	YYYYMMDD</td><td>Same</td>
+	</tr>
 
-      <li>Wweak: 10 days period (not used any more by omega)</li>
+	<tr><td>M</td><td>month: YYYYMM</td><td>Same</td>
+	</tr>
+	<tr><td>Y</td><td>year YYYY</td><td>Same</td>
+	</tr>
 
-      <li>Yyear YYYY</li>
+	<tr><td>XSFN</td><td>utf8 version of file name. Used for specific
+	file name searches</td><td>None</td>
+	</tr>
+	<tr><td>U</td><td>None</td><td>Url term. Truncated/hashed version
+	    of URL. Used for duplicate checks.</td>
+	</tr>
 
-      <li>XSFNfilename utf8 version of file name. Used for specific
-	file name searches</li>
+	<tr><td>S</td><td>Subject/title</td><td>xapian-core</td>
+	</tr>
+	<tr><td>A</td><td>Author</td><td>xapian-core</td>
+	</tr>
+	<tr><td>K</td><td>Keyword</td><td>xapian-core</td>
+	</tr>
+	
+      </tbody>
+    </table>
 
-    </ul>
-
-    <p>Omega prefixes with no equivalents in Recoll: P, R, U</p>
     <p>None of the "date" terms are currently used by recoll queries</p>
 
-    <p>Values: Recoll currently stores no document values.</p>
+    <h2>Values</h2>
+    <p>Recoll currently stores no document values.</p>
+    <p>Omega stores 2 values, for the md5 hash of the file, and the
+      last modification date (as unix time). The md5 value doesn't
+      appear to be currently used ?</p>
 
-    <p>Document data record format<p>
-    <ul>
-      <li>url= Full url. Always file://abspath. The path is not
+    <h2>Document data record format</h2>
+      <p>Recoll has the same line based / prefixed data record format
+      as omega (name=value\n).</p>
+
+    <table border=1 cellspacing=0 width="90%">
+	<thead>
+	<tr><th>Prefix</th><th>Recoll use</th><th>Omega use</th>
+	</tr>
+      </thead>
+      <tbody>
+	
+      <tr><td>url=</td><td>Full url. Always file://abspath. The path is not
 	encoded to utf-8, this is the system file name ,usable as an
-	argument to open(). (omega: sort of same)</li>
-      <li>mtype= mime type (omega: type)</li>
-      <li>fmtime= file modification date (omega: modtime)</li>
-      <li>dmtime= document modification date (omega: none)</li>
-      <li>origcharset= character set the text was converted from
-	(omega: none)</li>
-      <li>fbytes= file size in bytes (omega: size)</li>
-      <li>dbytes= document size in bytes (omega: none)</li>
-      <li>ipath= internal path for docs in multidoc files. (omega: none)</li>
-      <li>caption= title of document, utf8 (omega: same)</li>
-      <li>keywords= key words, utf8 (omega: none)</li>
-      <li>abstract= document abstract, utf8 (omega: sample)</li>
-    </ul>
+	argument to open()</td><td>Same</td>
+	</tr>
+
+	<tr><td>mtype=</td><td>mime type (omega: type)</td><td>type=</td>
+	</tr>
+	<tr><td>fmtime=</td><td>file modification date</td><td>modtime=</td>
+	</tr>
+	<tr><td>dmtime=</td><td> document modification date</td><td>None</td>
+	</tr>
+	<tr><td>origcharset=</td><td> character set the text was
+	    converted from</td><td>None</td>
+	</tr>
+	<tr><td>fbytes=</td><td> file size in bytes</td><td>size=</td>
+	</tr>
+	<tr><td>dbytes=</td><td>document size in bytes</td><td>None</td>
+	</tr>
+	<tr><td>ipath=</td><td>internal path for docs in multidoc
+	    files</td><td>None</td>
+	</tr>
+
+	<tr><td>caption=</td><td>title of document, utf8</td><td>Same</td>
+	</tr>
+	<tr><td>keywords=</td><td>key words, utf8</td><td>None</td>
+	</tr>
+	<tr><td>abstract=</td><td>document abstract, utf8</td><td>sample=</td>
+	</tr>
+      </tbody>
+    </table>
+    </div>
 
     <hr>
     <address><a href="mailto:jean-francois.dockes@wanadoo.fr">Jean-Francois Dockes</a></address>
 <!-- Created: Thu Dec  7 13:07:40 CET 2006 -->
 <!-- hhmts start -->
-Last modified: Thu Dec  7 14:19:02 CET 2006
+Last modified: Thu Jun 14 11:14:38 CEST 2007
 <!-- hhmts end -->
   </body>
 </html>

@@ -92,3 +92,4 @@ a.weak {
     color: #aaaaaa;
 }
 
+table { empty-cells:show; }
