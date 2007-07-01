@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.31 2007-06-22 06:14:04 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.32 2007-07-01 06:52:21 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -27,6 +27,7 @@ application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 # document in simple html format, have a look at the scripts.
 [index]
 application/msword = exec rcldoc
+application/ogg = exec rclogg
 application/pdf = exec rclpdf
 application/postscript = exec rclps
 application/vnd.ms-powerpoint = exec rclppt
@@ -43,10 +44,11 @@ application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
 application/x-abiword = exec rclabw
 application/x-dvi = exec rcldvi
+application/x-flac = exec rclflac
 application/x-lyx = exec rcllyx
 application/x-kword = exec rclkwd
 application/x-scribus = exec rclscribus
-audio/mpeg = exec rclmedia
+audio/mpeg = exec rclid3
 image/vnd.djvu = exec rcldjvu
 image/jpeg = exec rcljpeg
 message/rfc822 = internal
@@ -61,6 +63,7 @@ text/x-man = exec rclman
 # Icons to be used in the result list if required by gui config
 [icons]
 application/msword = wordprocessing
+application/ogg = sownd
 application/pdf = pdf
 application/postscript = postscript
 application/vnd.ms-excel = spreadsheet
@@ -75,9 +78,10 @@ application/vnd.sun.xml.writer = wordprocessing
 application/vnd.sun.xml.writer.global = wordprocessing
 application/vnd.sun.xml.writer.template = wordprocessing
 application/x-abiword = wordprocessing
-application/x-kword = wordprocessing
-application/x-fsdirectory = folder
 application/x-dvi = document
+application/x-flac = sownd
+application/x-fsdirectory = folder
+application/x-kword = wordprocessing
 audio/mpeg = sownd
 image/jpeg = image
 image/png = image
@@ -85,8 +89,8 @@ image/vnd.djvu = document
 message/rfc822 = message
 text/html = html
 text/plain = txt
-text/x-mail = message
 text/x-c = source
+text/x-mail = message
 
 
 [categories]
@@ -116,9 +120,12 @@ presentation = application/vnd.ms-powerpoint \
 	        application/vnd.sun.xml.impress \
 	        application/vnd.sun.xml.impress.template
 
-media = audio/mpeg \
-        image/jpeg \
-        image/png \
+media = \
+      audio/mpeg \
+      application/ogg \
+      application/x-flac \
+      image/jpeg \
+      image/png \
 
 message = message/rfc822 \
 	   text/x-gaim-log \

@@ -1,4 +1,4 @@
-# @(#$Id: mimeview,v 1.6 2007-06-15 11:41:50 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeview,v 1.7 2007-07-01 06:52:21 dockes Exp $  (C) 2004 J.F.Dockes
 
 ## ##########################################
 # External viewers, launched by the recoll GUI when you click on a result
@@ -12,6 +12,7 @@ application/x-kword = kword %f
 application/x-abiword = abiword %f
 
 application/msword = openoffice %f
+application/ogg = xmms %f
 application/pdf  = xpdf %f
 application/postscript = gv %f
 application/vnd.ms-excel = openoffice %f
@@ -28,6 +29,7 @@ application/vnd.sun.xml.writer.global = openoffice %f
 application/vnd.sun.xml.writer.template = openoffice %f
 application/x-fsdirectory = rox %f
 application/x-dvi = xdvi %f
+application/x-flac = xmms %f
 application/x-lyx = lyx %f
 application/x-scribus = scribus %f
 audio/mpeg = xmms %f
