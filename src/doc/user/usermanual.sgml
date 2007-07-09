@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.45 2007-06-26 16:58:25 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.46 2007-07-09 17:21:17 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1296,6 +1296,14 @@ fvwm
         experience:
         <programlisting>&lt;u>&lt;b>&lt;a href="P%N"&gt;%T&lt;/a&gt;&lt;/b>&lt;/u>&lt;br>
 %A&lt;font color=#008000>%U - %S&lt;/font> - %L
+        </programlisting>
+        Or the clean looking:
+        <programlisting>%L &lt;font color="#900000">%R&lt;/font>
+&nbsp;&nbsp;&lt;b>%T&lt;/b>&lt;br>%S&nbsp;
+&lt;font color="#808080">&lt;i>%U&lt;/i>&lt;/font>
+&lt;table bgcolor="#e0e0e0">
+&lt;tr>&lt;td>&lt;div>%A&lt;/div>&lt;/td>&lt;/tr>
+&lt;/table>%K
         </programlisting>
 	The format of the Preview and Edit links is 
 	<literal>&lt;a href="P<replaceable>docnum</replaceable>"&gt;</literal>
