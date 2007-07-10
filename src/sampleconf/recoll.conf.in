@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.16 2007-05-21 07:24:14 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.17 2007-07-10 05:44:06 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This should be copied to
 #   ~/.recoll/recoll.conf 
@@ -13,28 +13,22 @@ topdirs = ~
 skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
 	     *~ recollrc .beagle
 
+# Wildcard expressions for paths we shouldn't go into. The database and
+# configuration directories will be added in there, else the default value
+# is empty
+# skippedPaths = 
+# Same for real time indexing. The idea here is that there is stuff that
+# you might want to initially index but not monitor:
+#daemSkippedPaths = 
+
 # Debug messages. 3 is errors/warnings only. 4 would be quite verbose.
 loglevel = 3
 logfilename = stderr
-
-# Place to search for executable filters. If RECOLL_FILTERSDIR is set in
-# the environement, we use it instead
-filtersdir = @prefix@/share/recoll/filters
 
 # Languages for which to build stemming databases at the end of
 # indexing. Stemmer names can be found on http://www.xapian.org 
 # The flag to perform stem expansion at query time is now set from the GUI
 indexstemminglanguages = english 
-
-# The only reason to change this would be if you want to change the icons
-# displayed in the result list
-iconsdir = @prefix@/share/recoll/images
-
-# Where to store the database (directory). This may be an absolute path,
-# else it is taken as relative to the configuration directory (-c argument
-# or $RECOLL_CONFDIR). 
-# If nothing is specified, the default is then ~/.recoll/xapiandb/
-dbdir = xapiandb
 
 # Default character set. Values found inside files, ie content tag in html
 # documents, will override this. It can be specified per directory (see
@@ -44,7 +38,33 @@ dbdir = xapiandb
 # environment (LC_ALL/LC_CTYPE/LANG). The ultimate hardwired default is
 # still 8859-1. If for some reason you want a general default which doesnt
 # match your LANG and is not 8859-1, set it here.
-#defaultcharset = iso-8859-1
+# defaultcharset = iso-8859-1
+
+# Where to store the database (directory). This may be an absolute path,
+# else it is taken as relative to the configuration directory (-c argument
+# or $RECOLL_CONFDIR). 
+# If nothing is specified, the default is then ~/.recoll/xapiandb/
+dbdir = xapiandb
+
+# Maximum file system occupation before we stop indexing. The default value
+# is 0, meaning no checking. The value is a percentage, corresponding to
+# what the "Capacity" df output column shows.
+maxfsoccuppc = 0
+
+# Threshold (megabytes of new data) where we flush from memory to disk
+# index. Setting this (ie to 10) can help control memory usage. The default
+# value of 0 means no explicit flushing, which lets Xapian perform its own
+# thing, which is flushing every 10000 documents (memory usage depends on
+# average document size).
+# idxflushmb = 0
+
+# Place to search for executable filters. If RECOLL_FILTERSDIR is set in
+# the environement, we use it instead
+filtersdir = @prefix@/share/recoll/filters
+
+# Place to search for icons. The only reason to change this would be if you
+# want to change the icons displayed in the result list
+iconsdir = @prefix@/share/recoll/images
 
 # Guessing charsets usually does not work well
 guesscharset = 0
