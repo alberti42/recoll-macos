@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.59 2007-06-11 05:38:00 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.60 2007-07-10 09:23:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -69,6 +69,11 @@ DbIndexer::~DbIndexer() {
 	}
     }
     m_db.close();
+}
+
+list<string> DbIndexer::getStemmerNames()
+{
+    return Rcl::Db::getStemmerNames();
 }
 
 // Index each directory in the topdirs for a given db

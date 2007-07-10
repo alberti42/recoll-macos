@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.119 2007-06-25 10:25:39 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.120 2007-07-10 09:23:28 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -517,6 +517,14 @@ Db::~Db()
 	    m_ndb->m_iswritable));
     i_close(true);
 }
+
+    list<string> Db::getStemmerNames()
+{
+    list<string> res;
+    stringToStrings(Xapian::Stem::get_available_languages(), res);
+    return res;
+}
+
 
 bool Db::open(const string& dir, const string &stops, OpenMode mode, int qops)
 {

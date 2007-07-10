@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.53 2007-06-21 11:56:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.54 2007-07-10 09:23:28 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -96,6 +96,9 @@ class Db {
 
     /** Field name to prefix translation (ie: author -> 'A') */
     bool fieldToPrefix(const string& fldname, string &pfx);
+
+    /** List possible stemmer names */
+    static list<string> getStemmerNames();
 
     /* Update-related methods ******************************************/
 

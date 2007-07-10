@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.33 2007-06-08 16:47:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.34 2007-07-10 09:23:28 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -216,6 +216,7 @@ static int     op_flags;
 #define OPT_e     0x200
 #define OPT_w     0x400
 #define OPT_x     0x800
+#define OPT_l     0x1000
 
 static const char usage [] =
 "\n"
@@ -234,6 +235,8 @@ static const char usage [] =
 "    Purge data for individual files. No stem database updates\n"
 "recollindex -i <filename [filename ...]>\n"
 "    Index individual files. No database purge or stem database updates\n"
+"recollindex -l\n"
+"    List available stemming languages\n"
 "recollindex -s <lang>\n"
 "    Build stem database for additional language <lang>\n"
 #ifdef RCL_USE_ASPELL
@@ -282,6 +285,7 @@ int main(int argc, const char **argv)
 	    case 'e': op_flags |= OPT_e; break;
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
+	    case 'l': op_flags |= OPT_l; break;
 #ifdef RCL_MONITOR
 	    case 'm': op_flags |= OPT_m; break;
 #endif
@@ -338,6 +342,15 @@ int main(int argc, const char **argv)
 	else 
 	    exit(!purgefiles(config, filenames));
 
+    } else if (op_flags & OPT_l) {
+	if (argc != 0) 
+	    Usage();
+	list<string> stemmers = DbIndexer::getStemmerNames();
+	for (list<string>::const_iterator it = stemmers.begin(); 
+	     it != stemmers.end(); it++) {
+	    cout << *it << endl;
+	}
+	exit(0);
     } else if (op_flags & OPT_s) {
 	if (argc != 1) 
 	    Usage();

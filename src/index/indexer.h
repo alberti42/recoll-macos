@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.23 2007-02-08 17:05:12 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.24 2007-07-10 09:23:28 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -135,6 +135,9 @@ class DbIndexer : public FsTreeWalkerCB {
 
     /** Return my db dir */
     string getDbDir() {return m_dbdir;}
+
+    /** List possible stemmer names */
+    static list<string> getStemmerNames();
 
  private:
     FsTreeWalker m_walker;

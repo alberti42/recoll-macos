@@ -1,4 +1,4 @@
-.\" $Id: recollindex.1,v 1.5 2006-12-24 07:40:26 dockes Exp $ (C) 2005 J.F.Dockes\$
+.\" $Id: recollindex.1,v 1.6 2007-07-10 09:23:28 dockes Exp $ (C) 2005 J.F.Dockes\$
 .TH RECOLLINDEX 1 "8 January 2006"
 .SH NAME
 recollindex \- indexing command for the Recoll full text search system
@@ -42,6 +42,13 @@ recollindex \- indexing command for the Recoll full text search system
 ]
 .B -e 
 <filename [filename ...]>
+.br
+.B recollindex
+[
+.B -c
+<configdir>
+]
+.B -l
 .br
 .B recollindex
 [
@@ -100,7 +107,9 @@ Option
 -x
 disables this X11 session monitoring (daemon will stay alive even if it
 cannot connect to the X11 server).
-
+.PP
+.B recollindex -l 
+will list the names of available language stemmers.
 .PP
 The other modes are useful mainly for testing.
 .PP
@@ -116,8 +125,10 @@ databases will not be updated.
 will build the stem expansion database for a given language, which may or
 may not be part of the list in the configuration file. If the language is
 not part of the configuration, the stem expansion database will be deleted
-during the next normal run. The following languages (abbreviations) are
-recognized:
+during the next normal run. You can get the list of stemmer names from the
+.B recollindex -m
+command. At the time of this writbng, the following languages
+(abbreviations) are recognized (out of Xapian's stem.h):
 .RS
 .IP \(bu
 danish (da)
