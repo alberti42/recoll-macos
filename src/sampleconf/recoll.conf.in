@@ -1,7 +1,9 @@
-# @(#$Id: recoll.conf.in,v 1.17 2007-07-10 05:44:06 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.18 2007-07-10 09:24:13 dockes Exp $  (C) 2004 J.F.Dockes
 #
-# Recoll default configuration file. This should be copied to
-#   ~/.recoll/recoll.conf 
+# Recoll default configuration file. This typically lives in
+# @prefix@/share/recoll/examples and provides default values. You can
+# override selected parameters by adding assigments to
+# ~/.recoll/recoll.conf (or $RECOLL_CONFDIR/recoll.conf)
 
 # Space-separated list of directories to index. Next line indexes $HOME
 topdirs = ~
@@ -56,7 +58,7 @@ maxfsoccuppc = 0
 # value of 0 means no explicit flushing, which lets Xapian perform its own
 # thing, which is flushing every 10000 documents (memory usage depends on
 # average document size).
-# idxflushmb = 0
+idxflushmb = 10
 
 # Place to search for executable filters. If RECOLL_FILTERSDIR is set in
 # the environement, we use it instead
