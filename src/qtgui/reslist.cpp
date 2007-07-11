@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.29 2007-06-26 16:08:47 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.30 2007-07-11 10:05:27 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -647,6 +647,8 @@ RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
     int para = paragraphAt(pos);
     clicked(para, 0);
     m_popDoc = docnumfromparnum(para);
+    if (m_popDoc < 0) 
+	return 0;
     RCLPOPUP *popup = new RCLPOPUP(this);
     popup->insertItem(tr("&Preview"), this, SLOT(menuPreview()));
     popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
