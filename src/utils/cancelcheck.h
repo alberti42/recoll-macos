@@ -16,7 +16,7 @@
  */
 #ifndef _CANCELCHECK_H_INCLUDED_
 #define _CANCELCHECK_H_INCLUDED_
-/* @(#$Id: cancelcheck.h,v 1.2 2006-01-30 11:15:28 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: cancelcheck.h,v 1.3 2007-07-12 13:41:54 dockes Exp $  (C) 2005 J.F.Dockes */
 
 
 class CancelExcept {};
@@ -36,6 +36,7 @@ class CancelCheck {
 	    throw CancelExcept();
 	}
     }
+    bool cancelState() {return cancelRequested;}
  private:
     bool cancelRequested;
 
