@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.22 2007-07-12 08:23:40 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.23 2007-07-12 10:13:37 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -107,6 +107,9 @@ class PrefsPack {
     // Remembered term match mode
     int termMatchType;
 
+    // Program version that wrote this
+    int rclVersion;
+
     // Advanced search window clause list state
     vector<int> advSearchClauses;
 
@@ -118,7 +121,8 @@ class PrefsPack {
 	queryReplaceAbstract(false),
 	startWithAdvSearchOpen(false),
 	startWithSortToolOpen(false),
-	termMatchType(0)
+	termMatchType(0),
+	rclVersion(1009)
 	    {
 	    }
     static const char *getDfltResListFormat() {
@@ -127,7 +131,11 @@ class PrefsPack {
 	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
 	"%A %K";
     }
-
+    static const char *getV18DfltResListFormat() {
+	return 	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+	"%A %K";
+    }
 };
 
 /** Global preferences record */

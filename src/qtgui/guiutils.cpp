@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.33 2007-07-12 08:23:40 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.34 2007-07-12 10:13:37 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -192,8 +192,11 @@ void rwSettings(bool writing)
     QString rlfDflt = 
 	QString::fromAscii(prefs.getDfltResListFormat());
     SETTING_RW(prefs.reslistformat, "/Recoll/prefs/reslist/format", , rlfDflt);
-    if (prefs.reslistformat.stripWhiteSpace().isEmpty())
+    if (prefs.reslistformat == 
+	QString::fromAscii(prefs.getV18DfltResListFormat()) || 
+	prefs.reslistformat.stripWhiteSpace().isEmpty())
 	prefs.reslistformat = rlfDflt;
+
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", ,
 	       "english");
     SETTING_RW(prefs.useDesktopOpen, 
@@ -217,6 +220,8 @@ void rwSettings(bool writing)
 	       Num, 0);
     SETTING_RW(prefs.termMatchType, "/Recoll/prefs/query/termMatchType", 
 	       Num, 0);
+    SETTING_RW(prefs.rclVersion, "/Recoll/prefs/rclVersion", 
+	       Num, 1009);
 
     // Ssearch combobox history list
     if (writing) {

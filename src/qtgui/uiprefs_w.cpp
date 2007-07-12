@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.18 2007-07-12 08:23:40 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.19 2007-07-12 10:13:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -175,6 +175,13 @@ void UIPrefsDialog::accept()
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
     prefs.reslistformat =  rlfTE->text();
+    // Don't let us set the old default format from here, this would
+    // get reset to the new default. Ugly hack
+    if (prefs.reslistformat == 
+	QString::fromAscii(prefs.getV18DfltResListFormat())) {
+	prefs.reslistformat += " ";
+	rlfTE->setText(prefs.reslistformat);
+    }
     if (prefs.reslistformat.stripWhiteSpace().isEmpty()) {
 	prefs.reslistformat = prefs.getDfltResListFormat();
 	rlfTE->setText(prefs.reslistformat);
