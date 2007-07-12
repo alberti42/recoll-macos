@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.121 2007-07-12 08:34:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.122 2007-07-12 17:28:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -960,7 +960,7 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 			meta_it->first.c_str()));
 		continue;
 	    }
-	    LOGDEB(("Db::add: field [%s] pfx [%s]: [%s]\n", 
+	    LOGDEB1(("Db::add: field [%s] pfx [%s]: [%s]\n", 
 		    meta_it->first.c_str(), pfx.c_str(), 
 		    meta_it->second.c_str()));
 	    if (!dumb_string(meta_it->second, noacc)) {
