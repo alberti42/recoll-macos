@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.11 2007-02-02 10:12:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.12 2007-07-12 10:53:07 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -89,6 +89,17 @@ bool FsTreeWalker::setSkippedNames(const list<string> &patterns)
     data->skippedNames.unique();
     return true;
 }
+bool FsTreeWalker::inSkippedNames(const string& name)
+{
+    list<string>::const_iterator it;
+    for (it = data->skippedNames.begin(); 
+	 it != data->skippedNames.end(); it++) {
+	if (fnmatch(it->c_str(), name.c_str(), 0) == 0) {
+	    return true;
+	}
+    }
+    return false;
+}
 
 bool FsTreeWalker::addSkippedPath(const string& ipath)
 {
@@ -107,6 +118,16 @@ bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
     data->skippedPaths.sort();
     data->skippedPaths.unique();
     return true;
+}
+bool FsTreeWalker::inSkippedPaths(const string& path)
+{
+    list<string>::const_iterator it;
+    for (it = data->skippedPaths.begin(); 
+	 it != data->skippedPaths.end(); it++) {
+	if (fnmatch(it->c_str(), path.c_str(), FNM_PATHNAME) == 0) 
+	    return true;
+    }
+    return false;
 }
 
 FsTreeWalker::Status FsTreeWalker::walk(const string &top, 
@@ -156,20 +177,14 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
     struct dirent *ent;
     while ((ent = readdir(d)) != 0) {
-	// We do process hidden files for now, only skip . and ..
+	// Skip . and ..
 	if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) 
 	    continue;
 
+	// Skipped file names match ?
 	if (!data->skippedNames.empty()) {
-	    list<string>::const_iterator it;
-	    for (it = data->skippedNames.begin(); 
-		 it != data->skippedNames.end(); it++) {
-		if (fnmatch(it->c_str(), ent->d_name, 0) == 0) {
-		    //fprintf(stderr, 
-		    //"Skipping [%s] because of pattern match\n", ent->d_name);
-		    goto skip;
-		}
-	    }
+	    if (inSkippedNames(ent->d_name))
+		goto skip;
 	}
 
 	{
@@ -183,12 +198,8 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 		continue;
 	    }
 	    if (!data->skippedPaths.empty()) {
-		list<string>::const_iterator it;
-		for (it = data->skippedPaths.begin(); 
-		     it != data->skippedPaths.end(); it++) {
-		    if (fnmatch(it->c_str(), fn.c_str(), FNM_PATHNAME) == 0) 
-			goto skip;
-		}
+		if (inSkippedPaths(fn))
+		    goto skip;
 	    }
 
 	    if (S_ISDIR(st.st_mode)) {

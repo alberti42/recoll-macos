@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.11 2007-05-21 13:30:21 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.12 2007-07-12 10:53:07 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -158,7 +158,12 @@ void *rclMonRcvRun(void *q)
 	// timeout so that an intr will be detected
 	if (mon->getEvent(ev, 2)) {
 	    if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
-		mon->addWatch(ev.m_path, true);
+		// Add watch after checking that this doesn't match
+		// ignored files or paths
+		string name = path_getsimple(ev.m_path);
+		if (!walker.inSkippedNames(name) && 
+		    !walker.inSkippedPaths(ev.m_path))
+		    mon->addWatch(ev.m_path, true);
 	    }
 	    if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
 		queue->pushEvent(ev);

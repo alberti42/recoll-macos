@@ -16,7 +16,7 @@
  */
 #ifndef _FSTREEWALK_H_INCLUDED_
 #define _FSTREEWALK_H_INCLUDED_
-/* @(#$Id: fstreewalk.h,v 1.6 2006-12-21 08:22:35 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: fstreewalk.h,v 1.7 2007-07-12 10:53:07 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -71,6 +71,8 @@ class FsTreeWalker {
     /** Set the ignored paths list */
     bool setSkippedPaths(const list<string> &pathlist);
 
+    bool inSkippedPaths(const string& path);
+    bool inSkippedNames(const string& name);
  private:
     Status iwalk(const string &dir, FsTreeWalkerCB& cb);
     class Internal;
