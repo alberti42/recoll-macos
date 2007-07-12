@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.32 2007-05-24 07:48:19 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.33 2007-07-12 08:23:40 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -180,7 +180,6 @@ void rwSettings(bool writing)
 	}
     }
 
-    SETTING_RW(prefs.showicons, "/Recoll/prefs/reslist/showicons", Bool, true);
     SETTING_RW(prefs.autoSearchOnWS, "/Recoll/prefs/reslist/autoSearchOnWS", 
 	       Bool, false);
     SETTING_RW(prefs.ssearchAutoPhrase, 
@@ -191,9 +190,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Num, 
 	       10);
     QString rlfDflt = 
-	QString::fromAscii("%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-			   "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
-			   "%A %K");
+	QString::fromAscii(prefs.getDfltResListFormat());
     SETTING_RW(prefs.reslistformat, "/Recoll/prefs/reslist/format", , rlfDflt);
     if (prefs.reslistformat.stripWhiteSpace().isEmpty())
 	prefs.reslistformat = rlfDflt;

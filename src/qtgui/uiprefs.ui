@@ -154,7 +154,7 @@
                                                     <string>Result paragraph&lt;br&gt;format string</string>
                                                 </property>
                                                 <property name="toolTip" stdset="0">
-                                                    <string>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</string>
+                                                    <string>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name%lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</string>
                                                 </property>
                                             </widget>
                                             <widget class="QTextEdit">
@@ -263,17 +263,6 @@
                                                 </property>
                                             </widget>
                                         </hbox>
-                                    </widget>
-                                    <widget class="QCheckBox">
-                                        <property name="name">
-                                            <cstring>useIconsCB</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Show document type icons in result list.</string>
-                                        </property>
-                                        <property name="checked">
-                                            <bool>true</bool>
-                                        </property>
                                     </widget>
                                     <widget class="QCheckBox">
                                         <property name="name">

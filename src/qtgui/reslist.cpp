@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.30 2007-07-11 10:05:27 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.31 2007-07-12 08:23:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -408,17 +408,14 @@ void ResList::resultPageNext()
 
 	// Determine icon to display if any
 	string img_name;
-	if (prefs.showicons) {
-	    string iconpath;
-	    string iconname = rclconfig->getMimeIconName(doc.mimetype,
-							 &iconpath);
-	    LOGDEB1(("Img file; %s\n", iconpath.c_str()));
-	    QImage image(iconpath.c_str());
-	    if (!image.isNull()) {
-		img_name = string("img_") + iconname;
-		QMimeSourceFactory::defaultFactory()->
-		    setImage(img_name.c_str(), image);
-	    }
+	string iconpath;
+	string iconname = rclconfig->getMimeIconName(doc.mimetype, &iconpath);
+	LOGDEB1(("Img file; %s\n", iconpath.c_str()));
+	QImage image(iconpath.c_str());
+	if (!image.isNull()) {
+	    img_name = string("img_") + iconname;
+	    QMimeSourceFactory::defaultFactory()->
+		setImage(img_name.c_str(), image);
 	}
 
 	// Percentage of 'relevance'
@@ -501,14 +498,11 @@ void ResList::resultPageNext()
 	else
 	    result += "<p>";
 
-	if (!img_name.empty()) {
-	    result += "<img source=\"" + img_name + "\" align=\"left\">";
-	}
-
 	// Configurable stuff
 	map<char,string> subs;
 	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
 	subs['D'] = datebuf;
+	subs['I'] = img_name;
 	subs['K'] = !doc.meta["keywords"].empty() ? 
 	    escapeHtml(doc.meta["keywords"]) + "<br>" : "";
 	subs['L'] = linksbuf;

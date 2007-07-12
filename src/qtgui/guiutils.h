@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.21 2007-05-24 07:48:19 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.22 2007-07-12 08:23:40 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,6 @@ extern bool printableUrl(const string &in, string &out);
 /** Holder for preferences (gets saved to user Qt prefs) */
 class PrefsPack {
  public:
-    bool showicons;
     bool autoSearchOnWS;
     int respagesize;
     QString reslistfontfamily;
@@ -112,17 +111,23 @@ class PrefsPack {
     vector<int> advSearchClauses;
 
     PrefsPack() :
-	showicons(true), 
 	respagesize(8), 
 	reslistfontsize(10),
 	ssearchTyp(0),
 	queryBuildAbstract(true),
 	queryReplaceAbstract(false),
 	startWithAdvSearchOpen(false),
-	    startWithSortToolOpen(false),
-	    termMatchType(0)
+	startWithSortToolOpen(false),
+	termMatchType(0)
 	    {
 	    }
+    static const char *getDfltResListFormat() {
+	return 	"<img src=\"%I\" align=\"left\">"
+	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+	"%A %K";
+    }
+
 };
 
 /** Global preferences record */

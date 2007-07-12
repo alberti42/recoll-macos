@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.17 2007-05-24 07:48:19 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.18 2007-07-12 08:23:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -96,8 +96,6 @@ void UIPrefsDialog::setFromPrefs()
 {
     // Entries per result page spinbox
     pageLenSB->setValue(prefs.respagesize);
-    // Show icons checkbox
-    useIconsCB->setChecked(prefs.showicons);
     autoSearchCB->setChecked(prefs.autoSearchOnWS);
     syntlenSB->setValue(prefs.syntAbsLen);
     syntctxSB->setValue(prefs.syntAbsCtx);
@@ -171,13 +169,16 @@ void UIPrefsDialog::setFromPrefs()
 
 void UIPrefsDialog::accept()
 {
-    prefs.showicons = useIconsCB->isChecked();
     prefs.autoSearchOnWS = autoSearchCB->isChecked();
     prefs.respagesize = pageLenSB->value();
 
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
     prefs.reslistformat =  rlfTE->text();
+    if (prefs.reslistformat.stripWhiteSpace().isEmpty()) {
+	prefs.reslistformat = prefs.getDfltResListFormat();
+	rlfTE->setText(prefs.reslistformat);
+    }
 
     prefs.htmlBrowser =  helpBrowserLE->text();
 
