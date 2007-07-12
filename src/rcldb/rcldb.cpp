@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.120 2007-07-10 09:23:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.121 2007-07-12 08:34:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -525,6 +525,22 @@ Db::~Db()
     return res;
 }
 
+// Generic Xapian exception catching code. We do this quite often,
+// and I have no idea how to do this except for a macro
+#define XCATCHERROR(MSG) \
+ catch (const Xapian::Error &e) {		   \
+    MSG = e.get_msg();				   \
+    if (MSG.empty()) MSG = "Empty error message";  \
+ } catch (const string &s) {			   \
+    MSG = s;					   \
+    if (MSG.empty()) MSG = "Empty error message";  \
+ } catch (const char *s) {			   \
+    MSG = s;					   \
+    if (MSG.empty()) MSG = "Empty error message";  \
+ } catch (...) {				   \
+    MSG = "Caught unknown xapian exception";	   \
+ } 
+
 
 bool Db::open(const string& dir, const string &stops, OpenMode mode, int qops)
 {
@@ -544,7 +560,7 @@ bool Db::open(const string& dir, const string &stops, OpenMode mode, int qops)
     if (!stops.empty())
 	m_stops.setFile(stops);
 
-    const char *ermsg = "Unknown";
+    string ermsg;
     try {
 	switch (mode) {
 	case DbUpd:
@@ -581,15 +597,7 @@ bool Db::open(const string& dir, const string &stops, OpenMode mode, int qops)
 		try {
 		    // Make this non-fatal
 		    m_ndb->db.add_database(Xapian::Database(*it));
-		} catch (const Xapian::Error &e) {
-		    aerr = e.get_msg().c_str();
-		} catch (const string &s) {
-		    aerr = s.c_str();
-		} catch (const char *s) {
-		    aerr = s;
-		} catch (...) {
-		    aerr = "Caught unknown exception";
-		}
+		} XCATCHERROR(aerr);
 		if (!aerr.empty())
 		    LOGERR(("Db::Open: error while trying to add database "
 			    "from [%s]: %s\n", it->c_str(), aerr.c_str()));
@@ -600,17 +608,9 @@ bool Db::open(const string& dir, const string &stops, OpenMode mode, int qops)
 	m_ndb->m_isopen = true;
 	m_basedir = dir;
 	return true;
-    } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg().c_str();
-    } catch (const string &s) {
-	ermsg = s.c_str();
-    } catch (const char *s) {
-	ermsg = s;
-    } catch (...) {
-	ermsg = "Caught unknown exception";
-    }
+    } XCATCHERROR(ermsg);
     LOGERR(("Db::open: exception while opening [%s]: %s\n", 
-	    dir.c_str(), ermsg));
+	    dir.c_str(), ermsg.c_str()));
     return false;
 }
 
@@ -634,7 +634,7 @@ bool Db::i_close(bool final)
     if (m_ndb->m_isopen == false && !final) 
 	return true;
 
-    const char *ermsg = "Unknown";
+    string ermsg;
     try {
 	bool w = m_ndb->m_iswritable;
 	if (w)
@@ -653,16 +653,8 @@ bool Db::i_close(bool final)
 	}
 	LOGERR(("Rcl::Db::close(): cant recreate db object\n"));
 	return false;
-    } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg().c_str();
-    } catch (const string &s) {
-	ermsg = s.c_str();
-    } catch (const char *s) {
-	ermsg = s;
-    } catch (...) {
-	ermsg = "Caught unknown exception";
-    }
-    LOGERR(("Db:close: exception while deleting db: %s\n", ermsg));
+    } XCATCHERROR(ermsg);
+    LOGERR(("Db:close: exception while deleting db: %s\n", ermsg.c_str()));
     return false;
 }
 
@@ -680,11 +672,22 @@ bool Db::reOpen()
 
 int Db::docCnt()
 {
+    int res = -1;
+    string ermsg;
     if (m_ndb && m_ndb->m_isopen) {
-	return m_ndb->m_iswritable ? m_ndb->wdb.get_doccount() : 
-	    m_ndb->db.get_doccount();
+	try {
+	    res = m_ndb->m_iswritable ? m_ndb->wdb.get_doccount() : 
+		m_ndb->db.get_doccount();
+	} catch (const Xapian::DatabaseModifiedError &e) {
+	    LOGDEB(("Db::docCnt: got modified error. reopen/retry\n"));
+	    reOpen();
+	    res = m_ndb->m_iswritable ? m_ndb->wdb.get_doccount() : 
+		m_ndb->db.get_doccount();
+	} XCATCHERROR(ermsg);
+	if (!ermsg.empty())
+	    LOGERR(("Db::docCnt: got error: %s\n", ermsg.c_str()));
     }
-    return -1;
+    return res;
 }
 
 bool Db::addQueryDb(const string &dir) 
@@ -718,21 +721,14 @@ bool Db::rmQueryDb(const string &dir)
     }
     return reOpen();
 }
+
 bool Db::testDbDir(const string &dir)
 {
     string aerr;
     LOGDEB(("Db::testDbDir: [%s]\n", dir.c_str()));
     try {
 	Xapian::Database db(dir);
-    } catch (const Xapian::Error &e) {
-	aerr = e.get_msg().c_str();
-    } catch (const string &s) {
-	aerr = s.c_str();
-    } catch (const char *s) {
-	aerr = s;
-    } catch (...) {
-	aerr = "Caught unknown exception";
-    }
+    } XCATCHERROR(aerr);
     if (!aerr.empty()) {
 	LOGERR(("Db::Open: error while trying to open database "
 		"from [%s]: %s\n", dir.c_str(), aerr.c_str()));
@@ -823,7 +819,7 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
     }
 #endif
 
-    const char *ermsg;
+    string ermsg;
     try {
 	if (stops.hasStops() && stops.isStop(term)) {
 	    LOGDEB1(("Db: takeword [%s] in stop list\n", term.c_str()));
@@ -839,12 +835,8 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 	    doc.add_posting(prefix + term, pos, 1);
 	}
 	return true;
-    } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg().c_str();
-    } catch (...) {
-	ermsg= "Unknown error";
-    }
-    LOGERR(("Db: xapian add_posting error %s\n", ermsg));
+    } XCATCHERROR(ermsg);
+    LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
     return false;
 }
 
@@ -1102,13 +1094,7 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 	    LOGDEB(("Db::add: docid %d added [%s , %s]\n", did, fnc, 
 		    doc.ipath.c_str()));
 	}
-    } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg();
-	if (ermsg.empty()) 
-	    ermsg = "Empty error message";
-    } catch (...) {
-	ermsg= "Unknown error";
-    }
+    } XCATCHERROR(ermsg);
 
     if (!ermsg.empty()) {
 	LOGERR(("Db::add: replace_document failed: %s\n", ermsg.c_str()));
@@ -1118,13 +1104,7 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 	    m_ndb->wdb.add_document(newdocument);
 	    LOGDEB(("Db::add: %s added (failed re-seek for duplicate)\n", 
 		    fnc));
-	} catch (const Xapian::Error &e) {
-	    ermsg = e.get_msg();
-	    if (ermsg.empty()) 
-		ermsg = "Empty error message";
-	} catch (...) {
-	    ermsg= "Unknown error";
-	}
+	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
 	    LOGERR(("Db::add: add_document failed: %s\n", ermsg.c_str()));
 	    return false;
@@ -1139,13 +1119,7 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 	    LOGDEB(("Db::add: text size >= %d Mb, flushing\n", m_flushMb));
 	    try {
 		m_ndb->wdb.flush();
-	    } catch (const Xapian::Error &e) {
-		ermsg = e.get_msg();
-		if (ermsg.empty()) 
-		    ermsg = "Empty error message";
-	    } catch (...) {
-		ermsg= "Unknown error";
-	    }
+	    } XCATCHERROR(ermsg);
 	    if (!ermsg.empty()) {
 		LOGERR(("Db::add: flush() failed: %s\n", ermsg.c_str()));
 		return false;
@@ -1245,13 +1219,7 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 	} catch (const Xapian::DatabaseModifiedError &e) {
 	    LOGDEB(("Db::needUpdate: got modified error. reopen/retry\n"));
 	    reOpen();
-	} catch (const Xapian::Error &e) {
-	    ermsg = e.get_msg();
-	    break;
-	} catch (...) {
-	    ermsg= "Unknown error";
-	    break;
-	}
+	} XCATCHERROR(ermsg);
     }
     LOGERR(("Db::needUpdate: error while checking existence: %s\n", 
 	    ermsg.c_str()));
@@ -1293,7 +1261,7 @@ bool Db::createStemDb(const string& lang)
     if (m_ndb == 0 || m_ndb->m_isopen == false)
 	return false;
 
-    return StemDb:: createDb(m_ndb->m_iswritable ? m_ndb->wdb : m_ndb->db, 
+    return StemDb::createDb(m_ndb->m_iswritable ? m_ndb->wdb : m_ndb->db, 
 			     m_basedir, lang);
 }
 
@@ -1361,7 +1329,7 @@ bool Db::purgeFile(const string &fn)
     string hash;
     pathHash(fn, hash, PATHHASHLEN);
     string pterm  = "P" + hash;
-    const char *ermsg = "";
+    string ermsg;
     try {
 	Xapian::PostingIterator docid = db.postlist_begin(pterm);
 	if (docid == db.postlist_end(pterm))
@@ -1377,17 +1345,9 @@ bool Db::purgeFile(const string &fn)
 	    db.delete_document(*it);
 	}
 	return true;
-    } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg().c_str();
-    } catch (const string &s) {
-	ermsg = s.c_str();
-    } catch (const char *s) {
-	ermsg = s;
-    } catch (...) {
-	ermsg = "Caught unknown exception";
-    }
-    if (*ermsg) {
-	LOGERR(("Db::purgeFile: %s\n", ermsg));
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("Db::purgeFile: %s\n", ermsg.c_str()));
     }
     return false;
 }
@@ -1412,22 +1372,30 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
     LOGDEB((" pattern: [%s]\n", pattern.c_str()));
 
     // Match pattern against all file names in the db
-    Xapian::TermIterator it = m_ndb->db.allterms_begin(); 
-    it.skip_to("XSFN");
-    for (;it != m_ndb->db.allterms_end(); it++) {
-	if ((*it).find("XSFN") != 0)
-	    break;
-	string fn = (*it).substr(4);
-	LOGDEB2(("Matching [%s] and [%s]\n", pattern.c_str(), fn.c_str()));
-	if (fnmatch(pattern.c_str(), fn.c_str(), 0) != FNM_NOMATCH) {
-	    names.push_back((*it).c_str());
+    string ermsg;
+    try {
+	Xapian::TermIterator it = m_ndb->db.allterms_begin(); 
+	it.skip_to("XSFN");
+	for (;it != m_ndb->db.allterms_end(); it++) {
+	    if ((*it).find("XSFN") != 0)
+		break;
+	    string fn = (*it).substr(4);
+	    LOGDEB2(("Matching [%s] and [%s]\n", pattern.c_str(), fn.c_str()));
+	    if (fnmatch(pattern.c_str(), fn.c_str(), 0) != FNM_NOMATCH) {
+		names.push_back((*it).c_str());
+	    }
+	    // Limit the match count
+	    if (names.size() > 1000) {
+		LOGERR(("Db::filenameWildExp: too many matched file names\n"));
+		break;
+	    }
 	}
-	// Limit the match count
-	if (names.size() > 1000) {
-	    LOGERR(("Db::filenameWildExp: too many matched file names\n"));
-	    break;
-	}
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("filenameWildExp: xapian error: %s\n", ermsg.c_str()));
+	return false;
     }
+
     if (names.empty()) {
 	// Build an impossible query: we know its impossible because we
 	// control the prefixes!
@@ -1459,12 +1427,21 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
 	return false;
     }
     m_ndb->query = xq;
-    delete m_ndb->enquire;
-    m_ndb->enquire = new Xapian::Enquire(m_ndb->db);
-    m_ndb->enquire->set_query(m_ndb->query);
-    m_ndb->mset = Xapian::MSet();
-    // Get the query description and trim the "Xapian::Query"
-    string d = m_ndb->query.get_description();
+    string ermsg;
+    string d;
+    try {
+	delete m_ndb->enquire;
+	m_ndb->enquire = new Xapian::Enquire(m_ndb->db);
+	m_ndb->enquire->set_query(m_ndb->query);
+	m_ndb->mset = Xapian::MSet();
+	// Get the query description and trim the "Xapian::Query"
+	d = m_ndb->query.get_description();
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGDEB(("Db::SetQuery: xapian error %s\n", ermsg.c_str()));
+	return false;
+    }
+	
     if (d.find("Xapian::Query") == 0)
 	d.erase(0, strlen("Xapian::Query"));
     sdata->setDescription(d);
@@ -1620,32 +1597,52 @@ TermIter *Db::termWalkOpen()
     TermIter *tit = new TermIter;
     if (tit) {
 	tit->db = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
-	tit->it = tit->db.allterms_begin();
+	string ermsg;
+	try {
+	    tit->it = tit->db.allterms_begin();
+	} XCATCHERROR(ermsg);
+	if (!ermsg.empty()) {
+	    LOGERR(("Db::termWalkOpen: xapian error: %s\n", ermsg.c_str()));
+	    return 0;
+	}
     }
     return tit;
 }
 bool Db::termWalkNext(TermIter *tit, string &term)
 {
-    
-    if (tit && tit->it != tit->db.allterms_end()) {
-	term = *(tit->it)++;
-	return true;
+    string ermsg;
+    try {
+	if (tit && tit->it != tit->db.allterms_end()) {
+	    term = *(tit->it)++;
+	    return true;
+	}
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("Db::termWalkOpen: xapian error: %s\n", ermsg.c_str()));
     }
     return false;
 }
 void Db::termWalkClose(TermIter *tit)
 {
-    delete tit;
+    try {
+	delete tit;
+    } catch (...) {}
 }
-
 
 bool Db::termExists(const string& word)
 {
     if (!m_ndb || !m_ndb->m_isopen)
 	return 0;
     Xapian::Database db = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
-    if (!db.term_exists(word))
+    string ermsg;
+    try {
+	if (!db.term_exists(word))
+	    return false;
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("Db::termWalkOpen: xapian error: %s\n", ermsg.c_str()));
 	return false;
+    }
     return true;
 }
 
@@ -1669,12 +1666,15 @@ bool Db::getQueryTerms(list<string>& terms)
 
     terms.clear();
     Xapian::TermIterator it;
+    string ermsg;
     try {
 	for (it = m_ndb->query.get_terms_begin(); 
 	     it != m_ndb->query.get_terms_end(); it++) {
 	    terms.push_back(*it);
 	}
-    } catch (...) {
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("getQueryTerms: xapian error: %s\n", ermsg.c_str()));
 	return false;
     }
     return true;
@@ -1690,14 +1690,18 @@ bool Db::getMatchTerms(const Doc& doc, list<string>& terms)
     terms.clear();
     Xapian::TermIterator it;
     Xapian::docid id = Xapian::docid(doc.xdocid);
+    string ermsg;
     try {
 	for (it=m_ndb->enquire->get_matching_terms_begin(id);
 	     it != m_ndb->enquire->get_matching_terms_end(id); it++) {
 	    terms.push_back(*it);
 	}
-    } catch (...) {
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("getQueryTerms: xapian error: %s\n", ermsg.c_str()));
 	return false;
     }
+
     return true;
 }
 
@@ -1710,20 +1714,24 @@ int Db::getResCnt()
 	LOGERR(("Db::getResCnt: no query opened\n"));
 	return -1;
     }
+    string ermsg;
     if (m_ndb->mset.size() <= 0) {
 	try {
 	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum);
 	} catch (const Xapian::DatabaseModifiedError &error) {
 	    m_ndb->db.reopen();
 	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum);
-	} catch (const Xapian::Error & error) {
-	    LOGERR(("enquire->get_mset: exception: %s\n", 
-		    error.get_msg().c_str()));
+	} XCATCHERROR(ermsg);
+	if (!ermsg.empty()) {
+	    LOGERR(("enquire->get_mset: exception: %s\n", ermsg.c_str()));
 	    return -1;
 	}
     }
-
-    return m_ndb->mset.get_matches_lower_bound();
+    int ret = -1;
+    try {
+    ret = m_ndb->mset.get_matches_lower_bound();
+    } catch (...) {}
+    return ret;
 }
 
 
@@ -1861,7 +1869,7 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
     string hash;
     pathHash(fn, hash, PATHHASHLEN);
     string pqterm  = ipath.empty() ? "P" + hash : "Q" + hash + "|" + ipath;
-    const char *ermsg = "";
+    string ermsg;
     try {
 	if (!m_ndb->db.term_exists(pqterm)) {
 	    // Document found in history no longer in the database.
@@ -1878,17 +1886,9 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
 	string data = xdoc.get_data();
 	list<string> terms;
 	return m_ndb->dbDataToRclDoc(*docid, data, doc);
-    } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg().c_str();
-    } catch (const string &s) {
-	ermsg = s.c_str();
-    } catch (const char *s) {
-	ermsg = s;
-    } catch (...) {
-	ermsg = "Caught unknown exception";
-    }
-    if (*ermsg) {
-	LOGERR(("Db::getDoc: %s\n", ermsg));
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("Db::getDoc: %s\n", ermsg.c_str()));
     }
     return false;
 }
@@ -1900,20 +1900,34 @@ list<string> Db::expand(const Doc &doc)
 	LOGERR(("Db::expand: no query opened\n"));
 	return res;
     }
-    Xapian::RSet rset;
-    rset.add_document(Xapian::docid(doc.xdocid));
-    // We don't exclude the original query terms.
-    Xapian::ESet eset = m_ndb->enquire->get_eset(20, rset, false);
-    LOGDEB(("ESet terms:\n"));
-    // We filter out the special terms
-    for (Xapian::ESetIterator it = eset.begin(); it != eset.end(); it++) {
-	LOGDEB((" [%s]\n", (*it).c_str()));
-	if ((*it).empty() || ((*it).at(0)>='A' && (*it).at(0)<='Z'))
+    string ermsg;
+    for (int tries = 0; tries < 2; tries++) {
+	try {
+	    Xapian::RSet rset;
+	    rset.add_document(Xapian::docid(doc.xdocid));
+	    // We don't exclude the original query terms.
+	    Xapian::ESet eset = m_ndb->enquire->get_eset(20, rset, false);
+	    LOGDEB(("ESet terms:\n"));
+	    // We filter out the special terms
+	    for (Xapian::ESetIterator it = eset.begin(); 
+		 it != eset.end(); it++) {
+		LOGDEB((" [%s]\n", (*it).c_str()));
+		if ((*it).empty() || ((*it).at(0)>='A' && (*it).at(0)<='Z'))
+		    continue;
+		res.push_back(*it);
+		if (res.size() >= 10)
+		    break;
+	    }
+	} catch (const Xapian::DatabaseModifiedError &error) {
 	    continue;
-	res.push_back(*it);
-	if (res.size() >= 10)
-	    break;
+	} XCATCHERROR(ermsg);
+	if (!ermsg.empty()) {
+	    LOGERR(("Db::expand: xapian error %s\n", ermsg.c_str()));
+	    res.clear();
+	}
+	break;
     }
+
     return res;
 }
 
