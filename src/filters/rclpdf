@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclpdf,v 1.9 2007-06-08 13:51:09 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclpdf,v 1.10 2007-07-12 17:13:38 dockes Exp $  (C) 2004 J.F.Dockes
 # This is copied almost verbatim from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -166,8 +166,6 @@ awk 'BEGIN'\
       gsub(/&/, "\\&amp;", $0)
       gsub(/</, "\\&lt;", $0)
       gsub(/>/, "\\&gt;", $0)
-      gsub(/^ */, "", $0)
-      gsub(/ *$/, "", $0)
   }
   print $0
 }
