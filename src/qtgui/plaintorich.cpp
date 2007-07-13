@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.25 2007-06-25 10:13:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.26 2007-07-13 07:00:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -317,14 +317,14 @@ string termAnchorName(int i)
 // http://unicode.org/faq/char_combmark.html#17
 // We are counting on the fact that a sequence of two such chars should be 
 // extremely unlikely in normal text and not affecting the display.
-const char *firstTermBeacon = " \xcd\x8f\xcd\x8f ";
+const char *firstTermBeacon = "\xcd\x8f\xcd\x8f";
 #endif
 
 static string termBeacon(int i)
 {
     return string("<a name=\"") + termAnchorName(i) + "\">"
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
-		    + "<font color=\"white\">" + firstTermBeacon + "</font>"
+		    + " " + firstTermBeacon + " "
 #endif
 		    + "</a>";
 
