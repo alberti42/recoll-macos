@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.11 2007-06-12 13:31:38 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.12 2007-07-13 06:31:30 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -118,7 +118,6 @@ private:
     QWidget *currentW;
     HiliteData m_hData;
     void init();
-    virtual void destroy();
     TabData *tabDataForCurrent(); // Return auxiliary data pointer for cur tab
 };
 

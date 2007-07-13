@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.22 2007-06-20 13:15:57 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.23 2007-07-13 06:31:30 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -100,12 +100,14 @@ void Preview::init()
     currentChanged(pvTab->currentPage());
 }
 
-void Preview::destroy()
-{
-}
-
 void Preview::closeEvent(QCloseEvent *e)
 {
+    LOGDEB(("Preview::closeEvent. m_loading %d\n", m_loading));
+    if (m_loading) {
+	CancelCheck::instance().setCancel();
+	e->ignore();
+	return;
+    }
     prefs.pvwidth = width();
     prefs.pvheight = height();
     emit previewExposed(m_searchId, -1);
@@ -217,29 +219,32 @@ QTextEdit *Preview::getCurrentEditor()
 void Preview::doSearch(const QString &_text, bool next, bool reverse, 
 		       bool wordOnly)
 {
-    LOGDEB(("Preview::doSearch: [%s] next %d rev %d\n", 
-	    (const char *)_text.utf8(), int(next), int(reverse)));
+    LOGDEB(("Preview::doSearch: text [%s] txtlen %d next %d rev %d word %d\n", 
+	    (const char *)_text.utf8(), _text.length(), int(next), 
+	    int(reverse), int(wordOnly)));
     QString text = _text;
-    if (text.isEmpty()) {
-#ifdef QT_SCROLL_TO_ANCHOR_BUG
-	text = QString::fromUtf8(firstTermBeacon);
-#endif
-    }
+
+    bool matchCase = matchCheck->isChecked();
     QTextEdit *edit = getCurrentEditor();
     if (edit == 0) {
 	// ??
 	return;
     }
 
-    bool matchCase = matchCheck->isChecked();
+    if (text.isEmpty()) {
+#ifdef QT_SCROLL_TO_ANCHOR_BUG
+	text = QString::fromUtf8(firstTermBeacon);
+	matchCase = false;
+#else
+#error "Cycling without beacons needs coding"
+#endif
+    }
 
-    LOGDEB(("Preview::doSearch: find: case %d word %d fw %d\n", 
-	     matchCase, wordOnly, !reverse));
-
-    // If the search text changed we need to reset the cursor position
-    // to the start of the previous match, else incremental search is
-    // going to look for the next occurrence instead of trying to
-    // lenghten the current match
+    // If next is false, the user added characters to the current
+    // search string.  We need to reset the cursor position to the
+    // start of the previous match, else incremental search is going
+    // to look for the next occurrence instead of trying to lenghten
+    // the current match
     if (!next) {
 	int ps, is, pe, ie;
 	edit->getSelection(&ps, &is, &pe, &ie);
@@ -247,11 +252,13 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 	    is--;
 	else if (ps > 0)
 	    ps--;
-	LOGDEB(("Setting cursor to %d %d\n", ps, is));
+	LOGDEB(("Preview::doSearch: setting cursor to %d %d\n", ps, is));
 	edit->setCursorPosition(ps, is);
     }
 
+    LOGDEB(("Preview::doSearch: first find call\n"));
     bool found = edit->find(text, matchCase, wordOnly, !reverse, 0, 0);
+    LOGDEB(("Preview::doSearch: first find call return\n"));
     // If not found, try to wrap around. 
     if (!found && next) { 
 	LOGDEB(("Preview::doSearch: wrapping around\n"));
@@ -262,7 +269,9 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 	} else {
 	    mspara = msindex = 0;
 	}
+	LOGDEB(("Preview::doSearch: 2nd find call\n"));
 	found = edit->find(text,matchCase, false, !reverse, &mspara, &msindex);
+	LOGDEB(("Preview::doSearch: 2nd find call return\n"));
     }
 
     if (found) {
@@ -272,14 +281,13 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 	    QApplication::beep();
 	canBeep = false;
     }
+    LOGDEB(("Preview::doSearch: return\n"));
 }
-
 
 void Preview::nextPressed()
 {
     doSearch(searchTextLine->text(), true, false);
 }
-
 
 void Preview::prevPressed()
 {
@@ -362,8 +370,11 @@ void Preview::textDoubleClicked(int, int)
 
 void Preview::closeCurrentTab()
 {
-    if (m_loading)
+    LOGDEB(("Preview::closeCurrentTab: m_loading %d\n", m_loading));
+    if (m_loading) {
+	CancelCheck::instance().setCancel();
 	return;
+    }
     if (pvTab->count() > 1) {
 	QWidget *tw = pvTab->currentPage();
 	if (!tw) 
@@ -595,7 +606,7 @@ class LoadGuard {
     bool *m_bp;
 public:
     LoadGuard(bool *bp) {m_bp = bp ; *m_bp = true;}
-    ~LoadGuard() {*m_bp = false;}
+    ~LoadGuard() {*m_bp = false; CancelCheck::instance().setCancel(false);}
 };
 
 bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
@@ -607,9 +618,9 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     }
 
     LoadGuard guard(&m_loading);
+    CancelCheck::instance().setCancel(false);
 
     Rcl::Doc doc = idoc;
-    bool cancel = false;
 
     if (doc.meta["title"].empty()) 
 	doc.meta["title"] = path_getsimple(doc.url);
@@ -650,12 +661,16 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	qApp->processEvents();
 	if (progress.wasCanceled()) {
 	    CancelCheck::instance().setCancel();
-	    cancel = true;
 	}
 	if (prog >= 5)
 	    sleep(1);
     }
-    if (cancel)
+
+    LOGDEB(("LoadFileInCurrentTab: after file load: cancel %d status %d"
+	    " text length %d\n", 
+	    CancelCheck::instance().cancelState(), status, fdoc.text.length()));
+
+    if (CancelCheck::instance().cancelState())
 	return false;
     if (status != 0) {
 	QString explain;
@@ -694,12 +709,13 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	    qApp->processEvents();
 	    if (progress.wasCanceled()) {
 		CancelCheck::instance().setCancel();
-		cancel = true;
 	    }
 	    if (prog >= 5)
 		sleep(1);
 	}
-	if (cancel) {
+
+	// Conversion to rich text done
+	if (CancelCheck::instance().cancelState()) {
 	    if (richTxt.length() == 0) {
 		// We cant call closeCurrentTab here as it might delete
 		// the object which would be a nasty surprise to our
@@ -712,6 +728,11 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     } else {
 	richTxt = QString::fromUtf8(fdoc.text.c_str(), fdoc.text.length());
     }
+
+    int pos = richTxt.find(QString::fromUtf8(firstTermBeacon));
+    bool hasAnchors = (pos != -1);
+    LOGDEB(("LoadFileInCurrentTab: rich: cancel %d txtln %d, hasAnchors %d (pos %d)\n", 
+	    CancelCheck::instance().cancelState(), richTxt.length(), hasAnchors, pos));
 
     // Load into editor
     // Do it in several chunks 
@@ -750,32 +771,40 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	}
 
 	if (progress.wasCanceled()) {
-	    cancel = true;
             editor->append("<b>Cancelled !</b>");
-	    LOGDEB(("Cancelled\n"));
+	    LOGDEB(("LoadFileInCurrentTab: cancelled in editor load\n"));
 	    break;
 	}
     }
+    progress.close();
 
     if (searchTextLine->text().length() != 0) {
 	canBeep = true;
 	doSearch(searchTextLine->text(), true, false);
     } else {
-	QString aname = QString::fromUtf8(termAnchorName(1).c_str());
-	LOGDEB2(("Calling scrolltoanchor [%s]\n", (const char *)aname.utf8()));
-	editor->scrollToAnchor(aname);
+	if (hasAnchors) {
+	    QString aname = QString::fromUtf8(termAnchorName(1).c_str());
+	    LOGDEB2(("Call scrolltoanchor(%s)\n", (const char *)aname.utf8()));
+	    editor->scrollToAnchor(aname);
+	    // The q3textedit version of find is slow to the point of being
+	    // unusable (plus it does not always work)
+#if (QT_VERSION < 0x040000)
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
-	bool ocanbeep = canBeep;
-	canBeep = false;
-	QString empty;
-	doSearch(empty, 0, false, false);
-	canBeep = ocanbeep;
+	    bool ocanbeep = canBeep;
+	    canBeep = false;
+	    QString empty;
+	    // doSearch(_text, next, reverse, wordOnly)
+	    doSearch(empty, true, false, false);
+	    canBeep = ocanbeep;
 #endif
+#endif // (QT_VERSION < 0x040000)
+	}
     }
     // Enter document in document history
     g_dynconf->enterDoc(fn, doc.ipath);
 
     editor->setFocus();
     emit(previewExposed(m_searchId, docnum));
+    LOGDEB(("LoadFileInCurrentTab: returning true\n"));
     return true;
 }

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.31 2007-06-20 13:15:58 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.32 2007-07-13 06:31:30 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -418,6 +418,7 @@ void RclMain::showExtIdxDialog()
 // where the current one is closed
 void RclMain::previewClosed(QWidget *w)
 {
+    LOGDEB(("RclMain::previewClosed(%p)\n", w));
     if (w == (QWidget *)curPreview) {
 	LOGDEB(("Active preview closed\n"));
 	curPreview = 0;
