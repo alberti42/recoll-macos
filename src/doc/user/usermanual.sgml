@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.46 2007-07-09 17:21:17 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.47 2007-07-13 07:17:39 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -391,9 +391,11 @@ recoll
       configuration files.</para>
 
       <para>The configuration is documented inside the <link
-      linkend="rcl.install.config">installation chapter</link> of
-      this document, or in the recoll.conf(5) man page. The most
-      immediately useful variable you may interested in is probably <link
+      linkend="rcl.install.config">installation chapter</link> of this
+      document, or in the recoll.conf(5) man page, but the most
+      current information will most likely be the comments inside the
+      sample file. The most immediately useful variable you may
+      interested in is probably <link
       linkend="rcl.install.config.recollconf.topdirs">topdirs</link>,
       which determines what subtrees get indexed.</para>
 
@@ -1095,9 +1097,13 @@ fvwm
 
       <para>Documents that you actually view (with the internal preview
         or an external tool) are entered into the document history,
-        which is remembered. You can display the history list by using
+        which is remembered.</para> 
+      <para>You can display the history list by using
         the <guilabel>Tools/</guilabel><guilabel>Doc History</guilabel> menu
         entry.</para> 
+      <para>You can erase the document history by using the
+      <guilabel>Erase document history</guilabel> entry in the
+      <guimenu>File</guimenu> menu.
 
     </sect1>
 
@@ -1118,6 +1124,13 @@ fvwm
       <para>The sort parameters stay in effect until they are explicitly
       reset, or the program exits. An activated sort is indicated in
       the result list header.</para>
+
+      <para>Sort parameters are remembered between program
+      invocations, but result sorting is normally always inactive when
+      the program starts. It is possible to keep the sorting
+      activation state between program invocations by checking the
+      <guilabel>Remember sort activation state</guilabel>
+      option in the preferences.</para>
 
     </sect1>
 
@@ -1263,6 +1276,9 @@ fvwm
 	  </listitem>
 	  <listitem><formalpara><title>%D</title><para>Date</para></formalpara>
 	  </listitem>
+	  <listitem><formalpara><title>%I</title><para>Icon image name
+	  </para></formalpara> 
+	  </listitem>
 	  <listitem><formalpara><title>%K</title><para>Keywords (if
 	  any)</para></formalpara> 
 	  </listitem>
@@ -1288,7 +1304,7 @@ fvwm
 	  </listitem>
 	</itemizedlist>
         The default value for the string is:
-        <programlisting>%R %S %L &amp;nbsp;&amp;nbsp;&lt;b>%T&lt;/b>&lt;br>
+        <programlisting>&lt;img src="%I" align="left">%R %S %L &amp;nbsp;&amp;nbsp;&lt;b>%T&lt;/b>&lt;br>
 %M&amp;nbsp;%D&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i>%U&lt;/i>&lt;br>
 %A %K
         </programlisting>
@@ -1298,7 +1314,7 @@ fvwm
 %A&lt;font color=#008000>%U - %S&lt;/font> - %L
         </programlisting>
         Or the clean looking:
-        <programlisting>%L &lt;font color="#900000">%R&lt;/font>
+        <programlisting>&lt;img src="%I" align="left">%L &lt;font color="#900000">%R&lt;/font>
 &nbsp;&nbsp;&lt;b>%T&lt;/b>&lt;br>%S&nbsp;
 &lt;font color="#808080">&lt;i>%U&lt;/i>&lt;/font>
 &lt;table bgcolor="#e0e0e0">
@@ -1312,6 +1328,11 @@ fvwm
         where <replaceable>docnum</replaceable> is what %N would
         print. This makes the title a preview link in the above format.
 	</para>
+        <para>Please note that, due to the way the program
+	handles right mouse clicks in the result list, if the custom
+	formatting results in multiple paragraphs per result, right
+	clicks will only work inside the first one.</para>
+
 	</listitem>
 
 	<listitem><para><guilabel>HTML help browser</guilabel>: this
@@ -1319,12 +1340,6 @@ fvwm
 	started from the <guimenu>Help</guimenu> menu to read the user
 	manual. You can enter a simple name if the command is in your
 	PATH, or browse for a full pathname.</para>
-	</listitem>
-
-	<listitem><para><guilabel>Show document type icons in result
-	list</guilabel>: icons in the result list can be turned
-	off. They take quite a lot of space and convey relatively
-	little useful information.</para>
 	</listitem>
 
 	<listitem><para><guilabel>Auto-start simple search on
@@ -1431,52 +1446,45 @@ fvwm
     <sect1 id="rcl.install.binary">
       <title>Installing a prebuilt copy</title>
 
-      <para>Recoll binary installations are always linked statically
-        to the xapian libraries, and have no other dependencies. You
-        will only have to check or install 
-        <link linkend="rcl.install.external">supporting
-        applications</link> for the file types that you want to index
-        beyond text, HTML and mail files.</para> 
+      <para>&RCL; binary packages from the &RCL; web site are always
+      linked statically to the &XAP; libraries, and have no other
+      dependencies. You will only have to check or install <link
+      linkend="rcl.install.external">supporting applications</link>
+      for the file types that you want to index beyond text, HTML and
+      mail files, and maybe have a look at the 
+      <link linkend="rcl.install.config">configuration section</link>
+      (but this may not be necessary for a quick test with default
+      parameters).</para>
 
       <sect2 id="rcl.install.binary.package">
         <title>Installing through a package system</title>
 
-        <para>If you use a BSD-type port system or a
-         prebuilt package (RPM or other), just follow the usual
-         procedure, and maybe have a look at the <link
-         linkend="rcl.install.config">configuration
-         section</link> (but this may not be necessary for a quick
-         test with default parameters).</para>
+        <para>If you use a BSD-type port system or a prebuilt package
+        (RPM or other), just follow the usual  procedure for your
+        system.</para> 
 
       </sect2>
 
       <sect2 id="rcl.install.binary.rcl">
         <title>Installing a prebuilt &RCL;</title>
 
-      <para>The unpackaged binary versions are just compressed tar
-        files of a build tree, where only the useful parts were kept
-        (executables and sample configuration).</para>
+	<para>The unpackaged binary versions on the &RCL; web site are
+        just compressed tar files of a build tree, where only the
+        useful parts were kept (executables and sample
+        configuration).</para>
 
-      <para>The executable binary files are built with a static link to
+	<para>The executable binary files are built with a static link to
         libxapian and libiconv, to make installation easier (no
-        dependencies). However, this also means that you cannot change
-        the versions which are used.</para> 
+        dependencies).</para> 
 
-      <para>After extracting the tar file, you can proceed with
+	<para>After extracting the tar file, you can proceed with
         <link linkend="rcl.install.building.install">installation</link> as
         if you had built the package from source (that is, just type
         <literal>make install</literal>). The binary trees are built for
         installation to	<filename>/usr/local</filename>.</para>
 
-	<para>You may then need to install external applications to process
-	some file types that you want indexed (ie: acrobat, 
-	postscript&nbsp;...). See next section.</para> 
-
-	<para>Finally, you may want to have a look at the <link
-        linkend="rcl.indexing.config">configuration section</link>.</para>
-
       </sect2>
-      </sect1>
+    </sect1>
 
     <sect1 id="rcl.install.external">
       <title>Supporting packages</title>
@@ -1552,7 +1560,8 @@ fvwm
 
       <para>At the very least, you will need to download and install the
         <ulink url="http://www.xapian.org">xapian core package</ulink>
-        (&RCL; development currently uses version 0.9.5), and the <ulink
+        (&RCL; 1.9 normally uses version 1.0.2, but any 0.9 or 1.0.x
+        version will work too), and the <ulink
         url="http://www.trolltech.com/products/qt/index.html">qt
           run-time and development packages</ulink> (&RCL; development
           currently uses version 3.3.5, but any 3.3 version is
@@ -1575,10 +1584,11 @@ fvwm
         <title>Building</title>
 
       <para>&RCL; has been built on
-        Linux (redhat7.3, mandriva 2005/6, Fedora Core 3/4/5), FreeBSD and
-        Solaris 8. If you build on another system, <ulink
-        url="mailto:jean-francois.dockes@wanadoo.fr">I would very much
-        welcome patches</ulink>.</para>
+        Linux (redhat7.3, mandriva 2005/6, Fedora Core 3/4/5/6),
+        FreeBSD 5/6, macosx, and Solaris 8. If you build on another system, and
+        need to modify things,
+        <ulink url="mailto:jean-francois.dockes@wanadoo.fr">I would
+        very much welcome patches</ulink>.</para>
 
       <para>Depending on the <application>qt</application>
       configuration on your system, you may have to set the
@@ -1843,6 +1853,44 @@ skippedPaths = ~/somedir/*.txt
             </listitem>
           </varlistentry>
 
+          <varlistentry><term><literal>indexstemminglanguages</literal></term>
+            <listitem><para>A list of languages for which the stem
+            expansion databases will be built. See recollindex(1) or
+            use the <literal>recollindex -l</literal> command for
+            possible values. You can add a stem expansion database for
+            a different language by using <command>recollindex
+            -s</command>, but it will be deleted during the next
+            indexing. Only languages listed in the configuration
+            file are permanent.</para>
+            </listitem>
+          </varlistentry>
+         
+          <varlistentry><term><literal>defaultcharset</literal></term>
+            <listitem><para>The name of the character set used for
+            files that do not contain a character set definition (ie:
+            plain text files). This can be redefined for any
+            sub-directory. If it is not set at all, the character set
+            used is the one defined by the nls environment (LC_ALL,
+            LC_CTYPE, LANG), or iso8859-1 if nothing is set.</para> 
+
+          <varlistentry><term><literal>maxfsoccuppc</literal></term>
+            <listitem><para>Maximum file system occupation before we
+            stop indexing. The value is a percentage, corresponding to
+            what the "Capacity" df output column shows.  The default
+            value is 0, meaning no checking. </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>idxflushmb</literal></term>
+            <listitem><para>Threshold (megabytes of new text data)
+            where we flush from memory to disk index. Setting this can
+            help control memory usage. A value of 0 means no explicit
+            flushing, letting Xapian use its own default, which is
+            flushing every 10000 documents (memory usage depends on
+            average document size). The default value is 10.</para>
+            </listitem>
+          </varlistentry>
+
           <varlistentry><term><literal>filtersdir</literal></term>
             <listitem><para>A directory to search for the external
             filter scripts used to index some types of files. The
@@ -1852,25 +1900,13 @@ skippedPaths = ~/somedir/*.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>indexstemminglanguages</literal></term>
-            <listitem><para>A list of languages for which the stem
-            expansion databases will be built. See recollindex(1) for
-            possible values. You can add a stem expansion database for
-            a different language by using <command>recollindex
-            -s</command>, but it will be deleted during the next
-            indexing. Only languages listed in the configuration
-            file are permanent.</para>
+          <varlistentry><term><literal>iconsdir</literal></term>
+            <listitem><para>The name of the directory where
+            <command>recoll</command> result list icons are
+            stored. You can change this if you want different
+            images.</para>
             </listitem>
           </varlistentry>
-
-         
-          <varlistentry><term><literal>defaultcharset</literal></term>
-            <listitem><para>The name of the character set used for
-            files that do not contain a character set definition (ie:
-            plain text files). This can be redefined for any
-            sub-directory. If it is not set at all, the character set
-            used is the one defined by the nls environment (LC_ALL,
-            LC_CTYPE, LANG), or iso8859-1 if nothing is set.</para> 
 
           <varlistentry><term><literal>guesscharset</literal></term>
             <listitem><para>Decide if we try to guess the character
@@ -1912,14 +1948,6 @@ skippedPaths = ~/somedir/*.txt
             </para>
 	    </listitem>
 	  </varlistentry>
-
-          <varlistentry><term><literal>iconsdir</literal></term>
-            <listitem><para>The name of the directory where
-            <command>recoll</command> result list icons are
-            stored. You can change this if you want different
-            images.</para>
-            </listitem>
-          </varlistentry>
 
           <varlistentry><term><literal>aspellLanguage</literal></term>
             <listitem><para>Language definitions to use when creating
