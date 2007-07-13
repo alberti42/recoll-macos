@@ -313,7 +313,7 @@
                                             <cstring>keepSortCB</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Remember sorting preference between invocations.</string>
+                                            <string>Remember sort activation state.</string>
                                         </property>
                                         <property name="checked">
                                             <bool>false</bool>
