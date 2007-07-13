@@ -1308,7 +1308,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Show document type icons in result list.</source>
-        <translation>Afficher les icônes de type de fichier dans la liste de résultats.</translation>
+        <translation type="obsolete">Afficher les icônes de type de fichier dans la liste de résultats.</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -1434,7 +1434,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Définit the format pour chaque paragraphe de la liste de résultats. Utilise le format html qt et des remplacements à la printf:&lt;br&gt;%A Résumé&lt;br&gt; %D Date&lt;br&gt; %K Mots clefs (s&apos;il y en a)&lt;br&gt; %L Liens aperçu et édition&lt;br&gt; %M Type Mime&lt;br&gt; %N Numéro de résultat&lt;br&gt; %R Pertinence&lt;br&gt; %S Taille&lt;br&gt; %T Titre&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="obsolete">Définit the format pour chaque paragraphe de la liste de résultats. Utilise le format html qt et des remplacements à la printf:&lt;br&gt;%A Résumé&lt;br&gt; %D Date&lt;br&gt; %K Mots clefs (s&apos;il y en a)&lt;br&gt; %L Liens aperçu et édition&lt;br&gt; %M Type Mime&lt;br&gt; %N Numéro de résultat&lt;br&gt; %R Pertinence&lt;br&gt; %S Taille&lt;br&gt; %T Titre&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
@@ -1488,7 +1488,15 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Remember sorting preference between invocations.</source>
-        <translation>Mémoriser l&apos;état des paramètres de tri.</translation>
+        <translation type="obsolete">Mémoriser l&apos;état des paramètres de tri.</translation>
+    </message>
+    <message>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation>Definit le format des paragraphes de la liste de resultats. Utilise le format html qt et des directives de substitution de type printf:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>Remember sort activation state.</source>
+        <translation>Memoriser l&apos;etat d&apos;activation du tri.</translation>
     </message>
 </context>
 <context>

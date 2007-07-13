@@ -8,9 +8,16 @@ Latest (1.8.2):
 - There are a few problems in the qt4 version of recoll: some accelerators
   (esc-spc, ctl-arrow) do not work, neither do copy/paste between the
   result list and preview windows and x11 applications.
+
+- The q3textedit find() method is extremely slow. Positionning to first
+  search term in preview has been disabled in qt4, and the application will
+  sometimes appear to be looping when using the find feature in the
+  preview window (it's not looping, it's searching :( )
+
 - The dates shown for email attachments in a result list are the email
   folder modification date. This should be inherited from the parent
   message instead.
+
 - There are sometimes problems with document deletions: the index can
   get in a state where deleted or moved documents are not purged from the
   index (the log file says that the doc are deleted, but they aren't
@@ -19,6 +26,15 @@ Latest (1.8.2):
   fixed in a future release. You can apply the following patch to xapian
   1.0.1 to fix it:
       http://www.lesbonscomptes.com/recoll/xapian/xapian-delete-document.patch 
+
+- Under ubuntu (at least), the default awk interpreter (mawk) is buggy,
+  and the recoll pdf input filter does not work (removes all space
+  characters). This can be solved by installing the gawk package.
+
+- If the user-chosen result list entry format results in several paragraphs
+  (in the qt textedit sense), right clicks will only work inside the first
+  one for each entry.
+
 - NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is

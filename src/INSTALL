@@ -23,39 +23,34 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    4.4. Configuration overview
 
+   4.5. Extending Recoll
+
                         4.1. Installing a prebuilt copy
 
-   Recoll binary installations are always linked statically to the xapian
-   libraries, and have no other dependencies. You will only have to check or
-   install supporting applications for the file types that you want to index
-   beyond text, HTML and mail files.
+   Recoll binary packages from the Recoll web site are always linked
+   statically to the Xapian libraries, and have no other dependencies. You
+   will only have to check or install supporting applications for the file
+   types that you want to index beyond text, HTML and mail files, and maybe
+   have a look at the configuration section (but this may not be necessary
+   for a quick test with default parameters).
 
 4.1.1. Installing through a package system
 
    If you use a BSD-type port system or a prebuilt package (RPM or other),
-   just follow the usual procedure, and maybe have a look at the
-   configuration section (but this may not be necessary for a quick test with
-   default parameters).
+   just follow the usual procedure for your system.
 
 4.1.2. Installing a prebuilt Recoll
 
-   The unpackaged binary versions are just compressed tar files of a build
-   tree, where only the useful parts were kept (executables and sample
-   configuration).
+   The unpackaged binary versions on the Recoll web site are just compressed
+   tar files of a build tree, where only the useful parts were kept
+   (executables and sample configuration).
 
    The executable binary files are built with a static link to libxapian and
-   libiconv, to make installation easier (no dependencies). However, this
-   also means that you cannot change the versions which are used.
+   libiconv, to make installation easier (no dependencies).
 
    After extracting the tar file, you can proceed with installation as if you
    had built the package from source (that is, just type make install). The
    binary trees are built for installation to /usr/local.
-
-   You may then need to install external applications to process some file
-   types that you want indexed (ie: acrobat, postscript ...). See next
-   section.
-
-   Finally, you may want to have a look at the configuration section.
 
    --------------------------------------------------------------------------
 
@@ -120,9 +115,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 4.3.1. Prerequisites
 
    At the very least, you will need to download and install the xapian core
-   package (Recoll development currently uses version 0.9.5), and the qt
-   run-time and development packages (Recoll development currently uses
-   version 3.3.5, but any 3.3 version is probably OK).
+   package (Recoll 1.9 normally uses version 1.0.2, but any 0.9 or 1.0.x
+   version will work too), and the qt run-time and development packages
+   (Recoll development currently uses version 3.3.5, but any 3.3 version is
+   probably OK).
 
    You will most probably be able to find a binary package for qt for your
    system. You may have to compile Xapian but this is not difficult (if you
@@ -135,8 +131,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 4.3.2. Building
 
    Recoll has been built on Linux (redhat7.3, mandriva 2005/6, Fedora Core
-   3/4/5), FreeBSD and Solaris 8. If you build on another system, I would
-   very much welcome patches.
+   3/4/5/6), FreeBSD 5/6, macosx, and Solaris 8. If you build on another
+   system, and need to modify things, I would very much welcome patches.
 
    Depending on the qt configuration on your system, you may have to set the
    QTDIR and QMAKESPECS variables in your environment:
@@ -190,9 +186,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Link: HOME
    Link: UP
    Link: PREVIOUS
+   Link: NEXT
 
                                Recoll user manual
-   Prev                     Chapter 4. Installation                           
+   Prev                     Chapter 4. Installation                      Next 
 
    --------------------------------------------------------------------------
 
@@ -334,20 +331,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            value, and is the default. The daemversion is specific to the
            indexing monitor daemon.
 
-   filtersdir
-
-           A directory to search for the external filter scripts used to
-           index some types of files. The value should not be changed, except
-           if you want to modify one of the default scripts. The value can be
-           redefined for any sub-directory.
-
    indexstemminglanguages
 
            A list of languages for which the stem expansion databases will be
-           built. See recollindex(1) for possible values. You can add a stem
-           expansion database for a different language by using recollindex
-           -s, but it will be deleted during the next indexing. Only
-           languages listed in the configuration file are permanent.
+           built. See recollindex(1) or use the recollindex -l command for
+           possible values. You can add a stem expansion database for a
+           different language by using recollindex -s, but it will be deleted
+           during the next indexing. Only languages listed in the
+           configuration file are permanent.
 
    defaultcharset
 
@@ -356,6 +347,32 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            redefined for any sub-directory. If it is not set at all, the
            character set used is the one defined by the nls environment
            (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
+
+   maxfsoccuppc
+
+           Maximum file system occupation before we stop indexing. The value
+           is a percentage, corresponding to what the "Capacity" df output
+           column shows. The default value is 0, meaning no checking.
+
+   idxflushmb
+
+           Threshold (megabytes of new text data) where we flush from memory
+           to disk index. Setting this can help control memory usage. A value
+           of 0 means no explicit flushing, letting Xapian use its own
+           default, which is flushing every 10000 documents (memory usage
+           depends on average document size). The default value is 10.
+
+   filtersdir
+
+           A directory to search for the external filter scripts used to
+           index some types of files. The value should not be changed, except
+           if you want to modify one of the default scripts. The value can be
+           redefined for any sub-directory.
+
+   iconsdir
+
+           The name of the directory where recoll result list icons are
+           stored. You can change this if you want different images.
 
    guesscharset
 
@@ -388,11 +405,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            the size of the stored abstract (which can come from an actual
            section or just be the beginning of the text). The default value
            is 250.
-
-   iconsdir
-
-           The name of the directory where recoll result list icons are
-           stored. You can change this if you want different images.
 
    aspellLanguage
 
@@ -525,29 +537,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    argument and should output the text contents in html format on the
    standard output.
 
-   The html could be very minimal like the following example:
-
- <html><head>
- <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
- </head>
- <body>some text content</body></html>
-         
-
-   You should take care to escape some characters inside the text by
-   transforming them into appropriate entities. "&" should be transformed
-   into "&amp;", "<" should be transformed into "&lt;".
-
-   The character set needs to be specified in the header. It does not need to
-   be UTF-8 (Recoll will take care of translating it), but it must be
-   accurate for good results.
-
-   Recoll will also make use of other header fields if they are present:
-   title, description, keywords.
-
-   The easiest way to write a new filter is probably to start from an
-   existing one.
+   You can find more details about writing a Recoll filter in the section
+   about writing filters
 
    --------------------------------------------------------------------------
 
-   Prev                               Home                                    
-   Building from source                Up                                     
+   Prev                               Home                               Next 
+   Building from source                Up                    Extending Recoll 

@@ -1309,7 +1309,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Show document type icons in result list.</source>
-        <translation type="unfinished">Mostra le icone nella lsita dei risultati.</translation>
+        <translation type="obsolete">Mostra le icone nella lsita dei risultati.</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -1435,7 +1435,7 @@ Può essere lento per grossi documenti..</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Definisci il formato per ogni risultato. Usa il formato qt-html:e simile a quello di printf:&lt;br&gt;%A Riassunto&lt;br&gt; %D Data&lt;br&gt; %K Keywords (se ci sono)&lt;br&gt; %L Links Preview e Edita&lt;br&gt; %M Tipo Mime&lt;br&gt; %N Numero di risultati&lt;br&gt; %R Rilevanza&lt;br&gt; %S Size&lt;br&gt; %T Titolo&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="obsolete">Definisci il formato per ogni risultato. Usa il formato qt-html:e simile a quello di printf:&lt;br&gt;%A Riassunto&lt;br&gt; %D Data&lt;br&gt; %K Keywords (se ci sono)&lt;br&gt; %L Links Preview e Edita&lt;br&gt; %M Tipo Mime&lt;br&gt; %N Numero di risultati&lt;br&gt; %R Rilevanza&lt;br&gt; %S Size&lt;br&gt; %T Titolo&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
@@ -1489,7 +1489,11 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
         <translation type="unfinished">Rimuovi dalla lista. Non ha effetto sull&apos;indice del disco</translation>
     </message>
     <message>
-        <source>Remember sorting preference between invocations.</source>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remember sort activation state.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

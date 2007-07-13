@@ -1,4 +1,4 @@
-.\" $Id: recoll.conf.5,v 1.4 2006-11-20 18:07:02 dockes Exp $ (C) 2005 J.F.Dockes\$
+.\" $Id: recoll.conf.5,v 1.5 2007-07-13 10:18:49 dockes Exp $ (C) 2005 J.F.Dockes\$
 .TH RECOLL.CONF 5 "8 January 2006"
 .SH NAME
 recoll.conf \- main personal configuration file for Recoll
@@ -10,6 +10,11 @@ The system-wide configuration file is normally located inside
 /usr/[local]/share/recoll/examples. Any parameter set in the common file
 may be overriden by setting it in the personal configuration file, by default:
 .IR $HOME/.recoll/recoll.conf
+.LP
+Please note while we try to keep this manual page reasonably up to date, it
+will frequently lag the current state of the software. The best source of
+information about the configuration are the comments in the configuration
+file.
 
 .LP
 A short extract of the file might look as follows:
@@ -65,6 +70,12 @@ The list can be redefined for subdirectories, but is only actually changed
 for the top level ones in 
 .I topdirs
 .TP
+.BI "skippedPaths = " patterns
+A space-separated list of patterns for paths the indexer should not descend
+into. Together with topdirs, this allows pruning the indexed tree to one's
+content. daemSkippedPaths can be used to define a specific value for the
+real time indexing monitor.
+.TP
 .BI "loglevel = " value
 Verbosity level for recoll and recollindex. A value of 4 lists quite a lot of
 debug/information messages. 3 lists only errors. 
@@ -76,31 +87,45 @@ Where should the messages go. 'stderr' can be used as a special value.
 .B daemlogfilename
 can be used to specify a different value for the real-time indexing daemon.
 .TP
+.BI "dbdir = " directory
+The name of the Xapian database directory. It will be created if needed
+when the database is initialized. If this is not an absolute pathname, it
+will be taken relative to the configuration directory.
+.TP
+.BI "indexstemminglanguages = " languages
+A list of languages for which the stem expansion databases will be
+built. See recollindex(1) for possible values.
+.TP
+.BI "defaultcharset = " charset
+The name of the character set used for files that do not contain a
+character set definition (ie: plain text files). This can be redefined for
+any subdirectory.
+.TP
+.BI "maxfsoccuppc = " percentnumber
+Maximum file system occupation before we
+stop indexing. The value is a percentage, corresponding to
+what the "Capacity" df output column shows.  The default
+value is 0, meaning no checking.
+.TP
+.BI "idxflushmb = " megabytes
+Threshold (megabytes of new text data)
+where we flush from memory to disk index. Setting this can
+help control memory usage. A value of 0 means no explicit
+flushing, letting Xapian use its own default, which is
+flushing every 10000 documents (memory usage depends on
+average document size). The default value is 10.
+.TP
 .BI "filtersdir = " directory
 A directory to search for the external filter scripts used to index some
 types of files. The value should not be changed, except if you want to
 modify one of the default scripts. The value can be redefined for any
 subdirectory. 
 .TP
-.BI "indexstemminglanguages = " languages
-A list of languages for which the stem expansion databases will be
-built. See recollindex(1) for possible values.
-.TP
 .BI "iconsdir = " directory
 The name of the directory where 
 .B recoll
 result list icons are stored. You can change this if you want different
 images.
-.TP
-.BI "dbdir = " directory
-The name of the Xapian database directory. It will be created if needed
-when the database is initialized. If this is not an absolute pathname, it
-will be taken relative to the configuration directory.
-.TP
-.BI "defaultcharset = " charset
-The name of the character set used for files that do not contain a
-character set definition (ie: plain text files). This can be redefined for
-any subdirectory.
 .TP
 .BI "guesscharset = " boolean
 Try to guess the character set of files if no internal value is available

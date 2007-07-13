@@ -1,30 +1,61 @@
 CHANGES 
 
 1.9.0
-- Add option to remember sort tool state between program invocations (it is
-  reset to inactive by default)
-- Improve qt4 build: no more need for --enable-qt4
-- Fixed a number of qt4 glitches: selection and keyboard shortcuts.
+- Incompatible change: the icon image reference is now part of the result
+  list paragraph format string:
+  - If you had a standard config, you need do nothing.
+  - If you had a custom format string, you need to add
+     <img src="%I" align="left"> at its beginning to get the same result as
+     before.
+  - If you had unchecked the "show icons" option, you need to remove the
+    above string from the paragraph format to make the icons go away.
+  Changes to the format string are performed in the 
+  "Preferences->Query Configuration->User Interface" dialog tab.
+
+- New filters: abiword and kword, rcljpeg, rclflac, rclogg (contributed
+  filters). The jpeg and audio filters should be extended to make use of
+  the new field indexing/search capability (hint :) )
+
 - When searching for an empty string inside the preview window, position
-  the window to the next occurrence of the primary search terms.
-- Have email attachments inherit date and author from their parent message
+  the window to the next occurrence of a primary search term.
+
+- Added ext: and mime: selectors to the query language.
+
 - Added an adjustable flush threshold during indexing: should help control
-  memory usage. See the idxflushmb configuration parameter.
+  memory usage. See the idxflushmb configuration variable.
+
 - Added a check for file system free space. Indexing will stop if the
   threshold is reached. See the maxfsoccuppc configuration parameter.
-- Fix bus error on rclmon exit
-- Better handle aspell errors inside rclmon
+
+- Add preference option to remember sort tool state between program
+  invocations (it is reset to inactive by default)
+
 - Added File menu entry to erase document history.
-- Added ext: and mime: selectors to the query language.
+
+- Bound the space and backspace keys to PgUp/PgDown in preview.
+
+- (Hopefully) Improved abstract (keyword in context) generation
+
+- Improve qt4 build: no more need for --enable-qt4. Note: the qt4 build
+  still needs the qt3 support library.
+
 - Added support for arbitrary fields. Filters can now produce any number of
-  fields which will be selectively searchable through the query language.
-- Added abiword and kword support. 
-- Contributed filter: rcljpeg. This should be extended to use the new field
-  support.
+  fields which will be selectively searchable through the query
+  language. This could be useful, for exemple, for the mp3 and jpeg filters
+  (but is not currently used).
+
 - Changed the icon to an ugly one. The previous one was nicer but looked
   too much like Xapian's.
+
 - Added some kind of support for a stopword list.
-- Bound space and backspace to PgUp/PgDown in preview.
+- Have email attachments inherit date and author from their parent message
+  memory usage. See the idxflushmb configuration parameter.
+
+- Fix bus error on rclmon exit
+
+- Better handling of aspell errors inside rclmon
+
+- Fixed a number of qt4 glitches: selection and keyboard shortcuts.
 
 1.8.2 2007-05-19
 - Fixed method name for compatibility with xapian 1.0.0

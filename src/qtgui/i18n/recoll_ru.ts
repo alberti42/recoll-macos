@@ -1374,7 +1374,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Show document type icons in result list.</source>
-        <translation>Отображать типы документов в списке результатов.</translation>
+        <translation type="obsolete">Отображать типы документов в списке результатов.</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -1499,10 +1499,6 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Automatically add phrase to simple searches</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1552,7 +1548,11 @@ This should give higher precedence to the results where the search terms appear 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Remember sorting preference between invocations.</source>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remember sort activation state.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

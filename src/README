@@ -11,7 +11,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Copyright (c) 2005 Jean-Francois Dockes
 
    This document introduces full text search notions and describes the
-   installation and use of the Recoll application.
+   installation and use of the Recoll application. It currently describes
+   Recoll 1.9.
 
    [ Split HTML / Single HTML ]
 
@@ -104,6 +105,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
                              4.4.4. The mimeview file
 
                              4.4.5. Examples of configuration adjustments
+
+                4.5. Extending Recoll
+
+                             4.5.1. Writing a document filter
 
      ----------------------------------------------------------------------
 
@@ -370,9 +375,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    configuration files.
 
    The configuration is documented inside the installation chapter of this
-   document, or in the recoll.conf(5) man page. The most immediately useful
-   variable you may interested in is probably topdirs, which determines what
-   subtrees get indexed.
+   document, or in the recoll.conf(5) man page, but the most current
+   information will most likely be the comments inside the sample file. The
+   most immediately useful variable you may interested in is probably
+   topdirs, which determines what subtrees get indexed.
 
    The applications needed to index file types other than text, HTML or email
    (ie: pdf, postscript, ms-word...) are described in the external packages
@@ -660,23 +666,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    or lennon and either live or unplugged but not potatoes (in any part of
    the document).
 
-   The first element author:"john doe" is a phrase search limited to a
-   specific field. Phrase searches are specified as usual by enclosing the
-   words in double quotes. The field specification appears before the colon
-   (of course this is not limited to phrases, author:Balzac would be ok too).
-   Recoll currently manages the following fields:
-
-     * title, subject or caption are synonyms which specify data to be
-       searched for in the document title or subject.
-
-     * author or from for searching the documents originators.
-
-     * keyword for searching the document specified keywords (few documents
-       actually have any).
-
-   The query language is currently the only way to use the Recoll field
-   search capability.
-
    All elements in the search entry are normally combined with an implicit
    AND. It is possible to specify that elements be OR'ed instead, as in
    Beatles OR Lennon. The OR must be entered literally (capitals), and it has
@@ -686,8 +675,40 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    An entry preceded by a - specifies a term that should not appear.
 
+   The first element in the above exemple, author:"john doe" is a phrase
+   search limited to a specific field. Phrase searches are specified as usual
+   by enclosing the words in double quotes. The field specification appears
+   before the colon (of course this is not limited to phrases, author:Balzac
+   would be ok too). Recoll currently manages the following fields:
+
+     * title, subject or caption are synonyms which specify data to be
+       searched for in the document title or subject.
+
+     * author or from for searching the documents originators.
+
+     * keyword for searching the document specified keywords (few documents
+       actually have any).
+
+   As of release 1.9, the filters have the possibility to create other fields
+   with arbitrary names. No standard filters use this possibility yet.
+
+   There are two other elements which may be specified through the field
+   syntax, but are somewhat special:
+
+     * ext for specifying the file name extension (Ex: ext:html)
+
+     * mime for specifying the mime type. This one is quite special because
+       you can specify several values which will be OR'ed (the normal default
+       for the language is AND). Ex: mime:text/plain mime:text/html.
+       Specifying an explicit boolean operator or negation (-) before a mime
+       specification is not supported and will produce strange results.
+
+   The query language is currently the only way to use the Recoll field
+   search capability.
+
    Words inside phrases and capitalized words are not stem-expanded.
-   Wildcards may be used anywhere.
+   Wildcards may be used anywhere inside a term. Specifying a wild-card on
+   the left of a term can produce a very slow search.
 
    You can use the show query link at the top of the result list to check the
    exact query which was finally executed by Xapian.
@@ -873,8 +894,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 3.9. Document history
 
    Documents that you actually view (with the internal preview or an external
-   tool) are entered into the document history, which is remembered. You can
-   display the history list by using the Tools/Doc History menu entry.
+   tool) are entered into the document history, which is remembered.
+
+   You can display the history list by using the Tools/Doc History menu
+   entry.
+
+   You can erase the document history by using the Erase document history
+   entry in the File menu.
 
      ----------------------------------------------------------------------
 
@@ -890,6 +916,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The sort parameters stay in effect until they are explicitly reset, or the
    program exits. An activated sort is indicated in the result list header.
+
+   Sort parameters are remembered between program invocations, but result
+   sorting is normally always inactive when the program starts. It is
+   possible to keep the sorting activation state between program invocations
+   by checking the Remember sort activation state option in the preferences.
 
      ----------------------------------------------------------------------
 
@@ -984,6 +1015,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
           * %D. Date
 
+          * %I. Icon image name
+
           * %K. Keywords (if any)
 
           * %L. Preview and Edit links
@@ -1002,7 +1035,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
        The default value for the string is:
 
- %R %S %L &nbsp;&nbsp;<b>%T</b><br>
+ <img src="%I" align="left">%R %S %L &nbsp;&nbsp;<b>%T</b><br>
  %M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>
  %A %K
        
@@ -1014,18 +1047,29 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
  %A<font color=#008000>%U - %S</font> - %L
        
 
+       Or the clean looking:
+
+ <img src="%I" align="left">%L <font color="#900000">%R</font>
+   <b>%T</b><br>%S 
+ <font color="#808080"><i>%U</i></font>
+ <table bgcolor="#e0e0e0">
+ <tr><td><div>%A</div></td></tr>
+ </table>%K
+       
+
        The format of the Preview and Edit links is <a href="Pdocnum"> and <a
        href="Edocnum"> where docnum is what %N would print. This makes the
        title a preview link in the above format.
+
+       Please note that, due to the way the program handles right mouse
+       clicks in the result list, if the custom formatting results in
+       multiple paragraphs per result, right clicks will only work inside the
+       first one.
 
      * HTML help browser: this will let you chose your preferred browser
        which will be started from the Help menu to read the user manual. You
        can enter a simple name if the command is in your PATH, or browse for
        a full pathname.
-
-     * Show document type icons in result list: icons in the result list can
-       be turned off. They take quite a lot of space and convey relatively
-       little useful information.
 
      * Auto-start simple search on white space entry: if this is checked, a
        search will be executed each time you enter a space in the simple
@@ -1086,41 +1130,34 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 4.1. Installing a prebuilt copy
 
-   Recoll binary installations are always linked statically to the xapian
-   libraries, and have no other dependencies. You will only have to check or
-   install supporting applications for the file types that you want to index
-   beyond text, HTML and mail files.
+   Recoll binary packages from the Recoll web site are always linked
+   statically to the Xapian libraries, and have no other dependencies. You
+   will only have to check or install supporting applications for the file
+   types that you want to index beyond text, HTML and mail files, and maybe
+   have a look at the configuration section (but this may not be necessary
+   for a quick test with default parameters).
 
      ----------------------------------------------------------------------
 
   4.1.1. Installing through a package system
 
    If you use a BSD-type port system or a prebuilt package (RPM or other),
-   just follow the usual procedure, and maybe have a look at the
-   configuration section (but this may not be necessary for a quick test with
-   default parameters).
+   just follow the usual procedure for your system.
 
      ----------------------------------------------------------------------
 
   4.1.2. Installing a prebuilt Recoll
 
-   The unpackaged binary versions are just compressed tar files of a build
-   tree, where only the useful parts were kept (executables and sample
-   configuration).
+   The unpackaged binary versions on the Recoll web site are just compressed
+   tar files of a build tree, where only the useful parts were kept
+   (executables and sample configuration).
 
    The executable binary files are built with a static link to libxapian and
-   libiconv, to make installation easier (no dependencies). However, this
-   also means that you cannot change the versions which are used.
+   libiconv, to make installation easier (no dependencies).
 
    After extracting the tar file, you can proceed with installation as if you
    had built the package from source (that is, just type make install). The
    binary trees are built for installation to /usr/local.
-
-   You may then need to install external applications to process some file
-   types that you want indexed (ie: acrobat, postscript ...). See next
-   section.
-
-   Finally, you may want to have a look at the configuration section.
 
      ----------------------------------------------------------------------
 
@@ -1161,9 +1198,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
   4.3.1. Prerequisites
 
    At the very least, you will need to download and install the xapian core
-   package (Recoll development currently uses version 0.9.5), and the qt
-   run-time and development packages (Recoll development currently uses
-   version 3.3.5, but any 3.3 version is probably OK).
+   package (Recoll 1.9 normally uses version 1.0.2, but any 0.9 or 1.0.x
+   version will work too), and the qt run-time and development packages
+   (Recoll development currently uses version 3.3.5, but any 3.3 version is
+   probably OK).
 
    You will most probably be able to find a binary package for qt for your
    system. You may have to compile Xapian but this is not difficult (if you
@@ -1178,8 +1216,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
   4.3.2. Building
 
    Recoll has been built on Linux (redhat7.3, mandriva 2005/6, Fedora Core
-   3/4/5), FreeBSD and Solaris 8. If you build on another system, I would
-   very much welcome patches.
+   3/4/5/6), FreeBSD 5/6, macosx, and Solaris 8. If you build on another
+   system, and need to modify things, I would very much welcome patches.
 
    Depending on the qt configuration on your system, you may have to set the
    QTDIR and QMAKESPECS variables in your environment:
@@ -1370,20 +1408,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            value, and is the default. The daemversion is specific to the
            indexing monitor daemon.
 
-   filtersdir
-
-           A directory to search for the external filter scripts used to
-           index some types of files. The value should not be changed, except
-           if you want to modify one of the default scripts. The value can be
-           redefined for any sub-directory.
-
    indexstemminglanguages
 
            A list of languages for which the stem expansion databases will be
-           built. See recollindex(1) for possible values. You can add a stem
-           expansion database for a different language by using recollindex
-           -s, but it will be deleted during the next indexing. Only
-           languages listed in the configuration file are permanent.
+           built. See recollindex(1) or use the recollindex -l command for
+           possible values. You can add a stem expansion database for a
+           different language by using recollindex -s, but it will be deleted
+           during the next indexing. Only languages listed in the
+           configuration file are permanent.
 
    defaultcharset
 
@@ -1392,6 +1424,32 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            redefined for any sub-directory. If it is not set at all, the
            character set used is the one defined by the nls environment
            (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
+
+   maxfsoccuppc
+
+           Maximum file system occupation before we stop indexing. The value
+           is a percentage, corresponding to what the "Capacity" df output
+           column shows. The default value is 0, meaning no checking.
+
+   idxflushmb
+
+           Threshold (megabytes of new text data) where we flush from memory
+           to disk index. Setting this can help control memory usage. A value
+           of 0 means no explicit flushing, letting Xapian use its own
+           default, which is flushing every 10000 documents (memory usage
+           depends on average document size). The default value is 10.
+
+   filtersdir
+
+           A directory to search for the external filter scripts used to
+           index some types of files. The value should not be changed, except
+           if you want to modify one of the default scripts. The value can be
+           redefined for any sub-directory.
+
+   iconsdir
+
+           The name of the directory where recoll result list icons are
+           stored. You can change this if you want different images.
 
    guesscharset
 
@@ -1424,11 +1482,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            the size of the stored abstract (which can come from an actual
            section or just be the beginning of the text). The default value
            is 250.
-
-   iconsdir
-
-           The name of the directory where recoll result list icons are
-           stored. You can change this if you want different images.
 
    aspellLanguage
 
@@ -1571,7 +1624,34 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    argument and should output the text contents in html format on the
    standard output.
 
-   The html could be very minimal like the following example:
+   You can find more details about writing a Recoll filter in the section
+   about writing filters
+
+     ----------------------------------------------------------------------
+
+4.5. Extending Recoll
+
+  4.5.1. Writing a document filter
+
+   Recoll filters are executable programs which translate from a specific
+   format (ie: openoffice, acrobat, etc.) to the Recoll indexing input
+   format, which was chosen to be HTML.
+
+   Recoll filters are usually shell-scripts, but this is in no way necessary.
+   These programs are extremely simple and most of the difficulty lies in
+   extracting the text from the native format, not outputting what is
+   expected by Recoll. Happily enough, most document formats already have
+   translators or text extractors which handle the difficult part and can be
+   called from the filter.
+
+   Filters are called with a single argument which is the source file name.
+   They should output the result to stdout.
+
+   The RECOLL_FILTER_FORPREVIEW environment variable (values yes, no) tells
+   the filter if the operation is for indexing or previewing. Some filters
+   use this to output a slightly different format. This is not essential.
+
+   The output HTML could be very minimal like the following example:
 
  <html><head>
  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -1589,6 +1669,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Recoll will also make use of other header fields if they are present:
    title, description, keywords.
+
+   As of Recoll release 1.9, filters also have the possibility to "invent"
+   field names. This should be output as meta tags:
+
+ <meta name="somefield" content="Some textual data" />
+
+   In this case, a correspondance between field name and Xapian prefix should
+   also be added to the mimeconf file. See the existing entries for
+   inspiration. The field can then be used inside the query language to
+   narrow searches.
 
    The easiest way to write a new filter is probably to start from an
    existing one.
