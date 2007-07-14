@@ -155,6 +155,17 @@ if test X$rcl_iconv_inbuf_const = X1 ; then
   AC_DEFINE(RCL_ICONV_INBUF_CONST, 1, [iconv parameter 2 is const char**])
 fi
 
+
+AC_MSG_CHECKING(for type of string parameter to putenv)
+AC_TRY_COMPILE([
+    #include <stdlib.h>
+  ],[
+    putenv((const char *)0);
+  ], rcl_putenv_string_const="1", rcl_putenv_string_const="0")
+if test X$rcl_putenv_string_const = X1 ; then
+  AC_DEFINE(PUTENV_ARG_CONST, 1, [putenv parameter is const])
+fi
+
 #### Look for Xapian
 AC_PATH_PROG(XAPIAN_CONFIG, xapian-config, no)
 if test "$XAPIAN_CONFIG" = "no" ; then

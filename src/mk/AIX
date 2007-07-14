@@ -1,8 +1,7 @@
 include $(depth)/mk/commondefs
 include $(depth)/mk/localdefs
 
-ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
-         -DPUTENV_ARG_NOT_CONST 
+ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) 
 
 CC = gcc
 CXX = g++

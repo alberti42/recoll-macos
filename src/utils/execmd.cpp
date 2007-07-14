@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.24 2007-05-23 08:28:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.25 2007-07-14 16:53:00 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,9 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.24 2007-05-23 08:28:35 dockes Exp 
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_EXECMD
+#include "autoconfig.h"
+
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -27,7 +30,7 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.24 2007-05-23 08:28:35 dockes Exp 
 #include <errno.h>
 #include <signal.h>
 
-#ifdef PUTENV_ARG_NOT_CONST
+#if !defined(PUTENV_ARG_CONST)
 #include <string.h>
 #endif
 
@@ -360,10 +363,10 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 
 	for (vector<string>::const_iterator it = m_env.begin(); 
 	     it != m_env.end(); it++) {
-#ifdef PUTENV_ARG_NOT_CONST
-	    ::putenv(strdup(it->c_str()));
-#else
+#ifdef PUTENV_ARG_CONST
 	    ::putenv(it->c_str());
+#else
+	    ::putenv(strdup(it->c_str()));
 #endif
 	}
 	execvp(cmd.c_str(), (char *const*)argv);

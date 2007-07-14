@@ -24,3 +24,5 @@
 /* iconv parameter 2 is const char** */
 #undef RCL_ICONV_INBUF_CONST
 
+/* putenv parameter is const */
+#undef PUTENV_ARG_CONST
