@@ -32,7 +32,6 @@ case $withAspell in
      aspellProg=$withAspell
      ;;
 esac
-echo withAspell = $withAspell
 
 if test X$withAspell != Xno ; then
    AC_DEFINE(RCL_USE_ASPELL, 1, [Compile the aspell interface])
@@ -210,9 +209,6 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 # If QMAKESPEC is not set and needed, the qmake test at the previous test
 # will have failed, and we tell the user to check his environment.
 #
-# Note about qt4: if --enable-qt4 (enables the qt4gui directory), and the 
-# QTDIR variable are inconsistent, too bad.
-#
 
 if test X$QTDIR != X ; then
    PATH=$QTDIR/bin:$PATH
@@ -244,14 +240,19 @@ fi
 # Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
 # depend on this. We try to detect the qt 4 version string instead.
 qmakevers="`qmake --version 2>&1`"
-echo "qmake version: $qmakevers"
+#echo "qmake version: $qmakevers"
 v4=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*4.*'`
 if test X$v4 = X0 ; then 
    AC_MSG_NOTICE([using qt version 3 user interface])
    QTGUI=qtgui
 else
-   AC_MSG_NOTICE([using qt version 4 user interface])
-   QTGUI=qt4gui
+  AC_MSG_NOTICE([using qt version 4 user interface])
+  QTGUI=qt4gui
+  AC_PATH_PROG([UIC3], [uic3], NOTFOUND)
+  if test X$UIC3 = XNOTFOUND ; then 
+    AC_MSG_ERROR([Cannot find the uic3 program. Maybe you need to add
+    the qt3 compatibility libraries and tools to your qt4 installation ?])
+  fi
 fi
 
 cd $QTGUI
@@ -260,7 +261,7 @@ cd $QTGUI
 test -f uifrom3 && make -f uifrom3
 test -f recoll.pro && chmod +w recoll.pro
 cp recoll.pro.in recoll.pro
-echo QMAKE ${QMAKE}
+#echo QMAKE ${QMAKE}
 ${QMAKE} recoll.pro
 if test $? != 0 ; then
    AC_MSG_ERROR([Cannot use qmake to generate a Makefile. Maybe you need to

@@ -272,7 +272,7 @@ PACKAGE_STRING='Recoll 1.6'
 PACKAGE_BUGREPORT=''
 
 ac_unique_file="index/recollindex.cpp"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS aspellProg CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT XAPIAN_CONFIG QMAKE CXXCPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS INCICONV LIBICONV LIBXAPIAN LIBFAM QTGUI QTRECOLL_DATADIR XAPIANCXXFLAGS LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS aspellProg CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT XAPIAN_CONFIG QMAKE UIC3 CXXCPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS INCICONV LIBICONV LIBXAPIAN LIBFAM QTGUI QTRECOLL_DATADIR XAPIANCXXFLAGS LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1352,7 +1352,6 @@ fi
      aspellProg=$withAspell
      ;;
 esac
-echo withAspell = $withAspell
 
 if test X$withAspell != Xno ; then
 
@@ -2487,9 +2486,6 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 # If QMAKESPEC is not set and needed, the qmake test at the previous test
 # will have failed, and we tell the user to check his environment.
 #
-# Note about qt4: if --enable-qt4 (enables the qt4gui directory), and the
-# QTDIR variable are inconsistent, too bad.
-#
 
 if test X$QTDIR != X ; then
    PATH=$QTDIR/bin:$PATH
@@ -2563,16 +2559,63 @@ fi
 # Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
 # depend on this. We try to detect the qt 4 version string instead.
 qmakevers="`qmake --version 2>&1`"
-echo "qmake version: $qmakevers"
+#echo "qmake version: $qmakevers"
 v4=`expr "$qmakevers" : '.*Qt  *version  *4.*'`
 if test X$v4 = X0 ; then
    { echo "$as_me:$LINENO: using qt version 3 user interface" >&5
 echo "$as_me: using qt version 3 user interface" >&6;}
    QTGUI=qtgui
 else
-   { echo "$as_me:$LINENO: using qt version 4 user interface" >&5
+  { echo "$as_me:$LINENO: using qt version 4 user interface" >&5
 echo "$as_me: using qt version 4 user interface" >&6;}
-   QTGUI=qt4gui
+  QTGUI=qt4gui
+  # Extract the first word of "uic3", so it can be a program name with args.
+set dummy uic3; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_UIC3+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $UIC3 in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_UIC3="$UIC3" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_UIC3="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_UIC3" && ac_cv_path_UIC3="NOTFOUND"
+  ;;
+esac
+fi
+UIC3=$ac_cv_path_UIC3
+
+if test -n "$UIC3"; then
+  echo "$as_me:$LINENO: result: $UIC3" >&5
+echo "${ECHO_T}$UIC3" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  if test X$UIC3 = XNOTFOUND ; then
+    { { echo "$as_me:$LINENO: error: Cannot find the uic3 program. Maybe you need to add
+    the qt3 compatibility libraries and tools to your qt4 installation ?" >&5
+echo "$as_me: error: Cannot find the uic3 program. Maybe you need to add
+    the qt3 compatibility libraries and tools to your qt4 installation ?" >&2;}
+   { (exit 1); exit 1; }; }
+  fi
 fi
 
 cd $QTGUI
@@ -2581,7 +2624,7 @@ cd $QTGUI
 test -f uifrom3 && make -f uifrom3
 test -f recoll.pro && chmod +w recoll.pro
 cp recoll.pro.in recoll.pro
-echo QMAKE ${QMAKE}
+#echo QMAKE ${QMAKE}
 ${QMAKE} recoll.pro
 if test $? != 0 ; then
    { { echo "$as_me:$LINENO: error: Cannot use qmake to generate a Makefile. Maybe you need to
@@ -4892,6 +4935,7 @@ s,@EXEEXT@,$EXEEXT,;t t
 s,@OBJEXT@,$OBJEXT,;t t
 s,@XAPIAN_CONFIG@,$XAPIAN_CONFIG,;t t
 s,@QMAKE@,$QMAKE,;t t
+s,@UIC3@,$UIC3,;t t
 s,@CXXCPP@,$CXXCPP,;t t
 s,@X_CFLAGS@,$X_CFLAGS,;t t
 s,@X_PRE_LIBS@,$X_PRE_LIBS,;t t
