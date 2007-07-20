@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.14 2007-07-20 11:38:18 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.15 2007-07-20 14:43:21 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -113,6 +113,7 @@ private:
     QWidget      *m_currentW;
     HiliteData    m_hData;
     bool          m_justCreated; // First tab create is different
+    bool          m_haveAnchors; // Search terms are marked in text
 
     void init();
     virtual void setCurTabProps(const string& fn, const Rcl::Doc& doc, 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.25 2007-07-20 11:38:18 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.26 2007-07-20 14:43:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -99,6 +99,7 @@ void Preview::init()
     m_loading = false;
     currentChanged(pvTab->currentPage());
     m_justCreated = true;
+    m_haveAnchors = false;
 }
 
 void Preview::closeEvent(QCloseEvent *e)
@@ -233,6 +234,8 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     }
 
     if (text.isEmpty()) {
+	if (m_haveAnchors == false)
+	    return;
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
 	text = QString::fromUtf8(firstTermBeacon);
 	matchCase = false;
@@ -630,6 +633,8 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     LoadGuard guard(&m_loading);
     CancelCheck::instance().setCancel(false);
 
+    m_haveAnchors = false;
+
     Rcl::Doc doc = idoc;
 
     if (doc.meta["title"].empty()) 
@@ -740,9 +745,11 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     }
 
     int pos = richTxt.find(QString::fromUtf8(firstTermBeacon));
-    bool hasAnchors = (pos != -1);
-    LOGDEB(("LoadFileInCurrentTab: rich: cancel %d txtln %d, hasAnchors %d (pos %d)\n", 
-	    CancelCheck::instance().cancelState(), richTxt.length(), hasAnchors, pos));
+    m_haveAnchors = (pos != -1);
+    LOGDEB(("LoadFileInCurrentTab: rich: cancel %d txtln %d, hasAnchors %d "
+	    "(pos %d)\n", 
+	    CancelCheck::instance().cancelState(), richTxt.length(), 
+	    m_haveAnchors, pos));
 
     // Load into editor
     // Do it in several chunks 
@@ -792,7 +799,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	m_canBeep = true;
 	doSearch(searchTextLine->text(), true, false);
     } else {
-	if (hasAnchors) {
+	if (m_haveAnchors) {
 	    QString aname = QString::fromUtf8(termAnchorName(1).c_str());
 	    LOGDEB2(("Call scrolltoanchor(%s)\n", (const char *)aname.utf8()));
 	    editor->scrollToAnchor(aname);
