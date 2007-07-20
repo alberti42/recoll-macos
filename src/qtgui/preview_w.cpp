@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.23 2007-07-13 06:31:30 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.24 2007-07-20 10:55:04 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -89,15 +89,16 @@ void Preview::init()
 	    this, SLOT(currentChanged(QWidget *)));
     connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
 
-    dynSearchActive = false;
-    canBeep = true;
-    tabData.push_back(TabData(pvTab->currentPage()));
-    currentW = 0;
+    m_dynSearchActive = false;
+    m_canBeep = true;
+    m_tabData.push_back(TabData(pvTab->currentPage()));
+    m_currentW = 0;
     if (prefs.pvwidth > 100) {
 	resize(prefs.pvwidth, prefs.pvheight);
     }
     m_loading = false;
     currentChanged(pvTab->currentPage());
+    m_justCreated = true;
 }
 
 void Preview::closeEvent(QCloseEvent *e)
@@ -148,7 +149,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	// LOGDEB(("Preview::eventFilter: got ^W\n"));
 	closeCurrentTab();
 	return true;
-    } else if (dynSearchActive) {
+    } else if (m_dynSearchActive) {
 	if (keyEvent->key() == Qt::Key_F3) {
 	    doSearch(searchTextLine->text(), true, false);
 	    return true;
@@ -164,7 +165,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	if (e && target == e) {
 	    if (keyEvent->key() == Qt::Key_Slash) {
 		searchTextLine->setFocus();
-		dynSearchActive = true;
+		m_dynSearchActive = true;
 		return true;
 	    } else if (keyEvent->key() == Qt::Key_Space) {
 		e->scrollBy(0, e->visibleHeight());
@@ -183,12 +184,12 @@ void Preview::searchTextLine_textChanged(const QString & text)
 {
     LOGDEB1(("search line text changed. text: '%s'\n", text.ascii()));
     if (text.isEmpty()) {
-	dynSearchActive = false;
+	m_dynSearchActive = false;
 	//	nextButton->setEnabled(false);
 	//	prevButton->setEnabled(false);
 	clearPB->setEnabled(false);
     } else {
-	dynSearchActive = true;
+	m_dynSearchActive = true;
 	//	nextButton->setEnabled(true);
 	//	prevButton->setEnabled(true);
 	clearPB->setEnabled(true);
@@ -275,11 +276,11 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     }
 
     if (found) {
-	canBeep = true;
+	m_canBeep = true;
     } else {
-	if (canBeep)
+	if (m_canBeep)
 	    QApplication::beep();
-	canBeep = false;
+	m_canBeep = false;
     }
     LOGDEB(("Preview::doSearch: return\n"));
 }
@@ -298,7 +299,7 @@ void Preview::prevPressed()
 void Preview::currentChanged(QWidget * tw)
 {
     QWidget *edit = (QWidget *)tw->child("pvEdit");
-    currentW = tw;
+    m_currentW = tw;
     LOGDEB1(("Preview::currentChanged(). Editor: %p\n", edit));
     
     if (edit == 0) {
@@ -331,9 +332,9 @@ void Preview::currentChanged(QWidget * tw)
 void Preview::selecChanged()
 {
     LOGDEB1(("Selection changed\n"));
-    if (!currentW)
+    if (!m_currentW)
 	return;
-    QTextEdit *edit = (QTextEdit *)currentW->child("pvEdit");
+    QTextEdit *edit = (QTextEdit *)m_currentW->child("pvEdit");
     if (edit == 0) {
 	LOGERR(("Editor child not found\n"));
 	return;
@@ -357,9 +358,9 @@ void Preview::selecChanged(){}
 void Preview::textDoubleClicked(int, int)
 {
     LOGDEB2(("Preview::textDoubleClicked\n"));
-    if (!currentW)
+    if (!m_currentW)
 	return;
-    QTextEdit *edit = (QTextEdit *)currentW->child("pvEdit");
+    QTextEdit *edit = (QTextEdit *)m_currentW->child("pvEdit");
     if (edit == 0) {
 	LOGERR(("Editor child not found\n"));
 	return;
@@ -381,10 +382,10 @@ void Preview::closeCurrentTab()
 	    return;
 	pvTab->removePage(tw);
 	// Have to remove from tab data list
-	for (list<TabData>::iterator it = tabData.begin(); 
-	     it != tabData.end(); it++) {
+	for (list<TabData>::iterator it = m_tabData.begin(); 
+	     it != m_tabData.end(); it++) {
 	    if (it->w == tw) {
-		tabData.erase(it);
+		m_tabData.erase(it);
 		return;
 	    }
 	}
@@ -392,7 +393,6 @@ void Preview::closeCurrentTab()
 	close();
     }
 }
-
 
 QTextEdit *Preview::addEditorTab()
 {
@@ -404,7 +404,7 @@ QTextEdit *Preview::addEditorTab()
     anonLayout->addWidget(editor);
     pvTab->addTab(anon, "Tab");
     pvTab->showPage(anon);
-    tabData.push_back(TabData(anon));
+    m_tabData.push_back(TabData(anon));
     return editor;
 }
 
@@ -440,8 +440,8 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
 	tiptxt += meta_it->second + "\n";
     pvTab->setTabToolTip(w,QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
 
-    for (list<TabData>::iterator it = tabData.begin(); 
-	 it != tabData.end(); it++) {
+    for (list<TabData>::iterator it = m_tabData.begin(); 
+	 it != m_tabData.end(); it++) {
 	if (it->w == w) {
 	    it->fn = fn;
 	    it->ipath = doc.ipath;
@@ -456,8 +456,8 @@ TabData *Preview::tabDataForCurrent()
     QWidget *w = pvTab->currentPage();
     if (w == 0)
 	return 0;
-    for (list<TabData>::iterator it = tabData.begin(); 
-	 it != tabData.end(); it++) {
+    for (list<TabData>::iterator it = m_tabData.begin(); 
+	 it != m_tabData.end(); it++) {
 	if (it->w == w) {
 	    return &(*it);
 	}
@@ -465,11 +465,12 @@ TabData *Preview::tabDataForCurrent()
     return 0;
 }
 
-bool Preview::makeDocCurrent(const string &fn, const Rcl::Doc &doc)
+bool Preview::makeDocCurrent(const string &fn, size_t sz, 
+			     const Rcl::Doc& doc, int docnum, bool sametab)
 {
-    LOGDEB(("Preview::makeFileCurrent: %s\n", fn.c_str()));
-    for (list<TabData>::iterator it = tabData.begin(); 
-	 it != tabData.end(); it++) {
+    LOGDEB(("Preview::makeDocCurrent: %s\n", fn.c_str()));
+    for (list<TabData>::iterator it = m_tabData.begin(); 
+	 it != m_tabData.end(); it++) {
 	LOGDEB2(("Preview::makeFileCurrent: compare to w %p, file %s\n", 
 		 it->w, it->fn.c_str()));
 	if (!it->fn.compare(fn) && !it->ipath.compare(doc.ipath)) {
@@ -477,7 +478,16 @@ bool Preview::makeDocCurrent(const string &fn, const Rcl::Doc &doc)
 	    return true;
 	}
     }
-    return false;
+    // if just created the first tab was created during init
+    if (!sametab && !m_justCreated && !addEditorTab()) {
+	return false;
+    }
+    m_justCreated = false;
+    if (!loadFileInCurrentTab(fn, sz, doc, docnum)) {
+	closeCurrentTab();
+	return false;
+    }
+    return true;
 }
 
 /*
@@ -779,7 +789,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     progress.close();
 
     if (searchTextLine->text().length() != 0) {
-	canBeep = true;
+	m_canBeep = true;
 	doSearch(searchTextLine->text(), true, false);
     } else {
 	if (hasAnchors) {
@@ -790,12 +800,12 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	    // unusable (plus it does not always work)
 #if (QT_VERSION < 0x040000)
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
-	    bool ocanbeep = canBeep;
-	    canBeep = false;
+	    bool ocanbeep = m_canBeep;
+	    m_canBeep = false;
 	    QString empty;
 	    // doSearch(_text, next, reverse, wordOnly)
 	    doSearch(empty, true, false, false);
-	    canBeep = ocanbeep;
+	    m_canBeep = ocanbeep;
 #endif
 #endif // (QT_VERSION < 0x040000)
 	}

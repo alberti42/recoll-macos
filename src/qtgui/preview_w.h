@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.12 2007-07-13 06:31:30 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.13 2007-07-20 10:55:05 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -65,38 +65,33 @@ class Preview : public DummyPreviewBase
     Q_OBJECT
 
 public:
-    Preview(QWidget* parent = 0) 
-	: DummyPreviewBase(parent) {init();}
-
-    ~Preview(){}
-
-    virtual void setSId(int sid, const HiliteData& hdata) 
+    Preview(int sid, // Search Id
+	    const HiliteData& hdata) // Search terms etc. for highlighting
+	: DummyPreviewBase(0) 
     {
+	init();
 	m_searchId = sid;
 	m_hData = hdata;
     }
-    virtual void closeEvent( QCloseEvent *e );
-    virtual bool eventFilter( QObject *target, QEvent *event );
-    virtual bool makeDocCurrent( const string & fn, const Rcl::Doc & doc );
-    virtual QTextEdit *getCurrentEditor();
-    virtual QTextEdit *addEditorTab();
-    virtual bool loadFileInCurrentTab(string fn, size_t sz, 
-				      const Rcl::Doc& idoc, int dnm);
+
+    ~Preview(){}
+
+    virtual void closeEvent(QCloseEvent *e );
+    virtual bool eventFilter(QObject *target, QEvent *event );
+    virtual bool makeDocCurrent(const string &fn, size_t sz, 
+				const Rcl::Doc& idoc, int docnum, 
+				bool sametab = false);
 
 public slots:
-    virtual void searchTextLine_textChanged( const QString & text );
-    virtual void doSearch(const QString &str, bool next, bool reverse,
-			   bool wo = false);
+    virtual void searchTextLine_textChanged(const QString& text);
+    virtual void doSearch(const QString& str, bool next, bool reverse,
+			  bool wo = false);
     virtual void nextPressed();
     virtual void prevPressed();
-    virtual void currentChanged( QWidget * tw );
+    virtual void currentChanged(QWidget *tw);
     virtual void closeCurrentTab();
-    virtual void setCurTabProps(const string & fn, const Rcl::Doc & doc, 
-				int docnum);
     virtual void textDoubleClicked(int, int);
-
     virtual void selecChanged();
-
 
 signals:
     void previewClosed(QWidget *);
@@ -106,18 +101,26 @@ signals:
     void previewExposed(int sid, int docnum);
 
 private:
-    int m_searchId; // Identifier of search in main window. This is so that
-                  // we make sense when requesting the next document when 
-                  // browsing successive search results in a tab.
-    int matchIndex;
-    int matchPara;
-    bool dynSearchActive;
-    bool canBeep;
-    bool m_loading;
-    list<TabData> tabData;
-    QWidget *currentW;
-    HiliteData m_hData;
+    // Identifier of search in main window. This is used to check that
+    // we make sense when requesting the next document when browsing
+    // successive search results in a tab.
+    int           m_searchId; 
+
+    bool          m_dynSearchActive;
+    bool          m_canBeep;
+    bool          m_loading;
+    list<TabData> m_tabData;
+    QWidget      *m_currentW;
+    HiliteData    m_hData;
+    bool          m_justCreated; // First tab create is different
+
     void init();
+    virtual void setCurTabProps(const string& fn, const Rcl::Doc& doc, 
+				int docnum);
+    virtual QTextEdit *getCurrentEditor();
+    virtual QTextEdit *addEditorTab();
+    virtual bool loadFileInCurrentTab(string fn, size_t sz, 
+				      const Rcl::Doc& idoc, int dnm);
     TabData *tabDataForCurrent(); // Return auxiliary data pointer for cur tab
 };
 

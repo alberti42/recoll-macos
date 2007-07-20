@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.32 2007-07-13 06:31:30 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.33 2007-07-20 10:55:05 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -458,7 +458,9 @@ void RclMain::startPreview(int docnum, int mod)
 	curPreview = 0;
     }
     if (curPreview == 0) {
-	curPreview = new Preview(0);
+	HiliteData hdata;
+	m_searchData->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+	curPreview = new Preview(m_searchId, hdata);
 	if (curPreview == 0) {
 	    QMessageBox::warning(0, tr("Warning"), 
 				 tr("Can't create preview window"),
@@ -466,10 +468,6 @@ void RclMain::startPreview(int docnum, int mod)
 				 QMessageBox::NoButton);
 	    return;
 	}
-	HiliteData hdata;
-	m_searchData->getTerms(hdata.terms, hdata.groups, hdata.gslks);
-	curPreview->setSId(m_searchId, hdata);
-	curPreview->setCaption(resList->getDescription());
 	connect(curPreview, SIGNAL(previewClosed(QWidget *)), 
 		this, SLOT(previewClosed(QWidget *)));
 	connect(curPreview, SIGNAL(wordSelect(QString)),
@@ -480,16 +478,10 @@ void RclMain::startPreview(int docnum, int mod)
 		this, SLOT(previewPrevInTab(int, int)));
 	connect(curPreview, SIGNAL(previewExposed(int, int)),
 		this, SLOT(previewExposed(int, int)));
+	curPreview->setCaption(resList->getDescription());
 	curPreview->show();
-    } else {
-	if (curPreview->makeDocCurrent(fn, doc)) {
-	    // Already there
-	    return;
-	}
-	(void)curPreview->addEditorTab();
-    }
-    if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc, docnum))
-	curPreview->closeCurrentTab();
+    } 
+    curPreview->makeDocCurrent(fn, st.st_size, doc, docnum);
 }
 
 /** 
@@ -509,7 +501,7 @@ void RclMain::startPreview(Rcl::Doc doc)
 			     fn.c_str());
 	return;
     }
-    Preview *preview = new Preview(0);
+    Preview *preview = new Preview(0, HiliteData());
     if (preview == 0) {
 	QMessageBox::warning(0, tr("Warning"), 
 			     tr("Can't create preview window"),
@@ -517,12 +509,10 @@ void RclMain::startPreview(Rcl::Doc doc)
 			     QMessageBox::NoButton);
 	return;
     }
-    preview->setSId(0, HiliteData());
     connect(preview, SIGNAL(wordSelect(QString)),
 	    this, SLOT(ssearchAddTerm(QString)));
     preview->show();
-    if (!preview->loadFileInCurrentTab(fn, st.st_size, doc, 0))
-	preview->closeCurrentTab();
+    preview->makeDocCurrent(fn, st.st_size, doc, 0);
 }
 
 // Show next document from result list in current preview tab
@@ -530,6 +520,13 @@ void RclMain::previewNextInTab(int sid, int docnum)
 {
     LOGDEB(("RclMain::previewNextInTab  sid %d docnum %d, m_sid %d\n", 
 	    sid, docnum, m_searchId));
+
+    // We should handle this case better: this happens when the latest
+    // preview was closed and the user asks for the next document in
+    // an older one. The whole situation with multiple previews and
+    // showNext/showPrev is a mess, just avoid crashing for now.
+    if (curPreview == 0)
+	return;
 
     if (sid != m_searchId) {
 	QMessageBox::warning(0, "Recoll", 
@@ -560,8 +557,7 @@ void RclMain::previewNextInTab(int sid, int docnum)
 	return;
     }
 
-    if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc, docnum))
-	curPreview->closeCurrentTab();
+    curPreview->makeDocCurrent(fn, st.st_size, doc, docnum, true);
 }
 
 // Show previous document from result list in current preview tab
@@ -569,6 +565,13 @@ void RclMain::previewPrevInTab(int sid, int docnum)
 {
     LOGDEB(("RclMain::previewPrevInTab  sid %d docnum %d, m_sid %d\n", 
 	    sid, docnum, m_searchId));
+
+    // We should handle this case better: this happens when the latest
+    // preview was closed and the user asks for the next document in
+    // an older one. The whole situation with multiple previews and
+    // showNext/showPrev is a mess, just avoid crashing for now.
+    if (curPreview == 0)
+	return;
 
     if (sid != m_searchId) {
 	QMessageBox::warning(0, "Recoll", 
@@ -596,8 +599,7 @@ void RclMain::previewPrevInTab(int sid, int docnum)
 			     fn.c_str());
 	return;
     }
-    if (!curPreview->loadFileInCurrentTab(fn, st.st_size, doc, docnum))
-	curPreview->closeCurrentTab();
+    curPreview->makeDocCurrent(fn, st.st_size, doc, docnum, true);
 }
 
 // Preview tab exposed: possibly tell reslist (to color the paragraph)
