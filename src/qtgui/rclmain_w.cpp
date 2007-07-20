@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.34 2007-07-20 11:38:18 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.35 2007-07-20 11:44:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -514,9 +514,17 @@ void RclMain::startPreview(Rcl::Doc doc)
     preview->show();
     preview->makeDocCurrent(fn, st.st_size, doc, 0);
 }
+void RclMain::previewNextInTab(Preview * w, int sid, int docnum)
+{
+    previewPrevOrNextInTab(w, sid, docnum, true);
+}
+void RclMain::previewPrevInTab(Preview * w, int sid, int docnum)
+{
+    previewPrevOrNextInTab(w, sid, docnum, false);
+}
 
 // Show next document from result list in current preview tab
-void RclMain::previewNextInTab(Preview * w, int sid, int docnum)
+void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 {
     LOGDEB(("RclMain::previewNextInTab  sid %d docnum %d, m_sid %d\n", 
 	    sid, docnum, m_searchId));
@@ -530,8 +538,11 @@ void RclMain::previewNextInTab(Preview * w, int sid, int docnum)
 	return;
     }
 
-    docnum++;
-    if (docnum >= resList->getResCnt()) {
+    if (nxt)
+	docnum++;
+    else 
+	docnum--;
+    if (docnum < 0 || docnum >= resList->getResCnt()) {
 	QApplication::beep();
 	return;
     }
@@ -553,44 +564,6 @@ void RclMain::previewNextInTab(Preview * w, int sid, int docnum)
 	return;
     }
 
-    w->makeDocCurrent(fn, st.st_size, doc, docnum, true);
-}
-
-// Show previous document from result list in preview tab
-void RclMain::previewPrevInTab(Preview *w, int sid, int docnum)
-{
-    LOGDEB(("RclMain::previewPrevInTab  sid %d docnum %d, m_sid %d\n", 
-	    sid, docnum, m_searchId));
-
-    if (w == 0)  // ??
-	return;
-
-    if (sid != m_searchId) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("This search is not active any more"));
-	return;
-    }
-    if (docnum <= 0) {
-	QApplication::beep();
-	return;
-    }
-    docnum--;
-    Rcl::Doc doc;
-    if (!resList->getDoc(docnum, doc)) {
-	QMessageBox::warning(0, "Recoll",
-			     tr("Cannot retrieve document info" 
-				     " from database"));
-	return;
-    }
-	
-    // Check that the file exists in the file system
-    string fn = urltolocalpath(doc.url);
-    struct stat st;
-    if (stat(fn.c_str(), &st) < 0) {
-	QMessageBox::warning(0, "Recoll", tr("Cannot access document file: ") +
-			     fn.c_str());
-	return;
-    }
     w->makeDocCurrent(fn, st.st_size, doc, docnum, true);
 }
 

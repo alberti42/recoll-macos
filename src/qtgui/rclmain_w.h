@@ -118,6 +118,8 @@ private:
     // Used to match to preview windows
     int                      m_searchId; 
     virtual void init();
+    virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
+					bool next);
 };
 
 #endif // RCLMAIN_W_H
