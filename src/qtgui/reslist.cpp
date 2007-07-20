@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.31 2007-07-12 08:23:40 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.32 2007-07-20 14:32:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -82,6 +82,7 @@ extern "C" int XFlush(void *);
 void ResList::resetSearch() 
 {
     m_winfirst = -1;
+    m_curPvDoc = -1;
     // There should be a progress bar for long searches but there isn't 
     // We really want the old result list to go away, otherwise, for a
     // slow search, the user will wonder if anything happened. The
@@ -97,7 +98,6 @@ void ResList::resetSearch()
     XFlush(QX11Info::display());
 #endif
 #endif
-
 }
 
 void ResList::languageChange()
@@ -108,10 +108,8 @@ void ResList::languageChange()
 // Acquire new docsource
 void ResList::setDocSource(RefCntr<DocSequence> docsource)
 {
-    m_winfirst = -1;
+    resetSearch();
     m_docSource = docsource;
-    m_curPvDoc = -1;
-
     resultPageNext();
 }
 
@@ -490,13 +488,13 @@ void ResList::resultPageNext()
 	}
 
 	// Build the result list paragraph:
-	string result;
+	chunk.clear();
 
 	// Subheader: this is used by history
 	if (!sh.empty())
-	    result += string("<p><b>") + sh + "</p>\n<p>";
+	    chunk += "<p><b>" + QString::fromUtf8(sh.c_str()) + "</p>\n<p>";
 	else
-	    result += "<p>";
+	    chunk += "<p>";
 
 	// Configurable stuff
 	map<char,string> subs;
@@ -515,13 +513,12 @@ void ResList::resultPageNext()
 
 	string formatted;
 	pcSubst(sformat, formatted, subs);
-	result += formatted;
+	chunk += QString::fromUtf8(formatted.c_str());
 
-	result += "</p>\n";
+	chunk += "</p>\n";
 
-	LOGDEB2(("Chunk: [%s]\n", result.c_str()));
-	QString str = QString::fromUtf8(result.c_str(), result.length());
-	append(str);
+	LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.utf8()));
+	append(chunk);
 	setCursorPosition(0,0);
 	ensureCursorVisible();
 
@@ -613,7 +610,7 @@ void ResList::doubleClicked(int, int)
 
 void ResList::linkWasClicked(const QString &s, int clkmod)
 {
-    LOGDEB(("ResList::linkClicked: [%s]\n", s.ascii()));
+    LOGDEB(("ResList::linkWasClicked: [%s]\n", s.ascii()));
     int i = atoi(s.ascii()+1) -1;
     int what = s.ascii()[0];
     switch (what) {

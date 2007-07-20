@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.11 2007-06-12 13:31:38 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.12 2007-07-20 14:32:55 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -38,7 +38,6 @@ class ResList : public QTEXTBROWSER
     virtual bool getDoc(int docnum, Rcl::Doc &);
 
     virtual void setDocSource(RefCntr<DocSequence> source);
-    virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
     virtual QString getDescription(); // Printable actual query performed on db
     virtual int getResCnt(); // Return total result list size
 
@@ -70,7 +69,7 @@ class ResList : public QTEXTBROWSER
     void headerClicked();
     void docExpand(int);
     void wordSelect(QString);
-    void linkClicked(const QString&, int);
+    void linkClicked(const QString&, int); // See emitLinkClicked()
 
  protected:
     void keyPressEvent(QKeyEvent *e);
@@ -98,6 +97,7 @@ class ResList : public QTEXTBROWSER
     void emitLinkClicked(const QString &s) {
 	emit linkClicked(s, m_lstClckMod);
     };
+    virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
 };
 
 

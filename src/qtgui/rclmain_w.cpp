@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.35 2007-07-20 11:44:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.36 2007-07-20 14:32:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -514,16 +514,20 @@ void RclMain::startPreview(Rcl::Doc doc)
     preview->show();
     preview->makeDocCurrent(fn, st.st_size, doc, 0);
 }
+
+// Show next document from result list in current preview tab
 void RclMain::previewNextInTab(Preview * w, int sid, int docnum)
 {
     previewPrevOrNextInTab(w, sid, docnum, true);
 }
+
+// Show previous document from result list in current preview tab
 void RclMain::previewPrevInTab(Preview * w, int sid, int docnum)
 {
     previewPrevOrNextInTab(w, sid, docnum, false);
 }
 
-// Show next document from result list in current preview tab
+// Combined next/prev from result list in current preview tab
 void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 {
     LOGDEB(("RclMain::previewNextInTab  sid %d docnum %d, m_sid %d\n", 
@@ -549,9 +553,8 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 
     Rcl::Doc doc;
     if (!resList->getDoc(docnum, doc)) {
-	QMessageBox::warning(0, "Recoll",
-			     tr("Cannot retrieve document info" 
-				" from database"));
+	QMessageBox::warning(0, "Recoll", 
+			     tr("Cannot retrieve document info from database"));
 	return;
     }
 	
