@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.24 2007-07-20 10:55:04 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.25 2007-07-20 11:38:18 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -111,8 +111,8 @@ void Preview::closeEvent(QCloseEvent *e)
     }
     prefs.pvwidth = width();
     prefs.pvheight = height();
-    emit previewExposed(m_searchId, -1);
-    emit previewClosed((QWidget *)this);
+    emit previewExposed(this, m_searchId, -1);
+    emit previewClosed(this);
     QWidget::closeEvent(e);
 }
 
@@ -135,14 +135,14 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	// LOGDEB(("Preview::eventFilter: got Shift-Up\n"));
 	TabData *d = tabDataForCurrent();
 	if (d) 
-	    emit(showNext(m_searchId, d->docnum));
+	    emit(showNext(this, m_searchId, d->docnum));
 	return true;
     } else if (keyEvent->key() == Qt::Key_Up &&
 	       (keyEvent->state() & Qt::ShiftButton)) {
 	// LOGDEB(("Preview::eventFilter: got Shift-Down\n"));
 	TabData *d = tabDataForCurrent();
 	if (d) 
-	    emit(showPrev(m_searchId, d->docnum));
+	    emit(showPrev(this, m_searchId, d->docnum));
 	return true;
     } else if (keyEvent->key() == Qt::Key_W &&
 	       (keyEvent->state() & Qt::ControlButton)) {
@@ -319,7 +319,7 @@ void Preview::currentChanged(QWidget * tw)
     edit->installEventFilter(this);
     TabData *d = tabDataForCurrent();
     if (d) 
-	emit(previewExposed(m_searchId, d->docnum));
+	emit(previewExposed(this, m_searchId, d->docnum));
 }
 
 #if (QT_VERSION >= 0x040000)
@@ -814,7 +814,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     g_dynconf->enterDoc(fn, doc.ipath);
 
     editor->setFocus();
-    emit(previewExposed(m_searchId, docnum));
+    emit(previewExposed(this, m_searchId, docnum));
     LOGDEB(("LoadFileInCurrentTab: returning true\n"));
     return true;
 }

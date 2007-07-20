@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.13 2007-07-20 10:55:05 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.14 2007-07-20 11:38:18 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -94,11 +94,11 @@ public slots:
     virtual void selecChanged();
 
 signals:
-    void previewClosed(QWidget *);
+    void previewClosed(Preview *);
     void wordSelect(QString);
-    void showNext(int sid, int docnum);
-    void showPrev(int sid, int docnum);
-    void previewExposed(int sid, int docnum);
+    void showNext(Preview *w, int sid, int docnum);
+    void showPrev(Preview *w, int sid, int docnum);
+    void previewExposed(Preview *w, int sid, int docnum);
 
 private:
     // Identifier of search in main window. This is used to check that

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.33 2007-07-20 10:55:05 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.34 2007-07-20 11:38:18 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -416,10 +416,10 @@ void RclMain::showExtIdxDialog()
 // If a preview (toplevel) window gets closed by the user, we need to
 // clean up because there is no way to reopen it. And check the case
 // where the current one is closed
-void RclMain::previewClosed(QWidget *w)
+void RclMain::previewClosed(Preview *w)
 {
     LOGDEB(("RclMain::previewClosed(%p)\n", w));
-    if (w == (QWidget *)curPreview) {
+    if (w == curPreview) {
 	LOGDEB(("Active preview closed\n"));
 	curPreview = 0;
     } else {
@@ -468,16 +468,16 @@ void RclMain::startPreview(int docnum, int mod)
 				 QMessageBox::NoButton);
 	    return;
 	}
-	connect(curPreview, SIGNAL(previewClosed(QWidget *)), 
-		this, SLOT(previewClosed(QWidget *)));
+	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
+		this, SLOT(previewClosed(Preview *)));
 	connect(curPreview, SIGNAL(wordSelect(QString)),
 		this, SLOT(ssearchAddTerm(QString)));
-	connect(curPreview, SIGNAL(showNext(int, int)),
-		this, SLOT(previewNextInTab(int, int)));
-	connect(curPreview, SIGNAL(showPrev(int, int)),
-		this, SLOT(previewPrevInTab(int, int)));
-	connect(curPreview, SIGNAL(previewExposed(int, int)),
-		this, SLOT(previewExposed(int, int)));
+	connect(curPreview, SIGNAL(showNext(Preview *, int, int)),
+		this, SLOT(previewNextInTab(Preview *, int, int)));
+	connect(curPreview, SIGNAL(showPrev(Preview *, int, int)),
+		this, SLOT(previewPrevInTab(Preview *, int, int)));
+	connect(curPreview, SIGNAL(previewExposed(Preview *, int, int)),
+		this, SLOT(previewExposed(Preview *, int, int)));
 	curPreview->setCaption(resList->getDescription());
 	curPreview->show();
     } 
@@ -516,16 +516,12 @@ void RclMain::startPreview(Rcl::Doc doc)
 }
 
 // Show next document from result list in current preview tab
-void RclMain::previewNextInTab(int sid, int docnum)
+void RclMain::previewNextInTab(Preview * w, int sid, int docnum)
 {
     LOGDEB(("RclMain::previewNextInTab  sid %d docnum %d, m_sid %d\n", 
 	    sid, docnum, m_searchId));
 
-    // We should handle this case better: this happens when the latest
-    // preview was closed and the user asks for the next document in
-    // an older one. The whole situation with multiple previews and
-    // showNext/showPrev is a mess, just avoid crashing for now.
-    if (curPreview == 0)
+    if (w == 0) // ??
 	return;
 
     if (sid != m_searchId) {
@@ -544,7 +540,7 @@ void RclMain::previewNextInTab(int sid, int docnum)
     if (!resList->getDoc(docnum, doc)) {
 	QMessageBox::warning(0, "Recoll",
 			     tr("Cannot retrieve document info" 
-				     " from database"));
+				" from database"));
 	return;
     }
 	
@@ -557,20 +553,16 @@ void RclMain::previewNextInTab(int sid, int docnum)
 	return;
     }
 
-    curPreview->makeDocCurrent(fn, st.st_size, doc, docnum, true);
+    w->makeDocCurrent(fn, st.st_size, doc, docnum, true);
 }
 
-// Show previous document from result list in current preview tab
-void RclMain::previewPrevInTab(int sid, int docnum)
+// Show previous document from result list in preview tab
+void RclMain::previewPrevInTab(Preview *w, int sid, int docnum)
 {
     LOGDEB(("RclMain::previewPrevInTab  sid %d docnum %d, m_sid %d\n", 
 	    sid, docnum, m_searchId));
 
-    // We should handle this case better: this happens when the latest
-    // preview was closed and the user asks for the next document in
-    // an older one. The whole situation with multiple previews and
-    // showNext/showPrev is a mess, just avoid crashing for now.
-    if (curPreview == 0)
+    if (w == 0)  // ??
 	return;
 
     if (sid != m_searchId) {
@@ -599,11 +591,11 @@ void RclMain::previewPrevInTab(int sid, int docnum)
 			     fn.c_str());
 	return;
     }
-    curPreview->makeDocCurrent(fn, st.st_size, doc, docnum, true);
+    w->makeDocCurrent(fn, st.st_size, doc, docnum, true);
 }
 
 // Preview tab exposed: possibly tell reslist (to color the paragraph)
-void RclMain::previewExposed(int sid, int docnum)
+void RclMain::previewExposed(Preview *, int sid, int docnum)
 {
     LOGDEB2(("RclMain::previewExposed: sid %d docnum %d, m_sid %d\n", 
 	     sid, docnum, m_searchId));

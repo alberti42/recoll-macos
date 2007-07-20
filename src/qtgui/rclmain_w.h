@@ -53,6 +53,8 @@ public: DummyRclMainBase(QWidget *parent) :Q3MainWindow(parent){setupUi(this);}
 #endif
 //MOC_SKIP_END
 
+class Preview;
+
 class RclMain : public DummyRclMainBase
 {
     Q_OBJECT
@@ -73,7 +75,7 @@ public slots:
     virtual void startIndexing();
     virtual void startSearch(RefCntr<Rcl::SearchData> sdata);
     virtual void setDocSequence();
-    virtual void previewClosed(QWidget * w);
+    virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSortDialog();
     virtual void showSpellDialog();
@@ -92,9 +94,9 @@ public slots:
     virtual void startPreview(Rcl::Doc doc);
     virtual void startNativeViewer(int docnum);
     virtual void startNativeViewer(Rcl::Doc doc);
-    virtual void previewNextInTab(int sid, int docnum);
-    virtual void previewPrevInTab(int sid, int docnum);
-    virtual void previewExposed(int sid, int docnum);
+    virtual void previewNextInTab(Preview *, int sid, int docnum);
+    virtual void previewPrevInTab(Preview *, int sid, int docnum);
+    virtual void previewExposed(Preview *, int sid, int docnum);
     virtual void resetSearch();
     virtual void eraseDocHistory();
 protected:
