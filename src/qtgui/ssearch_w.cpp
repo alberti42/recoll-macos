@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.21 2007-06-12 10:33:48 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.22 2007-08-01 10:04:53 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -215,8 +215,12 @@ void SSearch::completion()
     // Query database
     const int max = 100;
     list<Rcl::TermMatchEntry> strs;
-    if (!rcldb->termMatch(Rcl::Db::ET_WILD, prefs.queryStemLang.ascii(),
-			  s, strs, max) || strs.size() == 0) {
+    string stemLang = (const char *)prefs.queryStemLang.ascii();
+    if (stemLang == "ALL") {
+	rclconfig->getConfParam("indexstemminglanguages", stemLang);
+    }
+    if (!rcldb->termMatch(Rcl::Db::ET_WILD, stemLang, s, strs, max) || 
+	strs.size() == 0) {
 	QApplication::beep();
 	return;
     }

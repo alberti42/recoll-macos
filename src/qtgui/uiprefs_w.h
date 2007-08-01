@@ -1,4 +1,4 @@
-/* @(#$Id: uiprefs_w.h,v 1.9 2007-08-01 07:55:03 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.10 2007-08-01 10:04:53 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 #ifndef _UIPREFS_W_H_INCLUDED_
 #define _UIPREFS_W_H_INCLUDED_
-/* @(#$Id: uiprefs_w.h,v 1.9 2007-08-01 07:55:03 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.10 2007-08-01 10:04:53 dockes Exp $  (C) 2005 J.F.Dockes */
 #include <qvariant.h>
 #include <qdialog.h>
 
@@ -88,6 +88,5 @@ private:
     ViewAction *m_viewAction;
 
 };
-
 
 #endif /* _UIPREFS_W_H_INCLUDED_ */

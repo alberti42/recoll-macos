@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.20 2007-08-01 07:55:03 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.21 2007-08-01 10:04:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -121,25 +121,22 @@ void UIPrefsDialog::setFromPrefs()
 
     // Stemming language combobox
     stemLangCMB->clear();
-    stemLangCMB->insertItem(tr("(no stemming)"));
+    stemLangCMB->insertItem(g_stringNoStem);
+    stemLangCMB->insertItem(g_stringAllStem);
     list<string> langs;
     if (!getStemLangs(langs)) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("error retrieving stemming languages"));
     }
-    int i = 0, cur = -1;
+    int cur = prefs.queryStemLang == ""  ? 0 : 1;
     for (list<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	stemLangCMB->
 	    insertItem(QString::fromAscii(it->c_str(), it->length()));
-	i++;
-	if (cur == -1) {
-	    if (!strcmp(prefs.queryStemLang.ascii(), it->c_str()))
-		cur = i;
+	if (cur == 0 && !strcmp(prefs.queryStemLang.ascii(), it->c_str())) {
+	    cur = stemLangCMB->count();
 	}
     }
-    if (cur < 0)
-	cur = 0;
     stemLangCMB->setCurrentItem(cur);
 
     autoPhraseCB->setChecked(prefs.ssearchAutoPhrase);
@@ -191,6 +188,8 @@ void UIPrefsDialog::accept()
 
     if (stemLangCMB->currentItem() == 0) {
 	prefs.queryStemLang = "";
+    } else if (stemLangCMB->currentItem() == 1) {
+	prefs.queryStemLang = "ALL";
     } else {
 	prefs.queryStemLang = stemLangCMB->currentText();
     }
@@ -238,6 +237,8 @@ void UIPrefsDialog::setStemLang(const QString& lang)
     int cur = 0;
     if (lang == "") {
 	cur = 0;
+    } else if (lang == "ALL") {
+	cur = 1;
     } else {
 	for (int i = 1; i < stemLangCMB->count(); i++) {
 	    if (lang == stemLangCMB->text(i)) {

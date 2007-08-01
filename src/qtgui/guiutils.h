@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.23 2007-07-12 10:13:37 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.24 2007-08-01 10:04:53 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -143,5 +143,7 @@ extern PrefsPack prefs;
 
 /** Read write settings from disk file */
 extern void rwSettings(bool dowrite);
+
+extern QString g_stringAllStem, g_stringNoStem;
 
 #endif /* _GUIUTILS_H_INCLUDED_ */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.37 2007-08-01 07:55:03 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.38 2007-08-01 10:04:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -76,6 +76,7 @@ using std::pair;
 #include "moc_rclmain_w.cpp"
 
 extern "C" int XFlush(void *);
+QString g_stringAllStem, g_stringNoStem;
 
 // Taken from qt designer. Don't know why it's needed.
 #if (QT_VERSION < 0x040000)
@@ -108,10 +109,13 @@ void RclMain::init()
     }
 
     // Stemming language menu
-    m_idNoStem = preferencesMenu->insertItem(tr("(no stemming)"));
-    m_stemLangToId[tr("(no stemming)")] = m_idNoStem;
+    g_stringNoStem = tr("(no stemming)");
+    g_stringAllStem = tr("(all languages)");
+    m_idNoStem = preferencesMenu->insertItem(g_stringNoStem);
+    m_stemLangToId[g_stringNoStem] = m_idNoStem;
+    m_idAllStem = preferencesMenu->insertItem(g_stringAllStem);
+    m_stemLangToId[g_stringAllStem] = m_idAllStem;
 
-    LOGDEB(("idNoStem: %d\n", m_idNoStem));
     // Can't get the stemming languages from the db at this stage as
     // db not open yet (the case where it does not even exist makes
     // things complicated). So get the languages from the config
@@ -124,7 +128,8 @@ void RclMain::init()
 	QMessageBox::warning(0, "Recoll", 
 			     tr("error retrieving stemming languages"));
     }
-    int curid = m_idNoStem, id; // Menu ids are negative integers
+    int curid = prefs.queryStemLang == "ALL" ? m_idAllStem : m_idNoStem;
+    int id; 
     for (list<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	QString qlang = QString::fromAscii(it->c_str(), it->length());
@@ -248,6 +253,8 @@ void RclMain::setStemLang(int id)
     QString lang;
     if (id == m_idNoStem) {
 	lang = "";
+    } else if (id == m_idAllStem) {
+	lang = "ALL";
     } else {
 	lang = preferencesMenu->text(id);
     }
@@ -265,6 +272,8 @@ void RclMain::setStemLang(const QString& lang)
     int id;
     if (lang == "") {
 	id = m_idNoStem;
+    } else if (lang == "ALL") {
+	id = m_idAllStem;
     } else {
 	map<QString, int>::iterator it = m_stemLangToId.find(lang);
 	if (it == m_stemLangToId.end()) 
@@ -399,7 +408,13 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     if (!prefs.queryStemLang.length() == 0)
 	qopts |= Rcl::Db::QO_STEM;
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-    if (!rcldb->setQuery(sdata, qopts, prefs.queryStemLang.ascii())) {
+
+    string stemLang = (const char *)prefs.queryStemLang.ascii();
+    if (stemLang == "ALL") {
+	rclconfig->getConfParam("indexstemminglanguages", stemLang);
+    }
+
+    if (!rcldb->setQuery(sdata, qopts, stemLang)) {
 	QMessageBox::warning(0, "Recoll", tr("Cant start query: ") +
 			     QString::fromAscii(rcldb->getReason().c_str()));
 	return;

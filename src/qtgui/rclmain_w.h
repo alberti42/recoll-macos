@@ -126,6 +126,7 @@ private:
     int                      m_searchId; 
     map<QString, int>        m_stemLangToId;
     int                      m_idNoStem;
+    int                      m_idAllStem;
 
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 

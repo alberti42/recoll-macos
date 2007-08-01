@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.9 2007-05-24 09:35:02 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.10 2007-08-01 10:04:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -218,12 +218,13 @@ static string stringlistdisp(const list<string>& sl)
 }
 
 /**
- * Expand term to list of all terms which stem to the same term.
+ * Expand term to list of all terms which stem to the same term, for one
+ * expansion language
  */
-bool stemExpand(const std::string& dbdir, 
-		const std::string& lang,
-		const std::string& term,
-		list<string>& result)
+static bool stemExpandOne(const std::string& dbdir, 
+			  const std::string& lang,
+			  const std::string& term,
+			  list<string>& result)
 {
     try {
 	Xapian::Stem stemmer(lang);
@@ -281,6 +282,30 @@ bool stemExpand(const std::string& dbdir,
 
     return true;
 }
+    
+/**
+ * Expand term to list of all terms which stem to the same term, add the
+ * expansion sets for possibly multiple expansion languages
+ */
+bool stemExpand(const std::string& dbdir, 
+		const std::string& langs,
+		const std::string& term,
+		list<string>& result)
+{
+
+    list<string> llangs;
+    stringToStrings(langs, llangs);
+    for (list<string>::const_iterator it = llangs.begin();
+	 it != llangs.end(); it++) {
+	list<string> oneexp;
+	stemExpandOne(dbdir, *it, term, oneexp);
+	result.insert(result.end(), oneexp.begin(), oneexp.end());
+    }
+    result.sort();
+    result.unique();
+    return true;
+}
+
 
 }
 }
