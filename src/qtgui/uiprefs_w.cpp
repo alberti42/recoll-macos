@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.19 2007-07-12 10:13:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.20 2007-08-01 07:55:03 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -231,6 +231,22 @@ void UIPrefsDialog::reject()
 {
     setFromPrefs();
     QDialog::reject();
+}
+
+void UIPrefsDialog::setStemLang(const QString& lang)
+{
+    int cur = 0;
+    if (lang == "") {
+	cur = 0;
+    } else {
+	for (int i = 1; i < stemLangCMB->count(); i++) {
+	    if (lang == stemLangCMB->text(i)) {
+		cur = i;
+		break;
+	    }
+	}
+    }
+    stemLangCMB->setCurrentItem(cur);
 }
 
 void UIPrefsDialog::showFontDialog()

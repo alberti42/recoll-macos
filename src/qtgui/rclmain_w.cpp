@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.36 2007-07-20 14:32:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.37 2007-08-01 07:55:03 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -107,10 +107,42 @@ void RclMain::init()
 	resList->setFont(nfont);
     }
 
+    // Stemming language menu
+    m_idNoStem = preferencesMenu->insertItem(tr("(no stemming)"));
+    m_stemLangToId[tr("(no stemming)")] = m_idNoStem;
+
+    LOGDEB(("idNoStem: %d\n", m_idNoStem));
+    // Can't get the stemming languages from the db at this stage as
+    // db not open yet (the case where it does not even exist makes
+    // things complicated). So get the languages from the config
+    // instead
+    string slangs;
+    list<string> langs;
+    if (rclconfig->getConfParam("indexstemminglanguages", slangs)) {
+	stringToStrings(slangs, langs);
+    } else {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("error retrieving stemming languages"));
+    }
+    int curid = m_idNoStem, id; // Menu ids are negative integers
+    for (list<string>::const_iterator it = langs.begin(); 
+	 it != langs.end(); it++) {
+	QString qlang = QString::fromAscii(it->c_str(), it->length());
+	id = preferencesMenu->insertItem(qlang);
+	m_stemLangToId[qlang] = id;
+	if (prefs.queryStemLang == qlang) {
+	    curid = id;
+	}
+    }
+    preferencesMenu->setItemChecked(curid, true);
+
     // Connections
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
-
+    connect(preferencesMenu, SIGNAL(activated(int)),
+	    this, SLOT(setStemLang(int)));
+    connect(preferencesMenu, SIGNAL(aboutToShow()),
+	    this, SLOT(adjustPrefsMenu()));
     // signals and slots connections
     connect(sSearch, SIGNAL(clearSearch()),
 	    this, SLOT(resetSearch()));
@@ -188,6 +220,68 @@ void RclMain::init()
 	// Have to call setdata again after sig connected...
 	sf.setData();
     }
+}
+
+void RclMain::setStemLang(int id)
+{
+    LOGDEB(("RclMain::setStemLang(%d)\n", id));
+    // Check that the menu entry is for a stemming language change
+    // (might also be "show prefs" etc.
+    bool isLangId = false;
+    for (map<QString, int>::const_iterator it = m_stemLangToId.begin();
+	 it != m_stemLangToId.end(); it++) {
+	if (id == it->second)
+	    isLangId = true;
+    }
+    if (!isLangId)
+	return;
+
+    // Set the "checked" item state for lang entries
+    for (map<QString, int>::const_iterator it = m_stemLangToId.begin();
+	 it != m_stemLangToId.end(); it++) {
+	preferencesMenu->setItemChecked(it->second, false);
+    }
+    preferencesMenu->setItemChecked(id, true);
+
+    // Retrieve language value (also handle special cases), set prefs,
+    // notify that we changed
+    QString lang;
+    if (id == m_idNoStem) {
+	lang = "";
+    } else {
+	lang = preferencesMenu->text(id);
+    }
+    prefs.queryStemLang = lang;
+    LOGDEB(("RclMain::setStemLang(%d): lang [%s]\n", 
+	    id, (const char *)prefs.queryStemLang.ascii()));
+    rwSettings(true);
+    emit stemLangChanged(lang);
+}
+
+// Set the checked stemming language item before showing the prefs menu
+void RclMain::setStemLang(const QString& lang)
+{
+    LOGDEB(("RclMain::setStemLang(%s)\n", (const char *)lang.ascii()));
+    int id;
+    if (lang == "") {
+	id = m_idNoStem;
+    } else {
+	map<QString, int>::iterator it = m_stemLangToId.find(lang);
+	if (it == m_stemLangToId.end()) 
+	    return;
+	id = it->second;
+    }
+    for (map<QString, int>::const_iterator it = m_stemLangToId.begin();
+	 it != m_stemLangToId.end(); it++) {
+	preferencesMenu->setItemChecked(it->second, false);
+    }
+    preferencesMenu->setItemChecked(id, true);
+}
+
+// Prefs menu about to show
+void RclMain::adjustPrefsMenu()
+{
+    setStemLang(prefs.queryStemLang);
 }
 
 void RclMain::closeEvent( QCloseEvent * )
@@ -393,6 +487,8 @@ void RclMain::showUIPrefs()
     if (uiprefs == 0) {
 	uiprefs = new UIPrefsDialog(0);
 	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
+	connect(this, SIGNAL(stemLangChanged(const QString&)), 
+		uiprefs, SLOT(setStemLang(const QString&)));
     } else {
 	// Close and reopen, in hope that makes us visible...
 	uiprefs->close();

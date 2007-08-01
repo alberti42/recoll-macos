@@ -67,7 +67,6 @@ public:
     }
     ~RclMain() {}
 
-
 public slots:
     virtual bool close();
     virtual void fileExit();
@@ -99,6 +98,14 @@ public slots:
     virtual void previewExposed(Preview *, int sid, int docnum);
     virtual void resetSearch();
     virtual void eraseDocHistory();
+    // Callback for setting the stemming language through the prefs menu
+    virtual void setStemLang(int id);
+    // Prefs menu about to show, set the checked lang entry
+    virtual void adjustPrefsMenu();
+
+signals:
+    void stemLangChanged(const QString& lang);
+
 protected:
     virtual void closeEvent( QCloseEvent * );
 
@@ -117,9 +124,13 @@ private:
     // Serial number of current search for this process.
     // Used to match to preview windows
     int                      m_searchId; 
+    map<QString, int>        m_stemLangToId;
+    int                      m_idNoStem;
+
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
 					bool next);
+    virtual void setStemLang(const QString& lang);
 };
 
 #endif // RCLMAIN_W_H

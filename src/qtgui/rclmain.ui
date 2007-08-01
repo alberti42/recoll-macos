@@ -82,18 +82,19 @@
         <separator/>
         <action name="fileExitAction"/>
     </item>
-    <item text="&amp;Tools" name="Tools">
+    <item text="&amp;Tools" name="toolsMenu">
         <action name="toolsDoc_HistoryAction"/>
         <action name="toolsAdvanced_SearchAction"/>
         <action name="toolsSort_parametersAction"/>
         <action name="toolsSpellAction"/>
     </item>
-    <item text="&amp;Preferences" name="Preferences">
+    <item text="&amp;Preferences" name="preferencesMenu">
         <action name="preferencesQuery_PrefsAction"/>
         <action name="extIdxAction"/>
+	<separator/>
     </item>
     <separator/>
-    <item text="&amp;Help" name="Help">
+    <item text="&amp;Help" name="helpMenu">
         <action name="userManualAction"/>
         <separator/>
         <action name="helpAbout_RecollAction"/>

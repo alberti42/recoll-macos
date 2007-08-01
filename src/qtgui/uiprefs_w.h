@@ -1,4 +1,4 @@
-/* @(#$Id: uiprefs_w.h,v 1.8 2007-02-08 09:03:29 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.9 2007-08-01 07:55:03 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 #ifndef _UIPREFS_W_H_INCLUDED_
 #define _UIPREFS_W_H_INCLUDED_
-/* @(#$Id: uiprefs_w.h,v 1.8 2007-02-08 09:03:29 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: uiprefs_w.h,v 1.9 2007-08-01 07:55:03 dockes Exp $  (C) 2005 J.F.Dockes */
 #include <qvariant.h>
 #include <qdialog.h>
 
@@ -75,6 +75,7 @@ public slots:
     virtual void togExtraDbPB_clicked();
     virtual void actAllExtraDbPB_clicked();
     virtual void unacAllExtraDbPB_clicked();
+    virtual void setStemLang(const QString& lang);
 
 signals:
     void uiprefsDone();
