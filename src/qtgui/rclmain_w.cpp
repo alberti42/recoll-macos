@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.38 2007-08-01 10:04:53 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.39 2007-08-02 06:33:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -151,6 +151,8 @@ void RclMain::init()
     // signals and slots connections
     connect(sSearch, SIGNAL(clearSearch()),
 	    this, SLOT(resetSearch()));
+    connect(firstPageAction, SIGNAL(activated()), 
+	    resList, SLOT(resultPageFirst()));
     connect(prevPageAction, SIGNAL(activated()), 
 	    resList, SLOT(resultPageBack()));
     connect(nextPageAction, SIGNAL(activated()),
@@ -202,6 +204,7 @@ void RclMain::init()
 #if (QT_VERSION < 0x040000)
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
+    firstPageAction->setIconSet(createIconSet("firstpage.png"));
     toolsSpellAction->setIconSet(QPixmap::fromMimeSource("spell.png"));
     toolsDoc_HistoryAction->setIconSet(QPixmap::fromMimeSource("history.png"));
     toolsAdvanced_SearchAction->setIconSet(QPixmap::fromMimeSource("asearch.png"));
@@ -210,6 +213,7 @@ void RclMain::init()
     toolsSpellAction->setIcon(QIcon(":/images/spell.png"));
     nextPageAction->setIcon(QIcon(":/images/nextpage.png"));
     prevPageAction->setIcon(QIcon(":/images/prevpage.png"));
+    firstPageAction->setIcon(QIcon(":/images/firstpage.png"));
     toolsDoc_HistoryAction->setIcon(QIcon(":/images/history.png"));
     toolsAdvanced_SearchAction->setIcon(QIcon(":/images/asearch.png"));
     toolsSort_parametersAction->setIcon(QIcon(":/images/sortparms.png"));
@@ -950,5 +954,6 @@ void RclMain::enableNextPage(bool yesno)
 void RclMain::enablePrevPage(bool yesno)
 {
     prevPageAction->setEnabled(yesno);
+    firstPageAction->setEnabled(yesno);
 }
 

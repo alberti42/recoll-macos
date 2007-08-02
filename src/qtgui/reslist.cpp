@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.32 2007-07-20 14:32:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.33 2007-08-02 06:33:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -244,6 +244,13 @@ void ResList::resultPageBack()
     if (m_winfirst <= 0)
 	return;
     m_winfirst -= 2 * prefs.respagesize;
+    resultPageNext();
+}
+
+// Go to the first page
+void ResList::resultPageFirst()
+{
+    m_winfirst = -1;
     resultPageNext();
 }
 

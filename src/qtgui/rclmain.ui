@@ -120,6 +120,7 @@
         <property name="label">
             <string>Result list</string>
         </property>
+        <action name="firstPageAction"/>
         <action name="prevPageAction"/>
         <action name="nextPageAction"/>
     </toolbar>
@@ -257,6 +258,20 @@
         </property>
         <property name="toolTip">
             <string>Next page of results</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>firstPageAction</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="text">
+            <string>First page</string>
+        </property>
+        <property name="toolTip">
+            <string>Go to first page of results</string>
         </property>
     </action>
     <action>

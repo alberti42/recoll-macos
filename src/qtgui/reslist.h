@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.12 2007-07-20 14:32:55 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.13 2007-08-02 06:33:35 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -47,6 +47,7 @@ class ResList : public QTEXTBROWSER
     virtual void resPageUpOrBack(); // Page up pressed
     virtual void resPageDownOrNext(); // Page down pressed
     virtual void resultPageBack(); // Display previous page of results
+    virtual void resultPageFirst(); // Display first page of results
     virtual void resultPageNext(); // Display next (or first) page of results
     virtual void menuPreview();
     virtual void menuEdit();
