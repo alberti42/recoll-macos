@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.8 2006-12-14 13:53:43 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.9 2007-08-03 07:50:49 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ static char rcsid [] = "@(#$Id: conftree.cpp,v 1.8 2006-12-14 13:53:43 dockes Ex
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <iostream>
 
 #include "conftree.h"
 #include "pathut.h"
@@ -42,7 +43,6 @@ using std::list;
 #ifndef MIN
 #define MIN(A,B) ((A)<(B) ? (A) : (B))
 #endif
-
 
 #define LL 1024
 void ConfSimple::parseinput(istream &input)
@@ -78,8 +78,10 @@ void ConfSimple::parseinput(istream &input)
 	// Note that we trim whitespace before checking for backslash-eol
 	// This avoids invisible problems.
 	trimstring(line);
-	if (line.empty())
+	if (line.empty()) {
+	    m_order.push_back(ConfLine(ConfLine::CFL_COMMENT, line));
 	    continue;
+	}
 	if (line[line.length() - 1] == '\\') {
 	    line.erase(line.length() - 1);
 	    appending = true;
@@ -93,13 +95,20 @@ void ConfSimple::parseinput(istream &input)
 		submapkey = path_tildexpand(line);
 	    else 
 		submapkey = line;
+	    // No need for adding sk to order, will be done with first
+	    // variable insert. Also means that empty section are
+	    // expandable (won't be output when rewriting)
+	    // Another option would be to add the subsec to m_order here
+	    // and not do it inside i_set() if init is true
 	    continue;
 	}
 
 	// Look for first equal sign
 	string::size_type eqpos = line.find("=");
-	if (eqpos == string::npos)
+	if (eqpos == string::npos) {
+	    m_order.push_back(ConfLine(ConfLine::CFL_COMMENT, line));
 	    continue;
+	}
 
 	// Compute name and value, trim white space
 	string nm, val;
@@ -108,48 +117,33 @@ void ConfSimple::parseinput(istream &input)
 	val = line.substr(eqpos+1, string::npos);
 	trimstring(val);
 	
-	if (nm.length() == 0)
+	if (nm.length() == 0) {
+	    m_order.push_back(ConfLine(ConfLine::CFL_COMMENT, line));
 	    continue;
-
-	map<string, map<string, string> >::iterator s;
-	s = submaps.find(submapkey);
-	if (s != submaps.end()) {
-	    // submap already exists
-	    map<string, string> &sm = s->second;
-	    sm[nm] = val;
-	} else {
-	    map<string, string> newmap;
-	    newmap[nm] = val;
-	    submaps[submapkey] = newmap;
 	}
-
+	i_set(nm, val, submapkey, true);
     }
 }
 
 
 ConfSimple::ConfSimple(int readonly, bool tildexp)
+    : dotildexpand(tildexp), m_data(0)
 {
-    data = 0;
-    dotildexpand = tildexp;
     status = readonly ? STATUS_RO : STATUS_RW;
 }
 
 ConfSimple::ConfSimple(string *d, int readonly, bool tildexp)
+    : dotildexpand(tildexp), m_data(d)
 {
-    data = d;
-    dotildexpand = tildexp;
     status = readonly ? STATUS_RO : STATUS_RW;
 
     stringstream input(*d, ios::in);
     parseinput(input);
 }
 
-
 ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp)
+    : dotildexpand(tildexp), m_filename(fname), m_data(0)
 {
-    data = 0;
-    filename = string(fname);
-    dotildexpand = tildexp;
     status = readonly ? STATUS_RO : STATUS_RW;
 
     ifstream input;
@@ -180,7 +174,6 @@ ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp)
 	return;
     }	    
 
-    // Parse
     parseinput(input);
 }
 
@@ -200,7 +193,7 @@ int ConfSimple::get(const string &nm, string &value, const string &sk)
 
     // Find submap
     map<string, map<string, string> >::iterator ss;
-    if ((ss = submaps.find(sk)) == submaps.end()) 
+    if ((ss = m_submaps.find(sk)) == m_submaps.end()) 
 	return 0;
 
     // Find named value
@@ -211,13 +204,15 @@ int ConfSimple::get(const string &nm, string &value, const string &sk)
     return 1;
 }
 
-static ConfSimple::WalkerCode swalker(void *f, const string &nm, 
+// Code to appropriately output a subkey (nm=="") or variable line
+// Splits long lines
+static ConfSimple::WalkerCode varprinter(void *f, const string &nm, 
 				      const string &value)
 {
     ostream *output = (ostream *)f;
-    if (nm.empty())
+    if (nm.empty()) {
 	*output << "\n[" << value << "]\n";
-    else {
+    } else {
 	string value1;
 	if (value.length() < 60) {
 	    value1 = value;
@@ -236,46 +231,90 @@ static ConfSimple::WalkerCode swalker(void *f, const string &nm,
     return ConfSimple::WALK_CONTINUE;
 }
 
+// Set variable and rewrite data
 int ConfSimple::set(const std::string &nm, const std::string &value, 
-		  const string &sk)
+		    const string &sk)
 {
     if (status  != STATUS_RW)
 	return 0;
 
-    // Preprocess value: we don't want nl's in there, and we want to keep
-    // lines to a reasonable length
+    if (!i_set(nm, value, sk))
+	return 0;
+    return write();
+}
+
+// Internal set variable: no rw checking or file rewriting. If init is
+// set, we're doing initial parsing, else we are changing a parsed
+// tree (changes the way we update the order data)
+int ConfSimple::i_set(const std::string &nm, const std::string &value, 
+		      const string &sk, bool init)
+{
+    // Values must not have embedded newlines
     if (value.find_first_of("\n\r") != string::npos) {
 	return 0;
     }
-
+    bool existing = false;
     map<string, map<string, string> >::iterator ss;
-    if ((ss = submaps.find(sk)) == submaps.end()) {
+    if ((ss = m_submaps.find(sk)) == m_submaps.end()) {
 	map<string, string> submap;
 	submap[nm] = value;
-	submaps[sk] = submap;
+	m_submaps[sk] = submap;
+	if (!sk.empty())
+	    m_order.push_back(ConfLine(ConfLine::CFL_SK, sk));
+	// The var insert will be at the end, need not search for the
+	// right place
+	init = true;
+    } else {
+	map<string, string>::iterator it;
+	it = ss->second.find(nm);
+	if (it == ss->second.end()) {
+	    ss->second.insert(pair<string,string>(nm, value));
+	} else {
+	    it->second = value;
+	    existing = true;
+	}
+    }
 
+    // If the variable already existed, no need to change the order data
+    if (existing)
+	return 1;
+
+    // Add the new variable at the end of its submap in the order data.
+
+    if (init) {
+	// During the initial construction, insert at end
+	m_order.push_back(ConfLine(ConfLine::CFL_VAR, nm));
+	return 1;
+    } 
+
+    list<ConfLine>::iterator start, fin;
+    if (sk.empty()) {
+	start = m_order.begin();
     } else {
-	ss->second[nm] = value;
-    }
-  
-    if (filename.length()) {
-	ofstream output(filename.c_str(), ios::out|ios::trunc);
-	if (!output.is_open())
-	    return 0;
-	if (sortwalk(swalker, &output) != WALK_CONTINUE) {
-	    return 0;
+	start = find(m_order.begin(), m_order.end(), 
+		     ConfLine(ConfLine::CFL_SK, sk));
+	if (start == m_order.end()) {
+	    // This is not logically possible. The subkey must
+	    // exist. We're doomed
+	    std::cerr << "Logical failure during configuration variable " 
+		"insertion" << endl;
+	    abort();
 	}
-	return 1;
-    } else if (data) {
-	ostringstream output(*data, ios::out | ios::trunc);
-	if (sortwalk(swalker, &output) != WALK_CONTINUE) {
-	    return 0;
-	}
-	return 1;
-    } else {
-	// No backing store, no writing
-	return 1;
     }
+
+    fin = m_order.end();
+    if (start != m_order.end()) {
+	start++;
+	for (list<ConfLine>::iterator it = start; it != m_order.end(); it++) {
+	    if (it->m_kind == ConfLine::CFL_SK) {
+		fin = it;
+		break;
+	    }
+	}
+    }
+    m_order.insert(fin, ConfLine(ConfLine::CFL_VAR, nm));
+
+    return 1;
 }
 
 int ConfSimple::erase(const string &nm, const string &sk)
@@ -284,30 +323,13 @@ int ConfSimple::erase(const string &nm, const string &sk)
 	return 0;
 
     map<string, map<string, string> >::iterator ss;
-    if ((ss = submaps.find(sk)) == submaps.end()) {
+    if ((ss = m_submaps.find(sk)) == m_submaps.end()) {
 	return 0;
-
     }
     
     ss->second.erase(nm);
   
-    if (filename.length()) {
-	ofstream output(filename.c_str(), ios::out|ios::trunc);
-	if (!output.is_open())
-	    return 0;
-	if (sortwalk(swalker, &output) != WALK_CONTINUE) {
-	    return 0;
-	}
-	return 1;
-    } else if (data) {
-	ostringstream output(*data, ios::out | ios::trunc);
-	if (sortwalk(swalker, &output) != WALK_CONTINUE) {
-	    return 0;
-	}
-	return 1;
-    } else {
-	return 1;
-    }
+    return write();
 }
 
 int ConfSimple::set(const char *nm, const char *value, const char *sk)
@@ -323,8 +345,8 @@ ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
     if (!ok())
 	return WALK_STOP;
     // For all submaps:
-    for (map<string, map<string, string> >::iterator sit = submaps.begin();
-	 sit != submaps.end(); sit++) {
+    for (map<string, map<string, string> >::iterator sit = m_submaps.begin();
+	 sit != m_submaps.end(); sit++) {
 
 	// Possibly emit submap name:
 	if (!sit->first.empty() && walker(clidata, "", sit->first.c_str())
@@ -342,12 +364,60 @@ ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
     return WALK_CONTINUE;
 }
 
-#include <iostream>
+bool ConfSimple::write()
+{
+    if (m_filename.length()) {
+	ofstream output(m_filename.c_str(), ios::out|ios::trunc);
+	if (!output.is_open())
+	    return 0;
+	return write(output);
+    } else if (m_data) {
+	ostringstream output(*m_data, ios::out | ios::trunc);
+	return write(output);
+    } else {
+	// No backing store, no writing
+	return 1;
+    }
+}
+
+bool ConfSimple::write(ostream& out)
+{
+    if (!ok())
+	return false;
+    string sk;
+    for (list<ConfLine>::const_iterator it = m_order.begin(); 
+	 it != m_order.end(); it++) {
+	switch(it->m_kind) {
+	case ConfLine::CFL_COMMENT: 
+	    out << it->m_data << endl; 
+	    if (!out.good()) 
+		return false;
+	    break;
+	case ConfLine::CFL_SK:      
+	    sk = it->m_data;
+	    out << "[" << it->m_data << "]" << endl;
+	    if (!out.good()) 
+		return false;
+	    break;
+	case ConfLine::CFL_VAR:
+	    string value;
+	    // As erase() doesnt update m_order we can find unexisting
+	    // variables, and must not output anything for them
+	    if (get(it->m_data, value, sk)) {
+		varprinter(&out, it->m_data, value);
+		if (!out.good()) 
+		    return false;
+	    }
+	}
+    }
+    return true;
+}
+
 void ConfSimple::listall()
 {
     if (!ok())
 	return;
-    sortwalk(swalker, &std::cout);
+    write(std::cout);
 }
 
 list<string> ConfSimple::getNames(const string &sk)
@@ -356,7 +426,7 @@ list<string> ConfSimple::getNames(const string &sk)
     if (!ok())
 	return mylist;
     map<string, map<string, string> >::iterator ss;
-    if ((ss = submaps.find(sk)) == submaps.end()) {
+    if ((ss = m_submaps.find(sk)) == m_submaps.end()) {
 	return mylist;
     }
     map<string, string>::const_iterator it;
@@ -365,6 +435,18 @@ list<string> ConfSimple::getNames(const string &sk)
     }
     mylist.sort();
     mylist.unique();
+    return mylist;
+}
+
+list<string> ConfSimple::getSubKeys()
+{
+    std::list<string> mylist;
+    if (!ok())
+	return mylist;
+    map<string, map<string, string> >::iterator ss;
+    for (ss = m_submaps.begin(); ss != m_submaps.end(); ss++) {
+	mylist.push_back(ss->first);
+    }
     return mylist;
 }
 
@@ -460,6 +542,7 @@ static char usage [] =
     "testconftree [opts] filename\n"
     "[-w]  : read/write test.\n"
     "[-s]  : string parsing test. Filename must hold parm 'strings'\n"
+    "[-a] nm value sect : add nm,value in 'sect' which can be ''\n"
     "[-q] nm sect : subsection test: look for nm in 'sect' which can be ''\n"
     "[-d] nm sect : delete nm in 'sect' which can be ''\n"
     "[-S] : string io test. No filename in this case\n"
@@ -478,11 +561,13 @@ static int     op_flags;
 #define OPT_S     0x10
 #define OPT_d     0x20
 #define OPT_V     0x40
+#define OPT_a     0x80
 
 int main(int argc, char **argv)
 {
     const char *nm = 0;
     const char *sub = 0;
+    const char *value = 0;
 
     thisprog = argv[0];
     argc--; argv++;
@@ -494,11 +579,19 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'd':   
+	    case 'd':
 		op_flags |= OPT_d;
 		if (argc < 3)  
 		    Usage();
 		nm = *(++argv);argc--;
+		sub = *(++argv);argc--;		  
+		goto b1;
+	    case 'a':
+		op_flags |= OPT_a;
+		if (argc < 4)  
+		    Usage();
+		nm = *(++argv);argc--;
+		value = *(++argv);argc--;
 		sub = *(++argv);argc--;		  
 		goto b1;
 	    case 'q':
@@ -556,13 +649,18 @@ int main(int argc, char **argv)
 	    }
 	    char spid[100];
 	    sprintf(spid, "%d", getpid());
-	    parms.set("mypid", spid);
+	    if (!parms.set("mypid", spid)) {
+		cerr << "Set mypid failed" << endl;
+	    }
 
 	    ostringstream ost;;
 	    ost << "mypid" << getpid();
-	    parms.set(ost.str(), spid, "");
-
-	    parms.set("unstring", "Une jolie phrase pour essayer");
+	    if (!parms.set(ost.str(), spid, "")) {
+		cerr << "Set mypid failed (2)" << endl;
+	    }
+	    if (!parms.set("unstring", "Une jolie phrase pour essayer")) {
+		cerr << "Set unstring failed" << endl;
+	    }
 	} else if (op_flags & OPT_q) {
 	    ConfTree parms(filename, 0);
 	    if (parms.getStatus() == ConfSimple::STATUS_ERROR) {
@@ -575,6 +673,17 @@ int main(int argc, char **argv)
 		exit(1);
 	    }
 	    printf("%s : '%s' = '%s'\n", sub, nm, value.c_str());
+	    exit(0);
+	} else if (op_flags & OPT_a) {
+	    ConfTree parms(filename, 0);
+	    if (parms.getStatus() == ConfSimple::STATUS_ERROR) {
+		fprintf(stderr, "Error opening or parsing file\n");
+		exit(1);
+	    }
+	    if (!parms.set(nm, value, sub)) {
+		fprintf(stderr, "Set error\n");
+		exit(1);
+	    }
 	    exit(0);
 	} else if (op_flags & OPT_d) {
 	    ConfTree parms(filename, 0);

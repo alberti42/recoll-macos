@@ -23,7 +23,9 @@
  * Configuration files have lines like 'name = value', and/or like '[subkey]'
  *
  * Lines like '[subkeyname]' in the file define subsections, with independant
- * configuration namespaces.
+ * configuration namespaces. Only subsections holding at least one variable are 
+ * significant (empty subsections may be deleted during an update, but
+   not always).
  *
  * Whitespace around name and value is insignificant.
  *
@@ -48,6 +50,7 @@
 #include <iostream>
 #else
 #include <istream>
+#include <ostream>
 #endif
 
 #ifndef NO_NAMESPACES
@@ -55,9 +58,27 @@ using std::string;
 using std::list;
 using std::map;
 using std::istream;
+using std::ostream;
 #endif // NO_NAMESPACES
 
 #include "pathut.h"
+
+/** Internal class used for storing presentation information */
+class ConfLine {
+public:
+    enum Kind {CFL_COMMENT, CFL_SK, CFL_VAR};
+    Kind m_kind;
+    string m_data;
+    ConfLine(Kind k, const string& d) 
+	: m_kind(k), m_data(d) 
+    {
+    }
+    bool operator==(const ConfLine& o) 
+    {
+	return o.m_kind == m_kind && o.m_data == m_data;
+    }
+	
+};
 
 /** 
  * Manages a simple configuration file with subsections.
@@ -135,29 +156,37 @@ public:
      */
     virtual list<string> getNames(const string &sk);
 
-    virtual string getFilename() {return filename;}
+    /**
+     * Return all subkeys 
+     */
+    virtual list<string> getSubKeys();
+
+    virtual string getFilename() {return m_filename;}
 
     /**
      * Copy constructor. Expensive but less so than a full rebuild
      */
-    ConfSimple(const ConfSimple &rhs) : data(0) {
+    ConfSimple(const ConfSimple &rhs) 
+	: m_data(0) 
+    {
 	if ((status = rhs.status) == STATUS_ERROR)
 	    return;
-	filename = rhs.filename;
+	m_filename = rhs.m_filename;
 	// Note: we just share the pointer, this doesnt belong to us
-	data = rhs.data;
-	submaps = rhs.submaps;
+	m_data = rhs.m_data;
+	m_submaps = rhs.m_submaps;
     }
 
     /**
      * Assignement. This is expensive
      */
-    ConfSimple& operator=(const ConfSimple &rhs) {
+    ConfSimple& operator=(const ConfSimple &rhs) 
+    {
 	if (this != &rhs && (status = rhs.status) != STATUS_ERROR) {
-	    filename = rhs.filename;
+	    m_filename = rhs.m_filename;
 	    // Note: we don't own data. Just share the pointer
-	    data = rhs.data;
-	    submaps = rhs.submaps;
+	    m_data = rhs.m_data;
+	    m_submaps = rhs.m_submaps;
 	}
 	return *this;
     }
@@ -166,11 +195,24 @@ protected:
     bool dotildexpand;
     StatusCode status;
 private:
-    string filename; // set if we're working with a file
-    string *data;    // set if we're working with an in-memory string
-    map<string, map<string, string> > submaps;
+    // Set if we're working with a file
+    string                            m_filename; 
+    // Set if we're working with an in-memory string
+    string                           *m_data;
+    // Configuration data submaps (one per subkey, the main data has a
+    // null subkey)
+    map<string, map<string, string> > m_submaps;
+    // Presentation data. We keep the comments, empty lines and
+    // variable and subkey ordering information in there (for
+    // rewriting the file while keeping hand-edited information)
+    list<ConfLine>                    m_order;
 
-    void parseinput(istream &input);
+    void parseinput(istream& input);
+    bool write();
+    bool write(ostream& out);
+    // Internal version of set: no RW checking
+    virtual int i_set(const string &nm, const string &val, 
+		      const string &sk, bool init = false);
 };
 
 /**
