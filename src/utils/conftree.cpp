@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.9 2007-08-03 07:50:49 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.10 2007-08-04 07:22:43 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -332,12 +332,6 @@ int ConfSimple::erase(const string &nm, const string &sk)
     return write();
 }
 
-int ConfSimple::set(const char *nm, const char *value, const char *sk)
-{
-    string ssk = (sk == 0) ? string("") : string(sk);
-    return set(string(nm), string(value), ssk);
-}
-
 ConfSimple::WalkerCode 
 ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
 		     void *clidata)
@@ -538,11 +532,89 @@ void memtest(ConfSimple &c)
     c.listall();
 }
 
+bool readwrite(ConfNull *conf)
+{
+    if (conf->ok()) {
+	// It's ok for the file to not exist here
+	string value;
+		
+	if (conf->get("mypid", value)) {
+	    cout << "Value for mypid is [" << value << "]" << endl;
+	} else {
+	    cout << "mypid not set" << endl;
+	}
+		
+	if (conf->get("unstring", value)) {
+	    cout << "Value for unstring is ["<< value << "]" << endl;
+	} else {
+	    cout << "unstring not set" << endl;
+	}
+    }
+    char spid[100];
+    sprintf(spid, "%d", getpid());
+    if (!conf->set("mypid", spid)) {
+	cerr << "Set mypid failed" << endl;
+    }
+
+    ostringstream ost;
+    ost << "mypid" << getpid();
+    if (!conf->set(ost.str(), spid, "")) {
+	cerr << "Set mypid failed (2)" << endl;
+    }
+    if (!conf->set("unstring", "Une jolie phrase pour essayer")) {
+	cerr << "Set unstring failed" << endl;
+    }
+    return true;
+}
+
+bool query(ConfNull *conf, const string& nm, const string& sub)
+{
+    if (!conf->ok()) {
+	cerr <<  "Error opening or parsing file\n" << endl;
+	return false;
+    }
+    string value;
+    if (!conf->get(nm, value, sub)) {
+	cerr << "name [" << nm << "] not found in [" << sub << "]" << endl;
+	return false;
+    }
+    cout << "[" << sub << "] " << nm << " " << value << endl;
+    return true;
+}
+
+bool erase(ConfNull *conf, const string& nm, const string& sub)
+{
+    if (!conf->ok()) {
+	cerr <<  "Error opening or parsing file\n" << endl;
+	return false;
+    }
+
+    if (!conf->erase(nm, sub)) {
+	cerr <<  "delete name [" << nm <<  "] in ["<< sub << "] failed" << endl;
+	return false;
+    }
+    return true;
+}
+
+bool setvar(ConfNull *conf, const string& nm, const string& value, 
+	    const string& sub)
+{
+    if (!conf->ok()) {
+	cerr <<  "Error opening or parsing file\n" << endl;
+	return false;
+    }
+    if (!conf->set(nm, value, sub)) {
+	cerr <<  "Set error\n" << endl;
+	return false;
+    }
+    return true;
+}
+
 static char usage [] =
     "testconftree [opts] filename\n"
     "[-w]  : read/write test.\n"
     "[-s]  : string parsing test. Filename must hold parm 'strings'\n"
-    "[-a] nm value sect : add nm,value in 'sect' which can be ''\n"
+    "[-a] nm value sect : add/set nm,value in 'sect' which can be ''\n"
     "[-q] nm sect : subsection test: look for nm in 'sect' which can be ''\n"
     "[-d] nm sect : delete nm in 'sect' which can be ''\n"
     "[-S] : string io test. No filename in this case\n"
@@ -562,6 +634,7 @@ static int     op_flags;
 #define OPT_d     0x20
 #define OPT_V     0x40
 #define OPT_a     0x80
+#define OPT_k     0x100
 
 int main(int argc, char **argv)
 {
@@ -602,6 +675,7 @@ int main(int argc, char **argv)
 		sub = *(++argv);argc--;		  
 		goto b1;
 	    case 's':   op_flags |= OPT_s; break;
+	    case 'k':   op_flags |= OPT_k; break;
 	    case 'S':   op_flags |= OPT_S; break;
 	    case 'V':   op_flags |= OPT_S; break;
 	    case 'w':	op_flags |= OPT_w; break;
@@ -612,131 +686,100 @@ int main(int argc, char **argv)
     }
 
     if ((op_flags & OPT_S)) {
+	// String storage test
 	if (argc != 0)
 	    Usage();
 	string s;
 	ConfSimple c(&s);
 	memtest(c);
+	exit(0);
     } else if  ((op_flags & OPT_V)) {
+	// No storage test
 	if (argc != 0)
 	    Usage();
-	string s;
 	ConfSimple c;
 	memtest(c);
-    } else {
-	if (argc < 1)
-	    Usage();
+	exit(0);
+    } 
 
-	const char *filename = *argv++;argc--;
+    // Other tests use file(s) as backing store
+    if (argc < 1)
+	Usage();
 
-	if (op_flags & OPT_w) {
-	    ConfSimple parms(filename);
-	    if (parms.getStatus() != ConfSimple::STATUS_ERROR) {
-		// It's ok for the file to not exist here
-		string value;
-		
-		if (parms.get("mypid", value)) {
-		    printf("Value for mypid is '%s'\n", value.c_str());
-		} else {
-		    printf("mypid not set\n");
-		}
-		
-		if (parms.get("unstring", value)) {
-		    printf("Value for unstring is '%s'\n", value.c_str());
-		} else {
-		    printf("unstring not set\n");
-		}
-	    }
-	    char spid[100];
-	    sprintf(spid, "%d", getpid());
-	    if (!parms.set("mypid", spid)) {
-		cerr << "Set mypid failed" << endl;
-	    }
+    list<string> flist;
+    while (argc--) {
+	flist.push_back(*argv++);
+    }
+    bool ro = !(op_flags & (OPT_w|OPT_a|OPT_d));
+    ConfNull *conf = 0;
+    switch (flist.size()) {
+    case 0:
+	Usage();
+	break;
+    case 1:
+	conf = new ConfTree(flist.front().c_str(), ro);
+	break;
+    default:
+	conf = new ConfStack<ConfTree>(flist, ro);
+	break;
+    }
 
-	    ostringstream ost;;
-	    ost << "mypid" << getpid();
-	    if (!parms.set(ost.str(), spid, "")) {
-		cerr << "Set mypid failed (2)" << endl;
-	    }
-	    if (!parms.set("unstring", "Une jolie phrase pour essayer")) {
-		cerr << "Set unstring failed" << endl;
-	    }
-	} else if (op_flags & OPT_q) {
-	    ConfTree parms(filename, 0);
-	    if (parms.getStatus() == ConfSimple::STATUS_ERROR) {
-		fprintf(stderr, "Error opening or parsing file\n");
-		exit(1);
-	    }
-	    string value;
-	    if (!parms.get(nm, value, sub)) {
-		fprintf(stderr, "name '%s' not found in '%s'\n", nm, sub);
-		exit(1);
-	    }
-	    printf("%s : '%s' = '%s'\n", sub, nm, value.c_str());
-	    exit(0);
-	} else if (op_flags & OPT_a) {
-	    ConfTree parms(filename, 0);
-	    if (parms.getStatus() == ConfSimple::STATUS_ERROR) {
-		fprintf(stderr, "Error opening or parsing file\n");
-		exit(1);
-	    }
-	    if (!parms.set(nm, value, sub)) {
-		fprintf(stderr, "Set error\n");
-		exit(1);
-	    }
-	    exit(0);
-	} else if (op_flags & OPT_d) {
-	    ConfTree parms(filename, 0);
-	    if (parms.getStatus() != ConfSimple::STATUS_RW) {
-		fprintf(stderr, "Error opening or parsing file\n");
-		exit(1);
-	    }
-	    if (!parms.erase(nm, sub)) {
-		fprintf(stderr, "delete name '%s' in '%s' failed\n", nm, sub);
-		exit(1);
-	    }
-	    printf("OK\n");
-	    exit(0);
-	} else if (op_flags & OPT_s) {
-	    ConfSimple parms(filename, 1);
-	    if (parms.getStatus() == ConfSimple::STATUS_ERROR) {
-		cerr << "Cant open /parse conf file " << filename << endl;
-		exit(1);
-	    }
-	    
-	    string source;
-	    if (!parms.get(string("strings"), source, "")) {
-		cerr << "Cant get param 'strings'" << endl;
-		exit(1);
-	    }
-	    cout << "source: [" << source << "]" << endl;
-	    list<string> strings;
-	    if (!stringToStrings(source, strings)) {
-		cerr << "parse failed" << endl;
-		exit(1);
-	    }
-	    
-	    for (list<string>::iterator it = strings.begin(); 
-		 it != strings.end(); it++) {
-		cout << "[" << *it << "]" << endl;
-	    }
-	     
-	} else {
-	    ConfTree parms(filename, 1);
-	    if (parms.getStatus() == ConfSimple::STATUS_ERROR) {
-		fprintf(stderr, "Open failed\n");
-		exit(1);
-	    }
-	    printf("LIST\n");
-	    parms.listall();
-	    //printf("WALK\n");parms.sortwalk(mywalker, 0);
-	    printf("\nNAMES in global space:\n");
-	    list<string> names = parms.getNames("");
-	    for (list<string>::iterator it = names.begin();it!=names.end();
-		 it++) 
-		printf("%s\n", (*it).c_str());
-
+    if (op_flags & OPT_w) {
+	exit(!readwrite(conf));
+    } else if (op_flags & OPT_q) {
+	exit(!query(conf, nm, sub));
+    } else if (op_flags & OPT_k) {
+	if (!conf->ok()) {
+	    cerr << "conf init error" << endl;
+	    exit(1);
 	}
+	list<string>lst = conf->getSubKeys();
+	for (list<string>::const_iterator it = lst.begin(); 
+	     it != lst.end(); it++) {
+	    cout << *it << endl;
+	}
+	exit(0);
+    } else if (op_flags & OPT_a) {
+	exit(!setvar(conf, nm, value, sub));
+    } else if (op_flags & OPT_d) {
+	exit(!erase(conf, nm, sub));
+    } else if (op_flags & OPT_s) {
+	if (!conf->ok()) {
+	    cerr << "Cant open /parse conf file " << endl;
+	    exit(1);
+	}
+	    
+	string source;
+	if (!conf->get(string("strings"), source, "")) {
+	    cerr << "Cant get param 'strings'" << endl;
+	    exit(1);
+	}
+	cout << "source: [" << source << "]" << endl;
+	list<string> strings;
+	if (!stringToStrings(source, strings)) {
+	    cerr << "parse failed" << endl;
+	    exit(1);
+	}
+	    
+	for (list<string>::iterator it = strings.begin(); 
+	     it != strings.end(); it++) {
+	    cout << "[" << *it << "]" << endl;
+	}
+	     
+    } else {
+	if (!conf->ok()) {
+	    fprintf(stderr, "Open failed\n");
+	    exit(1);
+	}
+	printf("LIST\n");
+	conf->listall();
+	//printf("WALK\n");conf->sortwalk(mywalker, 0);
+	printf("\nNAMES in global space:\n");
+	list<string> names = conf->getNames("");
+	for (list<string>::iterator it = names.begin();it!=names.end();
+	     it++) 
+	    printf("%s\n", (*it).c_str());
+
     }
 }
 

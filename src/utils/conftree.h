@@ -81,11 +81,28 @@ public:
 };
 
 /** 
- * Manages a simple configuration file with subsections.
+ * Virtual base class used to define an interface mostly useful for testing
  */
-class ConfSimple {
+class ConfNull {
 public:
     enum StatusCode {STATUS_ERROR=0, STATUS_RO=1, STATUS_RW=2};
+    virtual ~ConfNull() {};
+    virtual int get(const string &name, string &value, 
+		    const string &sk = "") = 0;
+    virtual int set(const string &nm, const string &val, 
+		    const string &sk = "") = 0;
+    virtual bool ok() = 0;
+    virtual list<string> getNames(const string &sk) = 0;
+    virtual int erase(const string &name, const string &sk) {return 0;}
+    virtual void listall() {}
+    virtual list<string> getSubKeys() = 0;
+};
+
+/** 
+ * Manages a simple configuration file with subsections.
+ */
+class ConfSimple : public ConfNull {
+public:
 
     /**
      * Build the object by reading content from file.
@@ -117,17 +134,14 @@ public:
      * global space if sk is empty).
      * @return 0 if name not found, 1 else
      */
-    virtual int get(const string &name, string &value, 
-		    const string &sk = string(""));
+    virtual int get(const string &name, string &value, const string &sk = "");
     /* Note: the version returning char* was buggy and has been removed */
 
     /** 
      * Set value for named parameter in specified subsection (or global)
      * @return 0 for error, 1 else
      */
-    virtual int set(const string &nm, const string &val, 
-		    const string &sk);
-    virtual int set(const char *name, const char *value, const char *sk = 0);
+    virtual int set(const string &nm, const string &val, const string &sk = "");
 
     /**
      * Remove name and value from config
@@ -167,7 +181,7 @@ public:
      * Copy constructor. Expensive but less so than a full rebuild
      */
     ConfSimple(const ConfSimple &rhs) 
-	: m_data(0) 
+	: ConfNull(), m_data(0) 
     {
 	if ((status = rhs.status) == STATUS_ERROR)
 	    return;
@@ -250,10 +264,6 @@ public:
      * @return 0 if name not found, 1 else
      */
     virtual int get(const string &name, string &value, const string &sk);
-
-    virtual int get(const char *name, string &value, const char *sk) {
-	return get(string(name), value, sk ? string(sk) : string(""));
-    }
 };
 
 /** 
@@ -262,17 +272,22 @@ public:
  * (ie personal) ones.
  *
  * Notes: it's ok for some of the files in the list to not exist, but the last
- * one must or we generate an error. We open all trees readonly.
+ * one must or we generate an error. We open all trees readonly, except the 
+ * topmost one if requested. All writes go to the topmost file. Note that
+ * erase() won't work.
  */
-template <class T> class ConfStack {
+template <class T> class ConfStack : public ConfNull {
 public:
-    /// Construct from list of configuration file names
-    ConfStack(const list<string> &fns, bool ro = true) {
+    /// Construct from list of configuration file names. The earler files in
+    /// have priority when fetching values. Only the first file will be updated 
+    /// if ro is false and set() is used.
+    ConfStack(const list<string> &fns, bool ro = true) 
+    {
 	construct(fns, ro);
     }
-    // Construct out of one name
-    // Construct out of name and list of directories
-    ConfStack(const string& nm, const list<string>& dirs, bool ro = true) {
+    /// Construct out of single file name and list of directories
+    ConfStack(const string& nm, const list<string>& dirs, bool ro = true) 
+    {
 	list<string> fns;
 	for (list<string>::const_iterator it = dirs.begin(); 
 	     it != dirs.end(); it++){
@@ -281,18 +296,22 @@ public:
 	ConfStack::construct(fns, ro);
     }
 
-    ~ConfStack() {
-	erase();
-	m_ok = false;
-    }
-
-    ConfStack(const ConfStack &rhs) {
+    ConfStack(const ConfStack &rhs) 
+	: ConfNull()
+    {
 	init_from(rhs);
     }
 
-    ConfStack& operator=(const ConfStack &rhs) {
+    virtual ~ConfStack() 
+    {
+	clear();
+	m_ok = false;
+    }
+
+    ConfStack& operator=(const ConfStack &rhs) 
+    {
 	if (this != &rhs){
-	    erase();
+	    clear();
 	    m_ok = rhs.m_ok;
 	    if (m_ok)
 		init_from(rhs);
@@ -300,7 +319,8 @@ public:
 	return *this;
     }
 
-    int get(const string &name, string &value, const string &sk) {
+    virtual int get(const string &name, string &value, const string &sk) 
+    {
 	typename list<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    if ((*it)->get(name, value, sk))
@@ -309,30 +329,49 @@ public:
 	return false;
     }
 
-    int get(const char *name, string &value, const char *sk) {
-	return get(string(name), value, sk ? string(sk) : string(""));
+    virtual int set(const string &nm, const string &val, const string &sk = "") 
+    {
+	if (!m_ok)
+	    return 0;
+	return m_confs.front()->set(nm, val, sk);
     }
 
-    list<string> getNames(const string &sk) {
+    virtual list<string> getNames(const string &sk) 
+    {
 	list<string> nms;
 	typename list<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end(); it++) {
 	    list<string> lst;
 	    lst = (*it)->getNames(sk);
-	    nms.splice(nms.end(), lst);
+	    nms.insert(nms.end(), lst.begin(), lst.end());
 	}
 	nms.sort();
 	nms.unique();
 	return nms;
     }
 
-    bool ok() {return m_ok;}
+    virtual list<string> getSubKeys() 
+    {
+	list<string> sks;
+	typename list<T*>::iterator it;
+	for (it = m_confs.begin();it != m_confs.end(); it++) {
+	    list<string> lst;
+	    lst = (*it)->getSubKeys();
+	    sks.insert(sks.end(), lst.begin(), lst.end());
+	}
+	sks.sort();
+	sks.unique();
+	return sks;
+    }
+
+    virtual bool ok() {return m_ok;}
 
 private:
-    bool m_ok;
+    bool     m_ok;
     list<T*> m_confs;
-    
-    void erase() {
+
+    /// Reset to pristine
+    void clear() {
 	typename list<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    delete (*it);
@@ -350,21 +389,25 @@ private:
 	}
     }
 
-    /// Common constructor code
+    /// Common construct from file list code
     void construct(const list<string> &fns, bool ro) {
-	if (!ro) {
-	    m_ok = false;
-	    return;
-	}
 	list<string>::const_iterator it;
 	bool lastok = false;
-	for (it = fns.begin();it != fns.end();it++) {
-	    T* p = new T(it->c_str(), true);
+	for (it = fns.begin(); it != fns.end(); it++) {
+	    T* p = new T(it->c_str(), ro);
 	    if (p && p->ok()) {
 		m_confs.push_back(p);
 		lastok = true;
-	    } else
+	    } else {
+		delete p;
 		lastok = false;
+		if (!ro) {
+		    // For rw acccess, the topmost file needs to be ok
+		    // (ro is set to true after the first file)
+		    break;
+		}
+	    }
+	    ro = true;
 	}
 	m_ok = lastok;
     }
