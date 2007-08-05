@@ -22,23 +22,31 @@
  *
  * Configuration files have lines like 'name = value', and/or like '[subkey]'
  *
- * Lines like '[subkeyname]' in the file define subsections, with independant
+ * Lines like '[subkey]' in the file define subsections, with independant
  * configuration namespaces. Only subsections holding at least one variable are 
- * significant (empty subsections may be deleted during an update, but
-   not always).
+ * significant (empty subsections may be deleted during an update, or not)
  *
  * Whitespace around name and value is insignificant.
  *
- * The names are case-sensitive but don't count on it.
+ * The names are case-sensitive but don't depend on it, this might change
  *
  * Values can be queried for, or set. 
- * Any line without a '=' is discarded when rewriting the file.
+ *
+ * Any line without a '=' is a comment (a line like #var = value
+ * actually assigns a variable named '#var', which is not a big issue)
+ *
  * A configuration object can be created empty or by reading from a file or
  * a string.
  * All 'set' calls cause an immediate rewrite of the backing object if any 
  * (file or string) 
  * 
- * Config objects can be stacked (overlayed).
+ * The ConfTree derived class interprets the subkeys as file paths and
+ * lets subdir keys hierarchically inherit the properties from
+ * parents.
+ *
+ * The ConfStack class stacks several Con(Simple/Tree) objects so that
+ * parameters from the top of the stack override the values from lower
+ * (useful to have central/personal config files)
  */
 
 #include <string>
