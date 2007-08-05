@@ -93,7 +93,7 @@ public:
 		    const string &sk = "") = 0;
     virtual bool ok() = 0;
     virtual list<string> getNames(const string &sk) = 0;
-    virtual int erase(const string &name, const string &sk) {return 0;}
+    virtual int erase(const string &, const string &) {return 0;}
     virtual void listall() {}
     virtual list<string> getSubKeys() = 0;
 };
