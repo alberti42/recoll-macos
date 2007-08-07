@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.18 2007-07-10 09:24:13 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.19 2007-08-07 08:26:40 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This typically lives in
 # @prefix@/share/recoll/examples and provides default values. You can
@@ -20,7 +20,8 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
 # is empty
 # skippedPaths = 
 # Same for real time indexing. The idea here is that there is stuff that
-# you might want to initially index but not monitor:
+# you might want to initially index but not monitor. If daemSkippedPaths is
+# not set, the daemon uses skippedPaths.
 #daemSkippedPaths = 
 
 # Debug messages. 3 is errors/warnings only. 4 would be quite verbose.

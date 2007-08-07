@@ -1,6 +1,6 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.8 2007-02-07 16:31:42 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.9 2007-08-07 08:26:40 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
@@ -93,7 +93,7 @@ bool Aspell::init(string &reason)
     // Language: we get this from the configuration, else from the NLS
     // environment. The aspell language names used for selecting language 
     // definition files (used to create dictionaries) are like en, fr
-    if (!m_config->getConfParam("aspellLanguage", m_lang)) {
+    if (!m_config->getConfParam("aspellLanguage", m_lang) || m_lang.empty()) {
 	string lang = "en";
 	const char *cp;
 	if ((cp = getenv("LC_ALL")))
