@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.33 2007-08-02 06:33:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.34 2007-08-07 08:42:47 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -495,7 +495,7 @@ void ResList::resultPageNext()
 	}
 
 	// Build the result list paragraph:
-	chunk.clear();
+	chunk = "";
 
 	// Subheader: this is used by history
 	if (!sh.empty())

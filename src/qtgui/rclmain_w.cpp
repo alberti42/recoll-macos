@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.39 2007-08-02 06:33:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.40 2007-08-07 08:42:47 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,7 @@ using std::pair;
 #include <qiconset.h>
 #include <qapplication.h>
 #include <qcursor.h>
+#include <qpopupmenu.h>
 
 #include "recoll.h"
 #include "debuglog.h"
