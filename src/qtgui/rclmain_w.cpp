@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.40 2007-08-07 08:42:47 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.41 2007-08-07 08:45:07 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,7 @@ using std::pair;
 #include <qmessagebox.h>
 #if (QT_VERSION < 0x040000)
 #include <qcstring.h>
+#include <qpopupmenu.h>
 #endif
 #include <qtabwidget.h>
 #include <qtimer.h>
@@ -52,7 +53,6 @@ using std::pair;
 #include <qiconset.h>
 #include <qapplication.h>
 #include <qcursor.h>
-#include <qpopupmenu.h>
 
 #include "recoll.h"
 #include "debuglog.h"
