@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.47 2007-07-13 07:17:39 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.48 2007-08-26 13:52:39 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1516,6 +1516,11 @@ fvwm
         <listitem><para>MS Excel and PowerPoint: 
            <ulink url="http://www.45.free.net/~vitus/software/catdoc/"> 
             catdoc</ulink>.</para>
+          </listitem>
+
+        <listitem><para>Wordperfect files: 
+           <ulink url="http://libwpd.sourceforge.net/download.html"> 
+            libwpd</ulink>.</para>
           </listitem>
 
         <listitem>
