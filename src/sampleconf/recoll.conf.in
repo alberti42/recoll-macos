@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.19 2007-08-07 08:26:40 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.20 2007-08-26 13:34:06 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This typically lives in
 # @prefix@/share/recoll/examples and provides default values. You can
@@ -27,6 +27,11 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
 # Debug messages. 3 is errors/warnings only. 4 would be quite verbose.
 loglevel = 3
 logfilename = stderr
+
+# Specific versions of log file name and level for the indexing daemon. The 
+# default is to use the above values.
+# daemloglevel = 3
+# daemlogfilename = /dev/null
 
 # Languages for which to build stemming databases at the end of
 # indexing. Stemmer names can be found on http://www.xapian.org 
