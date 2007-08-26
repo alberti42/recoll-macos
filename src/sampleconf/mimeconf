@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.32 2007-07-01 06:52:21 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.33 2007-08-26 13:34:59 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -42,6 +42,7 @@ application/vnd.sun.xml.math = exec rclsoff
 application/vnd.sun.xml.writer = exec rclsoff
 application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
+application/vnd.wordperfect = exec rclwpd
 application/x-abiword = exec rclabw
 application/x-dvi = exec rcldvi
 application/x-flac = exec rclflac
@@ -77,6 +78,7 @@ application/vnd.sun.xml.impress.template = presentation
 application/vnd.sun.xml.writer = wordprocessing
 application/vnd.sun.xml.writer.global = wordprocessing
 application/vnd.sun.xml.writer.template = wordprocessing
+application/vnd.wordperfect = wordprocessing
 application/x-abiword = wordprocessing
 application/x-dvi = document
 application/x-flac = sownd
@@ -102,6 +104,7 @@ text = \
       application/vnd.sun.xml.writer \
       application/vnd.sun.xml.writer.global \
       application/vnd.sun.xml.writer.template \
+      application/vnd.wordperfect \
       application/x-abiword \
       application/x-dvi \
       application/x-kword \
