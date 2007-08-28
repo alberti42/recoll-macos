@@ -16,7 +16,7 @@
  */
 #ifndef _FSTREEWALK_H_INCLUDED_
 #define _FSTREEWALK_H_INCLUDED_
-/* @(#$Id: fstreewalk.h,v 1.7 2007-07-12 10:53:07 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: fstreewalk.h,v 1.8 2007-08-28 08:08:39 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -27,6 +27,7 @@ using std::list;
 #endif
 
 class FsTreeWalkerCB;
+struct stat;
 
 /**
  * Class implementing a unix directory recursive walk.
@@ -74,7 +75,7 @@ class FsTreeWalker {
     bool inSkippedPaths(const string& path);
     bool inSkippedNames(const string& name);
  private:
-    Status iwalk(const string &dir, FsTreeWalkerCB& cb);
+    Status iwalk(const string &dir, struct stat *stp, FsTreeWalkerCB& cb);
     class Internal;
     Internal *data;
 };

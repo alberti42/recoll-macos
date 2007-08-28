@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.12 2007-07-12 10:53:07 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.13 2007-08-28 08:08:38 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -130,38 +130,44 @@ bool FsTreeWalker::inSkippedPaths(const string& path)
     return false;
 }
 
-FsTreeWalker::Status FsTreeWalker::walk(const string &top, 
+FsTreeWalker::Status FsTreeWalker::walk(const string& _top, 
 					FsTreeWalkerCB& cb)
 {
-    return iwalk(path_canon(top), cb);
-}
+    string top = path_canon(_top);
 
-FsTreeWalker::Status FsTreeWalker::iwalk(const string &top, 
-					FsTreeWalkerCB& cb)
-{
-    Status status = FtwOk;
     struct stat st;
     int statret;
-
-    // Handle the top entry
-    statret = (data->options & FtwFollow) ? stat(top.c_str(), &st) :
-	lstat(top.c_str(), &st);
+    // We always follow symlinks at this point. Makes more sense.
+    statret = stat(top.c_str(), &st);
     if (statret == -1) {
 	data->logsyserr("stat", top);
 	return FtwError;
     }
-    if (S_ISDIR(st.st_mode)) {
-	if ((status = cb.processone(top, &st, FtwDirEnter)) & 
+    return iwalk(top, &st, cb);
+}
+
+// Note that the 'norecurse' flag is handled as part of the directory read. 
+// This means that we always go into the top 'walk()' parameter if it is a 
+// directory, even if norecurse is set. Bug or Feature ?
+FsTreeWalker::Status FsTreeWalker::iwalk(const string &top, 
+					 struct stat *stp,
+					 FsTreeWalkerCB& cb)
+{
+    Status status = FtwOk;
+
+    // Handle the parameter
+    if (S_ISDIR(stp->st_mode)) {
+	if ((status = cb.processone(top, stp, FtwDirEnter)) & 
 	    (FtwStop|FtwError)) {
 	    return status;
 	}
-    } else if (S_ISREG(st.st_mode)) {
-	return cb.processone(top, &st, FtwRegular);
+    } else if (S_ISREG(stp->st_mode)) {
+	return cb.processone(top, stp, FtwRegular);
     } else {
 	return status;
     }
 
-    // Handle directory entries
+    // This is a directory, read it and process entries:
     DIR *d = opendir(top.c_str());
     if (d == 0) {
 	data->logsyserr("opendir", top);
@@ -206,7 +212,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 		if (data->options & FtwNoRecurse) {
 		    status = cb.processone(fn, &st, FtwDirEnter);
 		} else {
-		    status = iwalk(fn, cb);
+		    status = iwalk(fn, &st, cb);
 		}
 		if (status & (FtwStop|FtwError))
 		    goto out;
