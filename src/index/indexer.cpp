@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.60 2007-07-10 09:23:27 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.61 2007-08-28 08:12:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -499,21 +499,6 @@ bool ConfIndexer::index(bool resetbefore)
     for (dirit = tdl.begin(); dirit != tdl.end(); dirit++) {
 	string dbdir;
 	string doctopdir = *dirit;
-	{ // Check top dirs. Must not be symlinks
-	    struct stat st;
-	    if (lstat(doctopdir.c_str(), &st) < 0) {
-		LOGERR(("ConfIndexer::index: cant stat %s\n",
-			doctopdir.c_str()));
-		m_reason = "Stat error for: " + doctopdir;
-		return false;
-	    }
-	    if (S_ISLNK(st.st_mode)) {
-		LOGERR(("ConfIndexer::index: no symlinks allowed in topdirs: %s\n",
-			doctopdir.c_str()));
-		m_reason = doctopdir + " is a symbolic link";
-		return false;
-	    }
-	}
 	m_config->setKeyDir(doctopdir);
 	dbdir = m_config->getDbDir();
 	if (dbdir.empty()) {
