@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.33 2007-06-26 16:09:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.34 2007-08-28 08:07:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -202,7 +202,8 @@ bool FileInterner::dataToTempFile(const string& dt, const string& mt,
 	m_tmpflgs[m_handlers.size()-1] = true;
 	m_tempfiles.push_back(temp);
     } else {
-	LOGERR(("FileInterner::dataToTempFile: cant create tempfile\n"));
+	LOGERR(("FileInterner::dataToTempFile: cant create tempfile: %s\n",
+		temp->getreason().c_str()));
 	return false;
     }
 
