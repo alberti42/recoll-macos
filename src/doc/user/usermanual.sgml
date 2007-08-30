@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.48 2007-08-26 13:52:39 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.49 2007-08-30 08:39:04 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1773,9 +1773,8 @@ fvwm
 	    <term><literal>topdirs</literal></term>
             <listitem><para>Specifies the list of directories or files to
             index (recursively for directories). The indexer will not
-            follow symbolic links inside the indexed trees. If an entry in
-            the <literal>topdirs</literal> list is a symbolic link,
-            indexing will not start and will generate an error.</para>
+            follow symbolic links inside the indexed trees by default
+            (see the <literal>followLinks</literal> options though).</para>
             </listitem> 
           </varlistentry>
 
@@ -1838,6 +1837,16 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
 skippedPaths = ~/somedir/*.txt
               </programlisting>
             </listitem>
+          </varlistentry>
+
+          <varlistentry id="rcl.install.config.recollconf.followlinks">
+	    <term><literal>followLinks</literal></term>
+            <listitem><para>Specifies if the indexer should follow
+            symbolic links while walking the file tree. The default is
+            to ignore symbolic links to avoid multiple indexing of
+            linked files. No effort is made to avoid duplication when
+            this option is set to true..</para>
+            </listitem> 
           </varlistentry>
 
           <varlistentry><term><literal>loglevel,daemloglevel</literal></term>
