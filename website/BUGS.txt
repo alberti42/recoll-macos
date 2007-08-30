@@ -4,33 +4,7 @@ Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest (1.8.2):
-- There are a few problems in the qt4 version of recoll: some accelerators
-  (esc-spc, ctl-arrow) do not work, neither do copy/paste between the
-  result list and preview windows and x11 applications.
-
-- The q3textedit find() method is extremely slow. Positionning to first
-  search term in preview has been disabled in qt4, and the application will
-  sometimes appear to be looping when using the find feature in the
-  preview window (it's not looping, it's searching :( )
-
-- The dates shown for email attachments in a result list are the email
-  folder modification date. This should be inherited from the parent
-  message instead.
-
-- There are sometimes problems with document deletions: the index can
-  get in a state where deleted or moved documents are not purged from the
-  index (the log file says that the doc are deleted, but they aren't
-  actually). When this happens, the only solution currently is to reindex
-  from scratch (recollindex -z). This is due to a xapian bug, which will be
-  fixed in a future release. You can apply the following patch to xapian
-  1.0.1 to fix it:
-      http://www.lesbonscomptes.com/recoll/xapian/xapian-delete-document.patch 
-
-- Under ubuntu (at least), the default awk interpreter (mawk) is buggy,
-  and the recoll pdf input filter does not work (removes all space
-  characters). This can be solved by installing the gawk package.
-
+Latest (1.9.0 + xapian 1.0.2):
 - If the user-chosen result list entry format results in several paragraphs
   (in the qt textedit sense), right clicks will only work inside the first
   one for each entry.
@@ -38,14 +12,14 @@ Latest (1.8.2):
 - NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is
-  a bug in Xapian at least up to 0.9.10, where NEAR does not support
+  a bug in Xapian (all versions as far as I know), where NEAR does not support
   multiple OR subclauses, as would result from a multiple expansion. This
   manifests itself by a 'not implemented' Xapian exception. Workarounds:
 
       - Prevent expansion of NEAR terms (possibly except one) by
         capitalizing them.
 
-      - Or apply the following patch to xapian 0.9.9 or 0.9.10, inside the
+      - Or apply the following patch to xapian, inside the
         "api/" directory: 
          http://www.recoll.org/xapian/xapNearDistrib.patch
         or fetch the already patched source:
@@ -81,7 +55,37 @@ Latest (1.8.2):
   recollindex program (the recoll index thread doesn't work for creating
   the database). Don't know the reason. Only idea I have is problem with
   exception handling (recoll catches an exception while trying the
-  yest inexistant db).
+  yet inexistant db).
+
+1.8.2
+- Under ubuntu (at least, maybe debian too), the default awk interpreter
+  (mawk) is ancient, and the recoll pdf input filter does not
+  work (removes all space characters). This can be solved by installing the
+  gawk package. 
+  	   $ apt-get install gawk
+	   $ update-alternatives --set awk /usr/bin/gawk
+
+- There are sometimes problems with document deletions: the index can
+  get in a state where deleted or moved documents are not purged from the
+  index (the log file says that the doc are deleted, but they aren't
+  actually). When this happens, the only solution currently is to reindex
+  from scratch (recollindex -z). This is due to a xapian bug, which is
+  fixed in xapian 1.0.2, or you can apply the following patch to xapian
+  1.0.1 to fix it:
+      http://www.lesbonscomptes.com/recoll/xapian/xapian-delete-document.patch 
+
+- The dates shown for email attachments in a result list are the email
+  folder modification date. This should be inherited from the parent
+  message instead.
+
+- There are a few problems in the qt4 version of recoll: 
+  - Some accelerators (esc-spc, ctl-arrow) do not work, neither do
+    copy/paste between the result list and preview windows and x11
+    applications. 
+  - The qt4 q3textedit::find() method is extremely slow, so that
+    positionning to first search term in Recoll preview has been disabled,
+    and the application will sometimes appear to be looping when using the
+    find feature in the preview window (it's not looping, it's searching...)
 
 1.8.1
 - This is not really a bug but .beagle really should be included in

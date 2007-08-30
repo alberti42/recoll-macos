@@ -12,9 +12,9 @@ CHANGES
   Changes to the format string are performed in the 
   "Preferences->Query Configuration->User Interface" dialog tab.
 
-- New filters: abiword and kword, rcljpeg, rclflac, rclogg (contributed
-  filters). The jpeg and audio filters should be extended to make use of
-  the new field indexing/search capability (hint :) )
+- New filters: wordperfect, abiword and kword, rcljpeg, rclflac, rclogg
+  (contributed filters). The jpeg and audio filters should be extended to
+  make use of the new field indexing/search capability (hint :) )
 
 - When searching for an empty string inside the preview window, position
   the window to the next occurrence of a primary search term.
@@ -26,6 +26,11 @@ CHANGES
 
 - Added a check for file system free space. Indexing will stop if the
   threshold is reached. See the maxfsoccuppc configuration parameter.
+
+- Added 'followLinks' configuration option to have the indexer follow
+  symbolic links while walking the tree (the default is false).
+
+- Allow symbolic links as 'topdirs' members. These are always followed.
 
 - Add preference option to remember sort tool state between program
   invocations (it is reset to inactive by default)
