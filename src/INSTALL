@@ -83,6 +83,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * MS Excel and PowerPoint: catdoc.
 
+     * Wordperfect files: libwpd.
+
      * RTF: unrtf
 
      * dvi: dvips
@@ -268,8 +270,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
            Specifies the list of directories or files to index (recursively
            for directories). The indexer will not follow symbolic links
-           inside the indexed trees. If an entry in the topdirs list is a
-           symbolic link, indexing will not start and will generate an error.
+           inside the indexed trees by default (see the followLinks options
+           though).
 
    dbdir
 
@@ -318,6 +320,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
  skippedPaths = ~/somedir/*.txt
              
+
+   followLinks
+
+           Specifies if the indexer should follow symbolic links while
+           walking the file tree. The default is to ignore symbolic links to
+           avoid multiple indexing of linked files. No effort is made to
+           avoid duplication when this option is set to true. This option can
+           be set individually for each of the topdirs members by using
+           sections. It can not be changed below the topdirs level.
 
    loglevel,daemloglevel
 

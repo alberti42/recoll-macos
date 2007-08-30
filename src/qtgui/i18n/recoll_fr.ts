@@ -463,6 +463,18 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
         <source>Cannot extract document or create temporary file</source>
         <translation>Impossible d&apos;extraire le document ou de créer le fichier temporaire</translation>
     </message>
+    <message>
+        <source>(no stemming)</source>
+        <translation>(pas d&apos;expansion)</translation>
+    </message>
+    <message>
+        <source>(all languages)</source>
+        <translation>(tous les langages)</translation>
+    </message>
+    <message>
+        <source>error retrieving stemming languages</source>
+        <translation>impossible de trouver la liste des langages d&apos;expansion</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -641,6 +653,14 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>&amp;Erase document history</source>
         <translation>&amp;Effacer l&apos;historique des documents</translation>
+    </message>
+    <message>
+        <source>First page</source>
+        <translation>Premiere page</translation>
+    </message>
+    <message>
+        <source>Go to first page of results</source>
+        <translation>Aller a la premiere page de resultats</translation>
     </message>
 </context>
 <context>
@@ -1241,7 +1261,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>(no stemming)</source>
-        <translation>(pas d&apos;expansion)</translation>
+        <translation type="obsolete">(pas d&apos;expansion)</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian index</source>

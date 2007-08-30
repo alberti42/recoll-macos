@@ -448,6 +448,18 @@ Do you want to start the  preferences dialog ?</source>
         <source>Cannot extract document or create temporary file</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>(no stemming)</source>
+        <translation type="unfinished">(без словоформ)</translation>
+    </message>
+    <message>
+        <source>(all languages)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>error retrieving stemming languages</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -585,6 +597,14 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Erase document history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Go to first page of results</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1307,7 +1327,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>(no stemming)</source>
-        <translation>(без словоформ)</translation>
+        <translation type="obsolete">(без словоформ)</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian index</source>
