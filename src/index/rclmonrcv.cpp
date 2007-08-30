@@ -1,7 +1,7 @@
 #include "autoconfig.h"
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.12 2007-07-12 10:53:07 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.13 2007-08-30 09:01:52 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -134,6 +134,14 @@ void *rclMonRcvRun(void *q)
     WalkCB walkcb(queue->getConfig(), mon, queue);
     for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	queue->getConfig()->setKeyDir(*it);
+	// Adjust the follow symlinks options
+	bool follow;
+	if (queue->getConfig()->getConfParam("followLinks", &follow) && 
+	    follow) {
+	    walker.setOpts(FsTreeWalker::FtwFollow);
+	} else {
+	    walker.setOpts(FsTreeWalker::FtwOptNone);
+	}
 	// Adjust the skipped names according to config
 	walker.setSkippedNames(queue->getConfig()->getSkippedNames());
 	// Add the dbdir to skipped paths. Note that adding the dbdir

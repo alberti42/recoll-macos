@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.13 2007-08-28 08:08:38 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.14 2007-08-30 09:01:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -63,6 +63,13 @@ FsTreeWalker::FsTreeWalker(Options opts)
 FsTreeWalker::~FsTreeWalker()
 {
     delete data;
+}
+
+void FsTreeWalker::setOpts(Options opts)
+{
+    if (data) {
+	data->options = opts;
+    }
 }
 
 string FsTreeWalker::getReason()

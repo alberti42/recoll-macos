@@ -16,7 +16,7 @@
  */
 #ifndef _FSTREEWALK_H_INCLUDED_
 #define _FSTREEWALK_H_INCLUDED_
-/* @(#$Id: fstreewalk.h,v 1.8 2007-08-28 08:08:39 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: fstreewalk.h,v 1.9 2007-08-30 09:01:52 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -46,6 +46,9 @@ class FsTreeWalker {
 
     FsTreeWalker(Options opts = FtwOptNone);
     ~FsTreeWalker();
+
+    void setOpts(Options opts);
+
     /** 
      * Begin file system walk.
      * @param dir is not checked against the ignored patterns (this is 

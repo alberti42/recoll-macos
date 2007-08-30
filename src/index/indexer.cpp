@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.61 2007-08-28 08:12:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.62 2007-08-30 09:01:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -97,6 +97,15 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 	// Set the current directory in config so that subsequent
 	// getConfParams() will get local values
 	m_config->setKeyDir(*it);
+
+	// Adjust the "follow symlinks" option
+	bool follow;
+	if (m_config->getConfParam("followLinks", &follow) && follow) {
+	    m_walker.setOpts(FsTreeWalker::FtwFollow);
+	} else {
+	    m_walker.setOpts(FsTreeWalker::FtwOptNone);
+	}	    
+
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
 	    m_db.setAbstractParams(abslen, -1, -1);

@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.49 2007-08-30 08:39:04 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.50 2007-08-30 09:00:22 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1845,7 +1845,10 @@ skippedPaths = ~/somedir/*.txt
             symbolic links while walking the file tree. The default is
             to ignore symbolic links to avoid multiple indexing of
             linked files. No effort is made to avoid duplication when
-            this option is set to true..</para>
+            this option is set to true. This option can be set
+            individually for each of the <literal>topdirs</literal>
+            members by using sections. It can not be changed below the
+            <literal>topdirs</literal> level.</para>
             </listitem> 
           </varlistentry>
 

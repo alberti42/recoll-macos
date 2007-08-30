@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.24 2007-07-10 09:23:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.25 2007-08-30 09:01:52 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -96,8 +96,8 @@ class DbIndexer : public FsTreeWalkerCB {
 	      const string &dbd, // Place where the db lives
 	      DbIxStatusUpdater *updfunc = 0 // status updater callback
 	      ) 
-	: m_config(cnf), m_dbdir(dbd), m_updater(updfunc) { 
-    }
+	: m_config(cnf), m_dbdir(dbd), m_updater(updfunc) 
+    {}
 	
     virtual ~DbIndexer();
 
