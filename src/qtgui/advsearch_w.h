@@ -1,6 +1,6 @@
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-/* @(#$Id: advsearch_w.h,v 1.12 2007-02-19 16:10:00 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: advsearch_w.h,v 1.13 2007-08-31 09:04:23 dockes Exp $  (C) 2005 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ public slots:
     virtual void addAFiltypPB_clicked();
     virtual void restrictFtCB_toggled(bool);
     virtual void restrictCtCB_toggled(bool);
-    virtual void searchPB_clicked();
+    virtual void runSearch();
     virtual void browsePB_clicked();
     virtual void saveFileTypes();
     virtual void delClause();

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.17 2007-02-19 16:10:00 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.18 2007-08-31 09:04:23 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ void AdvSearch::init()
 {
     // signals and slots connections
     connect(delFiltypPB, SIGNAL(clicked()), this, SLOT(delFiltypPB_clicked()));
-    connect(searchPB, SIGNAL(clicked()), this, SLOT(searchPB_clicked()));
+    connect(searchPB, SIGNAL(clicked()), this, SLOT(runSearch()));
     connect(restrictFtCB, SIGNAL(toggled(bool)), 
 	    this, SLOT(restrictFtCB_toggled(bool)));
     connect(restrictCtCB, SIGNAL(toggled(bool)), 
@@ -77,8 +77,6 @@ void AdvSearch::init()
     connect(browsePB, SIGNAL(clicked()), this, SLOT(browsePB_clicked()));
     connect(addFiltypPB, SIGNAL(clicked()), this, SLOT(addFiltypPB_clicked()));
 
-    connect(subtreeCMB->lineEdit(), SIGNAL(returnPressed()), 
-	    this, SLOT(searchPB_clicked()));
     connect(delAFiltypPB, SIGNAL(clicked()), 
 	    this, SLOT(delAFiltypPB_clicked()));
     connect(addAFiltypPB, SIGNAL(clicked()), 
@@ -188,8 +186,6 @@ void AdvSearch::addClause(int tp)
 {
     SearchClauseW *w = new SearchClauseW(clauseFRM);
     m_clauseWins.push_back(w);
-    connect(w->wordsLE, SIGNAL(returnPressed()),
-	    this, SLOT(searchPB_clicked()));
     ((QVBoxLayout *)(clauseFRM->layout()))->addWidget(w);
     w->show();
     w->tpChange(tp);
@@ -354,7 +350,7 @@ void AdvSearch::saveFileTypes()
 }
 
 using namespace Rcl;
-void AdvSearch::searchPB_clicked()
+void AdvSearch::runSearch()
 {
     RefCntr<SearchData> sdata(new SearchData(conjunctCMB->currentItem() == 0 ?
 					     SCLT_AND : SCLT_OR));
