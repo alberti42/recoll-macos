@@ -464,6 +464,18 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <source>Cannot extract document or create temporary file</source>
         <translation>Fehler beim Extrahieren des Dokuments oder beim Erzeugen der temporären datei</translation>
     </message>
+    <message>
+        <source>(no stemming)</source>
+        <translation type="unfinished">(keine Wortstammerweiterung)</translation>
+    </message>
+    <message>
+        <source>(all languages)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>error retrieving stemming languages</source>
+        <translation type="unfinished">Fehler beim Holen der Wortstammsprachen</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -641,6 +653,14 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>&amp;Erase document history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Go to first page of results</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1242,7 +1262,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>(no stemming)</source>
-        <translation>(keine Wortstammerweiterung)</translation>
+        <translation type="obsolete">(keine Wortstammerweiterung)</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian index</source>
@@ -1309,7 +1329,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Show document type icons in result list.</source>
-        <translation>Zeige Dokumenttypicons in der Ergebnisliste.</translation>
+        <translation type="obsolete">Zeige Dokumenttypicons in der Ergebnisliste.</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -1435,7 +1455,7 @@ für Ergebnisse</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Definitions des Formats für die Absätze in der Ergebnisliste. Zur Konfiguration nutzen Sie QT HMTL-Formatierungen und printf ähnliche Ersetzungen:
+        <translation type="obsolete">Definitions des Formats für die Absätze in der Ergebnisliste. Zur Konfiguration nutzen Sie QT HMTL-Formatierungen und printf ähnliche Ersetzungen:
 %A Zusammenfassung
 %D Datum
 %K Schlüsselworte (wenn vorhanden)
@@ -1499,7 +1519,11 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <translation>Aus der Liste entfernen. Dies hat keinen Einfluss auf den gespeicherten Index.</translation>
     </message>
     <message>
-        <source>Remember sorting preference between invocations.</source>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remember sort activation state.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

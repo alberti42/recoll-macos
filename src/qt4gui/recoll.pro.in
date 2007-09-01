@@ -67,5 +67,10 @@ contains( UNAME, SunOS ) {
           LIBS += -ldl
 }
 
-TRANSLATIONS = i18n/recoll_fr.ts i18n/recoll_ru.ts i18n/recoll_uk.ts
+TRANSLATIONS = ../qtgui/i18n/recoll_de.ts \
+	     ../qtgui/i18n/recoll_fr.ts \
+	     ../qtgui/i18n/recoll_it.ts \
+	     ../qtgui/i18n/recoll_ru.ts \
+	     ../qtgui/i18n/recoll_uk.ts 
+
 QT += qt3support 
