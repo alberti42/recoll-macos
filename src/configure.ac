@@ -182,6 +182,8 @@ for i in $LIBXAPIAN ; do
     esac
 done
 LIBXAPIAN=$tmpxaplib
+# Also recent xapian libs need lz even when they think they don't...
+LIBXAPIAN="$LIBXAPIAN -lz"
 XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 
 #echo XAPIAN_CONFIG: $XAPIAN_CONFIG 
