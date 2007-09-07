@@ -41,20 +41,21 @@ CHANGES
 
 - (Hopefully) Improved abstract (keyword in context) generation
 
-- Improve qt4 build: no more need for --enable-qt4. Note: the qt4 build
-  still needs the qt3 support library.
-
 - Added support for arbitrary fields. Filters can now produce any number of
   fields which will be selectively searchable through the query
   language. This could be useful, for exemple, for the mp3 and jpeg filters
-  (but is not currently used).
+  (but it is not currently used).
+
+- Improved qt4 build: no more need for --enable-qt4. Note: the qt4 build
+  still needs the qt3 support library.
 
 - Changed the icon to an ugly one. The previous one was nicer but looked
   too much like Xapian's.
 
 - Added some kind of support for a stopword list.
+
 - Have email attachments inherit date and author from their parent message
-  memory usage. See the idxflushmb configuration parameter.
+  (instead of mail folder).
 
 - Fix bus error on rclmon exit
 
