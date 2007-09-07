@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.122 2007-07-12 17:28:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.123 2007-09-07 08:05:19 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -179,8 +179,16 @@ bool Native::subDocs(const string &hash, vector<Xapian::docid>& docids)
 	} catch (const Xapian::Error &e) {
 	    ermsg = e.get_msg().c_str();
 	    break;
+	} catch (const string &s) {
+	    ermsg = s;
+	    if (ermsg.empty()) 
+		ermsg = "Empty error message"; 
+	} catch (const char *s) {
+	    ermsg = s ? s : "";
+	    if (ermsg.empty()) 
+		ermsg = "Empty error message"; 
 	} catch (...) {
-	    ermsg= "Unknown error";
+	    ermsg= "Unknown xapian error (not Xapian::Error or string)";
 	    break;
 	}
     }
