@@ -4,7 +4,7 @@ Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest (1.9.0 + xapian 1.0.2):
+Latest (recoll 1.9.0 + xapian 1.0.2):
 - If the user-chosen result list entry format results in several paragraphs
   (in the qt textedit sense), right clicks will only work inside the first
   one for each entry.
@@ -21,9 +21,9 @@ Latest (1.9.0 + xapian 1.0.2):
 
       - Or apply the following patch to xapian, inside the
         "api/" directory: 
-         http://www.recoll.org/xapian/xapNearDistrib.patch
+         http://www.recoll.org/xapian/xapNearDistrib-1.0.patch
         or fetch the already patched source:
-	 http://www.recoll.org/xapian/xapian-core-0.9.10-recollNEARpatch.tar.gz
+	 http://www.recoll.org/xapian/xapian-core-1.0.2-recollNEARpatch.tar.gz
 
         then recompile, and install.
 
