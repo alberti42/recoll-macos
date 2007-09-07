@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.25 2007-08-26 13:34:59 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.26 2007-09-07 08:04:07 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
 
 .txt = text/plain
@@ -62,13 +62,6 @@
 .kwd = application/x-kword
 
 .wpd = application/vnd.wordperfect
-.wpl = application/vnd.wordperfect
-.wpi = application/vnd.wordperfect
-.wpm = application/vnd.wordperfect
-.wp5 = application/vnd.wordperfect
-.wp6 = application/vnd.wordperfect
-.wp8 = application/vnd.wordperfect
-.mem = application/vnd.wordperfect
 
 .rtf = text/rtf
 
