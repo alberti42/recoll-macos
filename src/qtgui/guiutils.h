@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.24 2007-08-01 10:04:53 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.25 2007-09-08 17:25:49 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -63,6 +63,7 @@ class PrefsPack {
  public:
     bool autoSearchOnWS;
     int respagesize;
+    int maxhltextmbs;
     QString reslistfontfamily;
     int reslistfontsize;
     // Result list format string

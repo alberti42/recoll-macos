@@ -195,6 +195,46 @@
                                     </widget>
                                     <widget class="QLayoutWidget">
                                         <property name="name">
+                                            <cstring>layoutHL</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabelHL</cstring>
+                                                </property>
+                                                <property name="toolTip" stdset="0">
+                                                    <string>Texts over this size will not be highlighted in preview (too slow).</string>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>5</hsizetype>
+                                                        <vsizetype>5</vsizetype>
+                                                        <horstretch>1</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Maximum text size highlighted for preview (megabytes)</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>maxHLTSB</cstring>
+                                                </property>
+                                                <property name="minValue">
+                                                    <number>1</number>
+                                                </property>
+                                                <property name="value">
+                                                    <number>3</number>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
                                             <cstring>layout36</cstring>
                                         </property>
                                         <hbox>

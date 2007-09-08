@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.26 2007-07-20 14:43:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.27 2007-09-08 17:25:49 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -705,9 +705,15 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 
     // Create preview text: highlight search terms (if not too big):
     QString richTxt;
-    bool highlightTerms = fdoc.text.length() < 2000 * 1024;
+
+    // We don't do the highlighting for very big texts: too long. We
+    // should at least do special char escaping, in case a '&' or '<'
+    // somehow slipped through previous processing.
+    bool highlightTerms = fdoc.text.length() < (unsigned long)prefs.maxhltextmbs * 1024 * 1024;
+    int beaconPos = -1;
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
+	qApp->processEvents();
 	ToRichThread rthr(fdoc.text, m_hData, richTxt);
 	rthr.start();
 
@@ -740,16 +746,20 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 		richTxt += "<b>Cancelled !</b>";
 	    }
 	}
+	beaconPos = richTxt.find(QString::fromUtf8(firstTermBeacon));
     } else {
+	// Note that in the case were we don't call plaintorich, the
+	// text will no be identified as richtxt/html (no <html> or
+	// <qt> etc. at the beginning), and there is no need to escape
+	// special characters
 	richTxt = QString::fromUtf8(fdoc.text.c_str(), fdoc.text.length());
     }
 
-    int pos = richTxt.find(QString::fromUtf8(firstTermBeacon));
-    m_haveAnchors = (pos != -1);
+    m_haveAnchors = (beaconPos != -1);
     LOGDEB(("LoadFileInCurrentTab: rich: cancel %d txtln %d, hasAnchors %d "
-	    "(pos %d)\n", 
+	    "(beaconPos %d)\n", 
 	    CancelCheck::instance().cancelState(), richTxt.length(), 
-	    m_haveAnchors, pos));
+	    m_haveAnchors, beaconPos));
 
     // Load into editor
     // Do it in several chunks 
@@ -796,20 +806,28 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     progress.close();
 
     if (searchTextLine->text().length() != 0) {
+	// If there is a current search string, perform the search
 	m_canBeep = true;
 	doSearch(searchTextLine->text(), true, false);
     } else {
+	// Position to the first query term
 	if (m_haveAnchors) {
 	    QString aname = QString::fromUtf8(termAnchorName(1).c_str());
 	    LOGDEB2(("Call scrolltoanchor(%s)\n", (const char *)aname.utf8()));
 	    editor->scrollToAnchor(aname);
-	    // The q3textedit version of find is slow to the point of being
-	    // unusable (plus it does not always work)
+
 #if (QT_VERSION < 0x040000)
+	    // The q3textedit version of te::find() is slow to the point of
+	    // being unusable (plus it does not always work). So we
+	    // don't position to the first term automatically, the
+	    // user can still use the search function in the preview
+	    // window to do it
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
 	    bool ocanbeep = m_canBeep;
 	    m_canBeep = false;
 	    QString empty;
+	    // Calling doSearch() with an empty string will look for
+	    // the first occurrence of a search term`
 	    // doSearch(_text, next, reverse, wordOnly)
 	    doSearch(empty, true, false, false);
 	    m_canBeep = ocanbeep;
@@ -817,6 +835,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 #endif // (QT_VERSION < 0x040000)
 	}
     }
+
     // Enter document in document history
     g_dynconf->enterDoc(fn, doc.ipath);
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.21 2007-08-01 10:04:53 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.22 2007-09-08 17:25:49 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -96,6 +96,7 @@ void UIPrefsDialog::setFromPrefs()
 {
     // Entries per result page spinbox
     pageLenSB->setValue(prefs.respagesize);
+    maxHLTSB->setValue(prefs.maxhltextmbs);
     autoSearchCB->setChecked(prefs.autoSearchOnWS);
     syntlenSB->setValue(prefs.syntAbsLen);
     syntctxSB->setValue(prefs.syntAbsCtx);
@@ -168,6 +169,7 @@ void UIPrefsDialog::accept()
 {
     prefs.autoSearchOnWS = autoSearchCB->isChecked();
     prefs.respagesize = pageLenSB->value();
+    prefs.maxhltextmbs = maxHLTSB->value();
 
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
