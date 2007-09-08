@@ -89,7 +89,7 @@
         <action name="toolsSpellAction"/>
     </item>
     <item text="&amp;Preferences" name="preferencesMenu">
-        <action name="preferencesQuery_PrefsAction"/>
+        <action name="queryPrefsAction"/>
         <action name="extIdxAction"/>
 	<separator/>
     </item>
@@ -290,7 +290,7 @@
     </action>
     <action>
         <property name="name">
-            <cstring>preferencesQuery_PrefsAction</cstring>
+            <cstring>queryPrefsAction</cstring>
         </property>
         <property name="menuText">
             <string>&amp;Query configuration</string>

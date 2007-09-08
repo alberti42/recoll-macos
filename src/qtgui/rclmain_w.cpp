@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.41 2007-08-07 08:45:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.42 2007-09-08 17:21:04 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -197,8 +197,7 @@ void RclMain::init()
     toolsSpellAction->setEnabled(FALSE);
 #endif
 
-    connect(preferencesQuery_PrefsAction, SIGNAL(activated()), 
-	    this, SLOT(showUIPrefs()));
+    connect(queryPrefsAction, SIGNAL(activated()), this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), this, SLOT(showExtIdxDialog()));
 
 
