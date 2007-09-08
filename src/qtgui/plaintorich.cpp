@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.26 2007-07-13 07:00:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.27 2007-09-08 17:19:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -337,9 +337,10 @@ static string termBeacon(int i)
 // to emulate how qt's textedit counts chars (ignoring tags and
 // duplicate whitespace etc...). This was tricky business, dependant
 // on qtextedit internals, and we don't do it any more, so we finally
-// don't know the term par/car positions in the editor text.  Instead,
-// we return the first term encountered, and the caller will use the
-// editor's find() function to position on it
+// don't know the term par/car positions in the editor text.  
+// Instead, we mark the search term positions either with html anchor
+// (qt currently has problems with them), or a special string, and the
+// caller will use the editor's find() function to position on it
 bool plaintorich(const string& in, string& out, 
 		 const HiliteData& hdata,
 		 bool noHeader, bool needBeacons)
