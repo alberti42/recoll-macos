@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.4 2006-12-19 12:11:21 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.5 2007-09-08 17:21:49 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -101,7 +101,7 @@ void ViewAction::editAction()
 	} else {
 	    if (action != action0 && dowarnmultiple) {
 		switch (QMessageBox::warning(0, "Recoll",
-					     tr("Changing actions with different"
+					     tr("Changing actions with different "
 						"current values"),
 					     "Continue",
 					     "Cancel",
