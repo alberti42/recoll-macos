@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.16 2007-06-08 15:30:01 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.17 2007-09-08 08:07:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@ using std::stack;
 
 #include "pathut.h"
 
+#include <sys/types.h>
 #ifndef STATFS_INCLUDE
 #define STATFS_INCLUDE <sys/vfs.h>
 #endif
@@ -44,10 +45,18 @@ using std::stack;
 
 bool fsocc(const string &path, int *pc, long *blocks)
 {
+#ifdef sun
+    struct statvfs buf;
+    if (statvfs(path.c_str(), &buf) != 0) {
+	return false;
+    }
+#else
     struct statfs buf;
     if (statfs(path.c_str(), &buf) != 0) {
 	return false;
     }
+#endif
+
     // used blocks
     double fpc = 0.0;
 #define FSOCC_USED (double(buf.f_blocks - buf.f_bfree))

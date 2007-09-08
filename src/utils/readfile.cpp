@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: readfile.cpp,v 1.4 2007-06-02 08:30:42 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: readfile.cpp,v 1.5 2007-09-08 08:07:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,19 @@ using std::string;
 
 #include "readfile.h"
 
+static void caterrno(string *reason)
+{
+  if (reason) {
+#ifdef sun
+    // Note: sun strerror is noted mt-safe ??
+    *reason += string("file_to_string: open failed: ") + strerror(errno);
+#else
+    strerror_r(errno, errbuf, ERRBUFSZ);
+    *reason += string("file_to_string: open failed: ") + errbuf;
+#endif
+  }
+}
+
 bool file_to_string(const string &fn, string &data, string *reason)
 {
 #define ERRBUFSZ 200    
@@ -40,20 +53,14 @@ bool file_to_string(const string &fn, string &data, string *reason)
 
     int fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
     if (fd < 0) {
-	if (reason) {
-	    strerror_r(errno, errbuf, ERRBUFSZ);
-	    *reason += string("file_to_string: open failed: ") + errbuf;
-	}
+        caterrno(reason);
 	return false;
     }
     char buf[4096];
     for (;;) {
 	int n = read(fd, buf, 4096);
 	if (n < 0) {
-	    if (reason) {
-		strerror_r(errno, errbuf, ERRBUFSZ);
-		*reason += string("file_to_string: read failed: ") + errbuf;
-	    }
+	    caterrno(reason);
 	    goto out;
 	}
 	if (n == 0)
@@ -62,10 +69,7 @@ bool file_to_string(const string &fn, string &data, string *reason)
 	try {
 	    data.append(buf, n);
 	} catch (...) {
-	    if (reason) {
-		strerror_r(errno, errbuf, ERRBUFSZ);
-		*reason += string("file_to_string: out of memory? : ") +errbuf;
-	    }
+	    caterrno(reason);
 	    goto out;
 	}
     }
