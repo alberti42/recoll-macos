@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: readfile.cpp,v 1.5 2007-09-08 08:07:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: readfile.cpp,v 1.6 2007-09-08 09:44:43 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,8 @@ using std::string;
 
 static void caterrno(string *reason)
 {
+#define ERRBUFSZ 200    
+    char errbuf[ERRBUFSZ];
   if (reason) {
 #ifdef sun
     // Note: sun strerror is noted mt-safe ??
@@ -47,8 +49,6 @@ static void caterrno(string *reason)
 
 bool file_to_string(const string &fn, string &data, string *reason)
 {
-#define ERRBUFSZ 200    
-    char errbuf[ERRBUFSZ];
     bool ret = false;
 
     int fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
