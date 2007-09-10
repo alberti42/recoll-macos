@@ -755,7 +755,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <location filename="../../qt4gui/rclmain.ui" line="257"/>
         <source>&amp;Query configuration</source>
-        <translation>Configuration pour la &amp;recherche</translation>
+        <translation>&amp;Recherche</translation>
     </message>
     <message>
         <location filename="" line="7471221"/>
