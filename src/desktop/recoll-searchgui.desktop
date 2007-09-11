@@ -1,11 +1,9 @@
 [Desktop Entry]
 Categories=Utility;Filesystem;Database;
 Comment=Find documents by specifying search terms
-Encoding=UTF-8
 Exec=recoll
 GenericName=Local Text Search
 Icon=recoll
 Name=Recoll
 Terminal=false
 Type=Application
-Value=1.0
