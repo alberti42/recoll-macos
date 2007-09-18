@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.29 2007-01-25 15:40:55 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.30 2007-09-18 20:35:31 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -103,7 +103,7 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
     LOGDEB3(("TextSplit::emitterm: [%s] pos %d\n", w.c_str(), pos));
 
     unsigned int l = w.length();
-    if (l > 0 && l < (unsigned)maxWordLength) {
+    if (l > 0 && l < (unsigned)m_maxWordLength) {
 	// 1 char word: we index single letters and digits, but
 	// nothing else. We might want to turn this into a test for a single
 	// utf8 character instead.
@@ -114,10 +114,10 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 		return true;
 	    }
 	}
-	if (pos != prevpos || l != prevlen) {
-	    bool ret = cb->takeword(w, pos, btstart, btend);
-	    prevlen = w.length();
-	    prevpos = pos;
+	if (pos != m_prevpos || l != m_prevlen) {
+	    bool ret = m_cb->takeword(w, pos, btstart, btend);
+	    m_prevpos = pos;
+	    m_prevlen = w.length();
 	    return ret;
 	}
 	LOGDEB2(("TextSplit::emitterm:dup: [%s] pos %d\n", w.c_str(), pos));
@@ -146,17 +146,17 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
     // Emit span. When splitting for query, we only emit final spans
     bool spanemitted = false;
     if (spanerase && !(m_flags & TXTS_NOSPANS)) {
-	// Maybe trim at end These are chars that we would keep inside 
+	// Maybe trim at end. These are chars that we would keep inside 
 	// a span, but not at the end
-	while (span.length() > 0) {
-	    switch (span[span.length()-1]) {
+	while (m_span.length() > 0) {
+	    switch (m_span[m_span.length()-1]) {
 	    case '.':
 	    case ',':
 	    case '@':
 	    case '\'':
-		span.resize(span.length()-1);
+		m_span.resize(m_span.length()-1);
 		if (--bp < 0) 
-		    bp=0;
+		    bp = 0;
 		break;
 	    default:
 		goto breakloop1;
@@ -164,27 +164,27 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 	}
     breakloop1:
 	spanemitted = true;
-	if (!emitterm(true, span, spanpos, bp-span.length(), bp))
+	if (!emitterm(true, m_span, m_spanpos, bp - m_span.length(), bp))
 	    return false;
     }
 
     // Emit word if different from span and not 'no words' mode
-    if (!(m_flags & TXTS_ONLYSPANS) && wordLen && 
-	(!spanemitted || wordLen != span.length())) {
-	string s(span.substr(wordStart, wordLen));
-	if (!emitterm(false, s, wordpos, bp-wordLen, bp))
+    if (!(m_flags & TXTS_ONLYSPANS) && m_wordLen && 
+	(!spanemitted || m_wordLen != m_span.length())) {
+	string s(m_span.substr(m_wordStart, m_wordLen));
+	if (!emitterm(false, s, m_wordpos, bp - m_wordLen, bp))
 	    return false;
     }
 
     // Adjust state
-    wordpos++;
-    wordLen = 0;
+    m_wordpos++;
+    m_wordLen = 0;
     if (spanerase) {
-	span.erase();
-	spanpos = wordpos;
-	wordStart = 0;
+	m_span.erase();
+	m_spanpos = m_wordpos;
+	m_wordStart = 0;
     } else {
-	wordStart = span.length();
+	m_wordStart = m_span.length();
     }
 
     return true;
@@ -215,9 +215,9 @@ bool TextSplit::text_to_words(const string &in)
 
     setcharclasses();
 
-    span.erase();
-    number = false;
-    wordStart = wordLen = prevpos = prevlen = wordpos = spanpos = 0;
+    m_span.erase();
+    m_inNumber = false;
+    m_wordStart = m_wordLen = m_prevpos = m_prevlen = m_wordpos = m_spanpos = 0;
 
     Utf8Iter it(in);
 
@@ -231,21 +231,21 @@ bool TextSplit::text_to_words(const string &in)
 	int cc = whatcc(c);
 	switch (cc) {
 	case LETTER:
-	    wordLen += it.appendchartostring(span);
+	    m_wordLen += it.appendchartostring(m_span);
 	    break;
 
 	case DIGIT:
-	    if (wordLen == 0)
-		number = true;
-	    wordLen += it.appendchartostring(span);
+	    if (m_wordLen == 0)
+		m_inNumber = true;
+	    m_wordLen += it.appendchartostring(m_span);
 	    break;
 
 	case SPACE:
 	SPACE:
-	    if (wordLen || span.length()) {
+	    if (m_wordLen || m_span.length()) {
 		if (!doemit(true, it.getBpos()))
 		    return false;
-		number = false;
+		m_inNumber = false;
 	    }
 	    break;
 	case WILD:
@@ -256,27 +256,27 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 	case '-':
 	case '+':
-	    if (wordLen == 0) {
+	    if (m_wordLen == 0) {
 		if (whatcc(it[it.getCpos()+1]) == DIGIT) {
-		    number = true;
-		    wordLen += it.appendchartostring(span);
+		    m_inNumber = true;
+		    m_wordLen += it.appendchartostring(m_span);
 		} else {
-		    wordStart += it.appendchartostring(span);
+		    m_wordStart += it.appendchartostring(m_span);
 		}
 	    } else {
 		if (!doemit(false, it.getBpos()))
 		    return false;
-		number = false;
-		wordStart += it.appendchartostring(span);
+		m_inNumber = false;
+		m_wordStart += it.appendchartostring(m_span);
 	    }
 	    break;
 	case '.':
 	case ',':
-	    if (number) {
+	    if (m_inNumber) {
 		// 132.jpg ?
 		if (whatcc(it[it.getCpos()+1]) != DIGIT)
 		    goto SPACE;
-		wordLen += it.appendchartostring(span);
+		m_wordLen += it.appendchartostring(m_span);
 		break;
 	    } else {
 		// If . inside a word, keep it, else, this is whitespace. 
@@ -286,16 +286,16 @@ bool TextSplit::text_to_words(const string &in)
 		// will be split as .x-errs, x, errs but not x-errs
 		// A final comma in a word will be removed by doemit
 		if (cc == '.') {
-		    if (wordLen) {
+		    if (m_wordLen) {
 			if (!doemit(false, it.getBpos()))
 			    return false;
 			// span length could have been adjusted by trimming
 			// inside doemit
-			if (span.length())
-			    wordStart += it.appendchartostring(span);
+			if (m_span.length())
+			    m_wordStart += it.appendchartostring(m_span);
 			break;
 		    } else {
-			wordStart += it.appendchartostring(span);
+			m_wordStart += it.appendchartostring(m_span);
 			break;
 		    }
 		}
@@ -303,29 +303,29 @@ bool TextSplit::text_to_words(const string &in)
 	    goto SPACE;
 	    break;
 	case '@':
-	    if (wordLen) {
+	    if (m_wordLen) {
 		if (!doemit(false, it.getBpos()))
 		    return false;
-		number = false;
+		m_inNumber = false;
 	    }
-	    wordStart += it.appendchartostring(span);
+	    m_wordStart += it.appendchartostring(m_span);
 	    break;
 	case '\'':
 	    // If in word, potential span: o'brien, else, this is more 
 	    // whitespace
-	    if (wordLen) {
+	    if (m_wordLen) {
 		if (!doemit(false, it.getBpos()))
 		    return false;
-		number = false;
-		wordStart += it.appendchartostring(span);
+		m_inNumber = false;
+		m_wordStart += it.appendchartostring(m_span);
 	    }
 	    break;
 	case '#': 
 	    // Keep it only at end of word ... Special case for c# you see...
-	    if (wordLen > 0) {
+	    if (m_wordLen > 0) {
 		int w = whatcc(it[it.getCpos()+1]);
 		if (w == SPACE || w == '\n' || w == '\r') {
-		    wordLen += it.appendchartostring(span);
+		    m_wordLen += it.appendchartostring(m_span);
 		    break;
 		}
 	    }
@@ -333,7 +333,7 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 	case '\n':
 	case '\r':
-	    if (span.length() && span[span.length() - 1] == '-') {
+	    if (m_span.length() && m_span[m_span.length() - 1] == '-') {
 		// if '-' is the last char before end of line, just
 		// ignore the line change. This is the right thing to
 		// do almost always. We'd then need a way to check if
@@ -349,11 +349,11 @@ bool TextSplit::text_to_words(const string &in)
 
 	default:
 	NORMALCHAR:
-	    wordLen += it.appendchartostring(span);
+	    m_wordLen += it.appendchartostring(m_span);
 	    break;
 	}
     }
-    if (wordLen || span.length()) {
+    if (m_wordLen || m_span.length()) {
 	if (!doemit(true, it.getBpos()))
 	    return false;
     }

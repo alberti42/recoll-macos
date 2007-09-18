@@ -16,7 +16,7 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.16 2007-01-18 12:09:58 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.17 2007-09-18 20:35:31 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -44,13 +44,18 @@ public:
  */
 class TextSplit {
 public:
-    enum Flags {TXTS_NONE = 0, TXTS_ONLYSPANS = 1, TXTS_NOSPANS = 2, 
-		TXTS_KEEPWILD = 4};
+    enum Flags {TXTS_NONE = 0, 
+		TXTS_ONLYSPANS = 1,  // Only return maximum spans (a@b.com) 
+		TXTS_NOSPANS = 2,  // Only return atomic words (a, b, com)
+		TXTS_KEEPWILD = 4 // Handle wildcards as letters
+    };
+
     /**
      * Constructor: just store callback object
      */
     TextSplit(TextSplitCB *t, Flags flags = TXTS_NONE) 
-	: m_flags(flags), cb(t), maxWordLength(40), prevpos(-1) {}
+	: m_flags(flags), m_cb(t), m_maxWordLength(40), m_prevpos(-1) {}
+
     /**
      * Split text, emit words and positions.
      */
@@ -61,25 +66,34 @@ public:
     static int countWords(const string &in, Flags flgs = TXTS_ONLYSPANS);
 
 private:
-    Flags m_flags;
-    TextSplitCB *cb;
-    int maxWordLength;
+    Flags         m_flags;
+    TextSplitCB  *m_cb;
+    int           m_maxWordLength;
 
-    string span; // Current span. Might be jf.dockes@wanadoo.f
-    int wordStart; // Current word: no punctuation at all in there
-    unsigned int wordLen;
-    bool number;
-    int wordpos; // Term position of current word
-    int spanpos; // Term position of current span
+    // Current span. Might be jf.dockes@wanadoo.f
+    string        m_span; 
+
+    // Current word: no punctuation at all in there
+    int           m_wordStart;
+    unsigned int  m_wordLen;
+
+    // Currently inside number
+    bool          m_inNumber;
+
+    // Term position of current word and span
+    int           m_wordpos; 
+    int           m_spanpos;
 
     // It may happen that our cleanup would result in emitting the
     // same term twice. We try to avoid this
-    int prevpos;
-    unsigned int prevlen;
+    int           m_prevpos;
+    unsigned int  m_prevlen;
+
+    // This processes cjk text:
+    // bool cjk_to_words();
 
     bool emitterm(bool isspan, string &term, int pos, int bs, int be);
     bool doemit(bool spanerase, int bp);
-
 };
 
 
