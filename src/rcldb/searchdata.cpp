@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.17 2007-06-22 06:14:04 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.18 2007-09-20 08:43:12 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -366,18 +366,25 @@ bool StringToXapianQ::processUserString(const string &iq,
 	     it != phrases.end(); it++) {
 	    LOGDEB(("strToXapianQ: phrase or word: [%s]\n", it->c_str()));
 
-	    // If there are both spans and single words in this element,
-	    // we need to use a word split, else a phrase query including
-	    // a span would fail if we didn't adjust the proximity to
-	    // account for the additional span term which is complicated.
+	    // If there are multiple spans in this element, including
+	    // at least one composite, we need to use a word split,
+	    // else a phrase query including a span would fail. 
+	    // (other possible solution: adjust slack to account for the
+	    //  additional position increase?)
+	    // Ex: "term0@term01 term1" is onlyspans-split as:
+	    //   0 term0@term01            0   12
+	    //   2 term1                  13   18
+	    // The position of term1 is 2, not 1, so the phrase search would
+	    // fail. We search for "term0 term01 term1" instead, which may 
+	    // have worse performance, but will succeed.
 	    wsQData splitDataS(stops), splitDataW(stops);
-	    TextSplit splitterS(&splitDataS, (TextSplit::Flags)
-				(TextSplit::TXTS_ONLYSPANS | 
-				 TextSplit::TXTS_KEEPWILD));
+	    TextSplit splitterS(&splitDataS, 
+				TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
+						 TextSplit::TXTS_KEEPWILD));
 	    splitterS.text_to_words(*it);
-	    TextSplit splitterW(&splitDataW, (TextSplit::Flags)
-				(TextSplit::TXTS_NOSPANS | 
-				 TextSplit::TXTS_KEEPWILD));
+	    TextSplit splitterW(&splitDataW, 
+				TextSplit::Flags(TextSplit::TXTS_NOSPANS | 
+						 TextSplit::TXTS_KEEPWILD));
 	    splitterW.text_to_words(*it);
 	    wsQData *splitData = &splitDataS;
 	    if (splitDataS.terms.size() > 1 && 
@@ -389,12 +396,12 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    switch (splitData->terms.size()) {
 	    case 0: continue;// ??
 	    case 1: 
-		// Not a real phrase: one term. Still may be expanded
-		// (stem or wildcard)
+		// Just a term. Still may be expanded (by stem or
+		// wildcard) to an OR list.
 		{
 		    string term = splitData->terms.front();
 		    list<string> exp;  
-		    string sterm;
+		    string sterm; // dumb version of user term
 		    stripExpandTerm(false, term, exp, sterm);
 		    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
 		    // Push either term or OR of stem-expanded set
@@ -417,10 +424,11 @@ bool StringToXapianQ::processUserString(const string &iq,
 		break;
 
 	    default:
-		// Phrase/near: transform into a PHRASE or NEAR xapian
-		// query, the element of which can themselves be OR
-		// queries if the terms get expanded by stemming or
-		// wildcards (we don't do stemming for PHRASE though)
+		// Element had several terms: transform into a PHRASE
+		// or NEAR xapian query, the elements of which can
+		// themselves be OR queries if the terms get expanded
+		// by stemming or wildcards (we don't do stemming for
+		// PHRASE though)
 		Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
 		Xapian::Query::OP_PHRASE;
 		list<Xapian::Query> orqueries;
