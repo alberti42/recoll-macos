@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.31 2007-09-20 08:45:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.32 2007-09-20 12:22:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -243,7 +243,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
  */
 bool TextSplit::text_to_words(const string &in)
 {
-    LOGDEB(("TextSplit::text_to_words:%s%s%s%s [%s]\n", 
+    LOGDEB1(("TextSplit::text_to_words:%s%s%s%s [%s]\n", 
 	    m_flags & TXTS_NOSPANS ? " nospans" : "",
 	    m_flags & TXTS_ONLYSPANS ? " onlyspans" : "",
 	    m_flags & TXTS_KEEPWILD ? " keepwild" : "",
@@ -434,7 +434,7 @@ const unsigned int ngramlen = 2;
 // be better off converting the whole buffer to utf32 on entry...
 bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 {
-    LOGDEB(("cjk_to_words: m_wordpos %d\n", m_wordpos));
+    LOGDEB1(("cjk_to_words: m_wordpos %d\n", m_wordpos));
     Utf8Iter &it = *itp;
 
     // We use an offset buffer to remember the starts of the utf-8
