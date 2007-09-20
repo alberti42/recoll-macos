@@ -16,7 +16,7 @@
  */
 #ifndef _UTF8ITER_H_INCLUDED_
 #define _UTF8ITER_H_INCLUDED_
-/* @(#$Id: utf8iter.h,v 1.8 2006-11-20 11:16:54 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: utf8iter.h,v 1.9 2007-09-20 08:45:05 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * A small helper class to iterate over utf8 strings. This is not an
@@ -30,8 +30,10 @@ public:
     Utf8Iter(const string &in) 
 	: m_s(in), m_cl(0), m_pos(0), m_charpos(0), m_error(false)
     {
-	compute_cl();
+	update_cl();
     }
+
+    const string& buffer() const {return m_s;}
 
     void rewind() 
     {
@@ -39,7 +41,7 @@ public:
 	m_pos = 0; 
 	m_charpos = 0; 
 	m_error = false;
-	compute_cl();
+	update_cl();
     }
 
     /** "Direct" access. Awfully inefficient as we skip from start or current
@@ -56,7 +58,7 @@ public:
 	int l;
 	while (mypos < m_s.length() && mycp != charpos) {
 	    l = get_cl(mypos);
-	    if (l < 0)
+	    if (l <= 0)
 		return (unsigned int)-1;
 	    mypos += l;
 	    ++mycp;
@@ -77,12 +79,12 @@ public:
 #ifdef UTF8ITER_CHECK
 	assert(m_cl != 0);
 #endif
-	if (m_cl == 0) 
+	if (m_cl <= 0) 
 	    return string::npos;
 
 	m_pos += m_cl;
 	m_charpos++;
-	compute_cl();
+	update_cl();
 	return m_pos;
     }
 
@@ -121,10 +123,17 @@ public:
 	return m_error;
     }
 
+    /** Return current byte offset in input string */
     string::size_type getBpos() const {
 	return m_pos;
     }
 
+    /** Return current character length */
+    string::size_type getBlen() const {
+	return m_cl;
+    }
+
+    /** Return current unicode character offset in input string */
     string::size_type getCpos() const {
 	return m_charpos;
     }
@@ -133,12 +142,13 @@ private:
     // String we're working with
     const string&     m_s; 
     // Character length at current position. A value of zero indicates
-    // unknown or error.
+    // an error.
     unsigned int      m_cl; 
     // Current byte offset in string.
     string::size_type m_pos; 
     // Current character position
     unsigned int      m_charpos; 
+    // Am I ok ?
     mutable bool      m_error;
 
     // Check position and cl against string length
@@ -149,24 +159,24 @@ private:
 	return p != string::npos && l > 0 && p + l <= m_s.length();
     }
 
-    // Update current char length in object state, minimum checking for 
-    // errors
-    inline int compute_cl() 
+    // Update current char length in object state, minimum checking
+    // for errors
+    inline void update_cl() 
     {
 	m_cl = 0;
-	if (m_pos == m_s.length())
-	    return -1;
+	if (m_pos >= m_s.length())
+	    return;
 	m_cl = get_cl(m_pos);
 	if (!poslok(m_pos, m_cl)) {
-	    m_pos = m_s.length();
+	    // Used to set eof here for safety, but this is bad because it
+	    // basically prevents the caller to discriminate error and eof.
+	    //	    m_pos = m_s.length();
 	    m_cl = 0;
 	    m_error = true;
-	    return -1;
 	}
-	return 0;
     }
 
-    // Get character byte length at specified position
+    // Get character byte length at specified position. Returns 0 for error.
     inline int get_cl(string::size_type p) const 
     {
 	unsigned int z = (unsigned char)m_s[p];
@@ -183,7 +193,7 @@ private:
 	assert(z <= 127 || (z & 224) == 192 || (z & 240) == 224 ||
 	       (z & 248) == 240);
 #endif
-	return -1;
+	return 0;
     }
 
     // Compute value at given position. No error checking.

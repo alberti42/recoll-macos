@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.30 2007-09-18 20:35:31 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.31 2007-09-20 08:45:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -94,6 +94,51 @@ static void setcharclasses()
 
     init = 1;
 }
+
+static inline int whatcc(unsigned int c)
+{
+    if (c <= 127) {
+	return charclasses[c]; 
+    } else {
+	if (unicign.find(c) != unicign.end())
+	    return SPACE;
+	else
+	    return LETTER;
+    }
+}
+
+// 2E80..2EFF; CJK Radicals Supplement
+// 3000..303F; CJK Symbols and Punctuation
+// 3040..309F; Hiragana
+// 30A0..30FF; Katakana
+// 3100..312F; Bopomofo
+// 3130..318F; Hangul Compatibility Jamo
+// 3190..319F; Kanbun
+// 31A0..31BF; Bopomofo Extended
+// 31C0..31EF; CJK Strokes
+// 31F0..31FF; Katakana Phonetic Extensions
+// 3200..32FF; Enclosed CJK Letters and Months
+// 3300..33FF; CJK Compatibility
+// 3400..4DBF; CJK Unified Ideographs Extension A
+// 4DC0..4DFF; Yijing Hexagram Symbols
+// 4E00..9FFF; CJK Unified Ideographs
+// A700..A71F; Modifier Tone Letters
+// AC00..D7AF; Hangul Syllables
+// F900..FAFF; CJK Compatibility Ideographs
+// FE30..FE4F; CJK Compatibility Forms
+// FF00..FFEF; Halfwidth and Fullwidth Forms
+// 20000..2A6DF; CJK Unified Ideographs Extension B
+// 2F800..2FA1F; CJK Compatibility Ideographs Supplement
+#define UNICODE_IS_CJK(p)						\
+    (((p) >= 0x2E80 && (p) <= 0x2EFF)                                   \
+     || ((p) >= 0x3000 && (p) <= 0x9FFF)                                \
+     || ((p) >= 0xA700 && (p) <= 0xA71F)                                \
+     || ((p) >= 0xAC00 && (p) <= 0xD7AF)                                \
+     || ((p) >= 0xF900 && (p) <= 0xFAFF)                                \
+     || ((p) >= 0xFE30 && (p) <= 0xFE4F)                                \
+     || ((p) >= 0xFF00 && (p) <= 0xFFEF)                                \
+     || ((p) >= 0x20000 && (p) <= 0x2A6DF)                              \
+     || ((p) >= 0x2F800 && (p) <= 0x2FA1F))
 
 // Do some checking (the kind which is simpler to do here than in the
 // main loop), then send term to our client.
@@ -190,18 +235,6 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
     return true;
 }
 
-static inline int whatcc(unsigned int c)
-{
-    if (c <= 127) {
-	return charclasses[c]; 
-    } else {
-	if (unicign.find(c) != unicign.end())
-	    return SPACE;
-	else
-	    return LETTER;
-    }
-}
-
 /** 
  * Splitting a text into terms to be indexed.
  * We basically emit a word every time we see a separator, but some chars are
@@ -210,7 +243,11 @@ static inline int whatcc(unsigned int c)
  */
 bool TextSplit::text_to_words(const string &in)
 {
-    LOGDEB2(("TextSplit::text_to_words: cb %p in [%s]\n", cb, 
+    LOGDEB(("TextSplit::text_to_words:%s%s%s%s [%s]\n", 
+	    m_flags & TXTS_NOSPANS ? " nospans" : "",
+	    m_flags & TXTS_ONLYSPANS ? " onlyspans" : "",
+	    m_flags & TXTS_KEEPWILD ? " keepwild" : "",
+	    m_flags & TXTS_NOCJK ? " nocjk" : "",
 	    in.substr(0,50).c_str()));
 
     setcharclasses();
@@ -228,6 +265,27 @@ bool TextSplit::text_to_words(const string &in)
 	    LOGERR(("Textsplit: error occured while scanning UTF-8 string\n"));
 	    return false;
 	}
+
+	if (!m_nocjk && UNICODE_IS_CJK(c)) {
+	    // CJK character hit. 
+	    // Do like at EOF with the current non-cjk data.
+	    if (m_wordLen || m_span.length()) {
+		if (!doemit(true, it.getBpos()))
+		    return false;
+	    }
+
+	    // Hand off situation to the cjk routine.
+	    if (!cjk_to_words(&it, &c)) {
+		LOGERR(("Textsplit: scan error in cjk handler\n"));
+		return false;
+	    }
+
+	    // Check for eof, else c contains the first non-cjk
+	    // character after the cjk sequence, just go on.
+	    if (it.eof())
+		break;
+	}
+
 	int cc = whatcc(c);
 	switch (cc) {
 	case LETTER:
@@ -360,7 +418,101 @@ bool TextSplit::text_to_words(const string &in)
     return true;
 }
 
-// Callback class for utility function usage
+const unsigned int ngramlen = 2;
+#define MAXNGRAMLEN 5
+
+// Using an utf8iter pointer just to avoid needing its definition in
+// textsplit.h
+//
+// We output ngrams for exemple for char input a b c and ngramlen== 2, 
+// we generate: a ab b bc c as words
+//
+// This is very different from the normal behaviour, so we don't use
+// the doemit() and emitterm() routines
+//
+// The routine is sort of a mess and goes to show that we'd probably
+// be better off converting the whole buffer to utf32 on entry...
+bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
+{
+    LOGDEB(("cjk_to_words: m_wordpos %d\n", m_wordpos));
+    Utf8Iter &it = *itp;
+
+    // We use an offset buffer to remember the starts of the utf-8
+    // characters which we still need to use.
+    // Fixed size array. ngramlen over 3 doesn't make sense.
+    assert(ngramlen < MAXNGRAMLEN);
+    unsigned int boffs[MAXNGRAMLEN];
+
+    // Current number of valid offsets;
+    unsigned int nchars = 0;
+    unsigned int c = 0;
+    for (; !it.eof(); it++) {
+	c = *it;
+	if (!UNICODE_IS_CJK(c)) {
+	    // Return to normal handler
+	    break;
+	}
+
+	if (nchars == ngramlen) {
+	    // Offset buffer full, shift it. Might be more efficient
+	    // to have a circular one, but things are complicated
+	    // enough already...
+	    for (unsigned int i = 0; i < nchars-1; i++) {
+		boffs[i] = boffs[i+1];
+	    }
+	}  else {
+	    nchars++;
+	}
+
+	// Take note of byte offset for this character.
+	boffs[nchars-1] = it.getBpos();
+
+	// Output all new ngrams: they begin at each existing position
+	// and end after the new character. onlyspans->only output
+	// maximum words, nospans=> single chars
+	if (!(m_flags & TXTS_ONLYSPANS) || nchars == ngramlen) {
+	    unsigned int btend = it.getBpos() + it.getBlen();
+	    unsigned int loopbeg = (m_flags & TXTS_NOSPANS) ? nchars-1 : 0;
+	    unsigned int loopend = (m_flags & TXTS_ONLYSPANS) ? 1 : nchars;
+	    for (unsigned int i = loopbeg; i < loopend; i++) {
+		if (!m_cb->takeword(it.buffer().substr(boffs[i], 
+						       btend-boffs[i]),
+				m_wordpos - (nchars-i-1), boffs[i], btend)) {
+		    return false;
+		}
+	    }
+
+	    if ((m_flags & TXTS_ONLYSPANS)) {
+		// Only spans: don't overlap: flush buffer
+		nchars = 0;
+	    }
+	}
+	// Increase word position by one, other words are at an
+	// existing position. This could be subject to discussion...
+	m_wordpos++;
+    }
+
+    // If onlyspans is set, there may be things to flush in the buffer
+    // first
+    if ((m_flags & TXTS_ONLYSPANS) && nchars > 0 && nchars != ngramlen)  {
+	unsigned int btend = it.getBpos(); // Current char is out
+	if (!m_cb->takeword(it.buffer().substr(boffs[0], 
+					       btend-boffs[0]),
+			    m_wordpos - nchars,
+			    boffs[0], btend)) {
+	    return false;
+	}
+    }
+
+    m_span.erase();
+    m_inNumber = false;
+    m_wordStart = m_wordLen = m_prevpos = m_prevlen = 0;
+    m_spanpos = m_wordpos;
+    *cp = c;
+    return true;
+}
+
+// Callback class for countWords 
 class utSplitterCB : public TextSplitCB {
  public:
     int wcnt;
@@ -404,11 +556,12 @@ class mySplitterCB : public TextSplitCB {
     bool takeword(const string &term, int pos, int bs, int be) {
 	if (nooutput)
 	    return true;
+	FILE *fp = stdout;
 	if (first) {
-	    printf("%3s %-20s %4s %4s\n", "pos", "Term", "bs", "be");
+	    fprintf(fp, "%3s %-20s %4s %4s\n", "pos", "Term", "bs", "be");
 	    first = 0;
 	}
-	printf("%3d %-20s %4d %4d\n", pos, term.c_str(), bs, be);
+	fprintf(fp, "%3d %-20s %4d %4d\n", pos, term.c_str(), bs, be);
 	return true;
     }
 };
@@ -438,6 +591,7 @@ static string usage =
     "   -s:  only spans\n"
     "   -w:  only words\n"
     "   -k:  preserve wildcards (?*)\n"
+    "   -C:  desactivate CJK processing\n"
     "   -c: just count words\n"
     " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
@@ -456,6 +610,7 @@ static int        op_flags;
 #define OPT_S	  0x4
 #define OPT_c     0x8
 #define OPT_k     0x10
+#define OPT_C     0x20
 
 int main(int argc, char **argv)
 {
@@ -470,6 +625,7 @@ int main(int argc, char **argv)
 	while (**argv)
 	    switch (*(*argv)++) {
 	    case 'c':	op_flags |= OPT_c; break;
+	    case 'C':	op_flags |= OPT_C; break;
 	    case 'k':	op_flags |= OPT_k; break;
 	    case 's':	op_flags |= OPT_s; break;
 	    case 'S':	op_flags |= OPT_S; break;
@@ -493,6 +649,9 @@ int main(int argc, char **argv)
 	flags = TextSplit::TXTS_NOSPANS;
     if (op_flags & OPT_k) 
 	flags = (TextSplit::Flags)(flags | TextSplit::TXTS_KEEPWILD); 
+
+    if (op_flags & OPT_C) 
+	flags = (TextSplit::Flags)(flags | TextSplit::TXTS_NOCJK); 
 
     string data;
     if (argc == 1) {

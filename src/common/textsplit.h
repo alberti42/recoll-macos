@@ -16,7 +16,7 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.17 2007-09-18 20:35:31 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.18 2007-09-20 08:45:05 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -36,6 +36,8 @@ public:
 			  ) = 0; 
 };
 
+class Utf8Iter;
+
 /** 
  * Split text into words. 
  * See comments at top of .cpp for more explanations.
@@ -47,14 +49,19 @@ public:
     enum Flags {TXTS_NONE = 0, 
 		TXTS_ONLYSPANS = 1,  // Only return maximum spans (a@b.com) 
 		TXTS_NOSPANS = 2,  // Only return atomic words (a, b, com)
-		TXTS_KEEPWILD = 4 // Handle wildcards as letters
+		TXTS_KEEPWILD = 4, // Handle wildcards as letters
+		TXTS_NOCJK = 8     // CJK special processing
     };
 
     /**
      * Constructor: just store callback object
      */
-    TextSplit(TextSplitCB *t, Flags flags = TXTS_NONE) 
-	: m_flags(flags), m_cb(t), m_maxWordLength(40), m_prevpos(-1) {}
+    TextSplit(TextSplitCB *t, Flags flags = Flags(TXTS_NONE))
+	: m_flags(flags), m_cb(t), m_maxWordLength(40), 
+	  m_nocjk((m_flags & TXTS_NOCJK) != 0),
+	  m_prevpos(-1)
+    {
+    }
 
     /**
      * Split text, emit words and positions.
@@ -69,11 +76,13 @@ private:
     Flags         m_flags;
     TextSplitCB  *m_cb;
     int           m_maxWordLength;
+    int           m_nocjk;
 
     // Current span. Might be jf.dockes@wanadoo.f
     string        m_span; 
 
-    // Current word: no punctuation at all in there
+    // Current word: no punctuation at all in there. Byte offset
+    // relative to the current span and byte length
     int           m_wordStart;
     unsigned int  m_wordLen;
 
@@ -90,7 +99,7 @@ private:
     unsigned int  m_prevlen;
 
     // This processes cjk text:
-    // bool cjk_to_words();
+    bool cjk_to_words(Utf8Iter *it, unsigned int *cp);
 
     bool emitterm(bool isspan, string &term, int pos, int bs, int be);
     bool doemit(bool spanerase, int bp);
