@@ -82,4 +82,6 @@ TRANSLATIONS = i18n/recoll_de.ts \
 	     i18n/recoll_fr.ts \
 	     i18n/recoll_it.ts \
 	     i18n/recoll_ru.ts \
-	     i18n/recoll_uk.ts 
+	     i18n/recoll_.ts \
+	     i18n/recoll_uk.ts  \
+	     i18n/recoll_xx.ts

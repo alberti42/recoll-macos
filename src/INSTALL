@@ -411,11 +411,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    idxabsmlen
 
            Recoll stores an abstract for each indexed file inside the
-           database. This is so that they can be displayed inside the result
-           lists without decoding the original file. This parameter defines
-           the size of the stored abstract (which can come from an actual
-           section or just be the beginning of the text). The default value
-           is 250.
+           database. The text can come from an actual 'abstract' section in
+           the document or will just be the beginning of the document. It is
+           stored in the index so that it can be displayed inside the result
+           lists without decoding the original file. The idxabsmlen parameter
+           defines the size of the stored abstract. The default value is 250
+           bytes. The search interface gives you the choice to display this
+           stored text or a synthetic abstract built by extracting text
+           around the search terms. If you always prefer the synthetic
+           abstract, you can reduce this value and save a little space.
 
    aspellLanguage
 
