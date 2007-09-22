@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.32 2007-09-20 12:22:26 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.33 2007-09-22 08:51:29 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@ static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.32 2007-09-20 12:22:26 dockes E
 #include <set>
 #include "textsplit.h"
 #include "debuglog.h"
+#include "assert.h"
 
 //#define UTF8ITER_CHECK
 #include "utf8iter.h"

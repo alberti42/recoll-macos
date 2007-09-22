@@ -16,7 +16,11 @@
  */
 #ifndef _UTF8ITER_H_INCLUDED_
 #define _UTF8ITER_H_INCLUDED_
-/* @(#$Id: utf8iter.h,v 1.9 2007-09-20 08:45:05 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: utf8iter.h,v 1.10 2007-09-22 08:51:29 dockes Exp $  (C) 2004 J.F.Dockes */
+
+#ifdef UTF8ITER_CHECK
+#include "assert.h"
+#endif
 
 /** 
  * A small helper class to iterate over utf8 strings. This is not an
