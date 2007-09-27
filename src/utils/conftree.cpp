@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.10 2007-08-04 07:22:43 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.11 2007-09-27 11:02:13 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -312,7 +312,11 @@ int ConfSimple::i_set(const std::string &nm, const std::string &value,
 	    }
 	}
     }
-    m_order.insert(fin, ConfLine(ConfLine::CFL_VAR, nm));
+
+    // It may happen that the order entry already exists because erase doesnt
+    // update m_order (fix it ?)
+    if (find(start, fin, ConfLine(ConfLine::CFL_VAR, nm)) == fin)
+	m_order.insert(fin, ConfLine(ConfLine::CFL_VAR, nm));
 
     return 1;
 }

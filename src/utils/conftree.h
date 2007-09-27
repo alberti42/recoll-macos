@@ -341,6 +341,28 @@ public:
     {
 	if (!m_ok)
 	    return 0;
+
+	// Avoid adding unneeded entries: if the new value matches the
+	// one out of the deeper config, erase or dont add it from/to
+	// the topmost file
+	typename list<T*>::iterator it = m_confs.begin();
+	it++;
+	while (it != m_confs.end()) {
+	    string value;
+	    if ((*it)->get(nm, value, sk)) {
+		// This file has value for nm/sk. If it is the same as the new
+		// one, no need for an entry in the topmost file. Else, stop
+		// looking and add the new entry
+		if (value == val) {
+		    m_confs.front()->erase(nm, sk);
+		    return true;
+		} else {
+		    break;
+		}
+	    }
+	    it++;
+	}
+
 	return m_confs.front()->set(nm, val, sk);
     }
 
