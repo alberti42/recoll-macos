@@ -1,0 +1,195 @@
+#ifndef lint
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.1 2007-09-27 15:47:25 dockes Exp $ (C) 2007 J.F.Dockes";
+#endif
+
+#include <qlayout.h>
+
+#include <list>
+using std::list;
+
+#include "confgui.h"
+#include "confguiindex.h"
+#include "smallut.h"
+#include "debuglog.h"
+#include "rcldb.h"
+#include "conflinkrcl.h"
+#include "execmd.h"
+
+namespace confgui {
+const static int spacing = 3;
+const static int margin = 6;
+
+ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
+    : QWidget(parent)
+{
+    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
+    vboxLayout->setSpacing(spacing);
+    vboxLayout->setMargin(margin);
+
+    ConfLink lnktopdirs(new ConfLinkRclRep(config, "topdirs"));
+    ConfParamDNLW *etopdirs = new 
+	ConfParamDNLW(this, lnktopdirs, tr("Top directories"),
+		      tr("The list of directories where recursive "
+			 "indexing starts. Default: your home."));
+    vboxLayout->addWidget(etopdirs);
+
+    ConfLink lnkskp(new ConfLinkRclRep(config, "skippedPaths"));
+    ConfParamSLW *eskp = new 
+	ConfParamSLW(this, lnkskp, tr("List of skipped paths"),
+		     tr("These are names of directories which indexing "
+			"will not enter.<br> May contain wildcards. "
+			"Must match "
+			"the paths seen by the indexer (ie: if topdirs "
+			"includes '/home/me' and '/home' is actually a link "
+			"to '/usr/home', a correct skippedPath entry "
+			"would be '/home/tmp*', not '/usr/home/tmp*')"));
+    vboxLayout->addWidget(eskp);
+
+    list<string> cstemlangs = Rcl::Db::getStemmerNames();
+    QStringList stemlangs;
+    for (list<string>::const_iterator it = cstemlangs.begin(); 
+	 it != cstemlangs.end(); it++) {
+	stemlangs.push_back(QString::fromUtf8(it->c_str()));
+    }
+    ConfLink lnkidxsl(new ConfLinkRclRep(config, "indexstemminglanguages"));
+    ConfParamCSLW *eidxsl = new 
+	ConfParamCSLW(this, lnkidxsl, tr("Index stemming languages"),
+		      tr("The languages for which stemming expansion "
+			 "dictionaries will be built."), stemlangs);
+    vboxLayout->addWidget(eidxsl);
+
+    ConfLink lnk4(new ConfLinkRclRep(config, "logfilename"));
+    ConfParamFNW *e4 = new 
+	ConfParamFNW(this, lnk4, tr("Log file name"),
+		     tr("The file where the messages will be written. "
+			"Use 'stderr' for terminal output"), false);
+    vboxLayout->addWidget(e4);
+
+    ConfLink lnk1(new ConfLinkRclRep(config, "loglevel"));
+    ConfParamIntW *e1 = new 
+	ConfParamIntW(this, lnk1, tr("Log verbosity level"),
+		      tr("This value adjusts the amount of "
+			 "messages, from only errors to a "
+			 "lot of debugging data."), 0, 6);
+    vboxLayout->addWidget(e1);
+
+    ConfLink lnkidxflsh(new ConfLinkRclRep(config, "idxflushmb"));
+    ConfParamIntW *eidxflsh = new 
+	ConfParamIntW(this, lnkidxflsh, tr("Index flush megabytes interval"),
+		      tr("This value adjust the amount of "
+			 "data which is indexed betweeen flushes to disk.<br>"
+			 "This helps control the indexer memory usage. "
+			 "Default 10MB "), 0, 1000);
+    vboxLayout->addWidget(eidxflsh);
+
+    ConfLink lnkfsocc(new ConfLinkRclRep(config, "maxfsoccuppc"));
+    ConfParamIntW *efsocc = new 
+	ConfParamIntW(this, lnkfsocc, tr("Max disk occupation (%)"),
+		      tr("This is the percentage of disk occupation where "
+			 "indexing will fail and stop (to avoid filling up "
+			 "your disk). <br>"
+			 "0 means no limit (this is the default)."), 0, 100);
+    vboxLayout->addWidget(efsocc);
+
+
+    ConfLink lnknaspl(new ConfLinkRclRep(config, "noaspell"));
+    ConfParamBoolW *enaspl = new 
+	ConfParamBoolW(this, lnknaspl, tr("No aspell usage"),
+		       tr("Disables use of aspell to generate spelling "
+			  "approximation in the term explorer tool.<br> "
+			  "Useful is aspell is absent or does not work. "));
+    vboxLayout->addWidget(enaspl);
+
+    ConfLink lnk2(new ConfLinkRclRep(config, "aspellLanguage"));
+    ConfParamStrW *e2 = new 
+	ConfParamStrW(this, lnk2, tr("Aspell language"),
+		      tr("The language for the aspell dictionary. "
+			 "This should look like 'en' or 'fr' ...<br>"
+			 "If this value is not set, the NLS environment "
+			 "will be used to compute it, which usually works."
+			 "To get an idea of what is installed on your system, "
+			 "type 'aspell config' and look for .dat files inside "
+			 "the 'data-dir' directory. "));
+    vboxLayout->addWidget(e2);
+
+    ConfLink lnkdbd(new ConfLinkRclRep(config, "dbdir"));
+    ConfParamFNW *edbd = new 
+	ConfParamFNW(this, lnkdbd, tr("Database directory name"),
+		     tr("The name for a directory where to store the index<br>"
+			"A non-absolute path is taken relative to the "
+			" configuration directory. The default is 'xapiandb'."
+			), true);
+    vboxLayout->addWidget(edbd);
+
+    ConfLink lnkusfc(new ConfLinkRclRep(config, "usesystemfilecommand"));
+    ConfParamBoolW *eusfc = new 
+	ConfParamBoolW(this, lnkusfc, tr("Use system's 'file' command"),
+		       tr("Use the system's 'file' command if internal "
+			  "mime type identification fails."));
+    vboxLayout->addWidget(eusfc);
+}
+
+ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
+    : QWidget(parent)
+{
+    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
+    vboxLayout->setSpacing(spacing);
+    vboxLayout->setMargin(margin);
+
+    ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames"));
+    ConfParamSLW *eskn = new 
+	ConfParamSLW(this, lnkskn, tr("List of skipped names"),
+		     tr("These are patterns for file or directory names which "
+			"should not be indexed. "));
+    vboxLayout->addWidget(eskn);
+
+    list<string> args;
+    args.push_back("-l");
+    ExecCmd ex;
+    string icout;
+    string cmd = "iconv";
+    int status = ex.doexec(cmd, args, 0, &icout);
+    if (status) {
+	LOGERR(("Can't get list of charsets from 'iconv -l'"));
+    }
+    icout = neutchars(icout, ",");
+    list<string> ccsets;
+    stringToStrings(icout, ccsets);
+    QStringList charsets;
+    charsets.push_back("");
+    for (list<string>::const_iterator it = ccsets.begin(); 
+	 it != ccsets.end(); it++) {
+	charsets.push_back(QString::fromUtf8(it->c_str()));
+    }
+
+    ConfLink lnk21(new ConfLinkRclRep(config, "defaultcharset"));
+    ConfParamCStrW *e21 = new 
+	ConfParamCStrW(this, lnk21, tr("Default character set"),
+		       tr("This is the character set used for reading files "
+			  "which do not identify the character set "
+			  "internally, for example pure text files.<br>"
+			  "The default value is empty, "
+			  "and the value from the NLS environnement is used."
+			  ), charsets);
+    vboxLayout->addWidget(e21);
+
+
+    ConfLink lnk3(new ConfLinkRclRep(config, "followLinks"));
+    ConfParamBoolW *e3 = new 
+	ConfParamBoolW(this, lnk3, tr("Follow symbolic links"),
+		       tr("Follow symbolic links while "
+			  "indexing. The default is no, "
+			  "to avoid duplicate indexing"));
+    vboxLayout->addWidget(e3);
+
+    ConfLink lnkafln(new ConfLinkRclRep(config, "indexallfilenames"));
+    ConfParamBoolW *eafln = new 
+	ConfParamBoolW(this, lnkafln, tr("Index all file names"),
+		       tr("Index the names of files for which the contents "
+			  "cannot be identified or processed (no or "
+			  "unsupported mime type). Default true"));
+    vboxLayout->addWidget(eafln);
+}
+
+
+} // Namespace confgui

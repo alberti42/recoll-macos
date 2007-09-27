@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confgui.cpp,v 1.1 2007-09-26 12:16:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confgui.cpp,v 1.2 2007-09-27 15:47:25 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -23,35 +23,38 @@ static char rcsid[] = "@(#$Id: confgui.cpp,v 1.1 2007-09-26 12:16:48 dockes Exp 
 #include "confgui.h"
 #include "smallut.h"
 #include "debuglog.h"
+#include "rcldb.h"
 
 #include <list>
 using std::list;
 
 namespace confgui {
 
+const static int spacing = 3;
+const static int margin = 6;
 
 void ConfParamW::setValue(const QString& value)
 {
-    m_cflink.set(string((const char *)value.utf8()));
+    m_cflink->set(string((const char *)value.utf8()));
 }
 
 void ConfParamW::setValue(int value)
 {
     char buf[30];
     sprintf(buf, "%d", value);
-    m_cflink.set(string(buf));
+    m_cflink->set(string(buf));
 }
 void ConfParamW::setValue(bool value)
 {
     char buf[30];
     sprintf(buf, "%d", value);
-    m_cflink.set(string(buf));
+    m_cflink->set(string(buf));
 }
 
 bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
 {
     m_hl = new QHBoxLayout(this);
-    m_hl->setSpacing(6);
+    m_hl->setSpacing(spacing);
 
     QLabel *tl = new QLabel(this);
     tl->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
@@ -67,8 +70,8 @@ bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
 
     return true;
 }
-
-ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink &cflink, 
+#include <qframe.h>
+ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink, 
 			     const QString& lbltxt,
 			     const QString& tltptxt,
 			     int minvalue, 
@@ -89,19 +92,27 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink &cflink,
 				  0,  // Horizontal stretch
 				  0,  // Vertical stretch
 				  sb->sizePolicy().hasHeightForWidth() ) );
+    m_hl->addWidget(sb);
+
+    QFrame *fr = new QFrame(this);
+    fr->setSizePolicy(QSizePolicy(QSizePolicy::Preferred,
+				  QSizePolicy::Fixed,
+				  1,  // Horizontal stretch
+				  0,  // Vertical stretch
+				  fr->sizePolicy().hasHeightForWidth() ) );
+    m_hl->addWidget(fr);
 
 
     string s;
-    m_cflink.get(s);
+    m_cflink->get(s);
     sb->setValue(atoi(s.c_str()));
 
-    m_hl->addWidget(sb);
 
     QObject::connect(sb, SIGNAL(valueChanged(int)), 
 		     this, SLOT(setValue(int)));
 }
 
-ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink& cflink, 
+ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink cflink, 
 			     const QString& lbltxt,
 			     const QString& tltptxt)
     : ConfParamW(parent, cflink)
@@ -112,7 +123,7 @@ ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink& cflink,
     //    le->setMinimumSize( QSize( 200, 0 ) );
 
     string s;
-    m_cflink.get(s);
+    m_cflink->get(s);
     le->setText(QString::fromUtf8(s.c_str()));
     le->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
 				  QSizePolicy::Fixed,
@@ -126,7 +137,7 @@ ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink& cflink,
 		     this, SLOT(setValue(const QString&)));
 }
 
-ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink& cflink, 
+ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink cflink, 
 			       const QString& lbltxt,
 			       const QString& tltptxt,
 			       const QStringList &sl
@@ -139,7 +150,7 @@ ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink& cflink,
     cmb->insertStringList(sl);
     cmb->setEditable(false);
     string s;
-    m_cflink.get(s);
+    m_cflink->get(s);
     QString cs = QString::fromUtf8(s.c_str());
     for (int i = 0; i < cmb->count(); i++) {
 	if (!cs.compare(cmb->text(i))) {
@@ -160,7 +171,7 @@ ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink& cflink,
 		     this, SLOT(setValue(const QString&)));
 }
 
-ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink& cflink, 
+ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink, 
 			     const QString& lbltxt,
 			     const QString& tltptxt)
     : ConfParamW(parent, cflink)
@@ -170,24 +181,33 @@ ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink& cflink,
     QCheckBox *cb = new QCheckBox(this);
 
     string s;
-    m_cflink.get(s);
+    m_cflink->get(s);
     cb->setChecked(stringToBool(s));
     cb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, 
 				  QSizePolicy::Fixed,
 				  0,  // Horizontal stretch
 				  0,  // Vertical stretch
 				  cb->sizePolicy().hasHeightForWidth() ) );
-
     m_hl->addWidget(cb);
+
+    QFrame *fr = new QFrame(this);
+    fr->setSizePolicy(QSizePolicy(QSizePolicy::Preferred,
+				  QSizePolicy::Fixed,
+				  1,  // Horizontal stretch
+				  0,  // Vertical stretch
+				  fr->sizePolicy().hasHeightForWidth() ) );
+    m_hl->addWidget(fr);
 
     QObject::connect(cb, SIGNAL(toggled(bool)), 
 		     this, SLOT(setValue(bool)));
 }
 
-ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink& cflink, 
+ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink, 
 			   const QString& lbltxt,
-			   const QString& tltptxt)
-    : ConfParamW(parent, cflink)
+			   const QString& tltptxt,
+			   bool isdir
+			   )
+    : ConfParamW(parent, cflink), m_isdir(isdir)
 {
     if (!createCommon(lbltxt, tltptxt))
 	return;
@@ -213,7 +233,7 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink& cflink,
 
 
     string s;
-    m_cflink.get(s);
+    m_cflink->get(s);
     m_le->setText(QString::fromUtf8(s.c_str()));
 
     QObject::connect(pb, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
@@ -223,23 +243,20 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink& cflink,
 
 void ConfParamFNW::showBrowserDialog()
 {
-    QString s = QFileDialog::getOpenFileName("",
-					     "",
-					     this,
-					     "open file dialog",
-					     "Choose a file");
+    QString s = m_isdir ?  
+	QFileDialog::getExistingDirectory() : QFileDialog::getSaveFileName();
     if (!s.isEmpty()) 
 	m_le->setText(s);
 }
 
-ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink& cflink, 
+ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink, 
 			     const QString& lbltxt,
 			     const QString& tltptxt)
     : ConfParamW(parent, cflink)
 {
     // Can't use createCommon here cause we want the buttons below the label
     m_hl = new QHBoxLayout(this);
-    m_hl->setSpacing(6);
+    m_hl->setSpacing(spacing);
 
     QVBoxLayout *vl1 = new QVBoxLayout();
     QHBoxLayout *hl1 = new QHBoxLayout();
@@ -256,7 +273,7 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink& cflink,
     vl1->addWidget(tl);
 
     QPushButton *pbA = new QPushButton(this);
-    pbA->setText(tr("Add"));
+    pbA->setText(tr("+"));
     pbA->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, 
 				   QSizePolicy::Fixed,
 				   0,  // Horizontal stretch
@@ -264,7 +281,7 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink& cflink,
 				   pbA->sizePolicy().hasHeightForWidth() ) );
     hl1->addWidget(pbA);
     QPushButton *pbD = new QPushButton(this);
-    pbD->setText(tr("Delete"));
+    pbD->setText(tr("-"));
     pbD->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, 
 				   QSizePolicy::Fixed,
 				   0,  // Horizontal stretch
@@ -279,7 +296,7 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink& cflink,
     m_lb = new QListBox(this);
 
     string s;
-    m_cflink.get(s);
+    m_cflink->get(s);
     list<string> ls; 
     stringToStrings(s, ls);
     QStringList qls;
@@ -328,14 +345,13 @@ void ConfParamSLW::showInputDialog()
 
 void ConfParamSLW::listToConf()
 {
-    LOGDEB(("ConfParamSLW::listToConf()\n"));
     list<string> ls;
     for (unsigned int i = 0; i < m_lb->count(); i++) {
 	ls.push_back((const char *)m_lb->text(i));
     }
     string s;
     stringsToString(ls, s);
-    m_cflink.set(s);
+    m_cflink->set(s);
 }
 
 void ConfParamSLW::deleteSelected()
@@ -345,7 +361,6 @@ void ConfParamSLW::deleteSelected()
 	didone = false;
 	for (unsigned int i = 0; i < m_lb->count(); i++) {
 	    if (m_lb->isSelected(i)) {
-		LOGDEB(("%d is selected\n", i));
 		m_lb->removeItem(i);
 		didone = true;
 		break;
@@ -356,13 +371,9 @@ void ConfParamSLW::deleteSelected()
 }
 
 // "Add entry" dialog for a file name list
-void ConfParamFNLW::showInputDialog()
+void ConfParamDNLW::showInputDialog()
 {
-    QString s = QFileDialog::getOpenFileName("",
-					     "",
-					     this,
-					     "open file dialog",
-					     "Choose a file");
+    QString s = QFileDialog::getExistingDirectory();
     if (!s.isEmpty()) {
 	if (m_lb->findItem(s, Qt::ExactMatch) == 0) {
 	    m_lb->insertItem(s);
@@ -381,8 +392,7 @@ void ConfParamCSLW::showInputDialog()
 				      m_sl, // List
 				      0, // current
 				      false, // editable,
-				      &ok,
-				      this);
+				      &ok);
     if (ok && !s.isEmpty()) {
 	if (m_lb->findItem(s, Qt::ExactMatch) == 0) {
 	    m_lb->insertItem(s);
@@ -392,4 +402,5 @@ void ConfParamCSLW::showInputDialog()
     }
 }
 
-}
+} // Namespace confgui
+

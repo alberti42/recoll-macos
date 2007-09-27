@@ -5,7 +5,7 @@ CONFIG	+= qt warn_on thread release debug
 
 HEADERS	+= confgui.h
 
-SOURCES	+= main.cpp confgui.cpp
+SOURCES	+= main.cpp confgui.cpp confguiindex.cpp
 
 #FORMS	= 
 
@@ -15,9 +15,9 @@ unix {
   OBJECTS_DIR = .obj
 
   DEFINES += RECOLL_DATADIR=\"/usr/local/share/recoll\"
-  LIBS += ../../lib/librcl.a -lz
+  LIBS += ../../lib/librcl.a -lxapian -liconv -lz 
 
-  INCLUDEPATH += ../../common ../../utils
+  INCLUDEPATH += ../../common ../../utils ../../rcldb
 #../index ../internfile ../query ../unac \
 #	      ../aspell ../rcldb
   POST_TARGETDEPS = ../../lib/librcl.a

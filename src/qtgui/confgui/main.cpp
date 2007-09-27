@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.1 2007-09-26 12:16:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.2 2007-09-27 15:47:25 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,9 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.1 2007-09-26 12:16:48 dockes Exp $ (
 #include "autoconfig.h"
 
 #include <string>
+#include <iostream>
 
-using std::string;
+using namespace std;
 
 #include <unistd.h>
 
@@ -33,10 +34,14 @@ using std::string;
 #include <qthread.h>
 #include <qtimer.h>
 #include <qlayout.h>
+#include <qframe.h>
 
 #include "pathut.h"
-#include "confgui.h"
+#include "confguiindex.h"
 #include "debuglog.h"
+#include "rclconfig.h"
+#include "execmd.h"
+#include "conflinkrcl.h"
 
 using namespace confgui;
 
@@ -62,7 +67,7 @@ Usage(void)
     exit((op_flags & OPT_h)==0);
 }
 
-class ConfLinkNull : public ConfLink {
+class ConfLinkNullRep : public ConfLinkRep {
     public:
     virtual bool set(const string& val) 
     {
@@ -72,12 +77,17 @@ class ConfLinkNull : public ConfLink {
     virtual bool get(string& val) {val = ""; return true;}
 };
 
+static RclConfig *config;
+RclConfig *RclConfig::getMainConfig() 
+{
+    return config;
+}
+
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
 
     //    fprintf(stderr, "Application created\n");
-    string a_config;
     thisprog = argv[0];
     argc--; argv++;
 
@@ -96,6 +106,15 @@ int main(int argc, char **argv)
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
 
+    string a_config = "tstconfdir";
+    config = new RclConfig(&a_config);
+    if (config == 0 || !config->ok()) {
+	cerr << "Cant read configuration in: " << a_config << endl;
+	exit(1);
+    }
+    cerr << "Working with configuration file in: " << config->getConfDir() 
+	 << endl;
+
     // Translation file for Qt
     QTranslator qt( 0 );
     qt.load( QString( "qt_" ) + QTextCodec::locale(), "." );
@@ -113,59 +132,19 @@ int main(int argc, char **argv)
 
 
     QWidget w;
-    ConfLinkNull lnk;
 
     QVBoxLayout *vboxLayout = new QVBoxLayout(&w);
     vboxLayout->setSpacing(6);
     vboxLayout->setMargin(11);
+    
+    vboxLayout->addWidget(new ConfTopPanelW(&w, config));
 
-    ConfParamIntW *e1 = new ConfParamIntW(&w, lnk, "The text for the label",
-					  "The text for the tooltip");
-    vboxLayout->addWidget(e1);
+    QFrame *line2 = new QFrame(&w);
+    line2->setFrameShape(QFrame::HLine);
+    line2->setFrameShadow(QFrame::Sunken);
+    vboxLayout->addWidget(line2);
 
-    ConfParamStrW *e2 = new ConfParamStrW(&w, lnk, 
-					  "The text for the string label",
-					  "The text for the string tooltip");
-    vboxLayout->addWidget(e2);
-
-    QStringList valuelist;
-    valuelist.push_back("aone");
-    valuelist.push_back("btwo");
-    valuelist.push_back("cthree");
-    valuelist.push_back("dfour");
-
-    ConfParamCStrW *e21 = new ConfParamCStrW(&w, lnk, 
-					    "The text for the string label",
-					    "The text for the string tooltip",
-					    valuelist);
-    vboxLayout->addWidget(e21);
-
-
-    ConfParamBoolW *e3 = new ConfParamBoolW(&w, lnk, 
-					  "The text for the Bool label",
-					  "The text for the Bool tooltip");
-    vboxLayout->addWidget(e3);
-
-    ConfParamFNW *e4 = new ConfParamFNW(&w, lnk, 
-					"The text for the File Name label",
-					"The text for the File Name tooltip");
-    vboxLayout->addWidget(e4);
-
-    ConfParamSLW *e5 = new ConfParamSLW(&w, lnk, 
-					"The text for the String List label",
-					"The text for the String List tooltip");
-    vboxLayout->addWidget(e5);
-
-    ConfParamFNLW *e6 = new ConfParamFNLW(&w, lnk, 
-					"The text for the File List label",
-					"The text for the File List tooltip");
-    vboxLayout->addWidget(e6);
-
-    ConfParamCSLW *e7 = new ConfParamCSLW(&w, lnk, 
-					  "The text for the File List label",
-					  "The text for the File List tooltip",
-					  valuelist);
-    vboxLayout->addWidget(e7);
+    vboxLayout->addWidget(new ConfSubPanelW(&w, config));
 
     QSize size(0, 0);
     size = size.expandedTo(w.minimumSizeHint());
