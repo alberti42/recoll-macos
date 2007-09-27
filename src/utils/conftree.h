@@ -343,8 +343,8 @@ public:
 	    return 0;
 
 	// Avoid adding unneeded entries: if the new value matches the
-	// one out of the deeper config, erase or dont add it from/to
-	// the topmost file
+	// one out from the deeper configs, erase or dont add it
+	// from/to the topmost file
 	typename list<T*>::iterator it = m_confs.begin();
 	it++;
 	while (it != m_confs.end()) {
