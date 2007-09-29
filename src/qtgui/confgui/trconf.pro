@@ -3,7 +3,7 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on thread release debug
 
-HEADERS	+= confgui.h
+HEADERS	+= confgui.h confguiindex.h
 
 SOURCES	+= main.cpp confgui.cpp confguiindex.cpp
 

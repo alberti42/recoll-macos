@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confgui.cpp,v 1.2 2007-09-27 15:47:25 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confgui.cpp,v 1.3 2007-09-29 09:06:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: confgui.cpp,v 1.2 2007-09-27 15:47:25 dockes Exp 
 #include <qstringlist.h>
 #include <qlistbox.h>
 #include <qcombobox.h>
+#include <qframe.h>
 
 #include "confgui.h"
 #include "smallut.h"
@@ -51,6 +52,11 @@ void ConfParamW::setValue(bool value)
     m_cflink->set(string(buf));
 }
 
+void ConfParamW::loadValue()
+{
+
+}
+
 bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
 {
     m_hl = new QHBoxLayout(this);
@@ -70,7 +76,7 @@ bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
 
     return true;
 }
-#include <qframe.h>
+
 ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink, 
 			     const QString& lbltxt,
 			     const QString& tltptxt,
@@ -81,18 +87,17 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink,
     if (!createCommon(lbltxt, tltptxt))
 	return;
 
-
-    QSpinBox *sb = new QSpinBox(this);
+    m_sb = new QSpinBox(this);
     //    sb->setMinimum(minvalue);
-    sb->setMinValue(minvalue);
+    m_sb->setMinValue(minvalue);
     //    sb->setMaximum(maxvalue);
-    sb->setMaxValue(maxvalue);
-    sb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
+    m_sb->setMaxValue(maxvalue);
+    m_sb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
 				  QSizePolicy::Fixed,
 				  0,  // Horizontal stretch
 				  0,  // Vertical stretch
-				  sb->sizePolicy().hasHeightForWidth() ) );
-    m_hl->addWidget(sb);
+				  m_sb->sizePolicy().hasHeightForWidth() ) );
+    m_hl->addWidget(m_sb);
 
     QFrame *fr = new QFrame(this);
     fr->setSizePolicy(QSizePolicy(QSizePolicy::Preferred,
@@ -103,13 +108,17 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink,
     m_hl->addWidget(fr);
 
 
+    loadValue();
+
+    QObject::connect(m_sb, SIGNAL(valueChanged(int)), 
+		     this, SLOT(setValue(int)));
+}
+
+void ConfParamIntW::loadValue()
+{
     string s;
     m_cflink->get(s);
-    sb->setValue(atoi(s.c_str()));
-
-
-    QObject::connect(sb, SIGNAL(valueChanged(int)), 
-		     this, SLOT(setValue(int)));
+    m_sb->setValue(atoi(s.c_str()));
 }
 
 ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink cflink, 
@@ -119,22 +128,28 @@ ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink cflink,
 {
     if (!createCommon(lbltxt, tltptxt))
 	return;
-    QLineEdit *le = new QLineEdit(this);
-    //    le->setMinimumSize( QSize( 200, 0 ) );
+    m_le = new QLineEdit(this);
+    //    m_le->setMinimumSize( QSize( 200, 0 ) );
 
-    string s;
-    m_cflink->get(s);
-    le->setText(QString::fromUtf8(s.c_str()));
-    le->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
+    loadValue();
+
+    m_le->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
 				  QSizePolicy::Fixed,
 				  1,  // Horizontal stretch
 				  0,  // Vertical stretch
-				  le->sizePolicy().hasHeightForWidth() ) );
+				  m_le->sizePolicy().hasHeightForWidth() ) );
 
-    m_hl->addWidget(le);
+    m_hl->addWidget(m_le);
 
-    QObject::connect(le, SIGNAL(textChanged(const QString&)), 
+    QObject::connect(m_le, SIGNAL(textChanged(const QString&)), 
 		     this, SLOT(setValue(const QString&)));
+}
+
+void ConfParamStrW::loadValue()
+{
+    string s;
+    m_cflink->get(s);
+    m_le->setText(QString::fromUtf8(s.c_str()));
 }
 
 ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink cflink, 
@@ -146,29 +161,35 @@ ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink cflink,
 {
     if (!createCommon(lbltxt, tltptxt))
 	return;
-    QComboBox *cmb = new QComboBox(this);
-    cmb->insertStringList(sl);
-    cmb->setEditable(false);
-    string s;
-    m_cflink->get(s);
-    QString cs = QString::fromUtf8(s.c_str());
-    for (int i = 0; i < cmb->count(); i++) {
-	if (!cs.compare(cmb->text(i))) {
-	    cmb->setCurrentItem(i);
-	    break;
-	}
-    }
+    m_cmb = new QComboBox(this);
+    m_cmb->insertStringList(sl);
+    m_cmb->setEditable(false);
 
-    cmb->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
+    loadValue();
+
+    m_cmb->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
 				  QSizePolicy::Fixed,
 				  1,  // Horizontal stretch
 				  0,  // Vertical stretch
-				   cmb->sizePolicy().hasHeightForWidth() ) );
+				   m_cmb->sizePolicy().hasHeightForWidth() ) );
 
-    m_hl->addWidget(cmb);
+    m_hl->addWidget(m_cmb);
 
-    QObject::connect(cmb, SIGNAL(activated(const QString&)), 
+    QObject::connect(m_cmb, SIGNAL(activated(const QString&)), 
 		     this, SLOT(setValue(const QString&)));
+}
+
+void ConfParamCStrW::loadValue()
+{
+    string s;
+    m_cflink->get(s);
+    QString cs = QString::fromUtf8(s.c_str());
+    for (int i = 0; i < m_cmb->count(); i++) {
+	if (!cs.compare(m_cmb->text(i))) {
+	    m_cmb->setCurrentItem(i);
+	    break;
+	}
+    }
 }
 
 ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink, 
@@ -176,19 +197,19 @@ ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink,
 			     const QString& tltptxt)
     : ConfParamW(parent, cflink)
 {
-    if (!createCommon(lbltxt, tltptxt))
-	return;
-    QCheckBox *cb = new QCheckBox(this);
+    // No createCommon because the checkbox has a label
+    m_hl = new QHBoxLayout(this);
+    m_hl->setSpacing(spacing);
 
-    string s;
-    m_cflink->get(s);
-    cb->setChecked(stringToBool(s));
-    cb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, 
+    m_cb = new QCheckBox(lbltxt, this);
+
+    m_cb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, 
 				  QSizePolicy::Fixed,
 				  0,  // Horizontal stretch
 				  0,  // Vertical stretch
-				  cb->sizePolicy().hasHeightForWidth() ) );
-    m_hl->addWidget(cb);
+				  m_cb->sizePolicy().hasHeightForWidth() ) );
+    QToolTip::add(m_cb, tltptxt);
+    m_hl->addWidget(m_cb);
 
     QFrame *fr = new QFrame(this);
     fr->setSizePolicy(QSizePolicy(QSizePolicy::Preferred,
@@ -198,8 +219,15 @@ ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink,
 				  fr->sizePolicy().hasHeightForWidth() ) );
     m_hl->addWidget(fr);
 
-    QObject::connect(cb, SIGNAL(toggled(bool)), 
+    QObject::connect(m_cb, SIGNAL(toggled(bool)), 
 		     this, SLOT(setValue(bool)));
+}
+
+void ConfParamBoolW::loadValue()
+{
+    string s;
+    m_cflink->get(s);
+    m_cb->setChecked(stringToBool(s));
 }
 
 ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink, 
@@ -211,7 +239,6 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
 {
     if (!createCommon(lbltxt, tltptxt))
 	return;
-
 
     m_le = new QLineEdit(this);
     m_le->setMinimumSize(QSize(150, 0 ));
@@ -232,13 +259,16 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
     m_hl->addWidget(pb);
 
 
-    string s;
-    m_cflink->get(s);
-    m_le->setText(QString::fromUtf8(s.c_str()));
-
     QObject::connect(pb, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
     QObject::connect(m_le, SIGNAL(textChanged(const QString&)), 
 		     this, SLOT(setValue(const QString&)));
+}
+
+void ConfParamFNW::loadValue()
+{
+    string s;
+    m_cflink->get(s);
+    m_le->setText(QString::fromUtf8(s.c_str()));
 }
 
 void ConfParamFNW::showBrowserDialog()
@@ -295,15 +325,7 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink,
 
     m_lb = new QListBox(this);
 
-    string s;
-    m_cflink->get(s);
-    list<string> ls; 
-    stringToStrings(s, ls);
-    QStringList qls;
-    for (list<string>::const_iterator it = ls.begin(); it != ls.end(); it++) {
-	qls.push_back(QString::fromUtf8(it->c_str()));
-    }
-    m_lb->insertStringList(qls);
+    loadValue();
 
     m_lb->setSelectionMode(QListBox::Extended);
 
@@ -323,6 +345,20 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink,
     
     QObject::connect(pbA, SIGNAL(clicked()), this, SLOT(showInputDialog()));
     QObject::connect(pbD, SIGNAL(clicked()), this, SLOT(deleteSelected()));
+}
+
+void ConfParamSLW::loadValue()
+{
+    string s;
+    m_cflink->get(s);
+    list<string> ls; 
+    stringToStrings(s, ls);
+    QStringList qls;
+    for (list<string>::const_iterator it = ls.begin(); it != ls.end(); it++) {
+	qls.push_back(QString::fromUtf8(it->c_str()));
+    }
+    m_lb->clear();
+    m_lb->insertStringList(qls);
 }
 
 void ConfParamSLW::showInputDialog()
@@ -361,6 +397,7 @@ void ConfParamSLW::deleteSelected()
 	didone = false;
 	for (unsigned int i = 0; i < m_lb->count(); i++) {
 	    if (m_lb->isSelected(i)) {
+		emit entryDeleted(m_lb->text(i));
 		m_lb->removeItem(i);
 		didone = true;
 		break;

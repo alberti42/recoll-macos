@@ -1,8 +1,13 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.1 2007-09-27 15:47:25 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.2 2007-09-29 09:06:53 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qlayout.h>
+#include <qframe.h>
+#include <qwidget.h>
+#include <qlabel.h>
+#include <qlistbox.h>
+#include <qtimer.h>
 
 #include <list>
 using std::list;
@@ -130,18 +135,58 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
 }
 
 ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
-    : QWidget(parent)
+    : QWidget(parent), m_config(config)
 {
     QVBoxLayout *vboxLayout = new QVBoxLayout(this);
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
 
-    ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames"));
+    ConfLink lnksubkeydirs(new ConfLinkNullRep());
+    m_subdirs = new 
+	ConfParamDNLW(this, lnksubkeydirs, 
+		      QObject::tr("Subdirectories with specific parameters"),
+		      QObject::tr("The list of subdirectories in the indexed "
+				  "hierarchy where some parameters need to be "
+				  "customised. "
+				  "Default: empty."));
+    m_subdirs->getListBox()->setSelectionMode(QListBox::Single);
+    connect(m_subdirs->getListBox(), SIGNAL(selectionChanged()),
+	    this, SLOT(subDirChanged()));
+    connect(m_subdirs, SIGNAL(entryDeleted(QString)),
+	    this, SLOT(subDirDeleted(QString)));
+    list<string> allkeydirs = config->getKeyDirs(); 
+    QStringList qls;
+    for (list<string>::const_iterator it = allkeydirs.begin(); 
+	 it != allkeydirs.end(); it++) {
+	qls.push_back(QString::fromUtf8(it->c_str()));
+    }
+    m_subdirs->getListBox()->insertStringList(qls);
+
+    vboxLayout->addWidget(m_subdirs);
+
+    QLabel *explain = new QLabel(this);
+    explain->setText(
+		     QObject::
+		     tr("<i>The following parameters are set either at the "
+			"top level (no selection or empty line selected) "
+			"or for the selected subdirectory. "
+			"You can add / remove directories by clicking "
+			"the +/- buttons."));
+    vboxLayout->addWidget(explain);
+
+    QFrame *line2 = new QFrame(this);
+    line2->setFrameShape(QFrame::HLine);
+    line2->setFrameShadow(QFrame::Sunken);
+    vboxLayout->addWidget(line2);
+
+    ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames", &m_sk));
     ConfParamSLW *eskn = new 
-	ConfParamSLW(this, lnkskn, tr("List of skipped names"),
-		     tr("These are patterns for file or directory names which "
-			"should not be indexed. "));
+	ConfParamSLW(this, lnkskn, 
+		     QObject::tr("List of skipped names"),
+		     QObject::tr("These are patterns for file or directory "
+				 " names which should not be indexed."));
     vboxLayout->addWidget(eskn);
+    m_widgets.push_back(eskn);
 
     list<string> args;
     args.push_back("-l");
@@ -162,34 +207,78 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
 	charsets.push_back(QString::fromUtf8(it->c_str()));
     }
 
-    ConfLink lnk21(new ConfLinkRclRep(config, "defaultcharset"));
+    ConfLink lnk21(new ConfLinkRclRep(config, "defaultcharset", &m_sk));
     ConfParamCStrW *e21 = new 
-	ConfParamCStrW(this, lnk21, tr("Default character set"),
-		       tr("This is the character set used for reading files "
+	ConfParamCStrW(this, lnk21, 
+		       QObject::tr("Default character set"),
+		       QObject::tr("This is the character set used for reading files "
 			  "which do not identify the character set "
 			  "internally, for example pure text files.<br>"
 			  "The default value is empty, "
 			  "and the value from the NLS environnement is used."
 			  ), charsets);
     vboxLayout->addWidget(e21);
+    m_widgets.push_back(e21);
 
-
-    ConfLink lnk3(new ConfLinkRclRep(config, "followLinks"));
+    ConfLink lnk3(new ConfLinkRclRep(config, "followLinks", &m_sk));
     ConfParamBoolW *e3 = new 
-	ConfParamBoolW(this, lnk3, tr("Follow symbolic links"),
-		       tr("Follow symbolic links while "
+	ConfParamBoolW(this, lnk3, 
+		        QObject::tr("Follow symbolic links"),
+		        QObject::tr("Follow symbolic links while "
 			  "indexing. The default is no, "
 			  "to avoid duplicate indexing"));
     vboxLayout->addWidget(e3);
+    m_widgets.push_back(e3);
 
-    ConfLink lnkafln(new ConfLinkRclRep(config, "indexallfilenames"));
+    ConfLink lnkafln(new ConfLinkRclRep(config, "indexallfilenames", &m_sk));
     ConfParamBoolW *eafln = new 
-	ConfParamBoolW(this, lnkafln, tr("Index all file names"),
-		       tr("Index the names of files for which the contents "
+	ConfParamBoolW(this, lnkafln, 
+		       QObject::tr("Index all file names"),
+		       QObject::tr("Index the names of files for which the contents "
 			  "cannot be identified or processed (no or "
 			  "unsupported mime type). Default true"));
     vboxLayout->addWidget(eafln);
+    m_widgets.push_back(eafln);
 }
 
+void ConfSubPanelW::reloadAll()
+{
+    for (list<ConfParamW*>::iterator it = m_widgets.begin();
+	 it != m_widgets.end(); it++) {
+	(*it)->loadValue();
+    }
+}
+
+void ConfSubPanelW::subDirChanged()
+{
+    LOGDEB(("ConfSubPanelW::subDirChanged\n"));
+    QListBoxItem *item = m_subdirs->getListBox()->selectedItem();
+    if (item == 0) {
+	m_sk = "";
+    } else {
+	m_sk = (const char *)item->text().utf8();
+    }
+    LOGDEB(("ConfSubPanelW::subDirChanged: now [%s]\n", m_sk.c_str()));
+    reloadAll();
+}
+
+void ConfSubPanelW::subDirDeleted(QString sbd)
+{
+    LOGDEB(("ConfSubPanelW::subDirDeleted(%s)\n", (const char *)sbd.utf8()));
+    if (sbd == "") {
+	// Can't do this, have to reinsert it
+	QTimer::singleShot(0, this, SLOT(restoreEmpty()));
+	return;
+    }
+    // Have to delete all entries for submap
+    m_config->setKeyDir((const char *)sbd.utf8());
+    m_config->eraseKeyDir();
+}
+
+void ConfSubPanelW::restoreEmpty()
+{
+    LOGDEB(("ConfSubPanelW::restoreEmpty()\n"));
+    m_subdirs->getListBox()->insertItem("", 0);
+}
 
 } // Namespace confgui

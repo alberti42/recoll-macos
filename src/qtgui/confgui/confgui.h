@@ -1,6 +1,6 @@
 #ifndef _confgui_h_included_
 #define _confgui_h_included_
-/* @(#$Id: confgui.h,v 1.2 2007-09-27 15:47:25 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: confgui.h,v 1.3 2007-09-29 09:06:53 dockes Exp $  (C) 2007 J.F.Dockes */
 
 #include <string>
 
@@ -15,6 +15,9 @@ class QHBoxLayout;
 class QLineEdit;
 class QListBox;
 class RclConfig;
+class QSpinBox;
+class QComboBox;
+class QCheckBox;
 
 namespace confgui {
 
@@ -26,6 +29,16 @@ namespace confgui {
     };
     typedef RefCntr<ConfLinkRep> ConfLink;
 
+    class ConfLinkNullRep : public ConfLinkRep {
+    public:
+	virtual bool set(const string&)
+	{
+	    //fprintf(stderr, "Setting value to [%s]\n", val.c_str());
+	    return true;
+	}
+	virtual bool get(string& val) {val = ""; return true;}
+    };
+
     // A widget to let the user change one configuration
     // parameter. Subclassed for specific parameter types
     class ConfParamW : public QWidget {
@@ -35,9 +48,12 @@ namespace confgui {
 	    : QWidget(parent), m_cflink(cflink)
 	{
 	}
+	virtual void loadValue() = 0;
+
     protected:
-	ConfLink m_cflink;
+	ConfLink     m_cflink;
 	QHBoxLayout *m_hl;
+
 	virtual bool createCommon(const QString& lbltxt,
 				  const QString& tltptxt);
 
@@ -58,6 +74,9 @@ namespace confgui {
 		      const QString& tltptxt,
 		      int minvalue = INT_MIN, 
 		      int maxvalue = INT_MAX);
+	virtual void loadValue();
+    protected:
+	QSpinBox *m_sb;
     };
 
     // Arbitrary string
@@ -66,6 +85,9 @@ namespace confgui {
 	ConfParamStrW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
 		      const QString& tltptxt);
+	virtual void loadValue();
+    protected:
+	QLineEdit *m_le;
     };
 
     // Constrained string: choose from list
@@ -74,6 +96,9 @@ namespace confgui {
 	ConfParamCStrW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
 		      const QString& tltptxt, const QStringList& sl);
+	virtual void loadValue();
+    protected:
+	QComboBox *m_cmb;
     };
 
     // Boolean
@@ -82,6 +107,9 @@ namespace confgui {
 	ConfParamBoolW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
 		      const QString& tltptxt);
+	virtual void loadValue();
+    protected:
+	QCheckBox *m_cb;
     };
 
     // File name
@@ -91,6 +119,7 @@ namespace confgui {
 	ConfParamFNW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
 		     const QString& tltptxt, bool isdir = false);
+	virtual void loadValue();
     protected slots:
 	void showBrowserDialog();
     protected:
@@ -105,12 +134,18 @@ namespace confgui {
 	ConfParamSLW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
 		      const QString& tltptxt);
+	virtual void loadValue();
+	QListBox *getListBox() {return m_lb;}
+	
     protected slots:
 	virtual void showInputDialog();
 	void deleteSelected();
+    signals:
+        void entryDeleted(QString);
     protected:
 	QListBox *m_lb;
 	void listToConf();
+	
     };
 
     // Dir name list

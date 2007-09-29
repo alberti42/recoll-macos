@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.2 2007-09-27 15:47:25 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.3 2007-09-29 09:06:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -27,14 +27,16 @@ using namespace std;
 
 #include <unistd.h>
 
+#include <qobject.h>
 #include <qapplication.h>
 #include <qtranslator.h>
-
 #include <qtextcodec.h> 
 #include <qthread.h>
 #include <qtimer.h>
 #include <qlayout.h>
 #include <qframe.h>
+#include <qwidget.h>
+#include <qlabel.h>
 
 #include "pathut.h"
 #include "confguiindex.h"
@@ -67,15 +69,6 @@ Usage(void)
     exit((op_flags & OPT_h)==0);
 }
 
-class ConfLinkNullRep : public ConfLinkRep {
-    public:
-    virtual bool set(const string& val) 
-    {
-	fprintf(stderr, "Setting value to [%s]\n", val.c_str());
-	return true;
-    }
-    virtual bool get(string& val) {val = ""; return true;}
-};
 
 static RclConfig *config;
 RclConfig *RclConfig::getMainConfig() 
@@ -139,10 +132,10 @@ int main(int argc, char **argv)
     
     vboxLayout->addWidget(new ConfTopPanelW(&w, config));
 
-    QFrame *line2 = new QFrame(&w);
-    line2->setFrameShape(QFrame::HLine);
-    line2->setFrameShadow(QFrame::Sunken);
-    vboxLayout->addWidget(line2);
+    QFrame *line1 = new QFrame(&w);
+    line1->setFrameShape(QFrame::HLine);
+    line1->setFrameShadow(QFrame::Sunken);
+    vboxLayout->addWidget(line1);
 
     vboxLayout->addWidget(new ConfSubPanelW(&w, config));
 
