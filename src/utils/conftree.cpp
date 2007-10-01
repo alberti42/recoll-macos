@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.11 2007-09-27 11:02:13 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.12 2007-10-01 06:19:21 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,13 @@ using std::list;
 #define MIN(A,B) ((A)<(B) ? (A) : (B))
 #endif
 
+//#define DEBUG
+#ifdef DEBUG
+#define LOGDEB(X) fprintf X
+#else
+#define LOGDEB(X)
+#endif
+
 #define LL 1024
 void ConfSimple::parseinput(istream &input)
 {
@@ -54,7 +61,7 @@ void ConfSimple::parseinput(istream &input)
 
     for (;;) {
 	input.getline(cline, LL-1);
-	// fprintf(stderr, "Line: '%s' status %d\n", cline, int(status));
+	LOGDEB((stderr, "Parse:line: [%s] status %d\n", cline, int(status)));
 	if (!input.good()) {
 	    if (input.bad()) {
 		status = STATUS_ERROR;
@@ -127,13 +134,13 @@ void ConfSimple::parseinput(istream &input)
 
 
 ConfSimple::ConfSimple(int readonly, bool tildexp)
-    : dotildexpand(tildexp), m_data(0)
+    : dotildexpand(tildexp), m_data(0), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
 }
 
 ConfSimple::ConfSimple(string *d, int readonly, bool tildexp)
-    : dotildexpand(tildexp), m_data(d)
+    : dotildexpand(tildexp), m_data(d), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
 
@@ -142,7 +149,7 @@ ConfSimple::ConfSimple(string *d, int readonly, bool tildexp)
 }
 
 ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp)
-    : dotildexpand(tildexp), m_filename(fname), m_data(0)
+    : dotildexpand(tildexp), m_filename(fname), m_data(0), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
 
@@ -204,7 +211,7 @@ int ConfSimple::get(const string &nm, string &value, const string &sk)
     return 1;
 }
 
-// Code to appropriately output a subkey (nm=="") or variable line
+// Appropriately output a subkey (nm=="") or variable line.
 // Splits long lines
 static ConfSimple::WalkerCode varprinter(void *f, const string &nm, 
 				      const string &value)
@@ -249,22 +256,34 @@ int ConfSimple::set(const std::string &nm, const std::string &value,
 int ConfSimple::i_set(const std::string &nm, const std::string &value, 
 		      const string &sk, bool init)
 {
+    LOGDEB((stderr, "ConfSimple::i_set: nm[%s] val[%s] key[%s], init %d\n",
+	    nm.c_str(), value.c_str(), sk.c_str(), init));
     // Values must not have embedded newlines
     if (value.find_first_of("\n\r") != string::npos) {
+	LOGDEB((stderr, "ConfSimple::i_set: LF in value\n"));
 	return 0;
     }
     bool existing = false;
     map<string, map<string, string> >::iterator ss;
+    // Test if submap already exists, else create it, and insert variable:
     if ((ss = m_submaps.find(sk)) == m_submaps.end()) {
+	LOGDEB((stderr, "ConfSimple::i_set: new submap\n"));
 	map<string, string> submap;
 	submap[nm] = value;
 	m_submaps[sk] = submap;
-	if (!sk.empty())
-	    m_order.push_back(ConfLine(ConfLine::CFL_SK, sk));
-	// The var insert will be at the end, need not search for the
-	// right place
-	init = true;
+
+	// Maybe add sk entry to m_order data:
+	if (!sk.empty()) {
+	    ConfLine nl(ConfLine::CFL_SK, sk);
+	    // Append SK entry only if it's not already there (erase
+	    // does not remove entries from the order data, adn it may
+	    // be being recreated after deletion)
+	    if (find(m_order.begin(), m_order.end(), nl) == m_order.end()) {
+		m_order.push_back(nl);
+	    }
+	}
     } else {
+	// Insert or update variable in existing map.
 	map<string, string>::iterator it;
 	it = ss->second.find(nm);
 	if (it == ss->second.end()) {
@@ -275,21 +294,29 @@ int ConfSimple::i_set(const std::string &nm, const std::string &value,
 	}
     }
 
-    // If the variable already existed, no need to change the order data
-    if (existing)
+    // If the variable already existed, no need to change the m_order data
+    if (existing) {
+	LOGDEB((stderr, "ConfSimple::i_set: existing var: no order update\n"));
 	return 1;
+    }
 
     // Add the new variable at the end of its submap in the order data.
 
     if (init) {
-	// During the initial construction, insert at end
+	// During the initial construction, just append:
+	LOGDEB((stderr, "ConfSimple::i_set: init true: append\n"));
 	m_order.push_back(ConfLine(ConfLine::CFL_VAR, nm));
 	return 1;
     } 
 
+    // Look for the start and end of the subkey zone. Start is either
+    // at begin() for a null subkey, or just behind the subkey
+    // entry. End is either the next subkey entry, or the end of
+    // list. We insert the new entry just before end.
     list<ConfLine>::iterator start, fin;
     if (sk.empty()) {
 	start = m_order.begin();
+	LOGDEB((stderr,"ConfSimple::i_set: null sk, start at top of order\n"));
     } else {
 	start = find(m_order.begin(), m_order.end(), 
 		     ConfLine(ConfLine::CFL_SK, sk));
@@ -304,7 +331,9 @@ int ConfSimple::i_set(const std::string &nm, const std::string &value,
 
     fin = m_order.end();
     if (start != m_order.end()) {
-	start++;
+	// The null subkey has no entry (maybe it should)
+	if (!sk.empty())
+	    start++;
 	for (list<ConfLine>::iterator it = start; it != m_order.end(); it++) {
 	    if (it->m_kind == ConfLine::CFL_SK) {
 		fin = it;
@@ -314,10 +343,10 @@ int ConfSimple::i_set(const std::string &nm, const std::string &value,
     }
 
     // It may happen that the order entry already exists because erase doesnt
-    // update m_order (fix it ?)
-    if (find(start, fin, ConfLine(ConfLine::CFL_VAR, nm)) == fin)
+    // update m_order
+    if (find(start, fin, ConfLine(ConfLine::CFL_VAR, nm)) == fin) {
 	m_order.insert(fin, ConfLine(ConfLine::CFL_VAR, nm));
-
+    }
     return 1;
 }
 
@@ -332,10 +361,22 @@ int ConfSimple::erase(const string &nm, const string &sk)
     }
     
     ss->second.erase(nm);
-  
+    if (ss->second.empty()) {
+	m_submaps.erase(ss);
+    }
     return write();
 }
 
+int ConfSimple::eraseKey(const string &sk)
+{
+    list<string>nms = getNames(sk);
+    for (list<string>::iterator it = nms.begin(); it != nms.end(); it++) {
+	erase(*it, sk);
+    }
+    return write();
+}
+
+// Walk the tree, calling user function at each node
 ConfSimple::WalkerCode 
 ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
 		     void *clidata)
@@ -362,8 +403,13 @@ ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
     return WALK_CONTINUE;
 }
 
+// Write to default output:
 bool ConfSimple::write()
 {
+    if (!ok())
+	return false;
+    if (m_holdWrites)
+	return true;
     if (m_filename.length()) {
 	ofstream output(m_filename.c_str(), ios::out|ios::trunc);
 	if (!output.is_open())
@@ -378,6 +424,9 @@ bool ConfSimple::write()
     }
 }
 
+// Write out the tree in configuration file format:
+// This does not check holdWrites, this is done by write(void), which
+// lets ie: listall work even when holdWrites is set
 bool ConfSimple::write(ostream& out)
 {
     if (!ok())
@@ -393,19 +442,34 @@ bool ConfSimple::write(ostream& out)
 	    break;
 	case ConfLine::CFL_SK:      
 	    sk = it->m_data;
-	    out << "[" << it->m_data << "]" << endl;
-	    if (!out.good()) 
-		return false;
-	    break;
-	case ConfLine::CFL_VAR:
-	    string value;
-	    // As erase() doesnt update m_order we can find unexisting
-	    // variables, and must not output anything for them
-	    if (get(it->m_data, value, sk)) {
-		varprinter(&out, it->m_data, value);
+	    LOGDEB((stderr, "ConfSimple::write: SK [%s]\n", sk.c_str()));
+	    // Check that the submap still exists, and only output it if it
+	    // does
+	    if (m_submaps.find(sk) != m_submaps.end()) {
+		out << "[" << it->m_data << "]" << endl;
 		if (!out.good()) 
 		    return false;
 	    }
+	    break;
+	case ConfLine::CFL_VAR:
+	    string nm = it->m_data;
+	    LOGDEB((stderr, "ConfSimple::write: VAR [%s], sk [%s]\n",
+		    nm.c_str(), sk.c_str()));
+	    // As erase() doesnt update m_order we can find unexisting
+	    // variables, and must not output anything for them. Have
+	    // to use a ConfSimple::get() to check here, because
+	    // ConfTree's could retrieve from an ancestor even if the
+	    // local var is gone.
+	    string value;
+	    if (ConfSimple::get(nm, value, sk)) {
+		    varprinter(&out, nm, value);
+		    if (!out.good()) 
+			return false;
+		    break;
+	    }
+	    LOGDEB((stderr, "ConfSimple::write: no value: nm[%s] sk[%s]\n",
+			nm.c_str(), sk.c_str()));
+	    break;
 	}
     }
     return true;
@@ -455,7 +519,7 @@ list<string> ConfSimple::getSubKeys()
 int ConfTree::get(const std::string &name, string &value, const string &sk)
 {
     if (sk.empty() || sk[0] != '/') {
-	//	fprintf(stderr, "Looking in global space");
+	//	LOGDEB((stderr, "ConfTree::get: looking in global space\n"));
 	return ConfSimple::get(name, value, sk);
     }
 
@@ -468,8 +532,8 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
 
     // Look in subkey and up its parents until root ('')
     for (;;) {
-	//fprintf(stderr,"Looking for '%s' in '%s'\n",
-	//name.c_str(), msk.c_str());
+	//	LOGDEB((stderr,"ConfTree::get: looking for '%s' in '%s'\n",
+	//		name.c_str(), msk.c_str()));
 	if (ConfSimple::get(name, value, msk))
 	    return 1;
 	string::size_type pos = msk.rfind("/");
@@ -600,6 +664,20 @@ bool erase(ConfNull *conf, const string& nm, const string& sub)
     return true;
 }
 
+bool eraseKey(ConfNull *conf, const string& sub)
+{
+    if (!conf->ok()) {
+	cerr <<  "Error opening or parsing file\n" << endl;
+	return false;
+    }
+
+    if (!conf->eraseKey(sub)) {
+	cerr <<  "delete key [" << sub <<  "] failed" << endl;
+	return false;
+    }
+    return true;
+}
+
 bool setvar(ConfNull *conf, const string& nm, const string& value, 
 	    const string& sub)
 {
@@ -618,9 +696,10 @@ static char usage [] =
     "testconftree [opts] filename\n"
     "[-w]  : read/write test.\n"
     "[-s]  : string parsing test. Filename must hold parm 'strings'\n"
-    "[-a] nm value sect : add/set nm,value in 'sect' which can be ''\n"
-    "[-q] nm sect : subsection test: look for nm in 'sect' which can be ''\n"
-    "[-d] nm sect : delete nm in 'sect' which can be ''\n"
+    "-a nm value sect : add/set nm,value in 'sect' which can be ''\n"
+    "-q nm sect : subsection test: look for nm in 'sect' which can be ''\n"
+    "-d nm sect : delete nm in 'sect' which can be ''\n"
+    "-E sect : erase key (and all its names)\n"
     "[-S] : string io test. No filename in this case\n"
     "[-V] : volatile config test. No filename in this case\n"
     ;
@@ -639,6 +718,7 @@ static int     op_flags;
 #define OPT_V     0x40
 #define OPT_a     0x80
 #define OPT_k     0x100
+#define OPT_E     0x200
 
 int main(int argc, char **argv)
 {
@@ -656,13 +736,6 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'd':
-		op_flags |= OPT_d;
-		if (argc < 3)  
-		    Usage();
-		nm = *(++argv);argc--;
-		sub = *(++argv);argc--;		  
-		goto b1;
 	    case 'a':
 		op_flags |= OPT_a;
 		if (argc < 4)  
@@ -671,6 +744,20 @@ int main(int argc, char **argv)
 		value = *(++argv);argc--;
 		sub = *(++argv);argc--;		  
 		goto b1;
+	    case 'd':
+		op_flags |= OPT_d;
+		if (argc < 3)  
+		    Usage();
+		nm = *(++argv);argc--;
+		sub = *(++argv);argc--;		  
+		goto b1;
+	    case 'E':   
+		op_flags |= OPT_E; 
+		if (argc < 2)
+		    Usage();
+		sub = *(++argv);argc--;		  
+		goto b1;
+	    case 'k':   op_flags |= OPT_k; break;
 	    case 'q':
 		op_flags |= OPT_q;
 		if (argc < 3)  
@@ -679,7 +766,6 @@ int main(int argc, char **argv)
 		sub = *(++argv);argc--;		  
 		goto b1;
 	    case 's':   op_flags |= OPT_s; break;
-	    case 'k':   op_flags |= OPT_k; break;
 	    case 'S':   op_flags |= OPT_S; break;
 	    case 'V':   op_flags |= OPT_S; break;
 	    case 'w':	op_flags |= OPT_w; break;
@@ -714,7 +800,7 @@ int main(int argc, char **argv)
     while (argc--) {
 	flist.push_back(*argv++);
     }
-    bool ro = !(op_flags & (OPT_w|OPT_a|OPT_d));
+    bool ro = !(op_flags & (OPT_w|OPT_a|OPT_d|OPT_E));
     ConfNull *conf = 0;
     switch (flist.size()) {
     case 0:
@@ -747,6 +833,8 @@ int main(int argc, char **argv)
 	exit(!setvar(conf, nm, value, sub));
     } else if (op_flags & OPT_d) {
 	exit(!erase(conf, nm, sub));
+    } else if (op_flags & OPT_E) {
+	exit(!eraseKey(conf, sub));
     } else if (op_flags & OPT_s) {
 	if (!conf->ok()) {
 	    cerr << "Cant open /parse conf file " << endl;

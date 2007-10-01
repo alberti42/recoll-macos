@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.49 2007-06-22 06:14:04 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.50 2007-10-01 06:19:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -107,7 +107,7 @@ RclConfig::RclConfig(const string *argcnf)
     cdirs.push_back(path_cat(m_datadir, "examples"));
     string cnferrloc = m_confdir + " or " + path_cat(m_datadir, "examples");
 
-    m_conf = new ConfStack<ConfTree>("recoll.conf", cdirs, true);
+    m_conf = new ConfStack<ConfTree>("recoll.conf", cdirs, false);
     if (m_conf == 0 || !m_conf->ok()) {
 	m_reason = string("No/bad main configuration file in: ") + cnferrloc;
 	return;

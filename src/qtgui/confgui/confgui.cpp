@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confgui.cpp,v 1.3 2007-09-29 09:06:53 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confgui.cpp,v 1.4 2007-10-01 06:19:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -415,6 +415,9 @@ void ConfParamDNLW::showInputDialog()
 	if (m_lb->findItem(s, Qt::ExactMatch) == 0) {
 	    m_lb->insertItem(s);
 	    m_lb->sort();
+	    QListBoxItem *item = m_lb->findItem(s, Qt::ExactMatch);
+	    if (m_lb->selectionMode() == QListBox::Single && item)
+		m_lb->setSelected(item, true);
 	    listToConf();
 	}
     }

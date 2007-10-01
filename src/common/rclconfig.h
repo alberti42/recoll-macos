@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.36 2007-06-22 06:14:04 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.37 2007-10-01 06:19:21 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -63,6 +63,8 @@ class RclConfig {
 	guesscharset = stringToBool(str);
     }
     string getKeyDir() const {return m_keydir;}
+    /** Get all defined key directories in configuration */
+    list<string> getKeyDirs() {return m_conf->getSubKeys();}
 
     /** Get generic configuration parameter according to current keydir */
     bool getConfParam(const string &name, string &value) 
@@ -71,6 +73,28 @@ class RclConfig {
 	    return false;
 	return m_conf->get(name, value, m_keydir);
     }
+    /** Set generic configuration parameter according to current keydir */
+    bool setConfParam(const string &name, const string &value) 
+    {
+	if (m_conf == 0)
+	    return false;
+	return m_conf->set(name, value, m_keydir);
+    }
+    /** Remove parameter from configuration */
+    bool eraseConfParam(const string &name)
+    {
+	if (m_conf == 0)
+	    return false;
+	return m_conf->erase(name, m_keydir);
+    }	
+    /** Remove parameter from configuration */
+    bool eraseKeyDir()
+    {
+	if (m_conf == 0)
+	    return false;
+	return m_conf->eraseKey(m_keydir);
+    }	
+
     /** Variant with autoconversion to int */
     bool getConfParam(const std::string &name, int *value);
     /** Variant with autoconversion to bool */

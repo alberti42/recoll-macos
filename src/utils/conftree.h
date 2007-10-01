@@ -85,7 +85,6 @@ public:
     {
 	return o.m_kind == m_kind && o.m_data == m_data;
     }
-	
 };
 
 /** 
@@ -102,8 +101,10 @@ public:
     virtual bool ok() = 0;
     virtual list<string> getNames(const string &sk) = 0;
     virtual int erase(const string &, const string &) {return 0;}
+    virtual int eraseKey(const string &) {return 0;}
     virtual void listall() {}
     virtual list<string> getSubKeys() = 0;
+    virtual bool holdWrites(bool) {return true;}
 };
 
 /** 
@@ -138,12 +139,23 @@ public:
     virtual ~ConfSimple() {};
 
     /** 
+     * Decide if we actually rewrite the backing-store after modifying the
+     * tree. (Re-)Enabling writes causes a flush.
+     */
+    virtual bool holdWrites(bool on)
+    {
+	m_holdWrites = on;
+	if (m_holdWrites == false)
+	    return write();
+	return true;
+    }
+
+    /** 
      * Get value for named parameter, from specified subsection (looks in 
      * global space if sk is empty).
      * @return 0 if name not found, 1 else
      */
     virtual int get(const string &name, string &value, const string &sk = "");
-    /* Note: the version returning char* was buggy and has been removed */
 
     /** 
      * Set value for named parameter in specified subsection (or global)
@@ -155,6 +167,11 @@ public:
      * Remove name and value from config
      */
     virtual int erase(const string &name, const string &sk);
+
+    /**
+     * Erase all names under given subkey (and subkey itself)
+     */
+    virtual int eraseKey(const string &sk);
 
     virtual StatusCode getStatus(); 
     virtual bool ok() {return getStatus() != STATUS_ERROR;}
@@ -171,6 +188,8 @@ public:
 				(*wlkr)(void *cldata, const string &nm, 
 					const string &val),
 				void *clidata);
+
+    /** List all values to stdout */
     virtual void listall();
 
     /**
@@ -228,6 +247,8 @@ private:
     // variable and subkey ordering information in there (for
     // rewriting the file while keeping hand-edited information)
     list<ConfLine>                    m_order;
+    // Control if we're writing to the backing store
+    bool                              m_holdWrites;
 
     void parseinput(istream& input);
     bool write();
@@ -254,11 +275,14 @@ private:
 class ConfTree : public ConfSimple {
 
 public:
-    /**
-     * Build the object by reading content from file.
-     */
+    /* The constructors just call ConfSimple's, asking for key tilde 
+     * expansion */
     ConfTree(const char *fname, int readonly = 0) 
 	: ConfSimple(fname, readonly, true) {}
+    ConfTree(string *data, int readonly = 0)
+	: ConfSimple(data, readonly, true) {}
+    ConfTree(int readonly = 0)
+	: ConfSimple(readonly, true) {}
     virtual ~ConfTree() {};
     ConfTree(const ConfTree& r)	: ConfSimple(r) {};
     ConfTree& operator=(const ConfTree& r) {
@@ -282,13 +306,14 @@ public:
  * Notes: it's ok for some of the files in the list to not exist, but the last
  * one must or we generate an error. We open all trees readonly, except the 
  * topmost one if requested. All writes go to the topmost file. Note that
- * erase() won't work.
+ * erase() won't work except for parameters only defined in the topmost
+ * file (it erases only from there).
  */
 template <class T> class ConfStack : public ConfNull {
 public:
-    /// Construct from list of configuration file names. The earler files in
-    /// have priority when fetching values. Only the first file will be updated 
-    /// if ro is false and set() is used.
+    /// Construct from list of configuration file names. The earler
+    /// files in have priority when fetching values. Only the first
+    /// file will be updated if ro is false and set() is used.
     ConfStack(const list<string> &fns, bool ro = true) 
     {
 	construct(fns, ro);
@@ -364,6 +389,19 @@ public:
 	}
 
 	return m_confs.front()->set(nm, val, sk);
+    }
+
+    virtual int erase(const string &nm, const string &sk) 
+    {
+	return m_confs.front()->erase(nm, sk);
+    }
+    virtual int eraseKey(const string &sk) 
+    {
+	return m_confs.front()->eraseKey(sk);
+    }
+    virtual bool holdWrites(bool on)
+    {
+	return m_confs.front()->holdWrites(on);
     }
 
     virtual list<string> getNames(const string &sk) 
