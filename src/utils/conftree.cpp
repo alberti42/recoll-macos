@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.12 2007-10-01 06:19:21 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.13 2007-10-01 15:57:48 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -549,6 +549,8 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
 
 #include <stdio.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
 #include <sstream>
 #include <iostream>
@@ -560,6 +562,121 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
 using namespace std;
 
 static char *thisprog;
+
+static void caterrno(string *reason)
+{
+#define ERRBUFSZ 200    
+    char errbuf[ERRBUFSZ];
+  if (reason) {
+#ifdef sun
+    // Note: sun strerror is noted mt-safe ??
+    *reason += string("file_to_string: open failed: ") + strerror(errno);
+#else
+    strerror_r(errno, errbuf, ERRBUFSZ);
+    *reason += string("file_to_string: open failed: ") + errbuf;
+#endif
+  }
+}
+static bool file_to_string(const string &fn, string &data, string *reason)
+{
+    bool ret = false;
+    int fd = open(fn.c_str(), O_RDONLY);
+    if (fd < 0) {
+        caterrno(reason);
+	return false;
+    }
+    char buf[4096];
+    for (;;) {
+	int n = read(fd, buf, 4096);
+	if (n < 0) {
+	    caterrno(reason);
+	    goto out;
+	}
+	if (n == 0)
+	    break;
+	try {
+	    data.append(buf, n);
+	} catch (...) {
+	    caterrno(reason);
+	    goto out;
+	}
+    }
+    ret = true;
+ out:
+    if (fd >= 0)
+	close(fd);
+    return ret;
+}
+
+bool complex_updates(const string& fn)
+{
+    int fd;
+    if ((fd = open(fn.c_str(), O_RDWR|O_TRUNC|O_CREAT, 0666)) < 0) {
+	perror("open/create");
+	return false;
+    }
+    close(fd);
+
+    ConfTree conf(fn.c_str());
+    if (!conf.ok()) {
+	cerr << "Config init failed" << endl;
+	return false;
+    }
+
+    conf.set("nm-1", "val-1", "");
+    conf.set("nm-2", "val-2", "");
+
+    conf.set("nm-1", "val1-1", "/dir1");
+    conf.set("nm-2", "val1-2", "/dir1");
+
+    conf.set("nm-1", "val2-1", "/dir2");
+    conf.set("nm-2", "val2-2", "/dir2");
+
+    conf.set("nm-1", "val11-1", "/dir1/dir1");
+    conf.set("nm-2", "val11-2", "/dir1/dir1");
+
+    conf.eraseKey("/dir2");
+    conf.set("nm-1", "val2-1", "/dir2");
+    conf.set("nm-2", "val2-2", "/dir2");
+
+    conf.erase("nm-1", "");
+    conf.erase("nm-2", "");
+    conf.eraseKey("/dir1");
+    conf.eraseKey("/dir2");
+    conf.eraseKey("/dir1/dir1");
+
+    conf.set("nm-1", "val1-1", "/dir1");
+    conf.set("nm-2", "val1-2", "/dir1");
+    conf.set("nm-1", "val-1", "");
+
+    conf.set("nm-1", "val2-1", "/dir2");
+    conf.set("nm-2", "val2-2", "/dir2");
+
+    conf.set("nm-1", "val11-1", "/dir1/dir1");
+    conf.set("nm-2", "val11-2", "/dir1/dir1");
+
+    conf.erase("nm-1", "/dir2");
+    conf.erase("nm-2", "/dir2");
+    conf.erase("nm-1", "/dir1/dir1");
+    conf.erase("nm-2", "/dir1/dir1");
+
+    string data;
+    file_to_string(fn, data, 0);
+    const string ref =
+	"nm-1 = val-1\n"
+	"[/dir1]\n"
+	"nm-1 = val1-1\n"
+	"nm-2 = val1-2\n"
+	;
+    if (data.compare(ref)) {
+	cerr << "Final file:" << endl << data << endl << "Differs from ref:" <<
+	    endl << ref << endl;
+	return false;
+    } else {
+	cout << "Updates test Ok" << endl;
+    }
+    return true;
+}
 
 ConfSimple::WalkerCode mywalker(void *, const string &nm, const string &value)
 {
@@ -700,8 +817,9 @@ static char usage [] =
     "-q nm sect : subsection test: look for nm in 'sect' which can be ''\n"
     "-d nm sect : delete nm in 'sect' which can be ''\n"
     "-E sect : erase key (and all its names)\n"
-    "[-S] : string io test. No filename in this case\n"
-    "[-V] : volatile config test. No filename in this case\n"
+    "-S : string io test. No filename in this case\n"
+    "-V : volatile config test. No filename in this case\n"
+    "-U : complex update test. Will erase the named file parameter\n"	 
     ;
 
 void Usage() {
@@ -719,6 +837,7 @@ static int     op_flags;
 #define OPT_a     0x80
 #define OPT_k     0x100
 #define OPT_E     0x200
+#define OPT_U      0x400
 
 int main(int argc, char **argv)
 {
@@ -767,7 +886,8 @@ int main(int argc, char **argv)
 		goto b1;
 	    case 's':   op_flags |= OPT_s; break;
 	    case 'S':   op_flags |= OPT_S; break;
-	    case 'V':   op_flags |= OPT_S; break;
+	    case 'V':   op_flags |= OPT_V; break;
+	    case 'U':   op_flags |= OPT_U; break;
 	    case 'w':	op_flags |= OPT_w; break;
 
 	    default: Usage();	break;
@@ -796,6 +916,9 @@ int main(int argc, char **argv)
     if (argc < 1)
 	Usage();
 
+    if (op_flags & OPT_U) {
+	exit(!complex_updates(argv[0]));
+    }
     list<string> flist;
     while (argc--) {
 	flist.push_back(*argv++);
