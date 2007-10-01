@@ -1,19 +1,27 @@
 #ifndef _confgui_h_included_
 #define _confgui_h_included_
-/* @(#$Id: confgui.h,v 1.3 2007-09-29 09:06:53 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: confgui.h,v 1.4 2007-10-01 06:35:31 dockes Exp $  (C) 2007 J.F.Dockes */
 
 #include <string>
 
+#include <qglobal.h>
 #include <qstring.h>
 #include <qwidget.h>
+#if QT_VERSION < 0x040000
+#define QHBOXLAYOUT QHBoxLayout
+#define QLISTBOX QListBox
+#else
+#define QHBOXLAYOUT Q3HBoxLayout
+#define QLISTBOX Q3ListBox
+#endif
 
 #include "refcntr.h"
 
 using std::string;
 
-class QHBoxLayout;
+class QHBOXLAYOUT;
 class QLineEdit;
-class QListBox;
+class QLISTBOX;
 class RclConfig;
 class QSpinBox;
 class QComboBox;
@@ -24,6 +32,7 @@ namespace confgui {
     // A class to isolate the gui widget from the config storage mechanism
     class ConfLinkRep {
     public:
+	virtual ~ConfLinkRep() {}
 	virtual bool set(const string& val) = 0;
 	virtual bool get(string& val) = 0;
     };
@@ -31,6 +40,7 @@ namespace confgui {
 
     class ConfLinkNullRep : public ConfLinkRep {
     public:
+	virtual ~ConfLinkNullRep() {}
 	virtual bool set(const string&)
 	{
 	    //fprintf(stderr, "Setting value to [%s]\n", val.c_str());
@@ -52,7 +62,7 @@ namespace confgui {
 
     protected:
 	ConfLink     m_cflink;
-	QHBoxLayout *m_hl;
+	QHBOXLAYOUT *m_hl;
 
 	virtual bool createCommon(const QString& lbltxt,
 				  const QString& tltptxt);
@@ -135,7 +145,7 @@ namespace confgui {
 		      const QString& lbltxt,
 		      const QString& tltptxt);
 	virtual void loadValue();
-	QListBox *getListBox() {return m_lb;}
+	QLISTBOX *getListBox() {return m_lb;}
 	
     protected slots:
 	virtual void showInputDialog();
@@ -143,7 +153,7 @@ namespace confgui {
     signals:
         void entryDeleted(QString);
     protected:
-	QListBox *m_lb;
+	QLISTBOX *m_lb;
 	void listToConf();
 	
     };
@@ -175,6 +185,7 @@ namespace confgui {
 	    }
     protected slots:
 	virtual void showInputDialog();
+    protected:
 	const QStringList m_sl;
     };
 }

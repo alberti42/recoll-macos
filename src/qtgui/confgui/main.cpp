@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.3 2007-09-29 09:06:53 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.4 2007-10-01 06:35:31 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,37 @@ using namespace std;
 
 #include <unistd.h>
 
+#include <qglobal.h>
+#if QT_VERSION < 0x040000
+#define QFRAME_INCLUDE <qframe.h>
+#define QFILEDIALOG_INCLUDE <qfiledialog.h>
+#define QLISTBOX_INCLUDE <qlistbox.h>
+#define QFILEDIALOG QFileDialog 
+#define QFRAME QFrame
+#define QHBOXLAYOUT QHBoxLayout
+#define QLISTBOX QListBox
+#define QLISTBOXITEM QListBoxItem
+#define QVBOXLAYOUT QVBoxLayout
+#else
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
+
+#include <QFrame>
+#define QFRAME_INCLUDE <q3frame.h>
+
+#include <QFileDialog>
+#define QFILEDIALOG_INCLUDE <q3filedialog.h>
+
+#define QLISTBOX_INCLUDE <q3listbox.h>
+
+#define QFILEDIALOG Q3FileDialog 
+#define QFRAME Q3Frame
+#define QHBOXLAYOUT Q3HBoxLayout
+#define QLISTBOX Q3ListBox
+#define QLISTBOXITEM Q3ListBoxItem
+#define QVBOXLAYOUT Q3VBoxLayout
+#endif
+
 #include <qobject.h>
 #include <qapplication.h>
 #include <qtranslator.h>
@@ -34,7 +65,7 @@ using namespace std;
 #include <qthread.h>
 #include <qtimer.h>
 #include <qlayout.h>
-#include <qframe.h>
+#include QFRAME_INCLUDE
 #include <qwidget.h>
 #include <qlabel.h>
 
@@ -126,15 +157,15 @@ int main(int argc, char **argv)
 
     QWidget w;
 
-    QVBoxLayout *vboxLayout = new QVBoxLayout(&w);
+    QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(&w);
     vboxLayout->setSpacing(6);
     vboxLayout->setMargin(11);
     
     vboxLayout->addWidget(new ConfTopPanelW(&w, config));
 
-    QFrame *line1 = new QFrame(&w);
-    line1->setFrameShape(QFrame::HLine);
-    line1->setFrameShadow(QFrame::Sunken);
+    QFRAME *line1 = new QFRAME(&w);
+    line1->setFrameShape(QFRAME::HLine);
+    line1->setFrameShadow(QFRAME::Sunken);
     vboxLayout->addWidget(line1);
 
     vboxLayout->addWidget(new ConfSubPanelW(&w, config));

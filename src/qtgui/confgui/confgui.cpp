@@ -1,8 +1,41 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confgui.cpp,v 1.4 2007-10-01 06:19:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confgui.cpp,v 1.5 2007-10-01 06:35:31 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
+
+#include <qglobal.h>
+#if QT_VERSION < 0x040000
+#define QFRAME_INCLUDE <qframe.h>
+#define QFILEDIALOG_INCLUDE <qfiledialog.h>
+#define QLISTBOX_INCLUDE <qlistbox.h>
+#define QFILEDIALOG QFileDialog 
+#define QFRAME QFrame
+#define QHBOXLAYOUT QHBoxLayout
+#define QLISTBOX QListBox
+#define QLISTBOXITEM QListBoxItem
+#define QLBEXACTMATCH Qt::ExactMatch
+#define QVBOXLAYOUT QVBoxLayout
+#else
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
+
+#include <QFrame>
+#define QFRAME_INCLUDE <q3frame.h>
+
+#include <QFileDialog>
+#define QFILEDIALOG_INCLUDE <q3filedialog.h>
+
+#define QLISTBOX_INCLUDE <q3listbox.h>
+
+#define QFILEDIALOG Q3FileDialog 
+#define QFRAME Q3Frame
+#define QHBOXLAYOUT Q3HBoxLayout
+#define QLISTBOX Q3ListBox
+#define QLISTBOXITEM Q3ListBoxItem
+#define QLBEXACTMATCH Q3ListBox::ExactMatch
+#define QVBOXLAYOUT Q3VBoxLayout
+#endif
 
 #include <qobject.h>
 #include <qlayout.h>
@@ -13,13 +46,13 @@ static char rcsid[] = "@(#$Id: confgui.cpp,v 1.4 2007-10-01 06:19:21 dockes Exp 
 #include <qtooltip.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
-#include <qfiledialog.h>
+#include QFILEDIALOG_INCLUDE
 #include <qinputdialog.h>
 #include <qpushbutton.h>
 #include <qstringlist.h>
-#include <qlistbox.h>
+#include QLISTBOX_INCLUDE
 #include <qcombobox.h>
-#include <qframe.h>
+#include QFRAME_INCLUDE
 
 #include "confgui.h"
 #include "smallut.h"
@@ -59,7 +92,7 @@ void ConfParamW::loadValue()
 
 bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
 {
-    m_hl = new QHBoxLayout(this);
+    m_hl = new QHBOXLAYOUT(this);
     m_hl->setSpacing(spacing);
 
     QLabel *tl = new QLabel(this);
@@ -99,7 +132,7 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink,
 				  m_sb->sizePolicy().hasHeightForWidth() ) );
     m_hl->addWidget(m_sb);
 
-    QFrame *fr = new QFrame(this);
+    QFRAME *fr = new QFRAME(this);
     fr->setSizePolicy(QSizePolicy(QSizePolicy::Preferred,
 				  QSizePolicy::Fixed,
 				  1,  // Horizontal stretch
@@ -198,7 +231,7 @@ ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink,
     : ConfParamW(parent, cflink)
 {
     // No createCommon because the checkbox has a label
-    m_hl = new QHBoxLayout(this);
+    m_hl = new QHBOXLAYOUT(this);
     m_hl->setSpacing(spacing);
 
     m_cb = new QCheckBox(lbltxt, this);
@@ -211,7 +244,7 @@ ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink,
     QToolTip::add(m_cb, tltptxt);
     m_hl->addWidget(m_cb);
 
-    QFrame *fr = new QFrame(this);
+    QFRAME *fr = new QFRAME(this);
     fr->setSizePolicy(QSizePolicy(QSizePolicy::Preferred,
 				  QSizePolicy::Fixed,
 				  1,  // Horizontal stretch
@@ -274,7 +307,7 @@ void ConfParamFNW::loadValue()
 void ConfParamFNW::showBrowserDialog()
 {
     QString s = m_isdir ?  
-	QFileDialog::getExistingDirectory() : QFileDialog::getSaveFileName();
+	QFILEDIALOG::getExistingDirectory() : QFILEDIALOG::getSaveFileName();
     if (!s.isEmpty()) 
 	m_le->setText(s);
 }
@@ -285,11 +318,11 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink,
     : ConfParamW(parent, cflink)
 {
     // Can't use createCommon here cause we want the buttons below the label
-    m_hl = new QHBoxLayout(this);
+    m_hl = new QHBOXLAYOUT(this);
     m_hl->setSpacing(spacing);
 
-    QVBoxLayout *vl1 = new QVBoxLayout();
-    QHBoxLayout *hl1 = new QHBoxLayout();
+    QVBOXLAYOUT *vl1 = new QVBOXLAYOUT();
+    QHBOXLAYOUT *hl1 = new QHBOXLAYOUT();
 
     QLabel *tl = new QLabel(this);
     tl->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
@@ -323,11 +356,11 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink,
     m_hl->addLayout(vl1);
 
 
-    m_lb = new QListBox(this);
+    m_lb = new QLISTBOX(this);
 
     loadValue();
 
-    m_lb->setSelectionMode(QListBox::Extended);
+    m_lb->setSelectionMode(QLISTBOX::Extended);
 
     m_lb->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
 				  QSizePolicy::Preferred,
@@ -371,7 +404,7 @@ void ConfParamSLW::showInputDialog()
 				      &ok,
 				      this);
     if (ok && !s.isEmpty()) {
-	if (m_lb->findItem(s, Qt::ExactMatch) == 0) {
+	if (m_lb->findItem(s, QLBEXACTMATCH) == 0) {
 	    m_lb->insertItem(s);
 	    m_lb->sort();
 	    listToConf();
@@ -410,13 +443,13 @@ void ConfParamSLW::deleteSelected()
 // "Add entry" dialog for a file name list
 void ConfParamDNLW::showInputDialog()
 {
-    QString s = QFileDialog::getExistingDirectory();
+    QString s = QFILEDIALOG::getExistingDirectory();
     if (!s.isEmpty()) {
-	if (m_lb->findItem(s, Qt::ExactMatch) == 0) {
+	if (m_lb->findItem(s, QLBEXACTMATCH) == 0) {
 	    m_lb->insertItem(s);
 	    m_lb->sort();
-	    QListBoxItem *item = m_lb->findItem(s, Qt::ExactMatch);
-	    if (m_lb->selectionMode() == QListBox::Single && item)
+	    QLISTBOXITEM *item = m_lb->findItem(s, QLBEXACTMATCH);
+	    if (m_lb->selectionMode() == QLISTBOX::Single && item)
 		m_lb->setSelected(item, true);
 	    listToConf();
 	}
@@ -434,7 +467,7 @@ void ConfParamCSLW::showInputDialog()
 				      false, // editable,
 				      &ok);
     if (ok && !s.isEmpty()) {
-	if (m_lb->findItem(s, Qt::ExactMatch) == 0) {
+	if (m_lb->findItem(s, QLBEXACTMATCH) == 0) {
 	    m_lb->insertItem(s);
 	    m_lb->sort();
 	    listToConf();

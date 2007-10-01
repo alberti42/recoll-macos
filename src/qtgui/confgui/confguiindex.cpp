@@ -1,12 +1,44 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.2 2007-09-29 09:06:53 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.3 2007-10-01 06:35:31 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
+#include <qglobal.h>
+#if QT_VERSION < 0x040000
+#define QFRAME_INCLUDE <qframe.h>
+#define QFILEDIALOG_INCLUDE <qfiledialog.h>
+#define QLISTBOX_INCLUDE <qlistbox.h>
+#define QFILEDIALOG QFileDialog 
+#define QFRAME QFrame
+#define QHBOXLAYOUT QHBoxLayout
+#define QLISTBOX QListBox
+#define QLISTBOXITEM QListBoxItem
+#define QLBEXACTMATCH Qt::ExactMatch
+#define QVBOXLAYOUT QVBoxLayout
+#else
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
+
+#include <QFrame>
+#define QFRAME_INCLUDE <q3frame.h>
+
+#include <QFileDialog>
+#define QFILEDIALOG_INCLUDE <q3filedialog.h>
+
+#define QLISTBOX_INCLUDE <q3listbox.h>
+
+#define QFILEDIALOG Q3FileDialog 
+#define QFRAME Q3Frame
+#define QHBOXLAYOUT Q3HBoxLayout
+#define QLISTBOX Q3ListBox
+#define QLISTBOXITEM Q3ListBoxItem
+#define QLBEXACTMATCH Q3ListBox::ExactMatch
+#define QVBOXLAYOUT Q3VBoxLayout
+#endif
 #include <qlayout.h>
-#include <qframe.h>
+#include QFRAME_INCLUDE
 #include <qwidget.h>
 #include <qlabel.h>
-#include <qlistbox.h>
+#include QLISTBOX_INCLUDE
 #include <qtimer.h>
 
 #include <list>
@@ -27,7 +59,7 @@ const static int margin = 6;
 ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
     : QWidget(parent)
 {
-    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
+    QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(this);
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
 
@@ -137,7 +169,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
 ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
     : QWidget(parent), m_config(config)
 {
-    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
+    QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(this);
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
 
@@ -149,7 +181,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
 				  "hierarchy where some parameters need to be "
 				  "customised. "
 				  "Default: empty."));
-    m_subdirs->getListBox()->setSelectionMode(QListBox::Single);
+    m_subdirs->getListBox()->setSelectionMode(QLISTBOX::Single);
     connect(m_subdirs->getListBox(), SIGNAL(selectionChanged()),
 	    this, SLOT(subDirChanged()));
     connect(m_subdirs, SIGNAL(entryDeleted(QString)),
@@ -174,9 +206,9 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
 			"the +/- buttons."));
     vboxLayout->addWidget(explain);
 
-    QFrame *line2 = new QFrame(this);
-    line2->setFrameShape(QFrame::HLine);
-    line2->setFrameShadow(QFrame::Sunken);
+    QFRAME *line2 = new QFRAME(this);
+    line2->setFrameShape(QFRAME::HLine);
+    line2->setFrameShadow(QFRAME::Sunken);
     vboxLayout->addWidget(line2);
 
     ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames", &m_sk));
@@ -252,7 +284,7 @@ void ConfSubPanelW::reloadAll()
 void ConfSubPanelW::subDirChanged()
 {
     LOGDEB(("ConfSubPanelW::subDirChanged\n"));
-    QListBoxItem *item = m_subdirs->getListBox()->selectedItem();
+    QLISTBOXITEM *item = m_subdirs->getListBox()->selectedItem();
     if (item == 0) {
 	m_sk = "";
     } else {
