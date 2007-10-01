@@ -1,0 +1,75 @@
+#! /usr/bin/perl -w
+
+
+
+#
+# maps image file tags to xapian tags
+#
+$tagMap = {
+	'subject' => 'subject',
+	'title' => 'title',
+	'headline' => 'title',
+	'caption' => 'caption',
+	'caption-abstract' => 'caption',
+	'author' => 'author',
+	'creator' => 'creator',
+	'from' => 'from',
+	'keywords' => 'keywords',
+	'keyword' => 'keyword',
+	'tag' => 'tag',
+};
+
+# set to non-zero if tags which map to xapian tags are to output
+# in the body as well as the header
+#
+$headAndBody = 0;
+
+# xapianTag
+# returns a xapian tag to be used for this tag
+#
+sub xapianTag {
+	my $imgtag = shift;
+	while ( ( $tagre, $xapiantag) = each %{$tagMap} ) {
+		return $xapiantag  if $imgtag =~ /$tagre/i;
+	}
+	return undef;
+}
+
+#
+# start here
+#
+use Image::ExifTool qw(:Public);
+
+$imageFile = shift;
+$imageFile = '-' if $imageFile eq '';
+unless ( open(IMGF, $imageFile)  ) {
+	print STDERR "$0: can't open file $imageFile\n";
+	exit(1); # file doesn't exist or can't be read
+}
+$info = ImageInfo(\*IMGF);
+die unless $info;
+$fields = [];
+$other = [];
+$titleHtmlTag = "";
+foreach $tagname ( sort keys %{$info} ) {
+	$xapiantag = xapianTag($tagname);
+	if (defined $xapiantag ) {
+		push @{$fields}, [ $xapiantag, $info->{$tagname} ];
+		$titleHtmlTag = "<title>$info->{$tagname}</title>" if $xapiantag eq 'title';
+		push @{$other}, [ $tagname, $info->{$tagname} ] if $headAndBody;
+	} else {
+		push @{$other}, [ $tagname, $info->{$tagname} ];
+	}
+}
+print "<html>\n<head>\n$titleHtmlTag\n";
+print "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n";
+foreach $tagpair ( @{$fields} ) {
+	($tagname, $value) = @{$tagpair};
+	print "<meta name=\"$tagname\" content=\"$value\">\n";
+}
+print "</head><body>\n";
+foreach $tagpair (@{$other} ) {
+	($tagname, $value) = @{$tagpair};
+	printf "%30s : %s<br>\n", $tagname, $value;
+}
+print "</body>\n</html>\n";
