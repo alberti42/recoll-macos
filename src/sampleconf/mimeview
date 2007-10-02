@@ -1,4 +1,4 @@
-# @(#$Id: mimeview,v 1.8 2007-08-26 13:34:59 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeview,v 1.9 2007-10-02 14:22:38 dockes Exp $  (C) 2004 J.F.Dockes
 
 ## ##########################################
 # External viewers, launched by the recoll GUI when you click on a result
@@ -36,6 +36,8 @@ application/x-scribus = scribus %f
 audio/mpeg = xmms %f
 image/jpeg = xv %f
 image/png = xv %f
+image/tiff = xv %f
+image/gif  = xv %f
 image/vnd.djvu = djview %f
 # Or firefox -remote "openFile(%u)"
 text/html = firefox %u

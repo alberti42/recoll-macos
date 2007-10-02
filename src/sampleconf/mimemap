@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.26 2007-09-07 08:04:07 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.27 2007-10-02 14:22:38 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
 
 .txt = text/plain
@@ -68,8 +68,13 @@
 .mp3 = audio/mpeg
 .flac = application/x-flac
 .ogg = application/ogg
+
 .png = image/png
 .jpg = image/jpeg
+.jpeg = image/jpeg
+.gif = image/gif
+.tiff = image/tiff
+.tif  = image/tiff
 
 # A list of stuff that we don't want to touch at all (for now). Having the
 # suffixes listed in there speeds up things quite a lot by avoiding

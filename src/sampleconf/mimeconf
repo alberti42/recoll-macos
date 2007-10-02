@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.33 2007-08-26 13:34:59 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.34 2007-10-02 14:22:38 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -51,7 +51,10 @@ application/x-kword = exec rclkwd
 application/x-scribus = exec rclscribus
 audio/mpeg = exec rclid3
 image/vnd.djvu = exec rcldjvu
-image/jpeg = exec rcljpeg
+image/gif = exec rclimg
+image/jpeg = exec rclimg
+image/png = exec rclimg
+image/tiff = exec rclimg
 message/rfc822 = internal
 text/html  = internal 
 text/plain = internal 
@@ -87,6 +90,7 @@ application/x-kword = wordprocessing
 audio/mpeg = sownd
 image/jpeg = image
 image/png = image
+image/tiff = image
 image/vnd.djvu = document
 message/rfc822 = message
 text/html = html
@@ -129,6 +133,9 @@ media = \
       application/x-flac \
       image/jpeg \
       image/png \
+      image/tiff \
+      image/gif \
+
 
 message = message/rfc822 \
 	   text/x-gaim-log \
