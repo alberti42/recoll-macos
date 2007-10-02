@@ -1,12 +1,14 @@
-#! /bin/sh
-#
+#!/bin/sh
+# @(#$Id: rclogg,v 1.1 2007-10-02 14:00:47 dockes Exp $  (C) 2007 J.F.Dockes
+#================================================================
+# rclogg
+# Handle ogg audio files for recoll.
+#================================================================
 # set variables
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
-progname="rcljpeg"
-decoder=exiftool
-#decoder=ps2ascii
-filetype=jpeg
+progname="rclogg"
+filetype=ogg
 
 
 #RECFILTCOMMONCODE
@@ -68,28 +70,37 @@ then
   senderror INPUTNOSUCHFILE "$infile"
 fi
 
-# protect access to our temp files and directories
-umask 77
-
 ##############################################################################
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds $decoder 
+checkcmds ogginfo
 
-echo '
-<html>
-<head>
-<title>
-</title>
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-</head>
-<body>
-'
-exiftool -q -q -m -IPTC:all "$infile" | sed -e 's/$/<br>/'
+# output the result
+echo '<html><head>'
+#echo '<title>' "$title" '</title>'
+echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
+echo '</head><body>'
+echo '<pre>'
 
-echo '
-</body>
-</html>
-'
+nocaptionexp='/=/s/.*=//p'
+kpcaptionexp='/=/p'
 
+if test X$RECOLL_FILTER_FORPREVIEW = Xyes ; then
+    captionexp=$kpcaptionexp
+else
+    captionexp=$nocaptionexp
+fi
+
+# Note: ogginfo output is unparseable: the COMMENT field can be
+# multiline, but there is no way to detect the end of the 'User
+# comments' area
+ogginfo "$infile" | \
+   sed -n \
+    -e "$captionexp"
+
+echo '</pre>'
+echo '</body></html>'
+
+# exit normally
+exit 0

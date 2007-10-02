@@ -1,0 +1,105 @@
+#!/bin/sh
+# @(#$Id: rclflac,v 1.1 2007-10-02 14:00:47 dockes Exp $  (C) 2007 J.F.Dockes
+#================================================================
+# rclflac
+# Handle flac audio files for recoll.
+#================================================================
+# set variables
+LANG=C ; export LANG
+LC_ALL=C ; export LC_ALL
+progname="rclflac"
+filetype=media
+
+
+#RECFILTCOMMONCODE
+##############################################################################
+# !! Leave the previous line unmodified!! Code imported from the
+# recfiltcommon file
+
+# Utility code common to all shell filters. This could be sourced at run
+# time, but it's slightly more efficient to include the code in the
+# filters at build time (with a sed script).
+
+# Describe error in a way that can be interpreted by our caller
+senderror()
+{
+    echo RECFILTERROR $*
+    # Also alert on stderr just in case
+    echo ":2:$progname::: $*" 1>&2
+    exit 1
+}
+
+iscmd()
+{
+    cmd=$1
+    case $cmd in
+    */*)
+	if test -x $cmd ; then return 0; else return 1; fi ;;
+    *)
+      oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
+      for d in $*;do test -x $d/$cmd && return 0;done
+      return 1 ;;
+    esac
+}
+
+checkcmds()
+{
+    for cmd in $*;do
+      if iscmd $cmd 
+      then 
+        a=1
+      else 
+        senderror HELPERNOTFOUND $cmd
+      fi
+    done
+}
+
+# show help message
+if test $# -ne 1 -o "$1" = "--help" 
+then
+  echo "Convert a $filetype file to HTML text for Recoll indexing."
+  echo "Usage: $progname [infile]"
+  exit 1
+fi
+
+infile="$1"
+
+# check the input file existence (may be '-' for stdin)
+if test "X$infile" != X- -a ! -f "$infile"
+then
+  senderror INPUTNOSUCHFILE "$infile"
+fi
+
+##############################################################################
+# !! Leave the following line unmodified !
+#ENDRECFILTCOMMONCODE
+
+checkcmds metaflac
+
+# output the result
+echo '<html><head>'
+#echo '<title>' "$title" '</title>'
+echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
+echo '</head><body>'
+echo '<pre>'
+
+nocaptionexp='s/ *comment\[.*\]: .*=//p'
+kpcaptionexp='s/ *comment\[.*\]: //p'
+
+if test X$RECOLL_FILTER_FORPREVIEW = Xyes ; then
+    captionexp=$kpcaptionexp
+else
+    captionexp=$nocaptionexp
+fi
+
+metaflac --list "$infile" | \
+   sed -n \
+    -e '/comment\[/s/</&lt;/g' \
+    -e '/comment\[/s/&/&amp;/g' \
+    -e '/comment\[/'"$captionexp"
+
+echo '</pre>'
+echo '</body></html>'
+
+# exit normally
+exit 0
