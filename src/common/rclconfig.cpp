@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.50 2007-10-01 06:19:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.51 2007-10-02 11:39:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.50 2007-10-01 06:19:21 dockes E
 #include "conftree.h"
 #include "debuglog.h"
 #include "smallut.h"
+#include "textsplit.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -131,7 +132,12 @@ RclConfig::RclConfig(const string *argcnf)
     }
 
     setKeyDir("");
-
+    bool nocjk = false;
+    if (getConfParam("nocjk", &nocjk) && nocjk == true) {
+	TextSplit::cjkProcessing(false);
+    } else {
+	TextSplit::cjkProcessing(true);
+    }
     m_ok = true;
     return;
 }

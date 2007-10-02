@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.33 2007-09-22 08:51:29 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.34 2007-10-02 11:39:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -141,6 +141,8 @@ static inline int whatcc(unsigned int c)
      || ((p) >= 0x20000 && (p) <= 0x2A6DF)                              \
      || ((p) >= 0x2F800 && (p) <= 0x2FA1F))
 
+bool TextSplit::t_processCJK = true;
+
 // Do some checking (the kind which is simpler to do here than in the
 // main loop), then send term to our client.
 inline bool TextSplit::emitterm(bool isspan, string &w, int pos, 
@@ -244,11 +246,11 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
  */
 bool TextSplit::text_to_words(const string &in)
 {
-    LOGDEB1(("TextSplit::text_to_words:%s%s%s%s [%s]\n", 
+    LOGDEB1(("TextSplit::text_to_words: docjk %d %s%s%s [%s]\n", 
+	    t_processCJK,
 	    m_flags & TXTS_NOSPANS ? " nospans" : "",
 	    m_flags & TXTS_ONLYSPANS ? " onlyspans" : "",
 	    m_flags & TXTS_KEEPWILD ? " keepwild" : "",
-	    m_flags & TXTS_NOCJK ? " nocjk" : "",
 	    in.substr(0,50).c_str()));
 
     setcharclasses();
@@ -267,7 +269,7 @@ bool TextSplit::text_to_words(const string &in)
 	    return false;
 	}
 
-	if (!m_nocjk && UNICODE_IS_CJK(c)) {
+	if (t_processCJK && UNICODE_IS_CJK(c)) {
 	    // CJK character hit. 
 	    // Do like at EOF with the current non-cjk data.
 	    if (m_wordLen || m_span.length()) {
@@ -592,7 +594,6 @@ static string usage =
     "   -s:  only spans\n"
     "   -w:  only words\n"
     "   -k:  preserve wildcards (?*)\n"
-    "   -C:  desactivate CJK processing\n"
     "   -c: just count words\n"
     " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
@@ -650,9 +651,6 @@ int main(int argc, char **argv)
 	flags = TextSplit::TXTS_NOSPANS;
     if (op_flags & OPT_k) 
 	flags = (TextSplit::Flags)(flags | TextSplit::TXTS_KEEPWILD); 
-
-    if (op_flags & OPT_C) 
-	flags = (TextSplit::Flags)(flags | TextSplit::TXTS_NOCJK); 
 
     string data;
     if (argc == 1) {
