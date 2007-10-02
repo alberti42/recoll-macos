@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.51 2007-09-21 16:45:03 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.52 2007-10-02 14:25:33 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1547,6 +1547,15 @@ fvwm
         extract tag information. Without it, only the file names will
         be indexed.</para>
           </listitem>
+
+        <listitem>
+	<para>Pictures: &RCL; uses the 
+	<ulink url="http://www.sno.phy.queensu.ca/~phil/exiftool/">
+	 Exiftool</ulink> <application>Perl</application> package to
+	 extract tag information. Most image file formats are
+	 supported.</para>
+          </listitem>
+
         </itemizedlist>
 
 	<para>Text, HTML, mail folders Openoffice and Scribus files
