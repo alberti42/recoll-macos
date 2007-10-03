@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.1 2006-12-15 12:40:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.2 2007-10-03 14:53:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@ static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.1 2006-12-15 12:40:24 dockes Exp 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
+#ifndef TEST_MH_MBOX
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -63,7 +63,70 @@ bool MimeHandlerMbox::set_document_file(const string &fn)
     return true;
 }
 
-static const  char *frompat = "^From .* [1-2][0-9][0-9][0-9][\r]*\n$";
+#define LL 1024
+typedef char line_type[LL+10];
+static inline void stripendnl(line_type& line, int& ll)
+{
+    ll = strlen(line);
+    while (ll > 0) {
+	if (line[ll-1] == '\n' || line[ll-1] == '\r') {
+	    line[ll-1] = 0;
+	    ll--;
+	} else 
+	    break;
+    }
+}
+
+// The mbox format uses lines beginning with 'From ' as separator.
+// Mailers are supposed to quote any other lines beginning with 
+// 'From ', turning it into '>From '. This should make it easy to detect
+// message boundaries by matching a '^From ' regular expression
+// Unfortunately this quoting is quite often incorrect in the real world.
+//
+// The rest of the format for the line is somewhat variable, but there will 
+// be a 4 digit year somewhere... 
+// The canonic format is the following, with a 24 characters date: 
+//         From toto@tutu.com Sat Sep 30 16:44:06 2000
+// This resulted into the pattern for versions up to 1.9.0: 
+//         "^From .* [1-2][0-9][0-9][0-9]$"
+//
+// Some mailers add a time zone to the date, this is non-"standard", 
+// but happens, like in: 
+//    From toto@truc.com Sat Sep 30 16:44:06 2000 -0400 
+//
+// This is taken into account in the new regexp, which also matches more
+// of the date format, to catch a few actual issues like
+//     From http://www.itu.int/newsroom/press/releases/1998/NP-2.html:
+// Note that this *should* have been quoted.
+//
+// http://www.qmail.org/man/man5/mbox.html seems to indicate that the
+// fact that From_ is normally preceded by a blank line should not be
+// used, but we do it anyway (for now).
+// The same source indicates that arbitrary data can follow the date field
+//
+// A variety of pathologic From_ lines:
+//   Bad date format:
+//      From uucp Wed May 22 11:28 GMT 1996
+//   Added timezone at the end (ok, part of the "any data" after the date)
+//      From qian2@fas.harvard.edu Sat Sep 30 16:44:06 2000 -0400
+//  Emacs VM botch ? Adds tz between hour and year
+//      From dockes Wed Feb 23 10:31:20 +0100 2005
+//      From dockes Fri Dec  1 20:36:39 +0100 2006
+// The modified regexp gives the exact same results on the ietf mail archive
+// and my own's.
+static const  char *frompat =  
+#if 0 //1.9.0
+    "^From .* [1-2][0-9][0-9][0-9]$";
+#endif
+#if 1
+"^From[ ]+[^ ]+[ ]+"                                  // From toto@tutu
+"[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Date
+"[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?[ ]+"             // Time, seconds optional
+"([^ ]+[ ]+)?"                                        // Optional tz
+"[12][0-9][0-9][0-9]"            // Year, unanchored, more data may follow
+    ;
+#endif
+    //    "([ ]+[-+][0-9]{4})?$"
 static regex_t fromregex;
 static bool regcompiled;
 
@@ -81,14 +144,15 @@ bool MimeHandlerMbox::next_document()
     if (m_ipath != "") {
 	sscanf(m_ipath.c_str(), "%d", &mtarg);
     } else if (m_forPreview) {
-	// Can't preview an mbox
+	// Can't preview an mbox. 
+	LOGDEB(("MimeHandlerMbox::next_document: can't preview folders!\n"));
 	return false;
     }
-    LOGDEB(("MimeHandlerMbox::next_document: fn %s, msgnum %d mtarg %d \n", 
+    LOGDEB0(("MimeHandlerMbox::next_document: fn %s, msgnum %d mtarg %d \n", 
 	    m_fn.c_str(), m_msgnum, mtarg));
 
     if (!regcompiled) {
-	regcomp(&fromregex, frompat, REG_NOSUB);
+	regcomp(&fromregex, frompat, REG_NOSUB|REG_EXTENDED);
 	regcompiled = true;
     }
 
@@ -113,18 +177,27 @@ bool MimeHandlerMbox::next_document()
     do  {
 	// Look for next 'From ' Line, start of message. Set start to
 	// line after this
-	char line[501];
+	line_type line;
 	for (;;) {
-	    if (!fgets(line, 500, fp)) {
+	    if (!fgets(line, LL, fp)) {
 		// Eof hit while looking for 'From ' -> file done. We'd need
 		// another return code here
+		LOGDEB2(("MimeHandlerMbox:next: hit eof while looking for "
+			 "start From_ line\n"));
 		return false;
 	    }
-	    if (line[0] == '\n' || line[0] == '\r') {
+	    m_lineno++;
+	    int ll;
+	    stripendnl(line, ll);
+	    LOGDEB2(("Start: hadempty %d ll %d Line: [%s]\n", 
+		    hademptyline, ll, line));
+	    if (ll <= 0) {
 		hademptyline = true;
 		continue;
 	    }
 	    if (hademptyline && !regexec(&fromregex, line, 0, 0, 0)) {
+		LOGDEB0(("MimeHandlerMbox: From_ at line %d: [%s]\n",
+			m_lineno, line));
 		start = ftello(fp);
 		m_msgnum++;
 		break;
@@ -135,32 +208,117 @@ bool MimeHandlerMbox::next_document()
 	// Look for next 'From ' line or eof, end of message.
 	for (;;) {
 	    end = ftello(fp);
-	    if (!fgets(line, 500, fp)) {
+	    if (!fgets(line, LL, fp)) {
 		if (ferror(fp) || feof(fp))
 		    iseof = true;
 		break;
 	    }
+	    m_lineno++;
+	    int ll;
+	    stripendnl(line, ll);
+	    LOGDEB2(("End: hadempty %d ll %d Line: [%s]\n", 
+		    hademptyline, ll, line));
 	    if (hademptyline && !regexec(&fromregex, line, 0, 0, 0)) {
+		// Rewind to start of "From " line
+		fseek(fp, end, SEEK_SET);
+		m_lineno--;
 		break;
 	    }
 	    if (mtarg <= 0 || m_msgnum == mtarg) {
+		line[ll] = '\n';
+		line[ll+1] = 0;
 		msgtxt += line;
 	    }
-	    if (line[0] == '\n' || line[0] == '\r') {
+	    if (ll <= 0) {
 		hademptyline = true;
 	    } else {
 		hademptyline = false;
 	    }
 	}
-	fseek(fp, end, SEEK_SET);
+
     } while (mtarg > 0 && m_msgnum < mtarg);
 
-    LOGDEB2(("Message text: [%s]\n", msgtxt.c_str()));
+    LOGDEB1(("Message text: [%s]\n", msgtxt.c_str()));
     char buf[20];
     sprintf(buf, "%d", m_msgnum);
     m_metaData["ipath"] = buf;
     m_metaData["mimetype"] = "message/rfc822";
-    if (iseof)
+    if (iseof) {
+	LOGDEB2(("MimeHandlerMbox::next: eof hit\n"));
 	m_havedoc = false;
+    }
     return msgtxt.empty() ? false : true;
 }
+
+#else // Test driver ->
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+#include "rclinit.h"
+#include "mh_mbox.h"
+
+static char *thisprog;
+
+static char usage [] =
+"  \n\n"
+;
+static void
+Usage(void)
+{
+    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    exit(1);
+}
+
+int main(int argc, char **argv)
+{
+  thisprog = argv[0];
+  argc--; argv++;
+
+  while (argc > 0 && **argv == '-') {
+    (*argv)++;
+    if (!(**argv))
+      /* Cas du "adb - core" */
+      Usage();
+    while (**argv)
+      switch (*(*argv)++) {
+      default: Usage();	break;
+      }
+    argc--; argv++;
+  }
+
+  if (argc != 1)
+    Usage();
+  string filename = *argv++;argc--;
+  string reason;
+  RclConfig *conf = recollinit(RclInitFlags(0), 0, 0, reason, 0);
+  if (conf == 0) {
+      cerr << "init failed " << reason << endl;
+      exit(1);
+  }
+  MimeHandlerMbox mh("text/x-mail");
+  if (!mh.set_document_file(filename)) {
+      cerr << "set_document_file failed" << endl;
+      exit(1);
+  }
+  int docnt = 0;
+  while (mh.has_documents()) {
+      if (!mh.next_document()) {
+	  cerr << "next_document failed" << endl;
+	  exit(1);
+      }
+      docnt++;
+  }
+  cout << docnt << " documents found in " << filename << endl;
+  exit(0);
+}
+
+
+#endif // TEST_MH_MBOX

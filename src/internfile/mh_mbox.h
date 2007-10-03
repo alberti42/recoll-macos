@@ -16,7 +16,7 @@
  */
 #ifndef _MBOX_H_INCLUDED_
 #define _MBOX_H_INCLUDED_
-/* @(#$Id: mh_mbox.h,v 1.1 2006-12-15 12:40:24 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_mbox.h,v 1.2 2007-10-03 14:53:37 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 using std::string;
@@ -31,7 +31,7 @@ using std::string;
 class MimeHandlerMbox : public RecollFilter {
  public:
     MimeHandlerMbox(const string& mime) 
-	: RecollFilter(mime), m_vfp(0), m_msgnum(0) 
+	: RecollFilter(mime), m_vfp(0), m_msgnum(0), m_lineno(0)
     {}
     virtual ~MimeHandlerMbox();
     virtual bool set_document_file(const string &file_path);
@@ -46,6 +46,7 @@ class MimeHandlerMbox : public RecollFilter {
     void      *m_vfp;    // File pointer for folder
     int        m_msgnum; // Current message number in folder. Starts at 1
     string     m_ipath;
+    int        m_lineno; // debug 
 };
 
 #endif /* _MBOX_H_INCLUDED_ */
