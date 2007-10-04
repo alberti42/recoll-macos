@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.51 2007-10-02 11:39:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.52 2007-10-04 12:21:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -136,7 +136,12 @@ RclConfig::RclConfig(const string *argcnf)
     if (getConfParam("nocjk", &nocjk) && nocjk == true) {
 	TextSplit::cjkProcessing(false);
     } else {
-	TextSplit::cjkProcessing(true);
+	int ngramlen;
+	if (getConfParam("cjkngramlen", &ngramlen)) {
+	    TextSplit::cjkProcessing(true, (unsigned int)ngramlen);
+	} else {
+	    TextSplit::cjkProcessing(true);
+	}
     }
     m_ok = true;
     return;

@@ -16,7 +16,7 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.19 2007-10-02 11:39:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.20 2007-10-04 12:21:52 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #ifndef NO_NAMESPACES
@@ -38,6 +38,7 @@ public:
 
 class Utf8Iter;
 
+
 /** 
  * Split text into words. 
  * See comments at top of .cpp for more explanations.
@@ -48,8 +49,15 @@ class TextSplit {
 public:
     // Should we activate special processing of Chinese characters ? This
     // needs a little more cpu, so it can be turned off globally.
-    static bool t_processCJK;
-    static void cjkProcessing(bool onoff) {t_processCJK = onoff;}
+    static bool o_processCJK;
+    static unsigned int  o_CJKNgramLen;
+    static const unsigned int o_CJKMaxNgramLen =  5;
+    static void cjkProcessing(bool onoff, unsigned int ngramlen = 2) 
+    {
+	o_processCJK = onoff;
+	o_CJKNgramLen = ngramlen <= o_CJKMaxNgramLen ? 
+	    ngramlen : o_CJKMaxNgramLen;
+    }
 
     enum Flags {TXTS_NONE = 0, 
 		TXTS_ONLYSPANS = 1,  // Only return maximum spans (a@b.com) 

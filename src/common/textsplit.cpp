@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.34 2007-10-02 11:39:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.35 2007-10-04 12:21:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -141,7 +141,8 @@ static inline int whatcc(unsigned int c)
      || ((p) >= 0x20000 && (p) <= 0x2A6DF)                              \
      || ((p) >= 0x2F800 && (p) <= 0x2FA1F))
 
-bool TextSplit::t_processCJK = true;
+bool          TextSplit::o_processCJK = true;
+unsigned int  TextSplit::o_CJKNgramLen = 2;
 
 // Do some checking (the kind which is simpler to do here than in the
 // main loop), then send term to our client.
@@ -246,12 +247,12 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
  */
 bool TextSplit::text_to_words(const string &in)
 {
-    LOGDEB1(("TextSplit::text_to_words: docjk %d %s%s%s [%s]\n", 
-	    t_processCJK,
-	    m_flags & TXTS_NOSPANS ? " nospans" : "",
-	    m_flags & TXTS_ONLYSPANS ? " onlyspans" : "",
-	    m_flags & TXTS_KEEPWILD ? " keepwild" : "",
-	    in.substr(0,50).c_str()));
+    LOGDEB1(("TextSplit::text_to_words: docjk %d (%d) %s%s%s [%s]\n", 
+	     o_processCJK, o_CJKNgramLen,
+	     m_flags & TXTS_NOSPANS ? " nospans" : "",
+	     m_flags & TXTS_ONLYSPANS ? " onlyspans" : "",
+	     m_flags & TXTS_KEEPWILD ? " keepwild" : "",
+	     in.substr(0,50).c_str()));
 
     setcharclasses();
 
@@ -269,7 +270,7 @@ bool TextSplit::text_to_words(const string &in)
 	    return false;
 	}
 
-	if (t_processCJK && UNICODE_IS_CJK(c)) {
+	if (o_processCJK && UNICODE_IS_CJK(c)) {
 	    // CJK character hit. 
 	    // Do like at EOF with the current non-cjk data.
 	    if (m_wordLen || m_span.length()) {
@@ -421,9 +422,6 @@ bool TextSplit::text_to_words(const string &in)
     return true;
 }
 
-const unsigned int ngramlen = 2;
-#define MAXNGRAMLEN 5
-
 // Using an utf8iter pointer just to avoid needing its definition in
 // textsplit.h
 //
@@ -442,9 +440,8 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 
     // We use an offset buffer to remember the starts of the utf-8
     // characters which we still need to use.
-    // Fixed size array. ngramlen over 3 doesn't make sense.
-    assert(ngramlen < MAXNGRAMLEN);
-    unsigned int boffs[MAXNGRAMLEN];
+    assert(o_CJKNgramLen < o_CJKMaxNgramLen);
+    unsigned int boffs[o_CJKMaxNgramLen+1];
 
     // Current number of valid offsets;
     unsigned int nchars = 0;
@@ -456,7 +453,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 	    break;
 	}
 
-	if (nchars == ngramlen) {
+	if (nchars == o_CJKNgramLen) {
 	    // Offset buffer full, shift it. Might be more efficient
 	    // to have a circular one, but things are complicated
 	    // enough already...
@@ -473,7 +470,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 	// Output all new ngrams: they begin at each existing position
 	// and end after the new character. onlyspans->only output
 	// maximum words, nospans=> single chars
-	if (!(m_flags & TXTS_ONLYSPANS) || nchars == ngramlen) {
+	if (!(m_flags & TXTS_ONLYSPANS) || nchars == o_CJKNgramLen) {
 	    unsigned int btend = it.getBpos() + it.getBlen();
 	    unsigned int loopbeg = (m_flags & TXTS_NOSPANS) ? nchars-1 : 0;
 	    unsigned int loopend = (m_flags & TXTS_ONLYSPANS) ? 1 : nchars;
@@ -497,7 +494,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 
     // If onlyspans is set, there may be things to flush in the buffer
     // first
-    if ((m_flags & TXTS_ONLYSPANS) && nchars > 0 && nchars != ngramlen)  {
+    if ((m_flags & TXTS_ONLYSPANS) && nchars > 0 && nchars != o_CJKNgramLen)  {
 	unsigned int btend = it.getBpos(); // Current char is out
 	if (!m_cb->takeword(it.buffer().substr(boffs[0], 
 					       btend-boffs[0]),
