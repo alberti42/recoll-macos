@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.18 2007-09-20 08:43:12 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.19 2007-10-04 12:26:04 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -367,16 +367,19 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    LOGDEB(("strToXapianQ: phrase or word: [%s]\n", it->c_str()));
 
 	    // If there are multiple spans in this element, including
-	    // at least one composite, we need to use a word split,
+	    // at least one composite, we have to do something
 	    // else a phrase query including a span would fail. 
-	    // (other possible solution: adjust slack to account for the
-	    //  additional position increase?)
-	    // Ex: "term0@term01 term1" is onlyspans-split as:
-	    //   0 term0@term01            0   12
-	    //   2 term1                  13   18
-	    // The position of term1 is 2, not 1, so the phrase search would
-	    // fail. We search for "term0 term01 term1" instead, which may 
-	    // have worse performance, but will succeed.
+	    // Ex: "term0@term1 term2" is onlyspans-split as:
+	    //   0 term0@term1             0   12
+	    //   2 term2                  13   18
+	    // The position of term1 is 2, not 1, so a phrase search
+	    // would fail.
+	    // We used to do  word split, searching for 
+	    // "term0 term01 term1" instead, which may have worse 
+	    // performance, but will succeed.
+	    // We now adjust the phrase/near slack by the term count
+	    // difference (this is mainly better for cjk where this is a very
+	    // common occurrence because of the ngrams thing.
 	    wsQData splitDataS(stops), splitDataW(stops);
 	    TextSplit splitterS(&splitDataS, 
 				TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
@@ -388,8 +391,10 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    splitterW.text_to_words(*it);
 	    wsQData *splitData = &splitDataS;
 	    if (splitDataS.terms.size() > 1 && 
-		splitDataS.terms.size() != splitDataW.terms.size())
-		splitData = &splitDataW;
+		splitDataS.terms.size() != splitDataW.terms.size()) {
+		slack += splitDataW.terms.size() - splitDataS.terms.size();
+		// used to: splitData = &splitDataW;
+	    }
 
 	    LOGDEB(("strToXapianQ: splitter term count: %d\n", 
 		     splitData->terms.size()));
