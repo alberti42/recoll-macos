@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.62 2007-08-30 09:01:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.63 2007-10-04 12:20:56 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -412,6 +412,8 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	LOGDEB(("processone: fn transcode %d errors from [%s] to UTF-8: %s\n",
 		ercnt, charset.c_str(), path_getsimple(fn).c_str()));
     }
+    LOGDEB2(("processone: fn transcoded from [%s] to [%s] (%s->%s)\n",
+	    path_getsimple(fn).c_str(), utf8fn.c_str(), charset.c_str(), "UTF-8"));
 
     FileInterner::Status fis = FileInterner::FIAgain;
     bool hadNullIpath = false;
