@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.9 2007-06-22 06:14:04 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.10 2007-10-05 14:00:04 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,12 +17,18 @@ static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.9 2007-06-22 06:14:04 dockes Ex
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include <string>
+#include <list>
+using std::string;
+using std::list;
+
 #include "wasastringtoquery.h"
 #include "rcldb.h"
 #include "searchdata.h"
 #include "wasatorcl.h"
 #include "debuglog.h"
 #include "smallut.h"
+#include "rclconfig.h"
 
 Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason)
 {
@@ -56,9 +62,21 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    // ??
 	    continue;
 	case WasaQuery::OP_LEAF:
-	    // Special case for mime. Not pretty.
+
+	    // Special cases for mime and category. Not pretty.
 	    if (!stringicmp("mime", (*it)->m_fieldspec)) {
 		sdata->addFiletype((*it)->m_value);
+		break;
+	    } 
+	    if (!stringicmp("rclcat", (*it)->m_fieldspec)) {
+		RclConfig *conf = RclConfig::getMainConfig();
+		list<string> mtypes;
+		if (conf && conf->getMimeCatTypes((*it)->m_value, mtypes)) {
+		    for (list<string>::iterator mit = mtypes.begin();
+			 mit != mtypes.end(); mit++) {
+			sdata->addFiletype(*mit);
+		    }
+		}
 		break;
 	    } 
 
