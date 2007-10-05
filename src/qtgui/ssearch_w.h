@@ -1,4 +1,4 @@
-/* @(#$Id: ssearch_w.h,v 1.5 2006-12-04 09:56:27 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: ssearch_w.h,v 1.6 2007-10-05 08:03:01 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -48,6 +48,8 @@ class SSearch : public DummySSearchBase
     Q_OBJECT
 
 public:
+    enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2, SST_LANG = 3};
+
     SSearch(QWidget* parent = 0, const char * = 0)
 	: DummySSearchBase(parent) 
     {
@@ -61,7 +63,8 @@ public:
     virtual bool eventFilter(QObject *target, QEvent *event);
 
 public slots:
-    virtual void searchTextChanged( const QString & text );
+    virtual void searchTextChanged(const QString & text);
+    virtual void setSearchString(const QString& text);
     virtual void startSimpleSearch();
 
 signals:

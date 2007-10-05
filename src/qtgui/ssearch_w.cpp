@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.22 2007-08-01 10:04:53 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.23 2007-10-05 08:03:01 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -35,8 +35,6 @@ static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.22 2007-08-01 10:04:53 dockes E
 #include "refcntr.h"
 #include "textsplit.h"
 #include "wasatorcl.h"
-
-enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2, SST_LANG = 3};
 
 void SSearch::init()
 {
@@ -181,6 +179,10 @@ void SSearch::startSimpleSearch()
 
     RefCntr<Rcl::SearchData> rsdata(sdata);
     emit startSearch(rsdata);
+}
+void SSearch::setSearchString(const QString& txt)
+{
+    queryText->setEditText(txt);
 }
 
 void SSearch::setAnyTermMode()

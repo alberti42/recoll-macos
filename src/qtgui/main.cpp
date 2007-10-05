@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.61 2007-06-08 16:47:19 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.62 2007-10-05 08:03:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -148,11 +148,23 @@ static int    op_flags;
 #define OPT_MOINS 0x1
 #define OPT_h     0x4 
 #define OPT_c     0x20
+#define OPT_q     0x40
+#define OPT_O     0x80
+#define OPT_L     0x100
+#define OPT_F     0x200
+
 static const char usage [] =
 "\n"
 "recoll [-h] [-c <configdir>]\n"
-"   -h : Print help and exit\n"
-"   -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+"  -h : Print help and exit\n"
+"  -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+"  -q 'query' [-o|l|f]: search query to be executed on startup as if entered\n"
+"      into simple search. The default mode is AND (but see modifier options)\n"
+"      In most cases, the query string should be quoted with single-quotes to\n"
+"      avoid shell interpretation\n"
+"     -L : the query will be interpreted as a query language string\n"
+"     -O : the query will be interpreted as an OR query\n"
+"     -F : the query will be interpreted as a filename search\n"
 ;
 static void
 Usage(void)
@@ -178,6 +190,8 @@ int main(int argc, char **argv)
 
     //    fprintf(stderr, "Application created\n");
     string a_config;
+    string qstring;
+
     thisprog = argv[0];
     argc--; argv++;
 
@@ -190,7 +204,13 @@ int main(int argc, char **argv)
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
+	    case 'F': op_flags |= OPT_F; break;
 	    case 'h': op_flags |= OPT_h; Usage();break;
+	    case 'L': op_flags |= OPT_L; break;
+	    case 'O': op_flags |= OPT_O; break;
+	    case 'q':	op_flags |= OPT_q; if (argc < 2)  Usage();
+		qstring = *(++argv);
+		argc--; goto b1;
 	    }
     b1: argc--; argv++;
     }
@@ -326,7 +346,22 @@ int main(int argc, char **argv)
     app.connect(&app, SIGNAL(aboutToQuit()), mainWindow, SLOT(close()));
 
     start_idxthread(*rclconfig);
-
+    if (op_flags & OPT_q) {
+	SSearch::SSearchType stype;
+	if (op_flags & OPT_O) {
+	    stype = SSearch::SST_ANY;
+	} else if (op_flags & OPT_F) {
+	    stype = SSearch::SST_FNM;
+	} else if (op_flags & OPT_L) {
+	    stype = SSearch::SST_LANG;
+	} else {
+	    stype = SSearch::SST_ALL;
+	}
+	mainWindow->sSearch->searchTypCMB->setCurrentItem(int(stype));
+	mainWindow->
+	    sSearch->setSearchString(QString::fromUtf8(qstring.c_str()));
+	QTimer::singleShot(0, mainWindow->sSearch, SLOT(startSimpleSearch()));
+    }
     //    fprintf(stderr, "Go\n");
     // Let's go
     return app.exec();
