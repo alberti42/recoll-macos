@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.34 2007-10-02 14:22:38 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.35 2007-10-06 07:44:03 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -30,8 +30,8 @@ application/msword = exec rcldoc
 application/ogg = exec rclogg
 application/pdf = exec rclpdf
 application/postscript = exec rclps
-application/vnd.ms-powerpoint = exec rclppt
 application/vnd.ms-excel = exec rclxls
+application/vnd.ms-powerpoint = exec rclppt
 application/vnd.sun.xml.calc = exec rclsoff
 application/vnd.sun.xml.calc.template = exec rclsoff
 application/vnd.sun.xml.draw = exec rclsoff
@@ -46,15 +46,15 @@ application/vnd.wordperfect = exec rclwpd
 application/x-abiword = exec rclabw
 application/x-dvi = exec rcldvi
 application/x-flac = exec rclflac
-application/x-lyx = exec rcllyx
 application/x-kword = exec rclkwd
+application/x-lyx = exec rcllyx
 application/x-scribus = exec rclscribus
 audio/mpeg = exec rclid3
-image/vnd.djvu = exec rcldjvu
 image/gif = exec rclimg
 image/jpeg = exec rclimg
 image/png = exec rclimg
 image/tiff = exec rclimg
+image/vnd.djvu = exec rcldjvu
 message/rfc822 = internal
 text/html  = internal 
 text/plain = internal 
@@ -87,7 +87,9 @@ application/x-dvi = document
 application/x-flac = sownd
 application/x-fsdirectory = folder
 application/x-kword = wordprocessing
+application/x-lyx = wordprocessing
 audio/mpeg = sownd
+image/gif = image
 image/jpeg = image
 image/png = image
 image/tiff = image
@@ -97,7 +99,7 @@ text/html = html
 text/plain = txt
 text/x-c = source
 text/x-mail = message
-
+text/x-man = document
 
 [categories]
 
@@ -117,7 +119,8 @@ text = \
       image/vnd.djvu \
       text/html \
       text/plain \
-      text/rtf
+      text/rtf \
+      text/x-man
 
 spreadsheet = application/vnd.ms-excel \
 	       application/vnd.sun.xml.calc \
