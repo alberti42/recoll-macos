@@ -95,6 +95,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        extract tag information. Without it, only the file names will be
        indexed.
 
+     * Pictures: Recoll uses the Exiftool Perl package to extract tag
+       information. Most image file formats are supported.
+
    Text, HTML, mail folders Openoffice and Scribus files are processed
    internally. Lyx is used to index Lyx files. Many filters need sed and awk.
 

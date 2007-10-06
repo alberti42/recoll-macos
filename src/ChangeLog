@@ -1,3 +1,387 @@
+2007-10-06 09:26  dockes
+
+	* VERSION: [no log message]
+
+2007-10-06 09:11  dockes
+
+	* doc/user/usermanual.sgml, qtgui/i18n/recoll_xx.ts: [no log
+	message]
+
+2007-10-05 16:00  dockes
+
+	* query/wasatorcl.cpp: add rclcat prefix to query languages + adapt
+	find_applet to use it
+
+2007-10-05 10:03  dockes
+
+	* qtgui/: main.cpp, ssearch_w.cpp, ssearch_w.h: add cmd line option
+	to run query when starting
+
+2007-10-04 14:26  dockes
+
+	* rcldb/searchdata.cpp: when search includes composite spans +
+	other terms, increase slack instead of switching to word split
+
+2007-10-04 14:21  dockes
+
+	* common/: rclconfig.cpp, textsplit.cpp, textsplit.h: make cjk
+	ngramlen configurable
+
+2007-10-04 14:20  dockes
+
+	* index/indexer.cpp: trace
+
+2007-10-03 16:53  dockes
+
+	* internfile/: Makefile, mh_mbox.cpp, mh_mbox.h: Improve From_ line
+	detection
+
+2007-10-02 16:25  dockes
+
+	* doc/user/: docbook.css, usermanual.sgml: [no log message]
+
+2007-10-02 16:22  dockes
+
+	* sampleconf/: mimeconf, mimemap, mimeview: a few more image files
+
+2007-10-02 15:59  dockes
+
+	* filters/: rcljpeg, rclflac, rclogg: [no log message]
+
+2007-10-02 15:56  dockes
+
+	* filters/rclimg: comments,GPL
+
+2007-10-02 13:39  dockes
+
+	* common/: rclconfig.cpp, textsplit.cpp, textsplit.h: add flag to
+	disable cjk processing
+
+2007-10-01 19:56  dockes
+
+	* filters/rclimg: initial version from Cedric Scott
+
+2007-10-01 17:57  dockes
+
+	* utils/conftree.cpp: added updates/erase tests
+
+2007-10-01 08:35  dockes
+
+	* qtgui/confgui/: confgui.cpp, confgui.h, confguiindex.cpp,
+	main.cpp, trconf.pro: qt4 port
+
+2007-10-01 08:19  dockes
+
+	* VERSION, common/rclconfig.cpp, common/rclconfig.h,
+	qtgui/confgui/confgui.cpp, utils/conftree.cpp, utils/conftree.h:
+	config update enabling functions
+
+2007-09-29 11:06  dockes
+
+	* qtgui/confgui/: confgui.cpp, confgui.h, confguiindex.cpp,
+	confguiindex.h, conflinkrcl.h, main.cpp, trconf.pro: [no log
+	message]
+
+2007-09-27 17:47  dockes
+
+	* qtgui/confgui/: confgui.cpp, confgui.h, confguiindex.cpp,
+	confguiindex.h, conflinkrcl.h, main.cpp, trconf.pro: [no log
+	message]
+
+2007-09-27 13:03  dockes
+
+	* utils/conftree.h: comment
+
+2007-09-27 13:02  dockes
+
+	* utils/: conftree.cpp, conftree.h: avoid adding unneeded entries
+	in confstack. fix erase-add resulting in duplicate
+
+2007-09-26 14:16  dockes
+
+	* qtgui/confgui/: confgui.cpp, confgui.h, main.cpp, trconf.pro: [no
+	log message]
+
+2007-09-22 10:51  dockes
+
+	* common/textsplit.cpp, utils/utf8iter.h: include assert.h when
+	needed
+
+2007-09-21 18:44  dockes
+
+	* VERSION, doc/user/usermanual.sgml, qtgui/recoll.pro.in, INSTALL,
+	README: [no log message]
+
+2007-09-20 14:22  dockes
+
+	* common/textsplit.cpp: logs
+
+2007-09-20 10:45  dockes
+
+	* common/textsplit.cpp, common/textsplit.h, utils/utf8iter.h:
+	initial cjk support
+
+2007-09-20 10:43  dockes
+
+	* rcldb/searchdata.cpp: comments,formatting
+
+2007-09-20 10:42  dockes
+
+	* qtgui/rclmain_w.cpp: restore cursor if cant start query
+
+2007-09-18 22:35  dockes
+
+	* common/: textsplit.cpp, textsplit.h: use m_ prefix for members
+
+2007-09-18 22:34  dockes
+
+	* qt4gui/recoll.pro.in: add recoll_xx.ts
+
+2007-09-18 09:01  dockes
+
+	* qtgui/i18n/recoll_it.ts: changes by Giovanni Cannizzaro
+
+2007-09-11 10:23  dockes
+
+	* desktop/recoll-searchgui.desktop: desktop file corrected as per
+	Kartik Mistry patch
+
+2007-09-10 07:44  dockes
+
+	* qtgui/i18n/recoll_fr.ts: long menu labels cause pbs at least on
+	macosx
+
+2007-09-08 19:26  dockes
+
+	* qtgui/i18n/: recoll_de.ts, recoll_fr.ts, recoll_it.ts,
+	recoll_ru.ts, recoll_uk.ts: [no log message]
+
+2007-09-08 19:25  dockes
+
+	* qtgui/: guiutils.cpp, guiutils.h, preview_w.cpp, uiprefs.ui,
+	uiprefs_w.cpp: change hghlight text size limit to configurable
+	value
+
+2007-09-08 19:21  dockes
+
+	* qtgui/viewaction_w.cpp: added missing space in string
+
+2007-09-08 19:21  dockes
+
+	* qtgui/: rclmain.ui, rclmain_w.cpp: renamed
+	preferencesQuery_PrefsAction to queryPrefsAction
+
+2007-09-08 19:19  dockes
+
+	* qtgui/plaintorich.cpp: comment
+
+2007-09-08 11:44  dockes
+
+	* utils/readfile.cpp: small pb in solaris fix
+
+2007-09-08 10:07  dockes
+
+	* mk/SunOS, utils/pathut.cpp, utils/readfile.cpp: SunOS 2.8 fixes
+
+2007-09-07 16:58  dockes
+
+	* configure, configure.ac: always add lz to lxapian
+
+2007-09-07 10:05  dockes
+
+	* rcldb/rcldb.cpp: improve purge error message printing
+
+2007-09-07 10:04  dockes
+
+	* qtgui/i18n/recoll_it.ts: new 1.9 translation by C. Rigamont
+
+2007-09-07 10:04  dockes
+
+	* sampleconf/mimemap: fix wordperfect spurious extensions
+
+2007-09-01 21:10  dockes
+
+	* qtgui/recoll.pro.in, qt4gui/recoll.pro.in,
+	qtgui/i18n/recoll_de.ts: [no log message]
+
+2007-08-31 11:04  dockes
+
+	* qtgui/: advsearch_w.cpp, advsearch_w.h: pressing CR in advsearch
+	would run query twice because of start autodefault
+
+2007-08-31 09:23  dockes
+
+	* qtgui/images/: d_firstpage.png, firstpage.png: [no log message]
+
+2007-08-30 12:11  dockes
+
+	* qtgui/i18n/recoll_fr.ts, qtgui/i18n/recoll_it.ts,
+	qtgui/i18n/recoll_ru.ts, qtgui/i18n/recoll_uk.ts, INSTALL, README:
+	[no log message]
+
+2007-08-30 11:00  dockes
+
+	* doc/user/usermanual.sgml, index/indexer.cpp, index/indexer.h,
+	index/rclmonrcv.cpp, sampleconf/recoll.conf.in,
+	utils/fstreewalk.cpp, utils/fstreewalk.h: add followLinks option
+
+2007-08-30 10:39  dockes
+
+	* doc/user/usermanual.sgml: add followLinks option
+
+2007-08-28 10:12  dockes
+
+	* index/indexer.cpp: allow symlinks in topdirs
+
+2007-08-28 10:08  dockes
+
+	* utils/: fstreewalk.cpp, fstreewalk.h: follow top (entry) symlinks
+	even if nofollow is set
+
+2007-08-28 10:07  dockes
+
+	* internfile/internfile.cpp: error msg
+
+2007-08-26 15:52  dockes
+
+	* doc/user/usermanual.sgml: add wordperfect ext app info
+
+2007-08-26 15:34  dockes
+
+	* filters/rclwpd, sampleconf/mimeconf, sampleconf/mimemap,
+	sampleconf/mimeview: added wordperfect support
+
+2007-08-26 15:34  dockes
+
+	* sampleconf/recoll.conf.in: add commented entries for daem*
+
+2007-08-07 10:45  dockes
+
+	* qtgui/rclmain_w.cpp: [no log message]
+
+2007-08-07 10:42  dockes
+
+	* qtgui/: rclmain_w.cpp, reslist.cpp: qt3 adjustments
+
+2007-08-07 10:26  dockes
+
+	* aspell/rclaspell.cpp, sampleconf/recoll.conf.in: [no log message]
+
+2007-08-05 07:55  dockes
+
+	* utils/conftree.h: comments
+
+2007-08-05 07:49  dockes
+
+	* utils/conftree.h: [no log message]
+
+2007-08-04 09:22  dockes
+
+	* utils/: conftree.cpp, conftree.h: Allow updates in confstacks
+
+2007-08-03 09:50  dockes
+
+	* utils/: Makefile, conftree.cpp, conftree.h:  have conftree
+	preserve comments and ordering
+
+2007-08-02 08:33  dockes
+
+	* qt4gui/recoll.qrc, qtgui/rclmain.ui, qtgui/rclmain_w.cpp,
+	qtgui/recoll.pro.in, qtgui/reslist.cpp, qtgui/reslist.h: added
+	gotofirstpage action
+
+2007-08-01 12:04  dockes
+
+	* qtgui/guiutils.h, qtgui/rclmain_w.cpp, qtgui/rclmain_w.h,
+	qtgui/ssearch_w.cpp, qtgui/uiprefs_w.cpp, qtgui/uiprefs_w.h,
+	rcldb/stemdb.cpp, rcldb/stemdb.h: Allow stem expansion for several
+	(all) stemming languages at a time
+
+2007-08-01 09:55  dockes
+
+	* qtgui/: rclmain.ui, rclmain_w.cpp, rclmain_w.h, uiprefs_w.cpp,
+	uiprefs_w.h: allow setting stemlang from prefs menu
+
+2007-07-20 16:50  dockes
+
+	* configure, configure.ac: check for uic3 during qt4 configure
+
+2007-07-20 16:43  dockes
+
+	* qtgui/: preview_w.cpp, preview_w.h: preview: dont search for
+	anchors if we have none
+
+2007-07-20 16:32  dockes
+
+	* qtgui/: rclmain_w.cpp, reslist.cpp, reslist.h: [no log message]
+
+2007-07-20 13:44  dockes
+
+	* qtgui/: rclmain_w.cpp, rclmain_w.h: factorize previewNext/Prev
+
+2007-07-20 13:38  dockes
+
+	* qtgui/: preview_w.cpp, preview_w.h, rclmain_w.cpp, rclmain_w.h:
+	more preview window interface cleanup
+
+2007-07-20 12:55  dockes
+
+	* qtgui/: preview_w.cpp, preview_w.h, rclmain_w.cpp: cleaned up
+	preview window interface
+
+2007-07-14 18:52  dockes
+
+	* configure, configure.ac, common/autoconfig.h.in, mk/AIX,
+	mk/Darwin, mk/Linux, mk/SunOS, utils/execmd.cpp: handle putenv arg
+	constness in configure
+
+2007-07-13 12:18  dockes
+
+	* qtgui/i18n/recoll_fr.ts, qtgui/i18n/recoll_it.ts,
+	qtgui/i18n/recoll_ru.ts, qtgui/i18n/recoll_uk.ts,
+	doc/man/recoll.conf.5, README, INSTALL: [no log message]
+
+2007-07-13 09:17  dockes
+
+	* doc/user/: docbook.css, usermanual.sgml: 1.9 changes
+
+2007-07-13 09:10  dockes
+
+	* qtgui/uiprefs.ui: msg
+
+2007-07-13 09:00  dockes
+
+	* qtgui/plaintorich.cpp: adjust term beacon for better finding ?
+
+2007-07-13 08:31  dockes
+
+	* qtgui/: preview_w.cpp, preview_w.h, rclmain_w.cpp: better handle
+	preview close during load
+
+2007-07-12 19:28  dockes
+
+	* rcldb/rcldb.cpp: [no log message]
+
+2007-07-12 19:13  dockes
+
+	* filters/rclpdf: dont use anchored regexps for stripping
+	whitespace, ubuntu mawk ignores the anchor
+
+2007-07-12 15:41  dockes
+
+	* utils/cancelcheck.h: [no log message]
+
+2007-07-12 12:53  dockes
+
+	* index/rclmonrcv.cpp, utils/fstreewalk.cpp, utils/fstreewalk.h:
+	monitor: dont add watch on created dir if in skippedXXX
+
+2007-07-12 12:13  dockes
+
+	* ChangeLog, qtgui/guiutils.cpp, qtgui/guiutils.h,
+	qtgui/uiprefs.ui, qtgui/uiprefs_w.cpp: fix v1.8 default format
+	string if we find it
+
 2007-07-12 10:34  dockes
 
 	* rcldb/rcldb.cpp: use uniform code for Xapian exception catching +
@@ -32,9 +416,9 @@
 
 2007-07-01 08:52  dockes
 
-	* filters/rclid3, filters/rclmedia, sampleconf/mimeconf,
-	sampleconf/mimemap, sampleconf/mimeview: audio tags support
-	improvement: flac+ogg. use FORPREVIEW
+	* filters/rclid3, sampleconf/mimeconf, sampleconf/mimemap,
+	sampleconf/mimeview: audio tags support improvement: flac+ogg. use
+	FORPREVIEW
 
 2007-06-26 19:07  dockes
 
@@ -621,11 +1005,6 @@
 	* aspell/rclaspell.cpp, mk/localdefs.in, aspell/rclaspell.cpp,
 	mk/localdefs.in: use configure libdir to search for aspell lib
 	(mainly for 64 bits machines)
-
-2007-02-01 13:43  dockes
-
-	* kioslave/recoll/: Makefile, kio_recoll.cpp, piclib/Makefile:
-	fixed kio compilation. Dont know if it works
 
 2007-01-30 13:08  dockes
 
@@ -1593,10 +1972,6 @@
 
 2006-11-13 09:49  dockes
 
-	* kioslave/recoll/kio_recoll.cpp: [no log message]
-
-2006-11-13 09:49  dockes
-
 	* rcldb/rcldb.cpp, rcldb/rcldb.h, rcldb/searchdata.cpp,
 	rcldb/searchdata.h, lib/Makefile, lib/mkMake: make searchdata a
 	more flexible struct
@@ -2344,9 +2719,8 @@
 2006-04-28 09:54  dockes
 
 	* common/rclconfig.cpp, common/rclconfig.h, index/indexer.cpp,
-	index/recollindex.cpp, kioslave/recoll/kio_recoll.cpp,
-	qtgui/main.cpp, query/qtry.cpp: centralize dbdir computation in
-	rclconfig+cat with conffdir if not absolute
+	index/recollindex.cpp, qtgui/main.cpp, query/qtry.cpp: centralize
+	dbdir computation in rclconfig+cat with conffdir if not absolute
 
 2006-04-28 09:23  dockes
 
@@ -3099,10 +3473,9 @@
 
 2006-01-20 11:01  dockes
 
-	* common/rclconfig.cpp, common/rclconfig.h,
-	kioslave/recoll/00README.txt, mk/commondefs, mk/localdefs.in,
-	qtgui/idxthread.cpp, qtgui/idxthread.h, qtgui/main.cpp,
-	utils/conftree.h, utils/debuglog.h: cleanup
+	* common/rclconfig.cpp, common/rclconfig.h, mk/commondefs,
+	mk/localdefs.in, qtgui/idxthread.cpp, qtgui/idxthread.h,
+	qtgui/main.cpp, utils/conftree.h, utils/debuglog.h: cleanup
 
 2006-01-19 18:11  dockes
 
@@ -3110,16 +3483,6 @@
 	common/rclconfig.cpp, common/rclconfig.h,
 	internfile/internfile.cpp, internfile/mh_exec.cpp, mk/localdefs.in,
 	qtgui/main.cpp, qtgui/recoll.pro: slight config cleanup
-
-2006-01-19 16:08  dockes
-
-	* kioslave/recoll/00README.txt: end of test, doesnt look very
-	useful
-
-2006-01-19 15:57  dockes
-
-	* kioslave/recoll/: Makefile, kio_recoll.cpp, kio_recoll.h,
-	kio_recoll.la, piclib/Makefile: end of initial experimentation
 
 2006-01-19 13:03  dockes
 
@@ -3129,17 +3492,11 @@
 
 	* Makefile, VERSION, makestaticdist.sh, bincimapmime/Makefile,
 	common/Makefile, doc/user/usermanual.sgml, index/Makefile,
-	kioslave/recoll/Makefile, kioslave/recoll/kio_recoll.cpp,
-	kioslave/recoll/kio_recoll.h, lib/Makefile, mk/Darwin, mk/FreeBSD,
-	mk/Linux, mk/SunOS, mk/commondefs, mk/localdefs.in,
-	qtgui/plaintorich.cpp, qtgui/plaintorich.h, qtgui/recollmain.ui.h,
-	query/Makefile, utils/Makefile, utils/smallut.cpp, utils/smallut.h:
-	misc small mods to help with building kio_recoll
-
-2006-01-18 14:41  dockes
-
-	* kioslave/recoll/: Makefile, kio_recoll.cpp, kio_recoll.h,
-	recoll.protocol: [no log message]
+	lib/Makefile, mk/Darwin, mk/FreeBSD, mk/Linux, mk/SunOS,
+	mk/commondefs, mk/localdefs.in, qtgui/plaintorich.cpp,
+	qtgui/plaintorich.h, qtgui/recollmain.ui.h, query/Makefile,
+	utils/Makefile, utils/smallut.cpp, utils/smallut.h: misc small mods
+	to help with building kio_recoll
 
 2006-01-17 11:08  dockes
 

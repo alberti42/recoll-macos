@@ -480,6 +480,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The recoll program provides the user interface for searching. It is based
    on the QT library.
 
+   recoll has two search modes:
+
+     * Simple search (the default, on the main screen) has a single entry
+       field where you can enter multiple words.
+
+     * Advanced search (a panel accessed through the Tools menu or the
+       toolbox bar icon) shas multiple entry fields, which you may use to
+       build a logical condition, with additional filtering on file type and
+       location in the file system.
+
+   In most cases, you can enter the terms as you think them, even if they
+   contain embedded punctuation or other non-textual characters. For exemple,
+   Recoll can handle things like e-mail addresses, or arbitrary cut and paste
+   from another text window, punctation and all.
+
+   The main case where you should enter text differently from how it is
+   printed is for east-oriental languages written with Chinese characters.
+   Words composed of single or multiple characters should be entered
+   separated by white space in this case (they would typically be printed
+   without white space).
+
      ----------------------------------------------------------------------
 
 3.1. Simple search
@@ -1189,6 +1210,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * MP3: Recoll will use the id3info command from the id3lib package to
        extract tag information. Without it, only the file names will be
        indexed.
+
+     * Pictures: Recoll uses the Exiftool Perl package to extract tag
+       information. Most image file formats are supported.
 
    Text, HTML, mail folders Openoffice and Scribus files are processed
    internally. Lyx is used to index Lyx files. Many filters need sed and awk.
