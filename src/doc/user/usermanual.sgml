@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.52 2007-10-02 14:25:33 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.53 2007-10-06 07:11:56 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -531,6 +531,33 @@ fvwm
     <para>The <command>recoll</command> program provides the user
     interface for searching. It is based on the
     <application>QT</application> library.</para>
+
+    <para><command>recoll</command> has two search modes:</para>
+    <itemizedlist>
+      <listitem><para>Simple search (the default, on the main screen) has
+	a single entry field where you can enter multiple words.</para>
+      </listitem>
+      <listitem><para>Advanced search (a panel accessed through the
+	<guilabel>Tools</guilabel> menu or the toolbox bar icon) shas
+	multiple entry fields, which you may use to build a logical
+	condition, with additional filtering on file type and location
+	in the file system.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>In most cases, you can enter the terms as you
+	think them, even if they contain embedded punctuation or other
+	non-textual characters. For
+	exemple, &RCL; can handle things like e-mail addresses, or
+	arbitrary cut and paste from another text window, punctation
+	and all.</para>
+
+    <para>The main case where you should enter text differently from
+      how it is printed is for east-oriental languages written with
+      Chinese characters. Words composed of single or multiple
+      characters should be entered separated by white space in this
+      case (they would typically be printed without white
+      space).</para>
 
     <sect1 id="rcl.search.simple">
       <title>Simple search</title>
