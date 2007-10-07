@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.3 2007-10-01 06:35:31 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.4 2007-10-07 20:22:55 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -67,7 +67,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
     ConfParamDNLW *etopdirs = new 
 	ConfParamDNLW(this, lnktopdirs, tr("Top directories"),
 		      tr("The list of directories where recursive "
-			 "indexing starts. Default: your home."));
+			 "indexing starts.<br>Default: your home."));
     vboxLayout->addWidget(etopdirs);
 
     ConfLink lnkskp(new ConfLinkRclRep(config, "skippedPaths"));
@@ -91,14 +91,14 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
     ConfLink lnkidxsl(new ConfLinkRclRep(config, "indexstemminglanguages"));
     ConfParamCSLW *eidxsl = new 
 	ConfParamCSLW(this, lnkidxsl, tr("Index stemming languages"),
-		      tr("The languages for which stemming expansion "
+		      tr("The languages for which stemming expansion<br>"
 			 "dictionaries will be built."), stemlangs);
     vboxLayout->addWidget(eidxsl);
 
     ConfLink lnk4(new ConfLinkRclRep(config, "logfilename"));
     ConfParamFNW *e4 = new 
 	ConfParamFNW(this, lnk4, tr("Log file name"),
-		     tr("The file where the messages will be written. "
+		     tr("The file where the messages will be written.<br>"
 			"Use 'stderr' for terminal output"), false);
     vboxLayout->addWidget(e4);
 
@@ -106,7 +106,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
     ConfParamIntW *e1 = new 
 	ConfParamIntW(this, lnk1, tr("Log verbosity level"),
 		      tr("This value adjusts the amount of "
-			 "messages, from only errors to a "
+			 "messages,<br>from only errors to a "
 			 "lot of debugging data."), 0, 6);
     vboxLayout->addWidget(e1);
 
@@ -124,7 +124,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
 	ConfParamIntW(this, lnkfsocc, tr("Max disk occupation (%)"),
 		      tr("This is the percentage of disk occupation where "
 			 "indexing will fail and stop (to avoid filling up "
-			 "your disk). <br>"
+			 "your disk).<br>"
 			 "0 means no limit (this is the default)."), 0, 100);
     vboxLayout->addWidget(efsocc);
 
@@ -161,7 +161,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
     ConfLink lnkusfc(new ConfLinkRclRep(config, "usesystemfilecommand"));
     ConfParamBoolW *eusfc = new 
 	ConfParamBoolW(this, lnkusfc, tr("Use system's 'file' command"),
-		       tr("Use the system's 'file' command if internal "
+		       tr("Use the system's 'file' command if internal<br>"
 			  "mime type identification fails."));
     vboxLayout->addWidget(eusfc);
 }
@@ -176,11 +176,10 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
     ConfLink lnksubkeydirs(new ConfLinkNullRep());
     m_subdirs = new 
 	ConfParamDNLW(this, lnksubkeydirs, 
-		      QObject::tr("Subdirectories with specific parameters"),
+		      QObject::tr("<b>Subdirectories with specific parameters"),
 		      QObject::tr("The list of subdirectories in the indexed "
-				  "hierarchy where some parameters need to be "
-				  "customised. "
-				  "Default: empty."));
+				  "hierarchy <br>where some parameters need "
+				  "to be customised. Default: empty."));
     m_subdirs->getListBox()->setSelectionMode(QLISTBOX::Single);
     connect(m_subdirs->getListBox(), SIGNAL(selectionChanged()),
 	    this, SLOT(subDirChanged()));
@@ -199,10 +198,11 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
     QLabel *explain = new QLabel(this);
     explain->setText(
 		     QObject::
-		     tr("<i>The following parameters are set either at the "
-			"top level (no selection or empty line selected) "
-			"or for the selected subdirectory. "
-			"You can add / remove directories by clicking "
+		     tr("<i>The parameters that follow are set either at the "
+			"top level, if nothing<br>"
+			"or an empty line is selected in the listbox above, "
+			"or for the selected subdirectory.<br>"
+			"You can add or remove directories by clicking "
 			"the +/- buttons."));
     vboxLayout->addWidget(explain);
 

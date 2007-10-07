@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confgui.cpp,v 1.5 2007-10-01 06:35:31 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confgui.cpp,v 1.6 2007-10-07 20:22:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -85,11 +85,6 @@ void ConfParamW::setValue(bool value)
     m_cflink->set(string(buf));
 }
 
-void ConfParamW::loadValue()
-{
-
-}
-
 bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
 {
     m_hl = new QHBOXLAYOUT(this);
@@ -121,15 +116,13 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink,
 	return;
 
     m_sb = new QSpinBox(this);
-    //    sb->setMinimum(minvalue);
     m_sb->setMinValue(minvalue);
-    //    sb->setMaximum(maxvalue);
     m_sb->setMaxValue(maxvalue);
     m_sb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed,
-				  QSizePolicy::Fixed,
-				  0,  // Horizontal stretch
-				  0,  // Vertical stretch
-				  m_sb->sizePolicy().hasHeightForWidth() ) );
+				    QSizePolicy::Fixed,
+				    0,  // Horizontal stretch
+				    0,  // Vertical stretch
+				    m_sb->sizePolicy().hasHeightForWidth()));
     m_hl->addWidget(m_sb);
 
     QFRAME *fr = new QFRAME(this);
@@ -139,7 +132,6 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink,
 				  0,  // Vertical stretch
 				  fr->sizePolicy().hasHeightForWidth() ) );
     m_hl->addWidget(fr);
-
 
     loadValue();
 
@@ -162,15 +154,14 @@ ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink cflink,
     if (!createCommon(lbltxt, tltptxt))
 	return;
     m_le = new QLineEdit(this);
-    //    m_le->setMinimumSize( QSize( 200, 0 ) );
 
     loadValue();
 
     m_le->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-				  QSizePolicy::Fixed,
-				  1,  // Horizontal stretch
-				  0,  // Vertical stretch
-				  m_le->sizePolicy().hasHeightForWidth() ) );
+				    QSizePolicy::Fixed,
+				    1,  // Horizontal stretch
+				    0,  // Vertical stretch
+				    m_le->sizePolicy().hasHeightForWidth()));
 
     m_hl->addWidget(m_le);
 
@@ -197,17 +188,14 @@ ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink cflink,
     m_cmb = new QComboBox(this);
     m_cmb->insertStringList(sl);
     m_cmb->setEditable(false);
-
-    loadValue();
-
     m_cmb->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-				  QSizePolicy::Fixed,
-				  1,  // Horizontal stretch
-				  0,  // Vertical stretch
-				   m_cmb->sizePolicy().hasHeightForWidth() ) );
-
+				     QSizePolicy::Fixed,
+				     1,  // Horizontal stretch
+				     0,  // Vertical stretch
+				     m_cmb->sizePolicy().hasHeightForWidth()));
     m_hl->addWidget(m_cmb);
 
+    loadValue();
     QObject::connect(m_cmb, SIGNAL(activated(const QString&)), 
 		     this, SLOT(setValue(const QString&)));
 }
@@ -226,8 +214,8 @@ void ConfParamCStrW::loadValue()
 }
 
 ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink, 
-			     const QString& lbltxt,
-			     const QString& tltptxt)
+			       const QString& lbltxt,
+			       const QString& tltptxt)
     : ConfParamW(parent, cflink)
 {
     // No createCommon because the checkbox has a label
@@ -235,12 +223,11 @@ ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink,
     m_hl->setSpacing(spacing);
 
     m_cb = new QCheckBox(lbltxt, this);
-
     m_cb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, 
 				  QSizePolicy::Fixed,
 				  0,  // Horizontal stretch
 				  0,  // Vertical stretch
-				  m_cb->sizePolicy().hasHeightForWidth() ) );
+				  m_cb->sizePolicy().hasHeightForWidth()));
     QToolTip::add(m_cb, tltptxt);
     m_hl->addWidget(m_cb);
 
@@ -249,7 +236,7 @@ ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink,
 				  QSizePolicy::Fixed,
 				  1,  // Horizontal stretch
 				  0,  // Vertical stretch
-				  fr->sizePolicy().hasHeightForWidth() ) );
+				  fr->sizePolicy().hasHeightForWidth()));
     m_hl->addWidget(fr);
 
     QObject::connect(m_cb, SIGNAL(toggled(bool)), 
@@ -276,10 +263,10 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
     m_le = new QLineEdit(this);
     m_le->setMinimumSize(QSize(150, 0 ));
     m_le->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-				  QSizePolicy::Fixed,
-				  1,  // Horizontal stretch
-				  0,  // Vertical stretch
-				  m_le->sizePolicy().hasHeightForWidth() ) );
+				    QSizePolicy::Fixed,
+				    1,  // Horizontal stretch
+				    0,  // Vertical stretch
+				    m_le->sizePolicy().hasHeightForWidth()));
     m_hl->addWidget(m_le);
 
     QPushButton *pb = new QPushButton(this);
@@ -288,7 +275,7 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
 				  QSizePolicy::Fixed,
 				  0,  // Horizontal stretch
 				  0,  // Vertical stretch
-				  pb->sizePolicy().hasHeightForWidth() ) );
+				  pb->sizePolicy().hasHeightForWidth()));
     m_hl->addWidget(pb);
 
 
@@ -313,8 +300,8 @@ void ConfParamFNW::showBrowserDialog()
 }
 
 ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink, 
-			     const QString& lbltxt,
-			     const QString& tltptxt)
+			   const QString& lbltxt,
+			   const QString& tltptxt)
     : ConfParamW(parent, cflink)
 {
     // Can't use createCommon here cause we want the buttons below the label
@@ -329,10 +316,9 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink,
 				  QSizePolicy::Fixed,
 				  0,  // Horizontal stretch
 				  0,  // Vertical stretch
-				  tl->sizePolicy().hasHeightForWidth() ) );
+				  tl->sizePolicy().hasHeightForWidth()));
     tl->setText(lbltxt);
     QToolTip::add(tl, tltptxt);
-    /* qt4    tl->setProperty("toolTip", tltptxt);*/
     vl1->addWidget(tl);
 
     QPushButton *pbA = new QPushButton(this);
@@ -341,7 +327,7 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink,
 				   QSizePolicy::Fixed,
 				   0,  // Horizontal stretch
 				   0,  // Vertical stretch
-				   pbA->sizePolicy().hasHeightForWidth() ) );
+				   pbA->sizePolicy().hasHeightForWidth()));
     hl1->addWidget(pbA);
     QPushButton *pbD = new QPushButton(this);
     pbD->setText(tr("-"));
@@ -349,33 +335,28 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink,
 				   QSizePolicy::Fixed,
 				   0,  // Horizontal stretch
 				   0,  // Vertical stretch
-				   pbD->sizePolicy().hasHeightForWidth() ) );
-
+				   pbD->sizePolicy().hasHeightForWidth()));
     hl1->addWidget(pbD);
+
     vl1->addLayout(hl1);
     m_hl->addLayout(vl1);
 
-
     m_lb = new QLISTBOX(this);
-
-    loadValue();
-
     m_lb->setSelectionMode(QLISTBOX::Extended);
-
     m_lb->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-				  QSizePolicy::Preferred,
-				  1,  // Horizontal stretch
-				  1,  // Vertical stretch
-				  m_lb->sizePolicy().hasHeightForWidth() ) );
+				    QSizePolicy::Preferred,
+				    1,  // Horizontal stretch
+				    1,  // Vertical stretch
+				    m_lb->sizePolicy().hasHeightForWidth()));
     m_hl->addWidget(m_lb);
 
     this->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-				  QSizePolicy::Preferred,
-				  1,  // Horizontal stretch
-				  1,  // Vertical stretch
-				  this->sizePolicy().hasHeightForWidth() ) );
+				    QSizePolicy::Preferred,
+				    1,  // Horizontal stretch
+				    1,  // Vertical stretch
+				    this->sizePolicy().hasHeightForWidth()));
 
-    
+    loadValue();
     QObject::connect(pbA, SIGNAL(clicked()), this, SLOT(showInputDialog()));
     QObject::connect(pbD, SIGNAL(clicked()), this, SLOT(deleteSelected()));
 }
@@ -476,4 +457,3 @@ void ConfParamCSLW::showInputDialog()
 }
 
 } // Namespace confgui
-
