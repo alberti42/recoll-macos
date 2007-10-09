@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confgui.cpp,v 1.6 2007-10-07 20:22:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confgui.cpp,v 1.7 2007-10-09 11:08:17 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -64,7 +64,7 @@ using std::list;
 
 namespace confgui {
 
-const static int spacing = 3;
+const static int spacing = 4;
 const static int margin = 6;
 
 void ConfParamW::setValue(const QString& value)
@@ -98,7 +98,6 @@ bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
 				  tl->sizePolicy().hasHeightForWidth() ) );
     tl->setText(lbltxt);
     QToolTip::add(tl, tltptxt);
-    /* qt4    tl->setProperty("toolTip", tltptxt);*/
 
     m_hl->addWidget(tl);
 
@@ -134,7 +133,6 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink,
     m_hl->addWidget(fr);
 
     loadValue();
-
     QObject::connect(m_sb, SIGNAL(valueChanged(int)), 
 		     this, SLOT(setValue(int)));
 }
@@ -154,17 +152,14 @@ ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink cflink,
     if (!createCommon(lbltxt, tltptxt))
 	return;
     m_le = new QLineEdit(this);
-
-    loadValue();
-
     m_le->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
 				    QSizePolicy::Fixed,
 				    1,  // Horizontal stretch
 				    0,  // Vertical stretch
 				    m_le->sizePolicy().hasHeightForWidth()));
-
     m_hl->addWidget(m_le);
 
+    loadValue();
     QObject::connect(m_le, SIGNAL(textChanged(const QString&)), 
 		     this, SLOT(setValue(const QString&)));
 }
@@ -239,6 +234,7 @@ ConfParamBoolW::ConfParamBoolW(QWidget *parent, ConfLink cflink,
 				  fr->sizePolicy().hasHeightForWidth()));
     m_hl->addWidget(fr);
 
+    loadValue();
     QObject::connect(m_cb, SIGNAL(toggled(bool)), 
 		     this, SLOT(setValue(bool)));
 }
@@ -278,7 +274,7 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
 				  pb->sizePolicy().hasHeightForWidth()));
     m_hl->addWidget(pb);
 
-
+    loadValue();
     QObject::connect(pb, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
     QObject::connect(m_le, SIGNAL(textChanged(const QString&)), 
 		     this, SLOT(setValue(const QString&)));

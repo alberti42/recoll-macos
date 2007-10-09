@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.4 2007-10-01 06:35:31 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.5 2007-10-09 11:08:17 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -28,26 +28,31 @@ using namespace std;
 #include <unistd.h>
 
 #include <qglobal.h>
+#include <qobject.h>
+
 #if QT_VERSION < 0x040000
 #define QFRAME_INCLUDE <qframe.h>
 #define QFILEDIALOG_INCLUDE <qfiledialog.h>
 #define QLISTBOX_INCLUDE <qlistbox.h>
+#include <qtabdialog.h>
 #define QFILEDIALOG QFileDialog 
 #define QFRAME QFrame
 #define QHBOXLAYOUT QHBoxLayout
 #define QLISTBOX QListBox
 #define QLISTBOXITEM QListBoxItem
 #define QVBOXLAYOUT QVBoxLayout
-#else
+#define QTABDIALOG QTabDialog
+
+#else // Qt4 -> 
+
 #include <Q3HBoxLayout>
 #include <Q3VBoxLayout>
-
+#include <Q3TabDialog>
 #include <QFrame>
 #define QFRAME_INCLUDE <q3frame.h>
 
 #include <QFileDialog>
 #define QFILEDIALOG_INCLUDE <q3filedialog.h>
-
 #define QLISTBOX_INCLUDE <q3listbox.h>
 
 #define QFILEDIALOG Q3FileDialog 
@@ -56,7 +61,8 @@ using namespace std;
 #define QLISTBOX Q3ListBox
 #define QLISTBOXITEM Q3ListBoxItem
 #define QVBOXLAYOUT Q3VBoxLayout
-#endif
+#define QTABDIALOG Q3TabDialog
+#endif // QT 3/4
 
 #include <qobject.h>
 #include <qapplication.h>
@@ -153,23 +159,7 @@ int main(int argc, char **argv)
     app.installTranslator( &translator );
     //    fprintf(stderr, "Translations installed\n");
 
-
-
-    QWidget w;
-
-    QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(&w);
-    vboxLayout->setSpacing(6);
-    vboxLayout->setMargin(11);
-    
-    vboxLayout->addWidget(new ConfTopPanelW(&w, config));
-
-    QFRAME *line1 = new QFRAME(&w);
-    line1->setFrameShape(QFRAME::HLine);
-    line1->setFrameShadow(QFRAME::Sunken);
-    vboxLayout->addWidget(line1);
-
-    vboxLayout->addWidget(new ConfSubPanelW(&w, config));
-
+    ConfIndexW w(0, config);
     QSize size(0, 0);
     size = size.expandedTo(w.minimumSizeHint());
     w.resize(size);

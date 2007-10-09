@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.4 2007-10-07 20:22:55 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.5 2007-10-09 11:08:17 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -40,6 +40,8 @@ static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.4 2007-10-07 20:22:55 dockes
 #include <qlabel.h>
 #include QLISTBOX_INCLUDE
 #include <qtimer.h>
+#include <qmessagebox.h>
+#include <qgroupbox.h>
 
 #include <list>
 using std::list;
@@ -51,12 +53,41 @@ using std::list;
 #include "rcldb.h"
 #include "conflinkrcl.h"
 #include "execmd.h"
+#include "rclconfig.h"
 
 namespace confgui {
-const static int spacing = 3;
+const static int spacing = 6;
 const static int margin = 6;
 
-ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
+ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
+    : QTABDIALOG(parent), m_rclconf(config)
+{
+    setOkButton();
+    setCancelButton();
+    if ((m_conf = m_rclconf->cloneMainConfig()) == 0) 
+	return;
+    m_conf->holdWrites(true);
+    addTab(new ConfTopPanelW(this, m_conf), QObject::tr("Global parameters"));
+    addTab(new ConfSubPanelW(this, m_conf), QObject::tr("Local parameters"));
+    connect(this, SIGNAL(applyButtonPressed()), this, SLOT(acceptChanges()));
+}
+
+void ConfIndexW::acceptChanges()
+{
+    LOGDEB(("ConfIndexW::acceptChanges()\n"));
+    if (m_conf) {
+	if (!m_conf->holdWrites(false)) {
+	    QMessageBox::critical(0, "Recoll",  
+				  tr("Can't write configuration file"));
+	}
+	delete m_conf;
+	m_conf = 0;
+	// Update in-memory config
+	m_rclconf->updateMainConfig();
+    }
+}
+
+ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     : QWidget(parent)
 {
     QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(this);
@@ -166,7 +197,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, RclConfig *config)
     vboxLayout->addWidget(eusfc);
 }
 
-ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
+ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     : QWidget(parent), m_config(config)
 {
     QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(this);
@@ -185,14 +216,13 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
 	    this, SLOT(subDirChanged()));
     connect(m_subdirs, SIGNAL(entryDeleted(QString)),
 	    this, SLOT(subDirDeleted(QString)));
-    list<string> allkeydirs = config->getKeyDirs(); 
+    list<string> allkeydirs = config->getSubKeys(); 
     QStringList qls;
     for (list<string>::const_iterator it = allkeydirs.begin(); 
 	 it != allkeydirs.end(); it++) {
 	qls.push_back(QString::fromUtf8(it->c_str()));
     }
     m_subdirs->getListBox()->insertStringList(qls);
-
     vboxLayout->addWidget(m_subdirs);
 
     QLabel *explain = new QLabel(this);
@@ -211,13 +241,15 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
     line2->setFrameShadow(QFRAME::Sunken);
     vboxLayout->addWidget(line2);
 
+    m_groupbox = new QGroupBox(this);
+    QVBoxLayout *vgbox = new QVBoxLayout;
     ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames", &m_sk));
     ConfParamSLW *eskn = new 
-	ConfParamSLW(this, lnkskn, 
+	ConfParamSLW(m_groupbox, lnkskn, 
 		     QObject::tr("List of skipped names"),
 		     QObject::tr("These are patterns for file or directory "
 				 " names which should not be indexed."));
-    vboxLayout->addWidget(eskn);
+    vgbox->addWidget(eskn);
     m_widgets.push_back(eskn);
 
     list<string> args;
@@ -241,7 +273,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
 
     ConfLink lnk21(new ConfLinkRclRep(config, "defaultcharset", &m_sk));
     ConfParamCStrW *e21 = new 
-	ConfParamCStrW(this, lnk21, 
+	ConfParamCStrW(m_groupbox, lnk21, 
 		       QObject::tr("Default character set"),
 		       QObject::tr("This is the character set used for reading files "
 			  "which do not identify the character set "
@@ -249,28 +281,31 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, RclConfig *config)
 			  "The default value is empty, "
 			  "and the value from the NLS environnement is used."
 			  ), charsets);
-    vboxLayout->addWidget(e21);
+    vgbox->addWidget(e21);
     m_widgets.push_back(e21);
 
     ConfLink lnk3(new ConfLinkRclRep(config, "followLinks", &m_sk));
     ConfParamBoolW *e3 = new 
-	ConfParamBoolW(this, lnk3, 
+	ConfParamBoolW(m_groupbox, lnk3, 
 		        QObject::tr("Follow symbolic links"),
 		        QObject::tr("Follow symbolic links while "
 			  "indexing. The default is no, "
 			  "to avoid duplicate indexing"));
-    vboxLayout->addWidget(e3);
+    vgbox->addWidget(e3);
     m_widgets.push_back(e3);
 
     ConfLink lnkafln(new ConfLinkRclRep(config, "indexallfilenames", &m_sk));
     ConfParamBoolW *eafln = new 
-	ConfParamBoolW(this, lnkafln, 
+	ConfParamBoolW(m_groupbox, lnkafln, 
 		       QObject::tr("Index all file names"),
 		       QObject::tr("Index the names of files for which the contents "
 			  "cannot be identified or processed (no or "
 			  "unsupported mime type). Default true"));
-    vboxLayout->addWidget(eafln);
+    vgbox->addWidget(eafln);
     m_widgets.push_back(eafln);
+    m_groupbox->setLayout(vgbox);
+    vboxLayout->addWidget(m_groupbox);
+    subDirChanged();
 }
 
 void ConfSubPanelW::reloadAll()
@@ -287,8 +322,10 @@ void ConfSubPanelW::subDirChanged()
     QLISTBOXITEM *item = m_subdirs->getListBox()->selectedItem();
     if (item == 0) {
 	m_sk = "";
+	m_groupbox->setTitle(tr("Global"));
     } else {
 	m_sk = (const char *)item->text().utf8();
+	m_groupbox->setTitle(item->text());
     }
     LOGDEB(("ConfSubPanelW::subDirChanged: now [%s]\n", m_sk.c_str()));
     reloadAll();
@@ -303,8 +340,7 @@ void ConfSubPanelW::subDirDeleted(QString sbd)
 	return;
     }
     // Have to delete all entries for submap
-    m_config->setKeyDir((const char *)sbd.utf8());
-    m_config->eraseKeyDir();
+    m_config->eraseKey((const char *)sbd.utf8());
 }
 
 void ConfSubPanelW::restoreEmpty()

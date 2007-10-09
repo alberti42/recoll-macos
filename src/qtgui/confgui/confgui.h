@@ -1,6 +1,6 @@
 #ifndef _confgui_h_included_
 #define _confgui_h_included_
-/* @(#$Id: confgui.h,v 1.4 2007-10-01 06:35:31 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: confgui.h,v 1.5 2007-10-09 11:08:17 dockes Exp $  (C) 2007 J.F.Dockes */
 
 #include <string>
 
@@ -22,7 +22,6 @@ using std::string;
 class QHBOXLAYOUT;
 class QLineEdit;
 class QLISTBOX;
-class RclConfig;
 class QSpinBox;
 class QComboBox;
 class QCheckBox;

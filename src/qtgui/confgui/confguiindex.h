@@ -1,6 +1,6 @@
 #ifndef _confguiindex_h_included_
 #define _confguiindex_h_included_
-/* @(#$Id: confguiindex.h,v 1.2 2007-09-29 09:06:53 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: confguiindex.h,v 1.3 2007-10-09 11:08:17 dockes Exp $  (C) 2007 J.F.Dockes */
 
 /**
  * Classes to handle the gui for the indexing configuration. These group 
@@ -9,18 +9,37 @@
 
 #include <qwidget.h>
 #include <qstring.h>
+#if QT_VERSION < 0x040000
+#include <qtabdialog.h>
+#define QTABDIALOG QTabDialog
+#else // Qt4 -> 
+#include <Q3TabDialog>
+#define QTABDIALOG Q3TabDialog
+#endif // QT 3/4
 
 #include <string>
 #include <list>
 using std::string;
 using std::list;
 
-
+class ConfNull;
 class RclConfig;
 class ConfParamW;
 class ConfParamDNLW;
+class QGroupBox;
 
 namespace confgui {
+
+class ConfIndexW : public QTABDIALOG {
+    Q_OBJECT
+public:
+    ConfIndexW(QWidget *parent, RclConfig *config);
+public slots:
+    void acceptChanges();
+private:
+    RclConfig *m_rclconf;
+    ConfNull  *m_conf;
+};
 
 /** 
  * A panel with the top-level parameters which can't be redefined in 
@@ -28,7 +47,7 @@ namespace confgui {
  */
 class ConfTopPanelW : public QWidget {
 public:
-    ConfTopPanelW(QWidget *parent, RclConfig *config);
+    ConfTopPanelW(QWidget *parent, ConfNull *config);
 };
 
 
@@ -38,15 +57,9 @@ public:
 class ConfSubPanelW : public QWidget {
     Q_OBJECT
 public:
-    ConfSubPanelW(QWidget *parent, RclConfig *config);
+    ConfSubPanelW(QWidget *parent, ConfNull *config);
 
-    void setkeydir(const string& sk) 
-    {
-	m_sk = sk;
-	reloadAll();
-    }
-    void reloadAll();
-public slots:
+private slots:
     void subDirChanged();
     void subDirDeleted(QString);
     void restoreEmpty();
@@ -54,10 +67,11 @@ private:
     string            m_sk;
     ConfParamDNLW    *m_subdirs;
     list<ConfParamW*> m_widgets;
-    RclConfig        *m_config;
+    ConfNull         *m_config;
+    QGroupBox        *m_groupbox;
+
+    void reloadAll();
 };
-
-
 
 } // Namespace confgui
 
