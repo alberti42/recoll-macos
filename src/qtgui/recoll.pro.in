@@ -13,7 +13,9 @@ HEADERS	+= \
 	searchclause_w.h \
 	ssearch_w.h \
 	uiprefs_w.h \
-        viewaction_w.h
+        viewaction_w.h \
+        confgui/confgui.h \
+        confgui/confguiindex.h
 
 
 SOURCES	+= \
@@ -30,7 +32,9 @@ SOURCES	+= \
 	searchclause_w.cpp \
         ssearch_w.cpp \
         uiprefs_w.cpp \
-        viewaction_w.cpp
+        viewaction_w.cpp \
+        confgui/confgui.cpp \
+        confgui/confguiindex.cpp
 
 FORMS	= \
 	advsearch.ui \
@@ -66,7 +70,7 @@ unix {
            -lz
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
-	      ../utils ../aspell ../rcldb
+	      ../utils ../aspell ../rcldb confgui
   POST_TARGETDEPS = ../lib/librcl.a
 }
 

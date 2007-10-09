@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.5 2007-10-09 11:08:17 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.6 2007-10-09 14:08:24 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -64,27 +64,62 @@ ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
 {
     setOkButton();
     setCancelButton();
-    if ((m_conf = m_rclconf->cloneMainConfig()) == 0) 
-	return;
-    m_conf->holdWrites(true);
-    addTab(new ConfTopPanelW(this, m_conf), QObject::tr("Global parameters"));
-    addTab(new ConfSubPanelW(this, m_conf), QObject::tr("Local parameters"));
+
+    reloadPanels();
+
     connect(this, SIGNAL(applyButtonPressed()), this, SLOT(acceptChanges()));
+    connect(this, SIGNAL(cancelButtonPressed()), this, SLOT(rejectChanges()));
 }
 
 void ConfIndexW::acceptChanges()
 {
     LOGDEB(("ConfIndexW::acceptChanges()\n"));
-    if (m_conf) {
-	if (!m_conf->holdWrites(false)) {
-	    QMessageBox::critical(0, "Recoll",  
-				  tr("Can't write configuration file"));
-	}
-	delete m_conf;
-	m_conf = 0;
-	// Update in-memory config
-	m_rclconf->updateMainConfig();
+    if (!m_conf) {
+	LOGERR(("ConfIndexW::acceptChanges: no config\n"));
+	return;
     }
+    // Let the changes to disk
+    if (!m_conf->holdWrites(false)) {
+	QMessageBox::critical(0, "Recoll",  
+			      tr("Can't write configuration file"));
+    }
+    // Delete local copy
+    delete m_conf;
+    m_conf = 0;
+    // Update in-memory config
+    m_rclconf->updateMainConfig();
+
+    QTimer::singleShot(0, this, SLOT(reloadPanels()));
+}
+
+void ConfIndexW::rejectChanges()
+{
+    LOGDEB(("ConfIndexW::rejectChanges()\n"));
+    // Discard local changes, and make new copy
+    delete m_conf;
+    m_conf = 0;
+    QTimer::singleShot(0, this, SLOT(reloadPanels()));
+}
+
+void ConfIndexW::reloadPanels()
+{
+    if ((m_conf = m_rclconf->cloneMainConfig()) == 0) 
+	return;
+    m_conf->holdWrites(true);
+    for (list<QWidget *>::iterator it = m_widgets.begin();
+	 it != m_widgets.end(); it++) {
+	removePage(*it);
+	delete *it;
+    }
+    m_widgets.clear();
+
+    QWidget *w = new ConfTopPanelW(this, m_conf);
+    m_widgets.push_back(w);
+    addTab(w, QObject::tr("Global parameters"));
+	
+    w = new ConfSubPanelW(this, m_conf);
+    m_widgets.push_back(w);
+    addTab(w, QObject::tr("Local parameters"));
 }
 
 ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)

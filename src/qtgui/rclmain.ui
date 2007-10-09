@@ -89,6 +89,8 @@
         <action name="toolsSpellAction"/>
     </item>
     <item text="&amp;Preferences" name="preferencesMenu">
+        <action name="indexConfigAction"/>
+	<separator/>
         <action name="queryPrefsAction"/>
         <action name="extIdxAction"/>
 	<separator/>
@@ -286,6 +288,14 @@
         </property>
         <property name="toolTip">
             <string>Previous page of results</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>indexConfigAction</cstring>
+        </property>
+        <property name="menuText">
+            <string>&amp;Indexing configuration</string>
         </property>
     </action>
     <action>

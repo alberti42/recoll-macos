@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.43 2007-09-20 08:42:34 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.44 2007-10-09 14:08:24 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -72,6 +72,8 @@ using std::pair;
 #include "internfile.h"
 #include "docseqdb.h"
 #include "docseqhist.h"
+#include "confguiindex.h"
+using namespace confgui;
 
 #include "rclmain_w.h"
 #include "moc_rclmain_w.cpp"
@@ -98,6 +100,7 @@ void RclMain::init()
     asearchform = 0;
     sortform = 0;
     uiprefs = 0;
+    indexConfig = 0;
     spellform = 0;
     m_searchId = 0;
     // Set the focus to the search terms entry:
@@ -197,6 +200,7 @@ void RclMain::init()
     toolsSpellAction->setEnabled(FALSE);
 #endif
 
+    connect(indexConfigAction, SIGNAL(activated()), this, SLOT(showIndexConfig()));
     connect(queryPrefsAction, SIGNAL(activated()), this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), this, SLOT(showExtIdxDialog()));
 
@@ -500,6 +504,19 @@ void RclMain::showSpellDialog()
         spellform->show();
     }
 
+}
+
+void RclMain::showIndexConfig()
+{
+    LOGDEB(("showIndexConfig()\n"));
+    if (indexConfig == 0) {
+	indexConfig = new ConfIndexW(0, rclconfig);
+	LOGDEB(("showIndexConfig(): confindexW created\n"));
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	indexConfig->close();
+    }
+    indexConfig->show();
 }
 
 void RclMain::showUIPrefs()

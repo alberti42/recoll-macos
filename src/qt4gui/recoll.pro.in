@@ -13,7 +13,9 @@ HEADERS	+= \
 	../qtgui/searchclause_w.h \
 	../qtgui/ssearch_w.h \
 	../qtgui/uiprefs_w.h \
-	../qtgui/viewaction_w.h
+	../qtgui/viewaction_w.h \
+	../qtgui/confgui/confgui.h \
+	../qtgui/confgui/confguiindex.h
 
 
 SOURCES	+= \
@@ -30,7 +32,10 @@ SOURCES	+= \
 	../qtgui/searchclause_w.cpp \
         ../qtgui/ssearch_w.cpp \
         ../qtgui/uiprefs_w.cpp \
-	../qtgui/viewaction_w.cpp
+	../qtgui/viewaction_w.cpp \
+	../qtgui/confgui/confgui.cpp \
+	../qtgui/confgui/confguiindex.cpp 
+	
 
 FORMS	= \
 	advsearch.ui \
@@ -55,7 +60,10 @@ unix {
            -lz
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
-	      ../utils ../aspell ../rcldb ../qt4gui/.ui ../qtgui ../../qtgui
+	      ../utils ../aspell ../rcldb ../qt4gui/.ui \
+	      ../qtgui ../../qtgui \
+	      ../qtgui/confgui ../../qtgui/confgui
+
   POST_TARGETDEPS = ../lib/librcl.a
 }
 

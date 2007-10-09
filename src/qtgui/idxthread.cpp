@@ -42,10 +42,9 @@ class IdxThread : public QThread , public DbIxStatusUpdater {
 	}
 	return true;
     }
-    ConfIndexer *indexer;
     // Maintain a copy/snapshot of idx status
     DbIxStatus m_statusSnap;
-    int loglevel;
+    const RclConfig *cnf;
 };
 
 int stopindexing;
@@ -57,25 +56,32 @@ static int stopidxthread;
 
 void IdxThread::run()
 {
-    DebugLog::getdbl()->setloglevel(loglevel);
     recoll_threadinit();
     for (;;) {
 	if (stopidxthread) {
-	    deleteZ(indexer);
 	    return;
 	}
 	if (startindexing) {
 	    startindexing = 0;
 	    indexingdone = 0;
 	    indexingstatus = IDXTS_NULL;
+	    // We have to make a copy of the config (setKeydir changes
+	    // it during indexation)
+	    RclConfig *myconf = new RclConfig(*cnf);
+	    int loglevel;
+	    myconf->setKeyDir("");
+	    myconf->getConfParam("loglevel", &loglevel);
+	    DebugLog::getdbl()->setloglevel(loglevel);
+	    ConfIndexer *indexer = new ConfIndexer(myconf, this);
 	    if (indexer->index()) {
 		indexingstatus = IDXTS_OK;
 		indexingReason = "";
 	    } else {
 		indexingstatus = IDXTS_ERROR;
-		indexingReason = "Indexation failed: " + indexer->getReason();
+		indexingReason = "Indexing failed: " + indexer->getReason();
 	    }
 	    indexingdone = 1;
+	    delete indexer;
 	} 
 	msleep(100);
     }
@@ -85,11 +91,7 @@ static IdxThread idxthread;
 
 void start_idxthread(const RclConfig& cnf)
 {
-    // We have to make a copy of the config (setKeydir changes it during 
-    // indexation)
-    RclConfig *myconf = new RclConfig(cnf);
-    idxthread.indexer = new ConfIndexer(myconf, &idxthread);
-    idxthread.loglevel = DebugLog::getdbl()->getlevel();
+    idxthread.cnf = &cnf;
     idxthread.start();
 }
 

@@ -1,6 +1,6 @@
 #ifndef _confguiindex_h_included_
 #define _confguiindex_h_included_
-/* @(#$Id: confguiindex.h,v 1.3 2007-10-09 11:08:17 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: confguiindex.h,v 1.4 2007-10-09 14:08:24 dockes Exp $  (C) 2007 J.F.Dockes */
 
 /**
  * Classes to handle the gui for the indexing configuration. These group 
@@ -36,9 +36,12 @@ public:
     ConfIndexW(QWidget *parent, RclConfig *config);
 public slots:
     void acceptChanges();
+    void rejectChanges();
+    void reloadPanels();
 private:
     RclConfig *m_rclconf;
     ConfNull  *m_conf;
+    list<QWidget *> m_widgets;
 };
 
 /** 

@@ -54,6 +54,10 @@ public: DummyRclMainBase(QWidget *parent) :Q3MainWindow(parent){setupUi(this);}
 //MOC_SKIP_END
 
 class Preview;
+namespace confgui {
+class ConfIndexW;
+}
+using confgui::ConfIndexW;
 
 class RclMain : public DummyRclMainBase
 {
@@ -84,6 +88,7 @@ public slots:
     virtual void showExtIdxDialog();
     virtual void sortDataChanged(DocSeqSortSpec spec);
     virtual void showUIPrefs();
+    virtual void showIndexConfig();
     virtual void setUIPrefs();
     virtual void enableNextPage(bool);
     virtual void enablePrevPage(bool);
@@ -114,6 +119,7 @@ private:
     AdvSearch *asearchform;
     SortForm *sortform;
     UIPrefsDialog *uiprefs;
+    ConfIndexW  *indexConfig;
     SpellW *spellform;
 
     RefCntr<Rcl::SearchData> m_searchData;
