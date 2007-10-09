@@ -100,11 +100,11 @@ public:
 		    const string &sk = "") = 0;
     virtual bool ok() = 0;
     virtual list<string> getNames(const string &sk) = 0;
-    virtual int erase(const string &, const string &) {return 0;}
-    virtual int eraseKey(const string &) {return 0;}
-    virtual void listall() {}
+    virtual int erase(const string &, const string &) = 0;
+    virtual int eraseKey(const string &) = 0;
+    virtual void listall()  {};
     virtual list<string> getSubKeys() = 0;
-    virtual bool holdWrites(bool) {return true;}
+    virtual bool holdWrites(bool) = 0;
 };
 
 /** 
@@ -140,14 +140,15 @@ public:
 
     /** 
      * Decide if we actually rewrite the backing-store after modifying the
-     * tree. (Re-)Enabling writes causes a flush.
+     * tree.
      */
     virtual bool holdWrites(bool on)
     {
 	m_holdWrites = on;
-	if (m_holdWrites == false)
+	if (on == false) {
 	    return write();
-	return true;
+	} else
+	    return true;
     }
 
     /** 
