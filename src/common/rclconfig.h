@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.37 2007-10-01 06:19:21 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.38 2007-10-09 09:43:10 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -46,6 +46,13 @@ class RclConfig {
     // themselves.
     static RclConfig* getMainConfig();
 
+    // Return a writable clone of the main config. This belongs to the
+    // caller (must delete it when done)
+    ConfNull *cloneMainConfig();
+
+    /** (re)Read recoll.conf */
+    bool updateMainConfig();
+
     bool ok() {return m_ok;}
     const string &getReason() {return m_reason;}
 
@@ -56,6 +63,8 @@ class RclConfig {
     void setKeyDir(const string &dir) 
     {
 	m_keydir = dir;
+	if (m_conf == 0)
+	    return;
 	if (!m_conf->get("defaultcharset", defcharset, m_keydir))
 	    defcharset.erase();
 	string str;
@@ -63,8 +72,6 @@ class RclConfig {
 	guesscharset = stringToBool(str);
     }
     string getKeyDir() const {return m_keydir;}
-    /** Get all defined key directories in configuration */
-    list<string> getKeyDirs() {return m_conf->getSubKeys();}
 
     /** Get generic configuration parameter according to current keydir */
     bool getConfParam(const string &name, string &value) 
@@ -73,28 +80,6 @@ class RclConfig {
 	    return false;
 	return m_conf->get(name, value, m_keydir);
     }
-    /** Set generic configuration parameter according to current keydir */
-    bool setConfParam(const string &name, const string &value) 
-    {
-	if (m_conf == 0)
-	    return false;
-	return m_conf->set(name, value, m_keydir);
-    }
-    /** Remove parameter from configuration */
-    bool eraseConfParam(const string &name)
-    {
-	if (m_conf == 0)
-	    return false;
-	return m_conf->erase(name, m_keydir);
-    }	
-    /** Remove parameter from configuration */
-    bool eraseKeyDir()
-    {
-	if (m_conf == 0)
-	    return false;
-	return m_conf->eraseKey(m_keydir);
-    }	
-
     /** Variant with autoconversion to int */
     bool getConfParam(const std::string &name, int *value);
     /** Variant with autoconversion to bool */
@@ -197,9 +182,10 @@ class RclConfig {
  private:
     int m_ok;
     string m_reason;    // Explanation for bad state
-    string m_confdir; // Directory where the files are stored
-    string m_datadir; // Example: /usr/local/share/recoll
+    string m_confdir;   // User directory where the customized files are stored
+    string m_datadir;   // Example: /usr/local/share/recoll
     string m_keydir;    // Current directory used for parameter fetches.
+    list<string> m_cdirs; // directory stack for the confstacks
 
     ConfStack<ConfTree> *m_conf;   // Parsed configuration files
     ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, 
@@ -215,7 +201,6 @@ class RclConfig {
 
     /** Create initial user configuration */
     bool initUserConfig();
-
     /** Copy from other */
     void initFrom(const RclConfig& r);
     /** Init pointers to 0 */

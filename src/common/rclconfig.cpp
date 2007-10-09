@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.52 2007-10-04 12:21:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.53 2007-10-09 09:43:10 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -103,34 +103,46 @@ RclConfig::RclConfig(const string *argcnf)
 	    return;
     }
 
-    list<string> cdirs;
-    cdirs.push_back(m_confdir);
-    cdirs.push_back(path_cat(m_datadir, "examples"));
+    m_cdirs.push_back(m_confdir);
+    m_cdirs.push_back(path_cat(m_datadir, "examples"));
     string cnferrloc = m_confdir + " or " + path_cat(m_datadir, "examples");
 
-    m_conf = new ConfStack<ConfTree>("recoll.conf", cdirs, false);
-    if (m_conf == 0 || !m_conf->ok()) {
-	m_reason = string("No/bad main configuration file in: ") + cnferrloc;
+    if (!updateMainConfig())
 	return;
-    }
 
-    mimemap = new ConfStack<ConfTree>("mimemap", cdirs, true);
+    mimemap = new ConfStack<ConfTree>("mimemap", m_cdirs, true);
     if (mimemap == 0 || !mimemap->ok()) {
 	m_reason = string("No or bad mimemap file in: ") + cnferrloc;
 	return;
     }
 
-    mimeconf = new ConfStack<ConfTree>("mimeconf", cdirs, true);
+    mimeconf = new ConfStack<ConfTree>("mimeconf", m_cdirs, true);
     if (mimeconf == 0 || !mimeconf->ok()) {
 	m_reason = string("No/bad mimeconf in: ") + cnferrloc;
 	return;
     }
-    mimeview = new ConfStack<ConfTree>("mimeview", cdirs, true);
+    mimeview = new ConfStack<ConfTree>("mimeview", m_cdirs, true);
     if (mimeconf == 0 || !mimeconf->ok()) {
 	m_reason = string("No/bad mimeview in: ") + cnferrloc;
 	return;
     }
 
+    m_ok = true;
+    setKeyDir("");
+    return;
+}
+
+bool RclConfig::updateMainConfig()
+{
+    LOGDEB(("RclConfig::updateMainConfig()\n"));
+    m_conf = new ConfStack<ConfTree>("recoll.conf", m_cdirs, true);
+    if (m_conf == 0 || !m_conf->ok()) {
+	string where;
+	stringsToString(m_cdirs, where);
+	m_reason = string("No/bad main configuration file in: ") + where;
+	m_ok = false;
+	return false;
+    }
     setKeyDir("");
     bool nocjk = false;
     if (getConfParam("nocjk", &nocjk) && nocjk == true) {
@@ -143,8 +155,17 @@ RclConfig::RclConfig(const string *argcnf)
 	    TextSplit::cjkProcessing(true);
 	}
     }
-    m_ok = true;
-    return;
+    return true;
+}
+
+ConfNull *RclConfig::cloneMainConfig()
+{
+    ConfNull *conf = new ConfStack<ConfTree>("recoll.conf", m_cdirs, false);
+    if (conf == 0 || !conf->ok()) {
+	m_reason = string("Can't read config");
+	return 0;
+    }
+    return conf;
 }
 
 bool RclConfig::getConfParam(const std::string &name, int *ivp)
