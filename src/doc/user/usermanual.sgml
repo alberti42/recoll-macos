@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.53 2007-10-06 07:11:56 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.54 2007-10-14 16:07:24 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -2027,6 +2027,25 @@ skippedPaths = ~/somedir/&lowast;.txt
             aspell crashes during dictionary generation.</para>
             </listitem>
           </varlistentry>
+
+	  <varlistentry><term><literal>nocjk</literal></term>
+	    <listitem><para>If this set to true, specific east asian
+	    (Chinese Korean Japanese) characters/word splitting is
+	    turned off. This will save a small amount of cpu if you
+	    have no CJK documents. If your document base does include
+	    such text but you are not interested in searching it,
+	    setting <literal>nocjk</literal> may be a significant time
+	    and space saver.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry><term><literal>cjkngramlen</literal></term>
+	    <listitem><para>This lets you adjust the size of n-grams
+	    used for indexing CJK text. The default value of 2 is
+	    probably appropriate in most cases. A value of 3 would
+	    allow more precision and efficiency on longer words, but
+	    the index will be approximately twice as large.</para>
+	    </listitem>
+	  </varlistentry>
 
         </variablelist>
 
