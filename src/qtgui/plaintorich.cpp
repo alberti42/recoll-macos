@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.27 2007-09-08 17:19:58 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.28 2007-10-17 16:12:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -310,24 +310,22 @@ string termAnchorName(int i)
 }
 
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
-// 0xcd8f is utf8 for unicode 034F COMBINING GRAPHEME JOINER Qt
-// doesn't display it, but accepts to search for it. With QT4 it
-// sometimes seems to create a display bug where two adjacent lines
-// are overstriked, but it shouldn't, see:
-// http://unicode.org/faq/char_combmark.html#17
-// We are counting on the fact that a sequence of two such chars should be 
-// extremely unlikely in normal text and not affecting the display.
-const char *firstTermBeacon = "\xcd\x8f\xcd\x8f";
+// qtextedit scrolltoanchor(), which we would like to use to walk the 
+// search hit positions does not work well. So we mark the positions with
+// a special string which we then use with the find() function for positionning
+// We used to use some weird utf8 char for this, but this was displayed 
+// inconsistently depending of system, font, etc. We now use a good ole bel 
+// char which doesnt' seem to cause any trouble.
+const char *firstTermBeacon = "\007";
 #endif
 
 static string termBeacon(int i)
 {
     return string("<a name=\"") + termAnchorName(i) + "\">"
 #ifdef QT_SCROLL_TO_ANCHOR_BUG
-		    + " " + firstTermBeacon + " "
+		    + firstTermBeacon
 #endif
 		    + "</a>";
-
 }
 
 
@@ -452,7 +450,7 @@ bool plaintorich(const string& in, string& out,
 	    chariter.appendchartostring(out);
 	}
     }
-#if 0
+#if 1
     {
 	FILE *fp = fopen("/tmp/debugplaintorich", "a");
 	fprintf(fp, "%s\n", out.c_str());
