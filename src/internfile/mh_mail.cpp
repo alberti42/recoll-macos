@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.29 2007-01-17 13:53:40 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.30 2007-10-17 11:40:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -135,9 +135,14 @@ bool MimeHandlerMail::next_document()
     return res;
 }
 
-// Decode according to content transfer encoding
-static bool decodeBody(const string& cte, const string& body, string& decoded,
-		       const string** respp)
+// Decode according to content transfer encoding. May actually do nothing,
+// which will be indicated by the *respp argument pointing to the original 
+// text on exit
+static bool decodeBody(const string& cte, // Content transfer encoding
+		       const string& body, // Source text
+		       string& decoded,   // Decoded text if actual decoding
+		       const string** respp // Decoding Indicator 
+		       )
 {
     // By default, there is no encoding (7bit,8bit,raw). Also in case of 
     // decoding error
@@ -146,13 +151,15 @@ static bool decodeBody(const string& cte, const string& body, string& decoded,
     if (!stringlowercmp("quoted-printable", cte)) {
 	if (!qp_decode(body, decoded)) {
 	    LOGERR(("decodeBody: quoted-printable decoding failed !\n"));
+	    LOGDEB(("      Body: \n%s\n", body.c_str()));
 	    return false;
 	}
 	*respp = &decoded;
     } else if (!stringlowercmp("base64", cte)) {
 	if (!base64_decode(body, decoded)) {
-	    LOGERR(("decodeBody: base64 decoding failed !. body [%s]\n", 
-		    body.c_str()));
+	    // base64 encoding errors are actually relatively common
+	    LOGERR(("decodeBody: base64 decoding failed !\n"));
+	    LOGDEB(("      Body: \n%s\n", body.c_str()));
 	    return false;
 	}
 	*respp = &decoded;
@@ -171,10 +178,15 @@ bool MimeHandlerMail::processAttach()
     }
     MHMailAttach *att = m_attachments[m_idx];
 
-    LOGDEB1(("processAttach:content-type: %s\n", att->m_contentType.c_str()));
     m_metaData["mimetype"] = att->m_contentType;
     m_metaData["charset"] = att->m_charset;
     m_metaData["filename"] = att->m_filename;
+    // Change the title to something helpul
+    m_metaData["title"] = att->m_filename + "  (" + m_subject + ")";
+    LOGDEB1(("  processAttach:ct [%s] cs [%s] fn [%s]\n", 
+	    att->m_contentType.c_str(),
+	    att->m_charset.c_str(),
+	    att->m_filename.c_str()));
 
     m_metaData["content"] = "";
     string& body = m_metaData["content"];
@@ -186,9 +198,27 @@ bool MimeHandlerMail::processAttach()
     }
     if (bdp != &body)
 	body = decoded;
+
+    // Special case for text/plain content. Internfile should deal
+    // with this but it expects text/plain to be utf-8 already, so we
+    // handle the transcoding if needed
+    if (m_metaData["mimetype"] == "text/plain" && 
+	stringicmp(m_metaData["charset"], "UTF-8")) {
+	string utf8;
+	if (!transcode(body, utf8, m_metaData["charset"], "UTF-8")) {
+	    LOGERR(("  processAttach: transcode to utf-8 failed "
+		    "for charset [%s]\n", m_metaData["charset"].c_str()));
+	    // Just let it through and hope for the best...
+	} else {
+	    body = utf8;
+	}
+    }
+
+    // Ipath
     char nbuf[10];
     sprintf(nbuf, "%d", m_idx);
     m_metaData["ipath"] = nbuf;
+
     return true;
 }
 
@@ -242,8 +272,10 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     }
     if (doc->h.getFirstHeader("Subject", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
-	if (depth == 1)
+	if (depth == 1) {
 	    m_metaData["title"] = transcoded;
+	    m_subject = transcoded;
+	}
 	text += string("Subject: ") + transcoded + string("\n");
     }
     text += '\n';
@@ -406,8 +438,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     } 
 
     // If the Content-Disposition is not inline, we treat it as
-    // attachment, as per rfc2183. We don't process attachments
-    // for now, except for indexing/displaying the file name
+    // attachment, as per rfc2183. 
     // If it is inline but not text or html, same thing.
     if (stringlowercmp("inline", content_disposition.value) ||
 	(stringlowercmp("text/plain", content_type.value) && 
@@ -421,7 +452,6 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 		out += "]";
 	    out += "\n\n";
 	}
-	LOGDEB(("walkmime: pushing attchmnt fn [%s]\n", filename.c_str()));
 	MHMailAttach *att = new MHMailAttach;
 	if (att == 0) {
 	    LOGERR(("Out of memory\n"));
@@ -433,6 +463,11 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	att->m_charset = charset;
 	att->m_contentTransferEncoding = cte;
 	att->m_part = doc;
+	LOGDEB(("walkmime: attachmnt: ct [%s] cte [%s] cs [%s] fn [%s]\n", 
+		att->m_contentType.c_str(),
+		att->m_contentTransferEncoding.c_str(),
+		att->m_charset.c_str(),
+		filename.c_str()));
 	m_attachments.push_back(att);
 	return;
     }

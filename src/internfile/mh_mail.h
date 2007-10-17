@@ -16,7 +16,7 @@
  */
 #ifndef _MAIL_H_INCLUDED_
 #define _MAIL_H_INCLUDED_
-/* @(#$Id: mh_mail.h,v 1.11 2006-12-16 15:39:54 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_mail.h,v 1.12 2007-10-17 11:40:35 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <sstream>
 #include <vector>
@@ -56,12 +56,13 @@ class MimeHandlerMail : public RecollFilter {
     bool processMsg(Binc::MimePart *doc, int depth);
     void walkmime(Binc::MimePart* doc, int depth);
     bool processAttach();
-    Binc::MimeDocument      *m_bincdoc;
-    int                      m_fd;
-    std::stringstream       *m_stream;
-    int                      m_idx; // starts at -1 for self, then index into
+    Binc::MimeDocument     *m_bincdoc;
+    int                     m_fd;
+    std::stringstream      *m_stream;
+    int                     m_idx; // starts at -1 for self, then index into
                                     // attachments;
-    vector<MHMailAttach *>   m_attachments;
+    string                  m_subject; 
+    vector<MHMailAttach *>  m_attachments;
 };
 
 class MHMailAttach {

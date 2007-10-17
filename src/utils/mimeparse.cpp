@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.18 2007-01-18 14:23:42 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.19 2007-10-17 11:40:35 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -221,7 +221,7 @@ find_next_token(const string &in, string::size_type start,
 	lex.quote = oquot;
 	return ++end;
     } else {
-	string::size_type end = in.find_first_of(delims + " \t(", start);
+	string::size_type end = in.find_first_of(delims + "\r\n \t(", start);
 	lex.what = Lexical::token;
 	lex.quote = 0;
 	if (end == string::npos) {
@@ -829,6 +829,8 @@ main(int argc, const char **argv)
       const char *tr[] = {
 	  "text/html;charset = UTF-8 ; otherparam=garb; \n"
 	  "QUOTEDPARAM=\"quoted value\"",
+
+	  "text/plain; charset=ASCII\r\n name=\"809D3016_5691DPS_5.2.LIC\"",
 
 	  "application/x-stuff;"
 	  "title*0*=us-ascii'en'This%20is%20even%20more%20;"
