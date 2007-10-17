@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.34 2007-08-28 08:07:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.35 2007-10-17 09:57:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -498,7 +498,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     }
 
     if (m_handlers.empty()) {
-	LOGERR(("FileInterner::internfile: stack empty\n"));
+	LOGERR(("FileInterner::internfile: conversion ended with no doc\n"));
 	return FIError;
     }
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.53 2007-10-09 09:43:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.54 2007-10-17 09:57:23 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -134,7 +134,6 @@ RclConfig::RclConfig(const string *argcnf)
 
 bool RclConfig::updateMainConfig()
 {
-    LOGDEB(("RclConfig::updateMainConfig()\n"));
     m_conf = new ConfStack<ConfTree>("recoll.conf", m_cdirs, true);
     if (m_conf == 0 || !m_conf->ok()) {
 	string where;
