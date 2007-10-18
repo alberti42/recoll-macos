@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.6 2007-10-09 14:08:24 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.7 2007-10-18 10:15:53 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -14,9 +14,12 @@ static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.6 2007-10-09 14:08:24 dockes
 #define QLISTBOXITEM QListBoxItem
 #define QLBEXACTMATCH Qt::ExactMatch
 #define QVBOXLAYOUT QVBoxLayout
+#define QGROUPBOX QGroupBox
+#include <qgroupbox.h>
 #else
 #include <Q3HBoxLayout>
 #include <Q3VBoxLayout>
+#include <Q3GroupBox>
 
 #include <QFrame>
 #define QFRAME_INCLUDE <q3frame.h>
@@ -33,6 +36,7 @@ static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.6 2007-10-09 14:08:24 dockes
 #define QLISTBOXITEM Q3ListBoxItem
 #define QLBEXACTMATCH Q3ListBox::ExactMatch
 #define QVBOXLAYOUT Q3VBoxLayout
+#define QGROUPBOX Q3GroupBox
 #endif
 #include <qlayout.h>
 #include QFRAME_INCLUDE
@@ -41,7 +45,6 @@ static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.6 2007-10-09 14:08:24 dockes
 #include QLISTBOX_INCLUDE
 #include <qtimer.h>
 #include <qmessagebox.h>
-#include <qgroupbox.h>
 
 #include <list>
 using std::list;
@@ -276,15 +279,13 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     line2->setFrameShadow(QFRAME::Sunken);
     vboxLayout->addWidget(line2);
 
-    m_groupbox = new QGroupBox(this);
-    QVBoxLayout *vgbox = new QVBoxLayout;
+    m_groupbox = new QGROUPBOX(1, Qt::Horizontal, this);
     ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames", &m_sk));
     ConfParamSLW *eskn = new 
 	ConfParamSLW(m_groupbox, lnkskn, 
 		     QObject::tr("List of skipped names"),
 		     QObject::tr("These are patterns for file or directory "
 				 " names which should not be indexed."));
-    vgbox->addWidget(eskn);
     m_widgets.push_back(eskn);
 
     list<string> args;
@@ -316,7 +317,6 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 			  "The default value is empty, "
 			  "and the value from the NLS environnement is used."
 			  ), charsets);
-    vgbox->addWidget(e21);
     m_widgets.push_back(e21);
 
     ConfLink lnk3(new ConfLinkRclRep(config, "followLinks", &m_sk));
@@ -326,7 +326,6 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		        QObject::tr("Follow symbolic links while "
 			  "indexing. The default is no, "
 			  "to avoid duplicate indexing"));
-    vgbox->addWidget(e3);
     m_widgets.push_back(e3);
 
     ConfLink lnkafln(new ConfLinkRclRep(config, "indexallfilenames", &m_sk));
@@ -336,9 +335,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		       QObject::tr("Index the names of files for which the contents "
 			  "cannot be identified or processed (no or "
 			  "unsupported mime type). Default true"));
-    vgbox->addWidget(eafln);
     m_widgets.push_back(eafln);
-    m_groupbox->setLayout(vgbox);
     vboxLayout->addWidget(m_groupbox);
     subDirChanged();
 }
