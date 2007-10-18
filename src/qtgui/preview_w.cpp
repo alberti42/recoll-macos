@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.27 2007-09-08 17:25:49 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.28 2007-10-18 10:39:41 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -35,10 +35,12 @@ using std::pair;
 #if (QT_VERSION < 0x040000)
 #include <qtextedit.h>
 #include <qprogressdialog.h>
+#define THRFINISHED finished
 #else
 #include <q3textedit.h>
 #include <q3progressdialog.h>
 #include <q3stylesheet.h>
+#define THRFINISHED isFinished
 #endif
 #include <qevent.h>
 #include <qlabel.h>
@@ -581,10 +583,10 @@ class LoadThread : public QThread {
 class ToRichThread : public QThread {
     string &in;
     const HiliteData &hdata;
-    QString &out;
+    list<string> &out;
     int loglevel;
  public:
-    ToRichThread(string &i, const HiliteData& hd, QString &o) 
+    ToRichThread(string &i, const HiliteData& hd, list<string> &o) 
 	: in(i), hdata(hd), out(o)
     {
 	    loglevel = DebugLog::getdbl()->getlevel();
@@ -592,12 +594,10 @@ class ToRichThread : public QThread {
     virtual void run()
     {
 	DebugLog::getdbl()->setloglevel(loglevel);
-	string rich;
 	try {
-	    plaintorich(in, rich, hdata, false, true);
+	    plaintorich(in, out, hdata, false, true);
 	} catch (CancelExcept) {
 	}
-	out = QString::fromUtf8(rich.c_str(), rich.length());
     }
 };
 
@@ -665,13 +665,8 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     for (prog = 1;;prog++) {
 	waiter.start();
 	waiter.wait();
-#if (QT_VERSION < 0x040000)
-	if (lthr.finished())
+	if (lthr.THRFINISHED ())
 	    break;
-#else
-	if (lthr.isFinished())
-	    break;
-#endif
 	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
 	qApp->processEvents();
 	if (progress.wasCanceled()) {
@@ -703,29 +698,27 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     // Reset config just in case.
     rclconfig->setKeyDir("");
 
-    // Create preview text: highlight search terms (if not too big):
-    QString richTxt;
-
+    // Create preview text: highlight search terms
     // We don't do the highlighting for very big texts: too long. We
     // should at least do special char escaping, in case a '&' or '<'
     // somehow slipped through previous processing.
-    bool highlightTerms = fdoc.text.length() < (unsigned long)prefs.maxhltextmbs * 1024 * 1024;
-    int beaconPos = -1;
+    bool highlightTerms = fdoc.text.length() < 
+	(unsigned long)prefs.maxhltextmbs * 1024 * 1024;
+    // Final text is produced in chunks so that we can display the top
+    // while still inserting at bottom
+    list<QString> qrichlst;
+
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
 	qApp->processEvents();
-	ToRichThread rthr(fdoc.text, m_hData, richTxt);
+	list<string> richlst;
+	ToRichThread rthr(fdoc.text, m_hData, richlst);
 	rthr.start();
 
 	for (;;prog++) {
 	    waiter.start();	waiter.wait();
-#if (QT_VERSION < 0x040000)
-	if (rthr.finished())
-	    break;
-#else
-	if (rthr.isFinished())
-	    break;
-#endif
+	    if (rthr.THRFINISHED ())
+		break;
 	    progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
 	    qApp->processEvents();
 	    if (progress.wasCanceled()) {
@@ -737,32 +730,36 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 
 	// Conversion to rich text done
 	if (CancelCheck::instance().cancelState()) {
-	    if (richTxt.length() == 0) {
+	    if (richlst.size() == 0 || richlst.front().length() == 0) {
 		// We cant call closeCurrentTab here as it might delete
 		// the object which would be a nasty surprise to our
 		// caller.
 		return false;
 	    } else {
-		richTxt += "<b>Cancelled !</b>";
+		richlst.back() += "<b>Cancelled !</b>";
 	    }
 	}
-	beaconPos = richTxt.find(QString::fromUtf8(firstTermBeacon));
+	// Convert to QString list
+	for (list<string>::iterator it = richlst.begin(); 
+	     it != richlst.end(); it++) {
+	    qrichlst.push_back(QString::fromUtf8(it->c_str(), it->length()));
+	}
     } else {
-	// Note that in the case were we don't call plaintorich, the
-	// text will no be identified as richtxt/html (no <html> or
-	// <qt> etc. at the beginning), and there is no need to escape
-	// special characters
-	richTxt = QString::fromUtf8(fdoc.text.c_str(), fdoc.text.length());
+	// No plaintorich() call.
+	// In this case, the text will no be identified as
+	// richtxt/html (no <html> or <qt> etc. at the beginning), and
+	// there is no need to escape special characters.
+	// Also we need to split in chunks (so that the top is displayed faster),
+	// and we must do it on a QString (to avoid utf8 issues).
+	QString qr = QString::fromUtf8(fdoc.text.c_str(), fdoc.text.length());
+	int l = 0;
+	for (int pos = 0; pos < (int)qr.length(); pos += l) {
+	    l = MIN(CHUNKL, qr.length() - pos);
+	    qrichlst.push_back(qr.mid(pos, l));
+	}
     }
-
-    m_haveAnchors = (beaconPos != -1);
-    LOGDEB(("LoadFileInCurrentTab: rich: cancel %d txtln %d, hasAnchors %d "
-	    "(beaconPos %d)\n", 
-	    CancelCheck::instance().cancelState(), richTxt.length(), 
-	    m_haveAnchors, beaconPos));
-
+	    
     // Load into editor
-    // Do it in several chunks 
     QTextEdit *editor = getCurrentEditor();
     editor->setText("");
     if (highlightTerms) {
@@ -775,24 +772,18 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     prog = 2 * nsteps / 3;
     progress.setLabelText(tr("Loading preview text into editor"));
     qApp->processEvents();
-    int l = 0;
-    for (int pos = 0; pos < (int)richTxt.length(); pos += l, prog++) {
+    int instep = 0;
+    for (list<QString>::iterator it = qrichlst.begin(); 
+	 it != qrichlst.end(); it++, prog++, instep++) {
 	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
 	qApp->processEvents();
-	
-	l = MIN(CHUNKL, richTxt.length() - pos);
-	// Avoid breaking inside a tag. Our tags are short (ie: <br>)
-	if (pos + l != (int)richTxt.length()) {
-	    for (int i = -15; i < 0; i++) {
-		if (richTxt[pos+l+i] == '<') {
-		    l = l+i;
-		    break;
-		}
-	    }
-	}
-	editor->append(richTxt.mid(pos, l));
+	if (it->find(QString::fromUtf8(firstTermBeacon)) != -1) 
+	    m_haveAnchors = true;
+
+	editor->append(*it);
+
 	// Stay at top
-	if (pos < 5) {
+	if (instep < 5) {
 	    editor->setCursorPosition(0,0);
 	    editor->ensureCursorVisible();
 	}
@@ -803,6 +794,8 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	    break;
 	}
     }
+
+
     progress.close();
 
     if (searchTextLine->text().length() != 0) {

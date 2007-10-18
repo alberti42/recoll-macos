@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.28 2007-10-17 16:12:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.29 2007-10-18 10:39:41 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -301,7 +301,7 @@ bool myTextSplitCB::matchGroups()
 }
 
 // Setting searchable beacons in the text to walk the term list.
-static const char *termAnchorNameBase = "FIRSTTERM";
+static const char *termAnchorNameBase = "TRM";
 string termAnchorName(int i)
 {
     char acname[sizeof(termAnchorNameBase) + 20];
@@ -314,8 +314,9 @@ string termAnchorName(int i)
 // search hit positions does not work well. So we mark the positions with
 // a special string which we then use with the find() function for positionning
 // We used to use some weird utf8 char for this, but this was displayed 
-// inconsistently depending of system, font, etc. We now use a good ole bel 
-// char which doesnt' seem to cause any trouble.
+// inconsistently depending of system, font, etc. We now use a good ole ctl
+// char which doesnt' seem to cause any trouble. Wanted to use ^L, but can't
+// be searched, so ^G
 const char *firstTermBeacon = "\007";
 #endif
 
@@ -339,12 +340,11 @@ static string termBeacon(int i)
 // Instead, we mark the search term positions either with html anchor
 // (qt currently has problems with them), or a special string, and the
 // caller will use the editor's find() function to position on it
-bool plaintorich(const string& in, string& out, 
+bool plaintorich(const string& in, list<string>& out, 
 		 const HiliteData& hdata,
-		 bool noHeader, bool needBeacons)
+		 bool noHeader, bool needBeacons, int chunksize)
 {
     Chrono chron;
-    out.erase();
     const vector<string>& terms(hdata.terms);
     const vector<vector<string> >& groups(hdata.groups);
     const vector<int>& slacks(hdata.gslks);
@@ -375,11 +375,15 @@ bool plaintorich(const string& in, string& out,
 
     cb.matchGroups();
 
+    out.clear();
+    out.push_back("");
+    list<string>::iterator sit = out.begin();
+
     // Rich text output
     if (noHeader)
-	out = "";
+	*sit = "";
     else 
-	out = "<qt><head><title></title></head><body><p>";
+	*sit = "<qt><head><title></title></head><body><p>";
 
     // Iterator for the list of input term positions. We use it to
     // output highlight tags and to compute term positions in the
@@ -413,47 +417,61 @@ bool plaintorich(const string& in, string& out,
 	    int ibyteidx = chariter.getBpos();
 	    if (ibyteidx == tPosIt->first) {
 		if (needBeacons)
-		    out += termBeacon(anchoridx++);
-		out += "<termtag>";
+		    *sit += termBeacon(anchoridx++);
+		*sit += "<termtag>";
 	    } else if (ibyteidx == tPosIt->second) {
 		// Output end tag, then skip all highlight areas that
 		// would overlap this one
-		out += "</termtag>";
+		*sit += "</termtag>";
 		int crend = tPosIt->second;
 		while (tPosIt != cb.tboffs.end() && tPosIt->first < crend)
 		    tPosIt++;
+		// Maybe end chunk
+		if (sit->size() > (unsigned int)chunksize) {
+		    out.push_back("");
+		    sit++;
+		}
 	    }
 	}
 
 	switch(*chariter) {
 	case '\n':
 	    if (ateol < 2) {
-		out += "<br>\n";
+		*sit += "<br>\n";
 		ateol++;
 	    }
 	    break;
 	case '\r': 
 	    break;
+	case '\007': // used as anchor char, strip other instances
+	    break;
 	case '<':
 	    ateol = 0;
-	    out += "&lt;";
+	    *sit += "&lt;";
 	    break;
 	case '&':
 	    ateol = 0;
-	    out += "&amp;";
+	    *sit += "&amp;";
 	    break;
 	default:
 	    // We don't change the eol status for whitespace, want a real line
 	    if (!(*chariter == ' ' || *chariter == '\t')) {
 		ateol = 0;
 	    }
-	    chariter.appendchartostring(out);
+	    chariter.appendchartostring(*sit);
 	}
     }
-#if 1
+#if 0
     {
 	FILE *fp = fopen("/tmp/debugplaintorich", "a");
-	fprintf(fp, "%s\n", out.c_str());
+	fprintf(fp, "BEGINOFPLAINTORICHOUTPUT\n");
+	for (list<string>::iterator it = out.begin();
+	     it != out.end(); it++) {
+	    fprintf(fp, "BEGINOFPLAINTORICHCHUNK\n");
+	    fprintf(fp, "%s", it->c_str());
+	    fprintf(fp, "ENDOFPLAINTORICHCHUNK\n");
+	}
+	fprintf(fp, "ENDOFPLAINTORICHOUTPUT\n");
 	fclose(fp);
     }
 #endif
