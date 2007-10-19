@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.23 2007-10-05 08:03:01 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.24 2007-10-19 15:25:19 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -107,7 +107,7 @@ void SSearch::startSimpleSearch()
 	// If there is no white space inside the query, then the user
 	// certainly means it as a phrase.
 	bool isreallyaphrase = false;
-	if (u8.find_first_of(" \t") == string::npos)
+	if (u8.find_first_of(" \t\r\n") == string::npos)
 	    isreallyaphrase = true;
 
 	// Maybe add automatic phrase ? For ALL and ANY, and not if
