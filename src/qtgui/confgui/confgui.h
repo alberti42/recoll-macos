@@ -1,7 +1,26 @@
 #ifndef _confgui_h_included_
 #define _confgui_h_included_
-/* @(#$Id: confgui.h,v 1.5 2007-10-09 11:08:17 dockes Exp $  (C) 2007 J.F.Dockes */
-
+/* @(#$Id: confgui.h,v 1.6 2007-10-19 14:31:40 dockes Exp $  (C) 2007 J.F.Dockes */
+/**
+ * This file defines a number of simple classes (virtual base: ConfParamW) 
+ * which let the user input configuration parameters. 
+ *
+ * Subclasses are defined for entering different kind of data, ie a string, 
+ * a file name, an integer, etc.
+ *
+ * Each configuration gui object is linked to the configuration data through
+ * a "link" object which knows the details of interacting with the actual
+ * configuration data, like the parameter name, the actual config object, 
+ * the method to call etc.
+ * 
+ * The link object is set when the input widget is created and cannot be 
+ * changed.
+ *
+ * The widgets are typically linked to a temporary configuration object, which
+ * is then copied to the actual configuration if the data is accepted, or
+ * destroyed and recreated as a copy if Cancel is pressed (you have to 
+ * delete/recreate the widgets in this case as the links are no longer valid).
+ */
 #include <string>
 
 #include <qglobal.h>
@@ -37,19 +56,21 @@ namespace confgui {
     };
     typedef RefCntr<ConfLinkRep> ConfLink;
 
+    // Useful to store/manage data which has no direct representation in
+    // the config, ie list of subkey directories
     class ConfLinkNullRep : public ConfLinkRep {
     public:
 	virtual ~ConfLinkNullRep() {}
 	virtual bool set(const string&)
 	{
-	    //fprintf(stderr, "Setting value to [%s]\n", val.c_str());
 	    return true;
 	}
 	virtual bool get(string& val) {val = ""; return true;}
     };
 
     // A widget to let the user change one configuration
-    // parameter. Subclassed for specific parameter types
+    // parameter. Subclassed for specific parameter types. Basically
+    // has a label and some kind of entry widget
     class ConfParamW : public QWidget {
 	Q_OBJECT
     public:

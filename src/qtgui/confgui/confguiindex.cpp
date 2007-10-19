@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.7 2007-10-18 10:15:53 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.8 2007-10-19 14:31:40 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -65,11 +65,12 @@ const static int margin = 6;
 ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
     : QTABDIALOG(parent), m_rclconf(config)
 {
+    setCaption(QString::fromLocal8Bit(config->getConfDir().c_str()));
     setOkButton();
     setCancelButton();
 
     reloadPanels();
-
+    resize(QSize(600, 500).expandedTo(minimumSizeHint()));
     connect(this, SIGNAL(applyButtonPressed()), this, SLOT(acceptChanges()));
     connect(this, SIGNAL(cancelButtonPressed()), this, SLOT(rejectChanges()));
 }
@@ -136,7 +137,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     ConfParamDNLW *etopdirs = new 
 	ConfParamDNLW(this, lnktopdirs, tr("Top directories"),
 		      tr("The list of directories where recursive "
-			 "indexing starts.<br>Default: your home."));
+			 "indexing starts. Default: your home."));
     vboxLayout->addWidget(etopdirs);
 
     ConfLink lnkskp(new ConfLinkRclRep(config, "skippedPaths"));
@@ -245,10 +246,15 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     ConfLink lnksubkeydirs(new ConfLinkNullRep());
     m_subdirs = new 
 	ConfParamDNLW(this, lnksubkeydirs, 
-		      QObject::tr("<b>Subdirectories with specific parameters"),
+		      QObject::tr("<b>Customised subtrees"),
 		      QObject::tr("The list of subdirectories in the indexed "
 				  "hierarchy <br>where some parameters need "
-				  "to be customised. Default: empty."));
+				  "to be redefined. Default: empty."));
+    m_subdirs->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
+					  QSizePolicy::Preferred,
+					  1,  // Horizontal stretch
+					  1,  // Vertical stretch
+			    m_subdirs->sizePolicy().hasHeightForWidth()));
     m_subdirs->getListBox()->setSelectionMode(QLISTBOX::Single);
     connect(m_subdirs->getListBox(), SIGNAL(selectionChanged()),
 	    this, SLOT(subDirChanged()));
@@ -280,6 +286,11 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     vboxLayout->addWidget(line2);
 
     m_groupbox = new QGROUPBOX(1, Qt::Horizontal, this);
+    m_groupbox->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
+					  QSizePolicy::Preferred,
+					  1,  // Horizontal stretch
+					  3,  // Vertical stretch
+			    m_groupbox->sizePolicy().hasHeightForWidth()));
     ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames", &m_sk));
     ConfParamSLW *eskn = new 
 	ConfParamSLW(m_groupbox, lnkskn, 
