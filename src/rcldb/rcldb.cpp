@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.123 2007-09-07 08:05:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.124 2007-10-24 08:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -104,18 +104,20 @@ class Native {
     Xapian::Database db;
     Xapian::Query    query; // query descriptor: terms and subqueries
 			    // joined by operators (or/and etc...)
-    Xapian::Enquire *enquire; // Open query descriptor.
-    Xapian::MSet     mset;    // Partial result set
+    Xapian::MatchDecider *decider;
+    Xapian::Enquire      *enquire; // Open query descriptor.
+    Xapian::MSet          mset;    // Partial result set
 
     // Term frequencies for current query. See makeAbstract, setQuery
     map<string, double>  m_termfreqs; 
     
     Native(Db *db) 
 	: m_db(db),
-	  m_isopen(false), m_iswritable(false), enquire(0) 
+	  m_isopen(false), m_iswritable(false), decider(0), enquire(0)
     { }
 
     ~Native() {
+	delete decider;
 	delete enquire;
     }
 
@@ -134,8 +136,16 @@ class Native {
      */
     bool subDocs(const string &hash, vector<Xapian::docid>& docids);
 
-    /** Keep this inline */
-    bool filterMatch(Db *rdb, Xapian::Document &xdoc) {
+};
+
+class FilterMatcher : public Xapian::MatchDecider {
+public:
+    FilterMatcher(const string &topdir)
+	: m_topdir(topdir)
+    {}
+    virtual ~FilterMatcher() {}
+
+    virtual bool operator()(const Xapian::Document &xdoc) const {
 	// Parse xapian document's data and populate doc fields
 	string data = xdoc.get_data();
 	ConfSimple parms(&data);
@@ -143,16 +153,22 @@ class Native {
 	// The only filtering for now is on file path (subtree)
 	string url;
 	parms.get(string("url"), url);
-	url = url.substr(7);
-	LOGDEB2(("Rcl::Db::Native:filter filter [%s] fn [%s]\n",
-		 rdb->m_filterTopDir.c_str(), url.c_str()));
-	if (url.find(rdb->m_filterTopDir) == 0) 
-	    return true;
-	return false;
+	LOGDEB2(("FilterMatcher topdir [%s] url [%s]\n",
+		 m_topdir.c_str(), url.c_str()));
+	if (url.find(m_topdir, 7) == 7) {
+	    LOGDEB(("FilterMatcher: MATCH\n"));
+	    return true; 
+	} else {
+	    LOGDEB(("FilterMatcher: NO MATCH\n"));
+	    return false;
+	}
     }
+    
+private:
+    string m_topdir;
 };
 
-    /* See comment in class declaration */
+/* See comment in class declaration */
 bool Native::subDocs(const string &hash, vector<Xapian::docid>& docids) 
 {
     docids.clear();
@@ -1424,6 +1440,10 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
     LOGDEB(("Db::setQuery:\n"));
 
     m_filterTopDir = sdata->getTopdir();
+    delete m_ndb->decider;
+    m_ndb->decider = 0;
+    if (!m_filterTopDir.empty())
+	m_ndb->decider = new FilterMatcher(m_filterTopDir);
     m_dbindices.clear();
     m_qOpts = opts;
     m_ndb->m_termfreqs.clear();
@@ -1760,12 +1780,8 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
 	return false;
     }
 
-    // For now the only post-query filter is on dir subtree
-    bool postqfilter = !m_filterTopDir.empty();
-    LOGDEB1(("Topdir %s postqflt %d\n", m_asdata.topdir.c_str(), postqfilter));
-
     int xapi;
-    if (postqfilter) {
+    if (m_ndb->decider) {
 	// There is a postquery filter, does this fall in already known area ?
 	if (exti >= (int)m_dbindices.size()) {
 	    // Have to fetch xapian docs and filter until we get
@@ -1796,7 +1812,7 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
 		for (unsigned int i = 0; i < m_ndb->mset.size() ; i++) {
 		    LOGDEB(("Db::getDoc: [%d]\n", i));
 		    Xapian::Document xdoc = m_ndb->mset[i].get_document();
-		    if (m_ndb->filterMatch(this, xdoc)) {
+		    if ((*m_ndb->decider)(xdoc)) {
 			m_dbindices.push_back(first + i);
 		    }
 		}
@@ -1807,7 +1823,6 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
     } else {
 	xapi = exti;
     }
-
 
     // From there on, we work with a xapian enquire item number. Fetch it
     int first = m_ndb->mset.get_firstitem();
