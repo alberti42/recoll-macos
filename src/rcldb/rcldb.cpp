@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.124 2007-10-24 08:42:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.125 2007-10-24 15:38:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -104,7 +104,31 @@ class Native {
     Xapian::Database db;
     Xapian::Query    query; // query descriptor: terms and subqueries
 			    // joined by operators (or/and etc...)
-    Xapian::MatchDecider *decider;
+
+    // Filtering results on location. There are 2 possible approaches
+    // for this:
+    //   - Set a "MatchDecider" to be used by Xapian during the query
+    //   - Filter the results out of Xapian (this also uses a
+    //     Xapian::MatchDecider object, but applied to the results by Recoll.
+    // 
+    // The result filtering approach was the first implemented. 
+    //
+    // The efficiency of both methods depend on the searches, so the code
+    // for both has been kept.  A nice point for the Xapian approach is that
+    // the result count estimate are correct (they are wrong with
+    // the postfilter approach). It is also faster in some worst case scenarios
+    // so this now the default (but the post-filtering is faster in many common
+    // cases).
+    // 
+    // Which is used is decided in SetQuery(), by setting either of
+    // the two following members. This in turn is controlled by a
+    // preprocessor directive.
+
+#define XAPIAN_FILTERING 1
+
+    Xapian::MatchDecider *decider;   // Xapian does the filtering
+    Xapian::MatchDecider *postfilter; // Result filtering done by Recoll
+
     Xapian::Enquire      *enquire; // Open query descriptor.
     Xapian::MSet          mset;    // Partial result set
 
@@ -113,11 +137,13 @@ class Native {
     
     Native(Db *db) 
 	: m_db(db),
-	  m_isopen(false), m_iswritable(false), decider(0), enquire(0)
+	  m_isopen(false), m_iswritable(false), decider(0), postfilter(0),
+	  enquire(0)
     { }
 
     ~Native() {
 	delete decider;
+	delete postfilter;
 	delete enquire;
     }
 
@@ -145,7 +171,9 @@ public:
     {}
     virtual ~FilterMatcher() {}
 
-    virtual bool operator()(const Xapian::Document &xdoc) const {
+    virtual bool operator()(const Xapian::Document &xdoc) const 
+    {
+	m_cnt++;
 	// Parse xapian document's data and populate doc fields
 	string data = xdoc.get_data();
 	ConfSimple parms(&data);
@@ -156,17 +184,19 @@ public:
 	LOGDEB2(("FilterMatcher topdir [%s] url [%s]\n",
 		 m_topdir.c_str(), url.c_str()));
 	if (url.find(m_topdir, 7) == 7) {
-	    LOGDEB(("FilterMatcher: MATCH\n"));
+	    LOGDEB2(("FilterMatcher: MATCH    %d\n", m_cnt));
 	    return true; 
 	} else {
-	    LOGDEB(("FilterMatcher: NO MATCH\n"));
+	    LOGDEB2(("FilterMatcher: NO MATCH %d\n", m_cnt));
 	    return false;
 	}
     }
+    static int m_cnt;
     
 private:
     string m_topdir;
 };
+int FilterMatcher::m_cnt;
 
 /* See comment in class declaration */
 bool Native::subDocs(const string &hash, vector<Xapian::docid>& docids) 
@@ -664,8 +694,7 @@ bool Db::i_close(bool final)
 	if (w)
 	    LOGDEB(("Rcl::Db:close: xapian will close. May take some time\n"));
 	// Used to do a flush here. Cant see why it should be necessary.
-	delete m_ndb;
-	m_ndb = 0;
+	deleteZ(m_ndb);
 	if (w)
 	    LOGDEB(("Rcl::Db:close() xapian close done.\n"));
 	if (final) {
@@ -1440,14 +1469,20 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
     LOGDEB(("Db::setQuery:\n"));
 
     m_filterTopDir = sdata->getTopdir();
-    delete m_ndb->decider;
-    m_ndb->decider = 0;
-    if (!m_filterTopDir.empty())
-	m_ndb->decider = new FilterMatcher(m_filterTopDir);
+    deleteZ(m_ndb->decider);
+    deleteZ(m_ndb->postfilter);
+    if (!m_filterTopDir.empty()) {
+#if XAPIAN_FILTERING
+	m_ndb->decider = 
+#else
+        m_ndb->postfilter =
+#endif
+	    new FilterMatcher(m_filterTopDir);
+    }
     m_dbindices.clear();
     m_qOpts = opts;
     m_ndb->m_termfreqs.clear();
-
+    FilterMatcher::m_cnt = 0;
     Xapian::Query xq;
     if (!sdata->toNativeQuery(*this, &xq, 
 			      (opts & Db::QO_STEM) ? stemlang : "")) {
@@ -1745,10 +1780,12 @@ int Db::getResCnt()
     string ermsg;
     if (m_ndb->mset.size() <= 0) {
 	try {
-	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum);
+	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum, 
+						   0, m_ndb->decider);
 	} catch (const Xapian::DatabaseModifiedError &error) {
 	    m_ndb->db.reopen();
-	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum);
+	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum,
+						   0, m_ndb->decider);
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
 	    LOGERR(("enquire->get_mset: exception: %s\n", ermsg.c_str()));
@@ -1781,7 +1818,7 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
     }
 
     int xapi;
-    if (m_ndb->decider) {
+    if (m_ndb->postfilter) {
 	// There is a postquery filter, does this fall in already known area ?
 	if (exti >= (int)m_dbindices.size()) {
 	    // Have to fetch xapian docs and filter until we get
@@ -1812,7 +1849,7 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
 		for (unsigned int i = 0; i < m_ndb->mset.size() ; i++) {
 		    LOGDEB(("Db::getDoc: [%d]\n", i));
 		    Xapian::Document xdoc = m_ndb->mset[i].get_document();
-		    if ((*m_ndb->decider)(xdoc)) {
+		    if ((*m_ndb->postfilter)(xdoc)) {
 			m_dbindices.push_back(first + i);
 		    }
 		}
@@ -1831,10 +1868,13 @@ bool Db::getDoc(int exti, Doc &doc, int *percent)
     if (!(xapi >= first && xapi <= last)) {
 	LOGDEB(("Fetching for first %d, count %d\n", xapi, qquantum));
 	try {
-	  m_ndb->mset = m_ndb->enquire->get_mset(xapi, qquantum);
+	    m_ndb->mset = m_ndb->enquire->get_mset(xapi, qquantum,
+						   0, m_ndb->decider);
 	} catch (const Xapian::DatabaseModifiedError &error) {
 	    m_ndb->db.reopen();
-	    m_ndb->mset = m_ndb->enquire->get_mset(xapi, qquantum);
+	    m_ndb->mset = m_ndb->enquire->get_mset(xapi, qquantum,
+						   0, m_ndb->decider);
+
 	} catch (const Xapian::Error & error) {
 	  LOGERR(("enquire->get_mset: exception: %s\n", 
 		  error.get_msg().c_str()));
