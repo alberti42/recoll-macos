@@ -16,13 +16,13 @@
  */
 #ifndef _MH_EXEC_H_INCLUDED_
 #define _MH_EXEC_H_INCLUDED_
-/* @(#$Id: mh_exec.h,v 1.3 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_exec.h,v 1.4 2007-10-25 15:50:31 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
+using std::list;
+using std::string;
 
-#include "rclconfig.h"
-#include "rcldb.h"
 #include "mimehandler.h"
 
 /** 
@@ -31,7 +31,7 @@
 */
 class MimeHandlerExec : public RecollFilter {
  public:
-    std::list<std::string> params;
+    list<string> params;
     MimeHandlerExec(const string& mt) : RecollFilter(mt) {}
     virtual ~MimeHandlerExec() {}
     virtual bool set_document_file(const string &file_path) {
