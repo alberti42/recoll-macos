@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.125 2007-10-24 15:38:53 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.126 2007-10-25 07:09:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1507,6 +1507,9 @@ bool Db::setQuery(RefCntr<SearchData> sdata, int opts,
 	
     if (d.find("Xapian::Query") == 0)
 	d.erase(0, strlen("Xapian::Query"));
+    if (!m_filterTopDir.empty()) {
+	d += string(" [dir: ") + m_filterTopDir + "]";
+    }
     sdata->setDescription(d);
     LOGDEB(("Db::SetQuery: Q: %s\n", sdata->getDescription().c_str()));
     return true;
