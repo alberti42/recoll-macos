@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confgui.cpp,v 1.7 2007-10-09 11:08:17 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confgui.cpp,v 1.8 2007-10-25 15:51:02 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -180,9 +180,9 @@ ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink cflink,
 {
     if (!createCommon(lbltxt, tltptxt))
 	return;
-    m_cmb = new QComboBox(this);
+    m_cmb = new QComboBox(false, this);
     m_cmb->insertStringList(sl);
-    m_cmb->setEditable(false);
+    //    m_cmb->setEditable(false);
     m_cmb->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
 				     QSizePolicy::Fixed,
 				     1,  // Horizontal stretch
