@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.8 2007-10-19 14:31:40 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.9 2007-10-25 15:51:06 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -142,7 +142,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnkskp(new ConfLinkRclRep(config, "skippedPaths"));
     ConfParamSLW *eskp = new 
-	ConfParamSLW(this, lnkskp, tr("List of skipped paths"),
+	ConfParamSLW(this, lnkskp, tr("Skipped paths"),
 		     tr("These are names of directories which indexing "
 			"will not enter.<br> May contain wildcards. "
 			"Must match "
@@ -160,7 +160,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     }
     ConfLink lnkidxsl(new ConfLinkRclRep(config, "indexstemminglanguages"));
     ConfParamCSLW *eidxsl = new 
-	ConfParamCSLW(this, lnkidxsl, tr("Index stemming languages"),
+	ConfParamCSLW(this, lnkidxsl, tr("Stemming languages"),
 		      tr("The languages for which stemming expansion<br>"
 			 "dictionaries will be built."), stemlangs);
     vboxLayout->addWidget(eidxsl);
@@ -294,7 +294,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames", &m_sk));
     ConfParamSLW *eskn = new 
 	ConfParamSLW(m_groupbox, lnkskn, 
-		     QObject::tr("List of skipped names"),
+		     QObject::tr("Skipped names"),
 		     QObject::tr("These are patterns for file or directory "
 				 " names which should not be indexed."));
     m_widgets.push_back(eskn);
