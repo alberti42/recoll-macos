@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.54 2007-10-14 16:07:24 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.55 2007-10-25 08:04:37 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -853,6 +853,13 @@ fvwm
       <itemizedlist>
 	<listitem><para><literal>ext</literal> for specifying the file
 	name extension (Ex: <literal>ext:html</literal>)</para>
+	</listitem>
+	<listitem><para><literal>dir</literal> for specifying the file
+	location (Ex:
+	<literal>dir:/home/me/somedir</literal>). Please note
+	that this is quite inefficient, that it may produce very
+	slow searches, and that it may be worth in some
+	cases to set up separate databases instead.</para>
 	</listitem>
 	<listitem><para><literal>mime</literal> for specifying the
 	mime type. This one is quite special because you can specify
@@ -2235,6 +2242,31 @@ skippedPaths = ~/somedir/&lowast;.txt
       </sect2>
 
     </sect1>
+
+    <sect1 id="rcl.kicker-applet">
+      <title>The KDE Kicker Recoll applet</title>
+
+      <para>The &RCL; source tree contains the source code to the
+	<literal>recoll_applet</literal>, a small application derived
+	from the <literal>find_applet</literal>. This can be used to
+	add a small &RCL; launcher to the KDE panel.</para>
+
+      <para>The applet is not automatically built with the main &RCL;
+      programs. To build it, you need to unpack the &RCL; source
+      code, then go to the <filename>kde/recoll_applet/</filename>
+      directory, and type the usual 
+      <userinput>configure;make;make install</userinput>.</para>
+      
+      <para>You can then add the applet to the panel by right-clicking
+      the panel and choosing the <guilabel>Add applet</guilabel>
+      entry.</para>
+
+      <para>The <literal>recoll_applet</literal> has a small text
+      window where you can type a &RCL; query (in query language
+      form), and an icon which can be used to restrict the search to
+      certain types of files.</para>
+    </sect1>
+
 
     <sect1 id="rcl.extending">
       <title>Extending &RCL;</title>
