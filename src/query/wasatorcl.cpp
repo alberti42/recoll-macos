@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.10 2007-10-05 14:00:04 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.11 2007-10-25 07:27:30 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    continue;
 	case WasaQuery::OP_LEAF:
 
-	    // Special cases for mime and category. Not pretty.
+	    // Special cases (mime, category, dir filter ...). Not pretty.
 	    if (!stringicmp("mime", (*it)->m_fieldspec)) {
 		sdata->addFiletype((*it)->m_value);
 		break;
@@ -77,6 +77,10 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 			sdata->addFiletype(*mit);
 		    }
 		}
+		break;
+	    } 
+	    if (!stringicmp("dir", (*it)->m_fieldspec)) {
+		sdata->setTopdir((*it)->m_value);
 		break;
 	    } 
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.7 2007-06-19 15:47:25 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.8 2007-10-25 07:27:30 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -54,6 +54,7 @@ static char usage [] =
 "Common options:\n"
 "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
 "    -d also dump file contents\n"
+"    -n <cnt> limit the maximum number of results (0->no limit, default 2000)\n"
 ;
 static void
 Usage(void)
@@ -68,6 +69,7 @@ static int     op_flags;
 #define OPT_a     0x4 
 #define OPT_c     0x8
 #define OPT_d     0x10
+#define OPT_n     0x20
 
 static RclConfig *rclconfig;
 RclConfig *RclConfig::getMainConfig() 
@@ -75,10 +77,10 @@ RclConfig *RclConfig::getMainConfig()
     return rclconfig;
 }
 
-
 int main(int argc, char **argv)
 {
     string a_config;
+    int limit = 2000;
     thisprog = argv[0];
     argc--; argv++;
 
@@ -94,6 +96,10 @@ int main(int argc, char **argv)
 		a_config = *(++argv);
 		argc--; goto b1;
             case 'd':   op_flags |= OPT_d; break;
+	    case 'n':	op_flags |= OPT_n; if (argc < 2)  Usage();
+		limit = atoi(*(++argv));
+		if (limit <= 0) limit = INT_MAX;
+		argc--; goto b1;
             case 'o':   op_flags |= OPT_o; break;
             default: Usage();   break;
             }
@@ -147,11 +153,12 @@ int main(int argc, char **argv)
 
     RefCntr<Rcl::SearchData> rq(sd);
     rcldb.setQuery(rq, Rcl::Db::QO_STEM);
-    int limit = 2000;
     cout << "Recoll query: " << rq->getDescription() << endl;
     int cnt = rcldb.getResCnt();
-    cout << cnt << " results " << 
-	(cnt <= limit ? "" : "(printing 2000 max):") << endl;
+    if (cnt <= limit)
+	cout << cnt << " results:" << endl;
+    else
+	cout << cnt << " results (printing  " << limit << " max):" << endl;
     string tmpdir;
     for (int i = 0; i < limit; i++) {
 	int pc;
