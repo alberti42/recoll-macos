@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.55 2007-10-25 08:04:37 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.56 2007-10-26 10:42:10 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -312,7 +312,10 @@ recoll
       run, and it can always be destroyed safely.</para>
 
       <sect2 id="rcl.indexing.storage.format">
-	<title>Index formats</title>
+	<title>Xapian index formats</title>
+
+	<para>If your first installation of &RCL; was 1.9.0 or more
+	recent, you can skip this section.</para>
 
 	<para>&XAP; has had two possible index formats for quite some
 	time. The "old" one named <literal>Quartz</literal>, and the
@@ -363,20 +366,24 @@ recoll
 	protection.</para> 
 
 	<para>If you use another setup, you should think of the kind
-	of protection you need for your index, and set the directory
-	and files access modes appropriately.</para>
+	of protection you need for your index, set the directory
+	and files access modes appropriately, and also maybe adjust
+	the <literal>umask</literal> used during index updates.</para>
+	
 
       </sect2>
 
     </sect1>
 
     <sect1 id="rcl.indexing.config">
-      <title>The indexing configuration</title>
+      <title>Indexing configuration</title>
 
-      <para>You can control which areas of the file system are
-      indexed, and how files are processed, by setting variables inside
-      the <link linkend="rcl.install.config">&RCL; configuration
-      files</link>.</para>
+      <para>Variables set inside the 
+      <link linkend="rcl.install.config">&RCL; configuration files</link>
+      control which areas of the file system are indexed, and how
+      files are processed. These variables can be set either by
+      editing the text files or using the dialogs in the
+      <command>recoll</command> GUI.</para>
 
       <para>You can also use <link linkend="rcl.search.multidb">multiple 
       indexes</link> defined by separate configurations, typically to 
@@ -403,6 +410,39 @@ recoll
       text, HTML or email (ie: pdf, postscript, ms-word...) are
       described in the <link linkend="rcl.install.external">external
       packages section</link></para>
+
+      <sect2 id="rcl.indexing.config.gui">
+	<title>The indexing configuration GUI</title>
+
+	<para>As of &RCL; 1.10, most parameters
+	for a given indexing configuration can be set from a
+	<command>recoll</command> GUI running on this configuration
+	(either as default, or by setting <literal>RECOLL_CONFDIR</literal>
+          or the <literal>-c</literal> option.)</para>
+
+	<para>The interface is started from the
+	<guilabel>Preferences</guilabel> menu. It has two main
+	panels. The first panel allows setting global variables, like
+	the list of top directories or the list of skipped paths. The
+	second panel allows setting variables that can be redefined
+	for subdirectories. This second panel has an initially empty list of
+	customisation directories, to which you can add. The variables
+	are then set for the currently selected directory (or at the top
+	level if the empty line is selected).</para>
+
+	<para>The meaning for most entries in the interface is 
+	self-evident and documented by a <literal>ToolTip</literal>
+	popup on the text label. For more detail, you will need to
+	refer to the <link linkend="rcl.install.config">configuration
+	section</link> of this guide.</para>
+
+	<para>The configuration tool normally respects the comments
+	and most of the formatting inside the configuration file, so
+	that it is quite possible to use it on hand-edited files,
+	which you might nevertheless want to backup first...</para>
+
+      </sect2>
+
 
     </sect1>
 
