@@ -1,6 +1,129 @@
+2007-10-25 17:51  dockes
+
+	* qtgui/confgui/confguiindex.cpp: labels
+
+2007-10-25 17:51  dockes
+
+	* qtgui/confgui/confgui.cpp: use new style combobox constructor
+
+2007-10-25 17:50  dockes
+
+	* internfile/mh_exec.h: cleanup
+
+2007-10-25 10:04  dockes
+
+	* doc/user/usermanual.sgml: [no log message]
+
+2007-10-25 09:27  dockes
+
+	* query/: recollq.cpp, wasatorcl.cpp: added option to query
+	language for filtering on directory
+
+2007-10-25 09:09  dockes
+
+	* rcldb/rcldb.cpp: add filter topdir to query description
+
+2007-10-24 17:38  dockes
+
+	* rcldb/rcldb.cpp: use a Xapian MatchDecider to filter on dir path
+
+2007-10-24 10:42  dockes
+
+	* rcldb/rcldb.cpp: make filter a xapian::MatchDecider, dont change
+	mechanism
+
+2007-10-19 17:25  dockes
+
+	* qtgui/ssearch_w.cpp, utils/smallut.cpp: consider cr and lf as
+	whitespace when splitting strings
+
+2007-10-19 16:31  dockes
+
+	* qtgui/confgui/: confgui.h, confguiindex.cpp: small sizing
+	adjustments
+
+2007-10-18 12:39  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, preview_w.cpp,
+	reslist.cpp: let plaintorich do the chunking, easier to make sure
+	we dont confuse textedit by cutting inside a tag
+
+2007-10-18 12:15  dockes
+
+	* qtgui/confgui/confguiindex.cpp: qt3
+
+2007-10-17 18:12  dockes
+
+	* qtgui/plaintorich.cpp: replaced utf8 cgj with good ole bel
+
+2007-10-17 13:40  dockes
+
+	* internfile/mh_mail.cpp, internfile/mh_mail.h,
+	utils/mimeparse.cpp: text/plain attachments were not transcoded to
+	utf-8
+
+2007-10-17 11:57  dockes
+
+	* common/rclconfig.cpp, internfile/internfile.cpp: [no log message]
+
+2007-10-15 15:08  dockes
+
+	* kde/recoll_applet/: 0README.Recoll, AUTHORS, COPYING, ChangeLog,
+	Doxyfile, INSTALL, Makefile.am, Makefile.cvs, Makefile.in, NEWS,
+	README, TODO, acinclude.m4, aclocal.m4, config.h.in, configure,
+	configure.files, configure.in, configure.in.in, stamp-h.in,
+	subdirs, admin/Doxyfile.am, admin/Doxyfile.global,
+	admin/Makefile.common, admin/acinclude.m4.in, admin/am_edit,
+	admin/bcheck.pl, admin/compile, admin/conf.change.pl,
+	admin/config.guess, admin/config.pl, admin/config.sub,
+	admin/configure.in.bot.end, admin/configure.in.min, admin/cvs.sh,
+	admin/debianrules, admin/depcomp, admin/deps.am,
+	admin/detect-autoconf.pl, admin/doxygen.sh, admin/install-sh,
+	admin/libtool.m4.in, admin/ltmain.sh, admin/missing,
+	admin/mkinstalldirs, admin/nmcheck, admin/oldinclude.m4.in,
+	admin/pkg.m4.in, admin/ylwrap, doc/Makefile.am, doc/Makefile.in,
+	doc/en/Makefile.am, doc/en/Makefile.in, doc/en/index.docbook,
+	po/Makefile.am, po/Makefile.in, src/Makefile.am, src/Makefile.in,
+	src/kpixmapcombo.cpp, src/kpixmapcombo.h, src/recoll_applet.cpp,
+	src/recoll_applet.desktop, src/recoll_applet.h,
+	src/recoll_applet.lsm: [no log message]
+
+2007-10-14 18:07  dockes
+
+	* doc/user/usermanual.sgml: [no log message]
+
+2007-10-09 16:08  dockes
+
+	* qt4gui/recoll.pro.in, qtgui/idxthread.cpp, qtgui/rclmain.ui,
+	qtgui/rclmain_w.cpp, qtgui/rclmain_w.h, qtgui/recoll.pro.in,
+	qtgui/confgui/confguiindex.cpp, qtgui/confgui/confguiindex.h:
+	indexing confgui seems to sort of work
+
+2007-10-09 13:08  dockes
+
+	* qtgui/confgui/: confgui.cpp, confgui.h, confguiindex.cpp,
+	confguiindex.h, conflinkrcl.h, main.cpp: [no log message]
+
+2007-10-09 11:43  dockes
+
+	* common/: rclconfig.cpp, rclconfig.h: modified mechanism for
+	confgui updates
+
+2007-10-09 11:40  dockes
+
+	* utils/conftree.h: [no log message]
+
+2007-10-07 22:22  dockes
+
+	* qtgui/confgui/: confgui.cpp, confguiindex.cpp: [no log message]
+
+2007-10-06 09:44  dockes
+
+	* sampleconf/mimeconf: [no log message]
+
 2007-10-06 09:26  dockes
 
-	* VERSION: [no log message]
+	* VERSION, ChangeLog, INSTALL, README: [no log message]
 
 2007-10-06 09:11  dockes
 
@@ -1006,6 +1129,11 @@
 	mk/localdefs.in: use configure libdir to search for aspell lib
 	(mainly for 64 bits machines)
 
+2007-02-01 13:43  dockes
+
+	* kde/kioslave/recoll/: Makefile, kio_recoll.cpp, piclib/Makefile:
+	fixed kio compilation. Dont know if it works
+
 2007-01-30 13:08  dockes
 
 	* VERSION: release 1.7.6
@@ -1972,6 +2100,10 @@
 
 2006-11-13 09:49  dockes
 
+	* kde/kioslave/recoll/kio_recoll.cpp: [no log message]
+
+2006-11-13 09:49  dockes
+
 	* rcldb/rcldb.cpp, rcldb/rcldb.h, rcldb/searchdata.cpp,
 	rcldb/searchdata.h, lib/Makefile, lib/mkMake: make searchdata a
 	more flexible struct
@@ -2719,8 +2851,9 @@
 2006-04-28 09:54  dockes
 
 	* common/rclconfig.cpp, common/rclconfig.h, index/indexer.cpp,
-	index/recollindex.cpp, qtgui/main.cpp, query/qtry.cpp: centralize
-	dbdir computation in rclconfig+cat with conffdir if not absolute
+	index/recollindex.cpp, kde/kioslave/recoll/kio_recoll.cpp,
+	qtgui/main.cpp, query/qtry.cpp: centralize dbdir computation in
+	rclconfig+cat with conffdir if not absolute
 
 2006-04-28 09:23  dockes
 
@@ -3473,9 +3606,10 @@
 
 2006-01-20 11:01  dockes
 
-	* common/rclconfig.cpp, common/rclconfig.h, mk/commondefs,
-	mk/localdefs.in, qtgui/idxthread.cpp, qtgui/idxthread.h,
-	qtgui/main.cpp, utils/conftree.h, utils/debuglog.h: cleanup
+	* common/rclconfig.cpp, common/rclconfig.h,
+	kde/kioslave/recoll/00README.txt, mk/commondefs, mk/localdefs.in,
+	qtgui/idxthread.cpp, qtgui/idxthread.h, qtgui/main.cpp,
+	utils/conftree.h, utils/debuglog.h: cleanup
 
 2006-01-19 18:11  dockes
 
@@ -3483,6 +3617,16 @@
 	common/rclconfig.cpp, common/rclconfig.h,
 	internfile/internfile.cpp, internfile/mh_exec.cpp, mk/localdefs.in,
 	qtgui/main.cpp, qtgui/recoll.pro: slight config cleanup
+
+2006-01-19 16:08  dockes
+
+	* kde/kioslave/recoll/00README.txt: end of test, doesnt look very
+	useful
+
+2006-01-19 15:57  dockes
+
+	* kde/kioslave/recoll/: Makefile, kio_recoll.cpp, kio_recoll.h,
+	kio_recoll.la, piclib/Makefile: end of initial experimentation
 
 2006-01-19 13:03  dockes
 
@@ -3492,11 +3636,17 @@
 
 	* Makefile, VERSION, makestaticdist.sh, bincimapmime/Makefile,
 	common/Makefile, doc/user/usermanual.sgml, index/Makefile,
-	lib/Makefile, mk/Darwin, mk/FreeBSD, mk/Linux, mk/SunOS,
-	mk/commondefs, mk/localdefs.in, qtgui/plaintorich.cpp,
-	qtgui/plaintorich.h, qtgui/recollmain.ui.h, query/Makefile,
-	utils/Makefile, utils/smallut.cpp, utils/smallut.h: misc small mods
-	to help with building kio_recoll
+	kde/kioslave/recoll/Makefile, kde/kioslave/recoll/kio_recoll.cpp,
+	kde/kioslave/recoll/kio_recoll.h, lib/Makefile, mk/Darwin,
+	mk/FreeBSD, mk/Linux, mk/SunOS, mk/commondefs, mk/localdefs.in,
+	qtgui/plaintorich.cpp, qtgui/plaintorich.h, qtgui/recollmain.ui.h,
+	query/Makefile, utils/Makefile, utils/smallut.cpp, utils/smallut.h:
+	misc small mods to help with building kio_recoll
+
+2006-01-18 14:41  dockes
+
+	* kde/kioslave/recoll/: Makefile, kio_recoll.cpp, kio_recoll.h,
+	recoll.protocol: [no log message]
 
 2006-01-17 11:08  dockes
 

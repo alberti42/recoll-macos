@@ -219,12 +219,12 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="216"/>
+        <location filename="../main.cpp" line="236"/>
         <source>Configuration problem: </source>
         <translation>Konfigurationsproblem:</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="280"/>
+        <location filename="../main.cpp" line="300"/>
         <source>No db directory in configuration</source>
         <translation>Kein Datenbankverzeichnis konfiguriert</translation>
     </message>
@@ -234,19 +234,19 @@
         <translation type="obsolete">Impossible de créer le répertoire temporaire</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="297"/>
+        <location filename="../main.cpp" line="317"/>
         <source>Could not open database in </source>
         <translation>Fehler beim Öffnen der Datenbank in</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="300"/>
+        <location filename="../main.cpp" line="320"/>
         <source>.
 Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
         <translation>.
 Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung anzupassen oder OK um mit der Indizierung zu beginnen.</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="235"/>
+        <location filename="../main.cpp" line="255"/>
         <source>Configuration problem (dynconf</source>
         <translation>Konfigurationsproblem (dynconf)</translation>
     </message>
@@ -309,17 +309,17 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation type="obsolete">Impossible de créer une représentation interne pour </translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="715"/>
+        <location filename="../preview_w.cpp" line="712"/>
         <source>Creating preview text</source>
         <translation>Erzeuge Vorschautext</translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="776"/>
+        <location filename="../preview_w.cpp" line="773"/>
         <source>Loading preview text into editor</source>
         <translation>Lade Vorschautext in den Editor</translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="544"/>
+        <location filename="../preview_w.cpp" line="546"/>
         <source>Cannot create temporary directory</source>
         <translation>Fehler beim Anlegen des temporären Verzeichnisses</translation>
     </message>
@@ -329,22 +329,22 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="77"/>
+        <location filename="../preview_w.cpp" line="79"/>
         <source>Close Tab</source>
         <translation>Reiter schließen</translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="553"/>
+        <location filename="../preview_w.cpp" line="555"/>
         <source>File does not exist</source>
         <translation>Datei existiert nicht</translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="695"/>
+        <location filename="../preview_w.cpp" line="690"/>
         <source>Missing helper program: </source>
         <translation>Fehlendes Hilfsprogramm:</translation>
     </message>
     <message>
-        <location filename="../preview_w.cpp" line="700"/>
+        <location filename="../preview_w.cpp" line="695"/>
         <source>Can&apos;t turn doc into internal representation for </source>
         <translation>Fehler bei der Indizierung des Dokuments </translation>
     </message>
@@ -403,6 +403,74 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
 </context>
 <context>
+    <name>QObject</name>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="122"/>
+        <source>Global parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="126"/>
+        <source>Local parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="249"/>
+        <source>&lt;b&gt;Customised subtrees</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="252"/>
+        <source>The list of subdirectories in the indexed hierarchy &lt;br&gt;where some parameters need to be redefined. Default: empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="280"/>
+        <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="297"/>
+        <source>Skipped names</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="299"/>
+        <source>These are patterns for file or directory  names which should not be indexed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="324"/>
+        <source>Default character set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="330"/>
+        <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="336"/>
+        <source>Follow symbolic links</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="339"/>
+        <source>Follow symbolic links while indexing. The default is no, to avoid duplicate indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="345"/>
+        <source>Index all file names</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="348"/>
+        <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <location filename="" line="7471221"/>
@@ -410,7 +478,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation type="obsolete">Recherche avancée</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="853"/>
+        <location filename="../rclmain_w.cpp" line="871"/>
         <source>About Recoll</source>
         <translation>über Recoll</translation>
     </message>
@@ -420,22 +488,22 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation type="obsolete">Indexation en cours</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="753"/>
+        <location filename="../rclmain_w.cpp" line="771"/>
         <source>No external viewer configured for mime type </source>
         <translation>Kein externer Betrachter für Mime Type </translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="838"/>
+        <location filename="../rclmain_w.cpp" line="856"/>
         <source>Executing: [</source>
         <translation>Ausführen: [</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="734"/>
+        <location filename="../rclmain_w.cpp" line="752"/>
         <source>Cannot retrieve document info from database</source>
         <translation>Keine Informationen zum Dokument in der Datenbank</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="681"/>
+        <location filename="../rclmain_w.cpp" line="699"/>
         <source>Cannot access document file: </source>
         <translation>Fehler beim Zugriff auf das Dokument:</translation>
     </message>
@@ -445,12 +513,12 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation type="obsolete">Previsualisation</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="621"/>
+        <location filename="../rclmain_w.cpp" line="639"/>
         <source>Warning</source>
         <translation>Warnung</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="622"/>
+        <location filename="../rclmain_w.cpp" line="640"/>
         <source>Can&apos;t create preview window</source>
         <translation>Fehler beim Erzeugen des Vorschaufensters</translation>
     </message>
@@ -472,17 +540,17 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation type="obsolete">Préférences pour l&apos;interface utilisateur</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="428"/>
+        <location filename="../rclmain_w.cpp" line="433"/>
         <source>Query results</source>
         <translation>Ergebnisse</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="449"/>
+        <location filename="../rclmain_w.cpp" line="454"/>
         <source>Query results (sorted)</source>
         <translation>Ergebnisse (sortiert)</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="924"/>
+        <location filename="../rclmain_w.cpp" line="942"/>
         <source>Document history</source>
         <translation>Dokumenthistorie</translation>
     </message>
@@ -502,52 +570,52 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation type="obsolete">Document inaccessible</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="913"/>
+        <location filename="../rclmain_w.cpp" line="931"/>
         <source>History data</source>
         <translation>Historische Daten</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="858"/>
+        <location filename="../rclmain_w.cpp" line="876"/>
         <source>Starting help browser </source>
         <translation>Starte Hilfebrowser</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="348"/>
+        <location filename="../rclmain_w.cpp" line="352"/>
         <source>Indexing in progress: </source>
         <translation>Indizierung in Arbeit:</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="352"/>
+        <location filename="../rclmain_w.cpp" line="356"/>
         <source>Files</source>
         <translation>Dateien</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="353"/>
+        <location filename="../rclmain_w.cpp" line="357"/>
         <source>Purge</source>
         <translation>säubern</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="354"/>
+        <location filename="../rclmain_w.cpp" line="358"/>
         <source>Stemdb</source>
         <translation>Wortstämme</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="355"/>
+        <location filename="../rclmain_w.cpp" line="359"/>
         <source>Closing</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="356"/>
+        <location filename="../rclmain_w.cpp" line="360"/>
         <source>Unknown</source>
         <translation>Unbekannt</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="656"/>
+        <location filename="../rclmain_w.cpp" line="674"/>
         <source>This search is not active any more</source>
         <translation>Diese Suche ist nicht mehr aktiv</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="423"/>
+        <location filename="../rclmain_w.cpp" line="427"/>
         <source>Cant start query: </source>
         <translation>Kann die Suche nicht starten:</translation>
     </message>
@@ -557,36 +625,36 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation type="obsolete">Approximation orthographique</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="761"/>
+        <location filename="../rclmain_w.cpp" line="779"/>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
         <translation>Fehlerhaftes Betrachterkommando für %1: [%2]
 Überprüfen Sie die Datei mimeconf</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="785"/>
+        <location filename="../rclmain_w.cpp" line="803"/>
         <source>The viewer specified in mimeconf for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
         <translation>Der in der mimeconf konfigurierte Betrachter für %1: %2 wurde nicht gefunden.
 Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="814"/>
+        <location filename="../rclmain_w.cpp" line="832"/>
         <source>Cannot extract document or create temporary file</source>
         <translation>Fehler beim Extrahieren des Dokuments oder beim Erzeugen der temporären datei</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="113"/>
+        <location filename="../rclmain_w.cpp" line="116"/>
         <source>(no stemming)</source>
         <translation type="unfinished">(keine Wortstammerweiterung)</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="114"/>
+        <location filename="../rclmain_w.cpp" line="117"/>
         <source>(all languages)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="130"/>
+        <location filename="../rclmain_w.cpp" line="133"/>
         <source>error retrieving stemming languages</source>
         <translation type="unfinished">Fehler beim Holen der Wortstammsprachen</translation>
     </message>
@@ -609,12 +677,12 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">Ctrl+S</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="246"/>
+        <location filename="../../qt4gui/rclmain.ui" line="248"/>
         <source>Previous page</source>
         <translation>vorige Seite</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="218"/>
+        <location filename="../../qt4gui/rclmain.ui" line="220"/>
         <source>Next page</source>
         <translation>nächste Seite</translation>
     </message>
@@ -629,7 +697,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">Beenden</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="128"/>
+        <location filename="../../qt4gui/rclmain.ui" line="130"/>
         <source>E&amp;xit</source>
         <translation>&amp;Beenden</translation>
     </message>
@@ -644,7 +712,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation>&amp;Werkzeuge</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="111"/>
+        <location filename="../../qt4gui/rclmain.ui" line="113"/>
         <source>&amp;Help</source>
         <translation>&amp;Hilfe</translation>
     </message>
@@ -704,17 +772,17 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">Démarrer l&apos;&amp;Indexation</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="155"/>
+        <location filename="../../qt4gui/rclmain.ui" line="157"/>
         <source>&amp;About Recoll</source>
         <translation>&amp;über Recoll</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="171"/>
+        <location filename="../../qt4gui/rclmain.ui" line="173"/>
         <source>Document &amp;History</source>
         <translation>&amp;Dokumentenhistorie</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="174"/>
+        <location filename="../../qt4gui/rclmain.ui" line="176"/>
         <source>Document  History</source>
         <translation>Dokumentenhistorie</translation>
     </message>
@@ -724,37 +792,37 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">Recherche avancée</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="182"/>
+        <location filename="../../qt4gui/rclmain.ui" line="184"/>
         <source>&amp;Advanced Search</source>
         <translation>&amp;Erweiterte Suche</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="185"/>
+        <location filename="../../qt4gui/rclmain.ui" line="187"/>
         <source>Advanced/complex  Search</source>
         <translation>Erweiterte/komplexe Suche</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="193"/>
+        <location filename="../../qt4gui/rclmain.ui" line="195"/>
         <source>&amp;Sort parameters</source>
         <translation>&amp;Sortierparameter</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="196"/>
+        <location filename="../../qt4gui/rclmain.ui" line="198"/>
         <source>Sort parameters</source>
         <translation>Sortierparameter</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="221"/>
+        <location filename="../../qt4gui/rclmain.ui" line="223"/>
         <source>Next page of results</source>
         <translation>nächste Ergebnisseite</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="249"/>
+        <location filename="../../qt4gui/rclmain.ui" line="251"/>
         <source>Previous page of results</source>
         <translation>vorige Ergebnisseite</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="257"/>
+        <location filename="../../qt4gui/rclmain.ui" line="267"/>
         <source>&amp;Query configuration</source>
         <translation>&amp;Suchkonfiguration</translation>
     </message>
@@ -764,7 +832,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">Manuel</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="163"/>
+        <location filename="../../qt4gui/rclmain.ui" line="165"/>
         <source>&amp;User manual</source>
         <translation>&amp;Benutzerhandbuch</translation>
     </message>
@@ -779,7 +847,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">À propos de Recoll</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="131"/>
+        <location filename="../../qt4gui/rclmain.ui" line="133"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
@@ -789,38 +857,43 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">MIse à jour index</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="139"/>
+        <location filename="../../qt4gui/rclmain.ui" line="141"/>
         <source>Update &amp;index</source>
         <translation>&amp;Indizieren</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="204"/>
+        <location filename="../../qt4gui/rclmain.ui" line="206"/>
         <source>Term &amp;explorer</source>
         <translation>&amp;Ausdruck Explorer</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="207"/>
+        <location filename="../../qt4gui/rclmain.ui" line="209"/>
         <source>Term explorer tool</source>
         <translation>Ausdruck Explorer Werkzeug</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="268"/>
+        <location filename="../../qt4gui/rclmain.ui" line="278"/>
         <source>External index dialog</source>
         <translation>Dialog für externe Indizierung</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="147"/>
+        <location filename="../../qt4gui/rclmain.ui" line="149"/>
         <source>&amp;Erase document history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="232"/>
+        <location filename="../../qt4gui/rclmain.ui" line="234"/>
         <source>First page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="235"/>
+        <location filename="../../qt4gui/rclmain.ui" line="237"/>
         <source>Go to first page of results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="259"/>
+        <source>&amp;Indexing configuration</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -909,12 +982,12 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
 </translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="541"/>
+        <location filename="../reslist.cpp" line="542"/>
         <source>Previous</source>
         <translation>Voriges</translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="546"/>
+        <location filename="../reslist.cpp" line="547"/>
         <source>Next</source>
         <translation>Nächstes</translation>
     </message>
@@ -924,12 +997,12 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation>&lt;p&gt;&lt;b&gt;keine Ergebnisse&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="651"/>
+        <location filename="../reslist.cpp" line="652"/>
         <source>&amp;Preview</source>
         <translation>&amp;Vorschau</translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="652"/>
+        <location filename="../reslist.cpp" line="653"/>
         <source>&amp;Edit</source>
         <translation>&amp;Editieren</translation>
     </message>
@@ -939,17 +1012,17 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">&amp;Copier le nom de fichier</translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="654"/>
+        <location filename="../reslist.cpp" line="655"/>
         <source>Copy &amp;Url</source>
         <translation>&amp;Url kopieren</translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="655"/>
+        <location filename="../reslist.cpp" line="656"/>
         <source>Find &amp;similar documents</source>
         <translation>&amp;Gleiche Dokumente finden</translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="772"/>
+        <location filename="../reslist.cpp" line="773"/>
         <source>Query details</source>
         <translation>Suchdetails</translation>
     </message>
@@ -964,12 +1037,12 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation>(Suche zeigen)</translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="653"/>
+        <location filename="../reslist.cpp" line="654"/>
         <source>Copy &amp;File Name</source>
         <translation>&amp;Dateinamen kopieren</translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="656"/>
+        <location filename="../reslist.cpp" line="657"/>
         <source>P&amp;arent document/folder</source>
         <translation>&amp;übergeordnetes Dokument/Ordner</translation>
     </message>
@@ -1007,47 +1080,47 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
 <context>
     <name>SSearch</name>
     <message>
-        <location filename="../ssearch_w.cpp" line="44"/>
+        <location filename="../ssearch_w.cpp" line="42"/>
         <source>Any term</source>
         <translation>Irgendein Ausdruck</translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="45"/>
+        <location filename="../ssearch_w.cpp" line="43"/>
         <source>All terms</source>
         <translation>Alle Ausdrücke</translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="46"/>
+        <location filename="../ssearch_w.cpp" line="44"/>
         <source>File name</source>
         <translation>Dateiname</translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="244"/>
+        <location filename="../ssearch_w.cpp" line="246"/>
         <source>Completions</source>
         <translation>Erweiterungen</translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="245"/>
+        <location filename="../ssearch_w.cpp" line="247"/>
         <source>Select an item:</source>
         <translation>Wählen Sie ein Element:</translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="228"/>
+        <location filename="../ssearch_w.cpp" line="230"/>
         <source>Too many completions</source>
         <translation>Zu viele Vervollständigungen:</translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="47"/>
+        <location filename="../ssearch_w.cpp" line="45"/>
         <source>Query language</source>
         <translation>Suchsprache</translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="99"/>
+        <location filename="../ssearch_w.cpp" line="97"/>
         <source>Bad query string</source>
         <translation>Fehlerhafter Suchstring</translation>
     </message>
     <message>
-        <location filename="../ssearch_w.cpp" line="105"/>
+        <location filename="../ssearch_w.cpp" line="103"/>
         <source>Out of memory</source>
         <translation>Kein freier Speicher mehr verfügbar</translation>
     </message>
@@ -1888,13 +1961,13 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="162"/>
-        <source>Texts beyond over this size will not be highlighted in preview (too slow).</source>
+        <location filename="../../qt4gui/uiprefs.ui" line="173"/>
+        <source>Maximum text size highlighted for preview (megabytes)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="173"/>
-        <source>Maximum text size highlighted for preview (megabytes)</source>
+        <location filename="../../qt4gui/uiprefs.ui" line="162"/>
+        <source>Texts over this size will not be highlighted in preview (too slow).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2055,6 +2128,156 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <location filename="" line="7471221"/>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
         <translation type="obsolete">Impossible d&apos;éxécuter une requête purement négative. Essayez d&apos;entrer des termes courants dans un champ &apos;ou&apos;</translation>
+    </message>
+</context>
+<context>
+    <name>confgui::ConfIndexW</name>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="88"/>
+        <source>Can&apos;t write configuration file</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>confgui::ConfParamFNW</name>
+    <message>
+        <location filename="../confgui/confgui.cpp" line="269"/>
+        <source>Browse</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>confgui::ConfParamSLW</name>
+    <message>
+        <location filename="../confgui/confgui.cpp" line="321"/>
+        <source>+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confgui.cpp" line="329"/>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>confgui::ConfSubPanelW</name>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="368"/>
+        <source>Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>confgui::ConfTopPanelW</name>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="138"/>
+        <source>Top directories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="140"/>
+        <source>The list of directories where recursive indexing starts. Default: your home.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="145"/>
+        <source>Skipped paths</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="152"/>
+        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="163"/>
+        <source>Stemming languages</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="165"/>
+        <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="170"/>
+        <source>Log file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="172"/>
+        <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="177"/>
+        <source>Log verbosity level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="180"/>
+        <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="185"/>
+        <source>Index flush megabytes interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="189"/>
+        <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="194"/>
+        <source>Max disk occupation (%)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="198"/>
+        <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="204"/>
+        <source>No aspell usage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="207"/>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="212"/>
+        <source>Aspell language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="219"/>
+        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="224"/>
+        <source>Database directory name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="228"/>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="233"/>
+        <source>Use system&apos;s &apos;file&apos; command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../confgui/confguiindex.cpp" line="235"/>
+        <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
