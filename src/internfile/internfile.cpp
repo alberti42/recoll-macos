@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.35 2007-10-17 09:57:42 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.36 2007-10-27 08:40:07 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@ static char rcsid[] = "@(#$Id: internfile.cpp,v 1.35 2007-10-17 09:57:42 dockes 
 
 #include <string>
 #include <iostream>
+#include <map>
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
@@ -62,26 +63,12 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     list<string>::const_iterator it = cmdv.begin();
     ++it;
     list<string> args;
+    map<char, string> subs;
+    subs['f'] = ifn;
+    subs['t'] = tdir;
     for (; it != cmdv.end(); it++) {
-	string s = *it;
 	string ns;
-	string::const_iterator it1;
-	for (it1 = s.begin(); it1 != s.end();it1++) {
-	    if (*it1 == '%') {
-		if (++it1 == s.end()) {
-		    ns += '%';
-		    break;
-		}
-		if (*it1 == '%')
-		    ns += '%';
-		if (*it1 == 'f')
-		    ns += ifn;
-		if (*it1 == 't')
-		    ns += tdir;
-	    } else {
-		ns += *it1;
-	    }
-	}
+	pcSubst(*it, ns, subs);
 	args.push_back(ns);
     }
 
