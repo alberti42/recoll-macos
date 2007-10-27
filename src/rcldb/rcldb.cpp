@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.126 2007-10-25 07:09:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.127 2007-10-27 08:39:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -171,7 +171,13 @@ public:
     {}
     virtual ~FilterMatcher() {}
 
-    virtual bool operator()(const Xapian::Document &xdoc) const 
+    virtual 
+#if XAPIAN_MAJOR_VERSION < 1
+    int 
+#else
+    bool
+#endif
+    operator()(const Xapian::Document &xdoc) const 
     {
 	m_cnt++;
 	// Parse xapian document's data and populate doc fields
