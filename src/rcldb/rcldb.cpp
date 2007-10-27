@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.127 2007-10-27 08:39:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.128 2007-10-27 16:40:57 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1202,14 +1202,14 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
     string pterm  = "P" + hash;
     string ermsg;
 
-    // Look for all documents with this path. We need to look at all
-    // to set their existence flag.  We check the update time on the
-    // fmtime field which will be identical for all docs inside a
-    // multi-document file (we currently always reindex all if the
-    // file changed)
+    // We look up the document indexed by the Pterm. This is either
+    // the actual document file, or, for a multi-document file, the
+    // pseudo-doc we create to stand for the file itself.
+
+    // We try twice in case database needs to be reopened.
     for (int tries = 0; tries < 2; tries++) {
 	try {
-	    // Check the date using the Pterm doc or pseudo-doc
+	    // Get the Pterm doc or pseudo-doc
 	    Xapian::PostingIterator docid = m_ndb->db.postlist_begin(pterm);
 	    if (docid == m_ndb->db.postlist_end(pterm)) {
 		// If no document exist with this path, we do need update
