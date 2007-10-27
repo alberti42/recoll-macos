@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rcluncomp,v 1.2 2006-04-04 15:44:17 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rcluncomp,v 1.3 2007-10-27 08:40:25 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Uncompress file using any program like gunzip/bunzip2. We jump through
 # hoops to let the decompressor remove the compression suffix in the file
@@ -17,11 +17,18 @@ outdir=$3
 sinfile=`basename "$infile"`
 #echo "rcluncomp: $sinfile" 1>&2
 
-cp "$infile" "$outdir/$sinfile" || exit 1
+# What we do depends on suffix existence.
+case "$sinfile" in
+*.*)
+	cp "$infile" "$outdir/$sinfile" || exit 1
+	$uncomp "$outdir/$sinfile"
+	uncompressed=`echo $outdir/*`
+	;;
+*)
+	$uncomp < "$infile" > "$outdir/$sinfile"
+	uncompressed="$outdir/$sinfile"
+	;;
+esac
 
-$uncomp "$outdir/$sinfile"
-
-uncompressed=`echo $outdir/*`
 #echo "rcluncomp: $uncompressed" 1>&2
-
 echo $uncompressed
