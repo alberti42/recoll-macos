@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.8 2007-10-25 07:27:30 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.9 2007-11-08 07:54:45 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -55,6 +55,7 @@ static char usage [] =
 "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
 "    -d also dump file contents\n"
 "    -n <cnt> limit the maximum number of results (0->no limit, default 2000)\n"
+"    -b : basic. Just output urls, no mime types or titles\n"
 ;
 static void
 Usage(void)
@@ -70,6 +71,7 @@ static int     op_flags;
 #define OPT_c     0x8
 #define OPT_d     0x10
 #define OPT_n     0x20
+#define OPT_b     0x40
 
 static RclConfig *rclconfig;
 RclConfig *RclConfig::getMainConfig() 
@@ -92,6 +94,7 @@ int main(int argc, char **argv)
         while (**argv)
             switch (*(*argv)++) {
             case 'a':   op_flags |= OPT_a; break;
+            case 'b':   op_flags |= OPT_b; break;
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
@@ -166,15 +169,18 @@ int main(int argc, char **argv)
 	if (!rcldb.getDoc(i, doc, &pc))
 	    break;
 
-	char cpc[20];
-	sprintf(cpc, "%d", pc);
-	cout 
-	    << doc.mimetype.c_str() << "\t"
-	    << "[" << doc.url.c_str() << "]" << "\t" 
-	    << "[" << doc.meta["title"].c_str() << "]" << "\t"
-	    << doc.fbytes.c_str()   << "\tbytes" << "\t"
-	    <<  endl;
-
+	if (op_flags & OPT_b) {
+	    cout << doc.url.c_str() << endl;
+	} else {
+	    char cpc[20];
+	    sprintf(cpc, "%d", pc);
+	    cout 
+		<< doc.mimetype.c_str() << "\t"
+		<< "[" << doc.url.c_str() << "]" << "\t" 
+		<< "[" << doc.meta["title"].c_str() << "]" << "\t"
+		<< doc.fbytes.c_str()   << "\tbytes" << "\t"
+		<<  endl;
+	}
 	if (op_flags & OPT_d) {
 	    string fn = doc.url.substr(7);
 	    struct stat st;
