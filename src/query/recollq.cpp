@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.9 2007-11-08 07:54:45 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.10 2007-11-08 09:35:47 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,9 +17,9 @@ static char rcsid[] = "@(#$Id: recollq.cpp,v 1.9 2007-11-08 07:54:45 dockes Exp 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+// Takes a query and run it, no gui, results to stdout
 
-// Takes a query expressed in wasabi/recoll simple language and run it
-
+#ifndef TEST_RECOLLQ
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -42,7 +42,7 @@ using namespace std;
 
 static char *thisprog;
 static char usage [] =
-" [-o|-a] <query string>\n"
+" [-o|-a|-f] <query string>\n"
 " Runs a recoll query and displays result lines. \n"
 "  Default: will interpret the argument(s) as a wasabi query string\n"
 "    query may be like: \n"
@@ -51,6 +51,7 @@ static char usage [] =
 "    Phrase: \"t1 t2\" (needs additional quoting on cmd line)\n"
 "  -o Emulate the gui simple search in ANY TERM mode\n"
 "  -a Emulate the gui simple search in ALL TERMS mode\n"
+"  -f Emulate the gui simple search in filename mode\n"
 "Common options:\n"
 "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
 "    -d also dump file contents\n"
@@ -60,26 +61,25 @@ static char usage [] =
 static void
 Usage(void)
 {
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    cerr << thisprog <<  ": usage:" << endl << usage;
     exit(1);
 }
 
+// ATTENTION A LA COMPATIBILITE AVEC LES OPTIONS DE recoll
+// OPT_q and OPT_t are ignored
 static int     op_flags;
-#define OPT_MOINS 0x1
 #define OPT_o     0x2 
 #define OPT_a     0x4 
 #define OPT_c     0x8
 #define OPT_d     0x10
 #define OPT_n     0x20
 #define OPT_b     0x40
+#define OPT_f     0x80
+#define OPT_l     0x100
+#define OPT_q     0x200
+#define OPT_t     0x400
 
-static RclConfig *rclconfig;
-RclConfig *RclConfig::getMainConfig() 
-{
-    return rclconfig;
-}
-
-int main(int argc, char **argv)
+int recollq(RclConfig **cfp, int argc, char **argv)
 {
     string a_config;
     int limit = 2000;
@@ -99,11 +99,15 @@ int main(int argc, char **argv)
 		a_config = *(++argv);
 		argc--; goto b1;
             case 'd':   op_flags |= OPT_d; break;
+            case 'f':   op_flags |= OPT_f; break;
+            case 'l':   op_flags |= OPT_l; break;
 	    case 'n':	op_flags |= OPT_n; if (argc < 2)  Usage();
 		limit = atoi(*(++argv));
 		if (limit <= 0) limit = INT_MAX;
 		argc--; goto b1;
             case 'o':   op_flags |= OPT_o; break;
+            case 'q':   op_flags |= OPT_q; break;
+            case 't':   op_flags |= OPT_t; break;
             default: Usage();   break;
             }
     b1: argc--; argv++;
@@ -120,8 +124,8 @@ int main(int argc, char **argv)
     Rcl::Db rcldb;
     string dbdir;
     string reason;
-
-    rclconfig = recollinit(0, 0, reason, &a_config);
+    *cfp = recollinit(0, 0, reason, &a_config);
+    RclConfig *rclconfig = *cfp;
     if (!rclconfig || !rclconfig->ok()) {
 	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
 	exit(1);
@@ -132,17 +136,23 @@ int main(int argc, char **argv)
 
     Rcl::SearchData *sd = 0;
 
-    if ((op_flags & OPT_a) || (op_flags & OPT_o)) {
+    if (op_flags & (OPT_a|OPT_o|OPT_f)) {
 	sd = new Rcl::SearchData(Rcl::SCLT_OR);
-	// If there is no white space inside the query, then the user
-	// certainly means it as a phrase.
-	bool isreallyaphrase = false;
-	if (qs.find_first_of(" \t") == string::npos)
-	    isreallyaphrase = true;
-	Rcl::SearchDataClause *clp = isreallyaphrase ? 
-	    new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, 0) :
-	    new Rcl::SearchDataClauseSimple((op_flags & OPT_o)?
-					    Rcl::SCLT_OR : Rcl::SCLT_AND, qs);
+	Rcl::SearchDataClause *clp = 0;
+	if (op_flags & OPT_f) {
+	    clp = new Rcl::SearchDataClauseFilename(qs);
+	} else {
+	    // If there is no white space inside the query, then the user
+	    // certainly means it as a phrase.
+	    bool isreallyaphrase = false;
+	    if (qs.find_first_of(" \t") == string::npos)
+		isreallyaphrase = true;
+	    clp = isreallyaphrase ? 
+		new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, 0) :
+		new Rcl::SearchDataClauseSimple((op_flags & OPT_o)?
+						Rcl::SCLT_OR : Rcl::SCLT_AND, 
+						qs);
+	}
 	if (sd)
 	    sd->addClause(clp);
     } else {
@@ -156,12 +166,15 @@ int main(int argc, char **argv)
 
     RefCntr<Rcl::SearchData> rq(sd);
     rcldb.setQuery(rq, Rcl::Db::QO_STEM);
-    cout << "Recoll query: " << rq->getDescription() << endl;
     int cnt = rcldb.getResCnt();
-    if (cnt <= limit)
-	cout << cnt << " results:" << endl;
-    else
-	cout << cnt << " results (printing  " << limit << " max):" << endl;
+    if (!(op_flags & OPT_b)) {
+	cout << "Recoll query: " << rq->getDescription() << endl;
+	if (cnt <= limit)
+	    cout << cnt << " results:" << endl;
+	else
+	    cout << cnt << " results (printing  " << limit << " max):" << endl;
+    }
+
     string tmpdir;
     for (int i = 0; i < limit; i++) {
 	int pc;
@@ -191,8 +204,8 @@ int main(int argc, char **argv)
 	    if (tmpdir.empty() || access(tmpdir.c_str(), 0) < 0) {
 		string reason;
 		if (!maketmpdir(tmpdir, reason)) {
-		    fprintf(stderr, "cannot create temporary directory: %s\n",
-			    reason.c_str());
+		    cerr << "Cannot create temporary directory: "
+			 << reason << endl;
 		    return 1;
 		}
 	    }
@@ -211,9 +224,29 @@ int main(int argc, char **argv)
     if (tmpdir.length()) {
 	wipedir(tmpdir);
 	if (rmdir(tmpdir.c_str()) < 0) {
-	    fprintf(stderr, "cannot clear temp dir %s\n", tmpdir.c_str());
+	    cerr << "Cannot clear temp dir " << tmpdir << endl;
 	}
     }
 
     return 0;
 }
+
+#else // TEST_RECOLLQ The test driver is actually the useful program...
+#include <stdlib.h>
+
+#include "rclconfig.h"
+#include "recollq.h"
+
+static RclConfig *rclconfig;
+
+RclConfig *RclConfig::getMainConfig() 
+{
+    return rclconfig;
+}
+
+int main(int argc, char **argv)
+{
+    exit(recollq(&rclconfig, argc, argv));
+}
+#endif // TEST_RECOLLQ
+

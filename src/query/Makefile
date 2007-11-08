@@ -19,7 +19,7 @@ recollq : $(RECOLLQ_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollq $(RECOLLQ_OBJS) \
 	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
 recollq.o : recollq.cpp 
-	$(CXX) $(ALL_CXXFLAGS) -c recollq.cpp
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_RECOLLQ -c recollq.cpp
 
 HISTORY_OBJS= trhist.o  $(BIGLIB) $(MIMELIB)
 trhist : $(HISTORY_OBJS)

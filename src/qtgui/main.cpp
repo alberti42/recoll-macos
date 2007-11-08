@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.62 2007-10-05 08:03:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.63 2007-11-08 09:35:47 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,7 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.62 2007-10-05 08:03:01 dockes Exp $ 
 #include "rclaspell.h"
 #endif
 #include "smallut.h"
+#include "recollq.h"
 
 #ifdef WITH_KDE
 static const char description[] =
@@ -144,27 +145,35 @@ static void sigcleanup(int)
 extern void qInitImages_recoll();
 
 static const char *thisprog;
+
+// ATTENTION A LA COMPATIBILITE AVEC LES OPTIONS DE recollq
 static int    op_flags;
-#define OPT_MOINS 0x1
 #define OPT_h     0x4 
 #define OPT_c     0x20
 #define OPT_q     0x40
-#define OPT_O     0x80
-#define OPT_L     0x100
-#define OPT_F     0x200
+#define OPT_o     0x80
+#define OPT_l     0x100
+#define OPT_f     0x200
+#define OPT_a     0x400
+#define OPT_t     0x800
 
 static const char usage [] =
 "\n"
-"recoll [-h] [-c <configdir>]\n"
+"recoll [-h] [-c <configdir>] [-q options]\n"
 "  -h : Print help and exit\n"
 "  -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
-"  -q 'query' [-o|l|f]: search query to be executed on startup as if entered\n"
-"      into simple search. The default mode is AND (but see modifier options)\n"
+"  [-o|l|f|a] [-t] -q 'query' : search query to be executed as if entered\n"
+"      into simple search. The default is to interpret the argument as a \n"
+"      query language string (but see modifier options)\n"
 "      In most cases, the query string should be quoted with single-quotes to\n"
 "      avoid shell interpretation\n"
-"     -L : the query will be interpreted as a query language string\n"
-"     -O : the query will be interpreted as an OR query\n"
-"     -F : the query will be interpreted as a filename search\n"
+"     -a : the query will be interpreted as an AND query.\n"
+"     -o : the query will be interpreted as an OR query.\n"
+"     -f : the query will be interpreted as a filename search\n"
+"     -l : the query will be interpreted as a query language string (default)\n"
+"     -t : terminal display: no gui. Results go to stdout. MUST be given\n"
+"          explicitely as -t (not ie, -at), and -q <query> MUST\n"
+"          be last on the command line if this is used.\n"
 ;
 static void
 Usage(void)
@@ -176,6 +185,12 @@ Usage(void)
 
 int main(int argc, char **argv)
 {
+    for (int i = 0; i < argc; i++) {
+	if (!strcmp(argv[i], "-t")) {
+	    exit(recollq(&rclconfig, argc, argv));
+	}
+    }
+
 #ifdef WITH_KDE
     KAboutData about("recoll", I18N_NOOP("Recoll"), rclversion, description,
                      KAboutData::License_GPL, "(C) 2006 Jean-Francois Dockes", 0, 0, "jean-francois.dockes@wanadoo.fr");
@@ -201,16 +216,18 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
+	    case 'a': op_flags |= OPT_a; break;
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
-	    case 'F': op_flags |= OPT_F; break;
+	    case 'f': op_flags |= OPT_f; break;
 	    case 'h': op_flags |= OPT_h; Usage();break;
-	    case 'L': op_flags |= OPT_L; break;
-	    case 'O': op_flags |= OPT_O; break;
+	    case 'l': op_flags |= OPT_l; break;
+	    case 'o': op_flags |= OPT_o; break;
 	    case 'q':	op_flags |= OPT_q; if (argc < 2)  Usage();
 		qstring = *(++argv);
 		argc--; goto b1;
+	    case 't': op_flags |= OPT_t; break;
 	    }
     b1: argc--; argv++;
     }
@@ -348,14 +365,14 @@ int main(int argc, char **argv)
     start_idxthread(*rclconfig);
     if (op_flags & OPT_q) {
 	SSearch::SSearchType stype;
-	if (op_flags & OPT_O) {
+	if (op_flags & OPT_o) {
 	    stype = SSearch::SST_ANY;
-	} else if (op_flags & OPT_F) {
+	} else if (op_flags & OPT_f) {
 	    stype = SSearch::SST_FNM;
-	} else if (op_flags & OPT_L) {
-	    stype = SSearch::SST_LANG;
-	} else {
+	} else if (op_flags & OPT_a) {
 	    stype = SSearch::SST_ALL;
+	} else {
+	    stype = SSearch::SST_LANG;
 	}
 	mainWindow->sSearch->searchTypCMB->setCurrentItem(int(stype));
 	mainWindow->
