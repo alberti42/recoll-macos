@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.10 2007-08-01 10:04:53 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.11 2007-11-08 09:34:17 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -84,6 +84,7 @@ p_notlowerascii(unsigned int c)
 bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 {
     LOGDEB(("StemDb::createDb(%s)\n", lang.c_str()));
+    Chrono cron;
 
     // First build the in-memory stem database:
     // We walk the list of all terms, and stem each. 
@@ -132,6 +133,8 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 		lang.c_str()));
 	return false;
     }
+    LOGDEB1(("StemDb::createDb(%s): in memory map built: %.2f S\n", 
+	    lang.c_str(), cron.secs()));
 
     // Create xapian database for stem relations
     string stemdbdir = stemdbname(dbdir, lang);
@@ -190,6 +193,7 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 		newdocument.set_data(record);
 		try {
 		    sdb.replace_document(stem, newdocument);
+		    //sdb.add_document(newdocument);
 		} catch (...) {
 		    LOGERR(("Db::createstemdb: replace failed\n"));
 		    return false;
@@ -201,6 +205,8 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 	    //	    cerr << "\n" << stem << " " << it->second;
 	}
     }
+    LOGDEB1(("StemDb::createDb(%s): done: %.2f S\n", 
+	    lang.c_str(), cron.secs()));
     LOGDEB(("Stem map size: %d stems %d mult %d no %d const %d\n", 
 	    assocs.size(), stemdiff, stemmultiple, nostem, stemconst));
     wiper.do_it = false;
