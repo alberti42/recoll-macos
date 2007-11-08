@@ -2,7 +2,8 @@ include $(depth)/mk/commondefs
 include $(depth)/mk/localdefs
 
 ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
-	 -pthread  \
+	 -pthread  -I/usr/include \
 	 -DHAVE_VASPRINTF=1 \
-	 -DHAVE_MKDTEMP=1
+	 -DHAVE_MKDTEMP=1 \
+	 -DSTATFS_INCLUDE="<sys/mount.h>"
 LIBSYS = 
