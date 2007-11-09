@@ -1,17 +1,14 @@
 #!/bin/sh
-# @(#$Id: rclmedia,v 1.4 2007-06-08 13:51:09 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rcltex,v 1.1 2007-11-09 11:55:50 dockes Exp $  (C) 2004 J.F.Dockes
 #================================================================
-# rclmedia
-# Handle media files for recoll. This currently returns an empty
-# document to let the indexer process the file names as terms, but
-# we might want to extract mp3 tags one day
+# rcltex
+# Translate TeX files for recoll. Use untex to translate to html
 #================================================================
 # set variables
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
-progname="rclmedia"
-filetype=media
-
+progname="rcltex"
+filetype=TeX
 
 
 #RECFILTCOMMONCODE
@@ -80,7 +77,7 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds id3info
+checkcmds untex iconv
 
 # output the result
 echo '<html><head>'
@@ -89,9 +86,10 @@ echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
 echo '</head><body>'
 echo '<pre>'
 
-id3info "$infile" | \
-   sed -e 's/</&lt;/g' -e 's/&/&amp;/g' -e 's/===.*://' | \
-	   grep -v 'Tag information for'
+untex -giso -a "$infile" | \
+    iconv -f iso-8859-1 -t utf-8 | \
+   sed \
+       -e 's/</&lt;/g' -e 's/&/&amp;/g' 
 
 echo '</pre>'
 echo '</body></html>'

@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.35 2007-10-06 07:44:03 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.36 2007-11-09 11:55:50 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -49,6 +49,7 @@ application/x-flac = exec rclflac
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-scribus = exec rclscribus
+application/x-tex = exec rcltex
 audio/mpeg = exec rclid3
 image/gif = exec rclimg
 image/jpeg = exec rclimg
@@ -88,6 +89,8 @@ application/x-flac = sownd
 application/x-fsdirectory = folder
 application/x-kword = wordprocessing
 application/x-lyx = wordprocessing
+application/x-scribus = document
+application/x-tex = wordprocessing
 audio/mpeg = sownd
 image/gif = image
 image/jpeg = image
@@ -116,6 +119,7 @@ text = \
       application/x-kword \
       application/x-lyx \
       application/x-scribus \
+      application/x-tex \
       image/vnd.djvu \
       text/html \
       text/plain \

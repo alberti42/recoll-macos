@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.27 2007-10-02 14:22:38 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.28 2007-11-09 11:55:50 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
 
 .txt = text/plain
@@ -25,6 +25,7 @@
 .eps = application/postscript
 .ai = application/postscript
 
+.tex = application/x-tex
 .dvi = application/x-dvi
 
 .djvu = image/vnd.djvu
@@ -84,7 +85,7 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
        .m4 .tcl .js .sh .pl .awk \
        .o .lib .dll .a \
        .dat .bak .rdf .log .db .ini .msf .pid \
-       .gnm .gnumeric .tex \
+       .gnm .gnumeric \
        .gif .bmp .xpm \
        ,v ~ #
 
