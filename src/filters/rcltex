@@ -1,8 +1,8 @@
 #!/bin/sh
-# @(#$Id: rcltex,v 1.1 2007-11-09 11:55:50 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rcltex,v 1.2 2007-11-09 15:56:14 dockes Exp $  (C) 2004 J.F.Dockes
 #================================================================
 # rcltex
-# Translate TeX files for recoll. Use untex to translate to html
+# Translate TeX files for recoll. Uses either untex or detex to translate to html
 #================================================================
 # set variables
 LANG=C ; export LANG
@@ -77,7 +77,13 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds untex iconv
+if iscmd detex ; then
+    checkcmds iconv
+    CMD="detex -n -e ''"
+else
+    checkcmds untex iconv
+    CMD="untex -giso -a"
+fi
 
 # output the result
 echo '<html><head>'
@@ -86,8 +92,10 @@ echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
 echo '</head><body>'
 echo '<pre>'
 
-untex -giso -a "$infile" | \
-    iconv -f iso-8859-1 -t utf-8 | \
+#untex -giso -a "$infile" | \
+
+$CMD "$infile" | \
+   iconv -c -f iso-8859-1 -t utf-8 | \
    sed \
        -e 's/</&lt;/g' -e 's/&/&amp;/g' 
 
