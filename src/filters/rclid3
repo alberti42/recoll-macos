@@ -1,17 +1,14 @@
 #!/bin/sh
-# @(#$Id: rclid3,v 1.1 2007-07-01 06:52:21 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclid3,v 1.2 2007-11-09 11:54:59 dockes Exp $  (C) 2004 J.F.Dockes
 #================================================================
-# rclmedia
-# Handle media files for recoll. This currently returns an empty
-# document to let the indexer process the file names as terms, but
-# we might want to extract mp3 tags one day
+# rclid3
+# Handle audio files for recoll. This uses id3info to extract tags
 #================================================================
 # set variables
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
-progname="rclmedia"
-filetype=media
-
+progname="rclid3"
+filetype=audio
 
 
 #RECFILTCOMMONCODE
