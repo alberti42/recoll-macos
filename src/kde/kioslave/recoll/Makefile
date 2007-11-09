@@ -1,11 +1,13 @@
-depth=../..
+depth=../../..
 include $(depth)/mk/sysconf
 
 all: kio_recoll.so 
 
 DEPS_CXXFLAGS =  -MT pop3.lo -MD -MP -MF .deps/pop3.Tpo
 
-INC_CXXFLAGS = -I. -I/usr/local/include -I/usr/X11R6/include \
+INC_CXXFLAGS = -I. \
+	-I/usr/local/include -I/usr/X11R6/include \
+	-I/opt/kde3/include -I$(QTDIR)/include \
 	     -I$(depth)/common -I$(depth)/query -I$(depth)/utils \
 	     -I$(depth)/qtgui -I$(depth)/rcldb
 
@@ -17,7 +19,10 @@ QT_CXXFLAGS = -DQT_CLEAN_NAMESPACE -DQT_NO_ASCII_CAST -DQT_NO_STL \
 SYS_CXXFLAGS = -D_GNU_SOURCE 
 THREAD_CXXFLAGS = -D_THREAD_SAFE -pthread -D_THREAD_SAFE -pthread
 
-LDFLAGS = -rpath=/usr/lib:/usr/local/lib \
+
+# -rpath=/usr/lib:/usr/local/lib \
+
+LDFLAGS = \
 	 -Wl,--rpath -Wl,/usr/local/lib \
 	-Wl,--rpath -Wl,/usr/X11R6/lib \
 	-Wl,-export-dynamic -Wl,-soname -Wl,kio_recoll.so
@@ -28,8 +33,8 @@ kio_recoll.so : kio_recoll.o libpic
 	    -Wl,--no-undefined \
 	    kio_recoll.o piclib/librcl.a \
 	    $(LIBXAPIAN) $(LIBICONV) \
-	    -L/usr/local/lib -L/usr/X11R6/lib -lkio -lkdecore \
-	    -lqt-mt \
+	    -L/opt/kde3/lib -L/usr/local/lib -L/usr/X11R6/lib -lkio -lkdecore \
+	    -L/usr/lib/qt3/lib -lqt-mt \
 	    -L/usr/lib -lstdc++ -lm -lc \
 	    -o kio_recoll.so 
 

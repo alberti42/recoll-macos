@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.6 2007-02-01 12:43:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.7 2007-11-09 15:46:17 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -27,14 +27,18 @@ using namespace std;
 #include "kio_recoll.h"
 
 using namespace KIO;
-
+static RclConfig *rclconfig;
+RclConfig *RclConfig::getMainConfig()
+{
+  return rclconfig;
+}
 
 RecollProtocol::RecollProtocol(const QCString &pool, const QCString &app) 
     : SlaveBase("recoll", pool, app), m_initok(false), 
       m_rclconfig(0), m_rcldb(0), m_docsource(0)
 {
     string reason;
-    m_rclconfig = recollinit(0, 0, m_reason);
+    rclconfig = m_rclconfig = recollinit(0, 0, m_reason);
     if (!m_rclconfig || !m_rclconfig->ok()) {
 	m_reason = string("Configuration problem: ") + reason;
 	return;
@@ -69,7 +73,10 @@ bool RecollProtocol::maybeOpenDb(string &reason)
 	reason = "Internal error: initialization error";
 	return false;
     }
-    if (!m_rcldb->isopen() && !m_rcldb->open(m_dbdir, Rcl::Db::DbRO)) {
+    if (!m_rcldb->isopen() && !m_rcldb->open(m_dbdir, 
+					     m_rclconfig->getStopfile(),
+					     Rcl::Db::DbRO,
+					     Rcl::Db::QO_STEM)) {
 	reason = "Could not open database in " + m_dbdir;
 	return false;
     }
@@ -134,7 +141,7 @@ void RecollProtocol::get(const KURL & url)
 	if (!m_docsource->getDoc(i, doc, &percent, &sh)) {
 	    // This may very well happen for history if the doc has
 	    // been removed since. So don't treat it as fatal.
-	    doc.abstract = string("Unavailable document");
+	    doc.meta["abstract"] = string("Unavailable document");
 	}
 
 	string iconname = m_rclconfig->getMimeIconName(doc.mimetype);
@@ -150,8 +157,8 @@ void RecollProtocol::get(const KURL & url)
 
 	char perbuf[10];
 	sprintf(perbuf, "%3d%%", percent);
-	if (doc.title.empty()) 
-	    doc.title = path_getsimple(doc.url);
+	if (doc.meta["title"].empty()) 
+	  doc.meta["title"] = path_getsimple(doc.url);
 	char datebuf[100];
 	datebuf[0] = 0;
 	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
@@ -162,12 +169,13 @@ void RecollProtocol::get(const KURL & url)
 		     "<i>Modified:</i>&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
 	}
 	result += "<img src=\"file://" + imgfile + "\" align=\"left\">";
-	string abst = escapeHtml(doc.abstract);
-	result += string(perbuf) + " <b>" + doc.title + "</b><br>" +
+	string abst = escapeHtml(doc.meta["abstract"]);
+	result += string(perbuf) + " <b>" + doc.meta["title"] + "</b><br>" +
 	    doc.mimetype + "&nbsp;" +
 	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>")) +
 	    (!abst.empty() ? abst + "<br>" : string("")) +
-	    (!doc.keywords.empty() ? doc.keywords + "<br>" : string("")) +
+	    (!doc.meta["keywords"].empty() ? doc.meta["keywords"] + 
+	     "<br>" : string("")) +
 	    "<a href=\"" + doc.url + "\">" + doc.url + "</a><br></p>\n";
 
 	QString str = QString::fromUtf8(result.c_str(), result.length());

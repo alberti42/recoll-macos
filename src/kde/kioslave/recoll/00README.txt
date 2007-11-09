@@ -1,4 +1,6 @@
 
+(this used to work but last time I tried with konqueror (kde3, 11-2007), it failed with "protocol not authorized" or such. Didn't investigate more).
+
 This is a small experiment with a recoll kio_slave
 
 A kio_slave was implemented, supporting the "get" operation. Ie, you type 
