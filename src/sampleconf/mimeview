@@ -1,4 +1,4 @@
-# @(#$Id: mimeview,v 1.9 2007-10-02 14:22:38 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeview,v 1.10 2007-11-09 13:44:08 dockes Exp $  (C) 2004 J.F.Dockes
 
 ## ##########################################
 # External viewers, launched by the recoll GUI when you click on a result
@@ -33,6 +33,7 @@ application/x-dvi = xdvi %f
 application/x-flac = xmms %f
 application/x-lyx = lyx %f
 application/x-scribus = scribus %f
+application/x-tex = gnuclient -q %f
 audio/mpeg = xmms %f
 image/jpeg = xv %f
 image/png = xv %f
