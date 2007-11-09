@@ -219,12 +219,12 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="236"/>
+        <location filename="../main.cpp" line="253"/>
         <source>Configuration problem: </source>
         <translation>Problema di configurazione: </translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="300"/>
+        <location filename="../main.cpp" line="317"/>
         <source>No db directory in configuration</source>
         <translation>Nessuna directory per il DB di base nella configurazione</translation>
     </message>
@@ -234,18 +234,18 @@
         <translation type="obsolete">Impossible de cr�er le r�pertoire temporaire</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="317"/>
+        <location filename="../main.cpp" line="334"/>
         <source>Could not open database in </source>
         <translation>Impossibile aprire il database in </translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="320"/>
+        <location filename="../main.cpp" line="337"/>
         <source>.
 Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
         <translation>Clicca &apos;Annulla&apos; se vuoi editare il file di configurazione prima di iniziare l&apos;indicizzazione, oppure &apos;OK&apos; se vuoi procedere.</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="255"/>
+        <location filename="../main.cpp" line="272"/>
         <source>Configuration problem (dynconf</source>
         <translation>Problema di configurazione (dynconf</translation>
     </message>

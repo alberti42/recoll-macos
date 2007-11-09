@@ -159,27 +159,27 @@
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="236"/>
+        <location filename="../main.cpp" line="253"/>
         <source>Configuration problem: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="255"/>
+        <location filename="../main.cpp" line="272"/>
         <source>Configuration problem (dynconf</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="300"/>
+        <location filename="../main.cpp" line="317"/>
         <source>No db directory in configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="317"/>
+        <location filename="../main.cpp" line="334"/>
         <source>Could not open database in </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="320"/>
+        <location filename="../main.cpp" line="337"/>
         <source>.
 Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
         <translation type="unfinished"></translation>
