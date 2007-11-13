@@ -1,3 +1,104 @@
+2007-11-13 16:34  dockes
+
+	* VERSION: 1.10.0?
+
+2007-11-13 11:07  dockes
+
+	* doc/man/recollq.1: [no log message]
+
+2007-11-09 19:48  dockes
+
+	* qtgui/i18n/recoll_fr.ts: 1.9 ?
+
+2007-11-09 19:07  dockes
+
+	* qtgui/i18n/: recoll_de.ts, recoll_fr.ts, recoll_it.ts,
+	recoll_ru.ts, recoll_tr.ts, recoll_uk.ts, recoll_xx.ts: [no log
+	message]
+
+2007-11-09 16:56  dockes
+
+	* filters/rcltex: [no log message]
+
+2007-11-09 16:46  dockes
+
+	* kde/kioslave/recoll/: 00README.txt, Makefile, kio_recoll.cpp: get
+	things to compile with recoll 1.9 and suse + kde 3.5.5
+
+2007-11-09 14:44  dockes
+
+	* sampleconf/mimeview: tex
+
+2007-11-09 12:55  dockes
+
+	* filters/rclmedia, filters/rcltex, sampleconf/mimeconf,
+	sampleconf/mimemap: added support for indexing TeX text
+
+2007-11-09 12:54  dockes
+
+	* filters/rclid3: comments
+
+2007-11-08 10:35  dockes
+
+	* lib/Makefile, lib/mkMake, qtgui/main.cpp, qtgui/recoll.pro.in,
+	query/Makefile, query/recollq.cpp, query/recollq.h: allow recoll to
+	be used as a recollq driver
+
+2007-11-08 10:34  dockes
+
+	* utils/execmd.cpp: include pthread
+
+2007-11-08 10:34  dockes
+
+	* rcldb/stemdb.cpp: debug
+
+2007-11-08 10:32  dockes
+
+	* qt4gui/recoll.pro.in: turkish
+
+2007-11-08 10:31  dockes
+
+	* mk/OpenBSD: [no log message]
+
+2007-11-08 08:54  dockes
+
+	* query/recollq.cpp: add -b option to only output url list
+
+2007-11-06 12:55  dockes
+
+	* qtgui/i18n/recoll_tr.ts: [no log message]
+
+2007-10-27 18:40  dockes
+
+	* rcldb/rcldb.cpp: comment
+
+2007-10-27 10:40  dockes
+
+	* filters/rcluncomp: allow uncompressing suffix-less files
+
+2007-10-27 10:40  dockes
+
+	* internfile/internfile.cpp: use pcSubst
+
+2007-10-27 10:39  dockes
+
+	* rcldb/rcldb.cpp: adjust MatchDecider return type according to
+	xapian version
+
+2007-10-27 10:38  dockes
+
+	* qtgui/i18n/recoll_de.ts, qtgui/i18n/recoll_fr.ts,
+	qtgui/i18n/recoll_it.ts, qtgui/i18n/recoll_ru.ts,
+	qtgui/i18n/recoll_uk.ts, ChangeLog: [no log message]
+
+2007-10-27 09:06  dockes
+
+	* qtgui/i18n/recoll_xx.ts: sent to ning
+
+2007-10-26 12:42  dockes
+
+	* doc/user/usermanual.sgml: index config gui
+
 2007-10-25 17:51  dockes
 
 	* qtgui/confgui/confguiindex.cpp: labels
