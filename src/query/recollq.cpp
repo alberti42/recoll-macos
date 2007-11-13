@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.10 2007-11-08 09:35:47 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.11 2007-11-13 18:40:51 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -170,7 +170,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     if (!(op_flags & OPT_b)) {
 	cout << "Recoll query: " << rq->getDescription() << endl;
 	if (cnt <= limit)
-	    cout << cnt << " results:" << endl;
+	    cout << cnt << " results" << endl;
 	else
 	    cout << cnt << " results (printing  " << limit << " max):" << endl;
     }
