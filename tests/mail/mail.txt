@@ -1,13 +1,13 @@
 Recoll query: (outmail_uniqueterm:(wqf=11))
-2 results 
+2 results
 message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/outmail]	[Re: CDNow, mkfichcom.tcl and "]	2248233	bytes	
 message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/outmail]	[Home Ip]	2248233	bytes	
 Recoll query: ((st PHRASE 4 pierre PHRASE 4 en PHRASE 4 chartreuse))
-1 results 
+1 results
 message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/BadHtmlInMail]	[Prochaine rando]	3637	bytes	
 Recoll query: (htmlattachment_uniqueterm:(wqf=11))
-1 results 
-text/html	[file:///home/dockes/projets/fulltext/testrecoll/mail/attach]	[RECOLL: a personal text search system for Unix/Linux]	4870	bytes	
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/mail/attach]	[RECOLL: a personal text search system for Unix/Linux]	4814	bytes	
 Recoll query: ((dear PHRASE 3 corporate PHRASE 3 administrator))
-1 results 
+1 results
 message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/badMail.edit]	[none - In payments / Out payments]	855	bytes	

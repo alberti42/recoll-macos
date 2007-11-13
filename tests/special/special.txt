@@ -1,15 +1,15 @@
 Recoll query: (uppercase_uniqueterm:(wqf=11))
-1 results 
+1 results
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/special/UPPERCASE_uniqueTERM.txt]	[UPPERCASE_uniqueTERM.txt]	1	bytes	
 Recoll query: (astrangewordþ:(wqf=11))
-1 results 
+1 results
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/special/casefolding.txt]	[casefolding.txt]	59	bytes	
 Recoll query: ((modernite PHRASE 3 efficience PHRASE 3 pertinence))
-1 results 
+1 results
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/special/di li gence.txt]	[di li gence.txt]	6216	bytes	
 Recoll query: ((dom.popup_allowed_events:(wqf=11) OR dom.popup_allowed_ev))
-1 results 
+1 results
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/special/strangewords.txt]	[strangewords.txt]	41	bytes	
-Recoll query: ((toto PHRASE 4 jean PHRASE 4 23 PHRASE 4 fr))
-1 results 
+Recoll query: ((toto@jean-23 PHRASE 4 fr))
+1 results
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/special/strangewords.txt]	[strangewords.txt]	41	bytes	
