@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.56 2007-10-26 10:42:10 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.57 2007-11-13 18:40:30 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1602,6 +1602,17 @@ fvwm
             url="http://www.gnu.org/software/unrtf/unrtf.html">unrtf</ulink>
           </para>
 	</listitem>
+
+	<listitem>
+	  <para>TeX: &RCL; uses the <application>untex</application>
+	  program. Your distribution may have a package for it. If it doesn't, 
+            <ulink url="http://www.recoll.org/untex/untex-1.3.jf.tar.gz">
+            there is a copy of the source on the &RCL; web site</ulink>,
+            because the program has no obvious home. The filter can
+            also work with 
+            <ulink url="http://www.cs.purdue.edu/homes/trinkle/detex/">
+             detex</ulink> and will use it if it is installed.</para>
+        </listitem>
 
 	<listitem>
             <para>dvi: <ulink
