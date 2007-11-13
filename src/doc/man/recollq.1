@@ -1,0 +1,71 @@
+.\" $Id: recollq.1,v 1.1 2007-11-13 10:07:35 dockes Exp $ (C) 2005 J.F.Dockes\$
+.TH RECOLLQ 1 "13 November 2007"
+.SH NAME
+recollq \- command line / standard output Recoll query command.
+.SH SYNOPSIS
+.B recollq
+[
+.B -c
+<configdir>
+]
+[
+.B -b
+]
+[
+.B -d
+]
+[
+.B -n
+<cnt>
+]
+[
+.B -o
+|
+.B -l
+|
+.B -f
+|
+.B -a
+]
+<query string>
+
+.SH DESCRIPTION
+The
+.B recollq
+command will execute the Recoll query specified on the command line and
+print the results to the standard output.
+.PP
+The 
+.B -c 
+option specifies the configuration directory name, overriding the
+default or $RECOLL_CONFDIR.
+.PP
+The query string will be interpreted by default as a query language string.
+If
+.B -a 
+is specified, the query string will be interpreted as an
+.I all words
+simple search query. If 
+.B -o 
+is specified, the query string will be interpreted as an
+.I any word
+simple search query. If 
+.B -f
+is specified, the query string will be interpreted as a
+.I file name
+simple search query. 
+.PP
+.B -b
+(basic) can be specified to only print the result urls in the output
+stream.
+.PP
+.B -n
+<cnt>
+can be used to set the maximum number of results that should be printed.
+.PP
+If 
+.B -d
+is set, the text for the result files contents will be dumped to stdout.
+.SH SEE ALSO
+.PP 
+recollindex(1) recollq(1) recoll.conf(5) 
