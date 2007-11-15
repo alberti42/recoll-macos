@@ -40,7 +40,6 @@ SOURCES	+= \
 FORMS	= \
 	advsearch.ui \
 	spell.ui \
-	preview.ui \
 	rclmain.ui \
 	sort.ui \
 	ssearchb.ui \
