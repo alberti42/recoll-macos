@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.30 2007-11-15 18:34:49 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.31 2007-11-15 18:44:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -82,6 +82,16 @@ using std::pair;
 #define QTEXTPARAGRAPH Q3TextParagraph
 #define QTEXTSTRINGCHAR Q3TextStringChar
 #endif
+// QTextEdit's scrollToAnchor() is supposed to make the anchor visible, but
+// actually, it only moves to the top of the paragraph containing the anchor.
+// As we only have one paragraph, this doesnt' help a lot (qt3 and qt4)
+//
+// So, had to write a different function, inspired from what 
+// qtextedit::find() does, instead. This ones actually moves the
+// cursor, which is probably not necessary, but does what we need.
+//
+// Problem is, it uses the sem-private qrichtext_p.h, which is not
+// even installed under qt4. We use a local copy, which is not nice.
 void QTextEditFixed::moveToAnchor(const QString& name)
 {
     if (name.isEmpty())
