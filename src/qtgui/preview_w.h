@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.16 2007-11-15 18:05:32 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.17 2007-11-15 18:34:49 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,41 +32,23 @@ class QPushButton;
 class QCheckBox;
 class QTextEditFixed;
 
+#if (QT_VERSION < 0x040000)
 #include <qtextedit.h>
 #include <private/qrichtext_p.h>
-class QTextEditFixed : public QTextEdit {
+#define QTEXTEDIT QTextEdit
+#else
+#include <q3textedit.h>
+#include <q3richtext_p.h>
+#define QTEXTEDIT Q3TextEdit
+#endif
+
+class QTextEditFixed : public QTEXTEDIT {
     Q_OBJECT
 public:
     QTextEditFixed( QWidget* parent=0, const char* name=0 ) 
-	: QTextEdit(parent, name)
+	: QTEXTEDIT(parent, name)
     {}
-    void moveToAnchor(const QString& name)
-    {
-	if (name.isEmpty())
-	    return;
-	sync();
-	QTextCursor l_cursor(document());
-	QTextParagraph* last = document()->lastParagraph();
-	for (;;) {
-	    QTextStringChar* c = l_cursor.paragraph()->at(l_cursor.index());
-	    if(c->isAnchor()) {
-		QString a = c->anchorName();
-		fprintf(stderr, "QTextEdit::scrollToAnchor: anchor nm [%s]\n",
-			(const char *)a.ascii());
-		if ( a == name ||
-		     (a.contains( '#' ) && 
-		      QStringList::split('#', a).contains(name))) {
-		
-		    *(textCursor())  = l_cursor;
-		    ensureCursorVisible();
-		    break;
-		}
-	    }
-	    if (l_cursor.paragraph() == last && l_cursor.atParagEnd())
-		break;
-	    l_cursor.gotoNextLetter();
-	}
-    }
+    void moveToAnchor(const QString& name);
 };
 
 

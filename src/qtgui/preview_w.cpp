@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.29 2007-11-15 18:05:32 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.30 2007-11-15 18:34:49 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -67,6 +67,47 @@ using std::pair;
 #define wasCanceled wasCancelled
 #endif
 
+#if (QT_VERSION < 0x040000)
+#include <qtextedit.h>
+#include <private/qrichtext_p.h>
+#define QTEXTEDIT QTextEdit
+#define QTEXTCURSOR QTextCursor
+#define QTEXTPARAGRAPH QTextParagraph
+#define QTEXTSTRINGCHAR QTextStringChar
+#else
+#include <q3textedit.h>
+#include "q3richtext_p.h"
+#define QTEXTEDIT Q3TextEdit
+#define QTEXTCURSOR Q3TextCursor
+#define QTEXTPARAGRAPH Q3TextParagraph
+#define QTEXTSTRINGCHAR Q3TextStringChar
+#endif
+void QTextEditFixed::moveToAnchor(const QString& name)
+{
+    if (name.isEmpty())
+	return;
+    sync();
+    QTEXTCURSOR l_cursor(document());
+    QTEXTPARAGRAPH* last = document()->lastParagraph();
+    for (;;) {
+	QTEXTSTRINGCHAR* c = l_cursor.paragraph()->at(l_cursor.index());
+	if(c->isAnchor()) {
+	    QString a = c->anchorName();
+	    if ( a == name ||
+		 (a.contains( '#' ) && 
+		  QStringList::split('#', a).contains(name))) {
+		
+		*(textCursor())  = l_cursor;
+		ensureCursorVisible();
+		break;
+	    }
+	}
+	if (l_cursor.paragraph() == last && l_cursor.atParagEnd())
+	    break;
+	l_cursor.gotoNextLetter();
+    }
+}
+
 void Preview::init()
 {
     setName("Preview");
@@ -84,7 +125,6 @@ void Preview::init()
     QVBoxLayout *unnamedLayout = 
 	new QVBoxLayout(unnamed, 0, 6, "unnamedLayout"); 
     QTextEditFixed *pvEdit = new QTextEditFixed(unnamed, "pvEdit");
-    pvEdit->setFocusPolicy(QTextEdit::WheelFocus);
     pvEdit->setReadOnly(TRUE);
     pvEdit->setUndoRedoEnabled(FALSE);
     unnamedLayout->addWidget(pvEdit);
@@ -114,7 +154,6 @@ void Preview::init()
     previewLayout->addLayout(layout3);
 
     resize(QSize(640, 480).expandedTo(minimumSizeHint()));
-    clearWState(WState_Polished);
 
     // buddies
     searchLabel->setBuddy(searchTextLine);
@@ -300,6 +339,7 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 	QString aname = 
 	    QString::fromUtf8(termAnchorName(m_curAnchor).c_str());
 	edit->moveToAnchor(aname);
+	return;
     }
 
     // If next is false, the user added characters to the current
