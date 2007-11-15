@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.15 2007-10-18 10:39:41 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.16 2007-11-15 18:05:32 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -43,22 +43,15 @@ struct HiliteData {
  * @param hdata       terms and groups to be highlighted. These are
  *                     lowercase and unaccented.
  * @param noHeader    if true don't output header (<qt><title>...)
- * @param needBeacons Need to navigate highlighted terms, mark them.
+ * @param needBeacons Need to navigate highlighted terms, mark them,return last
  */
 extern bool plaintorich(const string &in, list<string> &out,
 			const HiliteData& hdata,
 			bool noHeader,
-			bool needBeacons,
+			int  *needBeacons,
 			int chunksize = 50000
 			);
 
 extern string termAnchorName(int i);
-
-#define QT_SCROLL_TO_ANCHOR_BUG
-#ifdef QT_SCROLL_TO_ANCHOR_BUG
-// For some reason, can't get scrollToAnchor() to work. We use a special 
-// string as a beacon for the match area.
-extern const char *firstTermBeacon;
-#endif
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

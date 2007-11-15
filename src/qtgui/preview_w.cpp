@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.28 2007-10-18 10:39:41 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.29 2007-11-15 18:05:32 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -69,6 +69,62 @@ using std::pair;
 
 void Preview::init()
 {
+    setName("Preview");
+    setSizePolicy( QSizePolicy((QSizePolicy::SizeType)5, 
+			       (QSizePolicy::SizeType)5, 0, 0, 
+			       sizePolicy().hasHeightForWidth()));
+    QVBoxLayout* previewLayout =
+	new QVBoxLayout( this, 4, 6, "previewLayout"); 
+
+    pvTab = new QTabWidget(this, "pvTab");
+
+    // Create the first tab. Should be possible to use addEditorTab
+    // but this causes a pb with the sizeing
+    QWidget *unnamed = new QWidget(pvTab, "unnamed");
+    QVBoxLayout *unnamedLayout = 
+	new QVBoxLayout(unnamed, 0, 6, "unnamedLayout"); 
+    QTextEditFixed *pvEdit = new QTextEditFixed(unnamed, "pvEdit");
+    pvEdit->setFocusPolicy(QTextEdit::WheelFocus);
+    pvEdit->setReadOnly(TRUE);
+    pvEdit->setUndoRedoEnabled(FALSE);
+    unnamedLayout->addWidget(pvEdit);
+    pvTab->insertTab(unnamed, QString::fromLatin1(""));
+    m_tabData.push_back(TabData(pvTab->currentPage()));
+
+    previewLayout->addWidget(pvTab);
+
+    // Create the buttons and entry field
+    QHBoxLayout *layout3 = new QHBoxLayout(0, 0, 6, "layout3"); 
+    searchLabel = new QLabel(this, "searchLabel");
+    layout3->addWidget(searchLabel);
+    searchTextLine = new QLineEdit(this, "searchTextLine");
+    layout3->addWidget(searchTextLine);
+    nextButton = new QPushButton(this, "nextButton");
+    nextButton->setEnabled(TRUE);
+    layout3->addWidget(nextButton);
+    prevButton = new QPushButton(this, "prevButton");
+    prevButton->setEnabled(TRUE);
+    layout3->addWidget(prevButton);
+    clearPB = new QPushButton(this, "clearPB");
+    clearPB->setEnabled(FALSE);
+    layout3->addWidget(clearPB);
+    matchCheck = new QCheckBox(this, "matchCheck");
+    layout3->addWidget(matchCheck);
+
+    previewLayout->addLayout(layout3);
+
+    resize(QSize(640, 480).expandedTo(minimumSizeHint()));
+    clearWState(WState_Polished);
+
+    // buddies
+    searchLabel->setBuddy(searchTextLine);
+
+    searchLabel->setText(tr("&Search for:"));
+    nextButton->setText(tr("&Next"));
+    prevButton->setText(tr("&Previous"));
+    clearPB->setText(tr("Clear"));
+    matchCheck->setText(tr("Match &Case"));
+
 #if 0
     // Couldn't get a small button really in the corner. stays on the left of
     // the button area and looks ugly
@@ -93,7 +149,6 @@ void Preview::init()
 
     m_dynSearchActive = false;
     m_canBeep = true;
-    m_tabData.push_back(TabData(pvTab->currentPage()));
     m_currentW = 0;
     if (prefs.pvwidth > 100) {
 	resize(prefs.pvwidth, prefs.pvheight);
@@ -102,6 +157,7 @@ void Preview::init()
     currentChanged(pvTab->currentPage());
     m_justCreated = true;
     m_haveAnchors = false;
+    m_curAnchor = 1;
 }
 
 void Preview::closeEvent(QCloseEvent *e)
@@ -161,9 +217,9 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	    return QApplication::sendEvent(searchTextLine, event);
     } else {
 	QWidget *tw = pvTab->currentPage();
-	QTextEdit *e = 0;
+	QTextEditFixed *e = 0;
 	if (tw)
-	    e = (QTextEdit *)tw->child("pvEdit");
+	    e = (QTextEditFixed *)tw->child("pvEdit");
 	LOGDEB1(("Widget: %p, edit %p, target %p\n", tw, e, target));
 	if (e && target == e) {
 	    if (keyEvent->key() == Qt::Key_Slash) {
@@ -201,17 +257,16 @@ void Preview::searchTextLine_textChanged(const QString & text)
 }
 
 #if (QT_VERSION >= 0x040000)
-#define QTextEdit Q3TextEdit
 #define QProgressDialog Q3ProgressDialog
 #define QStyleSheetItem Q3StyleSheetItem
 #endif
 
-QTextEdit *Preview::getCurrentEditor()
+QTextEditFixed *Preview::getCurrentEditor()
 {
     QWidget *tw = pvTab->currentPage();
-    QTextEdit *edit = 0;
+    QTextEditFixed *edit = 0;
     if (tw) {
-	edit = (QTextEdit*)tw->child("pvEdit");
+	edit = (QTextEditFixed*)tw->child("pvEdit");
     }
     return edit;
 }
@@ -229,7 +284,7 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     QString text = _text;
 
     bool matchCase = matchCheck->isChecked();
-    QTextEdit *edit = getCurrentEditor();
+    QTextEditFixed *edit = getCurrentEditor();
     if (edit == 0) {
 	// ??
 	return;
@@ -238,12 +293,13 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     if (text.isEmpty()) {
 	if (m_haveAnchors == false)
 	    return;
-#ifdef QT_SCROLL_TO_ANCHOR_BUG
-	text = QString::fromUtf8(firstTermBeacon);
-	matchCase = false;
-#else
-#error "Cycling without beacons needs coding"
-#endif
+	if (m_curAnchor == m_lastAnchor)
+	    m_curAnchor = 1;
+	else
+	    m_curAnchor++;
+	QString aname = 
+	    QString::fromUtf8(termAnchorName(m_curAnchor).c_str());
+	edit->moveToAnchor(aname);
     }
 
     // If next is false, the user added characters to the current
@@ -339,7 +395,7 @@ void Preview::selecChanged()
     LOGDEB1(("Selection changed\n"));
     if (!m_currentW)
 	return;
-    QTextEdit *edit = (QTextEdit *)m_currentW->child("pvEdit");
+    QTextEditFixed *edit = (QTextEditFixed*)m_currentW->child("pvEdit");
     if (edit == 0) {
 	LOGERR(("Editor child not found\n"));
 	return;
@@ -365,7 +421,7 @@ void Preview::textDoubleClicked(int, int)
     LOGDEB2(("Preview::textDoubleClicked\n"));
     if (!m_currentW)
 	return;
-    QTextEdit *edit = (QTextEdit *)m_currentW->child("pvEdit");
+    QTextEditFixed *edit = (QTextEditFixed *)m_currentW->child("pvEdit");
     if (edit == 0) {
 	LOGERR(("Editor child not found\n"));
 	return;
@@ -399,11 +455,11 @@ void Preview::closeCurrentTab()
     }
 }
 
-QTextEdit *Preview::addEditorTab()
+QTextEditFixed *Preview::addEditorTab()
 {
     QWidget *anon = new QWidget((QWidget *)pvTab);
     QVBoxLayout *anonLayout = new QVBoxLayout(anon, 1, 1, "anonLayout"); 
-    QTextEdit *editor = new QTextEdit(anon, "pvEdit");
+    QTextEditFixed *editor = new QTextEditFixed(anon, "pvEdit");
     editor->setReadOnly(TRUE);
     editor->setUndoRedoEnabled(FALSE );
     anonLayout->addWidget(editor);
@@ -585,9 +641,11 @@ class ToRichThread : public QThread {
     const HiliteData &hdata;
     list<string> &out;
     int loglevel;
+    int *lastanchor;
  public:
-    ToRichThread(string &i, const HiliteData& hd, list<string> &o) 
-	: in(i), hdata(hd), out(o)
+    ToRichThread(string &i, const HiliteData& hd, list<string> &o, 
+		 int *lsta)
+	: in(i), hdata(hd), out(o), lastanchor(lsta)
     {
 	    loglevel = DebugLog::getdbl()->getlevel();
     }
@@ -595,7 +653,7 @@ class ToRichThread : public QThread {
     {
 	DebugLog::getdbl()->setloglevel(loglevel);
 	try {
-	    plaintorich(in, out, hdata, false, true);
+	    plaintorich(in, out, hdata, false, lastanchor);
 	} catch (CancelExcept) {
 	}
     }
@@ -712,7 +770,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	progress.setLabelText(tr("Creating preview text"));
 	qApp->processEvents();
 	list<string> richlst;
-	ToRichThread rthr(fdoc.text, m_hData, richlst);
+	ToRichThread rthr(fdoc.text, m_hData, richlst, &m_lastAnchor);
 	rthr.start();
 
 	for (;;prog++) {
@@ -760,7 +818,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     }
 	    
     // Load into editor
-    QTextEdit *editor = getCurrentEditor();
+    QTextEditFixed *editor = getCurrentEditor();
     editor->setText("");
     if (highlightTerms) {
 	QStyleSheetItem *item = 
@@ -777,8 +835,6 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	 it != qrichlst.end(); it++, prog++, instep++) {
 	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
 	qApp->processEvents();
-	if (it->find(QString::fromUtf8(firstTermBeacon)) != -1) 
-	    m_haveAnchors = true;
 
 	editor->append(*it);
 
@@ -795,9 +851,9 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	}
     }
 
-
     progress.close();
 
+    m_haveAnchors = m_lastAnchor != 0;
     if (searchTextLine->text().length() != 0) {
 	// If there is a current search string, perform the search
 	m_canBeep = true;
@@ -806,26 +862,9 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	// Position to the first query term
 	if (m_haveAnchors) {
 	    QString aname = QString::fromUtf8(termAnchorName(1).c_str());
-	    LOGDEB2(("Call scrolltoanchor(%s)\n", (const char *)aname.utf8()));
-	    editor->scrollToAnchor(aname);
-
-#if (QT_VERSION < 0x040000)
-	    // The q3textedit version of te::find() is slow to the point of
-	    // being unusable (plus it does not always work). So we
-	    // don't position to the first term automatically, the
-	    // user can still use the search function in the preview
-	    // window to do it
-#ifdef QT_SCROLL_TO_ANCHOR_BUG
-	    bool ocanbeep = m_canBeep;
-	    m_canBeep = false;
-	    QString empty;
-	    // Calling doSearch() with an empty string will look for
-	    // the first occurrence of a search term`
-	    // doSearch(_text, next, reverse, wordOnly)
-	    doSearch(empty, true, false, false);
-	    m_canBeep = ocanbeep;
-#endif
-#endif // (QT_VERSION < 0x040000)
+	    LOGDEB2(("Call movetoanchor(%s)\n", (const char *)aname.utf8()));
+	    editor->moveToAnchor(aname);
+	    m_curAnchor = 1;
 	}
     }
 

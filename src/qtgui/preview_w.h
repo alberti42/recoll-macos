@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.15 2007-07-20 14:43:21 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.16 2007-11-15 18:05:32 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,14 +22,53 @@
 #include <qwidget.h>
 
 #include "rcldb.h"
-#if (QT_VERSION < 0x040000)
-#include "preview.h"
-#else
-#include "ui_preview.h"
-#define QTextEdit Q3TextEdit
-#endif
 #include "refcntr.h"
 #include "plaintorich.h"
+
+class QTabWidget;
+class QLabel;
+class QLineEdit;
+class QPushButton;
+class QCheckBox;
+class QTextEditFixed;
+
+#include <qtextedit.h>
+#include <private/qrichtext_p.h>
+class QTextEditFixed : public QTextEdit {
+    Q_OBJECT
+public:
+    QTextEditFixed( QWidget* parent=0, const char* name=0 ) 
+	: QTextEdit(parent, name)
+    {}
+    void moveToAnchor(const QString& name)
+    {
+	if (name.isEmpty())
+	    return;
+	sync();
+	QTextCursor l_cursor(document());
+	QTextParagraph* last = document()->lastParagraph();
+	for (;;) {
+	    QTextStringChar* c = l_cursor.paragraph()->at(l_cursor.index());
+	    if(c->isAnchor()) {
+		QString a = c->anchorName();
+		fprintf(stderr, "QTextEdit::scrollToAnchor: anchor nm [%s]\n",
+			(const char *)a.ascii());
+		if ( a == name ||
+		     (a.contains( '#' ) && 
+		      QStringList::split('#', a).contains(name))) {
+		
+		    *(textCursor())  = l_cursor;
+		    ensureCursorVisible();
+		    break;
+		}
+	    }
+	    if (l_cursor.paragraph() == last && l_cursor.atParagEnd())
+		break;
+	    l_cursor.gotoNextLetter();
+	}
+    }
+};
+
 
 // We keep a list of data associated to each tab
 class TabData {
@@ -44,36 +83,18 @@ class TabData {
     {}
 };
 
-class QTextEdit;
+class Preview : public QWidget {
 
-//MOC_SKIP_BEGIN
-#if QT_VERSION < 0x040000
-class DummyPreviewBase : public PreviewBase
-{
- public: DummyPreviewBase(QWidget* parent = 0) : PreviewBase(parent)	{}
-};
-#else
-class DummyPreviewBase : public QWidget, public Ui::PreviewBase
-{
-public: DummyPreviewBase(QWidget* parent):QWidget(parent){setupUi(this);}
-};
-#endif
-//MOC_SKIP_END
-
-class Preview : public DummyPreviewBase
-{
     Q_OBJECT
 
 public:
+
     Preview(int sid, // Search Id
 	    const HiliteData& hdata) // Search terms etc. for highlighting
-	: DummyPreviewBase(0) 
+	: QWidget(0), m_searchId(sid), m_hData(hdata)
     {
 	init();
-	m_searchId = sid;
-	m_hData = hdata;
     }
-
     ~Preview(){}
 
     virtual void closeEvent(QCloseEvent *e );
@@ -114,12 +135,22 @@ private:
     HiliteData    m_hData;
     bool          m_justCreated; // First tab create is different
     bool          m_haveAnchors; // Search terms are marked in text
+    int           m_lastAnchor; // Number of last anchor. Then rewind to 1
+    int           m_curAnchor;
+
+    QTabWidget* pvTab;
+    QLabel* searchLabel;
+    QLineEdit* searchTextLine;
+    QPushButton* nextButton;
+    QPushButton* prevButton;
+    QPushButton* clearPB;
+    QCheckBox* matchCheck;
 
     void init();
     virtual void setCurTabProps(const string& fn, const Rcl::Doc& doc, 
 				int docnum);
-    virtual QTextEdit *getCurrentEditor();
-    virtual QTextEdit *addEditorTab();
+    virtual QTextEditFixed *getCurrentEditor();
+    virtual QTextEditFixed *addEditorTab();
     virtual bool loadFileInCurrentTab(string fn, size_t sz, 
 				      const Rcl::Doc& idoc, int dnm);
     TabData *tabDataForCurrent(); // Return auxiliary data pointer for cur tab

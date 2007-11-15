@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.29 2007-10-18 10:39:41 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.30 2007-11-15 18:05:32 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -309,24 +309,9 @@ string termAnchorName(int i)
     return string(acname);
 }
 
-#ifdef QT_SCROLL_TO_ANCHOR_BUG
-// qtextedit scrolltoanchor(), which we would like to use to walk the 
-// search hit positions does not work well. So we mark the positions with
-// a special string which we then use with the find() function for positionning
-// We used to use some weird utf8 char for this, but this was displayed 
-// inconsistently depending of system, font, etc. We now use a good ole ctl
-// char which doesnt' seem to cause any trouble. Wanted to use ^L, but can't
-// be searched, so ^G
-const char *firstTermBeacon = "\007";
-#endif
-
 static string termBeacon(int i)
 {
-    return string("<a name=\"") + termAnchorName(i) + "\">"
-#ifdef QT_SCROLL_TO_ANCHOR_BUG
-		    + firstTermBeacon
-#endif
-		    + "</a>";
+    return string("<a name=\"") + termAnchorName(i) + "\">";
 }
 
 
@@ -342,7 +327,7 @@ static string termBeacon(int i)
 // caller will use the editor's find() function to position on it
 bool plaintorich(const string& in, list<string>& out, 
 		 const HiliteData& hdata,
-		 bool noHeader, bool needBeacons, int chunksize)
+		 bool noHeader, int *lastAnchor, int chunksize)
 {
     Chrono chron;
     const vector<string>& terms(hdata.terms);
@@ -416,7 +401,7 @@ bool plaintorich(const string& in, list<string>& out,
 	if (tPosIt != tboffsend) {
 	    int ibyteidx = chariter.getBpos();
 	    if (ibyteidx == tPosIt->first) {
-		if (needBeacons)
+		if (lastAnchor)
 		    *sit += termBeacon(anchoridx++);
 		*sit += "<termtag>";
 	    } else if (ibyteidx == tPosIt->second) {
@@ -461,6 +446,8 @@ bool plaintorich(const string& in, list<string>& out,
 	    chariter.appendchartostring(*sit);
 	}
     }
+    if (lastAnchor)
+	*lastAnchor = anchoridx - 1;
 #if 0
     {
 	FILE *fp = fopen("/tmp/debugplaintorich", "a");
