@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.54 2007-10-17 09:57:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.55 2007-11-16 14:28:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -165,6 +165,35 @@ ConfNull *RclConfig::cloneMainConfig()
 	return 0;
     }
     return conf;
+}
+
+// Remember what directory we're under (for further conf->get()s), and 
+// prefetch a few common values.
+void RclConfig::setKeyDir(const string &dir) 
+{
+    m_keydir = dir;
+    if (m_conf == 0)
+	return;
+
+    if (!m_conf->get("defaultcharset", defcharset, m_keydir))
+	defcharset.erase();
+
+    getConfParam("guesscharset", &guesscharset);
+
+    string rmtstr;
+    if (m_conf->get("indexedmimetypes", rmtstr, m_keydir)) {
+	stringtolower(rmtstr);
+	if (rmtstr != m_rmtstr) {
+	    LOGDEB2(("RclConfig::setKeyDir: rmtstr [%s]\n", rmtstr.c_str()));
+	    m_rmtstr = rmtstr;
+	    list<string> l;
+	    // Yea, no good to go string->list->set. Lazy me.
+	    stringToStrings(rmtstr, l);
+	    for (list<string>::iterator it = l.begin(); it !=l.end(); it++) {
+		m_restrictMTypes.insert(*it);
+	    }
+	}
+    }
 }
 
 bool RclConfig::getConfParam(const std::string &name, int *ivp)
@@ -407,9 +436,15 @@ bool RclConfig::getMimeCatTypes(const string& cat, list<string>& tps)
     return true;
 }
 
-string RclConfig::getMimeHandlerDef(const std::string &mtype)
+string RclConfig::getMimeHandlerDef(const std::string &mtype, bool filtertypes)
 {
     string hs;
+    if (filtertypes && !m_restrictMTypes.empty()) {
+	string mt = mtype;
+	stringtolower(mt);
+	if (m_restrictMTypes.find(mt) == m_restrictMTypes.end())
+	    return hs;
+    }
     if (!mimeconf->get(mtype, hs, "index")) {
 	LOGDEB1(("getMimeHandler: no handler for '%s'\n", mtype.c_str()));
     }
@@ -718,6 +753,8 @@ void RclConfig::initFrom(const RclConfig& r)
     m_maxsufflen = r.m_maxsufflen;
     defcharset = r.defcharset;
     guesscharset = r.guesscharset;
+    m_rmtstr = r.m_rmtstr;
+    m_restrictMTypes = r.m_restrictMTypes;
 }
 
 #else // -> Test

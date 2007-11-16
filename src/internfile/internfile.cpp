@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.36 2007-10-27 08:40:07 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.37 2007-11-16 14:28:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -145,7 +145,7 @@ FileInterner::FileInterner(const std::string &f, const struct stat *stp,
 
     // Look for appropriate handler (might still return empty)
     m_mimetype = l_mime;
-    Dijon::Filter *df = getMimeHandler(l_mime, m_cfg);
+    Dijon::Filter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview);
 
     if (!df) {
 	// No handler for this type, for now :( if indexallfilenames

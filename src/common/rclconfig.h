@@ -16,17 +16,19 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.38 2007-10-09 09:43:10 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.39 2007-11-16 14:28:52 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
 #include <vector>
+#include <set>
 #include <utility>
 #ifndef NO_NAMESPACES
 using std::list;
 using std::string;
 using std::vector;
 using std::pair;
+using std::set;
 #endif
 
 #include "conftree.h"
@@ -60,17 +62,7 @@ class RclConfig {
     string getConfDir() {return m_confdir;}
 
     /** Set current directory reference, and fetch automatic parameters. */
-    void setKeyDir(const string &dir) 
-    {
-	m_keydir = dir;
-	if (m_conf == 0)
-	    return;
-	if (!m_conf->get("defaultcharset", defcharset, m_keydir))
-	    defcharset.erase();
-	string str;
-	m_conf->get("guesscharset", str, m_keydir);
-	guesscharset = stringToBool(str);
-    }
+    void setKeyDir(const string &dir);
     string getKeyDir() const {return m_keydir;}
 
     /** Get generic configuration parameter according to current keydir */
@@ -136,7 +128,7 @@ class RclConfig {
     string getSuffixFromMimeType(const string &mt);
 
     /** mimeconf: get input filter for mimetype */
-    string getMimeHandlerDef(const string &mimetype);
+    string getMimeHandlerDef(const string &mimetype, bool filtertypes=false);
 
     /** mimeconf: get icon name for mimetype */
     string getMimeIconName(const string &mtype, string *path = 0);
@@ -198,6 +190,9 @@ class RclConfig {
     // Parameters auto-fetched on setkeydir
     string defcharset;   // These are stored locally to avoid 
     bool   guesscharset; // They are fetched initially or on setKeydir()
+    // Limiting set of mime types to be processed. Normally empty.
+    string        m_rmtstr;
+    set<string>   m_restrictMTypes; 
 
     /** Create initial user configuration */
     bool initUserConfig();

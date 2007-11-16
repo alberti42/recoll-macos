@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.21 2006-12-19 08:40:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.22 2007-11-16 14:28:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -52,15 +52,16 @@ static Dijon::Filter *mhFactory(const string &mime)
 	return new MimeHandlerUnknown(lmime);
 }
 
-/**
+/*
  * Return handler object for given mime type:
  */
-Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg)
+Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg, 
+			      bool filtertypes)
 {
     // Get handler definition for mime type
     string hs;
     if (!mtype.empty())
-	hs = cfg->getMimeHandlerDef(mtype);
+	hs = cfg->getMimeHandlerDef(mtype, filtertypes);
 
     if (!hs.empty()) {
 	// Break definition into type and name 

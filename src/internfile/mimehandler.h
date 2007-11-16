@@ -16,7 +16,7 @@
  */
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-/* @(#$Id: mimehandler.h,v 1.14 2006-12-16 15:39:54 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimehandler.h,v 1.15 2007-11-16 14:28:52 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -86,8 +86,13 @@ protected:
 /**
  * Return indexing handler object for the given mime type
  * returned pointer should be deleted by caller
+ * @param mtyp input mime type, ie text/plain
+ * @param cfg  the recoll config object to be used
+ * @param filtertypes decide if we should restrict to types in 
+ *     indexedmimetypes (if this is set at all).
  */
-extern Dijon::Filter *getMimeHandler(const std::string &mtyp, RclConfig *cfg);
+extern Dijon::Filter *getMimeHandler(const std::string &mtyp, RclConfig *cfg,
+				     bool filtertypes=false);
 
 /// Can this mime type be interned ?
 extern bool canIntern(const std::string mimetype, RclConfig *cfg);
