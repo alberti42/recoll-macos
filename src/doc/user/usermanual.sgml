@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.57 2007-11-13 18:40:30 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.58 2007-11-16 15:20:45 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -2037,6 +2037,15 @@ skippedPaths = ~/somedir/&lowast;.txt
             files.</para> 
             </listitem>
           </varlistentry>
+
+	  <varlistentry><term><literal>indexedmimetypes</literal></term>
+	    <listitem><para>&RCL; normally indexes any file which it
+	    knows how to read. This list lets you restrict the indexed
+	    mime types to what you specify. If the variable is
+	    unspecified or the list empty (the default), all supported
+	    types are processed.</para>
+	    </listitem>
+	  </varlistentry>
 
 	  <varlistentry><term><literal>indexallfilenames</literal></term>
 	    <listitem><para>&RCL; indexes file names in a special
