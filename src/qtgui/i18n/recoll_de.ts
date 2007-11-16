@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1">
+<!DOCTYPE TS><TS version="1.1" language="de">
+<defaultcodec></defaultcodec>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -646,7 +647,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     <message>
         <location filename="../rclmain_w.cpp" line="116"/>
         <source>(no stemming)</source>
-        <translation type="unfinished">(keine Wortstammerweiterung)</translation>
+        <translation>(keine Wortstammerweiterung)</translation>
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="117"/>
@@ -656,7 +657,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     <message>
         <location filename="../rclmain_w.cpp" line="133"/>
         <source>error retrieving stemming languages</source>
-        <translation type="unfinished">Fehler beim Holen der Wortstammsprachen</translation>
+        <translation>Fehler beim Holen der Wortstammsprachen</translation>
     </message>
 </context>
 <context>
@@ -2151,12 +2152,12 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <message>
         <location filename="../confgui/confgui.cpp" line="321"/>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../confgui/confgui.cpp" line="329"/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
 </context>
 <context>

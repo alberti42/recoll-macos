@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1">
+<!DOCTYPE TS><TS version="1.1" language="uk">
+<defaultcodec></defaultcodec>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -213,7 +214,7 @@
     <message>
         <location filename="../../qt4gui/advsearch.ui" line="431"/>
         <source>Close</source>
-        <translation type="unfinished">Закрити</translation>
+        <translation>Закрити</translation>
     </message>
 </context>
 <context>
@@ -618,7 +619,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../rclmain_w.cpp" line="116"/>
         <source>(no stemming)</source>
-        <translation type="unfinished">(без словоформ)</translation>
+        <translation>(без словоформ)</translation>
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="117"/>
@@ -1110,17 +1111,17 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../searchclause_w.cpp" line="75"/>
         <source>Any of these</source>
-        <translation type="unfinished">з усіма словами</translation>
+        <translation>з усіма словами</translation>
     </message>
     <message>
         <location filename="../searchclause_w.cpp" line="76"/>
         <source>All of these</source>
-        <translation type="unfinished">з усіма словами</translation>
+        <translation>з усіма словами</translation>
     </message>
     <message>
         <location filename="../searchclause_w.cpp" line="77"/>
         <source>None of these</source>
-        <translation type="unfinished">без цих слів</translation>
+        <translation>без цих слів</translation>
     </message>
     <message>
         <location filename="../searchclause_w.cpp" line="78"/>
@@ -1254,7 +1255,7 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <location filename="../../qt4gui/spell.ui" line="81"/>
         <source>Alt+C</source>
-        <translation type="unfinished">Alt+C</translation>
+        <translation>Alt+C</translation>
     </message>
     <message>
         <location filename="../../qt4gui/spell.ui" line="100"/>
@@ -1859,7 +1860,7 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../../qt4gui/viewaction.ui" line="77"/>
         <source>Close</source>
-        <translation type="unfinished">Закрити</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <location filename="../../qt4gui/viewaction.ui" line="16"/>
@@ -1983,7 +1984,7 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../confgui/confgui.cpp" line="269"/>
         <source>Browse</source>
-        <translation type="unfinished">Перегляд</translation>
+        <translation>Перегляд</translation>
     </message>
 </context>
 <context>
@@ -1991,12 +1992,12 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../confgui/confgui.cpp" line="321"/>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../confgui/confgui.cpp" line="329"/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
 </context>
 <context>
