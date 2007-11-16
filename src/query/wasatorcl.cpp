@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.11 2007-10-25 07:27:30 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.12 2007-11-16 12:21:46 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,11 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 		sdata->addFiletype((*it)->m_value);
 		break;
 	    } 
-	    if (!stringicmp("rclcat", (*it)->m_fieldspec)) {
+
+	    // Xesam uses "type", we also support "rclcat", for broad
+	    // categories like "audio", "presentation", etc.
+	    if (!stringicmp("rclcat", (*it)->m_fieldspec) ||
+		!stringicmp("type", (*it)->m_fieldspec)) {
 		RclConfig *conf = RclConfig::getMainConfig();
 		list<string> mtypes;
 		if (conf && conf->getMimeCatTypes((*it)->m_value, mtypes)) {
