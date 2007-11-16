@@ -1,26 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="tr">
+<!DOCTYPE TS><TS version="1.1" language="tr_TR">
+<defaultcodec></defaultcodec>
 <context>
     <name>AdvSearch</name>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="obsolete">Tamamen negatif sorgu ï¿½alÄ±ï¿½ÂŸtÄ±rÄ±lamaz. Lï¿½tfen &apos;herhangi bir sï¿½zcï¿½k&apos; alanÄ±na genel ifadeler girin</translation>
-    </message>
-    <message>
         <location filename="../advsearch_w.cpp" line="89"/>
         <source>All clauses</source>
-        <translation>Tï¿½m ifadeler</translation>
+        <translation>Tüm ifadeler</translation>
     </message>
     <message>
         <location filename="../advsearch_w.cpp" line="90"/>
         <source>Any clause</source>
         <translation>Ä°fadelerin herhangi biri</translation>
-    </message>
-    <message>
-        <location filename="../advsearch_w.cpp" line="376"/>
-        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Tamamen negatif sorgu ï¿½alÄ±ï¿½ÂŸtÄ±rÄ±lamaz. Lï¿½tfen &apos;herhangi bir sï¿½zcï¿½k&apos; alanÄ±na genel ifadeler girin</translation>
     </message>
     <message>
         <location filename="../advsearch_w.cpp" line="129"/>
@@ -50,7 +41,12 @@
     <message>
         <location filename="../advsearch_w.cpp" line="144"/>
         <source>other</source>
-        <translation>diï¿½ÂŸer</translation>
+        <translation>diÄÂŸer</translation>
+    </message>
+    <message>
+        <location filename="../advsearch_w.cpp" line="376"/>
+        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
+        <translation>Tamamen negatif sorgu çalÄ±ÅÂŸtÄ±rÄ±lamaz. Lütfen &apos;herhangi bir sözcük&apos; alanÄ±na genel ifadeler girin</translation>
     </message>
 </context>
 <context>
@@ -58,117 +54,7 @@
     <message>
         <location filename="../../qt4gui/advsearch.ui" line="16"/>
         <source>Advanced search</source>
-        <translation>Geliï¿½ÂŸmiï¿½ÂŸ arama</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Search for files&lt;br&gt;having all of:</source>
-        <translation type="obsolete">BunlarÄ±n tï¿½mï¿½nï¿½ iï¿½eren&lt;br&gt;dosyalarÄ± ara:</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except &quot;exact phrase&quot; can accept a mix of simple words, and phrases enclosed in double quotes.</source>
-        <translation type="obsolete">Boï¿½ÂŸ bÄ±rakÄ±lan tï¿½m alanlar VEYA ya da VE baï¿½ÂŸlacÄ± ile birleï¿½ÂŸtirilecektir. &lt;br&gt;&quot;Tam olarak bu ifade&quot; dÄ±ï¿½ÂŸÄ±ndaki tï¿½m alan tipleri basit sï¿½zcï¿½klerin karÄ±ï¿½ÂŸÄ±mÄ±nÄ± ve ï¿½ift tÄ±rnak iï¿½ine alÄ±nmÄ±ï¿½ÂŸ ifadeleri kabul edebilir.</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All of these</source>
-        <translation type="obsolete">BunlarÄ±n tï¿½mï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Enter words, and/or quoted phrases.</source>
-        <translation type="obsolete">Sï¿½zcï¿½k ve/veya tÄ±rnak iï¿½erisine alÄ±nmÄ±ï¿½ÂŸ ifadeler girin.</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Enter words.</source>
-        <translation type="obsolete">Sï¿½zcï¿½k girin.</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Any of these</source>
-        <translation type="obsolete">BunlarÄ±n herhangi biri</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>None of these</source>
-        <translation type="obsolete">BunlarÄ±n hiï¿½birisi</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>File name matching</source>
-        <translation type="obsolete">Dosya adÄ± eï¿½ÂŸleï¿½ÂŸen</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Enter file name. * and ? are wildcards.</source>
-        <translation type="obsolete">Dosya adÄ±nÄ± girin. * ve ? ifadeleri wildcard olarak deï¿½ÂŸerlendirilecek.</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="170"/>
-        <source>Restrict file types</source>
-        <translation>Dosya tiplerini sÄ±nÄ±rlandÄ±r</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="204"/>
-        <source>Save as default</source>
-        <translation>ï¿½ntanÄ±mlÄ± olarak kaydet</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="223"/>
-        <source>Searched file types</source>
-        <translation>Aranan dosya tipleri</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="259"/>
-        <source>All ----&gt;</source>
-        <translation>Tï¿½mï¿½ ----&gt;</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="272"/>
-        <source>Sel -----&gt;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="285"/>
-        <source>&lt;----- Sel</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="298"/>
-        <source>&lt;----- All</source>
-        <translation>&lt;----- Tï¿½mï¿½</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="315"/>
-        <source>Ignored file types</source>
-        <translation>YoksayÄ±lan dosya tipleri</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="383"/>
-        <source>Enter top directory for search</source>
-        <translation>Arama iï¿½in en ï¿½st dizini girin</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="390"/>
-        <source>Browse</source>
-        <translation>Gï¿½zat</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="400"/>
-        <source>Restrict results to files in subtree:</source>
-        <translation>Arama sonuï¿½larÄ±nÄ± bu dizin ve aï¿½ÂŸaï¿½ÂŸÄ±sÄ± ile sÄ±nÄ±rlandÄ±r:</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/advsearch.ui" line="424"/>
-        <source>Start Search</source>
-        <translation>AramayÄ± Baï¿½ÂŸlat</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Dismiss</source>
-        <translation type="obsolete">BÄ±rak</translation>
+        <translation>GeliÅÂŸmiÅÂŸ arama</translation>
     </message>
     <message>
         <location filename="../../qt4gui/advsearch.ui" line="51"/>
@@ -178,7 +64,7 @@
     <message>
         <location filename="../../qt4gui/advsearch.ui" line="54"/>
         <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation>Boï¿½ÂŸ bÄ±rakÄ±lan tï¿½m alanlar VEYA ya da VE baï¿½ÂŸlacÄ± ile birleï¿½ÂŸtirilecektir. &lt;br&gt;&quot;Herhangi biri&quot; &quot;Tï¿½mï¿½&quot; ve &quot;Hiï¿½biri&quot; alan tipleri basit sï¿½zcï¿½klerin karÄ±ï¿½ÂŸÄ±mÄ±nÄ± ve ï¿½ift tÄ±rnak iï¿½ine alÄ±nmÄ±ï¿½ÂŸ ifadeleri kabul edebilir.&lt;br&gt;Veri iï¿½ermeyen alanlar yoksayÄ±lacaktÄ±r.</translation>
+        <translation>Tüm boÅÂŸ alanlar VEYA ya da VE baÄÂŸlaçlarÄ± ile birleÅÂŸtirilecek. &lt;br&gt; &quot;Herhangi biri&quot; &quot;Tümü&quot; ve &quot;Hiçbiri&quot; alan tipleri basit sözcüklerin karÄ±ÅÂŸÄ±mÄ±nÄ± ve çift tÄ±rnak içine alÄ±nmÄ±ÅÂŸ ifadeleri kabul edebilir.&lt;br&gt;Veri içermeyen alanlar yoksayÄ±lÄ±r.</translation>
     </message>
     <message>
         <location filename="../../qt4gui/advsearch.ui" line="100"/>
@@ -191,19 +77,79 @@
         <translation>Ä°fade ekle</translation>
     </message>
     <message>
+        <location filename="../../qt4gui/advsearch.ui" line="170"/>
+        <source>Restrict file types</source>
+        <translation>Dosya tiplerini sÄ±nÄ±rlandÄ±r</translation>
+    </message>
+    <message>
         <location filename="../../qt4gui/advsearch.ui" line="173"/>
         <source>Check this to enable filtering on file types</source>
-        <translation>Dosya tipleri ï¿½zerinde filtreleme kullanmak iï¿½in bunu iï¿½ÂŸaretleyin</translation>
+        <translation>Dosya tipleri üzerinde filtreleme kullanmak için bunu iÅÂŸaretleyin</translation>
     </message>
     <message>
         <location filename="../../qt4gui/advsearch.ui" line="191"/>
         <source>By categories</source>
-        <translation>Kategorilere gï¿½re</translation>
+        <translation>Kategorilere göre</translation>
     </message>
     <message>
         <location filename="../../qt4gui/advsearch.ui" line="194"/>
         <source>Check this to use file categories instead of raw mime types</source>
-        <translation>Dosya tipleri yerine ham mime tipleri ï¿½zerinde filtreleme kullanmak iï¿½in bunu iï¿½ÂŸaretleyin</translation>
+        <translation>Dosya tipleri yerine ham mime tipleri üzerinde filtreleme kullanmak için bunu iÅÂŸaretleyin</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="204"/>
+        <source>Save as default</source>
+        <translation>ÖntanÄ±mlÄ± olarak kaydet</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="223"/>
+        <source>Searched file types</source>
+        <translation>Aranan dosya tipleri</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="259"/>
+        <source>All ----&gt;</source>
+        <translation>Tümü ----&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="272"/>
+        <source>Sel -----&gt;</source>
+        <translation>Seç -----&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="285"/>
+        <source>&lt;----- Sel</source>
+        <translation>&lt;----- Seç</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="298"/>
+        <source>&lt;----- All</source>
+        <translation>&lt;----- Tümü</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="315"/>
+        <source>Ignored file types</source>
+        <translation>YoksayÄ±lan dosya tipleri</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="383"/>
+        <source>Enter top directory for search</source>
+        <translation>Arama için en üst dizini girin</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="390"/>
+        <source>Browse</source>
+        <translation>Gözat</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="400"/>
+        <source>Restrict results to files in subtree:</source>
+        <translation>Arama sonuçlarÄ±nÄ± bu dizin ve aÅÂŸaÄÂŸÄ±sÄ± ile sÄ±nÄ±rlandÄ±r:</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/advsearch.ui" line="424"/>
+        <source>Start Search</source>
+        <translation>AramayÄ± BaÅÂŸlat</translation>
     </message>
     <message>
         <location filename="../../qt4gui/advsearch.ui" line="431"/>
@@ -219,114 +165,49 @@
         <translation>YapÄ±landÄ±rma sorunu: </translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="317"/>
-        <source>No db directory in configuration</source>
-        <translation>YapÄ±landÄ±rma iï¿½erisinde veritabanÄ± dizini yok</translation>
+        <location filename="../main.cpp" line="272"/>
+        <source>Configuration problem (dynconf</source>
+        <translation>YapÄ±landÄ±rma sorunu</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Cannot create temporary directory</source>
-        <translation type="obsolete">Geï¿½ici dizin oluï¿½ÂŸturulamadÄ±</translation>
+        <location filename="../main.cpp" line="317"/>
+        <source>No db directory in configuration</source>
+        <translation>YapÄ±landÄ±rma içerisinde veritabanÄ± dizini yok</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="334"/>
         <source>Could not open database in </source>
-        <translation>VeritabanÄ± aï¿½Ä±lamadÄ±</translation>
+        <translation>VeritabanÄ± açÄ±lamadÄ±</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="337"/>
         <source>.
 Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
         <translation>.
-Ä°ndekseleme baï¿½ÂŸlamadan yapÄ±landÄ±rmayÄ± dï¿½zenlemek iï¿½in Ä°ptal dï¿½ï¿½ÂŸmesine basÄ±n ya da Tamam dï¿½ï¿½ÂŸmesine basarak iï¿½ÂŸleme izin verin.</translation>
-    </message>
-    <message>
-        <location filename="../main.cpp" line="272"/>
-        <source>Configuration problem (dynconf</source>
-        <translation>YapÄ±landÄ±rma sorunu</translation>
+Ä°ndekseleme baÅÂŸlamadan yapÄ±landÄ±rmayÄ± düzenlemek için Ä°ptal düÄÂŸmesine basÄ±n ya da Tamam düÄÂŸmesine basarak iÅÂŸleme izin verin.</translation>
     </message>
 </context>
 <context>
     <name>Preview</name>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Preview</source>
-        <translation type="obsolete">ï¿½nizleme</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Preview 1</source>
-        <translation type="obsolete">ï¿½nizleme 1</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;Search for:</source>
-        <translation type="obsolete">A&amp;ra:</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;Next</source>
-        <translation type="obsolete">&amp;Sonraki</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Alt+N</source>
-        <translation type="obsolete">Alt+S</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;Previous</source>
-        <translation type="obsolete">&amp;ï¿½nceki</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Alt+P</source>
-        <translation type="obsolete">Alt+P</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Match &amp;Case</source>
-        <translation type="obsolete">Eï¿½ÂŸleï¿½ÂŸme ï¿½Âa&amp;rtÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Alt+C</source>
-        <translation type="obsolete">Alt+R</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Clear</source>
-        <translation type="obsolete">Temizle</translation>
-    </message>
-    <message>
-        <location filename="../preview_w.cpp" line="712"/>
-        <source>Creating preview text</source>
-        <translation>ï¿½nizleme metni oluï¿½ÂŸturuluyor</translation>
-    </message>
-    <message>
-        <location filename="../preview_w.cpp" line="773"/>
-        <source>Loading preview text into editor</source>
-        <translation>ï¿½nizleme metni dï¿½zenleyiciye yï¿½kleniyor</translation>
+        <location filename="../preview_w.cpp" line="79"/>
+        <source>Close Tab</source>
+        <translation>Sekmeyi Kapat</translation>
     </message>
     <message>
         <location filename="../preview_w.cpp" line="546"/>
         <source>Cannot create temporary directory</source>
-        <translation>Geï¿½ici dizin oluï¿½ÂŸturulamadÄ±</translation>
-    </message>
-    <message>
-        <location filename="../preview_w.cpp" line="653"/>
-        <source>Cancel</source>
-        <translation>Ä°ptal</translation>
-    </message>
-    <message>
-        <location filename="../preview_w.cpp" line="79"/>
-        <source>Close Tab</source>
-        <translation>Kapat</translation>
+        <translation>Geçici dizin oluÅÂŸturulamadÄ±</translation>
     </message>
     <message>
         <location filename="../preview_w.cpp" line="555"/>
         <source>File does not exist</source>
         <translation>Dosya yok</translation>
+    </message>
+    <message>
+        <location filename="../preview_w.cpp" line="653"/>
+        <source>Cancel</source>
+        <translation>Ä°ptal</translation>
     </message>
     <message>
         <location filename="../preview_w.cpp" line="690"/>
@@ -336,7 +217,17 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <location filename="../preview_w.cpp" line="695"/>
         <source>Can&apos;t turn doc into internal representation for </source>
-        <translation type="unfinished"></translation>
+        <translation>ÅÂunun için iç gösterim yapÄ±lamÄ±yor</translation>
+    </message>
+    <message>
+        <location filename="../preview_w.cpp" line="712"/>
+        <source>Creating preview text</source>
+        <translation>Önizleme metni oluÅÂŸturuluyor</translation>
+    </message>
+    <message>
+        <location filename="../preview_w.cpp" line="773"/>
+        <source>Loading preview text into editor</source>
+        <translation>Önizleme metni düzenleyiciye yükleniyor</translation>
     </message>
 </context>
 <context>
@@ -344,17 +235,17 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <location filename="../../qt4gui/preview.ui" line="24"/>
         <source>Preview</source>
-        <translation>ï¿½nizleme</translation>
+        <translation>Önizle</translation>
     </message>
     <message>
         <location filename="../../qt4gui/preview.ui" line="36"/>
         <source>Preview 1</source>
-        <translation>ï¿½nizleme 1</translation>
+        <translation>Önizleme 1</translation>
     </message>
     <message>
         <location filename="../../qt4gui/preview.ui" line="64"/>
         <source>&amp;Search for:</source>
-        <translation>&amp;Ara:</translation>
+        <translation>A&amp;ra:</translation>
     </message>
     <message>
         <location filename="../../qt4gui/preview.ui" line="83"/>
@@ -364,17 +255,17 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <location filename="../../qt4gui/preview.ui" line="86"/>
         <source>Alt+N</source>
-        <translation>Alt+N</translation>
+        <translation>Alt+S</translation>
     </message>
     <message>
         <location filename="../../qt4gui/preview.ui" line="96"/>
         <source>&amp;Previous</source>
-        <translation>&amp;ï¿½nceki</translation>
+        <translation>&amp;Önceki</translation>
     </message>
     <message>
         <location filename="../../qt4gui/preview.ui" line="99"/>
         <source>Alt+P</source>
-        <translation>Alt+V</translation>
+        <translation>Alt+Ö</translation>
     </message>
     <message>
         <location filename="../../qt4gui/preview.ui" line="109"/>
@@ -384,7 +275,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <location filename="../../qt4gui/preview.ui" line="116"/>
         <source>Match &amp;Case</source>
-        <translation>Eï¿½ÂŸleï¿½ÂŸme ï¿½Âa&amp;rtÄ±</translation>
+        <translation>EÅÂŸleÅÂŸme ÅÂa&amp;rtÄ±</translation>
     </message>
     <message>
         <location filename="../../qt4gui/preview.ui" line="119"/>
@@ -397,177 +288,85 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <location filename="../confgui/confguiindex.cpp" line="122"/>
         <source>Global parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Genel parametreler</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="126"/>
         <source>Local parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Yerel parametreler</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="249"/>
         <source>&lt;b&gt;Customised subtrees</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;ÖzelleÅÂŸtirilmiÅÂŸ alt aÄÂŸaçlar</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="252"/>
         <source>The list of subdirectories in the indexed hierarchy &lt;br&gt;where some parameters need to be redefined. Default: empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ä°ndekslenmiÅÂŸ sÄ±ralama içerisindeki alt dizinlerin listesi &lt;br&gt;ki burada bazÄ± parametrelerin yeniden tanÄ±mlanmasÄ± gerekir. ÖntanÄ±mlÄ±: boÅÂŸ.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="280"/>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;AÅÂŸaÄÂŸÄ±daki parametreler, ya seçili alt dizin için uygulanÄ±r ya da üst düzeyde veya üstteki metin kutusunda hiçbir ÅÂŸey seçilmediÄÂŸinde yada boÅÂŸ bir satÄ±r seçildiÄÂŸinde uygulanÄ±r.&lt;br&gt;+/- düÄÂŸmelerine tÄ±klayarak dizinleri ekleyip çÄ±karabilirsiniz.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="297"/>
         <source>Skipped names</source>
-        <translation type="unfinished"></translation>
+        <translation>Atlanan isimler</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="299"/>
         <source>These are patterns for file or directory  names which should not be indexed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bu nitelikler insekslenmemesi  gereken dosya ve dizinler içindir.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="324"/>
         <source>Default character set</source>
-        <translation type="unfinished"></translation>
+        <translation>ÖntanÄ±mlÄ± karakter seti</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="330"/>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bu karakter seti, karakter kodlamasÄ± uygulama tarafÄ±ndan belirlenemeyen dosyalar için kulanÄ±lÄ±r, örneÄÂŸin salt metin dosyalarÄ±.&lt;br&gt;ÖntanÄ±mlÄ± deÄÂŸer boÅÂŸtur ve NLS çevresel deÄÂŸiÅÂŸkeni kullanÄ±lÄ±r.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="336"/>
         <source>Follow symbolic links</source>
-        <translation type="unfinished"></translation>
+        <translation>Sembolik baÄÂŸlantÄ±larÄ± izle</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="339"/>
         <source>Follow symbolic links while indexing. The default is no, to avoid duplicate indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Ä°ndekslerken sembolik baÄÂŸlantÄ±larÄ± izle. AynÄ± ögelerin yeniden indekslenmesinden kaçÄ±nmak için öntanÄ±mlÄ± deÄÂŸer hayÄ±r</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="345"/>
         <source>Index all file names</source>
-        <translation type="unfinished"></translation>
+        <translation>Tüm dosya isimlerini indeksle</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="348"/>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation type="unfinished"></translation>
+        <translation>Ä°çeriÄÂŸi tanÄ±nmayan ya da iÅÂŸlenemeyen (ya da desteklenmeyen mime tipi) dosyalarÄ± indeksle. ÖntanÄ±mlÄ± evet</translation>
     </message>
 </context>
 <context>
     <name>RclMain</name>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Advanced search</source>
-        <translation type="obsolete">Geliï¿½ÂŸmiï¿½ÂŸ arama</translation>
+        <location filename="../rclmain_w.cpp" line="116"/>
+        <source>(no stemming)</source>
+        <translation>(kök ayrÄ±ÅÂŸtÄ±rma kullanma)</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="871"/>
-        <source>About Recoll</source>
-        <translation>Recoll HakkÄ±nda</translation>
+        <location filename="../rclmain_w.cpp" line="117"/>
+        <source>(all languages)</source>
+        <translation>(tüm diller)</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Indexing in progress</source>
-        <translation type="obsolete">Ä°ndeksleme devam ediyor</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="771"/>
-        <source>No external viewer configured for mime type </source>
-        <translation>Mime tipi iï¿½in bir dÄ±ï¿½ÂŸ gï¿½sterici ayarlanmamÄ±ï¿½ÂŸ </translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="856"/>
-        <source>Executing: [</source>
-        <translation>ï¿½alÄ±ï¿½ÂŸtÄ±rÄ±lÄ±yor: [</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="752"/>
-        <source>Cannot retrieve document info from database</source>
-        <translation>VeritabanÄ±ndan belge bilgileri alÄ±namadÄ±</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="699"/>
-        <source>Cannot access document file: </source>
-        <translation>Belge dosyasÄ±na eriï¿½ÂŸilemedi: </translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Preview</source>
-        <translation type="obsolete">ï¿½nizleme</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="639"/>
-        <source>Warning</source>
-        <translation>UyarÄ±</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="640"/>
-        <source>Can&apos;t create preview window</source>
-        <translation>ï¿½nizleme penceresi oluï¿½ÂŸturulamÄ±yor</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
-</source>
-        <translation type="obsolete">&lt;b&gt;%1 indeksinden baï¿½ÂŸlanarak sonuï¿½lar gï¿½steriliyor (en bï¿½yï¿½k ayar boyutu %2)&lt;/b&gt;&lt;/p&gt;
-</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Sort criteria</source>
-        <translation type="obsolete">SÄ±ralama ï¿½lï¿½ï¿½tï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>User interface preferences</source>
-        <translation type="obsolete">KullanÄ±cÄ± arayï¿½zï¿½ tercihleri</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="433"/>
-        <source>Query results</source>
-        <translation>Arama Sonuï¿½larÄ±</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="454"/>
-        <source>Query results (sorted)</source>
-        <translation>Arama sonuï¿½larÄ± (sÄ±ralanmÄ±ï¿½ÂŸ)</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="942"/>
-        <source>Document history</source>
-        <translation>Belge geï¿½miï¿½ÂŸi</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Document history (sorted)</source>
-        <translation type="obsolete">Belge geï¿½miï¿½ÂŸi (sÄ±ralanmÄ±ï¿½ÂŸ)</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Query details</source>
-        <translation type="obsolete">Sorgu detaylarÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Unavailable document</source>
-        <translation type="obsolete">Eriï¿½ÂŸilemez belge</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="931"/>
-        <source>History data</source>
-        <translation>Geï¿½miï¿½ÂŸ verileri</translation>
-    </message>
-    <message>
-        <location filename="../rclmain_w.cpp" line="876"/>
-        <source>Starting help browser </source>
-        <translation>YardÄ±m tarayÄ±cÄ±yÄ± baï¿½ÂŸlat </translation>
+        <location filename="../rclmain_w.cpp" line="133"/>
+        <source>error retrieving stemming languages</source>
+        <translation>sözcük kökleri ayrÄ±ÅÂŸtÄ±rÄ±labilir diller alÄ±nÄ±rken hata oluÅÂŸtu</translation>
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="352"/>
@@ -587,7 +386,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <location filename="../rclmain_w.cpp" line="358"/>
         <source>Stemdb</source>
-        <translation type="unfinished"></translation>
+        <translation>KökAyrÄ±ÅÂŸtÄ±rmaVeritabanÄ±</translation>
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="359"/>
@@ -600,81 +399,111 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Bilinmeyen</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="674"/>
-        <source>This search is not active any more</source>
-        <translation>Bu arama atrÄ±k etkin deï¿½ÂŸil</translation>
-    </message>
-    <message>
         <location filename="../rclmain_w.cpp" line="427"/>
         <source>Cant start query: </source>
-        <translation>Sorgu baï¿½ÂŸlatÄ±lamadÄ±: </translation>
+        <translation>Sorgu baÅÂŸlatÄ±lamadÄ±: </translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Spell expansion</source>
-        <translation type="obsolete">Heceleme geniï¿½ÂŸlemesi</translation>
+        <location filename="../rclmain_w.cpp" line="433"/>
+        <source>Query results</source>
+        <translation>Arama SonuçlarÄ±</translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="454"/>
+        <source>Query results (sorted)</source>
+        <translation>Arama sonuçlarÄ± (sÄ±ralanmÄ±ÅÂŸ)</translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="752"/>
+        <source>Cannot retrieve document info from database</source>
+        <translation>VeritabanÄ±ndan belge bilgileri alÄ±namadÄ±</translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="699"/>
+        <source>Cannot access document file: </source>
+        <translation>Belge dosyasÄ±na eriÅÂŸilemedi: </translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="639"/>
+        <source>Warning</source>
+        <translation>UyarÄ±</translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="640"/>
+        <source>Can&apos;t create preview window</source>
+        <translation>Önizleme penceresi oluÅÂŸturulamÄ±yor</translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="674"/>
+        <source>This search is not active any more</source>
+        <translation>Bu arama atrÄ±k etkin deÄÂŸil</translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="771"/>
+        <source>No external viewer configured for mime type </source>
+        <translation>Mime tipi için bir dÄ±ÅÂŸ gösterici ayarlanmamÄ±ÅÂŸ </translation>
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="779"/>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation>%1 iï¿½in uygun olmayan komut: [%2]
-Lï¿½tfen mimeconf dosyasÄ±nÄ± kontrol edin</translation>
+        <translation>%1 için uygun olmayan komut: [%2]
+Lütfen mimeconf dosyasÄ±nÄ± kontrol edin</translation>
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="803"/>
         <source>The viewer specified in mimeconf for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>%1 iï¿½ib mimeconf dosyasÄ±nda belirtilen gï¿½sterici: %2 bulunamadÄ±.
-Tercihler penceresini  aï¿½mak ister misiniz?</translation>
+        <translation>%1 içib mimeconf dosyasÄ±nda belirtilen gösterici: %2 bulunamadÄ±.
+Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="832"/>
         <source>Cannot extract document or create temporary file</source>
-        <translation>Belge aï¿½Ä±lamadÄ± ya da geï¿½ici dosya oluï¿½ÂŸturulamadÄ±</translation>
+        <translation>Belge açÄ±lamadÄ± ya da geçici dosya oluÅÂŸturulamadÄ±</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="116"/>
-        <source>(no stemming)</source>
-        <translation>(stemming kullanma)</translation>
+        <location filename="../rclmain_w.cpp" line="856"/>
+        <source>Executing: [</source>
+        <translation>ÇalÄ±ÅÂŸtÄ±rÄ±lÄ±yor: [</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="117"/>
-        <source>(all languages)</source>
-        <translation>(tï¿½m diller)</translation>
+        <location filename="../rclmain_w.cpp" line="871"/>
+        <source>About Recoll</source>
+        <translation>Recoll HakkÄ±nda</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="133"/>
-        <source>error retrieving stemming languages</source>
-        <translation type="unfinished"></translation>
+        <location filename="../rclmain_w.cpp" line="876"/>
+        <source>Starting help browser </source>
+        <translation>YardÄ±m tarayÄ±cÄ±yÄ± baÅÂŸlat </translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="931"/>
+        <source>History data</source>
+        <translation>GeçmiÅÂŸ verileri</translation>
+    </message>
+    <message>
+        <location filename="../rclmain_w.cpp" line="942"/>
+        <source>Document history</source>
+        <translation>Belge geçmiÅÂŸi</translation>
     </message>
 </context>
 <context>
     <name>RclMainBase</name>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Search</source>
-        <translation type="obsolete">Ara</translation>
+        <location filename="../../qt4gui/rclmain.ui" line="24"/>
+        <source>Recoll</source>
+        <translation>Recoll</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Clear</source>
-        <translation type="obsolete">Temizle</translation>
+        <location filename="../../qt4gui/rclmain.ui" line="66"/>
+        <source>Search tools</source>
+        <translation>Arama araçlarÄ±</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Ctrl+S</source>
-        <translation type="obsolete">Ctrl+S</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="248"/>
-        <source>Previous page</source>
-        <translation>ï¿½nceki sayfa</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="220"/>
-        <source>Next page</source>
-        <translation>Sonraki sayfa</translation>
+        <location filename="../../qt4gui/rclmain.ui" line="75"/>
+        <source>Result list</source>
+        <translation>Sonuç listesi</translation>
     </message>
     <message>
         <location filename="../../qt4gui/rclmain.ui" line="84"/>
@@ -682,64 +511,9 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
         <translation>&amp;Dosya</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Exit</source>
-        <translation type="obsolete">ï¿½Ø¤ï¿½k</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="130"/>
-        <source>E&amp;xit</source>
-        <translation>&amp;ï¿½Ø¤ï¿½k</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Start Indexing</source>
-        <translation type="obsolete">Ä°ndekslemeyi Baï¿½ÂŸlat</translation>
-    </message>
-    <message>
         <location filename="../../qt4gui/rclmain.ui" line="94"/>
         <source>&amp;Tools</source>
-        <translation>&amp;Araï¿½lar</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="113"/>
-        <source>&amp;Help</source>
-        <translation>&amp;YardÄ±m</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Erase search entry</source>
-        <translation type="obsolete">Arama girdisini temizle</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Start query</source>
-        <translation type="obsolete">Sorguyu baï¿½ÂŸlat</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;All terms</source>
-        <translation type="obsolete">&amp;Tï¿½m sï¿½zcï¿½kler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Alt+A</source>
-        <translation type="obsolete">Alt+T</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Do documents have to contain all terms in query?</source>
-        <translation type="obsolete">Belge tï¿½m sï¿½zcï¿½kleri iï¿½ermek zorunda mÄ±dÄ±r?</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</source>
-        <translation type="obsolete">Eï¿½ÂŸer bu ayarlanÄ±rsa sorgu sonucunda bulunan belge sorgudaki tï¿½m sï¿½zcï¿½kleri iï¿½erir. AyrÄ±ca belgeler en yï¿½ksek isabete gï¿½re sÄ±ralanÄ±r ancak tï¿½m sï¿½zcï¿½kleri iï¿½ermeyebilir.</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Enter search terms here</source>
-        <translation type="obsolete">Aranacak ifadeleri buraya girin</translation>
+        <translation>&amp;Araçlar</translation>
     </message>
     <message>
         <location filename="../../qt4gui/rclmain.ui" line="103"/>
@@ -747,94 +521,14 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
         <translation>&amp;Tercihler</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="66"/>
-        <source>Search tools</source>
-        <translation>Arama araï¿½larÄ±</translation>
+        <location filename="../../qt4gui/rclmain.ui" line="113"/>
+        <source>&amp;Help</source>
+        <translation>&amp;YardÄ±m</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/rclmain.ui" line="75"/>
-        <source>Result list</source>
-        <translation>Sonuï¿½ listesi</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Start &amp;Indexing</source>
-        <translation type="obsolete">Ä°ndekslemeyi Baï¿½ÂŸla&amp;t</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="157"/>
-        <source>&amp;About Recoll</source>
-        <translation>&amp;Recoll HakkÄ±nda</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="173"/>
-        <source>Document &amp;History</source>
-        <translation>Belge &amp;Geï¿½miï¿½ÂŸi</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="176"/>
-        <source>Document  History</source>
-        <translation>Belge  Geï¿½miï¿½ÂŸi</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Advanced Search</source>
-        <translation type="obsolete">Geliï¿½ÂŸmiï¿½ÂŸ arama</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="184"/>
-        <source>&amp;Advanced Search</source>
-        <translation>&amp;Geliï¿½ÂŸmiï¿½ÂŸ arama</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="187"/>
-        <source>Advanced/complex  Search</source>
-        <translation>Geliï¿½ÂŸmiï¿½ÂŸ/karmaï¿½ÂŸÄ±k   Arama</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="195"/>
-        <source>&amp;Sort parameters</source>
-        <translation>&amp;SÄ±ralama ï¿½lï¿½ï¿½tleri</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="198"/>
-        <source>Sort parameters</source>
-        <translation>SÄ±ralama ï¿½lï¿½ï¿½tleri</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="223"/>
-        <source>Next page of results</source>
-        <translation>Sonuï¿½larÄ±n sonraki sayfasÄ±</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="251"/>
-        <source>Previous page of results</source>
-        <translation>Sonuï¿½larÄ±n ï¿½nceki sayfasÄ±</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="267"/>
-        <source>&amp;Query configuration</source>
-        <translation>&amp;Sorgu yapÄ±landÄ±rmasÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>User manual</source>
-        <translation type="obsolete">KullanÄ±cÄ± El KitabÄ±</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="165"/>
-        <source>&amp;User manual</source>
-        <translation>&amp;KullanÄ±cÄ± El KitabÄ±</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="24"/>
-        <source>Recoll</source>
-        <translation>Recoll</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>About Recoll</source>
-        <translation type="obsolete">Recoll HakkÄ±nda</translation>
+        <location filename="../../qt4gui/rclmain.ui" line="130"/>
+        <source>E&amp;xit</source>
+        <translation>&amp;ÃØ¤±k</translation>
     </message>
     <message>
         <location filename="../../qt4gui/rclmain.ui" line="133"/>
@@ -842,34 +536,74 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Update index</source>
-        <translation type="obsolete">Ä°ndeksi gï¿½ncelle</translation>
-    </message>
-    <message>
         <location filename="../../qt4gui/rclmain.ui" line="141"/>
         <source>Update &amp;index</source>
-        <translation>Ä°ndeksi g&amp;ï¿½ncelle</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="206"/>
-        <source>Term &amp;explorer</source>
-        <translation>Ä°fade g&amp;ï¿½sterici</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="209"/>
-        <source>Term explorer tool</source>
-        <translation>Ä°fade gï¿½sterme aracÄ±</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/rclmain.ui" line="278"/>
-        <source>External index dialog</source>
-        <translation></translation>
+        <translation>Ä°ndeksi g&amp;üncelle</translation>
     </message>
     <message>
         <location filename="../../qt4gui/rclmain.ui" line="149"/>
         <source>&amp;Erase document history</source>
-        <translation>&amp;Belge geï¿½miï¿½ÂŸini temizle</translation>
+        <translation>&amp;Belge geçmiÅÂŸini temizle</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="157"/>
+        <source>&amp;About Recoll</source>
+        <translation>&amp;Recoll HakkÄ±nda</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="165"/>
+        <source>&amp;User manual</source>
+        <translation>&amp;KullanÄ±cÄ± El KitabÄ±</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="173"/>
+        <source>Document &amp;History</source>
+        <translation>Belge &amp;GeçmiÅÂŸi</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="176"/>
+        <source>Document  History</source>
+        <translation>Belge  GeçmiÅÂŸi</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="184"/>
+        <source>&amp;Advanced Search</source>
+        <translation>&amp;GeliÅÂŸmiÅÂŸ arama</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="187"/>
+        <source>Advanced/complex  Search</source>
+        <translation>GeliÅÂŸmiÅÂŸ/karmaÅÂŸÄ±k   Arama</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="195"/>
+        <source>&amp;Sort parameters</source>
+        <translation>&amp;SÄ±ralama ölçütleri</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="198"/>
+        <source>Sort parameters</source>
+        <translation>SÄ±ralama ölçütleri</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="206"/>
+        <source>Term &amp;explorer</source>
+        <translation>Ä°fade g&amp;österici</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="209"/>
+        <source>Term explorer tool</source>
+        <translation>Ä°fade gösterme aracÄ±</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="220"/>
+        <source>Next page</source>
+        <translation>Sonraki sayfa</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="223"/>
+        <source>Next page of results</source>
+        <translation>SonuçlarÄ±n sonraki sayfasÄ±</translation>
     </message>
     <message>
         <location filename="../../qt4gui/rclmain.ui" line="234"/>
@@ -879,71 +613,32 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/rclmain.ui" line="237"/>
         <source>Go to first page of results</source>
-        <translation>Sonuï¿½larÄ±n ilk sayfasÄ±na git</translation>
+        <translation>SonuçlarÄ±n ilk sayfasÄ±na git</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="248"/>
+        <source>Previous page</source>
+        <translation>Önceki sayfa</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="251"/>
+        <source>Previous page of results</source>
+        <translation>SonuçlarÄ±n önceki sayfasÄ±</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="267"/>
+        <source>&amp;Query configuration</source>
+        <translation>&amp;Sorgu yapÄ±landÄ±rmasÄ±</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/rclmain.ui" line="278"/>
+        <source>External index dialog</source>
+        <translation>DÄ±ÅÂŸ indeksler penceresi</translation>
     </message>
     <message>
         <location filename="../../qt4gui/rclmain.ui" line="259"/>
         <source>&amp;Indexing configuration</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>RclResList</name>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Result list</source>
-        <translation type="obsolete">Sonuï¿½ listesi</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Unavailable document</source>
-        <translation type="obsolete">Eriï¿½ÂŸilemez belge</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Show query details</source>
-        <translation type="obsolete">Sorgu detaylarÄ±nÄ± gï¿½ster</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
-</source>
-        <translation type="obsolete">&lt;b&gt;%1 indeksinden baï¿½ÂŸlanarak sonuï¿½lar gï¿½steriliyor (en bï¿½yï¿½k ayar boyutu %2)&lt;/b&gt;&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;Preview</source>
-        <translation type="obsolete">&amp;ï¿½nizleme</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;Edit</source>
-        <translation type="obsolete">&amp;Dï¿½zenle</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;Copy File Name</source>
-        <translation type="obsolete">&amp;Dosya AdÄ±nÄ± Kopyala</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Copy &amp;Url</source>
-        <translation type="obsolete">&amp;Adresi Kopyala</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Sonuï¿½ bulunamadÄ±&lt;/b&gt;&lt;br&gt;</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;More like this</source>
-        <translation type="obsolete">&amp;Buna benzer daha fazlasÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Query details</source>
-        <translation type="obsolete">Sorgu detaylarÄ±</translation>
+        <translation>Ä°&amp;ndeksleme yapÄ±landÄ±rmasÄ± </translation>
     </message>
 </context>
 <context>
@@ -951,28 +646,42 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../reslist.cpp" line="105"/>
         <source>Result list</source>
-        <translation>Sonuï¿½ listesi</translation>
-    </message>
-    <message>
-        <location filename="../reslist.cpp" line="411"/>
-        <source>Unavailable document</source>
-        <translation>Eriï¿½ÂŸilemez belge</translation>
+        <translation>Sonuç listesi</translation>
     </message>
     <message>
         <location filename="../reslist.cpp" line="336"/>
         <source>Show query details</source>
-        <translation>Sorgu detaylarÄ±nÄ± gï¿½ster</translation>
+        <translation>Sorgu detaylarÄ±nÄ± göster</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
-</source>
-        <translation type="obsolete">&lt;b&gt;%1 indeksinden baï¿½ÂŸlanarak sonuï¿½lar gï¿½steriliyor (en bï¿½yï¿½k ayar boyutu %2)&lt;/b&gt;&lt;/p&gt;</translation>
+        <location filename="../reslist.cpp" line="339"/>
+        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
+        <translation>&lt;p&gt;&lt;b&gt;Sonuç bulunamadÄ±&lt;/b&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <location filename="../reslist.cpp" line="375"/>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
+        <translation>Toplam &lt;b&gt;%3&lt;/b&gt; sonucun &lt;b&gt;%1-%2&lt;/b&gt; arasÄ±, sorgu </translation>
+    </message>
+    <message>
+        <location filename="../reslist.cpp" line="380"/>
+        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
+        <translation>Sonuçlar &lt;b&gt;%1-%2&lt;/b&gt; arasÄ±, sorgu </translation>
+    </message>
+    <message>
+        <location filename="../reslist.cpp" line="385"/>
+        <source>(show query)</source>
+        <translation>(sorguyu göster)</translation>
+    </message>
+    <message>
+        <location filename="../reslist.cpp" line="411"/>
+        <source>Unavailable document</source>
+        <translation>EriÅÂŸilemez belge</translation>
     </message>
     <message>
         <location filename="../reslist.cpp" line="542"/>
         <source>Previous</source>
-        <translation>ï¿½nceki</translation>
+        <translation>Önceki</translation>
     </message>
     <message>
         <location filename="../reslist.cpp" line="547"/>
@@ -980,24 +689,19 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
         <translation>Sonraki</translation>
     </message>
     <message>
-        <location filename="../reslist.cpp" line="339"/>
-        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;p&gt;&lt;b&gt;Sonuï¿½ bulunamadÄ±&lt;/b&gt;&lt;br&gt;</translation>
-    </message>
-    <message>
         <location filename="../reslist.cpp" line="652"/>
         <source>&amp;Preview</source>
-        <translation>&amp;ï¿½nceki</translation>
+        <translation>&amp;Önizle</translation>
     </message>
     <message>
         <location filename="../reslist.cpp" line="653"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Dï¿½zenle</translation>
+        <translation>&amp;Düzenle</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;Copy File Name</source>
-        <translation type="obsolete">&amp;Dosya AdÄ±nÄ± Kopyala</translation>
+        <location filename="../reslist.cpp" line="654"/>
+        <source>Copy &amp;File Name</source>
+        <translation>&amp;Dosya AdÄ±nÄ± Kopyala</translation>
     </message>
     <message>
         <location filename="../reslist.cpp" line="655"/>
@@ -1010,58 +714,14 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
         <translation>Benzer belgeleri &amp;bul</translation>
     </message>
     <message>
+        <location filename="../reslist.cpp" line="657"/>
+        <source>P&amp;arent document/folder</source>
+        <translation>Ü&amp;st belge/dizin</translation>
+    </message>
+    <message>
         <location filename="../reslist.cpp" line="773"/>
         <source>Query details</source>
         <translation>Sorgu detaylarÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation type="obsolete">Toplam &lt;b&gt;%3&lt;/b&gt; sonucun &lt;b&gt;%1-%2&lt;/b&gt; arasÄ±, sorgu </translation>
-    </message>
-    <message>
-        <location filename="../reslist.cpp" line="385"/>
-        <source>(show query)</source>
-        <translation>(sorguyu gï¿½ster)</translation>
-    </message>
-    <message>
-        <location filename="../reslist.cpp" line="654"/>
-        <source>Copy &amp;File Name</source>
-        <translation>&amp;Dosya AdÄ±nÄ± Kopyala</translation>
-    </message>
-    <message>
-        <location filename="../reslist.cpp" line="657"/>
-        <source>P&amp;arent document/folder</source>
-        <translation>ï¿½&amp;st belge/dizin</translation>
-    </message>
-    <message>
-        <location filename="../reslist.cpp" line="375"/>
-        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation>Toplam &lt;b&gt;%3&lt;/b&gt; sonucun &lt;b&gt;%1-%2&lt;/b&gt; arasÄ±, sorgu </translation>
-    </message>
-    <message>
-        <location filename="../reslist.cpp" line="380"/>
-        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
-        <translation>Sonuï¿½lar &lt;b&gt;%1-%2&lt;/b&gt; arasÄ±, sorgu </translation>
-    </message>
-</context>
-<context>
-    <name>ResListBase</name>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Result list</source>
-        <translation type="obsolete">Sonuï¿½ listesi</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Unavailable document</source>
-        <translation type="obsolete">Eriï¿½ÂŸilemez belge</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
-</source>
-        <translation type="obsolete">&lt;b&gt;%1 indeksinden baï¿½ÂŸlanarak sonuï¿½lar gï¿½steriliyor (en bï¿½yï¿½k ayar boyutu %2)&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -1069,32 +729,17 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../ssearch_w.cpp" line="42"/>
         <source>Any term</source>
-        <translation>Herhangi bir sï¿½zcï¿½k</translation>
+        <translation>Sözcüklerin herhangi biri</translation>
     </message>
     <message>
         <location filename="../ssearch_w.cpp" line="43"/>
         <source>All terms</source>
-        <translation>Tï¿½m sï¿½zcï¿½kler</translation>
+        <translation>Tüm sözcükler</translation>
     </message>
     <message>
         <location filename="../ssearch_w.cpp" line="44"/>
         <source>File name</source>
         <translation>Dosya adÄ±</translation>
-    </message>
-    <message>
-        <location filename="../ssearch_w.cpp" line="246"/>
-        <source>Completions</source>
-        <translation>Tamamlamalar</translation>
-    </message>
-    <message>
-        <location filename="../ssearch_w.cpp" line="247"/>
-        <source>Select an item:</source>
-        <translation>Bir ï¿½ge seï¿½in:</translation>
-    </message>
-    <message>
-        <location filename="../ssearch_w.cpp" line="230"/>
-        <source>Too many completions</source>
-        <translation>ï¿½ok fazla tamamlama</translation>
     </message>
     <message>
         <location filename="../ssearch_w.cpp" line="45"/>
@@ -1104,12 +749,27 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../ssearch_w.cpp" line="97"/>
         <source>Bad query string</source>
-        <translation>Uygunsuz arama sï¿½zcï¿½ï¿½ÂŸï¿½</translation>
+        <translation>Uygunsuz arama sözcüÄÂŸü</translation>
     </message>
     <message>
         <location filename="../ssearch_w.cpp" line="103"/>
         <source>Out of memory</source>
         <translation>Yetersiz bellek</translation>
+    </message>
+    <message>
+        <location filename="../ssearch_w.cpp" line="230"/>
+        <source>Too many completions</source>
+        <translation>Çok fazla tamamlama</translation>
+    </message>
+    <message>
+        <location filename="../ssearch_w.cpp" line="246"/>
+        <source>Completions</source>
+        <translation>Tamamlamalar</translation>
+    </message>
+    <message>
+        <location filename="../ssearch_w.cpp" line="247"/>
+        <source>Select an item:</source>
+        <translation>Bir öge seçin:</translation>
     </message>
 </context>
 <context>
@@ -1142,72 +802,17 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/ssearchb.ui" line="55"/>
         <source>Start query</source>
-        <translation>Sorguyu baï¿½ÂŸlat</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;All terms</source>
-        <translation type="obsolete">&amp;Tï¿½m sï¿½zcï¿½kler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Alt+A</source>
-        <translation type="obsolete">Alt+T</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Do documents have to contain all terms in query?</source>
-        <translation type="obsolete">Belge tï¿½m sï¿½zcï¿½kleri iï¿½ermek zorunda mÄ±dÄ±r?</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>If this is set, each returned document will contain all the terms in the query. Else documents will be ordered by relevance, but may not contain all the terms.</source>
-        <translation type="obsolete">Eï¿½ÂŸer bu ayarlanÄ±rsa sorgu sonucunda bulunan belge sorgudaki tï¿½m sï¿½zcï¿½kleri iï¿½erir. AyrÄ±ca belgeler en yï¿½ksek isabete gï¿½re sÄ±ralanÄ±r ancak tï¿½m sï¿½zcï¿½kleri iï¿½ermeyebilir.</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Enter search terms here</source>
-        <translation type="obsolete">Aranacak ifadeleri buraya girin</translation>
+        <translation>Sorguyu baÅÂŸlat</translation>
     </message>
     <message>
         <location filename="../../qt4gui/ssearchb.ui" line="65"/>
         <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
-        <translation>Arama tipini seï¿½in: herhangi bir sï¿½zcï¿½k, tï¿½m sï¿½zcï¿½kler, ï¿½zel karakterler de kullanÄ±labilen dosya adÄ±.</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Any term</source>
-        <translation type="obsolete">Herhangi bir sï¿½zcï¿½k</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All terms</source>
-        <translation type="obsolete">Tï¿½m sï¿½zcï¿½kler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>File name</source>
-        <translation type="obsolete">Dosya adÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Completions</source>
-        <translation type="obsolete">Tamamlamalar</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Select an item:</source>
-        <translation type="obsolete">Bir ï¿½ge seï¿½in:</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Enter search terms here. CTRL-TAB for completions of current term.</source>
-        <translation type="obsolete">Aranacak ifadeleri buraya girin. Geï¿½erli sï¿½zcï¿½ï¿½ÂŸï¿½ tamamlamak iï¿½in CTRL-TAB kullanÄ±n.</translation>
+        <translation>Arama tipini seçin: herhangi bir sözcük, tüm sözcükler, özel karakterler de kullanÄ±labilen dosya adÄ±.</translation>
     </message>
     <message>
         <location filename="../../qt4gui/ssearchb.ui" line="98"/>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation>Aranacak ifadeleri buraya girin. Geï¿½erli sï¿½zcï¿½ï¿½ÂŸï¿½n tamamlamalarÄ± iï¿½in ESC SPACE kullanÄ±n.</translation>
+        <translation>Aranacak ifadeleri buraya girin. Geçerli sözcüÄÂŸün tamamlamalarÄ± için ESC SPACE kullanÄ±n.</translation>
     </message>
 </context>
 <context>
@@ -1225,12 +830,12 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../searchclause_w.cpp" line="76"/>
         <source>All of these</source>
-        <translation>BunlarÄ±n tï¿½mï¿½</translation>
+        <translation>BunlarÄ±n tümü</translation>
     </message>
     <message>
         <location filename="../searchclause_w.cpp" line="77"/>
         <source>None of these</source>
-        <translation>BunlarÄ±n hiï¿½birisi</translation>
+        <translation>BunlarÄ±n hiçbirisi</translation>
     </message>
     <message>
         <location filename="../searchclause_w.cpp" line="78"/>
@@ -1245,51 +850,21 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../searchclause_w.cpp" line="80"/>
         <source>File name matching</source>
-        <translation>Dosya adÄ± eï¿½ÂŸleï¿½ÂŸen</translation>
+        <translation>Dosya adÄ± eÅÂŸleÅÂŸen</translation>
     </message>
     <message>
         <location filename="../searchclause_w.cpp" line="87"/>
         <source>Select the type of query that will be performed with the words</source>
-        <translation>Sï¿½zcï¿½kler ile kullanÄ±lacak sorgu biï¿½imini seï¿½</translation>
+        <translation>Sözcükler ile kullanÄ±lacak sorgu biçimini seç</translation>
     </message>
     <message>
         <location filename="../searchclause_w.cpp" line="88"/>
         <source>Number of additional words that may be interspersed with the chosen ones</source>
-        <translation>Seï¿½ilen sï¿½zcï¿½klerin arasÄ±nda yeralabilecek ek sï¿½zcï¿½klerin sayÄ±sÄ±</translation>
+        <translation>Seçilen sözcüklerin arasÄ±nda yeralabilecek ek sözcüklerin sayÄ±sÄ±</translation>
     </message>
 </context>
 <context>
     <name>SortForm</name>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Sort Criteria</source>
-        <translation type="obsolete">SÄ±ralama ï¿½lï¿½ï¿½tï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Sort the</source>
-        <translation type="obsolete">SÄ±rala</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>most relevant results by:</source>
-        <translation type="obsolete">en uygun sonuï¿½ veren:</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Descending</source>
-        <translation type="obsolete">Azalan</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Reset</source>
-        <translation type="obsolete">SÄ±fÄ±rla</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Close</source>
-        <translation type="obsolete">Kapat</translation>
-    </message>
     <message>
         <location filename="../sort_w.cpp" line="36"/>
         <source>Date</source>
@@ -1306,7 +881,7 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/sort.ui" line="16"/>
         <source>Sort Criteria</source>
-        <translation>SÄ±ralama ï¿½lï¿½ï¿½tï¿½</translation>
+        <translation>SÄ±ralama Ölçütü</translation>
     </message>
     <message>
         <location filename="../../qt4gui/sort.ui" line="26"/>
@@ -1316,7 +891,7 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/sort.ui" line="46"/>
         <source>most relevant results by:</source>
-        <translation>en uygun sonuï¿½ veren:</translation>
+        <translation>en uygun sonuç veren:</translation>
     </message>
     <message>
         <location filename="../../qt4gui/sort.ui" line="91"/>
@@ -1324,19 +899,14 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
         <translation>Azalan</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Reset</source>
-        <translation type="obsolete">SÄ±fÄ±rla</translation>
+        <location filename="../../qt4gui/sort.ui" line="105"/>
+        <source>Apply</source>
+        <translation>Uygula</translation>
     </message>
     <message>
         <location filename="../../qt4gui/sort.ui" line="115"/>
         <source>Close</source>
         <translation>Kapat</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/sort.ui" line="105"/>
-        <source>Apply</source>
-        <translation>Uygula</translation>
     </message>
 </context>
 <context>
@@ -1344,22 +914,17 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/spell.ui" line="30"/>
         <source>Term Explorer</source>
-        <translation>Ä°fade Gï¿½sterici</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Enter word to expand</source>
-        <translation type="obsolete">geniï¿½ÂŸletilecek sï¿½zcï¿½ï¿½ÂŸï¿½ gir</translation>
+        <translation>Ä°fade Gösterici</translation>
     </message>
     <message>
         <location filename="../../qt4gui/spell.ui" line="56"/>
         <source>&amp;Expand </source>
-        <translation>&amp;Geniï¿½ÂŸlet </translation>
+        <translation>&amp;GeniÅÂŸlet </translation>
     </message>
     <message>
         <location filename="../../qt4gui/spell.ui" line="59"/>
         <source>Alt+E</source>
-        <translation>Alt+V</translation>
+        <translation>Alt+G</translation>
     </message>
     <message>
         <location filename="../../qt4gui/spell.ui" line="78"/>
@@ -1369,7 +934,7 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/spell.ui" line="81"/>
         <source>Alt+C</source>
-        <translation>Alt+S</translation>
+        <translation>Alt+K</translation>
     </message>
     <message>
         <location filename="../../qt4gui/spell.ui" line="100"/>
@@ -1387,12 +952,17 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../spell_w.cpp" line="55"/>
         <source>Wildcards</source>
-        <translation>ï¿½zel karakterler</translation>
+        <translation>Özel karakterler</translation>
     </message>
     <message>
         <location filename="../spell_w.cpp" line="56"/>
         <source>Regexp</source>
-        <translation>Dï¿½zenli ifade</translation>
+        <translation>Düzenli ifade</translation>
+    </message>
+    <message>
+        <location filename="../spell_w.cpp" line="57"/>
+        <source>Stem expansion</source>
+        <translation>Kök ayrÄ±ÅÂŸtÄ±rma geniÅÂŸlemesi</translation>
     </message>
     <message>
         <location filename="../spell_w.cpp" line="62"/>
@@ -1400,217 +970,37 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
         <translation>Heceleme/Fonetik</translation>
     </message>
     <message>
+        <location filename="../spell_w.cpp" line="75"/>
+        <source>error retrieving stemming languages</source>
+        <translation>sözcük kökleri ayrÄ±ÅÂŸtÄ±rÄ±labilir diller alÄ±nÄ±rken hata oluÅÂŸtu</translation>
+    </message>
+    <message>
         <location filename="../spell_w.cpp" line="172"/>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Aspell baï¿½ÂŸlatÄ±lamadÄ±. Yï¿½klenmemiï¿½ÂŸ olabilir mi?</translation>
+        <translation>Aspell baÅÂŸlatÄ±lamadÄ±. YüklenmemiÅÂŸ olabilir mi?</translation>
     </message>
     <message>
         <location filename="../spell_w.cpp" line="179"/>
         <source>Aspell expansion error. </source>
-        <translation>Aspell heceleme geniï¿½ÂŸlemesi hatasÄ±. </translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>No spelling expansion found</source>
-        <translation type="obsolete">Hiï¿½ heceleme geniï¿½ÂŸlemesi bulunamadÄ±</translation>
-    </message>
-    <message>
-        <location filename="../spell_w.cpp" line="57"/>
-        <source>Stem expansion</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../spell_w.cpp" line="75"/>
-        <source>error retrieving stemming languages</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspell heceleme geniÅÂŸlemesi hatasÄ±. </translation>
     </message>
     <message>
         <location filename="../spell_w.cpp" line="191"/>
         <source>No expansion found</source>
-        <translation>Hiï¿½ geniï¿½ÂŸleme bulunamadÄ±</translation>
+        <translation>Hiç geniÅÂŸleme bulunamadÄ±</translation>
     </message>
 </context>
 <context>
     <name>UIPrefsDialog</name>
     <message>
-        <location filename="" line="27395312"/>
-        <source>User interface</source>
-        <translation type="obsolete">KullanÄ±cÄ± arayï¿½zï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Number of entries in a result page</source>
-        <translation type="obsolete">Bir sonuï¿½ sayfasÄ±ndaki sonuï¿½ sayÄ±sÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Result list font</source>
-        <translation type="obsolete">Sonuï¿½ listesi yazÄ±tipi</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Helvetica-10</source>
-        <translation type="obsolete">Helvetica-10</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Opens a dialog to select the result list font</source>
-        <translation type="obsolete">Sonuï¿½ listesi yazÄ±tipini seï¿½mek iï¿½in bir pencere aï¿½ar</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Show document type icons in result list</source>
-        <translation type="obsolete">Sonuï¿½ listesinde belge tipi simgelerini gï¿½ster</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Reset</source>
-        <translation type="obsolete">SÄ±fÄ±rla</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Resets the result list font to the system default</source>
-        <translation type="obsolete">Sonuï¿½ listesi yazÄ±tipini sistem ayarlarÄ±na dï¿½ndï¿½r</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Search parameters</source>
-        <translation type="obsolete">Arama parametreleri</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;OK</source>
-        <translation type="obsolete">&amp;TAMAM</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Apply changes</source>
-        <translation type="obsolete">Deï¿½ÂŸiï¿½ÂŸiklikleri uygula</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&amp;Cancel</source>
-        <translation type="obsolete">&amp;Ä°ptal</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Discard changes</source>
-        <translation type="obsolete">Deï¿½ÂŸiï¿½ÂŸiklikleri sil</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>HTML help browser</source>
-        <translation type="obsolete">HTML yardÄ±m tarayÄ±cÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Select file</source>
-        <translation type="obsolete">Dosya seï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Dynamically build abstracts</source>
-        <translation type="obsolete">ï¿½zetleri dinamik olarak oluï¿½ÂŸtur</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Replace abstracts from documents</source>
-        <translation type="obsolete">Belgelerden ï¿½zetleri kaldÄ±r</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Auto-start simple search on whitespace entry</source>
-        <translation type="obsolete">Beyaz alan girdisi olduï¿½ÂŸunda basit aramayÄ± otomatik olarak baï¿½ÂŸlat</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Extra Databases</source>
-        <translation type="obsolete">Ek indeksler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Add database</source>
-        <translation type="obsolete">VeritabanÄ± ekle</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Select the xapiandb directory for the  database you want to add, then click Add Database</source>
-        <translation type="obsolete">Ä°stediï¿½ÂŸiniz indeksi eklemek iï¿½in  xapiandb (veritabanÄ±) dizinini seï¿½in ve Ä°ndeks Ekle dï¿½ï¿½ÂŸmesine tÄ±klayÄ±n</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Browse</source>
-        <translation type="obsolete">Gï¿½zat</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All extra databases</source>
-        <translation type="obsolete">Tï¿½m ek veritabanlarÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All known extra databases</source>
-        <translation type="obsolete">Bilinen tï¿½m ek veritabanlarÄ±</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All ----&gt;</source>
-        <translation type="obsolete">Tï¿½mï¿½ ----&gt;</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Sel -----&gt;</source>
-        <translation type="obsolete">Seï¿½ -----&gt;</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;----- Sel</source>
-        <translation type="obsolete">&lt;----- Seï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;----- All</source>
-        <translation type="obsolete">&lt;----- Tï¿½mï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Active extra databases</source>
-        <translation type="obsolete">Etkin ek indeksler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Extra databases that will be searched in addition to the main one</source>
-        <translation type="obsolete">Ana indeks yanÄ±nda aranacak olan ek indeksler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>The selected directory does not appear to be a Xapian database</source>
-        <translation type="obsolete">Seï¿½ilen dizin bir Xapian indeks dizini gibi gï¿½rï¿½nmï¿½yor</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>This is the main/local database!</source>
-        <translation type="obsolete">Bu ana/yerel veritabanÄ±!</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>The selected directory is already in the database list</source>
-        <translation type="obsolete">Seï¿½ilen dizin zaten indeks listesinde var</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Select directory holding xapian database (ie: /home/someone/.recoll/xapiandb)</source>
-        <translation type="obsolete">Xapian indeks dizinini seï¿½ (/home/kullanÄ±cÄ±_adÄ±nÄ±z/.recoll/xapiandb gibi.)</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>(no stemming)</source>
-        <translation type="obsolete">(stemming kullanma)</translation>
+        <location filename="../uiprefs_w.cpp" line="130"/>
+        <source>error retrieving stemming languages</source>
+        <translation>sözcük kökleri ayrÄ±ÅÂŸtÄ±rÄ±labilir diller alÄ±nÄ±rken hata oluÅÂŸtu</translation>
     </message>
     <message>
         <location filename="../uiprefs_w.cpp" line="358"/>
         <source>The selected directory does not appear to be a Xapian index</source>
-        <translation>Seï¿½ilen dizin bir Xapian indeks dizini gibi gï¿½rï¿½nmï¿½yor</translation>
+        <translation>Seçilen dizin bir Xapian indeks dizini gibi görünmüyor</translation>
     </message>
     <message>
         <location filename="../uiprefs_w.cpp" line="371"/>
@@ -1620,40 +1010,35 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../uiprefs_w.cpp" line="382"/>
         <source>The selected directory is already in the index list</source>
-        <translation>Seï¿½ilen dizin zaten indeks listesinde var</translation>
+        <translation>Seçilen dizin zaten indeks listesinde var</translation>
     </message>
     <message>
         <location filename="../uiprefs_w.cpp" line="420"/>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation>Xapian indeks dizinini seï¿½ (/home/kullanÄ±cÄ±_adÄ±nÄ±z/.recoll/xapiandb gibi.)</translation>
-    </message>
-    <message>
-        <location filename="../uiprefs_w.cpp" line="130"/>
-        <source>error retrieving stemming languages</source>
-        <translation type="unfinished"></translation>
+        <translation>Xapian indeks dizinini seç (/home/kullanÄ±cÄ±_adÄ±nÄ±z/.recoll/xapiandb gibi.)</translation>
     </message>
 </context>
 <context>
     <name>UIPrefsDialogBase</name>
     <message>
-        <location filename="" line="27395312"/>
-        <source>MyDialog</source>
-        <translation type="obsolete">Pencerem</translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="16"/>
+        <source>User preferences</source>
+        <translation>KullanÄ±cÄ± tercihleri</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="28"/>
         <source>User interface</source>
-        <translation>KullanÄ±cÄ± arayï¿½zï¿½</translation>
+        <translation>KullanÄ±cÄ± arayüzü</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="46"/>
         <source>Number of entries in a result page</source>
-        <translation>Bir sonuï¿½ sayfasÄ±ndaki sonuï¿½ sayÄ±sÄ±</translation>
+        <translation>Bir sonuç sayfasÄ±ndaki sonuç sayÄ±sÄ±</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="70"/>
         <source>Result list font</source>
-        <translation>Sonuï¿½ listesi yazÄ±tipi</translation>
+        <translation>Sonuç listesi yazÄ±tipi</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="80"/>
@@ -1663,7 +1048,7 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="83"/>
         <source>Opens a dialog to select the result list font</source>
-        <translation>Sonuï¿½ listesi yazÄ±tipini seï¿½mek iï¿½in bir pencere aï¿½ar</translation>
+        <translation>Sonuç listesi yazÄ±tipini seçmek için bir pencere açar</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="90"/>
@@ -1673,7 +1058,27 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="93"/>
         <source>Resets the result list font to the system default</source>
-        <translation>Sonuï¿½ listesi yazÄ±tipini sistem ayarlarÄ±na dï¿½ndï¿½r</translation>
+        <translation>Sonuç listesi yazÄ±tipini sistem ayarlarÄ±na döndür</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="112"/>
+        <source>Result paragraph&lt;br&gt;format string</source>
+        <translation>Sonuç paragrafÄ±&lt;br&gt;biçimlendirme ifadesi</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="115"/>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation>Tüm sonuç listesi paragraflarÄ±nÄ± tanÄ±mlar. Qt html biçimini ve printf benzeri yer deÄÂŸiÅÂŸtiricileri kullanÄ±n:&lt;br&gt;%A Özet&lt;br&gt; %D Tarih&lt;br&gt; %I Simge resminin adÄ±&lt;br&gt; %K Anahtar sözcükler (eÄÂŸer varsa)&lt;br&gt; %L Önizle ve Düzenle baÄÂŸlantÄ±larÄ±&lt;br&gt; %M Mime tipi&lt;br&gt; %N Sonuç numarasÄ±&lt;br&gt; %R Uyum yüzdesi&lt;br&gt; %S Boyut bilgileri&lt;br&gt; %T BaÅÂŸlÄ±k&lt;br&gt; %U Url&lt;br&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="162"/>
+        <source>Texts over this size will not be highlighted in preview (too slow).</source>
+        <translation>Bu boyuttan büyük metinler önizlemede vurgulanmayacak (çok yavaÅÂŸ).</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="173"/>
+        <source>Maximum text size highlighted for preview (megabytes)</source>
+        <translation>Önizlemede vurgulanacak en fazla metin boyutu (MB)</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="197"/>
@@ -1683,27 +1088,42 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="217"/>
         <source>Select file</source>
-        <translation>Dosya seï¿½</translation>
+        <translation>Dosya seç</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Show document type icons in result list.</source>
-        <translation type="obsolete">Sonuï¿½ listesinde belge tipi simgelerini gï¿½ster.</translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="236"/>
+        <source>Choose external viewer applications</source>
+        <translation>DÄ±ÅÂŸ gösterici uygulamalarÄ± seç</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="246"/>
+        <source>Manage</source>
+        <translation>Yönet</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="255"/>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Beyaz alan girdisi olduï¿½ÂŸunda basit aramayÄ± otomatik olarak baï¿½ÂŸlat.</translation>
+        <translation>Beyaz alan girdisi olduÄÂŸunda basit aramayÄ± otomatik olarak baÅÂŸlat.</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="265"/>
         <source>Start with advanced search dialog open.</source>
-        <translation>Geliï¿½ÂŸmiï¿½ÂŸ arama penceresi ile baï¿½ÂŸla.</translation>
+        <translation>GeliÅÂŸmiÅÂŸ arama penceresi ile baÅÂŸla.</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="275"/>
         <source>Start with sort dialog open.</source>
-        <translation>SÄ±ralama penceresi ile baï¿½ÂŸla.</translation>
+        <translation>SÄ±ralama penceresi ile baÅÂŸla.</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="285"/>
+        <source>Use desktop preferences to choose document editor.</source>
+        <translation>Belge düzenleyiciyi seçmek için masaüstü tercihlerini kullan.</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="295"/>
+        <source>Remember sort activation state.</source>
+        <translation>SÄ±ralama kurallarÄ±nÄ± hatÄ±rla.</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="308"/>
@@ -1713,128 +1133,7 @@ Tercihler penceresini  aï¿½mak ister misiniz?</translation>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="318"/>
         <source>Stemming language</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Automatically add phrase to simple searchs</source>
-        <translation type="obsolete">Basit aramalara ifadeyi otomatik olarak ekle</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="354"/>
-        <source>Dynamically build abstracts</source>
-        <translation>ï¿½zetleri dinamik olarak oluï¿½ÂŸtur</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="357"/>
-        <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
-May be slow for big documents.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="365"/>
-        <source>Replace abstracts from documents</source>
-        <translation>Belgelerden ï¿½zeti kaldÄ±r</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="368"/>
-        <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="385"/>
-        <source>Synthetic abstract size (characters)</source>
-        <translation>Yapay ï¿½zet boyutu (karakter sayÄ±sÄ±)</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="431"/>
-        <source>Synthetic abstract context words</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="475"/>
-        <source>External Indexes</source>
-        <translation>DÄ±ï¿½ÂŸ indeksler</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="570"/>
-        <source>Add index</source>
-        <translation>Ä°ndeks ekle</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="596"/>
-        <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation>Ä°stediï¿½ÂŸiniz indeksi eklemek iï¿½in xapiandb (veritabanÄ±) dizinini seï¿½in ve Ä°ndeks Ekle dï¿½ï¿½ÂŸmesine tÄ±klayÄ±n</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="593"/>
-        <source>Browse</source>
-        <translation>Gï¿½zat</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All indexes</source>
-        <translation type="obsolete">Tï¿½m indeksler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Indexes currently not used</source>
-        <translation type="obsolete">ï¿½Âimdi kullanÄ±lmayan indeksler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All ----&gt;</source>
-        <translation type="obsolete">Tï¿½mï¿½ ----&gt;</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Sel -----&gt;</source>
-        <translation type="obsolete">Seï¿½ -----&gt;</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;----- Sel</source>
-        <translation type="obsolete">&lt;----- Seï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;----- All</source>
-        <translation type="obsolete">&lt;----- Tï¿½mï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Active indexes</source>
-        <translation type="obsolete">Etkin indeksler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Indexes that will be searched in addition to the main one</source>
-        <translation type="obsolete">Ana indeks yanÄ±nda aranacak olan ek indeksler</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="629"/>
-        <source>&amp;OK</source>
-        <translation>&amp;TAMAM</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="641"/>
-        <source>Apply changes</source>
-        <translation>Deï¿½ÂŸiï¿½ÂŸiklikleri uygula</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="648"/>
-        <source>&amp;Cancel</source>
-        <translation>&amp;Ä°ptal</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="657"/>
-        <source>Discard changes</source>
-        <translation>Deï¿½ÂŸiï¿½ÂŸiklikleri sil</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="112"/>
-        <source>Result paragraph&lt;br&gt;format string</source>
-        <translation>Sonuï¿½ paragrafÄ±&lt;br&gt;biï¿½imlendirme ifadesi</translation>
+        <translation>Kök ayrÄ±ÅÂŸtÄ±rma dili</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="333"/>
@@ -1845,52 +1144,70 @@ May be slow for big documents.</source>
         <location filename="../../qt4gui/uiprefs.ui" line="336"/>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation type="unfinished"></translation>
+        <translation>[linux kernel] (2 sözcük) aramasÄ± [linux veya kernel veya (linux ifadesi 2 tane kernel)] olarak deÄÂŸiÅÂŸtirilecektir.  
+Bu, aranacak sözcüklerin tam olarak girildiÄÂŸi gibi görüntülendiÄÂŸi sonuçlara yüksek öncelik verilmesini saÄÂŸlayacaktÄ±r.</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="236"/>
-        <source>Choose external viewer applications</source>
-        <translation>DÄ±ï¿½ÂŸ gï¿½sterici uygulamalarÄ± seï¿½</translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="354"/>
+        <source>Dynamically build abstracts</source>
+        <translation>Özetleri dinamik olarak oluÅÂŸtur</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="246"/>
-        <source>Manage</source>
-        <translation>Yï¿½net</translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="357"/>
+        <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
+May be slow for big documents.</source>
+        <translation>Sorgu sözcükleri kullanÄ±larak sonuç listesi girdileri için özet oluÅÂŸturulsun mu ? 
+Büyük belgelerde yavaÅÂŸ olabilir.</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="16"/>
-        <source>User preferences</source>
-        <translation>KullanÄ±cÄ± tercihleri</translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="365"/>
+        <source>Replace abstracts from documents</source>
+        <translation>Belgelerden özetleri kaldÄ±r</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="285"/>
-        <source>Use desktop preferences to choose document editor.</source>
-        <translation>Belge dï¿½zenleyiciyi seï¿½mek iï¿½in masaï¿½stï¿½ tercihlerini kullan.</translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="368"/>
+        <source>Do we synthetize an abstract even if the document seemed to have one?</source>
+        <translation>Belgenin bir özeti varsa bile bir yapay özet oluÅÂŸturulsun mu?</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="385"/>
+        <source>Synthetic abstract size (characters)</source>
+        <translation>Yapay özet boyutu (karakter sayÄ±sÄ±)</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="431"/>
+        <source>Synthetic abstract context words</source>
+        <translation>Yapay özet sözcükleri</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="475"/>
+        <source>External Indexes</source>
+        <translation>DÄ±ÅÂŸ indeksler</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="490"/>
         <source>External indexes</source>
-        <translation>DÄ±ï¿½ÂŸ indeksler</translation>
+        <translation>DÄ±ÅÂŸ indeksler</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="506"/>
         <source>Toggle selected</source>
-        <translation>Seï¿½ /BÄ±rak</translation>
+        <translation>Seç /BÄ±rak</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="513"/>
         <source>Activate All</source>
-        <translation>Tï¿½mï¿½nï¿½ Etkinleï¿½ÂŸtir</translation>
+        <translation>Tümünü EtkinleÅÂŸtir</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="520"/>
         <source>Desactivate All</source>
-        <translation>Tï¿½mï¿½nï¿½ Pasifleï¿½ÂŸtir</translation>
+        <translation>Tümünü PasifleÅÂŸtir</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="541"/>
         <source>Remove selected</source>
-        <translation>Seï¿½ileni sil</translation>
+        <translation>Seçileni sil</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="544"/>
@@ -1898,50 +1215,60 @@ This should give higher precedence to the results where the search terms appear 
         <translation>Listeden sil. Bu diskteki indeksi etkilemez.</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="115"/>
-        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="570"/>
+        <source>Add index</source>
+        <translation>Ä°ndeks ekle</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="295"/>
-        <source>Remember sort activation state.</source>
-        <translation>SÄ±ralama kurallarÄ±nÄ± hatÄ±rla.</translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="596"/>
+        <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
+        <translation>Ä°stediÄÂŸiniz indeksi eklemek için xapiandb (veritabanÄ±) dizinini seçin ve Ä°ndeks Ekle düÄÂŸmesine tÄ±klayÄ±n</translation>
     </message>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Texts beyond over this size will not be highlighted in preview (too slow).</source>
-        <translation type="obsolete">Bu boyuttan daha bï¿½yï¿½k metinler ï¿½nizlemede gï¿½sterilmeyecek (ï¿½ok yavaï¿½ÂŸ).</translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="593"/>
+        <source>Browse</source>
+        <translation>Gözat</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="173"/>
-        <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>ï¿½nizlemede vurgulanacak en fazla metin boyutu (MB)</translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="629"/>
+        <source>&amp;OK</source>
+        <translation>&amp;TAMAM</translation>
     </message>
     <message>
-        <location filename="../../qt4gui/uiprefs.ui" line="162"/>
-        <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../qt4gui/uiprefs.ui" line="641"/>
+        <source>Apply changes</source>
+        <translation>DeÄÂŸiÅÂŸiklikleri uygula</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="648"/>
+        <source>&amp;Cancel</source>
+        <translation>&amp;Ä°ptal</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/uiprefs.ui" line="657"/>
+        <source>Discard changes</source>
+        <translation>DeÄÂŸiÅÂŸiklikleri sil</translation>
     </message>
 </context>
 <context>
     <name>ViewAction</name>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Changing actions with differentcurrent values</source>
-        <translation type="obsolete">FarklÄ± deï¿½ÂŸerlerle eylemler deï¿½ÂŸiï¿½ÂŸtiriliyor</translation>
-    </message>
-    <message>
         <location filename="../viewaction_w.cpp" line="105"/>
         <source>Changing actions with different current values</source>
-        <translation>FarklÄ± deï¿½ÂŸerlerle eylemler deï¿½ÂŸiï¿½ÂŸtiriliyor</translation>
+        <translation>FarklÄ± deÄÂŸerlerle eylemler deÄÂŸiÅÂŸtiriliyor</translation>
     </message>
 </context>
 <context>
     <name>ViewActionBase</name>
     <message>
-        <location filename="" line="27395312"/>
-        <source>Form1</source>
-        <translation type="obsolete">Form1</translation>
+        <location filename="../../qt4gui/viewaction.ui" line="16"/>
+        <source>Native Viewers</source>
+        <translation>DoÄÂŸal Göstericiler</translation>
+    </message>
+    <message>
+        <location filename="../../qt4gui/viewaction.ui" line="39"/>
+        <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
+        <translation>Bir ya da birkaç dosya tipi seçin ve Eylemi DeÄÂŸiÅÂŸtir düÄÂŸmesine tÄ±klayarak hangi uygulama ile açÄ±lacaÄÂŸÄ±nÄ± deÄÂŸiÅÂŸtirin</translation>
     </message>
     <message>
         <location filename="../../qt4gui/viewaction.ui" line="43"/>
@@ -1951,135 +1278,17 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../../qt4gui/viewaction.ui" line="54"/>
         <source>Action</source>
-        <translation>DavranÄ±ï¿½ÂŸ</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/viewaction.ui" line="39"/>
-        <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation>Bir ya da birkaï¿½ dosya tipi seï¿½in ve Eylemi Deï¿½ÂŸiï¿½ÂŸtir dï¿½ï¿½ÂŸmesine tÄ±klayarak hangi uygulama ile aï¿½Ä±lacaï¿½ÂŸÄ±nÄ± deï¿½ÂŸiï¿½ÂŸtirin</translation>
+        <translation>DavranÄ±ÅÂŸ</translation>
     </message>
     <message>
         <location filename="../../qt4gui/viewaction.ui" line="70"/>
         <source>Change Action</source>
-        <translation>DavranÄ±ï¿½ÂŸÄ± Deï¿½ÂŸiï¿½ÂŸtir</translation>
+        <translation>DavranÄ±ÅÂŸÄ± DeÄÂŸiÅÂŸtir</translation>
     </message>
     <message>
         <location filename="../../qt4gui/viewaction.ui" line="77"/>
         <source>Close</source>
         <translation>Kapat</translation>
-    </message>
-    <message>
-        <location filename="../../qt4gui/viewaction.ui" line="16"/>
-        <source>Native Viewers</source>
-        <translation>Doï¿½ÂŸal Gï¿½stericiler</translation>
-    </message>
-</context>
-<context>
-    <name>advsearch</name>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Advanced search</source>
-        <translation type="obsolete">Geliï¿½ÂŸmiï¿½ÂŸ arama</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Search For</source>
-        <translation type="obsolete">Ara</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All these words</source>
-        <translation type="obsolete">Tï¿½m sï¿½zcï¿½kler</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>This exact phrase</source>
-        <translation type="obsolete">Tam olarak bu ifade</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Any of these words</source>
-        <translation type="obsolete">Bu sï¿½zcï¿½kleriden herhangi biri</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>None of these words</source>
-        <translation type="obsolete">BunlarÄ±n hiï¿½birisi</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Restrict file types</source>
-        <translation type="obsolete">Dosya tiplerini sÄ±nÄ±rlandÄ±r</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Searched file types</source>
-        <translation type="obsolete">Aranan dosya tipleri</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Ignored file types</source>
-        <translation type="obsolete">YoksayÄ±lan dosya tipleri</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Browse</source>
-        <translation type="obsolete">Gï¿½zat</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Restrict results to files in subtree:</source>
-        <translation type="obsolete">Arama sonuï¿½larÄ±nÄ± bu dizin ve aï¿½ÂŸaï¿½ÂŸÄ±sÄ± ile sÄ±nÄ±rlandÄ±r:</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Start Search</source>
-        <translation type="obsolete">AramayÄ± Baï¿½ÂŸlat</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Dismiss</source>
-        <translation type="obsolete">BÄ±rak</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All ----&gt;</source>
-        <translation type="obsolete">Tï¿½mï¿½ ----&gt;</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Sel -----&gt;</source>
-        <translation type="obsolete">Seï¿½ -----&gt;</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;----- Sel</source>
-        <translation type="obsolete">&lt;----- Seï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>&lt;----- All</source>
-        <translation type="obsolete">&lt;----- Tï¿½mï¿½</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Search for files&lt;br&gt;having all of:</source>
-        <translation type="obsolete">BunlarÄ±n tï¿½mï¿½nï¿½ iï¿½eren&lt;br&gt;dosyalarÄ± ara:</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>All non blank fields will be combined with AND conjunctions</source>
-        <translation type="obsolete">Boï¿½ÂŸ bÄ±rakÄ±lan tï¿½m alanlar VE baï¿½ÂŸlacÄ± ile birleï¿½ÂŸtirilecektir</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>File name matching</source>
-        <translation type="obsolete">Dosya adÄ± eï¿½ÂŸleï¿½ÂŸen</translation>
-    </message>
-    <message>
-        <location filename="" line="27395312"/>
-        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="obsolete">Tamamen negatif sorgu ï¿½alÄ±ï¿½ÂŸtÄ±rÄ±lamaz. Lï¿½tfen &apos;herhangi bir sï¿½zcï¿½k&apos; alanÄ±na genel ifadeler girin</translation>
     </message>
 </context>
 <context>
@@ -2087,7 +1296,7 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../confgui/confguiindex.cpp" line="88"/>
         <source>Can&apos;t write configuration file</source>
-        <translation type="unfinished"></translation>
+        <translation>YapÄ±landÄ±rma dosyasÄ± yazÄ±lamadÄ±</translation>
     </message>
 </context>
 <context>
@@ -2095,7 +1304,7 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../confgui/confgui.cpp" line="269"/>
         <source>Browse</source>
-        <translation type="unfinished">Gï¿½zat</translation>
+        <translation>Gözat</translation>
     </message>
 </context>
 <context>
@@ -2103,12 +1312,12 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../confgui/confgui.cpp" line="321"/>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../confgui/confgui.cpp" line="329"/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
 </context>
 <context>
@@ -2116,7 +1325,7 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../confgui/confguiindex.cpp" line="368"/>
         <source>Global</source>
-        <translation type="unfinished"></translation>
+        <translation>Genel</translation>
     </message>
 </context>
 <context>
@@ -2124,112 +1333,112 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <location filename="../confgui/confguiindex.cpp" line="138"/>
         <source>Top directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Üst dizinler</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="140"/>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation type="unfinished"></translation>
+        <translation>Özyinelemeli indesklemenin baÅÂŸlayacaÄÂŸÄ± dizinlerin listesi. ÖntanÄ±mlÄ±: ev dizininiz.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="145"/>
         <source>Skipped paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Atlanan yollar</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="152"/>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bunlar indekslemenin girmeyeceÄÂŸi dizinlerin adlarÄ±dÄ±r.&lt;br&gt; * gibi özel karakterler içerebilir. Ä°ndeksleyici tarafÄ±ndan görülen yollar ile eÅÂŸleÅÂŸmelidir (örneÄÂŸin: eÄÂŸer en üst dizinler &apos;/home/ben&apos; ve &apos;/home&apos; içeriyorsa ve home &apos;/usr/home&apos; dizinine baÄÂŸlantÄ±lÄ± ise atlanacak dizin yolu &apos;/home/tmp*&apos; olmalÄ±dÄ±r, &apos;/usr/home/tmp*&apos; deÄÂŸil)</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="163"/>
         <source>Stemming languages</source>
-        <translation type="unfinished"></translation>
+        <translation>Sözcük kökleri ayrÄ±ÅÂŸtÄ±rÄ±labilir diller</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="165"/>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kök ayrÄ±ÅÂŸtÄ±rma geniÅÂŸlemesi için sözlükleri&lt;br&gt;inÅÂŸa edilecek olan diller.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="170"/>
         <source>Log file name</source>
-        <translation type="unfinished"></translation>
+        <translation>Günlük dosyasÄ±nÄ±n adÄ±</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="172"/>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation type="unfinished"></translation>
+        <translation>Ä°letilerin yazÄ±lacaÄÂŸÄ± dosya.&lt;br&gt;Uçbirim çÄ±ktÄ±sÄ± için &apos;stderr&apos; kullanÄ±n</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="177"/>
         <source>Log verbosity level</source>
-        <translation type="unfinished"></translation>
+        <translation>Günlük dosyasÄ± ayrÄ±ntÄ± düzeyi</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="180"/>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bu deÄÂŸer ileti boyutunu ayarlar,&lt;br&gt;sadece hatalardan hata ayÄ±klama verilerine kadar.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="185"/>
         <source>Index flush megabytes interval</source>
-        <translation type="unfinished"></translation>
+        <translation>Ä°ndex düzeltme MB araÄÂŸÄ±lÄ±</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="189"/>
         <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation type="unfinished"></translation>
+        <translation>Bu deÄÂŸer diske gönderilecek indekslenmiÅÂŸ veri miktarÄ±nÄ± ayarlar.&lt;br&gt;Bu indeksleyicinin bellek kullanÄ±mÄ±nÄ± kontrol etmeye yarar. ÖntanÄ±mlÄ± 10MB </translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="194"/>
         <source>Max disk occupation (%)</source>
-        <translation type="unfinished"></translation>
+        <translation>En yüksek disk kullanÄ±mÄ± (%)</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="198"/>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation type="unfinished"></translation>
+        <translation>Bu disk kullanÄ±mÄ±nÄ±n yüzdesidir ki bu orana eriÅÂŸildiÄÂŸinde indeksleme durdurulur (diskin doldurulmasÄ±nÄ± engellemek için).&lt;br&gt;0 kÄ±sÄ±tlama yok demektir (öntanÄ±mlÄ±).</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="204"/>
         <source>No aspell usage</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspell kullanÄ±mÄ± yok</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="207"/>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
-        <translation type="unfinished"></translation>
+        <translation>Ä°fade gösterme aracÄ± için heceleme yakÄ±nlÄ±ÄÂŸÄ± oluÅÂŸturma özelliÄÂŸini kapatÄ±r.&lt;br&gt; Aspell olmadÄ±ÄÂŸÄ±nda ya da çalÄ±ÅÂŸmadÄ±ÄÂŸÄ±nda kullanÄ±ÅÂŸlÄ±dÄ±r. </translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="212"/>
         <source>Aspell language</source>
-        <translation type="unfinished"></translation>
+        <translation>Aspell dili</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="219"/>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
+        <translation>Aspell sözlüÄÂŸü için dil. Bu &apos;en&apos; ya da &apos;fr&apos; gibi olmalÄ±dÄ±r ...&lt;br&gt;EÄÂŸer bu deÄÂŸer ayarlanmazsa ÅÂŸimdi kullandÄ±ÄÂŸÄ±nÄ±z NLS çevresel deÄÂŸiÅÂŸkeni kullanÄ±lacaktÄ±r. Sisteminizde neyin yüklü olduÄÂŸu hakkÄ±nda bilgi almak için &apos;aspell config&apos; yazÄ±p &apos;data-dir&apos; içerisindeki .dat dosyalarÄ±na bakÄ±n. </translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="224"/>
         <source>Database directory name</source>
-        <translation type="unfinished"></translation>
+        <translation>VeritabanÄ± dizininin adÄ±</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="228"/>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ä°ndeksin duracaÄÂŸÄ± dizinin adÄ±&lt;br&gt;EÄÂŸer tam yol verilmezse yol yapÄ±landÄ±rma  dizinine göre belirlenecek. ÖntanÄ±mlÄ± dizin adÄ± &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="233"/>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation type="unfinished"></translation>
+        <translation>Sistemdeki &apos;file&apos; komutunu kullan</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="235"/>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ä°ç mime tipi belirleme iÅÂŸlemi baÅÂŸarÄ±sÄ±z olursa&lt;br&gt; sistemdeki &apos;file&apos; komutunu kullan.</translation>
     </message>
 </context>
 </TS>
