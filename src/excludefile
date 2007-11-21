@@ -17,6 +17,7 @@ config.cache
 config.log
 config.status
 excludefile
+kde
 lib/librcl.a
 makesrcdist.sh
 mk/localdefs
