@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!&#68;DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <html>
   <head>
@@ -47,8 +47,8 @@
 
       <p><span class="application">Recoll</span> est un logiciel libre
       gratuit, dont le code source est disponible sous licence GPL. 
-      La version à jour est 
-      <a class="important" href="download.html">1.8.2</a></p>
+      La dernière version est 
+      <a class="important" href="download.html">1.10.0</a></p>
 
       <p><span class="application">Recoll</span> emprunte beaucoup de code
 	d'autres logiciels libres, et accueille volontiers les
@@ -62,7 +62,7 @@
 
       <blockquote>
       <p><b><i>Déjà utilisateur ?</i></b> Il est possible qu'il 
-	  y ait encore quelques astuces qui vous aient echappé. Un coup
+	  y ait encore quelques astuces qui vous aient échappées. Un coup
 	  d'oeil rapide sur la page des 
 	  <a href="usermanual/rcl.search.tips.html">petites recettes
 	de recherche</a> pourrait s'avérer fructueux !</p>
@@ -98,13 +98,7 @@
       </ul>
 
       <h2>Nouvelles: </h1>
-      <p>Il y a de nouveaux filtres d'indexation pour les fichiers
-	<span class="application">kword</span> et 
-	<span class="application">abiword</span>. Ils sont téléchargeables
-	dans la   <a href="filters/filters.html">zone des nouveaux
-	filtres</a>, et sont utilisable avec une installation existante de 
-	<span class="application">Recoll</span> 1.8.</p>
-
+      <p>2007-11-21 Recoll 1.10.0 est sorti.</p>
 
       <h2><a name="support">Support</a></h3>
 
@@ -113,7 +107,10 @@
 	<a href=
 	  "mailto:jean-francois.dockes@wanadoo.fr">contacter</a>.</p>
 
-      <p>Voir aussi la <a href="devel.html">page sur le développement</a>.</p>
+      <p>Voir aussi la <a href="devel.html">page sur le
+      développement</a>.</p>
+      <p><a href="BUGS.txt">Liste des probl&egrave;mes connus</a> (en
+      anglais). </p>
 
     </div>
   </body>
