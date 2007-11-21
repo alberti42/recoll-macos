@@ -34,11 +34,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 2.2. Index storage
 
-                             2.2.1. Index formats
+                             2.2.1. Xapian index formats
 
                              2.2.2. Security aspects
 
-                2.3. The indexing configuration
+                2.3. Indexing configuration
+
+                             2.3.1. The indexing configuration GUI
 
                 2.4. Periodic indexing
 
@@ -106,9 +108,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              4.4.5. Examples of configuration adjustments
 
-                4.5. Extending Recoll
+                4.5. The KDE Kicker Recoll applet
 
-                             4.5.1. Writing a document filter
+                4.6. Extending Recoll
+
+                             4.6.1. Writing a document filter
 
      ----------------------------------------------------------------------
 
@@ -315,7 +319,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  2.2.1. Index formats
+  2.2.1. Xapian index formats
+
+   If your first installation of Recoll was 1.9.0 or more recent, you can
+   skip this section.
 
    Xapian has had two possible index formats for quite some time. The "old"
    one named Quartz, and the new one named Flint. Xapian 0.9 used Quartz by
@@ -354,15 +361,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    in appropriate protection.
 
    If you use another setup, you should think of the kind of protection you
-   need for your index, and set the directory and files access modes
-   appropriately.
+   need for your index, set the directory and files access modes
+   appropriately, and also maybe adjust the umask used during index updates.
 
      ----------------------------------------------------------------------
 
-2.3. The indexing configuration
+2.3. Indexing configuration
 
-   You can control which areas of the file system are indexed, and how files
-   are processed, by setting variables inside the Recoll configuration files.
+   Variables set inside the Recoll configuration files control which areas of
+   the file system are indexed, and how files are processed. These variables
+   can be set either by editing the text files or using the dialogs in the
+   recoll GUI.
 
    You can also use multiple indexes defined by separate configurations,
    typically to separate personal and shared indexes, or to take advantage of
@@ -383,6 +392,31 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The applications needed to index file types other than text, HTML or email
    (ie: pdf, postscript, ms-word...) are described in the external packages
    section
+
+     ----------------------------------------------------------------------
+
+  2.3.1. The indexing configuration GUI
+
+   As of Recoll 1.10, most parameters for a given indexing configuration can
+   be set from a recoll GUI running on this configuration (either as default,
+   or by setting RECOLL_CONFDIR or the -c option.)
+
+   The interface is started from the Preferences menu. It has two main
+   panels. The first panel allows setting global variables, like the list of
+   top directories or the list of skipped paths. The second panel allows
+   setting variables that can be redefined for subdirectories. This second
+   panel has an initially empty list of customisation directories, to which
+   you can add. The variables are then set for the currently selected
+   directory (or at the top level if the empty line is selected).
+
+   The meaning for most entries in the interface is self-evident and
+   documented by a ToolTip popup on the text label. For more detail, you will
+   need to refer to the configuration section of this guide.
+
+   The configuration tool normally respects the comments and most of the
+   formatting inside the configuration file, so that it is quite possible to
+   use it on hand-edited files, which you might nevertheless want to backup
+   first...
 
      ----------------------------------------------------------------------
 
@@ -717,6 +751,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    syntax, but are somewhat special:
 
      * ext for specifying the file name extension (Ex: ext:html)
+
+     * dir for specifying the file location (Ex: dir:/home/me/somedir).
+       Please note that this is quite inefficient, that it may produce very
+       slow searches, and that it may be worth in some cases to set up
+       separate databases instead.
 
      * mime for specifying the mime type. This one is quite special because
        you can specify several values which will be OR'ed (the normal default
@@ -1203,6 +1242,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * RTF: unrtf
 
+     * TeX: Recoll uses the untex program. Your distribution may have a
+       package for it. If it doesn't, there is a copy of the source on the
+       Recoll web site, because the program has no obvious home. The filter
+       can also work with detex and will use it if it is installed.
+
      * dvi: dvips
 
      * djvu: DjVuLibre
@@ -1500,6 +1544,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            useful for files with suffix-less names, but it will also cause
            the indexing of many bogus "text" files.
 
+   indexedmimetypes
+
+           Recoll normally indexes any file which it knows how to read. This
+           list lets you restrict the indexed mime types to what you specify.
+           If the variable is unspecified or the list empty (the default),
+           all supported types are processed.
+
    indexallfilenames
 
            Recoll indexes file names in a special section of the database to
@@ -1535,6 +1586,21 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            If this is set, the aspell dictionary generation is turned off.
            Useful for cases where you don't need the functionality or when it
            is unusable because aspell crashes during dictionary generation.
+
+   nocjk
+
+           If this set to true, specific east asian (Chinese Korean Japanese)
+           characters/word splitting is turned off. This will save a small
+           amount of cpu if you have no CJK documents. If your document base
+           does include such text but you are not interested in searching it,
+           setting nocjk may be a significant time and space saver.
+
+   cjkngramlen
+
+           This lets you adjust the size of n-grams used for indexing CJK
+           text. The default value of 2 is probably appropriate in most
+           cases. A value of 3 would allow more precision and efficiency on
+           longer words, but the index will be approximately twice as large.
 
      ----------------------------------------------------------------------
 
@@ -1668,9 +1734,29 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-4.5. Extending Recoll
+4.5. The KDE Kicker Recoll applet
 
-  4.5.1. Writing a document filter
+   The Recoll source tree contains the source code to the recoll_applet, a
+   small application derived from the find_applet. This can be used to add a
+   small Recoll launcher to the KDE panel.
+
+   The applet is not automatically built with the main Recoll programs. To
+   build it, you need to unpack the Recoll source code, then go to the
+   kde/recoll_applet/ directory, and type the usual configure;make;make
+   install.
+
+   You can then add the applet to the panel by right-clicking the panel and
+   choosing the Add applet entry.
+
+   The recoll_applet has a small text window where you can type a Recoll
+   query (in query language form), and an icon which can be used to restrict
+   the search to certain types of files.
+
+     ----------------------------------------------------------------------
+
+4.6. Extending Recoll
+
+  4.6.1. Writing a document filter
 
    Recoll filters are executable programs which translate from a specific
    format (ie: openoffice, acrobat, etc.) to the Recoll indexing input

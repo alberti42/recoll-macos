@@ -23,7 +23,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    4.4. Configuration overview
 
-   4.5. Extending Recoll
+   4.5. The KDE Kicker Recoll applet
+
+   4.6. Extending Recoll
 
                         4.1. Installing a prebuilt copy
 
@@ -86,6 +88,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * Wordperfect files: libwpd.
 
      * RTF: unrtf
+
+     * TeX: Recoll uses the untex program. Your distribution may have a
+       package for it. If it doesn't, there is a copy of the source on the
+       Recoll web site, because the program has no obvious home. The filter
+       can also work with detex and will use it if it is installed.
 
      * dvi: dvips
 
@@ -402,6 +409,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            useful for files with suffix-less names, but it will also cause
            the indexing of many bogus "text" files.
 
+   indexedmimetypes
+
+           Recoll normally indexes any file which it knows how to read. This
+           list lets you restrict the indexed mime types to what you specify.
+           If the variable is unspecified or the list empty (the default),
+           all supported types are processed.
+
    indexallfilenames
 
            Recoll indexes file names in a special section of the database to
@@ -437,6 +451,21 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            If this is set, the aspell dictionary generation is turned off.
            Useful for cases where you don't need the functionality or when it
            is unusable because aspell crashes during dictionary generation.
+
+   nocjk
+
+           If this set to true, specific east asian (Chinese Korean Japanese)
+           characters/word splitting is turned off. This will save a small
+           amount of cpu if you have no CJK documents. If your document base
+           does include such text but you are not interested in searching it,
+           setting nocjk may be a significant time and space saver.
+
+   cjkngramlen
+
+           This lets you adjust the size of n-grams used for indexing CJK
+           text. The default value of 2 is probably appropriate in most
+           cases. A value of 3 would allow more precision and efficiency on
+           longer words, but the index will be approximately twice as large.
 
 4.4.2. The mimemap file
 
@@ -560,5 +589,5 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    --------------------------------------------------------------------------
 
-   Prev                               Home                               Next 
-   Building from source                Up                    Extending Recoll 
+   Prev                             Home                                 Next 
+   Building from source              Up          The KDE Kicker Recoll applet 
