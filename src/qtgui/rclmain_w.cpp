@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.44 2007-10-09 14:08:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.45 2007-11-21 14:15:48 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -407,7 +407,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     // If indexing is being performed, we reopen the db at each query.
     if (!maybeOpenDb(reason, indexingdone == 0)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	exit(1);
+	return;
     }
 
     resList->resetSearch();
@@ -915,7 +915,7 @@ void RclMain::showDocHistory()
     string reason;
     if (!maybeOpenDb(reason)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	exit(1);
+	return;
     }
     // Construct a bogus SearchData structure
     m_searchData = 

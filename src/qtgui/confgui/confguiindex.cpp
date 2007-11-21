@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.9 2007-10-25 15:51:06 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.10 2007-11-21 14:15:48 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -50,6 +50,8 @@ static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.9 2007-10-25 15:51:06 dockes
 using std::list;
 
 #include "confgui.h"
+#include "recoll.h"
+#include "idxthread.h"
 #include "confguiindex.h"
 #include "smallut.h"
 #include "debuglog.h"
@@ -94,6 +96,10 @@ void ConfIndexW::acceptChanges()
     m_rclconf->updateMainConfig();
 
     QTimer::singleShot(0, this, SLOT(reloadPanels()));
+    if (startIndexingAfterConfig) {
+	startIndexingAfterConfig = 0;
+	startindexing = 1;
+    }
 }
 
 void ConfIndexW::rejectChanges()

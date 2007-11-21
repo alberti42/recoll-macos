@@ -16,7 +16,7 @@
  */
 #ifndef _RECOLL_H_INCLUDED_
 #define _RECOLL_H_INCLUDED_
-/* @(#$Id: recoll.h,v 1.17 2006-10-11 14:16:26 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: recoll.h,v 1.18 2007-11-21 14:15:48 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 
 #include "rclconfig.h"
@@ -32,6 +32,7 @@ extern bool maybeOpenDb(std::string &reason, bool force = true);
 extern RclConfig *rclconfig;
 extern Rcl::Db *rcldb;
 extern int recollNeedsExit;
+extern int startIndexingAfterConfig; // 1st startup
 extern const std::string recoll_datadir;
 extern RclHistory *g_dynconf;
 #ifdef RCL_USE_ASPELL

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.63 2007-11-08 09:35:47 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.64 2007-11-21 14:15:48 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -86,6 +86,7 @@ RclConfig* RclConfig::getMainConfig()
 
 RclHistory *g_dynconf;
 int recollNeedsExit;
+int startIndexingAfterConfig;
 static string dbdir;
 static RclMain *mainWindow;
 static string recollsharedir;
@@ -320,8 +321,8 @@ int main(int argc, char **argv)
 
     rcldb = new Rcl::Db;
 
+    bool needindexconfig = false;
     if (!maybeOpenDb(reason)) {
-	startindexing = 1;
 
 	switch (QMessageBox::
 #if (QT_VERSION >= 0x030200)
@@ -337,20 +338,27 @@ int main(int argc, char **argv)
 			       "Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed."),
 		 "Ok", "Cancel", 0,   0)) {
 
-	case 0: // Ok
+	case 0: // Ok: indexing is going to start.
+	    startindexing = 1;
 	    break;
 
 	case 1: // Cancel
-	    exit(0);
+	    needindexconfig = true;
+	    startindexing = 0;
+	    break;
 	}
     }
 
     mainWindow->show();
-
-    if (prefs.startWithAdvSearchOpen)
-	mainWindow->showAdvSearchDialog();
-    if (prefs.startWithSortToolOpen)
-	mainWindow->showSortDialog();
+    if (needindexconfig) {
+	startIndexingAfterConfig = 1;
+	mainWindow->showIndexConfig();
+    } else {
+	if (prefs.startWithAdvSearchOpen)
+	    mainWindow->showAdvSearchDialog();
+	if (prefs.startWithSortToolOpen)
+	    mainWindow->showSortDialog();
+    }
 
     // Connect exit handlers etc.. Beware, apparently this must come
     // after mainWindow->show() , else the QMessageBox above never
