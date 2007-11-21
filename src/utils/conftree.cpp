@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.13 2007-10-01 15:57:48 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.14 2007-11-21 09:34:54 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -85,7 +85,7 @@ void ConfSimple::parseinput(istream &input)
 	// Note that we trim whitespace before checking for backslash-eol
 	// This avoids invisible problems.
 	trimstring(line);
-	if (line.empty()) {
+	if (line.empty() || line.at(0) == '#') {
 	    m_order.push_back(ConfLine(ConfLine::CFL_COMMENT, line));
 	    continue;
 	}
