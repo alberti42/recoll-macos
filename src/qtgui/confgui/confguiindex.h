@@ -1,6 +1,6 @@
 #ifndef _confguiindex_h_included_
 #define _confguiindex_h_included_
-/* @(#$Id: confguiindex.h,v 1.4 2007-10-09 14:08:24 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: confguiindex.h,v 1.5 2007-11-24 16:43:51 dockes Exp $  (C) 2007 J.F.Dockes */
 
 /**
  * Classes to handle the gui for the indexing configuration. These group 
@@ -49,6 +49,7 @@ private:
  * subdirectoriess:
  */
 class ConfTopPanelW : public QWidget {
+    Q_OBJECT
 public:
     ConfTopPanelW(QWidget *parent, ConfNull *config);
 };
