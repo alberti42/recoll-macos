@@ -15,7 +15,7 @@
     </message>
     <message>
         <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Requete négative pure impossible. Entrer un terme dans un des autres champs</translation>
+        <translation>Requête négative pure impossible. Entrer un terme dans un des autres champs</translation>
     </message>
     <message>
         <source>texts</source>
@@ -27,11 +27,11 @@
     </message>
     <message>
         <source>presentations</source>
-        <translation>presentations</translation>
+        <translation>présentations</translation>
     </message>
     <message>
         <source>media</source>
-        <translation>multimedia</translation>
+        <translation>multimédia</translation>
     </message>
     <message>
         <source>messages</source>
@@ -194,7 +194,7 @@
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
-        <translation>Cliquer Annuler pour pouvoir editer le fichier de configuration avant que l&apos;indexation ne demarre, ou Ok pour continuer.</translation>
+        <translation>Cliquer Annuler pour pouvoir éditer le fichier de configuration avant que l&apos;indexation ne démarre, ou Ok pour continuer.</translation>
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
@@ -209,7 +209,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Preview 1</source>
-        <translation type="obsolete">Previsualisation 1</translation>
+        <translation type="obsolete">Prévisualisation 1</translation>
     </message>
     <message>
         <source>&amp;Search for:</source>
@@ -284,11 +284,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>PreviewBase</name>
     <message>
         <source>Preview</source>
-        <translation type="obsolete">Previsualisation</translation>
+        <translation type="obsolete">Prévisualisation</translation>
     </message>
     <message>
         <source>Preview 1</source>
-        <translation type="obsolete">Previsualisation 1</translation>
+        <translation type="obsolete">Prévisualisation 1</translation>
     </message>
     <message>
         <source>&amp;Search for:</source>
@@ -327,39 +327,39 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation>Parametres globaux</translation>
+        <translation>Paramètres globaux</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation>Parametres locaux</translation>
+        <translation>Paramètres locaux</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
-        <translation>&lt;b&gt;Repertoires avec parametres specifiques</translation>
+        <translation>&lt;b&gt;Répertoires avec paramètres spécifiques</translation>
     </message>
     <message>
         <source>The list of subdirectories in the indexed hierarchy &lt;br&gt;where some parameters need to be redefined. Default: empty.</source>
-        <translation>La liste des sous-repertoires de la zone indexee&lt;br&gt;ou certains parametres sont redefinis. Defaut: vide.</translation>
+        <translation>La liste des sous-répertoires de la zone indexée&lt;br&gt;où certains paramètres sont redéfinis. Défaut: vide.</translation>
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;Les parametres qui suivent sont definis soit globalement, si la selection dans la liste ci-dessus&lt;br&gt;est vide ou reduite a la ligne vide, soit pour le repertoire selectione.&lt;br&gt;Vous pouvez ajouter et enlever des repertoires en cliquant les boutons +/-.</translation>
+        <translation>&lt;i&gt;Les paramètres qui suivent sont définis soit globalement, si la sélection dans la liste ci-dessus&lt;br&gt;est vide ou réduite à la ligne vide, soit pour le répertoire sélectionné.&lt;br&gt;Vous pouvez ajouter et enlever des répertoires en cliquant les boutons +/-.</translation>
     </message>
     <message>
         <source>Skipped names</source>
-        <translation>Noms ignores</translation>
+        <translation>Noms ignorés</translation>
     </message>
     <message>
         <source>These are patterns for file or directory  names which should not be indexed.</source>
-        <translation>Canevas definissant les fichiers ou repertoires qui ne doivent pas etre indexes.</translation>
+        <translation>Canevas définissant les fichiers ou répertoires qui ne doivent pas etre indexés.</translation>
     </message>
     <message>
         <source>Default character set</source>
-        <translation>Jeu de caractere par defaut</translation>
+        <translation>Jeu de caractères par défaut</translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>Jeu de caractere utilise pour lire les fichiers qui ne l&apos;identifient pas de maniere interne, par exemple les purs fichiers texte. &lt;br&gt;La valeur par defaut est vide, et le programme utilise l&apos;environnement.</translation>
+        <translation>Jeu de caractères utilisé pour lire les fichiers qui ne l&apos;identifient pas de manière interne, par exemple les purs fichiers texte. &lt;br&gt;La valeur par défaut est vide, et le programme utilise l&apos;environnement.</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
@@ -367,7 +367,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Follow symbolic links while indexing. The default is no, to avoid duplicate indexing</source>
-        <translation>Indexer les fichiers et repertoires pointes par les liens symboliques. Pas fait par defaut pour eviter les indexations multiples</translation>
+        <translation>Indexer les fichiers et répertoires pointés par les liens symboliques. Pas fait par défaut pour éviter les indexations multiples</translation>
     </message>
     <message>
         <source>Index all file names</source>
@@ -375,7 +375,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation>Indexer les noms des fichiers dont le contenu n&apos;est pas identifie ou traite (pas de type mime, ou type non supporte). Vrai par defaut</translation>
+        <translation>Indexer les noms des fichiers dont le contenu n&apos;est pas identifié ou traité (pas de type mime, ou type non supporté). Vrai par défaut</translation>
     </message>
 </context>
 <context>
@@ -410,7 +410,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Preview</source>
-        <translation type="obsolete">Previsualisation</translation>
+        <translation type="obsolete">Prévisualisation</translation>
     </message>
     <message>
         <source>Warning</source>
@@ -418,7 +418,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Can&apos;t create preview window</source>
-        <translation>Impossible de créer la fenetre de visualisation</translation>
+        <translation>Impossible de créer la fenêtre de visualisation</translation>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
