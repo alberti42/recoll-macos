@@ -213,11 +213,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>&amp;Search for:</source>
-        <translation type="obsolete">&amp;Rechercher:</translation>
+        <translation>&amp;Rechercher:</translation>
     </message>
     <message>
         <source>&amp;Next</source>
-        <translation type="obsolete">&amp;Suivant</translation>
+        <translation>&amp;Suivant</translation>
     </message>
     <message>
         <source>Alt+N</source>
@@ -225,7 +225,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>&amp;Previous</source>
-        <translation type="obsolete">&amp;Precédent</translation>
+        <translation>&amp;Precédent</translation>
     </message>
     <message>
         <source>Alt+P</source>
@@ -233,7 +233,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation type="obsolete">Respecter la &amp;casse</translation>
+        <translation>Respecter la &amp;casse</translation>
     </message>
     <message>
         <source>Alt+C</source>
@@ -241,7 +241,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Clear</source>
-        <translation type="obsolete">Effacer</translation>
+        <translation>Effacer</translation>
     </message>
     <message>
         <source>Can&apos;t turn doc into internal rep for </source>
@@ -284,43 +284,43 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>PreviewBase</name>
     <message>
         <source>Preview</source>
-        <translation>Previsualisation</translation>
+        <translation type="obsolete">Previsualisation</translation>
     </message>
     <message>
         <source>Preview 1</source>
-        <translation>Previsualisation 1</translation>
+        <translation type="obsolete">Previsualisation 1</translation>
     </message>
     <message>
         <source>&amp;Search for:</source>
-        <translation>&amp;Rechercher:</translation>
+        <translation type="obsolete">&amp;Rechercher:</translation>
     </message>
     <message>
         <source>&amp;Next</source>
-        <translation>&amp;Suivant</translation>
+        <translation type="obsolete">&amp;Suivant</translation>
     </message>
     <message>
         <source>Alt+N</source>
-        <translation>Alt+S</translation>
+        <translation type="obsolete">Alt+S</translation>
     </message>
     <message>
         <source>&amp;Previous</source>
-        <translation>&amp;Precédent</translation>
+        <translation type="obsolete">&amp;Precédent</translation>
     </message>
     <message>
         <source>Alt+P</source>
-        <translation>Alt+P</translation>
+        <translation type="obsolete">Alt+P</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Effacer</translation>
+        <translation type="obsolete">Effacer</translation>
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation>Respecter la &amp;casse</translation>
+        <translation type="obsolete">Respecter la &amp;casse</translation>
     </message>
     <message>
         <source>Alt+C</source>
-        <translation>Alt+C</translation>
+        <translation type="obsolete">Alt+C</translation>
     </message>
 </context>
 <context>
