@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.22 2007-09-08 17:25:49 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.23 2007-12-04 10:16:52 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -302,12 +302,11 @@ void UIPrefsDialog::showViewAction()
 {
     if (m_viewAction== 0) {
 	m_viewAction = new ViewAction(0);
-	m_viewAction->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
 	m_viewAction->close();
-	m_viewAction->show();
     }
+    m_viewAction->show();
 }
 
 ////////////////////////////////////////////

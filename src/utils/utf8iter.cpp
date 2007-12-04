@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: utf8iter.cpp,v 1.5 2006-11-20 11:16:54 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: utf8iter.cpp,v 1.6 2007-12-04 10:16:27 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -35,14 +35,43 @@ using namespace std;
 #include "utf8iter.h"
 #include "readfile.h"
 
+const char *thisprog;
+static char usage [] =
+    "utf8iter [opts] infile outfile\n"
+    " converts infile to 32 bits unicode (processor order), for testing\n"
+    "-v : print stuff as we go\n"
+    ;
+
+void Usage() {
+    fprintf(stderr, "%s:%s\n", thisprog, usage);
+    exit(1);
+}
+static int     op_flags;
+#define OPT_v	  0x2 
+
 int main(int argc, char **argv)
 {
-    if (argc != 3) {
-	cerr << "Usage: utf8iter infile outfile" << endl;
-	exit(1);
+    thisprog = argv[0];
+    argc--; argv++;
+
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 'v':   op_flags |= OPT_v; break;
+
+	    default: Usage();	break;
+	    }
+	argc--;argv++;
     }
-    const char *infile = argv[1];
-    const char *outfile = argv[2];
+
+    if (argc != 2) {
+	Usage();
+    }
+    const char *infile = *argv++;argc--;
+    const char *outfile = *argv++;argc--;
     string in;
     if (!file_to_string(infile, in)) {
 	cerr << "Cant read file\n" << endl;
@@ -62,8 +91,14 @@ int main(int argc, char **argv)
     for (;!it.eof(); it++) {
 	unsigned int value = *it;
 	if (value == (unsigned int)-1) {
-	    fprintf(stderr, "Conversion error occurred\n");
+	    cerr << "Conversion error occurred\n" << endl;
 	    exit(1);
+	}
+	if (op_flags & OPT_v) {
+	   printf("Value: 0x%x", value);
+	   if (value < 0x7f)
+	       printf(" (%c) ", value);
+	   printf("\n");
 	}
 	// UTF-32LE or BE array
 	ucsout1.push_back(value);
@@ -140,4 +175,3 @@ int main(int argc, char **argv)
     }
     exit(0);
 }
-
