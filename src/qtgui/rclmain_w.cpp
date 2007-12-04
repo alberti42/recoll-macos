@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.45 2007-11-21 14:15:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.46 2007-12-04 10:17:14 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -805,7 +805,11 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
 	switch(QMessageBox::warning(0, "Recoll", message, 
 				    "Yes", "No", 0, 0, 1)) {
-	case 0: showUIPrefs();break;
+	case 0: 
+	    showUIPrefs();
+	    if (uiprefs)
+		uiprefs->showViewAction();
+	    break;
 	case 1:
 	    
 	    return;
