@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.10 2007-05-23 08:28:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.11 2007-12-13 06:58:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@ static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.10 2007-05-23 08:28:35 dockes Exp
 #include <signal.h>
 #include <locale.h>
 #include <pthread.h>
+#include <cstdlib>
 
 #include "debuglog.h"
 #include "rclconfig.h"

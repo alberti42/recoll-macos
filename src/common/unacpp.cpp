@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.8 2006-04-04 09:36:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.9 2007-12-13 06:58:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@ static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.8 2006-04-04 09:36:46 dockes Exp $
 
 #ifndef TEST_UNACPP
 #include <stdio.h>
-
+#include <cstdlib>
 #include <errno.h>
 
 #include <string>

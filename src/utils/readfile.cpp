@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: readfile.cpp,v 1.6 2007-09-08 09:44:43 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: readfile.cpp,v 1.7 2007-12-13 06:58:22 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@ static char rcsid[] = "@(#$Id: readfile.cpp,v 1.6 2007-09-08 09:44:43 dockes Exp
 #define O_STREAMING 0
 #endif
 #include <errno.h>
+#include <cstring>
 
 #include <string>
 #ifndef NO_NAMESPACES

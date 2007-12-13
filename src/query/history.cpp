@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: history.cpp,v 1.8 2007-06-20 13:16:11 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: history.cpp,v 1.9 2007-12-13 06:58:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@ static char rcsid[] = "@(#$Id: history.cpp,v 1.8 2007-06-20 13:16:11 dockes Exp 
 #ifndef TEST_HISTORY
 #include <stdio.h>
 #include <time.h>
+#include <cstdlib>
 
 #include "history.h"
 #include "base64.h"

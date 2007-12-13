@@ -23,7 +23,7 @@
  */
 
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.7 2007-06-19 10:28:40 dockes Exp $ ";
+static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.8 2007-12-13 06:58:21 dockes Exp $ ";
 #endif
 
 #include <algorithm>
@@ -32,6 +32,7 @@ using std::find_if;
 #include "htmlparse.h"
 #include <stdio.h>
 #include <ctype.h>
+#include <cstring>
 
 map<string, unsigned int> HtmlParser::named_ents;
 

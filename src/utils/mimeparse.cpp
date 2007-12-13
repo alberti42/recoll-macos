@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.19 2007-10-17 11:40:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.20 2007-12-13 06:58:22 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,8 @@ static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.19 2007-10-17 11:40:35 dockes E
 #include <stdio.h>
 #include <ctype.h>
 #include <time.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "mimeparse.h"
 #include "base64.h"

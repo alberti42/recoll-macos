@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.1 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.2 2007-12-13 06:58:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.1 2007-01-19 10:32:39 dockes E
  */
 #include <math.h>
 #include <time.h>
+#include <cmath>
 
 #include "docseqhist.h"
 #include "rcldb.h"
@@ -48,7 +49,7 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent,
     if (percent)
 	*percent = 100;
     if (sh) {
-	if (m_prevtime < 0 || abs(m_prevtime - m_it->unixtime) > 86400) {
+	if (m_prevtime < 0 || abs (float(m_prevtime) - float(m_it->unixtime)) > 86400) {
 	    m_prevtime = m_it->unixtime;
 	    time_t t = (time_t)(m_it->unixtime);
 	    *sh = string(ctime(&t));

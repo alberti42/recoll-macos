@@ -36,6 +36,8 @@
 
 #include <stdio.h>
 #include <sys/stat.h>
+#include <cstdlib>
+#include <cstring>
 
 #include "address.h"
 //#include "depot.h"

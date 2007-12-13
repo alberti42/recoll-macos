@@ -24,6 +24,8 @@
  */
 #include <time.h>
 #include <stdio.h>
+#include <algorithm>
+#include <cstring>
 
 #include "myhtmlparse.h"
 #include "indextext.h" // for lowercase_term()

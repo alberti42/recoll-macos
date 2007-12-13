@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.14 2007-11-21 09:34:54 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.15 2007-12-13 06:58:22 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@ static char rcsid [] = "@(#$Id: conftree.cpp,v 1.14 2007-11-21 09:34:54 dockes E
 #include <sstream>
 #include <algorithm>
 #include <iostream>
+#include <cstring>
 
 #include "conftree.h"
 #include "pathut.h"

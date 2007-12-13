@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.55 2007-11-16 14:28:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.56 2007-12-13 06:58:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,8 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.55 2007-11-16 14:28:52 dockes E
 #endif
 
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
 
 #include "pathut.h"
 #include "rclconfig.h"

@@ -1,6 +1,6 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.9 2007-08-07 08:26:40 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.10 2007-12-13 06:58:21 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
@@ -11,7 +11,7 @@ static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.9 2007-08-07 08:26:40 dockes Ex
 #include <unistd.h>
 #include <dlfcn.h>
 #include <iostream>
-
+#include <stdlib.h>
 #include <vector>
 
 #include ASPELL_INCLUDE
