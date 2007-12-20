@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.64 2007-12-13 06:58:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.65 2007-12-20 09:08:04 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -418,24 +418,40 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     FileInterner::Status fis = FileInterner::FIAgain;
     bool hadNullIpath = false;
     Rcl::Doc doc;
+    const string plus = "+";
     char ascdate[20];
     sprintf(ascdate, "%ld", long(stp->st_mtime));
     while (fis == FileInterner::FIAgain) {
 	doc.erase();
-
 	string ipath;
 	fis = interner.internfile(doc, ipath);
 	if (fis == FileInterner::FIError) {
 	    list<string> ext = interner.getMissingExternal();
 	    m_missingExternal.merge(ext);
 	    m_missingExternal.unique();
-	    // We dont stop indexing for one bad doc
-	    return FsTreeWalker::FtwOk;
-	}
+	    // We used to return at this point. 
+	    //
+	    // The nice side was that if a filter failed because of a
+	    // lacking supporting app, the file would be indexed once
+	    // the app was installed.
+	    //
+	    // The not so nice point was that the file name was not
+	    // indexed.
+	    //
+	    // We now index at least the file name. We use a dirty
+	    // hack to ensure that the indexing will be retried each
+	    // time: the stored number as decimal ascii mtime is
+	    // prefixed with a '+', which doesnt change its value for
+	    // atoll() but is tested by rcldb::needUpdate()
+	    // Reset the date as set by the handler if any
+	    doc.fmtime.erase();
+	    // Go through:
+	} 
 
-	// Set the date if this was not done in the document handler
 	if (doc.fmtime.empty()) {
-	    doc.fmtime = ascdate;
+	    // Set the date if this was not done in the document handler
+	    doc.fmtime = (fis == FileInterner::FIError) ? plus + ascdate :
+		ascdate;
 	}
 
 	// Internal access path for multi-document files

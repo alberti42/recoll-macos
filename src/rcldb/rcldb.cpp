@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.129 2007-12-13 06:58:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.130 2007-12-20 09:08:04 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1237,7 +1237,9 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 		    cp+= 6;
 	    }
 #endif
-	    time_t mtime = cp ? atoll(cp) : 0;
+	    // If the time string begins with a "+", force an update. Happens
+	    // after a filter error, see indexer.cpp, processone()
+	    time_t mtime = (!cp || *cp == '+') ? 0 : atoll(cp);
 
 	    // Retrieve file size as stored in db data
 	    cp = strstr(data.c_str(), "fbytes=");
