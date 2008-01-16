@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.19 2007-10-04 12:26:04 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.20 2008-01-16 08:43:26 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -544,8 +544,15 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
+    list<string> patterns;
+    stringToStrings(m_text, patterns);
     list<string> names;
-    db.filenameWildExp(m_text, names);
+    for (list<string>::iterator it = patterns.begin();
+	 it != patterns.end(); it++) {
+	// This relies on filenameWildExp not resetting and always
+	// adding to the input
+	db.filenameWildExp(*it, names);
+    }
     // Build a query out of the matching file name terms.
     *qp = Xapian::Query(Xapian::Query::OP_OR, names.begin(), names.end());
     return true;
