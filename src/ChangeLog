@@ -1,3 +1,138 @@
+2007-12-20 10:08  dockes
+
+	* index/indexer.cpp, rcldb/rcldb.cpp: ensure that the names of
+	files with filter errors get indexed anyway
+
+2007-12-13 07:58  dockes
+
+	* aspell/rclaspell.cpp, bincimapmime/convert.h,
+	common/rclconfig.cpp, common/rclinit.cpp, common/textsplit.cpp,
+	common/unacpp.cpp, index/csguess.cpp, index/indexer.cpp,
+	index/rclmonprc.cpp, index/rclmonrcv.cpp, index/recollindex.cpp,
+	internfile/htmlparse.cpp, internfile/mh_mail.cpp,
+	internfile/mh_mbox.cpp, internfile/myhtmlparse.cpp,
+	query/docseqhist.cpp, query/history.cpp, query/recollq.cpp,
+	rcldb/pathhash.cpp, rcldb/rcldb.cpp, utils/base64.cpp,
+	utils/conftree.cpp, utils/copyfile.cpp, utils/fstreewalk.cpp,
+	utils/idfile.cpp, utils/mimeparse.cpp, utils/pathut.cpp,
+	utils/readfile.cpp, utils/wipedir.cpp: gcc 4 compat, thanks to
+	Kartik Mistry
+
+2007-12-04 11:17  dockes
+
+	* qtgui/rclmain_w.cpp: directly open editor action choice dialog
+	when user says so
+
+2007-12-04 11:16  dockes
+
+	* utils/utf8iter.cpp, qtgui/uiprefs_w.cpp: [no log message]
+
+2007-11-25 08:29  dockes
+
+	* qtgui/i18n/recoll_tr.ts: [no log message]
+
+2007-11-24 17:51  dockes
+
+	* qtgui/i18n/recoll_fr.ts: accents
+
+2007-11-24 17:43  dockes
+
+	* qtgui/confgui/confguiindex.h: make conftoppanelw a q_object for
+	translations to work
+
+2007-11-24 11:41  dockes
+
+	* qtgui/i18n/: recoll_de.ts, recoll_fr.ts, recoll_it.ts,
+	recoll_ru.ts, recoll_tr.ts, recoll_uk.ts, recoll_xx.ts: [no log
+	message]
+
+2007-11-21 17:34  dockes
+
+	* VERSION: [no log message]
+
+2007-11-21 15:15  dockes
+
+	* qtgui/: main.cpp, rclmain_w.cpp, recoll.h,
+	confgui/confguiindex.cpp: allow opening config gui if no index on
+	first start
+
+2007-11-21 10:42  dockes
+
+	* excludefile: [no log message]
+
+2007-11-21 10:34  dockes
+
+	* utils/conftree.cpp: explicitely detect lines beginning with #
+
+2007-11-21 10:00  dockes
+
+	* INSTALL, README: [no log message]
+
+2007-11-16 16:20  dockes
+
+	* doc/user/usermanual.sgml: [no log message]
+
+2007-11-16 15:28  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h,
+	internfile/internfile.cpp, internfile/mimehandler.cpp,
+	internfile/mimehandler.h: indexedmimetypes
+
+2007-11-16 13:21  dockes
+
+	* query/: wasastringtoquery.cpp, wasatorcl.cpp: very small effort
+	to look like xesam simple query
+
+2007-11-16 08:34  dockes
+
+	* qtgui/i18n/: recoll_de.ts, recoll_it.ts, recoll_ru.ts,
+	recoll_uk.ts: [no log message]
+
+2007-11-16 08:19  dockes
+
+	* qtgui/i18n/recoll_tr.ts: [no log message]
+
+2007-11-15 19:44  dockes
+
+	* qtgui/preview_w.cpp: comment
+
+2007-11-15 19:39  dockes
+
+	* qt4gui/: q3richtext_p.h, recoll.pro.in: qt4 movetoanchor
+
+2007-11-15 19:39  dockes
+
+	* qtgui/i18n/recoll_it.ts: [no log message]
+
+2007-11-15 19:34  dockes
+
+	* qtgui/: preview_w.cpp, preview_w.h: moveToAnchor qt4
+
+2007-11-15 19:05  dockes
+
+	* qtgui/: plaintorich.cpp, plaintorich.h, preview_w.cpp,
+	preview_w.h, recoll.pro.in: finally got anchors to work. qt3
+
+2007-11-15 19:05  dockes
+
+	* qtgui/reslist.cpp: [no log message]
+
+2007-11-13 19:42  dockes
+
+	* doc/man/recoll.1: [no log message]
+
+2007-11-13 19:40  dockes
+
+	* query/recollq.cpp: keep format constant
+
+2007-11-13 19:40  dockes
+
+	* doc/user/usermanual.sgml: text
+
+2007-11-13 16:35  dockes
+
+	* ChangeLog: [no log message]
+
 2007-11-13 16:34  dockes
 
 	* VERSION: 1.10.0?

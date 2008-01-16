@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.58 2007-11-16 15:20:45 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.59 2008-01-16 10:52:36 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -621,8 +621,13 @@ fvwm
         terms</guilabel>. This will look for documents containing all
         of the search terms (the ones with more terms will get better
         scores). <guilabel>Any term</guilabel> will search for
-        documents where at least one of the terms appear. <guilabel>File
-        name</guilabel> will specifically look for file names.</para>
+        documents where at least one of the terms appear. </para>
+
+      <para><guilabel>File name</guilabel> will specifically look for file
+        names. The entry will be split at white space characters,
+        and each pattern will be separately expanded. If you want
+        to search for a pattern including white space, you need
+        to use double quotes.</para>
 
       <para>The fourth entry (<guilabel>Query Language</guilabel>) is
       described in <link linkend="rcl.search.lang">its own
