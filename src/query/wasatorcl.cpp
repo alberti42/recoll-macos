@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.12 2007-11-16 12:21:46 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.13 2008-01-16 11:14:38 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -48,8 +48,14 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 {
     if (wasa == 0)
 	return 0;
+    if (wasa->m_op != WasaQuery::OP_AND && wasa->m_op != WasaQuery::OP_OR) {
+	LOGERR(("wasaQueryToRcl: top query neither AND nor OR!\n"));
+	return 0;
+    }
 
-    Rcl::SearchData *sdata = new Rcl::SearchData(Rcl::SCLT_AND);
+    Rcl::SearchData *sdata = new 
+	Rcl::SearchData(wasa->m_op == WasaQuery::OP_AND ? Rcl::SCLT_AND : 
+			Rcl::SCLT_OR);
 
     WasaQuery::subqlist_t::iterator it;
     Rcl::SearchDataClause *nclause;
@@ -59,7 +65,7 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	case WasaQuery::OP_NULL:
 	case WasaQuery::OP_AND:
 	default:
-	    // ??
+	    LOGINFO(("wasaQueryToRcl: found bad NULL or AND q type in list\n"));
 	    continue;
 	case WasaQuery::OP_LEAF:
 
@@ -107,7 +113,12 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    }
 	    sdata->addClause(nclause);
 	    break;
+
 	case WasaQuery::OP_EXCL:
+	    if (wasa->m_op != WasaQuery::OP_AND) {
+		LOGERR(("wasaQueryToRcl: negative clause inside OR list!\n"));
+		continue;
+	    }
 	    // Note: have to add dquotes which will be translated to
 	    // phrase if there are several words in there. Not pretty
 	    // but should work. If there is actually a single
@@ -126,29 +137,21 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 		nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
 	    sdata->addClause(nclause);
 	    break;
+
 	case WasaQuery::OP_OR:
-	    // Concatenate all OR values as phrases. Hope there are no
-	    // stray dquotes in there. Note that single terms won't be
-	    // handled as real phrases inside searchdata.cpp (so the
-	    // added dquotes won't interfer with stemming)
-	    {
-		string orvalue;
-		WasaQuery::subqlist_t::iterator orit;
-		for (orit = (*it)->m_subs.begin(); 
-		     orit != (*it)->m_subs.end(); orit++) {
-		    orvalue += string("\"") + (*orit)->m_value + "\" ";
-		}
-		nclause = new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, 
-							  orvalue,
-							  (*it)->m_fieldspec);
-		if (nclause == 0) {
-		    LOGERR(("wasaQueryToRcl: out of memory\n"));
-		    return 0;
-		}
-		if ((*it)->m_modifiers & WasaQuery::WQM_NOSTEM)
-		    nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
-		sdata->addClause(nclause);
+	    // Create a subquery.
+	    Rcl::SearchData *sub = wasaQueryToRcl(*it);
+	    if (sub == 0) {
+		continue;
 	    }
+	    nclause = new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, sub);
+	    if (nclause == 0) {
+		LOGERR(("wasaQueryToRcl: out of memory\n"));
+		return 0;
+	    }
+	    if ((*it)->m_modifiers & WasaQuery::WQM_NOSTEM)
+		nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
+	    sdata->addClause(nclause);
 	}
     }
 

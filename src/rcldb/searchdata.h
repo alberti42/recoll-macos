@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.10 2007-02-13 10:58:32 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.11 2008-01-16 11:14:38 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -222,19 +222,18 @@ public:
     // m_slack is declared in SearchDataClauseSimple
 };
 
-#ifdef NOTNOW
 /** Future pointer to subquery ? */
 class SearchDataClauseSub : public SearchDataClause {
 public:
-    SearchDataClauseSub(SClType tp, SClType stp) 
-	: SearchDataClause(tp), m_sub(stp) {}
-    virtual ~SearchDataClauseSub() {}
+    // Note that we take charge of the SearchData * and will delete it.
+    SearchDataClauseSub(SClType tp, SearchData *sub) 
+	: SearchDataClause(tp), m_sub(sub) {}
+    virtual ~SearchDataClauseSub() {delete m_sub; m_sub = 0;}
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
 
 protected:
-    SearchData m_sub;
+    SearchData *m_sub;
 };
-#endif // NOTNOW
 
 } // Namespace Rcl
 #endif /* _SEARCHDATA_H_INCLUDED_ */
