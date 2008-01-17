@@ -1,6 +1,6 @@
 #ifndef _WASASTRINGTOQUERY_H_INCLUDED_
 #define _WASASTRINGTOQUERY_H_INCLUDED_
-/* @(#$Id: wasastringtoquery.h,v 1.5 2007-02-12 18:16:08 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: wasastringtoquery.h,v 1.6 2008-01-17 11:14:13 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,6 +36,9 @@ using std::vector;
  * For LEAF elements, the value can hold one or several words. In the
  * latter case, it should be interpreted as a phrase (comes from a
  * user-entered "quoted string").
+ * 
+ * Some fields only make sense either for compound or LEAF queries. This 
+ * is commented for each. We should subclass really.
  */
 class WasaQuery {
 public:
@@ -54,7 +57,7 @@ public:
     /** Op to be performed on either value (may be LEAF or EXCL, or subqs */
     WasaQuery::Op      m_op;
 
-    /** Field specification if any (ie: title, author ...) */
+    /** Field specification if any (ie: title, author ...) Only OPT_LEAF */
     string             m_fieldspec;
 
     /* String value. Valid for op == OP_LEAF or EXCL */
