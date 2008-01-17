@@ -27,6 +27,12 @@
 #include "smallut.h"
 #include "rclinit.h"
 
+int stopindexing;
+int startindexing;
+IdxThreadStatus indexingstatus = IDXTS_OK;
+string indexingReason;
+static int stopidxthread;
+
 static QMutex curfile_mutex;
 
 class IdxThread : public QThread , public DbIxStatusUpdater {
@@ -38,21 +44,16 @@ class IdxThread : public QThread , public DbIxStatusUpdater {
 	LOGDEB1(("IdxThread::update: indexing %s\n", m_statusSnap.fn.c_str()));
 	if (stopindexing) {
 	    stopindexing = 0;
+	    m_interrupted = true;
 	    return false;
 	}
 	return true;
     }
     // Maintain a copy/snapshot of idx status
     DbIxStatus m_statusSnap;
+    bool m_interrupted;
     const RclConfig *cnf;
 };
-
-int stopindexing;
-int startindexing;
-int indexingdone = 1;
-IdxThreadStatus indexingstatus = IDXTS_NULL;
-string indexingReason;
-static int stopidxthread;
 
 void IdxThread::run()
 {
@@ -63,7 +64,7 @@ void IdxThread::run()
 	}
 	if (startindexing) {
 	    startindexing = 0;
-	    indexingdone = 0;
+	    m_interrupted = false;
 	    indexingstatus = IDXTS_NULL;
 	    // We have to make a copy of the config (setKeydir changes
 	    // it during indexation)
@@ -80,7 +81,6 @@ void IdxThread::run()
 		indexingstatus = IDXTS_ERROR;
 		indexingReason = "Indexing failed: " + indexer->getReason();
 	    }
-	    indexingdone = 1;
 	    delete indexer;
 	} 
 	msleep(100);
@@ -105,5 +105,9 @@ void stop_idxthread()
 DbIxStatus idxthread_idxStatus()
 {
     QMutexLocker locker(&curfile_mutex);
-    return(idxthread.m_statusSnap);
+    return idxthread.m_statusSnap;
+}
+bool idxthread_idxInterrupted()
+{
+    return idxthread.m_interrupted;
 }

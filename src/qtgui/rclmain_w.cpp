@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.46 2007-12-04 10:17:14 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.47 2008-01-17 11:15:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -103,6 +103,8 @@ void RclMain::init()
     indexConfig = 0;
     spellform = 0;
     m_searchId = 0;
+    m_idxStatusAck = false;
+
     // Set the focus to the search terms entry:
     sSearch->queryText->setFocus();
 
@@ -180,8 +182,8 @@ void RclMain::init()
 	    this, SLOT(startPreview(Rcl::Doc)));
 
     connect(fileExitAction, SIGNAL(activated() ), this, SLOT(fileExit() ) );
-    connect(fileStart_IndexingAction, SIGNAL(activated()), 
-	    this, SLOT(startIndexing()));
+    connect(fileToggleIndexingAction, SIGNAL(activated()), 
+	    this, SLOT(toggleIndexing()));
     connect(fileEraseDocHistoryAction, SIGNAL(activated()), 
 	    this, SLOT(eraseDocHistory()));
     connect(helpAbout_RecollAction, SIGNAL(activated()), 
@@ -336,18 +338,29 @@ void RclMain::periodic100()
     static int toggle = 0;
     // Check if indexing thread done
     if (indexingstatus != IDXTS_NULL) {
+	// Indexing is stopped
 	statusBar()->message("");
-	if (indexingstatus != IDXTS_OK) {
-	    indexingstatus = IDXTS_NULL;
-	    QMessageBox::warning(0, "Recoll", 
-				 QString::fromAscii(indexingReason.c_str()));
+	fileToggleIndexingAction->setText(tr("Update &Index"));
+	fileToggleIndexingAction->setEnabled(TRUE);
+	if (m_idxStatusAck == false) {
+	    m_idxStatusAck = true;
+	    if (indexingstatus != IDXTS_OK) {
+		if (idxthread_idxInterrupted()) {
+		    QMessageBox::warning(0, "Recoll", 
+					 tr("Indexing interrupted"));
+		} else {
+		    QMessageBox::warning(0, "Recoll", 
+					 QString::fromAscii(indexingReason.c_str()));
+		}
+	    }
+	    // Make sure we reopen the db to get the results.
+	    rcldb->close();
 	}
-	indexingstatus = IDXTS_NULL;
-	fileStart_IndexingAction->setEnabled(TRUE);
-	// Make sure we reopen the db to get the results.
-	LOGINFO(("Indexing done: closing query database\n"));
-	rcldb->close();
-    } else if (indexingdone == 0) {
+    } else {
+	// Indexing is running
+	m_idxStatusAck = false;
+	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+	// The toggle thing is for the status to flash
 	if (toggle == 0) {
 	    QString msg = tr("Indexing in progress: ");
 	    DbIxStatus status = idxthread_idxStatus();
@@ -385,11 +398,17 @@ void RclMain::periodic100()
 	fileExit();
 }
 
-void RclMain::startIndexing()
+void RclMain::toggleIndexing()
 {
-    if (indexingdone)
+    if (indexingstatus == IDXTS_NULL) {
+	// Indexing in progress
+	stopindexing = 1;
+	fileToggleIndexingAction->setText(tr("Update &Index"));
+    } else {
 	startindexing = 1;
-    fileStart_IndexingAction->setEnabled(FALSE);
+	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+    }
+    fileToggleIndexingAction->setEnabled(FALSE);
 }
 
 // Note that all our 'urls' are like : file://...
@@ -405,7 +424,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     // The db may have been closed at the end of indexing
     string reason;
     // If indexing is being performed, we reopen the db at each query.
-    if (!maybeOpenDb(reason, indexingdone == 0)) {
+    if (!maybeOpenDb(reason, indexingstatus == IDXTS_NULL)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
 	return;
     }

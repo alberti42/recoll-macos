@@ -75,7 +75,7 @@ public slots:
     virtual bool close();
     virtual void fileExit();
     virtual void periodic100();
-    virtual void startIndexing();
+    virtual void toggleIndexing();
     virtual void startSearch(RefCntr<Rcl::SearchData> sdata);
     virtual void setDocSequence();
     virtual void previewClosed(Preview *w);
@@ -133,6 +133,7 @@ private:
     map<QString, int>        m_stemLangToId;
     int                      m_idNoStem;
     int                      m_idAllStem;
+    bool                     m_idxStatusAck; // Did we act on last status?
 
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
