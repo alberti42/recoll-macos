@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.59 2008-01-16 10:52:36 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.60 2008-01-17 11:13:47 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1593,7 +1593,7 @@ fvwm
           </listitem>
 
         <listitem><para>MS Excel and PowerPoint: 
-           <ulink url="http://www.45.free.net/~vitus/software/catdoc/"> 
+           <ulink url="http://catdoc.klik.atekon.de/"> 
             catdoc</ulink>.</para>
           </listitem>
 
@@ -1627,7 +1627,7 @@ fvwm
 	<listitem>
             <para>djvu: 
 	    <ulink
-	       url="http://djvulibre.djvuzone.org/doc/index.html">DjVuLibre
+	       url="http://djvu.sourceforge.net">DjVuLibre
 	    </ulink></para>
         </listitem>
           
