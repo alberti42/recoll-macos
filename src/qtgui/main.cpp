@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.64 2007-11-21 14:15:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.65 2008-01-24 09:34:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,8 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.64 2007-11-21 14:15:48 dockes Exp $ 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
+#include <cstdlib>
 
 #include "autoconfig.h"
 
