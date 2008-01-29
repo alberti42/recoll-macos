@@ -550,7 +550,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The initial default search mode is All terms. This will look for documents
    containing all of the search terms (the ones with more terms will get
    better scores). Any term will search for documents where at least one of
-   the terms appear. File name will specifically look for file names.
+   the terms appear.
+
+   File name will specifically look for file names. The entry will be split
+   at white space characters, and each pattern will be separately expanded.
+   If you want to search for a pattern including white space, you need to use
+   double quotes.
 
    The fourth entry (Query Language) is described in its own section.
 
