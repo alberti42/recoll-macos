@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.11 2008-01-16 11:14:38 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.12 2008-01-29 10:11:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -122,7 +122,8 @@ private:
 class SearchDataClause {
 public:
     SearchDataClause(SClType tp) 
-	: m_tp(tp), m_parentSearch(0), m_modifiers(SDCM_NONE)
+	: m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
+	  m_modifiers(SDCM_NONE)
     {}
 
     virtual ~SearchDataClause() {}
