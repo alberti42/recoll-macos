@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclsvg,v 1.1 2008-02-03 16:04:58 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclsvg,v 1.2 2008-02-03 16:05:57 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -91,7 +91,6 @@ then
 fi
 
 encoding=`sed -ne '/<?xml/s/.*encoding="\([^"]*\).*/\1/p' < $infile`
-echo encoding $encoding
 
 if test X$encoding = X ; then encoding=UTF-8;fi
 
