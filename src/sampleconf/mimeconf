@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.37 2008-02-03 16:24:16 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.38 2008-02-05 10:45:01 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -98,7 +98,7 @@ image/jpeg = image
 image/png = image
 image/tiff = image
 image/vnd.djvu = document
-image/svg+xml = document
+image/svg+xml = drawing
 message/rfc822 = message
 text/html = html
 text/plain = txt
@@ -144,16 +144,16 @@ media = \
       image/png \
       image/tiff \
       image/gif \
-      image/svg+xml \
 
 message = message/rfc822 \
-	   text/x-gaim-log \
-	   text/x-mail \
+	  text/x-gaim-log \
+	  text/x-mail \
 
 other = application/vnd.sun.xml.draw \
         application/vnd.sun.xml.draw.template \
         application/vnd.sun.xml.math \
-        application/x-fsdirectory 
+        application/x-fsdirectory \
+        image/svg+xml \
 
 
 [prefixes]
