@@ -215,11 +215,11 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>&amp;Search for:</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Suche nache:</translation>
     </message>
     <message>
         <source>&amp;Next</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Nächstes</translation>
     </message>
     <message>
         <source>Alt+N</source>
@@ -227,7 +227,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>&amp;Previous</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Vorheriges</translation>
     </message>
     <message>
         <source>Alt+P</source>
@@ -243,7 +243,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Leeren</translation>
     </message>
     <message>
         <source>Can&apos;t turn doc into internal rep for </source>
@@ -329,11 +329,11 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Globale Parameter</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokale Parameter</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
@@ -349,7 +349,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Skipped names</source>
-        <translation type="unfinished"></translation>
+        <translation>Übersprungene Namen</translation>
     </message>
     <message>
         <source>These are patterns for file or directory  names which should not be indexed.</source>
@@ -357,27 +357,27 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Default character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard Zeichensatz</translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Zeichensatz der für Dateien benutzt wird, die ihren Zeichensatz nicht intern definieren, z.B. Textdateien.&lt;br&gt;Standardwert ist leer und der Wert der NLS Umgebung wird benutzt.</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
-        <translation type="unfinished"></translation>
+        <translation>Folge symbolischen Links</translation>
     </message>
     <message>
         <source>Follow symbolic links while indexing. The default is no, to avoid duplicate indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Folge symbolischen Links währen der Indizierung. Standard ist nein, um doppelte Indizierung zu vermeiden</translation>
     </message>
     <message>
         <source>Index all file names</source>
-        <translation type="unfinished"></translation>
+        <translation>Indiziere alle Dateinamen</translation>
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation type="unfinished"></translation>
+        <translation>Indiziere alle Namen der Dateien, deren Inhalt nicht bestimmt oder bearbeitet werden kann (keiner oder nicht unterstützter mime Typ). Standard: ja</translation>
     </message>
 </context>
 <context>
@@ -526,7 +526,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>(all languages)</source>
-        <translation type="unfinished"></translation>
+        <translation>(alle Sprachen)</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
@@ -709,19 +709,19 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>&amp;Erase document history</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Lösche Dokumenthistorie</translation>
     </message>
     <message>
         <source>First page</source>
-        <translation type="unfinished"></translation>
+        <translation>Erste Seite</translation>
     </message>
     <message>
         <source>Go to first page of results</source>
-        <translation type="unfinished"></translation>
+        <translation>Gehe zu der ersten Seite der Ergebnisse</translation>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Indizierungskonfiguration</translation>
     </message>
 </context>
 <context>
@@ -1584,7 +1584,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichern, ob Sortieren aktiviert ist.</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
@@ -1728,7 +1728,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation type="unfinished"></translation>
+        <translation>Kann Konfigurationsdatei nicht schreiben</translation>
     </message>
 </context>
 <context>
@@ -1753,42 +1753,42 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
-        <translation type="unfinished"></translation>
+        <translation>Global</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Start-Verzeichnisse</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Liste der Verzeichnisse in der die rekursive Indizierung startet. Standard: Home-Verzeichnis.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausgelassene Pfade</translation>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Namen der Verzeichnisse, die nicht indiziert werden.&lt;br&gt;Kann Wildcards enthalten. Muss den Pfaden entsprechen, die der Indexer sieht (z.B. wenn &apos;/home/me&apos; in den topdirs steht und &apos;/home&apos; eigentlich ein link zu &apos;/usr/home&apos; ist, dann wäre ein korrekter skippedPath Eintrag &apos;/home/tmp*&apos; und nicht &apos;/usr/home/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation type="unfinished"></translation>
+        <translation>Wortstammerweiterungssprachen</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Sprachen für die Worstammerweiterungs-&lt;br&gt;verzeichnisse erstellt werden.</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation type="unfinished"></translation>
+        <translation>Log Datei</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Datei in die Ausgaben geschrieben werden.&lt;br&gt;Für Ausgaben auf demTerminal &apos;stderr&apos; benutzen</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
@@ -1796,7 +1796,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dieser Wert stellt den Umfang der Ausgaben ein.&lt;br&gt;Nur Fehler bis zu einer Menge von Debug Ausgaben.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
@@ -1840,11 +1840,11 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation type="unfinished"></translation>
+        <translation>&apos;file&apos; Komando benutzen</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutze das &apos;file&apos; Kommando wenn die interne&lt;br&gt;mime Typ Erkennung fehlschlägt.</translation>
     </message>
 </context>
 </TS>
