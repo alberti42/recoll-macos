@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: idfile.cpp,v 1.6 2007-12-13 06:58:22 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: idfile.cpp,v 1.7 2008-02-11 10:21:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,11 @@ const int wantnhead = 3;
 
 string idFile(const char *fn)
 {
+    static int treat_mbox_as_rfc822;
+    if (treat_mbox_as_rfc822 == 0) {
+	treat_mbox_as_rfc822 = getenv("RECOLL_TREAT_MBOX_AS_RFC822") ? 1 : -1;
+    }
+
     ifstream input;
     input.open(fn, ios::in);
     if (!input.is_open()) {
@@ -120,7 +125,8 @@ string idFile(const char *fn)
 
 	// Check for mbox 'From ' line
 	if (lnum == 1 && !strncmp("From ", cline, 5)) {
-	    line1HasFrom = true;
+	    if (treat_mbox_as_rfc822 == -1)
+		line1HasFrom = true;
 	    continue;
 	} 
 
