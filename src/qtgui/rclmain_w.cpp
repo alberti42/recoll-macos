@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.47 2008-01-17 11:15:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.48 2008-02-19 08:02:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -353,7 +353,13 @@ void RclMain::periodic100()
 					 QString::fromAscii(indexingReason.c_str()));
 		}
 	    }
-	    // Make sure we reopen the db to get the results.
+	    // Make sure we reopen the db to get the results. If there
+	    // is current search data, we should reset it else things
+	    // are inconsistent (ie: applying sort will fail. But we
+	    // don't like erasing results while the user may be
+	    // looking at them either). Fixing this would be
+	    // relatively complicated (keep an open/close gen number
+	    // and check this / restart query in DocSeqDb() ?)
 	    rcldb->close();
 	}
     } else {
@@ -420,7 +426,8 @@ static string urltolocalpath(string url)
 // Start a db query and set the reslist docsource
 void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 {
-    LOGDEB(("RclMain::startSearch\n"));
+    LOGDEB(("RclMain::startSearch. Indexing %s\n", 
+	    indexingstatus == IDXTS_NULL?"on":"off"));
     // The db may have been closed at the end of indexing
     string reason;
     // If indexing is being performed, we reopen the db at each query.
@@ -464,8 +471,10 @@ void RclMain::resetSearch()
 
 void RclMain::setDocSequence()
 {
-    if (m_searchData.getcnt() == 0)
+    if (m_searchData.getcnt() == 0) {
+	// Null refcntr ?? No current search data 
 	return;
+    }
     RefCntr<DocSequence> docsource;
     if (m_sortspecs.sortwidth > 0) {
 	docsource = RefCntr<DocSequence>(new DocSeqSorted(m_docSource, 
