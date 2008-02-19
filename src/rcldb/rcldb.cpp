@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.130 2007-12-20 09:08:04 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.131 2008-02-19 07:41:26 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -571,7 +571,7 @@ Db::Db()
 
 Db::~Db()
 {
-    LOGDEB1(("Db::~Db\n"));
+    LOGDEB2(("Db::~Db\n"));
     if (m_ndb == 0)
 	return;
     LOGDEB(("Db::~Db: isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
@@ -683,6 +683,7 @@ string Db::getDbDir()
 // Note: xapian has no close call, we delete and recreate the db
 bool Db::close()
 {
+    LOGDEB2(("Db::close()\n"));
     return i_close(false);
 }
 
