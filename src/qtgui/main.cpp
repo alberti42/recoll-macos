@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.65 2008-01-24 09:34:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.66 2008-02-19 08:02:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -387,7 +387,9 @@ int main(int argc, char **argv)
 	mainWindow->sSearch->searchTypCMB->setCurrentItem(int(stype));
 	mainWindow->
 	    sSearch->setSearchString(QString::fromUtf8(qstring.c_str()));
-	QTimer::singleShot(0, mainWindow->sSearch, SLOT(startSimpleSearch()));
+	// The 200 ms are a hack to jump over the first db close by 
+	// periodic100()... 
+	QTimer::singleShot(200, mainWindow->sSearch, SLOT(startSimpleSearch()));
     }
     //    fprintf(stderr, "Go\n");
     // Let's go
