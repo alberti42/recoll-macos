@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: readfile.cpp,v 1.7 2007-12-13 06:58:22 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: readfile.cpp,v 1.8 2008-04-18 11:37:50 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -51,12 +51,18 @@ static void caterrno(string *reason)
 bool file_to_string(const string &fn, string &data, string *reason)
 {
     bool ret = false;
+    bool noclosing = true;
+    int fd = 0;
 
-    int fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
-    if (fd < 0) {
-        caterrno(reason);
-	return false;
+    if (!fn.empty()) {
+	fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
+	if (fd < 0) {
+	    caterrno(reason);
+	    return false;
+	}
+	noclosing = false;
     }
+
     char buf[4096];
     for (;;) {
 	int n = read(fd, buf, 4096);
@@ -77,7 +83,7 @@ bool file_to_string(const string &fn, string &data, string *reason)
 
     ret = true;
  out:
-    if (fd >= 0)
+    if (fd >= 0 && !noclosing)
 	close(fd);
     return ret;
 }

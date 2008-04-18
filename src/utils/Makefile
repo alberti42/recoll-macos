@@ -2,7 +2,7 @@ depth = ..
 include $(depth)/mk/sysconf
 
 PROGS = trconftree wipedir smallut trfstreewalk trpathut \
-      transcode \
+      transcode trbase64 \
       trmimeparse trexecmd utf8iter idfile
 
 all: $(PROGS) $(BIGLIB)
@@ -79,6 +79,13 @@ trconftree : $(CONFTREE_OBJS) $(BIGLIB)
 trconftree.o : conftree.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_CONFTREE -c -o trconftree.o \
 	       conftree.cpp
+
+BASE64_OBJS= trbase64.o  $(BIGLIB)
+trbase64 : $(BASE64_OBJS) 
+	$(CXX) $(ALL_CXXFLAGS) -o trbase64 $(BASE64_OBJS)
+trbase64.o : base64.cpp 
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_BASE64 -c -o trbase64.o \
+	       base64.cpp
 
 X11MON_OBJS= trx11mon.o x11mon.o
 trx11mon : $(X11MON_OBJS)

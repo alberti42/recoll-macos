@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: base64.cpp,v 1.7 2007-12-13 06:58:22 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: base64.cpp,v 1.8 2008-04-18 11:37:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -223,40 +223,96 @@ void base64_encode(const string &in, string &out)
 
 #ifdef TEST_BASE64
 #include <stdio.h>
-const char *values[] = {"", "1", "12", "123", "1234", "12345", "123456"};
-int nvalues = sizeof(values) / sizeof(char *);
+
+#include "readfile.h"
+
+const char *thisprog;
+static char usage [] = "testfile\n\n"
+;
+static void
+Usage(void)
+{
+    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    exit(1);
+}
+
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_i	  0x2 
+#define OPT_P	  0x4 
+
 int main(int argc, char **argv)
 {
-    string in, out, back;
-    int err = 0;
-    for (int i = 0; i < nvalues; i++) {
-	in = values[i];
+    thisprog = argv[0];
+    argc--; argv++;
+
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    /* Cas du "adb - core" */
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 'i':	op_flags |= OPT_i; break;
+	    default: Usage();	break;
+	    }
+	argc--; argv++;
+    }
+    
+    if (op_flags & OPT_i)  {
+	const char *values[] = {"", "1", "12", "123", "1234", 
+				"12345", "123456"};
+	int nvalues = sizeof(values) / sizeof(char *);
+	string in, out, back;
+	int err = 0;
+	for (int i = 0; i < nvalues; i++) {
+	    in = values[i];
+	    base64_encode(in, out);
+	    base64_decode(out, back);
+	    if (in != back) {
+		fprintf(stderr, "In [%s] %d != back [%s] %d (out [%s] %d\n", 
+			in.c_str(), int(in.length()), 
+			back.c_str(), int(back.length()),
+			out.c_str(), int(out.length())
+			);
+		err++;
+	    }
+	}
+	in.erase();
+	in += char(0);
+	in += char(0);
+	in += char(0);
+	in += char(0);
 	base64_encode(in, out);
 	base64_decode(out, back);
 	if (in != back) {
 	    fprintf(stderr, "In [%s] %d != back [%s] %d (out [%s] %d\n", 
-		    in.c_str(),in.length(), 
-		    back.c_str(), back.length(),
-		    out.c_str(), out.length()
+		    in.c_str(), int(in.length()), 
+		    back.c_str(), int(back.length()),
+		    out.c_str(), int(out.length())
 		    );
 	    err++;
 	}
+	exit(!(err == 0));
+    } else {
+	if (argc > 1)
+	    Usage();
+	string infile;
+	if (argc == 1)
+	    infile = *argv++;argc--;
+	string idata, reason;
+	if (!file_to_string(infile, idata, &reason)) {
+	    fprintf(stderr, "Can't read file: %s\n", reason.c_str());
+	    exit(1);
+	}
+	string odata;
+	if (!base64_decode(idata, odata)) {
+	    fprintf(stderr, "Decoding failed\n");
+	    exit(1);
+	}
+	write(1, odata.c_str(), 
+	      odata.size() * sizeof(string::value_type));
+	exit(0);
     }
-    in.erase();
-    in += char(0);
-    in += char(0);
-    in += char(0);
-    in += char(0);
-    base64_encode(in, out);
-    base64_decode(out, back);
-    if (in != back) {
-	fprintf(stderr, "In [%s] %d != back [%s] %d (out [%s] %d\n", 
-		in.c_str(),in.length(), 
-		back.c_str(), back.length(),
-		out.c_str(), out.length()
-		);
-	err++;
-    }
-    exit(!(err == 0));
 }
 #endif
