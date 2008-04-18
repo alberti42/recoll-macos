@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.16 2007-06-19 15:47:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.17 2008-04-18 11:39:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -222,8 +222,8 @@ int main(int argc, char **argv)
 		Xapian::PositionIterator pos;
 		for (pos = db->positionlist_begin(docid, *term); 
 		     pos != db->positionlist_end(docid, *term); pos++) {
-		    if (buf.size() < *pos)
-			buf.resize((*pos)+1);
+		    if (buf.size() <= *pos)
+			buf.resize((*pos)+100);
 		    buf[(*pos)] = *term;
 		}
 	    }
