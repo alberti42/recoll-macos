@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.31 2007-11-15 18:44:51 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.32 2008-04-18 11:38:56 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -342,10 +342,17 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     if (text.isEmpty()) {
 	if (m_haveAnchors == false)
 	    return;
-	if (m_curAnchor == m_lastAnchor)
-	    m_curAnchor = 1;
-	else
-	    m_curAnchor++;
+	if (reverse) {
+	    if (m_curAnchor == 1)
+		m_curAnchor = m_lastAnchor;
+	    else
+		m_curAnchor--;
+	} else {
+	    if (m_curAnchor == m_lastAnchor)
+		m_curAnchor = 1;
+	    else
+		m_curAnchor++;
+	}
 	QString aname = 
 	    QString::fromUtf8(termAnchorName(m_curAnchor).c_str());
 	edit->moveToAnchor(aname);
