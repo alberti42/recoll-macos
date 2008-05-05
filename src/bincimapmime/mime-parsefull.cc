@@ -48,6 +48,13 @@ Binc::MimeInputSource *mimeSource = 0;
 using namespace ::std;
 #endif /* NO_NAMESPACES */
 
+#undef MPF
+#ifdef MPF
+#define MPFDEB(X) fprintf X
+#else
+#define MPFDEB(X)
+#endif
+
 //------------------------------------------------------------------------
 void Binc::MimeDocument::parseFull(int fd) const
 {
@@ -347,6 +354,79 @@ static bool skipUntilBoundary(const string &delimiter,
   return foundBoundary;
 }
 
+// JFD: Things we do after finding a boundary (something like CRLF--somestring)
+// Need to see if this is a final one (with an additional -- at the end),
+// and need to check if it is immediately followed by another boundary 
+// (in this case, we give up our final CRLF in its favour)
+static inline void postBoundaryProcessing(bool *eof,
+					  unsigned int *nlines,
+					  int *boundarysize,
+					  bool *foundendofpart)
+{
+    // Read two more characters. This may be CRLF, it may be "--" and
+    // it may be any other two characters.
+    char a = '\0';
+    if (!mimeSource->getChar(&a))
+      *eof = true;
+    if (a == '\n')
+      ++*nlines; 
+
+    char b = '\0';
+    if (!mimeSource->getChar(&b))
+      *eof = true;
+    if (b == '\n')
+      ++*nlines;
+    
+    // If eof, we're done here
+    if (*eof)
+      return;
+
+    // If we find two dashes after the boundary, then this is the end
+    // of boundary marker, and we need to get 2 more chars
+    if (a == '-' && b == '-') {
+      *foundendofpart = true;
+      *boundarysize += 2;
+	
+      if (!mimeSource->getChar(&a))
+	*eof = true;
+      if (a == '\n')
+	++*nlines; 
+	
+      if (!mimeSource->getChar(&b))
+	*eof = true;
+      if (b == '\n')
+	++*nlines;
+    }
+
+    // If the boundary is followed by CRLF, we need to handle the
+    // special case where another boundary line follows
+    // immediately. In this case we consider the CRLF to be part of
+    // the NEXT boundary.
+    if (a == '\r' && b == '\n') {
+      // Get 2 more
+      if (!mimeSource->getChar(&a) || !mimeSource->getChar(&b)) {
+	*eof = true; 
+      } else if (a == '-' && b == '-') {
+	MPFDEB((stderr, "BINC: consecutive delimiters, giving up CRLF\n"));
+	mimeSource->ungetChar();
+	mimeSource->ungetChar();
+	mimeSource->ungetChar();
+	mimeSource->ungetChar();
+      } else {
+	// We unget the 2 chars, and keep our crlf (increasing our own size)
+	MPFDEB((stderr, "BINC: keeping my CRLF\n"));
+	mimeSource->ungetChar();
+	mimeSource->ungetChar();
+	*boundarysize += 2;
+      }
+
+    } else {
+      // Boundary string not followed by CRLF, don't read more and let
+      // others skip the rest. Note that this is allowed but quite uncommon
+      mimeSource->ungetChar();
+      mimeSource->ungetChar();
+    }
+}
 
 static void parseMultipart(const string &boundary,
 			   const string &toboundary,
@@ -357,6 +437,9 @@ static void parseMultipart(const string &boundary,
 			   unsigned int *bodylength,
 			   vector<Binc::MimePart> *members)
 {
+  MPFDEB((stderr, "BINC: ParseMultipart: boundary [%s], toboundary[%s]\n", 
+	  boundary.c_str(),
+	  toboundary.c_str()));
   using namespace ::Binc;
   unsigned int bodystartoffsetcrlf = mimeSource->getOffset();
 
@@ -372,64 +455,7 @@ static void parseMultipart(const string &boundary,
   if (!eof)
     *boundarysize = delimiter.size();
 
-  // Read two more characters. This may be CRLF, it may be "--" and
-  // it may be any other two characters.
-  char a;
-  if (!mimeSource->getChar(&a))
-    *eof = true;
-
-  if (a == '\n')
-    ++*nlines; 
-
-  char b;
-  if (!mimeSource->getChar(&b))
-    *eof = true;
-    
-  if (b == '\n')
-    ++*nlines;
-    
-  // If we find two dashes after the boundary, then this is the end
-  // of boundary marker.
-  if (!*eof) {
-    if (a == '-' && b == '-') {
-      *foundendofpart = true;
-      *boundarysize += 2;
-	
-      if (!mimeSource->getChar(&a))
-	*eof = true;
-	
-      if (a == '\n')
-	++*nlines; 
-	
-      if (!mimeSource->getChar(&b))
-	*eof = true;
-	
-      if (b == '\n')
-	++*nlines;
-    }
-
-    if (a == '\r' && b == '\n') {
-      // This exception is to handle a special case where the
-      // delimiter of one part is not followed by CRLF, but
-      // immediately followed by a CRLF prefixed delimiter.
-      if (!mimeSource->getChar(&a) || !mimeSource->getChar(&b))
-	*eof = true; 
-      else if (a == '-' && b == '-') {
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-      } else {
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-      }
-
-      *boundarysize += 2;
-    } else {
-      mimeSource->ungetChar();
-      mimeSource->ungetChar();
-    }
-  }
+  postBoundaryProcessing(eof, nlines, boundarysize, foundendofpart);
 
   // read all mime parts.
   if (!*foundendofpart && !*eof) {
@@ -457,70 +483,12 @@ static void parseMultipart(const string &boundary,
     // boundary of this multipart. Note that the first boundary does
     // not have to start with CRLF.
     string delimiter = "\r\n--" + toboundary;
-
     skipUntilBoundary(delimiter, nlines, eof);
 
     if (!*eof)
       *boundarysize = delimiter.size();
 
-    // Read two more characters. This may be CRLF, it may be "--" and
-    // it may be any other two characters.
-    char a = '\0';
-    if (!mimeSource->getChar(&a))
-      *eof = true;
-
-    if (a == '\n')
-      ++*nlines; 
-
-    char b = '\0';
-    if (!mimeSource->getChar(&b))
-      *eof = true;
-    
-    if (b == '\n')
-      ++*nlines;
-    
-    // If we find two dashes after the boundary, then this is the end
-    // of boundary marker.
-    if (!*eof) {
-      if (a == '-' && b == '-') {
-	*foundendofpart = true;
-	*boundarysize += 2;
-	
-	if (!mimeSource->getChar(&a))
-	  *eof = true;
-	
-	if (a == '\n')
-	  ++*nlines; 
-	
-	if (!mimeSource->getChar(&b))
-	  *eof = true;
-	
-	if (b == '\n')
-	  ++*nlines;
-      }
-
-      if (a == '\r' && b == '\n') {
-	// This exception is to handle a special case where the
-	// delimiter of one part is not followed by CRLF, but
-	// immediately followed by a CRLF prefixed delimiter.
-	if (!mimeSource->getChar(&a) || !mimeSource->getChar(&b))
-	  *eof = true; 
-	else if (a == '-' && b == '-') {
-	  mimeSource->ungetChar();
-	  mimeSource->ungetChar();
-	  mimeSource->ungetChar();
-	  mimeSource->ungetChar();
-	} else {
-	  mimeSource->ungetChar();
-	  mimeSource->ungetChar();
-	}
-
-	*boundarysize += 2;
-      } else {
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-      }
-    }
+    postBoundaryProcessing(eof, nlines, boundarysize, foundendofpart);
   }
 
   // make sure bodylength doesn't overflow    
@@ -535,6 +503,7 @@ static void parseMultipart(const string &boundary,
   } else {
     *bodylength = 0;
   }
+  MPFDEB((stderr, "BINC: ParseMultipart return\n"));
 }
 
 static void parseSinglePart(const string &toboundary,
@@ -544,6 +513,8 @@ static void parseSinglePart(const string &toboundary,
 			    bool *eof, bool *foundendofpart,
 			    unsigned int *bodylength)
 {
+  MPFDEB((stderr, "BINC: parseSinglePart, boundary [%s]\n", 
+	  toboundary.c_str()));
   using namespace ::Binc;
   unsigned int bodystartoffsetcrlf = mimeSource->getOffset();
 
@@ -591,59 +562,11 @@ static void parseSinglePart(const string &toboundary,
   delete [] boundaryqueue;
 
   if (toboundary != "") {
-    char a;
-    if (!mimeSource->getChar(&a))
-      *eof = true;
-
-    if (a == '\n')
-      ++*nlines;
-    char b;
-    if (!mimeSource->getChar(&b))
-      *eof = true;
-
-    if (b == '\n') 
-      ++*nlines;
-
-    if (a == '-' && b == '-') {
-      *boundarysize += 2;
-      *foundendofpart = true;
-      if (!mimeSource->getChar(&a))
-	*eof = true;
-
-      if (a == '\n')
-	++*nlines;
-
-      if (!mimeSource->getChar(&b))
-	*eof = true;
-	  
-      if (b == '\n')
-	++*nlines;
-    }
-
-    if (a == '\r' && b == '\n') {
-      // This exception is to handle a special case where the
-      // delimiter of one part is not followed by CRLF, but
-      // immediately followed by a CRLF prefixed delimiter.
-      if (!mimeSource->getChar(&a) || !mimeSource->getChar(&b))
-	*eof = true; 
-      else if (a == '-' && b == '-') {
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-      } else {
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-      }
-
-      *boundarysize += 2;
-    } else {
-      mimeSource->ungetChar();
-      mimeSource->ungetChar();
-    }
+    postBoundaryProcessing(eof, nlines, boundarysize, foundendofpart);
   } else {
-    // Recoll: in the case of a null boundary (probably illegal but wtf), eof
-    // was not set and multipart went into a loop until bad alloc.
+    // Recoll: in the case of a multipart body with a null
+    // boundary (probably illegal but wtf), eof was not set and
+    // multipart went into a loop until bad alloc.
     *eof = true;
   }
 
@@ -659,13 +582,15 @@ static void parseSinglePart(const string &toboundary,
   } else {
     *bodylength = 0;
   }
-
+  MPFDEB((stderr, "BINC: parseSimple ret: bodylength %d, boundarysize %d\n",
+	  *bodylength, *boundarysize));
 }
 
 //------------------------------------------------------------------------
 int Binc::MimePart::parseFull(const string &toboundary,
 			      int &boundarysize) const
 {
+  MPFDEB((stderr, "BINC: parsefull, toboundary[%s]\n", toboundary.c_str()));
   headerstartoffsetcrlf = mimeSource->getOffset();
 
   // Parse the header of this mime part.
@@ -697,5 +622,6 @@ int Binc::MimePart::parseFull(const string &toboundary,
 		    &eof, &foundendofpart, &bodylength);
   }
 
+  MPFDEB((stderr, "BINC: parsefull ret, toboundary[%s]\n", toboundary.c_str()));
   return (eof || foundendofpart) ? 1 : 0;
 }
