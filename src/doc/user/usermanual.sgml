@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.61 2008-05-05 20:28:34 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.62 2008-05-05 20:31:24 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1334,11 +1334,11 @@ fvwm
       <itemizedlist>
 
 	<listitem><para><guilabel>Number of results in a result
-	page</guilabel></para> 
+	      page</guilabel>: </para> 
 	</listitem>
 
 	<listitem><para><guilabel>Highlight color for query
-	      terms</guilabel>
+	      terms</guilabel>:
 	    Terms from the user query are highlighted in the result
 	    list samples and the preview window. The color can be
 	    chosen here. Any QT color string should work
@@ -1350,7 +1350,7 @@ fvwm
 	is quite a lot of information shown in the result list, and
 	you may want to customize the font and/or font size. The rest
 	of the fonts used by &RCL; are determined by your generic QT
-	config (try the <command>qtconfig</command> command.</para>
+	config (try the <command>qtconfig</command> command).</para>
 	</listitem>
 
 	<listitem><para><guilabel>Result paragraph format
