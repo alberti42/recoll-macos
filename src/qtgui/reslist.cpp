@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.36 2007-11-15 18:05:00 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.37 2008-05-05 16:38:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -492,7 +492,7 @@ void ResList::resultPageNext()
 	}
 	if (!rclconfig->getMimeViewerDef(doc.mimetype).empty()) {
 	    sprintf(vlbuf, "E%d", docnumforlinks);
-	    linksbuf += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
+	    linksbuf += string("<a href=") + vlbuf + ">" + "Open" + "</a>";
 	}
 
 	// Build the result list paragraph:
