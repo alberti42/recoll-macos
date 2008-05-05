@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.23 2007-12-04 10:16:52 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.24 2008-05-05 20:24:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -106,6 +106,9 @@ void UIPrefsDialog::setFromPrefs()
     useDesktopOpenCB->setChecked(prefs.useDesktopOpen);
     keepSortCB->setChecked(prefs.keepSort);
 
+    // Query terms color
+    qtermColorLE->setText(prefs.qtermcolor);
+    
     // Result list font family and size
     reslistFontFamily = prefs.reslistfontfamily;
     reslistFontSize = prefs.reslistfontsize;
@@ -171,6 +174,7 @@ void UIPrefsDialog::accept()
     prefs.respagesize = pageLenSB->value();
     prefs.maxhltextmbs = maxHLTSB->value();
 
+    prefs.qtermcolor = qtermColorLE->text();
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
     prefs.reslistformat =  rlfTE->text();

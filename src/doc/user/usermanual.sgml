@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.60 2008-01-17 11:13:47 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.61 2008-05-05 20:28:34 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1335,6 +1335,15 @@ fvwm
 
 	<listitem><para><guilabel>Number of results in a result
 	page</guilabel></para> 
+	</listitem>
+
+	<listitem><para><guilabel>Highlight color for query
+	      terms</guilabel>
+	    Terms from the user query are highlighted in the result
+	    list samples and the preview window. The color can be
+	    chosen here. Any QT color string should work
+	    (ie <literal>red</literal>, <literal>#ff0000</literal>). The
+	    default is <literal>blue</literal>.</para>
 	</listitem>
 
 	<listitem><para><guilabel>Result list font</guilabel>: There

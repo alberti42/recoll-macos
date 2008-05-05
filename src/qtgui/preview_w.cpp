@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.32 2008-04-18 11:38:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.33 2008-05-05 20:24:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -880,7 +880,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     if (highlightTerms) {
 	QStyleSheetItem *item = 
 	    new QStyleSheetItem(editor->styleSheet(), "termtag" );
-	item->setColor("blue");
+	item->setColor(prefs.qtermcolor);
 	item->setFontWeight(QFont::Bold);
     }
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.37 2008-05-05 16:38:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.38 2008-05-05 20:24:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -347,7 +347,7 @@ void ResList::resultPageNext()
 
     // Query term colorization
     QStyleSheetItem *item = new QStyleSheetItem(styleSheet(), "termtag" );
-    item->setColor("blue");
+    item->setColor(prefs.qtermcolor);
 
     // Result paragraph format
     string sformat = string(prefs.reslistformat.utf8());

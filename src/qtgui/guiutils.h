@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.25 2007-09-08 17:25:49 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.26 2008-05-05 20:24:55 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,7 @@ class PrefsPack {
     int respagesize;
     int maxhltextmbs;
     QString reslistfontfamily;
+    QString qtermcolor; // Color for query terms in reslist and preview
     int reslistfontsize;
     // Result list format string
     QString reslistformat;

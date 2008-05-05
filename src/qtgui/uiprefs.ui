@@ -92,6 +92,35 @@
                                     </widget>
                                     <widget class="QLayoutWidget">
                                         <property name="name">
+                                            <cstring>qtermcolor</cstring>
+                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabelqtc</cstring>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Highlight color for query terms</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QLineEdit">
+                                                <property name="name">
+                                                    <cstring>qtermColorLE</cstring>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>50</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                            </widget>
+                                        </hbox>
+                                    </widget>
+                                    <widget class="QLayoutWidget">
+                                        <property name="name">
                                             <cstring>layout24</cstring>
                                         </property>
                                         <hbox>
