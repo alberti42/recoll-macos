@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.62 2008-05-05 20:31:24 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.63 2008-05-07 06:14:14 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -456,43 +456,45 @@ recoll
         <command>recollindex</command> program, or by the
         indexing thread inside the <command>recoll</command>
         program (use the <guimenu>File</guimenu> menu). Both programs
-        will use of the <literal>RECOLL_CONFDIR</literal>
+        will use the <literal>RECOLL_CONFDIR</literal>
         variable or accept a <literal>-c</literal>
-        <replaceable>confdir</replaceable> option to specify the
-        configuration directory to be used.</para>
+        <replaceable>confdir</replaceable> option to specify a non-default
+        configuration directory.</para>
 
 	<para>If the <command>recoll</command> program finds no index
-       when it starts, it will automatically start indexing (except
-       if canceled).</para>
+	  when it starts, it will automatically start indexing (except
+	  if canceled).</para>
 
 	<para>It is best to avoid interrupting the indexing process, as
-        this may sometimes leave the index in a bad state.  This is
-        not a serious problem, as you then just need to delete 
-        the index files and restart the indexing. The index files are
-        normally stored in the <filename>$HOME/.recoll/xapiandb</filename>
-        directory, which you can just delete if needed. Alternatively,
-        you can start <command>recollindex</command> with option
-        <literal>-z</literal>, which will reset the database before
-        indexing.</para> 
+          this may sometimes leave the index in a bad state.  This is
+          not a serious problem, as you then just need to delete 
+          the index files and restart the indexing. The index files are
+          normally stored in the <filename>$HOME/.recoll/xapiandb</filename>
+          directory, which you can just delete if needed. Alternatively,
+          you can start <command>recollindex</command> with option
+          <literal>-z</literal>, which will reset the database before
+          indexing.</para> 
 
       </sect2>
 
       <sect2 id="rcl.indexing.periodic.automat">
 	<title>Using <command>cron</command> to automate
-      indexing</title>
+	  indexing</title>
 
 	<para>The most common way to set up indexing is to have a cron
-      task execute it every night. For example the following
-      <filename>crontab</filename> entry would do it every day at
-      3:30AM (supposing <command>recollindex</command> is in your PATH):</para>
+	  task execute it every night. For example the following
+	  <filename>crontab</filename> entry would do it every day at
+	  3:30AM (supposing <command>recollindex</command> is in your
+	  PATH):</para> 
 
 	<programlisting>30 3 * * * recollindex > /tmp/recolltrace 2>&1</programlisting>
 
 	<para>The usual command to edit your
-      <filename>crontab</filename> is 
-        <userinput>crontab -e</userinput> (which will usually start the
-      <command>vi</command> editor to edit the file). You may have
-      more sophisticated tools available on your system.</para>
+	  <filename>crontab</filename> is 
+          <userinput>crontab -e</userinput> (which will usually start
+	  the <command>vi</command> editor to edit the file). You may
+	  have more sophisticated tools available on your
+	  system.</para>
 
       </sect2>
     </sect1>
@@ -548,18 +550,21 @@ fvwm
       control tool in the menus and use the "Startup programs" tab).</para>
 
       <para>By default, the indexing daemon will write its messages to
-      a file inside the configuration directory (this is controlled by
-      the <literal>daemlogfilename</literal> and
-      <literal>daemloglevel</literal> configuration parameters). You
-      may want to change this. Also the log file will only be truncated
-      when the daemon starts. If the daemon runs permanently, the log
-      file may grow quite big, depending on the log level.</para>
+	a file inside the configuration directory (this is controlled
+	by the <literal>daemlogfilename</literal>
+	and <literal>daemloglevel</literal> configuration
+	parameters). You may want to change this. Also the log file
+	will only be truncated when the daemon starts. If the daemon
+	runs permanently, the log file may grow quite big, depending
+	on the log level.</para>
 
       <para>While it is convenient that data is indexed in real time,
-      repeated indexing can generate a significant load on the system
-      when files such as email folders change. You probably do not
-      want to enable it if your system is short on resources. Periodic
-      indexing is adequate in most cases.</para>
+	repeated indexing can generate a significant load on the
+	system when files such as email folders change. Also,
+	monitoring large file trees by itself significantly taxes
+	system resources. You probably do not want to enable it if
+	your system is short on resources. Periodic indexing is
+	adequate in most cases.</para>
 
     </sect1>
 
@@ -569,8 +574,8 @@ fvwm
     <title>Searching</title>
 
     <para>The <command>recoll</command> program provides the user
-    interface for searching. It is based on the
-    <application>QT</application> library.</para>
+      interface for searching. It is based on the
+      <application>QT</application> library.</para>
 
     <para><command>recoll</command> has two search modes:</para>
     <itemizedlist>
