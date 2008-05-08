@@ -16,11 +16,11 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.12 2008-01-29 10:11:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.13 2008-05-08 10:00:20 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
- * search fields and handle its translation to Xapian queries. 
+ * and handle its translation to Xapian queries.
  * This is not generic code, it reflects the choices made for the user 
  * interface, and it also knows some specific of recoll's usage of Xapian 
  * (ie: term prefixes)
@@ -46,21 +46,25 @@ enum SClType {
 class SearchDataClause;
 
 /** 
-  Data structure representing A Recoll query.
-  This is currently simply a list of search clauses. 
+  Data structure representing a Recoll user query, for translation
+  into a Xapian query tree.
 
-  For now, clauses in the list just reflect user entry in a query
-  field: some text, a clause type (AND/OR/NEAR etc.) and possibly a
-  distance. Each clause may hold several queries in the Xapian sense,
-  for exemple several terms and phrases as would result from 
-  ["this is a phrase" term1 term2]
+  This is a list of search clauses combined through either OR or AND.
 
-  This means that SearchData will be translated into a Xapian
-  Query tree of depth 2.
+  Clauses either reflect user entry in a query field: some text, a
+  clause type (AND/OR/NEAR etc.), possibly a distance, or points to
+  another SearchData representing a subquery.
 
-  The structure might be extended in the future so that some of the
-  clauses may be references to other subqueries (there doesn't seem to
-  be an urgent need for this)
+  The content of each clause when added may not be fully parsed yet
+  (may come directly from a gui field). It will be parsed and may be
+  translated to several queries in the Xapian sense, for exemple
+  several terms and phrases as would result from 
+  ["this is a phrase"  term1 term2] . 
+
+  This is why the clauses also have an AND/OR/... type. 
+
+  A phrase clause could be added either explicitely or using double quotes:
+  {SCLT_PHRASE, [this is a phrase]} or as {SCLT_XXX, ["this is a phrase"]}
 
  */
 class SearchData {
@@ -99,10 +103,11 @@ public:
      */
     string getDescription() {return m_description;}
     void setDescription(const string& d) {m_description = d;}
+    /** Get/set top subdirectory for filtering results */
     string getTopdir() {return m_topdir;}
     void setTopdir(const string& t) {m_topdir = t;}
+    /** Add file type for filtering results */
     void addFiletype(const string& ft) {m_filetypes.push_back(ft);}
-    int  clauseCount() {return m_query.size();}
 
 private:
     SClType                    m_tp; // Only SCLT_AND or SCLT_OR here
@@ -121,31 +126,24 @@ private:
 
 class SearchDataClause {
 public:
+    enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=1};
+
     SearchDataClause(SClType tp) 
 	: m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
 	  m_modifiers(SDCM_NONE)
     {}
-
     virtual ~SearchDataClause() {}
-
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string&) = 0;
-
-    bool isFileName() const {return m_tp==SCLT_FILENAME ? true: false;}
-
+    bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
     virtual string getReason() const {return m_reason;}
-
     virtual bool getTerms(vector<string>&, vector<vector<string> >&,
 			  vector<int>&) const
     {return true;}
-
     SClType getTp() {return m_tp;}
-
     void setParent(SearchData *p) {m_parentSearch = p;}
+    virtual void setModifiers(Modifier mod) {m_modifiers = mod;}
 
     friend class SearchData;
-    
-    enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=1};
-    virtual void setModifiers(Modifier mod) {m_modifiers = mod;}
 
 protected:
     string      m_reason;
@@ -223,10 +221,10 @@ public:
     // m_slack is declared in SearchDataClauseSimple
 };
 
-/** Future pointer to subquery ? */
+/** Subquery */
 class SearchDataClauseSub : public SearchDataClause {
 public:
-    // Note that we take charge of the SearchData * and will delete it.
+    // We take charge of the SearchData * and will delete it.
     SearchDataClauseSub(SClType tp, SearchData *sub) 
 	: SearchDataClause(tp), m_sub(sub) {}
     virtual ~SearchDataClauseSub() {delete m_sub; m_sub = 0;}
