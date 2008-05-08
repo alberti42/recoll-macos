@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.27 2007-10-19 15:25:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.28 2008-05-08 09:57:29 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -168,8 +168,7 @@ bool samecharset(const string &cs1, const string &cs2)
     return mcs1 == mcs2;
 }
 
-
-bool stringToStrings(const string &s, std::list<string> &tokens)
+template <class T> bool stringToStrings(const string &s, T &tokens)
 {
     string current;
     tokens.clear();
@@ -258,10 +257,18 @@ bool stringToStrings(const string &s, std::list<string> &tokens)
     }
     return true;
 }
-
-void stringsToString(const list<string> &tokens, string &s) 
+bool stringToStrings(const string &s, list<string> &tokens)
 {
-    for (list<string>::const_iterator it = tokens.begin();
+    return stringToStrings<list<string> >(s, tokens);
+}
+bool stringToStrings(const string &s, vector<string> &tokens)
+{
+    return stringToStrings<vector<string> >(s, tokens);
+}
+
+template <class T> void stringsToString(const T &tokens, string &s) 
+{
+    for (typename T::const_iterator it = tokens.begin();
 	 it != tokens.end(); it++) {
 	bool hasblanks = false;
 	if (it->find_first_of(" \t\n") != string::npos)
@@ -282,6 +289,14 @@ void stringsToString(const list<string> &tokens, string &s)
 	if (hasblanks)
 	    s.append(1, '"');
     }
+}
+void stringsToString(const list<string> &tokens, string &s)
+{
+    stringsToString<list<string> >(tokens, s);
+}
+void stringsToString(const vector<string> &tokens, string &s)
+{
+    stringsToString<vector<string> >(tokens, s);
 }
 
 void stringToTokens(const string& str, list<string>& tokens,

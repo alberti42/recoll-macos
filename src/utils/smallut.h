@@ -16,14 +16,16 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.27 2007-05-21 12:03:52 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.28 2008-05-08 09:57:29 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
+#include <vector>
 #include <map>
 
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
+using std::vector;
 using std::map;
 #endif /* NO_NAMESPACES */
 
@@ -45,10 +47,13 @@ extern bool samecharset(const string &cs1, const string &cs2);
  * dquotes can be escaped with \ etc...
  */
 extern bool stringToStrings(const string &s, list<string> &tokens);
+extern bool stringToStrings(const string &s, vector<string> &tokens);
+
 /**
  * Inverse operation:
  */
 extern void stringsToString(const list<string> &tokens, string &s);
+extern void stringsToString(const vector<string> &tokens, string &s);
 
 /**
  * Split input string. No handling of quoting
