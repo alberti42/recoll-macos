@@ -1,3 +1,71 @@
+2008-05-05 15:13  dockes
+
+	* bincimapmime/mime-parsefull.cc: part data was sometimes truncated
+	because of bad handling of consecutive mime boundaries. Most common
+	symptom: error in base64 decoding
+
+2008-04-18 13:41  dockes
+
+	* mk/localdefs.in: get CXXFLAGS from autoconf
+
+2008-04-18 13:39  dockes
+
+	* query/xadump.cpp: xadump would sometimes dump core with -b
+
+2008-04-18 13:38  dockes
+
+	* qtgui/preview_w.cpp: walking the search terms hits backwards
+	would go forward
+
+2008-04-18 13:37  dockes
+
+	* utils/: Makefile, base64.cpp, readfile.cpp: base64 testing code
+
+2008-02-19 09:02  dockes
+
+	* qtgui/main.cpp: make first sort after -q work
+
+2008-02-19 09:02  dockes
+
+	* qtgui/rclmain_w.cpp: comments+debug
+
+2008-02-19 08:41  dockes
+
+	* rcldb/rcldb.cpp: traces
+
+2008-02-11 11:21  dockes
+
+	* utils/idfile.cpp: hack for Mark B.: allow treating
+	(single-message) mbox files as message/rfc822
+
+2008-02-08 09:37  dockes
+
+	* qtgui/i18n/recoll_de.ts: update by Frank Thieme
+
+2008-02-05 11:45  dockes
+
+	* sampleconf/mimeconf: [no log message]
+
+2008-02-03 17:24  dockes
+
+	* sampleconf/: mimeconf, mimemap, mimeview: rclsvg
+
+2008-02-03 17:04  dockes
+
+	* filters/: rclsvg, rclsvg: [no log message]
+
+2008-01-29 11:14  dockes
+
+	* README: [no log message]
+
+2008-01-29 11:11  dockes
+
+	* rcldb/searchdata.h: m_haveWildCards was sometimes not init
+
+2008-01-29 09:41  dockes
+
+	* ChangeLog: [no log message]
+
 2008-01-24 10:34  dockes
 
 	* qtgui/main.cpp: [no log message]
