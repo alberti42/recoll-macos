@@ -13135,7 +13135,7 @@ void unac_debug_callback(int level, unac_debug_print_t function, void* data)
  * compatibility hack introduced in some GNU/Linux distributions that
  * did not know UTF-16BE.
  */
-static const char* utf16be()
+static const char* utf16be(void)
 {
   iconv_t cd;
   static char* name = 0;
