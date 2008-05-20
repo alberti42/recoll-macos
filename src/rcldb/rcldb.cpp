@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.131 2008-02-19 07:41:26 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.132 2008-05-20 10:09:54 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -983,7 +983,7 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 		      "\n\r");
     }
     if (doc.meta["title"].empty())
-	doc.meta["title"] = doc.utf8fn, "\n\r";
+	doc.meta["title"] = doc.utf8fn;
     doc.meta["title"] = 
 	neutchars(truncate_to_word(doc.meta["title"], 150), "\n\r");
     doc.meta["author"] = 
