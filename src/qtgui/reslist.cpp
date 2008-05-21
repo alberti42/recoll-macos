@@ -1,8 +1,9 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.38 2008-05-05 20:24:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.39 2008-05-21 07:21:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
+#include <stdlib.h>
 
 #include <qapplication.h>
 #include <qvariant.h>

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: idfile.cpp,v 1.7 2008-02-11 10:21:58 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: idfile.cpp,v 1.8 2008-05-21 07:21:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: idfile.cpp,v 1.7 2008-02-11 10:21:58 dockes Exp $
  */
 #ifndef TEST_IDFILE
 #include <unistd.h> // for access(2)
+#include <stdlib.h>
 #include <ctype.h>
 #include <cstring>
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.19 2008-05-20 10:08:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.20 2008-05-21 07:21:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,7 @@ static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.19 2008-05-20 10:08:55 dockes
 #include <list>
 #include <string>
 #include <map>
+#include <algorithm>
 
 #ifndef NO_NAMESPACES
 using std::list;

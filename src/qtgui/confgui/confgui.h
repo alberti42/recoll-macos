@@ -1,6 +1,6 @@
 #ifndef _confgui_h_included_
 #define _confgui_h_included_
-/* @(#$Id: confgui.h,v 1.6 2007-10-19 14:31:40 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: confgui.h,v 1.7 2008-05-21 07:21:37 dockes Exp $  (C) 2007 J.F.Dockes */
 /**
  * This file defines a number of simple classes (virtual base: ConfParamW) 
  * which let the user input configuration parameters. 
@@ -22,6 +22,7 @@
  * delete/recreate the widgets in this case as the links are no longer valid).
  */
 #include <string>
+#include <limits.h>
 
 #include <qglobal.h>
 #include <qstring.h>

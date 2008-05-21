@@ -1,8 +1,9 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confgui.cpp,v 1.8 2007-10-25 15:51:02 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confgui.cpp,v 1.9 2008-05-21 07:21:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <qglobal.h>
 #if QT_VERSION < 0x040000
