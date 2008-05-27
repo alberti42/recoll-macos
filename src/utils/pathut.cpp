@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.18 2007-12-13 06:58:22 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.19 2008-05-27 06:18:28 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -351,7 +351,7 @@ std::string url_encode(const std::string url, string::size_type offs)
     const char *cp = url.c_str();
     for (string::size_type i = offs; i < url.size(); i++) {
 	int c;
-	char *h = "0123456789ABCDEF";
+	const char *h = "0123456789ABCDEF";
 	c = cp[i];
 	if(c <= 0x1f || 
 	   c >= 0x7f || 
