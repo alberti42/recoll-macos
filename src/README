@@ -426,8 +426,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Indexing is performed either by the recollindex program, or by the
    indexing thread inside the recoll program (use the File menu). Both
-   programs will use of the RECOLL_CONFDIR variable or accept a -c confdir
-   option to specify the configuration directory to be used.
+   programs will use the RECOLL_CONFDIR variable or accept a -c confdir
+   option to specify a non-default configuration directory.
 
    If the recoll program finds no index when it starts, it will automatically
    start indexing (except if canceled).
@@ -504,8 +504,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    While it is convenient that data is indexed in real time, repeated
    indexing can generate a significant load on the system when files such as
-   email folders change. You probably do not want to enable it if your system
-   is short on resources. Periodic indexing is adequate in most cases.
+   email folders change. Also, monitoring large file trees by itself
+   significantly taxes system resources. You probably do not want to enable
+   it if your system is short on resources. Periodic indexing is adequate in
+   most cases.
 
      ----------------------------------------------------------------------
 
@@ -1065,12 +1067,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    User interface parameters:
 
-     * Number of results in a result page
+     * Number of results in a result page:
+
+     * Highlight color for query terms: Terms from the user query are
+       highlighted in the result list samples and the preview window. The
+       color can be chosen here. Any QT color string should work (ie red,
+       #ff0000). The default is blue.
 
      * Result list font: There is quite a lot of information shown in the
        result list, and you may want to customize the font and/or font size.
        The rest of the fonts used by Recoll are determined by your generic QT
-       config (try the qtconfig command.
+       config (try the qtconfig command).
 
      * Result paragraph format string: allows you to change the presentation
        of each result list entry. This is a qt-html string where the
