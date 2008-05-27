@@ -47,18 +47,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.10.0</a></p>
-      <p>We borrow a lot of code
-	from other packages, and welcome code and ideas from
-	contributors, see the <a class="important"
-	  href="credits.html">Credits</a>.</p>
-
-      <blockquote>
-      <p><b><i>Recoll user ?</i></b> Maybe there are still a few useful
-	  tricks that you don't know about. A quick look at
-	the <a href="usermanual/rcl.search.tips.html">search
-	tips</a> might prove useful !</p>
-      </blockquote>
+	<a class="important" href="download.html">1.10.2</a></p>
 
       <h2>Features: </h2>
 
@@ -81,21 +70,52 @@
 	<li><a class="weak" href="features.html">(more detail)</a></li>
       </ul>
 
+      <p><b><i>Recoll user ?</i></b> Maybe there are still a few useful
+	  tricks that you don't know about. A quick look at
+	the <a href="usermanual/rcl.search.tips.html">search
+	tips</a> might prove useful !</p>
+
 
       <h2>News: </h2>
       <ul>
-      <li>2007-11-21 Recoll 1.10.0 is out :) </li>
+	<li>2008-05-27 : 1.10.2 is out. It fixes a few minor bugs.</li>
+	<li>2008-05-22 : we now have a mailing list:
+	  <ul>
+	    <li><a href="http://www.freelists.org/list/recoll-user">
+		Subscription management</a></li>
+	    <li><a href="http://www.freelists.org/archives/recoll-user">
+		Archives </a></li>
+	  </ul>
+	</li>
+      </ul>
 	
       <h2><a name="support">Support</a></h3>
 
-      <p>If you have any problem with Recoll, its
-	installation, or an idea for improvement, <em>please</em> <a href=
-	  "mailto:jean-francois.dockes@wanadoo.fr">provide
-	  feedback</a>. You can also have a look at
-	  the <a href="devel.html">development</a> page for things you
-	  could do.</p>  
+      <p>If you have any problem with Recoll, or a suggestion for
+  	improvement, <em>please</em> provide feedback, preferably on the 
+	recoll-user mailing list, or directly to 
+	<a href="mailto:jean-francois.dockes@wanadoo.fr">me</a>.</p>
+
+      <p>Mailing list information:
+	<ul>
+	  <li><a href="http://www.freelists.org/list/recoll-user">
+	      Subscription management</a></li>
+	  <li><a href="http://www.freelists.org/archives/recoll-user">
+	      Archives </a></li>
+	</ul>
+      </p>
+
+      <p>You can also have a look at
+	the <a href="devel.html">development</a> page for things you
+	could do.</p>  
 
       <p>The list of known bugs is <a href="BUGS.txt">here</a></p>
+
+      <h2>Thanks</h2>
+      <p>We borrow a lot of code
+	from other packages, and welcome code and ideas from
+	contributors, see the 
+	<a class="important" href="credits.html">Credits</a>.</p>
 
     </div>
   </body>

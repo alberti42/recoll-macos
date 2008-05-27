@@ -1,5 +1,40 @@
 CHANGES 
 
+1.10.2
+
+- Fixed openSuse 11 compile issues.
+
+- Fixed bug in interpreting email mime structure, which resulted in base-64
+  decoding errors.
+
+- Fixed "Prev" button in preview window. Would actually go forward when
+  walking the search terms.
+
+- Allow setting the highlight color for search terms in result list and
+  preview (yes: feature change, should have waited for major release...)
+
+- Added svg filter
+
+1.10.1
+
+- Ensure that in case the data of a file can't be indexed because of some
+  error, at least the file name is indexed.
+
+- Improve query language to support OR queries of terms with field
+  specifications (ie: title:someterm OR author:someauthor).
+
+- Fix filename search to split patterns on white space, so that 
+  a "*.jpg *.jpeg" search does what's expected. Means you now need to use
+  double-quotes if there is actual embedded white space.
+
+- Jump directly to the external editor choice dialog instead of opening
+  preferences when an external viewer is not found.
+
+- Allow stopping indexing through menu action (only works with qt4 for now).
+
+- Create an "indexedmimetypes" configuration variable to allow explicitely
+  restricting the file types which do get indexed.
+
 1.10.0
 
 - Added a GUI dialog to configure the indexing parameters.

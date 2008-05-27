@@ -56,12 +56,17 @@
       <p><i>For building from source</i>, you will need a xapian-core
 	installation. You will find source and binary packages on  the 
 	<a href="http://www.xapian.org/download.php">Xapian download
-	  page</a>. Recoll 1.10.0 should build with any 0.9.x or 1.0.x
-	  Xapian version (the current one is 1.0.4).</p>
+	  page</a>. Recoll 1.10.2 should build with any 0.9.x or 1.0.x
+	  Xapian version (the current one is 1.0.5).</p>
 
       <p>You need Qt 3.3 (or qt 4) in all cases. Recoll will
 	automatically be configured to build with qt4 if the version
 	of qmake found in $QTDIR/bin:$PATH is for qt4.</p>
+
+      <p>QT 4.4 note (2008-05-23): there seems to be a few problems in
+	Qt 4.4.0 (maybe in the qt3 compatibility layer), resulting in
+	problems in displaying the Recoll result list. I suggest
+	avoiding qt 4.4 with Recoll for now (qt 4.3 works fine).</p>
 
       <p>Recoll relies on external packages for some
 	of its functionality (ie: for many of the non-text file
@@ -109,8 +114,8 @@
 
       <p>New and updated filters are sometimes 
 	<a href="filters/filters.html">available</a> before the next
-	Recoll release. All filters are currently up to date in
-	1.10.0. You can check the page if you are running an older
+	Recoll release. There are no updated filters for Recoll
+	1.10.2, but you may find some if you are running an older
 	release.</p>
 
 
@@ -118,11 +123,11 @@
 
       <p><b>Current version:</b> 
 
-	<p>1.10.0: <a href="recoll-1.10.0.tar.gz">recoll-1.10.0.tar.gz</a>
+	<p>1.10.2: <a href="recoll-1.10.2.tar.gz">recoll-1.10.2.tar.gz</a>
 	  See the <a href="BUGS.txt">known bugs and issues</a> and 
 	  <a href="CHANGES.txt">changes</a>.</p>
 
-      <p>Recoll 1.10.0 will work with Xapian versions 0.9.x or 1.0.x but
+      <p>Recoll 1.10 will work with Xapian versions 0.9.x or 1.0.x but
 	1.0 is preferred. In order to take advantage of the new index
 	format in Xapian 1.0, Recoll users updating from 1.8 or older,
 	or who have skipped this step for 1.9 need to delete their old index. 
@@ -139,22 +144,31 @@
 	the <a href="CHANGES.txt">changes</a> list.</p>
 
       <p>Older recoll releases:
+	<a href="recoll-1.10.1.tar.gz">1.10.1</a>.
+	<a href="recoll-1.10.0.tar.gz">1.10.0</a>.
 	<a href="recoll-1.9.0.tar.gz">1.9.0</a>.
-	<a href="recoll-1.8.2.tar.gz">1.8.2</a>.
-	<a href="recoll-1.7.6.tar.gz">1.7.6</a>.
-	<a href="recoll-1.6.3.tar.gz">1.6.3</a>.
-	<a href="recoll-1.5.11.tar.gz">1.5.11</a>. 
-	<a href="recoll-1.4.3.tar.gz">1.4.3</a>. 
-	<a href="recoll-1.3.3.tar.gz">1.3.3</a>.
-	<a href="recoll-1.2.3.tar.gz">1.2.3</a>.
-	<a href="recoll-1.1.0.tar.gz">1.1.0</a>.
-	<a href="recoll-1.0.16.tar.gz">1.0.16</a>.
+	<a href="older/recoll-1.8.2.tar.gz">1.8.2</a>.
+	<a href="older/recoll-1.7.6.tar.gz">1.7.6</a>.
+	<a href="older/recoll-1.6.3.tar.gz">1.6.3</a>.
+	<a href="older/recoll-1.5.11.tar.gz">1.5.11</a>. 
+	<a href="older/recoll-1.4.3.tar.gz">1.4.3</a>. 
+	<a href="older/recoll-1.3.3.tar.gz">1.3.3</a>.
+	<a href="older/recoll-1.2.3.tar.gz">1.2.3</a>.
+	<a href="older/recoll-1.1.0.tar.gz">1.1.0</a>.
+	<a href="older/recoll-1.0.16.tar.gz">1.0.16</a>.
       </p>
+
+      <p>A separate source file contains a KDE kicker applet to start
+	a Recoll search from the KDE toolbar: 
+	<a href="recoll_applet-1.10.0.tgz">recoll_applet-1.10.0.tgz</a>.
+	This is a very slightly modified version of the 
+	<a href="http://demandiseineseite.gmxhome.de/find/">
+	  find_applet.</a></p>
 
       <h2><a name="rpms">Packages</a></h2>
 
       <p>The executables inside the binary rpms have a static link to
-	xapian 1.0.4, there is no real dependency except Qt 3.3. 
+	xapian 1.0.4/5, there is no real dependency except Qt 3.3. 
 	The Fedora and Mandriva packages unfortunately think that they
 	depend on exiftool (which is needed by the little
 	used jpeg info filter), due to excessive rpmbuild
@@ -165,47 +179,40 @@
 
       <p><b>Fedora Core</b>
 	FC6 RPM: 
-	<a href="fc6/recoll-1.10.0-1.i386.rpm">
-	  fc6/recoll-1.10.0-1.i386.rpm</a>. 
+	<a href="fc6/recoll-1.10.2-1.i386.rpm">
+	  fc6/recoll-1.10.2-1.i386.rpm</a>. 
 	Source: 
-	<a href="fc6/recoll-1.10.0-1.src.rpm">
-	  recoll-1.10.0-1.src.rpm</a>
+	<a href="fc6/recoll-1.10.2-1.src.rpm">
+	  recoll-1.10.2-1.src.rpm</a>
       </p>
 
       <p><b>Mandriva 2006</b>  (also works on 2005 and 2007). 
 	RPM: 
-	<a href="mandriva2006/recoll-1.10.0-0.1.20060mdk.i586.rpm">
-	  recoll-1.10.0-0.1.20060mdk.i586.rpm</a>. 
+	<a href="mandriva2006/recoll-1.10.2-0.1.20060mdk.i586.rpm">
+	  recoll-1.10.2-0.1.20060mdk.i586.rpm</a>. 
 	Source: 
-	<a href="mandriva2006/recoll-1.10.0-0.1.20060mdk.src.rpm">
-	  recoll-1.10.0-0.1.20060mdk.src.rpm</a>
+	<a href="mandriva2006/recoll-1.10.2-0.1.20060mdk.src.rpm">
+	  recoll-1.10.2-0.1.20060mdk.src.rpm</a>
       </p>
 
-      <p><b>Suse 10.2</b> 
+      <p><b>Suse 10.3</b> 
 	RPM: 
-	<a href="suse10.2/recoll-1.10.0-0.i586.rpm">
-	  recoll-1.10.0-0.i586.rpm</a>. 
+	<a href="suse10.3/recoll-1.10.2-0.i586.rpm">
+	  recoll-1.10.2-0.i586.rpm</a>. 
 	Source: 
-	<a href="suse10.2/recoll-1.10.0-0.src.rpm">
-	  recoll-1.10.0-0.src.rpm</a>
+	<a href="suse10.3/recoll-1.10.2-0.src.rpm">
+	  recoll-1.10.2-0.src.rpm</a>
       </p>
 
-      <p><b>Ubuntu 6.06 dapper</b>
-	This has a static link on xapian 1.0.4:
-	<a href="debian/dapper/recoll_1.10.0-0ubuntu1_i386.deb">
-	  recoll_1.10.0-0ubuntu1_i386.deb</a> 
-	<a href="debian/edgy/">debian/dapper</a>. This package
-	appears to also work correctly on later Ubuntu releases, so I
-	skipped building specific packages for edgy or gutsy this
-	time. Please contact me if this is a problem.</p>
-
-<!--      <p><b>Ubuntu 6.10 edgy</b> 
-	binary package (also works fine on <b>Ubuntu 7.04 feisty</b>):
-	<a href="debian/edgy/recoll_1.9.0-0ubuntu1_i386.deb">
-	  recoll_1.9.0-0ubuntu1_i386.deb</a>. 
-	Source package directory:
-	<a href="debian/edgy/">debian/edgy</a>
-      </p> -->
+      <p><b>Ubuntu 6.06 dapper / edgy / gutsy / hardy</b>
+	This has a static link on xapian 1.0.5:
+	<a href="debian/dapper/recoll_1.10.2-0ubuntu1_i386.deb">
+	  recoll_1.10.2-0ubuntu1_i386.deb</a> 
+	<a href="debian/dapper/">debian/dapper</a>. This package was
+	built on "dapper" and appears to work correctly on later
+	Ubuntu releases, so I skipped building specific packages for
+	them this time. Please contact me if this is a
+	problem.</p>
 
       <p><b>Debian unstable</b> Recoll is in the package repository,
 	you can install it with the usual <em>apt-get install recoll</em>. 
@@ -224,7 +231,7 @@
       <h2><a name="otherbinary">Binary bundles</a></h2>
 
       <p>These are just prebuilt trees (without the source files).
-	The executables were built with xapian 1.0.4 (patched for the
+	The executables were built with xapian 1.0.5 (patched for the
 	NEAR bug) and libiconv 1.9.2 (where relevant) as static
 	libraries. They depend on qt 3.3. For Solaris, you should be
 	able to find a qt package 
@@ -233,17 +240,17 @@
       <p>The installation instructions are <a
         href="usermanual/rcl.install.binary.html"> there</a>.</p>
 
-      <p><span class="application">FreeBSD</span> 6.2 i386: 
-	<a href="recoll-1.10.0-FreeBSD-6.2-STABLE.tgz">
-	  recoll-1.10.0-FreeBSD-6.2-STABLE.tgz</a>
+      <p><span class="application">FreeBSD</span> 6.3 i386: 
+	<a href="freebsd/recoll-1.10.2-FreeBSD-6.3-STABLE.tgz">
+	  recoll-1.10.2-FreeBSD-6.3-STABLE.tgz</a>
       </p>
 
       <p><span class="application">Solaris 8</span> sparc. 
       Note to Solaris users: you need to perform the initial
       indexing pass with "recollindex", not the recoll GUI indexing
       thread. See <a href="BUGS.txt">errata</a>.
-      <a href="recoll-1.10.0-SunOS-5.8.tgz">
-        recoll-1.10.0-SunOS-5.8.tgz</a>.
+      <a href="sunos/recoll-1.10.2-SunOS-5.8.tgz">
+        recoll-1.10.2-SunOS-5.8.tgz</a>.
 
       <p>Recoll also builds and runs on Solaris 10, but, given the
 	situation of open source packages for Solaris (very old qt on
@@ -292,9 +299,6 @@
 	<a href="http://cvsweb.freebsd.org/ports/deskutils/recoll">
 	  recoll port</a>.</p>
 
-      <p>Local copies of ports
-      for <a href="port-recoll-1.10.0.tgz">recoll 1.10 port directory</a>.</p>
-
       <h2><a name="translations">Translations</a></h2>
 
       <p>Some of the translations for 1.10 are incomplete. The source
@@ -318,7 +322,10 @@
       <h3>Updated 1.10 translations that became available after the
 	release:</h3>
 
-      <p>None for now.</p>
+      <p>German. 
+	<a href="translations/recoll_de.ts">recoll_de.ts</a>
+	<a href="translations/recoll_de.qm">recoll_de.qm</a>
+	</p> 
 <!--
       <p><b>Italian</b>. Thanks to Mario, Christian and Giovanni for this.
 	<a href="translations/recoll_it.ts">recoll_it.ts</a>
@@ -329,10 +336,6 @@
 	<a href="translations/recoll_tr.qm">recoll_tr.qm</a>
 	</p> 
 
-      <p>German. 
-	<a href="translations/recoll_de.ts">recoll_de.ts</a>
-	<a href="translations/recoll_de.qm">recoll_de.qm</a>
-	</p> 
 -->
 
     </div>

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.1 2008-05-09 12:34:17 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.2 2008-05-27 10:45:59 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <Python.h>
@@ -10,25 +10,12 @@ using namespace std;
 
 #include "rclinit.h"
 #include "rclconfig.h"
-#include "idfile.h"
 #include "rcldb.h"
 #include "pathut.h"
 #include "wasastringtoquery.h"
 #include "wasatorcl.h"
 
 static RclConfig *config;
-
-static PyObject *
-recollq_idfile(PyObject *self, PyObject *args)
-{
-    const char *filename;
-
-    if (!PyArg_ParseTuple(args, "s", &filename))
-        return NULL;
-    //    string tp = "Newfule";
-    string tp = idFile(filename);
-    return Py_BuildValue("s", tp.c_str());
-}
 
 static PyObject *
 recollq_question(PyObject *self, PyObject *args)
@@ -81,7 +68,6 @@ recollq_question(PyObject *self, PyObject *args)
 
 
 static PyMethodDef recollqMethods[] = {
-    {"idfile",  recollq_idfile, METH_VARARGS, "Identify file type."},
     {"question",  recollq_question, METH_VARARGS, "Query language query."},
 
     {NULL, NULL, 0, NULL}        /* Sentinel */

@@ -1,12 +1,12 @@
 Name:           recoll
-Version:        1.10.0
+Version:        1.10.2
 Release:        1%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
 Group:          Applications/Databases
 License:        GPL
 URL:            http://www.recoll.org/
-Source0:        http://www.recoll.org/recoll-1.10.0.tar.gz 
+Source0:        http://www.recoll.org/recoll-1.10.2.tar.gz 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 # Not sure how easy it is to find a xapian-core rpm. Will be easier to
@@ -48,6 +48,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu May 27 2008 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.10.2-1
+- Update to release 1.10.2
+* Thu Jan 31 2008 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.10.1-1
+- Update to release 1.10.1
 * Wed Nov 21 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.10.0-1
 - Update to release 1.10.0
 * Tue Sep 11 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.9.0-1
