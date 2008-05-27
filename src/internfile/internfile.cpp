@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.37 2007-11-16 14:28:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.38 2008-05-27 05:40:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -356,8 +356,8 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 {
     LOGDEB(("FileInterner::internfile. ipath [%s]\n", ipath.c_str()));
     if (m_handlers.size() < 1) {
-	LOGERR(("FileInterner::internfile: bad stack size %d !!\n", 
-		m_handlers.size()));
+	// Just means the constructor failed
+	LOGERR(("FileInterner::internfile: constructor failed\n"));
 	return FIError;
     }
 
