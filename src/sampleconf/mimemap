@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.29 2008-02-03 16:24:16 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.30 2008-06-09 09:12:05 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
 
 .txt = text/plain
@@ -93,6 +93,11 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
 # Special handling of .txt files inside ~/.gaim directory
 [~/.gaim]
 .txt = text/x-gaim-log
+
+# Special handling of sidux manual menu system
+[/usr/share/sidux-manual]
+.htm = text/x-html-sidux-man
+.html = text/x-html-sidux-man
 
 # Manual files. You may want to adjust the location for your system
 # We can't use the default text/troff type because this doesn't say
