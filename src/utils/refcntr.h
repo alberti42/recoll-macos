@@ -41,7 +41,7 @@ public:
     }
     X *operator->() {return rep;}
     int getcnt() const {return pcount ? *pcount : 0;}
-    const X *getptr() const {return rep;}
+    X *getptr() const {return rep;}
     bool isNull() const {return rep == 0;}
 };
 
