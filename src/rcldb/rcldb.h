@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.54 2007-07-10 09:23:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.55 2008-06-13 18:22:46 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -52,8 +52,8 @@ namespace Rcl {
 #endif
 
 class SearchData;
-class Native;
 class TermIter;
+class Query;
 
 class TermMatchEntry {
 public:
@@ -71,17 +71,17 @@ public:
  */
 class Db {
  public:
+    // A place for things we don't want visible here.
+    class Native;
+    friend class Native;
 
     /* General stuff (valid for query or update) ****************************/
     Db();
     ~Db();
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
-    // KEEP_UPDATED is internal use by reOpen() only
-    enum QueryOpts {QO_NONE=0, QO_STEM = 1, QO_KEEP_UPDATED = 8};
-
     bool open(const string &dbdir, const string &stoplistfn, 
-	      OpenMode mode, int qops = QO_NONE);
+	      OpenMode mode, bool keep_updated = false);
     bool close();
     bool isopen();
 
@@ -130,11 +130,12 @@ class Db {
     /** Return total docs in db */
     int  docCnt(); 
 
-    // Parse query string and initialize query
-    bool setQuery(RefCntr<SearchData> q, int opts = QO_NONE,
-		  const string& stemlang = "english");
-    bool getQueryTerms(list<string>& terms);
-    bool getMatchTerms(const Doc& doc, list<string>& terms);
+    /** Add extra database for querying */
+    bool addQueryDb(const string &dir);
+    /** Remove extra database. if dir == "", remove all. */
+    bool rmQueryDb(const string &dir);
+    /** Tell if directory seems to hold xapian db */
+    static bool testDbDir(const string &dir);
 
     /** Return a list of index terms that match the input string
      * Expansion is performed either with either wildcard or regexp processing
@@ -143,32 +144,11 @@ class Db {
     bool termMatch(MatchType typ, const string &lang, const string &s, 
 		   list<TermMatchEntry>& result, int max = -1);
 
-    /** Add extra database for querying */
-    bool addQueryDb(const string &dir);
-    /** Remove extra database. if dir == "", remove all. */
-    bool rmQueryDb(const string &dir);
-    /** Tell if directory seems to hold xapian db */
-    static bool testDbDir(const string &dir);
-
-    /** Get document at rank i in current query. 
-
-	This is probably vastly inferior to the type of interface in
-	Xapian, but we have to start with something simple to
-	experiment with the GUI. i is sequential from 0 to some value.
-    */
-    bool getDoc(int i, Doc &doc, int *percent = 0);
-
     /* Build synthetic abstract out of query terms and term position data */
-    bool makeDocAbstract(Doc &doc, string& abstract);
+    bool makeDocAbstract(Doc &doc, Query *query, string& abstract);
 
     /** Get document for given filename and ipath */
     bool getDoc(const string &fn, const string &ipath, Doc &doc, int *percent);
-
-    /** Expand query */
-    list<string> expand(const Doc &doc);
-
-    /** Get results count for current query */
-    int getResCnt();
 
     /** Get a list of existing stemming databases */
     std::list<std::string> getStemLangs();
@@ -189,22 +169,16 @@ class Db {
     /** Filename wildcard expansion */
     bool filenameWildExp(const string& exp, list<string>& names);
 
+    /** This has to be public for access by embedded Query::Native */
+    Native *m_ndb; 
+
 private:
     // Internal form of close, can be called during destruction
     bool i_close(bool final);
 
-    string m_filterTopDir; // Current query filter on subtree top directory 
-    vector<int> m_dbindices; // In case there is a postq filter: sequence of 
-                             // db indices that match
-
     string m_reason; // Error explanation
 
-    // A place for things we don't want visible here.
-    friend class Native;
-    Native *m_ndb; 
-
-    unsigned int m_qOpts;
-    
+    /* Parameters cached out of the configuration files */
     // This is how long an abstract we keep or build from beginning of
     // text when indexing. It only has an influence on the size of the
     // db as we are free to shorten it again when displaying
@@ -215,7 +189,6 @@ private:
     // This is how many words (context size) we keep around query terms
     // when building the abstract
     int          m_synthAbsWordCtxLen;
-
     // Flush threshold. Megabytes of text indexed before we flush.
     int          m_flushMb;
     // Text bytes indexed since beginning
@@ -224,7 +197,6 @@ private:
     long long    m_flushtxtsz;
     // Text bytes at last fsoccup check
     long long    m_occtxtsz;
-
     // Maximum file system occupation percentage
     int          m_maxFsOccupPc;
 

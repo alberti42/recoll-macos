@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.132 2008-05-20 10:09:54 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.133 2008-06-13 18:22:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@ using namespace std;
 
 #include "rclconfig.h"
 #include "rcldb.h"
+#include "rcldb_p.h"
 #include "stemdb.h"
 #include "textsplit.h"
 #include "transcode.h"
@@ -47,8 +48,9 @@ using namespace std;
 #include "pathhash.h"
 #include "utf8iter.h"
 #include "searchdata.h"
+#include "rclquery.h"
+#include "rclquery_p.h"
 
-#include "xapian.h"
 
 #ifndef MAX
 #define MAX(A,B) (A>B?A:B)
@@ -88,125 +90,8 @@ namespace Rcl {
 const static string rclSyntAbs = "?!#@";
 const static string emptystring;
 
-// A class for data and methods that would have to expose
-// Xapian-specific stuff if they were in Rcl::Db. There could actually be
-// 2 different ones for indexing or query as there is not much in
-// common.
-class Native {
- public:
-    Db *m_db;
-    bool m_isopen;
-    bool m_iswritable;
-
-    // Indexing
-    Xapian::WritableDatabase wdb;
-
-    // Querying
-    Xapian::Database db;
-    Xapian::Query    query; // query descriptor: terms and subqueries
-			    // joined by operators (or/and etc...)
-
-    // Filtering results on location. There are 2 possible approaches
-    // for this:
-    //   - Set a "MatchDecider" to be used by Xapian during the query
-    //   - Filter the results out of Xapian (this also uses a
-    //     Xapian::MatchDecider object, but applied to the results by Recoll.
-    // 
-    // The result filtering approach was the first implemented. 
-    //
-    // The efficiency of both methods depend on the searches, so the code
-    // for both has been kept.  A nice point for the Xapian approach is that
-    // the result count estimate are correct (they are wrong with
-    // the postfilter approach). It is also faster in some worst case scenarios
-    // so this now the default (but the post-filtering is faster in many common
-    // cases).
-    // 
-    // Which is used is decided in SetQuery(), by setting either of
-    // the two following members. This in turn is controlled by a
-    // preprocessor directive.
-
-#define XAPIAN_FILTERING 1
-
-    Xapian::MatchDecider *decider;   // Xapian does the filtering
-    Xapian::MatchDecider *postfilter; // Result filtering done by Recoll
-
-    Xapian::Enquire      *enquire; // Open query descriptor.
-    Xapian::MSet          mset;    // Partial result set
-
-    // Term frequencies for current query. See makeAbstract, setQuery
-    map<string, double>  m_termfreqs; 
-    
-    Native(Db *db) 
-	: m_db(db),
-	  m_isopen(false), m_iswritable(false), decider(0), postfilter(0),
-	  enquire(0)
-    { }
-
-    ~Native() {
-	delete decider;
-	delete postfilter;
-	delete enquire;
-    }
-
-    string makeAbstract(Xapian::docid id, const list<string>& terms);
-
-    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
-
-    /** Compute list of subdocuments for a given path (given by hash) 
-     *  We look for all Q terms beginning with the path/hash
-     *  As suggested by James Aylett, a better method would be to add 
-     *  a single term (ie: XP/path/to/file) to all subdocs, then finding
-     *  them would be a simple matter of retrieving the posting list for the
-     *  term. There would still be a need for the current Qterm though, as a
-     *  unique term for replace_document, and for retrieving by
-     *  path/ipath (history)
-     */
-    bool subDocs(const string &hash, vector<Xapian::docid>& docids);
-
-};
-
-class FilterMatcher : public Xapian::MatchDecider {
-public:
-    FilterMatcher(const string &topdir)
-	: m_topdir(topdir)
-    {}
-    virtual ~FilterMatcher() {}
-
-    virtual 
-#if XAPIAN_MAJOR_VERSION < 1
-    int 
-#else
-    bool
-#endif
-    operator()(const Xapian::Document &xdoc) const 
-    {
-	m_cnt++;
-	// Parse xapian document's data and populate doc fields
-	string data = xdoc.get_data();
-	ConfSimple parms(&data);
-
-	// The only filtering for now is on file path (subtree)
-	string url;
-	parms.get(string("url"), url);
-	LOGDEB2(("FilterMatcher topdir [%s] url [%s]\n",
-		 m_topdir.c_str(), url.c_str()));
-	if (url.find(m_topdir, 7) == 7) {
-	    LOGDEB2(("FilterMatcher: MATCH    %d\n", m_cnt));
-	    return true; 
-	} else {
-	    LOGDEB2(("FilterMatcher: NO MATCH %d\n", m_cnt));
-	    return false;
-	}
-    }
-    static int m_cnt;
-    
-private:
-    string m_topdir;
-};
-int FilterMatcher::m_cnt;
-
 /* See comment in class declaration */
-bool Native::subDocs(const string &hash, vector<Xapian::docid>& docids) 
+bool Db::Native::subDocs(const string &hash, vector<Xapian::docid>& docids) 
 {
     docids.clear();
     string qterm = "Q"+ hash + "|";
@@ -250,7 +135,7 @@ bool Native::subDocs(const string &hash, vector<Xapian::docid>& docids)
 }
 
 // Turn data record from db into document fields
-bool Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc)
+bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc)
 {
     LOGDEB1(("Db::dbDataToRclDoc: data: %s\n", data.c_str()));
     ConfSimple parms(&data);
@@ -306,11 +191,14 @@ static list<string> noPrefixList(const list<string>& in)
 
 // Build a document abstract by extracting text chunks around the query terms
 // This uses the db termlists, not the original document.
-string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
+string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 {
     Chrono chron;
     LOGDEB(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
 	     m_db->m_synthAbsLen, m_db->m_synthAbsWordCtxLen));
+
+    list<string> iterms;
+    query->getQueryTerms(iterms);
 
     list<string> terms = noPrefixList(iterms);
     if (terms.empty()) {
@@ -318,14 +206,14 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
     }
 
     // Retrieve db-wide frequencies for the query terms
-    if (m_termfreqs.empty()) {
+    if (query->m_nq->termfreqs.empty()) {
 	double doccnt = db.get_doccount();
 	if (doccnt == 0) doccnt = 1;
 	for (list<string>::const_iterator qit = terms.begin(); 
 	     qit != terms.end(); qit++) {
-	    m_termfreqs[*qit] = db.get_termfreq(*qit) / doccnt;
+	    query->m_nq->termfreqs[*qit] = db.get_termfreq(*qit) / doccnt;
 	    LOGABS(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
-		     m_termfreqs[*qit]));
+		    query->m_nq->termfreqs[*qit]));
 	}
 	LOGABS(("makeAbstract:%d: got termfreqs\n", chron.ms()));
     }
@@ -343,7 +231,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 	Xapian::TermIterator term = db.termlist_begin(docid);
 	term.skip_to(*qit);
 	if (term != db.termlist_end(docid) && *term == *qit) {
-	    double q = (term.get_wdf() / doclen) * m_termfreqs[*qit];
+	    double q = (term.get_wdf() / doclen) * query->m_nq->termfreqs[*qit];
 	    q = -log10(q);
 	    if (q < 3) {
 		q = 0.05;
@@ -556,7 +444,7 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& iterms)
 /* Rcl::Db methods ///////////////////////////////// */
 
 Db::Db() 
-    : m_ndb(0), m_qOpts(QO_NONE), m_idxAbsTruncLen(250), m_synthAbsLen(250),
+    : m_ndb(0), m_idxAbsTruncLen(250), m_synthAbsLen(250),
       m_synthAbsWordCtxLen(4), m_flushMb(-1), 
       m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0),
       m_maxFsOccupPc(0), m_mode(Db::DbRO)
@@ -586,28 +474,9 @@ Db::~Db()
     return res;
 }
 
-// Generic Xapian exception catching code. We do this quite often,
-// and I have no idea how to do this except for a macro
-#define XCATCHERROR(MSG) \
- catch (const Xapian::Error &e) {		   \
-    MSG = e.get_msg();				   \
-    if (MSG.empty()) MSG = "Empty error message";  \
- } catch (const string &s) {			   \
-    MSG = s;					   \
-    if (MSG.empty()) MSG = "Empty error message";  \
- } catch (const char *s) {			   \
-    MSG = s;					   \
-    if (MSG.empty()) MSG = "Empty error message";  \
- } catch (...) {				   \
-    MSG = "Caught unknown xapian exception";	   \
- } 
-
-
-bool Db::open(const string& dir, const string &stops, OpenMode mode, int qops)
+bool Db::open(const string& dir, const string &stops, OpenMode mode, 
+	      bool keep_updated)
 {
-    bool keep_updated = (qops & QO_KEEP_UPDATED) != 0;
-    qops &= ~QO_KEEP_UPDATED;
-
     if (m_ndb == 0)
 	return false;
     LOGDEB(("Db::open: m_isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
@@ -724,7 +593,7 @@ bool Db::reOpen()
     if (m_ndb && m_ndb->m_isopen) {
 	if (!close())
 	    return false;
-	if (!open(m_basedir, "", m_mode, m_qOpts | QO_KEEP_UPDATED)) {
+	if (!open(m_basedir, "", m_mode, true)) {
 	    return false;
 	}
     }
@@ -1467,64 +1336,6 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
     return true;
 }
 
-// Prepare query out of user search data
-bool Db::setQuery(RefCntr<SearchData> sdata, int opts, 
-		  const string& stemlang)
-{
-    if (!m_ndb) {
-	LOGERR(("Db::setQuery: no db!\n"));
-	return false;
-    }
-    m_reason.erase();
-    LOGDEB(("Db::setQuery:\n"));
-
-    m_filterTopDir = sdata->getTopdir();
-    deleteZ(m_ndb->decider);
-    deleteZ(m_ndb->postfilter);
-    if (!m_filterTopDir.empty()) {
-#if XAPIAN_FILTERING
-	m_ndb->decider = 
-#else
-        m_ndb->postfilter =
-#endif
-	    new FilterMatcher(m_filterTopDir);
-    }
-    m_dbindices.clear();
-    m_qOpts = opts;
-    m_ndb->m_termfreqs.clear();
-    FilterMatcher::m_cnt = 0;
-    Xapian::Query xq;
-    if (!sdata->toNativeQuery(*this, &xq, 
-			      (opts & Db::QO_STEM) ? stemlang : "")) {
-	m_reason += sdata->getReason();
-	return false;
-    }
-    m_ndb->query = xq;
-    string ermsg;
-    string d;
-    try {
-	delete m_ndb->enquire;
-	m_ndb->enquire = new Xapian::Enquire(m_ndb->db);
-	m_ndb->enquire->set_query(m_ndb->query);
-	m_ndb->mset = Xapian::MSet();
-	// Get the query description and trim the "Xapian::Query"
-	d = m_ndb->query.get_description();
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGDEB(("Db::SetQuery: xapian error %s\n", ermsg.c_str()));
-	return false;
-    }
-	
-    if (d.find("Xapian::Query") == 0)
-	d.erase(0, strlen("Xapian::Query"));
-    if (!m_filterTopDir.empty()) {
-	d += string(" [dir: ") + m_filterTopDir + "]";
-    }
-    sdata->setDescription(d);
-    LOGDEB(("Db::SetQuery: Q: %s\n", sdata->getDescription().c_str()));
-    return true;
-}
-
 class TermMatchCmpByWcf {
 public:
     int operator()(const TermMatchEntry& l, const TermMatchEntry& r) {
@@ -1735,195 +1546,15 @@ bool Db::stemDiffers(const string& lang, const string& word,
     return true;
 }
 
-bool Db::getQueryTerms(list<string>& terms)
-{
-    if (!m_ndb)
-	return false;
 
-    terms.clear();
-    Xapian::TermIterator it;
-    string ermsg;
-    try {
-	for (it = m_ndb->query.get_terms_begin(); 
-	     it != m_ndb->query.get_terms_end(); it++) {
-	    terms.push_back(*it);
-	}
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGERR(("getQueryTerms: xapian error: %s\n", ermsg.c_str()));
-	return false;
-    }
-    return true;
-}
-
-bool Db::getMatchTerms(const Doc& doc, list<string>& terms)
-{
-    if (!m_ndb || !m_ndb->enquire) {
-	LOGERR(("Db::getMatchTerms: no query opened\n"));
-	return -1;
-    }
-
-    terms.clear();
-    Xapian::TermIterator it;
-    Xapian::docid id = Xapian::docid(doc.xdocid);
-    string ermsg;
-    try {
-	for (it=m_ndb->enquire->get_matching_terms_begin(id);
-	     it != m_ndb->enquire->get_matching_terms_end(id); it++) {
-	    terms.push_back(*it);
-	}
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGERR(("getQueryTerms: xapian error: %s\n", ermsg.c_str()));
-	return false;
-    }
-
-    return true;
-}
-
-// Mset size
-static const int qquantum = 30;
-
-int Db::getResCnt()
-{
-    if (!m_ndb || !m_ndb->enquire) {
-	LOGERR(("Db::getResCnt: no query opened\n"));
-	return -1;
-    }
-    string ermsg;
-    if (m_ndb->mset.size() <= 0) {
-	try {
-	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum, 
-						   0, m_ndb->decider);
-	} catch (const Xapian::DatabaseModifiedError &error) {
-	    m_ndb->db.reopen();
-	    m_ndb->mset = m_ndb->enquire->get_mset(0, qquantum,
-						   0, m_ndb->decider);
-	} XCATCHERROR(ermsg);
-	if (!ermsg.empty()) {
-	    LOGERR(("enquire->get_mset: exception: %s\n", ermsg.c_str()));
-	    return -1;
-	}
-    }
-    int ret = -1;
-    try {
-    ret = m_ndb->mset.get_matches_lower_bound();
-    } catch (...) {}
-    return ret;
-}
-
-
-// Get document at rank i in query (i is the index in the whole result
-// set, as in the enquire class. We check if the current mset has the
-// doc, else ask for an other one. We use msets of 10 documents. Don't
-// know if the whole thing makes sense at all but it seems to work.
-//
-// If there is a postquery filter (ie: file names), we have to
-// maintain a correspondance from the sequential external index
-// sequence to the internal Xapian hole-y one (the holes being the documents 
-// that dont match the filter).
-bool Db::getDoc(int exti, Doc &doc, int *percent)
-{
-    LOGDEB1(("Db::getDoc: exti %d\n", exti));
-    if (!m_ndb || !m_ndb->enquire) {
-	LOGERR(("Db::getDoc: no query opened\n"));
-	return false;
-    }
-
-    int xapi;
-    if (m_ndb->postfilter) {
-	// There is a postquery filter, does this fall in already known area ?
-	if (exti >= (int)m_dbindices.size()) {
-	    // Have to fetch xapian docs and filter until we get
-	    // enough or fail
-	    m_dbindices.reserve(exti+1);
-	    // First xapian doc we fetch is the one after last stored 
-	    int first = m_dbindices.size() > 0 ? m_dbindices.back() + 1 : 0;
-	    // Loop until we get enough docs
-	    while (exti >= (int)m_dbindices.size()) {
-		LOGDEB(("Db::getDoc: fetching %d starting at %d\n",
-			qquantum, first));
-		try {
-		    m_ndb->mset = m_ndb->enquire->get_mset(first, qquantum);
-		} catch (const Xapian::DatabaseModifiedError &error) {
-		    m_ndb->db.reopen();
-		    m_ndb->mset = m_ndb->enquire->get_mset(first, qquantum);
-		} catch (const Xapian::Error & error) {
-		  LOGERR(("enquire->get_mset: exception: %s\n", 
-			  error.get_msg().c_str()));
-		  abort();
-		}
-
-		if (m_ndb->mset.empty()) {
-		    LOGDEB(("Db::getDoc: got empty mset\n"));
-		    return false;
-		}
-		first = m_ndb->mset.get_firstitem();
-		for (unsigned int i = 0; i < m_ndb->mset.size() ; i++) {
-		    LOGDEB(("Db::getDoc: [%d]\n", i));
-		    Xapian::Document xdoc = m_ndb->mset[i].get_document();
-		    if ((*m_ndb->postfilter)(xdoc)) {
-			m_dbindices.push_back(first + i);
-		    }
-		}
-		first = first + m_ndb->mset.size();
-	    }
-	}
-	xapi = m_dbindices[exti];
-    } else {
-	xapi = exti;
-    }
-
-    // From there on, we work with a xapian enquire item number. Fetch it
-    int first = m_ndb->mset.get_firstitem();
-    int last = first + m_ndb->mset.size() -1;
-
-    if (!(xapi >= first && xapi <= last)) {
-	LOGDEB(("Fetching for first %d, count %d\n", xapi, qquantum));
-	try {
-	    m_ndb->mset = m_ndb->enquire->get_mset(xapi, qquantum,
-						   0, m_ndb->decider);
-	} catch (const Xapian::DatabaseModifiedError &error) {
-	    m_ndb->db.reopen();
-	    m_ndb->mset = m_ndb->enquire->get_mset(xapi, qquantum,
-						   0, m_ndb->decider);
-
-	} catch (const Xapian::Error & error) {
-	  LOGERR(("enquire->get_mset: exception: %s\n", 
-		  error.get_msg().c_str()));
-	  abort();
-	}
-	if (m_ndb->mset.empty())
-	    return false;
-	first = m_ndb->mset.get_firstitem();
-	last = first + m_ndb->mset.size() -1;
-    }
-
-    LOGDEB1(("Db::getDoc: Qry [%s] win [%d-%d] Estimated results: %d",
-	     m_ndb->query.get_description().c_str(), 
-	     first, last,
-	     m_ndb->mset.get_matches_lower_bound()));
-
-    Xapian::Document xdoc = m_ndb->mset[xapi-first].get_document();
-    Xapian::docid docid = *(m_ndb->mset[xapi-first]);
-    if (percent)
-	*percent = m_ndb->mset.convert_to_percent(m_ndb->mset[xapi-first]);
-
-    // Parse xapian document's data and populate doc fields
-    string data = xdoc.get_data();
-    return m_ndb->dbDataToRclDoc(docid, data, doc);
-}
-
-bool Db::makeDocAbstract(Doc &doc, string& abstract)
+bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
 {
     LOGDEB1(("Db::makeDocAbstract: exti %d\n", exti));
-    if (!m_ndb || !m_ndb->enquire) {
-	LOGERR(("Db::makeDocAbstract: no query opened\n"));
+    if (!m_ndb) {
+	LOGERR(("Db::makeDocAbstract: no db\n"));
 	return false;
     }
-    list<string> terms;
-    getQueryTerms(terms);
-    abstract = m_ndb->makeAbstract(doc.xdocid, terms);
+    abstract = m_ndb->makeAbstract(doc.xdocid, query);
     return true;
 }
 
@@ -1968,45 +1599,6 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
     }
     return false;
 }
-
-list<string> Db::expand(const Doc &doc)
-{
-    list<string> res;
-    if (!m_ndb || !m_ndb->enquire) {
-	LOGERR(("Db::expand: no query opened\n"));
-	return res;
-    }
-    string ermsg;
-    for (int tries = 0; tries < 2; tries++) {
-	try {
-	    Xapian::RSet rset;
-	    rset.add_document(Xapian::docid(doc.xdocid));
-	    // We don't exclude the original query terms.
-	    Xapian::ESet eset = m_ndb->enquire->get_eset(20, rset, false);
-	    LOGDEB(("ESet terms:\n"));
-	    // We filter out the special terms
-	    for (Xapian::ESetIterator it = eset.begin(); 
-		 it != eset.end(); it++) {
-		LOGDEB((" [%s]\n", (*it).c_str()));
-		if ((*it).empty() || ((*it).at(0)>='A' && (*it).at(0)<='Z'))
-		    continue;
-		res.push_back(*it);
-		if (res.size() >= 10)
-		    break;
-	    }
-	} catch (const Xapian::DatabaseModifiedError &error) {
-	    continue;
-	} XCATCHERROR(ermsg);
-	if (!ermsg.empty()) {
-	    LOGERR(("Db::expand: xapian error %s\n", ermsg.c_str()));
-	    res.clear();
-	}
-	break;
-    }
-
-    return res;
-}
-
 
 #ifndef NO_NAMESPACES
 }

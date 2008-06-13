@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.7 2007-11-09 15:46:17 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.8 2008-06-13 18:22:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -109,18 +109,20 @@ void RecollProtocol::get(const KURL & url)
     RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_OR));
     sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 
 						    (const char *)u8));
-
-    if (!m_rcldb->setQuery(sdata, Rcl::Db::QO_STEM, "english")) {
+    Rcl::Query *query = new Rcl::Query(m_rcldb);
+    if (!query->setQuery(sdata, Rcl::Db::QO_STEM, "english")) {
 	m_reason = "Internal Error: setQuery failed";
 	outputError(m_reason.c_str());
 	finished();
+	delete query;
 	return;
     }
 
     if (m_docsource)
 	delete m_docsource;
 
-    m_docsource = new DocSequenceDb(m_rcldb, "Query results", sdata);
+    m_docsource = new DocSequenceDb(RefCntr<Rcl::Query>(query), 
+				    "Query results", sdata);
 
     QByteArray output;
     QTextStream os(output, IO_WriteOnly );

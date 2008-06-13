@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.48 2008-02-19 08:02:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.49 2008-06-13 18:22:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -440,23 +440,25 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 
     int qopts = 0;
     if (!prefs.queryStemLang.length() == 0)
-	qopts |= Rcl::Db::QO_STEM;
+	qopts |= Rcl::Query::QO_STEM;
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
     string stemLang = (const char *)prefs.queryStemLang.ascii();
     if (stemLang == "ALL") {
 	rclconfig->getConfParam("indexstemminglanguages", stemLang);
     }
+    Rcl::Query *query = new Rcl::Query(rcldb);
 
-    if (!rcldb->setQuery(sdata, qopts, stemLang)) {
+    if (!query || !query->setQuery(sdata, qopts, stemLang)) {
 	QMessageBox::warning(0, "Recoll", tr("Cant start query: ") +
-			     QString::fromAscii(rcldb->getReason().c_str()));
+			     QString::fromAscii(query->getReason().c_str()));
 	QApplication::restoreOverrideCursor();
 	return;
     }
     curPreview = 0;
     DocSequenceDb *src = 
-	new DocSequenceDb(rcldb, string(tr("Query results").utf8()), sdata);
+	new DocSequenceDb(RefCntr<Rcl::Query>(query), 
+			  string(tr("Query results").utf8()), sdata);
     m_docSource = RefCntr<DocSequence>(src);
     m_searchData = sdata;
     setDocSequence();
@@ -921,7 +923,8 @@ void RclMain::docExpand(int docnum)
     if (!resList->getDoc(docnum, doc))
 	return;
     list<string> terms;
-    terms = rcldb->expand(doc);
+    if (!m_docSource.isNull())
+	terms = m_docSource->expand(doc);
     if (terms.empty())
 	return;
     // Do we keep the original query. I think we'd better not.

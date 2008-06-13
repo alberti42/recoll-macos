@@ -31,6 +31,7 @@ ${depth}/query/wasastringtoquery.cpp \
 ${depth}/query/wasatorcl.cpp \
 ${depth}/rcldb/pathhash.cpp \
 ${depth}/rcldb/rcldb.cpp \
+${depth}/rcldb/rclquery.cpp \
 ${depth}/rcldb/searchdata.cpp \
 ${depth}/rcldb/stemdb.cpp \
 ${depth}/rcldb/stoplist.cpp \

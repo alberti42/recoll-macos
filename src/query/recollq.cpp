@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.12 2007-12-13 06:58:21 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.13 2008-06-13 18:22:46 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ static char rcsid[] = "@(#$Id: recollq.cpp,v 1.12 2007-12-13 06:58:21 dockes Exp
 using namespace std;
 
 #include "rcldb.h"
+#include "rclquery.h"
 #include "rclconfig.h"
 #include "pathut.h"
 #include "rclinit.h"
@@ -132,8 +133,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	exit(1);
     }
     dbdir = rclconfig->getDbDir();
-    rcldb.open(dbdir,  rclconfig->getStopfile(),
-	       Rcl::Db::DbRO, Rcl::Db::QO_STEM);
+    rcldb.open(dbdir,  rclconfig->getStopfile(), Rcl::Db::DbRO);
 
     Rcl::SearchData *sd = 0;
 
@@ -166,8 +166,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     }
 
     RefCntr<Rcl::SearchData> rq(sd);
-    rcldb.setQuery(rq, Rcl::Db::QO_STEM);
-    int cnt = rcldb.getResCnt();
+    Rcl::Query query(&rcldb);
+    query.setQuery(rq, Rcl::Query::QO_STEM);
+    int cnt = query.getResCnt();
     if (!(op_flags & OPT_b)) {
 	cout << "Recoll query: " << rq->getDescription() << endl;
 	if (cnt <= limit)
@@ -180,7 +181,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     for (int i = 0; i < limit; i++) {
 	int pc;
 	Rcl::Doc doc;
-	if (!rcldb.getDoc(i, doc, &pc))
+	if (!query.getDoc(i, doc, &pc))
 	    break;
 
 	if (op_flags & OPT_b) {

@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.12 2007-06-19 08:36:24 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.13 2008-06-13 18:22:46 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -89,7 +89,7 @@ class DocSequence {
 			  vector<int>& gslks) const {
 	terms.clear(); groups.clear(); gslks.clear(); return true;
     }
-
+    virtual list<string> expand(Rcl::Doc &) {list<string> e; return e;}
  private:
     string m_title;
 };

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.2 2008-05-27 10:45:59 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.3 2008-06-13 18:22:46 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <Python.h>
@@ -11,6 +11,7 @@ using namespace std;
 #include "rclinit.h"
 #include "rclconfig.h"
 #include "rcldb.h"
+#include "rclquery.h"
 #include "pathut.h"
 #include "wasastringtoquery.h"
 #include "wasatorcl.h"
@@ -31,7 +32,7 @@ recollq_question(PyObject *self, PyObject *args)
     string reason;
     string dbdir = config->getDbDir();
     rcldb.open(dbdir, config->getStopfile(), 
-	       Rcl::Db::DbRO, Rcl::Db::QO_STEM);
+	       Rcl::Db::DbRO);
 
     Rcl::SearchData *sd = wasaStringToRcl(qs, reason);
     if (!sd) {
@@ -40,8 +41,9 @@ recollq_question(PyObject *self, PyObject *args)
     }
 
     RefCntr<Rcl::SearchData> rq(sd);
-    rcldb.setQuery(rq, Rcl::Db::QO_STEM);
-    int cnt = rcldb.getResCnt();
+    RefCntr<Rcl::Query> query(new Rcl::Query(&rcldb));
+    query->setQuery(rq, Rcl::Query::QO_STEM);
+    int cnt = query->getResCnt();
     cout << "Recoll query: " << rq->getDescription() << endl;
     if (cnt <= limit)
 	cout << cnt << " results" << endl;
@@ -51,7 +53,7 @@ recollq_question(PyObject *self, PyObject *args)
     for (int i = 0; i < limit; i++) {
 	int pc;
 	Rcl::Doc doc;
-	if (!rcldb.getDoc(i, doc, &pc))
+	if (!query->getDoc(i, doc, &pc))
 	    break;
 	char cpc[20];
 	sprintf(cpc, "%d", pc);

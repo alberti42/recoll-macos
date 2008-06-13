@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.19 2008-05-27 06:18:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.20 2008-06-13 18:22:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@ using std::list;
 using std::stack;
 #endif /* NO_NAMESPACES */
 
+#include "autoconfig.h"
 #include "pathut.h"
 
 #include <sys/types.h>

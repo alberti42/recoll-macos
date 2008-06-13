@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.13 2008-05-08 10:00:20 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.14 2008-06-13 18:22:46 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -47,7 +47,7 @@ class SearchDataClause;
 
 /** 
   Data structure representing a Recoll user query, for translation
-  into a Xapian query tree.
+  into a Xapian query tree. This could probably better called a 'question'.
 
   This is a list of search clauses combined through either OR or AND.
 

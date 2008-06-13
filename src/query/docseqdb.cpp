@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.3 2007-06-19 08:36:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.4 2008-06-13 18:22:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -23,28 +23,53 @@ static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.3 2007-06-19 08:36:24 dockes Exp
 #include "docseqdb.h"
 #include "rcldb.h"
 
+DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
+			     RefCntr<Rcl::SearchData> sdata) 
+    : DocSequence(t), m_q(q), m_sdata(sdata), m_rescnt(-1) 
+{
+}
+
+DocSequenceDb::~DocSequenceDb() 
+{
+}
+
+bool DocSequenceDb::getTerms(vector<string>& terms, 
+			     vector<vector<string> >& groups, 
+			     vector<int>& gslks) const 
+{
+    return m_sdata.getptr()->getTerms(terms, groups, gslks);
+}
+
+string DocSequenceDb::getDescription() 
+{
+    return m_sdata->getDescription();
+}
+
 bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, int *percent, string *sh)
 {
     if (sh) sh->erase();
-    return m_db ? m_db->getDoc(num, doc, percent) : false;
+    return m_q->getDoc(num, doc, percent);
 }
 
 int DocSequenceDb::getResCnt()
 {
-    if (!m_db)
-	return -1;
     if (m_rescnt < 0) {
-	m_rescnt= m_db->getResCnt();
+	m_rescnt= m_q->getResCnt();
     }
     return m_rescnt;
 }
 
 string DocSequenceDb::getAbstract(Rcl::Doc &doc)
 {
-    if (!m_db)
+    if (!m_q->whatDb())
 	return doc.meta["abstract"];
     string abstract;
-    m_db->makeDocAbstract(doc, abstract);
+    m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), abstract);
     return abstract.empty() ? doc.meta["abstract"] : abstract;
+}
+
+list<string> DocSequenceDb::expand(Rcl::Doc &doc)
+{
+    return m_q->expand(doc);
 }
 
