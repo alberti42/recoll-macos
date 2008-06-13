@@ -26,3 +26,6 @@
 
 /* putenv parameter is const */
 #undef PUTENV_ARG_CONST
+
+/* mkdtemp availability */
+#undef HAVE_MKDTEMP

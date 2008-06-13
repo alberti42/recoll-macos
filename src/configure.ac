@@ -110,6 +110,8 @@ else
    AC_MSG_NOTICE([inotify monitoring disabled])
 fi
 
+AC_CHECK_FUNCS(mkdtemp)
+
 ##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
 ##    then in libc (Linux, solaris)
 AC_LANG(C++)
@@ -306,7 +308,7 @@ AC_SUBST(QMAKE)
 AC_SUBST(QTGUI)
 AC_SUBST(QTRECOLL_DATADIR)
 AC_SUBST(XAPIANCXXFLAGS)
-
+AC_SUBST(HAVE_MKDTEMP)
 AC_CONFIG_FILES(mk/localdefs)
 AC_CONFIG_FILES(recollinstall)
 AC_CONFIG_FILES(Makefile)
