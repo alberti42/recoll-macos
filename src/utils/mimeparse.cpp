@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.20 2007-12-13 06:58:22 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.21 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -360,7 +360,7 @@ bool parseMimeHeaderValue(const string& value, MimeHeaderValue& parsed)
 	string nm = it->first;
 	// Create the name entry
 	if (parsed.params.find(nm) == parsed.params.end())
-	    parsed.params[nm] = "";
+	    parsed.params[nm].clear();
 	// Concatenate all chunks and decode the whole if the first one needs
 	// to. Yes, this is not quite right.
 	string value;
@@ -437,7 +437,7 @@ static bool rfc2047_decodeParsed(const std::string& charset,
 {
     DPRINT((stderr, "DecodeParsed: charset [%s] enc [%s] val [%s]\n",
 	    charset.c_str(), encoding.c_str(), value.c_str()));
-    utf8 = "";
+    utf8.clear();
 
     string decoded;
     if (!stringlowercmp("b", encoding)) {
@@ -485,7 +485,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
     Rfc2047States state = rfc2047ready;
     string encoding, charset, value, utf8;
 
-    out = "";
+    out.clear();
 
     for (string::size_type ii = 0; ii < in.length(); ii++) {
 	char ch = in[ii];
@@ -523,7 +523,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 			if (value.length() > 0) {
 			    transcode(value, utf8, "ISO-8859-1", "UTF-8");
 			    out += utf8;
-			    value = "";
+			    value.clear();
 			}
 			state = rfc2047charset; 
 		    }
@@ -568,7 +568,9 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 			    return false;
 			}
 			out += utf8;
-			charset = encoding = value = "";
+			charset.clear();
+			encoding.clear();
+			value.clear();
 		    }
 		    break;
 		default: state = rfc2047value; value += '?';value += ch;break;
@@ -583,7 +585,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
     if (value.length() > 0) {
 	transcode(value, utf8, "ISO-8859-1", "UTF-8");
 	out += utf8;
-	value = "";
+	value.clear();
     }
     if (state != rfc2047base) 
 	return false;

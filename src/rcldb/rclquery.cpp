@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.2 2008-07-01 08:31:08 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.3 2008-07-01 11:51:51 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 
 #include <list>
@@ -101,7 +101,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata, int opts,
     }
 
     Xapian::Query xq;
-    if (!sdata->toNativeQuery(*m_db, &xq, (opts & QO_STEM) ? stemlang : "")) {
+    if (!sdata->toNativeQuery(*m_db, &xq, (opts & QO_STEM) ? stemlang : string())) {
 	m_reason += sdata->getReason();
 	return false;
     }

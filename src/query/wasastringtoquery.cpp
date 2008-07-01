@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.6 2007-11-16 12:21:46 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.7 2008-07-01 11:51:51 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -44,7 +44,7 @@ WasaQuery::~WasaQuery()
 void WasaQuery::describe(string &desc) const
 {
     desc += "(";
-    string fieldspec = m_fieldspec.empty() ? "" : m_fieldspec + ": ";
+    string fieldspec = m_fieldspec.empty() ? string() : m_fieldspec + ": ";
     switch (m_op) {
     case OP_NULL: 
 	desc += "NULL"; 

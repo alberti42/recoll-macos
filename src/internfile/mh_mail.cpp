@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.32 2008-07-01 10:29:45 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.33 2008-07-01 11:51:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,11 @@ static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.32 2008-07-01 10:29:45 dockes Exp
 using namespace std;
 
 static const int maxdepth = 20;
+static const string cstr_mimetype = "mimetype";
+static const string cstr_content = "content";
+static const string cstr_author = "author";
+static const string cstr_modificationdate = "modificationdate";
+static const string cstr_title = "title";
 
 MimeHandlerMail::~MimeHandlerMail() 
 {
@@ -126,10 +131,10 @@ bool MimeHandlerMail::next_document()
     bool res = false;
 
     if (m_idx == -1) {
-	m_metaData["mimetype"] = "text/plain";
+	m_metaData[cstr_mimetype] = "text/plain";
 	res = processMsg(m_bincdoc, 0);
 	LOGDEB1(("MimeHandlerMail::next_document: mimetype %s\n",
-		m_metaData["mimetype"].c_str()));
+		m_metaData[cstr_mimetype].c_str()));
     } else {
 	res = processAttach();
     }
@@ -181,18 +186,18 @@ bool MimeHandlerMail::processAttach()
     }
     MHMailAttach *att = m_attachments[m_idx];
 
-    m_metaData["mimetype"] = att->m_contentType;
+    m_metaData[cstr_mimetype] = att->m_contentType;
     m_metaData["charset"] = att->m_charset;
     m_metaData["filename"] = att->m_filename;
     // Change the title to something helpul
-    m_metaData["title"] = att->m_filename + "  (" + m_subject + ")";
+    m_metaData[cstr_title] = att->m_filename + "  (" + m_subject + ")";
     LOGDEB1(("  processAttach:ct [%s] cs [%s] fn [%s]\n", 
 	    att->m_contentType.c_str(),
 	    att->m_charset.c_str(),
 	    att->m_filename.c_str()));
 
-    m_metaData["content"] = string();
-    string& body = m_metaData["content"];
+    m_metaData[cstr_content] = string();
+    string& body = m_metaData[cstr_content];
     att->m_part->getBody(body, 0, att->m_part->bodylength);
     string decoded;
     const string *bdp;
@@ -205,7 +210,7 @@ bool MimeHandlerMail::processAttach()
     // Special case for text/plain content. Internfile should deal
     // with this but it expects text/plain to be utf-8 already, so we
     // handle the transcoding if needed
-    if (m_metaData["mimetype"] == "text/plain" && 
+    if (m_metaData[cstr_mimetype] == "text/plain" && 
 	stringicmp(m_metaData["charset"], "UTF-8")) {
 	string utf8;
 	if (!transcode(body, utf8, m_metaData["charset"], "UTF-8")) {
@@ -219,12 +224,12 @@ bool MimeHandlerMail::processAttach()
 
     // Special case for application/octet-stream: try to better
     // identify content, using file name if set
-    if (m_metaData["mimetype"] == "application/octet-stream" &&
+    if (m_metaData[cstr_mimetype] == "application/octet-stream" &&
 	!m_metaData["filename"].empty()) {
 	string mt = mimetype(m_metaData["filename"], 0,	
 			     RclConfig::getMainConfig(), false);
 	if (!mt.empty()) 
-	    m_metaData["mimetype"] = mt;
+	    m_metaData[cstr_mimetype] = mt;
     }
 
     // Ipath
@@ -254,14 +259,14 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     }
 	
     // Handle some headers. 
-    string& text = m_metaData["content"];
+    string& text = m_metaData[cstr_content];
     Binc::HeaderItem hi;
     string transcoded;
     if (doc->h.getFirstHeader("From", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
 	text += string("From: ") + transcoded + string("\n");
 	if (depth == 1) {
-	    m_metaData["author"] = transcoded;
+	    m_metaData[cstr_author] = transcoded;
 	}
     }
     if (doc->h.getFirstHeader("To", hi)) {
@@ -275,7 +280,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	    if (t != (time_t)-1) {
 		char ascuxtime[100];
 		sprintf(ascuxtime, "%ld", (long)t);
-		m_metaData["modificationdate"] = ascuxtime;
+		m_metaData[cstr_modificationdate] = ascuxtime;
 	    } else {
 		// Leave mtime field alone, ftime will be used instead.
 		LOGDEB(("rfc2822Date...: failed: [%s]\n", transcoded.c_str()));
@@ -286,7 +291,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     if (doc->h.getFirstHeader("Subject", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
 	if (depth == 1) {
-	    m_metaData["title"] = transcoded;
+	    m_metaData[cstr_title] = transcoded;
 	    m_subject = transcoded;
 	}
 	text += string("Subject: ") + transcoded + string("\n");
@@ -298,7 +303,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     walkmime(doc, depth);
 
     LOGDEB2(("MimeHandlerMail::processMsg:text:[%s]\n", 
-	    m_metaData["content"].c_str()));
+	    m_metaData[cstr_content].c_str()));
     return true;
 }
 
@@ -320,7 +325,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	return;
     }
 
-    string& out = m_metaData["content"];
+    string& out = m_metaData[cstr_content];
 
     if (doc->isMultipart()) {
 	LOGDEB2(("walkmime: ismultipart %d subtype '%s'\n", 
@@ -512,7 +517,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	mh.set_document_string(body);
 	mh.next_document();
 	map<string, string>::const_iterator it = 
-	    mh.get_meta_data().find("content");
+	    mh.get_meta_data().find(cstr_content);
 	if (it != mh.get_meta_data().end())
 	    out += it->second;
     } else {

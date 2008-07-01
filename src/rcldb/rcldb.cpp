@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.133 2008-06-13 18:22:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.134 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -122,7 +122,7 @@ bool Db::Native::subDocs(const string &hash, vector<Xapian::docid>& docids)
 	    if (ermsg.empty()) 
 		ermsg = "Empty error message"; 
 	} catch (const char *s) {
-	    ermsg = s ? s : "";
+	    ermsg = s ? s : string();
 	    if (ermsg.empty()) 
 		ermsg = "Empty error message"; 
 	} catch (...) {
@@ -202,7 +202,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 
     list<string> terms = noPrefixList(iterms);
     if (terms.empty()) {
-	return "";
+	return string();
     }
 
     // Retrieve db-wide frequencies for the query terms
@@ -289,7 +289,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     // This can't happen, but would crash us
     if (totalweight == 0.0) {
 	LOGERR(("makeAbstract: 0 totalweight!\n"));
-	return "";
+	return string();
     }
 
     // Let's go populate
@@ -348,7 +348,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     // This can happen if there are term occurences in the keywords
     // etc. but not elsewhere ?
     if (qtermposs.size() == 0) 
-	return "";
+	return string();
 
     // Walk all document's terms position lists and populate slots
     // around the query terms. We arbitrarily truncate the list to
@@ -593,7 +593,7 @@ bool Db::reOpen()
     if (m_ndb && m_ndb->m_isopen) {
 	if (!close())
 	    return false;
-	if (!open(m_basedir, "", m_mode, true)) {
+	if (!open(m_basedir, string(), m_mode, true)) {
 	    return false;
 	}
     }
@@ -684,7 +684,7 @@ bool Db::fieldToPrefix(const string& fldname, string &pfx)
     // This is the default table
     static map<string, string> fldToPrefs;
     if (fldToPrefs.empty()) {
-	fldToPrefs["abstract"] = "";
+	fldToPrefs["abstract"] = string();
 	fldToPrefs["ext"] = "XE";
 
 	fldToPrefs["title"] = "S";
@@ -778,14 +778,14 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
 // want to stop indexation because of a bad string
 bool dumb_string(const string &in, string &out)
 {
-    out.erase();
+    out.clear();
     if (in.empty())
 	return true;
 
     string s1 = neutchars(in, "\n\r");
     if (!unacmaybefold(s1, out, "UTF-8", true)) {
 	LOGINFO(("dumb_string: unac failed for [%s]\n", in.c_str()));
-	out.erase();
+	out.clear();
 	// See comment at start of func
 	return true;
     }

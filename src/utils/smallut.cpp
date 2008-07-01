@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.28 2008-05-08 09:57:29 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.29 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -185,7 +185,7 @@ template <class T> bool stringToStrings(const string &s, T &tokens)
 		continue;
 	      case INQUOTE: 
 		tokens.push_back(current);
-		current = "";
+		current.clear();
 		state = SPACE;
 		continue;
 	      case ESCAPE:
@@ -220,7 +220,7 @@ template <class T> bool stringToStrings(const string &s, T &tokens)
 		  continue;
 	      case TOKEN: 
 		tokens.push_back(current);
-		current = "";
+		current.clear();
 		state = SPACE;
 		continue;
 	      case INQUOTE: 
@@ -336,14 +336,14 @@ void trimstring(string &s, const char *ws)
 {
     string::size_type pos = s.find_first_not_of(ws);
     if (pos == string::npos) {
-	s = "";
+	s.clear();
 	return;
     }
-    s.replace(0, pos, "");
+    s.replace(0, pos, string());
 
     pos = s.find_last_not_of(ws);
     if (pos != string::npos && pos != s.length()-1)
-	s.replace(pos+1, string::npos, "");
+	s.replace(pos+1, string::npos, string());
 }
 
 // Remove some chars and replace them with spaces

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.17 2008-04-18 11:39:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.18 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -168,8 +168,8 @@ int main(int argc, char **argv)
 	if (op_flags & OPT_T) {
 	    Xapian::TermIterator term;
 	    string printable;
-	    string op = (op_flags & OPT_n) ? "": "[";
-	    string cl = (op_flags & OPT_n) ? "": "]";
+	    string op = (op_flags & OPT_n) ? string(): "[";
+	    string cl = (op_flags & OPT_n) ? string(): "]";
 	    if (op_flags & OPT_i) {
 		for (term = db->termlist_begin(docid); 
 		     term != db->termlist_end(docid);term++) {

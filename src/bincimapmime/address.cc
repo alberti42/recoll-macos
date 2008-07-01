@@ -62,7 +62,7 @@ Address::Address(const string &wholeaddress)
   if (start != string::npos)
     name = wholeaddress.substr(0, start);
   else
-    name = "";
+    name = string();
   trim(name);
   trim(name, "\"");
 
@@ -79,11 +79,11 @@ Address::Address(const string &wholeaddress)
 string Address::toParenList(void) const
 {
   string tmp = "(";
-  tmp += name == "" ? "NIL" : toImapString(name);
+  tmp += name.empty() ? "NIL" : toImapString(name);
   tmp += " NIL ";
-  tmp += local == "" ? "\"\"" : toImapString(local);
+  tmp += local.empty() ? "\"\"" : toImapString(local);
   tmp += " ";
-  tmp += host == "" ? "\"\"" : toImapString(host);
+  tmp += host.empty() ? "\"\"" : toImapString(host);
   tmp += ")";
 
   return tmp;

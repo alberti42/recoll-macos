@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.15 2007-12-13 06:58:22 dockes Exp $  (C) 2003 J.F.Dockes";
+static char rcsid [] = "@(#$Id: conftree.cpp,v 1.16 2008-07-01 11:51:51 dockes Exp $  (C) 2003 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -389,7 +389,7 @@ ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
 	 sit != m_submaps.end(); sit++) {
 
 	// Possibly emit submap name:
-	if (!sit->first.empty() && walker(clidata, "", sit->first.c_str())
+	if (!sit->first.empty() && walker(clidata, string(), sit->first.c_str())
 	    == WALK_STOP)
 	    return WALK_STOP;
 
@@ -539,7 +539,7 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
 	    return 1;
 	string::size_type pos = msk.rfind("/");
 	if (pos != string::npos) {
-	    msk.replace(pos, string::npos, "");
+	    msk.replace(pos, string::npos, string());
 	} else
 	    break;
     }

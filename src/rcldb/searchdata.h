@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.14 2008-06-13 18:22:46 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.15 2008-07-01 11:51:51 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -160,7 +160,7 @@ protected:
 class SearchDataClauseSimple : public SearchDataClause {
 public:
     SearchDataClauseSimple(SClType tp, const string& txt, 
-			   const string& fld = "")
+			   const string& fld = string())
 	: SearchDataClause(tp), m_text(txt), m_field(fld), m_slack(0) {
 	m_haveWildCards = (txt.find_first_of("*?[") != string::npos);
     }
@@ -212,7 +212,7 @@ public:
 class SearchDataClauseDist : public SearchDataClauseSimple {
 public:
     SearchDataClauseDist(SClType tp, const string& txt, int slack, 
-			 const string& fld = "")
+			 const string& fld = string())
 	: SearchDataClauseSimple(tp, txt, fld) {m_slack = slack;}
     virtual ~SearchDataClauseDist() {}
 

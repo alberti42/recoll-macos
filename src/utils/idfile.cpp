@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: idfile.cpp,v 1.8 2008-05-21 07:21:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: idfile.cpp,v 1.9 2008-07-01 11:51:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ string idFile(const char *fn)
     input.open(fn, ios::in);
     if (!input.is_open()) {
 	LOGERR(("idFile: could not open [%s]\n", fn));
-	return string("");
+	return string();
     }	    
 
     bool line1HasFrom = false;
@@ -88,7 +88,7 @@ string idFile(const char *fn)
 	if (input.fail()) {
 	    if (input.bad()) {
 		LOGERR(("idfile: error while reading [%s]\n", fn));
-		return string("");
+		return string();
 	    }
 	    // Must be eof ?
 	    break;
@@ -121,7 +121,7 @@ string idFile(const char *fn)
 	// emacs vm can insert VERY long header lines.
 	if (ll > 800) {
 	    LOGDEB2(("idFile: Line too long\n"));
-	    return string("");
+	    return string();
 	}
 
 	// Check for mbox 'From ' line
@@ -159,7 +159,7 @@ string idFile(const char *fn)
     if (lookslikemail >= wantnhead)
 	return line1HasFrom ? string("text/x-mail") : string("message/rfc822");
 
-    return string("");
+    return string();
 }
 
 

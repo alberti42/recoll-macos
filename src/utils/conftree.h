@@ -95,9 +95,9 @@ public:
     enum StatusCode {STATUS_ERROR=0, STATUS_RO=1, STATUS_RW=2};
     virtual ~ConfNull() {};
     virtual int get(const string &name, string &value, 
-		    const string &sk = "") = 0;
+		    const string &sk = string()) = 0;
     virtual int set(const string &nm, const string &val, 
-		    const string &sk = "") = 0;
+		    const string &sk = string()) = 0;
     virtual bool ok() = 0;
     virtual list<string> getNames(const string &sk) = 0;
     virtual int erase(const string &, const string &) = 0;
@@ -156,13 +156,13 @@ public:
      * global space if sk is empty).
      * @return 0 if name not found, 1 else
      */
-    virtual int get(const string &name, string &value, const string &sk = "");
+    virtual int get(const string &name, string &value, const string &sk = string());
 
     /** 
      * Set value for named parameter in specified subsection (or global)
      * @return 0 for error, 1 else
      */
-    virtual int set(const string &nm, const string &val, const string &sk = "");
+    virtual int set(const string &nm, const string &val, const string &sk = string());
 
     /**
      * Remove name and value from config
@@ -363,7 +363,7 @@ public:
 	return false;
     }
 
-    virtual int set(const string &nm, const string &val, const string &sk = "") 
+    virtual int set(const string &nm, const string &val, const string &sk = string()) 
     {
 	if (!m_ok)
 	    return 0;

@@ -16,7 +16,7 @@
  */
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
-/* @(#$Id: pathut.h,v 1.14 2008-07-01 08:26:08 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: pathut.h,v 1.15 2008-07-01 11:51:51 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -34,7 +34,7 @@ extern string path_cat(const string &s1, const string &s2);
 /// Get the simple file name (get rid of any directory path prefix
 extern string path_getsimple(const string &s);
 /// Simple file name + optional suffix stripping
-extern string path_basename(const string &s, const string &suff="");
+extern string path_basename(const string &s, const string &suff=string());
 /// Get the father directory
 extern string path_getfather(const string &s);
 /// Get the current user's home directory

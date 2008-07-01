@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.21 2008-07-01 08:26:08 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.22 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -273,7 +273,7 @@ extern std::string path_absolute(const std::string &is)
     if (s[0] != '/') {
 	char buf[MAXPATHLEN];
 	if (!getcwd(buf, MAXPATHLEN)) {
-	    return "";
+	    return string();
 	}
 	s = path_cat(string(buf), s); 
     }
@@ -289,7 +289,7 @@ extern std::string path_canon(const std::string &is)
     if (s[0] != '/') {
 	char buf[MAXPATHLEN];
 	if (!getcwd(buf, MAXPATHLEN)) {
-	    return "";
+	    return string();
 	}
 	s = path_cat(string(buf), s); 
     }
