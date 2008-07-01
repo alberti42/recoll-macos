@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.10 2007-11-21 14:15:48 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.11 2008-07-01 08:27:21 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -210,7 +210,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 	ConfParamBoolW(this, lnknaspl, tr("No aspell usage"),
 		       tr("Disables use of aspell to generate spelling "
 			  "approximation in the term explorer tool.<br> "
-			  "Useful is aspell is absent or does not work. "));
+			  "Useful if aspell is absent or does not work. "));
     vboxLayout->addWidget(enaspl);
 
     ConfLink lnk2(new ConfLinkRclRep(config, "aspellLanguage"));
