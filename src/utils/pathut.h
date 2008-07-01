@@ -16,7 +16,7 @@
  */
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
-/* @(#$Id: pathut.h,v 1.13 2007-06-08 15:30:01 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: pathut.h,v 1.14 2008-07-01 08:26:08 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -52,6 +52,9 @@ extern list<string> path_dirglob(const string &dir,
 /// Encode according to rfc 1738
 extern string url_encode(const string url, 
 			      string::size_type offs);
+extern bool printableUrl(const string &fcharset, 
+			 const string &in, string &out);
+
 /// Stat parameter and check if it's a directory
 extern bool path_isdir(const string& path);
 

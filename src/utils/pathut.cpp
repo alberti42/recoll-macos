@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.20 2008-06-13 18:22:47 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.21 2008-07-01 08:26:08 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@ using std::stack;
 
 #include "autoconfig.h"
 #include "pathut.h"
+#include "transcode.h"
 
 #include <sys/types.h>
 #ifndef STATFS_INCLUDE
@@ -380,6 +381,17 @@ std::string url_encode(const std::string url, string::size_type offs)
 	}
     }
     return out;
+}
+
+// Printable url: this is used to transcode from the system charset
+// into either utf-8 if transcoding succeeds, or url-encoded
+bool printableUrl(const string &fcharset, const string &in, string &out)
+{
+    int ecnt = 0;
+    if (!transcode(in, out, fcharset, "UTF-8", &ecnt) || ecnt) {
+	out = url_encode(in, 7);
+    }
+    return true;
 }
 
 #else // TEST_PATHUT

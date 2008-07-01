@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.36 2008-05-05 20:24:55 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.37 2008-07-01 08:26:08 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -110,18 +110,6 @@ bool startHelpBrowser(const string &iurl)
 	    searched.c_str()));
     return false;
 }
-
-// Printable url: either utf-8 if transcoding succeeds, or url-encoded
-bool printableUrl(const string &in, string &out)
-{
-    string fcharset = rclconfig->getDefCharset(true);
-    int ecnt = 0;
-    if (!transcode(in, out, fcharset, "UTF-8", &ecnt) || ecnt) {
-	out = url_encode(in, 7);
-    }
-    return true;
-}
-
 
 // The global preferences structure
 PrefsPack prefs;
