@@ -16,42 +16,65 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.16 2007-11-15 18:05:32 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.17 2008-07-01 08:27:58 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
 using std::list;
 using std::string;
 
-// A data struct to hold words and groups of words to be highlighted
+/// Holder for plaintorich() input data: words and groups of words to
+/// be highlighted
 struct HiliteData {
+    // Single terms
     vector<string> terms;
+    // NEAR and PHRASE elements
     vector<vector<string> > groups;
-    vector<int> gslks; // group slacks (number of permitted non-matched words)
+    // Group slacks (number of permitted non-matched words). 
+    // Parallel vector to the above 'groups'
+    vector<int> gslks; 
 };
 
-/**
- * Transform plain text into qt rich text for the preview window.
- *
- * We escape characters like < or &, and add qt rich text tags to 
- * colorize the query terms. The latter is a quite complicated matter because
- * of phrase/near searches. We treat all such searches as "near", not "phrase"
- * 
- * @param in          raw text out of internfile.
- * @param out         rich text output, divided in chunks (to help our caller
- *          avoid inserting half tags into textedit which doesnt like it)
- * @param hdata       terms and groups to be highlighted. These are
- *                     lowercase and unaccented.
- * @param noHeader    if true don't output header (<qt><title>...)
- * @param needBeacons Need to navigate highlighted terms, mark them,return last
+/** 
+ * A class for highlighting search results. Overridable methods allow
+ * for different styles
  */
-extern bool plaintorich(const string &in, list<string> &out,
-			const HiliteData& hdata,
-			bool noHeader,
-			int  *needBeacons,
-			int chunksize = 50000
-			);
+class PlainToRich {
+public:
+    static const string snull;
+    virtual ~PlainToRich() {}
+    /**
+     * Transform plain text for highlighting search terms, ie in the
+     * preview window or result list entries.
+     *
+     * The actual tags used for highlighting and anchoring are
+     * determined by deriving from this class which handles the searching for
+     * terms and groups, but there is an assumption that the output will be
+     * html-like: we escape characters like < or &
+     * 
+     * Finding the search terms is relatively complicated because of
+     * phrase/near searches, which need group highlights. As a matter
+     * of simplification, we handle "phrase" as "near", not filtering
+     * on word order.
+     *
+     * @param in    raw text out of internfile.
+     * @param out   rich text output, divided in chunks (to help our caller
+     *   avoid inserting half tags into textedit which doesnt like it)
+     * @param hdata terms and groups to be highlighted. These are
+     *   lowercase and unaccented.
+     * @param chunksize max size of chunks in output list
+     */
+    virtual bool plaintorich(const string &in, list<string> &out,
+			     const HiliteData& hdata,
+			     int chunksize = 50000
+			     );
 
-extern string termAnchorName(int i);
+    /* Methods to ouput headers, highlighting and marking tags */
+    virtual string header() {return snull;}
+    virtual string startMatch() {return snull;}
+    virtual string endMatch() {return snull;}
+    virtual string startAnchor(int) {return snull;}
+    virtual string endAnchor() {return snull;}
+};
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

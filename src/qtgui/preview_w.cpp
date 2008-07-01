@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.34 2008-05-21 07:21:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.35 2008-07-01 08:27:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -345,17 +345,17 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 	    return;
 	if (reverse) {
 	    if (m_curAnchor == 1)
-		m_curAnchor = m_lastAnchor;
+		m_curAnchor = m_plaintorich.lastanchor;
 	    else
 		m_curAnchor--;
 	} else {
-	    if (m_curAnchor == m_lastAnchor)
+	    if (m_curAnchor == m_plaintorich.lastanchor)
 		m_curAnchor = 1;
 	    else
 		m_curAnchor++;
 	}
 	QString aname = 
-	    QString::fromUtf8(termAnchorName(m_curAnchor).c_str());
+	   QString::fromUtf8(m_plaintorich.termAnchorName(m_curAnchor).c_str());
 	edit->moveToAnchor(aname);
 	return;
     }
@@ -552,7 +552,7 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
     }
     LOGDEB(("Doc.url: [%s]\n", doc.url.c_str()));
     string url;
-    printableUrl(doc.url, url);
+    printableUrl(rclconfig->getDefCharset(), doc.url, url);
     string tiptxt = url + string("\n");
     tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
     if (meta_it != doc.meta.end() && !meta_it->second.empty())
@@ -670,7 +670,7 @@ class LoadThread : public QThread {
 	    *statusp = -1;
 	    return;
 	}
-	    
+	
 	FileInterner interner(filename, &st, rclconfig, tmpdir, mtype);
 	try {
 	    FileInterner::Status ret = interner.internfile(*out, ipath);
@@ -699,11 +699,11 @@ class ToRichThread : public QThread {
     const HiliteData &hdata;
     list<string> &out;
     int loglevel;
-    int *lastanchor;
+    PlainToRichQtPreview& ptr;
  public:
     ToRichThread(string &i, const HiliteData& hd, list<string> &o, 
-		 int *lsta)
-	: in(i), hdata(hd), out(o), lastanchor(lsta)
+		 PlainToRichQtPreview& _ptr)
+	: in(i), hdata(hd), out(o), ptr(_ptr)
     {
 	    loglevel = DebugLog::getdbl()->getlevel();
     }
@@ -711,7 +711,7 @@ class ToRichThread : public QThread {
     {
 	DebugLog::getdbl()->setloglevel(loglevel);
 	try {
-	    plaintorich(in, out, hdata, false, lastanchor);
+	    ptr.plaintorich(in, out, hdata);
 	} catch (CancelExcept) {
 	}
     }
@@ -828,7 +828,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	progress.setLabelText(tr("Creating preview text"));
 	qApp->processEvents();
 	list<string> richlst;
-	ToRichThread rthr(fdoc.text, m_hData, richlst, &m_lastAnchor);
+	ToRichThread rthr(fdoc.text, m_hData, richlst, m_plaintorich);
 	rthr.start();
 
 	for (;;prog++) {
@@ -911,7 +911,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 
     progress.close();
 
-    m_haveAnchors = m_lastAnchor != 0;
+    m_haveAnchors = m_plaintorich.lastanchor != 0;
     if (searchTextLine->text().length() != 0) {
 	// If there is a current search string, perform the search
 	m_canBeep = true;
@@ -919,7 +919,8 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     } else {
 	// Position to the first query term
 	if (m_haveAnchors) {
-	    QString aname = QString::fromUtf8(termAnchorName(1).c_str());
+	    QString aname = 
+		QString::fromUtf8(m_plaintorich.termAnchorName(1).c_str());
 	    LOGDEB2(("Call movetoanchor(%s)\n", (const char *)aname.utf8()));
 	    editor->moveToAnchor(aname);
 	    m_curAnchor = 1;

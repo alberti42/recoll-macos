@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.17 2007-11-15 18:34:49 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.18 2008-07-01 08:27:58 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -65,6 +65,33 @@ class TabData {
     {}
 };
 
+// Subclass plainToRich to add <termtag>s and anchors to the preview text
+class PlainToRichQtPreview : public PlainToRich {
+public:
+    int lastanchor;
+    PlainToRichQtPreview() {
+	lastanchor = 0;
+    }    
+    virtual ~PlainToRichQtPreview() {}
+    virtual string header() {
+	return string("<qt><head><title></title></head><body><p>");
+    }
+    virtual string startMatch() {return string("<termtag>");}
+    virtual string endMatch() {return string("</termtag>");}
+    virtual string termAnchorName(int i) {
+	static const char *termAnchorNameBase = "TRM";
+	char acname[sizeof(termAnchorNameBase) + 20];
+	sprintf(acname, "%s%d", termAnchorNameBase, i);
+	if (i > lastanchor)
+	    lastanchor = i;
+	return string(acname);
+    }
+
+    virtual string startAnchor(int i) {
+	return string("<a name=\"") + termAnchorName(i) + "\">";
+    }
+};
+
 class Preview : public QWidget {
 
     Q_OBJECT
@@ -116,6 +143,7 @@ private:
     QWidget      *m_currentW;
     HiliteData    m_hData;
     bool          m_justCreated; // First tab create is different
+    PlainToRichQtPreview m_plaintorich;
     bool          m_haveAnchors; // Search terms are marked in text
     int           m_lastAnchor; // Number of last anchor. Then rewind to 1
     int           m_curAnchor;

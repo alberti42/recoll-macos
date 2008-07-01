@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.30 2007-11-15 18:05:32 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.31 2008-07-01 08:27:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,8 @@ using std::set;
 #include "plaintorich.h"
 #include "cancelcheck.h"
 
+const string PlainToRich::snull = "";
+
 // For debug printing
 static string vecStringToString(const vector<string>& t)
 {
@@ -58,19 +60,13 @@ static string vecStringToString(const vector<string>& t)
 class myTextSplitCB : public TextSplitCB {
  public:
 
-    // Out: first query term found in text
-    string firstTerm;
-    int    firstTermOcc;
-    int m_firstTermPos;
-    int m_firstTermBPos;
-
     // Out: begin and end byte positions of query terms/groups in text
     vector<pair<int, int> > tboffs;  
 
     myTextSplitCB(const vector<string>& its, 
 		  const vector<vector<string> >&groups, 
 		  const vector<int>& slacks) 
-	:  firstTermOcc(1), m_wcount(0), m_groups(groups), m_slacks(slacks)
+	:  m_wcount(0), m_groups(groups), m_slacks(slacks)
     {
 	for (vector<string>::const_iterator it = its.begin(); 
 	     it != its.end(); it++) {
@@ -95,11 +91,6 @@ class myTextSplitCB : public TextSplitCB {
 	// If this word is a search term, remember its byte-offset span. 
 	if (m_terms.find(dumb) != m_terms.end()) {
 	    tboffs.push_back(pair<int, int>(bts, bte));
-	    if (firstTerm.empty()) {
-		firstTerm = term;
-		m_firstTermPos = pos;
-		m_firstTermBPos = bts;
-	    }
 	}
 	
 	if (m_gterms.find(dumb) != m_gterms.end()) {
@@ -148,10 +139,12 @@ class VecIntCmpShorter {
 #define SETMINMAX(POS, STA, STO)  {if ((POS) < (STA)) (STA) = (POS); \
 	if ((POS) > (STO)) (STO) = (POS);}
 
-// Recursively check that each term is inside the window (which is readjusted
-// as the successive terms are found)
+// Recursively check that each term is inside the window (which is
+// readjusted as the successive terms are found). i is the index for
+// the next position list to use (initially 1)
 static bool do_proximity_test(int window, vector<vector<int>* >& plists, 
-		    unsigned int i, int min, int max, int *sp, int *ep)
+			      unsigned int i, int min, int max, 
+			      int *sp, int *ep)
 {
     int tmp = max + 1;
     // take care to avoid underflow
@@ -210,7 +203,7 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	 it != terms.end(); it++) {
 	map<string, vector<int> >::iterator pl = m_plists.find(*it);
 	if (pl == m_plists.end()) {
-	    LOGDEB1(("myTextSplitCB::matchGroup: [%s] not found in m_plists\n",
+	    LOGDEB0(("myTextSplitCB::matchGroup: [%s] not found in m_plists\n",
 		    (*it).c_str()));
 	    continue;
 	}
@@ -218,58 +211,53 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	plistToTerm[&(pl->second)] = *it;
 	realgroup.push_back(*it);
     }
-    LOGDEB0(("myTextSplitCB::matchGroup:d %d:real group %s\n", window,
-	     vecStringToString(realgroup).c_str()));
-    if (plists.size() < 2)
+    LOGDEB0(("myTextSplitCB::matchGroup:d %d:real group after expansion %s\n", 
+	     window, vecStringToString(realgroup).c_str()));
+    if (plists.size() < 2) {
+	LOGDEB0(("myTextSplitCB::matchGroup: no actual groups found\n"));
 	return false;
+    }
     // Sort the positions lists so that the shorter is first
     std::sort(plists.begin(), plists.end(), VecIntCmpShorter());
 
-    // Walk the shortest plist and look for matches
-    int sta = int(10E9), sto = 0;
-    int pos;
-    // Occurrences are from 1->N
-    firstTermOcc = 0;
-    vector<int>::iterator it = plists[0]->begin();
-    do {
-	if (it == plists[0]->end())
+    { // Debug
+	map<vector<int>*, string>::iterator it;
+	it =  plistToTerm.find(plists[0]);
+	if (it == plistToTerm.end()) {
+	    // SuperWeird
+	    LOGERR(("matchGroup: term for first list not found !?!\n"));
 	    return false;
-	pos = *it++;
-	firstTermOcc++;
-    } while (!do_proximity_test(window, plists, 1, pos, pos, &sta, &sto));
-    SETMINMAX(pos, sta, sto);
-
-    LOGDEB0(("myTextSplitCB::matchGroup: MATCH [%d,%d]\n", sta, sto)); 
-
-    // Translate the position window into a byte offset window
-    int bs = 0;
-    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
-    map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
-    if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
-	LOGDEB1(("myTextSplitCB::matchGroup: pushing %d %d\n",
-		 i1->second.first, i2->second.second));
-	tboffs.push_back(pair<int, int>(i1->second.first, i2->second.second));
-	bs = i1->second.first;
-    } else {
-	LOGDEB(("myTextSplitCB::matchGroup: no bpos found for %d or %d\n", 
-		sta, sto));
+	}
+	LOGDEB0(("matchGroup: walking the shortest plist. Term [%s], len %d\n",
+		it->second.c_str(), plists[0]->size()));
     }
 
-    if (firstTerm.empty() || m_firstTermPos > sta) {
-	// firsTerm is used to try an position the preview window over
-	// the match. As it's difficult to divine byte/word positions
-	// in qtextedit, we use a string search. Use the
-	// shortest plist for this, which hopefully gives a better
-	// chance for the group to be found (it's hopeless to try and
-	// match the whole group)
-	map<vector<int>*, string>::iterator it = 
-	    plistToTerm.find(plists.front());
-	if (it != plistToTerm.end())
-	    firstTerm = it->second;
-	LOGDEB0(("myTextSplitCB:: best group term %s, firstTermOcc %d\n",
-		 firstTerm.c_str(), firstTermOcc));
-	m_firstTermPos = sta;
-	m_firstTermBPos = bs;
+    // Walk the shortest plist and look for matches
+    for (vector<int>::iterator it = plists[0]->begin(); 
+	 it != plists[0]->end(); it++) {
+	int pos = *it;
+	int sta = int(10E9), sto = 0;
+	LOGDEB0(("MatchGroup: Testing at pos %d\n", pos));
+	if (do_proximity_test(window, plists, 1, pos, pos, &sta, &sto)) {
+	    LOGDEB0(("myTextSplitCB::matchGroup: MATCH termpos [%d,%d]\n", 
+		     sta, sto)); 
+	    // Maybe extend the window by 1st term position, this was not
+	    // done by do_prox..
+	    SETMINMAX(pos, sta, sto);
+	    // Translate the position window into a byte offset window
+	    int bs = 0;
+	    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
+	    map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
+	    if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
+		LOGDEB0(("myTextSplitCB::matchGroup: pushing bpos %d %d\n",
+			i1->second.first, i2->second.second));
+		tboffs.push_back(pair<int, int>(i1->second.first, 
+						i2->second.second));
+		bs = i1->second.first;
+	    } else {
+		LOGDEB(("matchGroup: no bpos found for %d or %d\n", sta, sto));
+	    }
+	}
     }
 
     return true;
@@ -300,20 +288,6 @@ bool myTextSplitCB::matchGroups()
     return true;
 }
 
-// Setting searchable beacons in the text to walk the term list.
-static const char *termAnchorNameBase = "TRM";
-string termAnchorName(int i)
-{
-    char acname[sizeof(termAnchorNameBase) + 20];
-    sprintf(acname, "%s%d", termAnchorNameBase, i);
-    return string(acname);
-}
-
-static string termBeacon(int i)
-{
-    return string("<a name=\"") + termAnchorName(i) + "\">";
-}
-
 
 // Fix result text for display inside the gui text window.
 //
@@ -325,9 +299,9 @@ static string termBeacon(int i)
 // Instead, we mark the search term positions either with html anchor
 // (qt currently has problems with them), or a special string, and the
 // caller will use the editor's find() function to position on it
-bool plaintorich(const string& in, list<string>& out, 
-		 const HiliteData& hdata,
-		 bool noHeader, int *lastAnchor, int chunksize)
+bool PlainToRich::plaintorich(const string& in, list<string>& out, 
+			      const HiliteData& hdata,
+			      int chunksize)
 {
     Chrono chron;
     const vector<string>& terms(hdata.terms);
@@ -342,6 +316,7 @@ bool plaintorich(const string& in, list<string>& out,
 	LOGDEB0(("plaintorich: groups: \n"));
 	for (vector<vector<string> >::const_iterator vit = groups.begin(); 
 	     vit != groups.end(); vit++) {
+	    sterms += "GROUP: ";
 	    sterms += vecStringToString(*vit);
 	    sterms += "\n";
 	}
@@ -362,13 +337,10 @@ bool plaintorich(const string& in, list<string>& out,
 
     out.clear();
     out.push_back("");
-    list<string>::iterator sit = out.begin();
+    list<string>::iterator olit = out.begin();
 
     // Rich text output
-    if (noHeader)
-	*sit = "";
-    else 
-	*sit = "<qt><head><title></title></head><body><p>";
+    *olit = header();
 
     // Iterator for the list of input term positions. We use it to
     // output highlight tags and to compute term positions in the
@@ -388,10 +360,11 @@ bool plaintorich(const string& in, list<string>& out,
     // State variable used to limitate the number of consecutive empty lines 
     int ateol = 0;
 
-    // Stuff for numbered anchors at each term match
+    // Value for numbered anchors at each term match
     int anchoridx = 1;
 
     for (string::size_type pos = 0; pos != string::npos; pos = chariter++) {
+	// Check from time to time if we need to stop
 	if ((pos & 0xfff) == 0) {
 	    CancelCheck::instance().checkCancel();
 	}
@@ -401,20 +374,20 @@ bool plaintorich(const string& in, list<string>& out,
 	if (tPosIt != tboffsend) {
 	    int ibyteidx = chariter.getBpos();
 	    if (ibyteidx == tPosIt->first) {
-		if (lastAnchor)
-		    *sit += termBeacon(anchoridx++);
-		*sit += "<termtag>";
+		*olit += startAnchor(anchoridx++);
+		*olit += startMatch();
 	    } else if (ibyteidx == tPosIt->second) {
 		// Output end tag, then skip all highlight areas that
 		// would overlap this one
-		*sit += "</termtag>";
+		*olit += endMatch();
+		*olit += endAnchor();
 		int crend = tPosIt->second;
 		while (tPosIt != cb.tboffs.end() && tPosIt->first < crend)
 		    tPosIt++;
-		// Maybe end chunk
-		if (sit->size() > (unsigned int)chunksize) {
+		// Maybe end this chunk, begin next
+		if (olit->size() > (unsigned int)chunksize) {
 		    out.push_back("");
-		    sit++;
+		    olit++;
 		}
 	    }
 	}
@@ -422,33 +395,29 @@ bool plaintorich(const string& in, list<string>& out,
 	switch(*chariter) {
 	case '\n':
 	    if (ateol < 2) {
-		*sit += "<br>\n";
+		*olit += "<br>\n";
 		ateol++;
 	    }
 	    break;
 	case '\r': 
 	    break;
-	case '\007': // used as anchor char, strip other instances
-	    break;
 	case '<':
 	    ateol = 0;
-	    *sit += "&lt;";
+	    *olit += "&lt;";
 	    break;
 	case '&':
 	    ateol = 0;
-	    *sit += "&amp;";
+	    *olit += "&amp;";
 	    break;
 	default:
 	    // We don't change the eol status for whitespace, want a real line
 	    if (!(*chariter == ' ' || *chariter == '\t')) {
 		ateol = 0;
 	    }
-	    chariter.appendchartostring(*sit);
+	    chariter.appendchartostring(*olit);
 	}
     }
-    if (lastAnchor)
-	*lastAnchor = anchoridx - 1;
-#if 0
+#if 1
     {
 	FILE *fp = fopen("/tmp/debugplaintorich", "a");
 	fprintf(fp, "BEGINOFPLAINTORICHOUTPUT\n");

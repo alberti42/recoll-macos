@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.39 2008-05-21 07:21:37 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.40 2008-07-01 08:27:58 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -48,6 +48,14 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.39 2008-05-21 07:21:37 dockes Exp
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
+
+
+class PlainToRichQtReslist : public PlainToRich {
+public:
+    virtual ~PlainToRichQtReslist() {}
+    virtual string startMatch() {return string("<termtag>");}
+    virtual string endMatch() {return string("</termtag>");}
+};
 
 ResList::ResList(QWidget* parent, const char* name)
     : QTEXTBROWSER(parent, name)
@@ -430,7 +438,7 @@ void ResList::resultPageNext()
 
 	// Printable url: either utf-8 if transcoding succeeds, or url-encoded
 	string url;
-	printableUrl(doc.url, url);
+	printableUrl(rclconfig->getDefCharset(), doc.url, url);
 
 	// Make title out of file name if none yet
 	if (doc.meta["title"].empty()) {
@@ -480,7 +488,8 @@ void ResList::resultPageNext()
 	}
 	// No need to call escapeHtml(), plaintorich handles it
 	list<string> lr;
-	plaintorich(abstract, lr, hdata, true, 0, 100000);
+	PlainToRichQtReslist ptr;
+	ptr.plaintorich(abstract, lr, hdata);
 	string richabst = lr.front();
 
 	// Links;
