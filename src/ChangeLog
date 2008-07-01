@@ -1,3 +1,33 @@
+2008-07-01 14:11  dockes
+
+	* bincimapmime/convert.h: suppressed a few wasteful string-cstr
+	conversions
+
+2008-07-01 13:57  dockes
+
+	* bincimapmime/: convert.cc, convert.h, mime-parseonlyheader.cc,
+	mime-printheader.cc: suppressed a few wasteful string-cstr
+	conversions
+
+2008-07-01 13:51  dockes
+
+	* bincimapmime/address.cc, internfile/mh_mail.cpp,
+	query/wasastringtoquery.cpp, query/xadump.cpp, rcldb/rcldb.cpp,
+	rcldb/rclquery.cpp, rcldb/searchdata.h, utils/conftree.cpp,
+	utils/conftree.h, utils/idfile.cpp, utils/mimeparse.cpp,
+	utils/pathut.cpp, utils/pathut.h, utils/smallut.cpp: suppressed a
+	few wasteful string-cstr conversions
+
+2008-07-01 12:29  dockes
+
+	* index/mimetype.cpp, index/mimetype.h, internfile/mh_mail.cpp:
+	mh_mail now uses mimetype() to try and better identify
+	application/octet-stream
+
+2008-07-01 10:31  dockes
+
+	* ChangeLog: [no log message]
+
 2008-07-01 10:31  dockes
 
 	* rcldb/: rclquery.cpp, rclquery.h, rclquery_p.h: small cleanups
