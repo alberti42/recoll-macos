@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.31 2007-12-13 06:58:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.32 2008-07-01 10:29:45 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,8 @@ static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.31 2007-12-13 06:58:21 dockes Exp
 #include "debuglog.h"
 #include "smallut.h"
 #include "mh_html.h"
+#include "rclconfig.h"
+#include "mimetype.h"
 
 // binc imap mime definitions
 #include "mime.h"
@@ -103,7 +105,7 @@ bool MimeHandlerMail::skip_to_document(const string& ipath)
     LOGDEB(("MimeHandlerMail::skip_to_document(%s)\n", ipath.c_str()));
     if (m_idx == -1) {
 	// No decoding done yet. If ipath is null need do nothing
-	if (ipath == "" || ipath == "-1")
+	if (ipath.empty() || ipath == "-1")
 	    return true;
 	// ipath points to attachment: need to decode message
 	if (!next_document()) {
@@ -189,7 +191,7 @@ bool MimeHandlerMail::processAttach()
 	    att->m_charset.c_str(),
 	    att->m_filename.c_str()));
 
-    m_metaData["content"] = "";
+    m_metaData["content"] = string();
     string& body = m_metaData["content"];
     att->m_part->getBody(body, 0, att->m_part->bodylength);
     string decoded;
@@ -213,6 +215,16 @@ bool MimeHandlerMail::processAttach()
 	} else {
 	    body = utf8;
 	}
+    }
+
+    // Special case for application/octet-stream: try to better
+    // identify content, using file name if set
+    if (m_metaData["mimetype"] == "application/octet-stream" &&
+	!m_metaData["filename"].empty()) {
+	string mt = mimetype(m_metaData["filename"], 0,	
+			     RclConfig::getMainConfig(), false);
+	if (!mt.empty()) 
+	    m_metaData["mimetype"] = mt;
     }
 
     // Ipath

@@ -16,16 +16,22 @@
  */
 #ifndef _MIMETYPE_H_INCLUDED_
 #define _MIMETYPE_H_INCLUDED_
-/* @(#$Id: mimetype.h,v 1.6 2006-12-19 08:40:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimetype.h,v 1.7 2008-07-01 10:29:45 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
 class RclConfig;
 struct stat;
+
 /**
- * Try to determine a mime type for filename. 
- * This may imply more than matching the suffix, the name must be usable
- * to actually access file data.
+ * Try to determine a mime type for file. 
+ *
+ * If stp is not null, this may imply more than matching the suffix,
+ * the name must be usable to actually access file data.
+ * @param filename file/path name to use
+ * @param stp if not null use st_mode bits for directories etc.
+ * @param cfg recoll config
+ * @param usfc Use system's 'file' command as last resort (or not)
  */
 string mimetype(const std::string &filename, const struct stat *stp,
 		RclConfig *cfg, bool usfc);

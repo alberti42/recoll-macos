@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.20 2006-12-20 09:54:18 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.21 2008-07-01 10:29:45 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -57,13 +57,11 @@ using namespace std;
 
 static string mimetypefromdata(const string &fn, bool usfc)
 {
-    string mime;
-
     // In any case first try the internal identifier
-    mime = idFile(fn.c_str());
+    string mime = idFile(fn.c_str());
 
 #ifdef USE_SYSTEM_FILE_COMMAND
-    if (usfc && mime == "") {
+    if (usfc && mime.empty()) {
 	// Last resort: use "file -i"
 	list<string> args;
 
@@ -75,7 +73,7 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	int status = ex.doexec(cmd, args, 0, &result);
 	if (status) {
 	    LOGERR(("mimetypefromdata: doexec: status 0x%x\n", status));
-	    return "";
+	    return string();
 	}
 	// LOGDEB(("mimetypefromdata: %s [%s]\n", result.c_str(), fn.c_str()));
 
@@ -88,7 +86,7 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	list<string> res;
 	stringToStrings(result, res);
 	if (res.size() <= 1)
-	    return "";
+	    return string();
 	list<string>::iterator it = res.begin();
 	mime = *++it;
 	// Remove possible punctuation at the end
@@ -96,7 +94,7 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	    mime.erase(mime.length() -1);
 	// File -i will sometimes return strange stuff (ie: "very small file")
 	if(mime.find("/") == string::npos) 
-	    mime = "";
+	    mime.clear();
     }
 #endif
 
@@ -109,17 +107,18 @@ static string mimetypefromdata(const string &fn, bool usfc)
 string mimetype(const string &fn, const struct stat *stp,
 		RclConfig *cfg, bool usfc)
 {
-    if (S_ISDIR(stp->st_mode))
-	return "application/x-fsdirectory";
-    if (!S_ISREG(stp->st_mode))
-	return "application/x-fsspecial";
-
+    if (stp) {
+	if (S_ISDIR(stp->st_mode))
+	    return "application/x-fsdirectory";
+	if (!S_ISREG(stp->st_mode))
+	    return "application/x-fsspecial";
+    }
     if (cfg == 0)
-	return "";
+	return string();
 
     if (cfg->inStopSuffixes(fn)) {
 	LOGDEB(("mimetype: fn [%s] in stopsuffixes\n", fn.c_str()));
-	return "";
+	return string();
     }
 
     // First look for suffix in mimetype map
@@ -135,7 +134,9 @@ string mimetype(const string &fn, const struct stat *stp,
 	    return mtype;
     }
 
-    // Then examine data
+    // Finally examine data
+    if (!stp)
+	return string();
     return mimetypefromdata(fn, usfc);
 }
 
