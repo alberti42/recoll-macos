@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.55 2008-06-13 18:22:46 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.56 2008-07-01 08:28:45 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -55,6 +55,7 @@ class SearchData;
 class TermIter;
 class Query;
 
+/** Used for returning result lists for index terms matching some criteria */
 class TermMatchEntry {
 public:
     TermMatchEntry() : wcf(0) {}
@@ -106,7 +107,9 @@ class Db {
        possible depending on the document type */
     bool add(const string &filename, const Doc &doc, const struct stat *stp);
 
-    /** Test if the db entry for the given filename/stat is up to date */
+    /** Test if the db entry for the given filename/stat is up to date. This
+     * has the side-effect of setting the existence flag for the file document
+     * and all subdocs if any (for later use by 'purge()') */
     bool needUpdate(const string &filename, const struct stat *stp);
 
     /** Remove documents that no longer exist in the file system. This
@@ -123,7 +126,6 @@ class Db {
     bool createStemDb(const string &lang);
     /** Delete stem expansion database for given language. */
     bool deleteStemDb(const string &lang);
-
 
     /* Query-related methods ************************************/
 
@@ -144,7 +146,11 @@ class Db {
     bool termMatch(MatchType typ, const string &lang, const string &s, 
 		   list<TermMatchEntry>& result, int max = -1);
 
-    /* Build synthetic abstract out of query terms and term position data */
+    /** Set parameters for synthetic abstract generation */
+    void setAbstractParams(int idxTrunc, int synthLen, int syntCtxLen);
+
+    /** Build synthetic abstract for document, extracting chunks relevant for
+     * the input query. This uses index data only (no access to the file) */
     bool makeDocAbstract(Doc &doc, Query *query, string& abstract);
 
     /** Get document for given filename and ipath */
@@ -152,9 +158,6 @@ class Db {
 
     /** Get a list of existing stemming databases */
     std::list<std::string> getStemLangs();
-
-    /** Set parameters for synthetic abstract generation */
-    void setAbstractParams(int idxTrunc, int synthLen, int syntCtxLen);
 
     /** Whole term list walking. */
     TermIter *termWalkOpen();
@@ -169,7 +172,7 @@ class Db {
     /** Filename wildcard expansion */
     bool filenameWildExp(const string& exp, list<string>& names);
 
-    /** This has to be public for access by embedded Query::Native */
+    /* This has to be public for access by embedded Query::Native */
     Native *m_ndb; 
 
 private:
@@ -218,7 +221,7 @@ private:
 
     /* Copyconst and assignemt private and forbidden */
     Db(const Db &) {}
-    Db & operator=(const Db &) {return *this;};
+    Db& operator=(const Db &) {return *this;};
 };
 
 // Unaccent and lowercase data.
