@@ -126,21 +126,21 @@ int Binc::MimePart::parseOnlyHeader(const string &toboundary) const
 	  mimeSource->ungetChar();
 
 	quit = true;
-	name = "";
+	name.clear();
 	break;
       }
 
       name += c;
 
       if (name.length() == 2 && name.substr(0, 2) == "\r\n") {
-	name = "";
+	name.clear();
 	quit = true;
 	break;
       }
     }
 
     if (name.length() == 1 && name[0] == '\r') {
-      name = "";
+      name.clear();
       break;
     }
 
@@ -175,7 +175,7 @@ int Binc::MimePart::parseOnlyHeader(const string &toboundary) const
 	  h.add(name, content);
 
 	  name = c;
-	  content = "";
+	  content.clear();
 	  break;
 	}
       }

@@ -107,7 +107,7 @@ void Binc::MimePart::printHeader(int fd, IODevice &output,
 	// abort printing of header. note that in this case, the
 	// headers will not end with a seperate \r\n.
 	quit = true;
-	name = "";
+	name.clear();
 	break;
       }
     }
@@ -163,8 +163,8 @@ void Binc::MimePart::printHeader(int fd, IODevice &output,
 	}
 
 	// move on to the next header
-	content = "";
-	name = "";
+	content.clear();
+	name.clear();
 	break;
       }
 

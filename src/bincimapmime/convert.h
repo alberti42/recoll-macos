@@ -207,7 +207,7 @@ namespace Binc {
       if (delim.find(*i) != std::string::npos) {
 	if (!skipempty || token != "")
 	  dest.push_back(token);
-	token = "";
+	token.clear();
       } else
 	token += *i;
     }
@@ -230,7 +230,7 @@ namespace Binc {
       if (!inquote && delim.find(*i) != std::string::npos) {
 	if (!skipempty || token != "")
 	  dest.push_back(token);
-	token = "";
+	token.clear();
       } else
 	token += *i;
     }
@@ -241,13 +241,13 @@ namespace Binc {
   //----------------------------------------------------------------------
   inline std::string toCanonMailbox(const std::string &s_in)
   {
-    if (s_in.find("..") != std::string::npos) return "";
+    if (s_in.find("..") != std::string::npos) return string();
 
     if (s_in.length() >= 5) {
       std::string a = s_in.substr(0, 5);
       uppercase(a);
       return a == "INBOX" ?
-	a + (s_in.length() > 5 ? s_in.substr(5) : "") : s_in;
+	a + (s_in.length() > 5 ? s_in.substr(5) : string() : s_in;
     }
     
     return s_in;
