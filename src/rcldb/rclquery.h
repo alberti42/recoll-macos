@@ -1,6 +1,6 @@
 #ifndef _rclquery_h_included_
 #define _rclquery_h_included_
-/* @(#$Id: rclquery.h,v 1.1 2008-06-13 18:22:46 dockes Exp $  (C) 2008 J.F.Dockes */
+/* @(#$Id: rclquery.h,v 1.2 2008-07-01 08:31:08 dockes Exp $  (C) 2008 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -41,36 +41,45 @@ class Doc;
  * An Rcl::Query is a question (SearchData) applied to a
  * database. Handles access to the results. Somewhat equivalent to a
  * cursor in an rdb.
+ *
  */
 class Query {
  public:
     enum QueryOpts {QO_NONE=0, QO_STEM = 1};
 
+    /** The constructor only allocates memory */
     Query(Db *db);
-
     ~Query();
 
     /** Get explanation about last error */
     string getReason() const;
 
-    /** Parse query string and initialize query */
+    /** Accept data describing the search and query the index. This can
+     * be called repeatedly on the same object which gets reinitialized each
+     * time
+     */
     bool setQuery(RefCntr<SearchData> q, int opts = QO_NONE,
 		  const string& stemlang = "english");
-    bool getQueryTerms(list<string>& terms);
-    bool getMatchTerms(const Doc& doc, list<string>& terms);
-
-    /** Get document at rank i in current query. */
-    bool getDoc(int i, Doc &doc, int *percent = 0);
-
-    /** Expand query */
-    list<string> expand(const Doc &doc);
 
     /** Get results count for current query */
     int getResCnt();
 
+    /** Get document at rank i in current query results. */
+    bool getDoc(int i, Doc &doc, int *percent = 0);
+
+    /** Get possibly expanded list of query terms */
+    bool getQueryTerms(list<string>& terms);
+
+    /** Return a list of terms which matched for a specific result document */
+    bool getMatchTerms(const Doc& doc, list<string>& terms);
+
+    /** Expand query to look for documents like the one passed in */
+    list<string> expand(const Doc &doc);
+
+    /** Return the Db we're set for */
     Db *whatDb();
 
-    /** make this public for access from embedded Db::Native */
+    /* make this public for access from embedded Db::Native */
     class Native;
     Native *m_nq;
 
@@ -79,7 +88,7 @@ private:
     string m_reason; // Error explanation
     Db    *m_db;
     unsigned int m_qOpts;
-    /* Copyconst and assignemt private and forbidden */
+    /* Copyconst and assignement private and forbidden */
     Query(const Query &) {}
     Query & operator=(const Query &) {return *this;};
 };

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.1 2008-06-13 18:22:46 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.2 2008-07-01 08:31:08 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 
 #include <list>
@@ -79,16 +79,18 @@ Db *Query::whatDb()
 bool Query::setQuery(RefCntr<SearchData> sdata, int opts, 
 		     const string& stemlang)
 {
+    LOGDEB(("Query::setQuery:\n"));
+
     if (!m_db || ISNULL(m_nq)) {
 	LOGERR(("Query::setQuery: not initialised!\n"));
 	return false;
     }
     m_reason.erase();
-    LOGDEB(("Query::setQuery:\n"));
 
     m_filterTopDir = sdata->getTopdir();
-    deleteZ(m_nq->decider);
-    deleteZ(m_nq->postfilter);
+    m_qOpts = opts;
+    m_nq->clear();
+
     if (!m_filterTopDir.empty()) {
 #if XAPIAN_FILTERING
 	m_nq->decider = 
@@ -97,12 +99,9 @@ bool Query::setQuery(RefCntr<SearchData> sdata, int opts,
 #endif
 	    new FilterMatcher(m_filterTopDir);
     }
-    m_nq->m_dbindices.clear();
-    m_qOpts = opts;
-    m_nq->termfreqs.clear();
+
     Xapian::Query xq;
-    if (!sdata->toNativeQuery(*m_db, &xq, 
-			      (opts & QO_STEM) ? stemlang : "")) {
+    if (!sdata->toNativeQuery(*m_db, &xq, (opts & QO_STEM) ? stemlang : "")) {
 	m_reason += sdata->getReason();
 	return false;
     }
@@ -110,7 +109,6 @@ bool Query::setQuery(RefCntr<SearchData> sdata, int opts,
     string ermsg;
     string d;
     try {
-	delete m_nq->enquire;
 	m_nq->enquire = new Xapian::Enquire(m_db->m_ndb->db);
 	m_nq->enquire->set_query(m_nq->query);
 	m_nq->mset = Xapian::MSet();
