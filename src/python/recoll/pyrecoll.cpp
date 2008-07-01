@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.4 2008-06-17 11:43:26 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.5 2008-07-01 08:24:30 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <Python.h>
@@ -300,8 +300,70 @@ Db_query(recollq_DbObject* self)
     return (PyObject *)result;
 }
 
+static PyObject *
+Db_setAbstractParams(recollq_DbObject *self, PyObject *args, PyObject *kwargs)
+{
+    LOGDEB(("Db_setAbstractParams\n"));
+    static char *kwlist[] = {"maxchars", "contextwords", NULL};
+    int ctxwords = -1, maxchars = -1;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|ii", kwlist,
+				     &maxchars, &ctxwords))
+	return 0;
+    if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
+	LOGDEB(("Db_query: db not found %p\n", self->db));
+        PyErr_SetString(PyExc_AttributeError, "db");
+        return 0;
+    }
+    self->db->setAbstractParams(-1, maxchars, ctxwords);
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+Db_makeDocAbstract(recollq_DbObject* self, PyObject *args, PyObject *)
+{
+    LOGDEB(("Db_makeDocAbstract\n"));
+    recollq_DocObject *pydoc;
+    recollq_QueryObject *pyquery;
+    if (!PyArg_ParseTuple(args, "O!O!:Db_makeDocAbstract",
+			  &recollq_DocType, &pydoc,
+			  &recollq_QueryType, &pyquery)) {
+	return 0;
+    }
+    if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
+	LOGERR(("Db_makeDocAbstract: db not found %p\n", self->db));
+        PyErr_SetString(PyExc_AttributeError, "db");
+        return 0;
+    }
+    if (pydoc->doc == 0 || the_docs.find(pydoc->doc) == the_docs.end()) {
+	LOGERR(("Db_makeDocAbstract: doc not found %p\n", pydoc->doc));
+        PyErr_SetString(PyExc_AttributeError, "doc");
+        return 0;
+    }
+    if (pyquery->query == 0 || 
+	the_queries.find(pyquery->query) == the_queries.end()) {
+	LOGERR(("Db_makeDocAbstract: query not found %p\n", pyquery->query));
+        PyErr_SetString(PyExc_AttributeError, "query");
+        return 0;
+    }
+    string abstract;
+    if (!self->db->makeDocAbstract(*(pydoc->doc), pyquery->query, abstract)) {
+	PyErr_SetString(PyExc_EnvironmentError, "rcl makeDocAbstract failed");
+        return 0;
+    }
+    // Return a python unicode object
+    return PyUnicode_Decode(abstract.c_str(), abstract.size(), 
+				     "UTF-8", "replace");
+}
+
 static PyMethodDef Db_methods[] = {
     {"query", (PyCFunction)Db_query, METH_NOARGS,
+     "Return a new, blank query for this index"
+    },
+    {"setAbstractParams", (PyCFunction)Db_setAbstractParams, 
+     METH_VARARGS|METH_KEYWORDS,
+     "Set abstract build params: maxchars and contextwords"
+    },
+    {"makeDocAbstract", (PyCFunction)Db_makeDocAbstract, METH_VARARGS,
      "Return a new, blank query for this index"
     },
     {NULL}  /* Sentinel */
@@ -319,7 +381,7 @@ Query_dealloc(recollq_QueryObject *self)
 }
 
 static PyObject *
-Query_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
 {
     recollq_QueryObject *self;
     LOGDEB(("Query_new\n"));
@@ -479,11 +541,14 @@ Doc_init(recollq_DocObject *self, PyObject *, PyObject *)
 static PyObject *
 Doc_getmeta(recollq_DocObject *self, void *closure)
 {
+    LOGDEB(("Doc_getmeta\n"));
     if (self->doc == 0 || 
 	the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc");
 	return 0;
     }
+    LOGDEB(("Doc_getmeta: doc %p\n", self->doc));
+
 #if 0
     for (map<string,string>::const_iterator it = self->doc->meta.begin();
 	 it != self->doc->meta.end(); it++) {
