@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.31 2008-07-01 08:27:58 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.32 2008-07-04 09:29:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -417,7 +417,7 @@ bool PlainToRich::plaintorich(const string& in, list<string>& out,
 	    chariter.appendchartostring(*olit);
 	}
     }
-#if 1
+#if 0
     {
 	FILE *fp = fopen("/tmp/debugplaintorich", "a");
 	fprintf(fp, "BEGINOFPLAINTORICHOUTPUT\n");
