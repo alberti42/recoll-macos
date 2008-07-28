@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.24 2008-05-05 20:24:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.25 2008-07-28 08:42:52 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -56,6 +56,7 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.24 2008-05-05 20:24:55 dockes E
 #include "recoll.h"
 #include "guiutils.h"
 #include "rcldb.h"
+#include "rclconfig.h"
 #include "pathut.h"
 #include "uiprefs_w.h"
 #include "viewaction_w.h"
@@ -363,9 +364,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     }
     struct stat st1, st2;
     stat(dbdir.c_str(), &st1);
-    string rcldbdir;
-    if (rcldb) 
-	rcldbdir = rcldb->getDbDir();
+    string rcldbdir = RclConfig::getMainConfig()->getDbDir();
     stat(rcldbdir.c_str(), &st2);
     path_catslash(rcldbdir);
     fprintf(stderr, "rcldbdir: [%s]\n", rcldbdir.c_str());

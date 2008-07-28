@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.134 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.135 2008-07-28 08:42:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,6 @@ static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.134 2008-07-01 11:51:51 dockes Exp 
 #include <stdio.h>
 #include <cstring>
 #include <unistd.h>
-#include <sys/stat.h>
 #include <fnmatch.h>
 #include <regex.h>
 #include <math.h>
@@ -59,76 +58,82 @@ using namespace std;
 #define MIN(A,B) (A<B?A:B)
 #endif
 
+// Omega compatible values. We leave a hole for future omega values. Not sure 
+// it makes any sense to keep any level of omega compat given that the index
+// is incompatible anyway.
+enum value_slot {
+    VALUE_LASTMOD = 0,	// 4 byte big endian value - seconds since 1970.
+    VALUE_MD5 = 1,	// 16 byte MD5 checksum of original document.
+    VALUE_SIG = 10      // Doc sig as chosen by app (ex: mtime+size
+};
+
+
 // This is the word position offset at which we index the body text
 // (abstract, keywords, etc.. are stored before this)
 static const unsigned int baseTextPosition = 100000;
 
-#undef MTIME_IN_VALUE
-#ifdef MTIME_IN_VALUE
-// Omega compatible values
-#define enum value_slot {
-    VALUE_LASTMOD = 0,	// 4 byte big endian value - seconds since 1970.
-    VALUE_MD5 = 1	// 16 byte MD5 checksum of original document.
-};
-#endif
-
 #ifndef NO_NAMESPACES
 namespace Rcl {
 #endif
-    
-// Max length for path terms stored for each document. Truncate
-// longer path and uniquize with hash. The goal for this is to avoid
-// xapian max term length limitations, not to gain space (we gain very
-// little even with very short maxlens like 30)
-// Note that Q terms add the ipath to this, and that the xapian max
-// key length seems to be around 250
+
+// Synthetic abstract marker (to discriminate from abstract actually
+// found in document)
+const static string rclSyntAbs("?!#@");
+
+// Maximum length for path terms stored for each document. We truncate
+// longer paths and uniquize them by appending a hashed value. This
+// is done to avoid xapian max term length limitations, not
+// to gain space (we gain very little even with very short maxlens
+// like 30) Note that Q terms add the ipath to this, and that the
+// xapian max key length seems to be around 250.
 // The value for PATHHASHLEN includes the length of the hash part.
 #define PATHHASHLEN 150
 
-// Synthetic abstract marker (to discriminate from abstract actually
-// found in doc)
-const static string rclSyntAbs = "?!#@";
-const static string emptystring;
+// Compute the unique term used to link documents to their file-system source:
+// Hashed path + possible internal path
+static inline string make_uniterm(const string& fn, const string& ipath)
+{
+    string hash;
+    pathHash(fn, hash, PATHHASHLEN);
+    string s("Q");
+    s.append(hash);
+    s.append("|");
+    s.append(ipath);
+    return s;
+}
 
-/* See comment in class declaration */
-bool Db::Native::subDocs(const string &hash, vector<Xapian::docid>& docids) 
+/* See comment in class declaration: return all subdocuments of a
+ * document given by its unique path id */
+bool Db::Native::subDocs(const string &uniterm, vector<Xapian::docid>& docids) 
 {
     docids.clear();
-    string qterm = "Q"+ hash + "|";
-    string ermsg;
 
+    string ermsg;
     for (int tries = 0; tries < 2; tries++) {
 	try {
 	    Xapian::TermIterator it = db.allterms_begin(); 
-	    it.skip_to(qterm);
-	    for (;it != db.allterms_end(); it++) {
-		// If current term does not begin with qterm or has
+	    it.skip_to(uniterm);
+	    // Don't return the doc itself:
+	    it++;
+	    for (; it != db.allterms_end(); it++) {
+		LOGDEB2(("Testing [%s]\n", (*it).c_str()));
+		// If current term does not begin with uniterm or has
 		// another |, not the same file
-		if ((*it).find(qterm) != 0 || 
-		    (*it).find_last_of("|") != qterm.length() -1)
+		if ((*it).find(uniterm) != 0 || 
+		    (*it).find_last_of("|") != uniterm.length() - 1)
 		    break;
 		docids.push_back(*(db.postlist_begin(*it)));
 	    }
+	    LOGDEB2(("Db::Native::subDocs: returning %d ids\n", docids.size()));
 	    return true;
 	} catch (const Xapian::DatabaseModifiedError &e) {
 	    LOGDEB(("Db::subDocs: got modified error. reopen/retry\n"));
-	    // Can't use reOpen here, it would delete *me*
+	    // Can't use reOpen() here, I'm a Native:: method, this
+	    // would delete my own object
 	    db = Xapian::Database(m_db->m_basedir);
-	} catch (const Xapian::Error &e) {
-	    ermsg = e.get_msg().c_str();
+	} XCATCHERROR(ermsg);
+	if (!ermsg.empty()) 
 	    break;
-	} catch (const string &s) {
-	    ermsg = s;
-	    if (ermsg.empty()) 
-		ermsg = "Empty error message"; 
-	} catch (const char *s) {
-	    ermsg = s ? s : string();
-	    if (ermsg.empty()) 
-		ermsg = "Empty error message"; 
-	} catch (...) {
-	    ermsg= "Unknown xapian error (not Xapian::Error or string)";
-	    break;
-	}
     }
     LOGERR(("Rcl::Db::subDocs: %s\n", ermsg.c_str()));
     return false;
@@ -159,6 +164,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc
     parms.get(string("ipath"), doc.ipath);
     parms.get(string("fbytes"), doc.fbytes);
     parms.get(string("dbytes"), doc.dbytes);
+    parms.get(string("sig"), doc.sig);
     doc.xdocid = docid;
     return true;
 }
@@ -544,11 +550,6 @@ bool Db::open(const string& dir, const string &stops, OpenMode mode,
     return false;
 }
 
-string Db::getDbDir()
-{
-    return m_basedir;
-}
-
 // Note: xapian has no close call, we delete and recreate the db
 bool Db::close()
 {
@@ -811,7 +812,7 @@ static const int MB = 1024 * 1024;
 // the title abstract and body and add special terms for file name,
 // date, mime type ... , create the document data record (more
 // metadata), and update database
-bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
+bool Db::add(const string &fn, const Doc &idoc)
 {
     LOGDEB1(("Db::add: fn %s\n", fn.c_str()));
     if (m_ndb == 0)
@@ -899,7 +900,7 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 	    }
 	    splitData.setprefix(pfx); // Subject
 	    splitter.text_to_words(noacc);
-	    splitData.setprefix(emptystring);
+	    splitData.setprefix(string());
 	    splitData.basepos += splitData.curpos + 100;
 	}
     }
@@ -934,31 +935,9 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 	newdocument.add_term(noacc);
     }
 
-    // Pathname/ipath terms. This is used for file existence/uptodate
-    // checks, and unique id for the replace_document() call 
-
-    // Truncate the filepath part to a reasonable length and
-    // replace the truncated part with a hopefully unique hash
-    string hash;
-    pathHash(fn, hash, PATHHASHLEN);
-    LOGDEB2(("Db::add: pathhash [%s]\n", hash.c_str()));
-
-    // Unique term: makes unique identifier for documents
-    // either path or path+ipath inside multidocument files.
-    // We only add a path term if ipath is empty. Else there will be a qterm
-    // (path+ipath), and a pseudo-doc will be created to stand for the file 
-    // itself (for up to date checks). This is handled by 
-    // DbIndexer::processone() 
-    string uniterm;
-    if (doc.ipath.empty()) {
-	uniterm = "P" + hash;
-#ifdef MTIME_IN_VALUE
-#error need to fix fmtime to be stored as omega does it (bin net order str)
-	newdocument.add_value(VALUE_LASTMOD, doc.fmtime);
-#endif
-    } else {
-	uniterm = "Q" + hash + "|" + doc.ipath;
-    }
+    // Pathname/ipath unique term: this is used for file existence/uptodate
+    // checks, and unique id for the replace_document() call.
+    string uniterm = make_uniterm(fn, doc.ipath);
     newdocument.add_term(uniterm);
 
     // Dates etc...
@@ -985,14 +964,18 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 	record += "\ndmtime=" + doc.dmtime;
     }
     record += "\norigcharset=" + doc.origcharset;
-    char sizebuf[20]; 
-    sizebuf[0] = 0;
-    if (stp)
-	sprintf(sizebuf, "%ld", (long)stp->st_size);
-    if (sizebuf[0])
-	record += string("\nfbytes=") + sizebuf;
+
+    if (!doc.fbytes.empty())
+	record += string("\nfbytes=") + doc.fbytes;
+    // Note that we add the signature both as a value and in the data record
+    if (!doc.sig.empty())
+	record += string("\nsig=") + doc.sig;
+    newdocument.add_value(VALUE_SIG, doc.sig);
+
+    char sizebuf[30]; 
     sprintf(sizebuf, "%u", (unsigned int)doc.text.length());
     record += string("\ndbytes=") + sizebuf;
+
     if (!doc.ipath.empty()) {
 	record += "\nipath=" + doc.ipath;
     }
@@ -1062,71 +1045,58 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
 }
 
 // Test if given filename has changed since last indexed:
-bool Db::needUpdate(const string &filename, const struct stat *stp)
+bool Db::needUpdate(const string &filename, const string& sig)
 {
-    //    Chrono chron;
     if (m_ndb == 0)
 	return false;
 
-    string hash;
-    pathHash(filename, hash, PATHHASHLEN);
-    string pterm  = "P" + hash;
+    string uniterm = make_uniterm(filename, string());
     string ermsg;
 
-    // We look up the document indexed by the Pterm. This is either
+    // We look up the document indexed by the uniterm. This is either
     // the actual document file, or, for a multi-document file, the
     // pseudo-doc we create to stand for the file itself.
 
     // We try twice in case database needs to be reopened.
     for (int tries = 0; tries < 2; tries++) {
 	try {
-	    // Get the Pterm doc or pseudo-doc
-	    Xapian::PostingIterator docid = m_ndb->db.postlist_begin(pterm);
-	    if (docid == m_ndb->db.postlist_end(pterm)) {
+	    // Get the doc or pseudo-doc
+	    Xapian::PostingIterator docid = m_ndb->db.postlist_begin(uniterm);
+	    if (docid == m_ndb->db.postlist_end(uniterm)) {
 		// If no document exist with this path, we do need update
-		LOGDEB2(("Db::needUpdate: no path: [%s]\n", pterm.c_str()));
+		LOGDEB(("Db::needUpdate: no path: [%s]\n", uniterm.c_str()));
 		return true;
 	    }
 	    Xapian::Document doc = m_ndb->db.get_document(*docid);
 
-	    // Retrieve file modification time from db stored value
-#ifdef MTIME_IN_VALUE
-	    // This is slightly faster, but we'd need to setup a conversion
-	    // for old dbs, and it's not really worth it
-	    string value = doc.get_value(VALUE_LASTMOD);
-#error fixme make storage format compatible with omega
-	    const char *cp = value.c_str();
-#else
+	    // Retrieve old file/doc signature from value
+	    string osig = doc.get_value(VALUE_SIG);
+#if 0
+	    // Get old  sig from data record
 	    string data = doc.get_data();
-	    const char *cp = strstr(data.c_str(), "fmtime=");
-	    if (cp) {
-		cp += 7;
-	    } else {
-		cp = strstr(data.c_str(), "mtime=");
-		if (cp)
-		    cp+= 6;
-	    }
+	    string::size_type i1, i2;
+	    i1 = data.find("sig=");
+	    if (i1 == string::npos) 
+		return true;
+	    i1 += 4;
+	    if (i1 >= data.length())
+		return true;
+	    i2 = data.find_first_of("\n\r", i1);
+	    if (i2 == string::npos)
+		return true;
+	    string osig = data.substr(i1, i2-i1);
 #endif
-	    // If the time string begins with a "+", force an update. Happens
-	    // after a filter error, see indexer.cpp, processone()
-	    time_t mtime = (!cp || *cp == '+') ? 0 : atoll(cp);
-
-	    // Retrieve file size as stored in db data
-	    cp = strstr(data.c_str(), "fbytes=");
-	    if (cp)
-		cp += 7; 
-	    off_t fbytes = cp ? atoll(cp) : 0;
-
-	    // Compare db time and size data to filesystem's
-	    if (mtime != stp->st_mtime || fbytes != stp->st_size) {
-		LOGDEB2(("Db::needUpdate:yes: mtime: D %ld F %ld."
-			 "sz D %ld F %ld\n", long(mtime), long(stp->st_mtime),
-			 long(fbytes), long(stp->st_size)));
+	    LOGDEB(("Db::needUpdate: oldsig [%s] new [%s]\n",
+		    osig.c_str(), sig.c_str()));
+	    // Compare new/old sig
+	    if (sig != osig) {
+		LOGDEB(("Db::needUpdate:yes: olsig [%s] new [%s]\n",
+			osig.c_str(), sig.c_str()));
 		// Db is not up to date. Let's index the file
 		return true;
 	    } 
 
-	    LOGDEB2(("Db::needUpdate: uptodate: [%s]\n", pterm.c_str()));
+	    LOGDEB(("Db::needUpdate: uptodate: [%s]\n", uniterm.c_str()));
 
 	    // Up to date. 
 
@@ -1135,7 +1105,7 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 
 	    // Set the existence flag for all the subdocs (if any)
 	    vector<Xapian::docid> docids;
-	    if (!m_ndb->subDocs(hash, docids)) {
+	    if (!m_ndb->subDocs(uniterm, docids)) {
 		LOGERR(("Rcl::Db::needUpdate: can't get subdocs list\n"));
 		return true;
 	    }
@@ -1146,12 +1116,13 @@ bool Db::needUpdate(const string &filename, const struct stat *stp)
 		    updated[*it] = true;
 		}
 	    }
-	    //	    LOGDEB(("Db::needUpdate: used %d mS\n", chron.millis()));
 	    return false;
 	} catch (const Xapian::DatabaseModifiedError &e) {
 	    LOGDEB(("Db::needUpdate: got modified error. reopen/retry\n"));
 	    reOpen();
 	} XCATCHERROR(ermsg);
+	if (!ermsg.empty())
+	    break;
     }
     LOGERR(("Db::needUpdate: error while checking existence: %s\n", 
 	    ermsg.c_str()));
@@ -1258,22 +1229,20 @@ bool Db::purgeFile(const string &fn)
     if (m_ndb == 0)
 	return false;
     Xapian::WritableDatabase db = m_ndb->wdb;
-    string hash;
-    pathHash(fn, hash, PATHHASHLEN);
-    string pterm  = "P" + hash;
+    string uniterm = make_uniterm(fn, string());
     string ermsg;
     try {
-	Xapian::PostingIterator docid = db.postlist_begin(pterm);
-	if (docid == db.postlist_end(pterm))
+	Xapian::PostingIterator docid = db.postlist_begin(uniterm);
+	if (docid == db.postlist_end(uniterm))
 	    return true;
 	LOGDEB(("purgeFile: delete docid %d\n", *docid));
 	db.delete_document(*docid);
 	vector<Xapian::docid> docids;
-	m_ndb->subDocs(hash, docids);
+	m_ndb->subDocs(uniterm, docids);
 	LOGDEB(("purgeFile: subdocs cnt %d\n", docids.size()));
 	for (vector<Xapian::docid>::iterator it = docids.begin();
 	     it != docids.end(); it++) {
-	    LOGDEB2(("Db::purgeFile: delete subdoc %d\n", *it));
+	    LOGDEB(("Db::purgeFile: delete subdoc %d\n", *it));
 	    db.delete_document(*it);
 	}
 	return true;
@@ -1573,22 +1542,20 @@ bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
     if (*pc)
 	*pc = 100;
 
-    string hash;
-    pathHash(fn, hash, PATHHASHLEN);
-    string pqterm  = ipath.empty() ? "P" + hash : "Q" + hash + "|" + ipath;
+    string uniterm = make_uniterm(fn, ipath);
     string ermsg;
     try {
-	if (!m_ndb->db.term_exists(pqterm)) {
+	if (!m_ndb->db.term_exists(uniterm)) {
 	    // Document found in history no longer in the database.
 	    // We return true (because their might be other ok docs further)
 	    // but indicate the error with pc = -1
 	    if (*pc) 
 		*pc = -1;
 	    LOGINFO(("Db:getDoc: no such doc in index: [%s] (len %d)\n",
-		     pqterm.c_str(), pqterm.length()));
+		     uniterm.c_str(), uniterm.length()));
 	    return true;
 	}
-	Xapian::PostingIterator docid = m_ndb->db.postlist_begin(pqterm);
+	Xapian::PostingIterator docid = m_ndb->db.postlist_begin(uniterm);
 	Xapian::Document xdoc = m_ndb->db.get_document(*docid);
 	string data = xdoc.get_data();
 	list<string> terms;

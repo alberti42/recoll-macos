@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.65 2007-12-20 09:08:04 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.66 2008-07-28 08:42:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -386,7 +386,11 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     // from on to off it may happen that some files which are now
     // without mime type will not be purged from the db, resulting
     // in possible 'cannot intern file' messages at query time...
-    if (!m_db.needUpdate(fn, stp)) {
+    char cbuf[100]; 
+    // Document signature
+    sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
+    string sig = cbuf;
+    if (!m_db.needUpdate(fn, sig)) {
 	LOGDEB(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {
 	    m_updater->status.fn = fn;
@@ -465,8 +469,17 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	if (doc.utf8fn.empty())
 	    doc.utf8fn = utf8fn;
 
+	char cbuf[100]; 
+	sprintf(cbuf, "%ld", (long)stp->st_size);
+	doc.fbytes = cbuf;
+	// Document signature for up to date checks: concatenate mtime and 
+	// size. Note: looking for changes only, no need to parseback so no
+	// need for reversible formatting
+	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
+	doc.sig = cbuf;
+
 	// Add document to database
-	if (!m_db.add(fn, doc, stp)) 
+	if (!m_db.add(fn, doc)) 
 	    return FsTreeWalker::FtwError;
 
 	// Tell what we are doing and check for interrupt request
@@ -491,7 +504,15 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	fileDoc.fmtime = ascdate;
 	fileDoc.utf8fn = utf8fn;
 	fileDoc.mimetype = interner.getMimetype();
-	if (!m_db.add(fn, fileDoc, stp)) 
+
+
+	char cbuf[100]; 
+	sprintf(cbuf, "%ld", (long)stp->st_size);
+	fileDoc.fbytes = cbuf;
+	// Document signature for up to date checks.
+	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
+	fileDoc.sig = cbuf;
+	if (!m_db.add(fn, fileDoc)) 
 	    return FsTreeWalker::FtwError;
     }
 

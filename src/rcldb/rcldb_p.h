@@ -4,7 +4,7 @@
 #include "xapian.h"
 
 namespace Rcl {
-/* @(#$Id: rcldb_p.h,v 1.1 2008-06-13 18:22:46 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: rcldb_p.h,v 1.2 2008-07-28 08:42:52 dockes Exp $  (C) 2007 J.F.Dockes */
 
 // Generic Xapian exception catching code. We do this quite often,
 // and I have no idea how to do this except for a macro
@@ -60,7 +60,7 @@ class Db::Native {
      *  unique term for replace_document, and for retrieving by
      *  path/ipath (history)
      */
-    bool subDocs(const string &hash, vector<Xapian::docid>& docids);
+    bool subDocs(const string &uniterm, vector<Xapian::docid>& docids);
 
 };
 }

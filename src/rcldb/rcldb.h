@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.56 2008-07-01 08:28:45 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.57 2008-07-28 08:42:52 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -86,41 +86,44 @@ class Db {
     bool close();
     bool isopen();
 
-    /** Retrieve main database directory */
-    string getDbDir();
-
     /** Get explanation about last error */
     string getReason() const {return m_reason;}
-
-    /** Return list of configured stop words */
-    const StopList& getStopList() const {return m_stops;}
-
-    /** Field name to prefix translation (ie: author -> 'A') */
-    bool fieldToPrefix(const string& fldname, string &pfx);
 
     /** List possible stemmer names */
     static list<string> getStemmerNames();
 
-    /* Update-related methods ******************************************/
+    /** List existing stemming databases */
+    std::list<std::string> getStemLangs();
 
-    /** Add document. The Doc class should have been filled as much as
-       possible depending on the document type */
-    bool add(const string &filename, const Doc &doc, const struct stat *stp);
+    /* The next two, only for searchdata, should be somehow hidden */
+    /* Return list of configured stop words */
+    const StopList& getStopList() const {return m_stops;}
+    /* Field name to prefix translation (ie: author -> 'A') */
+    bool fieldToPrefix(const string& fldname, string &pfx);
+
+    /* Update-related methods ******************************************/
 
     /** Test if the db entry for the given filename/stat is up to date. This
      * has the side-effect of setting the existence flag for the file document
      * and all subdocs if any (for later use by 'purge()') */
-    bool needUpdate(const string &filename, const struct stat *stp);
+    bool needUpdate(const string &udi, const string& sig);
+
+    /** Add document. The Doc class should have been filled as much as
+      * possible depending on the document type */
+    bool add(const string &udi, const Doc &doc);
+
+    /** Delete document(s) for given UDI, including subdocs */
+    bool purgeFile(const string &fn);
 
     /** Remove documents that no longer exist in the file system. This
-	depends on the update map, which is built during
-	indexation. This should only be called after a full walk of
-	the file system, else the update map will not be complete, and
-	many documents will be deleted that shouldn't */
+     * depends on the update map, which is built during
+     * indexation. This should only be called after a full walk of
+     * the file system, else the update map will not be complete, and
+     * many documents will be deleted that shouldn't, which is why this
+     * has to be called externally, we can't know if the indexing
+     * pass was complete or partial.
+     */
     bool purge();
-
-    /** Delete document(s) for given filename */
-    bool purgeFile(const string &filename);
 
     /** Create stem expansion database for given language. */
     bool createStemDb(const string &lang);
@@ -146,6 +149,9 @@ class Db {
     bool termMatch(MatchType typ, const string &lang, const string &s, 
 		   list<TermMatchEntry>& result, int max = -1);
 
+    /** Specific filename wildcard expansion */
+    bool filenameWildExp(const string& exp, list<string>& names);
+
     /** Set parameters for synthetic abstract generation */
     void setAbstractParams(int idxTrunc, int synthLen, int syntCtxLen);
 
@@ -153,12 +159,11 @@ class Db {
      * the input query. This uses index data only (no access to the file) */
     bool makeDocAbstract(Doc &doc, Query *query, string& abstract);
 
-    /** Get document for given filename and ipath */
+    /** Get document for given filename and ipath. Used by the 'history'
+     * feature (and nothing else?) */
     bool getDoc(const string &fn, const string &ipath, Doc &doc, int *percent);
 
-    /** Get a list of existing stemming databases */
-    std::list<std::string> getStemLangs();
-
+    /* The following are mainly for the aspell module */
     /** Whole term list walking. */
     TermIter *termWalkOpen();
     bool termWalkNext(TermIter *, string &term);
@@ -169,9 +174,6 @@ class Db {
     bool stemDiffers(const string& lang, const string& term, 
 		     const string& base);
     
-    /** Filename wildcard expansion */
-    bool filenameWildExp(const string& exp, list<string>& names);
-
     /* This has to be public for access by embedded Query::Native */
     Native *m_ndb; 
 

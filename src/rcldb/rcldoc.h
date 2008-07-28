@@ -16,7 +16,7 @@
  */
 #ifndef _RCLDOC_H_INCLUDED_
 #define _RCLDOC_H_INCLUDED_
-/* @(#$Id: rcldoc.h,v 1.3 2007-06-19 08:36:24 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rcldoc.h,v 1.4 2008-07-28 08:42:52 dockes Exp $  (C) 2006 J.F.Dockes */
 
 #include <string>
 #include <map>
@@ -58,9 +58,20 @@ class Doc {
     // Attribute for the "abstract" entry. true if it is just the top
     // of doc, not a native document attribute
     bool   syntabs;      
-
-    string fbytes;       // File size. Set by Db::Add
-    string dbytes;       // Doc size. Set by Db::Add from text length
+    
+    // File size. Index: Set by caller prior to Db::Add. Query: set by
+    // rcldb from index doc data. Historically this always has
+    // represented the whole file size (as from stat()), but there
+    // would be a need for a 3rd value for multidoc files (file
+    // size/doc size/ doc text size)
+    string fbytes;       
+    // Doc text size. Index: from text.length(). Query: set by rcldb from
+    // index doc data.
+    string dbytes;
+    // Doc signature. Used for up to date checks. This is opaque, and
+    // could just as well be ctime, size, ctime+size, md5, whatever.
+    // Index: set by Db::Add caller. Query: set from doc data.
+    string sig;
 
     // The following fields don't go to the db record
     
@@ -82,6 +93,7 @@ class Doc {
 	syntabs = false;
 	fbytes.erase();
 	dbytes.erase();
+	sig.erase();
 
 	text.erase();
 	pc = 0;
