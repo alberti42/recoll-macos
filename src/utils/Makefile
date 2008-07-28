@@ -1,7 +1,7 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = trconftree wipedir smallut trfstreewalk trpathut \
+PROGS = trfileudi trconftree wipedir smallut trfstreewalk trpathut \
       transcode trbase64 \
       trmimeparse trexecmd utf8iter idfile
 
@@ -23,6 +23,12 @@ trpathut : $(PATHUT_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trpathut $(PATHUT_OBJS)
 trpathut.o : pathut.cpp pathut.h
 	$(CXX) -o trpathut.o -c $(ALL_CXXFLAGS) -DTEST_PATHUT pathut.cpp
+
+FILEUDI_OBJS= trfileudi.o  $(BIGLIB)
+trfileudi : $(FILEUDI_OBJS) 
+	$(CXX) $(ALL_CXXFLAGS) -o trfileudi $(FILEUDI_OBJS)
+trfileudi.o : fileudi.cpp fileudi.h
+	$(CXX) -o trfileudi.o -c $(ALL_CXXFLAGS) -DTEST_FILEUDI fileudi.cpp
 
 EXECMD_OBJS= trexecmd.o $(BIGLIB)
 trexecmd : $(EXECMD_OBJS)

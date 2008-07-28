@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.135 2008-07-28 08:42:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.136 2008-07-28 12:24:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -80,32 +80,20 @@ namespace Rcl {
 // found in document)
 const static string rclSyntAbs("?!#@");
 
-// Maximum length for path terms stored for each document. We truncate
-// longer paths and uniquize them by appending a hashed value. This
-// is done to avoid xapian max term length limitations, not
-// to gain space (we gain very little even with very short maxlens
-// like 30) Note that Q terms add the ipath to this, and that the
-// xapian max key length seems to be around 250.
-// The value for PATHHASHLEN includes the length of the hash part.
-#define PATHHASHLEN 150
-
 // Compute the unique term used to link documents to their file-system source:
 // Hashed path + possible internal path
-static inline string make_uniterm(const string& fn, const string& ipath)
+static inline string make_uniterm(const string& udi)
 {
-    string hash;
-    pathHash(fn, hash, PATHHASHLEN);
-    string s("Q");
-    s.append(hash);
-    s.append("|");
-    s.append(ipath);
-    return s;
+    string uniterm("Q");
+    uniterm.append(udi);
+    return uniterm;
 }
 
 /* See comment in class declaration: return all subdocuments of a
  * document given by its unique path id */
 bool Db::Native::subDocs(const string &uniterm, vector<Xapian::docid>& docids) 
 {
+    LOGDEB2(("subDocs: [%s]\n", uniterm.c_str()));
     docids.clear();
 
     string ermsg;
@@ -116,11 +104,11 @@ bool Db::Native::subDocs(const string &uniterm, vector<Xapian::docid>& docids)
 	    // Don't return the doc itself:
 	    it++;
 	    for (; it != db.allterms_end(); it++) {
-		LOGDEB2(("Testing [%s]\n", (*it).c_str()));
+		LOGDEB2(("subDocs: testing [%s]\n", (*it).c_str()));
 		// If current term does not begin with uniterm or has
 		// another |, not the same file
 		if ((*it).find(uniterm) != 0 || 
-		    (*it).find_last_of("|") != uniterm.length() - 1)
+		    (*it).find_last_of("|") != uniterm.length()-1)
 		    break;
 		docids.push_back(*(db.postlist_begin(*it)));
 	    }
@@ -812,9 +800,9 @@ static const int MB = 1024 * 1024;
 // the title abstract and body and add special terms for file name,
 // date, mime type ... , create the document data record (more
 // metadata), and update database
-bool Db::add(const string &fn, const Doc &idoc)
+bool Db::add(const string &udi, const Doc &idoc)
 {
-    LOGDEB1(("Db::add: fn %s\n", fn.c_str()));
+    LOGDEB1(("Db::add: udi %s\n", udi.c_str()));
     if (m_ndb == 0)
 	return false;
     static int first = 1;
@@ -937,7 +925,7 @@ bool Db::add(const string &fn, const Doc &idoc)
 
     // Pathname/ipath unique term: this is used for file existence/uptodate
     // checks, and unique id for the replace_document() call.
-    string uniterm = make_uniterm(fn, doc.ipath);
+    string uniterm = make_uniterm(udi);
     newdocument.add_term(uniterm);
 
     // Dates etc...
@@ -957,7 +945,7 @@ bool Db::add(const string &fn, const Doc &idoc)
     // - sample
     // - caption (title limited to 100 chars)
     // - mime type 
-    string record = "url=file://" + fn;
+    string record = "url=" + doc.url;
     record += "\nmtype=" + doc.mimetype;
     record += "\nfmtime=" + doc.fmtime;
     if (!doc.dmtime.empty()) {
@@ -992,7 +980,7 @@ bool Db::add(const string &fn, const Doc &idoc)
     LOGDEB1(("Newdocument data: %s\n", record.c_str()));
     newdocument.set_data(record);
 
-    const char *fnc = fn.c_str();
+    const char *fnc = udi.c_str();
     string ermsg;
 
     // Add db entry or update existing entry:
@@ -1001,11 +989,9 @@ bool Db::add(const string &fn, const Doc &idoc)
 	    m_ndb->wdb.replace_document(uniterm, newdocument);
 	if (did < updated.size()) {
 	    updated[did] = true;
-	    LOGDEB(("Db::add: docid %d updated [%s , %s]\n", did, fnc,
-		    doc.ipath.c_str()));
+	    LOGDEB(("Db::add: docid %d updated [%s]\n", did, fnc));
 	} else {
-	    LOGDEB(("Db::add: docid %d added [%s , %s]\n", did, fnc, 
-		    doc.ipath.c_str()));
+	    LOGDEB(("Db::add: docid %d added [%s]\n", did, fnc));
 	}
     } XCATCHERROR(ermsg);
 
@@ -1044,13 +1030,13 @@ bool Db::add(const string &fn, const Doc &idoc)
     return true;
 }
 
-// Test if given filename has changed since last indexed:
-bool Db::needUpdate(const string &filename, const string& sig)
+// Test if doc given by udi has changed since last indexed (test sigs)
+bool Db::needUpdate(const string &udi, const string& sig)
 {
     if (m_ndb == 0)
 	return false;
 
-    string uniterm = make_uniterm(filename, string());
+    string uniterm = make_uniterm(udi);
     string ermsg;
 
     // We look up the document indexed by the uniterm. This is either
@@ -1086,8 +1072,8 @@ bool Db::needUpdate(const string &filename, const string& sig)
 		return true;
 	    string osig = data.substr(i1, i2-i1);
 #endif
-	    LOGDEB(("Db::needUpdate: oldsig [%s] new [%s]\n",
-		    osig.c_str(), sig.c_str()));
+	    LOGDEB2(("Db::needUpdate: oldsig [%s] new [%s]\n",
+		     osig.c_str(), sig.c_str()));
 	    // Compare new/old sig
 	    if (sig != osig) {
 		LOGDEB(("Db::needUpdate:yes: olsig [%s] new [%s]\n",
@@ -1222,14 +1208,14 @@ bool Db::purge()
     return true;
 }
 
-/** Delete document(s) for given filename */
-bool Db::purgeFile(const string &fn)
+/* Delete document(s) for given unique identifier (doc and descendents) */
+bool Db::purgeFile(const string &udi)
 {
-    LOGDEB(("Db:purgeFile: [%s]\n", fn.c_str()));
+    LOGDEB(("Db:purgeFile: [%s]\n", udi.c_str()));
     if (m_ndb == 0)
 	return false;
     Xapian::WritableDatabase db = m_ndb->wdb;
-    string uniterm = make_uniterm(fn, string());
+    string uniterm = make_uniterm(udi);
     string ermsg;
     try {
 	Xapian::PostingIterator docid = db.postlist_begin(uniterm);
@@ -1528,21 +1514,18 @@ bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
 }
 
 // Retrieve document defined by file name and internal path. 
-bool Db::getDoc(const string &fn, const string &ipath, Doc &doc, int *pc)
+bool Db::getDoc(const string &udi, Doc &doc, int *pc)
 {
-    LOGDEB(("Db:getDoc: [%s] (%d) [%s]\n", fn.c_str(), fn.length(),
-	    ipath.c_str()));
+    LOGDEB(("Db:getDoc: [%s]\n", udi.c_str()));
     if (m_ndb == 0)
 	return false;
 
     // Initialize what we can in any case. If this is history, caller
     // will make partial display in case of error
-    doc.ipath = ipath;
-    doc.url = string("file://") + fn;
     if (*pc)
 	*pc = 100;
 
-    string uniterm = make_uniterm(fn, ipath);
+    string uniterm = make_uniterm(udi);
     string ermsg;
     try {
 	if (!m_ndb->db.term_exists(uniterm)) {

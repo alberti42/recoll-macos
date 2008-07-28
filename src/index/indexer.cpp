@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.66 2008-07-28 08:42:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.67 2008-07-28 12:24:15 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,7 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.66 2008-07-28 08:42:52 dockes Exp
 #include "internfile.h"
 #include "smallut.h"
 #include "wipedir.h"
+#include "fileudi.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -335,7 +336,9 @@ bool DbIndexer::purgeFiles(const list<string> &filenames)
 
     list<string>::const_iterator it;
     for (it = filenames.begin(); it != filenames.end(); it++) {
-	if (!m_db.purgeFile(*it)) {
+	string udi;
+	make_udi(*it, "", udi);
+	if (!m_db.purgeFile(udi)) {
 	    LOGERR(("DbIndexer::purgeFiles: Database error\n"));
 	    return false;
 	}
@@ -390,7 +393,9 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     // Document signature
     sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
     string sig = cbuf;
-    if (!m_db.needUpdate(fn, sig)) {
+    string udi;
+    make_udi(fn, "", udi);
+    if (!m_db.needUpdate(udi, sig)) {
 	LOGDEB(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {
 	    m_updater->status.fn = fn;
@@ -463,6 +468,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	    hadNullIpath = true;
 	else
 	    doc.ipath = ipath;
+	doc.url = string("file://") + fn;
 
 	// Note that the filter may have its own idea of the file name 
 	// (ie: mail attachment)
@@ -479,7 +485,9 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	doc.sig = cbuf;
 
 	// Add document to database
-	if (!m_db.add(fn, doc)) 
+	string udi;
+	make_udi(fn, ipath, udi);
+	if (!m_db.add(udi, doc)) 
 	    return FsTreeWalker::FtwError;
 
 	// Tell what we are doing and check for interrupt request
@@ -504,7 +512,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	fileDoc.fmtime = ascdate;
 	fileDoc.utf8fn = utf8fn;
 	fileDoc.mimetype = interner.getMimetype();
-
+	fileDoc.url = string("file://") + fn;
 
 	char cbuf[100]; 
 	sprintf(cbuf, "%ld", (long)stp->st_size);
@@ -512,7 +520,9 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	// Document signature for up to date checks.
 	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
 	fileDoc.sig = cbuf;
-	if (!m_db.add(fn, fileDoc)) 
+	string udi;
+	make_udi(fn, "", udi);
+	if (!m_db.add(udi, fileDoc)) 
 	    return FsTreeWalker::FtwError;
     }
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.2 2007-12-13 06:58:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.3 2008-07-28 12:24:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@ static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.2 2007-12-13 06:58:21 dockes E
 
 #include "docseqhist.h"
 #include "rcldb.h"
+#include "fileudi.h"
 
 bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent, 
 				string *sh) 
@@ -58,7 +59,14 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent,
 	} else
 	    sh->erase();
     }
-    return m_db->getDoc(m_it->fn, m_it->ipath, doc, percent);
+    string udi;
+    make_udi(m_it->fn, m_it->ipath, udi);
+    bool ret = m_db->getDoc(udi, doc, percent);
+    if (!ret) {
+	doc.url = string("file://") + m_it->fn;
+	doc.ipath = m_it->ipath;
+    }
+    return ret;
 }
 
 int DocSequenceHistory::getResCnt()

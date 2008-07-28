@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.57 2008-07-28 08:42:52 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.58 2008-07-28 12:24:15 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -113,7 +113,7 @@ class Db {
     bool add(const string &udi, const Doc &doc);
 
     /** Delete document(s) for given UDI, including subdocs */
-    bool purgeFile(const string &fn);
+    bool purgeFile(const string &udi);
 
     /** Remove documents that no longer exist in the file system. This
      * depends on the update map, which is built during
@@ -161,7 +161,7 @@ class Db {
 
     /** Get document for given filename and ipath. Used by the 'history'
      * feature (and nothing else?) */
-    bool getDoc(const string &fn, const string &ipath, Doc &doc, int *percent);
+    bool getDoc(const string &udi, Doc &doc, int *percent);
 
     /* The following are mainly for the aspell module */
     /** Whole term list walking. */

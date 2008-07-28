@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: fileudi.cpp,v 1.1 2008-07-28 10:20:20 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: fileudi.cpp,v 1.2 2008-07-28 12:24:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -100,6 +100,7 @@ void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
 void make_udi(const string& fn, const string& ipath, string &udi)
 {
     string s(fn);
+    // Note that we append a "|" in all cases. Historical, could be removed
     s.append("|");
     s.append(ipath);
     pathHash(s, udi, PATHHASHLEN);

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathhash.cpp,v 1.5 2007-12-13 06:58:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathhash.cpp,v 1.6 2008-07-28 12:24:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@ using std::string;
 namespace Rcl {
 #endif /* NO_NAMESPACES */
 
+    // Debug only
 #ifdef PATHHASH_HEX
 static void md5hexprint(const unsigned char hash[16], string &out)
 {
@@ -69,7 +70,7 @@ void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
 	      path.length() - (maxlen - HASHLEN));
     MD5Final(chash, &ctx);
 
-#if 0
+#ifdef PATHHASH_HEX
     string hex;
     md5hexprint(chash, hex);
     printf("hex  [%s]\n", hex.c_str());
@@ -82,7 +83,6 @@ void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
     // We happen to know there will be 2 pad chars in there, that we
     // don't need as this won't ever be decoded. Resulting length is 22
     hash.resize(hash.length() - 2);
-
 
     // Truncate path and append hash
     phash = path.substr(0, maxlen - HASHLEN) + hash;

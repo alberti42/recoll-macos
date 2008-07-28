@@ -42,6 +42,7 @@ ${depth}/utils/debuglog.cpp \
 ${depth}/utils/execmd.cpp \
 ${depth}/utils/fstreewalk.cpp \
 ${depth}/utils/idfile.cpp \
+${depth}/utils/fileudi.cpp \
 ${depth}/utils/md5.cpp \
 ${depth}/utils/mimeparse.cpp \
 ${depth}/utils/pathut.cpp \
