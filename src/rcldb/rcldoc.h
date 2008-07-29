@@ -16,7 +16,7 @@
  */
 #ifndef _RCLDOC_H_INCLUDED_
 #define _RCLDOC_H_INCLUDED_
-/* @(#$Id: rcldoc.h,v 1.6 2008-07-29 06:25:29 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rcldoc.h,v 1.7 2008-07-29 08:25:43 dockes Exp $  (C) 2006 J.F.Dockes */
 
 #include <string>
 #include <map>
@@ -28,11 +28,19 @@ namespace Rcl {
 #endif
 
 /**
- * Dumb holder for document attributes and data
+ * Dumb holder for document attributes and data. 
+ * 
+ * This is used both for indexing, where fields are filled-up by the
+ * indexer prior to adding to the index, and for querying, where
+ * fields are filled from data stored in the index. Not all fields are
+ * in use at both index and query times, and not all field data is
+ * stored at index time (for example the "text" field is split and
+ * indexed, but not stored as such)
  */
 class Doc {
  public:
-    // These fields potentially go into the document data record
+    ////////////////////////////////////////////////////////////
+    // The following fields are stored into the document data record
     // We indicate the routine that sets them up during indexing
     
     // This is just "file://" + binary filename. No transcoding: this
@@ -49,21 +57,29 @@ class Doc {
     // Set by DbIndexer::processone    
     string ipath;
 
-    string mimetype;     // Set by FileInterner::internfile
-    string fmtime;       // File modification time as decimal ascii unix time
-                         // Set by DbIndexer::processone
-    string dmtime;       // Data reference date (same format). Ie: mail date
-                         // Possibly set by handler
-    string origcharset;  // Charset we transcoded from (in case we want back)
-                         // Possibly set by handler
+    // Mime type. Set by FileInterner::internfile
+    string mimetype;     
 
-    // A map for textual metadata like, author, keywords, abstract, title
-    // Entries possibly set by handler. If a field-name to prefix translation 
-    // exists, the terms will be indexed with a prefix.
+    // File modification time as decimal ascii unix time
+    // Set by DbIndexer::processone
+    string fmtime;
+
+    // Data reference date (same format). Ie: mail date
+    // Possibly set by mimetype-specific handler
+    string dmtime;
+
+    // Charset we transcoded the 'text' field from (in case we want back)
+    // Possibly set by handler
+    string origcharset;  
+
+    // A map for textual metadata like, author, keywords, abstract,
+    // title.  The entries are possibly set by the mimetype-specific
+    // handler. If a field-name to prefix translation exists, the
+    // terms will be indexed with a prefix.
     map<string, string> meta; 
 
     // Attribute for the "abstract" entry. true if it is just the top
-    // of doc, not a native document attribute
+    // of doc, not a native document attribute.
     bool   syntabs;      
     
     // File size. Index: Set by caller prior to Db::Add. Query: set by
@@ -72,6 +88,7 @@ class Doc {
     // would be a need for a 3rd value for multidoc files (file
     // size/doc size/ doc text size)
     string fbytes;       
+
     // Doc text size. Index: from text.length(). Query: set by rcldb from
     // index doc data.
     string dbytes;
@@ -82,14 +99,18 @@ class Doc {
     // ctime+size, md5, whatever.
     string sig;
 
-    // The following fields don't go to the db record
-    
-    string text; // During indexing only: text returned by input handler will
-                 // be split and indexed 
+    /////////////////////////////////////////////////
+    // The following fields don't go to the db record, so they can't
+    // be retrieved at query time
+
+    // Main document text. This is plaintext utf-8 text to be split
+    // and indexed
+    string text; 
 
     int pc; // used by sortseq, convenience
     unsigned long xdocid; // Opaque: rcldb doc identifier.
 
+    ///////////////////////////////////////////////////////////////////
     void erase() {
 	url.erase();
 	utf8fn.erase();

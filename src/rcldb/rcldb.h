@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.59 2008-07-29 06:25:29 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.60 2008-07-29 08:25:43 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -106,8 +106,9 @@ class Db {
 
     /* Update-related methods ******************************************/
 
-    /** Test if the db entry for the given udi is up to date. This
-     * has the side-effect of setting the existence flag for the file document
+    /** Test if the db entry for the given udi is up to date (by
+     * comparing the input and stored sigs). 
+     * Side-effect: set the existence flag for the file document 
      * and all subdocs if any (for later use by 'purge()') 
      */
     bool needUpdate(const string &udi, const string& sig);
@@ -123,10 +124,12 @@ class Db {
 
     /** Remove documents that no longer exist in the file system. This
      * depends on the update map, which is built during
-     * indexation. This should only be called after a full walk of
+     * indexation (needUpdate()). 
+     *
+     * This should only be called after a full walk of
      * the file system, else the update map will not be complete, and
      * many documents will be deleted that shouldn't, which is why this
-     * has to be called externally, we can't know if the indexing
+     * has to be called externally, rcldb can't know if the indexing
      * pass was complete or partial.
      */
     bool purge();
