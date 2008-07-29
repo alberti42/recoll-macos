@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.58 2008-07-28 12:24:15 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.59 2008-07-29 06:25:29 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -43,9 +43,12 @@ using std::vector;
 // The main goal is simplicity and good matching to usage inside the recoll
 // user interface. In other words, this is not exhaustive or well-designed or 
 // reusable.
-
-
-struct stat;
+//
+// Unique Document Identifier: unically identifies a document in its
+// source storage (file system or other). Used for up to date checks
+// etc. "udi". Our user is responsible for making sure it's not too
+// big, cause it's stored as a Xapian term (< 150 bytes would be
+// reasonable)
 
 #ifndef NO_NAMESPACES
 namespace Rcl {
@@ -103,14 +106,17 @@ class Db {
 
     /* Update-related methods ******************************************/
 
-    /** Test if the db entry for the given filename/stat is up to date. This
+    /** Test if the db entry for the given udi is up to date. This
      * has the side-effect of setting the existence flag for the file document
-     * and all subdocs if any (for later use by 'purge()') */
+     * and all subdocs if any (for later use by 'purge()') 
+     */
     bool needUpdate(const string &udi, const string& sig);
 
-    /** Add document. The Doc class should have been filled as much as
-      * possible depending on the document type */
-    bool add(const string &udi, const Doc &doc);
+    /** Add or update document. The Doc class should have been filled as much as
+      * possible depending on the document type. parent_udi is only
+      * use for subdocs, else set it to empty */
+    bool addOrUpdate(const string &udi, const string &parent_udi, 
+		     const Doc &doc);
 
     /** Delete document(s) for given UDI, including subdocs */
     bool purgeFile(const string &udi);

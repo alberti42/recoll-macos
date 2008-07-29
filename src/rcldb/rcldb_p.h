@@ -4,7 +4,7 @@
 #include "xapian.h"
 
 namespace Rcl {
-/* @(#$Id: rcldb_p.h,v 1.2 2008-07-28 08:42:52 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: rcldb_p.h,v 1.3 2008-07-29 06:25:29 dockes Exp $  (C) 2007 J.F.Dockes */
 
 // Generic Xapian exception catching code. We do this quite often,
 // and I have no idea how to do this except for a macro
@@ -51,16 +51,22 @@ class Db::Native {
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
 
-    /** Compute list of subdocuments for a given path (given by hash) 
-     *  We look for all Q terms beginning with the path/hash
-     *  As suggested by James Aylett, a better method would be to add 
-     *  a single term (ie: XP/path/to/file) to all subdocs, then finding
-     *  them would be a simple matter of retrieving the posting list for the
-     *  term. There would still be a need for the current Qterm though, as a
-     *  unique term for replace_document, and for retrieving by
-     *  path/ipath (history)
+    /** Compute list of subdocuments for a given udi. We look for documents 
+     * indexed by a parent term matching the udi, the posting list for the 
+     * parentterm(udi)  (As suggested by James Aylett)
+     *
+     * Note that this is not currently recursive: all subdocs are supposed 
+     * to be children of the file doc.
+     * Ie: in a mail folder, all messages, attachments, attachments of
+     * attached messages etc. must have the folder file document as
+     * parent. 
+     * Parent-child relationships are defined by the indexer (rcldb user)
+     * 
+     * The file-system indexer currently works this way (flatly), 
+     * subDocs() could be relatively easily changed to support full recursivity
+     * if needed.
      */
-    bool subDocs(const string &uniterm, vector<Xapian::docid>& docids);
+    bool subDocs(const string &udi, vector<Xapian::docid>& docids);
 
 };
 }

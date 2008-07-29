@@ -16,7 +16,7 @@
  */
 #ifndef _RCLDOC_H_INCLUDED_
 #define _RCLDOC_H_INCLUDED_
-/* @(#$Id: rcldoc.h,v 1.5 2008-07-28 12:24:15 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rcldoc.h,v 1.6 2008-07-29 06:25:29 dockes Exp $  (C) 2006 J.F.Dockes */
 
 #include <string>
 #include <map>
@@ -75,9 +75,11 @@ class Doc {
     // Doc text size. Index: from text.length(). Query: set by rcldb from
     // index doc data.
     string dbytes;
-    // Doc signature. Used for up to date checks. This is opaque, and
-    // could just as well be ctime, size, ctime+size, md5, whatever.
+
+    // Doc signature. Used for up to date checks. 
     // Index: set by Db::Add caller. Query: set from doc data.
+    // This is opaque to rcldb, and could just as well be ctime, size,
+    // ctime+size, md5, whatever.
     string sig;
 
     // The following fields don't go to the db record

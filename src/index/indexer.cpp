@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.67 2008-07-28 12:24:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.68 2008-07-29 06:25:29 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -390,7 +390,10 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     // without mime type will not be purged from the db, resulting
     // in possible 'cannot intern file' messages at query time...
     char cbuf[100]; 
-    // Document signature
+    // Document signature. This is based on mtime and size and used
+    // for the uptodate check (the value computed here is checked
+    // against the stored one). Changing the computation forces a full
+    // reindex of course.
     sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
     string sig = cbuf;
     string udi;
@@ -398,6 +401,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     if (!m_db.needUpdate(udi, sig)) {
 	LOGDEB(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {
+	    // Status bar update, abort request etc.
 	    m_updater->status.fn = fn;
 	    if (!m_updater->update()) {
 		return FsTreeWalker::FtwStop;
@@ -422,14 +426,18 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 		ercnt, charset.c_str(), path_getsimple(fn).c_str()));
     }
     LOGDEB2(("processone: fn transcoded from [%s] to [%s] (%s->%s)\n",
-	    path_getsimple(fn).c_str(), utf8fn.c_str(), charset.c_str(), "UTF-8"));
+	     path_getsimple(fn).c_str(), utf8fn.c_str(), charset.c_str(), 
+	     "UTF-8"));
+
+    string parent_udi;
+    make_udi(fn, "", parent_udi);
+    Rcl::Doc doc;
+    const string plus("+");
+    char ascdate[20];
+    sprintf(ascdate, "%ld", long(stp->st_mtime));
 
     FileInterner::Status fis = FileInterner::FIAgain;
     bool hadNullIpath = false;
-    Rcl::Doc doc;
-    const string plus = "+";
-    char ascdate[20];
-    sprintf(ascdate, "%ld", long(stp->st_mtime));
     while (fis == FileInterner::FIAgain) {
 	doc.erase();
 	string ipath;
@@ -468,6 +476,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	    hadNullIpath = true;
 	else
 	    doc.ipath = ipath;
+
 	doc.url = string("file://") + fn;
 
 	// Note that the filter may have its own idea of the file name 
@@ -484,10 +493,11 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
 	doc.sig = cbuf;
 
-	// Add document to database
+	// Add document to database. If there is an ipath, add it as a children
+	// of the file document.
 	string udi;
 	make_udi(fn, ipath, udi);
-	if (!m_db.add(udi, doc)) 
+	if (!m_db.addOrUpdate(udi, ipath.empty() ? "" : parent_udi, doc)) 
 	    return FsTreeWalker::FtwError;
 
 	// Tell what we are doing and check for interrupt request
@@ -520,9 +530,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	// Document signature for up to date checks.
 	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
 	fileDoc.sig = cbuf;
-	string udi;
-	make_udi(fn, "", udi);
-	if (!m_db.add(udi, fileDoc)) 
+	if (!m_db.addOrUpdate(parent_udi, "", fileDoc)) 
 	    return FsTreeWalker::FtwError;
     }
 

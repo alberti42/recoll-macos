@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.136 2008-07-28 12:24:15 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.137 2008-07-29 06:25:29 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -80,39 +80,41 @@ namespace Rcl {
 // found in document)
 const static string rclSyntAbs("?!#@");
 
-// Compute the unique term used to link documents to their file-system source:
-// Hashed path + possible internal path
+// Compute the unique term used to link documents to their origin. 
+// "Q" + external udi
 static inline string make_uniterm(const string& udi)
 {
     string uniterm("Q");
     uniterm.append(udi);
     return uniterm;
 }
+// Compute parent term used to link documents to their parent document (if any)
+// "" + parent external udi
+static inline string make_parentterm(const string& udi)
+{
+    // I prefer to be in possible conflict with omega than with
+    // user-defined fields (Xxxx) that we also allow. "F" is currently
+    // not used by omega (2008-07)
+    string pterm("F");
+    pterm.append(udi);
+    return pterm;
+}
 
 /* See comment in class declaration: return all subdocuments of a
- * document given by its unique path id */
-bool Db::Native::subDocs(const string &uniterm, vector<Xapian::docid>& docids) 
+ * document given by its unique id. 
+*/
+bool Db::Native::subDocs(const string &udi, vector<Xapian::docid>& docids) 
 {
     LOGDEB2(("subDocs: [%s]\n", uniterm.c_str()));
-    docids.clear();
-
     string ermsg;
+    string pterm = make_parentterm(udi);
     for (int tries = 0; tries < 2; tries++) {
 	try {
-	    Xapian::TermIterator it = db.allterms_begin(); 
-	    it.skip_to(uniterm);
-	    // Don't return the doc itself:
-	    it++;
-	    for (; it != db.allterms_end(); it++) {
-		LOGDEB2(("subDocs: testing [%s]\n", (*it).c_str()));
-		// If current term does not begin with uniterm or has
-		// another |, not the same file
-		if ((*it).find(uniterm) != 0 || 
-		    (*it).find_last_of("|") != uniterm.length()-1)
-		    break;
-		docids.push_back(*(db.postlist_begin(*it)));
+	    Xapian::PostingIterator it = db.postlist_begin(pterm);
+	    for (; it != db.postlist_end(pterm); it++) {
+		docids.push_back(*it);
 	    }
-	    LOGDEB2(("Db::Native::subDocs: returning %d ids\n", docids.size()));
+	    LOGDEB(("Db::Native::subDocs: returning %d ids\n", docids.size()));
 	    return true;
 	} catch (const Xapian::DatabaseModifiedError &e) {
 	    LOGDEB(("Db::subDocs: got modified error. reopen/retry\n"));
@@ -800,9 +802,11 @@ static const int MB = 1024 * 1024;
 // the title abstract and body and add special terms for file name,
 // date, mime type ... , create the document data record (more
 // metadata), and update database
-bool Db::add(const string &udi, const Doc &idoc)
+bool Db::addOrUpdate(const string &udi, const string &parent_udi,
+		     const Doc &idoc)
 {
-    LOGDEB1(("Db::add: udi %s\n", udi.c_str()));
+    LOGDEB(("Db::add: udi [%s] parent [%s]\n", 
+	     udi.c_str(), parent_udi.c_str()));
     if (m_ndb == 0)
 	return false;
     static int first = 1;
@@ -927,7 +931,11 @@ bool Db::add(const string &udi, const Doc &idoc)
     // checks, and unique id for the replace_document() call.
     string uniterm = make_uniterm(udi);
     newdocument.add_term(uniterm);
-
+    // Parent term. This is used to find all descendents, mostly to delete them 
+    // when the parent goes away
+    if (!parent_udi.empty()) {
+	newdocument.add_term(make_parentterm(parent_udi));
+    }
     // Dates etc...
     time_t mtime = atol(doc.dmtime.empty() ? doc.fmtime.c_str() : 
 			doc.dmtime.c_str());
@@ -1091,7 +1099,7 @@ bool Db::needUpdate(const string &udi, const string& sig)
 
 	    // Set the existence flag for all the subdocs (if any)
 	    vector<Xapian::docid> docids;
-	    if (!m_ndb->subDocs(uniterm, docids)) {
+	    if (!m_ndb->subDocs(udi, docids)) {
 		LOGERR(("Rcl::Db::needUpdate: can't get subdocs list\n"));
 		return true;
 	    }
@@ -1193,9 +1201,9 @@ bool Db::purge()
 	    } catch (const Xapian::DocNotFoundError &) {
 		LOGDEB(("Db::purge: document #%d not found\n", docid));
 	    } catch (const Xapian::Error &e) {
-		LOGERR(("Db::purge: document #%d: %s\n", e.get_msg().c_str()));
+		LOGERR(("Db::purge: document #%d: %s\n", docid, e.get_msg().c_str()));
 	    } catch (...) {
-		LOGERR(("Db::purge: document #%d: unknown error\n"));
+		LOGERR(("Db::purge: document #%d: unknown error\n", docid));
 	    }
 	}
     }
@@ -1224,7 +1232,7 @@ bool Db::purgeFile(const string &udi)
 	LOGDEB(("purgeFile: delete docid %d\n", *docid));
 	db.delete_document(*docid);
 	vector<Xapian::docid> docids;
-	m_ndb->subDocs(uniterm, docids);
+	m_ndb->subDocs(udi, docids);
 	LOGDEB(("purgeFile: subdocs cnt %d\n", docids.size()));
 	for (vector<Xapian::docid>::iterator it = docids.begin();
 	     it != docids.end(); it++) {
