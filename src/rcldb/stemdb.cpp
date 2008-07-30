@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.11 2007-11-08 09:34:17 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.12 2008-07-30 13:16:13 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 /**
@@ -141,23 +141,23 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
     // We want to get rid of the db dir in case of error. This gets disarmed
     // just before success return.
     DirWiper wiper(stemdbdir);
-    const char *ermsg = "NOERROR";
+    string ermsg;
     Xapian::WritableDatabase sdb;
     try {
 	sdb = Xapian::WritableDatabase(stemdbdir, 
 				       Xapian::DB_CREATE_OR_OVERWRITE);
     } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg().c_str();
+	ermsg = e.get_msg();
     } catch (const string &s) {
-	ermsg = s.c_str();
+	ermsg = s;
     } catch (const char *s) {
 	ermsg = s;
     } catch (...) {
 	ermsg = "Caught unknown exception";
     }
-    if (ermsg != "NOERROR") {
+    if (!ermsg.empty()) {
 	LOGERR(("Db::createstemdb: exception while opening [%s]: %s\n", 
-		stemdbdir.c_str(), ermsg));
+		stemdbdir.c_str(), ermsg.c_str()));
 	return false;
     }
 
