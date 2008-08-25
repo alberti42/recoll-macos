@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.39 2008-06-09 09:12:05 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.40 2008-08-25 16:12:16 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -32,6 +32,8 @@ application/pdf = exec rclpdf
 application/postscript = exec rclps
 application/vnd.ms-excel = exec rclxls
 application/vnd.ms-powerpoint = exec rclppt
+application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
+ exec rclopxml
 application/vnd.sun.xml.calc = exec rclsoff
 application/vnd.sun.xml.calc.template = exec rclsoff
 application/vnd.sun.xml.draw = exec rclsoff
@@ -114,6 +116,7 @@ text = \
       application/msword \
       application/pdf \
       application/postscript \
+      application/vnd.openxmlformats-officedocument.wordprocessingml.document \
       application/vnd.sun.xml.writer \
       application/vnd.sun.xml.writer.global \
       application/vnd.sun.xml.writer.template \
