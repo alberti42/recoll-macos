@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.6 2008-08-26 07:36:41 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.7 2008-08-26 07:56:40 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <Python.h>
@@ -41,12 +41,12 @@ typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
     Rcl::Db *db;
-} recollq_DbObject;
-static PyTypeObject recollq_DbType = {
+} recoll_DbObject;
+static PyTypeObject recoll_DbType = {
     PyObject_HEAD_INIT(NULL)
     0,                         /*ob_size*/
-    "recollq.Db",             /*tp_name*/
-    sizeof(recollq_DbObject), /*tp_basicsize*/
+    "recoll.Db",             /*tp_name*/
+    sizeof(recoll_DbObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     0,                         /*tp_dealloc*/
     0,                         /*tp_print*/
@@ -64,7 +64,7 @@ static PyTypeObject recollq_DbType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    "Recollq Db objects",      /* tp_doc */
+    "Recoll Db objects",      /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
@@ -90,13 +90,13 @@ typedef struct {
     /* Type-specific fields go here. */
     Rcl::Query *query;
     int         next; // Index of result to be fetched next or -1 if uninit
-} recollq_QueryObject;
+} recoll_QueryObject;
 
-static PyTypeObject recollq_QueryType = {
+static PyTypeObject recoll_QueryType = {
     PyObject_HEAD_INIT(NULL)
     0,                         /*ob_size*/
-    "recollq.Query",             /*tp_name*/
-    sizeof(recollq_QueryObject), /*tp_basicsize*/
+    "recoll.Query",             /*tp_name*/
+    sizeof(recoll_QueryObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     0,                         /*tp_dealloc*/
     0,                         /*tp_print*/
@@ -114,7 +114,7 @@ static PyTypeObject recollq_QueryType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    "Recollq Query object",    /* tp_doc */
+    "Recoll Query object",    /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
@@ -137,13 +137,13 @@ typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
     Rcl::Doc *doc;
-} recollq_DocObject;
+} recoll_DocObject;
 
-static PyTypeObject recollq_DocType = {
+static PyTypeObject recoll_DocType = {
     PyObject_HEAD_INIT(NULL)
     0,                         /*ob_size*/
-    "recollq.Doc",             /*tp_name*/
-    sizeof(recollq_DocObject), /*tp_basicsize*/
+    "recoll.Doc",             /*tp_name*/
+    sizeof(recoll_DocObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     0,                         /*tp_dealloc*/
     0,                         /*tp_print*/
@@ -161,7 +161,7 @@ static PyTypeObject recollq_DocType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    "Recollq Doc objects",     /* tp_doc */
+    "Recoll Doc objects",     /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
@@ -184,7 +184,7 @@ static PyTypeObject recollq_DocType = {
 ///////////////////////////////////////////////
 ////// Db object code
 static void 
-Db_dealloc(recollq_DbObject *self)
+Db_dealloc(recoll_DbObject *self)
 {
     LOGDEB(("Db_dealloc\n"));
     if (self->db)
@@ -198,9 +198,9 @@ static PyObject *
 Db_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     LOGDEB(("Db_new\n"));
-    recollq_DbObject *self;
+    recoll_DbObject *self;
 
-    self = (recollq_DbObject *)type->tp_alloc(type, 0);
+    self = (recoll_DbObject *)type->tp_alloc(type, 0);
     if (self == 0) 
 	return 0;
     self->db = 0;
@@ -208,7 +208,7 @@ Db_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 static int
-Db_init(recollq_DbObject *self, PyObject *args, PyObject *kwargs)
+Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Db_init\n"));
     static char *kwlist[] = {"confdir", "extra_dbs", "writable", NULL};
@@ -289,7 +289,7 @@ Db_init(recollq_DbObject *self, PyObject *args, PyObject *kwargs)
 }
 
 static PyObject *
-Db_query(recollq_DbObject* self)
+Db_query(recoll_DbObject* self)
 {
     LOGDEB(("Db_query\n"));
     if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
@@ -297,8 +297,8 @@ Db_query(recollq_DbObject* self)
         PyErr_SetString(PyExc_AttributeError, "db");
         return 0;
     }
-    recollq_QueryObject *result = 
-	(recollq_QueryObject *)obj_Create(&recollq_QueryType, 0, 0);
+    recoll_QueryObject *result = 
+	(recoll_QueryObject *)obj_Create(&recoll_QueryType, 0, 0);
     if (!result)
 	return 0;
     result->query = new Rcl::Query(self->db);
@@ -308,7 +308,7 @@ Db_query(recollq_DbObject* self)
 }
 
 static PyObject *
-Db_setAbstractParams(recollq_DbObject *self, PyObject *args, PyObject *kwargs)
+Db_setAbstractParams(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Db_setAbstractParams\n"));
     static char *kwlist[] = {"maxchars", "contextwords", NULL};
@@ -326,14 +326,14 @@ Db_setAbstractParams(recollq_DbObject *self, PyObject *args, PyObject *kwargs)
 }
 
 static PyObject *
-Db_makeDocAbstract(recollq_DbObject* self, PyObject *args, PyObject *)
+Db_makeDocAbstract(recoll_DbObject* self, PyObject *args, PyObject *)
 {
     LOGDEB(("Db_makeDocAbstract\n"));
-    recollq_DocObject *pydoc;
-    recollq_QueryObject *pyquery;
+    recoll_DocObject *pydoc;
+    recoll_QueryObject *pyquery;
     if (!PyArg_ParseTuple(args, "O!O!:Db_makeDocAbstract",
-			  &recollq_DocType, &pydoc,
-			  &recollq_QueryType, &pyquery)) {
+			  &recoll_DocType, &pydoc,
+			  &recoll_QueryType, &pyquery)) {
 	return 0;
     }
     if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
@@ -363,7 +363,7 @@ Db_makeDocAbstract(recollq_DbObject* self, PyObject *args, PyObject *)
 }
 
 static PyObject *
-Db_needUpdate(recollq_DbObject* self, PyObject *args, PyObject *kwds)
+Db_needUpdate(recoll_DbObject* self, PyObject *args, PyObject *kwds)
 {
     char *udi = 0;
     char *sig = 0;
@@ -384,17 +384,17 @@ Db_needUpdate(recollq_DbObject* self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-Db_addOrUpdate(recollq_DbObject* self, PyObject *args, PyObject *)
+Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
 {
     LOGDEB(("Db_addOrUpdate\n"));
     char *udi = 0;
     char *parent_udi = 0;
 
-    recollq_DocObject *pydoc;
+    recoll_DocObject *pydoc;
 
     if (!PyArg_ParseTuple(args, "esesO!:Db_makeDocAbstract",
 			  "utf-8", &udi, "utf-8", &parent_udi, 
-			  &recollq_DocType, &pydoc)) {
+			  &recoll_DocType, &pydoc)) {
 	return 0;
     }
     if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
@@ -442,7 +442,7 @@ static PyMethodDef Db_methods[] = {
 /////////////////////////////////////////////
 /// Query object method
 static void 
-Query_dealloc(recollq_QueryObject *self)
+Query_dealloc(recoll_QueryObject *self)
 {
     LOGDEB(("Query_dealloc\n"));
     if (self->query)
@@ -455,10 +455,10 @@ Query_dealloc(recollq_QueryObject *self)
 static PyObject *
 Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
 {
-    recollq_QueryObject *self;
+    recoll_QueryObject *self;
     LOGDEB(("Query_new\n"));
 
-    self = (recollq_QueryObject *)type->tp_alloc(type, 0);
+    self = (recoll_QueryObject *)type->tp_alloc(type, 0);
     if (self == 0) 
 	return 0;
     self->query = 0;
@@ -470,7 +470,7 @@ Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
 // valid Query Object is through db_query(). (or we'd need to add a Db
 // parameter to the Query object creation method)
 static int
-Query_init(recollq_QueryObject *self, PyObject *, PyObject *)
+Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
 {
     LOGDEB(("Query_init\n"));
 
@@ -483,7 +483,7 @@ Query_init(recollq_QueryObject *self, PyObject *, PyObject *)
 }
 
 static PyObject *
-Query_execute(recollq_QueryObject* self, PyObject *args, PyObject *kwds)
+Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwds)
 {
     char *utf8 = 0;
     LOGDEB(("Query_execute\n"));
@@ -512,7 +512,7 @@ Query_execute(recollq_QueryObject* self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-Query_fetchone(recollq_QueryObject* self, PyObject *, PyObject *)
+Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
 {
     LOGDEB(("Query_fetchone\n"));
 
@@ -526,8 +526,8 @@ Query_fetchone(recollq_QueryObject* self, PyObject *, PyObject *)
         PyErr_SetString(PyExc_AttributeError, "query: no results");
 	return 0;
     }
-    recollq_DocObject *result = 
-	(recollq_DocObject *)obj_Create(&recollq_DocType, 0, 0);
+    recoll_DocObject *result = 
+	(recoll_DocObject *)obj_Create(&recoll_DocType, 0, 0);
     if (!result) {
 	LOGERR(("Query_fetchone: couldn't create doc object for result\n"));
 	return 0;
@@ -570,7 +570,7 @@ static PyMethodDef Query_methods[] = {
     {NULL}  /* Sentinel */
 };
 static PyMemberDef Query_members[] = {
-    {"next", T_INT, offsetof(recollq_QueryObject, next), 0,
+    {"next", T_INT, offsetof(recoll_QueryObject, next), 0,
      "Next index to be fetched from query results"},
     {NULL}  /* Sentinel */
 };
@@ -578,7 +578,7 @@ static PyMemberDef Query_members[] = {
 ///////////////////////////////////////////////////////////////////////
 ///// Doc object methods
 static void 
-Doc_dealloc(recollq_DocObject *self)
+Doc_dealloc(recoll_DocObject *self)
 {
     LOGDEB(("Doc_dealloc\n"));
     if (self->doc)
@@ -591,10 +591,10 @@ Doc_dealloc(recollq_DocObject *self)
 static PyObject *
 Doc_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    recollq_DocObject *self;
+    recoll_DocObject *self;
     LOGDEB(("Doc_new\n"));
 
-    self = (recollq_DocObject *)type->tp_alloc(type, 0);
+    self = (recoll_DocObject *)type->tp_alloc(type, 0);
     if (self == 0) 
 	return 0;
     self->doc = 0;
@@ -602,7 +602,7 @@ Doc_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 static int
-Doc_init(recollq_DocObject *self, PyObject *, PyObject *)
+Doc_init(recoll_DocObject *self, PyObject *, PyObject *)
 {
     LOGDEB(("Doc_init\n"));
     if (self->doc)
@@ -620,7 +620,7 @@ Doc_init(recollq_DocObject *self, PyObject *, PyObject *)
 // attributes (pass them an additional parameters as from the
 // getseters table and call it a "closure"
 static PyObject *
-Doc_getmeta(recollq_DocObject *self, void *closure)
+Doc_getmeta(recoll_DocObject *self, void *closure)
 {
     LOGDEB(("Doc_getmeta: [%s]\n", (const char *)closure));
     if (self->doc == 0 || 
@@ -647,7 +647,7 @@ Doc_getmeta(recollq_DocObject *self, void *closure)
 }
 
 static int
-Doc_setmeta(recollq_DocObject *self, PyObject *value, void *closure)
+Doc_setmeta(recoll_DocObject *self, PyObject *value, void *closure)
 {
     if (self->doc == 0 || 
 	the_docs.find(self->doc) == the_docs.end()) {
@@ -759,17 +759,17 @@ static PyGetSetDef Doc_getseters[] = {
 //////////////////////////////////////////////////////////////////////////
 // Module methods
 static PyObject *
-recollq_connect(PyObject *self, PyObject *args, PyObject *kwargs)
+recoll_connect(PyObject *self, PyObject *args, PyObject *kwargs)
 {
-    LOGDEB(("recollq_connect\n"));
-    recollq_DbObject *db = 
-	(recollq_DbObject *)obj_Create(&recollq_DbType, args, kwargs);
+    LOGDEB(("recoll_connect\n"));
+    recoll_DbObject *db = 
+	(recoll_DbObject *)obj_Create(&recoll_DbType, args, kwargs);
 
     return (PyObject *)db;
 }
 
-static PyMethodDef recollqMethods[] = {
-    {"connect",  (PyCFunction)recollq_connect, METH_VARARGS|METH_KEYWORDS, 
+static PyMethodDef recollMethods[] = {
+    {"connect",  (PyCFunction)recoll_connect, METH_VARARGS|METH_KEYWORDS, 
      "Connect to index and get Db object."},
 
     {NULL, NULL, 0, NULL}        /* Sentinel */
@@ -785,7 +785,7 @@ RclConfig *RclConfig::getMainConfig()
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
-initrecollq(void)
+initrecoll(void)
 {
     string reason;
     rclconfig = recollinit(0, 0, reason, 0);
@@ -800,38 +800,38 @@ initrecollq(void)
     }
 
     PyObject* m;
-    m = Py_InitModule3("recollq", recollqMethods,
+    m = Py_InitModule3("recoll", recollMethods,
                        "Recoll query extension module.");
     
-    recollq_DbType.tp_dealloc = (destructor)Db_dealloc;
-    recollq_DbType.tp_new = Db_new;
-    recollq_DbType.tp_init = (initproc)Db_init;
-    recollq_DbType.tp_methods = Db_methods;
-    if (PyType_Ready(&recollq_DbType) < 0)
+    recoll_DbType.tp_dealloc = (destructor)Db_dealloc;
+    recoll_DbType.tp_new = Db_new;
+    recoll_DbType.tp_init = (initproc)Db_init;
+    recoll_DbType.tp_methods = Db_methods;
+    if (PyType_Ready(&recoll_DbType) < 0)
         return;
-    LOGDEB(("initrecollq: recollq_DbType new %p\n", recollq_DbType.tp_new));
-    Py_INCREF(&recollq_DbType);
-    PyModule_AddObject(m, "Db", (PyObject *)&recollq_DbType);
+    LOGDEB(("initrecoll: recoll_DbType new %p\n", recoll_DbType.tp_new));
+    Py_INCREF(&recoll_DbType);
+    PyModule_AddObject(m, "Db", (PyObject *)&recoll_DbType);
 
-    recollq_QueryType.tp_dealloc = (destructor)Query_dealloc;
-    recollq_QueryType.tp_new = Query_new;
-    recollq_QueryType.tp_init = (initproc)Query_init;
-    recollq_QueryType.tp_methods = Query_methods;
-    recollq_QueryType.tp_members = Query_members;
-    if (PyType_Ready(&recollq_QueryType) < 0)
+    recoll_QueryType.tp_dealloc = (destructor)Query_dealloc;
+    recoll_QueryType.tp_new = Query_new;
+    recoll_QueryType.tp_init = (initproc)Query_init;
+    recoll_QueryType.tp_methods = Query_methods;
+    recoll_QueryType.tp_members = Query_members;
+    if (PyType_Ready(&recoll_QueryType) < 0)
         return;
-    Py_INCREF(&recollq_QueryType);
-    PyModule_AddObject(m, "Query", (PyObject *)&recollq_QueryType);
+    Py_INCREF(&recoll_QueryType);
+    PyModule_AddObject(m, "Query", (PyObject *)&recoll_QueryType);
 
-    recollq_DocType.tp_dealloc = (destructor)Doc_dealloc;
-    recollq_DocType.tp_new = Doc_new;
-    recollq_DocType.tp_init = (initproc)Doc_init;
-    recollq_DocType.tp_getset = Doc_getseters;
-    //    recollq_DocType.tp_methods = Doc_methods;
-    if (PyType_Ready(&recollq_DocType) < 0)
+    recoll_DocType.tp_dealloc = (destructor)Doc_dealloc;
+    recoll_DocType.tp_new = Doc_new;
+    recoll_DocType.tp_init = (initproc)Doc_init;
+    recoll_DocType.tp_getset = Doc_getseters;
+    //    recoll_DocType.tp_methods = Doc_methods;
+    if (PyType_Ready(&recoll_DocType) < 0)
         return;
-    Py_INCREF(&recollq_DocType);
-    PyModule_AddObject(m, "Doc", (PyObject *)&recollq_DocType);
+    Py_INCREF(&recoll_DocType);
+    PyModule_AddObject(m, "Doc", (PyObject *)&recoll_DocType);
 
-    LOGDEB(("initrecollq ok\n"));
+    LOGDEB(("initrecoll ok\n"));
 }

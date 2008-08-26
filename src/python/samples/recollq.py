@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-import recollq
+import recoll
 allmeta = ("title", "keywords", "abstract", "url", "mimetype", "mtime",
            "ipath", "fbytes", "dbytes", "relevance")
 
@@ -28,22 +28,22 @@ def dotest(db, q):
 q = "essaouira"
 
 print "TESTING WITH .recoll"
-db = recollq.connect()
+db = recoll.connect()
 db.setAbstractParams(maxchars=80, contextwords=2)
 dotest(db, q)
 
 sys.exit(0)
 
 print "TESTING WITH .recoll-test"
-db = recollq.connect(confdir="/Users/dockes/.recoll-test")
+db = recoll.connect(confdir="/Users/dockes/.recoll-test")
 dotest(db, q)
 
 print "TESTING WITH .recoll-doc"
-db = recollq.connect(confdir="/y/home/dockes/.recoll-doc")
+db = recoll.connect(confdir="/y/home/dockes/.recoll-doc")
 dotest(db, q)
 
 print "TESTING WITH .recoll and .recoll-doc"
-db = recollq.connect(confdir="/Users/dockes/.recoll", 
+db = recoll.connect(confdir="/Users/dockes/.recoll", 
                      extra_dbs=("/y/home/dockes/.recoll-doc",))
 dotest(db, q)
 

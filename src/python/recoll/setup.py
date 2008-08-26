@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 top = '../../'
 
-module1 = Extension('recollq',
+module1 = Extension('recoll',
                     define_macros = [('MAJOR_VERSION', '1'),
                                      ('MINOR_VERSION', '0'),
                                      ('UNAC_VERSION', '"1.0.7"'),
@@ -18,7 +18,7 @@ module1 = Extension('recollq',
                                     ],
                     libraries = ['xapian', 'iconv'],
                     library_dirs = ['/usr/local/lib'],
-                    sources = ['recoll_query.cpp',
+                    sources = ['pyrecoll.cpp',
                                top + 'common/rclconfig.cpp',
                                top + 'common/rclinit.cpp',
                                top + 'common/textsplit.cpp',
@@ -43,13 +43,11 @@ module1 = Extension('recollq',
                                top + 'utils/wipedir.cpp'
                                ])
 
-
-setup (name = 'RecollQuery',
+setup (name = 'Recoll',
        version = '1.0',
-       description = 'Enable querying a Recoll full text index',
+       description = 'Query/Augment a Recoll full text index',
        author = 'J.F. Dockes',
        author_email = 'jean-francois.dockes@wanadoo.fr',
        long_description = '''
-This is really just a demo package for now.
 ''',
        ext_modules = [module1])

@@ -90,8 +90,8 @@ fbytes = stdata[stat.ST_SIZE]
 f = open(docfile, 'r')
 
 if targetnum == None:
-    import recollq
-    db = recollq.connect(confdir=rclconf, writable=1)
+    import recoll
+    db = recoll.connect(confdir=rclconf, writable=1)
     if not db.needUpdate(udi(docfile, 0), str(fmtime)):
         exit(0)
 

@@ -4,7 +4,7 @@ import mailbox
 import email.header
 import email.utils
 #import sys
-import recollq
+import recoll
 import os
 import stat
 
@@ -54,7 +54,7 @@ class mbox_indexer:
             self.msgnum += 1
 
     def index_message(self, db, msg):
-        doc = recollq.Doc()
+        doc = recoll.Doc()
         doc.author = header_value(msg, "From")
         # url
         doc.url = "file://" + self.mbfile
@@ -103,7 +103,7 @@ class mbox_indexer:
         db.addOrUpdate(udi, u"", doc)
 
 
-db = recollq.connect(confdir=rclconf, writable=1)
+db = recoll.connect(confdir=rclconf, writable=1)
 
 mbidx = mbox_indexer(mbfile)
 mbidx.index(db)
