@@ -16,7 +16,7 @@
  */
 #ifndef _RCLDOC_H_INCLUDED_
 #define _RCLDOC_H_INCLUDED_
-/* @(#$Id: rcldoc.h,v 1.7 2008-07-29 08:25:43 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rcldoc.h,v 1.8 2008-08-26 07:33:31 dockes Exp $  (C) 2006 J.F.Dockes */
 
 #include <string>
 #include <map>
@@ -40,7 +40,8 @@ namespace Rcl {
 class Doc {
  public:
     ////////////////////////////////////////////////////////////
-    // The following fields are stored into the document data record
+    // The following fields are stored into the document data record (so they
+    // can be accessed after a query without fetching the actual document).
     // We indicate the routine that sets them up during indexing
     
     // This is just "file://" + binary filename. No transcoding: this
@@ -74,8 +75,10 @@ class Doc {
 
     // A map for textual metadata like, author, keywords, abstract,
     // title.  The entries are possibly set by the mimetype-specific
-    // handler. If a field-name to prefix translation exists, the
-    // terms will be indexed with a prefix.
+    // handler. If a fieldname-to-prefix translation exists, the
+    // terms in the value will be indexed with a prefix.
+    // Only some predefined fields are stored in the data record:
+    // "title", "keywords", "abstract", "author"
     map<string, string> meta; 
 
     // Attribute for the "abstract" entry. true if it is just the top
