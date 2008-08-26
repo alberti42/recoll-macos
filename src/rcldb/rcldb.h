@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.60 2008-07-29 08:25:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.61 2008-08-26 07:38:29 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -168,8 +168,10 @@ class Db {
      * the input query. This uses index data only (no access to the file) */
     bool makeDocAbstract(Doc &doc, Query *query, string& abstract);
 
-    /** Get document for given filename and ipath. Used by the 'history'
-     * feature (and nothing else?) */
+    /** Get document for given udi
+     *
+     * Used by the 'history' feature (and nothing else?) 
+     */
     bool getDoc(const string &udi, Doc &doc, int *percent);
 
     /* The following are mainly for the aspell module */

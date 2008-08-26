@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.137 2008-07-29 06:25:29 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.138 2008-08-26 07:38:29 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -144,6 +144,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc
     parms.get(string("caption"), doc.meta["title"]);
     parms.get(string("keywords"), doc.meta["keywords"]);
     parms.get(string("abstract"), doc.meta["abstract"]);
+    parms.get(string("author"), doc.meta["author"]);
     // Possibly remove synthetic abstract indicator (if it's there, we
     // used to index the beginning of the text as abstract).
     doc.syntabs = false;
@@ -927,7 +928,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	newdocument.add_term(noacc);
     }
 
-    // Pathname/ipath unique term: this is used for file existence/uptodate
+    // Udi unique term: this is used for file existence/uptodate
     // checks, and unique id for the replace_document() call.
     string uniterm = make_uniterm(udi);
     newdocument.add_term(uniterm);
@@ -1199,7 +1200,7 @@ bool Db::purge()
 		m_ndb->wdb.delete_document(docid);
 		LOGDEB(("Db::purge: deleted document #%d\n", docid));
 	    } catch (const Xapian::DocNotFoundError &) {
-		LOGDEB(("Db::purge: document #%d not found\n", docid));
+		LOGDEB0(("Db::purge: document #%d not found\n", docid));
 	    } catch (const Xapian::Error &e) {
 		LOGERR(("Db::purge: document #%d: %s\n", docid, e.get_msg().c_str()));
 	    } catch (...) {
