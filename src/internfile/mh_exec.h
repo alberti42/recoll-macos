@@ -16,7 +16,7 @@
  */
 #ifndef _MH_EXEC_H_INCLUDED_
 #define _MH_EXEC_H_INCLUDED_
-/* @(#$Id: mh_exec.h,v 1.4 2007-10-25 15:50:31 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_exec.h,v 1.5 2008-08-26 07:31:54 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -40,8 +40,13 @@ class MimeHandlerExec : public RecollFilter {
 	return true;
     }
     virtual bool next_document();
+    virtual bool skip_to_document(const string& ipath) {
+	m_ipath = ipath;
+	return true;
+    }
 private:
     string m_fn;
+    string m_ipath;
 };
 
 #endif /* _MH_EXEC_H_INCLUDED_ */

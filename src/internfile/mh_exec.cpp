@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.9 2007-02-06 18:01:58 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.10 2008-08-26 07:31:54 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -56,6 +56,8 @@ bool MimeHandlerExec::next_document()
     list<string>::iterator it = params.begin();
     list<string>myparams(++it, params.end());
     myparams.push_back(m_fn);
+    if (!m_ipath.empty())
+	myparams.push_back(m_ipath);
 
     // Execute command and store the result text, which is supposedly html
     string& html = m_metaData["content"];
