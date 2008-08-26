@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.8 2008-08-26 13:47:21 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.9 2008-08-26 13:50:13 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -118,9 +118,9 @@ void WasaQuery::describe(string &desc) const
  * parenthesis increases the index, but we're not interested in all
  */
 static const char * parserExpr = 
-    "([oO][rR]|\\|\\|)[[:space:]]*"        //1 OR,or,|| 
+    "(OR|\\|\\|)[[:space:]]*"        //1 OR,|| 
     "|"
-    "([Aa][Nn][Dd]|&&)[[:space:]]*"  // 2 AND,and,&& (ignored, default)
+    "(AND|&&)[[:space:]]*"           // 2 AND,&& (ignored, default)
     "|"
     "("                              //3 
       "([+-])?"                      //4 Force or exclude indicator
