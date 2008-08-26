@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.40 2008-07-01 08:27:58 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.41 2008-08-26 07:33:05 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -41,6 +41,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.40 2008-07-01 08:27:58 dockes Exp
 #include "mimehandler.h"
 #include "plaintorich.h"
 #include "refcntr.h"
+#include "internfile.h"
 
 #include "reslist.h"
 #include "moc_reslist.cpp"
@@ -679,29 +680,15 @@ void ResList::menuSeeParent()
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc)) {
 	Rcl::Doc doc1;
-	if (doc.ipath.empty()) {
+	if (FileInterner::getEnclosing(doc.url, doc.ipath, 
+				       doc1.url, doc1.ipath)) {
+	    emit previewRequested(doc1);
+	} else {
 	    // No parent doc: show enclosing folder with app configured for
 	    // directories
 	    doc1.url = path_getfather(doc.url);
 	    doc1.mimetype = "application/x-fsdirectory";
 	    emit editRequested(doc1);
-	} else {
-	    doc1.url = doc.url;
-	    doc1.ipath = doc.ipath;
-	    string::size_type colon;
-	    LOGDEB(("Ipath: [%s]\n", doc1.ipath.c_str()));
-	    if ((colon=doc1.ipath.find_last_of(":")) != string::npos) {
-		doc1.ipath.erase(colon);
-	    } else {
-		doc1.ipath.erase();
-	    }
-	    LOGDEB(("Ipath after: [%s]\n", doc1.ipath.c_str()));
-
-	    list<string> lipath;
-	    stringToTokens(doc.ipath, lipath, ":");
-	    if (lipath.size() >= 1)
-		lipath.pop_back();
-	    emit previewRequested(doc1);
 	}
     }
 }

@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.16 2007-06-26 16:09:19 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.17 2008-08-26 07:33:05 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -39,7 +39,14 @@ struct stat;
  */
 class FileInterner {
  public:
-
+    /**
+     * Get immediate parent for document. 
+     *
+     * This is not in general the same as the "parent" document used 
+     * with Rcl::Db::addOrUpdate(). The latter is generally the enclosing file. 
+     */
+    static bool getEnclosing(const string &url, const string &ipath,
+			     string &eurl, string &eipath);
     /**
      * Identify and possibly decompress file, create adequate
      * handler. The mtype parameter is only set when the object is

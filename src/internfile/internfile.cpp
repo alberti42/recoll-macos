@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.38 2008-05-27 05:40:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.39 2008-08-26 07:33:05 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,24 @@ using namespace std;
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
 static const string isep(":");
+
+bool FileInterner::getEnclosing(const string &url, const string &ipath,
+				string &eurl, string &eipath)
+{
+    eurl = url;
+    eipath = ipath;
+    string::size_type colon;
+    LOGDEB(("FileInterner::getEnclosing(): [%s]\n", eipath.c_str()));
+    if (eipath.empty())
+	return false;
+    if ((colon =  eipath.find_last_of(isep)) != string::npos) {
+	eipath.erase(colon);
+    } else {
+	eipath.erase();
+    }
+    LOGDEB(("FileInterner::getEnclosing() after: [%s]\n", eipath.c_str()));
+    return true;
+}
 
 // Execute the command to uncompress a file into a temporary one.
 static bool uncompressfile(RclConfig *conf, const string& ifn, 
@@ -610,6 +628,11 @@ Usage(void)
 static int        op_flags;
 #define OPT_q	  0x1 
 
+RclConfig *config;
+RclConfig *RclConfig::getMainConfig()
+{
+    return config;
+}
 int main(int argc, char **argv)
 {
     thisprog = argv[0];
@@ -639,7 +662,7 @@ int main(int argc, char **argv)
 	argc--;
     }
     string reason;
-    RclConfig *config = recollinit(0, 0, reason);
+    config = recollinit(0, 0, reason);
 
     if (config == 0 || !config->ok()) {
 	string str = "Configuration problem: ";
