@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.5 2008-07-01 08:24:30 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.6 2008-08-26 07:36:41 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <Python.h>
@@ -35,6 +35,8 @@ PyObject *obj_Create(PyTypeObject *tp, PyObject *args, PyObject *kwargs)
     return result;
 }
 
+//////////////////////////////////////////////////////
+////// Python object definitions for Db, Query, and Doc
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
@@ -46,7 +48,7 @@ static PyTypeObject recollq_DbType = {
     "recollq.Db",             /*tp_name*/
     sizeof(recollq_DbObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
-    0,    /*tp_dealloc*/
+    0,                         /*tp_dealloc*/
     0,                         /*tp_print*/
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
@@ -62,25 +64,26 @@ static PyTypeObject recollq_DbType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    "Recollq Db objects",           /* tp_doc */
+    "Recollq Db objects",      /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
     0,		               /* tp_weaklistoffset */
     0,		               /* tp_iter */
     0,		               /* tp_iternext */
-    0,             /* tp_methods */
-    0,             /* tp_members */
+    0,                         /* tp_methods */
+    0,                         /* tp_members */
     0,                         /* tp_getset */
     0,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
-    0,      /* tp_init */
+    0,                         /* tp_init */
     0,                         /* tp_alloc */
-    0,                 /* tp_new */
+    0,                         /* tp_new */
 };
+
 
 typedef struct {
     PyObject_HEAD
@@ -111,24 +114,24 @@ static PyTypeObject recollq_QueryType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    "Recollq Query objects",           /* tp_doc */
+    "Recollq Query object",    /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
     0,		               /* tp_weaklistoffset */
     0,		               /* tp_iter */
     0,		               /* tp_iternext */
-    0,             /* tp_methods */
-    0,             /* tp_members */
+    0,                         /* tp_methods */
+    0,                         /* tp_members */
     0,                         /* tp_getset */
     0,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
-    0,      /* tp_init */
+    0,                         /* tp_init */
     0,                         /* tp_alloc */
-    0,                 /* tp_new */
+    0,                         /* tp_new */
 };
 typedef struct {
     PyObject_HEAD
@@ -158,26 +161,28 @@ static PyTypeObject recollq_DocType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    "Recollq Doc objects",           /* tp_doc */
+    "Recollq Doc objects",     /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
     0,		               /* tp_weaklistoffset */
     0,		               /* tp_iter */
     0,		               /* tp_iternext */
-    0,             /* tp_methods */
-    0,             /* tp_members */
+    0,                         /* tp_methods */
+    0,                         /* tp_members */
     0,                         /* tp_getset */
     0,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
-    0,      /* tp_init */
+    0,                         /* tp_init */
     0,                         /* tp_alloc */
-    0,                 /* tp_new */
+    0,                         /* tp_new */
 };
 
+///////////////////////////////////////////////
+////// Db object code
 static void 
 Db_dealloc(recollq_DbObject *self)
 {
@@ -206,12 +211,13 @@ static int
 Db_init(recollq_DbObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Db_init\n"));
-    static char *kwlist[] = {"confdir", "extra_dbs", NULL};
+    static char *kwlist[] = {"confdir", "extra_dbs", "writable", NULL};
     PyObject *extradbs = 0;
     char *confdir = 0;
+    int writable = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|sO", kwlist,
-				     &confdir, &extradbs))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|sOi", kwlist,
+				     &confdir, &extradbs, &writable))
 	return -1;
 
     // If the user creates several dbs, changing the confdir, we call 
@@ -239,9 +245,10 @@ Db_init(recollq_DbObject *self, PyObject *args, PyObject *kwargs)
     self->db = new Rcl::Db;
     string dbdir = rclconfig->getDbDir();
     LOGDEB(("Db_init: getdbdir ok: [%s]\n", dbdir.c_str()));
-    if (!self->db->open(dbdir, rclconfig->getStopfile(), Rcl::Db::DbRO)) {
+    if (!self->db->open(dbdir, rclconfig->getStopfile(), writable ? 
+			Rcl::Db::DbUpd : Rcl::Db::DbRO)) {
 	LOGDEB(("Db_init: db open error\n"));
-	PyErr_SetString(PyExc_EnvironmentError, "Cant open index");
+	PyErr_SetString(PyExc_EnvironmentError, "Can't open index");
         return -1;
     }
 
@@ -355,20 +362,85 @@ Db_makeDocAbstract(recollq_DbObject* self, PyObject *args, PyObject *)
 				     "UTF-8", "replace");
 }
 
+static PyObject *
+Db_needUpdate(recollq_DbObject* self, PyObject *args, PyObject *kwds)
+{
+    char *udi = 0;
+    char *sig = 0;
+    LOGDEB(("Db_needUpdate\n"));
+    if (!PyArg_ParseTuple(args, "eses:Db_needUpdate", 
+			  "utf-8", &udi, "utf-8", &sig)) {
+	return 0;
+    }
+    if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
+	LOGERR(("Db_makeDocAbstract: db not found %p\n", self->db));
+        PyErr_SetString(PyExc_AttributeError, "db");
+        return 0;
+    }
+    bool result = self->db->needUpdate(udi, sig);
+    PyMem_Free(udi);
+    PyMem_Free(sig);
+    return Py_BuildValue("i", result);
+}
+
+static PyObject *
+Db_addOrUpdate(recollq_DbObject* self, PyObject *args, PyObject *)
+{
+    LOGDEB(("Db_addOrUpdate\n"));
+    char *udi = 0;
+    char *parent_udi = 0;
+
+    recollq_DocObject *pydoc;
+
+    if (!PyArg_ParseTuple(args, "esesO!:Db_makeDocAbstract",
+			  "utf-8", &udi, "utf-8", &parent_udi, 
+			  &recollq_DocType, &pydoc)) {
+	return 0;
+    }
+    if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
+	LOGERR(("Db_addOrUpdate: db not found %p\n", self->db));
+        PyErr_SetString(PyExc_AttributeError, "db");
+        return 0;
+    }
+    if (pydoc->doc == 0 || the_docs.find(pydoc->doc) == the_docs.end()) {
+	LOGERR(("Db_addOrUpdate: doc not found %p\n", pydoc->doc));
+        PyErr_SetString(PyExc_AttributeError, "doc");
+        return 0;
+    }
+    if (!self->db->addOrUpdate(udi, parent_udi, *pydoc->doc)) {
+	LOGERR(("Db_addOrUpdate: rcldb error\n"));
+        PyErr_SetString(PyExc_AttributeError, "rcldb error");
+	PyMem_Free(udi);
+	PyMem_Free(parent_udi);
+        return 0;
+    }
+    PyMem_Free(udi);
+    PyMem_Free(parent_udi);
+    Py_RETURN_NONE;
+}
+    
 static PyMethodDef Db_methods[] = {
     {"query", (PyCFunction)Db_query, METH_NOARGS,
      "Return a new, blank query for this index"
     },
     {"setAbstractParams", (PyCFunction)Db_setAbstractParams, 
      METH_VARARGS|METH_KEYWORDS,
-     "Set abstract build params: maxchars and contextwords"
+     "Set abstract build parameters: maxchars and contextwords"
     },
     {"makeDocAbstract", (PyCFunction)Db_makeDocAbstract, METH_VARARGS,
-     "Return a new, blank query for this index"
+     "Build keyword in context abstract for document and query"
+    },
+    {"needUpdate", (PyCFunction)Db_needUpdate, METH_VARARGS,
+     "Check index up to date"
+    },
+    {"addOrUpdate", (PyCFunction)Db_addOrUpdate, METH_VARARGS,
+     "Add or update document in index"
     },
     {NULL}  /* Sentinel */
 };
 
+/////////////////////////////////////////////
+/// Query object method
 static void 
 Query_dealloc(recollq_QueryObject *self)
 {
@@ -394,6 +466,9 @@ Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
     return (PyObject *)self;
 }
 
+// Query_init creates an unusable object. The only way to create a
+// valid Query Object is through db_query(). (or we'd need to add a Db
+// parameter to the Query object creation method)
 static int
 Query_init(recollq_QueryObject *self, PyObject *, PyObject *)
 {
@@ -411,9 +486,8 @@ static PyObject *
 Query_execute(recollq_QueryObject* self, PyObject *args, PyObject *kwds)
 {
     char *utf8 = 0;
-    int len = 0;
     LOGDEB(("Query_execute\n"));
-    if (!PyArg_ParseTuple(args, "es#:Query_execute", "utf-8", &utf8, &len)) {
+    if (!PyArg_ParseTuple(args, "es:Query_execute", "utf-8", &utf8)) {
 	return 0;
     }
 
@@ -425,6 +499,7 @@ Query_execute(recollq_QueryObject* self, PyObject *args, PyObject *kwds)
     }
     string reason;
     Rcl::SearchData *sd = wasaStringToRcl(utf8, reason);
+    PyMem_Free(utf8);
     if (!sd) {
 	PyErr_SetString(PyExc_ValueError, reason.c_str());
 	return 0;
@@ -451,24 +526,22 @@ Query_fetchone(recollq_QueryObject* self, PyObject *, PyObject *)
         PyErr_SetString(PyExc_AttributeError, "query: no results");
 	return 0;
     }
-    Rcl::Doc *doc = new Rcl::Doc;
+    recollq_DocObject *result = 
+	(recollq_DocObject *)obj_Create(&recollq_DocType, 0, 0);
+    if (!result) {
+	LOGERR(("Query_fetchone: couldn't create doc object for result\n"));
+	return 0;
+    }
     int percent;
-    if (!self->query->getDoc(self->next, *doc, &percent)) {
+    if (!self->query->getDoc(self->next, *result->doc, &percent)) {
         PyErr_SetString(PyExc_EnvironmentError, "query: cant fetch result");
 	self->next = -1;
 	return 0;
     }
     self->next++;
-    recollq_DocObject *result = 
-	(recollq_DocObject *)obj_Create(&recollq_DocType, 0, 0);
-    if (!result) {
-	delete doc;
-	return 0;
-    }
-    result->doc = doc;
-    the_docs.insert(result->doc);
     // Move some data from the dedicated fields to the meta array to make 
     // fetching attributes easier
+    Rcl::Doc *doc = result->doc;
     printableUrl(rclconfig->getDefCharset(), doc->url, doc->meta["url"]);
     doc->meta["mimetype"] = doc->mimetype;
     doc->meta["mtime"] = doc->dmtime.empty() ? doc->fmtime : doc->dmtime;
@@ -502,7 +575,8 @@ static PyMemberDef Query_members[] = {
     {NULL}  /* Sentinel */
 };
 
-
+///////////////////////////////////////////////////////////////////////
+///// Doc object methods
 static void 
 Doc_dealloc(recollq_DocObject *self)
 {
@@ -534,14 +608,21 @@ Doc_init(recollq_DocObject *self, PyObject *, PyObject *)
     if (self->doc)
 	the_docs.erase(self->doc);
     delete self->doc;
-    self->doc = 0;
+    self->doc = new Rcl::Doc;
+    if (self->doc == 0)
+	return -1;
+    the_docs.insert(self->doc);
     return 0;
 }
 
+// The "closure" thing is actually the meta field name. This is how
+// python allows one set of get/set functions to get/set different
+// attributes (pass them an additional parameters as from the
+// getseters table and call it a "closure"
 static PyObject *
 Doc_getmeta(recollq_DocObject *self, void *closure)
 {
-    LOGDEB(("Doc_getmeta\n"));
+    LOGDEB(("Doc_getmeta: [%s]\n", (const char *)closure));
     if (self->doc == 0 || 
 	the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc");
@@ -568,32 +649,109 @@ Doc_getmeta(recollq_DocObject *self, void *closure)
 static int
 Doc_setmeta(recollq_DocObject *self, PyObject *value, void *closure)
 {
-    PyErr_SetString(PyExc_RuntimeError, "Cannot set attributes for now");
-    return -1;
+    if (self->doc == 0 || 
+	the_docs.find(self->doc) == the_docs.end()) {
+        PyErr_SetString(PyExc_AttributeError, "doc??");
+	return -1;
+    }
+    LOGDEB2(("Doc_setmeta: doc %p\n", self->doc));
+    if (PyString_Check(value)) {
+	value = PyUnicode_FromObject(value);
+	if (value == 0) 
+	    return -1;
+    } 
+
+    if (!PyUnicode_Check(value)) {
+	PyErr_SetString(PyExc_AttributeError, "value not str/unicode??");
+	return -1;
+    }
+
+    PyObject* putf8 = PyUnicode_AsUTF8String(value);
+    if (putf8 == 0) {
+	LOGERR(("Doc_setmeta: encoding to utf8 failed\n"));
+	PyErr_SetString(PyExc_AttributeError, "value??");
+	return -1;
+    }
+
+    char* uvalue = PyString_AsString(putf8);
+    const char *key = (const char *)closure;
+    if (key == 0) {
+        PyErr_SetString(PyExc_AttributeError, "key??");
+	return -1;
+    }
+
+    LOGDEB(("Doc_setmeta: setting [%s] to [%s]\n", key, uvalue));
+    self->doc->meta[key] = uvalue;
+    switch (key[0]) {
+    case 'd':
+	if (!strcmp(key, "dbytes")) {
+	    self->doc->dbytes = uvalue;
+	}
+	break;
+    case 'f':
+	if (!strcmp(key, "fbytes")) {
+	    self->doc->fbytes = uvalue;
+	}
+	break;
+    case 'i':
+	if (!strcmp(key, "ipath")) {
+	    self->doc->ipath = uvalue;
+	}
+	break;
+    case 'm':
+	if (!strcmp(key, "mimetype")) {
+	    self->doc->mimetype = uvalue;
+	} else if (!strcmp(key, "mtime")) {
+	    self->doc->dmtime = uvalue;
+	}
+	break;
+    case 's':
+	if (!strcmp(key, "sig")) {
+	    self->doc->sig = uvalue;
+	}
+	break;
+    case 't':
+	if (!strcmp(key, "text")) {
+	    self->doc->text = uvalue;
+	}
+	break;
+    case 'u':
+	if (!strcmp(key, "url")) {
+	    self->doc->url = uvalue;
+	}
+	break;
+    }
+    return 0;
 }
 
 static PyGetSetDef Doc_getseters[] = {
     // Name, get, set, doc, closure
-    {"title", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "title", (void *)"title"},
-    {"keywords", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "keywords", (void *)"keywords"},
-    {"abstract", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "abstract", (void *)"abstract"},
     {"url", (getter)Doc_getmeta, (setter)Doc_setmeta, 
      "url", (void *)"url"},
+    {"ipath", (getter)Doc_getmeta, (setter)Doc_setmeta, 
+     "ipath", (void *)"ipath"},
     {"mimetype", (getter)Doc_getmeta, (setter)Doc_setmeta, 
      "mimetype", (void *)"mimetype"},
     {"mtime", (getter)Doc_getmeta, (setter)Doc_setmeta, 
      "mtime", (void *)"mtime"},
-    {"ipath", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "ipath", (void *)"ipath"},
     {"fbytes", (getter)Doc_getmeta, (setter)Doc_setmeta, 
      "fbytes", (void *)"fbytes"},
     {"dbytes", (getter)Doc_getmeta, (setter)Doc_setmeta, 
      "dbytes", (void *)"dbytes"},
     {"relevance", (getter)Doc_getmeta, (setter)Doc_setmeta, 
      "relevance", (void *)"relevance"},
+    {"title", (getter)Doc_getmeta, (setter)Doc_setmeta, 
+     "title", (void *)"title"},
+    {"keywords", (getter)Doc_getmeta, (setter)Doc_setmeta, 
+     "keywords", (void *)"keywords"},
+    {"abstract", (getter)Doc_getmeta, (setter)Doc_setmeta, 
+     "abstract", (void *)"abstract"},
+    {"author", (getter)Doc_getmeta, (setter)Doc_setmeta, 
+     "author", (void *)"author"},
+    {"text", (getter)Doc_getmeta, (setter)Doc_setmeta, 
+     "text", (void *)"text"},
+    {"sig", (getter)Doc_getmeta, (setter)Doc_setmeta, 
+     "sig", (void *)"sig"},
     {NULL}  /* Sentinel */
 };
 
