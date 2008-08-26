@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.13 2008-01-16 11:14:38 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.14 2008-08-26 13:47:21 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -68,9 +68,11 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    LOGINFO(("wasaQueryToRcl: found bad NULL or AND q type in list\n"));
 	    continue;
 	case WasaQuery::OP_LEAF:
-
+	    unsigned int mods = (unsigned int)(*it)->m_modifiers;
 	    // Special cases (mime, category, dir filter ...). Not pretty.
-	    if (!stringicmp("mime", (*it)->m_fieldspec)) {
+	    if (!stringicmp("mime", (*it)->m_fieldspec) ||
+		!stringicmp("format", (*it)->m_fieldspec)
+		) {
 		sdata->addFiletype((*it)->m_value);
 		break;
 	    } 
@@ -95,8 +97,14 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    } 
 
 	    if ((*it)->m_value.find_first_of(" \t\n\r") != string::npos) {
-		nclause = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
-							(*it)->m_value, 0, 
+		int slack = (mods & WasaQuery::WQM_PHRASESLACK) ? 10 : 0;
+		Rcl::SClType tp = Rcl::SCLT_PHRASE;
+		if (mods & WasaQuery::WQM_PROX) {
+		    tp = Rcl::SCLT_NEAR;
+		    slack = 10;
+		}
+		nclause = new Rcl::SearchDataClauseDist(tp, (*it)->m_value,
+							slack,
 							(*it)->m_fieldspec);
 	    } else {
 		nclause = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 

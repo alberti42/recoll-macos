@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.7 2008-07-01 11:51:51 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.8 2008-08-26 13:47:21 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -41,10 +41,24 @@ WasaQuery::~WasaQuery()
     m_subs.clear();
 }
 
+static const char* reltosrel(WasaQuery::Rel rel)
+{
+    switch (rel) {
+    case WasaQuery::REL_EQUALS: return "=";
+    case WasaQuery::REL_CONTAINS: return ":";
+    case WasaQuery::REL_LT: return "<";
+    case WasaQuery::REL_LTE: return "<=";
+    case WasaQuery::REL_GT: return ">";
+    case WasaQuery::REL_GTE: return ">=";
+    default: return "?";
+    }
+}
+
 void WasaQuery::describe(string &desc) const
 {
     desc += "(";
-    string fieldspec = m_fieldspec.empty() ? string() : m_fieldspec + ": ";
+    string fieldspec = m_fieldspec.empty() ? string() : m_fieldspec + 
+	reltosrel(m_rel);
     switch (m_op) {
     case OP_NULL: 
 	desc += "NULL"; 
@@ -71,6 +85,7 @@ void WasaQuery::describe(string &desc) const
 	desc.erase(desc.length() - 1);
     desc += ")"; 
     if (m_modifiers != 0) {
+	if (m_modifiers & WQM_BOOST)  desc += "BOOST|";
 	if (m_modifiers & WQM_CASESENS)  desc += "CASESENS|";
 	if (m_modifiers & WQM_DIACSENS)  desc += "DIACSENS|";
 	if (m_modifiers & WQM_NOSTEM)    desc += "NOSTEM|";
@@ -96,14 +111,6 @@ void WasaQuery::describe(string &desc) const
  * key:Value
  * or
  * Value
- ([+-]?)		# Required or Prohibited (optional)
- (\w+:)?		# Key  (optional)
- (		# Query Text
- (\"([^\"]*)\"?)#  quoted
- |		#  or
- ([^\s\"]+)	#  unquoted
- )
- ";
 */
 
 /* The master regular expression used to parse a query string
@@ -113,41 +120,47 @@ void WasaQuery::describe(string &desc) const
 static const char * parserExpr = 
     "([oO][rR]|\\|\\|)[[:space:]]*"        //1 OR,or,|| 
     "|"
-    "("                              //2
-      "([+-])?"                      //3 Force or exclude indicator
-      "("                            //4
-        "([[:alpha:]][[:alnum:]]*)"  //5 Field spec: "fieldname:"
-      ":)?"
-      "("                            //6
-        "(\""                        //7
-          "([^\"]+)"                 //8 "A quoted term"
+    "([Aa][Nn][Dd]|&&)[[:space:]]*"  // 2 AND,and,&& (ignored, default)
+    "|"
+    "("                              //3 
+      "([+-])?"                      //4 Force or exclude indicator
+      "("                            //5
+        "([[:alpha:]][[:alnum:]:]*)" //6 Field spec: ie: "dc:title:letitre"
+        "[[:space:]]*"
+        "(:|=|<|>|<=|>=)"            //7 Relation
+        "[[:space:]]*)?"
+      "("                            //8
+        "(\""                        //9
+          "([^\"]+)"                 //10 "A quoted term"
         "\")"                        
-        "([a-zA-Z0-9]*)"             //9 modifiers
+        "([a-zA-Z0-9]*)"             //11 modifiers
         "|"
-        "([^[:space:]\"]+)"          //10 ANormalTerm
+        "([^[:space:]\"]+)"          //12 ANormalTerm
       ")"
     ")[[:space:]]*"
 ;
 
 // For debugging the parser. But see also NMATCH
 static const char *matchNames[] = {
-     /*0*/   "",
-     /*1*/   "OR",
-     /*2*/   "",
-     /*3*/   "+-",
-     /*4*/   "",
-     /*5*/   "FIELD",
-     /*6*/   "",
-     /*7*/   "",
-     /*8*/   "QUOTEDTERM",
-     /*9*/   "MODIIFIERS",
-     /*10*/   "TERM",
+     /* 0*/   "",
+     /* 1*/   "OR",
+     /* 2*/   "AND",
+     /* 3*/   "",
+     /* 4*/   "+-",
+     /* 5*/   "",
+     /* 6*/   "FIELD",
+     /* 7*/   "RELATION",
+     /* 8*/   "",
+     /* 9*/   "",
+     /*10*/   "QUOTEDTERM",
+     /*11*/   "MODIIFIERS",
+     /*12*/   "TERM",
 };
 #define NMATCH (sizeof(matchNames) / sizeof(char *))
 
 // Symbolic names for the interesting submatch indices
-enum SbMatchIdx {SMI_OR=1, SMI_PM=3, SMI_FIELD=5, SMI_QUOTED=8, 
-		 SMI_MODIF=9, SMI_TERM=10};
+enum SbMatchIdx {SMI_OR=1, SMI_AND=2, SMI_PM=4, SMI_FIELD=6, SMI_REL=7,
+		 SMI_QUOTED=10, SMI_MODIF=11, SMI_TERM=12};
 
 static const int maxmatchlen = 1024;
 static const int errbuflen = 300;
@@ -284,6 +297,10 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    }
 	    prev_or = true;
 
+	} else if (checkSubMatch(SMI_AND, match, reason)) {
+	    // Do nothing, AND is the default. We might want to check for 
+	    // errors like consecutive ANDs, or OR AND
+
 	} else {
 
 	    WasaQuery *nclause = new WasaQuery;
@@ -312,19 +329,20 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		unsigned int mods = 0;
 		for (unsigned int i = 0; i < strlen(match); i++) {
 		    switch (match[i]) {
-		    case 'C': mods |= WasaQuery::WQM_CASESENS; break;
-		    case 'D': mods |= WasaQuery::WQM_DIACSENS; break;
-		    case 'l': mods |= WasaQuery::WQM_NOSTEM; break;
-		    case 'e': mods |= WasaQuery::WQM_CASESENS |
-			    WasaQuery::WQM_DIACSENS | 
-			    WasaQuery::WQM_NOSTEM; break;
-		    case 'f': mods |= WasaQuery::WQM_FUZZY; break;
 		    case 'b': mods |= WasaQuery::WQM_BOOST; break;
+		    case 'c': break;
+		    case 'C': mods |= WasaQuery::WQM_CASESENS; break;
+		    case 'd': break;
+		    case 'D': mods |= WasaQuery::WQM_DIACSENS; break;
+		    case 'e': mods |= WasaQuery::WQM_CASESENS | WasaQuery::WQM_DIACSENS |  WasaQuery::WQM_NOSTEM; break;
+		    case 'f': mods |= WasaQuery::WQM_FUZZY; break;
+		    case 'l': mods |= WasaQuery::WQM_NOSTEM; break;
+		    case 'L': break;
+		    case 'o': mods |= WasaQuery::WQM_PHRASESLACK; break;
 		    case 'p': mods |= WasaQuery::WQM_PROX; break;
+		    case 'r': mods |= WasaQuery::WQM_REGEX; break;
 		    case 's': mods |= WasaQuery::WQM_SLOPPY; break;
 		    case 'w': mods |= WasaQuery::WQM_WORDS; break;
-		    case 'o': mods |= WasaQuery::WQM_PHRASESLACK; break;
-		    case 'r': mods |= WasaQuery::WQM_REGEX; break;
 		    }
 		}
 		nclause->m_modifiers = WasaQuery::Modifier(mods);
@@ -336,6 +354,29 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		// etc. here but this went away from the spec. See 1.4
 		// if it comes back
 		nclause->m_fieldspec = match;
+		if (checkSubMatch(SMI_REL, match, reason)) {
+		    switch (match[0]) {
+		    case '=':nclause->m_rel = WasaQuery::REL_EQUALS;break;
+		    case ':':nclause->m_rel = WasaQuery::REL_CONTAINS;break;
+		    case '<':
+			if (match[1] == '=')
+			    nclause->m_rel = WasaQuery::REL_LTE;
+			else
+			    nclause->m_rel = WasaQuery::REL_LT;
+			break;
+		    case '>':
+			if (match[1] == '=')
+			    nclause->m_rel = WasaQuery::REL_GTE;
+			else
+			    nclause->m_rel = WasaQuery::REL_GT;
+			break;
+		    default:
+			nclause->m_rel = WasaQuery::REL_CONTAINS;
+		    }
+		} else {
+		    // ?? If field matched we should have a relation
+		    nclause->m_rel = WasaQuery::REL_CONTAINS;
+		}
 	    }
 
 	    // +- indicator ?
@@ -344,7 +385,6 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    } else {
 		nclause->m_op = WasaQuery::OP_LEAF;
 	    }
-
 
 	    if (prev_or) {
 		// The precedent token was an OR, add new clause to or chain

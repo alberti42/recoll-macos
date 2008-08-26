@@ -1,6 +1,6 @@
 #ifndef _WASASTRINGTOQUERY_H_INCLUDED_
 #define _WASASTRINGTOQUERY_H_INCLUDED_
-/* @(#$Id: wasastringtoquery.h,v 1.6 2008-01-17 11:14:13 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: wasastringtoquery.h,v 1.7 2008-08-26 13:47:21 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,10 +23,12 @@
 
 using std::string;
 using std::vector;
+/* Note: Xesam used to be named wasabi. We changed the references to wasabi in
+   the comments, but not the code */
 
 /** 
- * A simple class to represent a parsed wasabiSimple query element. 
- * Can hold a string value or an array of subqueries.
+ * A simple class to represent a parsed Xesam user language element. 
+ * Can hold one leaf element or an array of subqueries to be joined by AND/OR
  *
  * The complete query is represented by a top WasaQuery holding a
  * chain of ANDed subclauses. Some of the subclauses may be themselves
@@ -35,14 +37,30 @@ using std::vector;
  *
  * For LEAF elements, the value can hold one or several words. In the
  * latter case, it should be interpreted as a phrase (comes from a
- * user-entered "quoted string").
+ * user-entered "quoted string"), except if the modifier flags say otherwise.
  * 
  * Some fields only make sense either for compound or LEAF queries. This 
  * is commented for each. We should subclass really.
+ *
+ * Note that wasaStringToQuery supposedly parses the whole Xesam 
+ * User Search Language v 0.95, but that some elements are dropped or
+ * ignored during the translation to a native Recoll query in wasaToRcl
  */
 class WasaQuery {
 public:
+    /** Type of this element: leaf or AND/OR chain */
     enum Op {OP_NULL, OP_LEAF, OP_EXCL, OP_OR, OP_AND};
+    /** Relation to be searched between field and value. Recoll actually only
+	supports "contain" */
+    enum Rel {REL_NULL, REL_EQUALS, REL_CONTAINS, REL_LT, REL_LTE, 
+	      REL_GT, REL_GTE};
+    /** Modifiers for term handling: case/diacritics handling,
+	stemming control */
+    enum Modifier {WQM_CASESENS = 1, WQM_DIACSENS = 2, WQM_NOSTEM = 4, 
+		   WQM_BOOST = 8, WQM_PROX = 0x10, WQM_SLOPPY = 0x20, 
+		   WQM_WORDS = 0x40, WQM_PHRASESLACK = 0x80, WQM_REGEX = 0x100,
+		   WQM_FUZZY = 0x200};
+
     typedef vector<WasaQuery*> subqlist_t;
 
     WasaQuery() 
@@ -59,6 +77,8 @@ public:
 
     /** Field specification if any (ie: title, author ...) Only OPT_LEAF */
     string             m_fieldspec;
+    /** Relation between field and value: =, :, <,>,<=, >= */
+    WasaQuery::Rel     m_rel;
 
     /* String value. Valid for op == OP_LEAF or EXCL */
     string             m_value;
@@ -66,13 +86,7 @@ public:
     /** Subqueries. Valid for conjunctions */
     vector<WasaQuery*> m_subs;
     
-    /** Modifiers for term handling: case/diacritics handling,
-	stemming control */
-    enum Modifier {WQM_CASESENS = 1, WQM_DIACSENS = 2, WQM_NOSTEM = 4, 
-		   WQM_BOOST = 8, WQM_PROX = 0x10, WQM_SLOPPY = 0x20, 
-		   WQM_WORDS = 0x40, WQM_PHRASESLACK = 0x80, WQM_REGEX = 0x100,
-		   WQM_FUZZY = 0x200};
-    unsigned int       m_modifiers;
+    unsigned int   m_modifiers;
 };
 
 /**
