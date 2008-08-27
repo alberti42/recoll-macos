@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.7 2008-08-26 07:56:40 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.8 2008-08-27 12:12:31 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <Python.h>
@@ -37,6 +37,14 @@ PyObject *obj_Create(PyTypeObject *tp, PyObject *args, PyObject *kwargs)
 
 //////////////////////////////////////////////////////
 ////// Python object definitions for Db, Query, and Doc
+PyDoc_STRVAR(doc_DbObject,
+"Db([confdir=None], [extra_dbs=None], [writable = False])\n"
+"\n"
+"A Db object connects to a Recoll database.\n"
+"confdir specifies a Recoll configuration directory (default: environment).\n"
+"extra_dbs is a list of external databases (xapian directories)\n"
+"writable decides if we can index new data through this connection\n"
+);
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
@@ -64,7 +72,7 @@ static PyTypeObject recoll_DbType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    "Recoll Db objects",      /* tp_doc */
+    doc_DbObject,              /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
@@ -133,6 +141,16 @@ static PyTypeObject recoll_QueryType = {
     0,                         /* tp_alloc */
     0,                         /* tp_new */
 };
+
+PyDoc_STRVAR(doc_DocObject,
+"Doc()\n"
+"\n"
+"A Doc object contains index data for a given document.\n"
+"The data is extracted from the index when searching, or set by the\n"
+"indexer program when updating. See the data attributes list for more\n"
+"details."
+);
+
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
@@ -161,7 +179,7 @@ static PyTypeObject recoll_DocType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    "Recoll Doc objects",     /* tp_doc */
+    doc_DocObject,             /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
@@ -392,9 +410,9 @@ Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
 
     recoll_DocObject *pydoc;
 
-    if (!PyArg_ParseTuple(args, "esesO!:Db_makeDocAbstract",
-			  "utf-8", &udi, "utf-8", &parent_udi, 
-			  &recoll_DocType, &pydoc)) {
+    if (!PyArg_ParseTuple(args, "esO!|es:Db_addOrUpdate",
+			  "utf-8", &udi, &recoll_DocType, &pydoc,
+			  "utf-8", &parent_udi)) {
 	return 0;
     }
     if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
@@ -407,7 +425,7 @@ Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
         PyErr_SetString(PyExc_AttributeError, "doc");
         return 0;
     }
-    if (!self->db->addOrUpdate(udi, parent_udi, *pydoc->doc)) {
+    if (!self->db->addOrUpdate(udi, parent_udi?parent_udi:"", *pydoc->doc)) {
 	LOGERR(("Db_addOrUpdate: rcldb error\n"));
         PyErr_SetString(PyExc_AttributeError, "rcldb error");
 	PyMem_Free(udi);
@@ -415,26 +433,33 @@ Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
         return 0;
     }
     PyMem_Free(udi);
-    PyMem_Free(parent_udi);
+    if (parent_udi)
+	PyMem_Free(parent_udi);
     Py_RETURN_NONE;
 }
     
 static PyMethodDef Db_methods[] = {
     {"query", (PyCFunction)Db_query, METH_NOARGS,
-     "Return a new, blank query for this index"
+     "query() -> Query. Return a new, blank query object for this index."
     },
     {"setAbstractParams", (PyCFunction)Db_setAbstractParams, 
      METH_VARARGS|METH_KEYWORDS,
-     "Set abstract build parameters: maxchars and contextwords"
+     "setAbstractParams(maxchars, contextword).\n"
+     "Set the parameters used to build keyword in context abstracts"
     },
     {"makeDocAbstract", (PyCFunction)Db_makeDocAbstract, METH_VARARGS,
-     "Build keyword in context abstract for document and query"
+     "makeDocAbstract(Doc, Query) -> abstract string.\n"
+     "Build and return keyword in context abstract."
     },
     {"needUpdate", (PyCFunction)Db_needUpdate, METH_VARARGS,
-     "Check index up to date"
+     "needUpdate(udi, sig) -> Bool.\n"
+     "Check index up to date for doc udi having current signature sig."
     },
     {"addOrUpdate", (PyCFunction)Db_addOrUpdate, METH_VARARGS,
-     "Add or update document in index"
+     "addOrUpdate(udi, doc, parent_udi=None)\n"
+     "Add or update document doc having unique id udi\n"
+     "If parent_udi is set, this is the udi for the\n"
+     "container (ie mbox file)"
     },
     {NULL}  /* Sentinel */
 };
@@ -482,6 +507,14 @@ Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
     return 0;
 }
 
+PyDoc_STRVAR(doc_Query_execute,
+"execute(query_string)\n"
+"\n"
+"Starts a search for query_string, a Xesam user language string.\n"
+"The query can be a simple list of terms (and'ed by default), or more\n"
+"complicated with field specs etc. See the Recoll manual.\n"
+);
+
 static PyObject *
 Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwds)
 {
@@ -511,6 +544,11 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwds)
     return Py_BuildValue("i", cnt);
 }
 
+PyDoc_STRVAR(doc_Query_fetchone,
+"fetchone(None) -> Doc\n"
+"\n"
+"Fetches the next Doc object in the current search results.\n"
+);
 static PyObject *
 Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
 {
@@ -560,18 +598,22 @@ static PyMethodDef Query_methods[] = {
     {"execute", 
      (PyCFunction)Query_execute, 
      METH_VARARGS,
-     "Execute a search"
+     doc_Query_execute
     },
     {"fetchone", 
      (PyCFunction)Query_fetchone, 
      METH_VARARGS,
-     "Fetch result at rank i"
+     doc_Query_fetchone
     },
     {NULL}  /* Sentinel */
 };
+
 static PyMemberDef Query_members[] = {
     {"next", T_INT, offsetof(recoll_QueryObject, next), 0,
-     "Next index to be fetched from query results"},
+     "Next index to be fetched from results.\n"
+     "Can be set/reset before calling fetchone() to effect seeking.\n"
+     "Starts at 0"
+    },
     {NULL}  /* Sentinel */
 };
 
@@ -768,9 +810,19 @@ recoll_connect(PyObject *self, PyObject *args, PyObject *kwargs)
     return (PyObject *)db;
 }
 
+PyDoc_STRVAR(doc_connect,
+"connect([confdir=None], [extra_dbs=None], [writable = False])\n"
+"         -> Db.\n"
+"\n"
+"Connects to a Recoll database and returns a Db object.\n"
+"confdir specifies a Recoll configuration directory (default: environment).\n"
+"extra_dbs is a list of external databases (xapian directories)\n"
+"writable decides if we can index new data through this connection\n"
+);
+
 static PyMethodDef recollMethods[] = {
     {"connect",  (PyCFunction)recoll_connect, METH_VARARGS|METH_KEYWORDS, 
-     "Connect to index and get Db object."},
+     doc_connect},
 
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
@@ -801,7 +853,7 @@ initrecoll(void)
 
     PyObject* m;
     m = Py_InitModule3("recoll", recollMethods,
-                       "Recoll query extension module.");
+                       "Recoll extension module.");
     
     recoll_DbType.tp_dealloc = (destructor)Db_dealloc;
     recoll_DbType.tp_new = Db_new;
