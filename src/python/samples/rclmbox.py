@@ -100,7 +100,7 @@ class mbox_indexer:
         # sig
         doc.sig = self.sig()
         udi = self.udi(self.msgnum)
-        db.addOrUpdate(udi, u"", doc)
+        db.addOrUpdate(udi, doc)
 
 
 db = recoll.connect(confdir=rclconf, writable=1)

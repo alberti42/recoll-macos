@@ -1,9 +1,12 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.9 2008-08-27 12:34:41 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.10 2008-08-28 15:44:37 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
+
 
 #include <Python.h>
 #include <structmember.h>
+
+#include <strings.h>
 
 #include <string>
 #include <iostream>
@@ -13,6 +16,7 @@ using namespace std;
 #include "rclinit.h"
 #include "rclconfig.h"
 #include "rcldb.h"
+#include "searchdata.h"
 #include "rclquery.h"
 #include "pathut.h"
 #include "wasastringtoquery.h"
@@ -35,8 +39,195 @@ PyObject *obj_Create(PyTypeObject *tp, PyObject *args, PyObject *kwargs)
     return result;
 }
 
+//////////////////////////////////////////////////////////////////////
+/// SearchData code
+typedef struct {
+    PyObject_HEAD
+    /* Type-specific fields go here. */
+    RefCntr<Rcl::SearchData> sd;
+} recoll_SearchDataObject;
+
+static void 
+SearchData_dealloc(recoll_SearchDataObject *self)
+{
+    LOGDEB(("SearchData_dealloc\n"));
+    self->ob_type->tp_free((PyObject*)self);
+}
+
+static PyObject *
+SearchData_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    LOGDEB(("SearchData_new\n"));
+    recoll_SearchDataObject *self;
+
+    self = (recoll_SearchDataObject *)type->tp_alloc(type, 0);
+    if (self == 0) 
+	return 0;
+    return (PyObject *)self;
+}
+
+static int
+SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
+{
+    LOGDEB(("SearchData_init\n"));
+    static char *kwlist[] = {"type", NULL};
+    char *stp = 0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|s", kwlist, &stp))
+	return -1;
+    Rcl::SClType tp = Rcl::SCLT_AND;
+
+    if (stp && strcasecmp(stp, "or")) {
+	tp = Rcl::SCLT_OR;
+    }
+    self->sd = RefCntr<Rcl::SearchData>(new Rcl::SearchData(tp));
+    return 0;
+}
+
+PyDoc_STRVAR(doc_addClause,
+"addClause(type='and'|'or'|'excl'|'phrase'|'near'|'sub', qstring=string,\n"
+"          slack=int, field=string, subSearch=SearchData,\n"
+"Adds a simple clause to the SearchData And/Or chain, or a subquery\n"
+"defined by another SearchData object\n"
+);
+/* Note: necessite And/Or vient du fait que le string peut avoir
+   plusieurs mots. A transferer dans l'i/f Python ou pas ? */
+
+/* Forward decl, def needs recoll_searchDataTyep */
+static PyObject *
+SearchData_addClause(recoll_SearchDataObject* self, PyObject *args, 
+		     PyObject *kwargs);
+
+static PyMethodDef SearchData_methods[] = {
+    {"addClause", (PyCFunction)SearchData_addClause, METH_VARARGS|METH_KEYWORDS,
+     doc_addClause
+    },
+    {NULL}  /* Sentinel */
+};
+
+PyDoc_STRVAR(doc_SearchDataObject,
+"SearchData()\n"
+"\n"
+"A SearchData object describes a query.\n"
+);
+static PyTypeObject recoll_SearchDataType = {
+    PyObject_HEAD_INIT(NULL)
+    0,                         /*ob_size*/
+    "recoll.SearchData",             /*tp_name*/
+    sizeof(recoll_SearchDataObject), /*tp_basicsize*/
+    0,                         /*tp_itemsize*/
+    (destructor)SearchData_dealloc,    /*tp_dealloc*/
+    0,                         /*tp_print*/
+    0,                         /*tp_getattr*/
+    0,                         /*tp_setattr*/
+    0,                         /*tp_compare*/
+    0,                         /*tp_repr*/
+    0,                         /*tp_as_number*/
+    0,                         /*tp_as_sequence*/
+    0,                         /*tp_as_mapping*/
+    0,                         /*tp_hash */
+    0,                         /*tp_call*/
+    0,                         /*tp_str*/
+    0,                         /*tp_getattro*/
+    0,                         /*tp_setattro*/
+    0,                         /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,  /*tp_flags*/
+    doc_SearchDataObject,      /* tp_doc */
+    0,		               /* tp_traverse */
+    0,		               /* tp_clear */
+    0,		               /* tp_richcompare */
+    0,		               /* tp_weaklistoffset */
+    0,		               /* tp_iter */
+    0,		               /* tp_iternext */
+    SearchData_methods,        /* tp_methods */
+    0,                         /* tp_members */
+    0,                         /* tp_getset */
+    0,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    (initproc)SearchData_init, /* tp_init */
+    0,                         /* tp_alloc */
+    SearchData_new,            /* tp_new */
+};
+
+static PyObject *
+SearchData_addClause(recoll_SearchDataObject* self, PyObject *args, 
+		     PyObject *kwargs)
+{
+    LOGDEB(("SearchData_addClause\n"));
+    if (self->sd.isNull()) {
+	LOGERR(("SearchData_addClause: not init??\n"));
+        PyErr_SetString(PyExc_AttributeError, "sd");
+        return 0;
+    }
+    static char *kwlist[] = {"type", "qstring", "slack", "field",
+			     "subsearch", NULL};
+    char *tp = 0;
+    char *qs = 0;
+    int slack = 0;
+    char *fld = 0;
+    recoll_SearchDataObject *sub = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesO!", kwlist,
+				     &tp, "utf-8", &qs, &slack,
+				     "utf-8", &fld, 
+				     &recoll_SearchDataType, &sub))
+	return 0;
+
+    Rcl::SearchDataClause *cl = 0;
+
+    switch (tp[0]) {
+    case 'a':
+    case 'A':
+	if (strcasecmp(tp, "and"))
+	    goto defaultcase;
+	cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, qs, fld?fld:"");
+	break;
+    case 'o':
+    case 'O':
+	if (strcasecmp(tp, "or"))
+	    goto defaultcase;
+	cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, qs, fld?fld:"");
+	break;
+    case 'e':
+    case 'E':
+	if (strcasecmp(tp, "excl"))
+	    goto defaultcase;
+	cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_EXCL, qs, fld?fld:"");
+	break;
+    case 'n':
+    case 'N':
+	if (strcasecmp(tp, "near"))
+	    goto defaultcase;
+	cl = new Rcl::SearchDataClauseDist(Rcl::SCLT_NEAR, qs, slack, 
+					   fld ? fld : "");
+	break;
+    case 'p':
+    case 'P':
+	if (strcasecmp(tp, "phrase"))
+	    goto defaultcase;
+	cl = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, slack, 
+					   fld ? fld : "");
+	break;
+    case 's':
+    case 'S':
+	if (strcasecmp(tp, "sub"))
+	    goto defaultcase;
+	cl = new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, sub->sd);
+	break;
+    defaultcase:
+    default:
+        PyErr_SetString(PyExc_AttributeError, "Bad tp arg");
+	return 0;
+    }
+
+    self->sd->addClause(cl);
+    Py_RETURN_NONE;
+}
+
 ///////////////////////////////////////////////////////////////////////
-///// Doc object code
+///// Doc code
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
@@ -324,7 +515,7 @@ Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
 }
 
 PyDoc_STRVAR(doc_Query_execute,
-"execute(query_string)\n"
+"execute(query_string, stemmming=1|0)\n"
 "\n"
 "Starts a search for query_string, a Xesam user language string.\n"
 "The query can be a simple list of terms (and'ed by default), or more\n"
@@ -332,14 +523,17 @@ PyDoc_STRVAR(doc_Query_execute,
 );
 
 static PyObject *
-Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwds)
+Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
-    char *utf8 = 0;
     LOGDEB(("Query_execute\n"));
-    if (!PyArg_ParseTuple(args, "es:Query_execute", "utf-8", &utf8)) {
+    static char *kwlist[] = {"query_string", "stemming", NULL};
+    char *utf8 = 0;
+    int dostem = 1;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|i:Query_execute", 
+				     kwlist, "utf-8", &utf8,
+				     &dostem)) {
 	return 0;
     }
-
     LOGDEB(("Query_execute:  [%s]\n", utf8));
     if (self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
@@ -354,7 +548,36 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwds)
 	return 0;
     }
     RefCntr<Rcl::SearchData> rq(sd);
-    self->query->setQuery(rq, Rcl::Query::QO_STEM);
+    self->query->setQuery(rq, dostem?Rcl::Query::QO_STEM:Rcl::Query::QO_NONE);
+    int cnt = self->query->getResCnt();
+    self->next = 0;
+    return Py_BuildValue("i", cnt);
+}
+
+PyDoc_STRVAR(doc_Query_executesd,
+"execute(SearchData, stemming=1|0)\n"
+"\n"
+"Starts a search for the query defined by SearchData.\n"
+);
+
+static PyObject *
+Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = {"searchdata", "stemming", NULL};
+    recoll_SearchDataObject *pysd = 0;
+    int dostem = 1;
+    LOGDEB(("Query_executeSD\n"));
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|i:Query_execute", kwlist,
+				     &recoll_SearchDataType, &pysd, &dostem)) {
+	return 0;
+    }
+    if (self->query == 0 || 
+	the_queries.find(self->query) == the_queries.end()) {
+        PyErr_SetString(PyExc_AttributeError, "query");
+	return 0;
+    }
+    self->query->setQuery(pysd->sd, dostem ? Rcl::Query::QO_STEM : 
+			  Rcl::Query::QO_NONE);
     int cnt = self->query->getResCnt();
     self->next = 0;
     return Py_BuildValue("i", cnt);
@@ -410,7 +633,10 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
 }
 
 static PyMethodDef Query_methods[] = {
-    {"execute", (PyCFunction)Query_execute, METH_VARARGS, doc_Query_execute},
+    {"execute", (PyCFunction)Query_execute, METH_VARARGS|METH_KEYWORDS, 
+     doc_Query_execute},
+    {"executesd", (PyCFunction)Query_executesd, METH_VARARGS|METH_KEYWORDS, 
+     doc_Query_executesd},
     {"fetchone", (PyCFunction)Query_fetchone, METH_VARARGS,doc_Query_fetchone},
     {NULL}  /* Sentinel */
 };
@@ -619,8 +845,8 @@ static PyObject *
 Db_makeDocAbstract(recoll_DbObject* self, PyObject *args, PyObject *)
 {
     LOGDEB(("Db_makeDocAbstract\n"));
-    recoll_DocObject *pydoc;
-    recoll_QueryObject *pyquery;
+    recoll_DocObject *pydoc = 0;
+    recoll_QueryObject *pyquery = 0;
     if (!PyArg_ParseTuple(args, "O!O!:Db_makeDocAbstract",
 			  &recoll_DocType, &pydoc,
 			  &recoll_QueryType, &pyquery)) {
@@ -857,4 +1083,9 @@ initrecoll(void)
         return;
     Py_INCREF(&recoll_DocType);
     PyModule_AddObject(m, "Doc", (PyObject *)&recoll_DocType);
+
+    if (PyType_Ready(&recoll_SearchDataType) < 0)
+        return;
+    Py_INCREF(&recoll_SearchDataType);
+    PyModule_AddObject(m, "SearchData", (PyObject *)&recoll_SearchDataType);
 }

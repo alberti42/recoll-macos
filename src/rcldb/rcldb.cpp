@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.138 2008-08-26 07:38:29 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.139 2008-08-28 15:44:37 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -678,6 +678,7 @@ bool Db::fieldToPrefix(const string& fldname, string &pfx)
     if (fldToPrefs.empty()) {
 	fldToPrefs["abstract"] = string();
 	fldToPrefs["ext"] = "XE";
+	fldToPrefs["filename"] = "XSFN";
 
 	fldToPrefs["title"] = "S";
 	fldToPrefs["caption"] = "S";

@@ -23,7 +23,7 @@ def udi(docfile, numrec):
 
 ###############################################################
 def index_rec(db, numrec, rec):
-    doc = recollq.Doc()
+    doc = recoll.Doc()
     # url
     doc.url = "file://" + docfile
     # utf8fn
@@ -51,7 +51,7 @@ def index_rec(db, numrec, rec):
     # sig
     if numrec == 0:
         doc.sig = str(fmtime)
-    db.addOrUpdate(udi(docfile, numrec), u"", doc)
+    db.addOrUpdate(udi(docfile, numrec), doc)
 
 def output_rec(rec):
     # Escape html
