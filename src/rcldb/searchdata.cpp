@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.21 2008-01-16 11:14:38 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.22 2008-08-28 15:42:43 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,28 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d, const string& stemlang)
     Xapian::Query xq;
     m_reason.erase();
 
+    if (m_query.size() < 1) {
+	m_reason = "empty query";
+	return false;
+    }
+
+    // It's not allowed to have a pure negative query and also it
+    // seems that Xapian doesn't like the first element to be AND_NOT
+    qlist_it_t itnotneg = m_query.end();
+    for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
+	if ((*it)->m_tp != SCLT_EXCL) {
+	    itnotneg = it;
+	    break;
+	}
+    }
+    if (itnotneg == m_query.end()) {
+	LOGERR(("SearchData::toNativeQuery: can't have all negative clauses"));
+	m_reason = "Can't have only negative clauses";
+	return false;
+    }
+    if ((*m_query.begin())->m_tp == SCLT_EXCL) 
+	iter_swap(m_query.begin(), itnotneg);
+
     // Walk the clause list translating each in turn and building the 
     // Xapian query tree
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
@@ -59,7 +81,8 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d, const string& stemlang)
 	}	    
 
 	// If this structure is an AND list, must use AND_NOT for excl clauses.
-	// Else this is an OR list, and there can't be excl clauses
+	// Else this is an OR list, and there can't be excl clauses (checked by
+	// addClause())
 	Xapian::Query::op op;
 	if (m_tp == SCLT_AND) {
 	    op = (*it)->m_tp == SCLT_EXCL ? 
