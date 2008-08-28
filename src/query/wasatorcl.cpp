@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.14 2008-08-26 13:47:21 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.15 2008-08-28 15:43:57 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ using std::list;
 #include "debuglog.h"
 #include "smallut.h"
 #include "rclconfig.h"
+#include "refcntr.h"
 
 Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason)
 {
@@ -56,6 +57,8 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
     Rcl::SearchData *sdata = new 
 	Rcl::SearchData(wasa->m_op == WasaQuery::OP_AND ? Rcl::SCLT_AND : 
 			Rcl::SCLT_OR);
+    LOGDEB2(("wasaQueryToRcl: %s chain\n", wasa->m_op == WasaQuery::OP_AND ? 
+	     "AND" : "OR"));
 
     WasaQuery::subqlist_t::iterator it;
     Rcl::SearchDataClause *nclause;
@@ -68,6 +71,8 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    LOGINFO(("wasaQueryToRcl: found bad NULL or AND q type in list\n"));
 	    continue;
 	case WasaQuery::OP_LEAF:
+	    LOGDEB2(("wasaQueryToRcl: leaf clause [%s]:[%s]\n", 
+		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
 	    unsigned int mods = (unsigned int)(*it)->m_modifiers;
 	    // Special cases (mime, category, dir filter ...). Not pretty.
 	    if (!stringicmp("mime", (*it)->m_fieldspec) ||
@@ -123,6 +128,8 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    break;
 
 	case WasaQuery::OP_EXCL:
+	    LOGDEB2(("wasaQueryToRcl: excl clause [%s]:[%s]\n", 
+		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
 	    if (wasa->m_op != WasaQuery::OP_AND) {
 		LOGERR(("wasaQueryToRcl: negative clause inside OR list!\n"));
 		continue;
@@ -147,12 +154,16 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	    break;
 
 	case WasaQuery::OP_OR:
+	    LOGDEB2(("wasaQueryToRcl: OR clause [%s]:[%s]\n", 
+		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
 	    // Create a subquery.
 	    Rcl::SearchData *sub = wasaQueryToRcl(*it);
 	    if (sub == 0) {
 		continue;
 	    }
-	    nclause = new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, sub);
+	    nclause = 
+		new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, 
+					     RefCntr<Rcl::SearchData>(sub));
 	    if (nclause == 0) {
 		LOGERR(("wasaQueryToRcl: out of memory\n"));
 		return 0;

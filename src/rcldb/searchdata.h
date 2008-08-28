@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.15 2008-07-01 11:51:51 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.16 2008-08-28 15:43:57 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "rcldb.h"
+#include "refcntr.h"
 
 #ifndef NO_NAMESPACES
 using std::vector;
@@ -151,6 +152,11 @@ protected:
     SearchData *m_parentSearch;
     bool        m_haveWildCards;
     Modifier    m_modifiers;
+private:
+    SearchDataClause(const SearchDataClause& r) {}
+    SearchDataClause& operator=(const SearchDataClause& r) {
+	return *this;
+    }
 };
     
 /**
@@ -193,7 +199,18 @@ protected:
     int m_slack;
 };
 
-/** Filename search clause. */
+/** Filename search clause. This is special because term expansion is only
+ * performed against the XSFN terms (it's performed against the main index
+ * for all other fields). Else we could just use a "filename:" field
+ * This doesn't really make sense (either). I think we could either expand
+ * filenames against all terms and then select the XSFN ones, or always perform
+ * expansion only against the field's terms ? Anyway this doesn't hurt
+ * much either. 
+ *
+ * There is a big advantage though in expanding only against the
+ * field, especially for file names, because this makes searches for
+ * "*xx" much faster (no need to scan the whole main index).
+ */
 class SearchDataClauseFilename : public SearchDataClauseSimple {
 public:
     SearchDataClauseFilename(const string& txt)
@@ -225,13 +242,13 @@ public:
 class SearchDataClauseSub : public SearchDataClause {
 public:
     // We take charge of the SearchData * and will delete it.
-    SearchDataClauseSub(SClType tp, SearchData *sub) 
+    SearchDataClauseSub(SClType tp, RefCntr<SearchData> sub) 
 	: SearchDataClause(tp), m_sub(sub) {}
-    virtual ~SearchDataClauseSub() {delete m_sub; m_sub = 0;}
+    virtual ~SearchDataClauseSub() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
 
 protected:
-    SearchData *m_sub;
+    RefCntr<SearchData> m_sub;
 };
 
 } // Namespace Rcl
