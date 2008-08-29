@@ -5,7 +5,7 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq 'boolean_uniqueterm One or Two -Three' > $mystdout 2> $mystderr
+recollq 'boolean_uniqueterm One OR Two -Three' > $mystdout 2> $mystderr
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 
