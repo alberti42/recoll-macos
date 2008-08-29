@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.35 2007-12-13 06:58:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.36 2008-08-29 09:51:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -249,7 +249,7 @@ static const char usage [] =
 ;
 
 static void
-Usage(void)
+Usage(FILE *where = stderr)
 {
     FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
     fprintf(fp, "%s: Usage: %s", thisprog, usage);
@@ -265,9 +265,8 @@ RclConfig *RclConfig::getMainConfig()
 int main(int argc, const char **argv)
 {
     string a_config;
-#ifdef RCL_MONITOR
     int sleepsecs = 60;
-#endif
+
     thisprog = argv[0];
     argc--; argv++;
 
@@ -287,19 +286,15 @@ int main(int argc, const char **argv)
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
 	    case 'l': op_flags |= OPT_l; break;
-#ifdef RCL_MONITOR
 	    case 'm': op_flags |= OPT_m; break;
-#endif
 	    case 's': op_flags |= OPT_s; break;
 #ifdef RCL_USE_ASPELL
 	    case 'S': op_flags |= OPT_S; break;
 #endif
-#ifdef RCL_MONITOR
 	    case 'w':	op_flags |= OPT_w; if (argc < 2)  Usage();
 		if ((sscanf(*(++argv), "%d", &sleepsecs)) != 1) 
 		    Usage(); 
 		argc--; goto b1;
-#endif
 	    case 'x': op_flags |= OPT_x; break;
 	    case 'z': op_flags |= OPT_z; break;
 	    default: Usage(); break;
@@ -307,7 +302,15 @@ int main(int argc, const char **argv)
     b1: argc--; argv++;
     }
     if (op_flags & OPT_h)
-	Usage();
+	Usage(stdout);
+#ifndef RCL_MONITOR
+    if (op_flags & (OPT_m | OPT_w|OPT_x)) {
+	cerr << "Sorry, -m not available: real-time monitoring was not "
+	    "configured in this build\n";
+	exit(1);
+    }
+#endif
+
     if ((op_flags & OPT_z) && (op_flags & (OPT_i|OPT_e)))
 	Usage();
 
