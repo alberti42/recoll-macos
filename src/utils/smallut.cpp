@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.30 2008-08-30 07:30:55 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.31 2008-08-30 07:34:11 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -401,6 +401,8 @@ string truncate_to_word(const string &input, string::size_type maxlen)
 
 void utf8truncate(string &s, int maxlen)
 {
+    if (s.size() <= maxlen)
+	return;
     Utf8Iter iter(s);
     int pos = 0;
     while (iter++ != string::npos) 
