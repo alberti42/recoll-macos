@@ -1,4 +1,4 @@
-# @(#$Id: mimeview,v 1.14 2008-08-28 15:44:37 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeview,v 1.15 2008-09-01 20:39:40 dockes Exp $  (C) 2004 J.F.Dockes
 
 ## ##########################################
 # External viewers, launched by the recoll GUI when you click on a result
@@ -17,11 +17,18 @@ application/pdf  = xpdf %f
 application/postscript = gv %f
 application/vnd.ms-excel = openoffice %f
 application/vnd.ms-powerpoint = openoffice %f
-application/vnd.openxmlformats-officedocument.wordprocessingml.document = openoffice %f
-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = openoffice %f
-application/vnd.openxmlformats-officedocument.presentationml.presentation = openoffice %f
-									 
-
+application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
+ openoffice %f
+application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
+ openoffice %f
+application/vnd.openxmlformats-officedocument.presentationml.template = \
+ openoffice %f
+application/vnd.openxmlformats-officedocument.presentationml.presentation = \
+ openoffice %f
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
+ openoffice %f
+application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
+ openoffice %f
 application/vnd.sun.xml.calc = openoffice %f
 application/vnd.sun.xml.calc.template = openoffice %f
 application/vnd.sun.xml.draw = openoffice %f
