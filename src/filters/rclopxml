@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclopxml,v 1.1 2008-09-01 17:21:18 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclopxml,v 1.2 2008-09-01 17:31:47 dockes Exp $  (C) 2004 J.F.Dockes
 #================================================================
 # rcldocx
 # Extract text from an openxml msword file (will be extended for spreadsheets)
@@ -173,9 +173,9 @@ echo '</head>
 
 filename=''
 if test -f word/document.xml ; then
-   filenames=word/document.xml 
-   tagmatch="w:p"
-   xmlns_decls='
+ filenames=word/document.xml 
+ tagmatch="w:p"
+ xmlns_decls='
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
  xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -185,14 +185,17 @@ if test -f word/document.xml ; then
  xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
  xmlns:w10="urn:schemas-microsoft-com:office:word"
  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
- xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml"'
+ xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml"
+ '
+
 elif test -f xl/sharedStrings.xml ; then
-   filenames=xl/sharedStrings.xml 
-   tagmatch='x:t'
-   xmlns_decls='
- xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
- xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+ filenames=xl/sharedStrings.xml 
+ tagmatch='x:t'
+ xmlns_decls='
+   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
+   xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
   '
+
 elif test -f ppt/slides/slide1.xml ; then
  filenames=`echo ppt/slides/slide*.xml`
  tagmatch='a:t'
@@ -201,10 +204,19 @@ elif test -f ppt/slides/slide1.xml ; then
   xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" 
  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" 
   xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+ '
+# I want to suppress text output for all except a:t, don't know how to do it
+# help ! At least get rid of these:
+ moretemplates='
+  <xsl:template match="p:attrName">
+  </xsl:template>
 '
 else
- exit 1
+    # ??
+    exit 1
 fi
+
+
 for filename in $filenames;do
 xsltproc - $filename <<EOF
 <?xml version="1.0"?>
@@ -224,8 +236,7 @@ xsltproc - $filename <<EOF
   </p>
  </xsl:template>
 
-<!--  <xsl:template match="*">
-  </xsl:template> -->
+ $moretemplates
 
 </xsl:stylesheet>
 EOF
