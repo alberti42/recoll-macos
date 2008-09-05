@@ -1,6 +1,9 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.4 2008-09-05 10:34:17 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.5 2008-09-05 11:45:16 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
+
+#include <stdlib.h>
+#include <string.h>
 
 #include <list>
 #include <vector>
