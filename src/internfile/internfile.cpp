@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.39 2008-08-26 07:33:05 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.40 2008-09-05 10:36:06 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,8 @@ using namespace std;
 // file to ipath separator : "|"
 static const string isep(":");
 
+// This is used when the user wants to retrieve a search result doc's parent
+// (ie message having a given attachment)
 bool FileInterner::getEnclosing(const string &url, const string &ipath,
 				string &eurl, string &eipath)
 {
@@ -65,7 +67,8 @@ bool FileInterner::getEnclosing(const string &url, const string &ipath,
     return true;
 }
 
-// Execute the command to uncompress a file into a temporary one.
+// Uncompress input file into a temporary one, by executing the appropriate
+// script.
 static bool uncompressfile(RclConfig *conf, const string& ifn, 
 			   const list<string>& cmdv, const string& tdir, 
 			   string& tfile)
@@ -103,6 +106,7 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     return true;
 }
 
+// Delete temporary uncompressed file
 void FileInterner::tmpcleanup()
 {
     if (m_tdir.empty() || m_tfile.empty())
@@ -114,8 +118,12 @@ void FileInterner::tmpcleanup()
     }
 }
 
-// Handler==0 on return says we're in error, will be handled when calling
-// internfile
+// Constructor: identify the input file, possibly create an
+// uncompressed temporary copy, and create the top filter for the
+// uncompressed file type.
+//
+// Empty handler on return says that we're in error, this will be
+// processed by the first call to internfile().
 FileInterner::FileInterner(const std::string &f, const struct stat *stp,
 			   RclConfig *cnf, 
 			   const string& td, const string *imime)
@@ -198,6 +206,9 @@ FileInterner::~FileInterner()
     // m_tempfiles will take care of itself
 }
 
+// Create a temporary file for a block of data (ie: attachment) found
+// while walking the internal document tree, with a type for which the
+// handler needs an actual file (ie : external script).
 bool FileInterner::dataToTempFile(const string& dt, const string& mt, 
 				  string& fn)
 {
@@ -231,7 +242,7 @@ bool FileInterner::dataToTempFile(const string& dt, const string& mt,
 
 // See if the error string is formatted as a missing helper message,
 // accumulate helper name if it is
-void FileInterner::maybeExternalMissing(const string& msg)
+void FileInterner::checkExternalMissing(const string& msg)
 {
     if (msg.find("RECFILTERROR") == 0) {
 	list<string> lerr;
@@ -247,6 +258,8 @@ void FileInterner::maybeExternalMissing(const string& msg)
     }
 }
 
+// Return the list of missing external helper apps that we saw while
+// working
 const list<string>& FileInterner::getMissingExternal() 
 {
     m_missingExternal.sort();
@@ -260,6 +273,7 @@ void FileInterner::getMissingExternal(string& out)
     stringsToString(m_missingExternal, out);
 }
 
+// Helper for extracting a value from a map.
 static inline bool getKeyValue(const map<string, string>& docdata, 
 			       const string& key, string& value)
 {
@@ -310,7 +324,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
     return true;
 }
 
-// Collect the ipath stack. 
+// Collect the ipath from the current path in the document tree.
 // While we're at it, we also set the mimetype and filename, which are special 
 // properties: we want to get them from the topmost doc
 // with an ipath, not the last one which is usually text/plain
@@ -370,6 +384,96 @@ void FileInterner::popHandler()
     m_handlers.pop_back();
 }
 
+enum addResols {ADD_OK, ADD_CONTINUE, ADD_BREAK, ADD_ERROR};
+
+// Just got document from current top handler. See what type it is,
+// and possibly add a filter/handler to the stack
+int FileInterner::addHandler()
+{
+    const std::map<std::string, std::string>& docdata = 
+	m_handlers.back()->get_meta_data();
+    string charset, mimetype;
+    getKeyValue(docdata, keycs, charset);
+    getKeyValue(docdata, keymt, mimetype);
+
+    LOGDEB(("FileInterner::addHandler: next_doc is %s\n", mimetype.c_str()));
+    // If we find a document of the target type (text/plain in
+    // general), we're done decoding
+    if (!stringicmp(mimetype, m_targetMType)) {
+	LOGDEB1(("FileInterner::addHandler: target reached\n"));
+	return ADD_BREAK;
+    }
+
+    // We need to stack another handler. Check stack size
+    if (m_handlers.size() > MAXHANDLERS) {
+	// Stack too big. Skip this and go on to check if there is
+	// something else in the current back()
+	LOGERR(("FileInterner::addHandler: stack too high\n"));
+	return ADD_CONTINUE;
+    }
+
+    Dijon::Filter *newflt = getMimeHandler(mimetype, m_cfg);
+    if (!newflt) {
+	// If we can't find a handler, this doc can't be handled
+	// but there can be other ones so we go on
+	LOGINFO(("FileInterner::addHandler: no filter for [%s]\n",
+		 mimetype.c_str()));
+	return ADD_CONTINUE;
+    }
+    newflt->set_property(Dijon::Filter::OPERATING_MODE, 
+			m_forPreview ? "view" : "index");
+    newflt->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
+
+    // Get content: we don't use getkeyvalue() here to avoid copying
+    // the text, which may be big.
+    string ns;
+    const string *txt = &ns;
+    {
+	map<string,string>::const_iterator it;
+	it = docdata.find(keyct);
+	if (it != docdata.end())
+	    txt = &it->second;
+    }
+    bool setres = false;
+    if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
+	setres = newflt->set_document_string(*txt);
+    } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
+	setres = newflt->set_document_data(txt->c_str(), txt->length());
+    } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
+	string filename;
+	if (dataToTempFile(*txt, mimetype, filename)) {
+	    if (!(setres = newflt->set_document_file(filename))) {
+		m_tmpflgs[m_handlers.size()-1] = false;
+		m_tempfiles.pop_back();
+	    }
+	}
+    }
+    if (!setres) {
+	LOGINFO(("FileInterner::addHandler: set_doc failed inside %s "
+		 " for mtype %s\n", m_fn.c_str(), mimetype.c_str()));
+	delete newflt;
+	if (m_forPreview)
+	    return ADD_ERROR;
+	return ADD_CONTINUE;
+    }
+    // add handler and go on, maybe this one will give us text...
+    m_handlers.push_back(newflt);
+    LOGDEB1(("FileInterner::addHandler: added\n"));
+    return ADD_OK;
+}
+
+// Information and debug after a next_document error
+void FileInterner::processNextDocError()
+{
+    Rcl::Doc doc; string ipath;
+    collectIpathAndMT(doc, ipath);
+    m_reason = m_handlers.back()->get_error();
+    checkExternalMissing(m_reason);
+    LOGERR(("FileInterner::internfile: next_document error "
+	    "[%s%s%s] %s\n", m_fn.c_str(), ipath.empty() ? "" : "|", 
+	    ipath.c_str(), m_reason.c_str()));
+}
+
 FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 {
     LOGDEB(("FileInterner::internfile. ipath [%s]\n", ipath.c_str()));
@@ -379,7 +483,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	return FIError;
     }
 
-    // Ipath vector.
+    // Input Ipath vector when retrieving a given subdoc for previewing
     // Note that the vector is big enough for the maximum stack. All values
     // over the last significant one are ""
     // We set the ipath for the first handler here, others are set
@@ -396,118 +500,67 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	}
     }
 
-    /* Try to get doc from the topmost filter */
-    // Security counter: we try not to loop but ...
+    // Try to get doc from the topmost handler
+    // Security counter: looping happens when we stack one other 
+    // handler or when walking the file document tree without finding
+    // something to index (typical exemple: email with multiple image
+    // attachments and no image filter installed). So we need to be
+    // quite generous here, especially because there is another
+    // security in the form of a maximum handler stack size.
     int loop = 0;
     while (!m_handlers.empty()) {
-	if (loop++ > 30) {
+	if (loop++ > 1000) {
 	    LOGERR(("FileInterner:: looping!\n"));
 	    return FIError;
 	}
+	// If there are no more docs at the current top level we pop and
+	// see if there is something at the previous one
 	if (!m_handlers.back()->has_documents()) {
-	    // No docs at the current top level. Pop and see if there
-	    // is something at the previous one
 	    popHandler();
 	    continue;
 	}
 
-	// Don't stop on next_document() error. There might be ie an
-	// error while decoding an attachment, but we still want to
-	// process the rest of the mbox!
+	// While indexing, don't stop on next_document() error. There
+	// might be ie an error while decoding an attachment, but we
+	// still want to process the rest of the mbox! For preview: fatal.
 	if (!m_handlers.back()->next_document()) {
-	    Rcl::Doc doc; string ipath;
-	    collectIpathAndMT(doc, ipath);
-	    m_reason = m_handlers.back()->get_error();
-	    maybeExternalMissing(m_reason);
-	    LOGERR(("FileInterner::internfile: next_document error [%s%s%s] %s\n",
-		    m_fn.c_str(), ipath.empty()?"":"|", ipath.c_str(), 
-		    m_reason.c_str()));
-	    // If fetching a specific document, this is fatal
-	    if (m_forPreview) {
+	    processNextDocError(); // Debug etc.
+	    if (m_forPreview) 
 		return FIError;
-	    }
 	    popHandler();
 	    continue;
 	}
 
-	// Look at what we've got
-	const std::map<std::string, std::string>& docdata = 
-	    m_handlers.back()->get_meta_data();
-	string charset, mimetype;
-	getKeyValue(docdata, keycs, charset);
-	getKeyValue(docdata, keymt, mimetype);
-
-	LOGDEB(("FileInterner::internfile: next_doc is %s\n",
-		mimetype.c_str()));
-	// If we find a text/plain doc, we're done
-	if (!stringicmp(mimetype, m_targetMType))
-	    break;
-
-	// Got a non text/plain doc. We need to stack another
-	// filter. Check current size
-	if (m_handlers.size() > MAXHANDLERS) {
-	    // Stack too big. Skip this and go on to check if there is
-	    // something else in the current back()
-	    LOGINFO(("FileInterner::internfile: stack too high\n"));
+	// Look at the type for the next document and possibly add
+	// handler to stack.
+	switch (addHandler()) {
+	case ADD_OK: // Just go through: handler has been stacked, use it
+	    break; 
+	case ADD_CONTINUE: 
+	    // forget this doc and retrieve next from current handler
+	    // (ipath stays same)
 	    continue;
+	case ADD_BREAK: 
+	    // Stop looping: doc type ok, need complete its processing
+	    // and return it
+	    goto breakloop; // when you have to you have to
+	case ADD_ERROR: return FIError;
 	}
 
-	Dijon::Filter *again = getMimeHandler(mimetype, m_cfg);
-	if (!again) {
-	    // If we can't find a filter, this doc can't be handled
-	    // but there can be other ones so we go on
-	    LOGINFO(("FileInterner::internfile: no filter for [%s]\n",
-		    mimetype.c_str()));
-	    continue;
-	}
-	again->set_property(Dijon::Filter::OPERATING_MODE, 
-			    m_forPreview ? "view" : "index");
-	again->set_property(Dijon::Filter::DEFAULT_CHARSET, 
-			    charset);
-	string ns;
-	const string *txt = &ns;
-	map<string,string>::const_iterator it;
-	it = docdata.find("content");
-	if (it != docdata.end())
-	    txt = &it->second;
-
-	bool setres = false;
-	if (again->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
-	    setres = again->set_document_string(*txt);
-	} else if (again->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
-	    setres = again->set_document_data(txt->c_str(), txt->length());
-	}else if(again->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
-	    string filename;
-	    if (dataToTempFile(*txt, mimetype, filename)) {
-		if (!(setres = again->set_document_file(filename))) {
-		    m_tmpflgs[m_handlers.size()-1] = false;
-		    m_tempfiles.pop_back();
-		}
-	    }
-	}
-	if (!setres) {
-	    LOGINFO(("FileInterner::internfile: set_doc failed inside %s\n", 
-		    m_fn.c_str()));
-	    delete again;
-	    if (m_forPreview)
-		return FIError;
-	    continue;
-	}
-	// add filter and go on, maybe this one will give us text...
-	m_handlers.push_back(again);
 	if (!ipath.empty() &&
 	    !m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
 	    LOGERR(("FileInterner::internfile: can't skip\n"));
 	    return FIError;
 	}
     }
+ breakloop:
 
     if (m_handlers.empty()) {
 	LOGERR(("FileInterner::internfile: conversion ended with no doc\n"));
 	return FIError;
     }
 
-    // If indexing compute ipath and significant mimetype Note that
+    // If indexing compute ipath and significant mimetype.
     // ipath is returned through the parameter not doc.ipath We also
     // retrieve some metadata fields from the ancesters (like date or
     // author). This is useful for email attachments. The values will
@@ -518,7 +571,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     // Keep this AFTER collectIpathAndMT
     dijontorcl(doc);
 
-    // Destack what can be
+    // Possibly destack so that we can test for FIDone.
     while (!m_handlers.empty() && !m_handlers.back()->has_documents()) {
 	popHandler();
     }
