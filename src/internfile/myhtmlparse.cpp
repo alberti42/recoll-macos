@@ -361,7 +361,10 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 			    decode_entities(tmp);
 			    struct tm tm;
 			    if (strptime(tmp.c_str(), 
-					 " %Y-%m-%d %H:%M:%S ", &tm)) {
+					 " %Y-%m-%d %H:%M:%S ", &tm) ||
+				strptime(tmp.c_str(), 
+					 "%Y-%m-%dT%H:%M:%S", &tm)
+				) {
 				char ascuxtime[100];
 				sprintf(ascuxtime, "%ld", (long)mktime(&tm));
 				dmtime = ascuxtime;
