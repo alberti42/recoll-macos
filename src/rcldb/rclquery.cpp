@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.3 2008-07-01 11:51:51 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.4 2008-09-05 10:34:17 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 
 #include <list>
@@ -303,12 +303,13 @@ bool Query::getDoc(int exti, Doc &doc, int *percent)
 
     Xapian::Document xdoc = m_nq->mset[xapi-first].get_document();
     Xapian::docid docid = *(m_nq->mset[xapi-first]);
+    int pc = m_nq->mset.convert_to_percent(m_nq->mset[xapi-first]);
     if (percent)
-	*percent = m_nq->mset.convert_to_percent(m_nq->mset[xapi-first]);
+	*percent = pc;
 
     // Parse xapian document's data and populate doc fields
     string data = xdoc.get_data();
-    return m_db->m_ndb->dbDataToRclDoc(docid, data, doc);
+    return m_db->m_ndb->dbDataToRclDoc(docid, data, doc, pc);
 }
 
 list<string> Query::expand(const Doc &doc)

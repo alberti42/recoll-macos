@@ -4,7 +4,7 @@
 #include "xapian.h"
 
 namespace Rcl {
-/* @(#$Id: rcldb_p.h,v 1.3 2008-07-29 06:25:29 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: rcldb_p.h,v 1.4 2008-09-05 10:34:17 dockes Exp $  (C) 2007 J.F.Dockes */
 
 // Generic Xapian exception catching code. We do this quite often,
 // and I have no idea how to do this except for a macro
@@ -49,7 +49,8 @@ class Db::Native {
 
     string makeAbstract(Xapian::docid id, Query *query);
 
-    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
+    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc,
+			int percent);
 
     /** Compute list of subdocuments for a given udi. We look for documents 
      * indexed by a parent term matching the udi, the posting list for the 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.141 2008-08-30 12:21:41 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.142 2008-09-05 10:34:17 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -130,7 +130,8 @@ bool Db::Native::subDocs(const string &udi, vector<Xapian::docid>& docids)
 }
 
 // Turn data record from db into document fields
-bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc)
+bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
+				Doc &doc, int percent)
 {
     LOGDEB1(("Db::dbDataToRclDoc: data: %s\n", data.c_str()));
     ConfSimple parms(&data);
@@ -152,6 +153,9 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc
 	doc.meta["abstract"] = doc.meta["abstract"].substr(rclSyntAbs.length());
 	doc.syntabs = true;
     }
+    char buf[20];
+    sprintf(buf,"%.2f", float(percent) / 100.0);
+    doc.meta["relevancyrating"] = buf;
     parms.get(string("ipath"), doc.ipath);
     parms.get(string("fbytes"), doc.fbytes);
     parms.get(string("dbytes"), doc.dbytes);
@@ -1556,7 +1560,7 @@ bool Db::getDoc(const string &udi, Doc &doc, int *pc)
 	Xapian::Document xdoc = m_ndb->db.get_document(*docid);
 	string data = xdoc.get_data();
 	list<string> terms;
-	return m_ndb->dbDataToRclDoc(*docid, data, doc);
+	return m_ndb->dbDataToRclDoc(*docid, data, doc, 100);
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
 	LOGERR(("Db::getDoc: %s\n", ermsg.c_str()));
