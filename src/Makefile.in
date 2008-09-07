@@ -1,4 +1,4 @@
-# @(#$Id: Makefile.in,v 1.14 2008-09-07 07:08:41 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile.in,v 1.15 2008-09-07 07:22:33 dockes Exp $  (C) 2005 J.F.Dockes
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -48,8 +48,7 @@ clean:
 	rm -f qt4gui/Makefile qt4gui/preview/Makefile qt4gui/recoll
 	rm -f common/rclversion.h
 	rm -rf qtgui/.moc qtgui/.ui qtgui/confgui/.moc qtgui/confgui/.ui
-	rm -rf qtgui/.obj qt4gui/.moc qt4gui/.ui
-	(cd qt4gui; make -f uifrom3 clean)
+	rm -rf qtgui/.obj qt4gui/.moc qt4gui/.ui qt4gui/.obj
 
 # Note: we don't remove the top Makefile, to keep the "clean" targets
 # available but a "Make" won't work without a configure anyway
@@ -62,6 +61,7 @@ distclean: clean
 	   wasabi/Makefile wasabi/client/Makefile wasabi/server/Makefile
 	rm -f bincimapmime/alldeps index/alldeps lib/alldeps query/alldeps
 	rm -rf autom4te.cache
+	(cd qt4gui; make -f uifrom3 distclean)
 
 maintainer-clean: distclean
 	rm -f doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest

@@ -29,5 +29,5 @@ always:
 	rm -f images
 	ln -s ../qtgui/images .
 
-clean:
-	rm -f $(UIFILES)
+distclean:
+	rm -f $(UIFILES) images
