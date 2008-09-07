@@ -1,10 +1,11 @@
-# @(#$Id: Makefile.in,v 1.12 2007-06-11 05:51:05 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile.in,v 1.13 2008-09-07 06:43:30 dockes Exp $  (C) 2005 J.F.Dockes
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 
 bindir = @bindir@
 datadir = @datadir@
+datarootdir = @datarootdir@
 mandir = @mandir@
 
 QMAKE = @QMAKE@
@@ -33,27 +34,29 @@ static: mk/sysconf common/rclversion.h
 	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic depth=.. 
 
 clean:
-	cd common; ${MAKE} clean
-	cd index; ${MAKE} clean
-	cd internfile; ${MAKE} clean
-	cd lib; ${MAKE} clean
-	cd bincimapmime; ${MAKE} clean
-	cd query; ${MAKE} clean
-	cd utils; ${MAKE} clean
+	-cd common; ${MAKE} clean
+	-cd index; ${MAKE} clean
+	-cd internfile; ${MAKE} clean
+	-cd lib; ${MAKE} clean
+	-cd bincimapmime; ${MAKE} clean
+	-cd query; ${MAKE} clean
+	-cd utils; ${MAKE} clean
         #cd doc/user; ${MAKE} clean
 	@-cd qtgui; ${MAKE} clean
 	@-cd qt4gui; ${MAKE} clean
-	rm -f qtgui/Makefile qtgui/preview/Makefile qtgui/recoll
+	rm -f qtgui/Makefile qtgui/confgui/Makefile qtgui/recoll
 	rm -f qt4gui/Makefile qt4gui/preview/Makefile qt4gui/recoll
 	rm -f common/rclversion.h
-	rm -rf qtgui/.moc qtgui/.ui
+	rm -rf qtgui/.moc qtgui/.ui qtgui/confgui/.moc qtgui/confgui/.ui
 	rm -rf qt4gui/.moc qt4gui/.ui
 	(cd qt4gui; make -f uifrom3 clean)
 
+# Note: we don't remove the top Makefile, to keep the "clean" targets
+# available but a "Make" won't work without a configure anyway
 distclean: clean
 	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf \
 	   qtgui/recoll.pro qt4gui/recoll.pro \
-	   Makefile config.log config.status \
+	   config.log config.status \
 	   recollinstall \
 	   lib/*.dep common/autoconfig.h \
 	   wasabi/Makefile wasabi/client/Makefile wasabi/server/Makefile
