@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.16 2008-08-28 15:43:57 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.17 2008-09-08 15:47:44 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -153,8 +153,8 @@ protected:
     bool        m_haveWildCards;
     Modifier    m_modifiers;
 private:
-    SearchDataClause(const SearchDataClause& r) {}
-    SearchDataClause& operator=(const SearchDataClause& r) {
+    SearchDataClause(const SearchDataClause&) {}
+    SearchDataClause& operator=(const SearchDataClause&) {
 	return *this;
     }
 };
