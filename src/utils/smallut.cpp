@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.31 2008-08-30 07:34:11 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.32 2008-09-08 15:47:12 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -401,7 +401,7 @@ string truncate_to_word(const string &input, string::size_type maxlen)
 
 void utf8truncate(string &s, int maxlen)
 {
-    if (s.size() <= maxlen)
+    if (s.size() <= string::size_type(maxlen))
 	return;
     Utf8Iter iter(s);
     int pos = 0;
@@ -641,12 +641,15 @@ int main(int argc, char **argv)
 	printf("[%s] %s [%s] \n", suffpairs[i].s1, 
 	       c == 0 ? "matches" : c < 0 ? "<" : ">", suffpairs[i].s2);
     }
-#elif 1
+#elif 0
     std::string testit("\303\251l\303\251gant");
     for (int sz = 10; sz >= 0; sz--) {
 	utf8truncate(testit, sz);
 	cout << testit << endl;
     }
+#elif 1
+    std::string testit("ligne\ndeuxieme ligne\r3eme ligne\r\n");
+    cout << "[" << neutchars(testit, "\r\n") << "]" << endl;
 #endif
 
 }
