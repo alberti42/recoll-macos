@@ -1,3 +1,221 @@
+2008-09-07 09:22  dockes
+
+	* Makefile.in, qt4gui/uifrom3: cleanup
+
+2008-09-07 09:08  dockes
+
+	* Makefile.in: cleaning
+
+2008-09-07 08:43  dockes
+
+	* Makefile.in, VERSION, mk/localdefs.in: improved cleaning
+
+2008-09-05 13:45  dockes
+
+	* rcldb/: rclquery.cpp, stemdb.cpp: comp warning
+
+2008-09-05 13:45  dockes
+
+	* rcldb/rclquery.cpp: gcc4.3
+
+2008-09-05 13:34  dockes
+
+	* VERSION, internfile/internfile.cpp: accept more errors while
+	interning doc tree
+
+2008-09-05 12:36  dockes
+
+	* internfile/: internfile.cpp, internfile.h: strimline and
+	restructure the doctree-exploring loop to make it close to
+	understandable
+
+2008-09-05 12:34  dockes
+
+	* rcldb/: rcldb.cpp, rcldb_p.h, rclquery.cpp: add relevancyrating
+	to the metadata when querying
+
+2008-09-05 12:33  dockes
+
+	* internfile/myhtmlparse.cpp: accept iso date format
+	(2008-09-05T11:55:32)
+
+2008-09-05 12:25  dockes
+
+	* doc/man/: recollindex.1, recollindex.1: [no log message]
+
+2008-09-02 08:02  dockes
+
+	* VERSION: 1.10.5
+
+2008-09-01 22:39  dockes
+
+	* sampleconf/: mimeconf, mimemap, mimeview, mimeconf, mimeview:
+	openxml types
+
+2008-09-01 19:31  dockes
+
+	* filters/rclopxml: sort of works
+
+2008-09-01 19:21  dockes
+
+	* filters/rclopxml: almost almost ok excepts outputs some
+	formatting directives for ppt
+
+2008-08-30 14:21  dockes
+
+	* rcldb/rcldb.cpp: typo in xfsn len fix
+
+2008-08-30 09:38  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.cpp: truncate simple file names at max
+	term length
+
+2008-08-30 09:34  dockes
+
+	* utils/: smallut.cpp, smallut.cpp: utf8truncate
+
+2008-08-30 09:30  dockes
+
+	* utils/: smallut.cpp, smallut.h, smallut.cpp, smallut.h:
+	utf8truncate
+
+2008-08-29 15:59  dockes
+
+	* VERSION: 1.10.4?
+
+2008-08-29 15:47  dockes
+
+	* internfile/mh_mbox.cpp: accept rfc822 date format in From_
+	separators
+
+2008-08-29 15:05  dockes
+
+	* internfile/mh_mbox.cpp: accept weird date format in From lines
+	used by (old?) tbird
+
+2008-08-29 11:51  dockes
+
+	* index/recollindex.cpp: be more informative when monitoring not
+	configured
+
+2008-08-28 17:44  dockes
+
+	* python/recoll/pyrecoll.cpp, python/samples/rcldlkp.py,
+	python/samples/rclmbox.py, rcldb/rcldb.cpp, sampleconf/mimeview:
+	[no log message]
+
+2008-08-28 17:43  dockes
+
+	* query/wasatorcl.cpp, rcldb/searchdata.h: use a refcntr for the
+	sub SearchData
+
+2008-08-28 17:42  dockes
+
+	* rcldb/searchdata.cpp: ensure that a negative clause is not first
+	or only in list
+
+2008-08-27 14:34  dockes
+
+	* python/recoll/pyrecoll.cpp: reorganize+traces
+
+2008-08-27 14:12  dockes
+
+	* python/recoll/pyrecoll.cpp: doc
+
+2008-08-26 15:50  dockes
+
+	* query/wasastringtoquery.cpp: make AND and OR case-sensitive
+
+2008-08-26 15:47  dockes
+
+	* query/: wasastringtoquery.cpp, wasastringtoquery.h,
+	wasatorcl.cpp: try to parse the whole of Xesam user language 0.95
+
+2008-08-26 09:56  dockes
+
+	* python/: recoll/pyrecoll.cpp, recoll/setup.py,
+	samples/rcldlkp.py, samples/rclmbox.py, samples/recollq.py: renamed
+	a few things
+
+2008-08-26 09:38  dockes
+
+	* rcldb/: rcldb.cpp, rcldb.h: copy author back from data record to
+	Doc
+
+2008-08-26 09:36  dockes
+
+	* python/: recoll/pyrecoll.cpp, recoll/setup.py,
+	samples/rcldlkp.py, samples/rclmbox.py, samples/recollq.py: [no log
+	message]
+
+2008-08-26 09:33  dockes
+
+	* rcldb/rcldoc.h: comments
+
+2008-08-26 09:33  dockes
+
+	* internfile/internfile.cpp, internfile/internfile.h,
+	qtgui/reslist.cpp: move ipath computations from reslist to
+	internfile
+
+2008-08-26 09:31  dockes
+
+	* internfile/: mh_exec.cpp, mh_exec.h: implement skip_to_document
+
+2008-08-25 18:12  dockes
+
+	* sampleconf/: mimeconf, mimemap, mimeview: opxml formats
+
+2008-07-30 15:16  dockes
+
+	* rcldb/stemdb.cpp: fixed inocuous but nasty bad string value test
+
+2008-07-30 12:10  dockes
+
+	* wasabi/server/: main.cpp, rclwasabis.cpp: compiles again
+
+2008-07-30 11:52  dockes
+
+	* wasabi/server/: rclwasabis.cpp, rclwasabis.pro: quick code warp
+	to 10.2
+
+2008-07-29 10:25  dockes
+
+	* rcldb/: rcldb.h, rcldoc.h: comments
+
+2008-07-29 08:25  dockes
+
+	* index/indexer.cpp, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	rcldb/rcldb_p.h, rcldb/rcldoc.h: use explicit parent udi term
+	instead of Qterm structure to express parent-child relationship
+
+2008-07-28 14:24  dockes
+
+	* index/indexer.cpp, lib/Makefile, lib/mkMake,
+	query/docseqhist.cpp, rcldb/pathhash.cpp, rcldb/rcldb.cpp,
+	rcldb/rcldb.h, rcldb/rcldoc.h, utils/Makefile, utils/fileudi.cpp:
+	replaced path|ipath with unique doc id in rcldb i/f. Still depends
+	on udi structure for parent/child
+
+2008-07-28 12:20  dockes
+
+	* utils/: fileudi.cpp, fileudi.h: [no log message]
+
+2008-07-28 10:42  dockes
+
+	* index/indexer.cpp, qtgui/uiprefs_w.cpp, rcldb/rcldb.cpp,
+	rcldb/rcldb.h, rcldb/rcldb_p.h, rcldb/rcldoc.h, utils/base64.h:
+	begin i/f cleanup: opacify doc uptodate sig (size+mtime)
+
+2008-07-04 11:29  dockes
+
+	* qtgui/plaintorich.cpp: turn dbg off
+
+2008-07-01 15:00  dockes
+
+	* ChangeLog, VERSION: 1.10.3: checkpoint for 1.10 branch
+	maintenance
+
 2008-07-01 14:11  dockes
 
 	* bincimapmime/convert.h: suppressed a few wasteful string-cstr
@@ -54,17 +272,17 @@
 
 2008-07-01 10:24  dockes
 
-	* python/recoll_query.cpp: added abstract i/f
+	* python/recoll/pyrecoll.cpp: added abstract i/f
 
 2008-06-17 13:43  dockes
 
-	* python/: recoll_query.cpp, setup.py: basic functionality ok, more
-	funcs and options needed
+	* python/recoll/: pyrecoll.cpp, setup.py: basic functionality ok,
+	more funcs and options needed
 
 2008-06-13 20:22  dockes
 
 	* kde/kioslave/recoll/kio_recoll.cpp, lib/Makefile, lib/mkMake,
-	python/recoll_query.cpp, python/setup.py, qtgui/main.cpp,
+	python/recoll/pyrecoll.cpp, python/recoll/setup.py, qtgui/main.cpp,
 	qtgui/rclmain_w.cpp, query/docseq.h, query/docseqdb.cpp,
 	query/docseqdb.h, query/recollq.cpp, rcldb/rcldb.cpp,
 	rcldb/rcldb.h, rcldb/rcldb_p.h, rcldb/rclquery.cpp,
@@ -90,7 +308,7 @@
 
 2008-05-27 12:45  dockes
 
-	* python/: recoll_query.cpp, setup.py: 1.10.2
+	* python/recoll/: pyrecoll.cpp, setup.py: 1.10.2
 
 2008-05-27 08:47  dockes
 
@@ -128,7 +346,7 @@
 
 2008-05-09 14:34  dockes
 
-	* python/: recoll_query.cpp, setup.py: [no log message]
+	* python/recoll/: pyrecoll.cpp, setup.py: [no log message]
 
 2008-05-08 12:00  dockes
 
