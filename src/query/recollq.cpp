@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.13 2008-06-13 18:22:46 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.14 2008-09-08 16:49:10 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -59,6 +59,7 @@ static char usage [] =
 "    -d also dump file contents\n"
 "    -n <cnt> limit the maximum number of results (0->no limit, default 2000)\n"
 "    -b : basic. Just output urls, no mime types or titles\n"
+"    -m : dump the whole document meta[] array\n"
 ;
 static void
 Usage(void)
@@ -80,6 +81,7 @@ static int     op_flags;
 #define OPT_l     0x100
 #define OPT_q     0x200
 #define OPT_t     0x400
+#define OPT_m     0x800
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -103,6 +105,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             case 'd':   op_flags |= OPT_d; break;
             case 'f':   op_flags |= OPT_f; break;
             case 'l':   op_flags |= OPT_l; break;
+            case 'm':   op_flags |= OPT_m; break;
 	    case 'n':	op_flags |= OPT_n; if (argc < 2)  Usage();
 		limit = atoi(*(++argv));
 		if (limit <= 0) limit = INT_MAX;
@@ -192,9 +195,16 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	    cout 
 		<< doc.mimetype.c_str() << "\t"
 		<< "[" << doc.url.c_str() << "]" << "\t" 
-		<< "[" << doc.meta["title"].c_str() << "]" << "\t"
+		<< "[" << doc.meta[Rcl::Doc::keytt].c_str() << "]" << "\t"
 		<< doc.fbytes.c_str()   << "\tbytes" << "\t"
 		<<  endl;
+	    if (op_flags & OPT_m) {
+		for (map<string,string>::const_iterator it = doc.meta.begin();
+		     it != doc.meta.end(); it++) {
+		    cout << it->first << " = " << it->second << endl;
+		}
+	    }
+	    cout << endl;
 	}
 	if (op_flags & OPT_d) {
 	    string fn = doc.url.substr(7);

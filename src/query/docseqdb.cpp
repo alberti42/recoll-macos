@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.4 2008-06-13 18:22:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.5 2008-09-08 16:49:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -62,10 +62,10 @@ int DocSequenceDb::getResCnt()
 string DocSequenceDb::getAbstract(Rcl::Doc &doc)
 {
     if (!m_q->whatDb())
-	return doc.meta["abstract"];
+	return doc.meta[Rcl::Doc::keyabs];
     string abstract;
     m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), abstract);
-    return abstract.empty() ? doc.meta["abstract"] : abstract;
+    return abstract.empty() ? doc.meta[Rcl::Doc::keyabs] : abstract;
 }
 
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)

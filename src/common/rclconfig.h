@@ -16,18 +16,22 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.39 2007-11-16 14:28:52 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.40 2008-09-08 16:49:10 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
 #include <vector>
 #include <set>
 #include <utility>
+#include <map>
+#include <set>
 #ifndef NO_NAMESPACES
 using std::list;
 using std::string;
 using std::vector;
 using std::pair;
+using std::set;
+using std::map;
 using std::set;
 #endif
 
@@ -142,6 +146,14 @@ class RclConfig {
 
     /** mimeconf: get field prefix from field name */
     bool getFieldPrefix(const string& fldname, string &pfx);
+    /** Get implied meanings for field name (ie: author->[author, from]) */
+    bool getFieldSpecialisations(const string& fld, 
+				 list<string>& childrens, bool top = true);
+    /** Get prefixes for specialisations of field name */
+    bool getFieldSpecialisationPrefixes(const string& fld, 
+					list<string>& pfxes);
+    bool fieldIsStored(const string& fld);
+    const set<string>& getStoredFields() {return m_storedFields;}
 
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype);
@@ -181,8 +193,11 @@ class RclConfig {
 
     ConfStack<ConfTree> *m_conf;   // Parsed configuration files
     ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, 
-    ConfStack<ConfTree> *mimeconf; // but their content may depend on it.
-    ConfStack<ConfTree> *mimeview; // 
+    ConfStack<ConfSimple> *mimeconf; // but their content may depend on it.
+    ConfStack<ConfSimple> *mimeview; // 
+    ConfStack<ConfSimple> *m_fields;
+    map<string, string>  m_fldtopref;
+    set<string>          m_storedFields;
 
     void        *m_stopsuffixes;
     unsigned int m_maxsufflen;
@@ -205,11 +220,13 @@ class RclConfig {
 	mimemap = 0; 
 	mimeconf = 0; 
 	mimeview = 0; 
+	m_fields = 0;
 	m_stopsuffixes = 0;
 	m_maxsufflen = 0;
     }
     /** Free data then zero pointers */
     void freeAll();
+    bool readFieldsConfig(const string& errloc);
 };
 
 

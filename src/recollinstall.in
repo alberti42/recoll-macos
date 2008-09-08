@@ -97,6 +97,7 @@ ${INSTALL} -m 0444 \
 	   sampleconf/mimeview \
 	   sampleconf/recoll.conf \
            sampleconf/mimemap \
+           sampleconf/fields \
 	   ${datadir}/recoll/examples/ || exit 1
 ${INSTALL} -m 0755 index/rclmon.sh ${datadir}/recoll/examples/ || exit 1
 

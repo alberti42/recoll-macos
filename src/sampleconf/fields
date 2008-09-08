@@ -1,0 +1,55 @@
+# @(#$Id: fields,v 1.1 2008-09-08 16:49:10 dockes Exp $  (C) 2007 J.F.Dockes
+# Field names configuration. This defines how one may search ie for 
+# author:Hemingway
+# Important: 
+#   - the field names MUST be all lowercase here. They can be anycased
+#     in the documents:
+
+#####################################################
+# This section defines what prefix the terms inside named fields will be
+# indexed with (in addition to prefix-less indexing for general search)
+# ALL prefixes MUST be all UPPERCASE. Extension prefixes begin with X 
+# 
+# The choice of field names is rather arbitrary. Use of any of the aliases
+# defined in the following section will yield exactly the same results,
+# (both for indexing and search).
+[prefixes]
+
+# Native fields matching omega uses, which we index without an X first
+# letter. Don't change these
+title = S
+author = A
+keyword = K
+
+# extension examples. This are actually used by default by Recoll:
+ext = XE
+filename = XSFN
+
+############################
+# Some fields are stored in the document data record inside the index and
+# can be returned in result lists. There is no necessity that stored fields
+# should be indexed (have a prefix) (example: url but this one doesn't need
+# to be listed here)
+#
+# Some fields are stored by default, don't add them here, else they will be
+# stored twice: title, keywords, abstract, filename, mimetype, url
+# "author" used to be stored by default, now set here as optional
+[stored]
+stored = author
+
+##########################
+# This section defines field names aliases or synonyms. Any right hand side
+# value will be turned into the lhs canonic name before further treatment
+[aliases]
+title = caption subject
+author = creator
+keyword = keywords tag tags
+dmtime = date contentmodified datemodified
+mtype = type mimetype contenttype
+ext = fileextension
+
+#########################
+# This section defines a hierarchy for field names. Searching for a lhs
+# ancestor will be expanded to a search for itself and all rhs descendants
+[specialisations]
+author = from

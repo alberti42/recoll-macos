@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.41 2008-08-26 07:33:05 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.42 2008-09-08 16:49:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -418,7 +418,7 @@ void ResList::resultPageNext()
 	if (percent == -1) {
 	    percent = 0;
 	    // Document not available, maybe other further, will go on.
-	    doc.meta["abstract"] = string(tr("Unavailable document").utf8());
+	    doc.meta[Rcl::Doc::keyabs] = string(tr("Unavailable document").utf8());
 	}
 
 	// Determine icon to display if any
@@ -442,8 +442,8 @@ void ResList::resultPageNext()
 	printableUrl(rclconfig->getDefCharset(), doc.url, url);
 
 	// Make title out of file name if none yet
-	if (doc.meta["title"].empty()) {
-	    doc.meta["title"] = path_getsimple(url);
+	if (doc.meta[Rcl::Doc::keytt].empty()) {
+	    doc.meta[Rcl::Doc::keytt] = path_getsimple(url);
 	}
 
 	// Result number
@@ -485,7 +485,7 @@ void ResList::resultPageNext()
 	    (doc.syntabs || prefs.queryReplaceAbstract)) {
 	    abstract = m_docSource->getAbstract(doc);
 	} else {
-	    abstract = doc.meta["abstract"];
+	    abstract = doc.meta[Rcl::Doc::keyabs];
 	}
 	// No need to call escapeHtml(), plaintorich handles it
 	list<string> lr;
@@ -520,14 +520,14 @@ void ResList::resultPageNext()
 	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
 	subs['D'] = datebuf;
 	subs['I'] = img_name;
-	subs['K'] = !doc.meta["keywords"].empty() ? 
-	    escapeHtml(doc.meta["keywords"]) + "<br>" : "";
+	subs['K'] = !doc.meta[Rcl::Doc::keykw].empty() ? 
+	    escapeHtml(doc.meta[Rcl::Doc::keykw]) + "<br>" : "";
 	subs['L'] = linksbuf;
 	subs['N'] = numbuf;
 	subs['M'] = doc.mimetype;
 	subs['R'] = perbuf;
 	subs['S'] = sizebuf;
-	subs['T'] = escapeHtml(doc.meta["title"]);
+	subs['T'] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
 	subs['U'] = url;
 
 	string formatted;

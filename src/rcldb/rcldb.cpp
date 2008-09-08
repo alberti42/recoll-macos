@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.142 2008-09-05 10:34:17 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.143 2008-09-08 16:49:10 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -129,6 +129,13 @@ bool Db::Native::subDocs(const string &udi, vector<Xapian::docid>& docids)
     return false;
 }
 
+static const string keycap("caption");
+static const string keymtp("mtype");
+static const string keyfmt("fmtime");
+static const string keydmt("dmtime");
+static const string keyoc("origcharset");
+static const string keyurl("url");
+
 // Turn data record from db into document fields
 bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
 				Doc &doc, int percent)
@@ -137,30 +144,37 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     ConfSimple parms(&data);
     if (!parms.ok())
 	return false;
-    parms.get(string("url"), doc.url);
-    parms.get(string("mtype"), doc.mimetype);
-    parms.get(string("fmtime"), doc.fmtime);
-    parms.get(string("dmtime"), doc.dmtime);
-    parms.get(string("origcharset"), doc.origcharset);
-    parms.get(string("caption"), doc.meta["title"]);
-    parms.get(string("keywords"), doc.meta["keywords"]);
-    parms.get(string("abstract"), doc.meta["abstract"]);
-    parms.get(string("author"), doc.meta["author"]);
+    parms.get(keyurl, doc.url);
+    parms.get(keymtp, doc.mimetype);
+    parms.get(keyfmt, doc.fmtime);
+    parms.get(keydmt, doc.dmtime);
+    parms.get(keyoc, doc.origcharset);
+    parms.get(keycap, doc.meta[Doc::keytt]);
+    parms.get(Doc::keykw, doc.meta[Doc::keykw]);
+    parms.get(Doc::keyabs, doc.meta[Doc::keyabs]);
     // Possibly remove synthetic abstract indicator (if it's there, we
     // used to index the beginning of the text as abstract).
     doc.syntabs = false;
-    if (doc.meta["abstract"].find(rclSyntAbs) == 0) {
-	doc.meta["abstract"] = doc.meta["abstract"].substr(rclSyntAbs.length());
+    if (doc.meta[Doc::keyabs].find(rclSyntAbs) == 0) {
+	doc.meta[Doc::keyabs] = doc.meta[Doc::keyabs].substr(rclSyntAbs.length());
 	doc.syntabs = true;
     }
     char buf[20];
     sprintf(buf,"%.2f", float(percent) / 100.0);
-    doc.meta["relevancyrating"] = buf;
+    doc.meta[Doc::keyrr] = buf;
     parms.get(string("ipath"), doc.ipath);
     parms.get(string("fbytes"), doc.fbytes);
     parms.get(string("dbytes"), doc.dbytes);
     parms.get(string("sig"), doc.sig);
     doc.xdocid = docid;
+
+    // Other, not predefined meta fields:
+    list<string> keys = parms.getNames(string());
+    for (list<string>::const_iterator it = keys.begin(); 
+	 it != keys.end(); it++) {
+	if (doc.meta.find(*it) == doc.meta.end()) 
+	    parms.get(*it, doc.meta[*it]);
+    }
     return true;
 }
 
@@ -680,21 +694,21 @@ bool Db::fieldToPrefix(const string& fldname, string &pfx)
     // This is the default table
     static map<string, string> fldToPrefs;
     if (fldToPrefs.empty()) {
-	fldToPrefs["abstract"] = string();
+	fldToPrefs[Doc::keyabs] = string();
 	fldToPrefs["ext"] = "XE";
 	fldToPrefs["filename"] = "XSFN";
 
 	fldToPrefs["title"] = "S";
-	fldToPrefs["caption"] = "S";
+	fldToPrefs[keycap] = "S";
 	fldToPrefs["subject"] = "S";
 
-	fldToPrefs["author"] = "A";
+	fldToPrefs[Doc::keyau] = "A";
 	fldToPrefs["creator"] = "A";
 	fldToPrefs["from"] = "A";
 
 	fldToPrefs["keyword"] = "K";
 	fldToPrefs["tag"] = "K";
-	fldToPrefs["keywords"] = "K";
+	fldToPrefs[Doc::keykw] = "K";
 	fldToPrefs["tags"] = "K";
     }
 
@@ -803,6 +817,7 @@ void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 }
 
 static const int MB = 1024 * 1024;
+static const string nc("\n\r\x0c");
 
 // Add document in internal form to the database: index the terms in
 // the title abstract and body and add special terms for file name,
@@ -831,35 +846,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 
     Doc doc = idoc;
 
-    // The title, author, abstract and keywords fields are special, they
-    // get stored in the document data record.
-    // Truncate abstract, title and keywords to reasonable lengths. If
-    // abstract is currently empty, we make up one with the beginning
-    // of the document. This is then not indexed, but part of the doc
-    // data so that we can return it to a query without having to
-    // decode the original file.
-    bool syntabs = false;
-    // Note that the map accesses by operator[] create empty entries if they
-    // don't exist yet.
-    if (doc.meta["abstract"].empty()) {
-	syntabs = true;
-	doc.meta["abstract"] = rclSyntAbs + 
-	    neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), "\n\r");
-    } else {
-	doc.meta["abstract"] = 
-	    neutchars(truncate_to_word(doc.meta["abstract"], m_idxAbsTruncLen),
-		      "\n\r");
-    }
-    if (doc.meta["title"].empty())
-	doc.meta["title"] = doc.utf8fn;
-    doc.meta["title"] = 
-	neutchars(truncate_to_word(doc.meta["title"], 150), "\n\r");
-    doc.meta["author"] = 
-	neutchars(truncate_to_word(doc.meta["author"], 150), "\n\r");
-    doc.meta["keywords"] = 
-	neutchars(truncate_to_word(doc.meta["keywords"], 300),"\n\r");
-
-
     Xapian::Document newdocument;
     mySplitterCB splitData(newdocument, m_stops);
     TextSplit splitter(&splitData);
@@ -882,11 +868,9 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     string pfx;
     for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
 	if (!meta_it->second.empty()) {
-	    if (meta_it->first == "abstract" && syntabs)
-		continue;
 	    if (!fieldToPrefix(meta_it->first, pfx)) {
 		LOGDEB(("Db::add: no prefix for field [%s], no indexing\n",
-			meta_it->first.c_str()));
+			 meta_it->first.c_str()));
 		continue;
 	    }
 	    LOGDEB1(("Db::add: field [%s] pfx [%s]: [%s]\n", 
@@ -908,7 +892,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     else
 	splitData.basepos += splitData.curpos + 100;
 
-    // Finally: split and index body text
+    // Split and index body text
     LOGDEB2(("Db::add: split body\n"));
     if (!dumb_string(doc.text, noacc)) {
 	LOGERR(("Db::add: dumb_string failed\n"));
@@ -958,11 +942,22 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     buf[4] = '\0';
     newdocument.add_term("Y" + string(buf)); // Year (YYYY)
 
+
+    //////////////////////////////////////////////////////////////////
     // Document data record. omindex has the following nl separated fields:
     // - url
     // - sample
     // - caption (title limited to 100 chars)
     // - mime type 
+    //
+    // The title, author, abstract and keywords fields are special,
+    // they always get stored in the document data
+    // record. Configurable other fields can be, too.
+    //
+    // We truncate stored fields abstract, title and keywords to
+    // reasonable lengths and suppress newlines (so that the data
+    // record can keep a simple syntax)
+
     string record = "url=" + doc.url;
     record += "\nmtype=" + doc.mimetype;
     record += "\nfmtime=" + doc.fmtime;
@@ -982,20 +977,55 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     sprintf(sizebuf, "%u", (unsigned int)doc.text.length());
     record += string("\ndbytes=") + sizebuf;
 
-    if (!doc.ipath.empty()) {
+    if (!doc.ipath.empty())
 	record += "\nipath=" + doc.ipath;
+
+    if (doc.meta[Doc::keytt].empty())
+	doc.meta[Doc::keytt] = doc.utf8fn;
+    doc.meta[Doc::keytt] = 
+	neutchars(truncate_to_word(doc.meta[Doc::keytt], 150), nc);
+    if (!doc.meta[Doc::keytt].empty())
+	record += "\n" + keycap + "=" + doc.meta[Doc::keytt];
+
+    doc.meta[Doc::keykw] = 
+	neutchars(truncate_to_word(doc.meta[Doc::keykw], 300), nc);
+    if (!doc.meta[Doc::keykw].empty())
+	record += "\n" + Doc::keykw + "=" + doc.meta[Doc::keykw];
+
+    // If abstract is empty, we make up one with the beginning of the
+    // document. This is then not indexed, but part of the doc data so
+    // that we can return it to a query without having to decode the
+    // original file.
+    bool syntabs = false;
+    // Note that the map accesses by operator[] create empty entries if they
+    // don't exist yet.
+    if (doc.meta[Doc::keyabs].empty()) {
+	syntabs = true;
+	if (!doc.text.empty())
+	    doc.meta[Doc::keyabs] = rclSyntAbs + 
+		neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), nc);
+    } else {
+	doc.meta[Doc::keyabs] = 
+	    neutchars(truncate_to_word(doc.meta[Doc::keyabs], m_idxAbsTruncLen),
+		      nc);
     }
-    if (!doc.meta["title"].empty())
-	record += "\ncaption=" + doc.meta["title"];
-    if (!doc.meta["keywords"].empty())
-	record += "\nkeywords=" + doc.meta["keywords"];
-    if (!doc.meta["abstract"].empty())
-	record += "\nabstract=" + doc.meta["abstract"];
-    if (!doc.meta["author"].empty()) {
-	record += "\nauthor=" + doc.meta["author"];
+    if (!doc.meta[Doc::keyabs].empty())
+	record += "\n" + Doc::keyabs + "=" + doc.meta[Doc::keyabs];
+
+    RclConfig *config = RclConfig::getMainConfig();
+    if (config) {
+	const set<string>& stored = config->getStoredFields();
+	for (set<string>::const_iterator it = stored.begin();
+	     it != stored.end(); it++) {
+	    if (!doc.meta[*it].empty()) {
+		string value = 
+		    neutchars(truncate_to_word(doc.meta[*it], 150), nc);
+		record += "\n" + *it + "=" + value;
+	    }
+	}
     }
     record += "\n";
-    LOGDEB1(("Newdocument data: %s\n", record.c_str()));
+    LOGDEB(("Rcl::Db::add: new doc record:\n %s\n", record.c_str()));
     newdocument.set_data(record);
 
     const char *fnc = udi.c_str();

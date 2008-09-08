@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.40 2008-09-05 10:36:06 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.41 2008-09-08 16:49:10 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -286,13 +286,14 @@ static inline bool getKeyValue(const map<string, string>& docdata,
     return false;
 }
 
-static const string keyab("abstract");
+// These defs are for the Dijon meta array. Rcl::Doc predefined field
+// names are used where appropriate. In some cases, Rcl::Doc names are
+// used inside the Dijon metadata (ex: origcharset)
 static const string keyau("author");
 static const string keycs("charset");
 static const string keyct("content");
 static const string keyds("description");
 static const string keyfn("filename");
-static const string keykw("keywords");
 static const string keymd("modificationdate");
 static const string keymt("mimetype");
 static const string keyoc("origcharset");
@@ -317,8 +318,8 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 	    doc.meta[it->first] = it->second;
 	}
     }
-    if (doc.meta[keyab].empty() && !doc.meta[keyds].empty()) {
-	doc.meta[keyab] = doc.meta[keyds];
+    if (doc.meta[Rcl::Doc::keyabs].empty() && !doc.meta[keyds].empty()) {
+	doc.meta[Rcl::Doc::keyabs] = doc.meta[keyds];
 	doc.meta.erase(keyds);
     }
     return true;
@@ -353,7 +354,7 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 	} else {
 	    ipath += isep;
 	}
-	getKeyValue(docdata, keyau, doc.meta["author"]);
+	getKeyValue(docdata, keyau, doc.meta[Rcl::Doc::keyau]);
 	getKeyValue(docdata, keymd, doc.dmtime);
     }
 

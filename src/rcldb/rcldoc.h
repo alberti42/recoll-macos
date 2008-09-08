@@ -16,7 +16,7 @@
  */
 #ifndef _RCLDOC_H_INCLUDED_
 #define _RCLDOC_H_INCLUDED_
-/* @(#$Id: rcldoc.h,v 1.8 2008-08-26 07:33:31 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rcldoc.h,v 1.9 2008-09-08 16:49:10 dockes Exp $  (C) 2006 J.F.Dockes */
 
 #include <string>
 #include <map>
@@ -51,7 +51,7 @@ class Doc {
 
     // Transcoded version of the simple file name for SFN-prefixed
     // specific file name indexation
-    // Indexx: set by DbIndexer::processone    
+    // Index: set by DbIndexer::processone    
     string utf8fn; 
 
     // Internal path for multi-doc files. Ascii
@@ -78,11 +78,13 @@ class Doc {
     // handler. If a fieldname-to-prefix translation exists, the
     // terms in the value will be indexed with a prefix.
     // Only some predefined fields are stored in the data record:
-    // "title", "keywords", "abstract", "author"
+    // "title", "keywords", "abstract", "author", but if a field name is
+    // in the "stored" configuration list, it will be stored too.
     map<string, string> meta; 
 
     // Attribute for the "abstract" entry. true if it is just the top
-    // of doc, not a native document attribute.
+    // of doc, not a native document attribute. Not stored directly, but
+    // as an indicative prefix at the beginning of the abstract (ugly hack)
     bool   syntabs;      
     
     // File size. Index: Set by caller prior to Db::Add. Query: set by
@@ -110,7 +112,7 @@ class Doc {
     // and indexed
     string text; 
 
-    int pc; // used by sortseq, convenience
+    int pc; // relevancy percentage, used by sortseq, convenience
     unsigned long xdocid; // Opaque: rcldb doc identifier.
 
     ///////////////////////////////////////////////////////////////////
@@ -132,6 +134,12 @@ class Doc {
 	pc = 0;
 	xdocid = 0;
     }
+    static const string keyfn;
+    static const string keyrr;
+    static const string keyabs;
+    static const string keyau;
+    static const string keytt;
+    static const string keykw;
 };
 
 

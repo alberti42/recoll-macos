@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.56 2007-12-13 06:58:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.57 2008-09-08 16:49:10 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -109,25 +109,27 @@ RclConfig::RclConfig(const string *argcnf)
     m_cdirs.push_back(path_cat(m_datadir, "examples"));
     string cnferrloc = m_confdir + " or " + path_cat(m_datadir, "examples");
 
+    // Read and process "recoll.conf"
     if (!updateMainConfig())
 	return;
-
+    // Other files
     mimemap = new ConfStack<ConfTree>("mimemap", m_cdirs, true);
     if (mimemap == 0 || !mimemap->ok()) {
 	m_reason = string("No or bad mimemap file in: ") + cnferrloc;
 	return;
     }
-
-    mimeconf = new ConfStack<ConfTree>("mimeconf", m_cdirs, true);
+    mimeconf = new ConfStack<ConfSimple>("mimeconf", m_cdirs, true);
     if (mimeconf == 0 || !mimeconf->ok()) {
 	m_reason = string("No/bad mimeconf in: ") + cnferrloc;
 	return;
     }
-    mimeview = new ConfStack<ConfTree>("mimeview", m_cdirs, true);
-    if (mimeconf == 0 || !mimeconf->ok()) {
+    mimeview = new ConfStack<ConfSimple>("mimeview", m_cdirs, true);
+    if (mimeview == 0 || !mimeview->ok()) {
 	m_reason = string("No/bad mimeview in: ") + cnferrloc;
 	return;
     }
+    if (!readFieldsConfig(cnferrloc))
+	return;
 
     m_ok = true;
     setKeyDir("");
@@ -453,13 +455,127 @@ string RclConfig::getMimeHandlerDef(const std::string &mtype, bool filtertypes)
     return hs;
 }
 
+// Read definitions for field prefixes, aliases, and hierarchy and arrange 
+// things for speed (theses are used a lot during indexing)
+bool RclConfig::readFieldsConfig(const string& cnferrloc)
+{
+    m_fields = new ConfStack<ConfSimple>("fields", m_cdirs, true);
+    if (m_fields == 0 || !m_fields->ok()) {
+	m_reason = string("No/bad fields file in: ") + cnferrloc;
+	return false;
+    }
+
+    // Build a direct map avoiding all indirections for field to
+    // prefix translation
+    // Add direct prefixes
+    list<string>tps = m_fields->getNames("prefixes");
+    for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
+	string val;
+	m_fields->get(*it, val, "prefixes");
+	m_fldtopref[*it] = val;
+    }
+    // Add prefixes for aliases:
+    tps = m_fields->getNames("aliases");
+    for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
+	string canonic = *it; // canonic name
+	string pfx;
+	map<string,string>::const_iterator pit = m_fldtopref.find(canonic);
+	if (pit != m_fldtopref.end()) {
+	    pfx = pit->second;
+	} else {
+	    // Note: it's perfectly normal to have no prefix for the canonic
+	    // name, this could be a stored, not indexed field
+	    LOGDEB2(("RclConfig::readFieldsConfig: no pfx for canonic [%s]\n",
+		    canonic.c_str()));
+	    continue;
+	}
+	string aliases;
+	m_fields->get(canonic, aliases, "aliases");
+	list<string> l;
+	stringToStrings(aliases, l);
+	for (list<string>::const_iterator ait = l.begin();
+	     ait != l.end(); ait++) {
+	    m_fldtopref[*ait] = pfx;
+	}
+    }
+#if 0
+    for (map<string,string>::const_iterator it = m_fldtopref.begin();
+	 it != m_fldtopref.end(); it++) {
+	LOGDEB(("RclConfig::readFieldsConfig: [%s] => [%s]\n",
+		it->first.c_str(), it->second.c_str()));
+    }
+#endif
+
+    string ss;
+    if (m_fields->get("stored", ss, "stored")) {
+	list<string> sl;
+	stringToStrings(ss, sl);
+	for (list<string>::const_iterator it = sl.begin(); 
+	     it != sl.end(); it++) {
+	    LOGDEB(("Inserting [%s] in stored list\n", (*it).c_str()));
+	    m_storedFields.insert(*it);
+	}
+    }
+
+    return true;
+}
+
+// Return term indexing prefix for field name (ie: "filename" -> "XSFN")
 bool RclConfig::getFieldPrefix(const string& fld, string &pfx)
 {
-    if (!mimeconf->get(fld, pfx, "prefixes")) {
-      LOGDEB(("getFieldPrefix: no prefix defined for '%s'\n", fld.c_str()));
-      return false;
+    map<string,string>::const_iterator pit = m_fldtopref.find(fld);
+    if (pit != m_fldtopref.end()) {
+	pfx = pit->second;
+	return true;
+    } else {
+	LOGDEB1(("RclConfig::readFieldsConfig: no prefix for field [%s]\n",
+		 fld.c_str()));
+	return false;
+    }
+}
+
+// Return specialisations of field name for search expansion 
+// (ie: author->[author, from])
+bool RclConfig::getFieldSpecialisations(const string& fld, 
+					list<string>& children, bool top)
+{
+    string sclds;
+    children.push_back(fld);
+    if (m_fields->get(fld, sclds, "specialisations")) {
+	list<string> clds;
+	stringToStrings(sclds, clds);
+	for (list<string>::const_iterator it = clds.begin();
+	     it != clds.end(); it++) {
+	    getFieldSpecialisations(*it, children, false);
+	}
+    }
+    if (top) {
+	children.sort();
+	children.unique();
     }
     return true;
+}
+
+// 
+bool RclConfig::getFieldSpecialisationPrefixes(const string& fld, 
+					       list<string>& pfxes)
+{
+    list<string> clds;
+    getFieldSpecialisations(fld, clds);
+    for (list<string>::const_iterator it = clds.begin();
+	 it != clds.end(); it++) {
+	string pfx;
+	if (getFieldPrefix(*it, pfx))
+	    pfxes.push_back(pfx);
+    }
+    pfxes.sort();
+    pfxes.unique();
+    return true;
+}
+bool RclConfig::fieldIsStored(const string& fld)
+{
+    set<string>::const_iterator it = m_storedFields.find(fld);
+    return it != m_storedFields.end();
 }
 
 string RclConfig::getMimeViewerDef(const string &mtype)
@@ -497,7 +613,7 @@ bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
     cdirs.push_back(path_cat(m_datadir, "examples"));
 
     delete mimeview;
-    mimeview = new ConfStack<ConfTree>("mimeview", cdirs, true);
+    mimeview = new ConfStack<ConfSimple>("mimeview", cdirs, true);
     if (mimeview == 0 || !mimeview->ok()) {
 	m_reason = string("No/bad mimeview in: ") + m_confdir;
 	return false;
@@ -727,6 +843,7 @@ void RclConfig::freeAll()
     delete mimemap;
     delete mimeconf; 
     delete mimeview; 
+    delete m_fields;
     delete STOPSUFFIXES;
     // just in case
     zeroMe();
@@ -747,9 +864,9 @@ void RclConfig::initFrom(const RclConfig& r)
     if (r.mimemap)
 	mimemap = new ConfStack<ConfTree>(*(r.mimemap));
     if (r.mimeconf)
-	mimeconf = new ConfStack<ConfTree>(*(r.mimeconf));
+	mimeconf = new ConfStack<ConfSimple>(*(r.mimeconf));
     if (r.mimeview)
-	mimeview = new ConfStack<ConfTree>(*(r.mimeview));
+	mimeview = new ConfStack<ConfSimple>(*(r.mimeview));
     if (r.m_stopsuffixes)
 	m_stopsuffixes = new SuffixStore(*((SuffixStore*)r.m_stopsuffixes));
     m_maxsufflen = r.m_maxsufflen;

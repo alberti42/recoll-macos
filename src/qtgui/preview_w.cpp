@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.35 2008-07-01 08:27:58 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.36 2008-09-08 16:49:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -753,8 +753,8 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 
     Rcl::Doc doc = idoc;
 
-    if (doc.meta["title"].empty()) 
-	doc.meta["title"] = path_getsimple(doc.url);
+    if (doc.meta[Rcl::Doc::keytt].empty()) 
+	doc.meta[Rcl::Doc::keytt] = path_getsimple(doc.url);
 
     setCurTabProps(fn, doc, docnum);
 

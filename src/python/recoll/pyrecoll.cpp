@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.10 2008-08-28 15:44:37 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.11 2008-09-08 16:49:10 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -394,8 +394,8 @@ static PyGetSetDef Doc_getseters[] = {
      "fbytes", (void *)"fbytes"},
     {"dbytes", (getter)Doc_getmeta, (setter)Doc_setmeta, 
      "dbytes", (void *)"dbytes"},
-    {"relevance", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "relevance", (void *)"relevance"},
+    {"relevancyrating", (getter)Doc_getmeta, (setter)Doc_setmeta, 
+     "relevance", (void *)"relevancyrating"},
     {"title", (getter)Doc_getmeta, (setter)Doc_setmeta, 
      "title", (void *)"title"},
     {"keywords", (getter)Doc_getmeta, (setter)Doc_setmeta, 

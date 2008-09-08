@@ -3,7 +3,7 @@
 import sys
 import recoll
 allmeta = ("title", "keywords", "abstract", "url", "mimetype", "mtime",
-           "ipath", "fbytes", "dbytes", "relevance")
+           "ipath", "fbytes", "dbytes", "relevancyrating")
 
 
 def dotest(db, q):
