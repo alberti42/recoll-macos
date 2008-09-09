@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.143 2008-09-08 16:49:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.144 2008-09-09 12:58:23 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -869,11 +869,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
 	if (!meta_it->second.empty()) {
 	    if (!fieldToPrefix(meta_it->first, pfx)) {
-		LOGDEB(("Db::add: no prefix for field [%s], no indexing\n",
+		LOGDEB0(("Db::add: no prefix for field [%s], no indexing\n",
 			 meta_it->first.c_str()));
 		continue;
 	    }
-	    LOGDEB1(("Db::add: field [%s] pfx [%s]: [%s]\n", 
+	    LOGDEB0(("Db::add: field [%s] pfx [%s]: [%s]\n", 
 		    meta_it->first.c_str(), pfx.c_str(), 
 		    meta_it->second.c_str()));
 	    if (!dumb_string(meta_it->second, noacc)) {
@@ -1025,7 +1025,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	}
     }
     record += "\n";
-    LOGDEB(("Rcl::Db::add: new doc record:\n %s\n", record.c_str()));
+    LOGDEB0(("Rcl::Db::add: new doc record:\n %s\n", record.c_str()));
     newdocument.set_data(record);
 
     const char *fnc = udi.c_str();
