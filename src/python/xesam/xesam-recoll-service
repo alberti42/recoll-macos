@@ -1,0 +1,170 @@
+#!/usr/bin/env python
+"""
+Demo implementation of a xesam server. Run it like
+
+    demo/xesam-dummy-service [-s|--state-messages]
+
+And launch a search on it via
+
+    ./xesam-tool search hello
+
+You can use the -s or --state-messages switch to enable StateChanged
+signal monitoring in xesam-tool as well as in xesam-dummy-service.
+"""
+
+
+# Sets up path to uninstalled xesam module
+import demo
+
+import xesam
+import xesam.query
+from xesam.server import *
+import gobject
+import sys
+
+import datetime
+import recoll
+
+def timestampToIso8601(ts):
+    return datetime.datetime.fromtimestamp(long(ts)).isoformat()
+
+class RecollServer (xesam.server.Searcher):
+    """
+        
+    """
+    
+    def __init__ (self):
+        h_fact = HandleFactory ()
+        fact = ClientFactory (self, h_fact, RecollSession, RecollSearch)
+        xesam.server.Searcher.__init__ (self, h_fact, fact)
+        self.set_echo_queries (True)
+        self.rcldb = recoll.connect()
+
+    def start (self):
+        # Export our selves via a SearchServerStub
+        SearchServerStub(self).start()
+    
+    def GetProperty (self, shandle, name):
+        prop = xesam.server.Searcher.GetProperty(self, shandle, name)
+        xesam.debug ("Got property request for '%s' on session '%s', returning %s" % (name, shandle, prop))
+        return prop
+    
+    def SetProperty (self, shandle, name, value):
+        val = xesam.server.Searcher.SetProperty(self, shandle, name, value)
+        xesam.debug ("Set property request for '%s=%s', on session '%s', returning %s" % (name, value, shandle,val))
+        return val
+
+class RecollSession (Session):
+    """
+    
+    """
+    def __init__ (self, searcher, session_handle):
+        Session.__init__ (self, searcher, session_handle)
+        self.set_property ("recoll.org", "xesam-recoll-service")
+        
+class RecollSearch (Search):
+    """
+        
+    """
+    # Translation from known xesam/whatever field names to Recoll Doc elements
+    FLDTRANS = \
+        {
+        "xesam:title"   : lambda doc : doc.title,
+        "xesam:summary" : lambda doc : doc.abstract,
+        "xesam:mimeType" : lambda doc : doc.mimetype,
+        "xesam:contentModified" : lambda doc : \
+            timestampToIso8601(doc.dmtime or doc.fmtime),
+        "xesam:url"     : lambda doc : doc.url
+        }
+    SLICE = 10
+
+    def __init__ (self, searcher, session, search_handle, \
+                      query=None, xml=None) :
+        Search.__init__ (self, searcher, session, search_handle, \
+                             query=query, xml=xml)
+       
+        self._hit_fields = session.get_property (xesam.SESSION_HIT_FIELDS)
+        if self._hit_fields is None:
+            xesam.error ("Got property hit.fields as None."
+                             " Setting default xesam:url")
+            self._hit_fields = ["xesam:url"]
+        print "RecollSearch: fields:", self._hit_fields
+        # TOBEDONE: if fields includes "snippet" we need to generate
+        # the synthetic abstract for each returned doc
+        # Also relevancyRating, ContentCategory et SourceCategory
+        xesam.debug ("Created %s with handle %s and query:\n%s" % 
+                     (self.__class__, self.get_handle(), self.get_query()))
+
+        # Only user queries for now...
+        if not isinstance(self.get_query(), xesam.query.UserQuery):
+            raise Exception ("Only UserQuery supported ATM, sorry.")
+        self.rclquery = self._searcher.rcldb.query()
+
+    def start (self):
+        xesam.debug ("RecollSearch '%s' got [%s]" % 
+                     (self.get_handle(), self.get_query().get_string()))
+        self.nres = self.rclquery.execute(self.get_query().get_string())
+        hits = 0
+        done = 0
+        while self.rclquery.next >= 0 and self.rclquery.next < self.nres:
+            doc = self.rclquery.fetchone()
+            data = []
+            for fld in self._hit_fields:
+                if self.FLDTRANS.has_key (fld):
+                    data.append(self.FLDTRANS[fld](doc))
+                else:
+                    data.append("")
+            self.add_new_hit (self._hit_fields, data)
+            hits += 1
+            if hits >= self.SLICE:
+                break
+        else:
+            done = 1
+
+        if hits > 0:
+            self.emit ("hits-added", hits)
+            xesam.debug ("Search '%s' emitted 'hits-added' %d" % \
+                         (self.get_handle(), hits))
+        if done:
+            self.emit ("done")
+            xesam.debug ("Search '%s' emitted 'done'" % self.get_handle())
+            self.stop()
+
+
+    def get_hits(self, num_hits):
+        xesam.debug ("RecollSearch get_hits")
+
+        if self._stopped:
+            return Search.get_hits(self, num_hits)
+
+        hits = 0
+        done = 0;
+        while self.rclquery.next >= 0 and self.rclquery.next < self.nres:
+            doc = self.rclquery.fetchone()
+            data = []
+            for fld in self._hit_fields:
+                if self.FLDTRANS.has_key (fld):
+                    data.append(self.FLDTRANS[fld](doc))
+                else:
+                    data.append("")
+            self.add_new_hit (self._hit_fields, data)
+            hits += 1
+            if hits >= self.SLICE or hits >= num_hits:
+                break
+        else:
+            done = 1
+
+        if hits > 0:
+            self.emit ("hits-added", hits)
+            xesam.debug ("Search '%s' emitted 'hits-added' %d" % \
+                         (self.get_handle(), hits))
+        if done:
+            self.emit ("done")
+            xesam.debug ("Search '%s' emitted 'done'" % self.get_handle())
+            self.stop()
+
+        return Search.get_hits(self, num_hits)
+
+
+if __name__ == "__main__":
+    RecollServer().start()
