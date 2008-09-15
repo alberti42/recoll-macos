@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.29 2008-08-30 07:30:55 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.30 2008-09-15 08:02:03 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -34,6 +34,7 @@ extern int stringicmp(const string& s1, const string& s2);
 extern int stringlowercmp(const string& alreadylower, const string& s2);
 extern int stringuppercmp(const string& alreadyupper, const string& s2); 
 extern void stringtolower(string& io);
+extern string stringtolower(const string& io);
 // Is one string the end part of the other ?
 extern int stringisuffcmp(const string& s1, const string& s2);
 

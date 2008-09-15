@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.32 2008-09-08 15:47:12 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.33 2008-09-15 08:02:03 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,12 @@ void stringtolower(string& io)
 	it++;
     }
 }
-
+string stringtolower(const string& i)
+{
+    string o = i;
+    stringtolower(o);
+    return o;
+}
 extern int stringisuffcmp(const string& s1, const string& s2)
 {
     string::const_reverse_iterator r1 = s1.rbegin(), re1 = s1.rend(),

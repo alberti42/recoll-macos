@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.11 2007-06-19 07:52:33 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.12 2008-09-15 08:01:29 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,6 @@ bool transcode(const string &in, string &out, const string &icode,
 	size_t osiz;
 	op = obuf;
 	osiz = OBSIZ;
-	int isiz0=isiz;
 
 	if(iconv(ic, (ICV_P2_TYPE)&ip, &isiz, &op, &osiz) == (size_t)-1 && 
 	   errno != E2BIG) {
