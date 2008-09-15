@@ -1,16 +1,20 @@
-# @(#$Id: mimemap,v 1.31 2008-08-25 16:12:16 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.32 2008-09-15 08:03:37 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
 
 .txt = text/plain
 .text = text/plain
 .d    = text/plain
 
-# Source files. Defining them as text/x-c will enable ext viewer. If
-# text/plain they will be somewhat indexed
+# Source files. 
+# Defining them with specific types allows using a specific ext viewer (in 
+# mimeview). You can in general use rcltext to wrap them in html for
+# indexing the contents (and rough preview). You could also just set them
+# as text/plain (index as text, use text viewer)
 .cpp = text/x-c
 .h   = text/x-c
 .c   = text/x-c
 .cc  = text/x-c
+.py  = text/x-python
 
 .rtf  = text/rtf
 
@@ -109,9 +113,11 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
        .gif .bmp .xpm \
        ,v ~ #
 
-# Special handling of .txt files inside ~/.gaim directory
+# Special handling of .txt files inside ~/.gaim and ~/.purple directories
 [~/.gaim]
 .txt = text/x-gaim-log
+[~/.purple]
+.txt = text/x-purple-log
 
 # Special handling of sidux manual menu system
 [/usr/share/sidux-manual]

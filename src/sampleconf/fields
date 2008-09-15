@@ -1,4 +1,4 @@
-# @(#$Id: fields,v 1.1 2008-09-08 16:49:10 dockes Exp $  (C) 2007 J.F.Dockes
+# @(#$Id: fields,v 1.2 2008-09-15 08:03:37 dockes Exp $  (C) 2007 J.F.Dockes
 # Field names configuration. This defines how one may search ie for 
 # author:Hemingway
 # Important: 
@@ -16,14 +16,16 @@
 [prefixes]
 
 # Native fields matching omega uses, which we index without an X first
-# letter. Don't change these
-title = S
+# letter. Don't change these. Caption is used for 'title' to keep a last
+# remnant of omega compatibility inside the data record
+caption = S
 author = A
 keyword = K
 
 # extension examples. This are actually used by default by Recoll:
 ext = XE
 filename = XSFN
+recipient = XTO
 
 ############################
 # Some fields are stored in the document data record inside the index and
@@ -34,19 +36,30 @@ filename = XSFN
 # Some fields are stored by default, don't add them here, else they will be
 # stored twice: title, keywords, abstract, filename, mimetype, url
 # "author" used to be stored by default, now set here as optional
+# Only canonical names should be used here, not aliases.
 [stored]
 stored = author
 
 ##########################
 # This section defines field names aliases or synonyms. Any right hand side
 # value will be turned into the lhs canonic name before further treatment
+# Left-hand values must match names in the prefixes section or
+# data-record fields.
+# Note to filter writers: only canonic names should be used when indexing.
 [aliases]
-title = caption subject
-author = creator
-keyword = keywords tag tags
-dmtime = date contentmodified datemodified
-mtype = type mimetype contenttype
-ext = fileextension
+abstract = summary dc:summary description xesam:description
+author = creator dc:creator xesam:author xesam:creator
+caption = title dc:title subject
+# catg = dc:type contentCategory
+dbytes = size xesam:size
+dmtime = date dc:date dc:datemodified datemodified contentmodified \
+       xesam:contentmodified
+ext = fileextension xesam:fileextension
+# Don't add subject to keywords aliases, it's better to keep it for email
+keywords = keyword xesam:keyword tag tags dc:subject xesam:subject
+mtype = mime mimetype xesam:mimetype contenttype xesam:contenttype dc:format
+recipient = to xesam:recipient
+url = dc:identifier xesam:url
 
 #########################
 # This section defines a hierarchy for field names. Searching for a lhs

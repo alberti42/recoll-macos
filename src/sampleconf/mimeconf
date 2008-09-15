@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.42 2008-09-12 11:35:48 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.43 2008-09-15 08:03:37 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -78,6 +78,8 @@ text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
 text/x-mail = internal
 text/x-man = exec rclman
+text/x-purple-log = exec rclpurple
+text/x-python = exec rclpython
 
 ## #############################################
 # Icons to be used in the result list if required by gui config
@@ -132,6 +134,8 @@ text/x-c = source
 text/x-html-sidux-man = sidux-book
 text/x-mail = message
 text/x-man = document
+text/x-purple-log = pidgin
+text/x-python = text-x-python
 
 [categories]
 
@@ -156,7 +160,8 @@ text = \
       text/plain \
       text/rtf \
       text/x-html-sidux-man \
-      text/x-man
+      text/x-man \
+      text/x-python
 
 spreadsheet = \
    application/vnd.ms-excel \
@@ -183,6 +188,7 @@ media = \
 message = message/rfc822 \
 	  text/x-gaim-log \
 	  text/x-mail \
+	  text/x-purple-log \
 
 other = application/vnd.sun.xml.draw \
         application/vnd.sun.xml.draw.template \
