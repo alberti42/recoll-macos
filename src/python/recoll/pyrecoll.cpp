@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.12 2008-09-16 08:18:30 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.13 2008-09-16 10:19:24 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -297,6 +297,11 @@ Doc_getattr(recoll_DocObject *self, char *name)
     // array
     string value;
     switch (key.at(0)) {
+    case 'u':
+	if (!key.compare(Rcl::Doc::keyurl)) {
+	    value = self->doc->url;
+	}
+	break;
     case 'f':
 	if (!key.compare(Rcl::Doc::keyfs)) {
 	    value = self->doc->fbytes;
@@ -362,7 +367,7 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
         PyErr_SetString(PyExc_AttributeError, "doc??");
 	return -1;
     }
-    LOGDEB0(("Doc_setmeta: doc %p\n", self->doc));
+    LOGDEB1(("Doc_setmeta: doc %p\n", self->doc));
     if (PyString_Check(value)) {
 	value = PyUnicode_FromObject(value);
 	if (value == 0) 
@@ -371,6 +376,10 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
 
     if (!PyUnicode_Check(value)) {
 	PyErr_SetString(PyExc_AttributeError, "value not str/unicode??");
+	return -1;
+    }
+    if (name == 0) {
+        PyErr_SetString(PyExc_AttributeError, "name??");
 	return -1;
     }
 
@@ -382,94 +391,75 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
     }
 
     char* uvalue = PyString_AsString(putf8);
-    if (name == 0) {
-        PyErr_SetString(PyExc_AttributeError, "name??");
-	return -1;
-    }
+    string key = rclconfig->fieldCanon(stringtolower(string(name)));
 
-    LOGDEB0(("Doc_setattr: setting [%s] to [%s]\n", name, uvalue));
-    self->doc->meta[name] = uvalue;
-    switch (name[0]) {
-    case 'd':
-	if (!strcmp(name, "dbytes")) {
-	    self->doc->dbytes = uvalue;
-	}
-	break;
-    case 'f':
-	if (!strcmp(name, "fbytes")) {
-	    self->doc->fbytes = uvalue;
-	}
-	break;
-    case 'i':
-	if (!strcmp(name, "ipath")) {
-	    self->doc->ipath = uvalue;
-	}
-	break;
-    case 'm':
-	if (!strcmp(name, "mimetype")) {
-	    self->doc->mimetype = uvalue;
-	} else if (!strcmp(name, "mtime")) {
-	    self->doc->dmtime = uvalue;
-	}
-	break;
-    case 's':
-	if (!strcmp(name, "sig")) {
-	    self->doc->sig = uvalue;
-	}
-	break;
+    LOGDEB0(("Doc_setattr: [%s] (%s) -> [%s]\n", key.c_str(), name, uvalue));
+    // We set the value in the meta array in all cases. Good idea ? or do it
+    // only for fields without a dedicated Doc:: entry?
+    self->doc->meta[key] = uvalue;
+    switch (key.at(0)) {
     case 't':
-	if (!strcmp(name, "text")) {
+	if (!key.compare("text")) {
 	    self->doc->text = uvalue;
 	}
 	break;
     case 'u':
-	if (!strcmp(name, "url")) {
+	if (!key.compare(Rcl::Doc::keyurl)) {
 	    self->doc->url = uvalue;
+	}
+	break;
+    case 'f':
+	if (!key.compare(Rcl::Doc::keyfs)) {
+	    self->doc->fbytes = uvalue;
+	} else if (!key.compare(Rcl::Doc::keyfn)) {
+	    self->doc->utf8fn = uvalue;
+	} else if (!key.compare(Rcl::Doc::keyfs)) {
+	    self->doc->fbytes = uvalue;
+	} else if (!key.compare(Rcl::Doc::keyfmt)) {
+	    self->doc->fmtime = uvalue;
+	}
+	break;
+    case 'd':
+	if (!key.compare(Rcl::Doc::keyds)) {
+	    self->doc->dbytes = uvalue;
+	} else if (!key.compare(Rcl::Doc::keydmt)) {
+	    self->doc->dmtime = uvalue;
+	}
+	break;
+    case 'i':
+	if (!key.compare(Rcl::Doc::keyipt)) {
+	    self->doc->ipath = uvalue;
+	}
+	break;
+    case 'm':
+	if (!key.compare(Rcl::Doc::keytp)) {
+	    self->doc->mimetype = uvalue;
+	} else if (!key.compare(Rcl::Doc::keymt)) {
+	    self->doc->dmtime = uvalue;
+	}
+	break;
+    case 'o':
+	if (!key.compare(Rcl::Doc::keyoc)) {
+	    self->doc->origcharset = uvalue;
+	}
+	break;
+    case 's':
+	if (!key.compare(Rcl::Doc::keysig)) {
+	    self->doc->sig = uvalue;
+	} else 	if (!key.compare(Rcl::Doc::keysz)) {
+	    self->doc->dbytes = uvalue;
 	}
 	break;
     }
     return 0;
 }
-#if 0
-static PyGetSetDef Doc_getseters[] = {
-    // Name, get, set, doc, closure
-    {"url", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "url", (void *)"url"},
-    {"ipath", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "ipath", (void *)"ipath"},
-    {"mimetype", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "mimetype", (void *)"mimetype"},
-    {"mtime", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "mtime", (void *)"mtime"},
-    {"fbytes", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "fbytes", (void *)"fbytes"},
-    {"dbytes", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "dbytes", (void *)"dbytes"},
-    {"relevancyrating", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "relevance", (void *)"relevancyrating"},
-    {"title", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "title", (void *)"title"},
-    {"keywords", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "keywords", (void *)"keywords"},
-    {"abstract", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "abstract", (void *)"abstract"},
-    {"author", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "author", (void *)"author"},
-    {"text", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "text", (void *)"text"},
-    {"sig", (getter)Doc_getmeta, (setter)Doc_setmeta, 
-     "sig", (void *)"sig"},
-    {NULL}  /* Sentinel */
-};
-#endif
 
 PyDoc_STRVAR(doc_DocObject,
 "Doc()\n"
 "\n"
 "A Doc object contains index data for a given document.\n"
 "The data is extracted from the index when searching, or set by the\n"
-"indexer program when updating. See the data attributes list for more\n"
-"details."
+"indexer program when updating. \n"
 );
 static PyTypeObject recoll_DocType = {
     PyObject_HEAD_INIT(NULL)
