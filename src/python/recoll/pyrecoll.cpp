@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.11 2008-09-08 16:49:10 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.12 2008-09-16 08:18:30 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -84,31 +84,33 @@ SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
     return 0;
 }
 
+/* Note: addclause necessite And/Or vient du fait que le string peut avoir
+   plusieurs mots. A transferer dans l'i/f Python ou pas ? */
 PyDoc_STRVAR(doc_addClause,
 "addClause(type='and'|'or'|'excl'|'phrase'|'near'|'sub', qstring=string,\n"
-"          slack=int, field=string, subSearch=SearchData,\n"
+"          slack=int, field=string, subSearch=SearchData)\n"
 "Adds a simple clause to the SearchData And/Or chain, or a subquery\n"
 "defined by another SearchData object\n"
 );
-/* Note: necessite And/Or vient du fait que le string peut avoir
-   plusieurs mots. A transferer dans l'i/f Python ou pas ? */
 
-/* Forward decl, def needs recoll_searchDataTyep */
+/* Forward declaration only, definition needs recoll_searchDataType */
 static PyObject *
 SearchData_addClause(recoll_SearchDataObject* self, PyObject *args, 
 		     PyObject *kwargs);
 
+
+
 static PyMethodDef SearchData_methods[] = {
     {"addClause", (PyCFunction)SearchData_addClause, METH_VARARGS|METH_KEYWORDS,
-     doc_addClause
-    },
+     doc_addClause},
     {NULL}  /* Sentinel */
 };
 
 PyDoc_STRVAR(doc_SearchDataObject,
 "SearchData()\n"
 "\n"
-"A SearchData object describes a query.\n"
+"A SearchData object describes a query. It has a number of global parameters\n"
+"and a chain of search clauses.\n"
 );
 static PyTypeObject recoll_SearchDataType = {
     PyObject_HEAD_INIT(NULL)
@@ -165,9 +167,9 @@ SearchData_addClause(recoll_SearchDataObject* self, PyObject *args,
     static char *kwlist[] = {"type", "qstring", "slack", "field",
 			     "subsearch", NULL};
     char *tp = 0;
-    char *qs = 0;
+    char *qs = 0; // needs freeing
     int slack = 0;
-    char *fld = 0;
+    char *fld = 0; // needs freeing
     recoll_SearchDataObject *sub = 0;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesO!", kwlist,
 				     &tp, "utf-8", &qs, &slack,
@@ -221,10 +223,12 @@ SearchData_addClause(recoll_SearchDataObject* self, PyObject *args,
         PyErr_SetString(PyExc_AttributeError, "Bad tp arg");
 	return 0;
     }
-
+    PyMem_Free(qs);
+    PyMem_Free(fld);
     self->sd->addClause(cl);
     Py_RETURN_NONE;
 }
+
 
 ///////////////////////////////////////////////////////////////////////
 ///// Doc code
@@ -272,38 +276,86 @@ Doc_init(recoll_DocObject *self, PyObject *, PyObject *)
     return 0;
 }
 
-// The "closure" thing is actually the meta field name. This is how
-// python allows one set of get/set functions to get/set different
-// attributes (pass them an additional parameters as from the
-// getseters table and call it a "closure"
 static PyObject *
-Doc_getmeta(recoll_DocObject *self, void *closure)
+Doc_getattr(recoll_DocObject *self, char *name)
 {
-    LOGDEB0(("Doc_getmeta: [%s]\n", (const char *)closure));
+    LOGDEB(("Doc_getattr: name [%s]\n", name));
     if (self->doc == 0 || 
 	the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc");
 	return 0;
     }
-
 #if 0
     for (map<string,string>::const_iterator it = self->doc->meta.begin();
 	 it != self->doc->meta.end(); it++) {
 	LOGDEB(("meta[%s] -> [%s]\n", it->first.c_str(), it->second.c_str()));
     }
 #endif
+    string key = rclconfig->fieldCanon(stringtolower(string(name)));
 
-    // Retrieve utf-8 coded value for meta field (if it doesnt exist,
-    // this inserts a null value in the array, we could be nicer.
-    string meta = self->doc->meta[(const char *)closure];
+    // Handle special cases, then try retrieving key value from meta 
+    // array
+    string value;
+    switch (key.at(0)) {
+    case 'f':
+	if (!key.compare(Rcl::Doc::keyfs)) {
+	    value = self->doc->fbytes;
+	} else if (!key.compare(Rcl::Doc::keyfn)) {
+	    value = self->doc->utf8fn;
+	} else if (!key.compare(Rcl::Doc::keyfs)) {
+	    value = self->doc->fbytes;
+	} else if (!key.compare(Rcl::Doc::keyfmt)) {
+	    value = self->doc->fmtime;
+	}
+	break;
+    case 'd':
+	if (!key.compare(Rcl::Doc::keyds)) {
+	    value = self->doc->dbytes;
+	} else if (!key.compare(Rcl::Doc::keydmt)) {
+	    value = self->doc->dmtime;
+	}
+	break;
+    case 'i':
+	if (!key.compare(Rcl::Doc::keyipt)) {
+	    value = self->doc->ipath;
+	}
+	break;
+    case 'm':
+	if (!key.compare(Rcl::Doc::keytp)) {
+	    value = self->doc->mimetype;
+	} else if (!key.compare(Rcl::Doc::keymt)) {
+	    value = self->doc->dmtime.empty() ? self->doc->fmtime : 
+		self->doc->dmtime;
+	}
+	break;
+    case 'o':
+	if (!key.compare(Rcl::Doc::keyoc)) {
+	    value = self->doc->origcharset;
+	}
+	break;
+    case 's':
+	if (!key.compare(Rcl::Doc::keysig)) {
+	    value = self->doc->sig;
+	} else 	if (!key.compare(Rcl::Doc::keysz)) {
+	    value = self->doc->dbytes.empty() ? self->doc->fbytes : 
+		self->doc->dbytes;
+	}
+
+	break;
+    default:
+	value = self->doc->meta[key];
+    }
+
+    LOGDEB(("Doc_getattr: [%s] (%s) -> [%s]\n",
+	    name, key.c_str(), value.c_str()));
     // Return a python unicode object
-    PyObject* res = PyUnicode_Decode(meta.c_str(), meta.size(), "UTF-8", 
+    PyObject* res = PyUnicode_Decode(value.c_str(), value.size(), "UTF-8", 
 				     "replace");
     return res;
 }
 
 static int
-Doc_setmeta(recoll_DocObject *self, PyObject *value, void *closure)
+Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
 {
     if (self->doc == 0 || 
 	the_docs.find(self->doc) == the_docs.end()) {
@@ -330,56 +382,55 @@ Doc_setmeta(recoll_DocObject *self, PyObject *value, void *closure)
     }
 
     char* uvalue = PyString_AsString(putf8);
-    const char *key = (const char *)closure;
-    if (key == 0) {
-        PyErr_SetString(PyExc_AttributeError, "key??");
+    if (name == 0) {
+        PyErr_SetString(PyExc_AttributeError, "name??");
 	return -1;
     }
 
-    LOGDEB0(("Doc_setmeta: setting [%s] to [%s]\n", key, uvalue));
-    self->doc->meta[key] = uvalue;
-    switch (key[0]) {
+    LOGDEB0(("Doc_setattr: setting [%s] to [%s]\n", name, uvalue));
+    self->doc->meta[name] = uvalue;
+    switch (name[0]) {
     case 'd':
-	if (!strcmp(key, "dbytes")) {
+	if (!strcmp(name, "dbytes")) {
 	    self->doc->dbytes = uvalue;
 	}
 	break;
     case 'f':
-	if (!strcmp(key, "fbytes")) {
+	if (!strcmp(name, "fbytes")) {
 	    self->doc->fbytes = uvalue;
 	}
 	break;
     case 'i':
-	if (!strcmp(key, "ipath")) {
+	if (!strcmp(name, "ipath")) {
 	    self->doc->ipath = uvalue;
 	}
 	break;
     case 'm':
-	if (!strcmp(key, "mimetype")) {
+	if (!strcmp(name, "mimetype")) {
 	    self->doc->mimetype = uvalue;
-	} else if (!strcmp(key, "mtime")) {
+	} else if (!strcmp(name, "mtime")) {
 	    self->doc->dmtime = uvalue;
 	}
 	break;
     case 's':
-	if (!strcmp(key, "sig")) {
+	if (!strcmp(name, "sig")) {
 	    self->doc->sig = uvalue;
 	}
 	break;
     case 't':
-	if (!strcmp(key, "text")) {
+	if (!strcmp(name, "text")) {
 	    self->doc->text = uvalue;
 	}
 	break;
     case 'u':
-	if (!strcmp(key, "url")) {
+	if (!strcmp(name, "url")) {
 	    self->doc->url = uvalue;
 	}
 	break;
     }
     return 0;
 }
-
+#if 0
 static PyGetSetDef Doc_getseters[] = {
     // Name, get, set, doc, closure
     {"url", (getter)Doc_getmeta, (setter)Doc_setmeta, 
@@ -410,6 +461,7 @@ static PyGetSetDef Doc_getseters[] = {
      "sig", (void *)"sig"},
     {NULL}  /* Sentinel */
 };
+#endif
 
 PyDoc_STRVAR(doc_DocObject,
 "Doc()\n"
@@ -427,8 +479,8 @@ static PyTypeObject recoll_DocType = {
     0,                         /*tp_itemsize*/
     (destructor)Doc_dealloc,    /*tp_dealloc*/
     0,                         /*tp_print*/
-    0,                         /*tp_getattr*/
-    0,                         /*tp_setattr*/
+    (getattrfunc)Doc_getattr,  /*tp_getattr*/
+    (setattrfunc)Doc_setattr, /*tp_setattr*/
     0,                         /*tp_compare*/
     0,                         /*tp_repr*/
     0,                         /*tp_as_number*/
@@ -450,7 +502,7 @@ static PyTypeObject recoll_DocType = {
     0,		               /* tp_iternext */
     0,                         /* tp_methods */
     0,                         /* tp_members */
-    Doc_getseters,             /* tp_getset */
+    0,                         /* tp_getset */
     0,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
@@ -470,7 +522,10 @@ typedef struct {
     /* Type-specific fields go here. */
     Rcl::Query *query;
     int         next; // Index of result to be fetched next or -1 if uninit
+    char       *sortfield;
+    int         ascending;
 } recoll_QueryObject;
+
 /////////////////////////////////////////////
 /// Query object 
 static void 
@@ -481,6 +536,7 @@ Query_dealloc(recoll_QueryObject *self)
 	the_queries.erase(self->query);
     delete self->query;
     self->query = 0;
+    self->sortfield = 0;
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -495,6 +551,7 @@ Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
 	return 0;
     self->query = 0;
     self->next = -1;
+    self->sortfield = 0;
     return (PyObject *)self;
 }
 
@@ -511,7 +568,27 @@ Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
     delete self->query;
     self->query = 0;
     self->next = -1;
+    self->sortfield = 0;
+    self->ascending = true;
     return 0;
+}
+
+PyDoc_STRVAR(doc_Query_sortby,
+"sortby(field=fieldname, ascending=true)\n"
+"Sort results by 'fieldname', in ascending or descending order.\n"
+"Only one field can be used, no subsorts for now.\n"
+);
+
+static PyObject *
+Query_sortby(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
+{
+    LOGDEB(("Query_sortby\n"));
+    static char *kwlist[] = {"field", "ascending", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", kwlist, 
+				     &self->sortfield,
+				     &self->ascending))
+	return 0;
+    Py_RETURN_NONE;
 }
 
 PyDoc_STRVAR(doc_Query_execute,
@@ -527,14 +604,17 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Query_execute\n"));
     static char *kwlist[] = {"query_string", "stemming", NULL};
-    char *utf8 = 0;
+    char *sutf8 = 0; // needs freeing
     int dostem = 1;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|i:Query_execute", 
-				     kwlist, "utf-8", &utf8,
+				     kwlist, "utf-8", &sutf8,
 				     &dostem)) {
 	return 0;
     }
-    LOGDEB(("Query_execute:  [%s]\n", utf8));
+    LOGDEB(("Query_execute:  [%s]\n", sutf8));
+
+    string utf8(sutf8);
+    PyMem_Free(sutf8);
     if (self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
         PyErr_SetString(PyExc_AttributeError, "query");
@@ -542,11 +622,12 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     }
     string reason;
     Rcl::SearchData *sd = wasaStringToRcl(utf8, reason);
-    PyMem_Free(utf8);
+
     if (!sd) {
 	PyErr_SetString(PyExc_ValueError, reason.c_str());
 	return 0;
     }
+    sd->setSortBy(self->sortfield, self->ascending);
     RefCntr<Rcl::SearchData> rq(sd);
     self->query->setQuery(rq, dostem?Rcl::Query::QO_STEM:Rcl::Query::QO_NONE);
     int cnt = self->query->getResCnt();
@@ -557,7 +638,7 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 PyDoc_STRVAR(doc_Query_executesd,
 "execute(SearchData, stemming=1|0)\n"
 "\n"
-"Starts a search for the query defined by SearchData.\n"
+"Starts a search for the query defined by the SearchData object.\n"
 );
 
 static PyObject *
@@ -576,6 +657,7 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
+    pysd->sd->setSortBy(self->sortfield, self->ascending);
     self->query->setQuery(pysd->sd, dostem ? Rcl::Query::QO_STEM : 
 			  Rcl::Query::QO_NONE);
     int cnt = self->query->getResCnt();
@@ -616,18 +698,22 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
 	return 0;
     }
     self->next++;
+
     // Move some data from the dedicated fields to the meta array to make 
-    // fetching attributes easier
+    // fetching attributes easier. Is this actually needed ? Useful for
+    // url and relevancy rating which are also formatted .
     Rcl::Doc *doc = result->doc;
-    printableUrl(rclconfig->getDefCharset(), doc->url, doc->meta["url"]);
-    doc->meta["mimetype"] = doc->mimetype;
-    doc->meta["mtime"] = doc->dmtime.empty() ? doc->fmtime : doc->dmtime;
-    doc->meta["ipath"] = doc->ipath;
-    doc->meta["fbytes"] = doc->fbytes;
-    doc->meta["dbytes"] = doc->dbytes;
+    printableUrl(rclconfig->getDefCharset(), doc->url, 
+		 doc->meta[Rcl::Doc::keyurl]);
+    doc->meta[Rcl::Doc::keytp] = doc->mimetype;
+    doc->meta[Rcl::Doc::keymt] = doc->dmtime.empty() ? 
+	doc->fmtime : doc->dmtime;
+    doc->meta[Rcl::Doc::keyipt] = doc->ipath;
+    doc->meta[Rcl::Doc::keyfs] = doc->fbytes;
+    doc->meta[Rcl::Doc::keyds] = doc->dbytes;
     char pc[20];
     sprintf(pc, "%02d %%", percent);
-    doc->meta["relevance"] = pc;
+    doc->meta[Rcl::Doc::keyrr] = pc;
 
     return (PyObject *)result;
 }
@@ -637,7 +723,10 @@ static PyMethodDef Query_methods[] = {
      doc_Query_execute},
     {"executesd", (PyCFunction)Query_executesd, METH_VARARGS|METH_KEYWORDS, 
      doc_Query_executesd},
-    {"fetchone", (PyCFunction)Query_fetchone, METH_VARARGS,doc_Query_fetchone},
+    {"fetchone", (PyCFunction)Query_fetchone, METH_VARARGS,
+     doc_Query_fetchone},
+    {"sortby", (PyCFunction)Query_sortby, METH_VARARGS|METH_KEYWORDS,
+     doc_Query_sortby},
     {NULL}  /* Sentinel */
 };
 
@@ -881,8 +970,8 @@ Db_makeDocAbstract(recoll_DbObject* self, PyObject *args, PyObject *)
 static PyObject *
 Db_needUpdate(recoll_DbObject* self, PyObject *args, PyObject *kwds)
 {
-    char *udi = 0;
-    char *sig = 0;
+    char *udi = 0; // needs freeing
+    char *sig = 0; // needs freeing
     LOGDEB(("Db_needUpdate\n"));
     if (!PyArg_ParseTuple(args, "eses:Db_needUpdate", 
 			  "utf-8", &udi, "utf-8", &sig)) {
@@ -891,6 +980,8 @@ Db_needUpdate(recoll_DbObject* self, PyObject *args, PyObject *kwds)
     if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
 	LOGERR(("Db_needUpdate: db not found %p\n", self->db));
         PyErr_SetString(PyExc_AttributeError, "db");
+	PyMem_Free(udi);
+	PyMem_Free(sig);
         return 0;
     }
     bool result = self->db->needUpdate(udi, sig);
@@ -903,16 +994,20 @@ static PyObject *
 Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
 {
     LOGDEB(("Db_addOrUpdate\n"));
-    char *udi = 0;
-    char *parent_udi = 0;
-
+    char *sudi = 0; // needs freeing
+    char *sparent_udi = 0; // needs freeing
     recoll_DocObject *pydoc;
 
     if (!PyArg_ParseTuple(args, "esO!|es:Db_addOrUpdate",
-			  "utf-8", &udi, &recoll_DocType, &pydoc,
-			  "utf-8", &parent_udi)) {
+			  "utf-8", &sudi, &recoll_DocType, &pydoc,
+			  "utf-8", &sparent_udi)) {
 	return 0;
     }
+    string udi(sudi);
+    string parent_udi(sparent_udi ? sparent_udi : "");
+    PyMem_Free(sudi);
+    PyMem_Free(sparent_udi);
+
     if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
 	LOGERR(("Db_addOrUpdate: db not found %p\n", self->db));
         PyErr_SetString(PyExc_AttributeError, "db");
@@ -923,16 +1018,11 @@ Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
         PyErr_SetString(PyExc_AttributeError, "doc");
         return 0;
     }
-    if (!self->db->addOrUpdate(udi, parent_udi?parent_udi:"", *pydoc->doc)) {
+    if (!self->db->addOrUpdate(udi, parent_udi, *pydoc->doc)) {
 	LOGERR(("Db_addOrUpdate: rcldb error\n"));
         PyErr_SetString(PyExc_AttributeError, "rcldb error");
-	PyMem_Free(udi);
-	PyMem_Free(parent_udi);
         return 0;
     }
-    PyMem_Free(udi);
-    if (parent_udi)
-	PyMem_Free(parent_udi);
     Py_RETURN_NONE;
 }
     

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.41 2008-09-08 16:49:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.42 2008-09-16 08:18:30 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -296,7 +296,6 @@ static const string keyds("description");
 static const string keyfn("filename");
 static const string keymd("modificationdate");
 static const string keymt("mimetype");
-static const string keyoc("origcharset");
 static const string keytt("title");
 
 bool FileInterner::dijontorcl(Rcl::Doc& doc)
@@ -310,7 +309,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 	    doc.text = it->second;
 	} else if (it->first == keymd) {
 	    doc.dmtime = it->second;
-	} else if (it->first == keyoc) {
+	} else if (it->first == Rcl::Doc::keyoc) {
 	    doc.origcharset = it->second;
 	} else if (it->first == keymt || it->first == keycs) {
 	    // don't need these.

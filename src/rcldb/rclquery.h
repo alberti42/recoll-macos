@@ -1,6 +1,6 @@
 #ifndef _rclquery_h_included_
 #define _rclquery_h_included_
-/* @(#$Id: rclquery.h,v 1.2 2008-07-01 08:31:08 dockes Exp $  (C) 2008 J.F.Dockes */
+/* @(#$Id: rclquery.h,v 1.3 2008-09-16 08:18:30 dockes Exp $  (C) 2008 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -87,6 +87,7 @@ private:
     string m_filterTopDir; // Current query filter on subtree top directory 
     string m_reason; // Error explanation
     Db    *m_db;
+    void  *m_sorter;
     unsigned int m_qOpts;
     /* Copyconst and assignement private and forbidden */
     Query(const Query &) {}

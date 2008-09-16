@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.40 2008-09-08 16:49:10 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.41 2008-09-16 08:18:30 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -144,7 +144,7 @@ class RclConfig {
     /** mimeconf: get list of mime types for category */
     bool getMimeCatTypes(const string& cat, list<string>&);
 
-    /** mimeconf: get field prefix from field name */
+    /** fields: get field prefix from field name */
     bool getFieldPrefix(const string& fldname, string &pfx);
     /** Get implied meanings for field name (ie: author->[author, from]) */
     bool getFieldSpecialisations(const string& fld, 
@@ -152,8 +152,9 @@ class RclConfig {
     /** Get prefixes for specialisations of field name */
     bool getFieldSpecialisationPrefixes(const string& fld, 
 					list<string>& pfxes);
-    bool fieldIsStored(const string& fld);
     const set<string>& getStoredFields() {return m_storedFields;}
+    /** Get canonic name for possible alias */
+    string fieldCanon(const string& fld);
 
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype);
@@ -196,7 +197,8 @@ class RclConfig {
     ConfStack<ConfSimple> *mimeconf; // but their content may depend on it.
     ConfStack<ConfSimple> *mimeview; // 
     ConfStack<ConfSimple> *m_fields;
-    map<string, string>  m_fldtopref;
+    map<string, string>  m_fldtopfx;
+    map<string, string>  m_aliastocanon;
     set<string>          m_storedFields;
 
     void        *m_stopsuffixes;

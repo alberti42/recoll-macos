@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.57 2008-09-08 16:49:10 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.58 2008-09-16 08:18:30 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -467,27 +467,21 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 
     // Build a direct map avoiding all indirections for field to
     // prefix translation
-    // Add direct prefixes
+    // Add direct prefixes from the [prefixes] section
     list<string>tps = m_fields->getNames("prefixes");
     for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
 	string val;
 	m_fields->get(*it, val, "prefixes");
-	m_fldtopref[*it] = val;
+	m_fldtopfx[stringtolower(*it)] = val;
     }
-    // Add prefixes for aliases:
+    // Add prefixes for aliases (build alias-to-canonic map while we're at it)
     tps = m_fields->getNames("aliases");
     for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
-	string canonic = *it; // canonic name
+	string canonic = stringtolower(*it); // canonic name
 	string pfx;
-	map<string,string>::const_iterator pit = m_fldtopref.find(canonic);
-	if (pit != m_fldtopref.end()) {
+	map<string,string>::const_iterator pit = m_fldtopfx.find(canonic);
+	if (pit != m_fldtopfx.end()) {
 	    pfx = pit->second;
-	} else {
-	    // Note: it's perfectly normal to have no prefix for the canonic
-	    // name, this could be a stored, not indexed field
-	    LOGDEB2(("RclConfig::readFieldsConfig: no pfx for canonic [%s]\n",
-		    canonic.c_str()));
-	    continue;
 	}
 	string aliases;
 	m_fields->get(canonic, aliases, "aliases");
@@ -495,12 +489,14 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	stringToStrings(aliases, l);
 	for (list<string>::const_iterator ait = l.begin();
 	     ait != l.end(); ait++) {
-	    m_fldtopref[*ait] = pfx;
+	    if (!pfx.empty())
+		m_fldtopfx[stringtolower(*ait)] = pfx;
+	    m_aliastocanon[stringtolower(*ait)] = canonic;
 	}
     }
 #if 0
-    for (map<string,string>::const_iterator it = m_fldtopref.begin();
-	 it != m_fldtopref.end(); it++) {
+    for (map<string,string>::const_iterator it = m_fldtopfx.begin();
+	 it != m_fldtopfx.end(); it++) {
 	LOGDEB(("RclConfig::readFieldsConfig: [%s] => [%s]\n",
 		it->first.c_str(), it->second.c_str()));
     }
@@ -512,8 +508,9 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	stringToStrings(ss, sl);
 	for (list<string>::const_iterator it = sl.begin(); 
 	     it != sl.end(); it++) {
-	    LOGDEB(("Inserting [%s] in stored list\n", (*it).c_str()));
-	    m_storedFields.insert(*it);
+	    string fld = fieldCanon(stringtolower(*it));
+	    LOGDEB(("Inserting [%s] in stored list\n", fld.c_str()));
+	    m_storedFields.insert(fld);
 	}
     }
 
@@ -521,10 +518,11 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 }
 
 // Return term indexing prefix for field name (ie: "filename" -> "XSFN")
+// The input must be a canonical field name (alias translation done already)
 bool RclConfig::getFieldPrefix(const string& fld, string &pfx)
 {
-    map<string,string>::const_iterator pit = m_fldtopref.find(fld);
-    if (pit != m_fldtopref.end()) {
+    map<string,string>::const_iterator pit = m_fldtopfx.find(fld);
+    if (pit != m_fldtopfx.end()) {
 	pfx = pit->second;
 	return true;
     } else {
@@ -572,10 +570,13 @@ bool RclConfig::getFieldSpecialisationPrefixes(const string& fld,
     pfxes.unique();
     return true;
 }
-bool RclConfig::fieldIsStored(const string& fld)
+
+string RclConfig::fieldCanon(const string& fld)
 {
-    set<string>::const_iterator it = m_storedFields.find(fld);
-    return it != m_storedFields.end();
+    map<string, string>::const_iterator it = m_aliastocanon.find(fld);
+    if (it != m_aliastocanon.end())
+	return it->second;
+    return fld;
 }
 
 string RclConfig::getMimeViewerDef(const string &mtype)

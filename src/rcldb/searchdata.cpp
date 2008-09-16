@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.22 2008-08-28 15:42:43 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.23 2008-09-16 08:18:30 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -151,6 +151,14 @@ void SearchData::erase() {
     m_topdir.erase();
     m_description.erase();
     m_reason.erase();
+}
+
+void SearchData::setSortBy(const string& fld, bool ascending) {
+    RclConfig *cfg = RclConfig::getMainConfig();
+    m_sortField = cfg->fieldCanon(stringtolower(fld));
+    m_sortAscending = ascending;
+    LOGDEB0(("SearchData::setSortBy: [%s] %s\n", m_sortField.c_str(),
+	     m_sortAscending ? "ascending" : "descending"));
 }
 
 // Am I a file name only search ? This is to turn off term highlighting
@@ -572,9 +580,9 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
     list<string> names;
     for (list<string>::iterator it = patterns.begin();
 	 it != patterns.end(); it++) {
-	// This relies on filenameWildExp not resetting and always
-	// adding to the input
-	db.filenameWildExp(*it, names);
+	list<string> more;
+	db.filenameWildExp(*it, more);
+	names.splice(names.end(), more);
     }
     // Build a query out of the matching file name terms.
     *qp = Xapian::Query(Xapian::Query::OP_OR, names.begin(), names.end());

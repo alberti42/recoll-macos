@@ -16,7 +16,7 @@
  */
 #ifndef _RCLDOC_H_INCLUDED_
 #define _RCLDOC_H_INCLUDED_
-/* @(#$Id: rcldoc.h,v 1.9 2008-09-08 16:49:10 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: rcldoc.h,v 1.10 2008-09-16 08:18:30 dockes Exp $  (C) 2006 J.F.Dockes */
 
 #include <string>
 #include <map>
@@ -44,9 +44,9 @@ class Doc {
     // can be accessed after a query without fetching the actual document).
     // We indicate the routine that sets them up during indexing
     
-    // This is just "file://" + binary filename. No transcoding: this
-    // is used to access files
-    // Index: computed from fn by Db::add caller. Query: from doc data.
+    // This is just "file://" + binary or url-encoded filename. No
+    // transcoding: this is used to access files Index: computed from
+    // fn by Db::add caller. Query: from doc data.
     string url;
 
     // Transcoded version of the simple file name for SFN-prefixed
@@ -134,12 +134,29 @@ class Doc {
 	pc = 0;
 	xdocid = 0;
     }
-    static const string keyfn;
-    static const string keyrr;
-    static const string keyabs;
-    static const string keyau;
-    static const string keytt;
-    static const string keykw;
+
+    // The official names for recoll native fields when used in a text
+    // context (ie: the python interface duplicates some of the fixed
+    // fields in the meta array, these are the names used). Defined in
+    // rcldoc.cpp. For fields stored in the meta[] array (ie, title,
+    // author), filters _must_ use these values
+    static const string keyurl; // url
+    static const string keyfn;  // file name
+    static const string keyipt; // ipath
+    static const string keytp;  // mime type
+    static const string keyfmt; // file mtime
+    static const string keydmt; // document mtime
+    static const string keymt;  // mtime dmtime if set else fmtime
+    static const string keyoc;  // original charset
+    static const string keyfs;  // file size
+    static const string keyds;  // document size
+    static const string keysz;  // dbytes if set else fbytes
+    static const string keysig; // sig
+    static const string keyrr;  // relevancy rating
+    static const string keyabs; // abstract
+    static const string keyau;  // author
+    static const string keytt;  // title
+    static const string keykw;  // keywords
 };
 
 

@@ -1,4 +1,4 @@
-# @(#$Id: fields,v 1.2 2008-09-15 08:03:37 dockes Exp $  (C) 2007 J.F.Dockes
+# @(#$Id: fields,v 1.3 2008-09-16 08:18:30 dockes Exp $  (C) 2007 J.F.Dockes
 # Field names configuration. This defines how one may search ie for 
 # author:Hemingway
 # Important: 
@@ -43,13 +43,18 @@ stored = author
 ##########################
 # This section defines field names aliases or synonyms. Any right hand side
 # value will be turned into the lhs canonic name before further treatment
-# Left-hand values must match names in the prefixes section or
-# data-record fields.
-# Note to filter writers: only canonic names should be used when indexing.
+#
+# The left-hand values in the recoll distribution file are well known and
+# must match names used in the c++ code, or even the index data
+# record. They can't change! But you can add others.
+#
+# Filters should only add canonic names to the meta array when indexing,
+# not aliases.
+
 [aliases]
 abstract = summary dc:summary description xesam:description
 author = creator dc:creator xesam:author xesam:creator
-caption = title dc:title subject
+title = title dc:title subject
 # catg = dc:type contentCategory
 dbytes = size xesam:size
 dmtime = date dc:date dc:datemodified datemodified contentmodified \
@@ -64,5 +69,6 @@ url = dc:identifier xesam:url
 #########################
 # This section defines a hierarchy for field names. Searching for a lhs
 # ancestor will be expanded to a search for itself and all rhs descendants
+# This is not used for now
 [specialisations]
 author = from

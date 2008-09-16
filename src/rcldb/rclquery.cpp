@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.5 2008-09-05 11:45:16 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.6 2008-09-16 08:18:30 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 
 #include <stdlib.h>
@@ -7,6 +7,8 @@ static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.5 2008-09-05 11:45:16 dockes Exp
 
 #include <list>
 #include <vector>
+
+#include "xapian/sorter.h"
 
 #include "rcldb.h"
 #include "rcldb_p.h"
@@ -20,6 +22,8 @@ static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.5 2008-09-05 11:45:16 dockes Exp
 #ifndef NO_NAMESPACES
 namespace Rcl {
 #endif
+
+
 class FilterMatcher : public Xapian::MatchDecider {
 public:
     FilterMatcher(const string &topdir)
@@ -41,7 +45,7 @@ public:
 
 	// The only filtering for now is on file path (subtree)
 	string url;
-	parms.get(string("url"), url);
+	parms.get(Doc::keyurl, url);
 	LOGDEB2(("FilterMatcher topdir [%s] url [%s]\n",
 		 m_topdir.c_str(), url.c_str()));
 	if (url.find(m_topdir, 7) == 7) {
@@ -55,14 +59,46 @@ private:
     string m_topdir;
 };
 
+// Sort helper class
+class QSorter : public Xapian::Sorter {
+public:
+    QSorter(const string& f) : m_fld(docfToDatf(f) + "=") {}
+
+    virtual std::string operator()(const Xapian::Document& xdoc) const {
+	string data = xdoc.get_data();
+
+	// It would be simpler to do the record->Rcl::Doc thing, but
+	// hand-doing this will be faster. It makes more assumptions
+	// about the format than a ConfTree though:
+	string::size_type i1, i2;
+	i1 = data.find(m_fld);
+	if (i1 == string::npos) 
+	    return string();
+	i1 += m_fld.length();
+	if (i1 >= data.length())
+	    return string();
+	i2 = data.find_first_of("\n\r", i1);
+	if (i2 == string::npos)
+	    return string();
+	return data.substr(i1, i2-i1);
+    }
+
+private:
+    string m_fld;
+};
+
 Query::Query(Db *db)
-    : m_nq(new Native(this)), m_db(db)
+    : m_nq(new Native(this)), m_db(db), m_sorter(0)
 {
 }
 
 Query::~Query()
 {
     deleteZ(m_nq);
+    if (m_sorter) {
+	delete (QSorter*)m_sorter;
+	m_sorter = 0;
+    }
 }
 
 string Query::getReason() const
@@ -74,6 +110,7 @@ Db *Query::whatDb()
 {
     return m_db;
 }
+
 
 //#define ISNULL(X) (X).isNull()
 #define ISNULL(X) !(X)
@@ -114,6 +151,17 @@ bool Query::setQuery(RefCntr<SearchData> sdata, int opts,
     try {
 	m_nq->enquire = new Xapian::Enquire(m_db->m_ndb->db);
 	m_nq->enquire->set_query(m_nq->query);
+	if (!sdata->getSortBy().empty()) {
+	    if (m_sorter) {
+		delete (QSorter*)m_sorter;
+		m_sorter = 0;
+	    }
+	    m_sorter = new QSorter(sdata->getSortBy());
+	    // It really seems there is a xapian bug about sort order, we 
+	    // invert here.
+	    m_nq->enquire->set_sort_by_key((QSorter*)m_sorter, 
+					   !sdata->getSortAscending());
+	}
 	m_nq->mset = Xapian::MSet();
 	// Get the query description and trim the "Xapian::Query"
 	d = m_nq->query.get_description();

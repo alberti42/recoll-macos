@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.144 2008-09-09 12:58:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.145 2008-09-16 08:18:30 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -129,12 +129,10 @@ bool Db::Native::subDocs(const string &udi, vector<Xapian::docid>& docids)
     return false;
 }
 
+// Only ONE field name inside the index data record differs from the
+// Rcl::Doc ones: caption<->title, for a remnant of compatibility with
+// omega
 static const string keycap("caption");
-static const string keymtp("mtype");
-static const string keyfmt("fmtime");
-static const string keydmt("dmtime");
-static const string keyoc("origcharset");
-static const string keyurl("url");
 
 // Turn data record from db into document fields
 bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
@@ -144,11 +142,11 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     ConfSimple parms(&data);
     if (!parms.ok())
 	return false;
-    parms.get(keyurl, doc.url);
-    parms.get(keymtp, doc.mimetype);
-    parms.get(keyfmt, doc.fmtime);
-    parms.get(keydmt, doc.dmtime);
-    parms.get(keyoc, doc.origcharset);
+    parms.get(Doc::keyurl, doc.url);
+    parms.get(Doc::keytp, doc.mimetype);
+    parms.get(Doc::keyfmt, doc.fmtime);
+    parms.get(Doc::keydmt, doc.dmtime);
+    parms.get(Doc::keyoc, doc.origcharset);
     parms.get(keycap, doc.meta[Doc::keytt]);
     parms.get(Doc::keykw, doc.meta[Doc::keykw]);
     parms.get(Doc::keyabs, doc.meta[Doc::keyabs]);
@@ -162,10 +160,10 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     char buf[20];
     sprintf(buf,"%.2f", float(percent) / 100.0);
     doc.meta[Doc::keyrr] = buf;
-    parms.get(string("ipath"), doc.ipath);
-    parms.get(string("fbytes"), doc.fbytes);
-    parms.get(string("dbytes"), doc.dbytes);
-    parms.get(string("sig"), doc.sig);
+    parms.get(Doc::keyipt, doc.ipath);
+    parms.get(Doc::keyfs, doc.fbytes);
+    parms.get(Doc::keyds, doc.dbytes);
+    parms.get(Doc::keysig, doc.sig);
     doc.xdocid = docid;
 
     // Other, not predefined meta fields:
@@ -691,24 +689,25 @@ bool Db::isopen()
 // indexed with no prefix (ie: abstract)
 bool Db::fieldToPrefix(const string& fldname, string &pfx)
 {
-    // This is the default table
+    // This is the default table. We prefer the data from rclconfig if 
+    // available
     static map<string, string> fldToPrefs;
     if (fldToPrefs.empty()) {
 	fldToPrefs[Doc::keyabs] = string();
 	fldToPrefs["ext"] = "XE";
-	fldToPrefs["filename"] = "XSFN";
+	fldToPrefs[Doc::keyfn] = "XSFN";
 
-	fldToPrefs["title"] = "S";
 	fldToPrefs[keycap] = "S";
+	fldToPrefs[Doc::keytt] = "S";
 	fldToPrefs["subject"] = "S";
 
 	fldToPrefs[Doc::keyau] = "A";
 	fldToPrefs["creator"] = "A";
 	fldToPrefs["from"] = "A";
 
+	fldToPrefs[Doc::keykw] = "K";
 	fldToPrefs["keyword"] = "K";
 	fldToPrefs["tag"] = "K";
-	fldToPrefs[Doc::keykw] = "K";
 	fldToPrefs["tags"] = "K";
     }
 
@@ -719,6 +718,7 @@ bool Db::fieldToPrefix(const string& fldname, string &pfx)
     if (config && config->getFieldPrefix(fld, pfx))
 	return true;
 
+    // No data in rclconfig? Check default values
     map<string, string>::const_iterator it = fldToPrefs.find(fld);
     if (it != fldToPrefs.end()) {
 	pfx = it->second;
@@ -816,8 +816,16 @@ void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 	m_synthAbsWordCtxLen = syntctxlen;
 }
 
+static inline void leftzeropad(string& s, unsigned len)
+{
+    if (s.length() && s.length() < len)
+	s = s.insert(0, len-s.length(), '0');
+}
+
 static const int MB = 1024 * 1024;
 static const string nc("\n\r\x0c");
+
+#define RECORD_APPEND(R, NM, VAL) {R += NM + "=" + VAL + "\n";}
 
 // Add document in internal form to the database: index the terms in
 // the title abstract and body and add special terms for file name,
@@ -958,39 +966,43 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     // reasonable lengths and suppress newlines (so that the data
     // record can keep a simple syntax)
 
-    string record = "url=" + doc.url;
-    record += "\nmtype=" + doc.mimetype;
-    record += "\nfmtime=" + doc.fmtime;
+    string record;
+    RECORD_APPEND(record, Doc::keyurl, doc.url);
+    RECORD_APPEND(record, Doc::keytp, doc.mimetype);
+    // We left-zero-pad the times so that they are lexico-sortable
+    leftzeropad(doc.fmtime, 11);
+    RECORD_APPEND(record, Doc::keyfmt, doc.fmtime);
     if (!doc.dmtime.empty()) {
-	record += "\ndmtime=" + doc.dmtime;
+	leftzeropad(doc.dmtime, 11);
+	RECORD_APPEND(record, Doc::keydmt, doc.dmtime);
     }
-    record += "\norigcharset=" + doc.origcharset;
+    RECORD_APPEND(record, Doc::keyoc, doc.origcharset);
 
     if (!doc.fbytes.empty())
-	record += string("\nfbytes=") + doc.fbytes;
+	RECORD_APPEND(record, Doc::keyfs, doc.fbytes);
     // Note that we add the signature both as a value and in the data record
     if (!doc.sig.empty())
-	record += string("\nsig=") + doc.sig;
+	RECORD_APPEND(record, Doc::keysig, doc.sig);
     newdocument.add_value(VALUE_SIG, doc.sig);
 
     char sizebuf[30]; 
     sprintf(sizebuf, "%u", (unsigned int)doc.text.length());
-    record += string("\ndbytes=") + sizebuf;
+    RECORD_APPEND(record, Doc::keyds, sizebuf);
 
     if (!doc.ipath.empty())
-	record += "\nipath=" + doc.ipath;
+	RECORD_APPEND(record, Doc::keyipt, doc.ipath);
 
     if (doc.meta[Doc::keytt].empty())
 	doc.meta[Doc::keytt] = doc.utf8fn;
     doc.meta[Doc::keytt] = 
 	neutchars(truncate_to_word(doc.meta[Doc::keytt], 150), nc);
     if (!doc.meta[Doc::keytt].empty())
-	record += "\n" + keycap + "=" + doc.meta[Doc::keytt];
+	RECORD_APPEND(record, keycap, doc.meta[Doc::keytt]);
 
     doc.meta[Doc::keykw] = 
 	neutchars(truncate_to_word(doc.meta[Doc::keykw], 300), nc);
     if (!doc.meta[Doc::keykw].empty())
-	record += "\n" + Doc::keykw + "=" + doc.meta[Doc::keykw];
+	RECORD_APPEND(record, Doc::keykw, doc.meta[Doc::keykw]);
 
     // If abstract is empty, we make up one with the beginning of the
     // document. This is then not indexed, but part of the doc data so
@@ -1010,22 +1022,23 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 		      nc);
     }
     if (!doc.meta[Doc::keyabs].empty())
-	record += "\n" + Doc::keyabs + "=" + doc.meta[Doc::keyabs];
+	RECORD_APPEND(record, Doc::keyabs, doc.meta[Doc::keyabs]);
 
     RclConfig *config = RclConfig::getMainConfig();
     if (config) {
 	const set<string>& stored = config->getStoredFields();
 	for (set<string>::const_iterator it = stored.begin();
 	     it != stored.end(); it++) {
+	    string nm = stringtolower(config->fieldCanon(*it));
 	    if (!doc.meta[*it].empty()) {
 		string value = 
 		    neutchars(truncate_to_word(doc.meta[*it], 150), nc);
-		record += "\n" + *it + "=" + value;
+		RECORD_APPEND(record, nm, value);
 	    }
 	}
     }
-    record += "\n";
-    LOGDEB0(("Rcl::Db::add: new doc record:\n %s\n", record.c_str()));
+
+    LOGDEB0(("Rcl::Db::add: new doc record:\n%s\n", record.c_str()));
     newdocument.set_data(record);
 
     const char *fnc = udi.c_str();
@@ -1105,21 +1118,6 @@ bool Db::needUpdate(const string &udi, const string& sig)
 
 	    // Retrieve old file/doc signature from value
 	    string osig = doc.get_value(VALUE_SIG);
-#if 0
-	    // Get old  sig from data record
-	    string data = doc.get_data();
-	    string::size_type i1, i2;
-	    i1 = data.find("sig=");
-	    if (i1 == string::npos) 
-		return true;
-	    i1 += 4;
-	    if (i1 >= data.length())
-		return true;
-	    i2 = data.find_first_of("\n\r", i1);
-	    if (i2 == string::npos)
-		return true;
-	    string osig = data.substr(i1, i2-i1);
-#endif
 	    LOGDEB2(("Db::needUpdate: oldsig [%s] new [%s]\n",
 		     osig.c_str(), sig.c_str()));
 	    // Compare new/old sig
@@ -1287,14 +1285,12 @@ bool Db::purgeFile(const string &udi)
     return false;
 }
 
+// File name wild card expansion. This is a specialisation ot termMatch
 bool Db::filenameWildExp(const string& fnexp, list<string>& names)
 {
-    // File name search, with possible wildcards. 
-    // We expand wildcards by scanning the filename terms (prefixed 
-    // with XSFN) from the database. 
-    // We build an OR query with the expanded values if any.
     string pattern;
     dumb_string(fnexp, pattern);
+    names.clear();
 
     // If pattern is not quoted, and has no wildcards, we add * at
     // each end: match any substring
@@ -1303,33 +1299,14 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
     } else if (pattern.find_first_of("*?[") == string::npos) {
 	pattern = "*" + pattern + "*";
     } // else let it be
+    LOGDEB(("Rcl::Db::filenameWildExp: pattern: [%s]\n", pattern.c_str()));
 
-    LOGDEB((" pattern: [%s]\n", pattern.c_str()));
-
-    // Match pattern against all file names in the db
-    string ermsg;
-    try {
-	Xapian::TermIterator it = m_ndb->db.allterms_begin(); 
-	it.skip_to("XSFN");
-	for (;it != m_ndb->db.allterms_end(); it++) {
-	    if ((*it).find("XSFN") != 0)
-		break;
-	    string fn = (*it).substr(4);
-	    LOGDEB2(("Matching [%s] and [%s]\n", pattern.c_str(), fn.c_str()));
-	    if (fnmatch(pattern.c_str(), fn.c_str(), 0) != FNM_NOMATCH) {
-		names.push_back((*it).c_str());
-	    }
-	    // Limit the match count
-	    if (names.size() > 1000) {
-		LOGERR(("Db::filenameWildExp: too many matched file names\n"));
-		break;
-	    }
-	}
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGERR(("filenameWildExp: xapian error: %s\n", ermsg.c_str()));
+    list<TermMatchEntry> entries;
+    if (!termMatch(ET_WILD, string(), pattern, entries, 1000, Doc::keyfn))
 	return false;
-    }
+    for (list<TermMatchEntry>::const_iterator it = entries.begin();
+	 it != entries.end(); it++) 
+	names.push_back("XSFN"+it->term);
 
     if (names.empty()) {
 	// Build an impossible query: we know its impossible because we
@@ -1385,11 +1362,11 @@ const string regSpecChars = "(.[{";
 bool Db::termMatch(MatchType typ, const string &lang,
 		   const string &root, 
 		   list<TermMatchEntry>& res,
-		   int max)
+		   int max, 
+		   const string& field)
 {
     if (!m_ndb || !m_ndb->m_isopen)
 	return false;
-
     Xapian::Database db = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
 
     res.clear();
@@ -1398,6 +1375,11 @@ bool Db::termMatch(MatchType typ, const string &lang,
     string droot;
     dumb_string(root, droot);
     string nochars = typ == ET_WILD ? wildSpecChars : regSpecChars;
+
+    string prefix;
+    if (!field.empty()) {
+	(void)fieldToPrefix(field, prefix); 
+    }
 
     if (typ == ET_STEM) {
 	if (!stemExpand(lang, root, res, max))
@@ -1429,33 +1411,43 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	string::size_type es = droot.find_first_of(nochars);
 	string is;
 	switch (es) {
-	case string::npos: is = droot;break;
-	case 0: break;
-	default: is = droot.substr(0, es);break;
+	case string::npos: is = prefix + droot; break;
+	case 0: is = prefix; break;
+	default: is = prefix + droot.substr(0, es); break;
 	}
 	LOGDEB(("termMatch: initsec: [%s]\n", is.c_str()));
 
-	Xapian::TermIterator it = db.allterms_begin(); 
-	if (!is.empty())
-	    it.skip_to(is.c_str());
-	for (int n = 0;it != db.allterms_end(); it++) {
-	    // If we're beyond the terms matching the initial string, end
-	    if (!is.empty() && (*it).find(is) != 0)
-		break;
-	    // Don't match special internal terms beginning with uppercase ascii
-	    if ((*it).at(0) >= 'A' && (*it).at(0) <= 'Z')
-		continue;
-	    if (typ == ET_WILD) {
-		if (fnmatch(droot.c_str(), (*it).c_str(), 0) == FNM_NOMATCH)
-		    continue;
-	    } else {
-		if (regexec(&reg, (*it).c_str(), 0, 0, 0))
-		    continue;
+	string ermsg;
+	try {
+	    Xapian::TermIterator it = db.allterms_begin(); 
+	    if (!is.empty())
+		it.skip_to(is.c_str());
+	    for (int n = 0; it != db.allterms_end(); it++) {
+		// If we're beyond the terms matching the initial string, end
+		if (!is.empty() && (*it).find(is) != 0)
+		    break;
+		string term;
+		if (!prefix.empty())
+		    term = (*it).substr(prefix.length());
+		else
+		    term = *it;
+		if (typ == ET_WILD) {
+		    if (fnmatch(droot.c_str(), term.c_str(), 0) == FNM_NOMATCH)
+			continue;
+		} else {
+		    if (regexec(&reg, term.c_str(), 0, 0, 0))
+			continue;
+		}
+		// Do we want stem expansion here? We don't do it for now
+		res.push_back(TermMatchEntry(term, it.get_termfreq()));
+		++n;
 	    }
-	    // Do we want stem expansion here? We don't do it for now
-	    res.push_back(TermMatchEntry(*it, it.get_termfreq()));
-	    ++n;
+	} XCATCHERROR(ermsg);
+	if (!ermsg.empty()) {
+	    LOGERR(("termMatch: %s\n", ermsg.c_str()));
+	    return false;
 	}
+
 	if (typ == ET_REGEXP) {
 	    regfree(&reg);
 	}

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.14 2008-09-08 16:49:10 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.15 2008-09-16 08:18:30 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,33 @@ using namespace std;
 #include "internfile.h"
 #include "wipedir.h"
 
+bool dump_contents(RclConfig *rclconfig, string& tmpdir, Rcl::Doc& doc)
+{
+    string fn = doc.url.substr(7);
+    struct stat st;
+    if (stat(fn.c_str(), &st) != 0) {
+	cout << "No such file: " << fn << endl;
+	return true;
+    } 
+    if (tmpdir.empty() || access(tmpdir.c_str(), 0) < 0) {
+	string reason;
+	if (!maketmpdir(tmpdir, reason)) {
+	    cerr << "Cannot create temporary directory: "
+		 << reason << endl;
+	    return false;
+	}
+    }
+    wipedir(tmpdir);
+    FileInterner interner(fn, &st, rclconfig, tmpdir, &doc.mimetype);
+    if (interner.internfile(doc, doc.ipath)) {
+	cout << doc.text << endl;
+    } else {
+	cout << "Cant intern: " << fn << endl;
+    }
+    return true;
+}
+
+
 static char *thisprog;
 static char usage [] =
 " [-o|-a|-f] <query string>\n"
@@ -60,6 +87,8 @@ static char usage [] =
 "    -n <cnt> limit the maximum number of results (0->no limit, default 2000)\n"
 "    -b : basic. Just output urls, no mime types or titles\n"
 "    -m : dump the whole document meta[] array\n"
+"    -S fld : sort by field name\n"
+"    -D : sort descending\n"
 ;
 static void
 Usage(void)
@@ -82,10 +111,15 @@ static int     op_flags;
 #define OPT_q     0x200
 #define OPT_t     0x400
 #define OPT_m     0x800
+#define OPT_D     0x1000
+#define OPT_S     0x2000
+
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
     string a_config;
+    string sortfield;
+
     int limit = 2000;
     thisprog = argv[0];
     argc--; argv++;
@@ -103,6 +137,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		a_config = *(++argv);
 		argc--; goto b1;
             case 'd':   op_flags |= OPT_d; break;
+            case 'D':   op_flags |= OPT_D; break;
             case 'f':   op_flags |= OPT_f; break;
             case 'l':   op_flags |= OPT_l; break;
             case 'm':   op_flags |= OPT_m; break;
@@ -112,6 +147,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		argc--; goto b1;
             case 'o':   op_flags |= OPT_o; break;
             case 'q':   op_flags |= OPT_q; break;
+	    case 'S':	op_flags |= OPT_S; if (argc < 2)  Usage();
+		sortfield = *(++argv);
+		argc--; goto b1;
             case 't':   op_flags |= OPT_t; break;
             default: Usage();   break;
             }
@@ -168,6 +206,10 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	return 1;
     }
 
+    if (op_flags & OPT_S) {
+	sd->setSortBy(sortfield, (op_flags & OPT_D) ? false : true);
+    }
+
     RefCntr<Rcl::SearchData> rq(sd);
     Rcl::Query query(&rcldb);
     query.setQuery(rq, Rcl::Query::QO_STEM);
@@ -197,6 +239,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		<< "[" << doc.url.c_str() << "]" << "\t" 
 		<< "[" << doc.meta[Rcl::Doc::keytt].c_str() << "]" << "\t"
 		<< doc.fbytes.c_str()   << "\tbytes" << "\t"
+		<< doc.dmtime.c_str()   << "\tSecs" << "\t"
 		<<  endl;
 	    if (op_flags & OPT_m) {
 		for (map<string,string>::const_iterator it = doc.meta.begin();
@@ -204,32 +247,11 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		    cout << it->first << " = " << it->second << endl;
 		}
 	    }
-	    cout << endl;
 	}
+
 	if (op_flags & OPT_d) {
-	    string fn = doc.url.substr(7);
-	    struct stat st;
-	    if (stat(fn.c_str(), &st) != 0) {
-		cout << "No such file: " << fn << endl;
-		continue;
-	    } 
-	    if (tmpdir.empty() || access(tmpdir.c_str(), 0) < 0) {
-		string reason;
-		if (!maketmpdir(tmpdir, reason)) {
-		    cerr << "Cannot create temporary directory: "
-			 << reason << endl;
-		    return 1;
-		}
-	    }
-	    wipedir(tmpdir);
-	    FileInterner interner(fn, &st, rclconfig, tmpdir, &doc.mimetype);
-	    if (interner.internfile(doc, doc.ipath)) {
-		cout << doc.text << endl;
-	    } else {
-		cout << "Cant intern: " << fn << endl;
-	    }
-	}
-	
+	    dump_contents(rclconfig, tmpdir, doc);
+	}	
     }
 
     // Maybe clean up temporary directory

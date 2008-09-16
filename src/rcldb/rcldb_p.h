@@ -4,7 +4,7 @@
 #include "xapian.h"
 
 namespace Rcl {
-/* @(#$Id: rcldb_p.h,v 1.4 2008-09-05 10:34:17 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: rcldb_p.h,v 1.5 2008-09-16 08:18:30 dockes Exp $  (C) 2007 J.F.Dockes */
 
 // Generic Xapian exception catching code. We do this quite often,
 // and I have no idea how to do this except for a macro
@@ -70,5 +70,14 @@ class Db::Native {
     bool subDocs(const string &udi, vector<Xapian::docid>& docids);
 
 };
+
+// Field names inside the index data record may differ from the rcldoc ones
+// (esp.: caption / title)
+inline const string& docfToDatf(const string& df)
+{
+    static const string keycap("caption");
+    return df.compare(Doc::keytt) ? df : keycap;
+}
+
 }
 #endif /* _rcldb_p_h_included_ */

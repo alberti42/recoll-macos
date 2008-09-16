@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.61 2008-08-26 07:38:29 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.62 2008-09-16 08:18:30 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -156,9 +156,11 @@ class Db {
      * Stem expansion is performed if lang is not empty */
     enum MatchType {ET_WILD, ET_REGEXP, ET_STEM};
     bool termMatch(MatchType typ, const string &lang, const string &s, 
-		   list<TermMatchEntry>& result, int max = -1);
+		   list<TermMatchEntry>& result, int max = -1, 
+		   const string& field = "");
 
-    /** Specific filename wildcard expansion */
+    /** Special filename wildcard to XSFN terms expansion.
+	internal/searchdata use only */
     bool filenameWildExp(const string& exp, list<string>& names);
 
     /** Set parameters for synthetic abstract generation */
