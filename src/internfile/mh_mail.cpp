@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.33 2008-07-01 11:51:51 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.34 2008-09-16 08:13:45 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,7 @@ static const int maxdepth = 20;
 static const string cstr_mimetype = "mimetype";
 static const string cstr_content = "content";
 static const string cstr_author = "author";
+static const string cstr_recipient = "recipient";
 static const string cstr_modificationdate = "modificationdate";
 static const string cstr_title = "title";
 
@@ -272,6 +273,16 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     if (doc->h.getFirstHeader("To", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
 	text += string("To: ") + transcoded + string("\n");
+	if (depth == 1) {
+	    m_metaData[cstr_recipient] = transcoded;
+	}
+    }
+    if (doc->h.getFirstHeader("Cc", hi)) {
+	rfc2047_decode(hi.getValue(), transcoded);
+	text += string("Cc: ") + transcoded + string("\n");
+	if (depth == 1) {
+	    m_metaData[cstr_recipient] += " " + transcoded;
+	}
     }
     if (doc->h.getFirstHeader("Date", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
