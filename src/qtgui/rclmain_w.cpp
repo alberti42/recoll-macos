@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.49 2008-06-13 18:22:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.50 2008-09-16 10:13:48 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -850,16 +850,16 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     // configured command seems to be able to grok it or not.
     bool wantsipath = cmd.find("%i") != string::npos;
     bool istempfile = false;
-    string fn, url;
+    string fn = urltolocalpath(doc.url);
+    string url;
+    rclconfig->setKeyDir(path_getfather(fn));
     if (doc.ipath.empty() || wantsipath) {
-	fn = urltolocalpath(doc.url);
 	url = url_encode(doc.url, 7);
     } else {
 	// There is an ipath and the command does not know about
 	// them. We need a temp file.
 	TempFile temp;
-	if (!FileInterner::idocTempFile(temp, rclconfig, 
-					urltolocalpath(doc.url), 
+	if (!FileInterner::idocTempFile(temp, rclconfig, fn, 
 					doc.ipath, doc.mimetype)) {
 	    QMessageBox::warning(0, "Recoll",
 				 tr("Cannot extract document or create "
