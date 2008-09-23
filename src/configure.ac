@@ -243,7 +243,7 @@ fi
 
 # Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
 # depend on this. We try to detect the qt 4 version string instead.
-qmakevers="`qmake --version 2>&1`"
+qmakevers="`${QMAKE} --version 2>&1`"
 #echo "qmake version: $qmakevers"
 v4=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*4.*'`
 if test X$v4 = X0 ; then 
