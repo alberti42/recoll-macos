@@ -8,4 +8,12 @@ all the rest is standard unmodified kde boilerplate.
 The applet was modified to start a Recoll search instead of a
 Konqueror/kio_find/tracker one.
 
+To install, run the usual commands:
+./configure
+make
+make install
+
+You can then add the Recoll applet to the panel by right clicking there and
+following "Add applet"
+
 See the AUTHORS and COPYING files for the unchanged copyright information.
