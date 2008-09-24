@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.67 2008-06-13 18:22:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.68 2008-09-24 05:31:00 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
 
     //    fprintf(stderr, "Application created\n");
     string a_config;
-    string qstring;
+    string question;
 
     thisprog = argv[0];
     argc--; argv++;
@@ -225,7 +225,7 @@ int main(int argc, char **argv)
 	    case 'l': op_flags |= OPT_l; break;
 	    case 'o': op_flags |= OPT_o; break;
 	    case 'q':	op_flags |= OPT_q; if (argc < 2)  Usage();
-		qstring = *(++argv);
+		question = *(++argv);
 		argc--; goto b1;
 	    case 't': op_flags |= OPT_t; break;
 	    }
@@ -383,7 +383,7 @@ int main(int argc, char **argv)
 	}
 	mainWindow->sSearch->searchTypCMB->setCurrentItem(int(stype));
 	mainWindow->
-	    sSearch->setSearchString(QString::fromUtf8(qstring.c_str()));
+	    sSearch->setSearchString(QString::fromLocal8Bit(qstring.c_str()));
 	// The 200 ms are a hack to jump over the first db close by 
 	// periodic100()... 
 	QTimer::singleShot(200, mainWindow->sSearch, SLOT(startSimpleSearch()));
