@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.15 2008-09-16 08:18:30 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.16 2008-09-24 06:44:15 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -41,6 +41,7 @@ using namespace std;
 #include "wasatorcl.h"
 #include "internfile.h"
 #include "wipedir.h"
+#include "transcode.h"
 
 bool dump_contents(RclConfig *rclconfig, string& tmpdir, Rcl::Doc& doc)
 {
@@ -163,7 +164,6 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     while (argc > 0) {
 	qs += string(" ") + *argv++;argc--;
     }
-
     Rcl::Db rcldb;
     string dbdir;
     string reason;
@@ -173,6 +173,22 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
 	exit(1);
     }
+
+    {
+	string uq;
+	string charset = rclconfig->getDefCharset(true);
+	int ercnt;
+	if (!transcode(qs, uq, charset, "UTF-8", &ercnt)) {
+	    fprintf(stderr, "Can't convert command line args to utf-8\n");
+	    exit(1);
+	} else if (ercnt) {
+	    fprintf(stderr, "%d errors while converting arguments from %s "
+		    "to utf-8\n", ercnt, charset.c_str());
+	}
+	qs = uq;
+    }
+
+
     dbdir = rclconfig->getDbDir();
     rcldb.open(dbdir,  rclconfig->getStopfile(), Rcl::Db::DbRO);
 
