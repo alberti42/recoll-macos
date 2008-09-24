@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.63 2008-05-07 06:14:14 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.64 2008-09-24 06:34:35 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -2331,10 +2331,11 @@ skippedPaths = ~/somedir/&lowast;.txt
 	add a small &RCL; launcher to the KDE panel.</para>
 
       <para>The applet is not automatically built with the main &RCL;
-      programs. To build it, you need to unpack the &RCL; source
-      code, then go to the <filename>kde/recoll_applet/</filename>
-      directory, and type the usual 
-      <userinput>configure;make;make install</userinput>.</para>
+      programs, nor is it included with the main source distribution
+      (because the KDE build boilerplate makes it relatively big). You
+      can download its source from the recoll.org download page. Use
+      the omnipotent <userinput>configure;make;make
+      install</userinput> incantation to build and install.</para>
       
       <para>You can then add the applet to the panel by right-clicking
       the panel and choosing the <guilabel>Add applet</guilabel>
@@ -2343,7 +2344,9 @@ skippedPaths = ~/somedir/&lowast;.txt
       <para>The <literal>recoll_applet</literal> has a small text
       window where you can type a &RCL; query (in query language
       form), and an icon which can be used to restrict the search to
-      certain types of files.</para>
+      certain types of files. It is quite primitive, and launches a
+      new recoll GUI instance every time (even if it is already
+      running). You may find it useful anyway.</para>
     </sect1>
 
 
