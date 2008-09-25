@@ -4,7 +4,7 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="obsolete">Impossible d&apos;exécuter une requête purement négative. Essayez d&apos;entrer des termes courants dans un champ &apos;ou&apos;</translation>
+        <translation>Ausschließlich negative Suche nicht möglich. Bitte geben Sie mindestens einen positiven Suchbegriff an.</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -13,10 +13,6 @@
     <message>
         <source>Any clause</source>
         <translation>Einen der Ausdrücke</translation>
-    </message>
-    <message>
-        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Ausschließlich negative Suche nicht möglich. Bitte geben Sie mindestens einen positiven Suchbegriff an.</translation>
     </message>
     <message>
         <source>texts</source>
@@ -235,7 +231,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Groß/Kleinschreibung &amp;beachten</translation>
     </message>
     <message>
         <source>Alt+C</source>
@@ -497,7 +493,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation>Diese Suche ist nicht mehr aktiv</translation>
     </message>
     <message>
-        <source>Can't start query: </source>
+        <source>Can&apos;t start query: </source>
         <translation>Kann die Suche nicht starten:</translation>
     </message>
     <message>
@@ -531,6 +527,18 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     <message>
         <source>error retrieving stemming languages</source>
         <translation>Fehler beim Holen der Wortstammsprachen</translation>
+    </message>
+    <message>
+        <source>Update &amp;Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing interrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop &amp;Indexing</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1594,6 +1602,10 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1819,10 +1831,6 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Aspell language</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1845,6 +1853,10 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
         <translation>Benutze das &apos;file&apos; Kommando wenn die interne&lt;br&gt;mime Typ Erkennung fehlschlägt.</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

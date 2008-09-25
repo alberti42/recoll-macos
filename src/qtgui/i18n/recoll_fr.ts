@@ -3,7 +3,7 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="obsolete">Impossible d&apos;exécuter une requête purement négative. Essayez d&apos;entrer des termes courants dans un champ &apos;ou&apos;</translation>
+        <translation>Requête négative pure impossible. Entrer un terme dans un des autres champs</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -12,10 +12,6 @@
     <message>
         <source>Any clause</source>
         <translation>Une des clauses</translation>
-    </message>
-    <message>
-        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Requête négative pure impossible. Entrer un terme dans un des autres champs</translation>
     </message>
     <message>
         <source>texts</source>
@@ -495,7 +491,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Cette recherche n&apos;est plus active</translation>
     </message>
     <message>
-        <source>Can't start query: </source>
+        <source>Can&apos;t start query: </source>
         <translation>Impossible de démarrer la recherche:</translation>
     </message>
     <message>
@@ -529,6 +525,18 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>error retrieving stemming languages</source>
         <translation>impossible de trouver la liste des langages d&apos;expansion</translation>
+    </message>
+    <message>
+        <source>Update &amp;Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing interrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop &amp;Indexing</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1589,6 +1597,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
         <translation>Les texte plus gros ne seront pas surlignes dans la previsualisation (trop lent).</translation>
     </message>
+    <message>
+        <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1815,7 +1827,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
-        <translation>Interdit l&apos;utilisation d&apos;aspell pour generer un dictionnaire d&apos;approximation phonetique (outil d&apos;exploration des termes)&lt;br&gt;
+        <translation type="obsolete">Interdit l&apos;utilisation d&apos;aspell pour generer un dictionnaire d&apos;approximation phonetique (outil d&apos;exploration des termes)&lt;br&gt;
 Utile si aspell est absent ou ne fonctionne pas bien.</translation>
     </message>
     <message>
@@ -1841,6 +1853,10 @@ Utile si aspell est absent ou ne fonctionne pas bien.</translation>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
         <translation>Utiliser la commande &apos;file&apos; si la determination&lt;br&gt;interne du type mime n&apos;obtient pas de resultat.</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
