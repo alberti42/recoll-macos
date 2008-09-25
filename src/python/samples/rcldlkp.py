@@ -16,7 +16,7 @@ import stat
 import sys
 import re
 
-rclconf = "/Users/dockes/.recoll-test"
+rclconf = "/Users/dockes/.recoll-dlkp"
 
 def udi(docfile, numrec):
     return docfile + "#" + str(numrec)
@@ -69,7 +69,7 @@ def output_rec(rec):
 ################################################################
 
 def usage():
-    sys.stderr.write("Usage: doclookup.py <filename> [<recnum>]\n")
+    sys.stderr.write("Usage: rcldlkp.py <filename> [<recnum>]\n")
     exit(1)
 
 if len(sys.argv) < 2:

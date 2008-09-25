@@ -56,6 +56,7 @@ class mbox_indexer:
     def index_message(self, db, msg):
         doc = recoll.Doc()
         doc.author = header_value(msg, "From")
+        doc.recipient = header_value(msg, "To") + " " + header_value(msg, "Cc")
         # url
         doc.url = "file://" + self.mbfile
         # utf8fn
