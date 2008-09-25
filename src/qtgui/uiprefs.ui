@@ -665,7 +665,7 @@ May be slow for big documents.</string>
                                                     <cstring>unacAllExtraDbPB</cstring>
                                                 </property>
                                                 <property name="text">
-                                                    <string>Desactivate All</string>
+                                                    <string>Deactivate All</string>
                                                 </property>
                                             </widget>
                                         </hbox>

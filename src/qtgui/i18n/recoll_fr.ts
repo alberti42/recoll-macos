@@ -14,7 +14,7 @@
         <translation>Une des clauses</translation>
     </message>
     <message>
-        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
+        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
         <translation>Requête négative pure impossible. Entrer un terme dans un des autres champs</translation>
     </message>
     <message>
@@ -495,7 +495,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Cette recherche n&apos;est plus active</translation>
     </message>
     <message>
-        <source>Cant start query: </source>
+        <source>Can't start query: </source>
         <translation>Impossible de démarrer la recherche:</translation>
     </message>
     <message>
@@ -755,7 +755,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
         <translation type="obsolete">&amp;Copier le nom de fichier</translation>
     </message>
     <message>
-        <source>Copy &amp;Url</source>
+        <source>Copy &amp;URL</source>
         <translation type="obsolete">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
@@ -816,7 +816,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
         <translation type="obsolete">&amp;Copier le nom de fichier</translation>
     </message>
     <message>
-        <source>Copy &amp;Url</source>
+        <source>Copy &amp;URL</source>
         <translation>Copier l&apos;&amp;Url</translation>
     </message>
     <message>
@@ -1554,7 +1554,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <translation>Tout activer</translation>
     </message>
     <message>
-        <source>Desactivate All</source>
+        <source>Deactivate All</source>
         <translation>Tout désactiver</translation>
     </message>
     <message>
@@ -1766,7 +1766,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <translation>Chemins ignores</translation>
     </message>
     <message>
-        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
+        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
         <translation>Ce sont des noms de repertoires ou l&apos;indexation n&apos;entrera pas.&lt;br&gt;Ils peuvent contenir des caracteres jokers. Les chemins doivent correspondre a ceux vus par l&apos;indexeur (par exemple: si un des repertoires de depart est &apos;/home/me&apos; et que &apos;/home&apos; est un lien sur &apos;/usr/home&apos;, une entree correcte ici serait &apos;/home/me/tmp*&apos; , pas &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
@@ -1798,7 +1798,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <translation>Intervalle d&apos;ecriture de l&apos;index en megaoctets</translation>
     </message>
     <message>
-        <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
         <translation>Ajuste la quantite de donnees lues entre les ecritures sur disque.&lt;br&gt;Controle l&apos;utilisation de la memoire. Defaut 10 Mo </translation>
     </message>
     <message>

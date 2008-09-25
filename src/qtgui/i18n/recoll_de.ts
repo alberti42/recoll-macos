@@ -15,7 +15,7 @@
         <translation>Einen der Ausdrücke</translation>
     </message>
     <message>
-        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
+        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
         <translation>Ausschließlich negative Suche nicht möglich. Bitte geben Sie mindestens einen positiven Suchbegriff an.</translation>
     </message>
     <message>
@@ -497,7 +497,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
         <translation>Diese Suche ist nicht mehr aktiv</translation>
     </message>
     <message>
-        <source>Cant start query: </source>
+        <source>Can't start query: </source>
         <translation>Kann die Suche nicht starten:</translation>
     </message>
     <message>
@@ -757,7 +757,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">&amp;Copier le nom de fichier</translation>
     </message>
     <message>
-        <source>Copy &amp;Url</source>
+        <source>Copy &amp;URL</source>
         <translation type="obsolete">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
@@ -818,7 +818,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
         <translation type="obsolete">&amp;Copier le nom de fichier</translation>
     </message>
     <message>
-        <source>Copy &amp;Url</source>
+        <source>Copy &amp;URL</source>
         <translation>&amp;Url kopieren</translation>
     </message>
     <message>
@@ -1567,7 +1567,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <translation>Alle Auswählen</translation>
     </message>
     <message>
-        <source>Desactivate All</source>
+        <source>Deactivate All</source>
         <translation>Alle Abwählen</translation>
     </message>
     <message>
@@ -1771,8 +1771,8 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <translation>Ausgelassene Pfade</translation>
     </message>
     <message>
-        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
-        <translation>Die Namen der Verzeichnisse, die nicht indiziert werden.&lt;br&gt;Kann Wildcards enthalten. Muss den Pfaden entsprechen, die der Indexer sieht (z.B. wenn &apos;/home/me&apos; in den topdirs steht und &apos;/home&apos; eigentlich ein link zu &apos;/usr/home&apos; ist, dann wäre ein korrekter skippedPath Eintrag &apos;/home/tmp*&apos; und nicht &apos;/usr/home/tmp*&apos;)</translation>
+        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation>Die Namen der Verzeichnisse, die nicht indiziert werden.&lt;br&gt;Kann Wildcards enthalten. Muss den Pfaden entsprechen, die der Indexer sieht (z.B. wenn &apos;/home/me&apos; in den topdirs steht und &apos;/home&apos; eigentlich ein link zu &apos;/usr/home&apos; ist, dann wäre ein korrekter skippedPath Eintrag &apos;/home/me/tmp*&apos; und nicht &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -1803,7 +1803,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
         <translation type="unfinished"></translation>
     </message>
     <message>

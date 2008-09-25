@@ -15,7 +15,7 @@
         <translation>Qualsiasi termine</translation>
     </message>
     <message>
-        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
+        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
         <translation>Impossibile eseguire una ricerca puramente negativa. Inserire termini comuni nel campo &apos;qualsiasi termine&apos;</translation>
     </message>
     <message>
@@ -496,7 +496,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Questa ricerca non e&apos; piu&apos; attiva</translation>
     </message>
     <message>
-        <source>Cant start query: </source>
+        <source>Can't start query: </source>
         <translation>Non posso iniziare la ricerca: </translation>
     </message>
     <message>
@@ -756,7 +756,7 @@ Aprire la finestra delle preferenze ?</translation>
         <translation type="obsolete">&amp;Copier le nom de fichier</translation>
     </message>
     <message>
-        <source>Copy &amp;Url</source>
+        <source>Copy &amp;URL</source>
         <translation type="obsolete">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
@@ -817,7 +817,7 @@ Aprire la finestra delle preferenze ?</translation>
         <translation type="obsolete">&amp;Copier le nom de fichier</translation>
     </message>
     <message>
-        <source>Copy &amp;Url</source>
+        <source>Copy &amp;URL</source>
         <translation>Copia l&apos;&amp;Url</translation>
     </message>
     <message>
@@ -1556,7 +1556,7 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
         <translation>Seleziona tutti</translation>
     </message>
     <message>
-        <source>Desactivate All</source>
+        <source>Deactivate All</source>
         <translation>Deseleziona tutti</translation>
     </message>
     <message>
@@ -1764,8 +1764,8 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
         <translation>Indirizzi saltati</translation>
     </message>
     <message>
-        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
-        <translation>Questi sono i nomi delle cartelle in cui l&apos;indicizzazione non entra&lt;br&gt;Possono contenere caratteri speciali. Devono corrispondere agli indirizzi visti dal motore di indicizzazione (ad esempio, se la cartella superiore include &apos;/home/io&apos; e &apos;/home&apos; è in realtà un link a &apos;/usr/home&apos;, l&apos;indirizzo corretto che si vuole sltare dovrebbe essere &apos;/home/tmp*&apos; e non ì/home/usr/tmp*&apos;)</translation>
+        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation>Questi sono i nomi delle cartelle in cui l&apos;indicizzazione non entra&lt;br&gt;Possono contenere caratteri speciali. Devono corrispondere agli indirizzi visti dal motore di indicizzazione (ad esempio, se la cartella superiore include &apos;/home/io&apos; e &apos;/home&apos; è in realtà un link a &apos;/usr/home&apos;, l&apos;indirizzo corretto che si vuole sltare dovrebbe essere &apos;/home/me/tmp*&apos; e non ì/home/usr/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -1796,7 +1796,7 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
         <translation>Intervallo in megabite per il salvataggio intermedio dell&apos;indice</translation>
     </message>
     <message>
-        <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
         <translation>Questo valore regola il volume di dati da indicizzare tra un salvataggio e l&apos;altro.&lt;br&gt;Aiuta a controllare l&apos;uso della memoria.  Di default è post uguale a 10Mb</translation>
     </message>
     <message>

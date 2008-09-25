@@ -45,7 +45,7 @@
     </message>
     <message>
         <location filename="../advsearch_w.cpp" line="376"/>
-        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
+        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
         <translation>Tamamen negatif sorgu çalıştırılamaz. Lütfen &apos;herhangi bir sözcük&apos; alanına genel ifadeler girin</translation>
     </message>
 </context>
@@ -400,7 +400,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <location filename="../rclmain_w.cpp" line="427"/>
-        <source>Cant start query: </source>
+        <source>Can't start query: </source>
         <translation>Sorgu başlatılamadı: </translation>
     </message>
     <message>
@@ -705,7 +705,7 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <location filename="../reslist.cpp" line="655"/>
-        <source>Copy &amp;Url</source>
+        <source>Copy &amp;URL</source>
         <translation>&amp;Adresi Kopyala</translation>
     </message>
     <message>
@@ -1201,7 +1201,7 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     </message>
     <message>
         <location filename="../../qt4gui/uiprefs.ui" line="520"/>
-        <source>Desactivate All</source>
+        <source>Deactivate All</source>
         <translation>Tümünü Pasifleştir</translation>
     </message>
     <message>
@@ -1347,8 +1347,8 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="152"/>
-        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
-        <translation>Bunlar indekslemenin girmeyeceği dizinlerin adlarıdır.&lt;br&gt; * gibi özel karakterler içerebilir. İndeksleyici tarafından görülen yollar ile eşleşmelidir (örneğin: eğer en üst dizinler &apos;/home/ben&apos; ve &apos;/home&apos; içeriyorsa ve home &apos;/usr/home&apos; dizinine bağlantılı ise atlanacak dizin yolu &apos;/home/tmp*&apos; olmalıdır, &apos;/usr/home/tmp*&apos; değil)</translation>
+        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation>Bunlar indekslemenin girmeyeceği dizinlerin adlarıdır.&lt;br&gt; * gibi özel karakterler içerebilir. İndeksleyici tarafından görülen yollar ile eşleşmelidir (örneğin: eğer en üst dizinler &apos;/home/ben&apos; ve &apos;/home&apos; içeriyorsa ve home &apos;/usr/home&apos; dizinine bağlantılı ise atlanacak dizin yolu &apos;/home/me/tmp*&apos; olmalıdır, &apos;/usr/home/me/tmp*&apos; değil)</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="163"/>
@@ -1387,7 +1387,7 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     </message>
     <message>
         <location filename="../confgui/confguiindex.cpp" line="189"/>
-        <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
         <translation>Bu değer diske gönderilecek indekslenmiş veri miktarını ayarlar.&lt;br&gt;Bu indeksleyicinin bellek kullanımını kontrol etmeye yarar. Öntanımlı 10MB </translation>
     </message>
     <message>

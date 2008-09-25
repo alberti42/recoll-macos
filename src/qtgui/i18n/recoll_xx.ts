@@ -34,7 +34,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
+        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -298,7 +298,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cant start query: </source>
+        <source>Can't start query: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -542,7 +542,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Copy &amp;Url</source>
+        <source>Copy &amp;URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -943,7 +943,7 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Desactivate All</source>
+        <source>Deactivate All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1064,7 +1064,7 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
+        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1096,7 +1096,7 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
         <translation type="unfinished"></translation>
     </message>
     <message>

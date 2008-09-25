@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.50 2008-09-16 10:13:48 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.51 2008-09-25 06:00:24 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -450,7 +450,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     Rcl::Query *query = new Rcl::Query(rcldb);
 
     if (!query || !query->setQuery(sdata, qopts, stemLang)) {
-	QMessageBox::warning(0, "Recoll", tr("Cant start query: ") +
+	QMessageBox::warning(0, "Recoll", tr("Can't start query: ") +
 			     QString::fromAscii(query->getReason().c_str()));
 	QApplication::restoreOverrideCursor();
 	return;

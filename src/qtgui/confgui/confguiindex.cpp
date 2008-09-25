@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.11 2008-07-01 08:27:21 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.12 2008-09-25 06:00:25 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -155,7 +155,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			"the paths seen by the indexer (ie: if topdirs "
 			"includes '/home/me' and '/home' is actually a link "
 			"to '/usr/home', a correct skippedPath entry "
-			"would be '/home/tmp*', not '/usr/home/tmp*')"));
+			"would be '/home/me/tmp*', not '/usr/home/me/tmp*')"));
     vboxLayout->addWidget(eskp);
 
     list<string> cstemlangs = Rcl::Db::getStemmerNames();
@@ -190,7 +190,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     ConfParamIntW *eidxflsh = new 
 	ConfParamIntW(this, lnkidxflsh, tr("Index flush megabytes interval"),
 		      tr("This value adjust the amount of "
-			 "data which is indexed betweeen flushes to disk.<br>"
+			 "data which is indexed between flushes to disk.<br>"
 			 "This helps control the indexer memory usage. "
 			 "Default 10MB "), 0, 1000);
     vboxLayout->addWidget(eidxflsh);
