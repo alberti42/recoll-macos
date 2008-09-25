@@ -528,15 +528,15 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Update &amp;Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Mise à jour &amp;Index</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexation interrompue</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrèter l&apos;&amp;Indexation</translation>
     </message>
 </context>
 <context>
@@ -1599,7 +1599,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleur de mise en relief des termes recherchés</translation>
     </message>
 </context>
 <context>
@@ -1856,7 +1856,7 @@ Utile si aspell est absent ou ne fonctionne pas bien.</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation type="unfinished"></translation>
+        <translation>Désactiver l&apos;utilisation d&apos;aspell pour générer les approximations orthographiques.&lt;br&gt; Utile si aspell n&apos;est pas installé ou ne fonctionne pas. </translation>
     </message>
 </context>
 </TS>

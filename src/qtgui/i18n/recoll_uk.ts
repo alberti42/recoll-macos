@@ -4,7 +4,7 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="obsolete">Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
+        <translation type="unfinished">Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -16,7 +16,7 @@
     </message>
     <message>
         <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
+        <translation type="obsolete">Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
     </message>
     <message>
         <source>texts</source>
@@ -481,7 +481,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Cant start query: </source>
-        <translation>Неможливо почати запит: </translation>
+        <translation type="obsolete">Неможливо почати запит: </translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
@@ -510,6 +510,22 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>error retrieving stemming languages</source>
         <translation>помилка здобування списку мов</translation>
+    </message>
+    <message>
+        <source>Update &amp;Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing interrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop &amp;Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t start query: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -758,7 +774,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Copy &amp;Url</source>
-        <translation>Копіювати &amp;Url</translation>
+        <translation type="obsolete">Копіювати &amp;Url</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -787,6 +803,10 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
         <translation>Документи &lt;b&gt;%1-%2&lt;/b&gt; по </translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1451,7 +1471,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Desactivate All</source>
-        <translation>Виключити все</translation>
+        <translation type="obsolete">Виключити все</translation>
     </message>
     <message>
         <source>Remove selected</source>
@@ -1476,6 +1496,14 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
         <translation>Тексти із розміром, більшим за вказаний, не буде підсвічено у попередньому перегляді (повільно).</translation>
+    </message>
+    <message>
+        <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deactivate All</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1643,7 +1671,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
-        <translation>Це назви тек, у які індексування не потрапить.&lt;br&gt; Може містити шаблони.  Має співпадати із шляхами, що бачить індексатор (наприклад, якщо topdirs містить  &apos;/home/me&apos; та &apos;/home&apos; є посиланням на &apos;/usr/home&apos;, то вірний запис буде &apos;/home/me/tmp*&apos;, а не &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation type="obsolete">Це назви тек, у які індексування не потрапить.&lt;br&gt; Може містити шаблони.  Має співпадати із шляхами, що бачить індексатор (наприклад, якщо topdirs містить  &apos;/home/me&apos; та &apos;/home&apos; є посиланням на &apos;/usr/home&apos;, то вірний запис буде &apos;/home/me/tmp*&apos;, а не &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -1675,7 +1703,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation>Скільки даних буде проіндексовано між скиданнями індексу на диск.&lt;br&gt;Допомагає контролювати використання пам&apos;яті індексатором. Типово: 10Мб </translation>
+        <translation type="obsolete">Скільки даних буде проіндексовано між скиданнями індексу на диск.&lt;br&gt;Допомагає контролювати використання пам&apos;яті індексатором. Типово: 10Мб </translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
@@ -1691,7 +1719,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
-        <translation>Вимикає використання aspell для генерації наближень у написання в навіґаторі термінів.&lt;br&gt;Корисне, коли aspell відсутній або зламаний. </translation>
+        <translation type="obsolete">Вимикає використання aspell для генерації наближень у написання в навіґаторі термінів.&lt;br&gt;Корисне, коли aspell відсутній або зламаний. </translation>
     </message>
     <message>
         <source>Aspell language</source>
@@ -1716,6 +1744,18 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
         <translation>Використовувати команду &apos;file&apos; з системи, коли внутрішнє&lt;br&gt;визначення типу MIME дає збій.</translation>
+    </message>
+    <message>
+        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

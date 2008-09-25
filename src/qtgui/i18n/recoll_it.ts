@@ -4,7 +4,7 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="obsolete">Impossibile eseguire una query puramente negativa. Inserire termini comuni nel campo &apos;qualsiasi termine&apos;</translation>
+        <translation>Impossibile eseguire una ricerca puramente negativa. Inserire termini comuni nel campo &apos;qualsiasi termine&apos;</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -13,10 +13,6 @@
     <message>
         <source>Any clause</source>
         <translation>Qualsiasi termine</translation>
-    </message>
-    <message>
-        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Impossibile eseguire una ricerca puramente negativa. Inserire termini comuni nel campo &apos;qualsiasi termine&apos;</translation>
     </message>
     <message>
         <source>texts</source>
@@ -234,7 +230,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Rispetta &amp;Maiuscole/minuscole</translation>
     </message>
     <message>
         <source>Alt+C</source>
@@ -496,7 +492,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Questa ricerca non e&apos; piu&apos; attiva</translation>
     </message>
     <message>
-        <source>Can't start query: </source>
+        <source>Can&apos;t start query: </source>
         <translation>Non posso iniziare la ricerca: </translation>
     </message>
     <message>
@@ -530,6 +526,18 @@ Aprire la finestra delle preferenze ?</translation>
     <message>
         <source>error retrieving stemming languages</source>
         <translation>errore nel recupero delle lingue per l&apos;espansione</translation>
+    </message>
+    <message>
+        <source>Update &amp;Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing interrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop &amp;Indexing</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1587,6 +1595,10 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
         <translation>Testi di lunghezza superiore a questa non vengono evidenziati nella preview (troppo lento).</translation>
     </message>
+    <message>
+        <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1813,7 +1825,7 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
-        <translation>Disabilita l&apos;uso del dizionario aspell per generare le approssimazioni di pronuncia per lo strumento di ricerca di pronuncia. Utile se non c&apos;è aspell o se non funziona. </translation>
+        <translation type="obsolete">Disabilita l&apos;uso del dizionario aspell per generare le approssimazioni di pronuncia per lo strumento di ricerca di pronuncia. Utile se non c&apos;è aspell o se non funziona. </translation>
     </message>
     <message>
         <source>Aspell language</source>
@@ -1838,6 +1850,10 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
         <translation>Usa il comando di sistema &apos;file&apos; se fallisce&lt;br&gt;l&apos;identificazione interna del tipo mime.</translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

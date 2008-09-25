@@ -4,7 +4,7 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="obsolete">Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
+        <translation type="unfinished">Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -16,7 +16,7 @@
     </message>
     <message>
         <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
+        <translation type="obsolete">Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
     </message>
     <message>
         <source>texts</source>
@@ -488,7 +488,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Cant start query: </source>
-        <translation>Невозможно начать запрос: </translation>
+        <translation type="obsolete">Невозможно начать запрос: </translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
@@ -517,6 +517,22 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>error retrieving stemming languages</source>
         <translation>ошибка получения списка языков</translation>
+    </message>
+    <message>
+        <source>Update &amp;Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing interrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop &amp;Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t start query: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -898,7 +914,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Copy &amp;Url</source>
-        <translation>Копировать &amp;адрес</translation>
+        <translation type="obsolete">Копировать &amp;адрес</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -927,6 +943,10 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
         <translation>Документы &lt;b&gt;%1-%2&lt;/b&gt; по</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1620,7 +1640,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Desactivate All</source>
-        <translation>Выключить все</translation>
+        <translation type="obsolete">Выключить все</translation>
     </message>
     <message>
         <source>Remove selected</source>
@@ -1645,6 +1665,14 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
         <translation>Тексты большего размера не будут подсвечиваться при предварительном просмотре (медленно).</translation>
+    </message>
+    <message>
+        <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deactivate All</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1816,7 +1844,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
-        <translation>Имена каталогов, которые индексирование обойдёт.&lt;br&gt;Может содержать шаблоны.  Обязано подходить к путям, которые видит индексатор (например, если topdirs включает &apos;/home/me&apos; и &apos;/home&apos; является ссылкой на &apos;/usr/home&apos;, то правильная запись должна быть &apos;/home/me/tmp*&apos;, а не &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation type="obsolete">Имена каталогов, которые индексирование обойдёт.&lt;br&gt;Может содержать шаблоны.  Обязано подходить к путям, которые видит индексатор (например, если topdirs включает &apos;/home/me&apos; и &apos;/home&apos; является ссылкой на &apos;/usr/home&apos;, то правильная запись должна быть &apos;/home/me/tmp*&apos;, а не &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -1848,7 +1876,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation>Это значение определяет количество проиндексированных данных между сбросами на диск.&lt;br&gt;Помогает контролировать использование памяти при индексации.  Обычно 10Mb </translation>
+        <translation type="obsolete">Это значение определяет количество проиндексированных данных между сбросами на диск.&lt;br&gt;Помогает контролировать использование памяти при индексации.  Обычно 10Mb </translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
@@ -1864,7 +1892,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
-        <translation>Отключает использование aspell для генерации приближений написания в навигаторе терминов.&lt;br&gt; Полезно, если aspell отсутствует или сломан. </translation>
+        <translation type="obsolete">Отключает использование aspell для генерации приближений написания в навигаторе терминов.&lt;br&gt; Полезно, если aspell отсутствует или сломан. </translation>
     </message>
     <message>
         <source>Aspell language</source>
@@ -1889,6 +1917,18 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
         <translation>Использовать системную команду &apos;file&apos; &lt;br&gt;при сбое внутреннего определителя типов MIME.</translation>
+    </message>
+    <message>
+        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

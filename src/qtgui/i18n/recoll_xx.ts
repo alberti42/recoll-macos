@@ -298,7 +298,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Can't start query: </source>
+        <source>Can&apos;t start query: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -365,6 +365,18 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Document history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update &amp;Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing interrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop &amp;Indexing</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -982,6 +994,10 @@ May be slow for big documents.</source>
         <source>Discard changes</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1112,10 +1128,6 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Aspell language</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1137,6 +1149,10 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
