@@ -8,39 +8,39 @@
     </message>
     <message>
         <source>All clauses</source>
-        <translation type="unfinished"></translation>
+        <translation>Все поля</translation>
     </message>
     <message>
         <source>Any clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Любое поле</translation>
     </message>
     <message>
-        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="unfinished"></translation>
+        <source>Cannot execute pure negativequery. Please enter common terms in the &apos;any words&apos; field</source>
+        <translation>Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
     </message>
     <message>
         <source>texts</source>
-        <translation type="unfinished"></translation>
+        <translation>тексты</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="unfinished"></translation>
+        <translation>таблицы</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation type="unfinished"></translation>
+        <translation>презентации</translation>
     </message>
     <message>
         <source>media</source>
-        <translation type="unfinished"></translation>
+        <translation>мультимедиа</translation>
     </message>
     <message>
         <source>messages</source>
-        <translation type="unfinished"></translation>
+        <translation>сообщения</translation>
     </message>
     <message>
         <source>other</source>
-        <translation type="unfinished"></translation>
+        <translation>иное</translation>
     </message>
 </context>
 <context>
@@ -143,31 +143,31 @@
     </message>
     <message>
         <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
-        <translation type="unfinished"></translation>
+        <translation>Искать &lt;br&gt;документы,&lt;br&gt;удовлетворяющие:</translation>
     </message>
     <message>
         <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation type="unfinished"></translation>
+        <translation>Все непустые поля будут объединены при помощи ИЛИ или И. &lt;br&gt;Поля &quot;с любыми&quot;, &quot;со всеми&quot; и &quot;без этих&quot; работают со словами и фразами в двойных кавычках.&lt;br&gt;Пустые поля не принимаются в расчёт.</translation>
     </message>
     <message>
         <source>Delete clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Убрать поле</translation>
     </message>
     <message>
         <source>Add clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить поле</translation>
     </message>
     <message>
         <source>Check this to enable filtering on file types</source>
-        <translation type="unfinished"></translation>
+        <translation>Фильтровать по типам файлов</translation>
     </message>
     <message>
         <source>By categories</source>
-        <translation type="unfinished"></translation>
+        <translation>По категориям</translation>
     </message>
     <message>
         <source>Check this to use file categories instead of raw mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать категории, а не типы MIME</translation>
     </message>
     <message>
         <source>Close</source>
@@ -215,11 +215,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>&amp;Search for:</source>
-        <translation type="unfinished">&amp;Искать:</translation>
+        <translation>&amp;Искать:</translation>
     </message>
     <message>
         <source>&amp;Next</source>
-        <translation type="unfinished">&amp;Дальше</translation>
+        <translation>&amp;Дальше</translation>
     </message>
     <message>
         <source>Alt+N</source>
@@ -227,7 +227,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>&amp;Previous</source>
-        <translation type="unfinished">&amp;Предыдущее</translation>
+        <translation>&amp;Предыдущее</translation>
     </message>
     <message>
         <source>Alt+P</source>
@@ -235,7 +235,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation type="unfinished">&amp;Соблюдать регистр</translation>
+        <translation>&amp;Соблюдать регистр</translation>
     </message>
     <message>
         <source>Alt+C</source>
@@ -243,7 +243,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Clear</source>
-        <translation type="unfinished">Очистить</translation>
+        <translation>Очистить</translation>
     </message>
     <message>
         <source>Can&apos;t turn doc into internal rep for </source>
@@ -267,19 +267,19 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Close Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть вкладку</translation>
     </message>
     <message>
         <source>File does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл не существует</translation>
     </message>
     <message>
         <source>Missing helper program: </source>
-        <translation type="unfinished"></translation>
+        <translation>Отсутствует вспомогательная программа: </translation>
     </message>
     <message>
         <source>Can&apos;t turn doc into internal representation for </source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно сконвертировать документ во внутреннее представление </translation>
     </message>
 </context>
 <context>
@@ -329,55 +329,55 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Общие параметры</translation>
     </message>
     <message>
         <source>Local parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Частные параметры</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Каталоги с особенностями</translation>
     </message>
     <message>
         <source>The list of subdirectories in the indexed hierarchy &lt;br&gt;where some parameters need to be redefined. Default: empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Список подкаталогов в индексируемой иерархии,&lt;br&gt;где некоторые параметры нуждаются в коррекции.  Обычно пуст.</translation>
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;Следующие параметры устанавливаются на верхнем уровне, если выбрать&lt;br&gt;ничего или пустую строку, или для выбранного подкаталога.&lt;br&gt;Вы можете добавлять и удалять каталоги кнопками +/-.</translation>
     </message>
     <message>
         <source>Skipped names</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропускаемые имена</translation>
     </message>
     <message>
         <source>These are patterns for file or directory  names which should not be indexed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Шаблоны имён файлов или каталогов, которые не следует индексировать.</translation>
     </message>
     <message>
         <source>Default character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Кодировка по умолчанию</translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Эта кодировка будет использована при чтении файлов, в которых таковая не указывается явно (например, чисто текстовых файлов).&lt;br&gt;Обычно значение пусто, тогда оно извлекается из окружения (локали).</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
-        <translation type="unfinished"></translation>
+        <translation>Раскрывать символические ссылки</translation>
     </message>
     <message>
         <source>Follow symbolic links while indexing. The default is no, to avoid duplicate indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Ходить по символическим ссылкам при индексировании.  Обычно не делается для избежания дублей</translation>
     </message>
     <message>
         <source>Index all file names</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексировать все имена файлов</translation>
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексировать и те имена файлов, для которых не получается определить или обработать содержимое (неизвестный или неподдерживаемый тип MIME).  Обычно так</translation>
     </message>
 </context>
 <context>
@@ -487,22 +487,24 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation>Этот поиск уже не активен</translation>
     </message>
     <message>
-        <source>Can't start query: </source>
-        <translation type="unfinished"></translation>
+        <source>Cant start query: </source>
+        <translation>Невозможно начать запрос: </translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверная командная строка программы просмотра %1: [%2]
+Проверьте файл mimeconf</translation>
     </message>
     <message>
         <source>The viewer specified in mimeconf for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Программа просмотра, указанная в mimeconf для %1: %2, не найдена.
+Открыть диалог настроек?</translation>
     </message>
     <message>
         <source>Cannot extract document or create temporary file</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно извлечь документ или создать временный файл</translation>
     </message>
     <message>
         <source>(no stemming)</source>
@@ -510,11 +512,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>(all languages)</source>
-        <translation type="unfinished"></translation>
+        <translation>(все языки)</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
-        <translation type="unfinished"></translation>
+        <translation>ошибка получения списка языков</translation>
     </message>
 </context>
 <context>
@@ -641,31 +643,31 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Term &amp;explorer</source>
-        <translation type="unfinished"></translation>
+        <translation>Навигатор &amp;терминов</translation>
     </message>
     <message>
         <source>Term explorer tool</source>
-        <translation type="unfinished"></translation>
+        <translation>Инструмент исследования терминов</translation>
     </message>
     <message>
         <source>External index dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Диалог внешнего индекса</translation>
     </message>
     <message>
         <source>&amp;Erase document history</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Очистить историю документов</translation>
     </message>
     <message>
         <source>First page</source>
-        <translation type="unfinished"></translation>
+        <translation>Первая страница</translation>
     </message>
     <message>
         <source>Go to first page of results</source>
-        <translation type="unfinished"></translation>
+        <translation>Перейти к первой странице результатов</translation>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки ин&amp;дексирования</translation>
     </message>
 </context>
 <context>
@@ -701,7 +703,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="obsolete">&amp;Копировать имя файла</translation>
     </message>
     <message>
-        <source>Copy &amp;URL</source>
+        <source>Copy &amp;Url</source>
         <translation type="obsolete">Копировать &amp;адрес</translation>
     </message>
     <message>
@@ -895,7 +897,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="obsolete">&amp;Копировать имя файла</translation>
     </message>
     <message>
-        <source>Copy &amp;URL</source>
+        <source>Copy &amp;Url</source>
         <translation>Копировать &amp;адрес</translation>
     </message>
     <message>
@@ -908,23 +910,23 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>(show query)</source>
-        <translation type="unfinished"></translation>
+        <translation>(показать запрос)</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Скопировать &amp;имя файла</translation>
     </message>
     <message>
         <source>P&amp;arent document/folder</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Родительский документ/каталог</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
+        <translation>Документы &lt;b&gt;%1-%2&lt;/b&gt; из минимум &lt;b&gt;%3&lt;/b&gt; по </translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
+        <translation>Документы &lt;b&gt;%1-%2&lt;/b&gt; по</translation>
     </message>
 </context>
 <context>
@@ -968,19 +970,19 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Too many completions</source>
-        <translation type="unfinished"></translation>
+        <translation>Слишком много дополнений</translation>
     </message>
     <message>
         <source>Query language</source>
-        <translation type="unfinished"></translation>
+        <translation>Язык запроса</translation>
     </message>
     <message>
         <source>Bad query string</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверная строка запроса</translation>
     </message>
     <message>
         <source>Out of memory</source>
-        <translation type="unfinished"></translation>
+        <translation>Недостаточно памяти</translation>
     </message>
 </context>
 <context>
@@ -1059,14 +1061,14 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите поисковые слова.  Можно нажать Esc-пробел для дополнения текущего слова.</translation>
     </message>
 </context>
 <context>
     <name>SearchClauseW</name>
     <message>
         <source>SearchClauseW</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Any of these</source>
@@ -1082,23 +1084,23 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>This phrase</source>
-        <translation type="unfinished"></translation>
+        <translation>фраза</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation type="unfinished"></translation>
+        <translation>слова вблизи</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation type="unfinished"></translation>
+        <translation>имя файла</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите тип запроса, который будет произведён по словам</translation>
     </message>
     <message>
         <source>Number of additional words that may be interspersed with the chosen ones</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество дополнительных слов, которые могут оказаться между выбранными</translation>
     </message>
 </context>
 <context>
@@ -1129,11 +1131,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Дата</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип MIME</translation>
     </message>
 </context>
 <context>
@@ -1164,26 +1166,26 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Применить</translation>
     </message>
 </context>
 <context>
     <name>SpellBase</name>
     <message>
         <source>Term Explorer</source>
-        <translation type="unfinished"></translation>
+        <translation>Навигатор терминов</translation>
     </message>
     <message>
         <source>&amp;Expand </source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Раскрыть </translation>
     </message>
     <message>
         <source>Alt+E</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Закрыть</translation>
     </message>
     <message>
         <source>Alt+C</source>
@@ -1191,46 +1193,46 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Term</source>
-        <translation type="unfinished"></translation>
+        <translation>Слово</translation>
     </message>
     <message>
         <source>Count</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество</translation>
     </message>
 </context>
 <context>
     <name>SpellW</name>
     <message>
         <source>Wildcards</source>
-        <translation type="unfinished"></translation>
+        <translation>Шаблоны</translation>
     </message>
     <message>
         <source>Regexp</source>
-        <translation type="unfinished"></translation>
+        <translation>Регвыражение</translation>
     </message>
     <message>
         <source>Spelling/Phonetic</source>
-        <translation type="unfinished"></translation>
+        <translation>Написание/фонетика</translation>
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation type="unfinished"></translation>
+        <translation>Не получилось инициализировать Aspell.  Он установлен?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка раскрывания aspell. </translation>
     </message>
     <message>
         <source>Stem expansion</source>
-        <translation type="unfinished"></translation>
+        <translation>Раскрытие основы</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
-        <translation type="unfinished"></translation>
+        <translation>ошибка получения списка языков</translation>
     </message>
     <message>
         <source>No expansion found</source>
-        <translation type="unfinished"></translation>
+        <translation>Раскрытие не найдено</translation>
     </message>
 </context>
 <context>
@@ -1407,7 +1409,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
-        <translation type="unfinished"></translation>
+        <translation>ошибка получения списка языков</translation>
     </message>
 </context>
 <context>
@@ -1576,98 +1578,99 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="unfinished"></translation>
+        <translation>Строка форматирования&lt;br&gt;блока результатов</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматически добавлять фразу при простом поиске</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск [rolling stones] (два слова) будет изменён на [rolling или stones или (rolling phrase 2 stones)].
+Это может поднять результаты, для которых слова следуют именно в том порядке, как введены.</translation>
     </message>
     <message>
         <source>Choose external viewer applications</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать внешние приложения просмотра</translation>
     </message>
     <message>
         <source>Manage</source>
-        <translation type="unfinished"></translation>
+        <translation>Упорядочить</translation>
     </message>
     <message>
         <source>User preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Предпочтения</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать десктопные настройки для выбора редактора документов.</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешние индексы</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Переключить выделенные</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить все</translation>
     </message>
     <message>
-        <source>Deactivate All</source>
-        <translation type="unfinished"></translation>
+        <source>Desactivate All</source>
+        <translation>Выключить все</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить выделенные</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить из списка. Индекс на диске без изменений.</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Определяет формат каждого блока списка результатов. Используйте html-формат qt и замены в стиле printf:&lt;br&gt;%A аннотация&lt;br&gt; %D дата&lt;br&gt; %I название пиктограммы&lt;br&gt; %K ключевые слова (если есть)&lt;br&gt; %L ссылки предварительного просмотра и редактирования&lt;br&gt; %M тип MIME&lt;br&gt; %N количество результатов&lt;br&gt; %R релевантность&lt;br&gt; %S размер&lt;br&gt; %T заголовок&lt;br&gt; %U URL&lt;br&gt;</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation type="unfinished"></translation>
+        <translation>Запомнить состояние сортировки.</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальный объём текста с выделением при просмотре (Мб)</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation type="unfinished"></translation>
+        <translation>Тексты большего размера не будут подсвечиваться при предварительном просмотре (медленно).</translation>
     </message>
 </context>
 <context>
     <name>ViewAction</name>
     <message>
         <source>Changing actions with different current values</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменение действий с различными текущими значениями</translation>
     </message>
 </context>
 <context>
     <name>ViewActionBase</name>
     <message>
         <source>File type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип файла</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation type="unfinished"></translation>
+        <translation>Действие</translation>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите один или несколько типов файлов, затем нажмите &quot;Сменить действие&quot; для изменения программы, работающей с ними</translation>
     </message>
     <message>
         <source>Change Action</source>
-        <translation type="unfinished"></translation>
+        <translation>Сменить действие</translation>
     </message>
     <message>
         <source>Close</source>
@@ -1675,7 +1678,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Native Viewers</source>
-        <translation type="unfinished"></translation>
+        <translation>Родные вьюеры</translation>
     </message>
 </context>
 <context>
@@ -1769,7 +1772,7 @@ This should give higher precedence to the results where the search terms appear 
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно записать файл конфигурации</translation>
     </message>
 </context>
 <context>
@@ -1805,87 +1808,87 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation type="unfinished"></translation>
+        <translation>Список каталогов, где начинается рекурсивное индексирование.  Обычно домашний каталог.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропускать</translation>
     </message>
     <message>
-        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
+        <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/tmp*&apos;, not &apos;/usr/home/tmp*&apos;)</source>
+        <translation>Имена каталогов, которые индексирование обойдёт.&lt;br&gt;Может содержать шаблоны.  Обязано подходить к путям, которые видит индексатор (например, если topdirs включает &apos;/home/me&apos; и &apos;/home&apos; является ссылкой на &apos;/usr/home&apos;, то правильная запись должна быть &apos;/home/me/tmp*&apos;, а не &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation type="unfinished"></translation>
+        <translation>Языки со словоформами</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation type="unfinished"></translation>
+        <translation>Языки, для которых будут построены&lt;br&gt;словари раскрытия словоформ.</translation>
     </message>
     <message>
         <source>Log file name</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл журнала</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл, куда будут записываться сообщения.&lt;br&gt;&apos;stderr&apos; для вывода на терминал</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation type="unfinished"></translation>
+        <translation>Подробность журнала</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Это значение определяет подробность сообщений,&lt;br&gt;от ошибок до отладочных данных.</translation>
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation type="unfinished"></translation>
+        <translation>Интервал записи индекса (Мб)</translation>
     </message>
     <message>
-        <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation type="unfinished"></translation>
+        <source>This value adjust the amount of data which is indexed betweeen flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
+        <translation>Это значение определяет количество проиндексированных данных между сбросами на диск.&lt;br&gt;Помогает контролировать использование памяти при индексации.  Обычно 10Mb </translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное использование диска (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation type="unfinished"></translation>
+        <translation>Процент занятости диска, при котором индексирование будет прервано (во избежание заполнения доступного места).&lt;br&gt;Обычно: 0 (отключает проверку).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
-        <translation type="unfinished"></translation>
+        <translation>Не использовать aspell</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
-        <translation type="unfinished"></translation>
+        <translation>Отключает использование aspell для генерации приближений написания в навигаторе терминов.&lt;br&gt; Полезно, если aspell отсутствует или сломан. </translation>
     </message>
     <message>
         <source>Aspell language</source>
-        <translation type="unfinished"></translation>
+        <translation>Язык aspell</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
+        <translation>Язык словаря aspell.  Обычно вроде &apos;en&apos; или &apos;ru&apos;...&lt;br&gt;Если значение не указано, будет использовано окружение (локаль), что обычно работает.  Чтобы посмотреть, какие варианты доступны в системе, наберите &apos;aspell config&apos; и проверьте, какие .dat-файлы есть в каталоге &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>Database directory name</source>
-        <translation type="unfinished"></translation>
+        <translation>Каталог базы данных</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя каталога, в котором хранится индекс&lt;br&gt;Относительный путь берётся от каталога конфигурации.  Обычно &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать системную &apos;file&apos;</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать системную команду &apos;file&apos; &lt;br&gt;при сбое внутреннего определителя типов MIME.</translation>
     </message>
 </context>
 </TS>
