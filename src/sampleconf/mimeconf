@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.43 2008-09-15 08:03:37 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.44 2008-09-28 14:20:50 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -159,6 +159,7 @@ text = \
       text/html \
       text/plain \
       text/rtf \
+      text/x-c \
       text/x-html-sidux-man \
       text/x-man \
       text/x-python

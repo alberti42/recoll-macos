@@ -16,7 +16,7 @@
  */
 #ifndef _FILTSEQ_H_INCLUDED_
 #define _FILTSEQ_H_INCLUDED_
-/* @(#$Id: filtseq.h,v 1.1 2008-09-28 07:40:56 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: filtseq.h,v 1.2 2008-09-28 14:20:50 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <vector>
 #include <string>
@@ -34,6 +34,8 @@ class DocSeqFiltSpec {
     }
     std::vector<Crit> crits;
     std::vector<string> values;
+    void reset() {crits.clear(); values.clear();}
+    bool isNotNull() {return crits.size() != 0;}
 };
 
 /** 

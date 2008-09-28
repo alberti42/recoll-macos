@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.44 2008-09-28 07:40:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.45 2008-09-28 14:20:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -81,14 +81,14 @@ ResList::ResList(QWidget* parent, const char* name)
     m_winfirst = -1;
     m_curPvDoc = -1;
     m_lstClckMod = 0;
-    m_searchId = 0;
+    m_listId = 0;
 }
 
 ResList::~ResList()
 {
 }
 
-int ResList::newSearchId()
+int ResList::newListId()
 {
     static int id;
     return ++id;
@@ -98,39 +98,45 @@ extern "C" int XFlush(void *);
 
 void ResList::setDocSource(RefCntr<DocSequence> ndocsource)
 {
-    resetList();
-    m_searchId = newSearchId();
     m_baseDocSource = ndocsource;
-    if (m_sortspecs.sortwidth > 0) {
-	m_docSource = RefCntr<DocSequence>(new DocSeqSorted(ndocsource, 
-							    m_sortspecs,
-				 string(tr("Query results (sorted)").utf8())));
-    } else {
-	m_docSource = m_baseDocSource;
-    }
-    resultPageNext();
+    setDocSource();
 }
 
 // Reapply parameters. Sort params probably changed
 void ResList::setDocSource()
 {
+    if (m_baseDocSource.isNull())
+	return;
     resetList();
-    m_searchId = newSearchId();
-    RefCntr<DocSequence> docsource;
-    if (m_sortspecs.sortwidth > 0) {
-	m_docSource = RefCntr<DocSequence>(new DocSeqSorted(m_baseDocSource, 
+    m_listId = newListId();
+    m_docSource = m_baseDocSource;
+
+    // Filtering must be done before sorting, (which usually
+    // truncates the original list)
+    if (m_filtspecs.isNotNull()) {
+ 	m_docSource = 
+ 	    RefCntr<DocSequence>(new DocSeqFiltered(m_docSource, 
+						    m_filtspecs, ""));
+    }
+
+    if (m_sortspecs.isNotNull()) {
+	m_docSource = RefCntr<DocSequence>(new DocSeqSorted(m_docSource, 
 							    m_sortspecs,
 				 string(tr("Query results (sorted)").utf8())));
-    } else {
-	m_docSource = m_baseDocSource;
     }
     resultPageNext();
 }
 
-void ResList::sortDataChanged(DocSeqSortSpec spec)
+void ResList::setSortParams(const DocSeqSortSpec& spec)
 {
-    LOGDEB(("RclMain::sortDataChanged\n"));
+    LOGDEB(("ResList::setSortParams\n"));
     m_sortspecs = spec;
+}
+
+void ResList::setFilterParams(const DocSeqFiltSpec& spec)
+{
+    LOGDEB(("ResList::setFilterParams\n"));
+    m_filtspecs = spec;
 }
 
 void ResList::resetList() 

@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.14 2008-09-28 07:40:56 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.15 2008-09-28 14:20:50 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -22,6 +22,7 @@ class Q3PopupMenu;
 
 #include "docseq.h"
 #include "sortseq.h"
+#include "filtseq.h"
 #include "refcntr.h"
 #include "rcldoc.h"
 
@@ -46,11 +47,10 @@ class ResList : public QTEXTBROWSER
     bool getTerms(vector<string>& terms, 
 		  vector<vector<string> >& groups, vector<int>& gslks);
     list<string> expand(Rcl::Doc& doc);
-    int searchId() const {return m_searchId;}
+    int listId() const {return m_listId;}
 
  public slots:
-    // Erase list and forget current search
-    virtual void resetList();
+    virtual void resetList();     // Erase current list
     virtual void doubleClicked(int, int);
     virtual void resPageUpOrBack(); // Page up pressed
     virtual void resPageDownOrNext(); // Page down pressed
@@ -68,7 +68,8 @@ class ResList : public QTEXTBROWSER
     // Only used for qt ver >=4 but seems we cant undef it
     virtual void selecChanged();
     virtual void setDocSource();
-    virtual void sortDataChanged(DocSeqSortSpec spec);
+    virtual void setSortParams(const DocSeqSortSpec &spec);
+    virtual void setFilterParams(const DocSeqFiltSpec &spec);
 
  signals:
     void nextPageAvailable(bool);
@@ -96,8 +97,9 @@ class ResList : public QTEXTBROWSER
     RefCntr<DocSequence>  m_baseDocSource;
     // Possibly filtered/sorted docsource (the one displayed)
     RefCntr<DocSequence>  m_docSource;
-    // Current sort parameters
+    // Current sort and filtering parameters
     DocSeqSortSpec        m_sortspecs;
+    DocSeqFiltSpec        m_filtspecs;
     // Docs for current page
     std::vector<Rcl::Doc> m_curDocs;
     // First docnum (in m_docSource sequence) for current page
@@ -109,7 +111,7 @@ class ResList : public QTEXTBROWSER
     int                m_curPvDoc;// Docnum for current preview
     int                m_lstClckMod; // Last click modifier. 
     list<int>          m_selDocs;
-    int                m_searchId;
+    int                m_listId;
 
     virtual int docnumfromparnum(int);
     virtual int parnumfromdocnum(int);
@@ -119,7 +121,7 @@ class ResList : public QTEXTBROWSER
 	emit linkClicked(s, m_lstClckMod);
     };
     virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
-    static int newSearchId();
+    static int newListId();
 };
 
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.6 2007-06-19 16:19:24 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.7 2008-09-28 14:20:50 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ void SortForm::init()
 #endif
 
     // Initialize values from prefs:
-    mcntSB->setValue(prefs.sortWidth);
+    mcntSB->setValue(prefs.sortDepth);
     unsigned int spec = (unsigned int)prefs.sortSpec;
 
     // Restore active/inactive state from prefs, only if requested
@@ -105,7 +105,7 @@ void SortForm::setData()
     prefs.sortActive = sortCB->isChecked();
 
     if (!sortCB->isChecked()) {
-	spec.sortwidth = 0;
+	spec.sortdepth = 0;
     } else {
 	bool desc = descCB1->isChecked();
 	switch (fldCMB1->currentItem()) {
@@ -126,10 +126,10 @@ void SortForm::setData()
 	    spec.addCrit(DocSeqSortSpec::RCLFLD_MIMETYPE, desc?true:false);
 	    break;
 	}
-	spec.sortwidth = mcntSB->value();
+	spec.sortdepth = mcntSB->value();
 
 	// Save data to prefs;
-	prefs.sortWidth = spec.sortwidth;
+	prefs.sortDepth = spec.sortdepth;
 	unsigned int spec = 0, v, d;
 	v = fldCMB1->currentItem() & 0x7;
 	d = descCB1->isChecked() ? 8 : 0;

@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.27 2008-07-01 08:26:08 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.28 2008-09-28 14:20:50 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -101,7 +101,7 @@ class PrefsPack {
     int syntAbsCtx;
 
     // Sort specs (sort_w.cpp knows how to deal with the values
-    int sortWidth;
+    int sortDepth;
     int sortSpec;
 
     // Remembered term match mode

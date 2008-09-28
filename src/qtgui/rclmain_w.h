@@ -105,6 +105,7 @@ public slots:
     virtual void setStemLang(int id);
     // Prefs menu about to show, set the checked lang entry
     virtual void adjustPrefsMenu();
+    virtual void catgFilter(int);
 
 signals:
     void stemLangChanged(const QString& lang);
@@ -122,6 +123,7 @@ private:
 
     vector<TempFile>  m_tempfiles;
     map<QString, int> m_stemLangToId;
+    vector<string>    m_catgbutvec;
     int               m_idNoStem;
     int               m_idAllStem;
     bool              m_idxStatusAck; // Did we act on last status?

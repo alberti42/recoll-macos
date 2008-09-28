@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.52 2008-09-28 07:40:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.53 2008-09-28 14:20:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -95,6 +95,12 @@ static QIconSet createIconSet(const QString &name)
 
 void RclMain::init()
 {
+    // This is just to get the common catg strings into the message file
+    static const char* catg_strings[] = {
+            QT_TR_NOOP("All"), QT_TR_NOOP("media"),  QT_TR_NOOP("message"),
+            QT_TR_NOOP("other"),  QT_TR_NOOP("presentation"),
+            QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text")
+    };
 
     curPreview = 0;
     asearchform = 0;
@@ -145,6 +151,22 @@ void RclMain::init()
 	}
     }
     preferencesMenu->setItemChecked(curid, true);
+
+    // Document categories buttons
+    catgBGRP->setColumnLayout(1, Qt::Vertical);
+    list<string> cats;
+    rclconfig->getMimeCategories(cats);
+    // Text for button 0 is not used. Next statement just avoids unused
+    // variable compiler warning for catg_strings
+    m_catgbutvec.push_back(catg_strings[0]);
+    for (list<string>::const_iterator it = cats.begin();
+	 it != cats.end(); it++) {
+	QRadioButton *but = new QRadioButton(catgBGRP);
+	QString catgnm = QString::fromUtf8(it->c_str(), it->length());
+	m_catgbutvec.push_back(*it);
+	but->setText(tr(catgnm));
+    }
+    catgBGRP->setButton(0);
 
     // Connections
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
@@ -203,7 +225,7 @@ void RclMain::init()
     connect(indexConfigAction, SIGNAL(activated()), this, SLOT(showIndexConfig()));
     connect(queryPrefsAction, SIGNAL(activated()), this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), this, SLOT(showExtIdxDialog()));
-
+    connect(catgBGRP, SIGNAL(clicked(int)), this, SLOT(catgFilter(int)));
 
 #if (QT_VERSION < 0x040000)
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
@@ -229,7 +251,7 @@ void RclMain::init()
     if (prefs.keepSort && prefs.sortActive) {
 	SortForm sf(0);
 	connect(&sf, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
-		resList, SLOT(sortDataChanged(DocSeqSortSpec)));
+		resList, SLOT(setSortParams(DocSeqSortSpec)));
 	// Have to call setdata again after sig connected...
 	sf.setData();
     }
@@ -486,7 +508,7 @@ void RclMain::showSortDialog()
     if (sortform == 0) {
 	sortform = new SortForm(0);
 	connect(sortform, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
-		resList, SLOT(sortDataChanged(DocSeqSortSpec)));
+		resList, SLOT(setSortParams(DocSeqSortSpec)));
 	connect(sortform, SIGNAL(applySortData()), 
 		resList, SLOT(setDocSource()));
 	sortform->show();
@@ -605,7 +627,7 @@ void RclMain::startPreview(int docnum, int mod)
     if (curPreview == 0) {
 	HiliteData hdata;
 	resList->getTerms(hdata.terms, hdata.groups, hdata.gslks);
-	curPreview = new Preview(resList->searchId(), hdata);
+	curPreview = new Preview(resList->listId(), hdata);
 	if (curPreview == 0) {
 	    QMessageBox::warning(0, tr("Warning"), 
 				 tr("Can't create preview window"),
@@ -675,13 +697,13 @@ void RclMain::previewPrevInTab(Preview * w, int sid, int docnum)
 // Combined next/prev from result list in current preview tab
 void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 {
-    LOGDEB(("RclMain::previewNextInTab  sid %d docnum %d, searchId %d\n", 
-	    sid, docnum, resList->searchId()));
+    LOGDEB(("RclMain::previewNextInTab  sid %d docnum %d, listId %d\n", 
+	    sid, docnum, resList->listId()));
 
     if (w == 0) // ??
 	return;
 
-    if (sid != resList->searchId()) {
+    if (sid != resList->listId()) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("This search is not active any more"));
 	return;
@@ -720,8 +742,8 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 void RclMain::previewExposed(Preview *, int sid, int docnum)
 {
     LOGDEB2(("RclMain::previewExposed: sid %d docnum %d, m_sid %d\n", 
-	     sid, docnum, resList->searchId()));
-    if (sid != resList->searchId()) {
+	     sid, docnum, resList->listId()));
+    if (sid != resList->listId()) {
 	return;
     }
     resList->previewExposed(docnum);
@@ -973,4 +995,26 @@ void RclMain::enablePrevPage(bool yesno)
 {
     prevPageAction->setEnabled(yesno);
     firstPageAction->setEnabled(yesno);
+}
+
+// User pressed a category button: set filter params in reslist
+void RclMain::catgFilter(int id)
+{
+    LOGDEB(("RclMain::catgFilter: id %d\n"));
+    if (id < 0 || id >= int(m_catgbutvec.size()))
+	return; 
+
+    DocSeqFiltSpec spec;
+
+    if (id != 0)  {
+	string catg = m_catgbutvec[id];
+	list<string> tps;
+	rclconfig->getMimeCatTypes(catg, tps);
+	for (list<string>::const_iterator it = tps.begin();
+	     it != tps.end(); it++) 
+	    spec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);
+    }
+
+    resList->setFilterParams(spec);
+    resList->setDocSource();
 }

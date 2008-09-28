@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.37 2008-07-01 08:26:08 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.38 2008-09-28 14:20:50 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -207,7 +207,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.syntAbsCtx, "/Recoll/prefs/query/syntAbsCtx", 
 	       Num, 4);
 
-    SETTING_RW(prefs.sortWidth, "/Recoll/prefs/query/sortWidth", 
+    SETTING_RW(prefs.sortDepth, "/Recoll/prefs/query/sortDepth",
 	       Num, 100);
     SETTING_RW(prefs.sortSpec, "/Recoll/prefs/query/sortSpec", 
 	       Num, 0);
