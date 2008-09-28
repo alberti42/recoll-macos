@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQDB_H_INCLUDED_
 #define _DOCSEQDB_H_INCLUDED_
-/* @(#$Id: docseqdb.h,v 1.3 2008-06-13 18:22:46 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseqdb.h,v 1.4 2008-09-28 07:40:56 dockes Exp $  (C) 2004 J.F.Dockes */
 #include "docseq.h"
 #include "refcntr.h"
 
@@ -34,7 +34,7 @@ class DocSequenceDb : public DocSequence {
     virtual int getResCnt();
     virtual bool getTerms(vector<string>& terms, 
 			  vector<vector<string> >& groups, 
-			  vector<int>& gslks) const;
+			  vector<int>& gslks);
     virtual string getAbstract(Rcl::Doc &doc);
     virtual string getDescription();
     virtual list<string> expand(Rcl::Doc &doc);

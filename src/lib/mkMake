@@ -27,6 +27,7 @@ ${depth}/query/docseqhist.cpp \
 ${depth}/query/history.cpp \
 ${depth}/query/recollq.cpp \
 ${depth}/query/sortseq.cpp \
+${depth}/query/filtseq.cpp \
 ${depth}/query/wasastringtoquery.cpp \
 ${depth}/query/wasatorcl.cpp \
 ${depth}/rcldb/pathhash.cpp \

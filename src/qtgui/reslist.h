@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.13 2007-08-02 06:33:35 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.14 2008-09-28 07:40:56 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -21,7 +21,9 @@ class Q3PopupMenu;
 #endif
 
 #include "docseq.h"
+#include "sortseq.h"
 #include "refcntr.h"
+#include "rcldoc.h"
 
 class ResList : public QTEXTBROWSER
 {
@@ -35,14 +37,20 @@ class ResList : public QTEXTBROWSER
     // the docseq here. This has also the side-effect of making the
     // entry current (visible and highlighted), and only work if the
     // num is inside the current page or its immediate neighbours.
-    virtual bool getDoc(int docnum, Rcl::Doc &);
+    bool getDoc(int docnum, Rcl::Doc &);
 
-    virtual void setDocSource(RefCntr<DocSequence> source);
-    virtual QString getDescription(); // Printable actual query performed on db
-    virtual int getResCnt(); // Return total result list size
+    QString getDescription(); // Printable actual query performed on db
+    int getResCnt(); // Return total result list size
+    void setDocSource(RefCntr<DocSequence> ndocsource);
+    bool displayingHistory();
+    bool getTerms(vector<string>& terms, 
+		  vector<vector<string> >& groups, vector<int>& gslks);
+    list<string> expand(Rcl::Doc& doc);
+    int searchId() const {return m_searchId;}
 
  public slots:
-    virtual void resetSearch();
+    // Erase list and forget current search
+    virtual void resetList();
     virtual void doubleClicked(int, int);
     virtual void resPageUpOrBack(); // Page up pressed
     virtual void resPageDownOrNext(); // Page down pressed
@@ -59,6 +67,8 @@ class ResList : public QTEXTBROWSER
     virtual void append(const QString &text);
     // Only used for qt ver >=4 but seems we cant undef it
     virtual void selecChanged();
+    virtual void setDocSource();
+    virtual void sortDataChanged(DocSeqSortSpec spec);
 
  signals:
     void nextPageAvailable(bool);
@@ -82,14 +92,24 @@ class ResList : public QTEXTBROWSER
     virtual void showQueryDetails();
 
  private:
-    std::map<int,int>        m_pageParaToReldocnums;
-    RefCntr<DocSequence>     m_docSource;
-    std::vector<Rcl::Doc>    m_curDocs;
+    // Raw doc source
+    RefCntr<DocSequence>  m_baseDocSource;
+    // Possibly filtered/sorted docsource (the one displayed)
+    RefCntr<DocSequence>  m_docSource;
+    // Current sort parameters
+    DocSeqSortSpec        m_sortspecs;
+    // Docs for current page
+    std::vector<Rcl::Doc> m_curDocs;
+    // First docnum (in m_docSource sequence) for current page
     int                m_winfirst;
+    // Translate from textedit paragraph number to relative
+    // docnum. Built while we insert text into the qtextedit
+    std::map<int,int>  m_pageParaToReldocnums;
     int                m_popDoc; // Docnum for the popup menu.
     int                m_curPvDoc;// Docnum for current preview
     int                m_lstClckMod; // Last click modifier. 
     list<int>          m_selDocs;
+    int                m_searchId;
 
     virtual int docnumfromparnum(int);
     virtual int parnumfromdocnum(int);
@@ -99,6 +119,7 @@ class ResList : public QTEXTBROWSER
 	emit linkClicked(s, m_lstClckMod);
     };
     virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
+    static int newSearchId();
 };
 
 

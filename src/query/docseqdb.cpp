@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.5 2008-09-08 16:49:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.6 2008-09-28 07:40:56 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -35,9 +35,9 @@ DocSequenceDb::~DocSequenceDb()
 
 bool DocSequenceDb::getTerms(vector<string>& terms, 
 			     vector<vector<string> >& groups, 
-			     vector<int>& gslks) const 
+			     vector<int>& gslks)
 {
-    return m_sdata.getptr()->getTerms(terms, groups, gslks);
+    return m_sdata->getTerms(terms, groups, gslks);
 }
 
 string DocSequenceDb::getDescription() 

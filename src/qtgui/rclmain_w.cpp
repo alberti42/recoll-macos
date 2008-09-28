@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.51 2008-09-25 06:00:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.52 2008-09-28 07:40:56 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -102,7 +102,6 @@ void RclMain::init()
     uiprefs = 0;
     indexConfig = 0;
     spellform = 0;
-    m_searchId = 0;
     m_idxStatusAck = false;
 
     // Set the focus to the search terms entry:
@@ -155,8 +154,7 @@ void RclMain::init()
     connect(preferencesMenu, SIGNAL(aboutToShow()),
 	    this, SLOT(adjustPrefsMenu()));
     // signals and slots connections
-    connect(sSearch, SIGNAL(clearSearch()),
-	    this, SLOT(resetSearch()));
+    connect(sSearch, SIGNAL(clearSearch()), this, SLOT(resetSearch()));
     connect(firstPageAction, SIGNAL(activated()), 
 	    resList, SLOT(resultPageFirst()));
     connect(prevPageAction, SIGNAL(activated()), 
@@ -231,7 +229,7 @@ void RclMain::init()
     if (prefs.keepSort && prefs.sortActive) {
 	SortForm sf(0);
 	connect(&sf, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
-		this, SLOT(sortDataChanged(DocSeqSortSpec)));
+		resList, SLOT(sortDataChanged(DocSeqSortSpec)));
 	// Have to call setdata again after sig connected...
 	sf.setData();
     }
@@ -436,7 +434,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 	return;
     }
 
-    resList->resetSearch();
+    resList->resetList();
 
     int qopts = 0;
     if (!prefs.queryStemLang.length() == 0)
@@ -459,34 +457,13 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     DocSequenceDb *src = 
 	new DocSequenceDb(RefCntr<Rcl::Query>(query), 
 			  string(tr("Query results").utf8()), sdata);
-    m_docSource = RefCntr<DocSequence>(src);
-    m_searchData = sdata;
-    setDocSequence();
+    resList->setDocSource(RefCntr<DocSequence>(src));
     QApplication::restoreOverrideCursor();
 }
 
 void RclMain::resetSearch()
 {
-    resList->resetSearch();
-    m_searchData = RefCntr<Rcl::SearchData>();
-}
-
-void RclMain::setDocSequence()
-{
-    if (m_searchData.getcnt() == 0) {
-	// Null refcntr ?? No current search data 
-	return;
-    }
-    RefCntr<DocSequence> docsource;
-    if (m_sortspecs.sortwidth > 0) {
-	docsource = RefCntr<DocSequence>(new DocSeqSorted(m_docSource, 
-							  m_sortspecs,
-			  string(tr("Query results (sorted)").utf8())));
-    } else {
-	docsource = m_docSource;
-    }
-    m_searchId++;
-    resList->setDocSource(docsource);
+    resList->resetList();
 }
 
 // Open advanced search dialog.
@@ -509,16 +486,15 @@ void RclMain::showSortDialog()
     if (sortform == 0) {
 	sortform = new SortForm(0);
 	connect(sortform, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
-		this, SLOT(sortDataChanged(DocSeqSortSpec)));
+		resList, SLOT(sortDataChanged(DocSeqSortSpec)));
 	connect(sortform, SIGNAL(applySortData()), 
-		this, SLOT(setDocSequence()));
+		resList, SLOT(setDocSource()));
 	sortform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
 	sortform->close();
         sortform->show();
     }
-
 }
 
 void RclMain::showSpellDialog()
@@ -576,6 +552,13 @@ void RclMain::showExtIdxDialog()
     uiprefs->show();
 }
 
+void RclMain::showAboutDialog()
+{
+    string vstring = string("Recoll ") + rclversion + 
+	"<br>" + "http://www.recoll.org";
+    QMessageBox::information(this, tr("About Recoll"), vstring.c_str());
+}
+
 // If a preview (toplevel) window gets closed by the user, we need to
 // clean up because there is no way to reopen it. And check the case
 // where the current one is closed
@@ -602,9 +585,8 @@ void RclMain::startPreview(int docnum, int mod)
 {
     Rcl::Doc doc;
     if (!resList->getDoc(docnum, doc)) {
-	QMessageBox::warning(0, "Recoll",
-			     tr("Cannot retrieve document info" 
-				     " from database"));
+	QMessageBox::warning(0, "Recoll", tr("Cannot retrieve document info" 
+					     " from database"));
 	return;
     }
 	
@@ -622,8 +604,8 @@ void RclMain::startPreview(int docnum, int mod)
     }
     if (curPreview == 0) {
 	HiliteData hdata;
-	m_searchData->getTerms(hdata.terms, hdata.groups, hdata.gslks);
-	curPreview = new Preview(m_searchId, hdata);
+	resList->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+	curPreview = new Preview(resList->searchId(), hdata);
 	if (curPreview == 0) {
 	    QMessageBox::warning(0, tr("Warning"), 
 				 tr("Can't create preview window"),
@@ -693,13 +675,13 @@ void RclMain::previewPrevInTab(Preview * w, int sid, int docnum)
 // Combined next/prev from result list in current preview tab
 void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 {
-    LOGDEB(("RclMain::previewNextInTab  sid %d docnum %d, m_sid %d\n", 
-	    sid, docnum, m_searchId));
+    LOGDEB(("RclMain::previewNextInTab  sid %d docnum %d, searchId %d\n", 
+	    sid, docnum, resList->searchId()));
 
     if (w == 0) // ??
 	return;
 
-    if (sid != m_searchId) {
+    if (sid != resList->searchId()) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("This search is not active any more"));
 	return;
@@ -733,13 +715,13 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
     w->makeDocCurrent(fn, st.st_size, doc, docnum, true);
 }
 
-// Preview tab exposed: possibly tell reslist (to color the paragraph)
+// Preview tab exposed: if the preview comes from the currently
+// displayed result list, tell reslist (to color the paragraph)
 void RclMain::previewExposed(Preview *, int sid, int docnum)
 {
     LOGDEB2(("RclMain::previewExposed: sid %d docnum %d, m_sid %d\n", 
-	     sid, docnum, m_searchId));
-
-    if (sid != m_searchId) {
+	     sid, docnum, resList->searchId()));
+    if (sid != resList->searchId()) {
 	return;
     }
     resList->previewExposed(docnum);
@@ -897,14 +879,6 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     system(ncmd.c_str());
 }
 
-
-void RclMain::showAboutDialog()
-{
-    string vstring = string("Recoll ") + rclversion + 
-	"<br>" + "http://www.recoll.org";
-    QMessageBox::information(this, tr("About Recoll"), vstring.c_str());
-}
-
 void RclMain::startManual()
 {
     QString msg = tr("Starting help browser ");
@@ -914,7 +888,8 @@ void RclMain::startManual()
     startHelpBrowser();
 }
 
-// Search for document 'like' the selected one.
+// Search for document 'like' the selected one. We ask rcldb/xapian to find
+// significant terms, and add them to the simple search entry.
 void RclMain::docExpand(int docnum)
 {
     if (!rcldb)
@@ -923,8 +898,7 @@ void RclMain::docExpand(int docnum)
     if (!resList->getDoc(docnum, doc))
 	return;
     list<string> terms;
-    if (!m_docSource.isNull())
-	terms = m_docSource->expand(doc);
+    terms = resList->expand(doc);
     if (terms.empty())
 	return;
     // Do we keep the original query. I think we'd better not.
@@ -944,7 +918,7 @@ void RclMain::docExpand(int docnum)
 void RclMain::showDocHistory()
 {
     LOGDEB(("RclMain::showDocHistory\n"));
-    resList->resetSearch();
+    resList->resetList();
     curPreview = 0;
 
     string reason;
@@ -953,36 +927,27 @@ void RclMain::showDocHistory()
 	return;
     }
     // Construct a bogus SearchData structure
-    m_searchData = 
+    RefCntr<Rcl::SearchData>searchdata = 
 	RefCntr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND));
-    m_searchData->setDescription((const char *)tr("History data").utf8());
+    searchdata->setDescription((const char *)tr("History data").utf8());
 
-    m_searchId++;
 
     // If you change the title, also change it in eraseDocHistory()
     DocSequenceHistory *src = 
 	new DocSequenceHistory(rcldb, g_dynconf, 
 			       string(tr("Document history").utf8()));
     src->setDescription((const char *)tr("History data").utf8());
-    m_docSource = RefCntr<DocSequence>(src);
-    setDocSequence();
+    resList->setDocSource(RefCntr<DocSequence>(src));
 }
 
+// Erase all memory of documents viewed
 void RclMain::eraseDocHistory()
 {
+    // Clear file storage
     g_dynconf->eraseAll(RclHistory::docSubkey);
-    // We want to reset the displayed history if it is currently shown. Using
-    // the title value is an ugly hack
-    if (m_docSource->title() == 
-	string((const char *)tr("Document history").utf8())) {
+    // Clear possibly displayed history
+    if (resList->displayingHistory())
 	showDocHistory();
-    }
-}
-
-void RclMain::sortDataChanged(DocSeqSortSpec spec)
-{
-    LOGDEB(("RclMain::sortDataChanged\n"));
-    m_sortspecs = spec;
 }
 
 // Called when the uiprefs dialog is ok'd
@@ -1009,4 +974,3 @@ void RclMain::enablePrevPage(bool yesno)
     prevPageAction->setEnabled(yesno);
     firstPageAction->setEnabled(yesno);
 }
-

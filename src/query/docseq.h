@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.14 2008-09-08 16:49:10 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.15 2008-09-28 07:40:56 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -86,7 +86,8 @@ class DocSequence {
      * may have no associated search terms. Implement this for them. */
     virtual bool getTerms(vector<string>& terms, 
 			  vector<vector<string> >& groups, 
-			  vector<int>& gslks) const {
+			  vector<int>& gslks) 
+    {
 	terms.clear(); groups.clear(); gslks.clear(); return true;
     }
     virtual list<string> expand(Rcl::Doc &) {list<string> e; return e;}

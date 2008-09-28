@@ -77,7 +77,6 @@ public slots:
     virtual void periodic100();
     virtual void toggleIndexing();
     virtual void startSearch(RefCntr<Rcl::SearchData> sdata);
-    virtual void setDocSequence();
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSortDialog();
@@ -86,7 +85,6 @@ public slots:
     virtual void startManual();
     virtual void showDocHistory();
     virtual void showExtIdxDialog();
-    virtual void sortDataChanged(DocSeqSortSpec spec);
     virtual void showUIPrefs();
     virtual void showIndexConfig();
     virtual void setUIPrefs();
@@ -115,25 +113,18 @@ protected:
     virtual void closeEvent( QCloseEvent * );
 
 private:
-    Preview *curPreview;
-    AdvSearch *asearchform;
-    SortForm *sortform;
-    UIPrefsDialog *uiprefs;
-    ConfIndexW  *indexConfig;
-    SpellW *spellform;
+    Preview        *curPreview;
+    AdvSearch      *asearchform;
+    SortForm       *sortform;
+    UIPrefsDialog  *uiprefs;
+    ConfIndexW     *indexConfig;
+    SpellW         *spellform;
 
-    RefCntr<Rcl::SearchData> m_searchData;
-    DocSeqSortSpec           m_sortspecs;
-    RefCntr<DocSequence>     m_docSource;
-    
-    vector<TempFile>         m_tempfiles;
-    // Serial number of current search for this process.
-    // Used to match to preview windows
-    int                      m_searchId; 
-    map<QString, int>        m_stemLangToId;
-    int                      m_idNoStem;
-    int                      m_idAllStem;
-    bool                     m_idxStatusAck; // Did we act on last status?
+    vector<TempFile>  m_tempfiles;
+    map<QString, int> m_stemLangToId;
+    int               m_idNoStem;
+    int               m_idAllStem;
+    bool              m_idxStatusAck; // Did we act on last status?
 
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 

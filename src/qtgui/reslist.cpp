@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.43 2008-09-25 06:00:24 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.44 2008-09-28 07:40:56 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -81,15 +81,59 @@ ResList::ResList(QWidget* parent, const char* name)
     m_winfirst = -1;
     m_curPvDoc = -1;
     m_lstClckMod = 0;
+    m_searchId = 0;
 }
 
 ResList::~ResList()
 {
 }
 
+int ResList::newSearchId()
+{
+    static int id;
+    return ++id;
+}
+
 extern "C" int XFlush(void *);
 
-void ResList::resetSearch() 
+void ResList::setDocSource(RefCntr<DocSequence> ndocsource)
+{
+    resetList();
+    m_searchId = newSearchId();
+    m_baseDocSource = ndocsource;
+    if (m_sortspecs.sortwidth > 0) {
+	m_docSource = RefCntr<DocSequence>(new DocSeqSorted(ndocsource, 
+							    m_sortspecs,
+				 string(tr("Query results (sorted)").utf8())));
+    } else {
+	m_docSource = m_baseDocSource;
+    }
+    resultPageNext();
+}
+
+// Reapply parameters. Sort params probably changed
+void ResList::setDocSource()
+{
+    resetList();
+    m_searchId = newSearchId();
+    RefCntr<DocSequence> docsource;
+    if (m_sortspecs.sortwidth > 0) {
+	m_docSource = RefCntr<DocSequence>(new DocSeqSorted(m_baseDocSource, 
+							    m_sortspecs,
+				 string(tr("Query results (sorted)").utf8())));
+    } else {
+	m_docSource = m_baseDocSource;
+    }
+    resultPageNext();
+}
+
+void ResList::sortDataChanged(DocSeqSortSpec spec)
+{
+    LOGDEB(("RclMain::sortDataChanged\n"));
+    m_sortspecs = spec;
+}
+
+void ResList::resetList() 
 {
     m_winfirst = -1;
     m_curPvDoc = -1;
@@ -110,17 +154,31 @@ void ResList::resetSearch()
 #endif
 }
 
+bool ResList::displayingHistory()
+{
+    // We want to reset the displayed history if it is currently shown. Using
+    // the title value is an ugly hack
+    return m_docSource->title() == 
+	string((const char *)tr("Document history").utf8());
+}
+
 void ResList::languageChange()
 {
     setCaption(tr("Result list"));
 }
 
-// Acquire new docsource
-void ResList::setDocSource(RefCntr<DocSequence> docsource)
+bool ResList::getTerms(vector<string>& terms, 
+		       vector<vector<string> >& groups, vector<int>& gslks)
 {
-    resetSearch();
-    m_docSource = docsource;
-    resultPageNext();
+    // We could just
+    return m_baseDocSource->getTerms(terms, groups, gslks);
+}
+
+list<string> ResList::expand(Rcl::Doc& doc)
+{
+    if (m_baseDocSource.isNull())
+	return list<string>();
+    return m_baseDocSource->expand(doc);
 }
 
 // Get document number from paragraph number
@@ -214,7 +272,7 @@ void ResList::contentsMouseReleaseEvent(QMouseEvent *e)
 // Return total result list count
 int ResList::getResCnt()
 {
-    if (m_docSource.getcnt() == 0)
+    if (m_docSource.isNull())
 	return -1;
     return m_docSource->getResCnt();
 }
@@ -296,8 +354,7 @@ void ResList::append(const QString &text)
 // Fill up result list window with next screen of hits
 void ResList::resultPageNext()
 {
-    // This checks that the RefCntr pseudo-pointer is not holding a null.
-    if (m_docSource.getcnt() == 0)
+    if (m_docSource.isNull())
 	return;
 
     int resCnt = m_docSource->getResCnt();
