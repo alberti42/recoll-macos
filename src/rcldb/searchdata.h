@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.18 2008-09-16 08:18:30 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.19 2008-09-29 06:58:25 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -110,17 +110,11 @@ public:
     /** Add file type for filtering results */
     void addFiletype(const string& ft) {m_filetypes.push_back(ft);}
 
-    /** Choose sort order. Should this be in RclQuery instead ? */
-    void setSortBy(const string& fld, bool ascending = true);
-    const string& getSortBy() const {return m_sortField;}
-    bool getSortAscending() const {return m_sortAscending;}
 private:
     SClType                   m_tp; // Only SCLT_AND or SCLT_OR here
     vector<SearchDataClause*> m_query;
     vector<string>            m_filetypes; // Restrict to filetypes if set.
     string                    m_topdir; // Restrict to subtree.
-    string                    m_sortField;
-    bool                      m_sortAscending;
     // Printable expanded version of the complete query, retrieved/set
     // from rcldb after the Xapian::setQuery() call
     string m_description; 

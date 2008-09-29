@@ -1,6 +1,6 @@
 #ifndef _rclquery_h_included_
 #define _rclquery_h_included_
-/* @(#$Id: rclquery.h,v 1.3 2008-09-16 08:18:30 dockes Exp $  (C) 2008 J.F.Dockes */
+/* @(#$Id: rclquery.h,v 1.4 2008-09-29 06:58:25 dockes Exp $  (C) 2008 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -54,9 +54,14 @@ class Query {
     /** Get explanation about last error */
     string getReason() const;
 
+    /** Choose sort order. Must be called before setQuery */
+    void setSortBy(const string& fld, bool ascending = true);
+    const string& getSortBy() const {return m_sortField;}
+    bool getSortAscending() const {return m_sortAscending;}
+
     /** Accept data describing the search and query the index. This can
      * be called repeatedly on the same object which gets reinitialized each
-     * time
+     * time.
      */
     bool setQuery(RefCntr<SearchData> q, int opts = QO_NONE,
 		  const string& stemlang = "english");
@@ -89,6 +94,8 @@ private:
     Db    *m_db;
     void  *m_sorter;
     unsigned int m_qOpts;
+    string       m_sortField;
+    bool         m_sortAscending;
     /* Copyconst and assignement private and forbidden */
     Query(const Query &) {}
     Query & operator=(const Query &) {return *this;};

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.13 2008-09-16 10:19:24 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.14 2008-09-29 06:58:25 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -86,8 +86,8 @@ SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
 
 /* Note: addclause necessite And/Or vient du fait que le string peut avoir
    plusieurs mots. A transferer dans l'i/f Python ou pas ? */
-PyDoc_STRVAR(doc_addClause,
-"addClause(type='and'|'or'|'excl'|'phrase'|'near'|'sub', qstring=string,\n"
+PyDoc_STRVAR(doc_addclause,
+"addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub', qstring=string,\n"
 "          slack=int, field=string, subSearch=SearchData)\n"
 "Adds a simple clause to the SearchData And/Or chain, or a subquery\n"
 "defined by another SearchData object\n"
@@ -95,14 +95,14 @@ PyDoc_STRVAR(doc_addClause,
 
 /* Forward declaration only, definition needs recoll_searchDataType */
 static PyObject *
-SearchData_addClause(recoll_SearchDataObject* self, PyObject *args, 
+SearchData_addclause(recoll_SearchDataObject* self, PyObject *args, 
 		     PyObject *kwargs);
 
 
 
 static PyMethodDef SearchData_methods[] = {
-    {"addClause", (PyCFunction)SearchData_addClause, METH_VARARGS|METH_KEYWORDS,
-     doc_addClause},
+    {"addclause", (PyCFunction)SearchData_addclause, METH_VARARGS|METH_KEYWORDS,
+     doc_addclause},
     {NULL}  /* Sentinel */
 };
 
@@ -155,12 +155,12 @@ static PyTypeObject recoll_SearchDataType = {
 };
 
 static PyObject *
-SearchData_addClause(recoll_SearchDataObject* self, PyObject *args, 
+SearchData_addclause(recoll_SearchDataObject* self, PyObject *args, 
 		     PyObject *kwargs)
 {
-    LOGDEB(("SearchData_addClause\n"));
+    LOGDEB(("SearchData_addclause\n"));
     if (self->sd.isNull()) {
-	LOGERR(("SearchData_addClause: not init??\n"));
+	LOGERR(("SearchData_addclause: not init??\n"));
         PyErr_SetString(PyExc_AttributeError, "sd");
         return 0;
     }
@@ -617,8 +617,8 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	PyErr_SetString(PyExc_ValueError, reason.c_str());
 	return 0;
     }
-    sd->setSortBy(self->sortfield, self->ascending);
     RefCntr<Rcl::SearchData> rq(sd);
+    rq->setSortBy(self->sortfield, self->ascending);
     self->query->setQuery(rq, dostem?Rcl::Query::QO_STEM:Rcl::Query::QO_NONE);
     int cnt = self->query->getResCnt();
     self->next = 0;
@@ -1045,7 +1045,8 @@ PyDoc_STRVAR(doc_DbObject,
 "Db([confdir=None], [extra_dbs=None], [writable = False])\n"
 "\n"
 "A Db object connects to a Recoll database.\n"
-"confdir specifies a Recoll configuration directory (default: environment).\n"
+"confdir specifies a Recoll configuration directory (default: \n"
+" $RECOLL_CONFDIR or ~/.recoll).\n"
 "extra_dbs is a list of external databases (xapian directories)\n"
 "writable decides if we can index new data through this connection\n"
 );

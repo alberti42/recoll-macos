@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.6 2008-09-16 08:18:30 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.7 2008-09-29 06:58:25 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 
 #include <stdlib.h>
@@ -18,6 +18,7 @@ static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.6 2008-09-16 08:18:30 dockes Exp
 #include "conftree.h"
 #include "smallut.h"
 #include "searchdata.h"
+#include "rclconfig.h"
 
 #ifndef NO_NAMESPACES
 namespace Rcl {
@@ -88,7 +89,7 @@ private:
 };
 
 Query::Query(Db *db)
-    : m_nq(new Native(this)), m_db(db), m_sorter(0)
+    : m_nq(new Native(this)), m_db(db), m_sorter(0), m_sortAscending(true)
 {
 }
 
@@ -111,6 +112,13 @@ Db *Query::whatDb()
     return m_db;
 }
 
+void Query::setSortBy(const string& fld, bool ascending) {
+    RclConfig *cfg = RclConfig::getMainConfig();
+    m_sortField = cfg->fieldCanon(stringtolower(fld));
+    m_sortAscending = ascending;
+    LOGDEB0(("RclQuery::setSortBy: [%s] %s\n", m_sortField.c_str(),
+	     m_sortAscending ? "ascending" : "descending"));
+}
 
 //#define ISNULL(X) (X).isNull()
 #define ISNULL(X) !(X)
@@ -141,7 +149,8 @@ bool Query::setQuery(RefCntr<SearchData> sdata, int opts,
     }
 
     Xapian::Query xq;
-    if (!sdata->toNativeQuery(*m_db, &xq, (opts & QO_STEM) ? stemlang : string())) {
+    if (!sdata->toNativeQuery(*m_db, &xq, (opts & QO_STEM) ? 
+			      stemlang : string())) {
 	m_reason += sdata->getReason();
 	return false;
     }
@@ -151,16 +160,16 @@ bool Query::setQuery(RefCntr<SearchData> sdata, int opts,
     try {
 	m_nq->enquire = new Xapian::Enquire(m_db->m_ndb->db);
 	m_nq->enquire->set_query(m_nq->query);
-	if (!sdata->getSortBy().empty()) {
+	if (!m_sortField.empty()) {
 	    if (m_sorter) {
 		delete (QSorter*)m_sorter;
 		m_sorter = 0;
 	    }
-	    m_sorter = new QSorter(sdata->getSortBy());
+	    m_sorter = new QSorter(m_sortField);
 	    // It really seems there is a xapian bug about sort order, we 
 	    // invert here.
 	    m_nq->enquire->set_sort_by_key((QSorter*)m_sorter, 
-					   !sdata->getSortAscending());
+					   !m_sortAscending);
 	}
 	m_nq->mset = Xapian::MSet();
 	// Get the query description and trim the "Xapian::Query"

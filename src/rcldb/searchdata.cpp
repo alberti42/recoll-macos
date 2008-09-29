@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.23 2008-09-16 08:18:30 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.24 2008-09-29 06:58:25 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -151,14 +151,6 @@ void SearchData::erase() {
     m_topdir.erase();
     m_description.erase();
     m_reason.erase();
-}
-
-void SearchData::setSortBy(const string& fld, bool ascending) {
-    RclConfig *cfg = RclConfig::getMainConfig();
-    m_sortField = cfg->fieldCanon(stringtolower(fld));
-    m_sortAscending = ascending;
-    LOGDEB0(("SearchData::setSortBy: [%s] %s\n", m_sortField.c_str(),
-	     m_sortAscending ? "ascending" : "descending"));
 }
 
 // Am I a file name only search ? This is to turn off term highlighting

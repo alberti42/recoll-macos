@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.16 2008-09-24 06:44:15 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.17 2008-09-29 06:58:25 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -222,12 +222,11 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	return 1;
     }
 
-    if (op_flags & OPT_S) {
-	sd->setSortBy(sortfield, (op_flags & OPT_D) ? false : true);
-    }
-
     RefCntr<Rcl::SearchData> rq(sd);
     Rcl::Query query(&rcldb);
+    if (op_flags & OPT_S) {
+	query.setSortBy(sortfield, (op_flags & OPT_D) ? false : true);
+    }
     query.setQuery(rq, Rcl::Query::QO_STEM);
     int cnt = query.getResCnt();
     if (!(op_flags & OPT_b)) {
