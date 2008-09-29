@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.15 2008-09-28 14:20:50 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.16 2008-09-29 07:13:47 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -26,6 +26,15 @@ class Q3PopupMenu;
 #include "refcntr.h"
 #include "rcldoc.h"
 
+/**
+ * Display a list of document records. The data can be out of the history 
+ * manager or from an index query, both abstracted as a DocSequence. 
+ * Sorting and filtering are applied by stacking Sort/Filter DocSequences.
+ * This is nice because history and index result are handled the same, but 
+ * not nice because we can't use the sort/filter capabilities in the index 
+ * engine, and do it instead on the index output, which duplicates code and 
+ * may be sometimes slower.
+ */
 class ResList : public QTEXTBROWSER
 {
     Q_OBJECT;
