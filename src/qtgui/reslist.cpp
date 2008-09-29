@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.46 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.47 2008-09-29 11:33:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -113,16 +113,24 @@ void ResList::setDocSource()
 
     // Filtering must be done before sorting, (which usually
     // truncates the original list)
-    if (m_filtspecs.isNotNull()) {
- 	m_docSource = 
- 	    RefCntr<DocSequence>(new DocSeqFiltered(m_docSource, 
-						    m_filtspecs, ""));
+    if (m_baseDocSource->canFilter()) {
+	m_baseDocSource->setFiltSpec(m_filtspecs);
+    } else {
+	if (m_filtspecs.isNotNull()) {
+	    string title = m_baseDocSource->title() + " (" + 
+		string((const char*)tr("filtered").utf8()) + ")";
+	    m_docSource = 
+		RefCntr<DocSequence>(new DocSeqFiltered(m_docSource,m_filtspecs,
+							title));
+	} 
     }
 
     if (m_sortspecs.isNotNull()) {
+	string title = m_baseDocSource->title() + " (" + 
+	    string((const char *)tr("sorted").utf8()) + ")";
 	m_docSource = RefCntr<DocSequence>(new DocSeqSorted(m_docSource, 
 							    m_sortspecs,
-				 string(tr("Query results (sorted)").utf8())));
+							    title));
     }
     resultPageNext();
 }
@@ -162,10 +170,10 @@ void ResList::resetList()
 
 bool ResList::displayingHistory()
 {
-    // We want to reset the displayed history if it is currently shown. Using
-    // the title value is an ugly hack
-    return m_docSource->title() == 
-	string((const char *)tr("Document history").utf8());
+    // We want to reset the displayed history if it is currently
+    // shown. Using the title value is an ugly hack
+    string htstring = string((const char *)tr("Document history").utf8());
+    return m_docSource->title().find(htstring) == 0;
 }
 
 void ResList::languageChange()

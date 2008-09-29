@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.24 2008-09-29 06:58:25 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.25 2008-09-29 11:33:55 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ namespace Rcl {
 typedef  vector<SearchDataClause *>::iterator qlist_it_t;
 typedef  vector<SearchDataClause *>::const_iterator qlist_cit_t;
 
-bool SearchData::toNativeQuery(Rcl::Db &db, void *d, const string& stemlang)
+bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 {
     Xapian::Query xq;
     m_reason.erase();
@@ -74,7 +74,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d, const string& stemlang)
     // Xapian query tree
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
 	Xapian::Query nq;
-	if (!(*it)->toNativeQuery(db, &nq, stemlang)) {
+	if (!(*it)->toNativeQuery(db, &nq, m_stemlang)) {
 	    LOGERR(("SearchData::toNativeQuery: failed\n"));
 	    m_reason = (*it)->getReason();
 	    return false;
@@ -631,10 +631,9 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
 }
 
 // Translate subquery
-bool SearchDataClauseSub::toNativeQuery(Rcl::Db &db, void *p, 
-					 const string& stemlang)
+bool SearchDataClauseSub::toNativeQuery(Rcl::Db &db, void *p, const string&)
 {
-    return m_sub->toNativeQuery(db, p, stemlang);
+    return m_sub->toNativeQuery(db, p);
 }
 
 } // Namespace Rcl

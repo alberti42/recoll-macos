@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.13 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.14 2008-09-29 11:33:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -53,20 +53,6 @@ public:
 			return 0;
 		}
 		break;
-	    case DocSeqSortSpec::RCLFLD_URL:
-		LOGDEB1((" URL\n"));
-		if (ss.dirs[i] ? x->url > y->url :  x->url < y->url)
-		    return 1;
-		else if (x->url != y->url)
-		    return 0;
-		break;
-	    case DocSeqSortSpec::RCLFLD_IPATH: 
-		LOGDEB1((" IPATH\n"));
-		if (ss.dirs[i] ? x->ipath > y->ipath : x->ipath < y->ipath)
-		    return 1;
-		else if (x->ipath != y->ipath)
-		    return 0;
-		break;
 	    case DocSeqSortSpec::RCLFLD_MIMETYPE:
 		LOGDEB1((" MIMETYPE\n"));
 		if (ss.dirs[i] ? x->mimetype > y->mimetype : 
@@ -86,12 +72,17 @@ DocSeqSorted::DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec,
 			   const std::string &t)
     :  DocSequence(t), m_seq(iseq)
 {
+    setSortSpec(sortspec);
+}
+
+bool DocSeqSorted::setSortSpec(DocSeqSortSpec &sortspec)
+{
     m_spec = sortspec;
     LOGDEB(("DocSeqSorted:: count %d\n", m_spec.sortdepth));
     m_docs.resize(m_spec.sortdepth);
     int i;
     for (i = 0; i < m_spec.sortdepth; i++) {
-	if (!iseq->getDoc(i, m_docs[i])) {
+	if (!m_seq->getDoc(i, m_docs[i])) {
 	    LOGERR(("DocSeqSorted: getDoc failed for doc %d\n", i));
 	    break;
 	}
@@ -105,6 +96,7 @@ DocSeqSorted::DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec,
 
     CompareDocs cmp(sortspec);
     sort(m_docsp.begin(), m_docsp.end(), cmp);
+    return true;
 }
 
 bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, string *)

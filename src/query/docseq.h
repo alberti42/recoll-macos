@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.16 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.17 2008-09-29 11:33:55 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -34,10 +34,48 @@ struct ResListEntry {
     string subHeader;
 };
 
+/** Sort specification. Will be made closer to the db interface one day */
+class DocSeqSortSpec {
+ public:
+    DocSeqSortSpec() : sortdepth(0) {}
+    enum Field {RCLFLD_MIMETYPE, RCLFLD_MTIME};
+    void addCrit(Field fld, bool desc = false) {
+	crits.push_back(fld);
+	dirs.push_back(desc);
+    }
+    bool isNotNull() {return sortdepth > 0;}
+
+    int sortdepth; // We only re-sort the first sortdepth most relevant docs
+    std::vector<Field> crits;
+    std::vector<bool> dirs;
+};
+
+/** Filtering spec. This is only used to filter by doc category for now, hence
+    the rather specialized interface */
+class DocSeqFiltSpec {
+ public:
+    DocSeqFiltSpec() {}
+    enum Crit {DSFS_MIMETYPE};
+    void orCrit(Crit crit, const string& value) {
+	crits.push_back(crit);
+	values.push_back(value);
+    }
+    std::vector<Crit> crits;
+    std::vector<string> values;
+    void reset() {crits.clear(); values.clear();}
+    bool isNotNull() {return crits.size() != 0;}
+};
+
 /** Interface for a list of documents coming from some source.
 
     The result list display data may come from different sources (ie:
     history or Db query), and be post-processed (DocSeqSorted).
+    Additional functionality like filtering/sorting can either be
+    obtained by stacking DocSequence objects (ie: sorting history), or
+    by native capability (ex: docseqdb can sort and filter). The
+    implementation might be nicer by using more sophisticated c++ with
+    multiple inheritance of sort and filter virtual interfaces, but
+    the current one will have to do for now...
 */
 class DocSequence {
  public:
@@ -83,6 +121,13 @@ class DocSequence {
 	terms.clear(); groups.clear(); gslks.clear(); return true;
     }
     virtual list<string> expand(Rcl::Doc &) {list<string> e; return e;}
+
+    /** Optional functionality. Yeah, not nice */
+    virtual bool canFilter() {return false;}
+    virtual bool setFiltSpec(DocSeqFiltSpec &) {return false;}
+    virtual bool canSort() {return false;}
+    virtual bool setSortSpec(DocSeqSortSpec &) {return false;}
+
  private:
     string m_title;
 };

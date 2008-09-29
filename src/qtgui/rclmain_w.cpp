@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.53 2008-09-28 14:20:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.54 2008-09-29 11:33:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -99,7 +99,8 @@ void RclMain::init()
     static const char* catg_strings[] = {
             QT_TR_NOOP("All"), QT_TR_NOOP("media"),  QT_TR_NOOP("message"),
             QT_TR_NOOP("other"),  QT_TR_NOOP("presentation"),
-            QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text")
+            QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text"), 
+	    QT_TR_NOOP("sorted"), QT_TR_NOOP("filtered")
     };
 
     curPreview = 0;
@@ -457,19 +458,17 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     }
 
     resList->resetList();
-
-    int qopts = 0;
-    if (!prefs.queryStemLang.length() == 0)
-	qopts |= Rcl::Query::QO_STEM;
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
     string stemLang = (const char *)prefs.queryStemLang.ascii();
     if (stemLang == "ALL") {
 	rclconfig->getConfParam("indexstemminglanguages", stemLang);
     }
+    sdata->setStemlang(stemLang);
+
     Rcl::Query *query = new Rcl::Query(rcldb);
 
-    if (!query || !query->setQuery(sdata, qopts, stemLang)) {
+    if (!query || !query->setQuery(sdata)) {
 	QMessageBox::warning(0, "Recoll", tr("Can't start query: ") +
 			     QString::fromAscii(query->getReason().c_str()));
 	QApplication::restoreOverrideCursor();

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.18 2008-09-29 08:59:20 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.19 2008-09-29 11:33:55 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -221,13 +221,14 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	cerr << "Query string interpretation failed: " << reason << endl;
 	return 1;
     }
+    sd->setStemlang("english");
 
     RefCntr<Rcl::SearchData> rq(sd);
     Rcl::Query query(&rcldb);
     if (op_flags & OPT_S) {
 	query.setSortBy(sortfield, (op_flags & OPT_D) ? false : true);
     }
-    query.setQuery(rq, Rcl::Query::QO_STEM);
+    query.setQuery(rq);
     int cnt = query.getResCnt();
     if (!(op_flags & OPT_b)) {
 	cout << "Recoll query: " << rq->getDescription() << endl;

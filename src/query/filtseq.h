@@ -16,7 +16,7 @@
  */
 #ifndef _FILTSEQ_H_INCLUDED_
 #define _FILTSEQ_H_INCLUDED_
-/* @(#$Id: filtseq.h,v 1.3 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: filtseq.h,v 1.4 2008-09-29 11:33:55 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <vector>
 #include <string>
@@ -24,19 +24,6 @@
 #include "refcntr.h"
 #include "docseq.h"
 
-class DocSeqFiltSpec {
- public:
-    DocSeqFiltSpec() {}
-    enum Crit {DSFS_MIMETYPE};
-    void orCrit(Crit crit, const string& value) {
-	crits.push_back(crit);
-	values.push_back(value);
-    }
-    std::vector<Crit> crits;
-    std::vector<string> values;
-    void reset() {crits.clear(); values.clear();}
-    bool isNotNull() {return crits.size() != 0;}
-};
 
 /** 
  * A filtered sequence is created from another one by selecting entries
@@ -47,6 +34,8 @@ class DocSeqFiltered : public DocSequence {
     DocSeqFiltered(RefCntr<DocSequence> iseq, DocSeqFiltSpec &filtspec, 
 		 const std::string &t);
     virtual ~DocSeqFiltered() {}
+    virtual bool canFilter() {return true;}
+    virtual bool setFiltSpec(DocSeqFiltSpec &filtspec);
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
     virtual int getResCnt() {return m_seq->getResCnt();}
     virtual string getAbstract(Rcl::Doc& doc) {

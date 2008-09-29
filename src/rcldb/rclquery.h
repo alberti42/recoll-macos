@@ -1,6 +1,6 @@
 #ifndef _rclquery_h_included_
 #define _rclquery_h_included_
-/* @(#$Id: rclquery.h,v 1.5 2008-09-29 08:59:20 dockes Exp $  (C) 2008 J.F.Dockes */
+/* @(#$Id: rclquery.h,v 1.6 2008-09-29 11:33:55 dockes Exp $  (C) 2008 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -45,8 +45,6 @@ class Doc;
  */
 class Query {
  public:
-    enum QueryOpts {QO_NONE=0, QO_STEM = 1};
-
     /** The constructor only allocates memory */
     Query(Db *db);
     ~Query();
@@ -63,8 +61,7 @@ class Query {
      * be called repeatedly on the same object which gets reinitialized each
      * time.
      */
-    bool setQuery(RefCntr<SearchData> q, int opts = QO_NONE,
-		  const string& stemlang = "english");
+    bool setQuery(RefCntr<SearchData> q);
 
     /** Get results count for current query */
     int getResCnt();
@@ -93,7 +90,6 @@ private:
     string m_reason; // Error explanation
     Db    *m_db;
     void  *m_sorter;
-    unsigned int m_qOpts;
     string       m_sortField;
     bool         m_sortAscending;
     /* Copyconst and assignement private and forbidden */

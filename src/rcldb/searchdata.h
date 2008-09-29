@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.19 2008-09-29 06:58:25 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.20 2008-09-29 11:33:55 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -83,7 +83,7 @@ public:
     bool haveWildCards() {return m_haveWildCards;}
 
     /** Translate to Xapian query. rcldb knows about the void*  */
-    bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
+    bool toNativeQuery(Rcl::Db &db, void *);
 
     /** We become the owner of cl and will delete it */
     bool addClause(SearchDataClause *cl);
@@ -109,7 +109,7 @@ public:
     void setTopdir(const string& t) {m_topdir = t;}
     /** Add file type for filtering results */
     void addFiletype(const string& ft) {m_filetypes.push_back(ft);}
-
+    void setStemlang(const string& lang = "english") {m_stemlang = lang;}
 private:
     SClType                   m_tp; // Only SCLT_AND or SCLT_OR here
     vector<SearchDataClause*> m_query;
@@ -120,6 +120,7 @@ private:
     string m_description; 
     string m_reason;
     bool   m_haveWildCards;
+    string m_stemlang;
     /* Copyconst and assignment private and forbidden */
     SearchData(const SearchData &) {}
     SearchData& operator=(const SearchData&) {return *this;};

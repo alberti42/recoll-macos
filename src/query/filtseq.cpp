@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: filtseq.cpp,v 1.2 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: filtseq.cpp,v 1.3 2008-09-29 11:33:55 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,12 @@ DocSeqFiltered::DocSeqFiltered(RefCntr<DocSequence> iseq,
 			       const std::string &t)
     :  DocSequence(t), m_seq(iseq), m_spec(filtspec)
 {
+}
+
+bool DocSeqFiltered::setFiltSpec(DocSeqFiltSpec &filtspec)
+{
+    m_spec = filtspec;
+    m_dbindices.clear();
 }
 
 bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, string *)

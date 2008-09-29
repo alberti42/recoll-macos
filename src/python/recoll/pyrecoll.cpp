@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.15 2008-09-29 08:59:20 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.16 2008-09-29 11:33:55 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -617,9 +617,14 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	PyErr_SetString(PyExc_ValueError, reason.c_str());
 	return 0;
     }
+
+    // SearchData defaults to stemming in english
+    // Use default for now but need to add way to specify language
+    if (!dostem)
+	sd->setStemlang("");
     RefCntr<Rcl::SearchData> rq(sd);
     self->query->setSortBy(self->sortfield, self->ascending);
-    self->query->setQuery(rq, dostem?Rcl::Query::QO_STEM:Rcl::Query::QO_NONE);
+    self->query->setQuery(rq);
     int cnt = self->query->getResCnt();
     self->next = 0;
     return Py_BuildValue("i", cnt);

@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQDB_H_INCLUDED_
 #define _DOCSEQDB_H_INCLUDED_
-/* @(#$Id: docseqdb.h,v 1.5 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseqdb.h,v 1.6 2008-09-29 11:33:55 dockes Exp $  (C) 2004 J.F.Dockes */
 #include "docseq.h"
 #include "refcntr.h"
 
@@ -38,10 +38,17 @@ class DocSequenceDb : public DocSequence {
     virtual string getAbstract(Rcl::Doc &doc);
     virtual string getDescription();
     virtual list<string> expand(Rcl::Doc &doc);
+    virtual bool canFilter() {return true;}
+    virtual bool setFiltSpec(DocSeqFiltSpec &filtspec);
+    virtual bool canSort() {return false;} 
+    virtual bool setSortSpec(DocSeqSortSpec &sortspec);
+    virtual string title();
  private:
     RefCntr<Rcl::Query>      m_q;
     RefCntr<Rcl::SearchData> m_sdata;
+    RefCntr<Rcl::SearchData> m_fsdata; // Filtered 
     int                      m_rescnt;
+    bool                     m_filt;
 };
 
 #endif /* _DOCSEQDB_H_INCLUDED_ */

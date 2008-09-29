@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.8 2008-09-29 08:59:20 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.9 2008-09-29 11:33:55 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 
 #include <stdlib.h>
@@ -124,8 +124,7 @@ void Query::setSortBy(const string& fld, bool ascending) {
 #define ISNULL(X) !(X)
 
 // Prepare query out of user search data
-bool Query::setQuery(RefCntr<SearchData> sdata, int opts, 
-		     const string& stemlang)
+bool Query::setQuery(RefCntr<SearchData> sdata)
 {
     LOGDEB(("Query::setQuery:\n"));
 
@@ -136,7 +135,6 @@ bool Query::setQuery(RefCntr<SearchData> sdata, int opts,
     m_reason.erase();
 
     m_filterTopDir = sdata->getTopdir();
-    m_qOpts = opts;
     m_nq->clear();
 
     if (!m_filterTopDir.empty()) {
@@ -149,8 +147,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata, int opts,
     }
 
     Xapian::Query xq;
-    if (!sdata->toNativeQuery(*m_db, &xq, (opts & QO_STEM) ? 
-			      stemlang : string())) {
+    if (!sdata->toNativeQuery(*m_db, &xq)) {
 	m_reason += sdata->getReason();
 	return false;
     }
