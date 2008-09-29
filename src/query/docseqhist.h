@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQHIST_H_INCLUDED_
 #define _DOCSEQHIST_H_INCLUDED_
-/* @(#$Id: docseqhist.h,v 1.2 2007-01-19 15:22:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseqhist.h,v 1.3 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "docseq.h"
 #include "history.h"
@@ -34,7 +34,7 @@ class DocSequenceHistory : public DocSequence {
 	: DocSequence(t), m_db(d), m_hist(h), m_prevnum(-1), m_prevtime(-1) {}
     virtual ~DocSequenceHistory() {}
 
-    virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0);
+    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
     virtual int getResCnt();
     virtual string getDescription() {return m_description;}
     void setDescription(const string& desc) {m_description = desc;}

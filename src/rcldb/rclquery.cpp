@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.7 2008-09-29 06:58:25 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.8 2008-09-29 08:59:20 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 
 #include <stdlib.h>
@@ -278,7 +278,7 @@ int Query::getResCnt()
 // maintain a correspondance from the sequential external index
 // sequence to the internal Xapian hole-y one (the holes being the documents 
 // that dont match the filter).
-bool Query::getDoc(int exti, Doc &doc, int *percent)
+bool Query::getDoc(int exti, Doc &doc)
 {
     LOGDEB1(("Query::getDoc: exti %d\n", exti));
     if (ISNULL(m_nq) || !m_nq->enquire) {
@@ -364,8 +364,6 @@ bool Query::getDoc(int exti, Doc &doc, int *percent)
     Xapian::Document xdoc = m_nq->mset[xapi-first].get_document();
     Xapian::docid docid = *(m_nq->mset[xapi-first]);
     int pc = m_nq->mset.convert_to_percent(m_nq->mset[xapi-first]);
-    if (percent)
-	*percent = pc;
 
     // Parse xapian document's data and populate doc fields
     string data = xdoc.get_data();

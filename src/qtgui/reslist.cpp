@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.45 2008-09-28 14:20:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.46 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -474,15 +474,19 @@ void ResList::resultPageNext()
     //      setUpdatesEnabled(false);
     for (int i = 0; i < pagelen; i++) {
 
-	int &percent(respage[i].percent);
 	Rcl::Doc &doc(respage[i].doc);
 	string& sh(respage[i].subHeader);
-
-	if (percent == -1) {
+	int percent;
+	if (doc.pc == -1) {
 	    percent = 0;
 	    // Document not available, maybe other further, will go on.
 	    doc.meta[Rcl::Doc::keyabs] = string(tr("Unavailable document").utf8());
+	} else {
+	    percent = doc.pc;
 	}
+	// Percentage of 'relevance'
+	char perbuf[10];
+	sprintf(perbuf, "%3d%% ", percent);
 
 	// Determine icon to display if any
 	string img_name;
@@ -495,10 +499,6 @@ void ResList::resultPageNext()
 	    QMimeSourceFactory::defaultFactory()->
 		setImage(img_name.c_str(), image);
 	}
-
-	// Percentage of 'relevance'
-	char perbuf[10];
-	sprintf(perbuf, "%3d%% ", percent);
 
 	// Printable url: either utf-8 if transcoding succeeds, or url-encoded
 	string url;

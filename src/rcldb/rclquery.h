@@ -1,6 +1,6 @@
 #ifndef _rclquery_h_included_
 #define _rclquery_h_included_
-/* @(#$Id: rclquery.h,v 1.4 2008-09-29 06:58:25 dockes Exp $  (C) 2008 J.F.Dockes */
+/* @(#$Id: rclquery.h,v 1.5 2008-09-29 08:59:20 dockes Exp $  (C) 2008 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ class Query {
     int getResCnt();
 
     /** Get document at rank i in current query results. */
-    bool getDoc(int i, Doc &doc, int *percent = 0);
+    bool getDoc(int i, Doc &doc);
 
     /** Get possibly expanded list of query terms */
     bool getQueryTerms(list<string>& terms);

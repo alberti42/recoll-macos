@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQDB_H_INCLUDED_
 #define _DOCSEQDB_H_INCLUDED_
-/* @(#$Id: docseqdb.h,v 1.4 2008-09-28 07:40:56 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseqdb.h,v 1.5 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
 #include "docseq.h"
 #include "refcntr.h"
 
@@ -30,7 +30,7 @@ class DocSequenceDb : public DocSequence {
     DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
 		  RefCntr<Rcl::SearchData> sdata);
     virtual ~DocSequenceDb();
-    virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string * = 0);
+    virtual bool getDoc(int num, Rcl::Doc &doc, string * = 0);
     virtual int getResCnt();
     virtual bool getTerms(vector<string>& terms, 
 			  vector<vector<string> >& groups, 

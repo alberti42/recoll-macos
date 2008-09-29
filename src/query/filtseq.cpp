@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: filtseq.cpp,v 1.1 2008-09-28 07:40:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: filtseq.cpp,v 1.2 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ DocSeqFiltered::DocSeqFiltered(RefCntr<DocSequence> iseq,
 {
 }
 
-bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, int *percent, string *)
+bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, string *)
 {
     LOGDEB1(("DocSeqFiltered: fetching %d\n", idx));
 
@@ -61,23 +61,19 @@ bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, int *percent, string *)
 
 	// Loop until we get enough docs
 	Rcl::Doc tdoc;
-	int pc;
 	int i = 0;
 	while (idx >= (int)m_dbindices.size()) {
-	    if (!m_seq->getDoc(backend_idx, tdoc, &pc)) 
+	    if (!m_seq->getDoc(backend_idx, tdoc)) 
 		return false;
 	    if (filter(m_spec, &tdoc)) {
 		m_dbindices.push_back(backend_idx);
 	    }
 	    backend_idx++;
 	}
-
-	if (percent)
-	    *percent = pc;
 	doc = tdoc;
     } else {
 	// The corresponding backend indice is already known
-	if (!m_seq->getDoc(m_dbindices[idx], doc, percent)) 
+	if (!m_seq->getDoc(m_dbindices[idx], doc)) 
 	    return false;
     }
     return true;

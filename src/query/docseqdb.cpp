@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.6 2008-09-28 07:40:56 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.7 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -45,10 +45,10 @@ string DocSequenceDb::getDescription()
     return m_sdata->getDescription();
 }
 
-bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, int *percent, string *sh)
+bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, string *sh)
 {
     if (sh) sh->erase();
-    return m_q->getDoc(num, doc, percent);
+    return m_q->getDoc(num, doc);
 }
 
 int DocSequenceDb::getResCnt()

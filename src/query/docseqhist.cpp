@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.3 2008-07-28 12:24:15 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.4 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,7 @@ static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.3 2008-07-28 12:24:15 dockes E
 #include "rcldb.h"
 #include "fileudi.h"
 
-bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent, 
-				string *sh) 
+bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh) 
 {
     // Retrieve history list
     if (!m_hist)
@@ -47,8 +46,6 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent,
     m_prevnum = num;
     while (skip--) 
 	m_it++;
-    if (percent)
-	*percent = 100;
     if (sh) {
 	if (m_prevtime < 0 || abs (float(m_prevtime) - float(m_it->unixtime)) > 86400) {
 	    m_prevtime = m_it->unixtime;
@@ -61,7 +58,7 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, int *percent,
     }
     string udi;
     make_udi(m_it->fn, m_it->ipath, udi);
-    bool ret = m_db->getDoc(udi, doc, percent);
+    bool ret = m_db->getDoc(udi, doc);
     if (!ret) {
 	doc.url = string("file://") + m_it->fn;
 	doc.ipath = m_it->ipath;

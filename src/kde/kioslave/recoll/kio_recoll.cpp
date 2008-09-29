@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.8 2008-06-13 18:22:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.9 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -139,8 +139,7 @@ void RecollProtocol::get(const KURL & url)
 	string sh;
 	doc.erase();
 
-	int percent;
-	if (!m_docsource->getDoc(i, doc, &percent, &sh)) {
+	if (!m_docsource->getDoc(i, doc, &sh)) {
 	    // This may very well happen for history if the doc has
 	    // been removed since. So don't treat it as fatal.
 	    doc.meta["abstract"] = string("Unavailable document");
@@ -158,7 +157,7 @@ void RecollProtocol::get(const KURL & url)
 	    result = "<p>";
 
 	char perbuf[10];
-	sprintf(perbuf, "%3d%%", percent);
+	sprintf(perbuf, "%3d%%", doc.pc);
 	if (doc.meta["title"].empty()) 
 	  doc.meta["title"] = path_getsimple(doc.url);
 	char datebuf[100];

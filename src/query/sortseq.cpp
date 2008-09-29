@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.12 2008-09-28 14:20:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: sortseq.cpp,v 1.13 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -91,12 +91,10 @@ DocSeqSorted::DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec,
     m_docs.resize(m_spec.sortdepth);
     int i;
     for (i = 0; i < m_spec.sortdepth; i++) {
-	int percent;
-	if (!iseq->getDoc(i, m_docs[i], &percent)) {
+	if (!iseq->getDoc(i, m_docs[i])) {
 	    LOGERR(("DocSeqSorted: getDoc failed for doc %d\n", i));
 	    break;
 	}
-	m_docs[i].pc = percent;
     }
     m_spec.sortdepth = i;
     LOGDEB(("DocSeqSorted:: m_count %d\n", m_spec.sortdepth));
@@ -109,14 +107,12 @@ DocSeqSorted::DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec,
     sort(m_docsp.begin(), m_docsp.end(), cmp);
 }
 
-bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, int *percent, string *)
+bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, string *)
 {
     LOGDEB1(("DocSeqSorted: fetching %d\n", num));
     
     if (num >= m_spec.sortdepth)
 	return false;
-    if (percent)
-	*percent = (*m_docsp[num]).pc;
     doc = *m_docsp[num];
     return true;
 }

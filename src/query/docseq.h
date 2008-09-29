@@ -16,7 +16,7 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
-/* @(#$Id: docseq.h,v 1.15 2008-09-28 07:40:56 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: docseq.h,v 1.16 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -31,9 +31,7 @@ using std::vector;
 // A result list entry. 
 struct ResListEntry {
     Rcl::Doc doc;
-    int percent;
     string subHeader;
-    ResListEntry() : percent(0) {}
 };
 
 /** Interface for a list of documents coming from some source.
@@ -50,17 +48,11 @@ class DocSequence {
      *
      * @param num document rank in sequence
      * @param doc return data
-     * @param percent this will be updated with the percentage of relevance, if
-     *        available, depending on the type of sequence. Return -1 in there 
-     *        to indicate that the specified document data is
-     *        unavailable but that there may be available data further
-     *        in the sequence
      * @param sh subheader to display before this result (ie: date change 
      *           inside history)
      * @return true if ok, false for error or end of data
      */
-    virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0) 
-	= 0;
+    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0) = 0;
 
     /** Get next page of documents. This accumulates entries into the result
      *  list (doesn't reset it). */

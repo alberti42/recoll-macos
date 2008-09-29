@@ -16,7 +16,7 @@
  */
 #ifndef _SORTSEQ_H_INCLUDED_
 #define _SORTSEQ_H_INCLUDED_
-/* @(#$Id: sortseq.h,v 1.11 2008-09-28 14:20:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: sortseq.h,v 1.12 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <vector>
 #include <string>
@@ -48,7 +48,7 @@ class DocSeqSorted : public DocSequence {
     DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec, 
 		 const std::string &t);
     virtual ~DocSeqSorted() {}
-    virtual bool getDoc(int num, Rcl::Doc &doc, int *percent, string *sh = 0);
+    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
     virtual int getResCnt() {return m_spec.sortdepth;}
     virtual string getAbstract(Rcl::Doc& doc) {
 	return m_seq->getAbstract(doc);

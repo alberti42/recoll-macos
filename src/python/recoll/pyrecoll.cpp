@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.14 2008-09-29 06:58:25 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.15 2008-09-29 08:59:20 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -618,7 +618,7 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	return 0;
     }
     RefCntr<Rcl::SearchData> rq(sd);
-    rq->setSortBy(self->sortfield, self->ascending);
+    self->query->setSortBy(self->sortfield, self->ascending);
     self->query->setQuery(rq, dostem?Rcl::Query::QO_STEM:Rcl::Query::QO_NONE);
     int cnt = self->query->getResCnt();
     self->next = 0;
@@ -647,7 +647,7 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
-    pysd->sd->setSortBy(self->sortfield, self->ascending);
+    self->query->setSortBy(self->sortfield, self->ascending);
     self->query->setQuery(pysd->sd, dostem ? Rcl::Query::QO_STEM : 
 			  Rcl::Query::QO_NONE);
     int cnt = self->query->getResCnt();
@@ -681,8 +681,7 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
 	LOGERR(("Query_fetchone: couldn't create doc object for result\n"));
 	return 0;
     }
-    int percent;
-    if (!self->query->getDoc(self->next, *result->doc, &percent)) {
+    if (!self->query->getDoc(self->next, *result->doc)) {
         PyErr_SetString(PyExc_EnvironmentError, "query: cant fetch result");
 	self->next = -1;
 	return 0;
@@ -702,7 +701,7 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
     doc->meta[Rcl::Doc::keyfs] = doc->fbytes;
     doc->meta[Rcl::Doc::keyds] = doc->dbytes;
     char pc[20];
-    sprintf(pc, "%02d %%", percent);
+    sprintf(pc, "%02d %%", doc->pc);
     doc->meta[Rcl::Doc::keyrr] = pc;
 
     return (PyObject *)result;

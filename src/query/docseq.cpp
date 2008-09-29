@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseq.cpp,v 1.10 2007-01-19 10:32:39 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseq.cpp,v 1.11 2008-09-29 08:59:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,7 @@ int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
     int ret = 0;
     for (int num = offs; num < offs + cnt; num++, ret++) {
 	result.push_back(ResListEntry());
-	if (!getDoc(num, result.back().doc, &result.back().percent, 
-		    &result.back().subHeader)) {
+	if (!getDoc(num, result.back().doc, &result.back().subHeader)) {
 	    result.pop_back();
 	    return ret;
 	}

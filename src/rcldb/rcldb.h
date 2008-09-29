@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.62 2008-09-16 08:18:30 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.63 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -174,7 +174,7 @@ class Db {
      *
      * Used by the 'history' feature (and nothing else?) 
      */
-    bool getDoc(const string &udi, Doc &doc, int *percent);
+    bool getDoc(const string &udi, Doc &doc);
 
     /* The following are mainly for the aspell module */
     /** Whole term list walking. */

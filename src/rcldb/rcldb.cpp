@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.145 2008-09-16 08:18:30 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.146 2008-09-29 08:59:20 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -159,6 +159,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     }
     char buf[20];
     sprintf(buf,"%.2f", float(percent) / 100.0);
+    doc.pc = percent;
     doc.meta[Doc::keyrr] = buf;
     parms.get(Doc::keyipt, doc.ipath);
     parms.get(Doc::keyfs, doc.fbytes);
@@ -1554,7 +1555,7 @@ bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
 }
 
 // Retrieve document defined by file name and internal path. 
-bool Db::getDoc(const string &udi, Doc &doc, int *pc)
+bool Db::getDoc(const string &udi, Doc &doc)
 {
     LOGDEB(("Db:getDoc: [%s]\n", udi.c_str()));
     if (m_ndb == 0)
@@ -1562,8 +1563,7 @@ bool Db::getDoc(const string &udi, Doc &doc, int *pc)
 
     // Initialize what we can in any case. If this is history, caller
     // will make partial display in case of error
-    if (*pc)
-	*pc = 100;
+    doc.pc = 100;
 
     string uniterm = make_uniterm(udi);
     string ermsg;
@@ -1572,8 +1572,7 @@ bool Db::getDoc(const string &udi, Doc &doc, int *pc)
 	    // Document found in history no longer in the database.
 	    // We return true (because their might be other ok docs further)
 	    // but indicate the error with pc = -1
-	    if (*pc) 
-		*pc = -1;
+	    doc.pc = -1;
 	    LOGINFO(("Db:getDoc: no such doc in index: [%s] (len %d)\n",
 		     uniterm.c_str(), uniterm.length()));
 	    return true;
