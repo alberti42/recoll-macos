@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.36 2008-08-29 09:51:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.37 2008-09-30 12:38:28 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -401,6 +401,9 @@ int main(int argc, const char **argv)
 
     } else {
 	confindexer = new ConfIndexer(config, &updater);
-	exit(!confindexer->index(rezero));
+	bool status = confindexer->index(rezero);
+	if (!status) 
+	    cerr << "Indexing failed" << endl;
+	exit(!status);
     }
 }

@@ -27,10 +27,11 @@
 #include "smallut.h"
 #include "rclinit.h"
 
-int stopindexing;
-int startindexing;
-IdxThreadStatus indexingstatus = IDXTS_OK;
-string indexingReason;
+static int stopindexing;
+static int startindexing;
+static bool rezero;
+static IdxThreadStatus indexingstatus = IDXTS_OK;
+static string indexingReason;
 static int stopidxthread;
 
 static QMutex curfile_mutex;
@@ -74,13 +75,14 @@ void IdxThread::run()
 	    myconf->getConfParam("loglevel", &loglevel);
 	    DebugLog::getdbl()->setloglevel(loglevel);
 	    ConfIndexer *indexer = new ConfIndexer(myconf, this);
-	    if (indexer->index()) {
+	    if (indexer->index(rezero)) {
 		indexingstatus = IDXTS_OK;
 		indexingReason = "";
 	    } else {
 		indexingstatus = IDXTS_ERROR;
 		indexingReason = "Indexing failed: " + indexer->getReason();
 	    }
+	    rezero = false;
 	    delete indexer;
 	} 
 	msleep(100);
@@ -101,7 +103,15 @@ void stop_idxthread()
     stopidxthread = 1;
     idxthread.wait();
 }
-
+void stop_indexing()
+{
+    stopindexing = 1;
+}
+void start_indexing(bool raz)
+{
+    startindexing = 1;
+    rezero = raz;
+}
 DbIxStatus idxthread_idxStatus()
 {
     QMutexLocker locker(&curfile_mutex);
@@ -110,4 +120,12 @@ DbIxStatus idxthread_idxStatus()
 bool idxthread_idxInterrupted()
 {
     return idxthread.m_interrupted;
+}
+string idxthread_getReason()
+{
+    return indexingReason;
+}
+IdxThreadStatus idxthread_getStatus()
+{
+    return indexingstatus;
 }

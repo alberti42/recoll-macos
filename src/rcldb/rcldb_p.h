@@ -4,7 +4,7 @@
 #include "xapian.h"
 
 namespace Rcl {
-/* @(#$Id: rcldb_p.h,v 1.5 2008-09-16 08:18:30 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: rcldb_p.h,v 1.6 2008-09-30 12:38:29 dockes Exp $  (C) 2007 J.F.Dockes */
 
 // Generic Xapian exception catching code. We do this quite often,
 // and I have no idea how to do this except for a macro
@@ -30,10 +30,10 @@ class Query;
 // common.
 class Db::Native {
  public:
-    Db *m_db;
+    Db  *m_db;
     bool m_isopen;
     bool m_iswritable;
-
+    bool m_noversionwrite; //Set if open failed because of version mismatch!
     // Indexing
     Xapian::WritableDatabase wdb;
 
@@ -41,7 +41,7 @@ class Db::Native {
     Xapian::Database db;
     
     Native(Db *db) 
-	: m_db(db), m_isopen(false), m_iswritable(false)
+	: m_db(db), m_isopen(false), m_iswritable(false),m_noversionwrite(false)
     { }
 
     ~Native() {

@@ -16,7 +16,7 @@
  */
 #ifndef _IDXTHREAD_H_INCLUDED_
 #define _IDXTHREAD_H_INCLUDED_
-/* @(#$Id: idxthread.h,v 1.7 2008-01-17 11:15:43 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: idxthread.h,v 1.8 2008-09-30 12:38:29 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include "indexer.h"
 
@@ -27,15 +27,16 @@ class RclConfig;
 extern void start_idxthread(const RclConfig& cnf);
 extern void stop_idxthread();
 
-// Set these to to request action
-extern int stopindexing;
-extern int startindexing;
+// Use these to to request action from thread
+extern void start_indexing(bool rezero = false);
+extern void stop_indexing();
 
-// indexingstatus is NULL iff indexing is currently in progress.
+// Final status of indexing. indexingstatus is NULL iff indexing is
+// currently in progress.
 enum IdxThreadStatus {IDXTS_NULL = 0, IDXTS_OK = 1, IDXTS_ERROR = 2};
-extern IdxThreadStatus indexingstatus;
-// Final indexing status message
-extern string indexingReason;
+extern IdxThreadStatus idxthread_getStatus();
+extern string idxthread_getReason();
+
 // Current status of running indexing (phase, file name etc.)
 extern DbIxStatus idxthread_idxStatus();
 // Did last op fail because of stop request ?

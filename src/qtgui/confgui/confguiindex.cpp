@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.12 2008-09-25 06:00:25 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.13 2008-09-30 12:38:29 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <qglobal.h>
@@ -98,7 +98,7 @@ void ConfIndexW::acceptChanges()
     QTimer::singleShot(0, this, SLOT(reloadPanels()));
     if (startIndexingAfterConfig) {
 	startIndexingAfterConfig = 0;
-	startindexing = 1;
+	start_indexing(true);
     }
 }
 

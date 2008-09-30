@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.69 2008-09-24 05:35:03 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.70 2008-09-30 12:38:29 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -338,12 +338,11 @@ int main(int argc, char **argv)
 		 "Ok", "Cancel", 0,   0)) {
 
 	case 0: // Ok: indexing is going to start.
-	    startindexing = 1;
+	    start_indexing(true);
 	    break;
 
 	case 1: // Cancel
 	    needindexconfig = true;
-	    startindexing = 0;
 	    break;
 	}
     }

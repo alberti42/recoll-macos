@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.146 2008-09-29 08:59:20 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.147 2008-09-30 12:38:29 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -67,6 +67,10 @@ enum value_slot {
     VALUE_SIG = 10      // Doc sig as chosen by app (ex: mtime+size
 };
 
+// Recoll index format version is stored in user metadata. When this change,
+// we can't open the db and will have to reindex.
+static const string RCL_IDX_VERSION_KEY("RCL_IDX_VERSION_KEY");
+static const string RCL_IDX_VERSION("1");
 
 // This is the word position offset at which we index the body text
 // (abstract, keywords, etc.. are stored before this)
@@ -514,10 +518,11 @@ bool Db::open(const string& dir, const string &stops, OpenMode mode,
 		    Xapian::DB_CREATE_OR_OVERWRITE;
 		m_ndb->wdb = Xapian::WritableDatabase(dir, action);
 		m_ndb->m_iswritable = true;
-		// We open a readonly object in addition to the r/w
-		// one because some operations are faster when
-		// performed through a Database (no forced flushes on
-		// allterms_begin(), ie, used in subDocs()
+		// We open a readonly object in all cases (possibly in
+		// addition to the r/w one) because some operations
+		// are faster when performed through a Database: no
+		// forced flushes on allterms_begin(), ie, used in
+		// subDocs()
 		m_ndb->db = Xapian::Database(dir);
 		LOGDEB(("Db::open: lastdocid: %d\n", 
 			m_ndb->wdb.get_lastdocid()));
@@ -548,6 +553,19 @@ bool Db::open(const string& dir, const string &stops, OpenMode mode,
 	    }
 	    break;
 	}
+	// Check index format version. Must not try to check a just created or
+	// truncated db
+	if (mode != DbTrunc && m_ndb->db.get_doccount()>0) {
+	    Xapian::Database cdb = m_ndb->m_iswritable ? m_ndb->wdb: m_ndb->db;
+	    string version = cdb.get_metadata(RCL_IDX_VERSION_KEY);
+	    if (version.compare(RCL_IDX_VERSION)) {
+		m_ndb->m_noversionwrite = true;
+		LOGERR(("Rcl::Db::open: file index [%s], software [%s]\n",
+			version.c_str(), RCL_IDX_VERSION.c_str()));
+		throw Xapian::DatabaseError("Recoll index version mismatch",
+					    "", "");
+	    }
+	}
 	m_mode = mode;
 	m_ndb->m_isopen = true;
 	m_basedir = dir;
@@ -577,8 +595,11 @@ bool Db::i_close(bool final)
     string ermsg;
     try {
 	bool w = m_ndb->m_iswritable;
-	if (w)
+	if (w) {
+	    if (!m_ndb->m_noversionwrite)
+		m_ndb->wdb.set_metadata(RCL_IDX_VERSION_KEY, RCL_IDX_VERSION);
 	    LOGDEB(("Rcl::Db:close: xapian will close. May take some time\n"));
+	}
 	// Used to do a flush here. Cant see why it should be necessary.
 	deleteZ(m_ndb);
 	if (w)

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.54 2008-09-29 11:33:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.55 2008-09-30 12:38:29 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -358,20 +358,20 @@ void RclMain::periodic100()
 {
     static int toggle = 0;
     // Check if indexing thread done
-    if (indexingstatus != IDXTS_NULL) {
+    if (idxthread_getStatus() != IDXTS_NULL) {
 	// Indexing is stopped
 	statusBar()->message("");
 	fileToggleIndexingAction->setText(tr("Update &Index"));
 	fileToggleIndexingAction->setEnabled(TRUE);
 	if (m_idxStatusAck == false) {
 	    m_idxStatusAck = true;
-	    if (indexingstatus != IDXTS_OK) {
+	    if (idxthread_getStatus() != IDXTS_OK) {
 		if (idxthread_idxInterrupted()) {
 		    QMessageBox::warning(0, "Recoll", 
 					 tr("Indexing interrupted"));
 		} else {
 		    QMessageBox::warning(0, "Recoll", 
-					 QString::fromAscii(indexingReason.c_str()));
+		       QString::fromAscii(idxthread_getReason().c_str()));
 		}
 	    }
 	    // Make sure we reopen the db to get the results. If there
@@ -427,12 +427,12 @@ void RclMain::periodic100()
 
 void RclMain::toggleIndexing()
 {
-    if (indexingstatus == IDXTS_NULL) {
+    if (idxthread_getStatus() == IDXTS_NULL) {
 	// Indexing in progress
-	stopindexing = 1;
+	stop_indexing();
 	fileToggleIndexingAction->setText(tr("Update &Index"));
     } else {
-	startindexing = 1;
+	start_indexing(false);
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
     }
     fileToggleIndexingAction->setEnabled(FALSE);
@@ -448,11 +448,11 @@ static string urltolocalpath(string url)
 void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 {
     LOGDEB(("RclMain::startSearch. Indexing %s\n", 
-	    indexingstatus == IDXTS_NULL?"on":"off"));
+	    idxthread_getStatus() == IDXTS_NULL?"on":"off"));
     // The db may have been closed at the end of indexing
     string reason;
     // If indexing is being performed, we reopen the db at each query.
-    if (!maybeOpenDb(reason, indexingstatus == IDXTS_NULL)) {
+    if (!maybeOpenDb(reason, idxthread_getStatus() == IDXTS_NULL)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
 	return;
     }
