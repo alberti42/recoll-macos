@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.10 2008-08-26 07:31:54 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.11 2008-10-02 13:30:32 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,8 @@ bool MimeHandlerExec::next_document()
     }
 
     m_metaData["origcharset"] = m_defcharset;
-    // All recoll filters output utf-8
+    // Default charset: all recoll filters output utf-8, but this
+    // could still be overridden by the content-type meta tag.
     m_metaData["charset"] = "utf-8";
     m_metaData["mimetype"] = "text/html";
     return true;

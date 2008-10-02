@@ -16,7 +16,7 @@
  */
 #ifndef _MH_EXEC_H_INCLUDED_
 #define _MH_EXEC_H_INCLUDED_
-/* @(#$Id: mh_exec.h,v 1.5 2008-08-26 07:31:54 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_exec.h,v 1.6 2008-10-02 13:30:32 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -26,9 +26,11 @@ using std::string;
 #include "mimehandler.h"
 
 /** 
-    Turn external document into internal one by executing an external filter.
-    The command to execute, and its parameters, come from the mimeconf file
-*/
+ * Turn external document into internal one by executing an external filter.
+ *
+ * The command to execute, and its parameters, are stored in the "params" 
+ * which is built in mimehandler.cpp out of data from the mimeconf file.
+ */
 class MimeHandlerExec : public RecollFilter {
  public:
     list<string> params;
