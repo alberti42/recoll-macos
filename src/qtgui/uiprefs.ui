@@ -388,6 +388,17 @@
                                             <bool>false</bool>
                                         </property>
                                     </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>previewHtmlCB</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Prefer Html to plain text for preview.</string>
+                                        </property>
+                                        <property name="checked">
+                                            <bool>false</bool>
+                                        </property>
+                                    </widget>
                                 </vbox>
                             </widget>
                         </vbox>

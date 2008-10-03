@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.32 2008-07-04 09:29:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.33 2008-10-03 08:09:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -296,10 +296,12 @@ bool myTextSplitCB::matchGroups()
 // duplicate whitespace etc...). This was tricky business, dependant
 // on qtextedit internals, and we don't do it any more, so we finally
 // don't know the term par/car positions in the editor text.  
-// Instead, we mark the search term positions either with html anchor
-// (qt currently has problems with them), or a special string, and the
-// caller will use the editor's find() function to position on it
-bool PlainToRich::plaintorich(const string& in, list<string>& out, 
+// Instead, we now mark the search term positions with html anchors
+//
+// We output the result in chunks, arranging not to cut in the middle of
+// a tag, which would confuse qtextedit.
+bool PlainToRich::plaintorich(const string& in, 
+			      list<string>& out, // Output chunk list
 			      const HiliteData& hdata,
 			      int chunksize)
 {
@@ -323,16 +325,17 @@ bool PlainToRich::plaintorich(const string& in, list<string>& out,
 	LOGDEB0(("  %s", sterms.c_str()));
     }
 
-    // We first use the text splitter to break the text into words,
-    // and compare the words to the search terms, which yields the
-    // query terms positions inside the text
+    // Compute the positions for the query terms.  We use the text
+    // splitter to break the text into words, and compare the words to
+    // the search terms,
     myTextSplitCB cb(terms, groups, slacks);
     TextSplit splitter(&cb);
-    // Note that splitter returns the term locations in byte, not
-    // character offset
+    // Note: the splitter returns the term locations in byte, not
+    // character, offsets.
     splitter.text_to_words(in);
     LOGDEB0(("plaintorich: split done %d mS\n", chron.millis()));
 
+    // Compute the positions for NEAR and PHRASE groups.
     cb.matchGroups();
 
     out.clear();
@@ -346,7 +349,7 @@ bool PlainToRich::plaintorich(const string& in, list<string>& out,
     // output highlight tags and to compute term positions in the
     // output text
     vector<pair<int, int> >::iterator tPosIt = cb.tboffs.begin();
-    vector<pair<int, int> >::iterator tboffsend = cb.tboffs.end();
+    vector<pair<int, int> >::iterator tPosEnd = cb.tboffs.end();
 
 #if 0
     for (vector<pair<int, int> >::const_iterator it = cb.tboffs.begin();
@@ -357,12 +360,21 @@ bool PlainToRich::plaintorich(const string& in, list<string>& out,
 
     // Input character iterator
     Utf8Iter chariter(in);
-    // State variable used to limitate the number of consecutive empty lines 
+    // State variable used to limit the number of consecutive empty lines 
     int ateol = 0;
 
     // Value for numbered anchors at each term match
     int anchoridx = 1;
-
+    // html state
+    bool intag = false, inparamvalue = false;
+    unsigned int headend = 0;
+    if (m_inputhtml) {
+	headend = in.find("</head>");
+	if (headend == string::npos)
+	    headend = in.find("</HEAD>");
+	if (headend != string::npos)
+	    headend += 7;
+    }
     for (string::size_type pos = 0; pos != string::npos; pos = chariter++) {
 	// Check from time to time if we need to stop
 	if ((pos & 0xfff) == 0) {
@@ -371,51 +383,77 @@ bool PlainToRich::plaintorich(const string& in, list<string>& out,
 
 	// If we still have terms positions, check (byte) position. If
 	// we are at or after a term match, mark.
-	if (tPosIt != tboffsend) {
+	if (tPosIt != tPosEnd) {
 	    int ibyteidx = chariter.getBpos();
 	    if (ibyteidx == tPosIt->first) {
-		*olit += startAnchor(anchoridx++);
-		*olit += startMatch();
+		if (!intag && ibyteidx > headend) {
+		    *olit += startAnchor(anchoridx);
+		    *olit += startMatch();
+		}
+		anchoridx++;
 	    } else if (ibyteidx == tPosIt->second) {
-		// Output end tag, then skip all highlight areas that
-		// would overlap this one
-		*olit += endMatch();
-		*olit += endAnchor();
+		// Output end or match region tags
+		if (!intag && ibyteidx > headend) {
+		    *olit += endMatch();
+		    *olit += endAnchor();
+		}
+		// Skip all highlight areas that would overlap this one
 		int crend = tPosIt->second;
 		while (tPosIt != cb.tboffs.end() && tPosIt->first < crend)
 		    tPosIt++;
-		// Maybe end this chunk, begin next
-		if (olit->size() > (unsigned int)chunksize) {
+
+		// Maybe end this chunk, begin next. Don't do it on html
+		// there is just no way to do it right (qtextedit cant grok
+		// chunks cut in the middle of <a></a> for example).
+		if (!m_inputhtml && olit->size() > (unsigned int)chunksize) {
 		    out.push_back("");
 		    olit++;
 		}
 	    }
 	}
 
-	switch(*chariter) {
-	case '\n':
-	    if (ateol < 2) {
-		*olit += "<br>\n";
-		ateol++;
-	    }
-	    break;
-	case '\r': 
-	    break;
-	case '<':
-	    ateol = 0;
-	    *olit += "&lt;";
-	    break;
-	case '&':
-	    ateol = 0;
-	    *olit += "&amp;";
-	    break;
-	default:
-	    // We don't change the eol status for whitespace, want a real line
-	    if (!(*chariter == ' ' || *chariter == '\t')) {
-		ateol = 0;
+	if (m_inputhtml) {
+	    switch (*chariter) {
+	    case '<':
+		if (!inparamvalue)
+		    intag = true;
+		break;
+	    case '>':
+		if (!inparamvalue)
+		    intag = false;
+		break;
+	    case '"':
+		if (intag) {
+		    inparamvalue = !inparamvalue;
+		}
+		break;
 	    }
 	    chariter.appendchartostring(*olit);
-	}
+	} else switch (*chariter) {
+	    case '\n':
+		if (ateol < 2) {
+		    *olit += "<br>\n";
+		    ateol++;
+		}
+		break;
+	    case '\r': 
+		break;
+	    case '<':
+		ateol = 0;
+		*olit += "&lt;";
+		break;
+	    case '&':
+		ateol = 0;
+		*olit += "&amp;";
+		break;
+	    default:
+		// We don't change the eol status for whitespace, want
+		// a real line
+		if (!(*chariter == ' ' || *chariter == '\t')) {
+		    ateol = 0;
+		}
+		chariter.appendchartostring(*olit);
+	    }
     }
 #if 0
     {

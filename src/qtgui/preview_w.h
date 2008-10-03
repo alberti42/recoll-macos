@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.18 2008-07-01 08:27:58 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.19 2008-10-03 08:09:35 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -69,12 +69,16 @@ class TabData {
 class PlainToRichQtPreview : public PlainToRich {
 public:
     int lastanchor;
-    PlainToRichQtPreview() {
+    PlainToRichQtPreview(bool inputhtml = false) : PlainToRich(inputhtml) {
 	lastanchor = 0;
     }    
     virtual ~PlainToRichQtPreview() {}
     virtual string header() {
-	return string("<qt><head><title></title></head><body><p>");
+	if (m_inputhtml) {
+	    return snull;
+	} else {
+	    return string("<qt><head><title></title></head><body><p>");
+	}
     }
     virtual string startMatch() {return string("<termtag>");}
     virtual string endMatch() {return string("</termtag>");}

@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.17 2008-07-01 08:27:58 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.18 2008-10-03 08:09:35 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -37,12 +37,15 @@ struct HiliteData {
 
 /** 
  * A class for highlighting search results. Overridable methods allow
- * for different styles
+ * for different styles. We can handle plain text or html input. In the latter
+ * case, we may fail to highligt term groups if they are mixed with html tags.
  */
 class PlainToRich {
 public:
-    static const string snull;
+    PlainToRich(bool inputhtml = false) : m_inputhtml(inputhtml) {}
     virtual ~PlainToRich() {}
+    void set_inputhtml(bool v) {m_inputhtml = v;}
+
     /**
      * Transform plain text for highlighting search terms, ie in the
      * preview window or result list entries.
@@ -75,6 +78,10 @@ public:
     virtual string endMatch() {return snull;}
     virtual string startAnchor(int) {return snull;}
     virtual string endAnchor() {return snull;}
+
+protected:
+    static const string snull;
+    bool m_inputhtml;
 };
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

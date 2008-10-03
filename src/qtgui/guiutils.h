@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.28 2008-09-28 14:20:50 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.29 2008-10-03 08:09:35 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -81,6 +81,7 @@ class PrefsPack {
     bool queryReplaceAbstract;
     bool startWithAdvSearchOpen;
     bool startWithSortToolOpen;
+    bool previewHtml;
     // Extra query indexes. This are encoded to base64 before storing
     // to the qt settings file to avoid any bin string/ charset conv issues
     list<string> allExtraDbs;

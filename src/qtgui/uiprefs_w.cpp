@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.25 2008-07-28 08:42:52 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.26 2008-10-03 08:09:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -106,7 +106,7 @@ void UIPrefsDialog::setFromPrefs()
     initStartSortCB->setChecked(prefs.startWithSortToolOpen);
     useDesktopOpenCB->setChecked(prefs.useDesktopOpen);
     keepSortCB->setChecked(prefs.keepSort);
-
+    previewHtmlCB->setChecked(prefs.previewHtml);
     // Query terms color
     qtermColorLE->setText(prefs.qtermcolor);
     
@@ -209,6 +209,7 @@ void UIPrefsDialog::accept()
     prefs.startWithSortToolOpen = initStartSortCB->isChecked();
     prefs.useDesktopOpen = useDesktopOpenCB->isChecked();
     prefs.keepSort = keepSortCB->isChecked();
+    prefs.previewHtml = previewHtmlCB->isChecked();
 
     prefs.syntAbsLen = syntlenSB->value();
     prefs.syntAbsCtx = syntctxSB->value();

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.36 2008-09-08 16:49:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.37 2008-10-03 08:09:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -672,6 +672,10 @@ class LoadThread : public QThread {
 	}
 	
 	FileInterner interner(filename, &st, rclconfig, tmpdir, mtype);
+	// We don't set the interner's target mtype to html because we
+	// do want the html filter to do its work: we won't use the
+	// text, but we need the conversion to utf-8
+	// interner.setTargetMType("text/html");
 	try {
 	    FileInterner::Status ret = interner.internfile(*out, ipath);
 	    if (ret == FileInterner::FIDone || ret == FileInterner::FIAgain) {
@@ -682,6 +686,10 @@ class LoadThread : public QThread {
 		// a mysterious error. Happens when the file name matches a
 		// a search term of course.
 		*statusp = 0;
+		if (prefs.previewHtml && !interner.get_html().empty()) {
+		    out->text = interner.get_html();
+		    out->mimetype = "text/html";
+		}
 	    } else {
 		out->mimetype = interner.getMimetype();
 		interner.getMissingExternal(missing);
@@ -820,13 +828,20 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     // somehow slipped through previous processing.
     bool highlightTerms = fdoc.text.length() < 
 	(unsigned long)prefs.maxhltextmbs * 1024 * 1024;
+
     // Final text is produced in chunks so that we can display the top
     // while still inserting at bottom
     list<QString> qrichlst;
-
+    bool inputishtml = !fdoc.mimetype.compare("text/html");
     if (highlightTerms) {
 	progress.setLabelText(tr("Creating preview text"));
 	qApp->processEvents();
+	if (inputishtml) {
+	    LOGDEB(("Preview: got html %s\n", fdoc.text.c_str()));
+	    m_plaintorich.set_inputhtml(true);
+	} else {
+	    m_plaintorich.set_inputhtml(false);
+	}
 	list<string> richlst;
 	ToRichThread rthr(fdoc.text, m_hData, richlst, m_plaintorich);
 	rthr.start();
@@ -855,23 +870,29 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 		richlst.back() += "<b>Cancelled !</b>";
 	    }
 	}
-	// Convert to QString list
+	// Convert C++ string list to QString list
 	for (list<string>::iterator it = richlst.begin(); 
 	     it != richlst.end(); it++) {
 	    qrichlst.push_back(QString::fromUtf8(it->c_str(), it->length()));
 	}
     } else {
-	// No plaintorich() call.
-	// In this case, the text will no be identified as
-	// richtxt/html (no <html> or <qt> etc. at the beginning), and
-	// there is no need to escape special characters.
-	// Also we need to split in chunks (so that the top is displayed faster),
-	// and we must do it on a QString (to avoid utf8 issues).
+	LOGDEB(("Preview: no hilighting\n"));
+	// No plaintorich() call.  In this case, either the text is
+	// html and the html quoting is hopefully correct, or it's
+	// plain-text and there is no need to escape special
+	// characters. We'd still want to split in chunks (so that the
+	// top is displayed faster), but we must not cut tags, and
+	// it's too difficult on html. For text we do the splitting on
+	// a QString to avoid utf8 issues.
 	QString qr = QString::fromUtf8(fdoc.text.c_str(), fdoc.text.length());
 	int l = 0;
-	for (int pos = 0; pos < (int)qr.length(); pos += l) {
-	    l = MIN(CHUNKL, qr.length() - pos);
-	    qrichlst.push_back(qr.mid(pos, l));
+	if (inputishtml) {
+	    qrichlst.push_back(qr);
+	} else {
+	    for (int pos = 0; pos < (int)qr.length(); pos += l) {
+		l = MIN(CHUNKL, qr.length() - pos);
+		qrichlst.push_back(qr.mid(pos, l));
+	    }
 	}
     }
 	    
@@ -895,7 +916,8 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	qApp->processEvents();
 
 	editor->append(*it);
-
+	LOGDEB(("Preview:: loaded: [%s]\n", 
+		string((const char *)(*it).utf8()).c_str()));
 	// Stay at top
 	if (instep < 5) {
 	    editor->setCursorPosition(0,0);

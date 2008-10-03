@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.38 2008-09-28 14:20:50 dockes Exp $ (C) 2005 Jean-Francois Dockes";
+static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.39 2008-10-03 08:09:35 dockes Exp $ (C) 2005 Jean-Francois Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -147,6 +147,8 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
     SETTING_RW(prefs.startWithSortToolOpen, 
 	       "/Recoll/prefs/startWithSortToolOpen", Bool, false);
+    SETTING_RW(prefs.previewHtml, 
+	       "/Recoll/prefs/previewHtml", Bool, true);
 
     QString advSearchClauses;
     QString ascdflt;
