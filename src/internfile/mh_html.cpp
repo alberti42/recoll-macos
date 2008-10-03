@@ -1,28 +1,23 @@
-/* htmlparse.cc: simple HTML parser for omega indexer
+#ifndef lint
+static char rcsid[] = "@(#$Id: mh_html.cpp,v 1.26 2008-10-03 06:17:46 dockes Exp $ (C) 2005 J.F.Dockes";
+#endif
+/*
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
  *
- * ----START-LICENCE----
- * Copyright 1999,2000,2001 BrightStation PLC
- * Copyright 2001 Ananova Ltd
- * Copyright 2002 Olly Betts
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- * -----END-LICENCE-----
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the
+ *   Free Software Foundation, Inc.,
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-// This file has code from omindex + an adaptor function for recoll at the end
 
 #include "mimehandler.h"
 #include "debuglog.h"
@@ -36,6 +31,7 @@
 #include "smallut.h"
 
 #include <iostream>
+
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
@@ -43,7 +39,7 @@ using namespace std;
 
 bool MimeHandlerHtml::set_document_file(const string &fn)
 {
-    LOGDEB(("textHtmlToDoc: %s\n", fn.c_str()));
+    LOGDEB0(("textHtmlToDoc: %s\n", fn.c_str()));
     string otext;
     if (!file_to_string(fn, otext)) {
 	LOGINFO(("textHtmlToDoc: cant read: %s\n", fn.c_str()));
@@ -119,6 +115,23 @@ bool MimeHandlerHtml::next_document()
 	    result = p;
 	    if (diag == true) {
 		// Parser throws true at end of text. ok
+
+		if (m_forPreview) {
+		    // Save the html text
+		    m_html = transcoded;
+		    // In many cases, we need to change the charset decl,
+		    // because the file was transcoded. It seems that just
+		    // inserting one is enough (only the 1st one seems to
+		    // be used by browsers/qtextedit).
+		    unsigned int idx = m_html.find("<head>");
+		    if (idx == string::npos)
+			idx = m_html.find("<HEAD>");
+		    if (idx != string::npos)
+			m_html.replace(idx+6, 0, 
+				       "<meta http-equiv=\"content-type\" "
+				       "content=\"text/html; charset=utf-8\">");
+		}
+
 		break;
 	    }
 

@@ -16,15 +16,15 @@
  */
 #ifndef _HTML_H_INCLUDED_
 #define _HTML_H_INCLUDED_
-/* @(#$Id: mh_html.h,v 1.10 2007-05-30 12:31:19 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_html.h,v 1.11 2008-10-03 06:17:46 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
 #include "mimehandler.h"
 
 /**
- Translate html document to internal one. 
-*/
+ * Convert html to utf-8 text and extract whatever metadata we can find.
+ */
 class MimeHandlerHtml : public RecollFilter {
  public:
     MimeHandlerHtml(const string& mt) : RecollFilter(mt) {}
@@ -37,6 +37,11 @@ class MimeHandlerHtml : public RecollFilter {
 	return false;
     }
     virtual bool next_document();
+    const string& get_html() 
+    {
+	return m_html;
+    }
+    
 private:
     string m_filename;
     string m_html;
