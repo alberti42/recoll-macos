@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.42 2008-09-16 08:18:30 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.43 2008-10-03 06:23:23 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -42,10 +42,12 @@ using namespace std;
 #include "pathut.h"
 #include "wipedir.h"
 #include "rclconfig.h"
+#include "mh_html.h"
 
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
 static const string isep(":");
+static const string stxtplain("text/plain");
 
 // This is used when the user wants to retrieve a search result doc's parent
 // (ie message having a given attachment)
@@ -194,7 +196,7 @@ FileInterner::FileInterner(const std::string &f, const struct stat *stp,
     m_handlers.push_back(df);
     LOGDEB(("FileInterner::FileInterner: %s [%s]\n", l_mime.c_str(), 
 	     m_fn.c_str()));
-    m_targetMType = "text/plain";
+    m_targetMType = stxtplain;
 }
 
 FileInterner::~FileInterner()
@@ -397,9 +399,13 @@ int FileInterner::addHandler()
     getKeyValue(docdata, keymt, mimetype);
 
     LOGDEB(("FileInterner::addHandler: next_doc is %s\n", mimetype.c_str()));
+
     // If we find a document of the target type (text/plain in
-    // general), we're done decoding
-    if (!stringicmp(mimetype, m_targetMType)) {
+    // general), we're done decoding. If we hit text/plain, we're done
+    // in any case
+    if (!stringicmp(mimetype, m_targetMType) || 
+	!stringicmp(mimetype, stxtplain)) {
+	m_reachedMType = mimetype;
 	LOGDEB1(("FileInterner::addHandler: target reached\n"));
 	return ADD_BREAK;
     }
@@ -568,11 +574,25 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     // of calls is important.
     if (!m_forPreview)
 	collectIpathAndMT(doc, ipath);
+    else
+	doc.mimetype = m_reachedMType;
+
     // Keep this AFTER collectIpathAndMT
     dijontorcl(doc);
 
-    // Possibly destack so that we can test for FIDone.
+    // Possibly destack so that we can test for FIDone. While doing this
+    // possibly set aside an ancestor html text (for the GUI preview)
     while (!m_handlers.empty() && !m_handlers.back()->has_documents()) {
+	LOGDEB(("FileInterner::internfile: dstck filter fpv %d tgt %s\n",
+		m_forPreview, m_targetMType.c_str()));
+	if (m_forPreview) {
+	    LOGDEB(("FileInterner::internfile: Testing for html handler\n"));
+	    MimeHandlerHtml *hth = 
+		dynamic_cast<MimeHandlerHtml*>(m_handlers.back());
+	    if (hth) {
+		m_html = hth->get_html();
+	    }
+	}
 	popHandler();
     }
     if (m_handlers.empty())

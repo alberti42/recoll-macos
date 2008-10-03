@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.18 2008-09-05 10:36:06 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.19 2008-10-03 06:23:23 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -90,7 +90,8 @@ class FileInterner {
     const string&  getMimetype() {return m_mimetype;}
 
     /** We normally always return text/plain data. A caller can request
-     *  that we stop conversion at the native document type (ie: text/html) 
+     *  that we stop conversion at the native document type (ie: extracting
+     *  an email attachment and starting an external viewer)
      */
     void setTargetMType(const string& tp) {m_targetMType = tp;}
 
@@ -111,6 +112,7 @@ class FileInterner {
     const string& getReason() const {return m_reason;}
     const list<string>& getMissingExternal();
     void getMissingExternal(string& missing);
+    const string& get_html() {return m_html;}
 
  private:
     static const unsigned int MAXHANDLERS = 20;
@@ -118,7 +120,9 @@ class FileInterner {
     string                 m_fn;
     string                 m_mimetype; // Mime type for [uncompressed] file
     bool                   m_forPreview;
+    string                 m_html; // Possibly set-aside html text for preview
     string                 m_targetMType;
+    string                 m_reachedMType; // target or text/plain
     // m_tdir and m_tfile are used only for decompressing input file if needed
     const string&          m_tdir; 
     string                 m_tfile;
