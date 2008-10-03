@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.37 2008-10-03 08:09:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.38 2008-10-03 16:02:07 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -916,8 +916,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	qApp->processEvents();
 
 	editor->append(*it);
-	LOGDEB(("Preview:: loaded: [%s]\n", 
-		string((const char *)(*it).utf8()).c_str()));
+
 	// Stay at top
 	if (instep < 5) {
 	    editor->setCursorPosition(0,0);
