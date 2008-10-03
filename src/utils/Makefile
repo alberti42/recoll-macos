@@ -13,14 +13,14 @@ force:
 
 FSTREEWALK_OBJS= trfstreewalk.o fstreewalk.o $(BIGLIB)
 trfstreewalk : $(FSTREEWALK_OBJS)
-	$(CXX) -o trfstreewalk $(FSTREEWALK_OBJS)
+	$(CXX) -o trfstreewalk $(FSTREEWALK_OBJS) $(LIBICONV)
 trfstreewalk.o : fstreewalk.cpp fstreewalk.h
 	$(CXX) -o trfstreewalk.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_FSTREEWALK fstreewalk.cpp
 
 PATHUT_OBJS= trpathut.o  $(BIGLIB)
 trpathut : $(PATHUT_OBJS) 
-	$(CXX) $(ALL_CXXFLAGS) -o trpathut $(PATHUT_OBJS)
+	$(CXX) $(ALL_CXXFLAGS) -o trpathut $(PATHUT_OBJS)  $(LIBICONV)
 trpathut.o : pathut.cpp pathut.h
 	$(CXX) -o trpathut.o -c $(ALL_CXXFLAGS) -DTEST_PATHUT pathut.cpp
 
@@ -32,7 +32,7 @@ trfileudi.o : fileudi.cpp fileudi.h
 
 EXECMD_OBJS= trexecmd.o $(BIGLIB)
 trexecmd : $(EXECMD_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o trexecmd $(EXECMD_OBJS)
+	$(CXX) $(ALL_CXXFLAGS) -o trexecmd $(EXECMD_OBJS) $(LIBICONV)
 trexecmd.o : execmd.cpp execmd.h
 	$(CXX) -o trexecmd.o -c $(ALL_CXXFLAGS) -DTEST_EXECMD execmd.cpp
 
@@ -79,9 +79,9 @@ trutf8iter.o : utf8iter.cpp utf8iter.h
 	       utf8iter.cpp
 
 
-CONFTREE_OBJS= trconftree.o  ../lib/pathut.o ../lib/smallut.o ../lib/conftree.o
-trconftree : $(CONFTREE_OBJS) $(BIGLIB)
-	$(CXX) $(ALL_CXXFLAGS) -o trconftree $(CONFTREE_OBJS)
+CONFTREE_OBJS= trconftree.o  $(BIGLIB)
+trconftree : $(CONFTREE_OBJS)
+	$(CXX) $(ALL_CXXFLAGS) -o trconftree $(CONFTREE_OBJS) $(LIBICONV) 
 trconftree.o : conftree.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_CONFTREE -c -o trconftree.o \
 	       conftree.cpp
