@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.59 2008-10-03 08:09:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.60 2008-10-03 08:19:19 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -509,7 +509,6 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	for (list<string>::const_iterator it = sl.begin(); 
 	     it != sl.end(); it++) {
 	    string fld = fieldCanon(stringtolower(*it));
-	    LOGDEB0(("Inserting [%s] in stored list\n", fld.c_str()));
 	    m_storedFields.insert(fld);
 	}
     }
