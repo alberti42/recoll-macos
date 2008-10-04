@@ -16,7 +16,7 @@
  */
 #ifndef _MH_EXEC_H_INCLUDED_
 #define _MH_EXEC_H_INCLUDED_
-/* @(#$Id: mh_exec.h,v 1.6 2008-10-02 13:30:32 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_exec.h,v 1.7 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -33,7 +33,16 @@ using std::string;
  */
 class MimeHandlerExec : public RecollFilter {
  public:
+    // params, cfgMtype and chgCharset do not get reset by
+    // clear(). They define what I am
     list<string> params;
+    // The defaults for external filters is to output html except if defined 
+    // otherwise in the config.
+    string cfgMtype;
+    // For ext programs which don't output html, the output charset
+    // has to be known: ie they have a --charset utf-8 like option.
+    string cfgCharset; 
+
     MimeHandlerExec(const string& mt) : RecollFilter(mt) {}
     virtual ~MimeHandlerExec() {}
     virtual bool set_document_file(const string &file_path) {
@@ -46,6 +55,12 @@ class MimeHandlerExec : public RecollFilter {
 	m_ipath = ipath;
 	return true;
     }
+    virtual void clear() {
+	m_fn.erase(); 
+	m_ipath.erase();
+	RecollFilter::clear(); 
+    }
+
 private:
     string m_fn;
     string m_ipath;

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.11 2008-10-02 13:30:32 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.12 2008-10-04 14:26:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -35,8 +35,8 @@ public:
     }
 };
 
-// Execute an external program to translate a file from its native format
-// to html. Then call the html parser to do the actual indexing
+// Execute an external program to translate a file from its native
+// format to text or html.
 bool MimeHandlerExec::next_document()
 {
     if (m_havedoc == false)
@@ -59,29 +59,28 @@ bool MimeHandlerExec::next_document()
     if (!m_ipath.empty())
 	myparams.push_back(m_ipath);
 
-    // Execute command and store the result text, which is supposedly html
-    string& html = m_metaData["content"];
-    html.erase();
+    // Execute command and store the result text
+    string& output = m_metaData["content"];
+    output.erase();
     ExecCmd mexec;
     MEAdv adv;
     mexec.setAdvise(&adv);
     mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
-    int status = mexec.doexec(cmd, myparams, 0, &html);
+    int status = mexec.doexec(cmd, myparams, 0, &output);
     if (status) {
 	LOGERR(("MimeHandlerExec: command status 0x%x: %s\n", 
 		status, cmd.c_str()));
 	// If the output string begins with RECFILTERROR, then it's 
 	// interpretable error information
-	if (html.find("RECFILTERROR") == 0)
-	    m_reason = html;
+	if (output.find("RECFILTERROR") == 0)
+	    m_reason = output;
 	return false;
     }
-
     m_metaData["origcharset"] = m_defcharset;
     // Default charset: all recoll filters output utf-8, but this
     // could still be overridden by the content-type meta tag.
-    m_metaData["charset"] = "utf-8";
-    m_metaData["mimetype"] = "text/html";
+    m_metaData["charset"] = cfgCharset.empty() ? "utf-8" : cfgCharset;
+    m_metaData["mimetype"] = cfgMtype.empty() ? "text/html" : cfgMtype;
     return true;
 }

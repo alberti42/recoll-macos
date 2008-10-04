@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.4 2008-08-29 13:05:12 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.5 2008-10-04 14:26:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -39,10 +39,19 @@ using namespace std;
 
 MimeHandlerMbox::~MimeHandlerMbox()
 {
+    clear();
+}
+
+void MimeHandlerMbox::clear()
+{
+    m_fn.erase();
     if (m_vfp) {
 	fclose((FILE *)m_vfp);
 	m_vfp = 0;
     }
+    m_msgnum =  m_lineno = 0;
+    m_ipath.erase();
+    RecollFilter::clear();
 }
 
 bool MimeHandlerMbox::set_document_file(const string &fn)

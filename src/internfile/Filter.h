@@ -157,10 +157,12 @@ namespace Dijon
 	 * that the client application can pass the nested document's content
 	 * to another filter that supports this particular type.
 	 */
-	const std::map<std::string, std::string> &get_meta_data(void) const
+	virtual const std::map<std::string, std::string> &get_meta_data(void) const
 	{
 	    return m_metaData;
 	}
+
+	virtual void clear() {m_metaData.clear();}
 
     protected:
 	/// The MIME type handled by the filter.

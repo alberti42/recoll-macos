@@ -16,7 +16,7 @@
  */
 #ifndef _HTML_H_INCLUDED_
 #define _HTML_H_INCLUDED_
-/* @(#$Id: mh_html.h,v 1.11 2008-10-03 06:17:46 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_html.h,v 1.12 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -41,7 +41,11 @@ class MimeHandlerHtml : public RecollFilter {
     {
 	return m_html;
     }
-    
+    virtual void clear() {
+	m_filename.erase();
+	m_html.erase();
+	RecollFilter::clear(); 
+    }
 private:
     string m_filename;
     string m_html;

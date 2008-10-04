@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.68 2008-07-29 06:25:29 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.69 2008-10-04 14:26:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -455,20 +455,17 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	    // The not so nice point was that the file name was not
 	    // indexed.
 	    //
-	    // We now index at least the file name. We use a dirty
-	    // hack to ensure that the indexing will be retried each
-	    // time: the stored number as decimal ascii mtime is
-	    // prefixed with a '+', which doesnt change its value for
-	    // atoll() but is tested by rcldb::needUpdate()
-	    // Reset the date as set by the handler if any
+	    // We now index at least the file name and the mod time. 
+	    // We change the signature to ensure that the indexing will 
+	    // be retried every time. This can make indexing passes quite
+	    // slower if there are many files of types with no helper
 	    doc.fmtime.erase();
 	    // Go through:
 	} 
 
 	if (doc.fmtime.empty()) {
 	    // Set the date if this was not done in the document handler
-	    doc.fmtime = (fis == FileInterner::FIError) ? plus + ascdate :
-		ascdate;
+	    doc.fmtime = ascdate;
 	}
 
 	// Internal access path for multi-document files
@@ -492,6 +489,14 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	// need for reversible formatting
 	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
 	doc.sig = cbuf;
+	// If there was an error, ensure indexing will be
+	// retried. This is for the once missing, later installed
+	// filter case. It can make indexing much slower (if there are
+	// myriads of such files, the ext script is executed for them
+	// and fails every time)
+	if (fis == FileInterner::FIError) {
+	    doc.sig += plus;
+	}
 
 	// Add document to database. If there is an ipath, add it as a children
 	// of the file document.

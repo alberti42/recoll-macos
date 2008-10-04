@@ -16,7 +16,7 @@
  */
 #ifndef _MH_TEXT_H_INCLUDED_
 #define _MH_TEXT_H_INCLUDED_
-/* @(#$Id: mh_text.h,v 1.4 2006-12-16 15:39:54 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_text.h,v 1.5 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 using std::string;
@@ -40,6 +40,11 @@ class MimeHandlerText : public RecollFilter {
 	return false;
     }
     virtual bool next_document();
+    virtual void clear() 
+    {
+	m_text.erase(); 
+	RecollFilter::clear();
+    }
 private:
     string m_text;
 };

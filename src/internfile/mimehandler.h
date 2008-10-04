@@ -16,7 +16,7 @@
  */
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
-/* @(#$Id: mimehandler.h,v 1.15 2007-11-16 14:28:52 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mimehandler.h,v 1.16 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -76,6 +76,11 @@ public:
 	return m_reason;
     }
 
+    virtual void clear() {
+	m_forPreview = m_havedoc = false;
+	Dijon::Filter::clear();
+    }
+
 protected:
     bool   m_forPreview;
     string m_defcharset;
@@ -92,9 +97,11 @@ protected:
  *     indexedmimetypes (if this is set at all).
  */
 extern Dijon::Filter *getMimeHandler(const std::string &mtyp, RclConfig *cfg,
+
 				     bool filtertypes=false);
+/// Free up filter for reuse (you can also delete it)
+extern void returnMimeHandler(Dijon::Filter *);
 
 /// Can this mime type be interned ?
 extern bool canIntern(const std::string mimetype, RclConfig *cfg);
-
 #endif /* _MIMEHANDLER_H_INCLUDED_ */

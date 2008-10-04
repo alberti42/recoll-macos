@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.43 2008-10-03 06:23:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.44 2008-10-04 14:26:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -203,8 +203,9 @@ FileInterner::~FileInterner()
 {
     tmpcleanup();
     for (vector<Dijon::Filter*>::iterator it = m_handlers.begin();
-	 it != m_handlers.end(); it++)
-	delete *it;
+	 it != m_handlers.end(); it++) {
+        returnMimeHandler(*it);
+    }
     // m_tempfiles will take care of itself
 }
 
@@ -283,8 +284,10 @@ static inline bool getKeyValue(const map<string, string>& docdata,
     it = docdata.find(key);
     if (it != docdata.end()) {
 	value = it->second;
+	LOGDEB2(("getKeyValue: [%s]->[%s]\n", key.c_str(), value.c_str()));
 	return true;
     }
+    LOGDEB2(("getKeyValue: no value for [%s]\n", key.c_str()));
     return false;
 }
 
@@ -314,7 +317,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 	} else if (it->first == Rcl::Doc::keyoc) {
 	    doc.origcharset = it->second;
 	} else if (it->first == keymt || it->first == keycs) {
-	    // don't need these.
+	    // don't need/want these.
 	} else {
 	    doc.meta[it->first] = it->second;
 	}
@@ -338,7 +341,6 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 
     // If there is no ipath stack, the mimetype is the one from the file
     doc.mimetype = m_mimetype;
-    LOGDEB2(("INITIAL mimetype: %s\n", doc.mimetype.c_str()));
 
     string ipathel;
     for (vector<Dijon::Filter*>::const_iterator hit = m_handlers.begin();
@@ -382,7 +384,7 @@ void FileInterner::popHandler()
 	m_tempfiles.pop_back();
 	m_tmpflgs[i] = false;
     }
-    delete m_handlers.back();
+    returnMimeHandler(m_handlers.back());
     m_handlers.pop_back();
 }
 
@@ -430,8 +432,8 @@ int FileInterner::addHandler()
 			m_forPreview ? "view" : "index");
     newflt->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
 
-    // Get content: we don't use getkeyvalue() here to avoid copying
-    // the text, which may be big.
+    // Get current content: we don't use getkeyvalue() here to avoid
+    // copying the text, which may be big.
     string ns;
     const string *txt = &ns;
     {
@@ -469,9 +471,8 @@ int FileInterner::addHandler()
 }
 
 // Information and debug after a next_document error
-void FileInterner::processNextDocError()
+void FileInterner::processNextDocError(Rcl::Doc &doc, string& ipath)
 {
-    Rcl::Doc doc; string ipath;
     collectIpathAndMT(doc, ipath);
     m_reason = m_handlers.back()->get_error();
     checkExternalMissing(m_reason);
@@ -530,7 +531,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	// might be ie an error while decoding an attachment, but we
 	// still want to process the rest of the mbox! For preview: fatal.
 	if (!m_handlers.back()->next_document()) {
-	    processNextDocError(); // Debug etc.
+	    processNextDocError(doc, ipath);
 	    if (m_forPreview) 
 		return FIError;
 	    popHandler();

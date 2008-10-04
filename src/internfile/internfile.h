@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.19 2008-10-03 06:23:23 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.20 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -144,7 +144,7 @@ class FileInterner {
     void popHandler();
     int addHandler();
     void checkExternalMissing(const string& msg);
-    void processNextDocError();
+    void processNextDocError(Rcl::Doc &doc, string& ipath);
 };
 
  

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.22 2007-11-16 14:28:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.23 2008-10-04 14:26:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,10 @@ using namespace std;
 #include "mh_mbox.h"
 #include "mh_text.h"
 #include "mh_unknown.h"
-  
+
+// Pool of already known and created handlers
+static map<string, Dijon::Filter*>  o_handlers;
+
 /** Create internal handler object appropriate for given mime type */
 static Dijon::Filter *mhFactory(const string &mime)
 {
@@ -52,16 +55,103 @@ static Dijon::Filter *mhFactory(const string &mime)
 	return new MimeHandlerUnknown(lmime);
 }
 
-/*
- * Return handler object for given mime type:
+/**
+ * Create a filter that executes an external program or script
+ * A filter def can look like. 
+ * exec someprog -v -t " h i j";charset= xx; mimetype=yy
+ * We don't support ';' inside a quoted string for now. Can't see a use
+ * for it
  */
+MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs)
+{
+    list<string>semicolist;
+    stringToTokens(hs, semicolist, ";");
+    if (hs.size() < 1) {
+	LOGERR(("mhExecFactory: bad filter def: [%s]\n", hs.c_str()));
+	return 0;
+    }
+    string& cmd = *(semicolist.begin());
+
+    list<string> toks;
+    stringToStrings(cmd, toks);
+    if (toks.size() < 2) {
+	LOGERR(("mhExecFactory: bad config line for [%s]: [%s]\n", 
+		mtype.c_str(), hs.c_str()));
+	return 0;
+    }
+
+    MimeHandlerExec *h = new MimeHandlerExec(mtype.c_str());
+
+    list<string>::iterator it;
+
+    // toks size is at least 2, this has been checked by caller.
+    it = toks.begin();
+    it++;
+    h->params.push_back(cfg->findFilter(*it++));
+    h->params.insert(h->params.end(), it, toks.end());
+
+    // Handle additional parameters
+    it = semicolist.begin();
+    it++;
+    for (;it != semicolist.end(); it++) {
+	string &line = *it;
+	string::size_type eqpos = line.find("=");
+	if (eqpos == string::npos)
+	    continue;
+	// Compute name and value, trim white space
+	string nm, val;
+	nm = line.substr(0, eqpos);
+	trimstring(nm);
+	val = line.substr(eqpos+1, string::npos);
+	trimstring(val);
+	if (!nm.compare("charset")) {
+	    h->cfgCharset = val;
+	} else if (!nm.compare("mimetype")) {
+	    h->cfgMtype = val;
+	}
+    }
+
+#if 0
+    string sparams;
+    for (it = h->params.begin(); it != h->params.end(); it++) {
+	sparams += string("[") + *it + "] ";
+    }
+    LOGDEB(("mhExecFactory:mt [%s] cfgmt [%s] cfgcs [%s] params: [%s]\n",
+	    mtype.c_str(), h->cfgMtype.c_str(), h->cfgCharset.c_str(),
+	    sparams.c_str()));
+#endif
+
+    return h;
+}
+
+/* Return mime handler to pool */
+void returnMimeHandler(Dijon::Filter *handler)
+{
+    if (handler) {
+	handler->clear();
+	o_handlers[handler->get_mime_type()] = handler;
+    }
+}
+
+/* Get handler/filter object for given mime type: */
 Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg, 
 			      bool filtertypes)
 {
+    if (mtype.empty())
+	return false;
+
+    // Do we already have one ?
+    map<string, Dijon::Filter *>::iterator it = o_handlers.find(mtype);
+    if (it != o_handlers.end()) {
+	Dijon::Filter *h = it->second;
+	o_handlers.erase(it);
+	LOGDEB2(("getMimeHandler: found in cache\n"));
+	return h;
+    }
+    
     // Get handler definition for mime type
     string hs;
-    if (!mtype.empty())
-	hs = cfg->getMimeHandlerDef(mtype, filtertypes);
+    hs = cfg->getMimeHandlerDef(mtype, filtertypes);
 
     if (!hs.empty()) {
 	// Break definition into type and name 
@@ -84,11 +174,7 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 			mtype.c_str(), hs.c_str()));
 		return 0;
 	    }
-	    MimeHandlerExec *h = new MimeHandlerExec(mtype.c_str());
-	    it++;
-	    h->params.push_back(cfg->findFilter(*it++));
-	    h->params.insert(h->params.end(), it, toks.end());
-	    return h;
+	    return mhExecFactory(cfg, mtype, hs);
 	}
     }
 

@@ -16,7 +16,7 @@
  */
 #ifndef _MH_UNKNOWN_H_INCLUDED_
 #define _MH_UNKNOWN_H_INCLUDED_
-/* @(#$Id: mh_unknown.h,v 1.2 2006-12-15 12:40:02 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_unknown.h,v 1.3 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -43,6 +43,9 @@ class MimeHandlerUnknown : public RecollFilter {
 	m_metaData["content"] = "";
 	m_metaData["mimetype"] = "text/plain";
 	return true;
+    }
+    virtual void clear() {
+	RecollFilter::clear(); 
     }
 };
 

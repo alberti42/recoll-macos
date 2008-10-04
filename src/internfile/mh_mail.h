@@ -16,7 +16,7 @@
  */
 #ifndef _MAIL_H_INCLUDED_
 #define _MAIL_H_INCLUDED_
-/* @(#$Id: mh_mail.h,v 1.12 2007-10-17 11:40:35 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_mail.h,v 1.13 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <sstream>
 #include <vector>
@@ -51,6 +51,7 @@ class MimeHandlerMail : public RecollFilter {
     }
     virtual bool next_document();
     virtual bool skip_to_document(const string& ipath);
+    virtual void clear();
 
  private:
     bool processMsg(Binc::MimePart *doc, int depth);

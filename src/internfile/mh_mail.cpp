@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.34 2008-09-16 08:13:45 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.35 2008-10-04 14:26:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -54,14 +54,24 @@ static const string cstr_title = "title";
 
 MimeHandlerMail::~MimeHandlerMail() 
 {
-    delete m_bincdoc;
-    if (m_fd >= 0)
+    clear();
+}
+void MimeHandlerMail::clear()
+{
+    delete m_bincdoc; m_bincdoc = 0;
+    if (m_fd >= 0) {
 	close(m_fd);
-    delete m_stream;
+	m_fd = -1;
+    }
+    delete m_stream; m_stream = 0;
+    m_idx = -1;
+    m_subject.erase();
     for (vector<MHMailAttach*>::iterator it = m_attachments.begin(); 
 	 it != m_attachments.end(); it++) {
 	delete *it;
     }
+    m_attachments.clear();
+    RecollFilter::clear();
 }
 
 bool MimeHandlerMail::set_document_file(const string &fn)

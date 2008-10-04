@@ -16,7 +16,7 @@
  */
 #ifndef _MBOX_H_INCLUDED_
 #define _MBOX_H_INCLUDED_
-/* @(#$Id: mh_mbox.h,v 1.2 2007-10-03 14:53:37 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: mh_mbox.h,v 1.3 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 using std::string;
@@ -40,7 +40,7 @@ class MimeHandlerMbox : public RecollFilter {
 	m_ipath = ipath;
 	return true;
     }
-
+    virtual void clear();
  private:
     string     m_fn;     // File name
     void      *m_vfp;    // File pointer for folder
