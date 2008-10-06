@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.23 2008-10-04 14:26:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.24 2008-10-06 06:22:46 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -35,8 +35,9 @@ using namespace std;
 #include "mh_text.h"
 #include "mh_unknown.h"
 
-// Pool of already known and created handlers
-static map<string, Dijon::Filter*>  o_handlers;
+// Pool of already known and created handlers. There can be several instance
+// for a given mime type (think email attachment in email message)
+static multimap<string, Dijon::Filter*>  o_handlers;
 
 /** Create internal handler object appropriate for given mime type */
 static Dijon::Filter *mhFactory(const string &mime)
@@ -127,9 +128,10 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs)
 /* Return mime handler to pool */
 void returnMimeHandler(Dijon::Filter *handler)
 {
+    typedef multimap<string, Dijon::Filter*>::value_type value_type;
     if (handler) {
 	handler->clear();
-	o_handlers[handler->get_mime_type()] = handler;
+	o_handlers.insert(value_type(handler->get_mime_type(), handler));
     }
 }
 

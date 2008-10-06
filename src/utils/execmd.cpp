@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.26 2007-11-08 09:34:40 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.27 2008-10-06 06:22:47 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -374,7 +374,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	// Hu ho
 	LOGERR(("ExecCmd::doexec: execvp(%s) failed. errno %d\n", cmd.c_str(),
 		errno));
-	_exit(128);
+	_exit(127);
     }
     /* This cant be reached: to make cc happy */
     return -1;

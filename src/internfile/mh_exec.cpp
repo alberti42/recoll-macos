@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.12 2008-10-04 14:26:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.13 2008-10-06 06:22:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,10 @@ static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.12 2008-10-04 14:26:59 dockes Exp
 #include "mh_html.h"
 #include "debuglog.h"
 #include "cancelcheck.h"
+#include "smallut.h"
+
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -42,6 +46,10 @@ bool MimeHandlerExec::next_document()
     if (m_havedoc == false)
 	return false;
     m_havedoc = false;
+    if (missingHelper) {
+	LOGDEB(("MimeHandlerExec::next_document(): helper known missing\n"));
+	return false;
+    }
     if (params.empty()) {
 	// Hu ho
 	LOGERR(("MimeHandlerExec::mkDoc: empty params\n"));
@@ -59,7 +67,7 @@ bool MimeHandlerExec::next_document()
     if (!m_ipath.empty())
 	myparams.push_back(m_ipath);
 
-    // Execute command and store the result text
+    // Execute command, store the output
     string& output = m_metaData["content"];
     output.erase();
     ExecCmd mexec;
@@ -68,15 +76,37 @@ bool MimeHandlerExec::next_document()
     mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
     int status = mexec.doexec(cmd, myparams, 0, &output);
+
     if (status) {
-	LOGERR(("MimeHandlerExec: command status 0x%x: %s\n", 
+	LOGERR(("MimeHandlerExec: command status 0x%x for %s\n", 
 		status, cmd.c_str()));
-	// If the output string begins with RECFILTERROR, then it's 
-	// interpretable error information
-	if (output.find("RECFILTERROR") == 0)
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 127) {
+	    // That's how execmd signals a failed exec (most probably
+	    // a missing command). Let'hope no filter uses the same value as
+	    // an exit status... Disable myself permanently and signal the 
+	    // missing cmd.
+	    missingHelper = true;
+	    m_reason = string("RECFILTERROR HELPERNOTFOUND ") + cmd;
+	} else if (output.find("RECFILTERROR") == 0) {
+	    // If the output string begins with RECFILTERROR, then it's 
+	    // interpretable error information out from a recoll script
 	    m_reason = output;
+	    list<string> lerr;
+	    stringToStrings(output, lerr);
+	    if (lerr.size() > 2) {
+		list<string>::iterator it = lerr.begin();
+		it++;
+		if (*it == "HELPERNOTFOUND") {
+		    // No use trying again and again to execute this filter, 
+		    // it won't work.
+		    missingHelper = true;
+		}
+	    }		    
+	}
 	return false;
     }
+
+    // Success. Store some external metadata
     m_metaData["origcharset"] = m_defcharset;
     // Default charset: all recoll filters output utf-8, but this
     // could still be overridden by the content-type meta tag.
