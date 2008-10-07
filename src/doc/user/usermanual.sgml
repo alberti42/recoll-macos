@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.64 2008-09-24 06:34:35 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.65 2008-10-07 08:07:47 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -834,8 +834,13 @@ fvwm
       simple search entry when the search mode selector is set to
       <guilabel>Query Language</guilabel>.</para>
 
+      <para>The language is roughly based on the <ulink
+            url="http://www.xesam.org/main/XesamUserSearchLanguage95">
+      Xesam</ulink> user search language specification.</para>
+
       <para>Here follows a sample request that we are going to
       explain:</para>
+
       <programlisting>
           author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
       </programlisting>
@@ -850,6 +855,15 @@ fvwm
       <replaceable>live</replaceable> or
       <replaceable>unplugged</replaceable> but not
       <replaceable>potatoes</replaceable> (in any part of the document).</para>
+
+      <para>An element is composed of an optional field specification,
+      and a value, separated by a colon. Exemple:
+      <replaceable>Beatles</replaceable>,
+      <replaceable>author:balzac</replaceable>,
+      <replaceable>dc:title:grandet</replaceable> </para>
+
+      <para>The colon, if present, means "contains". Xesam defines other
+      relations, which are not supported for now.</para>
 
       <para>All elements in the search entry are normally combined
       with an implicit AND. It is possible to specify that elements be
@@ -870,16 +884,17 @@ fvwm
       <replaceable>word3</replaceable>. Do not enter explicit
       parenthesis, they are not supported for now.</para>
 
-      <para>An entry preceded by a <literal>-</literal> specifies a
-      term that should <emphasis>not</emphasis> appear.</para>
+      <para>An element preceded by a <literal>-</literal> specifies a
+      term that should <emphasis>not</emphasis> appear. Pure negative
+      queries are forbidden.</para>
 
-      <para>The first element in the above exemple,
-      <literal>author:"john doe"</literal> is a phrase search limited
-      to a specific field. Phrase searches are specified as usual by
-      enclosing the words in double quotes. The field specification
-      appears before the colon (of course this is not limited to
-      phrases, <literal>author:Balzac</literal> would be ok
-      too). &RCL; currently manages the following fields:</para>
+      <para>As usual, words inside quotes define a phrase
+      (the order of words is significant), so that
+      <replaceable>title:"prejudice pride"</replaceable> is not the same as
+      <replaceable>title:prejudice title:pride</replaceable>, and is
+      unlikely to find a result.</para> 
+
+      <para>&RCL; currently manages the following default fields:</para>
       <itemizedlist>
 	<listitem><para><literal>title</literal>,
 	<literal>subject</literal> or <literal>caption</literal> are
@@ -889,29 +904,32 @@ fvwm
 	<listitem><para><literal>author</literal> or
 	<literal>from</literal> for searching the documents originators.</para>
 	</listitem>
+	<listitem><para><literal>recipient</literal> or
+	<literal>to</literal> for searching the documents recipients.</para>
+	</listitem>
 	<listitem><para><literal>keyword</literal> for searching the
-	document specified keywords (few documents actually have any).</para>
+	document-specified keywords (few documents actually have any).</para>
+	</listitem>
+	<listitem><para><literal>filename</literal> for the document's
+	file name.</listitem>
+	<listitem><para><literal>ext</literal> specifies the file
+	name extension (Ex: <literal>ext:html</literal>)</para>
 	</listitem>
       </itemizedlist>
 
-      <para>As of release 1.9, the filters have the possibility to
-      create other fields with arbitrary names. No standard filters
-      use this possibility yet.</para>
-
-      <para>There are two other elements which may be specified
-      through the field syntax, but are somewhat special:</para>
+      <para>The field syntax also supports a few field-like, but
+      special, criteria:</para>
       <itemizedlist>
-	<listitem><para><literal>ext</literal> for specifying the file
-	name extension (Ex: <literal>ext:html</literal>)</para>
-	</listitem>
-	<listitem><para><literal>dir</literal> for specifying the file
-	location (Ex:
+	<listitem><para><literal>dir</literal> for filtering the
+	results on file	location (Ex:
 	<literal>dir:/home/me/somedir</literal>). Please note
 	that this is quite inefficient, that it may produce very
 	slow searches, and that it may be worth in some
 	cases to set up separate databases instead.</para>
 	</listitem>
-	<listitem><para><literal>mime</literal> for specifying the
+
+	<listitem><para><literal>mime</literal> or
+	<literal>format</literal> for specifying the
 	mime type. This one is quite special because you can specify
 	several values which will be OR'ed (the normal default for the
 	language is AND). Ex: <literal>mime:text/plain
@@ -920,18 +938,42 @@ fvwm
 	<literal>mime</literal> specification is not supported and
 	will produce strange results.</para>
 	</listitem>
+
+	<listitem><para><literal>type</literal> or
+	<literal>rclcat</literal> for specifying the category (as in
+	text/media/presentation/etc.). The classification of mime
+	types in categories is defined in the &RCL; configuration
+	(<filename>mimeconf</filename>), and can be modified or
+	extended. The default category names are those which permit
+	filtering results in the main GUI screen. Categories are OR'ed
+	like mime types above.</para>
+	</listitem>
+
       </itemizedlist>
+
+      <para>The document filters used while indexing have the
+      possibility to create other fields with arbitrary names, and
+      aliases may be defined in the configuration, so that the exact
+      field search possibilities may be different for you if someone
+      took care of the customisation.</para>
+
       <para>The query language is currently the only way to use the
       &RCL; field search capability.</para>
 
       <para>Words inside phrases and capitalized words are not
       stem-expanded. Wildcards may be used anywhere inside a term.
       Specifying a wild-card on the left of a term can produce a very
-      slow search.</para>
+      slow search (or even an incorrect one if the expansion is
+      truncated because of excessive size).</para>
 
       <para>You can use the <literal>show query</literal> link at the
       top of the result list to check the exact query which was
       finally executed by Xapian.</para>
+
+      <para>Most Xesam phrase modifiers are unsupported, except for
+      <literal>l</literal> (small ell) to disable stemming, and
+      <literal>p</literal> to turn an phrase into a NEAR (unordered)
+      search. Exemple: <replaceable>"prejudice pride"p</replaceable></para>
 
     </sect1>
 
