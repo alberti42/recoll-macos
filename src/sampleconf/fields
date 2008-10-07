@@ -1,4 +1,4 @@
-# @(#$Id: fields,v 1.3 2008-09-16 08:18:30 dockes Exp $  (C) 2007 J.F.Dockes
+# @(#$Id: fields,v 1.4 2008-10-07 06:44:23 dockes Exp $  (C) 2007 J.F.Dockes
 # Field names configuration. This defines how one may search ie for 
 # author:Hemingway
 # Important: 
@@ -34,7 +34,7 @@ recipient = XTO
 # to be listed here)
 #
 # Some fields are stored by default, don't add them here, else they will be
-# stored twice: title, keywords, abstract, filename, mimetype, url
+# stored twice: caption, keywords, abstract, filename, mimetype, url
 # "author" used to be stored by default, now set here as optional
 # Only canonical names should be used here, not aliases.
 [stored]
@@ -54,7 +54,7 @@ stored = author
 [aliases]
 abstract = summary dc:summary description xesam:description
 author = creator dc:creator xesam:author xesam:creator
-title = title dc:title subject
+caption = title title dc:title subject
 # catg = dc:type contentCategory
 dbytes = size xesam:size
 dmtime = date dc:date dc:datemodified datemodified contentmodified \

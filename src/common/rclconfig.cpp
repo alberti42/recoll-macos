@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.60 2008-10-03 08:19:19 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.61 2008-10-07 06:44:23 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -517,12 +517,14 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 }
 
 // Return term indexing prefix for field name (ie: "filename" -> "XSFN")
-// The input must be a canonical field name (alias translation done already)
-bool RclConfig::getFieldPrefix(const string& fld, string &pfx)
+bool RclConfig::getFieldPrefix(const string& _fld, string &pfx)
 {
+    string fld = fieldCanon(_fld);
     map<string,string>::const_iterator pit = m_fldtopfx.find(fld);
     if (pit != m_fldtopfx.end()) {
 	pfx = pit->second;
+	LOGDEB1(("RclConfig::getFieldPrefix: [%s]->[%s]\n", 
+		 _fld.c_str(), pfx.c_str()));
 	return true;
     } else {
 	LOGDEB1(("RclConfig::readFieldsConfig: no prefix for field [%s]\n",
@@ -570,11 +572,16 @@ bool RclConfig::getFieldSpecialisationPrefixes(const string& fld,
     return true;
 }
 
-string RclConfig::fieldCanon(const string& fld)
+string RclConfig::fieldCanon(const string& f)
 {
+    string fld = stringtolower(f);
     map<string, string>::const_iterator it = m_aliastocanon.find(fld);
-    if (it != m_aliastocanon.end())
+    if (it != m_aliastocanon.end()) {
+	LOGDEB1(("RclConfig::fieldCanon: [%s] -> [%s]\n", 
+		 f.c_str(), it->second.c_str()));
 	return it->second;
+    }
+    LOGDEB1(("RclConfig::fieldCanon: [%s] -> [%s]\n", f.c_str(), fld.c_str()));
     return fld;
 }
 

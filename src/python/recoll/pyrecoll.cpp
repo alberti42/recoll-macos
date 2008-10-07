@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.16 2008-09-29 11:33:55 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.17 2008-10-07 06:44:23 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -291,7 +291,7 @@ Doc_getattr(recoll_DocObject *self, char *name)
 	LOGDEB(("meta[%s] -> [%s]\n", it->first.c_str(), it->second.c_str()));
     }
 #endif
-    string key = rclconfig->fieldCanon(stringtolower(string(name)));
+    string key = rclconfig->fieldCanon(string(name));
 
     // Handle special cases, then try retrieving key value from meta 
     // array
@@ -391,7 +391,7 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
     }
 
     char* uvalue = PyString_AsString(putf8);
-    string key = rclconfig->fieldCanon(stringtolower(string(name)));
+    string key = rclconfig->fieldCanon(string(name));
 
     LOGDEB0(("Doc_setattr: [%s] (%s) -> [%s]\n", key.c_str(), name, uvalue));
     // We set the value in the meta array in all cases. Good idea ? or do it

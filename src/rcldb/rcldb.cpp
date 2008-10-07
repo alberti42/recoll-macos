@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.147 2008-09-30 12:38:29 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.148 2008-10-07 06:44:23 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -709,7 +709,7 @@ bool Db::isopen()
 // reason (old config not updated ?). We use it only if the config
 // translation fails. Also we add in there fields which should be
 // indexed with no prefix (ie: abstract)
-bool Db::fieldToPrefix(const string& fldname, string &pfx)
+bool Db::fieldToPrefix(const string& fld, string &pfx)
 {
     // This is the default table. We prefer the data from rclconfig if 
     // available
@@ -732,9 +732,6 @@ bool Db::fieldToPrefix(const string& fldname, string &pfx)
 	fldToPrefs["tag"] = "K";
 	fldToPrefs["tags"] = "K";
     }
-
-    string fld(fldname);
-    stringtolower(fld);
 
     RclConfig *config = RclConfig::getMainConfig();
     if (config && config->getFieldPrefix(fld, pfx))
@@ -1051,7 +1048,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	const set<string>& stored = config->getStoredFields();
 	for (set<string>::const_iterator it = stored.begin();
 	     it != stored.end(); it++) {
-	    string nm = stringtolower(config->fieldCanon(*it));
+	    string nm = config->fieldCanon(*it);
 	    if (!doc.meta[*it].empty()) {
 		string value = 
 		    neutchars(truncate_to_word(doc.meta[*it], 150), nc);

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.9 2008-09-29 11:33:55 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.10 2008-10-07 06:44:23 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 
 #include <stdlib.h>
@@ -114,7 +114,7 @@ Db *Query::whatDb()
 
 void Query::setSortBy(const string& fld, bool ascending) {
     RclConfig *cfg = RclConfig::getMainConfig();
-    m_sortField = cfg->fieldCanon(stringtolower(fld));
+    m_sortField = cfg->fieldCanon(fld);
     m_sortAscending = ascending;
     LOGDEB0(("RclQuery::setSortBy: [%s] %s\n", m_sortField.c_str(),
 	     m_sortAscending ? "ascending" : "descending"));
