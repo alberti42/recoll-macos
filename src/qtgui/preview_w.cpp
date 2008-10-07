@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.38 2008-10-03 16:02:07 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.39 2008-10-07 16:19:15 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -837,7 +837,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	progress.setLabelText(tr("Creating preview text"));
 	qApp->processEvents();
 	if (inputishtml) {
-	    LOGDEB(("Preview: got html %s\n", fdoc.text.c_str()));
+	    LOGDEB1(("Preview: got html %s\n", fdoc.text.c_str()));
 	    m_plaintorich.set_inputhtml(true);
 	} else {
 	    m_plaintorich.set_inputhtml(false);
