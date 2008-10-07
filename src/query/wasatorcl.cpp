@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.15 2008-08-28 15:43:57 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.16 2008-10-07 06:52:57 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -70,7 +70,7 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	default:
 	    LOGINFO(("wasaQueryToRcl: found bad NULL or AND q type in list\n"));
 	    continue;
-	case WasaQuery::OP_LEAF:
+	case WasaQuery::OP_LEAF: {
 	    LOGDEB2(("wasaQueryToRcl: leaf clause [%s]:[%s]\n", 
 		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
 	    unsigned int mods = (unsigned int)(*it)->m_modifiers;
@@ -125,8 +125,9 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 		nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
 	    }
 	    sdata->addClause(nclause);
+	}
 	    break;
-
+	    
 	case WasaQuery::OP_EXCL:
 	    LOGDEB2(("wasaQueryToRcl: excl clause [%s]:[%s]\n", 
 		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
