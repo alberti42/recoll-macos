@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclabw,v 1.2 2007-06-15 11:41:50 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclabw,v 1.3 2008-10-08 08:27:34 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -82,13 +82,6 @@ umask 77
 #ENDRECFILTCOMMONCODE
 
 checkcmds iconv sed
-
-# check the input file existence
-if test ! -f "$infile"
-then
-  printf '%s: %s: no such file\n' "$progname" "$infile"
-  exit 1
-fi
 
 encoding=`sed -e  '/<?xml version=/s/"?>$//' \
 	      -e '/^<?xml version=/s/.*encoding="//p;D;q' \

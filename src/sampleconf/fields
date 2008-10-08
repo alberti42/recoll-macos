@@ -1,4 +1,4 @@
-# @(#$Id: fields,v 1.4 2008-10-07 06:44:23 dockes Exp $  (C) 2007 J.F.Dockes
+# @(#$Id: fields,v 1.5 2008-10-08 08:27:34 dockes Exp $  (C) 2007 J.F.Dockes
 # Field names configuration. This defines how one may search ie for 
 # author:Hemingway
 # Important: 
@@ -53,7 +53,7 @@ stored = author
 
 [aliases]
 abstract = summary dc:summary description xesam:description
-author = creator dc:creator xesam:author xesam:creator
+author = creator dc:creator xesam:author xesam:creator from
 caption = title title dc:title subject
 # catg = dc:type contentCategory
 dbytes = size xesam:size

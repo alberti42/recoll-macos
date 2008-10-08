@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclid3,v 1.2 2007-11-09 11:54:59 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclid3,v 1.3 2008-10-08 08:27:34 dockes Exp $  (C) 2004 J.F.Dockes
 #================================================================
 # rclid3
 # Handle audio files for recoll. This uses id3info to extract tags
@@ -83,25 +83,52 @@ checkcmds id3info
 echo '<html><head>'
 #echo '<title>' "$title" '</title>'
 echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
-echo '</head><body>'
-echo '<pre>'
 
 nocaptionexp='s/===.*://'
-kpcaptionexp='s/===[^(]*//'
 
 if test X$RECOLL_FILTER_FORPREVIEW = Xyes ; then
-    captionexp=$kpcaptionexp
-else
-    captionexp=$nocaptionexp
-fi
-
+echo '</head><body><pre>'
 id3info "$infile" | \
    sed -e '/Tag information for/d' \
-       -e "$captionexp" \
-       -e 's/</&lt;/g' -e 's/&/&amp;/g' \
+       -e 's/===[^(]*//' \
+       -e 's/</&lt;/g' -e 's/&/&amp;/g' -e 's/"/&quot;/g' -e 's/>/&gt;/g' 
+echo '</pre></body></html>'
 
-echo '</pre>'
-echo '</body></html>'
+else
+# Indexing. There are many other fields which we could process this way.
+# Would also need that some fields are set up in the "fields" config
+# file to be really useful
+id3info "$infile" | awk -F: \
+'{
+   value=""
+   for (i = 2; i <=NF; i++) {
+     value = value " " $i
+   }
+   sub("&", "&amp;", value)
+   sub("\"", "&quot;", value)
+   sub("<", "&lt;", value)
+   sub(">", "&gt;", value)
+}
+/TIT2/{
+   printf "<meta name=\"title\" content=\"%s\">\n", value
+   body=body value "\n"
+   next
+}
+/TPE1/{
+   printf "<meta name=\"artist\" content=\"%s\">\n", value
+   body=body value "\n"
+   next
+}
+/TALB/{
+   printf "<meta name=\"album\" content=\"%s\">\n", value
+   body=body value "\n"
+   next
+}
+{
+   body=body value "\n"
+}
+END{print "</head><body><pre>";print body;print "</pre></body></html>"}
+'
+fi
 
-# exit normally
 exit 0

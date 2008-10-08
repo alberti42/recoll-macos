@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclogg,v 1.1 2007-10-02 14:00:47 dockes Exp $  (C) 2007 J.F.Dockes
+# @(#$Id: rclogg,v 1.2 2008-10-08 08:27:34 dockes Exp $  (C) 2007 J.F.Dockes
 #================================================================
 # rclogg
 # Handle ogg audio files for recoll.
@@ -74,33 +74,37 @@ fi
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds ogginfo
+checkcmds ogginfo sed awk
 
 # output the result
 echo '<html><head>'
-#echo '<title>' "$title" '</title>'
 echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
-echo '</head><body>'
-echo '<pre>'
 
-nocaptionexp='/=/s/.*=//p'
-kpcaptionexp='/=/p'
+if test X$RECOLL_FILTER_FORPREVIEW = Xyes 
+then
 
-if test X$RECOLL_FILTER_FORPREVIEW = Xyes ; then
-    captionexp=$kpcaptionexp
+echo '</head><body><pre>'
+ogginfo "$infile" | grep '=' | sed -e 's/&/&amp;/g' -e 's/"/&quot;/g' \
+    -e 's/</&lt;/g' -e 's/>/&gt;/g'
+echo '</pre></body></html>'
+
 else
-    captionexp=$nocaptionexp
+    ogginfo "$infile" | grep '=' | awk -F= \
+      '{sub("^[ 	]+", "", $1)  
+        sub("&", "&amp;", $2)
+        sub("\"", "&quot;", $2)
+        sub("<", "&lt;", $2)
+        sub(">", "&gt;", $2)
+        printf "<meta name=\"%s\" content=\"%s\">\n", $1, $2
+        body=body $2 "\n"
+       }
+    END{print "</head><body><pre>";print body;print "</pre></body></html>"}'
 fi
 
 # Note: ogginfo output is unparseable: the COMMENT field can be
 # multiline, but there is no way to detect the end of the 'User
 # comments' area
-ogginfo "$infile" | \
-   sed -n \
-    -e "$captionexp"
 
-echo '</pre>'
-echo '</body></html>'
 
 # exit normally
 exit 0

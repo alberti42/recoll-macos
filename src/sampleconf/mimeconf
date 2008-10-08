@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.44 2008-09-28 14:20:50 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.45 2008-10-08 08:27:34 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -26,12 +26,15 @@ application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 # The external "exec" filters are typically scripts. They output the
 # document in simple html format, have a look at the scripts.
 [index]
-application/msword = exec rcldoc
+# Note: rcldoc did some work to splice hyphenated words at eol. Seems
+# actually not needed because antiword apparently does it too
+# application/msword = exec rcldoc
+application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=utf-8
 application/ogg = exec rclogg
 application/pdf = exec rclpdf
 application/postscript = exec rclps
-application/vnd.ms-excel = exec rclxls
-application/vnd.ms-powerpoint = exec rclppt
+application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;charset=utf-8;mimetype=text/plain
+application/vnd.ms-powerpoint = exec catppt -d utf-8;charset=utf-8;mimetype=text/plain
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  exec rclopxml
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
@@ -54,7 +57,7 @@ application/vnd.sun.xml.math = exec rclsoff
 application/vnd.sun.xml.writer = exec rclsoff
 application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
-application/vnd.wordperfect = exec rclwpd
+application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
 application/x-dvi = exec rcldvi
 application/x-flac = exec rclflac
@@ -72,7 +75,7 @@ image/svg+xml = exec rclsvg
 message/rfc822 = internal
 text/html  = internal 
 text/plain = internal 
-text/rtf = exec rclrtf
+text/rtf = exec unrtf --nopict --html;charset=iso-8859-1;mimetype=text/html
 text/x-c = exec rcltext
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman

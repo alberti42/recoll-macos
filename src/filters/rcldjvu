@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rcldjvu,v 1.5 2007-06-08 13:51:08 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: rcldjvu,v 1.6 2008-10-08 08:27:34 dockes Exp $  (C) 2005 J.F.Dockes
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -102,13 +102,6 @@ umask 77
 #ENDRECFILTCOMMONCODE
 
 checkcmds djvutxt djvused awk
-
-# check the input file existence
-if test ! -f "$infile"
-then
-  printf '%s: %s: no such file\n' "$progname" "$infile"
-  exit 1
-fi
 
 # Title: we try to extract it from the annotations. djvused outputs string
 # in C/awk \-escaped notation. Awk can only process this in string
