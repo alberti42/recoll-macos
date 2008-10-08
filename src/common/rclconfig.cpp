@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.61 2008-10-07 06:44:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.62 2008-10-08 16:15:22 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,7 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.61 2008-10-07 06:44:23 dockes E
 #include "debuglog.h"
 #include "smallut.h"
 #include "textsplit.h"
+#include "readfile.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -453,6 +454,22 @@ string RclConfig::getMimeHandlerDef(const std::string &mtype, bool filtertypes)
 	LOGDEB1(("getMimeHandler: no handler for '%s'\n", mtype.c_str()));
     }
     return hs;
+}
+string RclConfig::getMissingHelperDesc()
+{
+    string fmiss = path_cat(getConfDir(), "missing");
+    string out;
+    file_to_string(fmiss, out);
+    return out;
+}
+void RclConfig::storeMissingHelperDesc(const string &s)
+{
+    string fmiss = path_cat(getConfDir(), "missing");
+    FILE *fp = fopen(fmiss.c_str(), "w");
+    if (fp) {
+	fwrite(s.c_str(), s.size(), 1, fp);
+	fclose(fp);
+    }
 }
 
 // Read definitions for field prefixes, aliases, and hierarchy and arrange 

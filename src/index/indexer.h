@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.25 2007-08-30 09:01:52 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.26 2008-10-08 16:15:22 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -146,7 +146,6 @@ class DbIndexer : public FsTreeWalkerCB {
     Rcl::Db      m_db;
     string       m_tmpdir;
     DbIxStatusUpdater *m_updater;
-    list<string> m_missingExternal; // Names of missing helper programs
 
     bool init(bool rst = false, bool rdonly = false);
 };

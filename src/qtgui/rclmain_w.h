@@ -82,6 +82,7 @@ public slots:
     virtual void showSortDialog();
     virtual void showSpellDialog();
     virtual void showAboutDialog();
+    virtual void showMissingHelpers();
     virtual void startManual();
     virtual void showDocHistory();
     virtual void showExtIdxDialog();

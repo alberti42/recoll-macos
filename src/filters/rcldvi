@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rcldvi,v 1.6 2007-06-08 13:51:08 dockes Exp $  (C) 2006 J.F.Dockes
+# @(#$Id: rcldvi,v 1.7 2008-10-08 16:15:22 dockes Exp $  (C) 2006 J.F.Dockes
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ elif iscmd catdvi ; then
 fi
 
 if test X$decoder = X ; then
-   senderror NOTFOUND dvips catdvi
+   senderror HELPERNOTFOUND dvips or catdvi
 fi
 
 if test X$decoder = Xdvips ; then

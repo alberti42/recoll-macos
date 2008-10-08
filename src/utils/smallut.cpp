@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.33 2008-09-15 08:02:03 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.34 2008-10-08 16:15:22 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -303,6 +303,10 @@ void stringsToString(const list<string> &tokens, string &s)
 void stringsToString(const vector<string> &tokens, string &s)
 {
     stringsToString<vector<string> >(tokens, s);
+}
+void stringsToString(const set<string> &tokens, string &s)
+{
+    stringsToString<set<string> >(tokens, s);
 }
 
 void stringToTokens(const string& str, list<string>& tokens,

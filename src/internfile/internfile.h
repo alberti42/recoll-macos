@@ -16,12 +16,16 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.20 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.21 2008-10-08 16:15:22 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
+#include <map>
+#include <set>
 using std::string;
 using std::vector;
+using std::map;
+using std::set;
 
 #include "pathut.h"
 #include "Filter.h"
@@ -95,6 +99,9 @@ class FileInterner {
      */
     void setTargetMType(const string& tp) {m_targetMType = tp;}
 
+    /* In case we see an html version, it's set aside and can be recovered */
+    const string& get_html() {return m_html;}
+
     /** Utility function: extract internal document into temporary file. 
      *  This is used mainly for starting an external viewer for a
      *  subdocument (ie: mail attachment).
@@ -110,9 +117,8 @@ class FileInterner {
 			     const string& ipath, const string& mtype);
 
     const string& getReason() const {return m_reason;}
-    const list<string>& getMissingExternal();
-    void getMissingExternal(string& missing);
-    const string& get_html() {return m_html;}
+    static void getMissingExternal(string& missing);
+    static void getMissingDescription(string& desc);
 
  private:
     static const unsigned int MAXHANDLERS = 20;
@@ -135,7 +141,8 @@ class FileInterner {
     // Error data if any
     string                 m_reason;
     // Missing external programs
-    list<string>           m_missingExternal;
+    static set<string>           o_missingExternal;
+    static map<string, set<string> > o_typesForMissing;
 
     void tmpcleanup();
     bool dijontorcl(Rcl::Doc&);
@@ -143,7 +150,7 @@ class FileInterner {
     bool dataToTempFile(const string& data, const string& mt, string& fn);
     void popHandler();
     int addHandler();
-    void checkExternalMissing(const string& msg);
+    void checkExternalMissing(const string& msg, const string& mt);
     void processNextDocError(Rcl::Doc &doc, string& ipath);
 };
 

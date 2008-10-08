@@ -16,17 +16,19 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.30 2008-09-15 08:02:03 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.31 2008-10-08 16:15:22 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
 #include <map>
+#include <set>
 
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
 using std::vector;
 using std::map;
+using std::set;
 #endif /* NO_NAMESPACES */
 
 // Note these are all ascii routines
@@ -55,6 +57,7 @@ extern bool stringToStrings(const string &s, vector<string> &tokens);
  */
 extern void stringsToString(const list<string> &tokens, string &s);
 extern void stringsToString(const vector<string> &tokens, string &s);
+extern void stringsToString(const set<string> &tokens, string &s);
 
 /**
  * Split input string. No handling of quoting

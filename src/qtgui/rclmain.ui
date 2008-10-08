@@ -118,6 +118,7 @@
         <action name="fileToggleIndexingAction"/>
         <separator/>
         <action name="fileEraseDocHistoryAction"/>
+        <action name="showMissingHelpers_Action"/>
         <separator/>
         <action name="fileExitAction"/>
     </item>
@@ -137,6 +138,7 @@
     <separator/>
     <item text="&amp;Help" name="helpMenu">
         <action name="userManualAction"/>
+        <action name="showMissingHelpers_Action"/>
         <separator/>
         <action name="helpAbout_RecollAction"/>
     </item>
@@ -225,6 +227,14 @@
         </property>
         <property name="menuText">
             <string>&amp;Erase document history</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>showMissingHelpers_Action</cstring>
+        </property>
+        <property name="menuText">
+            <string>&amp;Show missing helpers</string>
         </property>
     </action>
     <action>

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.55 2008-09-30 12:38:29 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.56 2008-10-08 16:15:22 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -209,6 +209,8 @@ void RclMain::init()
 	    this, SLOT(eraseDocHistory()));
     connect(helpAbout_RecollAction, SIGNAL(activated()), 
 	    this, SLOT(showAboutDialog()));
+    connect(showMissingHelpers_Action, SIGNAL(activated()), 
+	    this, SLOT(showMissingHelpers()));
     connect(userManualAction, SIGNAL(activated()), this, SLOT(startManual()));
     connect(toolsDoc_HistoryAction, SIGNAL(activated()), 
 	    this, SLOT(showDocHistory()));
@@ -578,6 +580,18 @@ void RclMain::showAboutDialog()
     string vstring = string("Recoll ") + rclversion + 
 	"<br>" + "http://www.recoll.org";
     QMessageBox::information(this, tr("About Recoll"), vstring.c_str());
+}
+void RclMain::showMissingHelpers()
+{
+    string miss = rclconfig->getMissingHelperDesc();
+    QString msg = tr("External applications/commands needed and not found "
+		     "for indexing your file types:\n\n");
+    if (!miss.empty()) {
+	msg += QString::fromUtf8(miss.c_str());
+    } else {
+	msg += tr("No helpers found missing");
+    }
+    QMessageBox::information(this, tr("Missing helper programs"), msg);
 }
 
 // If a preview (toplevel) window gets closed by the user, we need to

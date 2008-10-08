@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.41 2008-09-16 08:18:30 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.42 2008-10-08 16:15:22 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -161,6 +161,9 @@ class RclConfig {
     bool getMimeViewerDefs(vector<pair<string, string> >&);
     bool setMimeViewerDef(const string& mimetype, const string& cmd);
 
+    /** Store/retrieve missing helpers description string */
+    string getMissingHelperDesc();
+    void storeMissingHelperDesc(const string &s);
 
     /** Find exec file for external filter. cmd is the command name from the
      * command string returned by getMimeHandlerDef */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.69 2008-10-04 14:26:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.70 2008-10-08 16:15:22 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -146,12 +146,13 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
 		m_dbdir.c_str()));
 	return false;
     }
-    if (!m_missingExternal.empty()) {
-	string missing;
-	stringsToString(m_missingExternal, missing);
-	LOGINFO(("DbIndexer::index missing helper program(s): %s\n", 
+    string missing;
+    FileInterner::getMissingDescription(missing);
+    if (!missing.empty()) {
+	LOGINFO(("DbIndexer::index missing helper program(s):\n%s\n", 
 		 missing.c_str()));
     }
+    m_config->storeMissingHelperDesc(missing);
     return true;
 }
 
@@ -443,9 +444,6 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	string ipath;
 	fis = interner.internfile(doc, ipath);
 	if (fis == FileInterner::FIError) {
-	    list<string> ext = interner.getMissingExternal();
-	    m_missingExternal.merge(ext);
-	    m_missingExternal.unique();
 	    // We used to return at this point. 
 	    //
 	    // The nice side was that if a filter failed because of a
