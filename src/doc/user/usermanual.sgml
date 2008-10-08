@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.65 2008-10-07 08:07:47 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.66 2008-10-08 16:12:36 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -228,10 +228,17 @@
       </para>
 
       <para>&RCL; indexing processes plain text, HTML, openoffice
-      and e-mail files internally. Other types (ie: postscript, pdf,
-      ms-word, rtf) need external applications for preprocessing. The
-      list is in the <link linkend="rcl.install.external">
-      installation</link> section.</para>
+      and e-mail files internally.</para>
+
+      <para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
+      need external applications for preprocessing. The list is in the
+      <link linkend="rcl.install.external"> installation</link>
+      section. After every indexing operation, &RCL; updates a list of
+      commands that would be needed for indexing existing files
+      types. This list can be displayed from the
+      <command>recoll</command> <guilabel>File</guilabel> menu. It is
+      stored in the <filename>missing</filename> text file
+      inside the configuration directory.</para>
 
       <para>Without further configuration, &RCL; will index all
       appropriate files from your home directory, with a reasonable
@@ -1624,10 +1631,19 @@ fvwm
     <sect1 id="rcl.install.external">
       <title>Supporting packages</title>
 
-	<para>&RCL; uses external applications to index some file
+      <para>&RCL; uses external applications to index some file
         types. You need to install them for the file types that you wish to
         have indexed (these are run-time dependencies. None is needed for
-        building &RCL;):</para>
+        building &RCL;).</para>
+
+      <para>After an indexing pass, the commands that were found
+      missing can be displayed from the <command>recoll</command>
+      <guilabel>File</guilabel> menu. The list is stored in the
+      <filename>missing</filename> text file inside the configuration
+      directory.</para>
+
+      <para>A list of common file types which need external
+      commands:</para>
 
       <itemizedlist>
 
