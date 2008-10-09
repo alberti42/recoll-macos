@@ -16,12 +16,22 @@
  */
 #ifndef _TRANSCODE_H_INCLUDED_
 #define _TRANSCODE_H_INCLUDED_
-/* @(#$Id: transcode.h,v 1.4 2006-03-29 11:18:15 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: transcode.h,v 1.5 2008-10-09 09:19:23 dockes Exp $  (C) 2004 J.F.Dockes */
 /** 
- * A very minimal c++ized interface to iconv
+ * 
  */
 #include <string>
-
+/**
+ * c++ized interface to iconv
+ *
+ * @param in input string
+ * @param out output string
+ * @param icode input encoding
+ * @param ocode input encoding
+ * @param ecnt (output) number of transcoding errors
+ * @return true if transcoding succeeded, even with errors. False for global
+ *     errors like unknown charset names
+ */
 extern bool transcode(const std::string &in, std::string &out, 
 		      const std::string &icode,
 		      const std::string &ocode, 
