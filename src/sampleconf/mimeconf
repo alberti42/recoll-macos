@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.45 2008-10-08 08:27:34 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.46 2008-10-09 09:21:38 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -32,7 +32,7 @@ application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=utf-8
 application/ogg = exec rclogg
 application/pdf = exec rclpdf
-application/postscript = exec rclps
+application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
 application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;charset=utf-8;mimetype=text/plain
 application/vnd.ms-powerpoint = exec catppt -d utf-8;charset=utf-8;mimetype=text/plain
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \

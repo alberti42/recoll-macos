@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclflac,v 1.1 2007-10-02 14:00:47 dockes Exp $  (C) 2007 J.F.Dockes
+# @(#$Id: rclflac,v 1.2 2008-10-09 09:21:38 dockes Exp $  (C) 2007 J.F.Dockes
 #================================================================
 # rclflac
 # Handle flac audio files for recoll.
@@ -78,28 +78,57 @@ checkcmds metaflac
 
 # output the result
 echo '<html><head>'
-#echo '<title>' "$title" '</title>'
 echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
-echo '</head><body>'
-echo '<pre>'
 
 nocaptionexp='s/ *comment\[.*\]: .*=//p'
-kpcaptionexp='s/ *comment\[.*\]: //p'
 
 if test X$RECOLL_FILTER_FORPREVIEW = Xyes ; then
-    captionexp=$kpcaptionexp
-else
-    captionexp=$nocaptionexp
-fi
-
+echo '</head><body><pre>'
 metaflac --list "$infile" | \
    sed -n \
     -e '/comment\[/s/</&lt;/g' \
     -e '/comment\[/s/&/&amp;/g' \
-    -e '/comment\[/'"$captionexp"
+    -e '/comment\[/s/ *comment\[.*\]: //p'
 
-echo '</pre>'
-echo '</body></html>'
+echo '</pre></body></html>'
 
-# exit normally
+else
+metaflac --list "$infile" | \
+   sed -n \
+    -e '/comment\[/s/ *comment\[.*\]: //p' | \
+    awk -F= '
+{
+   value=""
+   for (i = 2; i <=NF; i++) {
+     value = value " " $i
+   }
+   sub("^ +", "", value)
+   sub("&", "&amp;", value)
+   sub("\"", "&quot;", value)
+   sub("<", "&lt;", value)
+   sub(">", "&gt;", value)
+}
+/^title=/{
+   printf "<meta name=\"title\" content=\"%s\">\n", value
+   body=body value "\n"
+   next
+}
+/^artist=/{
+   printf "<meta name=\"artist\" content=\"%s\">\n", value
+   body=body value "\n"
+   next
+}
+/^album=/{
+   printf "<meta name=\"album\" content=\"%s\">\n", value
+   body=body value "\n"
+   next
+}
+{
+   body=body value "\n"
+}
+END{print "</head><body><pre>";print body;print "</pre></body></html>"}
+'
+
+fi
+
 exit 0
