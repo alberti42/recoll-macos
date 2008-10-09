@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.17 2008-10-07 06:44:23 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.18 2008-10-09 09:36:06 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -88,7 +88,7 @@ SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
    plusieurs mots. A transferer dans l'i/f Python ou pas ? */
 PyDoc_STRVAR(doc_addclause,
 "addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub', qstring=string,\n"
-"          slack=int, field=string, subSearch=SearchData)\n"
+"          slack=int, field=string, stemming=1|0, subSearch=SearchData)\n"
 "Adds a simple clause to the SearchData And/Or chain, or a subquery\n"
 "defined by another SearchData object\n"
 );
@@ -164,16 +164,17 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
         PyErr_SetString(PyExc_AttributeError, "sd");
         return 0;
     }
-    static char *kwlist[] = {"type", "qstring", "slack", "field",
+    static char *kwlist[] = {"type", "qstring", "slack", "field", "stemming",
 			     "subsearch", NULL};
     char *tp = 0;
     char *qs = 0; // needs freeing
     int slack = 0;
     char *fld = 0; // needs freeing
+    int  dostem = 1; // needs freeing
     recoll_SearchDataObject *sub = 0;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesO!", kwlist,
 				     &tp, "utf-8", &qs, &slack,
-				     "utf-8", &fld, 
+				     "utf-8", &fld, &dostem,
 				     &recoll_SearchDataType, &sub))
 	return 0;
 
@@ -223,6 +224,10 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
         PyErr_SetString(PyExc_AttributeError, "Bad tp arg");
 	return 0;
     }
+    if (dostem == 0) {
+	cl->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
+    }
+
     PyMem_Free(qs);
     PyMem_Free(fld);
     self->sd->addClause(cl);
@@ -631,7 +636,7 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 }
 
 PyDoc_STRVAR(doc_Query_executesd,
-"execute(SearchData, stemming=1|0)\n"
+"execute(SearchData)\n"
 "\n"
 "Starts a search for the query defined by the SearchData object.\n"
 );
@@ -639,12 +644,11 @@ PyDoc_STRVAR(doc_Query_executesd,
 static PyObject *
 Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
-    static char *kwlist[] = {"searchdata", "stemming", NULL};
+    static char *kwlist[] = {"searchdata", NULL};
     recoll_SearchDataObject *pysd = 0;
-    int dostem = 1;
     LOGDEB(("Query_executeSD\n"));
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|i:Query_execute", kwlist,
-				     &recoll_SearchDataType, &pysd, &dostem)) {
+				     &recoll_SearchDataType, &pysd)) {
 	return 0;
     }
     if (self->query == 0 || 
@@ -653,8 +657,6 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	return 0;
     }
     self->query->setSortBy(self->sortfield, self->ascending);
-    self->query->setQuery(pysd->sd, dostem ? Rcl::Query::QO_STEM : 
-			  Rcl::Query::QO_NONE);
     int cnt = self->query->getResCnt();
     self->next = 0;
     return Py_BuildValue("i", cnt);
