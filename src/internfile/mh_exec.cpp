@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.13 2008-10-06 06:22:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.14 2008-10-09 09:19:37 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@ static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.13 2008-10-06 06:22:46 dockes Exp
 #include "debuglog.h"
 #include "cancelcheck.h"
 #include "smallut.h"
+#include "transcode.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -106,11 +107,28 @@ bool MimeHandlerExec::next_document()
 	return false;
     }
 
+    // if output is text, we must handle the conversion to utf-8
+    string charset = cfgCharset.empty() ? "utf-8" : cfgCharset;
+    string mt = cfgMtype.empty() ? "text/html" : cfgMtype;
+    if (!mt.compare("text/plain") && charset.compare("utf-8")) {
+	string transcoded;
+	int ecnt;
+	if (!transcode(output, transcoded, charset, "UTF-8", &ecnt)) {
+	    LOGERR(("mh_exec: transcode failed from [%s] to UTF-8\n",
+		    charset.c_str()));
+	} else {
+	    if (ecnt) {
+		LOGDEB(("mh_exec: %d transcoding errors  from [%s] to UTF-8\n",
+			ecnt, charset.c_str()));
+	    }
+	    output = transcoded;
+	}
+    }
     // Success. Store some external metadata
     m_metaData["origcharset"] = m_defcharset;
     // Default charset: all recoll filters output utf-8, but this
     // could still be overridden by the content-type meta tag.
-    m_metaData["charset"] = cfgCharset.empty() ? "utf-8" : cfgCharset;
-    m_metaData["mimetype"] = cfgMtype.empty() ? "text/html" : cfgMtype;
+    m_metaData["charset"] = charset;
+    m_metaData["mimetype"] = mt;
     return true;
 }

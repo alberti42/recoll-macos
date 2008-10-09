@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.24 2008-10-06 06:22:46 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.25 2008-10-09 09:19:37 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -106,9 +106,9 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs)
 	val = line.substr(eqpos+1, string::npos);
 	trimstring(val);
 	if (!nm.compare("charset")) {
-	    h->cfgCharset = val;
+	    h->cfgCharset = stringtolower((const string&)val);
 	} else if (!nm.compare("mimetype")) {
-	    h->cfgMtype = val;
+	    h->cfgMtype = stringtolower((const string&)val);
 	}
     }
 
