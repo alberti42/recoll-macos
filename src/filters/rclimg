@@ -1,5 +1,5 @@
 #! /usr/bin/perl -w
-# @(#$Id: rclimg,v 1.4 2008-10-09 06:38:53 dockes Exp $  (C) 2007 Cedric Scott
+# @(#$Id: rclimg,v 1.5 2008-10-09 06:41:21 dockes Exp $  (C) 2007 Cedric Scott
 #######################################################
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ sub xapianTag {
 #use Image::ExifTool qw(:Public);
 eval {require Image::ExifTool; Image::ExifTool->import(qw(:Public));}; 
 if ($@) {
-	print STDERR "RECFILTERROR HELPERNOTFOUND Perl::Image::ExifTool\n";
+	print "RECFILTERROR HELPERNOTFOUND Perl::Image::ExifTool\n";
 	exit(1);
 }
 
