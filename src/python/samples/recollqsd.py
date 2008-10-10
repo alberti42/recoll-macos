@@ -7,7 +7,7 @@ def dotest(db, q):
     query = db.query()
     query.sortby("title", 1)
 
-    nres = query.executesd(q, stemming = 1)
+    nres = query.executesd(q)
     print "Result count: ", nres
     if nres > 10:
         nres = 10
@@ -22,10 +22,10 @@ def dotest(db, q):
 # End dotest
 
 sd = recoll.SearchData()
-sd.addClause("and", "essaouira maroc")
-#sd.addClause("and", "dockes", field="author")
-#sd.addClause("phrase", "jean francois", 1)
-#sd.addClause("excl", "plage")
+sd.addclause("and", "essaouira maroc")
+#sd.addclause("and", "dockes", field="author")
+#sd.addclause("phrase", "jean francois", 1)
+#sd.addclause("excl", "plage")
 
 db = recoll.connect()
 dotest(db, sd)

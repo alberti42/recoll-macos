@@ -94,6 +94,8 @@ class mbox_indexer:
                 #print "Simple: " + ct
                 if ct.lower() == "text/plain":
                     charset = part.get_content_charset("iso-8859-1")
+                    print "charset: ", charset
+                    print "text: ", part.get_payload(None, True)
                     text += unicode(part.get_payload(None, True), charset)
         doc.text = text
         # dbytes

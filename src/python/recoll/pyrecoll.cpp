@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.19 2008-10-10 08:05:11 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.20 2008-10-10 08:18:27 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -173,7 +173,7 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
     char *fld = 0; // needs freeing
     int  dostem = 1; // needs freeing
     recoll_SearchDataObject *sub = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesO!", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesiO!", kwlist,
 				     &tp, "utf-8", &qs, &slack,
 				     "utf-8", &fld, &dostem,
 				     &recoll_SearchDataType, &sub))
@@ -665,7 +665,7 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 }
 
 PyDoc_STRVAR(doc_Query_executesd,
-"execute(SearchData)\n"
+"executesd(SearchData)\n"
 "\n"
 "Starts a search for the query defined by the SearchData object.\n"
 );
@@ -676,17 +676,19 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     static char *kwlist[] = {"searchdata", NULL};
     recoll_SearchDataObject *pysd = 0;
     LOGDEB(("Query_executeSD\n"));
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|i:Query_execute", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:Query_execute", 
+				     kwlist,
 				     &recoll_SearchDataType, &pysd)) {
 	return 0;
     }
-    if (self->query == 0 || 
+    if (pysd == 0 || self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
     string sf = self->sortfield ? string(self->sortfield) : string("");
     self->query->setSortBy(sf, self->ascending);
+    self->query->setQuery(pysd->sd);
     int cnt = self->query->getResCnt();
     self->next = 0;
     return Py_BuildValue("i", cnt);
