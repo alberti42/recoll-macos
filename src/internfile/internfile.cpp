@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.45 2008-10-08 16:15:22 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.46 2008-10-10 08:04:54 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -102,7 +102,7 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     ExecCmd ex;
     int status = ex.doexec(cmd, args, 0, &tfile);
     if (status || tfile.empty()) {
-	LOGERR(("uncompressfile: doexec: status 0x%x\n", status));
+	LOGERR(("uncompressfile: doexec: failed for [%s] status 0x%x\n", ifn.c_str(), status));
 	rmdir(tdir.c_str());
 	return false;
     }
@@ -181,7 +181,7 @@ FileInterner::FileInterner(const std::string &f, const struct stat *stp,
     if (!df) {
 	// No handler for this type, for now :( if indexallfilenames
 	// is set in the config, this normally wont happen (we get mh_unknown)
-	LOGDEB(("FileInterner:: no handler for %s\n", l_mime.c_str()));
+	LOGERR(("FileInterner:: ignored: [%s] mime [%s]\n", f.c_str(), l_mime.c_str()));
 	return;
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
@@ -506,7 +506,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     LOGDEB(("FileInterner::internfile. ipath [%s]\n", ipath.c_str()));
     if (m_handlers.size() < 1) {
 	// Just means the constructor failed
-	LOGERR(("FileInterner::internfile: constructor failed\n"));
+	LOGDEB(("FileInterner::internfile: no handler: constructor failed\n"));
 	return FIError;
     }
 
@@ -583,7 +583,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
  breakloop:
 
     if (m_handlers.empty()) {
-	LOGERR(("FileInterner::internfile: conversion ended with no doc\n"));
+	LOGDEB(("FileInterner::internfile: conversion ended with no doc\n"));
 	return FIError;
     }
 
@@ -604,10 +604,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     // Possibly destack so that we can test for FIDone. While doing this
     // possibly set aside an ancestor html text (for the GUI preview)
     while (!m_handlers.empty() && !m_handlers.back()->has_documents()) {
-	LOGDEB(("FileInterner::internfile: dstck filter fpv %d tgt %s\n",
-		m_forPreview, m_targetMType.c_str()));
 	if (m_forPreview) {
-	    LOGDEB(("FileInterner::internfile: Testing for html handler\n"));
 	    MimeHandlerHtml *hth = 
 		dynamic_cast<MimeHandlerHtml*>(m_handlers.back());
 	    if (hth) {
