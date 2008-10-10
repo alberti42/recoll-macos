@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.18 2008-10-09 09:36:06 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.19 2008-10-10 08:05:11 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -40,7 +40,7 @@ PyObject *obj_Create(PyTypeObject *tp, PyObject *args, PyObject *kwargs)
 }
 
 //////////////////////////////////////////////////////////////////////
-/// SearchData code
+/// SEARCHDATA SearchData code
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
@@ -87,8 +87,9 @@ SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
 /* Note: addclause necessite And/Or vient du fait que le string peut avoir
    plusieurs mots. A transferer dans l'i/f Python ou pas ? */
 PyDoc_STRVAR(doc_addclause,
-"addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub', qstring=string,\n"
-"          slack=int, field=string, stemming=1|0, subSearch=SearchData)\n"
+"addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',\n"
+"          qstring=string, slack=int, field=string, stemming=1|0,\n"
+"          subSearch=SearchData)\n"
 "Adds a simple clause to the SearchData And/Or chain, or a subquery\n"
 "defined by another SearchData object\n"
 );
@@ -109,8 +110,8 @@ static PyMethodDef SearchData_methods[] = {
 PyDoc_STRVAR(doc_SearchDataObject,
 "SearchData()\n"
 "\n"
-"A SearchData object describes a query. It has a number of global parameters\n"
-"and a chain of search clauses.\n"
+"A SearchData object describes a query. It has a number of global\n"
+"parameters and a chain of search clauses.\n"
 );
 static PyTypeObject recoll_SearchDataType = {
     PyObject_HEAD_INIT(NULL)
@@ -236,7 +237,7 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
 
 
 ///////////////////////////////////////////////////////////////////////
-///// Doc code
+///// DOC Doc code
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
@@ -418,8 +419,6 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
 	    self->doc->fbytes = uvalue;
 	} else if (!key.compare(Rcl::Doc::keyfn)) {
 	    self->doc->utf8fn = uvalue;
-	} else if (!key.compare(Rcl::Doc::keyfs)) {
-	    self->doc->fbytes = uvalue;
 	} else if (!key.compare(Rcl::Doc::keyfmt)) {
 	    self->doc->fmtime = uvalue;
 	}
@@ -464,7 +463,36 @@ PyDoc_STRVAR(doc_DocObject,
 "\n"
 "A Doc object contains index data for a given document.\n"
 "The data is extracted from the index when searching, or set by the\n"
-"indexer program when updating. \n"
+"indexer program when updating. The Doc object has no useful methods but\n"
+"many attributes to be read or set by its user. It matches exactly the\n"
+"Rcl::Doc c++ object. Some of the attributes are predefined, but, \n"
+"especially when indexing, others can be set, the name of which will be\n"
+"processed as field names by the indexing configuration.\n"
+"Inputs can be specified as unicode or strings.\n"
+"Outputs are unicode objects.\n"
+"All dates are specified as unix timestamps, printed as strings\n"
+"Predefined attributes (index/query/both):\n"
+" text (index): document plain text\n"
+" url (both)\n"
+" fbytes (both) optional) file size in bytes\n"
+" filename (both)\n"
+" fmtime (both) optional file modification date. Unix time printed \n"
+"    as string\n"
+" dbytes (both) document text bytes\n"
+" dmtime (both) document creation/modification date\n"
+" ipath (both) value private to the app.: internal access path\n"
+"    inside file\n"
+" mtype (both) mime type for original document\n"
+" mtime (query) dmtime if set else fmtime\n"
+" origcharset (both) charset the text was converted from\n"
+" size (query) dbytes if set, else fbytes\n"
+" sig (both) app-defined file modification signature. \n"
+"    For up to date checks\n"
+" relevancyrating (query)\n"
+" abstract (both)\n"
+" author (both)\n"
+" title (both)\n"
+" keywords (both)\n"
 );
 static PyTypeObject recoll_DocType = {
     PyObject_HEAD_INIT(NULL)
@@ -510,7 +538,7 @@ static PyTypeObject recoll_DocType = {
 
 
 //////////////////////////////////////////////////////
-
+/// QUERY Query object 
 
 typedef struct {
     PyObject_HEAD
@@ -521,8 +549,6 @@ typedef struct {
     int         ascending;
 } recoll_QueryObject;
 
-/////////////////////////////////////////////
-/// Query object 
 static void 
 Query_dealloc(recoll_QueryObject *self)
 {
@@ -572,6 +598,7 @@ PyDoc_STRVAR(doc_Query_sortby,
 "sortby(field=fieldname, ascending=true)\n"
 "Sort results by 'fieldname', in ascending or descending order.\n"
 "Only one field can be used, no subsorts for now.\n"
+"Must be called before executing the search\n"
 );
 
 static PyObject *
@@ -587,9 +614,10 @@ Query_sortby(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 }
 
 PyDoc_STRVAR(doc_Query_execute,
-"execute(query_string, stemmming=1|0)\n"
+"execute(query_string, stemming=1|0)\n"
 "\n"
-"Starts a search for query_string, a Xesam user language string.\n"
+"Starts a search for query_string, a Recoll search language string\n"
+"(mostly Xesam-compatible).\n"
 "The query can be a simple list of terms (and'ed by default), or more\n"
 "complicated with field specs etc. See the Recoll manual.\n"
 );
@@ -628,7 +656,8 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     if (!dostem)
 	sd->setStemlang("");
     RefCntr<Rcl::SearchData> rq(sd);
-    self->query->setSortBy(self->sortfield, self->ascending);
+    string sf = self->sortfield ? string(self->sortfield) : string("");
+    self->query->setSortBy(sf, self->ascending);
     self->query->setQuery(rq);
     int cnt = self->query->getResCnt();
     self->next = 0;
@@ -656,7 +685,8 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
-    self->query->setSortBy(self->sortfield, self->ascending);
+    string sf = self->sortfield ? string(self->sortfield) : string("");
+    self->query->setSortBy(sf, self->ascending);
     int cnt = self->query->getResCnt();
     self->next = 0;
     return Py_BuildValue("i", cnt);
@@ -728,13 +758,17 @@ static PyMethodDef Query_methods[] = {
 
 static PyMemberDef Query_members[] = {
     {"next", T_INT, offsetof(recoll_QueryObject, next), 0,
-     "Next index to be fetched from results.\n"
-     "Can be set/reset before calling fetchone() to effect seeking.\n"
-     "Starts at 0"
+     "Next index to be fetched from results. Normally increments after\n"
+     "each fetchone() call, but can be set/reset before the call effect\n"
+     "seeking. Starts at 0"
     },
     {NULL}  /* Sentinel */
 };
 
+PyDoc_STRVAR(doc_QueryObject,
+"Recoll Query objects are used to execute index searches. \n"
+"They must be created by the Db.query() method.\n"
+	     );
 static PyTypeObject recoll_QueryType = {
     PyObject_HEAD_INIT(NULL)
     0,                         /*ob_size*/
@@ -757,7 +791,7 @@ static PyTypeObject recoll_QueryType = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
-    "Recoll Query object",    /* tp_doc */
+    doc_QueryObject,           /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
@@ -779,7 +813,7 @@ static PyTypeObject recoll_QueryType = {
 
 
 ///////////////////////////////////////////////
-////// Db object code
+////// DB Db object code
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
@@ -987,6 +1021,37 @@ Db_needUpdate(recoll_DbObject* self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
+Db_delete(recoll_DbObject* self, PyObject *args, PyObject *kwds)
+{
+    char *udi = 0; // needs freeing
+    LOGDEB(("Db_delete\n"));
+    if (!PyArg_ParseTuple(args, "es:Db_delete", "utf-8", &udi)) {
+	return 0;
+    }
+    if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
+	LOGERR(("Db_delete: db not found %p\n", self->db));
+        PyErr_SetString(PyExc_AttributeError, "db");
+	PyMem_Free(udi);
+        return 0;
+    }
+    bool result = self->db->purgeFile(udi);
+    PyMem_Free(udi);
+    return Py_BuildValue("i", result);
+}
+
+static PyObject *
+Db_purge(recoll_DbObject* self)
+{
+    if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
+	LOGERR(("Db_purge: db not found %p\n", self->db));
+        PyErr_SetString(PyExc_AttributeError, "db");
+        return 0;
+    }
+    bool result = self->db->purge();
+    return Py_BuildValue("i", result);
+}
+
+static PyObject *
 Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
 {
     LOGDEB(("Db_addOrUpdate\n"));
@@ -1028,29 +1093,47 @@ static PyMethodDef Db_methods[] = {
     },
     {"setAbstractParams", (PyCFunction)Db_setAbstractParams, 
      METH_VARARGS|METH_KEYWORDS,
-     "setAbstractParams(maxchars, contextword).\n"
-     "Set the parameters used to build keyword in context abstracts"
+     "setAbstractParams(maxchars, contextwords).\n"
+     "Set the parameters used to build 'keyword-in-context' abstracts"
     },
     {"makeDocAbstract", (PyCFunction)Db_makeDocAbstract, METH_VARARGS,
-     "makeDocAbstract(Doc, Query) -> abstract string.\n"
-     "Build and return keyword in context abstract."
+     "makeDocAbstract(Doc, Query) -> string\n"
+     "Build and return 'keyword-in-context' abstract for document\n"
+     "and query."
     },
     {"needUpdate", (PyCFunction)Db_needUpdate, METH_VARARGS,
      "needUpdate(udi, sig) -> Bool.\n"
-     "Check index up to date for doc udi having current signature sig."
+     "Check if the index is up to date for the document defined by udi,\n"
+     "having the current signature sig."
+    },
+    {"delete", (PyCFunction)Db_delete, METH_VARARGS,
+     "delete(udi) -> Bool.\n"
+     "Purge index from all data for udi. If udi matches a container\n"
+     "document, purge all subdocs (docs with a parent_udi matching udi)."
+    },
+    {"purge", (PyCFunction)Db_purge, METH_NOARGS,
+     "purge() -> Bool.\n"
+     "Delete all documents that were not touched during the just finished\n"
+     "indexing pass (since open-for-write). These are the documents for\n"
+     "the needUpdate() call was not performed, indicating that they no\n"
+     "longer exist in the primary storage system.\n"
     },
     {"addOrUpdate", (PyCFunction)Db_addOrUpdate, METH_VARARGS,
-     "addOrUpdate(udi, doc, parent_udi=None)\n"
-     "Add or update document doc having unique id udi\n"
-     "If parent_udi is set, this is the udi for the\n"
-     "container (ie mbox file)"
+     "addOrUpdate(udi, doc, parent_udi=None) -> None\n"
+     "Add or update index data for a given document\n"
+     "The udi string must define a unique id for the document. It is not\n"
+     "interpreted inside Recoll\n"
+     "doc is a Doc object\n"
+     "if parent_udi is set, this is a unique identifier for the\n"
+     "top-level container (ie mbox file)"
     },
     {NULL}  /* Sentinel */
 };
 PyDoc_STRVAR(doc_DbObject,
 "Db([confdir=None], [extra_dbs=None], [writable = False])\n"
 "\n"
-"A Db object connects to a Recoll database.\n"
+"A Db object holds a connection to a Recoll index. Use the connect()\n"
+"function to create one.\n"
 "confdir specifies a Recoll configuration directory (default: \n"
 " $RECOLL_CONFDIR or ~/.recoll).\n"
 "extra_dbs is a list of external databases (xapian directories)\n"
@@ -1116,7 +1199,8 @@ PyDoc_STRVAR(doc_connect,
 "         -> Db.\n"
 "\n"
 "Connects to a Recoll database and returns a Db object.\n"
-"confdir specifies a Recoll configuration directory (default: environment).\n"
+"confdir specifies a Recoll configuration directory\n"
+"(the default is built like for any Recoll program).\n"
 "extra_dbs is a list of external databases (xapian directories)\n"
 "writable decides if we can index new data through this connection\n"
 );
@@ -1133,6 +1217,9 @@ RclConfig *RclConfig::getMainConfig()
 {
     return rclconfig;
 }
+
+PyDoc_STRVAR(pyrecoll_doc_string,
+"This is an interface to the Recoll full text indexer.");
 
 #ifndef PyMODINIT_FUNC	/* declarations for DLL import/export */
 #define PyMODINIT_FUNC void
@@ -1175,4 +1262,7 @@ initrecoll(void)
         return;
     Py_INCREF(&recoll_SearchDataType);
     PyModule_AddObject(m, "SearchData", (PyObject *)&recoll_SearchDataType);
+    PyModule_AddStringConstant(m, "__doc__",
+                               pyrecoll_doc_string);
+
 }
