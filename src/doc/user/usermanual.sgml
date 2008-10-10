@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.66 2008-10-08 16:12:36 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.67 2008-10-10 08:19:12 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1575,12 +1575,329 @@ fvwm
       <para>Your main database (the one the current configuration
       indexes to), is always implicitly active. If this is not
       desirable, you can set up your configuration so that it indexes,
-      for example, an empty directory.</para>
+      for example, an empty directory. An alternative indexer may also
+      need to implement a way of purging the index from stale data,
+      </para>
 
     </sect1>
 
   </chapter>
 
+  <chapter id="rcl.program">
+    <title>Programming interface</title>
+
+    <sect1 id="rcl.program.elements">
+      <title>Interface elements</title>
+
+      <para>A few elements in the interface are specific and and need
+      an explanation.</para>
+
+      <variablelist>
+
+	<varlistentry>
+	  <term>udi</term> <listitem><para>An udi (unique document
+            identifier) identifies a document. Because of limitations
+            inside the index engine, it is restricted in length (to
+            200 bytes), which is why a regular URI cannot be used. The
+            structure and contents of the udi is defined by the
+            application and opaque to the index engine. For example,
+            the internal file system indexer uses the complete
+            document path (file path + internal path), truncated to
+            length, the suppressed part being replaced by a hash
+            value.</para> </listitem>
+	</varlistentry>
+
+	<varlistentry> 
+	  <term>ipath</term> 
+	  
+	  <listitem><para>This data value (set as a field in the Doc
+	  object) is stored, along with the URL, but not indexed by
+	  &RCL;. Its contents are not interpreted, and its use is up
+	  to the application. For example, the &RCL; internal file
+	  system indexer stores the part of the document access path
+	  internal to the container file (<literal>ipath</literal> in
+	  this case is a list of subdocument sequential numbers). url
+	  and ipath are returned in every search result and permit
+	  access to the original document.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry> 
+	  <term>Stored and indexed fields</term> 
+	  
+	  <listitem><para>The <filename>fields</filename> file inside
+	  the &RCL; configuration defines which document fields are
+	  either "indexed" (searchable), "stored" (retrievable with
+	  search results), or both.</para>
+	  </listitem>
+	</varlistentry>
+
+	</variablelist>
+
+      <para>Data for an external indexer, should be stored in a
+      separate index, not the one for the &RCL; internal file system
+      indexer, except if the latter is not used at all). The reason
+      is that the main document indexer purge pass would remove all
+      the other indexer's documents, as they were not seen during
+      indexing. The main indexer documents would also probably be a
+      problem for the external indexer purge operation.</para>
+
+    </sect1>
+
+    <sect1 id="rcl.program.python">
+      <title>Python interface</title>
+
+      <sect2 id="rcl.program.python.intro">
+	<title>Introduction</title>
+
+	  <para>&RCL; versions after 1.11 define a Python programming
+	  interface, both for searching and indexing.</para> 
+
+	<para>The python interface is not built by default and can be
+	found in the source package, under python/recoll. The
+	directory contains the usual <filename>setup.py</filename>
+	script which you can use to build and install the
+	module:
+
+	  <screen>
+        <userinput>cd recoll-xxx/python/recoll</userinput>
+        <userinput>python setup.py build</userinput>
+        <userinput>python setup.py install</userinput>
+      </screen>
+          </para> 
+
+      </sect2>
+
+
+      <sect2 id="rcl.program.python.manual">
+	<title>Interface manual</title>
+
+      <literalLayout>
+NAME
+    recoll - This is an interface to the Recoll full text indexer.
+
+FILE
+    /usr/local/lib/python2.5/site-packages/recoll.so
+
+CLASSES
+        Db
+        Doc
+        Query
+        SearchData
+    
+    class Db(__builtin__.object)
+     |  Db([confdir=None], [extra_dbs=None], [writable = False])
+     |  
+     |  A Db object holds a connection to a Recoll index. Use the connect()
+     |  function to create one.
+     |  confdir specifies a Recoll configuration directory (default: 
+     |   $RECOLL_CONFDIR or ~/.recoll).
+     |  extra_dbs is a list of external databases (xapian directories)
+     |  writable decides if we can index new data through this connection
+     |  
+     |  Methods defined here:
+     |  
+     |  
+     |  addOrUpdate(...)
+     |      addOrUpdate(udi, doc, parent_udi=None) -> None
+     |      Add or update index data for a given document
+     |      The udi string must define a unique id for the document. It is not
+     |      interpreted inside Recoll
+     |      doc is a Doc object
+     |      if parent_udi is set, this is a unique identifier for the
+     |      top-level container (ie mbox file)
+     |  
+     |  delete(...)
+     |      delete(udi) -> Bool.
+     |      Purge index from all data for udi. If udi matches a container
+     |      document, purge all subdocs (docs with a parent_udi matching udi).
+     |  
+     |  makeDocAbstract(...)
+     |      makeDocAbstract(Doc, Query) -> string
+     |      Build and return 'keyword-in-context' abstract for document
+     |      and query.
+     |  
+     |  needUpdate(...)
+     |      needUpdate(udi, sig) -> Bool.
+     |      Check if the index is up to date for the document defined by udi,
+     |      having the current signature sig.
+     |  
+     |  purge(...)
+     |      purge() -> Bool.
+     |      Delete all documents that were not touched during the just finished
+     |      indexing pass (since open-for-write). These are the documents for
+     |      the needUpdate() call was not performed, indicating that they no
+     |      longer exist in the primary storage system.
+     |  
+     |  query(...)
+     |      query() -> Query. Return a new, blank query object for this index.
+     |  
+     |  setAbstractParams(...)
+     |      setAbstractParams(maxchars, contextwords).
+     |      Set the parameters used to build 'keyword-in-context' abstracts
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+    
+    class Doc(__builtin__.object)
+     |  Doc()
+     |  
+     |  A Doc object contains index data for a given document.
+     |  The data is extracted from the index when searching, or set by the
+     |  indexer program when updating. The Doc object has no useful methods but
+     |  many attributes to be read or set by its user. It matches exactly the
+     |  Rcl::Doc c++ object. Some of the attributes are predefined, but, 
+     |  especially when indexing, others can be set, the name of which will be
+     |  processed as field names by the indexing configuration.
+     |  Inputs can be specified as unicode or strings.
+     |  Outputs are unicode objects.
+     |  All dates are specified as unix timestamps, printed as strings
+     |  Predefined attributes (index/query/both):
+     |   text (index): document plain text
+     |   url (both)
+     |   fbytes (both) optional) file size in bytes
+     |   filename (both)
+     |   fmtime (both) optional file modification date. Unix time printed 
+     |      as string
+     |   dbytes (both) document text bytes
+     |   dmtime (both) document creation/modification date
+     |   ipath (both) value private to the app.: internal access path
+     |      inside file
+     |   mtype (both) mime type for original document
+     |   mtime (query) dmtime if set else fmtime
+     |   origcharset (both) charset the text was converted from
+     |   size (query) dbytes if set, else fbytes
+     |   sig (both) app-defined file modification signature. 
+     |      For up to date checks
+     |   relevancyrating (query)
+     |   abstract (both)
+     |   author (both)
+     |   title (both)
+     |   keywords (both)
+     |  
+     |  Methods defined here:
+     |  
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+    
+    class Query(__builtin__.object)
+     |  Recoll Query objects are used to execute index searches. 
+     |  They must be created by the Db.query() method.
+     |  
+     |  Methods defined here:
+     |  
+     |  
+     |  execute(...)
+     |      execute(query_string, stemming=1|0)
+     |      
+     |      Starts a search for query_string, a Recoll search language string
+     |      (mostly Xesam-compatible).
+     |      The query can be a simple list of terms (and'ed by default), or more
+     |      complicated with field specs etc. See the Recoll manual.
+     |  
+     |  executesd(...)
+     |      executesd(SearchData)
+     |      
+     |      Starts a search for the query defined by the SearchData object.
+     |  
+     |  fetchone(...)
+     |      fetchone(None) -> Doc
+     |      
+     |      Fetches the next Doc object in the current search results.
+     |  
+     |  sortby(...)
+     |      sortby(field=fieldname, ascending=true)
+     |      Sort results by 'fieldname', in ascending or descending order.
+     |      Only one field can be used, no subsorts for now.
+     |      Must be called before executing the search
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  next
+     |      Next index to be fetched from results. Normally increments after
+     |      each fetchone() call, but can be set/reset before the call effect
+     |      seeking. Starts at 0
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+    
+    class SearchData(__builtin__.object)
+     |  SearchData()
+     |  
+     |  A SearchData object describes a query. It has a number of global
+     |  parameters and a chain of search clauses.
+     |  
+     |  Methods defined here:
+     |  
+     |  
+     |  addclause(...)
+     |      addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',
+     |                qstring=string, slack=int, field=string, stemming=1|0,
+     |                subSearch=SearchData)
+     |      Adds a simple clause to the SearchData And/Or chain, or a subquery
+     |      defined by another SearchData object
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+
+FUNCTIONS
+    connect(...)
+        connect([confdir=None], [extra_dbs=None], [writable = False])
+                 -> Db.
+        
+        Connects to a Recoll database and returns a Db object.
+        confdir specifies a Recoll configuration directory
+        (the default is built like for any Recoll program).
+        extra_dbs is a list of external databases (xapian directories)
+        writable decides if we can index new data through this connection
+
+
+</literalLayout>
+
+
+      <sect2 id="rcl.program.python.examples">
+	<title>Example code</title>
+
+	<para>The following sample would query the index with a user
+	language string. See the <filename>python/samples</filename>
+	directory inside the &RCL; source for other examples.</para>
+
+	<programlisting>
+#!/usr/bin/env python
+
+import recoll
+
+db = recoll.connect()
+db.setAbstractParams(maxchars=80, contextwords=2)
+
+query = db.query()
+nres = query.execute("some user question")
+print "Result count: ", nres
+if nres > 5:
+    nres = 5
+while query.next >= 0 and query.next < nres: 
+    doc = query.fetchone()
+    print query.next
+    for k in ("title", "size"):
+        print k, ":", getattr(doc, k).encode('utf-8')
+    abs = db.makeDocAbstract(doc, query).encode('utf-8')
+    print abs
+    print
+
+
+
+</programlisting>
+
+      </sect2>
+
+    </sect1>
+  </chapter>
 
   <chapter id="rcl.install">
     <title>Installation</title>
