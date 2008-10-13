@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.33 2008-10-03 08:09:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.34 2008-10-13 11:44:17 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -386,14 +386,14 @@ bool PlainToRich::plaintorich(const string& in,
 	if (tPosIt != tPosEnd) {
 	    int ibyteidx = chariter.getBpos();
 	    if (ibyteidx == tPosIt->first) {
-		if (!intag && ibyteidx > headend) {
+		if (!intag && ibyteidx > (int)headend) {
 		    *olit += startAnchor(anchoridx);
 		    *olit += startMatch();
 		}
 		anchoridx++;
 	    } else if (ibyteidx == tPosIt->second) {
 		// Output end or match region tags
-		if (!intag && ibyteidx > headend) {
+		if (!intag && ibyteidx > (int)headend) {
 		    *olit += endMatch();
 		    *olit += endAnchor();
 		}
