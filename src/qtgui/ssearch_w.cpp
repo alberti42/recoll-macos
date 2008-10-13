@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.24 2007-10-19 15:25:19 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.25 2008-10-13 11:46:06 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -484,7 +484,7 @@ static const char *eventTypeToStr(int tp)
 #endif
 #endif
 
-bool SSearch::eventFilter(QObject *target, QEvent *event)
+bool SSearch::eventFilter(QObject *, QEvent *event)
 {
 #if defined(SHOWEVENTS)
     if (event->type() == QEvent::Timer || 

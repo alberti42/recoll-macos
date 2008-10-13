@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: filtseq.cpp,v 1.3 2008-09-29 11:33:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: filtseq.cpp,v 1.4 2008-10-13 11:46:06 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,7 @@ bool DocSeqFiltered::setFiltSpec(DocSeqFiltSpec &filtspec)
 {
     m_spec = filtspec;
     m_dbindices.clear();
+    return true;
 }
 
 bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, string *)
