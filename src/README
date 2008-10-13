@@ -78,41 +78,51 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.12. Customizing the search interface
 
-   4. Installation
+   4. Programming interface
 
-                4.1. Installing a prebuilt copy
+                4.1. Writing a document filter
 
-                             4.1.1. Installing through a package system
+                             4.1.1. Filter HTML output
 
-                             4.1.2. Installing a prebuilt Recoll
+                4.2. Field data processing configuration
 
-                4.2. Supporting packages
+                4.3. API
 
-                4.3. Building from source
+                             4.3.1. Interface elements
 
-                             4.3.1. Prerequisites
+                             4.3.2. Python interface
 
-                             4.3.2. Building
+   5. Installation
 
-                             4.3.3. Installation
+                5.1. Installing a prebuilt copy
 
-                4.4. Configuration overview
+                             5.1.1. Installing through a package system
 
-                             4.4.1. Main configuration file
+                             5.1.2. Installing a prebuilt Recoll
 
-                             4.4.2. The mimemap file
+                5.2. Supporting packages
 
-                             4.4.3. The mimeconf file
+                5.3. Building from source
 
-                             4.4.4. The mimeview file
+                             5.3.1. Prerequisites
 
-                             4.4.5. Examples of configuration adjustments
+                             5.3.2. Building
 
-                4.5. The KDE Kicker Recoll applet
+                             5.3.3. Installation
 
-                4.6. Extending Recoll
+                5.4. Configuration overview
 
-                             4.6.1. Writing a document filter
+                             5.4.1. Main configuration file
+
+                             5.4.2. The mimemap file
+
+                             5.4.3. The mimeconf file
+
+                             5.4.4. The mimeview file
+
+                             5.4.5. Examples of configuration adjustments
+
+                5.5. The KDE Kicker Recoll applet
 
      ----------------------------------------------------------------------
 
@@ -256,8 +266,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    individually indexed documents.
 
    Recoll indexing processes plain text, HTML, openoffice and e-mail files
-   internally. Other types (ie: postscript, pdf, ms-word, rtf) need external
+   internally.
+
+   Other file types (ie: postscript, pdf, ms-word, rtf ...) need external
    applications for preprocessing. The list is in the installation section.
+   After every indexing operation, Recoll updates a list of commands that
+   would be needed for indexing existing files types. This list can be
+   displayed from the recoll File menu. It is stored in the missing text file
+   inside the configuration directory.
 
    Without further configuration, Recoll will index all appropriate files
    from your home directory, with a reasonable set of defaults.
@@ -717,6 +733,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The query language processor is activated on the simple search entry when
    the search mode selector is set to Query Language.
 
+   The language is roughly based on the Xesam user search language
+   specification.
+
    Here follows a sample request that we are going to explain:
 
            author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
@@ -728,6 +747,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    or lennon and either live or unplugged but not potatoes (in any part of
    the document).
 
+   An element is composed of an optional field specification, and a value,
+   separated by a colon. Exemple: Beatles, author:balzac, dc:title:grandet
+
+   The colon, if present, means "contains". Xesam defines other relations,
+   which are not supported for now.
+
    All elements in the search entry are normally combined with an implicit
    AND. It is possible to specify that elements be OR'ed instead, as in
    Beatles OR Lennon. The OR must be entered literally (capitals), and it has
@@ -735,50 +760,68 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    (word2 OR word3) not (word1 AND word2) OR word3. Do not enter explicit
    parenthesis, they are not supported for now.
 
-   An entry preceded by a - specifies a term that should not appear.
+   An element preceded by a - specifies a term that should not appear. Pure
+   negative queries are forbidden.
 
-   The first element in the above exemple, author:"john doe" is a phrase
-   search limited to a specific field. Phrase searches are specified as usual
-   by enclosing the words in double quotes. The field specification appears
-   before the colon (of course this is not limited to phrases, author:Balzac
-   would be ok too). Recoll currently manages the following fields:
+   As usual, words inside quotes define a phrase (the order of words is
+   significant), so that title:"prejudice pride" is not the same as
+   title:prejudice title:pride, and is unlikely to find a result.
+
+   Recoll currently manages the following default fields:
 
      * title, subject or caption are synonyms which specify data to be
        searched for in the document title or subject.
 
      * author or from for searching the documents originators.
 
-     * keyword for searching the document specified keywords (few documents
+     * recipient or to for searching the documents recipients.
+
+     * keyword for searching the document-specified keywords (few documents
        actually have any).
 
-   As of release 1.9, the filters have the possibility to create other fields
-   with arbitrary names. No standard filters use this possibility yet.
+     * filename for the document's file name.
 
-   There are two other elements which may be specified through the field
-   syntax, but are somewhat special:
+     * ext specifies the file name extension (Ex: ext:html)
 
-     * ext for specifying the file name extension (Ex: ext:html)
+   The field syntax also supports a few field-like, but special, criteria:
 
-     * dir for specifying the file location (Ex: dir:/home/me/somedir).
-       Please note that this is quite inefficient, that it may produce very
-       slow searches, and that it may be worth in some cases to set up
-       separate databases instead.
+     * dir for filtering the results on file location (Ex:
+       dir:/home/me/somedir). Please note that this is quite inefficient,
+       that it may produce very slow searches, and that it may be worth in
+       some cases to set up separate databases instead.
 
-     * mime for specifying the mime type. This one is quite special because
-       you can specify several values which will be OR'ed (the normal default
-       for the language is AND). Ex: mime:text/plain mime:text/html.
+     * mime or format for specifying the mime type. This one is quite special
+       because you can specify several values which will be OR'ed (the normal
+       default for the language is AND). Ex: mime:text/plain mime:text/html.
        Specifying an explicit boolean operator or negation (-) before a mime
        specification is not supported and will produce strange results.
+
+     * type or rclcat for specifying the category (as in
+       text/media/presentation/etc.). The classification of mime types in
+       categories is defined in the Recoll configuration (mimeconf), and can
+       be modified or extended. The default category names are those which
+       permit filtering results in the main GUI screen. Categories are OR'ed
+       like mime types above.
+
+   The document filters used while indexing have the possibility to create
+   other fields with arbitrary names, and aliases may be defined in the
+   configuration, so that the exact field search possibilities may be
+   different for you if someone took care of the customisation.
 
    The query language is currently the only way to use the Recoll field
    search capability.
 
    Words inside phrases and capitalized words are not stem-expanded.
    Wildcards may be used anywhere inside a term. Specifying a wild-card on
-   the left of a term can produce a very slow search.
+   the left of a term can produce a very slow search (or even an incorrect
+   one if the expansion is truncated because of excessive size).
 
    You can use the show query link at the top of the result list to check the
    exact query which was finally executed by Xapian.
+
+   Most Xesam phrase modifiers are unsupported, except for l (small ell) to
+   disable stemming, and p to turn an phrase into a NEAR (unordered) search.
+   Exemple: "prejudice pride"p
 
      ----------------------------------------------------------------------
 
@@ -1194,13 +1237,432 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Your main database (the one the current configuration indexes to), is
    always implicitly active. If this is not desirable, you can set up your
-   configuration so that it indexes, for example, an empty directory.
+   configuration so that it indexes, for example, an empty directory. An
+   alternative indexer may also need to implement a way of purging the index
+   from stale data,
 
      ----------------------------------------------------------------------
 
-                            Chapter 4. Installation
+                        Chapter 4. Programming interface
 
-4.1. Installing a prebuilt copy
+   Recoll has an Application programming Interface, usable both for indexing
+   and searching, currently accessible from the Python language.
+
+   Another less radical way to extend the application is to write filters for
+   new types of documents.
+
+   The processing of metadata attributes for documents (fields) is highly
+   configurable.
+
+     ----------------------------------------------------------------------
+
+4.1. Writing a document filter
+
+   Recoll filters are executable programs which translate from a specific
+   format (ie: openoffice, acrobat, etc.) to the Recoll indexing input
+   format, which may be text/plain or text/html.
+
+   Recoll filters are usually shell-scripts, but this is in no way necessary.
+   These programs are extremely simple and most of the difficulty lies in
+   extracting the text from the native format, not outputting what is
+   expected by Recoll. Happily enough, most document formats already have
+   translators or text extractors which handle the difficult part and can be
+   called from the filter. In some case the output of the translating program
+   is appropriate, and no intermediate shell-script is needed.
+
+   Filters are called with a single argument which is the source file name.
+   They should output the result to stdout.
+
+   The RECOLL_FILTER_FORPREVIEW environment variable (values yes, no) tells
+   the filter if the operation is for indexing or previewing. Some filters
+   use this to output a slightly different format. This is not essential.
+
+   The association of file types to filters is performed in the mimeconf
+   file. A sample:
+
+ [index]
+ application/msword = exec antiword -t -i 1 -m UTF-8;\
+      mimetype=text/plain;charset=utf-8
+
+ application/ogg = exec rclogg
+
+ text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
+
+   The fragment specifies that:
+
+     * application/msword files are processed by executing the antiword
+       program, which outputs text/plain encoded in iso-8859-1.
+
+     * application/ogg files are processed by the rclogg script, with default
+       output type (text/html, with encoding specified in the header, or
+       utf-8 by default).
+
+     * text/rtf is processed by unrtf, which outputs text/html. The
+       iso-8859-1 encoding is specified because it is not the utf-8 default,
+       and not output by unrtf in the HTML header section.
+
+   The easiest way to write a new filter is probably to start from an
+   existing one.
+
+   Filters which output text/plain text are generally simpler, but they
+   cannot specify the character set and other metadata, so they are limited
+   to cases where these elements are not needed.
+
+     ----------------------------------------------------------------------
+
+  4.1.1. Filter HTML output
+
+   The output HTML could be very minimal like the following example:
+
+ <html><head>
+ <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+ </head>
+ <body>some text content</body></html>
+         
+
+   You should take care to escape some characters inside the text by
+   transforming them into appropriate entities. "&" should be transformed
+   into "&amp;", "<" should be transformed into "&lt;". This is not always
+   properly done by translating programs which output HTML, and of course
+   nerver by those which output plain text.
+
+   The character set needs to be specified in the header. It does not need to
+   be UTF-8 (Recoll will take care of translating it), but it must be
+   accurate for good results.
+
+   Recoll will also make use of other header fields if they are present:
+   title, description, keywords.
+
+   Filters also have the possibility to "invent" field names. This should be
+   output as meta tags:
+
+ <meta name="somefield" content="Some textual data" />
+
+   See the following section for details about configuring how field data is
+   processed by the indexer.
+
+     ----------------------------------------------------------------------
+
+4.2. Field data processing configuration
+
+   Fields are named pieces of information in or about documents, like title,
+   author, abstract.
+
+   The field values for documents can appear in several ways during indexing:
+   either output by filters as meta fields in the HTML header section, or
+   added as attributes of the Doc object when using the API, or again
+   synthetized internally by Recoll.
+
+   The Recoll query language allows searching for text in a specific field.
+
+   Recoll defines a number of default fields. Additional ones can be output
+   by filters, and described in the fields configuration file.
+
+   Fields can be:
+
+     * indexed, meaning that their terms are separately stored in inverted
+       lists (with a specific prefix), and that a field-specific search is
+       possible.
+
+     * stored, meaning that their value is recorded in the index data record
+       for the document, and can be returned and displayed with search
+       results.
+
+   A field can be either or both indexed and stored.
+
+   A field becomes indexed by having a prefix defined in the [prefixes]
+   section of the fields file. See the comments in there for details
+
+   A field becomes stored by appearing in the [stored] section of the fields
+   file.
+
+     ----------------------------------------------------------------------
+
+4.3. API
+
+  4.3.1. Interface elements
+
+   A few elements in the interface are specific and and need an explanation.
+
+   udi
+
+           An udi (unique document identifier) identifies a document. Because
+           of limitations inside the index engine, it is restricted in length
+           (to 200 bytes), which is why a regular URI cannot be used. The
+           structure and contents of the udi is defined by the application
+           and opaque to the index engine. For example, the internal file
+           system indexer uses the complete document path (file path +
+           internal path), truncated to length, the suppressed part being
+           replaced by a hash value.
+
+   ipath
+
+           This data value (set as a field in the Doc object) is stored,
+           along with the URL, but not indexed by Recoll. Its contents are
+           not interpreted, and its use is up to the application. For
+           example, the Recoll internal file system indexer stores the part
+           of the document access path internal to the container file (ipath
+           in this case is a list of subdocument sequential numbers). url and
+           ipath are returned in every search result and permit access to the
+           original document.
+
+   Stored and indexed fields
+
+           The fields file inside the Recoll configuration defines which
+           document fields are either "indexed" (searchable), "stored"
+           (retrievable with search results), or both.
+
+   Data for an external indexer, should be stored in a separate index, not
+   the one for the Recoll internal file system indexer, except if the latter
+   is not used at all). The reason is that the main document indexer purge
+   pass would remove all the other indexer's documents, as they were not seen
+   during indexing. The main indexer documents would also probably be a
+   problem for the external indexer purge operation.
+
+     ----------------------------------------------------------------------
+
+  4.3.2. Python interface
+
+    4.3.2.1. Introduction
+
+   Recoll versions after 1.11 define a Python programming interface, both for
+   searching and indexing.
+
+   The python interface is not built by default and can be found in the
+   source package, under python/recoll. The directory contains the usual
+   setup.py script which you can use to build and install the module:
+
+         cd recoll-xxx/python/recoll
+         python setup.py build
+         python setup.py install
+     
+
+     ----------------------------------------------------------------------
+
+    4.3.2.2. Interface manual
+
+   NAME
+       recoll - This is an interface to the Recoll full text indexer.
+
+   FILE
+       /usr/local/lib/python2.5/site-packages/recoll.so
+
+   CLASSES
+           Db
+           Doc
+           Query
+           SearchData
+       
+       class Db(__builtin__.object)
+        |  Db([confdir=None], [extra_dbs=None], [writable = False])
+        |  
+        |  A Db object holds a connection to a Recoll index. Use the connect()
+        |  function to create one.
+        |  confdir specifies a Recoll configuration directory (default: 
+        |   $RECOLL_CONFDIR or ~/.recoll).
+        |  extra_dbs is a list of external databases (xapian directories)
+        |  writable decides if we can index new data through this connection
+        |  
+        |  Methods defined here:
+        |  
+        |  
+        |  addOrUpdate(...)
+        |      addOrUpdate(udi, doc, parent_udi=None) -> None
+        |      Add or update index data for a given document
+        |      The udi string must define a unique id for the document. It is not
+        |      interpreted inside Recoll
+        |      doc is a Doc object
+        |      if parent_udi is set, this is a unique identifier for the
+        |      top-level container (ie mbox file)
+        |  
+        |  delete(...)
+        |      delete(udi) -> Bool.
+        |      Purge index from all data for udi. If udi matches a container
+        |      document, purge all subdocs (docs with a parent_udi matching udi).
+        |  
+        |  makeDocAbstract(...)
+        |      makeDocAbstract(Doc, Query) -> string
+        |      Build and return 'keyword-in-context' abstract for document
+        |      and query.
+        |  
+        |  needUpdate(...)
+        |      needUpdate(udi, sig) -> Bool.
+        |      Check if the index is up to date for the document defined by udi,
+        |      having the current signature sig.
+        |  
+        |  purge(...)
+        |      purge() -> Bool.
+        |      Delete all documents that were not touched during the just finished
+        |      indexing pass (since open-for-write). These are the documents for
+        |      the needUpdate() call was not performed, indicating that they no
+        |      longer exist in the primary storage system.
+        |  
+        |  query(...)
+        |      query() -> Query. Return a new, blank query object for this index.
+        |  
+        |  setAbstractParams(...)
+        |      setAbstractParams(maxchars, contextwords).
+        |      Set the parameters used to build 'keyword-in-context' abstracts
+        |  
+        |  ----------------------------------------------------------------------
+        |  Data and other attributes defined here:
+        |  
+       
+       class Doc(__builtin__.object)
+        |  Doc()
+        |  
+        |  A Doc object contains index data for a given document.
+        |  The data is extracted from the index when searching, or set by the
+        |  indexer program when updating. The Doc object has no useful methods but
+        |  many attributes to be read or set by its user. It matches exactly the
+        |  Rcl::Doc c++ object. Some of the attributes are predefined, but, 
+        |  especially when indexing, others can be set, the name of which will be
+        |  processed as field names by the indexing configuration.
+        |  Inputs can be specified as unicode or strings.
+        |  Outputs are unicode objects.
+        |  All dates are specified as unix timestamps, printed as strings
+        |  Predefined attributes (index/query/both):
+        |   text (index): document plain text
+        |   url (both)
+        |   fbytes (both) optional) file size in bytes
+        |   filename (both)
+        |   fmtime (both) optional file modification date. Unix time printed 
+        |      as string
+        |   dbytes (both) document text bytes
+        |   dmtime (both) document creation/modification date
+        |   ipath (both) value private to the app.: internal access path
+        |      inside file
+        |   mtype (both) mime type for original document
+        |   mtime (query) dmtime if set else fmtime
+        |   origcharset (both) charset the text was converted from
+        |   size (query) dbytes if set, else fbytes
+        |   sig (both) app-defined file modification signature. 
+        |      For up to date checks
+        |   relevancyrating (query)
+        |   abstract (both)
+        |   author (both)
+        |   title (both)
+        |   keywords (both)
+        |  
+        |  Methods defined here:
+        |  
+        |  
+        |  ----------------------------------------------------------------------
+        |  Data and other attributes defined here:
+        |  
+       
+       class Query(__builtin__.object)
+        |  Recoll Query objects are used to execute index searches. 
+        |  They must be created by the Db.query() method.
+        |  
+        |  Methods defined here:
+        |  
+        |  
+        |  execute(...)
+        |      execute(query_string, stemming=1|0)
+        |      
+        |      Starts a search for query_string, a Recoll search language string
+        |      (mostly Xesam-compatible).
+        |      The query can be a simple list of terms (and'ed by default), or more
+        |      complicated with field specs etc. See the Recoll manual.
+        |  
+        |  executesd(...)
+        |      executesd(SearchData)
+        |      
+        |      Starts a search for the query defined by the SearchData object.
+        |  
+        |  fetchone(...)
+        |      fetchone(None) -> Doc
+        |      
+        |      Fetches the next Doc object in the current search results.
+        |  
+        |  sortby(...)
+        |      sortby(field=fieldname, ascending=true)
+        |      Sort results by 'fieldname', in ascending or descending order.
+        |      Only one field can be used, no subsorts for now.
+        |      Must be called before executing the search
+        |  
+        |  ----------------------------------------------------------------------
+        |  Data descriptors defined here:
+        |  
+        |  next
+        |      Next index to be fetched from results. Normally increments after
+        |      each fetchone() call, but can be set/reset before the call effect
+        |      seeking. Starts at 0
+        |  
+        |  ----------------------------------------------------------------------
+        |  Data and other attributes defined here:
+        |  
+       
+       class SearchData(__builtin__.object)
+        |  SearchData()
+        |  
+        |  A SearchData object describes a query. It has a number of global
+        |  parameters and a chain of search clauses.
+        |  
+        |  Methods defined here:
+        |  
+        |  
+        |  addclause(...)
+        |      addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',
+        |                qstring=string, slack=int, field=string, stemming=1|0,
+        |                subSearch=SearchData)
+        |      Adds a simple clause to the SearchData And/Or chain, or a subquery
+        |      defined by another SearchData object
+        |  
+        |  ----------------------------------------------------------------------
+        |  Data and other attributes defined here:
+        |  
+
+   FUNCTIONS
+       connect(...)
+           connect([confdir=None], [extra_dbs=None], [writable = False])
+                    -> Db.
+           
+           Connects to a Recoll database and returns a Db object.
+           confdir specifies a Recoll configuration directory
+           (the default is built like for any Recoll program).
+           extra_dbs is a list of external databases (xapian directories)
+           writable decides if we can index new data through this connection
+
+   
+
+     ----------------------------------------------------------------------
+
+    4.3.2.3. Example code
+
+   The following sample would query the index with a user language string.
+   See the python/samples directory inside the Recoll source for other
+   examples.
+
+ #!/usr/bin/env python
+
+ import recoll
+
+ db = recoll.connect()
+ db.setAbstractParams(maxchars=80, contextwords=2)
+
+ query = db.query()
+ nres = query.execute("some user question")
+ print "Result count: ", nres
+ if nres > 5:
+     nres = 5
+ while query.next >= 0 and query.next < nres:
+     doc = query.fetchone()
+     print query.next
+     for k in ("title", "size"):
+         print k, ":", getattr(doc, k).encode('utf-8')
+     abs = db.makeDocAbstract(doc, query).encode('utf-8')
+     print abs
+     print
+
+ 
+
+     ----------------------------------------------------------------------
+
+                            Chapter 5. Installation
+
+5.1. Installing a prebuilt copy
 
    Recoll binary packages from the Recoll web site are always linked
    statically to the Xapian libraries, and have no other dependencies. You
@@ -1211,14 +1673,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.1.1. Installing through a package system
+  5.1.1. Installing through a package system
 
    If you use a BSD-type port system or a prebuilt package (RPM or other),
    just follow the usual procedure for your system.
 
      ----------------------------------------------------------------------
 
-  4.1.2. Installing a prebuilt Recoll
+  5.1.2. Installing a prebuilt Recoll
 
    The unpackaged binary versions on the Recoll web site are just compressed
    tar files of a build tree, where only the useful parts were kept
@@ -1233,11 +1695,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-4.2. Supporting packages
+5.2. Supporting packages
 
    Recoll uses external applications to index some file types. You need to
    install them for the file types that you wish to have indexed (these are
-   run-time dependencies. None is needed for building Recoll):
+   run-time dependencies. None is needed for building Recoll).
+
+   After an indexing pass, the commands that were found missing can be
+   displayed from the recoll File menu. The list is stored in the missing
+   text file inside the configuration directory.
+
+   A list of common file types which need external commands:
 
      * Openoffice: supported natively, but needs the unzip command to be
        installed.
@@ -1275,9 +1743,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-4.3. Building from source
+5.3. Building from source
 
-  4.3.1. Prerequisites
+  5.3.1. Prerequisites
 
    At the very least, you will need to download and install the xapian core
    package (Recoll 1.9 normally uses version 1.0.2, but any 0.9 or 1.0.x
@@ -1295,7 +1763,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.3.2. Building
+  5.3.2. Building
 
    Recoll has been built on Linux (redhat7.3, mandriva 2005/6, Fedora Core
    3/4/5/6), FreeBSD 5/6, macosx, and Solaris 8. If you build on another
@@ -1335,7 +1803,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.3.3. Installation
+  5.3.3. Installation
 
    Either type make install or execute recollinstall prefix, in the root of
    the source tree. This will copy the commands to prefix/bin and the sample
@@ -1350,7 +1818,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-4.4. Configuration overview
+5.4. Configuration overview
 
    Most of the parameters specific to the recoll GUI are set through the
    Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
@@ -1410,7 +1878,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.4.1. Main configuration file
+  5.4.1. Main configuration file
 
    recoll.conf is the main configuration file. It defines things like what to
    index (top directories and things to ignore), and the default character
@@ -1616,7 +2084,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.4.2. The mimemap file
+  5.4.2. The mimemap file
 
    mimemap specifies the file name extension to mime type mappings.
 
@@ -1642,7 +2110,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.4.3. The mimeconf file
+  5.4.3. The mimeconf file
 
    mimeconf specifies how the different mime types are handled for indexing,
    and which icons are displayed in the recoll result lists.
@@ -1656,7 +2124,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.4.4. The mimeview file
+  5.4.4. The mimeview file
 
    mimeview specifies which programs are started when you click on an Edit
    link in a result list. Ie: HTML is normally displayed using firefox, but
@@ -1679,9 +2147,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.4.5. Examples of configuration adjustments
+  5.4.5. Examples of configuration adjustments
 
-    4.4.5.1. Adding an external viewer for an non-indexed type
+    5.4.5.1. Adding an external viewer for an non-indexed type
 
    Imagine that you have some kind of file which does not have indexable
    content, but for which you would like to have a functional Edit link in
@@ -1714,7 +2182,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    4.4.5.2. Adding indexing support for a new file type
+    5.4.5.2. Adding indexing support for a new file type
 
    Let us now imagine that the above .blob files actually contain indexable
    text and that you know how to extract it with a command line program.
@@ -1738,86 +2206,32 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The rclblob filter should be an executable program or script which exists
    inside /usr/[local/]share/recoll/filters. It will be given a file name as
-   argument and should output the text contents in html format on the
-   standard output.
+   argument and should output the text contents on the standard output.
 
-   You can find more details about writing a Recoll filter in the section
-   about writing filters
+   The filter programming section describes in more detail how to write a
+   filter.
 
      ----------------------------------------------------------------------
 
-4.5. The KDE Kicker Recoll applet
+5.5. The KDE Kicker Recoll applet
 
    The Recoll source tree contains the source code to the recoll_applet, a
    small application derived from the find_applet. This can be used to add a
    small Recoll launcher to the KDE panel.
 
-   The applet is not automatically built with the main Recoll programs. To
-   build it, you need to unpack the Recoll source code, then go to the
-   kde/recoll_applet/ directory, and type the usual configure;make;make
-   install.
+   The applet is not automatically built with the main Recoll programs, nor
+   is it included with the main source distribution (because the KDE build
+   boilerplate makes it relatively big). You can download its source from the
+   recoll.org download page. Use the omnipotent configure;make;make install
+   incantation to build and install.
 
    You can then add the applet to the panel by right-clicking the panel and
    choosing the Add applet entry.
 
    The recoll_applet has a small text window where you can type a Recoll
    query (in query language form), and an icon which can be used to restrict
-   the search to certain types of files.
-
-     ----------------------------------------------------------------------
-
-4.6. Extending Recoll
-
-  4.6.1. Writing a document filter
-
-   Recoll filters are executable programs which translate from a specific
-   format (ie: openoffice, acrobat, etc.) to the Recoll indexing input
-   format, which was chosen to be HTML.
-
-   Recoll filters are usually shell-scripts, but this is in no way necessary.
-   These programs are extremely simple and most of the difficulty lies in
-   extracting the text from the native format, not outputting what is
-   expected by Recoll. Happily enough, most document formats already have
-   translators or text extractors which handle the difficult part and can be
-   called from the filter.
-
-   Filters are called with a single argument which is the source file name.
-   They should output the result to stdout.
-
-   The RECOLL_FILTER_FORPREVIEW environment variable (values yes, no) tells
-   the filter if the operation is for indexing or previewing. Some filters
-   use this to output a slightly different format. This is not essential.
-
-   The output HTML could be very minimal like the following example:
-
- <html><head>
- <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
- </head>
- <body>some text content</body></html>
-         
-
-   You should take care to escape some characters inside the text by
-   transforming them into appropriate entities. "&" should be transformed
-   into "&amp;", "<" should be transformed into "&lt;".
-
-   The character set needs to be specified in the header. It does not need to
-   be UTF-8 (Recoll will take care of translating it), but it must be
-   accurate for good results.
-
-   Recoll will also make use of other header fields if they are present:
-   title, description, keywords.
-
-   As of Recoll release 1.9, filters also have the possibility to "invent"
-   field names. This should be output as meta tags:
-
- <meta name="somefield" content="Some textual data" />
-
-   In this case, a correspondance between field name and Xapian prefix should
-   also be added to the mimeconf file. See the existing entries for
-   inspiration. The field can then be used inside the query language to
-   narrow searches.
-
-   The easiest way to write a new filter is probably to start from an
-   existing one.
+   the search to certain types of files. It is quite primitive, and launches
+   a new recoll GUI instance every time (even if it is already running). You
+   may find it useful anyway.
 
      ----------------------------------------------------------------------
