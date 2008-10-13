@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.19 2008-09-29 11:33:55 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.20 2008-10-13 08:23:36 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -254,7 +254,6 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		<< "[" << doc.url.c_str() << "]" << "\t" 
 		<< "[" << doc.meta[Rcl::Doc::keytt].c_str() << "]" << "\t"
 		<< doc.fbytes.c_str()   << "\tbytes" << "\t"
-		<< doc.dmtime.c_str()   << "\tSecs" << "\t"
 		<<  endl;
 	    if (op_flags & OPT_m) {
 		for (map<string,string>::const_iterator it = doc.meta.begin();
