@@ -436,7 +436,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Query results (sorted)</source>
-        <translation>Résultats de la recherche (triés)</translation>
+        <translation type="obsolete">Résultats de la recherche (triés)</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -460,7 +460,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Starting help browser </source>
-        <translation>Demarrage de l&apos;outil de consultation de l&apos;aide</translation>
+        <translation>Démarrage de l&apos;outil de consultation de l&apos;aide</translation>
     </message>
     <message>
         <source>Indexing in progress: </source>
@@ -538,6 +538,58 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
         <source>Stop &amp;Indexing</source>
         <translation>Arrèter l&apos;&amp;Indexation</translation>
     </message>
+    <message>
+        <source>All</source>
+        <translation>Tout</translation>
+    </message>
+    <message>
+        <source>media</source>
+        <translation>multimédia</translation>
+    </message>
+    <message>
+        <source>message</source>
+        <translation>message</translation>
+    </message>
+    <message>
+        <source>other</source>
+        <translation>autres</translation>
+    </message>
+    <message>
+        <source>presentation</source>
+        <translation>présentation</translation>
+    </message>
+    <message>
+        <source>spreadsheet</source>
+        <translation>feuille de calcul</translation>
+    </message>
+    <message>
+        <source>text</source>
+        <translation>texte</translation>
+    </message>
+    <message>
+        <source>sorted</source>
+        <translation>trié</translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation>filtré</translation>
+    </message>
+    <message>
+        <source>External applications/commands needed and not found for indexing your file types:
+
+</source>
+        <translation>Applications externes non trouvees pour indexer vos types de fichiers:
+
+</translation>
+    </message>
+    <message>
+        <source>No helpers found missing</source>
+        <translation>Pas d&apos;applications manquantes</translation>
+    </message>
+    <message>
+        <source>Missing helper programs</source>
+        <translation>Applications manquantes</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -555,7 +607,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Previous page</source>
-        <translation>Page précedente</translation>
+        <translation>Page précédente</translation>
     </message>
     <message>
         <source>Next page</source>
@@ -615,7 +667,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>&amp;Preferences</source>
-        <translation>&amp;Preferences</translation>
+        <translation>&amp;Préférences</translation>
     </message>
     <message>
         <source>Search tools</source>
@@ -729,6 +781,14 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
         <source>&amp;Indexing configuration</source>
         <translation>Configuration &amp;Indexation</translation>
     </message>
+    <message>
+        <source>All</source>
+        <translation>Tout</translation>
+    </message>
+    <message>
+        <source>&amp;Show missing helpers</source>
+        <translation>Afficher les application&amp;s manquantes</translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -801,7 +861,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Previous</source>
-        <translation></translation>
+        <translation>Précédent</translation>
     </message>
     <message>
         <source>Next</source>
@@ -858,6 +918,18 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
         <translation>Résultats &lt;b&gt;%1-%2&lt;/b&gt; pour </translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation>filtré</translation>
+    </message>
+    <message>
+        <source>sorted</source>
+        <translation>trié</translation>
+    </message>
+    <message>
+        <source>Document history</source>
+        <translation>Historique des documents consultés</translation>
     </message>
 </context>
 <context>
@@ -1600,6 +1672,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>Highlight color for query terms</source>
         <translation>Couleur de mise en relief des termes recherchés</translation>
+    </message>
+    <message>
+        <source>Prefer Html to plain text for preview.</source>
+        <translation>Utiliser le format Html pour la previsualisation.</translation>
     </message>
 </context>
 <context>

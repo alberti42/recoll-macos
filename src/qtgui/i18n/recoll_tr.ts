@@ -352,7 +352,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Query results (sorted)</source>
-        <translation>Arama sonuçları (sıralanmış)</translation>
+        <translation type="obsolete">Arama sonuçları (sıralanmış)</translation>
     </message>
     <message>
         <source>Cannot retrieve document info from database</source>
@@ -424,6 +424,56 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>media</source>
+        <translation type="unfinished">ortamlar</translation>
+    </message>
+    <message>
+        <source>message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>other</source>
+        <translation type="unfinished">diğer</translation>
+    </message>
+    <message>
+        <source>presentation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>spreadsheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sorted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External applications/commands needed and not found for indexing your file types:
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No helpers found missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing helper programs</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -549,6 +599,14 @@ Tercihler penceresini  açmak ister misiniz?</translation>
         <source>&amp;Indexing configuration</source>
         <translation>İ&amp;ndeksleme yapılandırması </translation>
     </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Show missing helpers</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>
@@ -615,6 +673,18 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     <message>
         <source>Query details</source>
         <translation>Sorgu detayları</translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sorted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document history</source>
+        <translation type="unfinished">Belge geçmişi</translation>
     </message>
 </context>
 <context>
@@ -1045,6 +1115,10 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer Html to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -437,7 +437,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Query results (sorted)</source>
-        <translation>Risultati ricerca (ordinati)</translation>
+        <translation type="obsolete">Risultati ricerca (ordinati)</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -537,6 +537,56 @@ Aprire la finestra delle preferenze ?</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>media</source>
+        <translation type="unfinished">multimediali</translation>
+    </message>
+    <message>
+        <source>message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>other</source>
+        <translation type="unfinished">altri</translation>
+    </message>
+    <message>
+        <source>presentation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>spreadsheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sorted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External applications/commands needed and not found for indexing your file types:
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No helpers found missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing helper programs</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -730,6 +780,14 @@ Aprire la finestra delle preferenze ?</translation>
         <source>&amp;Indexing configuration</source>
         <translation>Conf&amp;igurazione indicizzazione</translation>
     </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Show missing helpers</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclResList</name>
@@ -859,6 +917,18 @@ Aprire la finestra delle preferenze ?</translation>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
         <translation>Documenti &lt;b&gt;%1-%2&lt;/b&gt; per</translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sorted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document history</source>
+        <translation type="unfinished">Cronologia dei documenti</translation>
     </message>
 </context>
 <context>
@@ -1597,6 +1667,10 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     </message>
     <message>
         <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer Html to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

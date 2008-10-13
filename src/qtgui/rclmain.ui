@@ -368,7 +368,7 @@
     </action>
 </actions>
 <pixmapinproject/>
-<layoutdefaults spacing="6" margin="11"/>
+<layoutdefaults spacing="2" margin="2"/>
 <includehints>
     <includehint>ssearch_w.h</includehint>
     <includehint>reslist.h</includehint>

@@ -392,7 +392,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Query results (sorted)</source>
-        <translation>Результаты поиска (сортированные)</translation>
+        <translation type="obsolete">Результаты поиска (сортированные)</translation>
     </message>
     <message>
         <source>Advanced search</source>
@@ -532,6 +532,56 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>media</source>
+        <translation type="unfinished">мультимедиа</translation>
+    </message>
+    <message>
+        <source>message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>other</source>
+        <translation type="unfinished">иное</translation>
+    </message>
+    <message>
+        <source>presentation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>spreadsheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sorted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External applications/commands needed and not found for indexing your file types:
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No helpers found missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing helper programs</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -684,6 +734,14 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>&amp;Indexing configuration</source>
         <translation>Настройки ин&amp;дексирования</translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Show missing helpers</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -947,6 +1005,18 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Copy &amp;URL</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sorted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document history</source>
+        <translation type="unfinished">История документов</translation>
     </message>
 </context>
 <context>
@@ -1672,6 +1742,10 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Deactivate All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer Html to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

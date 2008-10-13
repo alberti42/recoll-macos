@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.67 2008-10-10 08:19:12 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.68 2008-10-13 07:57:12 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1586,7 +1586,194 @@ fvwm
   <chapter id="rcl.program">
     <title>Programming interface</title>
 
-    <sect1 id="rcl.program.elements">
+    <para>&RCL; has an Application programming Interface, usable both
+    for indexing and searching, currently accessible from the
+    <application>Python</application> language.</para>
+
+    <para>Another less radical way to extend the application is to
+    write filters for new types of documents.</para>
+
+    <para>The processing of metadata attributes for documents
+    (<literal>fields</literal>) is highly configurable.</para>
+
+    <sect1 id="rcl.program.filters">
+	<title>Writing a document filter</title>
+
+	<para>&RCL; filters are executable programs which 
+	translate from a specific format (ie:
+	<application>openoffice</application>,
+	<application>acrobat</application>, etc.) to the &RCL;
+	indexing input format, which may be
+	<literal>text/plain</literal> or
+	<literal>text/html</literal>.</para> 
+
+	<para>&RCL; filters are usually shell-scripts, but this is in
+	no way necessary. These programs are extremely simple and most
+	of the difficulty lies in extracting the text from the native
+	format, not outputting what is expected by &RCL;. Happily
+	enough, most document formats already have translators or text
+	extractors which handle the difficult part and can be called
+	from the filter. In some case the output of the translating
+	program is appropriate, and no intermediate shell-script is
+	needed.</para> 
+
+	<para>Filters are called with a single argument which is the
+	source file name. They should output the result to stdout.</para>
+
+	<para>The <literal>RECOLL_FILTER_FORPREVIEW</literal>
+	environment variable (values <literal>yes</literal>,
+	<literal>no</literal>) tells the filter if the operation is
+	for indexing or previewing. Some filters use this to output a
+	slightly different format. This is not essential.</para>
+
+      <para>The association of file types to filters is performed in
+      the <filename>mimeconf</filename> file. A sample:</para>
+<programlisting>
+
+[index]
+application/msword = exec antiword -t -i 1 -m UTF-8;\
+     mimetype=text/plain;charset=utf-8
+
+application/ogg = exec rclogg
+
+text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
+</programlisting>
+
+      <para>The fragment specifies that:</para>
+
+      <itemizedlist>
+
+	<listitem><para><literal>application/msword</literal> files
+	are processed by executing the <command>antiword</command>
+	program, which outputs
+        <literal>text/plain</literal> encoded in
+        <literal>iso-8859-1</literal>.</para> 
+	</listitem>
+	
+	<listitem><para><literal>application/ogg</literal> files are
+	processed by the <command>rclogg</command> script, with
+	default output type (<literal>text/html</literal>, with
+	encoding specified in the header, or <literal>utf-8</literal>
+	by default).</para>
+	</listitem>
+	
+	<listitem><para><literal>text/rtf</literal> is processed by
+	<command>unrtf</command>, which outputs
+	<literal>text/html</literal>. The 
+	<literal>iso-8859-1</literal> encoding is specified because it
+	is not the <literal>utf-8</literal> default, and not output by
+	<command>unrtf</command> in the HTML header section.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para>The easiest way to write a new filter is probably to start
+          from an existing one.</para>
+
+      <para>Filters which output <literal>text/plain</literal> text
+      are generally simpler, but they cannot specify the character set
+      and other metadata, so they are limited to cases where these
+      elements are not needed.</para>
+
+
+    <sect2 id="rcl.program.filters.html">
+	<title>Filter HTML output</title>
+
+	<para>The output HTML could be very minimal like the following
+	example:</para>
+
+	<programlisting>&lt;html>&lt;head>
+&lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+&lt/head>
+&lt;body>some text content&lt;/body>&lt;/html>
+          </programlisting>
+
+	<para>You should take care to escape some
+	characters inside
+	  the text by transforming them into appropriate
+	  entities. "<literal>&amp;</literal>" should be transformed into
+	  "<literal>&amp;amp;</literal>", "<literal>&lt;</literal>"
+	  should be transformed into
+	  "<literal>&amp;lt;</literal>". This is not always properly
+	  done by translating programs which output HTML, and of
+	  course nerver by those which output plain text.</para>
+
+	<para>The character set needs to be specified in the
+	  header. It does not need to be UTF-8 (&RCL; will take care
+	  of translating it), but it must be accurate for good
+	  results.</para>
+
+	<para>&RCL; will also make use of other header fields if
+	  they are present: <literal>title</literal>,
+	  <literal>description</literal>,
+	  <literal>keywords</literal>.</para>
+
+	<para>Filters also have the possibility to "invent" field
+	names. This should be output as meta tags:</para>
+
+	<programlisting>
+&lt;meta name="somefield" content="Some textual data" /&gt;
+</programlisting>
+
+      <para> See the following section for details about configuring
+      how field data is processed by the indexer.</para>
+
+      </sect2>
+
+    </sect1>
+
+    <sect1 id="rcl.program.fields">
+	<title>Field data processing configuration</title>
+
+      <para><literal>Fields</literal> are named pieces of information
+      in or about documents, like <literal>title</literal>,
+      <literal>author</literal>, <literal>abstract</literal>.</para> 
+
+      <para>The field values for documents can appear in several ways
+      during indexing: either output by filters as
+      <literal>meta</literal> fields in the HTML header section, or
+      added as attributes of the <literal>Doc</literal> object when
+      using the API, or again synthetized internally by &RCL;.</para>
+
+      <para>The &RCL; query language allows searching for text in a
+      specific field.</para>
+
+      <para>&RCL; defines a number of default fields. Additional
+      ones can be output by filters, and described in the
+      <filename>fields</filename> configuration file.</para>
+
+      <para>Fields can be:</para>
+      <itemizedlist>
+
+	<listitem><para><literal>indexed</literal>, meaning that their
+	terms are separately stored in inverted lists (with a specific
+	prefix), and that a field-specific search is possible.</para>
+	</listitem>
+
+	<listitem><para><literal>stored</literal>, meaning that their
+        value is recorded in the index data record for the document,
+        and can be returned and displayed with search results.</para>
+	</listitem>
+
+      </itemizedlist>
+
+      <para>A field can be either or both indexed and stored.</para>
+
+      <para>A field becomes indexed by having a prefix defined in
+      the <literal>[prefixes]</literal> section of the
+      <filename>fields</filename> file. See the comments in there for
+      details</para> 
+
+      <para>A field becomes stored by appearing in
+      the <literal>[stored]</literal> section of the
+      <filename>fields</filename> file.</para>
+
+    </sect1>
+
+
+    <sect1 id="rcl.program.api">
+      <title>API</title>
+
+    <sect2 id="rcl.program.api.elements">
       <title>Interface elements</title>
 
       <para>A few elements in the interface are specific and and need
@@ -1642,12 +1829,12 @@ fvwm
       indexing. The main indexer documents would also probably be a
       problem for the external indexer purge operation.</para>
 
-    </sect1>
+    </sect2>
 
-    <sect1 id="rcl.program.python">
+    <sect2 id="rcl.program.api.python">
       <title>Python interface</title>
 
-      <sect2 id="rcl.program.python.intro">
+      <sect3 id="rcl.program.python.intro">
 	<title>Introduction</title>
 
 	  <para>&RCL; versions after 1.11 define a Python programming
@@ -1666,10 +1853,10 @@ fvwm
       </screen>
           </para> 
 
-      </sect2>
+      </sect3>
 
 
-      <sect2 id="rcl.program.python.manual">
+      <sect3 id="rcl.program.python.manual">
 	<title>Interface manual</title>
 
       <literalLayout>
@@ -1859,9 +2046,9 @@ FUNCTIONS
 
 
 </literalLayout>
+	</sect3>
 
-
-      <sect2 id="rcl.program.python.examples">
+      <sect3 id="rcl.program.python.examples">
 	<title>Example code</title>
 
 	<para>The following sample would query the index with a user
@@ -1894,10 +2081,12 @@ while query.next >= 0 and query.next < nres:
 
 </programlisting>
 
-      </sect2>
+      </sect3>
 
-    </sect1>
+    </sect2>
+
   </chapter>
+
 
   <chapter id="rcl.install">
     <title>Installation</title>
@@ -2686,11 +2875,11 @@ skippedPaths = ~/somedir/&lowast;.txt
 	  be an executable program or script which exists inside
 	  <filename>/usr/[local/]share/recoll/filters</filename>. It
 	  will be given a file name as argument and should output the
-	  text contents in html format on the standard output.</para>
+	  text contents on the standard output.</para>
 
-	  <para>You can find more details about writing a &RCL; filter
-	  in the <link linkend="rcl.extending.filters">section about
-	  writing filters</link></para>
+	  <para>The <link linkend="rcl.program.filters">filter
+	  programming</link> section describes in more detail how to
+	  write a filter.</para> 
 	</sect3>
 
       </sect2>
@@ -2722,83 +2911,6 @@ skippedPaths = ~/somedir/&lowast;.txt
       certain types of files. It is quite primitive, and launches a
       new recoll GUI instance every time (even if it is already
       running). You may find it useful anyway.</para>
-    </sect1>
-
-
-    <sect1 id="rcl.extending">
-      <title>Extending &RCL;</title>
-      
-      <sect2 id="rcl.extending.filters">
-	<title>Writing a document filter</title>
-
-	<para>&RCL; filters are executable programs which 
-	translate from a specific format (ie:
-	<application>openoffice</application>,
-	<application>acrobat</application>, etc.) to the &RCL;
-	indexing input format, which was chosen to be HTML.</para>
-
-	<para>&RCL; filters are usually shell-scripts, but this is in
-	no way necessary. These programs are extremely simple and most
-	of the difficulty lies in extracting the text from the native
-	format, not outputting what is expected by &RCL;. Happily
-	enough, most document formats already have translators or text
-	extractors which handle the difficult part and can be called
-	from the filter.</para>
-
-	<para>Filters are called with a single argument which is the
-	source file name. They should output the result to stdout.</para>
-
-	<para>The <literal>RECOLL_FILTER_FORPREVIEW</literal>
-	environment variable (values <literal>yes</literal>,
-	<literal>no</literal>) tells the filter if the operation is
-	for indexing or previewing. Some filters use this to output a
-	slightly different format. This is not essential.</para>
-
-	<para>The output HTML could be very minimal like the following
-	example:</para>
-
-	<programlisting>&lt;html>&lt;head>
-&lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-&lt/head>
-&lt;body>some text content&lt;/body>&lt;/html>
-          </programlisting>
-
-	<para>You should take care to escape some characters inside
-	  the text by transforming them into appropriate
-	  entities. "<literal>&amp;</literal>" should be transformed into
-	  "<literal>&amp;amp;</literal>", "<literal>&lt;</literal>"
-	  should be transformed into "<literal>&amp;lt;</literal>".</para>
-
-	<para>The character set needs to be specified in the
-	  header. It does not need to be UTF-8 (&RCL; will take care
-	  of translating it), but it must be accurate for good
-	  results.</para>
-
-	<para>&RCL; will also make use of other header fields if
-	  they are present: <literal>title</literal>,
-	  <literal>description</literal>,
-	  <literal>keywords</literal>.</para>
-
-	<para>As of &RCL; release 1.9, filters also have the
-	possibility to "invent" field names. This should be output as
-	meta tags:</para>
-
-	<programlisting>
-&lt;meta name="somefield" content="Some textual data" /&gt;
-</programlisting>
-	
-	<para>In this case, a correspondance between field name and
-	&XAP; prefix should also be added to the
-	<filename>mimeconf</filename> file. See the existing entries
-	for inspiration. The field can then be used inside the query
-	language to narrow searches.</para>
-
-	<para>The easiest way to write a new filter is probably to start
-          from an existing one.</para>
-
-	
-      </sect2>
-
     </sect1>
 
   </chapter>
