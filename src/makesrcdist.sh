@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: makesrcdist.sh,v 1.13 2007-06-26 11:59:42 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: makesrcdist.sh,v 1.14 2008-10-13 11:46:27 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
 #set -x
@@ -74,6 +74,10 @@ mv -f $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
 # We tag .. as there is the 'packaging/' directory in there
 CVSTAG="RECOLL_$versionforcvs"
 [ $dotag = "yes" ] && (cd ..;cvs tag -F $CVSTAG .)
+
+# Can't now put ./Makefile in excludefile, gets ignored everywhere. So delete
+# the top Makefile here (its' output by configure on the target system):
+rm -f $topdir/Makefile
 
 out=recoll-$version.tar.gz
 (cd $targetdir ; \
