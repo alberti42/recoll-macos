@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.37 2008-09-30 12:38:28 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.38 2008-10-14 06:07:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@ using namespace std;
 #include "pathut.h"
 #include "rclmon.h"
 #include "x11mon.h"
+#include "rclversion.h"
 
 // Globals for exit cleanup
 ConfIndexer *confindexer;
@@ -253,6 +254,7 @@ Usage(FILE *where = stderr)
 {
     FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
     fprintf(fp, "%s: Usage: %s", thisprog, usage);
+    fprintf(fp, "Recoll version: %s\n", rclversion);
     exit((op_flags & OPT_h)==0);
 }
 
