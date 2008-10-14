@@ -40,8 +40,9 @@ public:
 	}
     }
     X *operator->() {return rep;}
-    int getcnt() const {return pcount ? *pcount : 0;}
     X *getptr() const {return rep;}
+    const X *getconstptr() const {return rep;}
+    int getcnt() const {return pcount ? *pcount : 0;}
     bool isNull() const {return rep == 0;}
 };
 

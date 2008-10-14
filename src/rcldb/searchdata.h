@@ -16,7 +16,7 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.20 2008-09-29 11:33:55 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: searchdata.h,v 1.21 2008-10-14 07:50:13 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui
@@ -139,8 +139,8 @@ public:
     bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
     virtual string getReason() const {return m_reason;}
     virtual bool getTerms(vector<string>&, vector<vector<string> >&,
-			  vector<int>&) const
-    {return true;}
+			  vector<int>&) const = 0;
+    //    {return true;}
     SClType getTp() {return m_tp;}
     void setParent(SearchData *p) {m_parentSearch = p;}
     virtual void setModifiers(Modifier mod) {m_modifiers = mod;}
@@ -247,7 +247,8 @@ public:
 	: SearchDataClause(tp), m_sub(sub) {}
     virtual ~SearchDataClauseSub() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
-
+    virtual bool getTerms(vector<string>&, vector<vector<string> >&,
+			  vector<int>&) const;
 protected:
     RefCntr<SearchData> m_sub;
 };

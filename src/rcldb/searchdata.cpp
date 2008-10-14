@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.25 2008-09-29 11:33:55 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.26 2008-10-14 07:50:13 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -634,6 +634,13 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
 bool SearchDataClauseSub::toNativeQuery(Rcl::Db &db, void *p, const string&)
 {
     return m_sub->toNativeQuery(db, p);
+}
+
+bool SearchDataClauseSub::getTerms(vector<string>& terms, 
+				   vector<vector<string> >& groups,
+				   vector<int>& gslks) const
+{
+    return m_sub.getconstptr()->getTerms(terms, groups, gslks);
 }
 
 } // Namespace Rcl
