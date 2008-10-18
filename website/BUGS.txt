@@ -4,15 +4,29 @@ Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest (recoll 1.10.2 + xapian 1.0.x):
+Latest (recoll 1.10.6 + xapian 1.0.x):
 
-- In a preview window, when walking the search term hits with the
-  Previous/Next buttons, 'Previous' actually acts as 'Next' (it does work
-  normally for the local search).
+- When Recoll is built with qt 4.4.0, the icons in the result list are all
+  displayed at the top of the page and garbled. This appears to be a qt
+  bug, fixed in 4.4.1. Use either qt 4.3.x or 4.4.1
+
+- If the locale is not utf-8, non-ascii command line arguments to recoll
+  and recollq are not converted to utf-8, which may prevent, for example,
+  the kde applet from working. The workaround is to apply the following
+  one-line fix to qtgui/main.cpp, recompile and install recoll:
+386c386
+<           sSearch->setSearchString(QString::fromUtf8(qstring.c_str()));
+---
+>           sSearch->setSearchString(QString::fromLocal8Bit(qstring.c_str()));
+
 
 - If the user-chosen result list entry format results in several paragraphs
   (in the qt textedit sense), right clicks will only work inside the first
   one for each entry.
+
+- When a mime type has an external viewer defined, but the actual file is
+  compressed (ie: xxx.txt.gz), recoll will try to start the external viewer
+  on the compressed file, which will not work in most cases.
 
 - NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
@@ -28,7 +42,7 @@ Latest (recoll 1.10.2 + xapian 1.0.x):
         "api/" directory: 
          http://www.recoll.org/xapian/xapNearDistrib-1.0.patch
         or fetch the already patched source:
-	 http://www.recoll.org/xapian/xapian-core-1.0.5-recollNEARpatch.tar.gz
+	 http://www.recoll.org/xapian/xapian-core-1.0.7-recollNEARpatch.tar.gz
 
         then recompile, and install.
 
@@ -40,10 +54,6 @@ Latest (recoll 1.10.2 + xapian 1.0.x):
   result list font in the query preferences. This is not a recoll problem,
   I don't know the exact cause (I've seen it happen with "Sans Serif" and
   go away with Helvetica or Arial).
-
-- When a mime type has an external viewer defined, but the actual file is
-  compressed (ie: xxx.txt.gz), recoll will try to start the external viewer
-  on the compressed file, which will not work in most cases.
 
 - Under some versions of KDE (ie: Fedora FC5 KDE 3.5.4-0.5.fc5), there is a
   problem with the window stacking order. Opening the "browse" file
@@ -59,11 +69,26 @@ Latest (recoll 1.10.2 + xapian 1.0.x):
   yet inexistant db).
 
 1.10.1 + xapian 1.0.x
+- A relatively simple error case can cause the indexer to stop processing
+  an mbox file (forgetting all subsequent messages). More specifically,
+  this happens when encountering more than than a few dozen errors while
+  handling attachments. This is relatively common: for exemple if an
+  external helper application is missing and multiple attachments of the
+  affected type are found (ie: multiple images and no
+  exiftool). Workaround: install the helper application. 
+- The decoding of base-64 data in emails fails in a relatively uncommon 
+  but sometimes encountered case.
+- In a preview window, when walking the search term hits with the
+  Previous/Next buttons, 'Previous' actually acts as 'Next' (it does work
+  normally for the local search).
+- Problems in detecting message separators inside Thunderbird mailboxes
+  (quite probably mainly for messages imported from outlook?). Can lead to
+  unindexed messages, and even apparently indexer crashes in some cases.
+- File names indexed as terms can sometimes overflow the maximum term
+  size, halting the indexing.
+- For Phrase/Near searches, only the first term group is highlighted in
+  preview. 
 
-- The decoding of base-64 data in emails fails in a relatively uncommon but
-  sometimes encountered case.
-- The "Previous" button in the preview window would actually go forward
-  when walking the search terms 
 
 1.10.0
 
