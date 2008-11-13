@@ -1,13 +1,20 @@
 depth=../../..
 include $(depth)/mk/sysconf
 
+# Need to set this by hand until we decide how to autoconf this without
+# bringing 2mbytes of kde config files.
+# May also need to adjust stuff such as the --rpath's below
+#
+KDE_INCLUDES=/usr/include/kde
+QT_INCLUDES=/usr/include/qt3
+
+
 all: kio_recoll.so 
 
 DEPS_CXXFLAGS =  -MT pop3.lo -MD -MP -MF .deps/pop3.Tpo
 
 INC_CXXFLAGS = -I. \
-	-I/usr/local/include -I/usr/X11R6/include \
-	-I/opt/kde3/include -I$(QTDIR)/include \
+	-I$(KDE_INCLUDES) -I$(QT_INCLUDES) \
 	     -I$(depth)/common -I$(depth)/query -I$(depth)/utils \
 	     -I$(depth)/qtgui -I$(depth)/rcldb
 

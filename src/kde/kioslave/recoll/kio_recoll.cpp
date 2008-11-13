@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.10 2008-09-29 11:33:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.11 2008-11-13 10:57:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -21,7 +21,8 @@ using namespace std;
 #include "docseqdb.h"
 #include "pathut.h"
 #include "searchdata.h"
-
+#include "wasastringtoquery.h"
+#include "wasatorcl.h"
 #include "plaintorich.h"
 
 #include "kio_recoll.h"
@@ -75,8 +76,7 @@ bool RecollProtocol::maybeOpenDb(string &reason)
     }
     if (!m_rcldb->isopen() && !m_rcldb->open(m_dbdir, 
 					     m_rclconfig->getStopfile(),
-					     Rcl::Db::DbRO,
-					     Rcl::Db::QO_STEM)) {
+					     Rcl::Db::DbRO)) {
 	reason = "Could not open database in " + m_dbdir;
 	return false;
     }
@@ -106,23 +106,23 @@ void RecollProtocol::get(const KURL & url)
     fprintf(stderr, "RecollProtocol::get:path [%s]\n", path.latin1());
     QCString u8 =  path.utf8();
 
-    RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_OR));
-    sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 
-						    (const char *)u8));
-    Rcl::Query *query = new Rcl::Query(m_rcldb);
+    RefCntr<Rcl::SearchData> sdata = wasaStringToRcl((const char*)u8, m_reason);
+    sdata->setStemlang("english");
+
+    RefCntr<Rcl::Query>query(new Rcl::Query(m_rcldb));
     if (!query->setQuery(sdata)) {
 	m_reason = "Internal Error: setQuery failed";
 	outputError(m_reason.c_str());
 	finished();
-	delete query;
 	return;
     }
 
     if (m_docsource)
 	delete m_docsource;
 
-    m_docsource = new DocSequenceDb(RefCntr<Rcl::Query>(query), 
-				    "Query results", sdata);
+    m_docsource = new DocSequenceDb(query, "Query results", sdata);
+
+    string explain = m_docsource->getDescription();
 
     QByteArray output;
     QTextStream os(output, IO_WriteOnly );
@@ -134,8 +134,13 @@ void RecollProtocol::get(const KURL & url)
     os << "<title>Recoll: query results</title>" << endl;
     os << "</head><body>" << endl;
 
+    //	outputError("EXPLAINING");
+    os << "<p><b>Actual query performed: </b>" << endl;
+    os << explain.c_str() << "</p>";
+
     Rcl::Doc doc;
-    for (int i = 0; i < 100; i++) {
+    int cnt = query->getResCnt();
+    for (int i = 0; i < cnt; i++) {
 	string sh;
 	doc.erase();
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.8 2008-09-29 11:33:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.9 2008-11-13 10:57:46 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,8 @@ static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.8 2008-09-29 11:33:55 dockes Exp
 
 DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
 			     RefCntr<Rcl::SearchData> sdata) 
-    : DocSequence(t), m_q(q), m_sdata(sdata), m_rescnt(-1), m_filt(false)
+    : DocSequence(t), m_q(q), m_sdata(sdata), m_fsdata(sdata),
+      m_rescnt(-1), m_filt(false)
 {
 }
 

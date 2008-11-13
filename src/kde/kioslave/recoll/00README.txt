@@ -20,11 +20,10 @@ Implementation notes:
 
 - You MUST install a kio_recoll.la in lib/kde3 along with kio_recoll.so,
   else kdeinit won't be able to load the lib (probably uses the libltdl
-  crap?). The one in this directory was duplicated/adjusted from
-  kio_man.la
+  thingy?). The one in this directory was duplicated/adjusted from
+  kio_man.la. The contents don't seem too critical, just needs to exist.
 
-- The current implementation always tries to retrieve 100 docs (doesn't
-  even stop if there are less). It would probably be easy to add state and
+- Currently retrieves all results on one page. Need to add state and
   previous/next buttons. As I didn't find this thing to be particularly
   useful, I didn't bothered to.
 
@@ -35,5 +34,7 @@ Implementation notes:
   wherever kde keeps its plugins (ie: lib/kde3), and recoll.protocol in the
   services directory (share/services ? look for other .protocol file).
 
-- I saw after doing the build/config mockup that kdevelop can generate a kio_slave project. This would certainly be the next thing to do.
-
+- I saw after doing the build/config mockup that kdevelop can generate a
+  kio_slave project. This might be the next thing to do. otoh would need to
+  separate the kio from the main source to avoid having to distribute 2megs
+  of kde build config files.
