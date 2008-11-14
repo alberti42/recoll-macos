@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.11 2008-11-13 10:57:46 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.12 2008-11-14 15:49:03 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -18,9 +18,9 @@ using namespace std;
 #include "rclconfig.h"
 #include "rcldb.h"
 #include "rclinit.h"
-#include "docseqdb.h"
 #include "pathut.h"
 #include "searchdata.h"
+#include "rclquery.h"
 #include "wasastringtoquery.h"
 #include "wasatorcl.h"
 #include "plaintorich.h"
@@ -36,7 +36,7 @@ RclConfig *RclConfig::getMainConfig()
 
 RecollProtocol::RecollProtocol(const QCString &pool, const QCString &app) 
     : SlaveBase("recoll", pool, app), m_initok(false), 
-      m_rclconfig(0), m_rcldb(0), m_docsource(0)
+      m_rclconfig(0), m_rcldb(0)
 {
     string reason;
     rclconfig = m_rclconfig = recollinit(0, 0, m_reason);
@@ -63,7 +63,6 @@ RecollProtocol::RecollProtocol(const QCString &pool, const QCString &app)
 
 RecollProtocol::~RecollProtocol()
 {
-    delete m_docsource;
     delete m_rcldb;
     delete m_rclconfig;
 }
@@ -117,12 +116,7 @@ void RecollProtocol::get(const KURL & url)
 	return;
     }
 
-    if (m_docsource)
-	delete m_docsource;
-
-    m_docsource = new DocSequenceDb(query, "Query results", sdata);
-
-    string explain = m_docsource->getDescription();
+    string explain = sdata->getDescription();
 
     QByteArray output;
     QTextStream os(output, IO_WriteOnly );
@@ -144,7 +138,7 @@ void RecollProtocol::get(const KURL & url)
 	string sh;
 	doc.erase();
 
-	if (!m_docsource->getDoc(i, doc, &sh)) {
+	if (!query->getDoc(i, doc)) {
 	    // This may very well happen for history if the doc has
 	    // been removed since. So don't treat it as fatal.
 	    doc.meta["abstract"] = string("Unavailable document");
@@ -174,7 +168,8 @@ void RecollProtocol::get(const KURL & url)
 	    strftime(datebuf, 99, 
 		     "<i>Modified:</i>&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
 	}
-	result += "<img src=\"file://" + imgfile + "\" align=\"left\">";
+	result += "<a href=\"" + doc.url + "\">" +
+	    "<img src=\"file://" + imgfile + "\" align=\"left\">" + "</a>";
 	string abst = escapeHtml(doc.meta["abstract"]);
 	result += string(perbuf) + " <b>" + doc.meta["title"] + "</b><br>" +
 	    doc.mimetype + "&nbsp;" +
