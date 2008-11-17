@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.12 2008-11-14 15:49:03 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.13 2008-11-17 14:51:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -10,10 +10,22 @@ static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.12 2008-11-14 15:49:03 dockes 
 #include <string>
 
 using namespace std;
+#include <qglobal.h>
 
+#if (QT_VERSION < 0x040000)
 #include <qfile.h>
+#include <qtextstream.h>
+#include <qstring.h>
+#else
+#include <QFile>
+#include <QTextStream>
+#include <QByteArray>
+#endif
 
-#include <kinstance.h>
+#include <kdebug.h>
+
+//#include <kinstance.h>
+#include <kcomponentdata.h>
 
 #include "rclconfig.h"
 #include "rcldb.h"
@@ -23,18 +35,17 @@ using namespace std;
 #include "rclquery.h"
 #include "wasastringtoquery.h"
 #include "wasatorcl.h"
-#include "plaintorich.h"
-
 #include "kio_recoll.h"
 
 using namespace KIO;
+
 static RclConfig *rclconfig;
 RclConfig *RclConfig::getMainConfig()
 {
   return rclconfig;
 }
 
-RecollProtocol::RecollProtocol(const QCString &pool, const QCString &app) 
+RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app) 
     : SlaveBase("recoll", pool, app), m_initok(false), 
       m_rclconfig(0), m_rcldb(0)
 {
@@ -67,6 +78,12 @@ RecollProtocol::~RecollProtocol()
     delete m_rclconfig;
 }
 
+void RecollProtocol::mimetype(const KUrl & /*url*/)
+{
+  mimeType("text/html");
+  finished();
+}
+
 bool RecollProtocol::maybeOpenDb(string &reason)
 {
     if (!m_rcldb) {
@@ -82,9 +99,9 @@ bool RecollProtocol::maybeOpenDb(string &reason)
     return true;
 }
 
-void RecollProtocol::get(const KURL & url)
+void RecollProtocol::get(const KUrl & url)
 {
-    fprintf(stderr, "RecollProtocol::get %s\n", url.url().ascii());
+    kDebug(7130) << "RecollProtocol::get:" << url << endl;
     mimeType("text/html");
 
     if (!m_initok || !maybeOpenDb(m_reason)) {
@@ -102,8 +119,8 @@ void RecollProtocol::get(const KURL & url)
     }
 
     QString path = url.path();
-    fprintf(stderr, "RecollProtocol::get:path [%s]\n", path.latin1());
-    QCString u8 =  path.utf8();
+    kDebug(7130) << "RecollProtocol::get:path:" << path << endl;
+    QByteArray u8 =  path.toUtf8();
 
     RefCntr<Rcl::SearchData> sdata = wasaStringToRcl((const char*)u8, m_reason);
     sdata->setStemlang("english");
@@ -119,8 +136,8 @@ void RecollProtocol::get(const KURL & url)
     string explain = sdata->getDescription();
 
     QByteArray output;
-    QTextStream os(output, IO_WriteOnly );
-    os.setEncoding(QTextStream::UnicodeUTF8); 
+    QTextStream os(&output, QIODevice::ReadWrite);
+
     os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" << endl;
     os << "<html><head>" << endl;
     os << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" << endl;
@@ -128,7 +145,6 @@ void RecollProtocol::get(const KURL & url)
     os << "<title>Recoll: query results</title>" << endl;
     os << "</head><body>" << endl;
 
-    //	outputError("EXPLAINING");
     os << "<p><b>Actual query performed: </b>" << endl;
     os << explain.c_str() << "</p>";
 
@@ -141,7 +157,7 @@ void RecollProtocol::get(const KURL & url)
 	if (!query->getDoc(i, doc)) {
 	    // This may very well happen for history if the doc has
 	    // been removed since. So don't treat it as fatal.
-	    doc.meta["abstract"] = string("Unavailable document");
+	    doc.meta[Rcl::Doc::keykw] = string("Unavailable document");
 	}
 
 	string iconname = m_rclconfig->getMimeIconName(doc.mimetype);
@@ -157,8 +173,8 @@ void RecollProtocol::get(const KURL & url)
 
 	char perbuf[10];
 	sprintf(perbuf, "%3d%%", doc.pc);
-	if (doc.meta["title"].empty()) 
-	  doc.meta["title"] = path_getsimple(doc.url);
+	if (doc.meta[Rcl::Doc::keytt].empty()) 
+	    doc.meta[Rcl::Doc::keytt] = path_getsimple(doc.url);
 	char datebuf[100];
 	datebuf[0] = 0;
 	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
@@ -170,12 +186,12 @@ void RecollProtocol::get(const KURL & url)
 	}
 	result += "<a href=\"" + doc.url + "\">" +
 	    "<img src=\"file://" + imgfile + "\" align=\"left\">" + "</a>";
-	string abst = escapeHtml(doc.meta["abstract"]);
-	result += string(perbuf) + " <b>" + doc.meta["title"] + "</b><br>" +
+	string abst = escapeHtml(doc.meta[Rcl::Doc::keyabs]);
+	result += string(perbuf) + " <b>" + doc.meta[Rcl::Doc::keytt] + "</b><br>" +
 	    doc.mimetype + "&nbsp;" +
 	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>")) +
 	    (!abst.empty() ? abst + "<br>" : string("")) +
-	    (!doc.meta["keywords"].empty() ? doc.meta["keywords"] + 
+	    (!doc.meta[Rcl::Doc::keytt].empty() ? doc.meta[Rcl::Doc::keykw] + 
 	     "<br>" : string("")) +
 	    "<a href=\"" + doc.url + "\">" + doc.url + "</a><br></p>\n";
 
@@ -186,17 +202,14 @@ void RecollProtocol::get(const KURL & url)
     os << "</body></html>";
     
     data(output);
-    data(QByteArray());
-
-    fprintf(stderr, "RecollProtocol::get: calling finished\n");
+    kDebug(7130) << "call finished" << endl;
     finished();
 }
 
 void RecollProtocol::outputError(const QString& errmsg)
 {
     QByteArray array;
-    QTextStream os(array, IO_WriteOnly);
-    os.setEncoding(QTextStream::UnicodeUTF8);
+    QTextStream os(&array, QIODevice::WriteOnly);
 
     os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Strict//EN\">" << endl;
     os << "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" << endl;
@@ -204,26 +217,33 @@ void RecollProtocol::outputError(const QString& errmsg)
     os << "</head>" << endl;
     os << "<body><h1>Recoll Error</h1>" << errmsg << "</body>" << endl;
     os << "</html>" << endl;
-
     data(array);
 }
 
 
-extern "C" { int KDE_EXPORT kdemain(int argc, char **argv); }
+extern "C" {int kdemain(int argc, char **argv);}
 
 int kdemain(int argc, char **argv)
 {
-  fprintf(stderr, "KIO_RECOLL\n");
-  KInstance instance("kio_recoll");
+    FILE*mf = fopen("/tmp/toto","w");
+    fprintf(mf, "KIORECOLL\n");
+    fclose(mf);
+#ifdef KDE_VERSION_3
+    KInstance instance("kio_recoll");
+#else
+    KComponentData instance("kio_recoll");
+#endif
+    kDebug(7130) << "*** starting kio_recoll " << endl;
 
-  if (argc != 4)  {
-      fprintf(stderr, 
-	      "Usage: kio_recoll protocol domain-socket1 domain-socket2\n");
-      exit(-1);
-  }
+    if (argc != 4)  {
+	kDebug(7130) << "Usage: kio_recoll proto dom-socket1 dom-socket2\n" << endl;
+	exit(-1);
+    }
 
-  RecollProtocol slave(argv[2], argv[3]);
-  slave.dispatchLoop();
+    RecollProtocol slave(argv[2], argv[3]);
+    slave.dispatchLoop();
 
-  return 0;
+    kDebug(7130) << "kio_recoll Done" << endl;
+    return 0;
 }
+
