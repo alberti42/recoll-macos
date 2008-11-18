@@ -16,7 +16,7 @@
  */
 #ifndef _CANCELCHECK_H_INCLUDED_
 #define _CANCELCHECK_H_INCLUDED_
-/* @(#$Id: cancelcheck.h,v 1.4 2008-11-18 13:24:43 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: cancelcheck.h,v 1.5 2008-11-18 13:51:09 dockes Exp $  (C) 2005 J.F.Dockes */
 
 
 /**
@@ -30,10 +30,11 @@
  *    interaction, if the worker takes too long.
  *  - The worker task calls checkCancel() at regular intervals, possibly as
  *    a side-effect of some other progress-reporting call. If cancellation has
- *    been requested, this will raise an exception.
- * The worker routine must be exception-clean, and the caller should
- * catch the CancelExcept exception.
- * 
+ *    been requested, this will raise an exception, to be catched and processed
+ *    wherever the worker was invoked.
+ * Of course, the worker side must be exception-clean, but this otherwise avoids
+ * having to set-up code to handle a special cancellation error along
+ * the whole worker call stack.
  */
 class CancelExcept {};
 
