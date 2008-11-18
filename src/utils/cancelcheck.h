@@ -16,9 +16,25 @@
  */
 #ifndef _CANCELCHECK_H_INCLUDED_
 #define _CANCELCHECK_H_INCLUDED_
-/* @(#$Id: cancelcheck.h,v 1.3 2007-07-12 13:41:54 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: cancelcheck.h,v 1.4 2008-11-18 13:24:43 dockes Exp $  (C) 2005 J.F.Dockes */
 
 
+/**
+ * Common cancel checking mechanism
+ *
+ * The CancelCheck class is used as a singleton objet (private constructor).
+ * The single instance can be accessed as CancelCheck::instance.
+ * It is used as follows, in an asynchronous program where there is an
+ *  interactive (or otherwise controlling) task and a long-working one:
+ *  - The control task calls setCancel(), usually as a result of user 
+ *    interaction, if the worker takes too long.
+ *  - The worker task calls checkCancel() at regular intervals, possibly as
+ *    a side-effect of some other progress-reporting call. If cancellation has
+ *    been requested, this will raise an exception.
+ * The worker routine must be exception-clean, and the caller should
+ * catch the CancelExcept exception.
+ * 
+ */
 class CancelExcept {};
 
 class CancelCheck {
