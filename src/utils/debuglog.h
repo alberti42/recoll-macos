@@ -107,11 +107,6 @@ extern int setfilename(const char *fname, int trnc = 1);
 #else
 #define LOGDEB3(X)
 #endif
-#if STATICVERBOSITY >= DEBDEB4
-#define LOGDEB4(X) {if (DebugLog::getdbl()->getlevel()>=DEBDEB4){DebugLog::getdbl()->prolog(DEBDEB4,__FILE__,__LINE__) ;DebugLog::getdbl()->log X;}}
-#else
-#define LOGDEB4(X)
-#endif
 #ifndef NO_NAMESPACES
 }
 #endif // NO_NAMESPACES
