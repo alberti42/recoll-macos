@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.13 2008-11-17 14:51:38 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.14 2008-11-19 12:28:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -101,7 +101,8 @@ bool RecollProtocol::maybeOpenDb(string &reason)
 
 void RecollProtocol::get(const KUrl & url)
 {
-    kDebug(7130) << "RecollProtocol::get:" << url << endl;
+    kDebug() << "RecollProtocol::get:" << url << endl;
+
     mimeType("text/html");
 
     if (!m_initok || !maybeOpenDb(m_reason)) {
@@ -119,7 +120,7 @@ void RecollProtocol::get(const KUrl & url)
     }
 
     QString path = url.path();
-    kDebug(7130) << "RecollProtocol::get:path:" << path << endl;
+    kDebug() << "RecollProtocol::get:path:" << path << endl;
     QByteArray u8 =  path.toUtf8();
 
     RefCntr<Rcl::SearchData> sdata = wasaStringToRcl((const char*)u8, m_reason);
@@ -202,7 +203,7 @@ void RecollProtocol::get(const KUrl & url)
     os << "</body></html>";
     
     data(output);
-    kDebug(7130) << "call finished" << endl;
+    kDebug() << "call finished" << endl;
     finished();
 }
 
@@ -220,8 +221,10 @@ void RecollProtocol::outputError(const QString& errmsg)
     data(array);
 }
 
-
-extern "C" {int kdemain(int argc, char **argv);}
+// Note: KDE_EXPORT is actually needed on Unix when building with
+// cmake. Says something like __attribute__(visibility(defautl))
+// (cmake apparently sets all symbols to not exported)
+extern "C" {KDE_EXPORT int kdemain(int argc, char **argv);}
 
 int kdemain(int argc, char **argv)
 {
@@ -233,17 +236,17 @@ int kdemain(int argc, char **argv)
 #else
     KComponentData instance("kio_recoll");
 #endif
-    kDebug(7130) << "*** starting kio_recoll " << endl;
+    kDebug() << "*** starting kio_recoll " << endl;
 
     if (argc != 4)  {
-	kDebug(7130) << "Usage: kio_recoll proto dom-socket1 dom-socket2\n" << endl;
+	kDebug() << "Usage: kio_recoll proto dom-socket1 dom-socket2\n" << endl;
 	exit(-1);
     }
 
     RecollProtocol slave(argv[2], argv[3]);
     slave.dispatchLoop();
 
-    kDebug(7130) << "kio_recoll Done" << endl;
+    kDebug() << "kio_recoll Done" << endl;
     return 0;
 }
 
