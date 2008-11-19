@@ -24,10 +24,12 @@ ${depth}/internfile/mh_text.cpp \
 ${depth}/query/docseq.cpp \
 ${depth}/query/docseqdb.cpp \
 ${depth}/query/docseqhist.cpp \
-${depth}/query/history.cpp \
-${depth}/query/recollq.cpp \
-${depth}/query/sortseq.cpp \
 ${depth}/query/filtseq.cpp \
+${depth}/query/history.cpp \
+${depth}/query/plaintorich.cpp \
+${depth}/query/recollq.cpp \
+${depth}/query/reslistpager.cpp \
+${depth}/query/sortseq.cpp \
 ${depth}/query/wasastringtoquery.cpp \
 ${depth}/query/wasatorcl.cpp \
 ${depth}/rcldb/pathhash.cpp \

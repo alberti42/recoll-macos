@@ -22,7 +22,6 @@ SOURCES	+= \
 	../qtgui/guiutils.cpp \
 	../qtgui/idxthread.cpp \
 	../qtgui/main.cpp \
-	../qtgui/plaintorich.cpp \
 	../qtgui/rclmain_w.cpp \
 	../qtgui/reslist.cpp \
         ../qtgui/advsearch_w.cpp \

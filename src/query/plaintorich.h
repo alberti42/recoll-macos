@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.18 2008-10-03 08:09:35 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.1 2008-11-19 12:19:40 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>

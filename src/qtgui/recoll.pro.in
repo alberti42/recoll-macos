@@ -22,7 +22,6 @@ SOURCES	+= \
 	guiutils.cpp \
 	idxthread.cpp \
 	main.cpp \
-	plaintorich.cpp \
 	rclmain_w.cpp \
 	reslist.cpp \
         advsearch_w.cpp \
