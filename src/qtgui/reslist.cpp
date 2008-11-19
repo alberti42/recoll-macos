@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.48 2008-11-08 11:00:35 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.49 2008-11-19 10:06:49 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -336,23 +336,6 @@ void ResList::resultPageFirst()
     resultPageNext();
 }
 
-// Convert byte count into unit (KB/MB...) appropriate for display
-static string displayableBytes(long size)
-{
-    char sizebuf[30];
-    const char * unit = " B ";
-
-    if (size > 1024 && size < 1024*1024) {
-	unit = " KB ";
-	size /= 1024;
-    } else if (size  >= 1024*1204) {
-	unit = " MB ";
-	size /= (1024*1024);
-    }
-    sprintf(sizebuf, "%ld%s", size, unit);
-    return string(sizebuf);
-}
-
 void ResList::append(const QString &text)
 {
     QTEXTBROWSER::append(text);
@@ -438,7 +421,7 @@ void ResList::resultPageNext()
     // We could use a <title> but the textedit doesnt display
     // it prominently
     // Note: have to append text in chunks that make sense
-    // html-wise. If we break things up to much, the editor
+    // html-wise. If we break things up too much, the editor
     // gets confused. Hence the use of the 'chunk' text
     // accumulator
     // Also note that there can be results beyond the estimated resCnt.
@@ -497,16 +480,8 @@ void ResList::resultPageNext()
 	sprintf(perbuf, "%3d%% ", percent);
 
 	// Determine icon to display if any
-	string img_name;
 	string iconpath;
-	string iconname = rclconfig->getMimeIconName(doc.mimetype, &iconpath);
-	LOGDEB1(("Img file; %s\n", iconpath.c_str()));
-	QImage image(iconpath.c_str());
-	if (!image.isNull()) {
-	    img_name = string("img_") + iconname;
-	    QMimeSourceFactory::defaultFactory()->
-		setImage(img_name.c_str(), image);
-	}
+	(void)rclconfig->getMimeIconName(doc.mimetype, &iconpath);
 
 	// Printable url: either utf-8 if transcoding succeeds, or url-encoded
 	string url;
@@ -590,7 +565,7 @@ void ResList::resultPageNext()
 	map<char,string> subs;
 	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
 	subs['D'] = datebuf;
-	subs['I'] = img_name;
+	subs['I'] = iconpath;
 	subs['K'] = !doc.meta[Rcl::Doc::keykw].empty() ? 
 	    escapeHtml(doc.meta[Rcl::Doc::keykw]) + "<br>" : "";
 	subs['L'] = linksbuf;
@@ -806,44 +781,7 @@ QString ResList::getDescription()
 /** Show detailed expansion of a query */
 void ResList::showQueryDetails()
 {
-    // Break query into lines of reasonable length, avoid cutting words,
-    // Also limit the total number of lines. 
-    const unsigned int ll = 100;
-    const unsigned int maxlines = 50;
-    string query = m_docSource->getDescription();
-    string oq;
-    unsigned int nlines = 0;
-    while (query.length() > 0) {
-	string ss = query.substr(0, ll);
-	if (ss.length() == ll) {
-	    string::size_type pos = ss.find_last_of(" ");
-	    if (pos == string::npos) {
-		pos = query.find_first_of(" ");
-		if (pos != string::npos)
-		    ss = query.substr(0, pos+1);
-		else 
-		    ss = query;
-	    } else {
-		ss = ss.substr(0, pos+1);
-	    }
-	}
-	// This cant happen, but anyway. Be very sure to avoid an infinite loop
-	if (ss.length() == 0) {
-	    LOGDEB(("showQueryDetails: Internal error!\n"));
-	    oq = query;
-	    break;
-	}
-	oq += ss + "\n";
-	if (nlines++ >= maxlines) {
-	    oq += " ... \n";
-	    break;
-	}
-	query= query.substr(ss.length());
-	LOGDEB1(("oq [%s]\n, query [%s]\n, ss [%s]\n",
-		oq.c_str(), query.c_str(), ss.c_str()));
-    }
-
-    QString desc = tr("Query details") + ": " + 
-	QString::fromUtf8(oq.c_str());
+    string oq = breakIntoLines(m_docSource->getDescription(), 100, 50);
+    QString desc = tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
     QMessageBox::information(this, tr("Query details"), desc);
 }

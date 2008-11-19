@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.31 2008-10-08 16:15:22 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.32 2008-11-19 10:06:49 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -90,6 +90,12 @@ extern string truncate_to_word(const string &input, string::size_type maxlen);
 /** Truncate in place in an utf8-legal way */
 extern void utf8truncate(string &s, int maxlen);
 
+/** Convert byte count into unit (KB/MB...) appropriate for display */
+string displayableBytes(long size);
+
+/** Break big string into lines */
+string breakIntoLines(const string& in, unsigned int ll = 100, 
+		      unsigned int maxlines= 50);
 /** Small utility to substitute printf-like percents cmds in a string */
 bool pcSubst(const string& in, string& out, map<char, string>& subs);
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.34 2008-10-08 16:15:22 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.35 2008-11-19 10:06:49 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -495,6 +495,58 @@ bool pcSubst(const string& in, string& out, map<char, string>& subs)
 	}
     }
     return true;
+}
+
+// Convert byte count into unit (KB/MB...) appropriate for display
+string displayableBytes(long size)
+{
+    char sizebuf[30];
+    const char * unit = " B ";
+
+    if (size > 1024 && size < 1024*1024) {
+	unit = " KB ";
+	size /= 1024;
+    } else if (size  >= 1024*1204) {
+	unit = " MB ";
+	size /= (1024*1024);
+    }
+    sprintf(sizebuf, "%ld%s", size, unit);
+    return string(sizebuf);
+}
+
+string breakIntoLines(const string& in, unsigned int ll, 
+		      unsigned int maxlines)
+{
+    string query = in;
+    string oq;
+    unsigned int nlines = 0;
+    while (query.length() > 0) {
+	string ss = query.substr(0, ll);
+	if (ss.length() == ll) {
+	    string::size_type pos = ss.find_last_of(" ");
+	    if (pos == string::npos) {
+		pos = query.find_first_of(" ");
+		if (pos != string::npos)
+		    ss = query.substr(0, pos+1);
+		else 
+		    ss = query;
+	    } else {
+		ss = ss.substr(0, pos+1);
+	    }
+	}
+	// This cant happen, but anyway. Be very sure to avoid an infinite loop
+	if (ss.length() == 0) {
+	    oq = query;
+	    break;
+	}
+	oq += ss + "\n";
+	if (nlines++ >= maxlines) {
+	    oq += " ... \n";
+	    break;
+	}
+	query= query.substr(ss.length());
+    }
+    return oq;
 }
 
 ////////////////////
