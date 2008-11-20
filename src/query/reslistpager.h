@@ -1,6 +1,6 @@
 #ifndef _reslistpager_h_included_
 #define _reslistpager_h_included_
-/* @(#$Id: reslistpager.h,v 1.1 2008-11-19 12:19:40 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: reslistpager.h,v 1.2 2008-11-20 13:10:23 dockes Exp $  (C) 2007 J.F.Dockes */
 
 #include <vector>
 using std::vector;
@@ -13,12 +13,25 @@ using std::vector;
  */
 class ResListPager {
 public:
-    ResListPager(RefCntr<DocSequence> src, int pagesize, 
-		 const string& parformat)
-	: m_docSource(src), m_pagesize(pagesize), m_parformat(parformat),
-	  m_hasNext(false) 
+    ResListPager() : m_pagesize(10), m_hasNext(false) {}
+    void setDocSource(RefCntr<DocSequence> src)
+    {
+	m_winfirst = -1;
+	m_docSource = src;
+	m_hasNext = false;
+	m_respage.clear();
+    }
+    ResListPager(RefCntr<DocSequence> src, int pagesize)
+	: m_winfirst(-1), m_docSource(src), m_pagesize(pagesize), 
+	m_hasNext(false) 
     {}
     virtual ~ResListPager() {}
+    int pageNumber() 
+    {
+	if (m_winfirst < 0 || m_pagesize <= 0)
+	    return -1;
+	return m_winfirst / m_pagesize;
+    }
     void pageNext();
     bool hasNext() {return m_hasNext;}
     bool hasPrev() {return m_winfirst > 0;}
@@ -35,14 +48,24 @@ public:
     void resultPageNext();
     void displayPage();
     bool pageEmpty() {return m_respage.size() == 0;}
+
+    string queryDescription() {return m_docSource.isNull() ? "" :
+	    m_docSource->getDescription();}
+
+    // Things that need to be reimplemented in the subclass:
     virtual bool append(const string& data);
     virtual string tr(const string& in);
+    virtual string detailsLink();
+    virtual const string &parFormat();
+    virtual string nextUrl();
+    virtual string prevUrl();
+    virtual string pageTop() {return string();}
+
 private:
     // First docnum (from docseq) in current page
     int                  m_winfirst;
     RefCntr<DocSequence> m_docSource;
     int                  m_pagesize;
-    string               m_parformat;
 
     bool                 m_hasNext;
     vector<ResListEntry> m_respage;

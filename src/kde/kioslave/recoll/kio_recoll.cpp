@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.14 2008-11-19 12:28:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.15 2008-11-20 13:10:23 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -26,6 +26,7 @@ using namespace std;
 
 //#include <kinstance.h>
 #include <kcomponentdata.h>
+#include <kstandarddirs.h>
 
 #include "rclconfig.h"
 #include "rcldb.h"
@@ -36,8 +37,64 @@ using namespace std;
 #include "wasastringtoquery.h"
 #include "wasatorcl.h"
 #include "kio_recoll.h"
+#include "docseqdb.h"
+#include "readfile.h"
+#include "smallut.h"
 
 using namespace KIO;
+
+bool RecollKioPager::append(const string& data)
+{
+    if (!m_parent) return false;
+    m_parent->data(QByteArray(data.c_str()));
+    return true;
+}
+
+string RecollKioPager::detailsLink()
+{
+    string chunk = "<a href=\"recoll://command/QueryDetails\">";
+    chunk += tr("(show query)") + "</a>";
+    return chunk;
+}
+
+const static string parformat = 
+    "<a href=\"%U\"><img src=\"%I\" align=\"left\"></a>"
+    "%R %S "
+    "<a href=\"%U\">Open</a>&nbsp;&nbsp;<b>%T</b><br>"
+    "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+    "%A %K";
+const string &RecollKioPager::parFormat()
+{
+    return parformat;
+}
+
+string RecollKioPager::pageTop()
+{
+    return "<p align=\"center\"><a href=\"recoll://welcome\">New Search</a></p>";
+}
+
+string RecollKioPager::nextUrl()
+{
+    int pagenum = pageNumber();
+    if (pagenum < 0)
+	pagenum = 0;
+    else
+	pagenum++;
+    char buf[100];
+    sprintf(buf, "recoll://command/Page%d", pagenum);
+    return buf;
+}
+string RecollKioPager::prevUrl()
+{
+    int pagenum = pageNumber();
+    if (pagenum <= 0)
+	pagenum = 0;
+    else
+	pagenum--;
+    char buf[100];
+    sprintf(buf, "recoll://command/Page%d", pagenum);
+    return buf;
+}
 
 static RclConfig *rclconfig;
 RclConfig *RclConfig::getMainConfig()
@@ -49,6 +106,7 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
     : SlaveBase("recoll", pool, app), m_initok(false), 
       m_rclconfig(0), m_rcldb(0)
 {
+    m_pager.setParent(this);
     string reason;
     rclconfig = m_rclconfig = recollinit(0, 0, m_reason);
     if (!m_rclconfig || !m_rclconfig->ok()) {
@@ -99,9 +157,86 @@ bool RecollProtocol::maybeOpenDb(string &reason)
     return true;
 }
 
+static string welcomedata;
+
+void RecollProtocol::welcomePage()
+{
+    kDebug() << endl;
+    if (welcomedata.empty()) {
+	QString location = 
+	    KStandardDirs::locate("data", "kio_recoll/welcome.html");
+	string reason;
+	if (location.isEmpty() || 
+	    !file_to_string((const char *)location.toUtf8(), 
+			    welcomedata, &reason)) {
+	    welcomedata = "<html><head><title>Recoll Error</title></head>"
+		"<body><p>Could not locate Recoll welcome.html file: ";
+	    welcomedata += reason;
+	    welcomedata += "</p></body></html>";
+	}
+    }    
+    string tmp;
+    map<char, string> subs;
+    subs['Q'] = "";
+    pcSubst(welcomedata, tmp, subs);
+    data(tmp.c_str());
+    kDebug() << "WelcomePage done" << endl;
+}
+
+void RecollProtocol::doSearch(const QString& q, char opt)
+{
+    string qs = (const char *)q.toUtf8();
+    Rcl::SearchData *sd = 0;
+    if (opt != 'l') {
+	Rcl::SearchDataClause *clp = 0;
+	if (opt == 'f') {
+	    clp = new Rcl::SearchDataClauseFilename(qs);
+	} else {
+	    // If there is no white space inside the query, then the user
+	    // certainly means it as a phrase.
+	    bool isreallyaphrase = false;
+	    if (qs.find_first_of(" \t") == string::npos)
+		isreallyaphrase = true;
+	    clp = isreallyaphrase ? 
+		new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, 0) :
+		new Rcl::SearchDataClauseSimple(opt == 'o' ?
+						Rcl::SCLT_OR : Rcl::SCLT_AND, 
+						qs);
+	}
+	sd = new Rcl::SearchData(Rcl::SCLT_OR);
+	if (sd && clp)
+	    sd->addClause(clp);
+    } else {
+	kDebug() << "Parsing query";
+	sd = wasaStringToRcl(qs, m_reason);
+    }
+    if (!sd) {
+	m_reason = "Internal Error: cant allocate new query";
+	outputError(m_reason.c_str());
+	finished();
+	return;
+    }
+
+    RefCntr<Rcl::SearchData> sdata(sd);
+    sdata->setStemlang("english");
+    RefCntr<Rcl::Query>query(new Rcl::Query(m_rcldb));
+    if (!query->setQuery(sdata)) {
+	m_reason = "Internal Error: setQuery failed";
+	outputError(m_reason.c_str());
+	finished();
+	return;
+    }
+    DocSequenceDb *src = 
+	new DocSequenceDb(RefCntr<Rcl::Query>(query), "Query results", 
+			  sdata);
+
+    m_pager.setDocSource(RefCntr<DocSequence>(src));
+    m_pager.resultPageNext();
+}
+
 void RecollProtocol::get(const KUrl & url)
 {
-    kDebug() << "RecollProtocol::get:" << url << endl;
+    kDebug() << url << endl;
 
     mimeType("text/html");
 
@@ -111,98 +246,75 @@ void RecollProtocol::get(const KUrl & url)
 	return;
     }
 
-    string iconsdir;
-    m_rclconfig->getConfParam("iconsdir", iconsdir);
-    if (iconsdir.empty()) {
-	iconsdir = path_cat("/usr/local/share/recoll", "images");
-    } else {
-	iconsdir = path_tildexpand(iconsdir);
-    }
-
+    QString host = url.host();
     QString path = url.path();
-    kDebug() << "RecollProtocol::get:path:" << path << endl;
-    QByteArray u8 =  path.toUtf8();
+    kDebug() << "host:" << host << " path:" << path;
+    if (host.isEmpty() || !host.compare("welcome")) {
+	kDebug() << "Host is empty";
+	if (path.isEmpty() || !path.compare("/")) {
+	    kDebug() << "Path is empty or strange";
+	    // Display welcome page
+	    welcomePage();
+	    finished();
+	    return;
+	}
+	// Ie: "recoll: some search string"
+	doSearch(path);
+    } else if (!host.compare("search")) {
+	if (path.compare("/query")) {
+	    finished(); return;
+	}
+	// Decode the forms' arguments
+	QString query = url.queryItem("q");
+	if (query.isEmpty()) {
+	    finished(); return;
+	}
+	QString opt = url.queryItem("qtp");
+	if (opt.isEmpty()) {
+	    opt = "l";
+	}
+	doSearch(query, opt.toUtf8().at(0));
+    } else if (!host.compare("command")) {
+	if (path.isEmpty()) {
+	    finished();return;
+	} else if (path.indexOf("/Page") == 0) {
+	    int newpage = 0;
+	    sscanf(path.toUtf8(), "/Page%d", &newpage);
+	    if (newpage > m_pager.pageNumber()) {
+		int npages = newpage - m_pager.pageNumber();
+		for (int i = 0; i < npages; i++)
+		    m_pager.resultPageNext();
+	    } else if (newpage < m_pager.pageNumber()) {
+		int npages = m_pager.pageNumber() - newpage;
+		for (int i = 0; i < npages; i++) 
+		    m_pager.resultPageBack();
+	    }
+	} else if (path.indexOf("/QueryDetails") == 0) {
+	    QByteArray array;
+	    QTextStream os(&array, QIODevice::WriteOnly);
 
-    RefCntr<Rcl::SearchData> sdata = wasaStringToRcl((const char*)u8, m_reason);
-    sdata->setStemlang("english");
-
-    RefCntr<Rcl::Query>query(new Rcl::Query(m_rcldb));
-    if (!query->setQuery(sdata)) {
-	m_reason = "Internal Error: setQuery failed";
-	outputError(m_reason.c_str());
-	finished();
-	return;
+	    os << "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" << endl;
+	    os << "<title>" << "Recoll query details" << "</title>\n" << endl;
+	    os << "</head>" << endl;
+	    os << "<body><h3>Query details:</h3>" << endl;
+	    os << "<p>" << m_pager.queryDescription().c_str() <<"</p>"<< endl;
+	    os << "<p><a href=\"recoll://command/Page" << 
+		m_pager.pageNumber() << "\">Return to results</a>" << endl;
+	    os << "</body></html>" << endl;
+	    data(array);
+	    finished();
+	    return;
+	} else {
+	    // Unknown //command/???
+	    finished(); return;
+	}
+    } else {
+	// Unknown 'host' //??? value
+	finished(); return;
     }
 
-    string explain = sdata->getDescription();
+    m_pager.displayPage();
 
-    QByteArray output;
-    QTextStream os(&output, QIODevice::ReadWrite);
-
-    os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" << endl;
-    os << "<html><head>" << endl;
-    os << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" << endl;
-    os << "<meta http-equiv=\"Pragma\" content=\"no-cache\">" << endl;
-    os << "<title>Recoll: query results</title>" << endl;
-    os << "</head><body>" << endl;
-
-    os << "<p><b>Actual query performed: </b>" << endl;
-    os << explain.c_str() << "</p>";
-
-    Rcl::Doc doc;
-    int cnt = query->getResCnt();
-    for (int i = 0; i < cnt; i++) {
-	string sh;
-	doc.erase();
-
-	if (!query->getDoc(i, doc)) {
-	    // This may very well happen for history if the doc has
-	    // been removed since. So don't treat it as fatal.
-	    doc.meta[Rcl::Doc::keykw] = string("Unavailable document");
-	}
-
-	string iconname = m_rclconfig->getMimeIconName(doc.mimetype);
-	if (iconname.empty())
-	    iconname = "document";
-	string imgfile = iconsdir + "/" + iconname + ".png";
-
-	string result;
-	if (!sh.empty())
-	    result += string("<p><b>") + sh + "</p>\n<p>";
-	else
-	    result = "<p>";
-
-	char perbuf[10];
-	sprintf(perbuf, "%3d%%", doc.pc);
-	if (doc.meta[Rcl::Doc::keytt].empty()) 
-	    doc.meta[Rcl::Doc::keytt] = path_getsimple(doc.url);
-	char datebuf[100];
-	datebuf[0] = 0;
-	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
-	    time_t mtime = doc.dmtime.empty() ?
-		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
-	    struct tm *tm = localtime(&mtime);
-	    strftime(datebuf, 99, 
-		     "<i>Modified:</i>&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
-	}
-	result += "<a href=\"" + doc.url + "\">" +
-	    "<img src=\"file://" + imgfile + "\" align=\"left\">" + "</a>";
-	string abst = escapeHtml(doc.meta[Rcl::Doc::keyabs]);
-	result += string(perbuf) + " <b>" + doc.meta[Rcl::Doc::keytt] + "</b><br>" +
-	    doc.mimetype + "&nbsp;" +
-	    (datebuf[0] ? string(datebuf) + "<br>" : string("<br>")) +
-	    (!abst.empty() ? abst + "<br>" : string("")) +
-	    (!doc.meta[Rcl::Doc::keytt].empty() ? doc.meta[Rcl::Doc::keykw] + 
-	     "<br>" : string("")) +
-	    "<a href=\"" + doc.url + "\">" + doc.url + "</a><br></p>\n";
-
-	QString str = QString::fromUtf8(result.c_str(), result.length());
-	os << str;
-    }
-
-    os << "</body></html>";
-    
-    data(output);
     kDebug() << "call finished" << endl;
     finished();
 }
@@ -221,6 +333,8 @@ void RecollProtocol::outputError(const QString& errmsg)
     data(array);
 }
 
+
+
 // Note: KDE_EXPORT is actually needed on Unix when building with
 // cmake. Says something like __attribute__(visibility(defautl))
 // (cmake apparently sets all symbols to not exported)
@@ -228,9 +342,6 @@ extern "C" {KDE_EXPORT int kdemain(int argc, char **argv);}
 
 int kdemain(int argc, char **argv)
 {
-    FILE*mf = fopen("/tmp/toto","w");
-    fprintf(mf, "KIORECOLL\n");
-    fclose(mf);
 #ifdef KDE_VERSION_3
     KInstance instance("kio_recoll");
 #else

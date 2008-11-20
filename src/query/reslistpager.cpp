@@ -1,6 +1,10 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.1 2008-11-19 12:19:40 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.2 2008-11-20 13:10:23 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
 #include "reslistpager.h"
 #include "debuglog.h"
@@ -63,31 +67,9 @@ void ResListPager::resultPageNext()
     m_respage = npage;
 }
 
-bool ResListPager::append(const string& data)
-{
-    fprintf(stderr, "%s", data.c_str());
-    return true;
-}
-
-string ResListPager::tr(const string& in) 
-{
-    return in;
-}
-
 void ResListPager::displayPage()
 {
     string chunk;
-    if (pageEmpty()) {
-	chunk = "<html><head></head><body>"
-	    "<p><font size=+1><b>";
-	chunk += m_docSource->title();
-	chunk += "</b></font>";
-	chunk += "<a href=\"H-1\">";
-	chunk += tr("Show query details");
-	chunk += "</a><br>";
-	append(chunk);
-	return;
-    }
 
     // Display list header
     // We could use a <title> but the textedit doesnt display
@@ -97,8 +79,12 @@ void ResListPager::displayPage()
     // gets confused. Hence the use of the 'chunk' text
     // accumulator
     // Also note that there can be results beyond the estimated resCnt.
-    chunk = "<qt><head></head><body><p>"
-	"<font size=+1><b>";
+    chunk = "<html><head>"
+	"<meta http-equiv=\"content-type\""
+	"content=\"text/html; charset=utf-8\">"
+	"</head><body>";
+    chunk += pageTop();
+    chunk += "<p><font size=+1><b>";
     chunk += m_docSource->title();
     chunk += "</b></font>"
 	"&nbsp;&nbsp;&nbsp;";
@@ -121,9 +107,21 @@ void ResListPager::displayPage()
 	    chunk += buf;
 	}
     }
-    chunk += "<a href=\"H-1\">";
-    chunk += tr("(show query)");
-    chunk += "</a></p>";
+    chunk += detailsLink();
+    if (hasPrev() || hasNext()) {
+	chunk += "&nbsp;&nbsp;";
+	if (hasPrev()) {
+	    chunk += "<a href=\"" + prevUrl() + "\"><b>";
+	    chunk += tr("Previous");
+	    chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
+	}
+	if (hasNext()) {
+	    chunk += "<a href=\""+ nextUrl() + "\"><b>";
+	    chunk += tr("Next");
+	    chunk += "</b></a>";
+	}
+    }
+    chunk += "</p>";
 
     append(chunk);
     if (pageEmpty())
@@ -154,6 +152,7 @@ void ResListPager::displayPage()
 	// Determine icon to display if any
 	string iconpath;
 	RclConfig::getMainConfig()->getMimeIconName(doc.mimetype, &iconpath);
+	iconpath = string("file://") + iconpath;
 
 	// Printable url: either utf-8 if transcoding succeeds, or url-encoded
 	string url;
@@ -249,7 +248,7 @@ void ResListPager::displayPage()
 	subs['U'] = url;
 
 	string formatted;
-	pcSubst(m_parformat, formatted, subs);
+	pcSubst(parFormat(), formatted, subs);
 	chunk += formatted;
 
 	chunk += "</p>\n";
@@ -262,12 +261,12 @@ void ResListPager::displayPage()
     chunk = "<p align=\"center\">";
     if (hasPrev() || hasNext()) {
 	if (hasPrev()) {
-	    chunk += "<a href=\"p-1\"><b>";
+	    chunk += "<a href=\"" + prevUrl() + "\"><b>";
 	    chunk += tr("Previous");
 	    chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
 	}
 	if (hasNext()) {
-	    chunk += "<a href=\"n-1\"><b>";
+	    chunk += "<a href=\""+ nextUrl() + "\"><b>";
 	    chunk += tr("Next");
 	    chunk += "</b></a>";
 	}
@@ -276,3 +275,41 @@ void ResListPager::displayPage()
     chunk += "</body></html>\n";
     append(chunk);
 }
+
+string ResListPager::nextUrl()
+{
+    return "n-1";
+}
+string ResListPager::prevUrl()
+{
+    return "p-1";
+}
+
+// Default implementations for things that should be re-implemented by our user.
+bool ResListPager::append(const string& data)
+{
+    fprintf(stderr, "%s", data.c_str());
+    return true;
+}
+
+string ResListPager::tr(const string& in) 
+{
+    return in;
+}
+
+string ResListPager::detailsLink()
+{
+    string chunk = "<a href=\"H-1\">";
+    chunk += tr("(show query)") + "</a>";
+    return chunk;
+}
+
+const string &ResListPager::parFormat()
+{
+    const static string format("<img src=\"%I\" align=\"left\">"
+			       "%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+			       "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+			       "%A %K");
+    return format;
+}
+
