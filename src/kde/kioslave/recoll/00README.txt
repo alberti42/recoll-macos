@@ -6,19 +6,45 @@ A kio_slave was implemented, supporting the "get" operation. Ie, you type
 a list of results, each with a link to the document.
 
 This does not appear terribly useful as such, especially because I couldn't
-think of a way to get access to email documents (especially those inside a
-multi-msg file) from Konqueror. The Recoll preview feature is actually
-quite useful in this case.
+think of a way to get access to email documents from Konqueror (especially
+those inside a multi-msg folder file, it's better with maildir). The Recoll
+preview feature is actually quite useful in this case.
+
+Building and installing:
+-----------------------
+This began under KDE3 and might still be made to work, but I only built
+with KDE4 and cmake recently.
+
+A kind of recipe:
+ - You need the KDE4 core devel packages and cmake installed
+ - Extract the source and build recoll normally.
+ - In the recoll source, go to kde/kioslave/recoll, then execute:
+
+ cmake CMakeLists.txt
+ ccmake .
+  # Change the install prefix from /usr/local to /usr, then 'c', 'g'
+ make
+ sudo make install
+
+ - Note: there may be a way to install to a personal directory and avoid
+   being root, and somebody who knows more about kde will have to teach me
+   this.
+
+- You should then be able to enter "recoll:" in the konqueror url, and
+  perform a recoll search (supposing you have an index already built of
+  course, the kio_slave doesn't deal with this for now).
+
 
 Implementation notes:
 -----------------------
 
-- There are two main ways to do this: 
+- There would be two main ways to do this: 
   - a-la kio_beagle, using listDir() to list entries pointing to the
     different operations or objects (help, status, search result
     entries, bookmarks, whatever...). The nice thing is that the
     results really look like file object in a directory (probably,
-    didn't try it actually), no need for look and feel, it's provided by kde
+    didn't try it actually), no need for look and feel, it's provided by
+    KDE 
 
   - Or a la strigi: all interactions are through html pages and get()
     operations.  Looks less like a normal konqueror file-system
