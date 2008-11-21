@@ -20,9 +20,9 @@ A kind of recipe:
  - Extract the source and build recoll normally.
  - In the recoll source, go to kde/kioslave/recoll, then execute:
 
- cmake CMakeLists.txt
  ccmake .
-  # Change the install prefix from /usr/local to /usr, then 'c', 'g'
+  # type 'c', then change the install prefix from /usr/local to /usr, then
+  # 'c', 'g' 
  make
  sudo make install
 

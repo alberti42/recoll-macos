@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: makesrcdist.sh,v 1.14 2008-10-13 11:46:27 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: makesrcdist.sh,v 1.15 2008-11-21 16:37:25 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
 #set -x
@@ -62,6 +62,10 @@ cvs commit -m '' README INSTALL
 make distclean
 yes | clean.O
 rm -f lib/*.dep
+# Possibly clean up the cmake stuff
+cd kde/kioslave/recoll/ || exit 1
+rm -rf CMakeCache.txt CMakeFiles/ CMakeTmp/ CPack* CTestTestfile.cmake cmake_* *automoc* lib
+
 $TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
 
 # Fix the single/multiple page link in the header (we dont deliver the
