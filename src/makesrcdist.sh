@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: makesrcdist.sh,v 1.15 2008-11-21 16:37:25 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: makesrcdist.sh,v 1.16 2008-11-21 16:43:42 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
 #set -x
@@ -63,8 +63,8 @@ make distclean
 yes | clean.O
 rm -f lib/*.dep
 # Possibly clean up the cmake stuff
-cd kde/kioslave/recoll/ || exit 1
-rm -rf CMakeCache.txt CMakeFiles/ CMakeTmp/ CPack* CTestTestfile.cmake cmake_* *automoc* lib
+(cd kde/kioslave/recoll/ || exit 1
+rm -rf CMakeCache.txt CMakeFiles/ CMakeTmp/ CPack* CTestTestfile.cmake cmake_* *automoc* lib)
 
 $TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
 
