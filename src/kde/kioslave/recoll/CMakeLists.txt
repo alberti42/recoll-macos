@@ -101,9 +101,14 @@ ${depth}/utils/transcode.cpp
 ${depth}/utils/wipedir.cpp
 )
 
+CHECK_LIBRARY_EXISTS(dl dlopen "" DLOPEN_IN_LIBDL)
+IF(DLOPEN_IN_LIBDL)
+	LIST(APPEND EXTRA_LIBS dl)
+ENDIF(DLOPEN_IN_LIBDL)
+
 kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
 
-target_link_libraries(kio_recoll xapian dl ${KDE4_KIO_LIBS})
+target_link_libraries(kio_recoll xapian ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
 
 install(TARGETS kio_recoll DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES recoll.protocol DESTINATION ${SERVICES_INSTALL_DIR})
