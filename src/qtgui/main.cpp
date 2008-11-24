@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.70 2008-09-30 12:38:29 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.71 2008-11-24 15:23:12 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -72,8 +72,6 @@ static KCmdLineOptions options[] =
     KCmdLineLastOption
 };
 #endif
-
-const string recoll_datadir = RECOLL_DATADIR;
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
@@ -237,8 +235,18 @@ int main(int argc, char **argv)
     qt.load( QString( "qt_" ) + QTextCodec::locale(), "." );
     app.installTranslator( &qt );
 
+    string reason;
+    rclconfig = recollinit(recollCleanup, sigcleanup, reason, &a_config);
+    if (!rclconfig || !rclconfig->ok()) {
+	QString msg = "Configuration problem: ";
+	msg += QString::fromUtf8(reason.c_str());
+	QMessageBox::critical(0, "Recoll",  msg);
+	exit(1);
+    }
+    //    fprintf(stderr, "recollinit done\n");
+
     // Translations for Recoll
-    string translatdir = path_cat(recoll_datadir, "translations");
+    string translatdir = path_cat(rclconfig->getDatadir(), "translations");
     QTranslator translator( 0 );
     // QTextCodec::locale() returns $LANG
     translator.load( QString("recoll_") + QTextCodec::locale(), 
@@ -246,16 +254,6 @@ int main(int argc, char **argv)
     app.installTranslator( &translator );
 
     //    fprintf(stderr, "Translations installed\n");
-
-    string reason;
-    rclconfig = recollinit(recollCleanup, sigcleanup, reason, &a_config);
-    if (!rclconfig || !rclconfig->ok()) {
-	QString msg = app.translate("Main", "Configuration problem: ");
-	msg += QString::fromUtf8(reason.c_str());
-	QMessageBox::critical(0, "Recoll",  msg);
-	exit(1);
-    }
-    //    fprintf(stderr, "recollinit done\n");
 
 #ifdef RCL_USE_ASPELL
     aspell = new Aspell(rclconfig);

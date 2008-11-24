@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.5 2007-10-09 11:08:17 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.6 2008-11-24 15:23:12 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -84,8 +84,6 @@ using namespace std;
 
 using namespace confgui;
 
-const string recoll_datadir = RECOLL_DATADIR;
-
 static const char *thisprog;
 static int    op_flags;
 #define OPT_MOINS 0x1
@@ -151,7 +149,7 @@ int main(int argc, char **argv)
     app.installTranslator( &qt );
 
     // Translations for Recoll
-    string translatdir = path_cat(recoll_datadir, "translations");
+    string translatdir = path_cat(config->getDatadir(), "translations");
     QTranslator translator( 0 );
     // QTextCodec::locale() returns $LANG
     translator.load( QString("recoll_") + QTextCodec::locale(), 
