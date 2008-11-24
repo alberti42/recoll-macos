@@ -14,21 +14,21 @@ xadump : $(XADUMP_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o xadump $(XADUMP_OBJS) \
 	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
 
-RECOLLQ_OBJS= recollq.o  $(BIGLIB) $(MIMELIB)
+RECOLLQ_OBJS= recollq.o  $(BIGLIB) 
 recollq : $(RECOLLQ_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollq $(RECOLLQ_OBJS) \
 	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
 recollq.o : recollq.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_RECOLLQ -c recollq.cpp
 
-HISTORY_OBJS= trhist.o  $(BIGLIB) $(MIMELIB)
+HISTORY_OBJS= trhist.o  $(BIGLIB) 
 trhist : $(HISTORY_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trhist $(HISTORY_OBJS) \
 	       $(LIBICONV) $(LIBXAPIAN)
 trhist.o : history.cpp history.h
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_HISTORY -c -o trhist.o history.cpp
 
-WASASTRINGTOQUERY_OBJS= trwasastrtoq.o  $(BIGLIB) $(MIMELIB)
+WASASTRINGTOQUERY_OBJS= trwasastrtoq.o  $(BIGLIB) 
 trwasastrtoq : $(WASASTRINGTOQUERY_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trwasastrtoq $(WASASTRINGTOQUERY_OBJS) \
              $(LIBICONV) $(LIBXAPIAN)

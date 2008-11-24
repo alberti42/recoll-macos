@@ -29,3 +29,8 @@
 
 /* mkdtemp availability */
 #undef HAVE_MKDTEMP
+
+#undef HAVE_SYS_MOUNT_H 
+#undef HAVE_SYS_STATFS_H 
+#undef HAVE_SYS_STATVFS_H 
+#undef HAVE_SYS_VFS_H 

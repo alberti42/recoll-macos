@@ -52,8 +52,7 @@ unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 
-  DEFINES += RECOLL_DATADIR='\\"@QTRECOLL_DATADIR@\\"'
-  LIBS += ../lib/librcl.a ../bincimapmime/libmime.a \
+  LIBS += ../lib/librcl.a \
             $(BSTATIC) @LIBXAPIAN@ @LIBICONV@ $(BDYNAMIC) \
            -lz
 

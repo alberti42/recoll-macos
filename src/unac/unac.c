@@ -13170,7 +13170,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
     if(out == 0) {
 	if(debug_level >= UNAC_DEBUG_LOW)
 	  DEBUG("realloc %d bytes failed\n", out_size+1);
-	// *outp is still valid. Let the caller free it
+	/* *outp is still valid. Let the caller free it */
 	return -1;
     }
   } else {
@@ -13302,7 +13302,7 @@ static int convert(const char* from, const char* to,
     /* +1 for null */
     out = realloc(out, out_size + 1);
     if(out == 0) {
-	// *outp still valid, no freeing
+	/* *outp still valid, no freeing */
 	if(debug_level >= UNAC_DEBUG_LOW)
 	  DEBUG("realloc %d bytes failed\n", out_size+1);
 	return -1;
@@ -13375,8 +13375,8 @@ static int convert(const char* from, const char* to,
 	      /* +1 for null */
 	      out_base = realloc(out_base, out_size + 1);
 	      if (out_base == 0) {
-		  // *outp potentially not valid any more. Free here,
-		  // and zero out
+		  /* *outp potentially not valid any more. Free here,
+		   * and zero out */
 		  if(debug_level >= UNAC_DEBUG_LOW)
 		      DEBUG("realloc %d bytes failed\n", out_size+1);
 		  free(saved);

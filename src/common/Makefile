@@ -1,4 +1,4 @@
-# @(#$Id: Makefile,v 1.14 2006-11-20 11:17:53 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.15 2008-11-24 15:47:40 dockes Exp $  (C) 2005 J.F.Dockes
 depth = ..
 include $(depth)/mk/sysconf
 
@@ -25,7 +25,7 @@ trtextsplit.o : textsplit.cpp
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_TEXTSPLIT -c -o trtextsplit.o \
 	       textsplit.cpp
 
-RCLCONFIG_OBJS= trrclconfig.o  $(BIGLIB) $(MIMELIB)
+RCLCONFIG_OBJS= trrclconfig.o  $(BIGLIB) 
 rclconfig : $(RCLCONFIG_OBJS) 
 	$(CXX) $(ALL_CXXFLAGS) -o rclconfig $(RCLCONFIG_OBJS) \
 	       $(LIBICONV) $(LIBSYS)

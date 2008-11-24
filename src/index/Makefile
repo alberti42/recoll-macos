@@ -6,7 +6,7 @@ SRCS = recollindex.cpp rclmonrcv.cpp rclmonprc.cpp
 
 all: depend $(PROGS) $(BIGLIB)
 
-RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o $(BIGLIB) $(MIMELIB)
+RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o $(BIGLIB) 
 recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
 	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
@@ -39,9 +39,6 @@ trmimetype.o : mimetype.cpp
 $(BIGLIB): force
 	cd $(depth)/lib;$(MAKE)
 force:
-
-$(MIMELIB): 
-	cd $(depth)/bincimapmime;$(MAKE)
 
 depend: alldeps.stamp
 alldeps.stamp : $(SRCS)

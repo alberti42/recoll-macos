@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pathut.cpp,v 1.22 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pathut.cpp,v 1.23 2008-11-24 15:47:40 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -41,11 +41,20 @@ using std::stack;
 #include "transcode.h"
 
 #include <sys/types.h>
-#ifndef STATFS_INCLUDE
-#define STATFS_INCLUDE <sys/vfs.h>
+// Let's include all files where statfs can be defined and hope for no
+// conflict...
+#ifdef HAVE_SYS_MOUNT_H 
+#include <sys/mount.h>
 #endif
-
-#include STATFS_INCLUDE
+#ifdef HAVE_SYS_STATFS_H 
+#include <sys/statfs.h>
+#endif
+#ifdef HAVE_SYS_STATVFS_H 
+#include <sys/statvfs.h>
+#endif
+#ifdef HAVE_SYS_VFS_H 
+#include <sys/vfs.h>
+#endif
 
 bool fsocc(const string &path, int *pc, long *blocks)
 {

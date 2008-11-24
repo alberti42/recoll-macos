@@ -18,9 +18,6 @@ $(BIGLIB): force
 	cd $(depth)/lib;$(MAKE)
 force:
 
-$(MIMELIB): 
-	cd $(depth)/bincimapmime;$(MAKE)
-
 depend: alldeps.stamp
 alldeps.stamp : $(SRCS)
 	$(CXX) -M $(ALL_CXXFLAGS) $(SRCS) > alldeps

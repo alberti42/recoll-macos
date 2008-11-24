@@ -15,6 +15,8 @@ EOF
    exit 1
 fi
 
+AC_CHECK_HEADERS(sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h)
+
 # Use aspell to provide spelling expansions ?
 # The default is yes. If we do find an aspell installation, we use it. Else
 # we do compile the aspell module using an internal copy of aspell.h

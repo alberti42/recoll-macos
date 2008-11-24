@@ -2,21 +2,19 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-UNACCFLAGS = $(CFLAGS) -g -I. -I$(depth)/unac $(INCICONV) -DUNAC_VERSION=\"1.0.7\"
-
 LIBS = librcl.a
 
 all: $(LIBS)
 
-OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o csguess.o indexer.o mimetype.o htmlparse.o myhtmlparse.o mimehandler.o internfile.o mh_exec.o mh_html.o mh_mail.o mh_mbox.o mh_text.o docseq.o docseqdb.o docseqhist.o filtseq.o history.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o pathhash.o rcldb.o rcldoc.o rclquery.o searchdata.o stemdb.o stoplist.o base64.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o pathut.o readfile.o smallut.o transcode.o wipedir.o x11mon.o
-DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp csguess.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp myhtmlparse.dep.stamp mimehandler.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp history.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp pathhash.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rclquery.dep.stamp searchdata.dep.stamp stemdb.dep.stamp stoplist.dep.stamp base64.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp pathut.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp
+OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o csguess.o indexer.o mimetype.o htmlparse.o myhtmlparse.o mimehandler.o internfile.o mh_exec.o mh_html.o mh_mail.o mh_mbox.o mh_text.o docseq.o docseqdb.o docseqhist.o filtseq.o history.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o pathhash.o rcldb.o rcldoc.o rclquery.o searchdata.o stemdb.o stoplist.o base64.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o pathut.o readfile.o smallut.o transcode.o wipedir.o x11mon.o mime-getpart.o mime-parsefull.o mime-parseonlyheader.o mime-printbody.o mime-printdoc.o mime-printheader.o mime.o convert.o iodevice.o iofactory.o
+DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp csguess.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp myhtmlparse.dep.stamp mimehandler.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp history.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp pathhash.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rclquery.dep.stamp searchdata.dep.stamp stemdb.dep.stamp stoplist.dep.stamp base64.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp pathut.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp mime-getpart.dep.stamp mime-parsefull.dep.stamp mime-parseonlyheader.dep.stamp mime-printbody.dep.stamp mime-printdoc.dep.stamp mime-printheader.dep.stamp mime.dep.stamp convert.dep.stamp iodevice.dep.stamp iofactory.dep.stamp
 
 librcl.a : $(DEPS) $(OBJS) unac.o
 	ar ru librcl.a $(OBJS) unac.o
 	$(RANLIB) librcl.a
 
 unac.o : $(depth)/unac/unac.c $(depth)/unac/unac.h
-	$(CC) $(UNACCFLAGS) -c $(depth)/unac/unac.c
+	$(CC) $(ALL_CXXFLAGS) -c $(depth)/unac/unac.c
 rclaspell.o : ../aspell/rclaspell.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../aspell/rclaspell.cpp
 rclconfig.o : ../common/rclconfig.cpp
@@ -119,6 +117,26 @@ wipedir.o : ../utils/wipedir.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../utils/wipedir.cpp
 x11mon.o : ../utils/x11mon.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../utils/x11mon.cpp
+mime-getpart.o : ../bincimapmime/mime-getpart.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/mime-getpart.cc
+mime-parsefull.o : ../bincimapmime/mime-parsefull.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/mime-parsefull.cc
+mime-parseonlyheader.o : ../bincimapmime/mime-parseonlyheader.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/mime-parseonlyheader.cc
+mime-printbody.o : ../bincimapmime/mime-printbody.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/mime-printbody.cc
+mime-printdoc.o : ../bincimapmime/mime-printdoc.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/mime-printdoc.cc
+mime-printheader.o : ../bincimapmime/mime-printheader.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/mime-printheader.cc
+mime.o : ../bincimapmime/mime.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/mime.cc
+convert.o : ../bincimapmime/convert.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/convert.cc
+iodevice.o : ../bincimapmime/iodevice.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/iodevice.cc
+iofactory.o : ../bincimapmime/iofactory.cc
+	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/iofactory.cc
 depend: $(DEPS)
 clean:
 	rm -f $(OBJS) $(LIBS) $(DEPS) unac.o
@@ -329,3 +347,43 @@ include smallut.dep
 include transcode.dep
 include wipedir.dep
 include x11mon.dep
+mime-getpart.dep.stamp : ../bincimapmime/mime-getpart.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/mime-getpart.cc > mime-getpart.dep
+	touch mime-getpart.dep.stamp
+mime-parsefull.dep.stamp : ../bincimapmime/mime-parsefull.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/mime-parsefull.cc > mime-parsefull.dep
+	touch mime-parsefull.dep.stamp
+mime-parseonlyheader.dep.stamp : ../bincimapmime/mime-parseonlyheader.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/mime-parseonlyheader.cc > mime-parseonlyheader.dep
+	touch mime-parseonlyheader.dep.stamp
+mime-printbody.dep.stamp : ../bincimapmime/mime-printbody.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/mime-printbody.cc > mime-printbody.dep
+	touch mime-printbody.dep.stamp
+mime-printdoc.dep.stamp : ../bincimapmime/mime-printdoc.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/mime-printdoc.cc > mime-printdoc.dep
+	touch mime-printdoc.dep.stamp
+mime-printheader.dep.stamp : ../bincimapmime/mime-printheader.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/mime-printheader.cc > mime-printheader.dep
+	touch mime-printheader.dep.stamp
+mime.dep.stamp : ../bincimapmime/mime.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/mime.cc > mime.dep
+	touch mime.dep.stamp
+convert.dep.stamp : ../bincimapmime/convert.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/convert.cc > convert.dep
+	touch convert.dep.stamp
+iodevice.dep.stamp : ../bincimapmime/iodevice.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/iodevice.cc > iodevice.dep
+	touch iodevice.dep.stamp
+iofactory.dep.stamp : ../bincimapmime/iofactory.cc
+	$(CXX) -M $(ALL_CXXFLAGS) ../bincimapmime/iofactory.cc > iofactory.dep
+	touch iofactory.dep.stamp
+include mime-getpart.dep
+include mime-parsefull.dep
+include mime-parseonlyheader.dep
+include mime-printbody.dep
+include mime-printdoc.dep
+include mime-printheader.dep
+include mime.dep
+include convert.dep
+include iodevice.dep
+include iofactory.dep

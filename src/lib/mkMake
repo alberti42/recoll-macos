@@ -3,7 +3,7 @@
 mk=Makefile
 depth=${depth:-..}
 
-SRCS="\
+SRC_CPP="\
 ${depth}/aspell/rclaspell.cpp \
 ${depth}/common/rclconfig.cpp \
 ${depth}/common/rclinit.cpp \
@@ -57,13 +57,33 @@ ${depth}/utils/wipedir.cpp \
 ${depth}/utils/x11mon.cpp \
 "
 
+SRC_CC="\
+${depth}/bincimapmime/mime-getpart.cc \
+${depth}/bincimapmime/mime-parsefull.cc \
+${depth}/bincimapmime/mime-parseonlyheader.cc \
+${depth}/bincimapmime/mime-printbody.cc \
+${depth}/bincimapmime/mime-printdoc.cc \
+${depth}/bincimapmime/mime-printheader.cc \
+${depth}/bincimapmime/mime.cc \
+${depth}/bincimapmime/convert.cc \
+${depth}/bincimapmime/iodevice.cc \
+${depth}/bincimapmime/iofactory.cc \
+"
 
-for c in $SRCS;do
+for c in $SRC_CPP;do
     o=`basename $c .cpp`.o
     OBJS="$OBJS $o"
     d=`basename $c .cpp`.dep
     cp /dev/null $d
     s=`basename $c .cpp`.dep.stamp
+    DEPS="$DEPS $s"
+done
+for c in $SRC_CC;do
+    o=`basename $c .cc`.o
+    OBJS="$OBJS $o"
+    d=`basename $c .cc`.dep
+    cp /dev/null $d
+    s=`basename $c .cc`.dep.stamp
     DEPS="$DEPS $s"
 done
 
@@ -73,8 +93,6 @@ cat > $mk <<EOF
 # DONT EDIT BY HAND: created by script mkMake
 depth = ${depth}
 include \$(depth)/mk/sysconf
-
-UNACCFLAGS = \$(CFLAGS) -g -I. -I\$(depth)/unac \$(INCICONV) -DUNAC_VERSION=\\"1.0.7\\"
 
 LIBS = librcl.a
 
@@ -88,11 +106,16 @@ librcl.a : \$(DEPS) \$(OBJS) unac.o
 	\$(RANLIB) librcl.a
 
 unac.o : \$(depth)/unac/unac.c \$(depth)/unac/unac.h
-	\$(CC) \$(UNACCFLAGS) -c \$(depth)/unac/unac.c
+	\$(CC) \$(ALL_CXXFLAGS) -c \$(depth)/unac/unac.c
 EOF
 
-for c in $SRCS;do
+for c in $SRC_CPP;do
     o=`basename $c .cpp`.o
+    echo "$o : $c" >> $mk
+    echo "	\$(CXX) \$(ALL_CXXFLAGS) -c $c" >> $mk
+done
+for c in $SRC_CC;do
+    o=`basename $c .cc`.o
     echo "$o : $c" >> $mk
     echo "	\$(CXX) \$(ALL_CXXFLAGS) -c $c" >> $mk
 done
@@ -106,14 +129,25 @@ distclean: clean
 	rm -f *.dep   
 EOF
 
-for c in $SRCS;do
+for c in $SRC_CPP;do
     d=`basename $c .cpp`.dep
     s=`basename $c .cpp`.dep.stamp
     echo "$s : $c" >> $mk
     echo "	\$(CXX) -M \$(ALL_CXXFLAGS) $c > $d" >> $mk
     echo "	touch $s" >> $mk
 done
-for c in $SRCS;do
+for c in $SRC_CPP;do
     d=`basename $c .cpp`.dep
+    echo "include $d" >> $mk
+done
+for c in $SRC_CC;do
+    d=`basename $c .cc`.dep
+    s=`basename $c .cc`.dep.stamp
+    echo "$s : $c" >> $mk
+    echo "	\$(CXX) -M \$(ALL_CXXFLAGS) $c > $d" >> $mk
+    echo "	touch $s" >> $mk
+done
+for c in $SRC_CC;do
+    d=`basename $c .cc`.dep
     echo "include $d" >> $mk
 done

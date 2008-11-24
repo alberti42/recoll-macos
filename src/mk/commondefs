@@ -17,7 +17,6 @@ COMMONCXXFLAGS = -I. \
 PIC_CXXFLAGS = -fPIC -DPIC
 
 BIGLIB = $(depth)/lib/librcl.a
-MIMELIB = $(depth)/bincimapmime/libmime.a
 
 RANLIB = test -f
 

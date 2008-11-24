@@ -16,7 +16,7 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
-/* @(#$Id: rclconfig.h,v 1.42 2008-10-08 16:15:22 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rclconfig.h,v 1.43 2008-11-24 15:47:40 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <list>
 #include <string>
@@ -64,6 +64,8 @@ class RclConfig {
 
     /** Return the directory where this configuration is stored */
     string getConfDir() {return m_confdir;}
+    /** Get the local value for /usr/local/share/recoll/ */
+    const string& getDatadir() {return m_datadir;}
 
     /** Set current directory reference, and fetch automatic parameters. */
     void setKeyDir(const string &dir);

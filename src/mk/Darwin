@@ -1,8 +1,7 @@
 include $(depth)/mk/commondefs
 include $(depth)/mk/localdefs
 
-ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
-	   -DSTATFS_INCLUDE="<sys/mount.h>"
+ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS)
 
 RANLIB = ranlib
 LIBSYS = 
