@@ -1,0 +1,12 @@
+- Sur ubuntu et freebsd cmake installe
+-- Installing /usr/lib/kde4/kio_recoll.so
+Au lieu de /usr/lib/kde4/lib/kde4/kio_recoll.so
+-- Installing /usr/share/kde4/services/recoll.protocol
+Au lieu de /usr/lib/kde4/share/kde4/services/recoll.protocol
+-- Installing /usr/share/apps/kio_recoll/welcome.html
+Au lieu de /usr/lib/kde4/share/kde4/apps/
+
+- Il faut configurer cmake avec target /usr, donc attention a configurer
+  recoll avec --target=/usr pour que les fichiers de config soient au bon
+  endroit
+

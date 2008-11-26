@@ -46,7 +46,7 @@ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
   ${rcltop}/utils 
 )
 
-set(kio_recoll_SRCS  kio_recoll.cpp
+set(kio_recoll_SRCS  kio_recoll.cpp htmlif.cpp dirif.cpp
 ${depth}/aspell/rclaspell.cpp
 ${depth}/bincimapmime/mime-getpart.cc 
 ${depth}/bincimapmime/mime-parsefull.cc 
