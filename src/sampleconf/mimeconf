@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.46 2008-10-09 09:21:38 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.47 2008-11-27 09:49:46 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -199,28 +199,3 @@ other = application/vnd.sun.xml.draw \
         application/vnd.sun.xml.math \
         application/x-fsdirectory \
         image/svg+xml \
-
-
-[prefixes]
-
-# This allows extending the set of fields that recoll understand/searches. 
-# See the manual for exact usage.
-# Important: 
-#   - the field names MUST be all lowercase here. They can be anycased
-#     in the documents:
-#   - The extension field prefixes MUST begin with X and be all UPPERCASE.
-title = S
-caption = S
-subject = S
-
-author = A
-creator = A
-from = A
-
-keyword = K
-tag = K
-keywords = K
-tags = K
-
-# testing /example :
-recollspecialfield = XRCLSF
