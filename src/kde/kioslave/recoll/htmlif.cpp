@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.1 2008-11-26 15:03:41 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.2 2008-11-27 17:48:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ const string &RecollKioPager::parFormat()
 
 string RecollKioPager::pageTop()
 {
-    return "<p align=\"center\"><a href=\"recoll:///\">New Search</a></p>";
+    return "<p align=\"center\"><a href=\"recoll:///welcome\">New Search</a></p>";
 }
 
 string RecollKioPager::nextUrl()
@@ -148,9 +148,10 @@ void RecollProtocol::queryDetails()
 
 void RecollProtocol::htmlDoSearch(const QString& q, char opt)
 {
-    kDebug() << endl;
+    kDebug() << "htmlDoSearch" << endl;
+    if (!doSearch(q, opt))
+	return;
     mimeType("text/html");
-    doSearch(q, opt);
     m_pager.setDocSource(m_source);
     m_pager.resultPageNext();
     m_pager.displayPage();

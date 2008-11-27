@@ -10,3 +10,19 @@ Au lieu de /usr/lib/kde4/share/kde4/apps/
   recoll avec --target=/usr pour que les fichiers de config soient au bon
   endroit
 
+
+Sur kubuntu 8.10 (a jour au 2008-27-11), cmake genere une dependance sur 
+/build/buildd/kde4libs-4.1.2/obj-i486-linux-gnu/lib/libkdecore.so dans 
+CMakeFiles/kio_recoll.dir/build.make 
+Pas trouve le moyen de corriger, il faut editer la ligne et remplacer
+par /usr/lib/..
+
+
+Debug areas: /usr/share/kde4/config/kdebug.areas
+kdebugdialog [--fullmode] pour configurer
+./.kde/share/config/kdebugrc
+Output to ~/.xession-errors par defaut controle ?
+
+
+Probleme quand l'url se termine par un / et qu'on edite le mot,
+konqueror lance une recherche a chaque lettre.

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.16 2008-11-26 15:03:41 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.17 2008-11-27 17:48:43 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -119,10 +119,11 @@ bool RecollProtocol::maybeOpenDb(string &reason)
 void RecollProtocol::mimetype(const KUrl &url)
 {
     kDebug() << url << endl;
-    if (0) 
-	mimeType("text/html");
-    else
+#ifdef USEDIRMODEL
 	mimeType("inode/directory");
+#else
+	mimeType("text/html");
+#endif
     finished();
 }
 
@@ -139,6 +140,8 @@ bool RecollProtocol::URLToQuery(const KUrl &url, QString& q, QString& opt)
 	    opt = "l";
 	} 
     }
+    if (q.startsWith("/"))
+	q.remove(0,1);
     return true;
 }
 
@@ -147,18 +150,21 @@ void RecollProtocol::get(const KUrl & url)
     kDebug() << url << endl;
 
     if (!m_initok || !maybeOpenDb(m_reason)) {
-	error(KIO::ERR_SLAVE_DEFINED, "Init error");
+	string reason = "RecollProtocol::get:Init error: " + m_reason;
+	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
 	return;
     }
+#ifdef USEDIRMODEL
     error(KIO::ERR_IS_DIRECTORY, QString::null);
     return;
+#endif
 
     QString host = url.host();
     QString path = url.path();
 
     kDebug() << "host:" << host << " path:" << path;
 
-    if (host.isEmpty() && !path.compare("/")) {
+    if (host.isEmpty() && (!path.compare("/")||!path.compare("/welcome"))) {
 	// recoll:/
 	welcomePage();
 	goto out;
@@ -202,7 +208,7 @@ void RecollProtocol::get(const KUrl & url)
     kDebug() << "done" << endl;
 }
 
-void RecollProtocol::doSearch(const QString& q, char opt)
+bool RecollProtocol::doSearch(const QString& q, char opt)
 {
     kDebug() << q << endl;
     string qs = (const char *)q.toUtf8();
@@ -231,33 +237,37 @@ void RecollProtocol::doSearch(const QString& q, char opt)
 	sd = wasaStringToRcl(qs, m_reason);
     }
     if (!sd) {
-	m_reason = "Internal Error: cant allocate new query";
-	outputError(m_reason.c_str());
+	kDebug() << "Could not build search data from user string";
+	m_reason = "Internal Error: cant build search";
+	error(-1, m_reason.c_str());
 	finished();
-	return;
+	return false;
     }
 
     RefCntr<Rcl::SearchData> sdata(sd);
     sdata->setStemlang("english");
-    kDebug() << "Building query";
+    kDebug() << "Executing query";
     RefCntr<Rcl::Query>query(new Rcl::Query(m_rcldb));
     if (!query->setQuery(sdata)) {
-	m_reason = "Internal Error: setQuery failed";
-	outputError(m_reason.c_str());
+	m_reason = "Internal Error: query execute failed";
+	error(-1, m_reason.c_str());
 	finished();
-	return;
+	kDebug() << "setQuery failed, returning";
+	return false;
     }
+
     kDebug() << "Building docsequence";
     DocSequenceDb *src = 
 	new DocSequenceDb(RefCntr<Rcl::Query>(query), "Query results", sdata);
     if (src == 0) {
 	kDebug() << "Cant' build result sequence";
-	error(-1, QString::null);
+	error(-1, "Can't build result sequence");
 	finished();
-	return;
+	return false;
     }
     kDebug() << "Setting source";
     m_source = RefCntr<DocSequence>(src);
+    return true;
 }
 
 // Note: KDE_EXPORT is actually needed on Unix when building with

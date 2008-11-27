@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.1 2008-11-26 15:03:41 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.2 2008-11-27 17:48:43 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -66,33 +66,88 @@ const UDSEntry resultToUDSEntry(Rcl::Doc doc)
     	entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
     }
     
-    //    entry.insert(KIO::UDSEntry::UDS_URL, doc.url.c_str());
+    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
     //    entry.insert(KIO::UDSEntry::UDS_URL, "recoll://search/query/1");
     return entry;
 }
 
 
-// Don't know that we really need this. It's used by beagle to return
-// info on the virtual entries used to execute commands, and on the
-// saved searches (appearing as directories)
 void RecollProtocol::stat(const KUrl & url)
 {
     kDebug() << url << endl ;
 
     QString path = url.path();
     KIO::UDSEntry entry;
-    entry.insert(KIO::UDSEntry::UDS_NAME, url.path());
-    entry.insert(KIO::UDSEntry::UDS_URL, url.url());
+    if (!path.compare("/"))
+	entry.insert(KIO::UDSEntry::UDS_NAME, "/welcome");
+    else
+	entry.insert(KIO::UDSEntry::UDS_NAME, url.path());
+    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
     entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
     statEntry(entry);
     finished();
 }
 
+// From kio_beagle
+void RecollProtocol::createRootEntry(KIO::UDSEntry& entry)
+{
+    // home directory
+    entry.clear();
+    entry.insert( KIO::UDSEntry::UDS_NAME, ".");
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0700);
+    entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+}
+
+void RecollProtocol::createGoHomeEntry(KIO::UDSEntry& entry)
+{
+    // status file
+    entry.clear();
+    entry.insert(KIO::UDSEntry::UDS_NAME, "Recoll home (click me)");
+    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
+    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, "recoll:///welcome");
+    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0500);
+    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
+    entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "recoll");
+}
+
+
 void RecollProtocol::listDir(const KUrl& url)
 {
     kDebug() << url << endl;
+
+    // It seems that when the request is from konqueror
+    // autocompletion it comes with a / at the end, which offers
+    // an opportunity to not perform it.
+    if (url.path() != "/" && url.path().endsWith("/")) {
+	kDebug() << "Endswith/" << endl;
+	error(-1, "");
+	return;
+    }
+
     if (!m_initok || !maybeOpenDb(m_reason)) {
-	error(KIO::ERR_SLAVE_DEFINED, "Init error");
+	string reason = "RecollProtocol::listDir: Init error:" + m_reason;
+	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
+	return;
+    }
+    if (url.path().isEmpty() || url.path() == "/") {
+	kDebug() << "list /" << endl;
+
+	UDSEntryList entries;
+	KIO::UDSEntry entry;
+
+	// entry for '/'
+	createRootEntry(entry);
+	//	listEntry(entry, false);
+	entries.append(entry);
+
+	// entry for 'Information'
+	createGoHomeEntry(entry);
+	//	listEntry(entry, false);
+	entries.append(entry);
+
+	listEntries(entries);
+	finished();
 	return;
     }
 
@@ -100,19 +155,20 @@ void RecollProtocol::listDir(const KUrl& url)
     URLToQuery(url, query, opt);
     kDebug() << "Query: " << query;
     if (!query.isEmpty()) {
-	doSearch(query, opt.toUtf8().at(0));
+	if (!doSearch(query, opt.toUtf8().at(0)))
+	    return;
     } else {
 	finished();
 	return;
     }
 
     vector<ResListEntry> page;
-    int pagelen = m_source->getSeqSlice(0, 20, page);
+    int pagelen = m_source->getSeqSlice(0, 100, page);
     kDebug() << "Got " << pagelen << " results.";
     UDSEntryList entries;
     for (int i = 0; i < pagelen; i++) {
 	entries.append(resultToUDSEntry(page[i].doc));
     }
     listEntries(entries);
-    //    finished();
+    finished();
 }

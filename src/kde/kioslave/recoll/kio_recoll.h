@@ -1,5 +1,5 @@
 #ifndef _RECOLL_H
-/* @(#$Id: kio_recoll.h,v 1.7 2008-11-26 15:03:41 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: kio_recoll.h,v 1.8 2008-11-27 17:48:43 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -64,17 +64,19 @@ class RecollProtocol : public KIO::SlaveBase {
     virtual void get(const KUrl & url );
     virtual void stat(const KUrl & url);
     virtual void listDir(const KUrl& url);
-    
+
     static RclConfig  *o_rclconfig;
 
  private:
     bool maybeOpenDb(string &reason);
     void outputError(const QString& errmsg);
-    void doSearch(const QString& q, char opt = 'l');
+    bool doSearch(const QString& q, char opt = 'l');
     void welcomePage();
     void queryDetails();
     void htmlDoSearch(const QString& q, char opt);
     bool URLToQuery(const KUrl &url, QString& q, QString& opt);
+    void createRootEntry(KIO::UDSEntry& entry);
+    void createGoHomeEntry(KIO::UDSEntry& entry);
 
     bool        m_initok;
     Rcl::Db    *m_rcldb;
