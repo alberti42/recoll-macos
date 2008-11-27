@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.2 2008-11-20 13:10:23 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.3 2008-11-27 14:05:16 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -69,6 +69,8 @@ void ResListPager::resultPageNext()
 
 void ResListPager::displayPage()
 {
+    if (m_docSource.isNull())
+	return;
     string chunk;
 
     // Display list header
