@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.68 2008-10-13 07:57:12 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.69 2008-11-27 09:39:06 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -2492,6 +2492,12 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
                 <filename>~/.thunderbird</filename> or
                 <filename>~/.evolution</filename> in
                 <literal>topdirs</literal>.</para> 
+
+                <para>Not even the file names are indexed for patterns
+                in this list. See the
+                <literal>recoll_noindex</literal> variable in
+                <filename>mimemap</filename> for an alternative
+                approach which indexes the file names</para>.
             </listitem>
           </varlistentry>
 
@@ -2725,15 +2731,15 @@ skippedPaths = ~/somedir/&lowast;.txt
         unnecessary decompressions or <command>file</command>
         executions). This is partially redundant with
         <literal>skippedNames</literal> in the main configuration
-        file, with two differences: it will not affect directories,
-        and it cannot be made dependant on the file-system location
-        (it is a configuration-wide parameter). You could accomplish
-        with <literal>skippedNames</literal> anything that
-        <literal>recoll_noindex</literal> does. The latter is used
-        mostly for things known to be unindexable by a given &RCL;
-        version. Having it there avoids cluttering the more
-        user-oriented and locally customized
-        <literal>skippedNames</literal>.</para>
+        file, with a few differences: it will not affect directories,
+        it cannot be made dependant on the file-system location (it is
+        a configuration-wide parameter), and the file names will still
+        be indexed (not even the file names are indexed for patterns
+        in <literal>skippedNames</literal>.
+        <literal>recoll_noindex</literal> is used mostly for things
+        known to be unindexable by a given &RCL; version. Having it
+        there avoids cluttering the more user-oriented and locally
+        customized <literal>skippedNames</literal>.</para>
 
       </sect2>
 
