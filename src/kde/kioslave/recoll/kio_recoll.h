@@ -1,5 +1,5 @@
 #ifndef _RECOLL_H
-/* @(#$Id: kio_recoll.h,v 1.8 2008-11-27 17:48:43 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: kio_recoll.h,v 1.9 2008-11-28 09:14:42 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ using std::string;
 #include <kurl.h>
 #include <kio/global.h>
 #include <kio/slavebase.h>
+#include <kdeversion.h>
 
 #include "rclconfig.h"
 #include "rcldb.h"
@@ -62,8 +63,10 @@ class RecollProtocol : public KIO::SlaveBase {
     virtual ~RecollProtocol();
     virtual void mimetype(const KUrl & url );
     virtual void get(const KUrl & url );
+#if KDE_IS_VERSION(4,1,0)
     virtual void stat(const KUrl & url);
     virtual void listDir(const KUrl& url);
+#endif
 
     static RclConfig  *o_rclconfig;
 

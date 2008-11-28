@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.17 2008-11-27 17:48:43 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.18 2008-11-28 09:14:42 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -119,11 +119,7 @@ bool RecollProtocol::maybeOpenDb(string &reason)
 void RecollProtocol::mimetype(const KUrl &url)
 {
     kDebug() << url << endl;
-#ifdef USEDIRMODEL
-	mimeType("inode/directory");
-#else
-	mimeType("text/html");
-#endif
+    mimeType("text/html");
     finished();
 }
 
@@ -154,17 +150,14 @@ void RecollProtocol::get(const KUrl & url)
 	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
 	return;
     }
-#ifdef USEDIRMODEL
-    error(KIO::ERR_IS_DIRECTORY, QString::null);
-    return;
-#endif
 
     QString host = url.host();
     QString path = url.path();
 
     kDebug() << "host:" << host << " path:" << path;
 
-    if (host.isEmpty() && (!path.compare("/")||!path.compare("/welcome"))) {
+    if (host.isEmpty() && 
+	(path.isEmpty() || !path.compare("/")||!path.compare("/welcome"))) {
 	// recoll:/
 	welcomePage();
 	goto out;

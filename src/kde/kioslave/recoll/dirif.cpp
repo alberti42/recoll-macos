@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.2 2008-11-27 17:48:43 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.3 2008-11-28 09:14:42 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,12 @@ static char rcsid[] = "@(#$Id: dirif.cpp,v 1.2 2008-11-27 17:48:43 dockes Exp $ 
  * Stephan Binner <binner@kde.org>
  */
 
+#include <kdeversion.h>
+#if KDE_IS_VERSION(4,1,0)
+// Couldn't get listDir() to work with kde 4.0, konqueror keeps
+// crashing because of kdirmodel, couldn't find a workaround (not
+// saying it's impossible)...
+
 #include <sys/stat.h>
 
 #include <kurl.h>
@@ -34,10 +40,26 @@ static char rcsid[] = "@(#$Id: dirif.cpp,v 1.2 2008-11-27 17:48:43 dockes Exp $ 
 
 #include <kdebug.h>
 
-
 #include "kio_recoll.h"
-
 using namespace KIO;
+
+void RecollProtocol::stat(const KUrl & url)
+{
+    kDebug() << url << endl ;
+
+    QString path = url.path();
+    KIO::UDSEntry entry;
+    if (!path.compare("/"))
+	entry.insert(KIO::UDSEntry::UDS_NAME, "/welcome");
+    else
+	entry.insert(KIO::UDSEntry::UDS_NAME, url.path());
+    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
+    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
+    statEntry(entry);
+    finished();
+}
+
+
 
 const UDSEntry resultToUDSEntry(Rcl::Doc doc)
 {
@@ -71,22 +93,6 @@ const UDSEntry resultToUDSEntry(Rcl::Doc doc)
     return entry;
 }
 
-
-void RecollProtocol::stat(const KUrl & url)
-{
-    kDebug() << url << endl ;
-
-    QString path = url.path();
-    KIO::UDSEntry entry;
-    if (!path.compare("/"))
-	entry.insert(KIO::UDSEntry::UDS_NAME, "/welcome");
-    else
-	entry.insert(KIO::UDSEntry::UDS_NAME, url.path());
-    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
-    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
-    statEntry(entry);
-    finished();
-}
 
 // From kio_beagle
 void RecollProtocol::createRootEntry(KIO::UDSEntry& entry)
@@ -172,3 +178,4 @@ void RecollProtocol::listDir(const KUrl& url)
     listEntries(entries);
     finished();
 }
+#endif // KDE 4.1+

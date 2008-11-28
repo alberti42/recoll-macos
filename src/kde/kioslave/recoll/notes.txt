@@ -26,3 +26,11 @@ Output to ~/.xession-errors par defaut controle ?
 
 Probleme quand l'url se termine par un / et qu'on edite le mot,
 konqueror lance une recherche a chaque lettre.
+
+
+Apparemment c'est l'entree "listing" du .protocol qui decide si le plugin
+est traité plutot comme un dirlister ou comme un htmlgetter. Curieusement,
+le changement ne s'opere pas toujours immediatement quand on change le
+fichier .proto, y compris apres avoir tue tous les process kde (changement
+à la deuxieme execution de konqueror sur kde4.0). Sur kde4.0 il faut que le
+.proto soit sans entree "listing"
