@@ -1,5 +1,5 @@
 #ifndef _RECOLL_H
-/* @(#$Id: kio_recoll.h,v 1.9 2008-11-28 09:14:42 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: kio_recoll.h,v 1.10 2008-12-01 15:36:52 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -70,23 +70,36 @@ class RecollProtocol : public KIO::SlaveBase {
 
     static RclConfig  *o_rclconfig;
 
+    friend class RecollKioPager;
  private:
     bool maybeOpenDb(string &reason);
     void outputError(const QString& errmsg);
-    bool doSearch(const QString& q, char opt = 'l');
+    bool doSearch(const QString& q, const QString& opt = "l");
     void welcomePage();
     void queryDetails();
-    void htmlDoSearch(const QString& q, char opt);
-    bool URLToQuery(const KUrl &url, QString& q, QString& opt);
-    void createRootEntry(KIO::UDSEntry& entry);
-    void createGoHomeEntry(KIO::UDSEntry& entry);
+    void htmlDoSearch(const QString& q, const QString& opt, int page);
+    bool URLToQuery(const KUrl &url, QString& q, QString& opt, int *page=0);
+    bool isRecollResult(const KUrl &url, int *num);
+    string makeQueryUrl(int page);
 
     bool        m_initok;
     Rcl::Db    *m_rcldb;
     std::string m_reason;
+
+    // All details about the current search state: because of how the
+    // KIO slaves are used / reused, we can't be sure that the next
+    // request will be for the same search, and we need to check and
+    // restart one if the data changes. This is very wasteful of
+    // course but hopefully won't happen too much in actual use. One
+    // possible workaround for some scenarios (one slave several
+    // konqueror windows) would be to have a small cache of recent
+    // searches kept open.
     RecollKioPager m_pager;
     RefCntr<DocSequence> m_source;
+    QString     m_srchStr;
+    QString     m_opt;
 };
+
 extern "C" {int kdemain(int, char**);}
 
 #endif // _RECOLL_H

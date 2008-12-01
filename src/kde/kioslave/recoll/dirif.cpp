@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.3 2008-11-28 09:14:42 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.4 2008-12-01 15:36:52 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@ static char rcsid[] = "@(#$Id: dirif.cpp,v 1.3 2008-11-28 09:14:42 dockes Exp $ 
  */
 
 #include <kdeversion.h>
+
 #if KDE_IS_VERSION(4,1,0)
 // Couldn't get listDir() to work with kde 4.0, konqueror keeps
 // crashing because of kdirmodel, couldn't find a workaround (not
@@ -37,39 +38,71 @@ static char rcsid[] = "@(#$Id: dirif.cpp,v 1.3 2008-11-28 09:14:42 dockes Exp $ 
 
 #include <kurl.h>
 #include <kio/global.h>
+#include <kstandarddirs.h>
 
 #include <kdebug.h>
 
 #include "kio_recoll.h"
+#include "pathut.h"
+
 using namespace KIO;
 
-void RecollProtocol::stat(const KUrl & url)
-{
-    kDebug() << url << endl ;
+static const QString resultBaseName("recollResult");
 
+//
+bool RecollProtocol::isRecollResult(const KUrl &url, int *num)
+{
+    *num = -1;
+    kDebug() << "url" << url << "m_srchStr" << m_srchStr;
+    // Does the url look like a recoll search result ??
+    if (!url.host().isEmpty() || url.path().isEmpty() || 
+	url.protocol().compare("recoll")) 
+	return false;
     QString path = url.path();
-    KIO::UDSEntry entry;
-    if (!path.compare("/"))
-	entry.insert(KIO::UDSEntry::UDS_NAME, "/welcome");
-    else
-	entry.insert(KIO::UDSEntry::UDS_NAME, url.path());
-    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
-    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
-    statEntry(entry);
-    finished();
+    if (!path.startsWith("/")) 
+	return false;
+    // Look for the last '/' and check if it is followed by
+    // resultBaseName (riiiight...)
+    int slashpos = path.lastIndexOf("/");
+    if (slashpos == -1 || slashpos == 0 || slashpos == path.length() -1)
+	return false;
+    slashpos++;
+    kDebug() << "Comparing " << path.mid(slashpos, resultBaseName.length()) <<
+	"and " << resultBaseName;
+    if (path.mid(slashpos, resultBaseName.length()).compare(resultBaseName))
+	return false;
+
+    QString snum = path.mid(slashpos + resultBaseName.length());
+    sscanf(snum.toAscii(), "%d", num);
+    if (*num == -1)
+	return false;
+
+    kDebug() << "URL analysis ok, num:" << *num;
+
+    // We do have something that ressembles a recoll result locator. Check if
+    // this matches the current search, else have to run the requested one
+    QString searchstring = path.mid(1, slashpos-2);
+    kDebug() << "Comparing search strings" << m_srchStr << "and" << searchstring;
+    if (searchstring.compare(m_srchStr)) {
+	kDebug() << "Starting new search";
+	if (!doSearch(searchstring))
+	    return false;
+    }
+
+    return true;
 }
 
-
-
-const UDSEntry resultToUDSEntry(Rcl::Doc doc)
+static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
 {
-    
     UDSEntry entry;
     
     KUrl url(doc.url.c_str());
     kDebug() << doc.url.c_str();
 
-    entry.insert(KIO::UDSEntry::UDS_NAME, url.fileName());
+    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
+    char cnum[30];sprintf(cnum, "%d", num);
+    entry.insert(KIO::UDSEntry::UDS_NAME, resultBaseName + cnum);
+
     if (!doc.mimetype.compare("application/x-fsdirectory")) {
 	entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
     	entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
@@ -87,17 +120,16 @@ const UDSEntry resultToUDSEntry(Rcl::Doc doc)
     	entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, info.st_atime);
     	entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
     }
-    
+    kDebug() << "entry URL: " << doc.url.c_str();
     entry.insert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
-    //    entry.insert(KIO::UDSEntry::UDS_URL, "recoll://search/query/1");
+
     return entry;
 }
 
 
 // From kio_beagle
-void RecollProtocol::createRootEntry(KIO::UDSEntry& entry)
+static void createRootEntry(KIO::UDSEntry& entry)
 {
-    // home directory
     entry.clear();
     entry.insert( KIO::UDSEntry::UDS_NAME, ".");
     entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
@@ -105,11 +137,12 @@ void RecollProtocol::createRootEntry(KIO::UDSEntry& entry)
     entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
 }
 
-void RecollProtocol::createGoHomeEntry(KIO::UDSEntry& entry)
+// Points to html query screen
+static void createGoHomeEntry(KIO::UDSEntry& entry)
 {
-    // status file
     entry.clear();
-    entry.insert(KIO::UDSEntry::UDS_NAME, "Recoll home (click me)");
+    entry.insert(KIO::UDSEntry::UDS_NAME, "search");
+    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll search (click me)");
     entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
     entry.insert(KIO::UDSEntry::UDS_TARGET_URL, "recoll:///welcome");
     entry.insert(KIO::UDSEntry::UDS_ACCESS, 0500);
@@ -117,6 +150,49 @@ void RecollProtocol::createGoHomeEntry(KIO::UDSEntry& entry)
     entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "recoll");
 }
 
+// Points to help file
+static void createGoHelpEntry(KIO::UDSEntry& entry)
+{
+    QString location = 
+	KStandardDirs::locate("data", "kio_recoll/help.html");
+    entry.clear();
+    entry.insert(KIO::UDSEntry::UDS_NAME, "help");
+    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll help (click me first)");
+    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
+    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, QString("file://") +
+		 location);
+    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0500);
+    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
+    entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "help");
+}
+
+void RecollProtocol::stat(const KUrl & url)
+{
+    kDebug() << url << endl ;
+    int num = -1;
+    QString path = url.path();
+    KIO::UDSEntry entry;
+    if (!path.compare("/")) {
+	createRootEntry(entry);
+    } else if (!path.compare("/help")) {
+	createGoHelpEntry(entry);
+    } else if (!path.compare("/search")) {
+	createGoHomeEntry(entry);
+    } else if (isRecollResult(url, &num)) {
+	// If this url starts with the current search url appended with a 
+	// result name appended, let's stat said result.
+	Rcl::Doc doc;
+	if (num >= 0 && !m_source.isNull()  && m_source->getDoc(num, doc)) {
+	    entry = resultToUDSEntry(doc, num);
+	}
+    } else {
+	// ?? 
+    }
+
+    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
+    statEntry(entry);
+    finished();
+}
 
 void RecollProtocol::listDir(const KUrl& url)
 {
@@ -136,6 +212,7 @@ void RecollProtocol::listDir(const KUrl& url)
 	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
 	return;
     }
+
     if (url.path().isEmpty() || url.path() == "/") {
 	kDebug() << "list /" << endl;
 
@@ -144,12 +221,11 @@ void RecollProtocol::listDir(const KUrl& url)
 
 	// entry for '/'
 	createRootEntry(entry);
-	//	listEntry(entry, false);
 	entries.append(entry);
 
-	// entry for 'Information'
 	createGoHomeEntry(entry);
-	//	listEntry(entry, false);
+	entries.append(entry);
+	createGoHelpEntry(entry);
 	entries.append(entry);
 
 	listEntries(entries);
@@ -157,23 +233,32 @@ void RecollProtocol::listDir(const KUrl& url)
 	return;
     }
 
+    
     QString query, opt;
     URLToQuery(url, query, opt);
     kDebug() << "Query: " << query;
     if (!query.isEmpty()) {
-	if (!doSearch(query, opt.toUtf8().at(0)))
+	if (!doSearch(query, opt))
 	    return;
     } else {
 	finished();
 	return;
     }
 
+    static int numentries = -1;
+    if (numentries == -1) {
+	if (o_rclconfig)
+	    o_rclconfig->getConfParam("kio_max_direntries", &numentries);
+	if (numentries == -1)
+	    numentries = 100;
+    }
+
     vector<ResListEntry> page;
-    int pagelen = m_source->getSeqSlice(0, 100, page);
+    int pagelen = m_source->getSeqSlice(0, numentries, page);
     kDebug() << "Got " << pagelen << " results.";
     UDSEntryList entries;
     for (int i = 0; i < pagelen; i++) {
-	entries.append(resultToUDSEntry(page[i].doc));
+	entries.append(resultToUDSEntry(page[i].doc, i));
     }
     listEntries(entries);
     finished();

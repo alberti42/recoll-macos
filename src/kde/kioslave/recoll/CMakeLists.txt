@@ -123,5 +123,5 @@ ELSE ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
    		 RENAME recoll.protocol)
 ENDIF ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
 
-install(FILES data/welcome.html	
+install(FILES data/welcome.html	data/help.html
 	      DESTINATION  ${DATA_INSTALL_DIR}/kio_recoll)

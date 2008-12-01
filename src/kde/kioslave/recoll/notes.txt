@@ -34,3 +34,23 @@ le changement ne s'opere pas toujours immediatement quand on change le
 fichier .proto, y compris apres avoir tue tous les process kde (changement
 à la deuxieme execution de konqueror sur kde4.0). Sur kde4.0 il faut que le
 .proto soit sans entree "listing"
+
+
+Les KIO slaves ne sont pas associes a une fenetre ! ils sont
+reutilises au hasard, et leur etat n'a aucune raison de correspondre a
+celui de l'affichage. On peut tres bien avoir 1 fenetre 2 kio ou 1 kio
+deux fenetres, et le next d'un search peut arriver au kio qui a
+l'autre search, donc n'importenaouak. Il faudrait que l'etat soit
+partage et accede par un identifiant uniquement determine par l'url de
+la fenetre.
+
+Meme pour une fenetre unique, au bout d'un moment le kio timeout et exite.
+
+En fait les slaves ne peuvent pas stocker d'etat du tout. Donc:
+ - soit un serveur central auquel ils parlent
+ - soit ils relancent dynamiquement les recherches si pas de match
+C'est vrai aussi bien pour les dirlists que pour la version html. 
+
+J'ai essaye de mettre une boucle timeout callback callspecial() mais
+ca ne sert a rien, c'est gere dans le process kio_slave, ca ne
+maintient pas l'association avec un konqueror.
