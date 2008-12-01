@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.3 2008-12-01 15:36:52 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.4 2008-12-01 18:42:52 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,8 @@ using namespace KIO;
 
 bool RecollKioPager::append(const string& data)
 {
-    if (!m_parent) return false;
+    if (!m_parent) 
+	return false;
     m_parent->data(QByteArray(data.c_str()));
     return true;
 }
@@ -65,7 +66,7 @@ const static string parformat =
     "<a href=\"%U\">Open</a>&nbsp;&nbsp;<b>%T</b><br>"
     "%M&nbsp;%D&nbsp;&nbsp; <i>%U</i><br>"
     "%A %K";
-const string &RecollKioPager::parFormat()
+const string& RecollKioPager::parFormat()
 {
     return parformat;
 }
@@ -108,7 +109,7 @@ static string welcomedata;
 
 void RecollProtocol::welcomePage()
 {
-    kDebug() << endl;
+    kDebug();
     mimeType("text/html");
     if (welcomedata.empty()) {
 	QString location = 
@@ -128,12 +129,11 @@ void RecollProtocol::welcomePage()
     subs['Q'] = "";
     pcSubst(welcomedata, tmp, subs);
     data(tmp.c_str());
-    kDebug() << "done" << endl;
 }
 
 void RecollProtocol::queryDetails()
 {
-    kDebug() << endl;
+    kDebug();
     mimeType("text/html");
     QByteArray array;
     QTextStream os(&array, QIODevice::WriteOnly);
@@ -149,12 +149,13 @@ void RecollProtocol::queryDetails()
 	"\">Return to results</a>" << endl;
     os << "</body></html>" << endl;
     data(array);
-    kDebug() << "done" << endl;
 }
 
 void RecollProtocol::htmlDoSearch(const QString& q, const QString &opt, int page)
 {
-    kDebug();
+    kDebug() << "q" << q << "opt" << opt << "page" << page;
+    if (m_source.isNull())
+	kDebug() << "Null source";
     // Check if same search or need to start new
     if (q.compare(m_srchStr) || opt.compare(m_opt)) {
 	if (!doSearch(q, opt))
@@ -177,23 +178,5 @@ void RecollProtocol::htmlDoSearch(const QString& q, const QString &opt, int page
     // Display
     mimeType("text/html");
     m_pager.displayPage();
-    kDebug() << "done" << endl;
-}
-
-void RecollProtocol::outputError(const QString& errmsg)
-{
-    mimeType("text/html");
-    QByteArray array;
-    QTextStream os(&array, QIODevice::WriteOnly);
-
-    os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Strict//EN\">" << endl;
-    os << "<html><head>" << endl;
-    os << "<meta http-equiv=\"Content-Type\" content=\"text/html;"
-	"charset=utf-8\">" << endl;
-    os << "<title>" << "Recoll error" << "</title>\n" << endl;
-    os << "</head>" << endl;
-    os << "<body><p><b>Recoll error: </b>" << errmsg << "</p>" << endl;
-    os << "<p><a href=\"recoll:///\">New query</a></p>"<< endl;
-    os << "</body></html>" << endl;
-    data(array);
+    kDebug() << "done";
 }

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.19 2008-12-01 15:36:52 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.20 2008-12-01 18:42:52 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -24,23 +24,14 @@ static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.19 2008-12-01 15:36:52 dockes 
 #include <errno.h> 
 
 #include <string>
-
 using namespace std;
-#include <qglobal.h>
 
-#if (QT_VERSION < 0x040000)
+#include <qglobal.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qstring.h>
-#else
-#include <QFile>
-#include <QTextStream>
-#include <QByteArray>
-#endif
 
 #include <kdebug.h>
-
-//#include <kinstance.h>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 
@@ -60,6 +51,7 @@ using namespace std;
 using namespace KIO;
 
 RclConfig *RecollProtocol::o_rclconfig;
+
 RclConfig *RclConfig::getMainConfig()
 {
     return RecollProtocol::o_rclconfig;
@@ -78,7 +70,8 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
     }
     if (o_rclconfig->getDbDir().empty()) {
 	// Note: this will have to be replaced by a call to a
-	// configuration buildin dialog for initial configuration
+	// configuration building dialog for initial configuration? Or
+	// do we assume that the QT GUO is always used for this ?
 	m_reason = "No db directory in configuration ??";
 	return;
     }
@@ -97,7 +90,7 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
 // Doesn't seem needed in the kio context.
 RecollProtocol::~RecollProtocol()
 {
-    kDebug() << endl;
+    kDebug();
     delete m_rcldb;
 }
 
@@ -116,6 +109,7 @@ bool RecollProtocol::maybeOpenDb(string &reason)
     return true;
 }
 
+// Not sure this is ever used 
 void RecollProtocol::mimetype(const KUrl &url)
 {
     kDebug() << url << endl;
@@ -126,6 +120,7 @@ void RecollProtocol::mimetype(const KUrl &url)
 bool RecollProtocol::URLToQuery(const KUrl &url, QString& q, QString& opt, 
 				int *page)
 {
+    // "recoll:/some query/" or "recoll:/some query"
     if (url.host().isEmpty()) {
 	q = url.path();
 	opt = "l";
@@ -141,7 +136,7 @@ bool RecollProtocol::URLToQuery(const KUrl &url, QString& q, QString& opt,
 	if (page) {
 	    QString p = url.queryItem("p");
 	    if (p.isEmpty()) {
-		page = 0;
+		*page = 0;
 	    } else {
 		sscanf(p.toAscii(), "%d", page);
 	    }
@@ -149,9 +144,14 @@ bool RecollProtocol::URLToQuery(const KUrl &url, QString& q, QString& opt,
     }
     if (q.startsWith("/"))
 	q.remove(0,1);
+    if (q.endsWith("/"))
+	q.chop(1);
     return true;
 }
 
+// This is used by the html interface, but also by the directory one
+// when doing file copies for exemple. This is the central dispatcher
+// for requests, it has to know a little about both models.
 void RecollProtocol::get(const KUrl & url)
 {
     kDebug() << url << endl;
@@ -199,13 +199,12 @@ void RecollProtocol::get(const KUrl & url)
 	    goto out;
 	} 
     }
-    kDebug() << "Unrecognized URL: " << url << endl;
     error(KIO::ERR_SLAVE_DEFINED, "Unrecognized URL");
  out:
     finished();
-    kDebug() << "done" << endl;
 }
 
+// Execute Recoll search, and set the docsource etc.
 bool RecollProtocol::doSearch(const QString& q, const QString &qopt)
 {
     kDebug() << "query" << q << "opt" << qopt;
@@ -234,11 +233,9 @@ bool RecollProtocol::doSearch(const QString& q, const QString &qopt)
 	if (sd && clp)
 	    sd->addClause(clp);
     } else {
-	kDebug() << "Parsing query: " << qs.c_str();
 	sd = wasaStringToRcl(qs, m_reason);
     }
     if (!sd) {
-	kDebug() << "Could not build search data from user string";
 	m_reason = "Internal Error: cant build search";
 	error(KIO::ERR_SLAVE_DEFINED, m_reason.c_str());
 	finished();
@@ -247,26 +244,21 @@ bool RecollProtocol::doSearch(const QString& q, const QString &qopt)
 
     RefCntr<Rcl::SearchData> sdata(sd);
     sdata->setStemlang("english");
-    kDebug() << "Executing query";
     RefCntr<Rcl::Query>query(new Rcl::Query(m_rcldb));
     if (!query->setQuery(sdata)) {
 	m_reason = "Query execute failed. Invalid query or syntax error?";
 	error(KIO::ERR_SLAVE_DEFINED, m_reason.c_str());
 	finished();
-	kDebug() << "setQuery failed, returning";
 	return false;
     }
 
-    kDebug() << "Building docsequence";
     DocSequenceDb *src = 
 	new DocSequenceDb(RefCntr<Rcl::Query>(query), "Query results", sdata);
     if (src == 0) {
-	kDebug() << "Cant' build result sequence";
 	error(KIO::ERR_SLAVE_DEFINED, "Can't build result sequence");
 	finished();
 	return false;
     }
-    kDebug() << "Setting source";
     m_source = RefCntr<DocSequence>(src);
     return true;
 }

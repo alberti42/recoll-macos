@@ -1,5 +1,5 @@
 #ifndef _RECOLL_H
-/* @(#$Id: kio_recoll.h,v 1.10 2008-12-01 15:36:52 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: kio_recoll.h,v 1.11 2008-12-01 18:42:52 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -22,12 +22,7 @@
 using std::string;
 
 #include <qglobal.h>
-
-#if (QT_VERSION < 0x040000)
 #include <qstring.h>
-#else
-#include <QString>
-#endif
 
 #include <kurl.h>
 #include <kio/global.h>
@@ -42,6 +37,7 @@ using std::string;
 
 class RecollProtocol;
 
+/** Specialize the recoll html pager for the kind of links we use etc. */
 class RecollKioPager : public ResListPager {
 public:
     RecollKioPager() : m_parent(0) {}
@@ -53,16 +49,44 @@ public:
     virtual string nextUrl();
     virtual string prevUrl();
     virtual string pageTop();
+
 private:
     RecollProtocol *m_parent;
 };
 
+/**
+ * A KIO slave to execute and display Recoll searches.
+ *
+ * Things are made a little complicated because KIO slaves can't hope
+ * that their internal state will remain consistent with their user
+ * application state: slaves die, are restarted, reused, at random
+ * between requests. 
+ * In our case, this means that any request has to be processed
+ * without reference to the last operation performed. Ie, if the
+ * search parameters are not those from the last request, the search
+ * must be restarted anew. This happens for example with different
+ * searches in 2 konqueror screens: typically only one kio_slave will
+ * be used.
+ * The fact that we check if the search is the same as the last one,
+ * to avoid restarting is an optimization, not the base mechanism
+ * (contrary to what was initially assumed, and may have left a few
+ * crumbs around).
+ *
+ * We have two modes of operation, one based on html forms and result
+ * pages, which can potentially be developped to the full Recoll
+ * functionality, and one based on a directory listing model, which
+ * will always be more limited, but may be useful in some cases to
+ * allow easy copying of files etc. Which one is in use is decided by
+ * the form of the URL. 
+ */
 class RecollProtocol : public KIO::SlaveBase {
  public:
     RecollProtocol(const QByteArray &pool, const QByteArray &app );
     virtual ~RecollProtocol();
-    virtual void mimetype(const KUrl & url );
-    virtual void get(const KUrl & url );
+    virtual void mimetype(const KUrl& url);
+    virtual void get(const KUrl& url);
+    // The directory mode is not available with KDE 4.0, I could find
+    // no way to avoid crashing kdirmodel
 #if KDE_IS_VERSION(4,1,0)
     virtual void stat(const KUrl & url);
     virtual void listDir(const KUrl& url);
@@ -71,29 +95,30 @@ class RecollProtocol : public KIO::SlaveBase {
     static RclConfig  *o_rclconfig;
 
     friend class RecollKioPager;
+
  private:
-    bool maybeOpenDb(string &reason);
-    void outputError(const QString& errmsg);
+    bool maybeOpenDb(string& reason);
+    bool URLToQuery(const KUrl &url, QString& q, QString& opt, int *page=0);
     bool doSearch(const QString& q, const QString& opt = "l");
+
     void welcomePage();
     void queryDetails();
-    void htmlDoSearch(const QString& q, const QString& opt, int page);
-    bool URLToQuery(const KUrl &url, QString& q, QString& opt, int *page=0);
-    bool isRecollResult(const KUrl &url, int *num);
     string makeQueryUrl(int page);
+    void htmlDoSearch(const QString& q, const QString& opt, int page);
+
+    bool isRecollResult(const KUrl &url, int *num);
 
     bool        m_initok;
     Rcl::Db    *m_rcldb;
-    std::string m_reason;
+    string      m_reason;
 
-    // All details about the current search state: because of how the
-    // KIO slaves are used / reused, we can't be sure that the next
-    // request will be for the same search, and we need to check and
-    // restart one if the data changes. This is very wasteful of
-    // course but hopefully won't happen too much in actual use. One
-    // possible workaround for some scenarios (one slave several
-    // konqueror windows) would be to have a small cache of recent
-    // searches kept open.
+    // Search state: because of how the KIO slaves are used / reused,
+    // we can't be sure that the next request will be for the same
+    // search, and we need to check and restart one if the data
+    // changes. This is very wasteful but hopefully won't happen too
+    // much in actual use. One possible workaround for some scenarios
+    // (one slave several konqueror windows) would be to have a small
+    // cache of recent searches kept open.
     RecollKioPager m_pager;
     RefCntr<DocSequence> m_source;
     QString     m_srchStr;

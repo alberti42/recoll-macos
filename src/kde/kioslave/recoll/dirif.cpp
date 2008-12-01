@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.4 2008-12-01 15:36:52 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.5 2008-12-01 18:42:52 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,6 @@ static char rcsid[] = "@(#$Id: dirif.cpp,v 1.4 2008-12-01 15:36:52 dockes Exp $ 
 #include <kurl.h>
 #include <kio/global.h>
 #include <kstandarddirs.h>
-
 #include <kdebug.h>
 
 #include "kio_recoll.h"
@@ -49,18 +48,24 @@ using namespace KIO;
 
 static const QString resultBaseName("recollResult");
 
-//
+// Check if the input URL is of the form that konqueror builds by
+// appending one of our result file names to the directory name (which
+// is the search string). If it is, extract return the result document
+// number. Possibly restart the search if the search string does not
+// match the current one
 bool RecollProtocol::isRecollResult(const KUrl &url, int *num)
 {
     *num = -1;
     kDebug() << "url" << url << "m_srchStr" << m_srchStr;
-    // Does the url look like a recoll search result ??
+
+    // Basic checks
     if (!url.host().isEmpty() || url.path().isEmpty() || 
 	url.protocol().compare("recoll")) 
 	return false;
     QString path = url.path();
     if (!path.startsWith("/")) 
 	return false;
+
     // Look for the last '/' and check if it is followed by
     // resultBaseName (riiiight...)
     int slashpos = path.lastIndexOf("/");
@@ -72,6 +77,7 @@ bool RecollProtocol::isRecollResult(const KUrl &url, int *num)
     if (path.mid(slashpos, resultBaseName.length()).compare(resultBaseName))
 	return false;
 
+    // Extract the result number
     QString snum = path.mid(slashpos + resultBaseName.length());
     sscanf(snum.toAscii(), "%d", num);
     if (*num == -1)
@@ -84,7 +90,6 @@ bool RecollProtocol::isRecollResult(const KUrl &url, int *num)
     QString searchstring = path.mid(1, slashpos-2);
     kDebug() << "Comparing search strings" << m_srchStr << "and" << searchstring;
     if (searchstring.compare(m_srchStr)) {
-	kDebug() << "Starting new search";
 	if (!doSearch(searchstring))
 	    return false;
     }
@@ -92,6 +97,7 @@ bool RecollProtocol::isRecollResult(const KUrl &url, int *num)
     return true;
 }
 
+// Translate rcldoc result into directory entry
 static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
 {
     UDSEntry entry;
@@ -186,7 +192,9 @@ void RecollProtocol::stat(const KUrl & url)
 	    entry = resultToUDSEntry(doc, num);
 	}
     } else {
-	// ?? 
+	// Don't return an error here, we get stat() on yet unperformed searches
+	// ie stat("recoll:/some search string")
+	// Would have to perform the search, better to return bogus ok
     }
 
     entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
@@ -202,8 +210,8 @@ void RecollProtocol::listDir(const KUrl& url)
     // autocompletion it comes with a / at the end, which offers
     // an opportunity to not perform it.
     if (url.path() != "/" && url.path().endsWith("/")) {
-	kDebug() << "Endswith/" << endl;
-	error(-1, "");
+	kDebug() << "EndsWith /" << endl;
+	error(ERR_SLAVE_DEFINED, "Autocompletion search aborted");
 	return;
     }
 
@@ -255,7 +263,6 @@ void RecollProtocol::listDir(const KUrl& url)
 
     vector<ResListEntry> page;
     int pagelen = m_source->getSeqSlice(0, numentries, page);
-    kDebug() << "Got " << pagelen << " results.";
     UDSEntryList entries;
     for (int i = 0; i < pagelen; i++) {
 	entries.append(resultToUDSEntry(page[i].doc, i));
