@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.5 2008-12-01 18:42:52 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.6 2008-12-02 13:38:16 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -270,4 +270,9 @@ void RecollProtocol::listDir(const KUrl& url)
     listEntries(entries);
     finished();
 }
-#endif // KDE 4.1+
+#else // <--- KDE 4.1+ 
+bool RecollProtocol::isRecollResult(const KUrl &, int *)
+{
+    return false;
+}
+#endif 
