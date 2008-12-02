@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.3 2008-11-27 14:05:16 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.4 2008-12-02 13:14:01 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -29,8 +29,10 @@ Prefs prefs = {true, true};
 
 void ResListPager::resultPageNext()
 {
-    if (m_docSource.isNull())
+    if (m_docSource.isNull()) {
+	LOGDEB(("ResListPager::displayPage: null source\n"));
 	return;
+    }
 
     int resCnt = m_docSource->getResCnt();
     LOGDEB(("ResListPager::resultPageNext: rescnt %d, winfirst %d\n", 
@@ -69,8 +71,10 @@ void ResListPager::resultPageNext()
 
 void ResListPager::displayPage()
 {
-    if (m_docSource.isNull())
+    if (m_docSource.isNull()) {
+	LOGDEB(("ResListPager::displayPage: null source\n"));
 	return;
+    }
     string chunk;
 
     // Display list header

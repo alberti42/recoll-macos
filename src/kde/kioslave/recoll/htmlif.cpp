@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.4 2008-12-01 18:42:52 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.5 2008-12-02 13:14:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -124,9 +124,29 @@ void RecollProtocol::welcomePage()
 	    welcomedata += "</p></body></html>";
 	}
     }    
+
+    string catgq;
+#if 0
+    // Catg filtering. A bit complicated to do because of the
+    // stateless thing (one more thing to compare to check if same
+    // query) right now. Would be easy by adding to the query
+    // language, but not too useful in this case, so scrap it for now.
+    list<string> cats;
+    if (o_rclconfig->getMimeCategories(cats) && !cats.empty()) {
+	catgq = "<p>Filter on types: "
+	    "<input type=\"radio\" name=\"ct\" value=\"All\" checked>All";
+	for (list<string>::iterator it = cats.begin(); it != cats.end();it++) {
+	    catgq += "\n<input type=\"radio\" name=\"ct\" value=\"" +
+		*it + "\">" + *it ;
+	}
+    }
+#endif 
+
     string tmp;
     map<char, string> subs;
     subs['Q'] = "";
+    subs['C'] = catgq;
+    subs['S'] = "";
     pcSubst(welcomedata, tmp, subs);
     data(tmp.c_str());
 }

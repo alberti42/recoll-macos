@@ -1,32 +1,49 @@
-- Sur ubuntu et freebsd cmake installe
--- Installing /usr/lib/kde4/kio_recoll.so
-Au lieu de /usr/lib/kde4/lib/kde4/kio_recoll.so
--- Installing /usr/share/kde4/services/recoll.protocol
-Au lieu de /usr/lib/kde4/share/kde4/services/recoll.protocol
--- Installing /usr/share/apps/kio_recoll/welcome.html
-Au lieu de /usr/lib/kde4/share/kde4/apps/
+Implementation notes:
+====================
 
-- Il faut configurer cmake avec target /usr, donc attention a configurer
-  recoll avec --target=/usr pour que les fichiers de config soient au bon
-  endroit
+- There would be two main ways to do this: 
+  - a-la kio_beagle, using listDir() to list entries pointing to the
+    different operations or objects (help, status, search result
+    entries, bookmarks, whatever...). The nice thing is that the
+    results really look like file object in a directory (probably,
+    didn't try it actually), no need for look and feel, it's provided by
+    KDE 
+
+  - Or a la strigi: all interactions are through html pages and get()
+    operations.  Looks less like a normal konqueror file-system
+    listing, and needs more html coding but all in all probably
+    simpler.
+
+Recoll is currently doing both things on KDE4.1 (only html for
+KDE4.0). As far as I understand, the way to trigger a listdir is to
+have a inode/directory default mime type in the protocol file, and
+return inode/directory when appropriate in mimetype() (look at
+kio_beagle). Some kde daemon needs to be restarted when doing this
+(the protocol file is cached somewhere).
 
 
-Sur kubuntu 8.10 (a jour au 2008-27-11), cmake genere une dependance sur 
-/build/buildd/kde4libs-4.1.2/obj-i486-linux-gnu/lib/libkdecore.so dans 
-CMakeFiles/kio_recoll.dir/build.make 
-Pas trouve le moyen de corriger, il faut editer la ligne et remplacer
-par /usr/lib/..
+TOdoes
+======
+- Improve the html interface to support more functions
+ - Category filtering
+ - Sorting
 
+- Find a way to use the html form to enter the query and get the results
+  as a directory ?
+  - Would it be possible to use a redirect to switch to the
+    directory-oriented results for a query from the html form ?
 
+KDE misc notes
+==================
 Debug areas: /usr/share/kde4/config/kdebug.areas
 kdebugdialog [--fullmode] pour configurer
 ./.kde/share/config/kdebugrc
-Output to ~/.xession-errors par defaut controle ?
+Output to ~/.xession-errors by default. How to change ?
 
-
+kio_recoll misc notes:
+===========================
 Probleme quand l'url se termine par un / et qu'on edite le mot,
 konqueror lance une recherche a chaque lettre.
-
 
 Apparemment c'est l'entree "listing" du .protocol qui decide si le plugin
 est traité plutot comme un dirlister ou comme un htmlgetter. Curieusement,
@@ -35,7 +52,8 @@ fichier .proto, y compris apres avoir tue tous les process kde (changement
 à la deuxieme execution de konqueror sur kde4.0). Sur kde4.0 il faut que le
 .proto soit sans entree "listing"
 
-
+Problemes de gestion de l'etat
+===============================
 Les KIO slaves ne sont pas associes a une fenetre ! ils sont
 reutilises au hasard, et leur etat n'a aucune raison de correspondre a
 celui de l'affichage. On peut tres bien avoir 1 fenetre 2 kio ou 1 kio
@@ -54,3 +72,39 @@ C'est vrai aussi bien pour les dirlists que pour la version html.
 J'ai essaye de mettre une boucle timeout callback callspecial() mais
 ca ne sert a rien, c'est gere dans le process kio_slave, ca ne
 maintient pas l'association avec un konqueror.
+
+KDE_FORK_SLAVES resoudrait peut-etre la question ?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Old KDE3 notes, 
+===============
+
+kio_recoll has not been checked or worked under KDE3 for eons, no
+reason to believe it works.
+
+- Not using libtool. Probably should. compilation flags in the Makefile
+  were copy-pasted from a kdebase compilation tree on FreeBSD (kio/man).
+- You MUST install a kio_recoll.la in lib/kde3 along with kio_recoll.so,
+  else kdeinit won't be able to load the lib (probably uses the libltdl
+  thingy?). The one in this directory was duplicated/adjusted from
+  kio_man.la. The contents don't seem too critical, just needs to exist.
+- If you want to try, compile, then install kio_recoll.la kio_recoll.so
+  wherever kde keeps its plugins (ie: lib/kde3), and recoll.protocol in the
+  services directory (share/services ? look for other .protocol file).
+- I saw after doing the build/config mockup that kdevelop can generate a
+  kio_slave project. This might be the next thing to do. otoh would need to
+  separate the kio from the main source to avoid having to distribute 2megs
+  of kde build config files.
+

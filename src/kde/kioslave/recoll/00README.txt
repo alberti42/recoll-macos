@@ -1,77 +1,77 @@
+Recoll KIO slave
+================
 
-This is a small experiment with a recoll kio_slave
+This is a small experiment with a recoll KIO slave
 
-A kio_slave was implemented, supporting the "get" operation. Ie, you type 
-"recoll: some query terms" in the Konqueror address window, and you receive
-a list of results, each with a link to the document.
-
-This does not appear terribly useful as such, especially because I couldn't
-think of a way to get access to email documents from Konqueror (especially
-those inside a multi-msg folder file, it's better with maildir). The Recoll
-preview feature is actually quite useful in this case.
+It does not appear terribly useful as such, especially because I
+couldn't think of a way to get access to email documents from
+Konqueror (especially those inside a multi-msg folder file, it's
+better with maildir). The Recoll preview feature is actually quite
+useful in this case. But anyway, here it is...
 
 Building and installing:
------------------------
-This began under KDE3 and might still be made to work, but I only built
-with KDE4 and cmake recently.
+=======================
+
+This began under KDE3 and might still be made to work, but I only
+built with KDE4 and cmake recently. Full functionality is only
+available with KDE 4.1 and later.
+
+The main Recoll installation shares its prefix with the KIO slave,
+which needs to use the KDE one. This means that, if KDE lives in /usr,
+Recoll must be configured with --prefix=/usr, not /usr/local. Else
+you'll have run-time problems, the slave will not be able to find the
+recoll configuration.
 
 A kind of recipe:
  - You need the KDE4 core devel packages and cmake installed
- - Extract the source and build recoll normally.
+
+ - Extract the recoll source, configure recoll with --prefix=/usr
+   build and install recoll (or use another prefix if KDE lives elsewhere).
+
  - In the recoll source, go to kde/kioslave/recoll, then execute:
 
- ccmake .
-  # type 'c', then change the install prefix from /usr/local to /usr, then
-  # 'c', 'g' 
+ mkdir builddir
+ cd builddir
+ cmake .. -DCMAKE_INSTALL_PREFIX=/usr
  make
  sudo make install
 
- - Note: there may be a way to install to a personal directory and avoid
-   being root, and somebody who knows more about kde will have to teach me
-   this.
+ - You should have a look at where "make install" copies things,
+   because wrong targets are frequent. Especially, you should check
+   that kio_recoll.so is copied to the right place, meaning among the
+   output of "kde4-config --path module". As an additional check,
+   there should be many other kio_[xxx].so in there. Same for the
+   protocol file, check that it's not alone in its directory (really,
+   this sounds strange, but, to this point, I've seen more systems
+   with broken cmake/KDE configs than correct ones).
 
-- You should then be able to enter "recoll:" in the konqueror url, and
-  perform a recoll search (supposing you have an index already built of
-  course, the kio_slave doesn't deal with this for now).
+You need to build/update the index with recollindex, the KIO slave
+doesn't deal with it for now.
 
 
-Implementation notes:
------------------------
+Misc build problems:
+===================
 
-- There would be two main ways to do this: 
-  - a-la kio_beagle, using listDir() to list entries pointing to the
-    different operations or objects (help, status, search result
-    entries, bookmarks, whatever...). The nice thing is that the
-    results really look like file object in a directory (probably,
-    didn't try it actually), no need for look and feel, it's provided by
-    KDE 
+KUBUNTU 8.10 (updated to 2008-27-11)
+------------------------------------
+cmake generates a bad dependancy on
+      /build/buildd/kde4libs-4.1.2/obj-i486-linux-gnu/lib/libkdecore.so 
+inside CMakeFiles/kio_recoll.dir/build.make 
 
-  - Or a la strigi: all interactions are through html pages and get()
-    operations.  Looks less like a normal konqueror file-system
-    listing, and needs more html coding but all in all probably
-    simpler.
+Found no way to fix this. You need to edit the line and replace the
+/build/[...]/lib with /usr/lib. This manifests itself with the
+following error message:
 
- Recoll is currently doing the html thing. As far as I understand, the
- way to trigger a listdir is to have a inode/directory default mime
- type in the protocol file, and return inode/directory when
- appropriate in mimetype() (look at kio_beagle). Some kde daemon needs
- to be restarted when doing this (the protocol file is cached
- somewhere).
+   make[2]: *** No rule to make target `/build/buildd/kde4libs-4.1.2/obj-i486-linux-gnu/lib/libkdecore.so', needed by `lib/kio_recoll.so'.  Stop.
 
-Also would need a page header, configuration polish etc... Not done for
-the same reason, this is a proof of concept.
 
-KDE3 notes
-- Not using libtool. Probably should. compilation flags in the Makefile
-  were copy-pasted from a kdebase compilation tree on FreeBSD (kio/man).
-- You MUST install a kio_recoll.la in lib/kde3 along with kio_recoll.so,
-  else kdeinit won't be able to load the lib (probably uses the libltdl
-  thingy?). The one in this directory was duplicated/adjusted from
-  kio_man.la. The contents don't seem too critical, just needs to exist.
-- If you want to try, compile, then install kio_recoll.la kio_recoll.so
-  wherever kde keeps its plugins (ie: lib/kde3), and recoll.protocol in the
-  services directory (share/services ? look for other .protocol file).
-- I saw after doing the build/config mockup that kdevelop can generate a
-  kio_slave project. This might be the next thing to do. otoh would need to
-  separate the kio from the main source to avoid having to distribute 2megs
-  of kde build config files.
+
+Usage
+=====
+You should then be able to enter "recoll:" in the konqueror URL
+entry. Depending on the KDE version, this will bring you either to an
+HTML search form, or to a directory listing, where you should read the
+help file, which explains how to switch between the HTML and
+directory-oriented interfaces.
+
+
