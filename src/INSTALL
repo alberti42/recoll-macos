@@ -318,6 +318,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            solution is to have .* in skippedNames, and add things like
            ~/.thunderbird or ~/.evolution in topdirs.
 
+           Not even the file names are indexed for patterns in this list. See
+           the recoll_noindex variable in mimemap for an alternative approach
+           which indexes the file names.
+
    skippedPaths and daemSkippedPaths
 
            A space-separated list of patterns for paths of files or
@@ -487,13 +491,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    mimemap also has a recoll_noindex variable which is a list of suffixes.
    Matching files will be skipped (which avoids unnecessary decompressions or
    file executions). This is partially redundant with skippedNames in the
-   main configuration file, with two differences: it will not affect
-   directories, and it cannot be made dependant on the file-system location
-   (it is a configuration-wide parameter). You could accomplish with
-   skippedNames anything that recoll_noindex does. The latter is used mostly
-   for things known to be unindexable by a given Recoll version. Having it
-   there avoids cluttering the more user-oriented and locally customized
-   skippedNames.
+   main configuration file, with a few differences: it will not affect
+   directories, it cannot be made dependant on the file-system location (it
+   is a configuration-wide parameter), and the file names will still be
+   indexed (not even the file names are indexed for patterns in skippedNames.
+   recoll_noindex is used mostly for things known to be unindexable by a
+   given Recoll version. Having it there avoids cluttering the more
+   user-oriented and locally customized skippedNames.
 
 5.4.3. The mimeconf file
 
