@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.7 2008-12-02 13:41:35 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.8 2008-12-03 10:02:20 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -177,24 +177,44 @@ void RecollProtocol::stat(const KUrl & url)
     kDebug() << url << endl ;
     int num = -1;
     QString path = url.path();
+    QString host = url.host();
     KIO::UDSEntry entry;
-    if (!path.compare("/")) {
+    if (!host.isEmpty()) {
+	// Do nothing probably coming from the html form, if we return a 
+	// directory here, we crash konqueror
+	kDebug() << "HOST NOT EMPTY:" << host;
+    } else if (!path.compare("/")) {
 	createRootEntry(entry);
     } else if (!path.compare("/help")) {
 	createGoHelpEntry(entry);
     } else if (!path.compare("/search")) {
 	createGoHomeEntry(entry);
+	//    } else if (!path.compare("/welcome")) {
     } else if (isRecollResult(url, &num)) {
-	// If this url starts with the current search url appended with a 
-	// result name appended, let's stat said result.
+	// Let's stat said result.
 	Rcl::Doc doc;
 	if (num >= 0 && !m_source.isNull()  && m_source->getDoc(num, doc)) {
 	    entry = resultToUDSEntry(doc, num);
 	}
     } else {
-	// Don't return an error here, we get stat() on yet unperformed searches
-	// ie stat("recoll:/some search string")
-	// Would have to perform the search, better to return bogus ok
+	// ie "recoll:/some string" or "recoll:/some string/" 
+	//
+	// We have a problem here. We'd like to let the user enter
+	// either form and get an html or a dir contents result,
+	// depending on the ending /. Otoh this makes the name space
+	// inconsistent, because /toto can't be a file (the html
+	// result page) while /toto/ would be a directory ? or can it
+	//
+	// Another approach would be to use different protocol names
+	// to avoid any possibility of mixups
+	if (path.endsWith("/")) {
+	    QString q, opt;
+	    URLToQuery(url, q, opt);
+	    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+	    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0700);
+	    entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+	    entry.insert(KIO::UDSEntry::UDS_NAME, q);
+	}
     }
 
     entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
