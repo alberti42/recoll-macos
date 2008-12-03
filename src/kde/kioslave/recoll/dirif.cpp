@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.8 2008-12-03 10:02:20 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.9 2008-12-03 17:04:20 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -53,14 +53,14 @@ static const QString resultBaseName("recollResult");
 // is the search string). If it is, extract return the result document
 // number. Possibly restart the search if the search string does not
 // match the current one
-bool RecollProtocol::isRecollResult(const KUrl &url, int *num)
+bool RecollProtocol::isRecollResult(const KUrl &url, int *num, QString *q)
 {
     *num = -1;
-    kDebug() << "url" << url << "m_srchStr" << m_srchStr;
+    kDebug() << "url" << url;
 
     // Basic checks
     if (!url.host().isEmpty() || url.path().isEmpty() || 
-	url.protocol().compare("recoll")) 
+	(url.protocol().compare("recoll") && url.protocol().compare("recollf")))
 	return false;
     QString path = url.path();
     if (!path.startsWith("/")) 
@@ -87,13 +87,7 @@ bool RecollProtocol::isRecollResult(const KUrl &url, int *num)
 
     // We do have something that ressembles a recoll result locator. Check if
     // this matches the current search, else have to run the requested one
-    QString searchstring = path.mid(1, slashpos-2);
-    kDebug() << "Comparing search strings" << m_srchStr << "and" << searchstring;
-    if (searchstring.compare(m_srchStr)) {
-	if (!doSearch(searchstring))
-	    return false;
-    }
-
+    *q = path.mid(1, slashpos-2);
     return true;
 }
 
@@ -106,7 +100,7 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     kDebug() << doc.url.c_str();
 
     entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
-    char cnum[30];sprintf(cnum, "%d", num);
+    char cnum[30];sprintf(cnum, "%04d", num);
     entry.insert(KIO::UDSEntry::UDS_NAME, resultBaseName + cnum);
 
     if (!doc.mimetype.compare("application/x-fsdirectory")) {
@@ -150,7 +144,7 @@ static void createGoHomeEntry(KIO::UDSEntry& entry)
     entry.insert(KIO::UDSEntry::UDS_NAME, "search");
     entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll search (click me)");
     entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
-    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, "recoll:///welcome");
+    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, "recoll:///search.html");
     entry.insert(KIO::UDSEntry::UDS_ACCESS, 0500);
     entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
     entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "recoll");
@@ -175,28 +169,40 @@ static void createGoHelpEntry(KIO::UDSEntry& entry)
 void RecollProtocol::stat(const KUrl & url)
 {
     kDebug() << url << endl ;
-    int num = -1;
-    QString path = url.path();
-    QString host = url.host();
+
+    UrlIngester ingest(this, url);
+
     KIO::UDSEntry entry;
-    if (!host.isEmpty()) {
-	// Do nothing probably coming from the html form, if we return a 
-	// directory here, we crash konqueror
-	kDebug() << "HOST NOT EMPTY:" << host;
-    } else if (!path.compare("/")) {
-	createRootEntry(entry);
-    } else if (!path.compare("/help")) {
-	createGoHelpEntry(entry);
-    } else if (!path.compare("/search")) {
-	createGoHomeEntry(entry);
-	//    } else if (!path.compare("/welcome")) {
-    } else if (isRecollResult(url, &num)) {
-	// Let's stat said result.
-	Rcl::Doc doc;
-	if (num >= 0 && !m_source.isNull()  && m_source->getDoc(num, doc)) {
-	    entry = resultToUDSEntry(doc, num);
+    UrlIngester::RootEntryType rettp;
+    QueryDesc qd;
+    int num;
+    if (ingest.isRootEntry(&rettp)) {
+	switch(rettp) {
+	case UrlIngester::UIRET_ROOT:
+	    createRootEntry(entry);
+	    break;
+	case UrlIngester::UIRET_HELP: 
+	    createGoHelpEntry(entry);
+	    break;
+	case UrlIngester::UIRET_SEARCH:
+	    createGoHomeEntry(entry);
+	    break;
+	default: 
+	    error(ERR_DOES_NOT_EXIST, "");
+	    break;
 	}
-    } else {
+    } else if (ingest.isResult(&qd, &num)) {
+	if (syncSearch(qd)) {
+	    Rcl::Doc doc;
+	    if (num >= 0 && !m_source.isNull()  && m_source->getDoc(num, doc)) {
+		entry = resultToUDSEntry(doc, num);
+	    } else {
+		error(ERR_DOES_NOT_EXIST, "");
+	    }
+	} else {
+	    // hopefully syncSearch() set the error?
+	}
+    } else if (ingest.isQuery(&qd)) {
 	// ie "recoll:/some string" or "recoll:/some string/" 
 	//
 	// We have a problem here. We'd like to let the user enter
@@ -207,13 +213,11 @@ void RecollProtocol::stat(const KUrl & url)
 	//
 	// Another approach would be to use different protocol names
 	// to avoid any possibility of mixups
-	if (path.endsWith("/")) {
-	    QString q, opt;
-	    URLToQuery(url, q, opt);
-	    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
-	    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0700);
-	    entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
-	    entry.insert(KIO::UDSEntry::UDS_NAME, q);
+	if (m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
+	    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+	    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
+	    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+	    entry.insert(KIO::UDSEntry::UDS_NAME, qd.query);
 	}
     }
 
@@ -226,50 +230,48 @@ void RecollProtocol::listDir(const KUrl& url)
 {
     kDebug() << url << endl;
 
-    // It seems that when the request is from konqueror
-    // autocompletion it comes with a / at the end, which offers
-    // an opportunity to not perform it.
-    if (url.path() != "/" && url.path().endsWith("/")) {
-	kDebug() << "EndsWith /" << endl;
-	error(ERR_SLAVE_DEFINED, "Autocompletion search aborted");
-	return;
-    }
+    UrlIngester ingest(this, url);
+    UrlIngester::RootEntryType rettp;
+    QueryDesc qd;
 
-    if (!m_initok || !maybeOpenDb(m_reason)) {
-	string reason = "RecollProtocol::listDir: Init error:" + m_reason;
-	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
-	return;
-    }
-
-    if (url.path().isEmpty() || url.path() == "/") {
-	kDebug() << "list /" << endl;
-
-	UDSEntryList entries;
-	KIO::UDSEntry entry;
-
-	// entry for '/'
-	createRootEntry(entry);
-	entries.append(entry);
-
-	createGoHomeEntry(entry);
-	entries.append(entry);
-	createGoHelpEntry(entry);
-	entries.append(entry);
-
-	listEntries(entries);
-	finished();
-	return;
-    }
-
-    
-    QString query, opt;
-    URLToQuery(url, query, opt);
-    kDebug() << "Query: " << query;
-    if (!query.isEmpty()) {
-	if (!doSearch(query, opt))
+    if (ingest.isRootEntry(&rettp)) {
+	switch(rettp) {
+	case UrlIngester::UIRET_ROOT:
+	    {
+		kDebug() << "list /" << endl;
+		UDSEntryList entries;
+		KIO::UDSEntry entry;
+		createRootEntry(entry);
+		entries.append(entry);
+		createGoHomeEntry(entry);
+		entries.append(entry);
+		createGoHelpEntry(entry);
+		entries.append(entry);
+		listEntries(entries);
+		finished();
+	    }
 	    return;
+	default:
+	    error(ERR_CANNOT_ENTER_DIRECTORY, "");
+	    finished();
+	    return;
+	}
+    } else if (ingest.isQuery(&qd)) {
+	// At this point, it seems that when the request is from
+	// konqueror autocompletion it comes with a / at the end,
+	// which offers an opportunity to not perform it.
+	if (ingest.endSlashQuery()) {
+	    kDebug() << "Ends With /" << endl;
+	    error(ERR_SLAVE_DEFINED, "Autocompletion search aborted");
+	    return;
+	}
+	if (!syncSearch(qd)) {
+	    return;
+	}
+	// Fallthrough to actually listing the directory
     } else {
-	finished();
+	kDebug() << "Cant grok input url";
+	error(ERR_CANNOT_ENTER_DIRECTORY, "");
 	return;
     }
 
@@ -290,7 +292,9 @@ void RecollProtocol::listDir(const KUrl& url)
     listEntries(entries);
     finished();
 }
+
 #else // <--- KDE 4.1+ 
+
 #include <kurl.h>
 #include "kio_recoll.h"
 bool RecollProtocol::isRecollResult(const KUrl &, int *)

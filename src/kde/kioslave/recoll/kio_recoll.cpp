@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.20 2008-12-01 18:42:52 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.21 2008-12-03 17:04:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,8 @@ RclConfig *RclConfig::getMainConfig()
 }
 
 RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app) 
-    : SlaveBase("recoll", pool, app), m_initok(false), m_rcldb(0), m_opt("l")
+    : SlaveBase("recoll", pool, app), m_initok(false), m_rcldb(0),
+      m_alwaysdir(false)
 {
     kDebug() << endl;
     if (o_rclconfig == 0) {
@@ -81,6 +82,17 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
 	m_reason = "Could not build database object. (out of memory ?)";
 	return;
     }
+
+    // Decide if we allow switching between html and file manager
+    // presentation by using an end slash or not. Can also be done dynamically 
+    // by switching proto names.
+    const char *cp = getenv("RECOLL_KIO_ALWAYS_DIR");
+    if (cp) {
+	m_alwaysdir = stringToBool(cp);
+    } else {
+	o_rclconfig->getConfParam("kio_always_dir", &m_alwaysdir);
+    }
+
     m_pager.setParent(this);
     m_initok = true;
     return;
@@ -113,46 +125,99 @@ bool RecollProtocol::maybeOpenDb(string &reason)
 void RecollProtocol::mimetype(const KUrl &url)
 {
     kDebug() << url << endl;
+    ///////////////////////////////REMOVEME REMOVEME REMOVEME when sure !/////
+    abort();
+    ////////////////////////////////////////////////////////////////////////
     mimeType("text/html");
     finished();
 }
 
-bool RecollProtocol::URLToQuery(const KUrl &url, QString& q, QString& opt, 
-				int *page)
+UrlIngester::UrlIngester(RecollProtocol *p, const KUrl& url)
+    : m_parent(p), m_slashend(false), m_alwaysdir(false),
+      m_retType(UIRET_NONE), m_resnum(0), m_type(UIMT_NONE)
 {
-    // "recoll:/some query/" or "recoll:/some query"
+    kDebug() << "Url" << url;
+    m_alwaysdir = !url.protocol().compare("recollf");
+    QString path = url.path();
     if (url.host().isEmpty()) {
-	q = url.path();
-	opt = "l";
-	if (page)
-	    *page = 0;
-    } else {
-	// Decode the forms' arguments
-	q = url.queryItem("q");
-	opt = url.queryItem("qtp");
-	if (opt.isEmpty()) {
-	    opt = "l";
-	} 
-	if (page) {
-	    QString p = url.queryItem("p");
-	    if (p.isEmpty()) {
-		*page = 0;
-	    } else {
-		sscanf(p.toAscii(), "%d", page);
-	    }
+	if (path.isEmpty() || !path.compare("/")) {
+	    m_type = UIMT_ROOTENTRY;
+	    m_retType = UIRET_ROOT;
+	    return;
+	} else if (!path.compare("/help.html")) {
+	    m_type = UIMT_ROOTENTRY;
+	    m_retType = UIRET_HELP;
+	    return;
+	} else if (!path.compare("/search.html")) {
+	    m_type = UIMT_ROOTENTRY;
+	    m_retType = UIRET_SEARCH;
+	    return;
+	} else if (m_parent->isRecollResult(url, &m_resnum, &m_query.query)) {
+	    m_type = UIMT_QUERYRESULT;
+	    m_query.opt = "l";
+	    m_query.page = 0;
+	} else {
+	    // Have to think this is some search string
+	    m_type = UIMT_QUERY;
+	    m_query.query = url.path();
+	    m_query.opt = "l";
+	    m_query.page = 0;
 	}
+    } else {
+	if (url.host().compare("search")) {
+	    return;
+	}
+	m_type = UIMT_QUERY;
+	// Decode the forms' arguments
+	m_query.query = url.queryItem("q");
+
+	m_query.opt = url.queryItem("qtp");
+	if (m_query.opt.isEmpty()) {
+	    m_query.opt = "l";
+	} 
+	QString p = url.queryItem("p");
+	if (p.isEmpty()) {
+	    m_query.page = 0;
+	} else {
+	    sscanf(p.toAscii(), "%d", &m_query.page);
+	}
+	p = url.queryItem("det");
+	m_query.isDetReq = !p.isEmpty();
     }
-    if (q.startsWith("/"))
-	q.remove(0,1);
-    if (q.endsWith("/"))
-	q.chop(1);
-    return true;
+    if (m_query.query.startsWith("/"))
+	m_query.query.remove(0,1);
+    if (m_query.query.endsWith("/")) {
+	m_slashend = true;
+	m_query.query.chop(1);
+    } else {
+	m_slashend = false;
+    }
+    return;
+}
+
+bool RecollProtocol::syncSearch(const QueryDesc &qd, bool *same)
+{
+    kDebug();
+    if (!m_initok || !maybeOpenDb(m_reason)) {
+	string reason = "RecollProtocol::listDir: Init error:" + m_reason;
+	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
+	return false;
+    }
+    if (qd.sameQuery(m_query)) {
+	if (same) 
+	    *same = true;
+	return true;
+    }
+    if (same) 
+	*same = false;
+    // doSearch() calls error() if appropriate.
+    return doSearch(qd);
 }
 
 // This is used by the html interface, but also by the directory one
 // when doing file copies for exemple. This is the central dispatcher
 // for requests, it has to know a little about both models.
-void RecollProtocol::get(const KUrl & url)
+void RecollProtocol::get(const KUrl& url)
 {
     kDebug() << url << endl;
 
@@ -162,56 +227,65 @@ void RecollProtocol::get(const KUrl & url)
 	return;
     }
 
-    QString host = url.host();
-    QString path = url.path();
-
-    int docnum = -1;
-    if (host.isEmpty() && 
-	(path.isEmpty() || !path.compare("/")||!path.compare("/welcome"))) {
-	// recoll:/ : print the html form page
-	welcomePage();
-	goto out;
-    } else if (host.isEmpty() && isRecollResult(url, &docnum)) {
+    UrlIngester ingest(this, url);
+    UrlIngester::RootEntryType rettp;
+    QueryDesc qd;
+    int resnum;
+    if (ingest.isRootEntry(&rettp)) {
+	switch(rettp) {
+	case UrlIngester::UIRET_HELP: 
+	    {
+		QString location = 
+		    KStandardDirs::locate("data", "kio_recoll/help.html");
+		redirection(location);
+	    }
+	    goto out;
+	default:
+	    searchPage();
+	    goto out;
+	}
+    } else if (ingest.isResult(&qd, &resnum)) {
 	// Matched an url generated by konqueror out of a directory listing:
 	// ie: recoll:/some search string/recollResultxx
 	// Redirect to the result document URL
+	if (!syncSearch(qd)) {
+	    return;
+	}
 	Rcl::Doc doc;
-	if (docnum >= 0 && !m_source.isNull() && m_source->getDoc(docnum, doc)) {
+	if (resnum >= 0 && !m_source.isNull() && m_source->getDoc(resnum, doc)) {
 	    mimeType(doc.mimetype.c_str());
 	    redirection(KUrl::fromLocalFile((const char *)(doc.url.c_str()+7)));
 	    goto out;
 	}
-    } else if (host.isEmpty() || 
-	       (!host.compare("search") && !path.compare("/query"))) {
-	// Either "recoll://search/query?query args"
-	// Or "recoll:[/]some search string"
-	// HTML style query, maybe initial or request for other page
-	QString query, opt;
-	int page;
-	URLToQuery(url, query, opt, &page);
-	if (!query.isEmpty()) {
-	    htmlDoSearch(query, opt, page);
+    } else if (ingest.isQuery(&qd)) {
+#if 0 
+// Do we need this ?
+	if (host.isEmpty()) {
+	    char cpage[20];sprintf(cpage, "%d", page);
+	    QString nurl = QString::fromAscii("recoll://search/query?q=") +
+		query + "&qtp=" + opt + "&p=" + cpage;
+	    redirection(KUrl(nurl));
 	    goto out;
 	}
-    } else if (!host.compare("command")) {
-	if (path.indexOf("/QueryDetails") == 0) {
-	    queryDetails();
-	    goto out;
-	} 
+#endif
+	// htmlDoSearch does the search syncing (needs to know about changes).
+	htmlDoSearch(qd);
+	goto out;
     }
-    error(KIO::ERR_SLAVE_DEFINED, "Unrecognized URL");
+
+    error(KIO::ERR_SLAVE_DEFINED, "Unrecognized URL or internal error");
  out:
     finished();
 }
 
-// Execute Recoll search, and set the docsource etc.
-bool RecollProtocol::doSearch(const QString& q, const QString &qopt)
+// Execute Recoll search, and set the docsource
+bool RecollProtocol::doSearch(const QueryDesc& qd)
 {
-    kDebug() << "query" << q << "opt" << qopt;
-    m_srchStr = q;
-    m_opt = qopt;
-    char opt = qopt.isEmpty() ? 'l' : qopt.toUtf8().at(0);
-    string qs = (const char *)q.toUtf8();
+    kDebug() << "query" << qd.query << "opt" << qd.opt;
+    m_query = qd;
+
+    char opt = qd.opt.isEmpty() ? 'l' : qd.opt.toUtf8().at(0);
+    string qs = (const char *)qd.query.toUtf8();
     Rcl::SearchData *sd = 0;
     if (opt != 'l') {
 	Rcl::SearchDataClause *clp = 0;
@@ -238,7 +312,6 @@ bool RecollProtocol::doSearch(const QString& q, const QString &qopt)
     if (!sd) {
 	m_reason = "Internal Error: cant build search";
 	error(KIO::ERR_SLAVE_DEFINED, m_reason.c_str());
-	finished();
 	return false;
     }
 
@@ -248,7 +321,6 @@ bool RecollProtocol::doSearch(const QString& q, const QString &qopt)
     if (!query->setQuery(sdata)) {
 	m_reason = "Query execute failed. Invalid query or syntax error?";
 	error(KIO::ERR_SLAVE_DEFINED, m_reason.c_str());
-	finished();
 	return false;
     }
 
@@ -256,7 +328,6 @@ bool RecollProtocol::doSearch(const QString& q, const QString &qopt)
 	new DocSequenceDb(RefCntr<Rcl::Query>(query), "Query results", sdata);
     if (src == 0) {
 	error(KIO::ERR_SLAVE_DEFINED, "Can't build result sequence");
-	finished();
 	return false;
     }
     m_source = RefCntr<DocSequence>(src);

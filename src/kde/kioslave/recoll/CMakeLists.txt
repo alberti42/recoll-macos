@@ -95,7 +95,7 @@ target_link_libraries(kio_recoll xapian ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
 install(TARGETS kio_recoll DESTINATION ${PLUGIN_INSTALL_DIR})
 
 IF ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
-     install(FILES recoll.protocol DESTINATION ${SERVICES_INSTALL_DIR})
+     install(FILES recoll.protocol recollf.protocol DESTINATION ${SERVICES_INSTALL_DIR})
 ELSE ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
    install(FILES recollnolist.protocol DESTINATION ${SERVICES_INSTALL_DIR}
    		 RENAME recoll.protocol)

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.5 2008-12-02 13:14:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.6 2008-12-03 17:04:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -53,10 +53,24 @@ bool RecollKioPager::append(const string& data)
     return true;
 }
 
+string RecollProtocol::makeQueryUrl(int page, bool isdet)
+{
+    char buf[100];
+    sprintf(buf, "recoll://search/query?q=%s&qtp=%s&p=%d", 
+	    (const char*)m_query.query.toUtf8(), 
+	    (const char*)m_query.opt.toUtf8(), 
+	    page);
+    string ret(buf);
+    if (isdet)
+	ret += "&det=1";
+    return ret;
+}
+
 string RecollKioPager::detailsLink()
 {
-    string chunk = "<a href=\"recoll://command/QueryDetails\">";
-    chunk += tr("(show query)") + "</a>";
+    string chunk = string("<a href=\"") + 
+	m_parent->makeQueryUrl(m_parent->m_pager.pageNumber(), true) + "\">"
+	+ "(show query)" + "</a>";
     return chunk;
 }
 
@@ -73,16 +87,7 @@ const string& RecollKioPager::parFormat()
 
 string RecollKioPager::pageTop()
 {
-    return "<p align=\"center\"><a href=\"recoll:///welcome\">New Search</a></p>";
-}
-
-string RecollProtocol::makeQueryUrl(int page)
-{
-    char buf[100];
-    sprintf(buf, "recoll://search/query?q=%s&qtp=%s&p=%d", 
-	    (const char*)m_srchStr.toUtf8(), (const char*)m_opt.toUtf8(), 
-	    page);
-    return string(buf);
+    return "<p align=\"center\"><a href=\"recoll:///search.html\">New Search</a></p>";
 }
 
 string RecollKioPager::nextUrl()
@@ -107,7 +112,7 @@ string RecollKioPager::prevUrl()
 
 static string welcomedata;
 
-void RecollProtocol::welcomePage()
+void RecollProtocol::searchPage()
 {
     kDebug();
     mimeType("text/html");
@@ -171,32 +176,35 @@ void RecollProtocol::queryDetails()
     data(array);
 }
 
-void RecollProtocol::htmlDoSearch(const QString& q, const QString &opt, int page)
+void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
 {
-    kDebug() << "q" << q << "opt" << opt << "page" << page;
-    if (m_source.isNull())
-	kDebug() << "Null source";
-    // Check if same search or need to start new
-    if (q.compare(m_srchStr) || opt.compare(m_opt)) {
-	if (!doSearch(q, opt))
-	    return;
+    kDebug() << "q" << qd.query << "opt" << qd.opt << "page" << qd.page <<
+	"isdet" << qd.isDetReq;
+
+    mimeType("text/html");
+
+    bool samesearch;
+    if (!syncSearch(qd, &samesearch))
+	return;
+    if (!samesearch) {
 	m_pager.setDocSource(m_source);
-	// goto page 0
 	m_pager.resultPageNext();
+    }
+    if (qd.isDetReq) {
+	queryDetails();
+	return;
     }
 
     // Check / adjust page number
-    if (page > m_pager.pageNumber()) {
-	int npages = page - m_pager.pageNumber();
+    if (qd.page > m_pager.pageNumber()) {
+	int npages = qd.page - m_pager.pageNumber();
 	for (int i = 0; i < npages; i++)
 	    m_pager.resultPageNext();
-    } else if (page < m_pager.pageNumber()) {
-	int npages = m_pager.pageNumber() - page;
+    } else if (qd.page < m_pager.pageNumber()) {
+	int npages = m_pager.pageNumber() - qd.page;
 	for (int i = 0; i < npages; i++) 
 	    m_pager.resultPageBack();
     }
     // Display
-    mimeType("text/html");
     m_pager.displayPage();
-    kDebug() << "done";
 }

@@ -1,5 +1,5 @@
 #ifndef _RECOLL_H
-/* @(#$Id: kio_recoll.h,v 1.11 2008-12-01 18:42:52 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: kio_recoll.h,v 1.12 2008-12-03 17:04:20 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -54,6 +54,54 @@ private:
     RecollProtocol *m_parent;
 };
 
+class QueryDesc {
+public:
+    QueryDesc() : opt("l"), page(0), isDetReq(false) {}
+    QString query;
+    QString opt;
+    int page;
+    bool isDetReq;
+    bool sameQuery(const QueryDesc& o) const {
+	return !opt.compare(o.opt) && !query.compare(o.query);
+    }
+};
+
+// Our virtual tree is a bit complicated. We need a class to analyse an URL
+// and tell what we should do with it
+class UrlIngester {
+public:
+    UrlIngester(RecollProtocol *p, const KUrl& url);
+    enum RootEntryType {UIRET_NONE, UIRET_ROOT, UIRET_HELP, UIRET_SEARCH};
+    bool isRootEntry(RootEntryType *tp) {
+	if (m_type != UIMT_ROOTENTRY) return false;
+	*tp = m_retType;
+	return true;
+    }
+    bool isQuery(QueryDesc *q) {
+	if (m_type != UIMT_QUERY) return false;
+	*q = m_query;
+	return true;
+    }
+    bool isResult(QueryDesc *q, int *num) {
+	if (m_type != UIMT_QUERYRESULT) return false;
+	*q = m_query;
+	*num = m_resnum;
+	return true;
+    }
+    bool endSlashQuery() {return m_slashend;}
+    bool alwaysDir() {return m_alwaysdir;}
+private:
+    RecollProtocol *m_parent;
+    QueryDesc       m_query;
+    bool            m_slashend;
+    bool            m_alwaysdir;
+    RootEntryType   m_retType;
+    int             m_resnum;
+    enum MyType {UIMT_NONE, UIMT_ROOTENTRY, UIMT_QUERY, UIMT_QUERYRESULT};
+    MyType           m_type;
+};
+
+
 /**
  * A KIO slave to execute and display Recoll searches.
  *
@@ -95,23 +143,25 @@ class RecollProtocol : public KIO::SlaveBase {
     static RclConfig  *o_rclconfig;
 
     friend class RecollKioPager;
+    friend class UrlIngester;
 
  private:
     bool maybeOpenDb(string& reason);
     bool URLToQuery(const KUrl &url, QString& q, QString& opt, int *page=0);
-    bool doSearch(const QString& q, const QString& opt = "l");
+    bool doSearch(const QueryDesc& qd);
 
-    void welcomePage();
+    void searchPage();
     void queryDetails();
-    string makeQueryUrl(int page);
-    void htmlDoSearch(const QString& q, const QString& opt, int page);
+    string makeQueryUrl(int page, bool isdet = false);
+    bool syncSearch(const QueryDesc& qd, bool *same = 0);
+    void htmlDoSearch(const QueryDesc& qd);
 
-    bool isRecollResult(const KUrl &url, int *num);
+    bool isRecollResult(const KUrl &url, int *num, QString* q);
 
     bool        m_initok;
     Rcl::Db    *m_rcldb;
     string      m_reason;
-
+    bool        m_alwaysdir;
     // Search state: because of how the KIO slaves are used / reused,
     // we can't be sure that the next request will be for the same
     // search, and we need to check and restart one if the data
@@ -121,8 +171,8 @@ class RecollProtocol : public KIO::SlaveBase {
     // cache of recent searches kept open.
     RecollKioPager m_pager;
     RefCntr<DocSequence> m_source;
-    QString     m_srchStr;
-    QString     m_opt;
+    // Note: page here is not used, current page always comes from m_pager.
+    QueryDesc      m_query;
 };
 
 extern "C" {int kdemain(int, char**);}
