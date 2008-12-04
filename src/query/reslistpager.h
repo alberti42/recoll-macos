@@ -1,6 +1,6 @@
 #ifndef _reslistpager_h_included_
 #define _reslistpager_h_included_
-/* @(#$Id: reslistpager.h,v 1.2 2008-11-20 13:10:23 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: reslistpager.h,v 1.3 2008-12-04 11:49:59 dockes Exp $  (C) 2007 J.F.Dockes */
 
 #include <vector>
 using std::vector;
@@ -32,6 +32,7 @@ public:
 	    return -1;
 	return m_winfirst / m_pagesize;
     }
+    virtual int pageSize() const {return m_pagesize;}
     void pageNext();
     bool hasNext() {return m_hasNext;}
     bool hasPrev() {return m_winfirst > 0;}
@@ -60,12 +61,11 @@ public:
     virtual string nextUrl();
     virtual string prevUrl();
     virtual string pageTop() {return string();}
-
 private:
     // First docnum (from docseq) in current page
     int                  m_winfirst;
     RefCntr<DocSequence> m_docSource;
-    int                  m_pagesize;
+    const int            m_pagesize;
 
     bool                 m_hasNext;
     vector<ResListEntry> m_respage;

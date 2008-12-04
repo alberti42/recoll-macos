@@ -16,7 +16,7 @@
  */
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
-/* @(#$Id: pathut.h,v 1.15 2008-07-01 11:51:51 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: pathut.h,v 1.16 2008-12-04 11:49:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -51,7 +51,7 @@ extern list<string> path_dirglob(const string &dir,
 					   const string pattern);
 /// Encode according to rfc 1738
 extern string url_encode(const string url, 
-			      string::size_type offs);
+			      string::size_type offs = 0);
 extern bool printableUrl(const string &fcharset, 
 			 const string &in, string &out);
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.21 2008-12-03 17:04:20 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.22 2008-12-04 11:49:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -164,7 +164,8 @@ UrlIngester::UrlIngester(RecollProtocol *p, const KUrl& url)
 	    m_query.page = 0;
 	}
     } else {
-	if (url.host().compare("search")) {
+	kDebug() << "host" << url.host() << "path" << url.path();
+	if (url.host().compare("search") || url.path().compare("/query")) {
 	    return;
 	}
 	m_type = UIMT_QUERY;
@@ -187,6 +188,7 @@ UrlIngester::UrlIngester(RecollProtocol *p, const KUrl& url)
     if (m_query.query.startsWith("/"))
 	m_query.query.remove(0,1);
     if (m_query.query.endsWith("/")) {
+	kDebug() << "Ends with /";
 	m_slashend = true;
 	m_query.query.chop(1);
     } else {
@@ -195,7 +197,7 @@ UrlIngester::UrlIngester(RecollProtocol *p, const KUrl& url)
     return;
 }
 
-bool RecollProtocol::syncSearch(const QueryDesc &qd, bool *same)
+bool RecollProtocol::syncSearch(const QueryDesc &qd)
 {
     kDebug();
     if (!m_initok || !maybeOpenDb(m_reason)) {
@@ -204,12 +206,8 @@ bool RecollProtocol::syncSearch(const QueryDesc &qd, bool *same)
 	return false;
     }
     if (qd.sameQuery(m_query)) {
-	if (same) 
-	    *same = true;
 	return true;
     }
-    if (same) 
-	*same = false;
     // doSearch() calls error() if appropriate.
     return doSearch(qd);
 }
@@ -331,6 +329,9 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
 	return false;
     }
     m_source = RefCntr<DocSequence>(src);
+    // Reset pager in all cases. Costs nothing, stays at page -1 initially
+    // htmldosearch will fetch the first page if needed.
+    m_pager.setDocSource(m_source);
     return true;
 }
 

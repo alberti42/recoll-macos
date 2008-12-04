@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.9 2008-12-03 17:04:20 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.10 2008-12-04 11:49:58 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -141,7 +141,7 @@ static void createRootEntry(KIO::UDSEntry& entry)
 static void createGoHomeEntry(KIO::UDSEntry& entry)
 {
     entry.clear();
-    entry.insert(KIO::UDSEntry::UDS_NAME, "search");
+    entry.insert(KIO::UDSEntry::UDS_NAME, "search.html");
     entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll search (click me)");
     entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
     entry.insert(KIO::UDSEntry::UDS_TARGET_URL, "recoll:///search.html");
@@ -173,6 +173,7 @@ void RecollProtocol::stat(const KUrl & url)
     UrlIngester ingest(this, url);
 
     KIO::UDSEntry entry;
+    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
     UrlIngester::RootEntryType rettp;
     QueryDesc qd;
     int num;
@@ -194,7 +195,8 @@ void RecollProtocol::stat(const KUrl & url)
     } else if (ingest.isResult(&qd, &num)) {
 	if (syncSearch(qd)) {
 	    Rcl::Doc doc;
-	    if (num >= 0 && !m_source.isNull()  && m_source->getDoc(num, doc)) {
+	    if (num >= 0 && !m_source.isNull() && 
+		m_source->getDoc(num, doc)) {
 		entry = resultToUDSEntry(doc, num);
 	    } else {
 		error(ERR_DOES_NOT_EXIST, "");
@@ -214,14 +216,15 @@ void RecollProtocol::stat(const KUrl & url)
 	// Another approach would be to use different protocol names
 	// to avoid any possibility of mixups
 	if (m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
+	    kDebug() << "Directory type";
 	    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
 	    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
 	    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
 	    entry.insert(KIO::UDSEntry::UDS_NAME, qd.query);
+	    entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
+	    entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, time(0));
 	}
     }
-
-    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
     statEntry(entry);
     finished();
 }
@@ -253,7 +256,6 @@ void RecollProtocol::listDir(const KUrl& url)
 	    return;
 	default:
 	    error(ERR_CANNOT_ENTER_DIRECTORY, "");
-	    finished();
 	    return;
 	}
     } else if (ingest.isQuery(&qd)) {
@@ -266,6 +268,7 @@ void RecollProtocol::listDir(const KUrl& url)
 	    return;
 	}
 	if (!syncSearch(qd)) {
+	    // syncSearch did the error thing
 	    return;
 	}
 	// Fallthrough to actually listing the directory
@@ -283,8 +286,18 @@ void RecollProtocol::listDir(const KUrl& url)
 	    numentries = 100;
     }
 
+    // If the html pager is set, begin display at the current page. This
+    // allows paging the dir display by switching between both modes
+    int first = 0;
+    if (m_pager.pageNumber() > 0) {
+	first = m_pager.pageNumber() * m_pager.pageSize();
+    }
     vector<ResListEntry> page;
-    int pagelen = m_source->getSeqSlice(0, numentries, page);
+    int pagelen = m_source->getSeqSlice(first, numentries, page);
+    if (pagelen < 0) {
+	error(ERR_SLAVE_DEFINED, "Internal error");
+	return;
+    }
     UDSEntryList entries;
     for (int i = 0; i < pagelen; i++) {
 	entries.append(resultToUDSEntry(page[i].doc, i));

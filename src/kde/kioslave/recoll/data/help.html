@@ -5,60 +5,86 @@
 </head>
 <body>
   <a href="recoll:///search.html">Recoll search</a>
-  <h3>Recoll kio slave</h3>
+  <h2>Recoll kio slave</h2>
 
   <p>Use this module to perform Recoll searches from any program with
-    a KIO interface (sort of...). <b>kio_recoll</b> is primarily
+    a KIO interface. <b>kio_recoll</b> is primarily
     designed and tested with <b>konqueror</b>, and you will
     undoubtedly get even more surprising effects with other tools.</p>
 
-  <p>The module can work in two different modes, depending on the form
-    of the URLS that it is given:</p>
-    <li><b>Html interface</b>: this is what you get into when you just type
-      recoll: or recoll:/ in the address bar, and then click the initial
-      icon.</li>
-    <li><b>File/Directory interface</b>: which you enter when you pass
-      an URL ending with a '/'</li>
+  <p>The module can work in two modes:</p>
+  <ul>
+    <li><b>Html interface</b>, close to a simplified QT Recoll
+      interface.</li>
+    <li><b>File manager interface</b>, which presents results as
+      directory entries</li>
+  </ul>
 
-  <p>Please note that this module is still in its infancy and that it
-    is still more a toy than anything else. The semantics of the
-    KIO slaves interface is still a bit unstable between KDE releases, 
-    you will certainly get surprising effects from time to time.</p>
+  <p>The module is still in its infancy. You will undoubtedly obtain
+    strange effects from time to time. If you have any remarks or
+    ideas about improving kio_recoll, or observe an interesting and
+    reproducible sequence, please <a href="mailto:jfd@recoll.org">
+    report it</a>.</p>
 
-  <h4>HTML interface</h4>
+  <p>The module is particularly unhelpful with search hits inside
+    email folders, which Konqueror has no way to access.</p>
 
-  <p>This works more or less like the Recoll QT GUI, much
-    simplified. The 
+
+  <h3>HTML interface</h3>
+
+  <p>This works more or less like the Recoll QT GUI, much simplified. The 
     <a href="http://www.recoll.org/usermanual/rcl.search.lang.html">
-      Recoll manual</a> describes the queries that can be
-    performed.</p> 
+      Recoll manual</a> describes the queries that can be performed.</p> 
+
   <p>Most pages in the interface should quite self-explanatory.</p>
 
-  <h4>File interface</h4>
+  <p>You normally enter this interface by entering "recoll:" or
+    "recoll:/" in the Konqueror URL entry, and following the "search"
+    link.<br>  In most circumstances, entering a link like
+    "recoll:/some search terms" will also yield an HTML result
+    list.</p>
 
-  <p>kio_recoll enters this mode when it receives an URL ending with 
-    a&nbsp;'/', ie:</p>
-  <blockquote><i>recoll:///xapian recoll ext:.html/</i></blockquote>
+
+  <h3>File manager interface</h3>
+
+  <p>Search results are returned as directory entries. No search
+    result details (samples, relevance etc.) are available, but this
+    interface allows multiple selections and copies, usage inside any
+    KDE open dialog, etc.</p>
 
   <p>The <i>path</i> part of the URI is taken as a Recoll query
     language string and executed. The results are displayed as
     directory entries.</p>
 
-  <p>This works fine with normal documents, very badly with message
-    inside folders, which Konqueror has no way to access.</p>
+  <p>To avoid swamping the interface with thousands of results, the
+    result count is limited to 100 by default. You can change this value
+    by setting the <code>kio_max_direntries</code> parameter in your recoll
+    configuration file (typically ~/.recoll/recoll.conf)</p>
 
-  <p>As there is no provision to page directory listings, the number
-    of results returned is limited to a fixed value, 100 by default,
-    which you can change by setting the kio_max_direntries in your
-    Recoll configuration file (usually ~/.recoll). 
-    <a href="http://www.recoll.org/usermanual/rcl.install.config.html">
-      More information about Recoll configuration.</a></p>
+  <p>There are several ways to enter this interface:</p>
+  <ul>
+    <li>Using "recollf" as protocol name instead of "recoll". This is
+      probably the easiest option inside open dialogs.</li>
 
-  <p>This interface is very limited, but allows performing multiple
-    selection, copies, and other file operations on the results, which
-    may be useful in some cases (or not :))</p>
+    <li>Using an URL ending with a&nbsp;'/', ie:
+      <blockquote><i>recoll:/red apples ext:.html/</i></blockquote></li>
 
-  <p><a href="recoll:///welcome">Recoll Search</a></p>
+    <li>Switching from the HTML interface in konqueror by clicking the
+      "Directory&nbsp;view" link at the top of the page. When doing
+      this, the directory content will be synchronized with the
+      current HTML result page. This offers a way to display results
+      in the file manager beyond the <code>kio_max_direntries</code>
+      limit. <em>In most cases, you will have to reload the file
+      manager page to obtain this synchronization</em>.</li>
+
+    <li>Users who will want to use the file manager view most of the
+      time can set the <code>RECOLL_KIO_ALWAYS_DIR</code> environment
+      variable or the <code>kio_always_dir</code> recoll.conf variable
+      to&nbsp;1. The HTML interface will then only be accessible
+      through the search link in the top "recoll:" view.</li>
+  </ul>
+
+  <p><a href="recoll:///search.html">Recoll Search</a></p>
 
 </body>
 </html>

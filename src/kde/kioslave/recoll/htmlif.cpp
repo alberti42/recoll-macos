@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.6 2008-12-03 17:04:20 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.7 2008-12-04 11:49:59 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,7 @@ string RecollProtocol::makeQueryUrl(int page, bool isdet)
 {
     char buf[100];
     sprintf(buf, "recoll://search/query?q=%s&qtp=%s&p=%d", 
-	    (const char*)m_query.query.toUtf8(), 
+	    url_encode((const char*)m_query.query.toUtf8()).c_str(), 
 	    (const char*)m_query.opt.toUtf8(), 
 	    page);
     string ret(buf);
@@ -87,7 +87,14 @@ const string& RecollKioPager::parFormat()
 
 string RecollKioPager::pageTop()
 {
-    return "<p align=\"center\"><a href=\"recoll:///search.html\">New Search</a></p>";
+    return "<p align=\"center\">"
+	"<a href=\"recoll:///search.html\">New Search</a>"
+#if KDE_IS_VERSION(4,1,0)
+	" &nbsp;&nbsp;&nbsp;<a href=\"recoll:///" + 
+	url_encode(string(m_parent->m_query.query.toUtf8())) +
+	"/\">Directory view</a> (you may need to reload the page)"
+#endif
+	"</p>";
 }
 
 string RecollKioPager::nextUrl()
@@ -183,11 +190,10 @@ void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
 
     mimeType("text/html");
 
-    bool samesearch;
-    if (!syncSearch(qd, &samesearch))
+    if (!syncSearch(qd))
 	return;
-    if (!samesearch) {
-	m_pager.setDocSource(m_source);
+    // syncSearch/doSearch do the setDocSource when needed
+    if (m_pager.pageNumber() < 0) {
 	m_pager.resultPageNext();
     }
     if (qd.isDetReq) {

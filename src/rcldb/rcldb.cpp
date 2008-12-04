@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.148 2008-10-07 06:44:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.149 2008-12-04 11:49:59 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -333,8 +333,8 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	    unsigned int occurrences = 0;
 	    for (pos = db.positionlist_begin(docid, qterm); 
 		 pos != db.positionlist_end(docid, qterm); pos++) {
-		unsigned int ipos = *pos;
-		if (ipos < baseTextPosition) // Not in text body
+		int ipos = *pos;
+		if (ipos < int(baseTextPosition)) // Not in text body
 		    continue;
 		LOGABS(("makeAbstract: [%s] at %d occurrences %d maxoccs %d\n",
 			qterm.c_str(), ipos, occurrences, maxoccs));
@@ -344,7 +344,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 		unsigned int sta = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
 		unsigned int sto = ipos+m_db->m_synthAbsWordCtxLen;
 		for (unsigned int ii = sta; ii <= sto;  ii++) {
-		    if (ii == ipos)
+		    if (ii == (unsigned int)ipos)
 			sparseDoc[ii] = qterm;
 		    else
 			sparseDoc[ii] = emptys;
@@ -1366,6 +1366,8 @@ bool Db::stemExpand(const string &lang, const string &term,
 	LOGDEB1(("Db::stemExpand: Got %d from %s\n", 
 		 more.size(), it->c_str()));
 	result.insert(result.end(), more.begin(), more.end());
+	if (result.size() >= (unsigned int)max)
+	    break;
     }
     LOGDEB1(("Db:::stemExpand: final count %d \n", result.size()));
     return true;

@@ -1,5 +1,5 @@
 #ifndef _RECOLL_H
-/* @(#$Id: kio_recoll.h,v 1.12 2008-12-03 17:04:20 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: kio_recoll.h,v 1.13 2008-12-04 11:49:59 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -153,7 +153,7 @@ class RecollProtocol : public KIO::SlaveBase {
     void searchPage();
     void queryDetails();
     string makeQueryUrl(int page, bool isdet = false);
-    bool syncSearch(const QueryDesc& qd, bool *same = 0);
+    bool syncSearch(const QueryDesc& qd);
     void htmlDoSearch(const QueryDesc& qd);
 
     bool isRecollResult(const KUrl &url, int *num, QString* q);
