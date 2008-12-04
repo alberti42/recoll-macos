@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.10 2008-12-04 11:49:58 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.11 2008-12-04 12:23:27 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -310,7 +310,7 @@ void RecollProtocol::listDir(const KUrl& url)
 
 #include <kurl.h>
 #include "kio_recoll.h"
-bool RecollProtocol::isRecollResult(const KUrl &, int *)
+bool RecollProtocol::isRecollResult(const KUrl &, int *, QString *)
 {
     return false;
 }
