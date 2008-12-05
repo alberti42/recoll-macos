@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.22 2008-12-04 11:49:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.23 2008-12-05 11:09:31 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -293,7 +293,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
 	    // If there is no white space inside the query, then the user
 	    // certainly means it as a phrase.
 	    bool isreallyaphrase = false;
-	    if (qs.find_first_of(" \t") == string::npos)
+	    if (!TextSplit::hasVisibleWhite(qs))
 		isreallyaphrase = true;
 	    clp = isreallyaphrase ? 
 		new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, 0) :
