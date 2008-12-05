@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.32 2008-11-19 10:06:49 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.33 2008-12-05 07:38:07 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -48,6 +48,9 @@ extern bool samecharset(const string &cs1, const string &cs2);
  *
  * Token delimiter is " \t\n" except inside dquotes. dquote inside
  * dquotes can be escaped with \ etc...
+ * Input is handled a byte at a time, things will work as long as space tab etc.
+ * have the ascii values and can't appear as part of a multibyte char. utf-8 ok
+ * but so are the iso-8859-x and surely others.
  */
 extern bool stringToStrings(const string &s, list<string> &tokens);
 extern bool stringToStrings(const string &s, vector<string> &tokens);
