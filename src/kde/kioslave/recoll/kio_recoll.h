@@ -1,5 +1,5 @@
 #ifndef _RECOLL_H
-/* @(#$Id: kio_recoll.h,v 1.13 2008-12-04 11:49:59 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: kio_recoll.h,v 1.14 2008-12-08 14:34:50 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -88,8 +88,15 @@ public:
 	*num = m_resnum;
 	return true;
     }
+    bool isPreview(QueryDesc *q, int *num) {
+	if (m_type != UIMT_PREVIEW) return false;
+	*q = m_query;
+	*num = m_resnum;
+	return true;
+    }
     bool endSlashQuery() {return m_slashend;}
     bool alwaysDir() {return m_alwaysdir;}
+
 private:
     RecollProtocol *m_parent;
     QueryDesc       m_query;
@@ -97,7 +104,8 @@ private:
     bool            m_alwaysdir;
     RootEntryType   m_retType;
     int             m_resnum;
-    enum MyType {UIMT_NONE, UIMT_ROOTENTRY, UIMT_QUERY, UIMT_QUERYRESULT};
+    enum MyType {UIMT_NONE, UIMT_ROOTENTRY, UIMT_QUERY, UIMT_QUERYRESULT,
+		 UIMT_PREVIEW};
     MyType           m_type;
 };
 
@@ -155,7 +163,7 @@ class RecollProtocol : public KIO::SlaveBase {
     string makeQueryUrl(int page, bool isdet = false);
     bool syncSearch(const QueryDesc& qd);
     void htmlDoSearch(const QueryDesc& qd);
-
+    void showPreview(const Rcl::Doc& doc);
     bool isRecollResult(const KUrl &url, int *num, QString* q);
 
     bool        m_initok;

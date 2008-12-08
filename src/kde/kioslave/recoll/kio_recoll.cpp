@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.23 2008-12-05 11:09:31 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.24 2008-12-08 14:34:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -164,6 +164,8 @@ UrlIngester::UrlIngester(RecollProtocol *p, const KUrl& url)
 	    m_query.page = 0;
 	}
     } else {
+	// Non empty host, url must be something like :
+	//      //search/query?q=query&param=value...
 	kDebug() << "host" << url.host() << "path" << url.path();
 	if (url.host().compare("search") || url.path().compare("/query")) {
 	    return;
@@ -184,6 +186,18 @@ UrlIngester::UrlIngester(RecollProtocol *p, const KUrl& url)
 	}
 	p = url.queryItem("det");
 	m_query.isDetReq = !p.isEmpty();
+	
+	p = url.queryItem("cmd");
+	if (!p.isEmpty() && !p.compare("pv")) {
+	    p = url.queryItem("dn");
+	    if (!p.isEmpty()) {
+		// Preview and no docnum ??
+		m_resnum = atoi((const char *)p.toUtf8());
+		// Result in page is 1+
+		m_resnum--;
+		m_type = UIMT_PREVIEW;
+	    }
+	}
     }
     if (m_query.query.startsWith("/"))
 	m_query.query.remove(0,1);
@@ -253,6 +267,15 @@ void RecollProtocol::get(const KUrl& url)
 	if (resnum >= 0 && !m_source.isNull() && m_source->getDoc(resnum, doc)) {
 	    mimeType(doc.mimetype.c_str());
 	    redirection(KUrl::fromLocalFile((const char *)(doc.url.c_str()+7)));
+	    goto out;
+	}
+    } else if (ingest.isPreview(&qd, &resnum)) {
+	if (!syncSearch(qd)) {
+	    return;
+	}
+	Rcl::Doc doc;
+	if (resnum >= 0 && !m_source.isNull() && m_source->getDoc(resnum, doc)) {
+	    showPreview(doc);
 	    goto out;
 	}
     } else if (ingest.isQuery(&qd)) {

@@ -116,18 +116,11 @@ J'ai essaye de mettre une boucle timeout callback callspecial() mais
 ca ne sert a rien, c'est gere dans le process kio_slave, ca ne
 maintient pas l'association avec un konqueror.
 
-KDE_FORK_SLAVES resoudrait peut-etre la question ?
-
-
-
-
-
-
-
-
-
-
-
+KDE_FORK_SLAVES sort of solves the problem in a limited way: 
+ - It applies to an application instance, not a KIO slave type, so it
+   affects other KIO usages.  
+ - If the application has 2 sessions with the same KIO there are no 
+   warranties that 1 kio per session will be used ?
 
 
 

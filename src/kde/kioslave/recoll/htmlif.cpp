@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.7 2008-12-04 11:49:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.8 2008-12-08 14:34:50 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@ static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.7 2008-12-04 11:49:59 dockes Exp $
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h> 
+#include <sys/stat.h>
 
 #include <string>
 
@@ -42,6 +43,9 @@ using namespace std;
 #include "docseqdb.h"
 #include "readfile.h"
 #include "smallut.h"
+#include "plaintorich.h"
+#include "internfile.h"
+#include "wipedir.h"
 
 using namespace KIO;
 
@@ -52,18 +56,18 @@ bool RecollKioPager::append(const string& data)
     m_parent->data(QByteArray(data.c_str()));
     return true;
 }
-
+#include <sstream>
 string RecollProtocol::makeQueryUrl(int page, bool isdet)
 {
-    char buf[100];
-    sprintf(buf, "recoll://search/query?q=%s&qtp=%s&p=%d", 
-	    url_encode((const char*)m_query.query.toUtf8()).c_str(), 
-	    (const char*)m_query.opt.toUtf8(), 
-	    page);
-    string ret(buf);
+    ostringstream str;
+    str << "recoll://search/query?q=" << 
+	url_encode((const char*)m_query.query.toUtf8()) <<
+	"&qtp=" << (const char*)m_query.opt.toUtf8();
+    if (page >= 0)
+	str << "&p=" << page;
     if (isdet)
-	ret += "&det=1";
-    return ret;
+	str << "&det=1";
+    return str.str();
 }
 
 string RecollKioPager::detailsLink()
@@ -74,22 +78,41 @@ string RecollKioPager::detailsLink()
     return chunk;
 }
 
-const static string parformat = 
-    "<a href=\"%U\"><img src=\"%I\" align=\"left\"></a>"
-    "%R %S "
-    "<a href=\"%U\">Open</a>&nbsp;&nbsp;<b>%T</b><br>"
-    "%M&nbsp;%D&nbsp;&nbsp; <i>%U</i><br>"
-    "%A %K";
+static string parformat;
 const string& RecollKioPager::parFormat()
 {
-    return parformat;
+    // Need to escape the % inside the query url
+    string qurl = m_parent->makeQueryUrl(-1, false), escurl;
+    for (string::size_type pos = 0; pos < qurl.length(); pos++) {
+	switch(qurl.at(pos)) {
+	case '%':
+	    escurl += "%%";
+	    break;
+	default:
+	    escurl += qurl.at(pos);
+	}
+    }
+
+    ostringstream str;
+    str << 
+	"<a href=\"%U\"><img src=\"%I\" align=\"left\"></a>" 
+	"%R %S "
+	"<a href=\"%U\">Open</a>&nbsp;&nbsp;";
+    str << "<a href=\"" << escurl << "&cmd=pv&dn=%N\">Preview</a><br>";
+    str <<  
+    "<b>%T</b><br>"
+    "%M&nbsp;%D&nbsp;&nbsp; <i>%U</i><br>"
+    "%A %K";
+    return parformat = str.str();
 }
 
 string RecollKioPager::pageTop()
 {
     return "<p align=\"center\">"
 	"<a href=\"recoll:///search.html\">New Search</a>"
-#if KDE_IS_VERSION(4,1,0)
+// Would be nice to have but doesnt work because the query may be executed
+// by another kio instance which has no idea of the current page o
+#if 0 && KDE_IS_VERSION(4,1,0)
 	" &nbsp;&nbsp;&nbsp;<a href=\"recoll:///" + 
 	url_encode(string(m_parent->m_query.query.toUtf8())) +
 	"/\">Directory view</a> (you may need to reload the page)"
@@ -179,6 +202,77 @@ void RecollProtocol::queryDetails()
     os << "<p>" << m_pager.queryDescription().c_str() <<"</p>"<< endl;
     os << "<p><a href=\"" << makeQueryUrl(m_pager.pageNumber()).c_str() << 
 	"\">Return to results</a>" << endl;
+    os << "</body></html>" << endl;
+    data(array);
+}
+
+class PlainToRichKio : public PlainToRich {
+public:
+    PlainToRichKio(bool inputhtml = false) : PlainToRich(inputhtml) {
+    }    
+    virtual ~PlainToRichKio() {}
+    virtual string header() {
+	if (m_inputhtml) {
+	    return snull;
+	} else {
+	    return string("<html><head><title></title></head><body><p>");
+	}
+    }
+    virtual string startMatch() {return string("<font color=\"blue\">");}
+    virtual string endMatch() {return string("</font>");}
+};
+
+void RecollProtocol::showPreview(const Rcl::Doc& doc)
+{
+    string fn = doc.url.substr(7);
+    kDebug() << fn.c_str();
+
+    struct stat st;
+    if (::stat(fn.c_str(), &st) != 0) {
+	string reason = string("File not found: ") + fn.c_str();
+	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
+	return;
+    } 
+    string tmpdir;
+    string reason;
+    if (!maketmpdir(tmpdir, reason)) {
+	error(KIO::ERR_SLAVE_DEFINED, "Cannot create temporary directory");
+	return;
+    }
+    o_rclconfig->setKeyDir(path_getfather(fn));
+    FileInterner interner(fn, &st, o_rclconfig, tmpdir, &doc.mimetype);
+    Rcl::Doc fdoc;
+
+    if (!interner.internfile(fdoc, fdoc.ipath)) {
+	wipedir(tmpdir);
+	rmdir(tmpdir.c_str());
+	error(KIO::ERR_SLAVE_DEFINED, "Cannot convert file to internal format");
+	return;
+    }
+    wipedir(tmpdir);
+    rmdir(tmpdir.c_str());
+
+    if (!interner.get_html().empty()) {
+	fdoc.text = interner.get_html();
+	fdoc.mimetype = "text/html";
+    }
+
+    mimeType("text/html");
+
+    PlainToRichKio ptr;
+    ptr.set_inputhtml(!fdoc.mimetype.compare("text/html"));
+    list<string> otextlist;
+    HiliteData hdata;
+    if (!m_source.isNull())
+	m_source->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+    ptr.plaintorich(fdoc.text, otextlist, hdata);
+
+    QByteArray array;
+    QTextStream os(&array, QIODevice::WriteOnly);
+    for (list<string>::iterator it = otextlist.begin(); 
+	 it != otextlist.end(); it++) {
+	os << (*it).c_str();
+    }
     os << "</body></html>" << endl;
     data(array);
 }

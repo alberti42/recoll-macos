@@ -42,6 +42,7 @@ ${rcltop}/common/textsplit.cpp
 ${rcltop}/common/unacpp.cpp
 ${rcltop}/index/mimetype.cpp
 ${rcltop}/internfile/htmlparse.cpp
+${rcltop}/internfile/internfile.cpp
 ${rcltop}/internfile/myhtmlparse.cpp
 ${rcltop}/internfile/mimehandler.cpp
 ${rcltop}/internfile/mh_exec.cpp
