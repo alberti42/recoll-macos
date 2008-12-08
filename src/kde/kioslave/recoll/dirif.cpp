@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: dirif.cpp,v 1.11 2008-12-04 12:23:27 dockes Exp $ (C) 2008 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dirif.cpp,v 1.12 2008-12-08 17:42:57 dockes Exp $ (C) 2008 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -72,8 +72,8 @@ bool RecollProtocol::isRecollResult(const KUrl &url, int *num, QString *q)
     if (slashpos == -1 || slashpos == 0 || slashpos == path.length() -1)
 	return false;
     slashpos++;
-    kDebug() << "Comparing " << path.mid(slashpos, resultBaseName.length()) <<
-	"and " << resultBaseName;
+    //kDebug() << "Comparing " << path.mid(slashpos, resultBaseName.length()) <<
+    //	"and " << resultBaseName;
     if (path.mid(slashpos, resultBaseName.length()).compare(resultBaseName))
 	return false;
 
@@ -83,7 +83,7 @@ bool RecollProtocol::isRecollResult(const KUrl &url, int *num, QString *q)
     if (*num == -1)
 	return false;
 
-    kDebug() << "URL analysis ok, num:" << *num;
+    //kDebug() << "URL analysis ok, num:" << *num;
 
     // We do have something that ressembles a recoll result locator. Check if
     // this matches the current search, else have to run the requested one
@@ -97,7 +97,7 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     UDSEntry entry;
     
     KUrl url(doc.url.c_str());
-    kDebug() << doc.url.c_str();
+//    kDebug() << doc.url.c_str();
 
     entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
     char cnum[30];sprintf(cnum, "%04d", num);
@@ -120,7 +120,6 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     	entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, info.st_atime);
     	entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
     }
-    kDebug() << "entry URL: " << doc.url.c_str();
     entry.insert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
 
     return entry;
