@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: readfile.cpp,v 1.8 2008-04-18 11:37:50 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: readfile.cpp,v 1.9 2008-12-08 11:22:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,9 +17,13 @@ static char rcsid[] = "@(#$Id: readfile.cpp,v 1.8 2008-04-18 11:37:50 dockes Exp
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#ifndef TEST_READFILE
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #ifndef O_STREAMING
 #define O_STREAMING 0
 #endif
@@ -27,47 +31,65 @@ static char rcsid[] = "@(#$Id: readfile.cpp,v 1.8 2008-04-18 11:37:50 dockes Exp
 #include <cstring>
 
 #include <string>
+
 #ifndef NO_NAMESPACES
 using std::string;
 #endif /* NO_NAMESPACES */
 
 #include "readfile.h"
 
-static void caterrno(string *reason)
+static void caterrno(string *reason, const char *what)
 {
 #define ERRBUFSZ 200    
     char errbuf[ERRBUFSZ];
-  if (reason) {
+    if (reason) {
+	*reason += "file_to_string: ";
+	*reason += what;
+	*reason += ": ";
 #ifdef sun
-    // Note: sun strerror is noted mt-safe ??
-    *reason += string("file_to_string: open failed: ") + strerror(errno);
+	// Note: sun strerror is noted mt-safe ??
+	*reason += strerror(errno);
 #else
-    strerror_r(errno, errbuf, ERRBUFSZ);
-    *reason += string("file_to_string: open failed: ") + errbuf;
+	strerror_r(errno, errbuf, ERRBUFSZ);
+	*reason += errbuf;
 #endif
-  }
+    }
 }
 
+// Note: the fstat() + reserve() calls divide cpu usage almost by 2
+// on both linux i586 and macosx (compared to just append())
+// Also tried a version with mmap, but it's actually slower on the mac and not
+// faster on linux.
 bool file_to_string(const string &fn, string &data, string *reason)
 {
     bool ret = false;
     bool noclosing = true;
     int fd = 0;
+    struct stat st;
+    // Initialize st_size: if fn.empty() , the fstat() call won't happen. 
+    st.st_size = 0;
 
+    // If we have a file name, open it, else use stdin.
     if (!fn.empty()) {
 	fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
-	if (fd < 0) {
-	    caterrno(reason);
+	if (fd < 0 
+#if 1
+	    || fstat(fd, &st) < 0
+#endif
+	    ) {
+	    caterrno(reason, "open/stat");
 	    return false;
 	}
 	noclosing = false;
     }
+    if (st.st_size > 0)
+	data.reserve(st.st_size+1);
 
     char buf[4096];
     for (;;) {
 	int n = read(fd, buf, 4096);
 	if (n < 0) {
-	    caterrno(reason);
+	    caterrno(reason, "read");
 	    goto out;
 	}
 	if (n == 0)
@@ -76,7 +98,7 @@ bool file_to_string(const string &fn, string &data, string *reason)
 	try {
 	    data.append(buf, n);
 	} catch (...) {
-	    caterrno(reason);
+	    caterrno(reason, "append");
 	    goto out;
 	}
     }
@@ -87,3 +109,109 @@ bool file_to_string(const string &fn, string &data, string *reason)
 	close(fd);
     return ret;
 }
+
+#else // Test
+
+#include <sys/stat.h>
+#include <stdlib.h>
+
+#include <string>
+#include <iostream>
+using namespace std;
+
+#include "readfile.h"
+#include "fstreewalk.h"
+
+using namespace std;
+
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_f	  0x2
+#define OPT_F	  0x4
+
+class myCB : public FsTreeWalkerCB {
+ public:
+    FsTreeWalker::Status processone(const string &path, 
+				    const struct stat *st,
+				    FsTreeWalker::CbFlag flg)
+    {
+	if (flg == FsTreeWalker::FtwDirEnter) {
+	    //cout << "[Entering " << path << "]" << endl;
+	} else if (flg == FsTreeWalker::FtwDirReturn) {
+	    //cout << "[Returning to " << path << "]" << endl;
+	} else if (flg == FsTreeWalker::FtwRegular) {
+	    //cout << path << endl;
+	    string s, reason;
+	    if (!file_to_string(path, s, &reason)) {
+		cerr << "Failed: " << reason << " : " << path << endl;
+	    } else {
+		//cout << 
+		//"================================================" << endl;
+		cout << path << endl;
+		//		cout << s;
+	    }
+	    reason.clear();
+	}
+	return FsTreeWalker::FtwOk;
+    }
+};
+
+static const char *thisprog;
+static char usage [] =
+"trreadfile topdirorfile\n\n"
+;
+static void
+Usage(void)
+{
+    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    exit(1);
+}
+
+int main(int argc, const char **argv)
+{
+    list<string> patterns;
+    list<string> paths;
+    thisprog = argv[0];
+    argc--; argv++;
+
+  while (argc > 0 && **argv == '-') {
+    (*argv)++;
+    if (!(**argv))
+      /* Cas du "adb - core" */
+      Usage();
+    while (**argv)
+      switch (*(*argv)++) {
+      case 'f':	op_flags |= OPT_f;break;
+      case 'F':	op_flags |= OPT_F;break;
+      default: Usage();	break;
+      }
+    argc--; argv++;
+  }
+
+  if (argc != 1)
+    Usage();
+  string top = *argv++;argc--;
+
+  struct stat st;
+  if (stat(top.c_str(), &st) < 0) {
+      perror("stat");
+      exit(1);
+  }
+  if (S_ISDIR(st.st_mode)) {
+      FsTreeWalker walker;
+      myCB cb;
+      walker.walk(top, cb);
+      if (walker.getErrCnt() > 0)
+	  cout << walker.getReason();
+  } else if (S_ISREG(st.st_mode)) {
+      string s, reason;
+      if (!file_to_string(top, s, &reason)) {
+	  cerr << reason;
+	  exit(1);
+      } else {
+	  cout << s;
+      }
+  }
+  exit(0);
+}
+#endif //TEST_READFILE

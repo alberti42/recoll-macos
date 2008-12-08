@@ -1,7 +1,7 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = trfileudi trconftree wipedir smallut trfstreewalk trpathut \
+PROGS = trreadfile trfileudi trconftree wipedir smallut trfstreewalk trpathut \
       transcode trbase64 \
       trmimeparse trexecmd utf8iter idfile
 
@@ -17,6 +17,13 @@ trfstreewalk : $(FSTREEWALK_OBJS)
 trfstreewalk.o : fstreewalk.cpp fstreewalk.h
 	$(CXX) -o trfstreewalk.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_FSTREEWALK fstreewalk.cpp
+
+READFILE_OBJS= trreadfile.o readfile.o $(BIGLIB)
+trreadfile : $(READFILE_OBJS)
+	$(CXX) -o trreadfile $(READFILE_OBJS) $(LIBICONV) $(LIBSYS)
+trreadfile.o : readfile.cpp readfile.h
+	$(CXX) -o trreadfile.o -c $(ALL_CXXFLAGS) \
+	       -DTEST_READFILE readfile.cpp
 
 PATHUT_OBJS= trpathut.o  $(BIGLIB)
 trpathut : $(PATHUT_OBJS) 
