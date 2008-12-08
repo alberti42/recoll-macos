@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.8 2008-12-08 14:34:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.9 2008-12-08 17:43:32 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -97,12 +97,11 @@ const string& RecollKioPager::parFormat()
     str << 
 	"<a href=\"%U\"><img src=\"%I\" align=\"left\"></a>" 
 	"%R %S "
-	"<a href=\"%U\">Open</a>&nbsp;&nbsp;";
-    str << "<a href=\"" << escurl << "&cmd=pv&dn=%N\">Preview</a><br>";
-    str <<  
-    "<b>%T</b><br>"
-    "%M&nbsp;%D&nbsp;&nbsp; <i>%U</i><br>"
-    "%A %K";
+	"<a href=\"" << escurl << "&cmd=pv&dn=%N\">Preview</a>&nbsp;&nbsp;" <<
+	"<a href=\"%U\">Open</a><br>" <<
+	"<b>%T</b><br>"
+	"%M&nbsp;%D&nbsp;&nbsp; <i>%U</i><br>"
+	"%A %K";
     return parformat = str.str();
 }
 
@@ -206,20 +205,29 @@ void RecollProtocol::queryDetails()
     data(array);
 }
 
+
 class PlainToRichKio : public PlainToRich {
 public:
-    PlainToRichKio(bool inputhtml = false) : PlainToRich(inputhtml) {
+    PlainToRichKio(const string& nm, bool inputhtml = false) 
+	: PlainToRich(inputhtml) , m_name(nm)
+    {
     }    
     virtual ~PlainToRichKio() {}
     virtual string header() {
 	if (m_inputhtml) {
 	    return snull;
 	} else {
-	    return string("<html><head><title></title></head><body><p>");
+	    return
+		string("<html><head>"
+		       "<META http-equiv=\"Content-Type\""
+		       "content=\"text/html;charset=UTF-8\"><title>") + 
+		m_name + 
+		string("</title></head><body><p>");
 	}
     }
     virtual string startMatch() {return string("<font color=\"blue\">");}
     virtual string endMatch() {return string("</font>");}
+    const string &m_name;
 };
 
 void RecollProtocol::showPreview(const Rcl::Doc& doc)
@@ -259,8 +267,8 @@ void RecollProtocol::showPreview(const Rcl::Doc& doc)
 
     mimeType("text/html");
 
-    PlainToRichKio ptr;
-    ptr.set_inputhtml(!fdoc.mimetype.compare("text/html"));
+    string fname =  path_getsimple(doc.url).c_str();
+    PlainToRichKio ptr(fname, !fdoc.mimetype.compare("text/html"));
     list<string> otextlist;
     HiliteData hdata;
     if (!m_source.isNull())
