@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.71 2008-11-24 15:23:12 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.72 2008-12-12 11:00:27 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -229,6 +229,15 @@ int main(int argc, char **argv)
 	    }
     b1: argc--; argv++;
     }
+
+    // If -q was given, all remaining non-option args are concatenated
+    // to the query. This is for the common case recoll -q x y z to
+    // avoid needing quoting "x y z"
+    if (op_flags & OPT_q)
+	while (argc--) {
+	    question += " ";
+	    question += *argv--;
+	}
 
     // Translation file for Qt
     QTranslator qt( 0 );
