@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.149 2008-12-04 11:49:59 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.150 2008-12-12 11:02:20 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -142,7 +142,7 @@ static const string keycap("caption");
 bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
 				Doc &doc, int percent)
 {
-    LOGDEB1(("Db::dbDataToRclDoc: data: %s\n", data.c_str()));
+    LOGDEB0(("Db::dbDataToRclDoc: data: %s\n", data.c_str()));
     ConfSimple parms(&data);
     if (!parms.ok())
 	return false;
