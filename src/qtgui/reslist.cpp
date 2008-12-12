@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.49 2008-11-19 10:06:49 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.50 2008-12-12 11:01:01 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -566,6 +566,7 @@ void ResList::resultPageNext()
 	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
 	subs['D'] = datebuf;
 	subs['I'] = iconpath;
+	subs['i'] = doc.ipath;
 	subs['K'] = !doc.meta[Rcl::Doc::keykw].empty() ? 
 	    escapeHtml(doc.meta[Rcl::Doc::keykw]) + "<br>" : "";
 	subs['L'] = linksbuf;
