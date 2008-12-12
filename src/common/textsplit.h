@@ -16,7 +16,7 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.21 2008-12-05 11:09:31 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.22 2008-12-12 11:53:45 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -96,7 +96,10 @@ public:
      * handles all Unicode whitespace, but needs correct utf-8 input
      */
     static bool stringToStrings(const string &s, list<string> &tokens);
-    
+
+    /** Is char CJK ? */
+    static bool isCJK(int c);
+
 private:
     Flags         m_flags;
     TextSplitCB  *m_cb;
