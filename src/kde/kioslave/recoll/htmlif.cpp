@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.9 2008-12-08 17:43:32 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.10 2008-12-15 15:04:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ const string& RecollKioPager::parFormat()
 	"<a href=\"" << escurl << "&cmd=pv&dn=%N\">Preview</a>&nbsp;&nbsp;" <<
 	"<a href=\"%U\">Open</a><br>" <<
 	"<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp; <i>%U</i><br>"
+	"%M&nbsp;%D&nbsp;&nbsp; <i>%U</i>&nbsp;&nbsp;%i<br>"
 	"%A %K";
     return parformat = str.str();
 }
@@ -250,8 +250,8 @@ void RecollProtocol::showPreview(const Rcl::Doc& doc)
     o_rclconfig->setKeyDir(path_getfather(fn));
     FileInterner interner(fn, &st, o_rclconfig, tmpdir, &doc.mimetype);
     Rcl::Doc fdoc;
-
-    if (!interner.internfile(fdoc, fdoc.ipath)) {
+    string ipath = doc.ipath;
+    if (!interner.internfile(fdoc, ipath)) {
 	wipedir(tmpdir);
 	rmdir(tmpdir.c_str());
 	error(KIO::ERR_SLAVE_DEFINED, "Cannot convert file to internal format");

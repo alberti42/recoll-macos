@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.5 2008-12-04 11:49:59 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.6 2008-12-15 15:04:53 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -247,6 +247,7 @@ void ResListPager::displayPage()
 	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
 	subs['D'] = datebuf;
 	subs['I'] = iconpath;
+	subs['i'] = doc.ipath;
 	subs['K'] = !doc.meta[Rcl::Doc::keykw].empty() ? 
 	    escapeHtml(doc.meta[Rcl::Doc::keykw]) + "<br>" : "";
 	subs['L'] = linksbuf;
