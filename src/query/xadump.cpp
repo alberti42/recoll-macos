@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.18 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.19 2008-12-15 14:39:52 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@ static char rcsid[] = "@(#$Id: xadump.cpp,v 1.18 2008-07-01 11:51:51 dockes Exp 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include <stdlib.h>
 #include <signal.h>
 #include <strings.h>
 
@@ -207,7 +208,7 @@ int main(int argc, char **argv)
 	    cout << "Really delete xapian document ?" << endl;
 	    string rep;
 	    cin >> rep;
-	    if (!rep.empty() && rep[0] == 'y' || rep[0] == 'Y') {
+	    if (!rep.empty() && (rep[0] == 'y' || rep[0] == 'Y')) {
 		Xapian::WritableDatabase wdb(dbdir,  Xapian::DB_OPEN);
 		cout << "Deleting" << endl;
 		wdb.delete_document(docid);

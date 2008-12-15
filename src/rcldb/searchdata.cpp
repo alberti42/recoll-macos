@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.28 2008-12-15 09:24:24 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.29 2008-12-15 14:39:52 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -234,9 +234,9 @@ private:
     // After splitting entry on whitespace: process non-phrase element
     void processSimpleSpan(const string& span, list<Xapian::Query> &pqueries);
     // Process phrase/near element
-    void StringToXapianQ::processPhraseOrNear(wsQData *splitData, 
-					      list<Xapian::Query> &pqueries,
-					      bool useNear, int slack);
+    void processPhraseOrNear(wsQData *splitData, 
+			     list<Xapian::Query> &pqueries,
+			     bool useNear, int slack);
 
     Db&           m_db;
     const string& m_prefix;
