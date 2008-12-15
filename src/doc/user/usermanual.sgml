@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.70 2008-12-02 13:16:29 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.71 2008-12-15 09:33:49 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1123,6 +1123,7 @@ fvwm
 
     <sect1 id="rcl.search.wildcards">
       <title>More about wildcards</title>
+
       <para>All words entered in &RCL; search fields will be processed
       for wildcard expansion before the request is finally
       executed.</para>
@@ -1270,6 +1271,9 @@ fvwm
     <sect1 id="rcl.search.tips">
       <title>Search tips, shortcuts</title>
 
+    <sect2 id="rcl.search.tips.terms">
+      <title>Terms and search expansion</title>
+
       <formalpara><title>Term completion</title>
 	<para>Typing <keycap>Esc</keycap> <keycap>Space</keycap> in
 	the simple search entry field while entering a word will
@@ -1284,6 +1288,13 @@ fvwm
 	preview window will copy it to the simple search entry field.</para>
       </formalpara>
 
+      <formalpara><title>Wildcards</title>
+	  <para>Wildcards can be used inside search terms in all forms
+	    of searches. <link linkend="rcl.search.wildcards">
+            More about wildcards</link>.
+          </para>
+      </formalpara>
+
       <formalpara><title>Disabling stem expansion</title>
       <para>Entering a capitalized word in any search field will prevent
         stem expansion (no search for
@@ -1294,44 +1305,6 @@ fvwm
         search. You can also disable stem expansion or change the
         stemming language in the preferences.</para>
       </formalpara>
-
-      <formalpara><title>Phrases</title>
-      <para>A phrase can be looked for by enclosing it in double
-        quotes. Example: <literal>"user manual"</literal> will look
-        only for occurrences of <literal>user</literal> immediately
-        followed by <literal>manual</literal>. You can use the
-        <guilabel>This exact phrase</guilabel> field of the advanced
-        search dialog to the same effect. Phrases can be entered along
-        simple terms in all simple or advanced search entry fields
-        (except <guilabel>This exact phrase</guilabel>).</para>
-      </formalpara>
-
-      <formalpara><title>Browsing the result list inside a preview 
-                   window (1.5)</title>
-       <para>Entering <keycap>Shift-Down</keycap> or <keycap>Shift-Up</keycap>
-       (<keycap>Shift</keycap> + an arrow key) in a preview window will
-       display the next or the previous document from the result
-       list. Any secondary search currently active will be executed on
-       the new document.</para>
-      </formalpara>
-
-      <formalpara><title>Forced opening of a preview window (1.6)</title>
-       <para>You can use <keycap>Shift</keycap>+Click on a result list
-       <literal>Preview</literal> link to force the creation of a
-       preview window instead of a new tab in the existing one.</para>
-      </formalpara>
-
-      <formalpara><title>AutoPhrases (1.5)</title>
-      <para>This option can be set in the preferences dialog. If it is
-      set, a phrase will be automatically built and added to simple
-      searches when looking for <literal>Any terms</literal>. This
-      will not change radically the results, but will give a relevance
-      boost to the results where the search terms appear as a
-      phrase. Ie: searching for <literal>virtual reality</literal>
-      will still find all documents where either
-      <literal>virtual</literal> or <literal>reality</literal> or 
-      both appear, but those which contain <literal>virtual
-      reality</literal> should appear sooner in the list.</para>
 
       <formalpara><title>Finding related documents</title>
 	<para>Selecting the <guilabel>Find similar documents</guilabel> entry
@@ -1348,14 +1321,74 @@ fvwm
         to index all directories in the file path as terms. This has been
         abandoned as it did not seem really useful). Alternatively, you
         can use the specific file name search which will
-        <emphasis>only</emphasis> look for file names and can use wildcard
-        expansion.</para>
+        <emphasis>only</emphasis> look for file names, and may be
+        faster than the generic search especially when using wildcards.</para>
+      </formalpara>
+
+      </sect2>
+
+
+    <sect2 id="rcl.search.tips.phrases">
+      <title>Working with phrases and proximity</title>
+
+      <formalpara><title>Phrases and Proximity searches</title>
+      <para>A phrase can be looked for by enclosing it in double
+        quotes. Example: <literal>"user manual"</literal> will look
+        only for occurrences of <literal>user</literal> immediately
+        followed by <literal>manual</literal>. You can use the
+        <guilabel>This exact phrase</guilabel> field of the advanced
+        search dialog to the same effect. Phrases can be entered along
+        simple terms in all simple or advanced search entry fields
+        (except <guilabel>This exact phrase</guilabel>).</para>
+      </formalpara>
+
+      <formalpara><title>AutoPhrases</title>
+      <para>This option can be set in the preferences dialog. If it is
+      set, a phrase will be automatically built and added to simple
+      searches when looking for <literal>Any terms</literal>. This
+      will not change radically the results, but will give a relevance
+      boost to the results where the search terms appear as a
+      phrase. Ie: searching for <literal>virtual reality</literal>
+      will still find all documents where either
+      <literal>virtual</literal> or <literal>reality</literal> or 
+      both appear, but those which contain <literal>virtual
+      reality</literal> should appear sooner in the list.</para>
+
+      </sect2>
+
+    <sect2 id="rcl.search.tips.misc">
+      <title>Others</title>
+
+	
+      <formalpara><title>Using fields</title>
+        <para>You can use the <link linkend="rcl.search.lang">query
+        language </link> and field specifications
+        to only search certain parts of documents. This can be
+        especially helpful with email, for example only searching
+        emails from a specific originator:
+        <literal>search tips from:helpfulgui</literal>
+        </para>
       </formalpara>
 
       <formalpara><title>Query explanation</title>
         <para>You can get an exact description of what the query
         looked for, including stem expansion, and Boolean operators
         used, by clicking on the result list header.</para>
+      </formalpara>
+
+      <formalpara><title>Browsing the result list inside a preview 
+                   window</title>
+       <para>Entering <keycap>Shift-Down</keycap> or <keycap>Shift-Up</keycap>
+       (<keycap>Shift</keycap> + an arrow key) in a preview window will
+       display the next or the previous document from the result
+       list. Any secondary search currently active will be executed on
+       the new document.</para>
+      </formalpara>
+
+      <formalpara><title>Forced opening of a preview window</title>
+       <para>You can use <keycap>Shift</keycap>+Click on a result list
+       <literal>Preview</literal> link to force the creation of a
+       preview window instead of a new tab in the existing one.</para>
       </formalpara>
 
       <formalpara><title>Closing previews</title> 
@@ -1369,7 +1402,7 @@ fvwm
       <para>Entering <keycap>^Q</keycap> almost anywhere will
         close the application.</para>
       </formalpara>
-
+      </sect2>
     </sect1>
 
     <sect1 id="rcl.search.custom">
