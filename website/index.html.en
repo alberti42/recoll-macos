@@ -47,7 +47,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.10.6</a> 
+	<a class="important" href="download.html">1.11.2</a> 
 	(<a href="CHANGES.txt">Changes</a>).</p>
 
       <h2>Features: </h2>
@@ -80,8 +80,7 @@
       <h2>News: </h2>
       <ul>
 	<li>2008-10-14 : <a href="download.html#source">1.11.0</a> is
-	  out. You may want to give it a try if you are not afraid of
-	  initial bugs.</li> 
+	  out.</li> 
 	<li>2008-09-01 : <a href="filters/filters.html">A new
 	    filter</a> for Office Open XML formats (docx ...).</li>
 	<li>2008-05-22 : we now have a mailing list:

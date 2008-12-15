@@ -48,7 +48,7 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL. 
 	La dernière version est 
-	<a class="important" href="download.html">1.10.6</a></p>
+	<a class="important" href="download.html">1.11.2</a></p>
 
       <p>L'interface utilisateur de 
 	<span class="application">Recoll</span> est traduite en
@@ -93,11 +93,12 @@
 
       <h2>Nouvelles: </h2>
       <ul>
-	<li>2008-10-14 : la version <a
-	href="download.html#source">1.11.0</a> vient de sortir.
-	  Essayez la si vous n'avez pas peur des problèmes de jeunesse!</li> 
+	<li>2008-10-14 : la version 
+	<a href="download.html#source">1.11.0</a> vient de sortir.</li> 
+
 	<li>2008-09-01 : <a href="filters/filters.html">Un nouveau
 	    filtre</a> pour les formats Office Open XML (docx ...).</li>
+
 	<li>2008-05-27 Recoll 1.10.2 est sorti.</li>
       </ul>
 

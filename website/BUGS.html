@@ -35,8 +35,16 @@
 	  supposedly fixed in later versions. Bugs listed in the
 	  topmost section may also exist in older versions.</i></p>
 
-      <h2>Latest (recoll 1.11.0 + xapian 1.0.x)</h2>
+      <h2>Latest (recoll 1.11.2 + xapian 1.0.x)</h2>
       <ul>
+
+	<li>Performing a full index with release 1.11, over a version
+	  created with a much older recoll release may sometimes end
+	  with an error saying  "backend doesn't implement metadata".
+	  If this happens, you need to delete the index directory
+	  (typically <em>~/.recoll/xapiandb/</em>) and restart
+	  indexing. For big indexes, removing the directory preventively
+	  may be a smart move to avoid losing time.</li>
 
 	<li> When Recoll is built with qt 4.4.0, the icons in the
 	  result list are all displayed at the top of the page and
@@ -46,6 +54,13 @@
 	<li> If the user-chosen result list entry format results in
 	  several paragraphs (in the qt textedit sense), right clicks
 	  will only work inside the first one for each entry.
+
+	  <li>The "Copy file name" and "Copy URL" entries of the
+	  right-click menus only copy the data to the X11 primary
+	  selection (use middle-button click to paste). This is
+	  probably a mistake, the data should be copied to the
+	  clipboard too (permitting the use of the "Paste" edit menu
+	  entry or Ctrl+V in the target).
 
 	<li> When a mime type has an external viewer defined, but the
 	  actual file is compressed (ie: xxx.txt.gz), recoll will try
@@ -98,6 +113,18 @@
 	  the database). Don't know the reason. Only idea I have is problem with
 	  exception handling (recoll catches an exception while trying the
 	  yet inexistant db).</li>
+      </ul>
+
+      <h2>1.11.1</h2>
+      <ul>
+	<li>Unicode space characters like 
+	  <em>0x3000,&nbsp;Ideographic&nbsp;space</em>
+	  where not detected inside user entries like the main
+	  interface search entry. Badly parsed searches would retrieve no
+	  results, when the same search entered with ascii space characters
+	  would have succeeded.</li>
+	<li>Spaces were inserted inside CJK strings when building
+	  abstracts for the result list.</li>
       </ul>
 
       <h2>1.10.6</h2>

@@ -53,9 +53,10 @@
       <p>Instructions: <a href="usermanual/rcl.install.html">
 	  Installation / building manual</a>.</p> 
 
-      <p>All binary packages on this page need a Qt 3.3 runtime
-	environment. They are statically linked with
-	Xapian, which you don't need to install.</p> 
+      <p>Most binary packages on this page need a Qt 3.3 runtime
+	environment (QT 4.x is specified for a few). They are
+	statically linked with Xapian, which you don't need to
+	install separately.</p>
 
       <p>Optional packages used by document filters:
 	<a href="usermanual/usermanual.html#RCL.INSTALL.EXTERNAL"> 
@@ -71,11 +72,6 @@
 	<a href="mailto:jean-francois.dockes@wanadoo.fr">
 	  report them</a>.</p>
 
-      <p>Recoll users updating from 1.8 or older,
-	or who have skipped this step for 1.9 need to delete their old index. 
-	<a href="xapUpg100.html">More details</a>. 
-	<em>You don't need to do this if you did it for Recoll 1.9</em></p>
-
       <h3>What do the release numbers mean?</h3>
 
       <p>The Recoll releases are numbered X.Y.Z. The X
@@ -86,12 +82,13 @@
         if you don't need the new features,
 	you may want to wait a little, and especially skip the first
 	release (X.Y.0), at least for a few weeks.</p>
-      <p>Z changes for bug fixes only, and moving from X.Y.Z to X.Y.Z+u
-	should in general involve little risk of regression. But,
-	<em>any</em> change can bring problems, if you are not
-	affected by the corrected bugs (check the <a
-	href="CHANGES.html">changes file</a>), there is probably no
-	necessity to upgrade anyway.</p>
+
+      <p>Z changes for <a href="BUGS/html">bug fixes</a> only, 
+	and moving from X.Y.Z to X.Y.Z+u should in general involve
+	little risk of regression. But, <em>any</em> change can bring
+	problems, if you are not affected by the corrected bugs (check
+	the <a href="CHANGES.html">changes file</a>), there is
+	probably no necessity to upgrade anyway.</p>
 
       <h2><a name="filters">Updated filters</a></h2>
 
@@ -103,39 +100,46 @@
 
       <h2><a name="source">Source</a></h2>
 
-      <p><b>Current version:</b>
-	1.10.6: <a href="recoll-1.10.6.tar.gz">recoll-1.10.6.tar.gz</a> 
-	See the <a href="BUGS.html">known bugs and issues</a> and 
-	<a href="CHANGES.html">changes</a>.</p>
+      <p><b>Current version:</b>1.11.2: 
+	<a href="recoll-1.11.2.tar.gz">recoll-1.11.2.tar.gz</a>.
+	<a href="CHANGES.html">Changes</a>. <a href="BUGS.html">Bugs</a>.
+	<br>
+	
+	Version 1.11 has relatively <a href="CHANGES.html">extensive
+	changes</a> (<a href="pics/recoll0.png">pic</a>), and needs an
+	index reset after installing over an 1.10 or older
+	version. For an existing installation you can use option -z to
+	the command line indexer: <tt>recollindex&nbsp;-z</tt>, or
+	just delete the old index directory
+	(ie: <tt>rm&nbsp;-rf&nbsp;~/.recoll/xapiandb/</tt>). The
+	latter option may be safer with old indexes. If the first
+	1.11 indexing ends with an error like <em>backend doesn't
+	  implement metadata</em>, you certainly need to do it.</p> 
+
+      <p>The download page for Recoll 1.10 is
+	still <a href="download-1.10.html">still available</a>.</p>
 
       <p>In order to build Recoll from source, you will need a
-	xapian-core installation. You will find
-	source and binary packages on  the 
-	<a href="http://www.xapian.org/download.php">Xapian download
-	  page</a>. Recoll should build with any 0.9.x or 1.0.x
-	  Xapian version. 1.0.x is preferred.</p>
-
-      <p>You can build with Qt 3.3 or Qt 4. Recoll will
-	automatically be configured to build with Qt 4 if the version
-	of qmake found in $QTDIR/bin:$PATH is for Qt 4 (or if $QMAKE
-	is set to such a version).</p>
-
-      <p>There seems to be a few problems in Qt 4.4.0 (2008-08-23), 
-	resulting in problems in displaying the Recoll result list. I
-	suggest avoiding this release. Qt 4.3.x and
-	4.4.1 work fine.</p>
-
-      <p><b>Recoll 1.11.0 is out</b>. This version has	relatively 
-	<a href="CHANGES.html">extensive changes</a>
-	(<a href="pics/recoll0.png"> pic</a>): , and needs a full
-	indexation after installation. I hope that some brave souls
-	will be willing to help with shaking the last initial
-	bugs: <a href="recoll-1.11.0.tar.gz">
-	  recoll-1.11.0.tar.gz</a>. </p>
+	xapian-core installation. You will find	source and binary
+	packages on the <a href="http://www.xapian.org/download.php">
+	  Xapian download page</a>. 
+	Recoll 1.11 needs at least xapian 1.0.5, and I can see no
+	reason not to use the latest 1.0 Xapian (1.0.9 currently).</p>
+      <table>
+	<tr><td valign="top">Qt:</td>
+	  <td>
+	  You can build with Qt 3.3 or Qt 4. Recoll will
+	  automatically be configured to build with Qt 4 if the version
+	  of qmake found in $QTDIR/bin:$PATH is for Qt 4.</td></tr>
+	<tr><td></td><td>
+	  There seems to be a few issues in Qt 4.4.0 (2008-08-23), 
+	  resulting in problems when displaying the Recoll result list. I
+	  suggest avoiding this release. Qt 4.3.x and
+	  4.4.1 work fine.</td></tr>
+      </table>
 
       <p>Older recoll releases:
-	<a href="recoll-1.10.5.tar.gz">1.10.5</a>.
-	<a href="recoll-1.10.0.tar.gz">1.10.0</a>.
+	<a href="recoll-1.10.6.tar.gz">1.10.6</a>.
 	<a href="recoll-1.9.0.tar.gz">1.9.0</a>.
 	<a href="older/recoll-1.8.2.tar.gz">1.8.2</a>.
 	<a href="older/recoll-1.7.6.tar.gz">1.7.6</a>.
@@ -158,7 +162,8 @@
       <h2><a name="rpms">Packages</a></h2>
 
       <p>The executables inside the binary rpms have a static link to
-	xapian 1.0.[4-8], there is no real dependency except Qt 3.3. 
+	xapian 1.0.[4-9], there is no real dependency except Qt 3.3
+	(or Qt 4.1 when mentioned). 
 	The Fedora and Mandriva packages unfortunately think that they
 	depend on exiftool (which is needed by the little
 	used jpeg info filter), due to excessive rpmbuild
@@ -169,42 +174,48 @@
 
       <p><b>Fedora Core</b>
 	FC6 RPM: 
-	<a href="fc6/recoll-1.10.6-1.i386.rpm">
-	  fc6/recoll-1.10.6-1.i386.rpm</a>. 
+	<a href="fc6/recoll-1.11.0-1.i386.rpm">
+	  recoll-1.11.0-1.i386.rpm</a>. 
 	Source: 
-	<a href="fc6/recoll-1.10.6-1.src.rpm">
-	  recoll-1.10.6-1.src.rpm</a>
+	<a href="fc6/recoll-1.11.0-1.src.rpm">
+	  recoll-1.11.0-1.src.rpm</a>
 	This package also installs and runs on Fedora 9.
       </p>
 
       <p><b>Mandriva 2006</b>  (also works on 2005 and 2007). 
 	RPM: 
-	<a href="mandriva2006/recoll-1.10.6-0.1.20060mdk.i586.rpm">
-	  recoll-1.10.6-0.1.20060mdk.i586.rpm</a>. 
+	<a href="mandriva2006/recoll-1.11.0-0.1.20060mdk.i586.rpm">
+	  recoll-1.11.0-0.1.20060mdk.i586.rpm</a>. 
 	Source: 
-	<a href="mandriva2006/recoll-1.10.6-0.1.20060mdk.src.rpm">
-	  recoll-1.10.6-0.1.20060mdk.src.rpm</a>
+	<a href="mandriva2006/recoll-1.11.0-0.1.20060mdk.src.rpm">
+	  recoll-1.11.0-0.1.20060mdk.src.rpm</a>
       </p>
 
-      <p><b>Suse 10.3</b> 
+      <p><b>Suse 10.3 / 11.0</b> 
 	RPM: 
-	<a href="suse10.3/recoll-1.10.6-0.i586.rpm">
-	  recoll-1.10.6-0.i586.rpm</a>. 
+	<a href="suse10.3/recoll-1.11.0-0.i586.rpm">
+	  recoll-1.11.0-0.i586.rpm</a>. 
 	Source: 
-	<a href="suse10.3/recoll-1.10.6-0.src.rpm">
-	  recoll-1.10.6-0.src.rpm</a>
+	<a href="suse10.3/recoll-1.11.0-0.src.rpm">
+	  recoll-1.11.0-0.src.rpm</a><br>
+	If you build from source on OpenSuse 11, note that the default
+	qt4 version is 4.4.0 which will badly display the result list
+	icons. Use qt3 or install a newer version of qt4.
       </p>
 
       <p><b>Ubuntu 6.06 dapper / edgy / gutsy / hardy</b>
-	<a href="debian/dapper/recoll_1.10.6-0ubuntu1_i386.deb">
-	  recoll_1.10.6-0ubuntu1_i386.deb</a> 
+	<a href="debian/dapper/recoll_1.11.0-0ubuntu1_i386.deb">
+	  recoll_1.11.0-0ubuntu1_i386.deb</a> 
 	<a href="debian/dapper/">debian/dapper</a>. This package was
 	built on "dapper" and appears to work correctly on later
 	Ubuntu releases. This package is not configured for real-time
-	indexing. Here is a package for Ubuntu 8.04 Hardy which
-	is:
-	<a href="debian/hardy/recoll_1.10.6-0ubuntu1_i386.deb">
-	  recoll_1.10.6-0ubuntu1_i386.deb</a> 
+	indexing.</p>
+      <p>Here is a package for Ubuntu 8.04 Hardy which supports
+	real-time indexing. It is also built for qt4, so this must be
+	installed on the target system. Avoid qt 4.4.0 (from hardy
+	backports). The standard 4.3.x is fine (or 4.4.1 and later)
+	<a href="debian/hardy/recoll_1.11.1-0ubuntu1_i386.deb">
+	  recoll_1.11.1-0ubuntu1_i386.deb</a> 
       </p>
 
       <p><b>Debian unstable</b> Recoll is in the package repository,
@@ -215,7 +226,7 @@
       <h2><a name="otherbinary">Binary bundles</a></h2>
 
       <p>These are just prebuilt trees (without the source files).
-	The executables were built with xapian 1.0.5 (patched for the
+	The executables were built with xapian 1.0.8 (patched for the
 	NEAR bug) and libiconv 1.9.2 (where relevant) as static
 	libraries. They depend on Qt 3.3. For Solaris, you should be
 	able to find a Qt package 
@@ -224,31 +235,30 @@
       <p>The installation instructions are <a
         href="usermanual/rcl.install.binary.html"> there</a>.</p>
 
-      <p><span class="application">FreeBSD</span> 6.3 i386: 
-	<a href="freebsd/recoll-1.10.6-FreeBSD-6.3-STABLE.tgz">
-	  recoll-1.10.6-FreeBSD-6.3-STABLE.tgz</a>
+      <p><span class="application">FreeBSD</span> 6.4 i386: 
+	<a href="freebsd/recoll-1.11.0-FreeBSD-6.4-PRERELEASE.tgz">
+	  recoll-1.11.0-FreeBSD-6.4-PRERELEASE.tgz</a>
       </p>
 
       <p><span class="application">Solaris 8</span> sparc. 
       Note to Solaris users: you need to perform the initial
       indexing pass with "recollindex", not the recoll GUI indexing
       thread. See <a href="BUGS.html">errata</a>.
-      <a href="sunos/recoll-1.10.6-SunOS-5.8.tgz">
-        recoll-1.10.6-SunOS-5.8.tgz</a>.
+      <a href="sunos/recoll-1.11.0-SunOS-5.8.tgz">
+        recoll-1.11.0-SunOS-5.8.tgz</a>.
 
       <p>Recoll also builds and runs on Solaris 10, but, given the
 	situation of open source packages for Solaris (very old Qt on
 	the Companion CD, inconsistent versions of the compiler and
 	non-threaded version of Qt on sunfreeware), I've come to the
 	temporary conclusion that you are better off building than
-	trying to install packages. The approach I recently tried and
-	which worked was to:
+	trying to install packages. The approach I tried a couple of
+	months ago and which worked was to:
 	<ul>
 	  <li>Install gcc 3.4.6 and gnu make from the sunfreeware 
 	    packages (go to /usr/local). I guess that the gcc in
 	    /usr/sfw should be ok too here.</li>
-	  <li>Compile xapian-core and install it (with prefix
-	    /usr/local).</li>
+	  <li>Compile xapian-core and install it (with prefix /usr/local).</li>
 	  <li>Configure and install Qt. The following config worked for me,
 	    with Qt 3.3.8:
 <pre>
@@ -262,8 +272,8 @@
 	    QMAKESPEC=/usr/local/Trolltech/Qt-3.3.8/mkspecs/solaris-g++
 	    and add $QTDIR/bin to the PATH then configure, make and
 	    install Recoll</li>
-	  <li>Don't forget to use recollindex for the first index
-	    build, recoll does not work for this (exception handling
+	  <li>Don't forget to use <tt>recollindex</tt> for the first index
+	    build, <tt>recoll</tt> does not work for this (exception handling
 	    mystery probably).</li>
 	</ul>
 	</p>
@@ -276,8 +286,7 @@
       <p>There are ports for both xapian-core
 	and recoll in the standard tree, you may just need to update
 	your ports (cvsup, portsnap), or you can get the ports from
-	the FreeBSD site. The ports are not updated for the xapian
-	NEAR problem though.
+	the FreeBSD site. 
 	<a href="http://cvsweb.freebsd.org/ports/databases/xapian-core">
 	  xapian port</a> 
 	<a href="http://cvsweb.freebsd.org/ports/deskutils/recoll">
@@ -285,7 +294,7 @@
 
       <h2><a name="translations">Translations</a></h2>
 
-      <p>Some of the translations for 1.10 are incomplete. The source
+      <p>Most of the translations for 1.11 are incomplete. The source
 	translation files are included in the source release. If your
 	language has some english messages left and you want to take a
 	shot at fixing the problem, you can send the results to
@@ -301,11 +310,13 @@
       </p>
 
       <p><a href="translations/recoll_xx.ts">recoll_xx.ts</a> is a blank
-	Recoll 1.10 message file, handy to work on a new translation.</p>
+	Recoll 1.11 message file, handy to work on a new translation.</p>
 
-      <h3>Updated 1.10 translations that became available after the
+      <h3>Updated 1.11 translations that became available after the
 	release:</h3>
 
+      <p>None for now :(</p>
+<!--
       <p>German. 
 	<a href="translations/recoll_de.ts">recoll_de.ts</a>
 	<a href="translations/recoll_de.qm">recoll_de.qm</a>
@@ -318,7 +329,6 @@
 	<a href="translations/recoll_ru.ts">recoll_ru.ts</a>
 	<a href="translations/recoll_ru.qm">recoll_ru.qm</a>
 	</p> 
-<!--
       <p><b>Italian</b>. Thanks to Mario, Christian and Giovanni for this.
 	<a href="translations/recoll_it.ts">recoll_it.ts</a>
 	<a href="translations/recoll_it.qm">recoll_it.qm</a>
@@ -327,7 +337,6 @@
 	<a href="translations/recoll_tr.ts">recoll_tr.ts</a>
 	<a href="translations/recoll_tr.qm">recoll_tr.qm</a>
 	</p> 
-
 -->
 
     </div>
