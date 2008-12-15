@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.27 2008-12-05 11:09:31 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.28 2008-12-15 09:24:24 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,8 @@ namespace Rcl {
 
 typedef  vector<SearchDataClause *>::iterator qlist_it_t;
 typedef  vector<SearchDataClause *>::const_iterator qlist_cit_t;
+
+static const int original_term_wqf_booster = 10;
 
 bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 {
@@ -172,8 +174,10 @@ bool SearchData::getTerms(vector<string>& terms,
     return true;
 }
 
-// Splitter callback for breaking a user query string into simple
-// terms and phrases. 
+// Splitter callback for breaking a user string into simple terms and
+// phrases. This is for parts of the user entry which would appear as
+// a single word because there is no white space inside, but are
+// actually multiple terms to rcldb (ie term1,term2)
 class wsQData : public TextSplitCB {
  public:
     wsQData(const StopList &_stops) 
@@ -191,32 +195,33 @@ class wsQData : public TextSplitCB {
 	return true;
     }
     const StopList &stops;
-    int alltermcount; // Count of terms including stopwords: this is
-		      // for adjusting phrase/near slack
+    // Count of terms including stopwords: this is for adjusting
+    // phrase/near slack
+    int alltermcount; 
 };
 
-/** 
- * Translate a user compound string as may be entered in recoll's
- * search entry fields, ex: [term1 "a phrase" term3] into a xapian
- * query tree.
- * The object keeps track of the query terms and term groups while 
- * translating.
- */
+// A class used to translate a user compound string (*not* a query
+// language string) as may be entered in any_terms/all_terms search
+// entry fields, ex: [term1 "a phrase" term3] into a xapian query
+// tree.
+// The object keeps track of the query terms and term groups while
+// translating.
 class StringToXapianQ {
 public:
-    StringToXapianQ(Db& db, const string &stmlng, bool boostUser)
-	: m_db(db), m_stemlang(stmlng), m_doBoostUserTerms(boostUser)
+    StringToXapianQ(Db& db, const string& prefix, 
+		    const string &stmlng, bool boostUser)
+	: m_db(db), m_prefix(prefix), m_stemlang(stmlng), 
+	  m_doBoostUserTerms(boostUser)
     { }
 
     bool processUserString(const string &iq,
-			   const string &prefix,
 			   string &ermsg,
 			   list<Xapian::Query> &pqueries, 
 			   const StopList &stops,
 			   int slack = 0, bool useNear = false);
-
-    bool getTerms(vector<string>& terms, 
-		  vector<vector<string> >& groups) 
+    // After processing the string: return search terms and term
+    // groups (ie: for highlighting)
+    bool getTerms(vector<string>& terms, vector<vector<string> >& groups) 
     {
 	terms.insert(terms.end(), m_terms.begin(), m_terms.end());
 	groups.insert(groups.end(), m_groups.begin(), m_groups.end());
@@ -226,8 +231,15 @@ public:
 private:
     void stripExpandTerm(bool dont, const string& term, list<string>& exp, 
 		      string& sterm);
+    // After splitting entry on whitespace: process non-phrase element
+    void processSimpleSpan(const string& span, list<Xapian::Query> &pqueries);
+    // Process phrase/near element
+    void StringToXapianQ::processPhraseOrNear(wsQData *splitData, 
+					      list<Xapian::Query> &pqueries,
+					      bool useNear, int slack);
 
     Db&           m_db;
+    const string& m_prefix;
     const string& m_stemlang;
     bool          m_doBoostUserTerms;
     // Single terms and phrases resulting from breaking up text;
@@ -348,25 +360,100 @@ static void addPrefix(list<string>& terms, const string& prefix)
 	it->insert(0, prefix);
 }
 
+void StringToXapianQ::processSimpleSpan(const string& span, 
+					list<Xapian::Query> &pqueries)
+{
+    list<string> exp;  
+    string sterm; // dumb version of user term
+    stripExpandTerm(false, span, exp, sterm);
+    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
+    addPrefix(exp, m_prefix);
+    // Push either term or OR of stem-expanded set
+    Xapian::Query xq(Xapian::Query::OP_OR, exp.begin(), exp.end());
+
+    // If sterm (simplified original user term) is not null, give it a
+    // relevance boost. We do this even if no expansion occurred (else
+    // the non-expanded terms in a term list would end-up with even
+    // less wqf). This does not happen if there are wildcards anywhere
+    // in the search.
+    if (m_doBoostUserTerms && !sterm.empty()) {
+	xq = Xapian::Query(Xapian::Query::OP_OR, 
+			   xq, 
+			   Xapian::Query(m_prefix+sterm, 
+					 original_term_wqf_booster));
+    }
+    pqueries.push_back(xq);
+}
+
+// User entry element had several terms: transform into a PHRASE or
+// NEAR xapian query, the elements of which can themselves be OR
+// queries if the terms get expanded by stemming or wildcards (we
+// don't do stemming for PHRASE though)
+void StringToXapianQ::processPhraseOrNear(wsQData *splitData, 
+					  list<Xapian::Query> &pqueries,
+					  bool useNear, int slack)
+{
+    Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
+	Xapian::Query::OP_PHRASE;
+    list<Xapian::Query> orqueries;
+    bool hadmultiple = false;
+    vector<vector<string> >groups;
+
+    // Go through the list and perform stem/wildcard expansion for each element
+    for (vector<string>::iterator it = splitData->terms.begin();
+	 it != splitData->terms.end(); it++) {
+	// Adjust when we do stem expansion. Not inside phrases, and
+	// some versions of xapian will accept only one OR clause
+	// inside NEAR, all others must be leafs.
+	bool nostemexp = (op == Xapian::Query::OP_PHRASE) || hadmultiple;
+
+	string sterm;
+	list<string>exp;
+	stripExpandTerm(nostemexp, *it, exp, sterm);
+	groups.push_back(vector<string>(exp.begin(), exp.end()));
+	addPrefix(exp, m_prefix);
+	orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
+					  exp.begin(), exp.end()));
+#ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
+	if (exp.size() > 1) 
+	    hadmultiple = true;
+#endif
+    }
+
+    // Generate an appropriate PHRASE/NEAR query with adjusted slack
+    // For phrases, give a relevance boost like we do for original terms
+    Xapian::Query xq(op, orqueries.begin(), orqueries.end(),
+		     splitData->alltermcount + slack);
+    if (op == Xapian::Query::OP_PHRASE)
+	xq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, xq, 
+			   original_term_wqf_booster);
+    pqueries.push_back(xq);
+
+    // Add all combinations of NEAR/PHRASE groups to the highlighting data. 
+    vector<vector<string> > allcombs;
+    vector<string> comb;
+    multiply_groups(groups.begin(), groups.end(), comb, allcombs);
+    m_groups.insert(m_groups.end(), allcombs.begin(), allcombs.end());
+}
+
 /** 
- * Turn string into list of xapian queries. There is little
- * interpretation done on the string (no +term -term or filename:term
- * stuff). We just separate words and phrases, and interpret
- * capitalized terms as wanting no stem expansion. 
+ * Turn user entry string (NOT query language) into a list of xapian queries.
+ * We just separate words and phrases, and do wildcard and stemp expansion,
+ *
  * The final list contains one query for each term or phrase
  *   - Elements corresponding to a stem-expanded part are an OP_OR
  *     composition of the stem-expanded terms (or a single term query).
- *   - Elements corresponding to a phrase are an OP_PHRASE composition of the
- *     phrase terms (no stem expansion in this case)
+ *   - Elements corresponding to phrase/near are an OP_PHRASE/NEAR
+ *     composition of the phrase terms (no stem expansion in this case)
  * @return the subquery count (either or'd stem-expanded terms or phrase word
  *   count)
  */
 bool StringToXapianQ::processUserString(const string &iq,
-					const string &prefix,
 					string &ermsg,
 					list<Xapian::Query> &pqueries,
 					const StopList& stops,
-					int slack, bool useNear
+					int slack, 
+					bool useNear
 					)
 {
     LOGDEB(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
@@ -374,11 +461,12 @@ bool StringToXapianQ::processUserString(const string &iq,
     m_terms.clear();
     m_groups.clear();
 
-    // Split input into user-level words and double-quoted phrases:
-    // word1 word2 "this is a phrase". The text splitter may still
-    // decide that the resulting "words" are really phrases, this
-    // depends on separators: [paul@dom.net] would still be a word
-    // (span), but [about:me] will probably be handled as a phrase.
+    // Simple whitespace-split input into user-level words and
+    // double-quoted phrases: word1 word2 "this is a phrase". The text
+    // splitter may further still decide that the resulting "words"
+    // are really phrases, this depends on separators: [paul@dom.net]
+    // would still be a word (span), but [about:me] will probably be
+    // handled as a phrase.
     list<string> phrases;
     TextSplit::stringToStrings(iq, phrases);
 
@@ -387,10 +475,10 @@ bool StringToXapianQ::processUserString(const string &iq,
     try {
 	for (list<string>::iterator it = phrases.begin(); 
 	     it != phrases.end(); it++) {
-	    LOGDEB(("strToXapianQ: phrase or word: [%s]\n", it->c_str()));
+	    LOGDEB0(("strToXapianQ: phrase/word: [%s]\n", it->c_str()));
 
 	    // If there are multiple spans in this element, including
-	    // at least one composite, we have to do something
+	    // at least one composite, we have to increase the slack
 	    // else a phrase query including a span would fail. 
 	    // Ex: "term0@term1 term2" is onlyspans-split as:
 	    //   0 term0@term1             0   12
@@ -419,81 +507,15 @@ bool StringToXapianQ::processUserString(const string &iq,
 		// used to: splitData = &splitDataW;
 	    }
 
-	    LOGDEB(("strToXapianQ: splitter term count: %d\n", 
-		     splitData->terms.size()));
+	    LOGDEB0(("strToXapianQ: termcount: %d\n", splitData->terms.size()));
 	    switch (splitData->terms.size()) {
-	    case 0: continue;// ??
+	    case 0: 
+		continue;// ??
 	    case 1: 
-		// Just a term. Still may be expanded (by stem or
-		// wildcard) to an OR list.
-		{
-		    string term = splitData->terms.front();
-		    list<string> exp;  
-		    string sterm; // dumb version of user term
-		    stripExpandTerm(false, term, exp, sterm);
-		    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
-		    // Push either term or OR of stem-expanded set
-		    addPrefix(exp, prefix);
-		    Xapian::Query xq(Xapian::Query::OP_OR, 
-				     exp.begin(), exp.end());
-
-		    // If sterm is not null, give a relevance boost to
-		    // the original term. We do this even if no
-		    // expansion occurred (else the non-expanded terms
-		    // in a term list would end-up with even less
-		    // wqf). This does not happen if there are
-		    // wildcards anywhere in the search.
-		    if (m_doBoostUserTerms && !sterm.empty()) {
-			xq = Xapian::Query(Xapian::Query::OP_OR, xq, 
-					   Xapian::Query(prefix+sterm, 10));
-		    }
-		    pqueries.push_back(xq);
-		}
+		processSimpleSpan(splitData->terms.front(), pqueries);
 		break;
-
 	    default:
-		// Element had several terms: transform into a PHRASE
-		// or NEAR xapian query, the elements of which can
-		// themselves be OR queries if the terms get expanded
-		// by stemming or wildcards (we don't do stemming for
-		// PHRASE though)
-		Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
-		Xapian::Query::OP_PHRASE;
-		list<Xapian::Query> orqueries;
-		bool hadmultiple = false;
-		vector<vector<string> >groups;
-		for (vector<string>::iterator it = splitData->terms.begin();
-		     it != splitData->terms.end(); it++) {
-		    // Some version of xapian will accept only one OR clause
-		    // inside NEAR, all others must be leafs
-		    bool nostemexp = 
-			op == Xapian::Query::OP_PHRASE || hadmultiple;
-
-		    string sterm;
-		    list<string>exp;
-		    stripExpandTerm(nostemexp, *it, exp, sterm);
-		    groups.push_back(vector<string>(exp.begin(), exp.end()));
-		    addPrefix(exp, prefix);
-		    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
-						      exp.begin(), exp.end()));
-#ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
-		    if (exp.size() > 1) 
-			hadmultiple = true;
-#endif
-		}
-
-		pqueries.push_back(Xapian::Query(op,
-						 orqueries.begin(),
-						 orqueries.end(),
-						 splitData->alltermcount 
-						 + slack));
-		// Add NEAR/PHRASE groups to the highlighting data. Must
-		// push all combinations
-		vector<vector<string> > allcombs;
-		vector<string> comb;
-		multiply_groups(groups.begin(), groups.end(), comb, allcombs);
-		m_groups.insert(m_groups.end(), allcombs.begin(), 
-				allcombs.end());
+		processPhraseOrNear(splitData, pqueries, useNear, slack);
 	    }
 	}
     } catch (const Xapian::Error &e) {
@@ -547,8 +569,8 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	(m_parentSearch && !m_parentSearch->haveWildCards()) || 
 	(m_parentSearch == 0 && !m_haveWildCards);
 
-    StringToXapianQ tr(db, l_stemlang, doBoostUserTerm);
-    if (!tr.processUserString(m_text, prefix, m_reason, pqueries, 
+    StringToXapianQ tr(db, prefix, l_stemlang, doBoostUserTerm);
+    if (!tr.processUserString(m_text, m_reason, pqueries, 
 			      db.getStopList()))
 	return false;
     if (pqueries.empty()) {
@@ -617,8 +639,8 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     }
     string s = string("\"") + m_text + string("\"");
     bool useNear = (m_tp == SCLT_NEAR);
-    StringToXapianQ tr(db, l_stemlang, doBoostUserTerm);
-    if (!tr.processUserString(s, prefix, m_reason, pqueries, db.getStopList(),
+    StringToXapianQ tr(db, prefix, l_stemlang, doBoostUserTerm);
+    if (!tr.processUserString(s, m_reason, pqueries, db.getStopList(),
 			      m_slack, useNear))
 	return false;
     if (pqueries.empty()) {
