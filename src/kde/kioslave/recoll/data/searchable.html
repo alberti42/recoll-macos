@@ -2,9 +2,6 @@
   <head>
     <title>Recoll searchable HTML</title>
 
-  </head>
-  <body ondblclick="dictionary()">
-
     <script language="JavaScript">
       function dictionary() {
         if (navigator.appName != 'Microsoft Internet Explorer') {
@@ -21,12 +18,15 @@
 
      function recoll(t) {
        if (t) {
-         window.location.href = 
-	     'recoll://search/query?qtp=a&p=0&q=' +
-	     encodeURIComponent(t);
+         window.location.href = 'recoll://search/query?qtp=a&p=0&q=' +
+              encodeURIComponent(t);
        }   
      }
    </script>
+
+  </head>
+
+  <body ondblclick="dictionary()">
 
     <h2>A <b>Recoll</b>-searchable HTML page </h2>
 

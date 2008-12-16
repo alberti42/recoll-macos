@@ -76,6 +76,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.11. Search tips, shortcuts
 
+                             3.11.1. Terms and search expansion
+
+                             3.11.2. Working with phrases and proximity
+
+                             3.11.3. Others
+
                 3.12. Customizing the search interface
 
    4. Programming interface
@@ -1036,6 +1042,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 3.11. Search tips, shortcuts
 
+  3.11.1. Terms and search expansion
+
    Term completion. Typing Esc Space in the simple search entry field while
    entering a word will either complete the current word if its beginning
    matches a unique term in the index, or open a window to propose a list of
@@ -1045,35 +1053,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    word in the result list or in a preview window will copy it to the simple
    search entry field.
 
+   Wildcards. Wildcards can be used inside search terms in all forms of
+   searches. More about wildcards.
+
    Disabling stem expansion. Entering a capitalized word in any search field
    will prevent stem expansion (no search for gardening if you enter Garden
    instead of garden). This is the only case where character case should make
    a difference for a Recoll search. You can also disable stem expansion or
    change the stemming language in the preferences.
-
-   Phrases. A phrase can be looked for by enclosing it in double quotes.
-   Example: "user manual" will look only for occurrences of user immediately
-   followed by manual. You can use the This exact phrase field of the
-   advanced search dialog to the same effect. Phrases can be entered along
-   simple terms in all simple or advanced search entry fields (except This
-   exact phrase).
-
-   Browsing the result list inside a preview window (1.5). Entering
-   Shift-Down or Shift-Up (Shift + an arrow key) in a preview window will
-   display the next or the previous document from the result list. Any
-   secondary search currently active will be executed on the new document.
-
-   Forced opening of a preview window (1.6). You can use Shift+Click on a
-   result list Preview link to force the creation of a preview window instead
-   of a new tab in the existing one.
-
-   AutoPhrases (1.5). This option can be set in the preferences dialog. If it
-   is set, a phrase will be automatically built and added to simple searches
-   when looking for Any terms. This will not change radically the results,
-   but will give a relevance boost to the results where the search terms
-   appear as a phrase. Ie: searching for virtual reality will still find all
-   documents where either virtual or reality or both appear, but those which
-   contain virtual reality should appear sooner in the list.
 
    Finding related documents. Selecting the Find similar documents entry in
    the result list paragraph right-click menu will select a set of
@@ -1085,12 +1072,49 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    specify them as ordinary terms in normal search fields (Recoll used to
    index all directories in the file path as terms. This has been abandoned
    as it did not seem really useful). Alternatively, you can use the specific
-   file name search which will only look for file names and can use wildcard
-   expansion.
+   file name search which will only look for file names, and may be faster
+   than the generic search especially when using wildcards.
+
+     ----------------------------------------------------------------------
+
+  3.11.2. Working with phrases and proximity
+
+   Phrases and Proximity searches. A phrase can be looked for by enclosing it
+   in double quotes. Example: "user manual" will look only for occurrences of
+   user immediately followed by manual. You can use the This exact phrase
+   field of the advanced search dialog to the same effect. Phrases can be
+   entered along simple terms in all simple or advanced search entry fields
+   (except This exact phrase).
+
+   AutoPhrases. This option can be set in the preferences dialog. If it is
+   set, a phrase will be automatically built and added to simple searches
+   when looking for Any terms. This will not change radically the results,
+   but will give a relevance boost to the results where the search terms
+   appear as a phrase. Ie: searching for virtual reality will still find all
+   documents where either virtual or reality or both appear, but those which
+   contain virtual reality should appear sooner in the list.
+
+     ----------------------------------------------------------------------
+
+  3.11.3. Others
+
+   Using fields. You can use the query language and field specifications to
+   only search certain parts of documents. This can be especially helpful
+   with email, for example only searching emails from a specific originator:
+   search tips from:helpfulgui
 
    Query explanation. You can get an exact description of what the query
    looked for, including stem expansion, and Boolean operators used, by
    clicking on the result list header.
+
+   Browsing the result list inside a preview window. Entering Shift-Down or
+   Shift-Up (Shift + an arrow key) in a preview window will display the next
+   or the previous document from the result list. Any secondary search
+   currently active will be executed on the new document.
+
+   Forced opening of a preview window. You can use Shift+Click on a result
+   list Preview link to force the creation of a preview window instead of a
+   new tab in the existing one.
 
    Closing previews. Entering ^W in a tab will close it (and, for the last
    tab, close the preview window). Entering Esc will close the preview window
