@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: debuglog.cpp,v 1.5 2007-01-16 10:58:09 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: debuglog.cpp,v 1.6 2008-12-16 14:20:10 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -29,9 +29,16 @@ static char rcsid[] = "@(#$Id: debuglog.cpp,v 1.5 2007-01-16 10:58:09 dockes Exp
 #include <new.h>
 #endif
 
-#include <stack>
+#include <string>
+#include <set>
+#include <list>
+using std::set;
+using std::string;
+using std::list;
 
 #include "debuglog.h"
+#include "pathut.h"
+#include "smallut.h"
 
 #ifndef freeZ 
 #define freeZ(X) {if (X) {free(X);X=0;}}
@@ -152,7 +159,26 @@ int DebugLogFileWriter::put(const char *s)
     return impl ? impl->put(s) : -1;
 };
 
-
+static set<string> yesfiles;
+static void initfiles()
+{
+    const char *cp = getenv("DEBUGLOG_FILES");
+    if (!cp)
+	return;
+    list<string> files;
+    stringToTokens(cp, files, ",");
+    yesfiles.insert(files.begin(), files.end());
+}
+static bool fileInFiles(const string& file)
+{
+    string sf = path_getsimple(file);
+    if (yesfiles.find(sf) != yesfiles.end()) {
+	//fprintf(stderr, "Debug ON: %s \n", file.c_str());
+	return true;
+    }
+    //fprintf(stderr, "Debug OFF: %s \n", file.c_str());
+    return false;
+}
 
 #ifdef _WINDOWS
 #include <windows.h>
@@ -186,6 +212,12 @@ DebugLog::prolog(int lev, const char *f, int line)
 {
     if (!writer)
 	return;
+    if (!yesfiles.empty() && !fileInFiles(f)) {
+	fileyes = false;
+	return;
+    } else {
+	fileyes = true;
+    }
     if (dodate) {
 	char dts[100];
 	datestring(dts);
@@ -210,7 +242,7 @@ DebugLog::prolog(int lev, const char *f, int line)
 void 
 DebugLog::log(const char *s ...)
 {
-    if (!writer)
+    if (!writer || !fileyes)
 	return;
     va_list ap;
     va_start(ap,s);
@@ -308,6 +340,7 @@ DebugLog *getdbl()
     if (!(dbl = (DebugLog *)pthread_getspecific(dbl_key))) {
 	dbl = new DebugLog;
 	dbl->setwriter(theWriter);
+	initfiles();
 	status = pthread_setspecific(dbl_key, dbl);
 	if (status) {
 	    fprintf(stderr, "debuglog: cant initialize pthread "
@@ -326,6 +359,7 @@ DebugLog *getdbl()
     if (!dbl) {
 	dbl = new DebugLog;
 	dbl->setwriter(theWriter);
+	initfiles();
     }
     return dbl;
 }

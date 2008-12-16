@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.1 2008-11-19 12:19:40 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.2 2008-12-16 14:20:10 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -42,7 +42,7 @@ struct HiliteData {
  */
 class PlainToRich {
 public:
-    PlainToRich(bool inputhtml = false) : m_inputhtml(inputhtml) {}
+    PlainToRich() : m_inputhtml(false) {}
     virtual ~PlainToRich() {}
     void set_inputhtml(bool v) {m_inputhtml = v;}
 

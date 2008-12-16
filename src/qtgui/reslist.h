@@ -1,6 +1,6 @@
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
-/* @(#$Id: reslist.h,v 1.16 2008-09-29 07:13:47 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: reslist.h,v 1.17 2008-12-16 14:20:10 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
 
@@ -25,6 +25,27 @@ class Q3PopupMenu;
 #include "filtseq.h"
 #include "refcntr.h"
 #include "rcldoc.h"
+#include "reslistpager.h"
+
+class ResList;
+
+class QtGuiResListPager : public ResListPager {
+public:
+    QtGuiResListPager(ResList *p, int ps) 
+	: ResListPager(ps), m_parent(p) 
+    {}
+    virtual bool append(const string& data);
+    virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
+    virtual string trans(const string& in);
+    virtual string detailsLink();
+    virtual const string &parFormat();
+    virtual string nextUrl();
+    virtual string prevUrl();
+    virtual string pageTop();
+    virtual string iconPath(const string& mt);
+private:
+    ResList *m_parent;
+};
 
 /**
  * Display a list of document records. The data can be out of the history 
@@ -39,6 +60,7 @@ class ResList : public QTEXTBROWSER
 {
     Q_OBJECT;
 
+    friend class QtGuiResListPager;
  public:
     ResList(QWidget* parent = 0, const char* name = 0);
     virtual ~ResList();
@@ -63,9 +85,10 @@ class ResList : public QTEXTBROWSER
     virtual void doubleClicked(int, int);
     virtual void resPageUpOrBack(); // Page up pressed
     virtual void resPageDownOrNext(); // Page down pressed
-    virtual void resultPageBack(); // Display previous page of results
-    virtual void resultPageFirst(); // Display first page of results
-    virtual void resultPageNext(); // Display next (or first) page of results
+    virtual void resultPageBack(); // Previous page of results
+    virtual void resultPageFirst(); // First page of results
+    virtual void resultPageNext(); // Next (or first) page of results
+    virtual void displayPage(); // Display current page
     virtual void menuPreview();
     virtual void menuEdit();
     virtual void menuCopyFN();
@@ -102,6 +125,7 @@ class ResList : public QTEXTBROWSER
     virtual void showQueryDetails();
 
  private:
+    QtGuiResListPager           *m_pager;
     // Raw doc source
     RefCntr<DocSequence>  m_baseDocSource;
     // Possibly filtered/sorted docsource (the one displayed)
@@ -111,8 +135,7 @@ class ResList : public QTEXTBROWSER
     DocSeqFiltSpec        m_filtspecs;
     // Docs for current page
     std::vector<Rcl::Doc> m_curDocs;
-    // First docnum (in m_docSource sequence) for current page
-    int                m_winfirst;
+
     // Translate from textedit paragraph number to relative
     // docnum. Built while we insert text into the qtextedit
     std::map<int,int>  m_pageParaToReldocnums;
@@ -122,6 +145,7 @@ class ResList : public QTEXTBROWSER
     list<int>          m_selDocs;
     int                m_listId;
 
+    
     virtual int docnumfromparnum(int);
     virtual int parnumfromdocnum(int);
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.50 2008-12-12 11:01:01 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.51 2008-12-16 14:20:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -50,7 +50,6 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.50 2008-12-12 11:01:01 dockes Exp
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
 
-
 class PlainToRichQtReslist : public PlainToRich {
 public:
     virtual ~PlainToRichQtReslist() {}
@@ -78,10 +77,10 @@ ResList::ResList(QWidget* parent, const char* name)
 #if (QT_VERSION >= 0x040000)
     connect(this, SIGNAL(selectionChanged()), this, SLOT(selecChanged()));
 #endif
-    m_winfirst = -1;
     m_curPvDoc = -1;
     m_lstClckMod = 0;
     m_listId = 0;
+    m_pager = new QtGuiResListPager(this, prefs.respagesize);
 }
 
 ResList::~ResList()
@@ -132,6 +131,7 @@ void ResList::setDocSource()
 							    m_sortspecs,
 							    title));
     }
+    m_pager->setDocSource(m_docSource);
     resultPageNext();
 }
 
@@ -149,7 +149,6 @@ void ResList::setFilterParams(const DocSeqFiltSpec& spec)
 
 void ResList::resetList() 
 {
-    m_winfirst = -1;
     m_curPvDoc = -1;
     // There should be a progress bar for long searches but there isn't 
     // We really want the old result list to go away, otherwise, for a
@@ -184,7 +183,6 @@ void ResList::languageChange()
 bool ResList::getTerms(vector<string>& terms, 
 		       vector<vector<string> >& groups, vector<int>& gslks)
 {
-    // We could just
     return m_baseDocSource->getTerms(terms, groups, gslks);
 }
 
@@ -198,12 +196,12 @@ list<string> ResList::expand(Rcl::Doc& doc)
 // Get document number from paragraph number
 int ResList::docnumfromparnum(int par)
 {
-    if (m_winfirst == -1)
+    if (m_pager->pageNumber() < 0)
 	return -1;
     std::map<int,int>::iterator it = m_pageParaToReldocnums.find(par);
     int dn;
     if (it != m_pageParaToReldocnums.end()) {
-        dn = m_winfirst + it->second;
+        dn = m_pager->pageNumber() * prefs.respagesize + it->second;
     } else {
         dn = -1;
     }
@@ -213,9 +211,12 @@ int ResList::docnumfromparnum(int par)
 // Get paragraph number from document number
 int ResList::parnumfromdocnum(int docnum)
 {
-    if (m_winfirst == -1 || docnum - m_winfirst < 0)
+    if (m_pager->pageNumber() < 0)
 	return -1;
-    docnum -= m_winfirst;
+    int winfirst = m_pager->pageNumber() * prefs.respagesize;
+    if (docnum - winfirst < 0)
+	return -1;
+    docnum -= winfirst;
     for (std::map<int,int>::iterator it = m_pageParaToReldocnums.begin();
 	 it != m_pageParaToReldocnums.end(); it++) {
 	if (docnum == it->second)
@@ -230,27 +231,28 @@ int ResList::parnumfromdocnum(int docnum)
 // result in a one-page change.
 bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 {
-    LOGDEB(("ResList::getDoc: docnum %d m_winfirst %d\n", docnum, m_winfirst));
+    LOGDEB(("ResList::getDoc: docnum %d winfirst %d\n", docnum, 
+	    m_pager->pageNumber() * prefs.respagesize));
     if (docnum < 0)
 	return false;
+    if (m_pager->pageNumber() < 0)
+	return false;
+    int winfirst = m_pager->pageNumber() * prefs.respagesize;
     // Is docnum in current page ? Then all Ok
-    if (docnum >= int(m_winfirst) && 
-	docnum < int(m_winfirst + m_curDocs.size())) {
-	doc = m_curDocs[docnum - m_winfirst];
+    if (docnum >= winfirst && docnum < winfirst + int(m_curDocs.size())) {
+	doc = m_curDocs[docnum - winfirst];
 	return true;
     }
 
     // Else we accept to page down or up but not further
-    if (docnum < int(m_winfirst) && 
-	docnum >= int(m_winfirst) - prefs.respagesize) {
+    if (docnum < winfirst && docnum >= winfirst - prefs.respagesize) {
 	resultPageBack();
-    } else if (docnum < 
-	       int(m_winfirst + m_curDocs.size()) + prefs.respagesize) {
+    } else if (docnum < winfirst + int(m_curDocs.size()) + prefs.respagesize) {
 	resultPageNext();
     }
-    if (docnum >= int(m_winfirst) && 
-	docnum < int(m_winfirst + m_curDocs.size())) {
-	doc = m_curDocs[docnum - m_winfirst];
+    winfirst = m_pager->pageNumber() * prefs.respagesize;
+    if (docnum >= winfirst && docnum < winfirst + int(m_curDocs.size())) {
+	doc = m_curDocs[docnum - winfirst];
 	return true;
     }
     return false;
@@ -323,23 +325,21 @@ void ResList::resPageDownOrNext()
 // 2 pages and show next page.
 void ResList::resultPageBack()
 {
-    if (m_winfirst <= 0)
-	return;
-    m_winfirst -= 2 * prefs.respagesize;
-    resultPageNext();
+    m_pager->resultPageBack();
+    displayPage();
 }
 
 // Go to the first page
 void ResList::resultPageFirst()
 {
-    m_winfirst = -1;
-    resultPageNext();
+    m_pager->resultPageFirst();
+    displayPage();
 }
 
 void ResList::append(const QString &text)
 {
     QTEXTBROWSER::append(text);
-#if 0
+#if 1
     {
 	FILE *fp = fopen("/tmp/debugreslist", "a");
 	fprintf(fp, "%s\n", (const char *)text.utf8());
@@ -348,268 +348,88 @@ void ResList::append(const QString &text)
 #endif
 }
 
+bool QtGuiResListPager::append(const string& data)
+{
+    LOGDEB1(("QtGuiReslistPager::append: %s\n", data.c_str()));
+    m_parent->append(QString::fromUtf8(data.c_str()));
+    return true;
+}
+bool QtGuiResListPager::append(const string& data, int i, const Rcl::Doc& doc)
+{
+    LOGDEB1(("QtGuiReslistPager::append: %d %s %s\n",
+	     i, doc.url.c_str(), doc.ipath.c_str()));
+    m_parent->setCursorPosition(0,0);
+    m_parent->ensureCursorVisible();
+    m_parent->m_pageParaToReldocnums[m_parent->paragraphs()] = i;
+    m_parent->m_curDocs.push_back(doc);
+    return append(data);
+}
+
+string QtGuiResListPager::trans(const string& in)
+{
+    return string((const char*)ResList::tr(in.c_str()).utf8());
+}
+string QtGuiResListPager::detailsLink()
+{
+    string chunk = "<a href=\"H-1\">";
+    chunk += (const char*)ResList::tr("(show query)");
+    chunk += "</a>";
+    return chunk;
+}
+const string& QtGuiResListPager::parFormat()
+{
+    static string parformat;
+    if (parformat.empty())
+	parformat = (const char*)prefs.reslistformat.utf8();
+    return parformat;
+}
+string QtGuiResListPager::nextUrl()
+{
+    return "n-1";
+}
+string QtGuiResListPager::prevUrl()
+{
+    return "p-1";
+}
+string QtGuiResListPager::pageTop() 
+{
+    m_parent->clear();
+    return string();
+}
+
+string QtGuiResListPager::iconPath(const string& mtype)
+{
+    string iconpath;
+    RclConfig::getMainConfig()->getMimeIconName(mtype, &iconpath);
+    return iconpath;
+}
+
 // Fill up result list window with next screen of hits
 void ResList::resultPageNext()
 {
-    if (m_docSource.isNull())
-	return;
+    m_pager->resultPageNext();
+    displayPage();
+}
 
-    int resCnt = m_docSource->getResCnt();
+void ResList::displayPage()
+{
+    // Query term colorization
+    static QStyleSheetItem *item;
+    if (!item) {
+	item = new QStyleSheetItem(styleSheet(), "termtag" );
+	if (item)
+	    item->setColor(prefs.qtermcolor);
+    }
+
+    m_curDocs.clear();
     m_pageParaToReldocnums.clear();
 
-    LOGDEB(("resultPageNext: rescnt %d, winfirst %d\n", resCnt,
-	    m_winfirst));
+    m_pager->displayPage();
 
-    bool hasPrev = false;
-    if (m_winfirst < 0) {
-	m_winfirst = 0;
-    } else {
-	m_winfirst += prefs.respagesize;
-    }
-    if (m_winfirst)
-	hasPrev = true;
-    emit prevPageAvailable(hasPrev);
-
-    // Get the next page of results.
-    vector<ResListEntry> respage;
-    int pagelen = m_docSource->getSeqSlice(m_winfirst, 
-					   prefs.respagesize, respage);
-
-    // If page was truncated, there is no next
-    bool hasNext = pagelen == prefs.respagesize;
-    emit nextPageAvailable(hasNext);
-
-    if (pagelen <= 0) {
-	// No results ? This can only happen on the first page or if the
-	// actual result list size is a multiple of the page pref (else
-	// there would have been no Next on the last page)
-	if (m_winfirst) {
-	    // Have already results. Let them show, just disable the
-	    // Next button. We'd need to remove the Next link from the page
-	    // too.
-	    // Restore the m_winfirst value
-	    m_winfirst -= prefs.respagesize;
-	    return;
-	}
-	clear();
-	QString chunk = "<qt><head></head><body><p>";
-	chunk += "<p><font size=+1><b>";
-	chunk += QString::fromUtf8(m_docSource->title().c_str());
-	chunk += "</b></font><br>";
-	chunk += "<a href=\"H-1\">";
-	chunk += tr("Show query details");
-	chunk += "</a><br>";
-	append(chunk);
-	append(tr("<p><b>No results found</b><br>"));
-	if (m_winfirst < 0)
-	    m_winfirst = -1;
-	return;
-    }
-
-    clear();
-    m_curDocs.clear();
-
-    // Query term colorization
-    QStyleSheetItem *item = new QStyleSheetItem(styleSheet(), "termtag" );
-    item->setColor(prefs.qtermcolor);
-
-    // Result paragraph format
-    string sformat = string(prefs.reslistformat.utf8());
-    LOGDEB(("resultPageNext: format: [%s]\n", sformat.c_str()));
-
-    // Display list header
-    // We could use a <title> but the textedit doesnt display
-    // it prominently
-    // Note: have to append text in chunks that make sense
-    // html-wise. If we break things up too much, the editor
-    // gets confused. Hence the use of the 'chunk' text
-    // accumulator
-    // Also note that there can be results beyond the estimated resCnt.
-    QString chunk = "<qt><head></head><body><p>";
-
-    chunk += "<font size=+1><b>";
-    chunk += QString::fromUtf8(m_docSource->title().c_str());
-    chunk += ".</b></font>";
-
-    chunk += "&nbsp;&nbsp;&nbsp;";
-
-    if (m_winfirst + pagelen < resCnt) {
-	chunk +=
-	    tr("Documents <b>%1-%2</b> out of at least <b>%3</b> for ")
-	    .arg(m_winfirst+1)
-	    .arg(m_winfirst+pagelen)
-	    .arg(resCnt);
-    } else {
-	chunk += tr("Documents <b>%1-%2</b> for ")
-	    .arg(m_winfirst+1)
-	    .arg(m_winfirst+pagelen);
-    }
-
-    chunk += "<a href=\"H-1\">";
-    chunk += tr("(show query)");
-    chunk += "</a>";
-
-    append(chunk);
-
-    HiliteData hdata;
-    m_docSource->getTerms(hdata.terms, hdata.groups, hdata.gslks);
-
-    // Insert results in result list window. We have to actually send
-    // the text to the widget (instead of setting the whole at the
-    // end), because we need the paragraph number each time we add a
-    // result paragraph (its diffult and error-prone to compute the
-    // paragraph numbers in parallel). We would like to disable
-    // updates while we're doing this, but couldn't find a way to make
-    // it work, the widget seems to become confused if appended while
-    // updates are disabled
-    //      setUpdatesEnabled(false);
-    for (int i = 0; i < pagelen; i++) {
-
-	Rcl::Doc &doc(respage[i].doc);
-	string& sh(respage[i].subHeader);
-	int percent;
-	if (doc.pc == -1) {
-	    percent = 0;
-	    // Document not available, maybe other further, will go on.
-	    doc.meta[Rcl::Doc::keyabs] = string(tr("Unavailable document").utf8());
-	} else {
-	    percent = doc.pc;
-	}
-	// Percentage of 'relevance'
-	char perbuf[10];
-	sprintf(perbuf, "%3d%% ", percent);
-
-	// Determine icon to display if any
-	string iconpath;
-	(void)rclconfig->getMimeIconName(doc.mimetype, &iconpath);
-
-	// Printable url: either utf-8 if transcoding succeeds, or url-encoded
-	string url;
-	printableUrl(rclconfig->getDefCharset(), doc.url, url);
-
-	// Make title out of file name if none yet
-	if (doc.meta[Rcl::Doc::keytt].empty()) {
-	    doc.meta[Rcl::Doc::keytt] = path_getsimple(url);
-	}
-
-	// Result number
-	char numbuf[20];
-	int docnumforlinks = m_winfirst + 1 + i;
-	sprintf(numbuf, "%d", docnumforlinks);
-
-	// Document date: either doc or file modification time
-	char datebuf[100];
-	datebuf[0] = 0;
-	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
-	    time_t mtime = doc.dmtime.empty() ?
-		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
-	    struct tm *tm = localtime(&mtime);
-#ifndef sun
-	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z", tm);
-#else
-	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%Z", tm);
-#endif
-	}
-
-	// Size information. We print both doc and file if they differ a lot
-	long fsize = -1, dsize = -1;
-	if (!doc.dbytes.empty())
-	    dsize = atol(doc.dbytes.c_str());
-	if (!doc.fbytes.empty())
-	    fsize = atol(doc.fbytes.c_str());
-	string sizebuf;
-	if (dsize > 0) {
-	    sizebuf = displayableBytes(dsize);
-	    if (fsize > 10 * dsize && fsize - dsize > 1000)
-		sizebuf += string(" / ") + displayableBytes(fsize);
-	} else if (fsize >= 0) {
-	    sizebuf = displayableBytes(fsize);
-	}
-
-	string abstract;
-	if (prefs.queryBuildAbstract && 
-	    (doc.syntabs || prefs.queryReplaceAbstract)) {
-	    abstract = m_docSource->getAbstract(doc);
-	} else {
-	    abstract = doc.meta[Rcl::Doc::keyabs];
-	}
-	// No need to call escapeHtml(), plaintorich handles it
-	list<string> lr;
-	PlainToRichQtReslist ptr;
-	ptr.plaintorich(abstract, lr, hdata);
-	string richabst = lr.front();
-
-	// Links;
-	string linksbuf;
-	char vlbuf[100];
-	if (canIntern(doc.mimetype, rclconfig)) { 
-	    sprintf(vlbuf, "\"P%d\"", docnumforlinks);
-	    linksbuf += string("<a href=") + vlbuf + ">" + "Preview" + "</a>" 
-		+ "&nbsp;&nbsp;";
-	}
-	if (!rclconfig->getMimeViewerDef(doc.mimetype).empty()) {
-	    sprintf(vlbuf, "E%d", docnumforlinks);
-	    linksbuf += string("<a href=") + vlbuf + ">" + "Open" + "</a>";
-	}
-
-	// Build the result list paragraph:
-	chunk = "";
-
-	// Subheader: this is used by history
-	if (!sh.empty())
-	    chunk += "<p><b>" + QString::fromUtf8(sh.c_str()) + "</p>\n<p>";
-	else
-	    chunk += "<p>";
-
-	// Configurable stuff
-	map<char,string> subs;
-	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
-	subs['D'] = datebuf;
-	subs['I'] = iconpath;
-	subs['i'] = doc.ipath;
-	subs['K'] = !doc.meta[Rcl::Doc::keykw].empty() ? 
-	    escapeHtml(doc.meta[Rcl::Doc::keykw]) + "<br>" : "";
-	subs['L'] = linksbuf;
-	subs['N'] = numbuf;
-	subs['M'] = doc.mimetype;
-	subs['R'] = perbuf;
-	subs['S'] = sizebuf;
-	subs['T'] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
-	subs['U'] = url;
-
-	string formatted;
-	pcSubst(sformat, formatted, subs);
-	chunk += QString::fromUtf8(formatted.c_str());
-
-	chunk += "</p>\n";
-
-	LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.utf8()));
-	append(chunk);
-	setCursorPosition(0,0);
-	ensureCursorVisible();
-
-        m_pageParaToReldocnums[paragraphs()-1] = i;
-	m_curDocs.push_back(doc);
-    }
-
-    // Footer
-    chunk = "<p align=\"center\">";
-    if (hasPrev || hasNext) {
-	if (hasPrev) {
-	    chunk += "<a href=\"p-1\"><b>";
-	    chunk += tr("Previous");
-	    chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
-	}
-	if (hasNext) {
-	    chunk += "<a href=\"n-1\"><b>";
-	    chunk += tr("Next");
-	    chunk += "</b></a>";
-	}
-    }
-    chunk += "</p>\n";
-    chunk += "</body></qt>\n";
-    append(chunk);
-
+    LOGDEB0(("ResList::resultPageNext: hasNext %d hasPrev %d\n",
+	    m_pager->hasPrev(), m_pager->hasNext()));
+    emit prevPageAvailable(m_pager->hasPrev());
+    emit nextPageAvailable(m_pager->hasNext());
     // Possibly color paragraph of current preview if any
     previewExposed(m_curPvDoc);
     ensureCursorVisible();
@@ -725,18 +545,17 @@ void ResList::menuPreview()
 void ResList::menuSeeParent()
 {
     Rcl::Doc doc;
-    if (getDoc(m_popDoc, doc)) {
-	Rcl::Doc doc1;
-	if (FileInterner::getEnclosing(doc.url, doc.ipath, 
-				       doc1.url, doc1.ipath)) {
-	    emit previewRequested(doc1);
-	} else {
-	    // No parent doc: show enclosing folder with app configured for
-	    // directories
-	    doc1.url = path_getfather(doc.url);
-	    doc1.mimetype = "application/x-fsdirectory";
-	    emit editRequested(doc1);
-	}
+    if (!getDoc(m_popDoc, doc)) 
+	return;
+    Rcl::Doc doc1;
+    if (FileInterner::getEnclosing(doc.url, doc.ipath, doc1.url, doc1.ipath)) {
+	emit previewRequested(doc1);
+    } else {
+	// No parent doc: show enclosing folder with app configured for
+	// directories
+	doc1.url = path_getfather(doc.url);
+	doc1.mimetype = "application/x-fsdirectory";
+	emit editRequested(doc1);
     }
 }
 

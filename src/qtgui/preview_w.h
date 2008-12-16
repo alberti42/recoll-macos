@@ -1,6 +1,6 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
-/* @(#$Id: preview_w.h,v 1.19 2008-10-03 08:09:35 dockes Exp $  (C) 2006 J.F.Dockes */
+/* @(#$Id: preview_w.h,v 1.20 2008-12-16 14:20:10 dockes Exp $  (C) 2006 J.F.Dockes */
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -69,7 +69,8 @@ class TabData {
 class PlainToRichQtPreview : public PlainToRich {
 public:
     int lastanchor;
-    PlainToRichQtPreview(bool inputhtml = false) : PlainToRich(inputhtml) {
+    PlainToRichQtPreview() 
+    {
 	lastanchor = 0;
     }    
     virtual ~PlainToRichQtPreview() {}

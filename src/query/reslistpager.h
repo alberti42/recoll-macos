@@ -1,6 +1,6 @@
 #ifndef _reslistpager_h_included_
 #define _reslistpager_h_included_
-/* @(#$Id: reslistpager.h,v 1.3 2008-12-04 11:49:59 dockes Exp $  (C) 2007 J.F.Dockes */
+/* @(#$Id: reslistpager.h,v 1.4 2008-12-16 14:20:10 dockes Exp $  (C) 2007 J.F.Dockes */
 
 #include <vector>
 using std::vector;
@@ -8,24 +8,31 @@ using std::vector;
 #include "refcntr.h"
 #include "docseq.h"
 
+class PlainToRich;
+
 /**
- * Produces html text for a paged result list. 
+ * Manage a paged HTML result list. 
  */
 class ResListPager {
 public:
-    ResListPager() : m_pagesize(10), m_hasNext(false) {}
+    ResListPager(int pagesize=10) : m_pagesize(pagesize) {initall();}
+    ResListPager(RefCntr<DocSequence> src, int pagesize)
+	: m_pagesize(pagesize)
+    {
+	initall();
+	m_docSource = src;
+    }
+    virtual ~ResListPager() {}
+
+    void setHighLighter(PlainToRich *ptr) {m_hiliter = ptr;}
     void setDocSource(RefCntr<DocSequence> src)
     {
 	m_winfirst = -1;
-	m_docSource = src;
 	m_hasNext = false;
 	m_respage.clear();
+	m_docSource = src;
     }
-    ResListPager(RefCntr<DocSequence> src, int pagesize)
-	: m_winfirst(-1), m_docSource(src), m_pagesize(pagesize), 
-	m_hasNext(false) 
-    {}
-    virtual ~ResListPager() {}
+
     int pageNumber() 
     {
 	if (m_winfirst < 0 || m_pagesize <= 0)
@@ -55,13 +62,28 @@ public:
 
     // Things that need to be reimplemented in the subclass:
     virtual bool append(const string& data);
-    virtual string tr(const string& in);
+    virtual bool append(const string& data, int, const Rcl::Doc&)
+    {
+	return append(data);
+    }
+    virtual string trans(const string& in);
     virtual string detailsLink();
     virtual const string &parFormat();
     virtual string nextUrl();
     virtual string prevUrl();
     virtual string pageTop() {return string();}
+    virtual string iconPath(const string& mtype);
 private:
+    void initall() 
+    {
+	m_winfirst = -1;
+	m_hasNext = false;
+	m_respage.clear();
+	m_queryBuildAbstract = true;
+	m_queryReplaceAbstract = false;
+	m_hiliter = 0;
+    }
+
     // First docnum (from docseq) in current page
     int                  m_winfirst;
     RefCntr<DocSequence> m_docSource;
@@ -69,6 +91,9 @@ private:
 
     bool                 m_hasNext;
     vector<ResListEntry> m_respage;
+    bool                 m_queryBuildAbstract;
+    bool                 m_queryReplaceAbstract;
+    PlainToRich         *m_hiliter;
 };
 
 #endif /* _reslistpager_h_included_ */

@@ -44,13 +44,15 @@ namespace DebugLog {
 class DebugLogWriter;
 
 class DebugLog {
-    std::stack<int> levels;
+    stack<int> levels;
     int debuglevel;
     int dodate;
     DebugLogWriter *writer;
+    bool  fileyes;
   public:
-    DebugLog() : debuglevel(10), dodate(0), writer(0) {}
-    DebugLog(DebugLogWriter *w) : debuglevel(-1), dodate(0), writer(w) {}
+    DebugLog() : debuglevel(10), dodate(0), writer(0), fileyes(true) {}
+    DebugLog(DebugLogWriter *w) : debuglevel(-1), dodate(0), writer(w),
+				  fileyes(true) {}
     virtual ~DebugLog() {}
     virtual void setwriter(DebugLogWriter *w) {writer = w;}
     virtual DebugLogWriter *getwriter() {return writer;}

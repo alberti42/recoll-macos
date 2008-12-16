@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.6 2008-12-15 15:04:53 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.7 2008-12-16 14:20:10 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 #include <stdio.h>
@@ -13,19 +13,14 @@ static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.6 2008-12-15 15:04:53 dockes
 #include "plaintorich.h"
 #include "mimehandler.h"
 
-// This should be passed as an input object to the pager instead
+// Default highlighter
 class PlainToRichHtReslist : public PlainToRich {
 public:
     virtual ~PlainToRichHtReslist() {}
     virtual string startMatch() {return string("<font color=\"blue\">");}
     virtual string endMatch() {return string("</font>");}
 };
-// IDEM
-struct Prefs {
-    bool queryBuildAbstract;
-    bool queryReplaceAbstract;
-};
-Prefs prefs = {true, true};
+static PlainToRichHtReslist g_hiliter;
 
 void ResListPager::resultPageNext()
 {
@@ -41,7 +36,7 @@ void ResListPager::resultPageNext()
     if (m_winfirst < 0) {
 	m_winfirst = 0;
     } else {
-	m_winfirst += m_pagesize;
+	m_winfirst += m_respage.size();
     }
     // Get the next page of results.
     vector<ResListEntry> npage;
@@ -59,7 +54,7 @@ void ResListPager::resultPageNext()
 	    // Next button. We'd need to remove the Next link from the page
 	    // too.
 	    // Restore the m_winfirst value, let the current result vector alone
-	    m_winfirst -= m_pagesize;
+	    m_winfirst -= m_respage.size();
 	} else {
 	    // No results at all (on first page)
 	    m_winfirst = -1;
@@ -71,14 +66,18 @@ void ResListPager::resultPageNext()
 
 void ResListPager::displayPage()
 {
+    LOGDEB(("ResListPager::displayPage\n"));
     if (m_docSource.isNull()) {
 	LOGDEB(("ResListPager::displayPage: null source\n"));
 	return;
     }
-    if (m_winfirst < 0) {
+    if (m_winfirst < 0 && !pageEmpty()) {
 	LOGDEB(("ResListPager::displayPage: sequence error: winfirst < 0\n"));
 	return;
     }
+    if (m_hiliter == 0)
+	m_hiliter = &g_hiliter;
+
     string chunk;
 
     // Display list header
@@ -89,10 +88,8 @@ void ResListPager::displayPage()
     // gets confused. Hence the use of the 'chunk' text
     // accumulator
     // Also note that there can be results beyond the estimated resCnt.
-    chunk = "<html><head>"
-	"<meta http-equiv=\"content-type\""
-	"content=\"text/html; charset=utf-8\">"
-	"</head><body>";
+    chunk = "<html><head><meta http-equiv=\"content-type\""
+	"content=\"text/html; charset=utf-8\"></head><body>";
     chunk += pageTop();
     chunk += "<p><font size=+1><b>";
     chunk += m_docSource->title();
@@ -100,17 +97,17 @@ void ResListPager::displayPage()
 	"&nbsp;&nbsp;&nbsp;";
 
     if (pageEmpty()) {
-	chunk += tr("<p><b>No results found</b> for ");
+	chunk += trans("<p><b>No results found</b><br>");
     } else {
 	unsigned int resCnt = m_docSource->getResCnt();
 	if (m_winfirst + m_respage.size() < resCnt) {
-	    string f1 =	tr("Documents <b>%d-%d</b> out of at least <b>%d</b> for ");
+	    string f1 =	trans("Documents <b>%d-%d</b> out of at least <b>%d</b> for ");
 	    char buf[1024];
 	    snprintf(buf, 1023, f1.c_str(), m_winfirst+1, 
 		     m_winfirst + m_respage.size(), resCnt);
 	    chunk += buf;
 	} else {
-	    string f1 = tr("Documents <b>%d-%d</b> for ");
+	    string f1 = trans("Documents <b>%d-%d</b> for ");
 	    char buf[1024];
 	    snprintf(buf, 1023, f1.c_str(), m_winfirst + 1, 
 		     m_winfirst + m_respage.size());
@@ -122,12 +119,12 @@ void ResListPager::displayPage()
 	chunk += "&nbsp;&nbsp;";
 	if (hasPrev()) {
 	    chunk += "<a href=\"" + prevUrl() + "\"><b>";
-	    chunk += tr("Previous");
+	    chunk += trans("Previous");
 	    chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
 	}
 	if (hasNext()) {
 	    chunk += "<a href=\""+ nextUrl() + "\"><b>";
-	    chunk += tr("Next");
+	    chunk += trans("Next");
 	    chunk += "</b></a>";
 	}
     }
@@ -136,7 +133,6 @@ void ResListPager::displayPage()
     append(chunk);
     if (pageEmpty())
 	return;
-
 
     HiliteData hdata;
     m_docSource->getTerms(hdata.terms, hdata.groups, hdata.gslks);
@@ -151,7 +147,7 @@ void ResListPager::displayPage()
 	if (doc.pc == -1) {
 	    percent = 0;
 	    // Document not available, maybe other further, will go on.
-	    doc.meta[Rcl::Doc::keyabs] = string(tr("Unavailable document"));
+	    doc.meta[Rcl::Doc::keyabs] = string(trans("Unavailable document"));
 	} else {
 	    percent = doc.pc;
 	}
@@ -160,9 +156,7 @@ void ResListPager::displayPage()
 	sprintf(perbuf, "%3d%% ", percent);
 
 	// Determine icon to display if any
-	string iconpath;
-	RclConfig::getMainConfig()->getMimeIconName(doc.mimetype, &iconpath);
-	iconpath = string("file://") + iconpath;
+	string iconpath = iconPath(doc.mimetype);
 
 	// Printable url: either utf-8 if transcoding succeeds, or url-encoded
 	string url;
@@ -208,16 +202,15 @@ void ResListPager::displayPage()
 	}
 
 	string abstract;
-	if (prefs.queryBuildAbstract && 
-	    (doc.syntabs || prefs.queryReplaceAbstract)) {
+	if (m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
 	    abstract = m_docSource->getAbstract(doc);
 	} else {
 	    abstract = doc.meta[Rcl::Doc::keyabs];
 	}
 	// No need to call escapeHtml(), plaintorich handles it
 	list<string> lr;
-	PlainToRichHtReslist ptr;
-	ptr.plaintorich(abstract, lr, hdata);
+	m_hiliter->set_inputhtml(false);
+	m_hiliter->plaintorich(abstract, lr, hdata);
 	string richabst = lr.front();
 
 	// Links;
@@ -225,12 +218,13 @@ void ResListPager::displayPage()
 	char vlbuf[100];
 	if (canIntern(doc.mimetype, RclConfig::getMainConfig())) { 
 	    sprintf(vlbuf, "\"P%d\"", docnumforlinks);
-	    linksbuf += string("<a href=") + vlbuf + ">" + "Preview" + "</a>" 
-		+ "&nbsp;&nbsp;";
+	    linksbuf += string("<a href=") + vlbuf + ">" + trans("Preview") 
+		+ "</a>&nbsp;&nbsp;";
 	}
 	if (!RclConfig::getMainConfig()->getMimeViewerDef(doc.mimetype).empty()) {
 	    sprintf(vlbuf, "E%d", docnumforlinks);
-	    linksbuf += string("<a href=") + vlbuf + ">" + "Open" + "</a>";
+	    linksbuf += string("<a href=") + vlbuf + ">" + trans("Open")
+		+ "</a>";
 	}
 
 	// Build the result list paragraph:
@@ -265,7 +259,7 @@ void ResListPager::displayPage()
 	chunk += "</p>\n";
 
 	LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.c_str()));
-	append(chunk);
+	append(chunk, i, doc);
     }
 
     // Footer
@@ -273,12 +267,12 @@ void ResListPager::displayPage()
     if (hasPrev() || hasNext()) {
 	if (hasPrev()) {
 	    chunk += "<a href=\"" + prevUrl() + "\"><b>";
-	    chunk += tr("Previous");
+	    chunk += trans("Previous");
 	    chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
 	}
 	if (hasNext()) {
 	    chunk += "<a href=\""+ nextUrl() + "\"><b>";
-	    chunk += tr("Next");
+	    chunk += trans("Next");
 	    chunk += "</b></a>";
 	}
     }
@@ -296,6 +290,14 @@ string ResListPager::prevUrl()
     return "p-1";
 }
 
+string ResListPager::iconPath(const string& mtype)
+{
+    string iconpath;
+    RclConfig::getMainConfig()->getMimeIconName(mtype, &iconpath);
+    iconpath = string("file://") + iconpath;
+    return iconpath;
+}
+
 // Default implementations for things that should be re-implemented by our user.
 bool ResListPager::append(const string& data)
 {
@@ -303,7 +305,7 @@ bool ResListPager::append(const string& data)
     return true;
 }
 
-string ResListPager::tr(const string& in) 
+string ResListPager::trans(const string& in) 
 {
     return in;
 }
@@ -311,7 +313,7 @@ string ResListPager::tr(const string& in)
 string ResListPager::detailsLink()
 {
     string chunk = "<a href=\"H-1\">";
-    chunk += tr("(show query)") + "</a>";
+    chunk += trans("(show query)") + "</a>";
     return chunk;
 }
 
