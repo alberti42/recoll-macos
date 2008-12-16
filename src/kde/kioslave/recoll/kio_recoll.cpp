@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.24 2008-12-08 14:34:50 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.25 2008-12-16 17:28:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -151,6 +151,8 @@ UrlIngester::UrlIngester(RecollProtocol *p, const KUrl& url)
 	} else if (!path.compare("/search.html")) {
 	    m_type = UIMT_ROOTENTRY;
 	    m_retType = UIRET_SEARCH;
+	    // Retrieve the query value for preloading the form
+	    m_query.query = url.queryItem("q");
 	    return;
 	} else if (m_parent->isRecollResult(url, &m_resnum, &m_query.query)) {
 	    m_type = UIMT_QUERYRESULT;

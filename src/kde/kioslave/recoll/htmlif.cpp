@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.10 2008-12-15 15:04:53 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: htmlif.cpp,v 1.11 2008-12-16 17:28:10 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -107,8 +107,10 @@ const string& RecollKioPager::parFormat()
 
 string RecollKioPager::pageTop()
 {
-    return "<p align=\"center\">"
-	"<a href=\"recoll:///search.html\">New Search</a>"
+    string pt = "<p align=\"center\"> <a href=\"recoll:///search.html?q=";
+    pt += url_encode(string(m_parent->m_query.query.toUtf8()));
+    pt += "\">New Search</a>";
+    return pt;
 // Would be nice to have but doesnt work because the query may be executed
 // by another kio instance which has no idea of the current page o
 #if 0 && KDE_IS_VERSION(4,1,0)
@@ -116,7 +118,6 @@ string RecollKioPager::pageTop()
 	url_encode(string(m_parent->m_query.query.toUtf8())) +
 	"/\">Directory view</a> (you may need to reload the page)"
 #endif
-	"</p>";
 }
 
 string RecollKioPager::nextUrl()
@@ -178,7 +179,7 @@ void RecollProtocol::searchPage()
 
     string tmp;
     map<char, string> subs;
-    subs['Q'] = "";
+    subs['Q'] = (const char *)m_query.query.toUtf8();
     subs['C'] = catgq;
     subs['S'] = "";
     pcSubst(welcomedata, tmp, subs);
@@ -208,8 +209,8 @@ void RecollProtocol::queryDetails()
 
 class PlainToRichKio : public PlainToRich {
 public:
-    PlainToRichKio(const string& nm, bool inputhtml = false) 
-	: PlainToRich(inputhtml) , m_name(nm)
+    PlainToRichKio(const string& nm) 
+	: PlainToRich() , m_name(nm)
     {
     }    
     virtual ~PlainToRichKio() {}
@@ -268,7 +269,8 @@ void RecollProtocol::showPreview(const Rcl::Doc& doc)
     mimeType("text/html");
 
     string fname =  path_getsimple(doc.url).c_str();
-    PlainToRichKio ptr(fname, !fdoc.mimetype.compare("text/html"));
+    PlainToRichKio ptr(fname);
+    ptr.set_inputhtml(!fdoc.mimetype.compare("text/html"));
     list<string> otextlist;
     HiliteData hdata;
     if (!m_source.isNull())

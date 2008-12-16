@@ -1,5 +1,5 @@
 #ifndef _RECOLL_H
-/* @(#$Id: kio_recoll.h,v 1.14 2008-12-08 14:34:50 dockes Exp $  (C) 2005 J.F.Dockes */
+/* @(#$Id: kio_recoll.h,v 1.15 2008-12-16 17:28:10 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,8 @@ public:
     void setParent(RecollProtocol *proto) {m_parent = proto;}
 
     virtual bool append(const string& data);
+    virtual bool append(const string& data, int, const Rcl::Doc&)
+    {return append(data);}
     virtual string detailsLink();
     virtual const string &parFormat();
     virtual string nextUrl();
