@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.70 2008-10-08 16:15:22 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.71 2008-12-17 08:01:40 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
     for (list<string>::const_iterator it = topdirs->begin();
 	 it != topdirs->end(); it++) {
 	LOGDEB(("DbIndexer::index: Indexing %s into %s\n", it->c_str(), 
-		m_dbdir.c_str()));
+		getDbDir().c_str()));
 
 	// Set the current directory in config so that subsequent
 	// getConfParams() will get local values
@@ -143,7 +143,7 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
     }
     if (!m_db.close()) {
 	LOGERR(("DbIndexer::index: error closing database in %s\n", 
-		m_dbdir.c_str()));
+		getDbDir().c_str()));
 	return false;
     }
     string missing;
@@ -197,8 +197,8 @@ bool DbIndexer::init(bool resetbefore, bool rdonly)
     }
     Rcl::Db::OpenMode mode = rdonly ? Rcl::Db::DbRO :
 	resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
-    if (!m_db.open(m_dbdir, m_config->getStopfile(), mode)) {
-	LOGERR(("DbIndexer: error opening database in %s\n", m_dbdir.c_str()));
+    if (!m_db.open(mode)) {
+	LOGERR(("DbIndexer: error opening database %s\n", getDbDir().c_str()));
 	return false;
     }
 
@@ -250,7 +250,7 @@ bool DbIndexer::createAspellDict()
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("DbIndexer::indexfiles: error closing database in %s\n", 
-		m_dbdir.c_str()));
+		getDbDir().c_str()));
 	noaspell = true;
 	return false;
     }
@@ -322,7 +322,7 @@ bool DbIndexer::indexFiles(const list<string> &filenames)
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("DbIndexer::indexfiles: error closing database in %s\n", 
-		m_dbdir.c_str()));
+		getDbDir().c_str()));
 	return false;
     }
     return true;
@@ -348,7 +348,7 @@ bool DbIndexer::purgeFiles(const list<string> &filenames)
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("DbIndexer::purgefiles: error closing database in %s\n", 
-		m_dbdir.c_str()));
+		getDbDir().c_str()));
 	return false;
     }
     return true;

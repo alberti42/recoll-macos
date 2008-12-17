@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.72 2008-12-12 11:00:27 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.73 2008-12-17 08:01:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -87,7 +87,6 @@ RclConfig* RclConfig::getMainConfig()
 RclHistory *g_dynconf;
 int recollNeedsExit;
 int startIndexingAfterConfig;
-static string dbdir;
 static RclMain *mainWindow;
 static string recollsharedir;
 
@@ -106,10 +105,9 @@ bool maybeOpenDb(string &reason, bool force)
 	LOGDEB(("main: adding [%s]\n", it->c_str()));
 	rcldb->addQueryDb(*it);
     }
-    if (!rcldb->isopen() && !rcldb->open(dbdir, rclconfig->getStopfile(),
-					 Rcl::Db::DbRO)) {
+    if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO)) {
 	reason = "Could not open database in " + 
-	    dbdir + " wait for indexing to complete?";
+	    rclconfig->getDbDir() + " wait for indexing to complete?";
 	return false;
     }
     rcldb->setAbstractParams(-1, prefs.syntAbsLen, prefs.syntAbsCtx);
@@ -315,7 +313,7 @@ int main(int argc, char **argv)
     }
 
     mainWindow->sSearch->searchTypCMB->setCurrentItem(prefs.ssearchTyp);
-    dbdir = rclconfig->getDbDir();
+    string dbdir = rclconfig->getDbDir();
     if (dbdir.empty()) {
 	// Note: this will have to be replaced by a call to a
 	// configuration buildin dialog for initial configuration
@@ -325,7 +323,7 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
-    rcldb = new Rcl::Db;
+    rcldb = new Rcl::Db(rclconfig);
 
     bool needindexconfig = false;
     if (!maybeOpenDb(reason)) {

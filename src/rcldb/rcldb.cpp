@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.151 2008-12-12 11:53:45 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.152 2008-12-17 08:01:40 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -470,17 +470,16 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 
 /* Rcl::Db methods ///////////////////////////////// */
 
-Db::Db() 
-    : m_ndb(0), m_idxAbsTruncLen(250), m_synthAbsLen(250),
+Db::Db(RclConfig *cfp)
+    : m_ndb(0), m_config(cfp), m_idxAbsTruncLen(250), m_synthAbsLen(250),
       m_synthAbsWordCtxLen(4), m_flushMb(-1), 
       m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0),
       m_maxFsOccupPc(0), m_mode(Db::DbRO)
 {
     m_ndb = new Native(this);
-    RclConfig *config = RclConfig::getMainConfig();
-    if (config) {
-	config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
-	config->getConfParam("idxflushmb", &m_flushMb);
+    if (m_config) {
+	m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
+	m_config->getConfParam("idxflushmb", &m_flushMb);
     }
 }
 
@@ -494,18 +493,19 @@ Db::~Db()
     i_close(true);
 }
 
-    list<string> Db::getStemmerNames()
+list<string> Db::getStemmerNames()
 {
     list<string> res;
     stringToStrings(Xapian::Stem::get_available_languages(), res);
     return res;
 }
 
-bool Db::open(const string& dir, const string &stops, OpenMode mode, 
-	      bool keep_updated)
+bool Db::open(OpenMode mode, bool keep_updated)
 {
-    if (m_ndb == 0)
+    if (m_ndb == 0 || m_config == 0) {
+	m_reason = "Null configuration or Xapian Db";
 	return false;
+    }
     LOGDEB(("Db::open: m_isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
 	    m_ndb->m_iswritable));
 
@@ -514,9 +514,9 @@ bool Db::open(const string& dir, const string &stops, OpenMode mode,
 	if (!close())
 	    return false;
     }
-    if (!stops.empty())
-	m_stops.setFile(stops);
-
+    if (m_config->getStopfile().empty())
+	m_stops.setFile(m_config->getStopfile());
+    string dir = m_config->getDbDir();
     string ermsg;
     try {
 	switch (mode) {
@@ -632,7 +632,7 @@ bool Db::reOpen()
     if (m_ndb && m_ndb->m_isopen) {
 	if (!close())
 	    return false;
-	if (!open(m_basedir, string(), m_mode, true)) {
+	if (!open(m_mode, true)) {
 	    return false;
 	}
     }
@@ -742,8 +742,7 @@ bool Db::fieldToPrefix(const string& fld, string &pfx)
 	fldToPrefs["tags"] = "K";
     }
 
-    RclConfig *config = RclConfig::getMainConfig();
-    if (config && config->getFieldPrefix(fld, pfx))
+    if (m_config && m_config->getFieldPrefix(fld, pfx))
 	return true;
 
     // No data in rclconfig? Check default values
@@ -1052,17 +1051,14 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     if (!doc.meta[Doc::keyabs].empty())
 	RECORD_APPEND(record, Doc::keyabs, doc.meta[Doc::keyabs]);
 
-    RclConfig *config = RclConfig::getMainConfig();
-    if (config) {
-	const set<string>& stored = config->getStoredFields();
-	for (set<string>::const_iterator it = stored.begin();
-	     it != stored.end(); it++) {
-	    string nm = config->fieldCanon(*it);
-	    if (!doc.meta[*it].empty()) {
-		string value = 
-		    neutchars(truncate_to_word(doc.meta[*it], 150), nc);
-		RECORD_APPEND(record, nm, value);
-	    }
+    const set<string>& stored = m_config->getStoredFields();
+    for (set<string>::const_iterator it = stored.begin();
+	 it != stored.end(); it++) {
+	string nm = m_config->fieldCanon(*it);
+	if (!doc.meta[*it].empty()) {
+	    string value = 
+		neutchars(truncate_to_word(doc.meta[*it], 150), nc);
+	    RECORD_APPEND(record, nm, value);
 	}
     }
 

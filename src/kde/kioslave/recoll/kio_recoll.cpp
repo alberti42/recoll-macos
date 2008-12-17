@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.25 2008-12-16 17:28:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: kio_recoll.cpp,v 1.26 2008-12-17 08:01:40 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
 	return;
     }
 
-    m_rcldb = new Rcl::Db;
+    m_rcldb = new Rcl::Db(o_rclconfig);
     if (!m_rcldb) {
 	m_reason = "Could not build database object. (out of memory ?)";
 	return;
@@ -112,9 +112,7 @@ bool RecollProtocol::maybeOpenDb(string &reason)
 	reason = "Internal error: initialization error";
 	return false;
     }
-    if (!m_rcldb->isopen() && !m_rcldb->open(o_rclconfig->getDbDir(), 
-					     o_rclconfig->getStopfile(),
-					     Rcl::Db::DbRO)) {
+    if (!m_rcldb->isopen() && !m_rcldb->open(Rcl::Db::DbRO)) {
 	reason = "Could not open database in " + o_rclconfig->getDbDir();
 	return false;
     }

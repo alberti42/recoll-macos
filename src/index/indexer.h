@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.26 2008-10-08 16:15:22 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.27 2008-12-17 08:01:40 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -56,11 +56,14 @@ class DbIxStatusUpdater {
 /**
    The top level indexing object. Processes the configuration, then invokes
    file system walking to populate/update the database(s).
- 
-   Multiple top-level directories can be listed in the
-   configuration. Each can be indexed to a different
-   database. Directories are first grouped by database, then an
-   internal class (DbIndexer) is used to process each group.
+
+   Fiction:
+      Multiple top-level directories can be listed in the
+      configuration. Each can be indexed to a different
+      database. Directories are first grouped by database, then an
+      internal class (DbIndexer) is used to process each group.
+   Fact: we've had one db per config forever. The multidb/config code has been 
+   kept around for no good reason, this fiction only affects indexer.cpp
 */
 class ConfIndexer {
  public:
@@ -93,10 +96,11 @@ class DbIndexer : public FsTreeWalkerCB {
  public:
     /** Constructor does nothing but store parameters */
     DbIndexer(RclConfig *cnf,         // Configuration data
-	      const string &dbd, // Place where the db lives
+	      // Db dir not used anymore, rcl::db gets it from the cfg
+	      const string &,      
 	      DbIxStatusUpdater *updfunc = 0 // status updater callback
 	      ) 
-	: m_config(cnf), m_dbdir(dbd), m_updater(updfunc) 
+	: m_config(cnf), m_db(cnf), m_updater(updfunc)
     {}
 	
     virtual ~DbIndexer();
@@ -134,7 +138,7 @@ class DbIndexer : public FsTreeWalkerCB {
 		   FsTreeWalker::CbFlag);
 
     /** Return my db dir */
-    string getDbDir() {return m_dbdir;}
+    string getDbDir() {return m_config->getDbDir();}
 
     /** List possible stemmer names */
     static list<string> getStemmerNames();
@@ -142,7 +146,6 @@ class DbIndexer : public FsTreeWalkerCB {
  private:
     FsTreeWalker m_walker;
     RclConfig   *m_config;
-    string       m_dbdir;
     Rcl::Db      m_db;
     string       m_tmpdir;
     DbIxStatusUpdater *m_updater;

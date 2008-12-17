@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.63 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.64 2008-12-17 08:01:40 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -50,6 +50,8 @@ using std::vector;
 // big, cause it's stored as a Xapian term (< 150 bytes would be
 // reasonable)
 
+class RclConfig;
+
 #ifndef NO_NAMESPACES
 namespace Rcl {
 #endif
@@ -80,12 +82,11 @@ class Db {
     friend class Native;
 
     /* General stuff (valid for query or update) ****************************/
-    Db();
+    Db(RclConfig *cfp);
     ~Db();
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
-    bool open(const string &dbdir, const string &stoplistfn, 
-	      OpenMode mode, bool keep_updated = false);
+    bool open(OpenMode mode, bool keep_updated = false);
     bool close();
     bool isopen();
 
@@ -194,7 +195,8 @@ private:
     // Internal form of close, can be called during destruction
     bool i_close(bool final);
 
-    string m_reason; // Error explanation
+    RclConfig *m_config;
+    string     m_reason; // Error explanation
 
     /* Parameters cached out of the configuration files */
     // This is how long an abstract we keep or build from beginning of

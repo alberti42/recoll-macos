@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.21 2008-12-05 11:09:31 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.22 2008-12-17 08:01:40 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -164,8 +164,6 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     while (argc > 0) {
 	qs += string(" ") + *argv++;argc--;
     }
-    Rcl::Db rcldb;
-    string dbdir;
     string reason;
     *cfp = recollinit(0, 0, reason, &a_config);
     RclConfig *rclconfig = *cfp;
@@ -189,8 +187,12 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     }
 
 
-    dbdir = rclconfig->getDbDir();
-    rcldb.open(dbdir,  rclconfig->getStopfile(), Rcl::Db::DbRO);
+    Rcl::Db rcldb(rclconfig);
+    if (!rcldb.open(Rcl::Db::DbRO)) {
+	cerr << "Cant open database in " << rclconfig->getDbDir() << 
+	    " reason: " << rcldb.getReason() << endl;
+	exit(1);
+    }
 
     Rcl::SearchData *sd = 0;
 
@@ -297,4 +299,3 @@ int main(int argc, char **argv)
     exit(recollq(&rclconfig, argc, argv));
 }
 #endif // TEST_RECOLLQ
-

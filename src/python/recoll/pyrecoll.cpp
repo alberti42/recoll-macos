@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.20 2008-10-10 08:18:27 dockes Exp $ (C) 2007 J.F.Dockes";
+static char rcsid[] = "@(#$Id: pyrecoll.cpp,v 1.21 2008-12-17 08:01:40 dockes Exp $ (C) 2007 J.F.Dockes";
 #endif
 
 
@@ -881,11 +881,8 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
     if (self->db)
 	the_dbs.erase(self->db);
     delete self->db;
-    self->db = new Rcl::Db;
-    string dbdir = rclconfig->getDbDir();
-
-    if (!self->db->open(dbdir, rclconfig->getStopfile(), writable ? 
-			Rcl::Db::DbUpd : Rcl::Db::DbRO)) {
+    self->db = new Rcl::Db(rclconfig);
+    if (!self->db->open(writable ? Rcl::Db::DbUpd : Rcl::Db::DbRO)) {
 	LOGERR(("Db_init: db open error\n"));
 	PyErr_SetString(PyExc_EnvironmentError, "Can't open index");
         return -1;
