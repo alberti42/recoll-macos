@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.51 2008-12-16 14:20:10 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -56,6 +56,7 @@ public:
     virtual string startMatch() {return string("<termtag>");}
     virtual string endMatch() {return string("</termtag>");}
 };
+static PlainToRichQtReslist g_hiliter;
 
 ResList::ResList(QWidget* parent, const char* name)
     : QTEXTBROWSER(parent, name)
@@ -81,6 +82,7 @@ ResList::ResList(QWidget* parent, const char* name)
     m_lstClckMod = 0;
     m_listId = 0;
     m_pager = new QtGuiResListPager(this, prefs.respagesize);
+    m_pager->setHighLighter(&g_hiliter);
 }
 
 ResList::~ResList()
@@ -417,9 +419,9 @@ void ResList::displayPage()
     static QStyleSheetItem *item;
     if (!item) {
 	item = new QStyleSheetItem(styleSheet(), "termtag" );
-	if (item)
-	    item->setColor(prefs.qtermcolor);
     }
+    if (item)
+	item->setColor(prefs.qtermcolor);
 
     m_curDocs.clear();
     m_pageParaToReldocnums.clear();
