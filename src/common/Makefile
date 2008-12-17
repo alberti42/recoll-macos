@@ -1,4 +1,4 @@
-# @(#$Id: Makefile,v 1.15 2008-11-24 15:47:40 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.16 2008-12-17 14:26:49 dockes Exp $  (C) 2005 J.F.Dockes
 depth = ..
 include $(depth)/mk/sysconf
 
@@ -20,7 +20,7 @@ trunacpp.o : unacpp.cpp unacpp.h
 
 TEXTSPLIT_OBJS= trtextsplit.o  $(BIGLIB)
 textsplit : $(TEXTSPLIT_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o textsplit $(TEXTSPLIT_OBJS)
+	$(CXX) $(ALL_CXXFLAGS) -o textsplit $(TEXTSPLIT_OBJS) $(LIBICONV)
 trtextsplit.o : textsplit.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_TEXTSPLIT -c -o trtextsplit.o \
 	       textsplit.cpp
