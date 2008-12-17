@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.29 2008-12-15 14:39:52 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.30 2008-12-17 14:26:09 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -483,10 +483,10 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    // Ex: "term0@term1 term2" is onlyspans-split as:
 	    //   0 term0@term1             0   12
 	    //   2 term2                  13   18
-	    // The position of term1 is 2, not 1, so a phrase search
+	    // The position of term2 is 2, not 1, so a phrase search
 	    // would fail.
 	    // We used to do  word split, searching for 
-	    // "term0 term01 term1" instead, which may have worse 
+	    // "term0 term1 term2" instead, which may have worse 
 	    // performance, but will succeed.
 	    // We now adjust the phrase/near slack by the term count
 	    // difference (this is mainly better for cjk where this is a very
