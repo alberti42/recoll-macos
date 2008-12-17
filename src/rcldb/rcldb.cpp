@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.153 2008-12-17 14:26:49 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.154 2008-12-17 16:19:58 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -200,7 +200,7 @@ static list<string> noPrefixList(const list<string>& in)
     return out;
 }
 
-//#define DEBUGABSTRACT 
+    //#define DEBUGABSTRACT  1
 #ifdef DEBUGABSTRACT
 #define LOGABS LOGDEB
 #else
@@ -362,16 +362,19 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 			       ii < (unsigned int)ipos + qtrmwrdcnt) {
 			sparseDoc[ii] = occupiedmarker;
 		    } else if (!sparseDoc[ii].compare(ellipsis)) {
-			// For an empty, slot, the test has a side
+			// For an empty slot, the test has a side
 			// effect of inserting an empty string which
 			// is what we want
 			sparseDoc[ii] = emptys;
 		    }
 		}
 		// Add ... at the end. This may be replaced later by
-		// an overlapping extract
-		if (sparseDoc[sto+1].empty())
+		// an overlapping extract. Take care not to replace an
+		// empty string here, we really want an empty slot,
+		// use find()
+		if (sparseDoc.find(sto+1) == sparseDoc.end()) {
 		    sparseDoc[sto+1] = ellipsis;
+		}
 
 		// Limit to allocated occurences and total size
 		if (++occurrences >= maxoccs || 
