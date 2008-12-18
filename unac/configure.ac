@@ -33,7 +33,7 @@ AC_PROG_MAKE_SET
 dnl
 dnl Unicode version used by unac, as published at http://www.unicode.org/Public/
 dnl
-UNICODE_VERSION=3.2.0
+UNICODE_VERSION=5.1.0
 AC_SUBST(UNICODE_VERSION)
 
 AC_PROG_CC

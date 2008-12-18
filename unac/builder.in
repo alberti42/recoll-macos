@@ -82,6 +82,9 @@ sub main {
     # Generate compatibility decomposition and strip marks
     # (marks == diacritics == accents)
     #
+    # For kana japanese characters, we don't strip accents. Note: we just
+    # need to test for the main kana (hiragana + katakana 3040-30ff) block,
+    # characters such as halfwidth variations will be first decomposed into it
     my($from, $to);
     while(($from, $to) = each(%decomposition)) {
 	my(@code_values) = split(' ', $to);
@@ -91,7 +94,8 @@ sub main {
 	    my($code_value) = shift(@code_values);
 	    if(exists($decomposition{$code_value})) {
 		push(@code_values, split(' ', $decomposition{$code_value}));
-	    } elsif(!exists($mark{$code_value})) {
+	    } elsif (!exists($mark{$code_value}) || 
+		     (hex $code_value >= 0x3040 && hex $code_value <= 0x30ff)) {
 		push(@decomposition, $code_value);
 	    }
 	}
