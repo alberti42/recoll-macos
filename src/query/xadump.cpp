@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: xadump.cpp,v 1.19 2008-12-15 14:39:52 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: xadump.cpp,v 1.20 2008-12-18 14:11:01 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,8 @@ static char rcsid[] = "@(#$Id: xadump.cpp,v 1.19 2008-12-15 14:39:52 dockes Exp 
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+#include "utf8iter.h"
+
 #include "xapian.h"
 
 static string thisprog;
@@ -42,6 +44,7 @@ static string usage =
     " -t term -F  : retrieve term frequency data for given term\n"
     " -t term -P  : retrieve postings for term\n"
     " -i docid -T : term list for doc docid\n"
+    " -x          : separate each output char with a space\n"
     " -T          : list all terms\n"
     "    -f       : precede each term in the list with its occurrence count\n"
     "    -n : raw data (no [])\n"
@@ -73,6 +76,25 @@ static int        op_flags;
 #define OPT_q     0x1000
 #define OPT_n     0x2000
 #define OPT_X     0x4000
+#define OPT_x     0x8000
+
+// Compute an exploded version of string, inserting a space between each char.
+// (no character combining possible)
+static string detailstring(const string& in)
+{
+    if (!(op_flags & OPT_x))
+	return in;
+    string out;
+    Utf8Iter  it(in);
+    for (; !it.eof(); it++) {
+	it.appendchartostring(out);
+	out += ' ';
+    }
+    // Strip last space
+    if (!out.empty())
+	out.resize(out.size()-1);
+    return out;
+}
 
 Xapian::Database *db;
 
@@ -132,6 +154,7 @@ int main(int argc, char **argv)
 		argc--; 
 		goto b1;
 	    case 'X':	op_flags |= OPT_X; break;
+	    case 'x':	op_flags |= OPT_x; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
@@ -174,14 +197,14 @@ int main(int argc, char **argv)
 	    if (op_flags & OPT_i) {
 		for (term = db->termlist_begin(docid); 
 		     term != db->termlist_end(docid);term++) {
-		    cout << op << *term << cl << endl;
+		    cout << op << detailstring(*term) << cl << endl;
 		}
 	    } else {
 		for (term = db->allterms_begin(); 
 		     term != db->allterms_end();term++) {
 		    if (op_flags & OPT_f)
 			cout << term.get_termfreq() << " ";
-		    cout << op << *term << cl << endl;
+		    cout << op << detailstring(*term) << cl << endl;
 		}
 	    }
 	} else if (op_flags & OPT_s) {
@@ -191,7 +214,7 @@ int main(int argc, char **argv)
 		Xapian::TermIterator term;
 		for (term = db->termlist_begin(docid); 
 		     term != db->termlist_end(docid);term++) {
-		    cout << *term << " ";
+		    cout << detailstring(*term) << " ";
 		    Xapian::Document doc = db->get_document(docid);
 		    string data = doc.get_data();
 		    cout << data;
@@ -225,7 +248,7 @@ int main(int argc, char **argv)
 		     pos != db->positionlist_end(docid, *term); pos++) {
 		    if (buf.size() <= *pos)
 			buf.resize((*pos)+100);
-		    buf[(*pos)] = *term;
+		    buf[(*pos)] = detailstring(*term);
 		}
 	    }
 	    for (vector<string>::iterator it = buf.begin(); it != buf.end();
