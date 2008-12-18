@@ -61,6 +61,10 @@ sub main {
 	   $uppercase_mapping,
 	   $lowercase_mapping,
 	   $titlecase_mapping) = split(/;/, $_);
+
+        # Basic plane only
+	last if (hex $code_value > 0xffff); 
+
 	#
 	# Generate ranges of values that are not explicitly listed.
 	# CJK ideographs for instance.
@@ -85,6 +89,8 @@ sub main {
     # For kana japanese characters, we don't strip accents. Note: we just
     # need to test for the main kana (hiragana + katakana 3040-30ff) block,
     # characters such as halfwidth variations will be first decomposed into it
+    #
+    # We also forbid any excursion out of the basic plane. Sorry, Dave.
     my($from, $to);
     while(($from, $to) = each(%decomposition)) {
 	my(@code_values) = split(' ', $to);
@@ -92,6 +98,10 @@ sub main {
 	my(@decomposition);
 	while(@code_values) {
 	    my($code_value) = shift(@code_values);
+	    if (hex $code_value > 0xffff) {
+		undef @decomposition;
+		last;
+	    }
 	    if(exists($decomposition{$code_value})) {
 		push(@code_values, split(' ', $decomposition{$code_value}));
 	    } elsif (!exists($mark{$code_value}) || 
