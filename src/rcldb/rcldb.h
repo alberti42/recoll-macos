@@ -16,7 +16,7 @@
  */
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
-/* @(#$Id: rcldb.h,v 1.64 2008-12-17 08:01:40 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: rcldb.h,v 1.65 2008-12-19 09:55:36 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -187,7 +187,9 @@ class Db {
     /** Test if terms stem to different roots. */
     bool stemDiffers(const string& lang, const string& term, 
 		     const string& base);
-    
+
+    RclConfig *getConf() {return m_config;}
+
     /* This has to be public for access by embedded Query::Native */
     Native *m_ndb; 
 

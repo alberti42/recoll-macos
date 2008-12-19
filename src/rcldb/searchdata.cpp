@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.31 2008-12-19 09:44:39 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.32 2008-12-19 09:55:36 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	vector<string> exptps;
 	exptps.reserve(m_filetypes.size());
 	// Expand categories
-	RclConfig *cfg = RclConfig::getMainConfig();
+	RclConfig *cfg = db.getConf();
 	for (vector<string>::iterator it = m_filetypes.begin(); 
 	     it != m_filetypes.end(); it++) {
 	    if (cfg && cfg->isMimeCategory(*it)) {
