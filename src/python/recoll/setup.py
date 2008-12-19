@@ -1,47 +1,66 @@
 from distutils.core import setup, Extension
-top = '../../'
+import os
+
+sys = os.uname()[0]
+if sys == 'Linux':
+    libs = ['xapian']
+else:
+    libs = ['xapian', 'iconv']
+
+if 'RECOLL_DATADIR' in os.environ:
+    datadirs = [os.environ['RECOLL_DATADIR']]
+else:
+    datadirs = []
+datadirs = datadirs + ['/usr/share/recoll', '/usr/local/share/recoll', '/']
+for datadir in datadirs:
+    if os.path.exists(datadir):
+        break
+if datadir == '/':
+    print 'You need to install Recoll first'
+    os.exit(1)
+
+
+top = os.path.join('..', '..')
 
 module1 = Extension('recoll',
                     define_macros = [('MAJOR_VERSION', '1'),
                                      ('MINOR_VERSION', '0'),
                                      ('UNAC_VERSION', '"1.0.7"'),
-                                     ('STATFS_INCLUDE', '"sys/mount.h"'),
-                                     ('RECOLL_DATADIR', 
-                                      '"/usr/local/share/recoll"')
+                                     ('RECOLL_DATADIR', '"' + datadir + '"')
                                      ],
                     include_dirs = ['/usr/local/include',
-                                    top + 'utils', 
-                                    top + 'common', 
-                                    top + 'rcldb',
-                                    top + 'query',
-                                    top + 'unac'
+                                    os.path.join(top, 'utils'), 
+                                    os.path.join(top, 'common'), 
+                                    os.path.join(top, 'rcldb'), 
+                                    os.path.join(top, 'query'), 
+                                    os.path.join(top, 'unac')
                                     ],
-                    libraries = ['xapian', 'iconv'],
+                    libraries = libs,
                     library_dirs = ['/usr/local/lib'],
                     sources = ['pyrecoll.cpp',
-                               top + 'common/rclconfig.cpp',
-                               top + 'common/rclinit.cpp',
-                               top + 'common/textsplit.cpp',
-                               top + 'common/unacpp.cpp',
-                               top + 'query/wasastringtoquery.cpp',
-                               top + 'query/wasatorcl.cpp',
-                               top + 'rcldb/pathhash.cpp',
-                               top + 'rcldb/rcldb.cpp',
-                               top + 'rcldb/rcldoc.cpp',
-                               top + 'rcldb/rclquery.cpp',
-                               top + 'rcldb/searchdata.cpp',
-                               top + 'rcldb/stemdb.cpp',
-                               top + 'rcldb/stoplist.cpp',
-                               top + 'unac/unac.c',
-                               top + 'utils/base64.cpp',
-                               top + 'utils/conftree.cpp',
-                               top + 'utils/debuglog.cpp',
-                               top + 'utils/md5.cpp',
-                               top + 'utils/pathut.cpp',
-                               top + 'utils/readfile.cpp',
-                               top + 'utils/smallut.cpp',
-                               top + 'utils/transcode.cpp',
-                               top + 'utils/wipedir.cpp'
+                               os.path.join(top, 'common/rclconfig.cpp'),
+                               os.path.join(top, 'common/rclinit.cpp'),
+                               os.path.join(top, 'common/textsplit.cpp'),
+                               os.path.join(top, 'common/unacpp.cpp'),
+                               os.path.join(top, 'query/wasastringtoquery.cpp'),
+                               os.path.join(top, 'query/wasatorcl.cpp'),
+                               os.path.join(top, 'rcldb/pathhash.cpp'),
+                               os.path.join(top, 'rcldb/rcldb.cpp'),
+                               os.path.join(top, 'rcldb/rcldoc.cpp'),
+                               os.path.join(top, 'rcldb/rclquery.cpp'),
+                               os.path.join(top, 'rcldb/searchdata.cpp'),
+                               os.path.join(top, 'rcldb/stemdb.cpp'),
+                               os.path.join(top, 'rcldb/stoplist.cpp'),
+                               os.path.join(top, 'unac/unac.c'),
+                               os.path.join(top, 'utils/base64.cpp'),
+                               os.path.join(top, 'utils/conftree.cpp'),
+                               os.path.join(top, 'utils/debuglog.cpp'),
+                               os.path.join(top, 'utils/md5.cpp'),
+                               os.path.join(top, 'utils/pathut.cpp'),
+                               os.path.join(top, 'utils/readfile.cpp'),
+                               os.path.join(top, 'utils/smallut.cpp'),
+                               os.path.join(top, 'utils/transcode.cpp'),
+                               os.path.join(top, 'utils/wipedir.cpp')
                                ])
 
 setup (name = 'Recoll',
