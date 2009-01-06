@@ -35,7 +35,7 @@
 	  supposedly fixed in later versions. Bugs listed in the
 	  topmost section may also exist in older versions.</i></p>
 
-      <h2>Latest (recoll 1.11.2 + xapian 1.0.x)</h2>
+      <h2>Latest (recoll 1.11.4 + xapian 1.0.x)</h2>
       <ul>
 
 	<li>Performing a full index with release 1.11, over a version
@@ -115,7 +115,7 @@
 	  yet inexistant db).</li>
       </ul>
 
-      <h2>1.11.1</h2>
+      <h2><a name="b_1_11_1">1.11.1</a></h2>
       <ul>
 	<li>Unicode space characters like 
 	  <em>0x3000,&nbsp;Ideographic&nbsp;space</em>
@@ -125,6 +125,18 @@
 	  would have succeeded.</li>
 	<li>Spaces were inserted inside CJK strings when building
 	  abstracts for the result list.</li>
+	<li>Accent removal should not be performed for Japanese.</li>
+	<li>When using the query language, an OR part with more than
+	  two terms will swallow preceding AND terms, one for each
+	  additional OR. Ex: (champagne ext:odt OR ext:sxw OR ext:lyx)
+	  will be interpreted as 
+	      "champagne OR ext:odt OR ext:sxw OR ext:lyx"
+	  instead of the correct
+	      "champagne AND (ext:odt OR ext:sxw OR ext:lyx)"
+	  Workaround until the fix is issued: add non-existing terms
+	  before the OR part and check the resulting query: 
+	      "champagne bogusxyztv ext:odt OR ext:sxw OR ext:lyx"
+	</li>
       </ul>
 
       <h2>1.10.6</h2>
