@@ -1,0 +1,4 @@
+A result list with a preview window open.
+
+
+

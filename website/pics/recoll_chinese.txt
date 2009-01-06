@@ -1,0 +1,2 @@
+Recoll searching Chinese text. Chinese text search is based on n-grams and
+relatively rough, but still useful (I am told).
