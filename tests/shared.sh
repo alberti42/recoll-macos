@@ -1,8 +1,8 @@
-# @(#$Id: shared.sh,v 1.3 2007-11-21 16:34:16 dockes Exp $  (C) 2006 J.F.Dockes
+# @(#$Id: shared.sh,v 1.4 2009-01-06 18:47:33 dockes Exp $  (C) 2006 J.F.Dockes
 
 # shared code and variables for all tests
 
-RECOLL_CONFDIR=/Users/dockes/projets/fulltext/testrecoll/config
+RECOLL_CONFDIR=/home/dockes/projets/fulltext/testrecoll/config
 export RECOLL_CONFDIR
 
 # Call this with the script's $0 as argument
