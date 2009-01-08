@@ -2,10 +2,29 @@
 # @(#$Id: makesrcdist.sh,v 1.16 2008-11-21 16:43:42 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
+fatal()
+{
+	echo $*
+	exit 1
+}
 #set -x
 
 TAR=/usr/bin/tar
- 
+SVNREPOS=svn+ssh://y/home/subversion/recoll/
+
+version=`cat VERSION`
+versionforcvs=`echo $version | sed -e 's/\./_/g'`
+
+editedfiles=`svn status | egrep -v '^\?'`
+if test ! -z "$editedfiles"; then
+	fatal  "Edited files exist: " $editedfiles
+fi
+
+tagtop() {
+	(cd ..;	svn copy -m "Release $version tagged" . $SVNREPOS/tags/$1) \
+	    	|| fatal tag failed
+}
+
 targetdir=${targetdir-/tmp}
 dotag=${dotag-yes}
 
@@ -13,9 +32,6 @@ if test ! -d qtgui;then
     echo "Should be executed in the master recoll directory"
     exit 1
 fi
-
-version=`cat VERSION`
-versionforcvs=`echo $version | sed -e 's/\./_/g'`
 
 topdir=$targetdir/recoll-$version
 if test ! -d $topdir ; then
@@ -56,7 +72,7 @@ links -dump ${RECOLLDOC}/rcl.install.external.html >> INSTALL
 links -dump ${RECOLLDOC}/rcl.install.building.html >> INSTALL
 links -dump ${RECOLLDOC}/rcl.install.config.html >> INSTALL
 
-cvs commit -m '' README INSTALL
+svn commit -m '' README INSTALL
 
 # Clean up this dir and copy the dist-specific files 
 make distclean
@@ -76,8 +92,9 @@ diff $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
 mv -f $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
 
 # We tag .. as there is the 'packaging/' directory in there
-CVSTAG="RECOLL_$versionforcvs"
-[ $dotag = "yes" ] && (cd ..;cvs tag -F $CVSTAG .)
+TAG="RECOLL_$versionforcvs"
+#[ $dotag = "yes" ] && (cd ..;cvs tag -F $CVSTAG .)
+[ $dotag = "yes" ] && tagtop $TAG
 
 # Can't now put ./Makefile in excludefile, gets ignored everywhere. So delete
 # the top Makefile here (its' output by configure on the target system):
