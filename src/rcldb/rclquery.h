@@ -54,6 +54,7 @@ class Query {
 
     /** Choose sort order. Must be called before setQuery */
     void setSortBy(const string& fld, bool ascending = true);
+    void setCollapseDuplicates(bool on) {m_collapseDuplicates = on;}
     const string& getSortBy() const {return m_sortField;}
     bool getSortAscending() const {return m_sortAscending;}
 
@@ -90,8 +91,9 @@ private:
     string m_reason; // Error explanation
     Db    *m_db;
     void  *m_sorter;
-    string       m_sortField;
-    bool         m_sortAscending;
+    string m_sortField;
+    bool   m_sortAscending;
+    bool   m_collapseDuplicates;     
     /* Copyconst and assignement private and forbidden */
     Query(const Query &) {}
     Query & operator=(const Query &) {return *this;};

@@ -22,4 +22,5 @@ namespace Rcl {
     const string Doc::keyau("author");
     const string Doc::keytt("title");
     const string Doc::keykw("keywords");
+    const string Doc::keymd5("md5");
 }

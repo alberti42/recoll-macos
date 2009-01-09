@@ -471,6 +471,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     sdata->setStemlang(stemLang);
 
     Rcl::Query *query = new Rcl::Query(rcldb);
+    query->setCollapseDuplicates(prefs.collapseDuplicates);
 
     if (!query || !query->setQuery(sdata)) {
 	QMessageBox::warning(0, "Recoll", tr("Can't start query: ") +

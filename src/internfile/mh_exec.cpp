@@ -25,6 +25,7 @@ static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.14 2008-10-09 09:19:37 dockes Exp
 #include "cancelcheck.h"
 #include "smallut.h"
 #include "transcode.h"
+#include "md5.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -130,5 +131,14 @@ bool MimeHandlerExec::next_document()
     // could still be overridden by the content-type meta tag.
     m_metaData["charset"] = charset;
     m_metaData["mimetype"] = mt;
+
+    string md5, xmd5, reason;
+    if (MD5File(m_fn, md5, &reason)) {
+	m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+    } else {
+	LOGERR(("MimeHandlerExec: cant compute md5 for [%s]: %s\n", 
+		m_fn.c_str(), reason.c_str()));
+    }
+
     return true;
 }

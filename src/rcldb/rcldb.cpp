@@ -48,7 +48,7 @@ using namespace std;
 #include "searchdata.h"
 #include "rclquery.h"
 #include "rclquery_p.h"
-
+#include "md5.h"
 
 #ifndef MAX
 #define MAX(A,B) (A>B?A:B)
@@ -56,15 +56,6 @@ using namespace std;
 #ifndef MIN
 #define MIN(A,B) (A<B?A:B)
 #endif
-
-// Omega compatible values. We leave a hole for future omega values. Not sure 
-// it makes any sense to keep any level of omega compat given that the index
-// is incompatible anyway.
-enum value_slot {
-    VALUE_LASTMOD = 0,	// 4 byte big endian value - seconds since 1970.
-    VALUE_MD5 = 1,	// 16 byte MD5 checksum of original document.
-    VALUE_SIG = 10      // Doc sig as chosen by app (ex: mtime+size
-};
 
 // Recoll index format version is stored in user metadata. When this change,
 // we can't open the db and will have to reindex.
@@ -1076,6 +1067,15 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 		neutchars(truncate_to_word(doc.meta[*it], 150), nc);
 	    RECORD_APPEND(record, nm, value);
 	}
+    }
+
+    // If the file's md5 was computed, add value. This is optionally
+    // used for query result duplicate elimination.
+    string& md5 = doc.meta[Doc::keymd5];
+    if (!md5.empty()) {
+	string digest;
+	MD5HexScan(md5, digest);
+	newdocument.add_value(VALUE_MD5, digest);
     }
 
     LOGDEB0(("Rcl::Db::add: new doc record:\n%s\n", record.c_str()));

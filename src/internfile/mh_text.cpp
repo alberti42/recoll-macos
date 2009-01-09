@@ -29,19 +29,26 @@ using namespace std;
 #include "debuglog.h"
 #include "readfile.h"
 #include "transcode.h"
+#include "md5.h"
 
 // Process a plain text file
 bool MimeHandlerText::set_document_file(const string &fn)
 {
     string otext;
-    if (!file_to_string(fn, otext))
+    string reason;
+    if (!file_to_string(fn, otext, &reason)) {
+	LOGERR(("MimeHandlerText: can't read file: %s\n", reason.c_str()));
 	return false;
+    }
     return set_document_string(otext);
 }
     
 bool MimeHandlerText::set_document_string(const string& otext)
 {
     m_text = otext;
+    string md5, xmd5;
+    MD5String(m_text, md5);
+    m_metaData["md5"] = MD5HexPrint(md5, xmd5);
     m_havedoc = true;
     return true;
 }

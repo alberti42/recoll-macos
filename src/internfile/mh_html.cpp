@@ -29,6 +29,7 @@ static char rcsid[] = "@(#$Id: mh_html.cpp,v 1.26 2008-10-03 06:17:46 dockes Exp
 #include "indextext.h"
 #include "mh_html.h"
 #include "smallut.h"
+#include "md5.h"
 
 #include <iostream>
 
@@ -53,6 +54,12 @@ bool MimeHandlerHtml::set_document_string(const string& htext)
 {
     m_html = htext;
     m_havedoc = true;
+
+    // We want to compute the md5 now because we may modify m_html later
+    string md5, xmd5;
+    MD5String(htext, md5);
+    m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+
     return true;
 }
 

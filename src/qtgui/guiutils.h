@@ -82,6 +82,7 @@ class PrefsPack {
     bool startWithAdvSearchOpen;
     bool startWithSortToolOpen;
     bool previewHtml;
+    bool collapseDuplicates;
     // Extra query indexes. This are encoded to base64 before storing
     // to the qt settings file to avoid any bin string/ charset conv issues
     list<string> allExtraDbs;

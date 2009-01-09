@@ -90,6 +90,20 @@
                                             </widget>
                                         </hbox>
                                     </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>collapseDupsCB</cstring>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                          <string>If checked, results with the same content under different names will only be shown once.</string>
+                                        </property>
+                                        <property name="text">
+                                            <string>Hide duplicate results.</string>
+                                        </property>
+                                        <property name="checked">
+                                            <bool>false</bool>
+                                        </property>
+                                    </widget>
                                     <widget class="QLayoutWidget">
                                         <property name="name">
                                             <cstring>qtermcolor</cstring>

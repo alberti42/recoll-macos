@@ -89,7 +89,8 @@ private:
 };
 
 Query::Query(Db *db)
-    : m_nq(new Native(this)), m_db(db), m_sorter(0), m_sortAscending(true)
+    : m_nq(new Native(this)), m_db(db), m_sorter(0), m_sortAscending(true),
+      m_collapseDuplicates(false)
 {
 }
 
@@ -155,7 +156,11 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
     string d;
     try {
 	m_nq->enquire = new Xapian::Enquire(m_db->m_ndb->db);
-	m_nq->enquire->set_query(m_nq->query);
+	if (m_collapseDuplicates) {
+	    m_nq->enquire->set_collapse_key(Rcl::VALUE_MD5);
+	} else {
+	    m_nq->enquire->set_collapse_key(Xapian::BAD_VALUENO);
+	}
 	if (!m_sortField.empty()) {
 	    if (m_sorter) {
 		delete (QSorter*)m_sorter;
@@ -167,6 +172,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
 	    m_nq->enquire->set_sort_by_key((QSorter*)m_sorter, 
 					   !m_sortAscending);
 	}
+	m_nq->enquire->set_query(m_nq->query);
 	m_nq->mset = Xapian::MSet();
 	// Get the query description and trim the "Xapian::Query"
 	d = m_nq->query.get_description();

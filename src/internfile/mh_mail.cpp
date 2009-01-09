@@ -38,6 +38,7 @@ static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.35 2008-10-04 14:26:59 dockes Exp
 #include "mh_html.h"
 #include "rclconfig.h"
 #include "mimetype.h"
+#include "md5.h"
 
 // binc imap mime definitions
 #include "mime.h"
@@ -81,6 +82,18 @@ bool MimeHandlerMail::set_document_file(const string &fn)
 	close(m_fd);
 	m_fd = -1;
     }
+
+    // Yes, we read the file twice. It would be possible in theory to add
+    // the md5 computation to the mime analysis, but ...
+    string md5, xmd5, reason;
+    if (MD5File(fn, md5, &reason)) {
+	m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+    } else {
+	LOGERR(("MimeHandlerMail: cant compute md5 for [%s]: %s\n", fn.c_str(),
+		reason.c_str()));
+    }
+
+
     m_fd = open(fn.c_str(), 0);
     if (m_fd < 0) {
 	LOGERR(("MimeHandlerMail::set_document_file: open(%s) errno %d\n",
@@ -104,6 +117,11 @@ bool MimeHandlerMail::set_document_string(const string &msgtxt)
     LOGDEB1(("MimeHandlerMail::set_document_string\n"));
     LOGDEB2(("Message text: [%s]\n", msgtxt.c_str()));
     delete m_stream;
+
+    string md5, xmd5;
+    MD5String(msgtxt, md5);
+    m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+
     m_stream = new stringstream(msgtxt);
     delete m_bincdoc;
     m_bincdoc = new Binc::MimeDocument;

@@ -157,6 +157,7 @@ class Doc {
     static const string keyau;  // author
     static const string keytt;  // title
     static const string keykw;  // keywords
+    static const string keymd5; // file md5 checksum
 };
 
 

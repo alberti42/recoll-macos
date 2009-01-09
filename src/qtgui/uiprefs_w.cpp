@@ -97,6 +97,7 @@ void UIPrefsDialog::setFromPrefs()
 {
     // Entries per result page spinbox
     pageLenSB->setValue(prefs.respagesize);
+    collapseDupsCB->setChecked(prefs.collapseDuplicates);
     maxHLTSB->setValue(prefs.maxhltextmbs);
     autoSearchCB->setChecked(prefs.autoSearchOnWS);
     syntlenSB->setValue(prefs.syntAbsLen);
@@ -173,6 +174,7 @@ void UIPrefsDialog::accept()
 {
     prefs.autoSearchOnWS = autoSearchCB->isChecked();
     prefs.respagesize = pageLenSB->value();
+    prefs.collapseDuplicates = collapseDupsCB->isChecked();
     prefs.maxhltextmbs = maxHLTSB->value();
 
     prefs.qtermcolor = qtermColorLE->text();

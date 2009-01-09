@@ -175,6 +175,8 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.ssearchAutoPhrase, 
 	       "/Recoll/prefs/ssearchAutoPhrase", Bool, false);
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Num, 8);
+    SETTING_RW(prefs.collapseDuplicates, 
+	       "/Recoll/prefs/reslist/collapseDuplicates", Bool, false);
     SETTING_RW(prefs.maxhltextmbs, "/Recoll/prefs/preview/maxhltextmbs", Num, 3);
     SETTING_RW(prefs.qtermcolor, "/Recoll/prefs/qtermcolor", , "blue");
     if (!writing && prefs.qtermcolor == "")
