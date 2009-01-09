@@ -44,7 +44,6 @@ using namespace std;
 #include "debuglog.h"
 #include "pathut.h"
 #include "smallut.h"
-#include "pathhash.h"
 #include "utf8iter.h"
 #include "searchdata.h"
 #include "rclquery.h"

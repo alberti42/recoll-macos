@@ -32,7 +32,6 @@ ${depth}/query/reslistpager.cpp \
 ${depth}/query/sortseq.cpp \
 ${depth}/query/wasastringtoquery.cpp \
 ${depth}/query/wasatorcl.cpp \
-${depth}/rcldb/pathhash.cpp \
 ${depth}/rcldb/rcldb.cpp \
 ${depth}/rcldb/rcldoc.cpp \
 ${depth}/rcldb/rclquery.cpp \
