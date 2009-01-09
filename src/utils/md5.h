@@ -26,8 +26,7 @@ These notices must be retained in any copies of any part of this
 documentation and/or software.
  */
 
-extern "C" {
-
+/* Base functions from original file */
 /* MD5 context. */
 typedef struct MD5Context {
   unsigned int state[4];	/* state (ABCD) */
@@ -35,9 +34,16 @@ typedef struct MD5Context {
   unsigned char buffer[64];	/* input buffer */
 } MD5_CTX;
 
-void   MD5Init (MD5_CTX *);
-void   MD5Update (MD5_CTX *, const unsigned char *, unsigned int);
-void   MD5Final (unsigned char [16], MD5_CTX *);
-}
+extern void   MD5Init (MD5_CTX *);
+extern void   MD5Update (MD5_CTX *, const unsigned char *, unsigned int);
+extern void   MD5Final (unsigned char [16], MD5_CTX *);
 
+/* Convenience / utilities */
+#include <string>
+using std::string;
+extern void MD5Final(string& digest, MD5_CTX *);
+extern bool MD5File(const string& filename, string& digest, string *reason);
+extern string& MD5String(const string& data, string& digest);
+extern string& MD5HexPrint(const string& digest, string& xdigest);
+extern string& MD5HexScan(const string& xdigest, string& digest);
 #endif /* _MD5_H_ */

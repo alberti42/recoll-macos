@@ -1,7 +1,8 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = trreadfile trfileudi trconftree wipedir smallut trfstreewalk trpathut \
+PROGS = trmd5 trreadfile trfileudi trconftree wipedir smallut \
+      trfstreewalk trpathut \
       transcode trbase64 \
       trmimeparse trexecmd utf8iter idfile
 
@@ -24,6 +25,13 @@ trreadfile : $(READFILE_OBJS)
 trreadfile.o : readfile.cpp readfile.h
 	$(CXX) -o trreadfile.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_READFILE readfile.cpp
+
+MD5_OBJS= trmd5.o md5.o $(BIGLIB)
+trmd5 : $(MD5_OBJS)
+	$(CXX) -o trmd5 $(MD5_OBJS) $(LIBICONV) $(LIBSYS)
+trmd5.o : md5.cpp md5.h
+	$(CXX) -o trmd5.o -c $(ALL_CXXFLAGS) \
+	       -DTEST_MD5 md5.cpp
 
 PATHUT_OBJS= trpathut.o  $(BIGLIB)
 trpathut : $(PATHUT_OBJS) 

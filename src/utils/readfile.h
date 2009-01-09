@@ -19,12 +19,21 @@
 /* @(#$Id: readfile.h,v 1.3 2007-06-02 08:30:42 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+using std::string;
 
 /**
  * Read whole file into string. 
  * @return true for ok, false else
  */
-bool file_to_string(const std::string &filename, std::string &data, 
-		    std::string *reason = 0);
+bool file_to_string(const string &filename, string &data, string *reason = 0);
+
+class FileScanDo {
+public:
+    virtual ~FileScanDo() {}
+    virtual bool init(unsigned int size, string *reason) = 0;
+    virtual bool data(const char *buf, int cnt, string* reason) = 0;
+};
+bool file_scan(const std::string &filename, FileScanDo* doer,  
+	       std::string *reason = 0);
 
 #endif /* _READFILE_H_INCLUDED_ */

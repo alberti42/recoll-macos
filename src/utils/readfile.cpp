@@ -40,27 +40,53 @@ using std::string;
 
 static void caterrno(string *reason, const char *what)
 {
-#define ERRBUFSZ 200    
-    char errbuf[ERRBUFSZ];
     if (reason) {
-	*reason += "file_to_string: ";
-	*reason += what;
-	*reason += ": ";
+	reason->append("file_to_string: ");
+	reason->append(what);
+	reason->append(": ");
 #ifdef sun
 	// Note: sun strerror is noted mt-safe ??
-	*reason += strerror(errno);
+	reason->append(strerror(errno));
 #else
+#define ERRBUFSZ 200    
+	char errbuf[ERRBUFSZ];
 	strerror_r(errno, errbuf, ERRBUFSZ);
-	*reason += errbuf;
+	reason->append(errbuf);
 #endif
     }
 }
 
-// Note: the fstat() + reserve() calls divide cpu usage almost by 2
+class FileToString : public FileScanDo {
+public:
+    FileToString(string& data) : m_data(data) {}
+    string& m_data;
+    bool init(unsigned int size, string *reason) {
+	if (size > 0)
+	    m_data.reserve(size); 
+	return true;
+    }
+    bool data(const char *buf, int cnt, string *reason) {
+	try {
+	    m_data.append(buf, cnt);
+	} catch (...) {
+	    caterrno(reason, "append");
+	    return false;
+	}
+	return true;
+    }
+};
+
+bool file_to_string(const string &fn, string &data, string *reason)
+{
+    FileToString accum(data);
+    return file_scan(fn, &accum, reason);
+}
+
+// Note: the fstat() + reserve() (in init()) calls divide cpu usage almost by 2
 // on both linux i586 and macosx (compared to just append())
 // Also tried a version with mmap, but it's actually slower on the mac and not
 // faster on linux.
-bool file_to_string(const string &fn, string &data, string *reason)
+bool file_scan(const string &fn, FileScanDo* doer, string *reason)
 {
     bool ret = false;
     bool noclosing = true;
@@ -72,19 +98,16 @@ bool file_to_string(const string &fn, string &data, string *reason)
     // If we have a file name, open it, else use stdin.
     if (!fn.empty()) {
 	fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
-	if (fd < 0 
-#if 1
-	    || fstat(fd, &st) < 0
-#endif
-	    ) {
+	if (fd < 0 || fstat(fd, &st) < 0) {
 	    caterrno(reason, "open/stat");
 	    return false;
 	}
 	noclosing = false;
     }
     if (st.st_size > 0)
-	data.reserve(st.st_size+1);
-
+	doer->init(st.st_size+1, reason);
+    else 
+	doer->init(0, reason);
     char buf[4096];
     for (;;) {
 	int n = read(fd, buf, 4096);
@@ -95,10 +118,7 @@ bool file_to_string(const string &fn, string &data, string *reason)
 	if (n == 0)
 	    break;
 
-	try {
-	    data.append(buf, n);
-	} catch (...) {
-	    caterrno(reason, "append");
+	if (!doer->data(buf, n, reason)) {
 	    goto out;
 	}
     }
@@ -206,7 +226,7 @@ int main(int argc, const char **argv)
   } else if (S_ISREG(st.st_mode)) {
       string s, reason;
       if (!file_to_string(top, s, &reason)) {
-	  cerr << reason;
+	  cerr << reason << endl;
 	  exit(1);
       } else {
 	  cout << s;
