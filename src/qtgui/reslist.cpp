@@ -265,10 +265,10 @@ void ResList::keyPressEvent(QKeyEvent * e)
     if (e->key() == Qt::Key_Q && (e->state() & Qt::ControlButton)) {
 	recollNeedsExit = 1;
 	return;
-    } else if (e->key() == Qt::Key_Prior) {
+    } else if (e->key() == Qt::Key_Prior || e->key() == Qt::Key_Backspace) {
 	resPageUpOrBack();
 	return;
-    } else if (e->key() == Qt::Key_Next) {
+    } else if (e->key() == Qt::Key_Next || e->key() == Qt::Key_Space) {
 	resPageDownOrNext();
 	return;
     }
