@@ -987,9 +987,16 @@ fvwm
     <sect1 id="rcl.search.complex">
       <title>Complex/advanced search</title>
 
-      <para>The advanced search dialog has a number of fields that
-        will allow a more refined search. Each entry field is
-        configurable for the following modes:</para>
+      <para>The advanced search dialog helps you build more complex
+      queries. It can be opened through the <guilabel>Tools</guilabel>
+      menu or through the main toolbar.</para>
+
+      <para>The dialog has three parts:</para>
+
+      <itemizedlist>
+	<listitem><para>The top part allows constructing a query by
+          combining multiple clauses of different types.
+          Each entry field is configurable for the following modes:</para>
 
         <itemizedlist>
 	  <listitem><para>All terms.</para>
@@ -1004,41 +1011,48 @@ fvwm
 	  <listitem><para>Proximity (terms in any order within an
 	  adjustable window).</para>
 	  </listitem>
-	  <listitem><para>Filename search with wildcards.</para>
+	  <listitem><para>Filename search.</para>
 	  </listitem>
 	</itemizedlist>
 
-      <para>Additional entry fields can be created by clicking the
-      <guilabel>Add clause</guilabel> button.</para>
+        <para>Additional entry fields can be created by clicking the
+          <guilabel>Add clause</guilabel> button.</para>
 
-      <para>You can choose that all relevant fields will be combined
-      by either an AND or an OR conjunction. All types of clauses
-      except "phrase" and "near" can accept a mix of single words and
-      phrases enclosed in double quotes. Stemming expansion will be
-      performed for all terms not beginning with a capital letter,
-      except for terms inside "phrase" clauses. Wildcards will be
-      processed everywhere.</para>
+        <para>When searching, the non-empty clauses will be
+          combined either with an AND or an OR conjunction, depending on
+          the choice made on the left (<guilabel>All clauses</guilabel> or
+          <guilabel>Any clause</guilabel>).</para>
 
-      <para>Advanced search will also let you search for documents of
-       specific mime types (ie: only <literal>text/plain</literal>, or
-        <literal>text/HTML</literal> or
-        <literal>application/pdf</literal> etc...). The state of the
-        file type selection can be saved as the default (the file type
-        filter will not be activated at program start-up, but the lists
-        will be in the restored state).</para>
+        <para>Entries of all types except "Phrase" and "Near" accept
+          a mix of single words and phrases enclosed in double quotes. 
+          Stemming and wildcard expansion will be performed as for simple
+          search. </para>
+	</listitem>
 
-      <para>You can also restrict the search results
-      to a sub-tree of the indexed area. If you need to do this often,
-      you may think of setting up multiple indexes instead, as the
-      performance will be much better.</para>
+	<listitem><para>The next part allows filtering the
+          results by their mime types.</para> 
+	  <para>The state of the file type selection can be saved as
+  	    the default (the file type filter will not be activated at
+  	    program start-up, but the lists will be in the restored
+  	    state).</para> 
+	</listitem>
+
+	<listitem>
+          <para>The bottom part allows restricting the search results to a
+            sub-tree of the indexed area. If you need to do this often, 
+            you may think of setting up multiple indexes instead, as the
+            performance will be much better.</para>
+	</listitem>
+
+      </itemizedlist>
+
 
       <para>Click on the <guilabel>Start Search</guilabel> button in
-      the advanced search dialog, or type <keycap>Enter</keycap> in
-      any text field to start the search. The button in
-      the main window always performs a simple search.</para>
-
+        the advanced search dialog, or type <keycap>Enter</keycap> in
+        any text field to start the search. The button in
+        the main window always performs a simple search.</para>
       <para>Click on the <literal>Show query details</literal> link at
-      the top of the result page to see the query expansion.</para>
+        the top of the result page to see the query expansion.</para>
 
     </sect1>
 
@@ -1242,31 +1256,41 @@ fvwm
     </sect1>
 
     <sect1 id="rcl.search.sort">
-      <title>Sorting search results</title>
+      <title>Sorting search results and collapsing duplicates</title>
 
       <para>The documents in a result list are normally sorted in
-      order of relevance. It is possible to specify different sort
-      parameters by using the <guimenu>Sort parameters</guimenu>
-      dialog (located in the <guimenu>Tools</guimenu>
-      menu).</para>
+        order of relevance. It is possible to specify different sort
+        parameters by using the <guimenu>Sort parameters</guimenu>
+        dialog (located in the <guimenu>Tools</guimenu> menu).</para>
 
       <para>The tool sorts a specified number of the most
-      relevant documents in the result list, according to
-      specified criteria. The currently available criteria are
-      <emphasis>date</emphasis> and <emphasis>mime type</emphasis>.</para> 
+        relevant documents in the result list, according to specified
+        criteria. The currently available criteria are
+        <emphasis>date</emphasis> and <emphasis>mime
+        type</emphasis>.</para>
 
-      <para>The sort parameters stay in effect until they are explicitly
-      reset, or the program exits. An activated sort is indicated in
-      the result list header.</para>
+      <para>The sort parameters stay in effect until they are
+        explicitly reset, or the program exits. An activated sort is
+        indicated in the result list header.</para>
 
       <para>Sort parameters are remembered between program
-      invocations, but result sorting is normally always inactive when
-      the program starts. It is possible to keep the sorting
-      activation state between program invocations by checking the
-      <guilabel>Remember sort activation state</guilabel>
-      option in the preferences.</para>
+        invocations, but result sorting is normally always inactive
+        when the program starts. It is possible to keep the sorting
+        activation state between program invocations by checking the
+        <guilabel>Remember sort activation state</guilabel> option in
+        the preferences.</para>
+
+      <para>It is also possible to hide duplicate entries inside
+        the result list (documents with the exact same contents as the
+        displayed one). The test of identity is based on an MD5 hash
+        of the document container, not only of the text contents (so
+        that ie, a text document with an image added will not be a
+        duplicate of the text only). Duplicates hiding is controlled
+        by an entry in the <guilabel>Query configuration</guilabel>
+        dialog, and is off by default.</para>
 
     </sect1>
+
 
     <sect1 id="rcl.search.tips">
       <title>Search tips, shortcuts</title>
@@ -1422,6 +1446,11 @@ fvwm
 
 	<listitem><para><guilabel>Number of results in a result
 	      page</guilabel>: </para> 
+	</listitem>
+
+	<listitem><para><guilabel>Hide duplicate results</guilabel>:
+	decides if result list entries are shown for identical
+	documents found in different places.</para> 
 	</listitem>
 
 	<listitem><para><guilabel>Highlight color for query
