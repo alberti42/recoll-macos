@@ -181,9 +181,6 @@ void AdvSearch::addClause()
     addClause(0);
 }
 
-#define HORADJ 50
-#define VERTADJ 30
-
 void AdvSearch::addClause(int tp)
 {
     SearchClauseW *w = new SearchClauseW(clauseFRM);
@@ -196,9 +193,6 @@ void AdvSearch::addClause(int tp)
     } else {
 	delClausePB->setEnabled(false);
     }
-    // Have to adjust the size else we lose the bottom buttons! Why?
-    QSize sz = layout()->sizeHint();
-    resize(QSize(sz.width()+HORADJ, sz.height()+VERTADJ));
 }
 
 void AdvSearch::delClause()
@@ -212,19 +206,7 @@ void AdvSearch::delClause()
     } else {
 	delClausePB->setEnabled(false);
     }
-    QSize sz = layout()->sizeHint();
-    resize(QSize(sz.width()+HORADJ, sz.height()+VERTADJ));
 }
-
-#if (QT_VERSION < 0x040000)
-void AdvSearch::polish()
-{
-    AdvSearchBase::polish();
-    QSize sz = sizeHint();
-    resize(QSize(sz.width()+HORADJ+10, sz.height()+VERTADJ-20));
-}
-#endif
-
 
 // Move selected file types from the searched to the ignored box
 void AdvSearch::delFiltypPB_clicked()

@@ -74,9 +74,6 @@ public slots:
     virtual void addClause();
     virtual void addClause(int);
     virtual bool close();
-#if (QT_VERSION < 0x040000)
-    virtual void polish();
-#endif
 
 signals:
     void startSearch(RefCntr<Rcl::SearchData>);
