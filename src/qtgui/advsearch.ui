@@ -165,7 +165,7 @@
                                     <number>0</number>
                                 </property>
                                 <property name="spacing">
-                                    <number>0</number>
+                                    <number>1</number>
                                 </property>
                                 <widget class="Line">
                                     <property name="name">
@@ -184,6 +184,20 @@
                             </vbox>
                         </widget>
                     </hbox>
+                </widget>
+                <widget class="Line">
+                    <property name="name">
+                        <cstring>line3</cstring>
+                    </property>
+                    <property name="frameShape">
+                        <enum>HLine</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Sunken</enum>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">

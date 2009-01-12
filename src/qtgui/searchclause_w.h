@@ -42,9 +42,6 @@ public:
     QSpinBox* proxSlackSB;
     QLineEdit* wordsLE;
 
-protected:
-    QVBoxLayout* searchClauseLayout;
-    QHBoxLayout* hLayout;
 public slots:
     virtual void tpChange(int);
 protected slots:

@@ -36,10 +36,7 @@ static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.4 2006-12-04 06:19:11 dock
 SearchClauseW::SearchClauseW(QWidget* parent)
     : QWidget(parent)
 {
-    searchClauseLayout = new QVBoxLayout(this);
-
-    hLayout = new QHBoxLayout(0, 0, 3, "hLayout"); 
-
+    QHBoxLayout* hLayout = new QHBoxLayout(this, 0, 3); 
     sTpCMB = new QComboBox(FALSE, this, "sTpCMB");
     hLayout->addWidget(sTpCMB);
 
@@ -49,7 +46,7 @@ SearchClauseW::SearchClauseW(QWidget* parent)
     wordsLE = new QLineEdit(this, "wordsLE");
     wordsLE->setMinimumSize(QSize(250, 0));
     hLayout->addWidget(wordsLE);
-    searchClauseLayout->addLayout(hLayout);
+
     languageChange();
     resize(QSize(0, 0).expandedTo(minimumSizeHint()));
 
