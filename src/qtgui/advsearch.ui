@@ -1,561 +1,537 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>AdvSearchBase</class>
-<widget class="QDialog">
+  <class>AdvSearchBase</class>
+  <widget class="QDialog">
     <property name="name">
-        <cstring>AdvSearchBase</cstring>
+      <cstring>AdvSearchBase</cstring>
     </property>
     <property name="geometry">
-        <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>545</width>
-            <height>537</height>
-        </rect>
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>545</width>
+        <height>537</height>
+      </rect>
     </property>
     <property name="caption">
-        <string>Advanced search</string>
+      <string>Advanced search</string>
     </property>
     <property name="sizeGripEnabled">
-        <bool>true</bool>
+      <bool>true</bool>
     </property>
     <vbox>
+      <property name="name">
+        <cstring>unnamed</cstring>
+      </property>
+      <widget class="QLayoutWidget">
         <property name="name">
-            <cstring>unnamed</cstring>
+          <cstring>layout17</cstring>
         </property>
-        <widget class="QLayoutWidget">
+        <hbox>
+          <property name="name">
+            <cstring>unnamed</cstring>
+          </property>
+          <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout10</cstring>
+              <cstring>layout16</cstring>
             </property>
             <vbox>
+              <property name="name">
+                <cstring>unnamed</cstring>
+              </property>
+              <property name="spacing">
+                <number>2</number>
+              </property>
+              <widget class="QLabel">
                 <property name="name">
-                    <cstring>unnamed</cstring>
+                  <cstring>textLabel2</cstring>
                 </property>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout17</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLayoutWidget">
-                            <property name="name">
-                                <cstring>layout16</cstring>
-                            </property>
-                            <vbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <property name="spacing">
-                                    <number>2</number>
-                                </property>
-                                <widget class="QLabel">
-                                    <property name="name">
-                                        <cstring>textLabel2</cstring>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>0</hsizetype>
-                                            <vsizetype>5</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="frameShape">
-                                        <enum>NoFrame</enum>
-                                    </property>
-                                    <property name="frameShadow">
-                                        <enum>Plain</enum>
-                                    </property>
-                                    <property name="margin">
-                                        <number>4</number>
-                                    </property>
-                                    <property name="text">
-                                        <string>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</string>
-                                    </property>
-                                    <property name="toolTip" stdset="0">
-                                        <string>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;"Any" "All" and "None" field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</string>
-                                    </property>
-                                </widget>
-                                <widget class="QComboBox">
-                                    <property name="name">
-                                        <cstring>conjunctCMB</cstring>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>0</hsizetype>
-                                            <vsizetype>0</vsizetype>
-                                            <horstretch>8</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                </widget>
-                                <spacer>
-                                    <property name="name">
-                                        <cstring>spacer2</cstring>
-                                    </property>
-                                    <property name="orientation">
-                                        <enum>Vertical</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>Expanding</enum>
-                                    </property>
-                                    <property name="sizeHint">
-                                        <size>
-                                            <width>0</width>
-                                            <height>0</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                                <widget class="QPushButton">
-                                    <property name="name">
-                                        <cstring>delClausePB</cstring>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>0</hsizetype>
-                                            <vsizetype>0</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="text">
-                                        <string>Delete clause</string>
-                                    </property>
-                                    <property name="autoDefault">
-                                        <bool>false</bool>
-                                    </property>
-                                </widget>
-                                <widget class="QPushButton">
-                                    <property name="name">
-                                        <cstring>addClausePB</cstring>
-                                    </property>
-                                    <property name="sizePolicy">
-                                        <sizepolicy>
-                                            <hsizetype>0</hsizetype>
-                                            <vsizetype>0</vsizetype>
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="text">
-                                        <string>Add clause</string>
-                                    </property>
-                                    <property name="autoDefault">
-                                        <bool>false</bool>
-                                    </property>
-                                </widget>
-                            </vbox>
-                        </widget>
-                        <widget class="QFrame">
-                            <property name="name">
-                                <cstring>clauseFRM</cstring>
-                            </property>
-                            <property name="frameShape">
-                                <enum>StyledPanel</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>Plain</enum>
-                            </property>
-                            <vbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <property name="margin">
-                                    <number>0</number>
-                                </property>
-                                <property name="spacing">
-                                    <number>1</number>
-                                </property>
-                                <widget class="Line">
-                                    <property name="name">
-                                        <cstring>clauseline</cstring>
-                                    </property>
-                                    <property name="frameShape">
-                                        <enum>HLine</enum>
-                                    </property>
-                                    <property name="frameShadow">
-                                        <enum>Plain</enum>
-                                    </property>
-                                    <property name="orientation">
-                                        <enum>Horizontal</enum>
-                                    </property>
-                                </widget>
-                            </vbox>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="Line">
-                    <property name="name">
-                        <cstring>line3</cstring>
-                    </property>
-                    <property name="frameShape">
-                        <enum>HLine</enum>
-                    </property>
-                    <property name="frameShadow">
-                        <enum>Sunken</enum>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout9</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>restrictFtCB</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>1</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>1</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="text">
-                                <string>Restrict file types</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Check this to enable filtering on file types</string>
-                            </property>
-                        </widget>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>restrictCtCB</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>1</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>1</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="text">
-                                <string>By categories</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Check this to use file categories instead of raw mime types</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>saveFileTypesPB</cstring>
-                            </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="text">
-                                <string>Save as default</string>
-                            </property>
-                            <property name="autoDefault">
-                                <bool>false</bool>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>filTypHB</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLayoutWidget">
-                            <property name="name">
-                                <cstring>layout9</cstring>
-                            </property>
-                            <vbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <property name="spacing">
-                                    <number>0</number>
-                                </property>
-                                <widget class="QLabel">
-                                    <property name="name">
-                                        <cstring>textLabel2_2</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>Searched file types</string>
-                                    </property>
-                                </widget>
-                                <widget class="QListBox">
-                                    <property name="name">
-                                        <cstring>yesFiltypsLB</cstring>
-                                    </property>
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                    <property name="minimumSize">
-                                        <size>
-                                            <width>200</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                    <property name="selectionMode">
-                                        <enum>Extended</enum>
-                                    </property>
-                                </widget>
-                            </vbox>
-                        </widget>
-                        <widget class="QLayoutWidget">
-                            <property name="name">
-                                <cstring>layout11</cstring>
-                            </property>
-                            <vbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <property name="spacing">
-                                    <number>2</number>
-                                </property>
-                                <widget class="QPushButton">
-                                    <property name="name">
-                                        <cstring>delAFiltypPB</cstring>
-                                    </property>
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                    <property name="text">
-                                        <string>All ----&gt;</string>
-                                    </property>
-                                    <property name="autoDefault">
-                                        <bool>false</bool>
-                                    </property>
-                                </widget>
-                                <widget class="QPushButton">
-                                    <property name="name">
-                                        <cstring>delFiltypPB</cstring>
-                                    </property>
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                    <property name="text">
-                                        <string>Sel -----&gt;</string>
-                                    </property>
-                                    <property name="autoDefault">
-                                        <bool>false</bool>
-                                    </property>
-                                </widget>
-                                <widget class="QPushButton">
-                                    <property name="name">
-                                        <cstring>addFiltypPB</cstring>
-                                    </property>
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                    <property name="text">
-                                        <string>&lt;----- Sel</string>
-                                    </property>
-                                    <property name="autoDefault">
-                                        <bool>false</bool>
-                                    </property>
-                                </widget>
-                                <widget class="QPushButton">
-                                    <property name="name">
-                                        <cstring>addAFiltypPB</cstring>
-                                    </property>
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                    <property name="text">
-                                        <string>&lt;----- All</string>
-                                    </property>
-                                    <property name="autoDefault">
-                                        <bool>false</bool>
-                                    </property>
-                                </widget>
-                            </vbox>
-                        </widget>
-                        <widget class="QLayoutWidget">
-                            <property name="name">
-                                <cstring>layout10</cstring>
-                            </property>
-                            <vbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <property name="spacing">
-                                    <number>0</number>
-                                </property>
-                                <widget class="QLabel">
-                                    <property name="name">
-                                        <cstring>textLabel3</cstring>
-                                    </property>
-                                    <property name="text">
-                                        <string>Ignored file types</string>
-                                    </property>
-                                </widget>
-                                <widget class="QListBox">
-                                    <property name="name">
-                                        <cstring>noFiltypsLB</cstring>
-                                    </property>
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                    <property name="minimumSize">
-                                        <size>
-                                            <width>200</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                    <property name="selectionMode">
-                                        <enum>Extended</enum>
-                                    </property>
-                                </widget>
-                            </vbox>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="Line">
-                    <property name="name">
-                        <cstring>line3</cstring>
-                    </property>
-                    <property name="frameShape">
-                        <enum>HLine</enum>
-                    </property>
-                    <property name="frameShadow">
-                        <enum>Sunken</enum>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layoutFT</cstring>
-                    </property>
-                    <grid>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QComboBox" row="1" column="0">
-                            <property name="name">
-                                <cstring>subtreeCMB</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>7</hsizetype>
-                                    <vsizetype>0</vsizetype>
-                                    <horstretch>8</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                                <size>
-                                    <width>300</width>
-                                    <height>0</height>
-                                </size>
-                            </property>
-                            <property name="editable">
-                                <bool>true</bool>
-                            </property>
-                            <property name="maxCount">
-                                <number>20</number>
-                            </property>
-                            <property name="insertionPolicy">
-                                <enum>NoInsertion</enum>
-                            </property>
-                            <property name="duplicatesEnabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Enter top directory for search</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton" row="1" column="1">
-                            <property name="name">
-                                <cstring>browsePB</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Browse</string>
-                            </property>
-                            <property name="autoDefault">
-                                <bool>false</bool>
-                            </property>
-                        </widget>
-                        <widget class="QLabel" row="0" column="0">
-                            <property name="name">
-                                <cstring>textLabel1</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Restrict results to files in subtree:</string>
-                            </property>
-                        </widget>
-                    </grid>
-                </widget>
-                <widget class="Line">
-                    <property name="name">
-                        <cstring>line1</cstring>
-                    </property>
-                    <property name="frameShape">
-                        <enum>HLine</enum>
-                    </property>
-                    <property name="frameShadow">
-                        <enum>Sunken</enum>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout26</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>searchPB</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Start Search</string>
-                            </property>
-                        </widget>
-                        <widget class="QPushButton">
-                            <property name="name">
-                                <cstring>dismissPB</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Close</string>
-                            </property>
-                            <property name="autoDefault">
-                                <bool>false</bool>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
+                <property name="sizePolicy">
+                  <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>5</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                  </sizepolicy>
+                </property>
+                <property name="frameShape">
+                  <enum>NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                  <enum>Plain</enum>
+                </property>
+                <property name="margin">
+                  <number>4</number>
+                </property>
+                <property name="text">
+                  <string>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</string>
+                </property>
+                <property name="toolTip" stdset="0">
+                  <string>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;"Any" "All" and "None" field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</string>
+                </property>
+              </widget>
+              <widget class="QComboBox">
+                <property name="name">
+                  <cstring>conjunctCMB</cstring>
+                </property>
+                <property name="sizePolicy">
+                  <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>8</horstretch>
+                    <verstretch>0</verstretch>
+                  </sizepolicy>
+                </property>
+              </widget>
+              <spacer>
+                <property name="name">
+                  <cstring>spacer2</cstring>
+                </property>
+                <property name="orientation">
+                  <enum>Vertical</enum>
+                </property>
+                <property name="sizeType">
+                  <enum>Expanding</enum>
+                </property>
+                <property name="sizeHint">
+                  <size>
+                    <width>0</width>
+                    <height>0</height>
+                  </size>
+                </property>
+              </spacer>
+              <widget class="QPushButton">
+                <property name="name">
+                  <cstring>delClausePB</cstring>
+                </property>
+                <property name="sizePolicy">
+                  <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                  </sizepolicy>
+                </property>
+                <property name="text">
+                  <string>Delete clause</string>
+                </property>
+                <property name="autoDefault">
+                  <bool>false</bool>
+                </property>
+              </widget>
+              <widget class="QPushButton">
+                <property name="name">
+                  <cstring>addClausePB</cstring>
+                </property>
+                <property name="sizePolicy">
+                  <sizepolicy>
+                    <hsizetype>0</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                  </sizepolicy>
+                </property>
+                <property name="text">
+                  <string>Add clause</string>
+                </property>
+                <property name="autoDefault">
+                  <bool>false</bool>
+                </property>
+              </widget>
             </vbox>
-        </widget>
-        <widget class="Line">
+          </widget>
+          <widget class="QFrame">
             <property name="name">
-                <cstring>line2</cstring>
+              <cstring>clauseFRM</cstring>
             </property>
             <property name="frameShape">
-                <enum>HLine</enum>
+              <enum>StyledPanel</enum>
             </property>
             <property name="frameShadow">
-                <enum>Sunken</enum>
+              <enum>Plain</enum>
             </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
+            <vbox>
+              <property name="name">
+                <cstring>unnamed</cstring>
+              </property>
+              <property name="margin">
+                <number>0</number>
+              </property>
+              <property name="spacing">
+                <number>1</number>
+              </property>
+              <widget class="Line">
+                <property name="name">
+                  <cstring>clauseline</cstring>
+                </property>
+                <property name="frameShape">
+                  <enum>HLine</enum>
+                </property>
+                <property name="frameShadow">
+                  <enum>Plain</enum>
+                </property>
+                <property name="orientation">
+                  <enum>Horizontal</enum>
+                </property>
+              </widget>
+            </vbox>
+          </widget>
+        </hbox>
+      </widget>
+      <widget class="Line">
+        <property name="name">
+          <cstring>line3</cstring>
+        </property>
+        <property name="frameShape">
+          <enum>HLine</enum>
+        </property>
+        <property name="frameShadow">
+          <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+          <enum>Horizontal</enum>
+        </property>
+      </widget>
+      <widget class="QLayoutWidget">
+        <property name="name">
+          <cstring>layout9</cstring>
+        </property>
+        <hbox>
+          <property name="name">
+            <cstring>unnamed</cstring>
+          </property>
+          <widget class="QCheckBox">
+            <property name="name">
+              <cstring>restrictFtCB</cstring>
             </property>
-        </widget>
+            <property name="sizePolicy">
+              <sizepolicy>
+                <hsizetype>1</hsizetype>
+                <vsizetype>0</vsizetype>
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+              </sizepolicy>
+            </property>
+            <property name="text">
+              <string>Restrict file types</string>
+            </property>
+            <property name="toolTip" stdset="0">
+              <string>Check this to enable filtering on file types</string>
+            </property>
+          </widget>
+          <widget class="QCheckBox">
+            <property name="name">
+              <cstring>restrictCtCB</cstring>
+            </property>
+            <property name="enabled">
+              <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+              <sizepolicy>
+                <hsizetype>1</hsizetype>
+                <vsizetype>0</vsizetype>
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+              </sizepolicy>
+            </property>
+            <property name="text">
+              <string>By categories</string>
+            </property>
+            <property name="toolTip" stdset="0">
+              <string>Check this to use file categories instead of raw mime types</string>
+            </property>
+          </widget>
+          <widget class="QPushButton">
+            <property name="name">
+              <cstring>saveFileTypesPB</cstring>
+            </property>
+            <property name="enabled">
+              <bool>false</bool>
+            </property>
+            <property name="text">
+              <string>Save as default</string>
+            </property>
+            <property name="autoDefault">
+              <bool>false</bool>
+            </property>
+          </widget>
+        </hbox>
+      </widget>
+      <widget class="QLayoutWidget">
+        <property name="name">
+          <cstring>filTypHB</cstring>
+        </property>
+        <hbox>
+          <property name="name">
+            <cstring>unnamed</cstring>
+          </property>
+          <widget class="QLayoutWidget">
+            <property name="name">
+              <cstring>layout9</cstring>
+            </property>
+            <vbox>
+              <property name="name">
+                <cstring>unnamed</cstring>
+              </property>
+              <property name="spacing">
+                <number>0</number>
+              </property>
+              <widget class="QLabel">
+                <property name="name">
+                  <cstring>textLabel2_2</cstring>
+                </property>
+                <property name="text">
+                  <string>Searched file types</string>
+                </property>
+              </widget>
+              <widget class="QListBox">
+                <property name="name">
+                  <cstring>yesFiltypsLB</cstring>
+                </property>
+                <property name="enabled">
+                  <bool>false</bool>
+                </property>
+                <property name="minimumSize">
+                  <size>
+                    <width>200</width>
+                    <height>20</height>
+                  </size>
+                </property>
+                <property name="selectionMode">
+                  <enum>Extended</enum>
+                </property>
+              </widget>
+            </vbox>
+          </widget>
+          <widget class="QLayoutWidget">
+            <property name="name">
+              <cstring>layout11</cstring>
+            </property>
+            <vbox>
+              <property name="name">
+                <cstring>unnamed</cstring>
+              </property>
+              <property name="spacing">
+                <number>0</number>
+              </property>
+              <widget class="QPushButton">
+                <property name="name">
+                  <cstring>delAFiltypPB</cstring>
+                </property>
+                <property name="enabled">
+                  <bool>false</bool>
+                </property>
+                <property name="text">
+                  <string>All ----&gt;</string>
+                </property>
+                <property name="autoDefault">
+                  <bool>false</bool>
+                </property>
+              </widget>
+              <widget class="QPushButton">
+                <property name="name">
+                  <cstring>delFiltypPB</cstring>
+                </property>
+                <property name="enabled">
+                  <bool>false</bool>
+                </property>
+                <property name="text">
+                  <string>Sel -----&gt;</string>
+                </property>
+                <property name="autoDefault">
+                  <bool>false</bool>
+                </property>
+              </widget>
+              <widget class="QPushButton">
+                <property name="name">
+                  <cstring>addFiltypPB</cstring>
+                </property>
+                <property name="enabled">
+                  <bool>false</bool>
+                </property>
+                <property name="text">
+                  <string>&lt;----- Sel</string>
+                </property>
+                <property name="autoDefault">
+                  <bool>false</bool>
+                </property>
+              </widget>
+              <widget class="QPushButton">
+                <property name="name">
+                  <cstring>addAFiltypPB</cstring>
+                </property>
+                <property name="enabled">
+                  <bool>false</bool>
+                </property>
+                <property name="text">
+                  <string>&lt;----- All</string>
+                </property>
+                <property name="autoDefault">
+                  <bool>false</bool>
+                </property>
+              </widget>
+            </vbox>
+          </widget>
+          <widget class="QLayoutWidget">
+            <property name="name">
+              <cstring>layout10</cstring>
+            </property>
+            <vbox>
+              <property name="name">
+                <cstring>unnamed</cstring>
+              </property>
+              <property name="spacing">
+                <number>0</number>
+              </property>
+              <widget class="QLabel">
+                <property name="name">
+                  <cstring>textLabel3</cstring>
+                </property>
+                <property name="text">
+                  <string>Ignored file types</string>
+                </property>
+              </widget>
+              <widget class="QListBox">
+                <property name="name">
+                  <cstring>noFiltypsLB</cstring>
+                </property>
+                <property name="enabled">
+                  <bool>false</bool>
+                </property>
+                <property name="minimumSize">
+                  <size>
+                    <width>200</width>
+                    <height>20</height>
+                  </size>
+                </property>
+                <property name="selectionMode">
+                  <enum>Extended</enum>
+                </property>
+              </widget>
+            </vbox>
+          </widget>
+        </hbox>
+      </widget>
+      <widget class="Line">
+        <property name="name">
+          <cstring>line3</cstring>
+        </property>
+        <property name="frameShape">
+          <enum>HLine</enum>
+        </property>
+        <property name="frameShadow">
+          <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+          <enum>Horizontal</enum>
+        </property>
+      </widget>
+      <widget class="QLayoutWidget">
+        <property name="name">
+          <cstring>layoutFT</cstring>
+        </property>
+        <grid>
+          <property name="name">
+            <cstring>unnamed</cstring>
+          </property>
+          <widget class="QComboBox" row="1" column="0">
+            <property name="name">
+              <cstring>subtreeCMB</cstring>
+            </property>
+            <property name="sizePolicy">
+              <sizepolicy>
+                <hsizetype>7</hsizetype>
+                <vsizetype>0</vsizetype>
+                <horstretch>8</horstretch>
+                <verstretch>0</verstretch>
+              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+              <size>
+                <width>300</width>
+                <height>0</height>
+              </size>
+            </property>
+            <property name="editable">
+              <bool>true</bool>
+            </property>
+            <property name="maxCount">
+              <number>20</number>
+            </property>
+            <property name="insertionPolicy">
+              <enum>NoInsertion</enum>
+            </property>
+            <property name="duplicatesEnabled">
+              <bool>false</bool>
+            </property>
+            <property name="toolTip" stdset="0">
+              <string>Enter top directory for search</string>
+            </property>
+          </widget>
+          <widget class="QPushButton" row="1" column="1">
+            <property name="name">
+              <cstring>browsePB</cstring>
+            </property>
+            <property name="text">
+              <string>Browse</string>
+            </property>
+            <property name="autoDefault">
+              <bool>false</bool>
+            </property>
+          </widget>
+          <widget class="QLabel" row="0" column="0">
+            <property name="name">
+              <cstring>textLabel1</cstring>
+            </property>
+            <property name="text">
+              <string>Restrict results to files in subtree:</string>
+            </property>
+          </widget>
+        </grid>
+      </widget>
+      <widget class="Line">
+        <property name="name">
+          <cstring>line1</cstring>
+        </property>
+        <property name="frameShape">
+          <enum>HLine</enum>
+        </property>
+        <property name="frameShadow">
+          <enum>Sunken</enum>
+        </property>
+        <property name="orientation">
+          <enum>Horizontal</enum>
+        </property>
+      </widget>
+      <widget class="QLayoutWidget">
+        <property name="name">
+          <cstring>layout26</cstring>
+        </property>
+        <hbox>
+          <property name="name">
+            <cstring>unnamed</cstring>
+          </property>
+          <widget class="QPushButton">
+            <property name="name">
+              <cstring>searchPB</cstring>
+            </property>
+            <property name="text">
+              <string>Start Search</string>
+            </property>
+          </widget>
+          <widget class="QPushButton">
+            <property name="name">
+              <cstring>dismissPB</cstring>
+            </property>
+            <property name="text">
+              <string>Close</string>
+            </property>
+            <property name="autoDefault">
+              <bool>false</bool>
+            </property>
+          </widget>
+        </hbox>
+      </widget>
     </vbox>
-</widget>
+  </widget>
 <layoutdefaults spacing="6" margin="11"/>
 </UI>
