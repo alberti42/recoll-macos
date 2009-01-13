@@ -75,7 +75,7 @@
                         <enum>TabFocus</enum>
                     </property>
                     <property name="toolTip" stdset="0">
-                        <string>Choose type of search: any term, all terms, filename with possible wildcards.</string>
+                        <string>Choose search type.</string>
                     </property>
                 </widget>
                 <widget class="QComboBox">
