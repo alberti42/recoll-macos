@@ -29,7 +29,7 @@
     <abstract>
       <para>This document introduces full text search notions
       and describes the installation and use of the &RCL;
-      application. It currently describes &RCL; 1.9.</para>
+      application. It currently describes &RCL; 1.10.</para>
     </abstract>
 
 
@@ -49,16 +49,16 @@
       indexing completes.</para>
 
       <para>Do not do this if your home directory contains a huge
-      number of documents and you do not want to wait or are very
-      short on disk space. In this case, you may want to edit the <link
-      linkend="rcl.indexing.config">configuration file</link> first to
-      restrict the indexed area.</para>
+        number of documents and you do not want to wait or are very
+        short on disk space. In this case, you may first want to customize
+        the <link linkend="rcl.indexing.config">configuration</link>
+        to restrict the indexed area.</para> 
 
       <para>Also be aware that you may need to install the
-      appropriate <link linkend="rcl.install.external">
-      supporting applications</link> for document types that need
-      them (for example <application>antiword</application> for
-      ms-word files).</para>
+        appropriate <link linkend="rcl.install.external"> supporting
+        applications</link> for document types that need them (for
+        example <application>antiword</application> for ms-word
+        files).</para>
       
     <sect1 id="rcl.introduction.search"> 
       <title>Full text search</title>
@@ -140,8 +140,8 @@
 
       <para>&RCL; has many parameters which define exactly what to
         index, and how to classify and decode the source
-        documents. These are kept in a <link
-        linkend="rcl.indexing.config">configuration file</link>. A
+        documents. These are kept in <link
+        linkend="rcl.indexing.config">configuration files</link>. A
         default configuration is copied into a standard location
         (usually something like
         <filename>/usr/[local/]share/recoll/examples</filename>)
@@ -2411,31 +2411,45 @@ while query.next >= 0 and query.next < nres:
       <title>Configuration overview</title>
 
       <para>Most of the parameters specific to the
-         <command>recoll</command> GUI are set through the
-          <guilabel>Preferences</guilabel> menu and stored in the
-          standard QT place
-          (<filename>$HOME/.qt/recollrc</filename>). You probably do not
-          want to edit this by hand.</para>
+        <command>recoll</command> GUI are set through the
+        <guilabel>Preferences</guilabel> menu and stored in the
+        standard QT place (<filename>$HOME/.qt/recollrc</filename>). 
+        You probably do not want to edit this by hand.</para>
 
-      <para>For other options, &RCL; uses text configuration
-        files. You will have to edit them by hand for 
-        now (there is still some hope for a GUI configuration tool
-        in the future). The most accurate documentation for the
+      <para>&RCL; indexing options are set inside text configuration
+        files located in a configuration directory. There can be
+        several such directories, each of which define the parameters
+        for one index.</para>
+
+      <para>The configuration files can be edited by hand or through
+        the <guilabel>Indexing configuration</guilabel> dialog 
+        (<guilabel>Preferences</guilabel> menu). The GUI tool will try
+        to respect your formatting and comments as much as possible,
+        so it is quite possible to use both ways.</para>
+
+      <para>The most accurate documentation for the
         configuration parameters is given by comments inside the default
         files, and we will just give a general overview here.</para>
 
-      <para>There are two sets of configuration files. The system-wide
-      files are kept in a directory named like
-      <filename>/usr/[local/]share/recoll/examples</filename>, 
-      they define default values for the system. A parallel set of
-      files exists by default in the <filename>.recoll</filename> directory
-      in your home. This directory can be changed with the 
-      <literal>RECOLL_CONFDIR</literal> environment variable or the -c
-      option parameter to <command>recoll</command> and
-      <command>recollindex</command>.</para> 
+      <para>For each index, there are two sets of configuration
+        files. System-wide configuration files are kept in a directory named
+        like <filename>/usr/[local/]share/recoll/examples</filename>,
+        and define default values, shared by all indexes. For each
+        index, a parallel set of files defines the customized
+        parameters.</para>
+
+      <para>The default location of the configuration is the
+        <filename>.recoll</filename>
+        directory in your home. Most people will only use this
+        directory.</para> 
+
+      <para>This location can be changed, or others can be added with the
+        <literal>RECOLL_CONFDIR</literal> environment variable or the
+        -c option parameter to <command>recoll</command> and
+        <command>recollindex</command>.</para>
 
       <para>If the <filename>.recoll</filename> directory does not
-      exist when <command>recoll</command> or 
+        exist when <command>recoll</command> or
         <command>recollindex</command> are started, it will be created
         with a set of empty configuration files.
         <command>recoll</command> will give you a chance to edit the
