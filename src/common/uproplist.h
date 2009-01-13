@@ -19,17 +19,15 @@
 /* @(#$Id: uproplist.h,v 1.3 2008-12-05 11:09:31 dockes Exp $  (C) 2004 J.F.Dockes */
 
 
-/* 
- * A subset of Unicode chars that we consider whitespace when we split text in
- * words. 
-
+/** 
+ * A subset of Unicode chars that we consider word breaks when we
+ * split text in words. 
+ *
  * This is used as a quick fix to the ascii-based code, and is not correct.
  * the correct way would be to do what http://www.unicode.org/reports/tr29/ 
- * says. We should then convert first to ucs-4, and then strictly use 
- * character properties, which might actually be simpler than the current 
- * solution...
+ * says. 
  * 
- * From:
+ * Data from:
 # PropList-4.0.1.txt
 # Date: 2004-03-02, 02:42:40 GMT [MD]
 #
@@ -48,9 +46,7 @@ static const unsigned int uniign[] = {
     0x00A5, /* YEN SIGN;Sc; */
     0x00A6, /* BROKEN BAR;So */
     0x00A7, /* SECTION SIGN;So; */
-    0x00A8, /* DIAERESIS;Sk; */
     0x00A9, /* COPYRIGHT SIGN;So */
-    0x00AA, /* FEMININE ORDINAL INDICATOR;Ll */
     0x00AB, /* LEFT-POINTING DOUBLE ANGLE QUOTATION MARK;Pi */
     0x00AC, /* NOT SIGN;Sm */
     0x00AE, /* registered sign */
@@ -160,6 +156,9 @@ static const unsigned int uniign[] = {
     0xFF1F, /*  ; Terminal_Punctuation # Po       FULLWIDTH QUESTION MARK*/
     0xFF61, /*  ; Terminal_Punctuation # Po       HALFWIDTH IDEOGRAPHIC FULL STOP*/
     0xFF64, /*  ; Terminal_Punctuation # Po       HALFWIDTH IDEOGRAPHIC COMMA*/
+
+    /* STerm means Sentence Terminal. Some of these are in Terminal_Punctuation 
+       but not all ?? */
     0x0021, /*  ; STerm # Po       EXCLAMATION MARK*/
     0x002E, /*  ; STerm # Po       FULL STOP*/
     0x003F, /*  ; STerm # Po       QUESTION MARK*/
