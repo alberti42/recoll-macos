@@ -618,8 +618,9 @@ fvwm
 	<step><para>Start the <command>recoll</command> program.</para>
 	</step>
 	<step><para>Possibly choose a search mode: <guilabel>Any
-	term</guilabel> or <guilabel>All terms</guilabel> or
-	<guilabel>File name</guilabel>.</para>
+	term</guilabel>, <guilabel>All terms</guilabel>, 
+        <guilabel>File name</guilabel> or
+	<guilabel>Query language</guilabel>.</para>
 	</step>
 	<step><para>Enter search term(s) in the text field at the top of the
         window.</para>
