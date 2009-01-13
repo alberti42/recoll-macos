@@ -6,6 +6,15 @@
 namespace Rcl {
 /* @(#$Id: rcldb_p.h,v 1.6 2008-09-30 12:38:29 dockes Exp $  (C) 2007 J.F.Dockes */
 
+// Omega compatible values. We leave a hole for future omega values. Not sure 
+// it makes any sense to keep any level of omega compat given that the index
+// is incompatible anyway.
+enum value_slot {
+    VALUE_LASTMOD = 0,	// 4 byte big endian value - seconds since 1970.
+    VALUE_MD5 = 1,	// 16 byte MD5 checksum of original document.
+    VALUE_SIG = 10      // Doc sig as chosen by app (ex: mtime+size
+};
+
 // Generic Xapian exception catching code. We do this quite often,
 // and I have no idea how to do this except for a macro
 #define XCATCHERROR(MSG) \

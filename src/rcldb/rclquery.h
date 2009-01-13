@@ -54,9 +54,11 @@ class Query {
 
     /** Choose sort order. Must be called before setQuery */
     void setSortBy(const string& fld, bool ascending = true);
-    void setCollapseDuplicates(bool on) {m_collapseDuplicates = on;}
     const string& getSortBy() const {return m_sortField;}
     bool getSortAscending() const {return m_sortAscending;}
+
+    /** Return or filter results with identical content checksum */
+    void setCollapseDuplicates(bool on) {m_collapseDuplicates = on;}
 
     /** Accept data describing the search and query the index. This can
      * be called repeatedly on the same object which gets reinitialized each
