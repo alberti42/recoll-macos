@@ -88,7 +88,7 @@ static void setcharclasses()
     for (i = 0; i  < strlen(wild); i++)
 	charclasses[int(wild[i])] = WILD;
 
-    char special[] = ".@+-,#'\n\r";
+    char special[] = ".@+-,#'_\n\r";
     for (i = 0; i  < strlen(special); i++)
 	charclasses[int(special[i])] = special[i];
 
@@ -138,16 +138,18 @@ static inline int whatcc(unsigned int c)
 // FF00..FFEF; Halfwidth and Fullwidth Forms
 // 20000..2A6DF; CJK Unified Ideographs Extension B
 // 2F800..2FA1F; CJK Compatibility Ideographs Supplement
+// Note: the p > 127 test is not necessary, but optimizes away the ascii case
 #define UNICODE_IS_CJK(p)						\
-    (((p) >= 0x2E80 && (p) <= 0x2EFF)                                   \
-     || ((p) >= 0x3000 && (p) <= 0x9FFF)                                \
-     || ((p) >= 0xA700 && (p) <= 0xA71F)                                \
-     || ((p) >= 0xAC00 && (p) <= 0xD7AF)                                \
-     || ((p) >= 0xF900 && (p) <= 0xFAFF)                                \
-     || ((p) >= 0xFE30 && (p) <= 0xFE4F)                                \
-     || ((p) >= 0xFF00 && (p) <= 0xFFEF)                                \
-     || ((p) >= 0x20000 && (p) <= 0x2A6DF)                              \
-     || ((p) >= 0x2F800 && (p) <= 0x2FA1F))
+    ((p) > 127 &&							\
+     (((p) >= 0x2E80 && (p) <= 0x2EFF) ||				\
+      ((p) >= 0x3000 && (p) <= 0x9FFF) ||				\
+      ((p) >= 0xA700 && (p) <= 0xA71F) ||				\
+      ((p) >= 0xAC00 && (p) <= 0xD7AF) ||				\
+      ((p) >= 0xF900 && (p) <= 0xFAFF) ||				\
+      ((p) >= 0xFE30 && (p) <= 0xFE4F) ||				\
+      ((p) >= 0xFF00 && (p) <= 0xFFEF) ||				\
+      ((p) >= 0x20000 && (p) <= 0x2A6DF) ||				\
+      ((p) >= 0x2F800 && (p) <= 0x2FA1F)))
 
 bool TextSplit::isCJK(int c)
 {
@@ -378,6 +380,14 @@ bool TextSplit::text_to_words(const string &in)
 	    goto SPACE;
 	    break;
 	case '@':
+	    if (m_wordLen) {
+		if (!doemit(false, it.getBpos()))
+		    return false;
+		m_inNumber = false;
+	    }
+	    m_wordStart += it.appendchartostring(m_span);
+	    break;
+	case '_':
 	    if (m_wordLen) {
 		if (!doemit(false, it.getBpos()))
 		    return false;
