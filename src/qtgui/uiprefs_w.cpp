@@ -316,6 +316,11 @@ void UIPrefsDialog::showViewAction()
     }
     m_viewAction->show();
 }
+void UIPrefsDialog::showViewAction(const QString& mt)
+{
+    showViewAction();
+    m_viewAction->selectMT(mt);
+}
 
 ////////////////////////////////////////////
 // External / extra search indexes setup

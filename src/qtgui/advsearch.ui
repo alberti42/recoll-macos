@@ -66,7 +66,7 @@
                   <string>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</string>
                 </property>
                 <property name="toolTip" stdset="0">
-                  <string>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;"Any" "All" and "None" field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</string>
+                  <string>All non empty fields on the right will be combined with AND ("All clauses" choice) or OR ("Any clause" choice) conjunctions. &lt;br&gt;"Any" "All" and "None" field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</string>
                 </property>
               </widget>
               <widget class="QComboBox">
@@ -80,6 +80,9 @@
                     <horstretch>8</horstretch>
                     <verstretch>0</verstretch>
                   </sizepolicy>
+                </property>
+                <property name="toolTip" stdset="0">
+                  <string>All non empty fields on the right will be combined with AND ("All clauses" choice) or OR ("Any clause" choice) conjunctions. &lt;br&gt;"Any" "All" and "None" field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</string>
                 </property>
               </widget>
               <spacer>
@@ -179,7 +182,7 @@
       </widget>
       <widget class="Line">
         <property name="name">
-          <cstring>line3</cstring>
+          <cstring>line4</cstring>
         </property>
         <property name="frameShape">
           <enum>HLine</enum>
@@ -413,7 +416,7 @@
       </widget>
       <widget class="Line">
         <property name="name">
-          <cstring>line3</cstring>
+          <cstring>line5</cstring>
         </property>
         <property name="frameShape">
           <enum>HLine</enum>

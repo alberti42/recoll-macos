@@ -28,11 +28,13 @@ using namespace std;
 
 #if (QT_VERSION < 0x040000)
 #include <qlistview.h>
+#define QLVEXACTMATCH Qt::ExactMatch
 #else
 #include <q3listview.h>
 #define QListView Q3ListView
 #define QListViewItem Q3ListViewItem
 #define QListViewItemIterator Q3ListViewItemIterator
+#define QLVEXACTMATCH Q3ListView::ExactMatch
 #endif
 
 #include <qmessagebox.h>
@@ -57,7 +59,7 @@ void ViewAction::init()
 #endif
 	   this, SLOT(editAction()));
     fillLists();
-    resize(QSize(450, 250).expandedTo(minimumSizeHint()) );
+    resize(QSize(640, 250).expandedTo(minimumSizeHint()) );
 }
 
 void ViewAction::fillLists()
@@ -72,6 +74,16 @@ void ViewAction::fillLists()
 			  QString::fromAscii(it->second.c_str()));
     }
 
+}
+
+void ViewAction::selectMT(const QString& mt)
+{
+    QListViewItem *item =  actionsLV->findItem(mt, 0, QLVEXACTMATCH);
+    if (item) {
+	actionsLV->ensureItemVisible(item);
+	actionsLV->setSelected(item, true);
+	actionsLV->setSelectionAnchor(item);
+    }
 }
 
 // To avoid modifying the listview state from the dbl click signal, as

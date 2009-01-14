@@ -66,9 +66,10 @@ public:
 public slots:
     virtual void showFontDialog();
     virtual void showViewAction();
+    virtual void showViewAction(const QString& mt);
     virtual void resetReslistFont();
     virtual void showBrowserDialog();
-    virtual void extraDbTextChanged( const QString & text );
+    virtual void extraDbTextChanged(const QString& text);
     virtual void addExtraDbPB_clicked();
     virtual void delExtraDbPB_clicked();
     virtual void browseDbPB_clicked();

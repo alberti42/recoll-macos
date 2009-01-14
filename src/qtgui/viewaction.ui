@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>224</width>
+            <width>400</width>
             <height>132</height>
         </rect>
     </property>
@@ -27,6 +27,14 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
+              <widget class="QLabel">
+                <property name="name">
+                  <cstring>textLabel1</cstring>
+                </property>
+                <property name="text">
+                  <string>Select one or several mime types then click "Change Action"</string>
+                </property>
+              </widget>
                 <widget class="QListView">
                     <column>
                         <property name="text">

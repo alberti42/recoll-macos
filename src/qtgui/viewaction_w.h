@@ -61,6 +61,8 @@ public:
     }
     ~ViewAction() {}
 
+    void selectMT(const QString& mt);
+
 public slots:
     virtual void editAction();
     virtual void listDblClicked();

@@ -847,18 +847,18 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     }
 
     if (cmdpath.empty()) {
+	QString mt = QString::fromAscii(doc.mimetype.c_str());
 	QString message = tr("The viewer specified in mimeconf for %1: %2"
 			     " is not found.\nDo you want to start the "
 			     " preferences dialog ?")
-	    .arg(QString::fromAscii(doc.mimetype.c_str()))
-	    .arg(QString::fromLocal8Bit(lcmd.front().c_str()));
+	    .arg(mt).arg(QString::fromLocal8Bit(lcmd.front().c_str()));
 
 	switch(QMessageBox::warning(0, "Recoll", message, 
 				    "Yes", "No", 0, 0, 1)) {
 	case 0: 
 	    showUIPrefs();
 	    if (uiprefs)
-		uiprefs->showViewAction();
+		uiprefs->showViewAction(mt);
 	    break;
 	case 1:
 	    
