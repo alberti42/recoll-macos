@@ -70,7 +70,7 @@ public:
 
 DocSeqSorted::DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec,
 			   const std::string &t)
-    :  DocSequence(t), m_seq(iseq)
+    :  DocSeqModifier(t, iseq)
 {
     setSortSpec(sortspec);
 }

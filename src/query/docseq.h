@@ -27,6 +27,7 @@ using std::vector;
 #endif
 
 #include "rcldoc.h"
+#include "refcntr.h"
 
 // A result list entry. 
 struct ResListEntry {
@@ -120,7 +121,7 @@ class DocSequence {
     {
 	terms.clear(); groups.clear(); gslks.clear(); return true;
     }
-    virtual list<string> expand(Rcl::Doc &) {list<string> e; return e;}
+    virtual list<string> expand(Rcl::Doc &) {return list<string>();}
 
     /** Optional functionality. Yeah, not nice */
     virtual bool canFilter() {return false;}
@@ -131,5 +132,35 @@ class DocSequence {
  private:
     string m_title;
 };
+
+/** A modifier has a child sequence which does the real work and does
+ * something with the results. Some operations are just delegated
+ */
+class DocSeqModifier : public DocSequence {
+public:
+    DocSeqModifier(const string &t, RefCntr<DocSequence> iseq) 
+	: DocSequence(t), m_seq(iseq) 
+    {}
+    virtual ~DocSeqModifier() {}
+
+    virtual string getAbstract(Rcl::Doc& doc) 
+    {
+	return m_seq->getAbstract(doc);
+    }
+    virtual string getDescription() 
+    {
+	return m_seq->getDescription();
+    }
+    virtual bool getTerms(vector<string>& terms, 
+			  vector<vector<string> >& groups, 
+			  vector<int>& gslks) 
+    {
+	return m_seq->getTerms(terms, groups, gslks);
+    }
+
+protected:
+    RefCntr<DocSequence>    m_seq;
+};
+
 
 #endif /* _DOCSEQ_H_INCLUDED_ */

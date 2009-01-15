@@ -43,7 +43,7 @@ static bool filter(const DocSeqFiltSpec& fs, const Rcl::Doc *x)
 DocSeqFiltered::DocSeqFiltered(RefCntr<DocSequence> iseq, 
 			       DocSeqFiltSpec &filtspec,
 			       const std::string &t)
-    :  DocSequence(t), m_seq(iseq), m_spec(filtspec)
+    :  DocSeqModifier(t, iseq), m_spec(filtspec)
 {
 }
 

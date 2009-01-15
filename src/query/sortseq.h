@@ -28,7 +28,7 @@
  * A sorted sequence is created from the first N documents of another one, 
  * and sorts them according to the given criteria.
  */
-class DocSeqSorted : public DocSequence {
+class DocSeqSorted : public DocSeqModifier {
  public:
     DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec, 
 		 const std::string &t);
@@ -37,13 +37,7 @@ class DocSeqSorted : public DocSequence {
     virtual bool setSortSpec(DocSeqSortSpec &sortspec);
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
     virtual int getResCnt() {return m_spec.sortdepth;}
-    virtual string getAbstract(Rcl::Doc& doc) {
-	return m_seq->getAbstract(doc);
-    }
-    virtual string getDescription() {return m_seq->getDescription();}
-
  private:
-    RefCntr<DocSequence>    m_seq;
     DocSeqSortSpec          m_spec;
     std::vector<Rcl::Doc>   m_docs;
     std::vector<Rcl::Doc *> m_docsp;

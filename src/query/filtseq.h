@@ -29,7 +29,7 @@
  * A filtered sequence is created from another one by selecting entries
  * according to the given criteria.
  */
-class DocSeqFiltered : public DocSequence {
+class DocSeqFiltered : public DocSeqModifier {
  public:
     DocSeqFiltered(RefCntr<DocSequence> iseq, DocSeqFiltSpec &filtspec, 
 		 const std::string &t);
@@ -38,13 +38,7 @@ class DocSeqFiltered : public DocSequence {
     virtual bool setFiltSpec(DocSeqFiltSpec &filtspec);
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
     virtual int getResCnt() {return m_seq->getResCnt();}
-    virtual string getAbstract(Rcl::Doc& doc) {
-	return m_seq->getAbstract(doc);
-    }
-    virtual string getDescription() {return m_seq->getDescription();}
-
  private:
-    RefCntr<DocSequence>    m_seq;
     DocSeqFiltSpec          m_spec;
     vector<int>             m_dbindices;
 };
