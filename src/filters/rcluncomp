@@ -21,11 +21,11 @@ sinfile=`basename "$infile"`
 case "$sinfile" in
 *.*)
 	cp "$infile" "$outdir/$sinfile" || exit 1
-	$uncomp "$outdir/$sinfile"
+	$uncomp "$outdir/$sinfile" || exit 1
 	uncompressed=`echo $outdir/*`
 	;;
 *)
-	$uncomp < "$infile" > "$outdir/$sinfile"
+	$uncomp < "$infile" > "$outdir/$sinfile" || exit 1
 	uncompressed="$outdir/$sinfile"
 	;;
 esac

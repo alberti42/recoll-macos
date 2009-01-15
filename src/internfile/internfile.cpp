@@ -102,8 +102,11 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     ExecCmd ex;
     int status = ex.doexec(cmd, args, 0, &tfile);
     if (status || tfile.empty()) {
-	LOGERR(("uncompressfile: doexec: failed for [%s] status 0x%x\n", ifn.c_str(), status));
-	rmdir(tdir.c_str());
+	LOGERR(("uncompressfile: doexec: failed for [%s] status 0x%x\n", 
+		ifn.c_str(), status));
+	if (wipedir(tdir.c_str())) {
+	    LOGERR(("uncompressfile: wipedir failed\n"));
+	}
 	return false;
     }
     if (tfile[tfile.length() - 1] == '\n')
@@ -619,7 +622,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	return FIAgain;
 }
 
-
+// Automatic cleanup of iDocTempFile's temp dir
 class DirWiper {
  public:
     string dir;
@@ -637,6 +640,11 @@ class DirWiper {
 // We do the usual internfile stuff: create a temporary directory,
 // then create an interner and call internfile. 
 // We then write the data out of the resulting document into the output file.
+// There are two temporary objects:
+// - The internfile temporary directory gets destroyed before we
+//   return by the DirWiper object
+// - The output temporary file which is held in a reference-counted
+//   object and will be deleted when done with.
 bool FileInterner::idocTempFile(TempFile& otemp, RclConfig *cnf, 
 				const string& fn,
 				const string& ipath,
