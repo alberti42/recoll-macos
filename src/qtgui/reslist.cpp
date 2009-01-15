@@ -341,7 +341,7 @@ void ResList::resultPageFirst()
 void ResList::append(const QString &text)
 {
     QTEXTBROWSER::append(text);
-#if 1
+#if 0
     {
 	FILE *fp = fopen("/tmp/debugreslist", "a");
 	fprintf(fp, "%s\n", (const char *)text.utf8());
