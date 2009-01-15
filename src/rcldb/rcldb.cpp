@@ -1621,7 +1621,6 @@ bool Db::getDoc(const string &udi, Doc &doc)
 	Xapian::PostingIterator docid = m_ndb->db.postlist_begin(uniterm);
 	Xapian::Document xdoc = m_ndb->db.get_document(*docid);
 	string data = xdoc.get_data();
-	list<string> terms;
 	return m_ndb->dbDataToRclDoc(*docid, data, doc, 100);
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
