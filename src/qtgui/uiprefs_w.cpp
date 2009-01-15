@@ -192,6 +192,7 @@ void UIPrefsDialog::accept()
 	prefs.reslistformat = prefs.getDfltResListFormat();
 	rlfTE->setText(prefs.reslistformat);
     }
+    prefs.creslistformat = (const char*)prefs.reslistformat.utf8();
 
     prefs.htmlBrowser =  helpBrowserLE->text();
 

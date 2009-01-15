@@ -193,6 +193,7 @@ void rwSettings(bool writing)
 	QString::fromAscii(prefs.getV18DfltResListFormat()) || 
 	prefs.reslistformat.stripWhiteSpace().isEmpty())
 	prefs.reslistformat = rlfDflt;
+    prefs.creslistformat = (const char*)prefs.reslistformat.utf8();
 
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", ,
 	       "english");

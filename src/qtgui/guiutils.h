@@ -67,6 +67,7 @@ class PrefsPack {
     int reslistfontsize;
     // Result list format string
     QString reslistformat;
+    string  creslistformat;
     QString queryStemLang;
     int mainwidth;
     int mainheight;

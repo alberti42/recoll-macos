@@ -380,10 +380,7 @@ string QtGuiResListPager::detailsLink()
 }
 const string& QtGuiResListPager::parFormat()
 {
-    static string parformat;
-    if (parformat.empty())
-	parformat = (const char*)prefs.reslistformat.utf8();
-    return parformat;
+    return prefs.creslistformat;
 }
 string QtGuiResListPager::nextUrl()
 {
