@@ -45,7 +45,9 @@ Recoll configuration.
 Recipe:
  - Make sure the KDE4 core devel packages and cmake are installed.
 
- - Extract the Recoll source, configure recoll with --prefix=/usr
+ - Extract the Recoll source.
+
+ - IF Recoll is not installed yet: configure recoll with --prefix=/usr
    (or wherever KDE lives), build and install Recoll.
 
  - In the Recoll source, go to kde/kioslave/recoll, then build and
