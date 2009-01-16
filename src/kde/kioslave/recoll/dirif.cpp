@@ -285,14 +285,8 @@ void RecollProtocol::listDir(const KUrl& url)
 	    numentries = 100;
     }
 
-    // If the html pager is set, begin display at the current page. This
-    // allows paging the dir display by switching between both modes
-    int first = 0;
-    if (m_pager.pageNumber() > 0) {
-	first = m_pager.pageNumber() * m_pager.pageSize();
-    }
     vector<ResListEntry> page;
-    int pagelen = m_source->getSeqSlice(first, numentries, page);
+    int pagelen = m_source->getSeqSlice(0, numentries, page);
     if (pagelen < 0) {
 	error(ERR_SLAVE_DEFINED, "Internal error");
 	return;

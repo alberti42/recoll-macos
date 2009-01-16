@@ -98,7 +98,7 @@ const string& RecollKioPager::parFormat()
 	"<a href=\"%U\"><img src=\"%I\" align=\"left\"></a>" 
 	"%R %S "
 	"<a href=\"" << escurl << "&cmd=pv&dn=%N\">Preview</a>&nbsp;&nbsp;" <<
-	"<a href=\"%U\">Open</a><br>" <<
+	"<a href=\"%U\">Open</a> " <<
 	"<b>%T</b><br>"
 	"%M&nbsp;%D&nbsp;&nbsp; <i>%U</i>&nbsp;&nbsp;%i<br>"
 	"%A %K";

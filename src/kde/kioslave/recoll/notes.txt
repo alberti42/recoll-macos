@@ -1,11 +1,20 @@
+Recoll KIO Slave notes/todoes/etc.
+
+Goal: access Recoll search from other applications. 
+
+We want to allow URLs like recoll:/?? to be used inside
+Konqueror/Dolphin and open dialogs, to start a search with results
+displayed/used inside the application.
+
+
 Todoes
-=====
+======
 
 
 Implementation notes:
 ====================
 
-- There would be two main ways to do this: 
+- There are two main ways to do this: 
   - a-la kio_beagle, using listDir() to list entries pointing to the
     different operations or objects (help, status, search result
     entries, bookmarks, whatever...). The nice thing is that the
@@ -14,16 +23,12 @@ Implementation notes:
     KDE 
 
   - Or a la strigi: all interactions are through html pages and get()
-    operations.  Looks less like a normal konqueror file-system
-    listing, and needs more html coding but all in all probably
-    simpler.
+    operations.  Much simpler, but does not allow file management
+    operations (except by drag/drop from the result list), and can't
+    use it inside other application's Open dialogs.
 
-Recoll is currently doing both things on KDE4.1 (only html for
-KDE4.0). As far as I understand, the way to trigger a listdir is to
-have a inode/directory default mime type in the protocol file, and
-return inode/directory when appropriate in mimetype() (look at
-kio_beagle). Some kde daemon needs to be restarted when doing this
-(the protocol file is cached somewhere).
+Recoll is currently doing both things on KDE4.1 (only html for KDE4.0). 
+
 
 Virtual tree:
 =============
@@ -38,16 +43,27 @@ recoll:/search.html
 
 recoll:/some search string
 recoll:/some search string/
+ We have a 'mode' determined by the protocol name:
+  	 recoll -> mixed
+	 recollf -> file manager
   - html mode: these redirect to recoll://search/query?q="some search string"
   - file manager mode: do the search and display results.
   - mixed mode: what mode is entered depends on ending /
-  'mode' is determined by the protocol name:
-  	 recoll -> html
-	 recollf -> file manager
-	 recollm -> mixed
 
 recoll://search/query?q=...
   html mode search  
+
+recoll:/some search string/recollResultxyz
+xyz is the index in result list.
+
+When generating a directory, with use bogus names for the result
+entries (the displayed ones are from UDS_DISPLAY_NAME and are the real
+names). When doing drag/drop or "open with" Konqueror/Dolphin builds
+an url by concatenating the current directory name and the UDS_NAME,
+instead of using UDS_TARGET_URL as when the entry is clicked. This
+forces us to use identifying names including the result number, which
+has many ennoying side effects (such as the target app not knowing the
+real file path...
 
 
 KIO notes:

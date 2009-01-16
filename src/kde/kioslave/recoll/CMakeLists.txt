@@ -56,7 +56,6 @@ ${rcltop}/query/plaintorich.cpp
 ${rcltop}/query/reslistpager.cpp
 ${rcltop}/query/wasastringtoquery.cpp
 ${rcltop}/query/wasatorcl.cpp
-${rcltop}/rcldb/pathhash.cpp
 ${rcltop}/rcldb/rcldb.cpp
 ${rcltop}/rcldb/rcldoc.cpp
 ${rcltop}/rcldb/rclquery.cpp
