@@ -3,8 +3,8 @@
 .SH NAME
 recoll.conf \- main personal configuration file for Recoll
 .SH DESCRIPTION
-This file defines the indexation configuration for the full-text search
-system Recoll.
+This file defines the indexation configuration for the Recoll full-text search
+system.
 .LP
 The system-wide configuration file is normally located inside
 /usr/[local]/share/recoll/examples. Any parameter set in the common file
@@ -58,6 +58,11 @@ embedded spaces can be quoted with double-quotes.
 .BI "topdirs = "  directories
 Specifies the list of directories to index (recursively). 
 .TP
+.BI "dbdir = " directory
+The name of the Xapian database directory. It will be created if needed
+when the database is initialized. If this is not an absolute pathname, it
+will be taken relative to the configuration directory.
+.TP
 .BI "skippedNames = " patterns
 A space-separated list of patterns for names of files or directories that
 should be completely ignored. The list defined in the default file is:
@@ -76,6 +81,18 @@ into. Together with topdirs, this allows pruning the indexed tree to one's
 content. daemSkippedPaths can be used to define a specific value for the
 real time indexing monitor.
 .TP
+.BI "followLinks = " boolean
+Specifies if the indexer should follow
+symbolic links while walking the file tree. The default is
+to ignore symbolic links to avoid multiple indexing of
+linked files. No effort is made to avoid duplication when
+this option is set to true. This option can be set
+individually for each of the 
+.I topdirs
+members by using sections. It can not be changed below the
+.I topdirs
+level.
+.TP
 .BI "loglevel = " value
 Verbosity level for recoll and recollindex. A value of 4 lists quite a lot of
 debug/information messages. 3 lists only errors. 
@@ -86,11 +103,6 @@ can be used to specify a different value for the real-time indexing daemon.
 Where should the messages go. 'stderr' can be used as a special value.
 .B daemlogfilename
 can be used to specify a different value for the real-time indexing daemon.
-.TP
-.BI "dbdir = " directory
-The name of the Xapian database directory. It will be created if needed
-when the database is initialized. If this is not an absolute pathname, it
-will be taken relative to the configuration directory.
 .TP
 .BI "indexstemminglanguages = " languages
 A list of languages for which the stem expansion databases will be
@@ -132,13 +144,6 @@ Try to guess the character set of files if no internal value is available
 (ie: for plain text files). This does not work well in general, and should
 probably not be used.
 .TP
-.BI "indexallfilenames = " boolean
-Recoll indexes file names into a special section of the database to allow
-specific file names searches using wild cards. This parameter decides if
-file name indexing is performed only for files with mime types that would
-qualify them for full text indexation, or for all files inside
-the selected subtrees, independant of mime type.
-.TP
 .BI "usesystemfilecommand = " boolean
 Decide if we use the 
 .B "file -i"
@@ -147,6 +152,65 @@ system command as a final step for determining the mime type for a file
 .B mimemap 
 file). This can be useful for files with suffixless names, but it will
 also cause the indexation of many bogus "text" files.
+.TP
+.BI "indexedmimetypes = " list
+Recoll normally indexes any file which it knows how to read. This list lets
+you restrict the indexed mime types to what you specify. If the variable is
+unspecified or the list empty (the default), all supported types are
+processed.
+.TP
+.BI "compressedfilemaxkbs = " value
+Size limit for compressed (.gz or .bz2) files. These need to be
+decompressed in a temporary directory for identification, which can be very
+wasteful if 'uninteresting' big compressed files are present.  Negative
+means no limit, 0 means no processing of any compressed file. Defaults 
+to -1.
+.TP
+.BI "indexallfilenames = " boolean
+Recoll indexes file names into a special section of the database to allow
+specific file names searches using wild cards. This parameter decides if
+file name indexing is performed only for files with mime types that would
+qualify them for full text indexation, or for all files inside
+the selected subtrees, independant of mime type.
+.TP
+.BI "idxabsmlen = " value
+Recoll stores an abstract for each indexed file inside the database. The
+text can come from an actual 'abstract' section in the document or will
+just be the beginning of the document. It is stored in the index so that it
+can be displayed inside the result lists without decoding the original
+file. The
+.I idxabsmlen
+parameter defines the size of the stored abstract. The default value is 250
+bytes.  The search interface gives you the choice to display this stored
+text or a synthetic abstract built by extracting text around the search
+terms. If you always prefer the synthetic abstract, you can reduce this
+value and save a little space.
+.TP
+.BI "aspellLanguage = " lang
+Language definitions to use when creating the aspell dictionary.  The value
+must match a set of aspell language definition files. You can type "aspell
+config" to see where these are installed (look for data-dir). The default
+if the variable is not set is to use your desktop national language
+environment to guess the value.
+.TP
+.BI "noaspell = " boolean
+If this is set, the aspell dictionary generation is turned off. Useful for
+cases where you don't need the functionality or when it is unusable because
+aspell crashes during dictionary generation.
+.TP
+.BI "nocjk = " boolean
+If this set to true, specific east asian (Chinese Korean Japanese)
+characters/word splitting is turned off. This will save a small amount of
+cpu if you have no CJK documents. If your document base does include such
+text but you are not interested in searching it, setting
+.I nocjk
+may be a significant time and space saver.
+.TP
+.BI "cjkngramlen = " value
+This lets you adjust the size of n-grams used for indexing CJK text. The
+default value of 2 is probably appropriate in most cases. A value of 3
+would allow more precision and efficiency on longer words, but the index
+will be approximately twice as large.
 .SH SEE ALSO
 .PP 
 recollindex(1) recoll(1)

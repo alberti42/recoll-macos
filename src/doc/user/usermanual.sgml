@@ -578,9 +578,9 @@ fvwm
   </chapter>
 
   <chapter id="rcl.search">
-    <title>Searching</title>
+    <title>Searching with the Qt graphical user interface</title>
 
-    <para>The <command>recoll</command> program provides the user
+    <para>The <command>recoll</command> program provides the main user
       interface for searching. It is based on the
       <application>QT</application> library.</para>
 
@@ -1048,6 +1048,23 @@ fvwm
       </itemizedlist>
 
 
+      <formalpara><title>Phrases and Proximity searches</title>
+      <para>These two clauses work in similar ways, with the
+      difference that proximity searches do not impose an order on the
+      words. In both cases, an adjustable number (slack) of non-matched words
+      may be accepted between the searched ones (use the counter on
+      the left to adjust this count). For phrases, the default count
+      is zero (exact match). For proximity it is ten (meaning that two search
+      terms, would be matched if found within a window of twelve
+      words). Examples: a phrase search for <literal>quick
+      fox</literal> with a slack of 0 will match <literal>quick
+      fox</literal> but not <literal>quick brown fox</literal>. With
+      a slack of 1 it will match the latter, but not <literal>fox
+      quick</literal>. A proximity search for <literal>quick
+      fox</literal> with the default slack will match the
+      latter, and also <literal>a fox is a cunning and quick animal</literal>.
+      </formalpara>
+
       <para>Click on the <guilabel>Start Search</guilabel> button in
         the advanced search dialog, or type <keycap>Enter</keycap> in
         any text field to start the search. The button in
@@ -1361,7 +1378,7 @@ fvwm
         quotes. Example: <literal>"user manual"</literal> will look
         only for occurrences of <literal>user</literal> immediately
         followed by <literal>manual</literal>. You can use the
-        <guilabel>This exact phrase</guilabel> field of the advanced
+        <guilabel>This phrase</guilabel> field of the advanced
         search dialog to the same effect. Phrases can be entered along
         simple terms in all simple or advanced search entry fields
         (except <guilabel>This exact phrase</guilabel>).</para>
@@ -1643,6 +1660,135 @@ fvwm
       </para>
 
     </sect1>
+
+  </chapter>
+
+  <chapter id="rcl.searchkio">
+    <title>Searching with the KDE KIO slave</title>
+
+    <sect1 id="rcl.searchkio.intro">
+      <title>What's this</title>
+
+      <para>The &RCL; KIO slave allows performing a &RCL; search
+      by entering an appropriate URL in a KDE open dialog, or with an
+      HTML-based interface displayed in
+      <command>Konqueror</command>.</para>  
+
+      <para>The HTML-based interface is similar to the QT-based
+      interface, but slightly less powerful for now. Its advantage is
+      that you can perform your search while staying fully within the
+      KDE framework: drag and drop from the result list works normally
+      and you have your normal choice of applications for opening
+      files.</para>
+
+      <para>The alternative interface uses a directory view of search
+      results. Due to limitations in the current KIO slave interface,
+      it is currently not obviously useful (to me).</para>
+
+      <para>The interface is described in more detail inside a help
+      file which you can access by entering
+      <filename>recoll:/</filename> inside the
+      <command>konqueror</command> URL line (this works only if the
+      recoll KIO slave has been previously installed).</para>
+
+
+      <para>The instructions for building this module are located in
+      the source tree. See:
+      <filename>kde/kio/recoll/00README.txt</filename></para> 
+    </sect1>
+
+
+
+    <sect1 id="rcl.searchkio.searchabledocs">
+      <title>Searchable documents</title>
+
+      <para>As a sample application, the &RCL; KIO slave could allow
+      preparing a set of HTML documents (for example a manual) so that
+      they become their own search interface inside
+      <command>konqueror</command>.</para>
+
+      <para>This can be done by either explicitely inserting
+      <literal>&lt;a&nbsp;href="recoll:/..."&gt;</literal> links 
+      around some document areas, or automatically by adding a
+      very small <application>javascript</application> program to the
+      documents, like the following example, which would initiate a search by
+      double-clicking any term:</para>
+ 
+     <programlisting>&lt;script language="JavaScript">
+    function recollsearch() {
+        var t = document.getSelection();
+        window.location.href = 'recoll://search/query?qtp=a&amp;p=0&amp;q=' +
+            encodeURIComponent(t);
+    }
+&lt;/script>
+ ....
+&lt;body ondblclick="recollsearch()">
+
+</programlisting>
+
+    </sect1>
+
+  </chapter>
+
+
+
+  <chapter id="rcl.searchkcl">
+    <title>Searching on the command line</title>
+
+    <para>There are several ways to obtain search results as a text
+    stream, without a graphical interface:</para>
+    <itemizedlist>
+      <listitem><para>By passing option <literal>-t</literal> to the
+      <command>recoll</command> program.</para>
+      </listitem>
+      <listitem><para>By using the <command>recollq</command> program.</para>
+      </listitem>
+      <listitem><para>By writing a custom
+      <application>Python</application> program, using the 
+      <link linkend="rcl.program.api.python">Recoll Python API</link>.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>The first two methods work in the same way and accept/need the same
+    arguments (except for the additional <literal>-t</literal> to
+    <command>recoll</command>). The query to be executed is specified
+    as command line arguments.</para> 
+
+    <para><command>recollq</command> is not built by default. You can
+    use the <filename>Makefile</filename> in the
+    <filename>query</filename> directory to build it. This is a very
+    simple program, and it will often be useful to taylor its output format
+    to your needs.</para>
+
+    <para><command>recollq</command> has a man page (not installed by
+    default, look in the <filename>doc/man</filename> directory). The
+    Usage string is as follows:</para>
+<programlisting>recollq [-o|-a|-f] &lt;query string>
+ Runs a recoll query and displays result lines. 
+  Default: will interpret the argument(s) as a query language string
+  -o Emulate the gui simple search in ANY TERM mode
+  -a Emulate the gui simple search in ALL TERMS mode
+  -f Emulate the gui simple search in filename mode
+Common options:
+    -c &lt;configdir> : specify config directory, overriding $RECOLL_CONFDIR
+    -d also dump file contents
+    -n &lt;cnt> limit the maximum number of results (0->no limit, default 2000)
+    -b : basic. Just output urls, no mime types or titles
+    -m : dump the whole document meta[] array
+    -S fld : sort by field name
+    -D : sort descending
+</programlisting>
+
+    <para>Sample execution:</para>
+<programlisting>recollq 'ilur -nautique mime:text/html'
+Recoll query: ((((ilur:(wqf=11) OR ilurs) AND_NOT (nautique:(wqf=11)
+  OR nautiques OR nautiqu OR nautiquement)) FILTER Ttext/html))
+4 results
+text/html	[file:///Users/uncrypted-dockes/projets/bateaux/ilur/comptes.html]	[comptes.html]	18593	bytes	
+text/html	[file:///Users/uncrypted-dockes/projets/nautique/webnautique/articles/ilur1/index.html]	[Constructio...
+text/html	[file:///Users/uncrypted-dockes/projets/pagepers/index.html]	[psxtcl/writemime/recoll]...
+text/html	[file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
+</programlisting>
 
   </chapter>
 
@@ -2710,6 +2856,16 @@ skippedPaths = ~/somedir/&lowast;.txt
 	    mime types to what you specify. If the variable is
 	    unspecified or the list empty (the default), all supported
 	    types are processed.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>compressedfilemaxkbs</literal></term>
+	    <listitem><para>Size limit for compressed (.gz or .bz2)
+	    files. These need to be decompressed in a temporary
+	    directory for identification, which can be very wasteful
+	    if 'uninteresting' big compressed files are present.
+	    Negative means no limit, 0 means no processing of any
+	    compressed file. Defaults to -1.</para>
 	    </listitem>
 	  </varlistentry>
 
