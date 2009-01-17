@@ -158,16 +158,24 @@ FileInterner::FileInterner(const std::string &f, const struct stat *stp,
 	// identification, then do the rest with the temp file.
 	list<string>ucmd;
 	if (m_cfg->getUncompressor(l_mime, ucmd)) {
-	    if (!uncompressfile(m_cfg, m_fn, ucmd, m_tdir, m_tfile)) {
-		return;
+	    // Check for compressed size limit
+	    int maxkbs = -1;
+	    if (!m_cfg->getConfParam("compressedfilemaxkbs", &maxkbs) ||
+		maxkbs < 0 || !stp || int(stp->st_size / 1024) < maxkbs) {
+		if (!uncompressfile(m_cfg, m_fn, ucmd, m_tdir, m_tfile)) {
+		    return;
+		}
+		LOGDEB1(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
+			 m_tdir.c_str(), m_tfile.c_str()));
+		m_fn = m_tfile;
+		// Note: still using the original file's stat. right ?
+		l_mime = mimetype(m_fn, stp, m_cfg, usfci);
+		if (l_mime.empty() && imime)
+		    l_mime = *imime;
+	    } else {
+		LOGINFO(("internfile: %s over size limit %d kbs\n",
+			 m_fn.c_str(), maxkbs));
 	    }
-	    LOGDEB1(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
-		    m_tdir.c_str(), m_tfile.c_str()));
-	    m_fn = m_tfile;
-	    // Note: still using the original file's stat. right ?
-	    l_mime = mimetype(m_fn, stp, m_cfg, usfci);
-	    if (l_mime.empty() && imime)
-		l_mime = *imime;
 	}
     }
 

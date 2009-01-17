@@ -353,6 +353,18 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 			  "cannot be identified or processed (no or "
 			  "unsupported mime type). Default true"));
     m_widgets.push_back(eafln);
+
+    ConfLink lnkzfmaxkbs(new ConfLinkRclRep(config, 
+					    "compressedfilemaxkbs"));
+    ConfParamIntW *ezfmaxkbs = new 
+	ConfParamIntW(m_groupbox, lnkzfmaxkbs, 
+		      tr("Max. compressed file size (KB)"),
+		      tr("This value sets a threshold beyond which compressed"
+			 "files will not be processed. Set to -1 for no "
+			 "limit, to 0 for no decompression ever."),
+		      -1, 1000000);
+    m_widgets.push_back(ezfmaxkbs);
+
     vboxLayout->addWidget(m_groupbox);
     subDirChanged();
 }

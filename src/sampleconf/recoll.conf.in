@@ -91,6 +91,12 @@ usesystemfilecommand = 1
 # know? (we can otherwise just ignore them)
 indexallfilenames = 1
 
+# Size limit for compressed files. We need to decompress these in a
+# temporary directory for identification, which can be wasteful in some
+# cases. Limit the waste. Negative means no limit. 0 results in no
+# processing of any compressed file
+# compressedfilemaxkbs = -1
+
 # Length of abstracts we store while indexing. Longer will make for a
 # bigger db
 # idxabsmlen = 250
