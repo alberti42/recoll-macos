@@ -41,15 +41,29 @@ using std::string;
 static void caterrno(string *reason, const char *what, int _errno)
 {
     if (reason) {
-	reason->append("file_to_string: ");
 	reason->append(what);
-	reason->append(": ");
+	reason->append(": errno: ");
+	char nbuf[10];
+	sprintf(nbuf, "%d", _errno);
+	reason->append(nbuf);
+	reason->append(" : ");
 #ifdef sun
 	// Note: sun strerror is noted mt-safe ??
 	reason->append(strerror(_errno));
 #else
 #define ERRBUFSZ 200    
 	char errbuf[ERRBUFSZ];
+	// There are 2 versions of strerror_r. 
+	// - The GNU one returns a pointer to the message (maybe
+	//   static storage or supplied buffer).
+        // - The POSIX one always stores in supplied buffer and
+	//   returns 0 on success. As the possibility of error and
+	//   error code are not specified, we're basically doomed
+	//   cause we can't use a test on the 0 value to know if we
+	//   were returned a pointer... 
+	// Also couldn't find an easy way to disable the gnu version without
+	// changing the cxxflags globally, so forget it.
+	// At worse we get no message at all here.
 	errbuf[0] = 0;
 	strerror_r(_errno, errbuf, ERRBUFSZ);
 	reason->append(errbuf);
