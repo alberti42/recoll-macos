@@ -38,7 +38,7 @@ using std::string;
 
 #include "readfile.h"
 
-static void caterrno(string *reason, const char *what)
+static void caterrno(string *reason, const char *what, int _errno)
 {
     if (reason) {
 	reason->append("file_to_string: ");
@@ -46,11 +46,12 @@ static void caterrno(string *reason, const char *what)
 	reason->append(": ");
 #ifdef sun
 	// Note: sun strerror is noted mt-safe ??
-	reason->append(strerror(errno));
+	reason->append(strerror(_errno));
 #else
 #define ERRBUFSZ 200    
 	char errbuf[ERRBUFSZ];
-	strerror_r(errno, errbuf, ERRBUFSZ);
+	errbuf[0] = 0;
+	strerror_r(_errno, errbuf, ERRBUFSZ);
 	reason->append(errbuf);
 #endif
     }
@@ -69,7 +70,7 @@ public:
 	try {
 	    m_data.append(buf, cnt);
 	} catch (...) {
-	    caterrno(reason, "append");
+	    caterrno(reason, "append", errno);
 	    return false;
 	}
 	return true;
@@ -99,7 +100,7 @@ bool file_scan(const string &fn, FileScanDo* doer, string *reason)
     if (!fn.empty()) {
 	fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
 	if (fd < 0 || fstat(fd, &st) < 0) {
-	    caterrno(reason, "open/stat");
+	    caterrno(reason, "open/stat", errno);
 	    return false;
 	}
 	noclosing = false;
@@ -112,7 +113,7 @@ bool file_scan(const string &fn, FileScanDo* doer, string *reason)
     for (;;) {
 	int n = read(fd, buf, 4096);
 	if (n < 0) {
-	    caterrno(reason, "read");
+	    caterrno(reason, "read", errno);
 	    goto out;
 	}
 	if (n == 0)
