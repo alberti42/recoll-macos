@@ -521,7 +521,7 @@ bool Db::open(OpenMode mode, bool keep_updated)
 	if (!close())
 	    return false;
     }
-    if (m_config->getStopfile().empty())
+    if (!m_config->getStopfile().empty())
 	m_stops.setFile(m_config->getStopfile());
     string dir = m_config->getDbDir();
     string ermsg;
