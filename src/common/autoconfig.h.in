@@ -34,3 +34,6 @@
 #undef HAVE_SYS_STATFS_H 
 #undef HAVE_SYS_STATVFS_H 
 #undef HAVE_SYS_VFS_H 
+
+/* Use file extended attributes */
+#undef RCL_USE_XATTR

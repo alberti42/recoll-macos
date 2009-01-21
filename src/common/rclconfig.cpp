@@ -530,6 +530,15 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	}
     }
 
+    // Extended file attribute to field translations
+    list<string>xattrs = m_fields->getNames("xattrtofields");
+    for (list<string>::const_iterator it = xattrs.begin(); 
+	 it != xattrs.end(); it++) {
+	string val;
+	m_fields->get(*it, val, "xattrtofields");
+	m_xattrtofld[*it] = val;
+    }
+
     return true;
 }
 
@@ -881,7 +890,8 @@ void RclConfig::initFrom(const RclConfig& r)
     m_reason = r.m_reason;
     m_confdir = r.m_confdir;
     m_datadir = r.m_datadir;
-    m_keydir = r.m_datadir;
+    m_keydir = r.m_keydir;
+    m_cdirs = r.m_cdirs;
     // We should use reference-counted objects instead!
     if (r.m_conf)
 	m_conf = new ConfStack<ConfTree>(*(r.m_conf));
@@ -891,6 +901,12 @@ void RclConfig::initFrom(const RclConfig& r)
 	mimeconf = new ConfStack<ConfSimple>(*(r.mimeconf));
     if (r.mimeview)
 	mimeview = new ConfStack<ConfSimple>(*(r.mimeview));
+    if (r.m_fields)
+	m_fields = new ConfStack<ConfSimple>(*(r.m_fields));
+    m_fldtopfx = r.m_fldtopfx;
+    m_aliastocanon = r.m_aliastocanon;
+    m_storedFields = r.m_storedFields;
+    m_xattrtofld = r.m_xattrtofld;
     if (r.m_stopsuffixes)
 	m_stopsuffixes = new SuffixStore(*((SuffixStore*)r.m_stopsuffixes));
     m_maxsufflen = r.m_maxsufflen;

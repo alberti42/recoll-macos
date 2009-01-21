@@ -157,7 +157,9 @@ class RclConfig {
     const set<string>& getStoredFields() {return m_storedFields;}
     /** Get canonic name for possible alias */
     string fieldCanon(const string& fld);
-
+    /** Get xattr name to field names translations */
+    const map<string, string>& getXattrToField() {return m_xattrtofld;}
+    
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype);
     bool getMimeViewerDefs(vector<pair<string, string> >&);
@@ -205,6 +207,7 @@ class RclConfig {
     map<string, string>  m_fldtopfx;
     map<string, string>  m_aliastocanon;
     set<string>          m_storedFields;
+    map<string, string>  m_xattrtofld;
 
     void        *m_stopsuffixes;
     unsigned int m_maxsufflen;

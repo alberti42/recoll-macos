@@ -34,6 +34,7 @@ using namespace std;
 // Process a plain text file
 bool MimeHandlerText::set_document_file(const string &fn)
 {
+    RecollFilter::set_document_file(fn);
     string otext;
     string reason;
     if (!file_to_string(fn, otext, &reason)) {

@@ -1269,6 +1269,15 @@ if test -n "$ac_init_help"; then
    esac
   cat <<\_ACEOF
 
+Optional Features:
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-xattr          Enable fetching metadata from file extended
+                          attributes. This is only useful if some application
+                          creates them on (part of) your data set. You also
+                          need to set up appropriate mappings in the
+                          configuration.
+
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
@@ -3632,6 +3641,25 @@ else
    { echo "$as_me:$LINENO: inotify monitoring disabled" >&5
 echo "$as_me: inotify monitoring disabled" >&6;}
 fi
+
+# Enable use of file extended attributes.
+# Not by default as these are little used for now.
+# Check whether --enable-xattr was given.
+if test "${enable_xattr+set}" = set; then
+  enableval=$enable_xattr; xattrEnabled=$enableval
+else
+  xattrEnabled=no
+fi
+
+
+if test X$xattrEnabled = Xyes ; then
+
+cat >>confdefs.h <<\_ACEOF
+#define RCL_USE_XATTR 1
+_ACEOF
+
+fi
+
 
 
 for ac_func in mkdtemp

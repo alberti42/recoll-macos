@@ -41,6 +41,7 @@ using namespace std;
 bool MimeHandlerHtml::set_document_file(const string &fn)
 {
     LOGDEB0(("textHtmlToDoc: %s\n", fn.c_str()));
+    RecollFilter::set_document_file(fn);
     string otext;
     if (!file_to_string(fn, otext)) {
 	LOGINFO(("textHtmlToDoc: cant read: %s\n", fn.c_str()));

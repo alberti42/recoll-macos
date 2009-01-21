@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: internfile.cpp,v 1.46 2008-10-10 08:04:54 dockes 
  */
 
 #ifndef TEST_INTERNFILE
+#include "autoconfig.h"
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -132,7 +133,7 @@ void FileInterner::tmpcleanup()
 //
 // Empty handler on return says that we're in error, this will be
 // processed by the first call to internfile().
-FileInterner::FileInterner(const std::string &f, const struct stat *stp,
+FileInterner::FileInterner(const string &f, const struct stat *stp,
 			   RclConfig *cnf, 
 			   const string& td, const string *imime)
     : m_cfg(cnf), m_fn(f), m_forPreview(imime?true:false), m_tdir(td)
@@ -337,7 +338,12 @@ static const string keytt("title");
 bool FileInterner::dijontorcl(Rcl::Doc& doc)
 {
     Dijon::Filter *df = m_handlers.back();
-    const std::map<std::string, std::string>& docdata = df->get_meta_data();
+    if (df == 0) {
+	//??
+	LOGERR(("FileInterner::dijontorcl: null top handler ??\n"));
+	return false;
+    }
+    const map<string, string>& docdata = df->get_meta_data();
 
     for (map<string,string>::const_iterator it = docdata.begin(); 
 	 it != docdata.end(); it++) {
@@ -357,6 +363,18 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 	doc.meta[Rcl::Doc::keyabs] = doc.meta[keyds];
 	doc.meta.erase(keyds);
     }
+#ifdef RCL_USE_XATTR
+    // Finally set any data possibly coming out of the extended file attributes
+    // these override any values from inside the file.
+    RecollFilter *rf = dynamic_cast<RecollFilter*>(df);
+    if (rf != 0) {
+	const map<string, string>& ffa = rf->getFieldsFromAttrs();
+	for (map<string,string>::const_iterator it = ffa.begin(); 
+	     it != ffa.end(); it++) {
+	    doc.meta[it->first] = it->second;
+	}
+    }
+#endif //RCL_USE_XATTR
     return true;
 }
 
@@ -425,7 +443,7 @@ enum addResols {ADD_OK, ADD_CONTINUE, ADD_BREAK, ADD_ERROR};
 // and possibly add a filter/handler to the stack
 int FileInterner::addHandler()
 {
-    const std::map<std::string, std::string>& docdata = 
+    const map<string, string>& docdata = 
 	m_handlers.back()->get_meta_data();
     string charset, mimetype;
     getKeyValue(docdata, keycs, charset);

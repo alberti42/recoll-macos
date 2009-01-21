@@ -72,3 +72,9 @@ url = dc:identifier xesam:url
 # This is not used for now
 [specialisations]
 author = from
+
+######################
+# Section to define translations from extended file attribute names to
+# field names. xattr use must be enabled at compile time for this to be
+# used. Enter translations as "xattrname = fieldname". Case matters.
+[xattrtofields]

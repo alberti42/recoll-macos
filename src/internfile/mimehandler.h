@@ -17,11 +17,16 @@
 #ifndef _MIMEHANDLER_H_INCLUDED_
 #define _MIMEHANDLER_H_INCLUDED_
 /* @(#$Id: mimehandler.h,v 1.16 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
+#include "autoconfig.h"
 
 #include <string>
 #include <list>
 using std::string;
 using std::list;
+#ifdef RCL_USE_XATTR
+#include <map>
+using std::map;
+#endif // RCL_USE_XATTR
 
 #include <Filter.h>
 
@@ -51,6 +56,10 @@ public:
     // We don't use this for now
     virtual bool set_document_uri(const std::string &) {return false;}
 
+    /// This does the extended attributes thing if enabled and should
+    /// be called from subclasses.
+    virtual bool set_document_file(const string &file_path);
+
     // Default implementations
     virtual bool set_document_string(const std::string &) {return false;}
     virtual bool set_document_data(const char *cp, unsigned int sz) {
@@ -77,15 +86,26 @@ public:
     }
 
     virtual void clear() {
-	m_forPreview = m_havedoc = false;
 	Dijon::Filter::clear();
+	m_forPreview = m_havedoc = false;
+	m_defcharset.clear();
+	m_reason.clear();
+#ifdef RCL_USE_XATTR
+	m_fieldsFromAttrs.clear();
+#endif // RCL_USE_XATTR
     }
+#ifdef RCL_USE_XATTR
+    const map<string, string>& getFieldsFromAttrs() {return m_fieldsFromAttrs;}
+#endif // RCL_USE_XATTR
 
 protected:
     bool   m_forPreview;
     string m_defcharset;
     string m_reason;
     bool   m_havedoc;
+#ifdef RCL_USE_XATTR
+    map<string, string> m_fieldsFromAttrs;
+#endif // RCL_USE_XATTR
 };
 
 /**
@@ -97,11 +117,12 @@ protected:
  *     indexedmimetypes (if this is set at all).
  */
 extern Dijon::Filter *getMimeHandler(const std::string &mtyp, RclConfig *cfg,
-
 				     bool filtertypes=false);
+
 /// Free up filter for reuse (you can also delete it)
 extern void returnMimeHandler(Dijon::Filter *);
 
 /// Can this mime type be interned ?
 extern bool canIntern(const std::string mimetype, RclConfig *cfg);
+
 #endif /* _MIMEHANDLER_H_INCLUDED_ */

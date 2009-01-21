@@ -57,6 +57,7 @@ void MimeHandlerMbox::clear()
 bool MimeHandlerMbox::set_document_file(const string &fn)
 {
     LOGDEB(("MimeHandlerMbox::set_document_file(%s)\n", fn.c_str()));
+    RecollFilter::set_document_file(fn);
     m_fn = fn;
     if (m_vfp) {
 	fclose((FILE *)m_vfp);

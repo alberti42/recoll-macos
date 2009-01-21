@@ -78,6 +78,7 @@ void MimeHandlerMail::clear()
 bool MimeHandlerMail::set_document_file(const string &fn)
 {
     LOGDEB(("MimeHandlerMail::set_document_file(%s)\n", fn.c_str()));
+    RecollFilter::set_document_file(fn);
     if (m_fd >= 0) {
 	close(m_fd);
 	m_fd = -1;

@@ -30,7 +30,8 @@ class MimeHandlerUnknown : public RecollFilter {
  public:
     MimeHandlerUnknown(const string& mt) : RecollFilter(mt) {}
     virtual ~MimeHandlerUnknown() {}
-    virtual bool set_document_string(const string&) {
+    virtual bool set_document_string(const string& fn) {
+	RecollFilter::set_document_file(fn);
 	return m_havedoc = true;
     }
     virtual bool set_document_file(const string&) {

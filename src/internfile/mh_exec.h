@@ -50,6 +50,7 @@ class MimeHandlerExec : public RecollFilter {
     {}
     virtual ~MimeHandlerExec() {}
     virtual bool set_document_file(const string &file_path) {
+	RecollFilter::set_document_file(file_path);
 	m_fn = file_path;
 	m_havedoc = true;
 	return true;

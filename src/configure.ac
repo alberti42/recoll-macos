@@ -112,6 +112,20 @@ else
    AC_MSG_NOTICE([inotify monitoring disabled])
 fi
 
+# Enable use of file extended attributes. 
+# Not by default as these are little used for now.
+AC_ARG_ENABLE(xattr,
+    AC_HELP_STRING([--enable-xattr],
+   [Enable fetching metadata from file extended attributes. This is only
+   useful if some application creates them on (part of) your data set. You also 
+   need to set up appropriate mappings in the configuration.]),
+        xattrEnabled=$enableval, xattrEnabled=no)
+
+if test X$xattrEnabled = Xyes ; then
+  AC_DEFINE(RCL_USE_XATTR, 1, [Use file extended attributes])
+fi
+
+
 AC_CHECK_FUNCS(mkdtemp)
 
 ##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
