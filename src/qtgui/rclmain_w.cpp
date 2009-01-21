@@ -33,12 +33,18 @@ using std::pair;
 
 #include <qapplication.h>
 #include <qmessagebox.h>
+
 #if (QT_VERSION < 0x040000)
 #include <qcstring.h>
 #include <qpopupmenu.h>
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
+#include <qfiledialog.h>
+#else
+#include <q3filedialog.h>
+#define QFileDialog  Q3FileDialog
 #endif
+
 #include <qtabwidget.h>
 #include <qtimer.h>
 #include <qstatusbar.h>
@@ -196,6 +202,8 @@ void RclMain::init()
 	    this, SLOT(enablePrevPage(bool)));
     connect(resList, SIGNAL(docEditClicked(int)), 
 	    this, SLOT(startNativeViewer(int)));
+    connect(resList, SIGNAL(docSaveToFileClicked(int)), 
+	    this, SLOT(saveDocToFile(int)));
     connect(resList, SIGNAL(editRequested(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
 
@@ -793,6 +801,32 @@ void RclMain::ssearchAddTerm(QString term)
     sSearch->queryText->setEditText(text);
 }
 
+void RclMain::saveDocToFile(int docnum)
+{
+    Rcl::Doc doc;
+    if (!resList->getDoc(docnum, doc)) {
+	QMessageBox::warning(0, "Recoll",
+			     tr("Cannot retrieve document info" 
+				" from database"));
+	return;
+    }
+    string fn = urltolocalpath(doc.url);
+    QString s = 
+	QFileDialog::getSaveFileName(path_home().c_str(),
+				     "",  this,
+				     tr("Save file dialog"),
+				     tr("Choose a file name to save under"));
+    string tofile((const char *)s.toLocal8Bit());
+    TempFile temp; // not used
+    if (!FileInterner::idocToFile(temp, tofile, rclconfig, fn, 
+				  doc.ipath, doc.mimetype)) {
+	QMessageBox::warning(0, "Recoll",
+			     tr("Cannot extract document or create "
+				"temporary file"));
+	return;
+    }
+}
+
 void RclMain::startNativeViewer(int docnum)
 {
     Rcl::Doc doc;
@@ -879,7 +913,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	// There is an ipath and the command does not know about
 	// them. We need a temp file.
 	TempFile temp;
-	if (!FileInterner::idocTempFile(temp, rclconfig, fn, 
+	if (!FileInterner::idocToFile(temp, string(), rclconfig, fn, 
 					doc.ipath, doc.mimetype)) {
 	    QMessageBox::warning(0, "Recoll",
 				 tr("Cannot extract document or create "

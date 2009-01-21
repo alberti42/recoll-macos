@@ -90,6 +90,7 @@ class ResList : public QTEXTBROWSER
     virtual void resultPageNext(); // Next (or first) page of results
     virtual void displayPage(); // Display current page
     virtual void menuPreview();
+    virtual void menuSaveToFile();
     virtual void menuEdit();
     virtual void menuCopyFN();
     virtual void menuCopyURL();
@@ -108,6 +109,7 @@ class ResList : public QTEXTBROWSER
     void prevPageAvailable(bool);
     void docEditClicked(int);
     void docPreviewClicked(int, int);
+    void docSaveToFileClicked(int);
     void previewRequested(Rcl::Doc);
     void editRequested(Rcl::Doc);
     void headerClicked();

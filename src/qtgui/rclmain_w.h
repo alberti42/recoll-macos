@@ -97,6 +97,7 @@ public slots:
     virtual void startPreview(Rcl::Doc doc);
     virtual void startNativeViewer(int docnum);
     virtual void startNativeViewer(Rcl::Doc doc);
+    virtual void saveDocToFile(int docnum);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
     virtual void previewPrevInTab(Preview *, int sid, int docnum);
     virtual void previewExposed(Preview *, int sid, int docnum);

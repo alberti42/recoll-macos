@@ -102,19 +102,21 @@ class FileInterner {
     /* In case we see an html version, it's set aside and can be recovered */
     const string& get_html() {return m_html;}
 
-    /** Utility function: extract internal document into temporary file. 
+    /** Extract internal document into temporary file. 
      *  This is used mainly for starting an external viewer for a
      *  subdocument (ie: mail attachment).
      * @return true for success.
      * @param temp output reference-counted temp file object (goes
-     *   away magically)
+     *   away magically). Only used if tofile.empty()
+     * @param tofile output file if not null
      * @param cnf The recoll config
      * @param fn  The main document from which to extract
      * @param ipath The internal path to the subdoc
      * @param mtype The target mime type (we don't want to decode to text!)
      */
-    static bool idocTempFile(TempFile& temp, RclConfig *cnf, const string& fn, 
-			     const string& ipath, const string& mtype);
+    static bool idocToFile(TempFile& temp, const string& tofile, 
+			   RclConfig *cnf, const string& fn, 
+			   const string& ipath, const string& mtype);
 
     const string& getReason() const {return m_reason;}
     static void getMissingExternal(string& missing);

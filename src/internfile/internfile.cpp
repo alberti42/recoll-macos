@@ -648,7 +648,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	return FIAgain;
 }
 
-// Automatic cleanup of iDocTempFile's temp dir
+// Automatic cleanup of iDocToFile's temp dir
 class DirWiper {
  public:
     string dir;
@@ -671,14 +671,15 @@ class DirWiper {
 //   return by the DirWiper object
 // - The output temporary file which is held in a reference-counted
 //   object and will be deleted when done with.
-bool FileInterner::idocTempFile(TempFile& otemp, RclConfig *cnf, 
-				const string& fn,
-				const string& ipath,
-				const string& mtype)
+bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
+			      RclConfig *cnf, 
+			      const string& fn,
+			      const string& ipath,
+			      const string& mtype)
 {
     struct stat st;
     if (stat(fn.c_str(), &st) < 0) {
-	LOGERR(("FileInterner::idocTempFile: can't stat [%s]\n", fn.c_str()));
+	LOGERR(("FileInterner::idocToFile: can't stat [%s]\n", fn.c_str()));
 	return false;
     }
 
@@ -693,29 +694,39 @@ bool FileInterner::idocTempFile(TempFile& otemp, RclConfig *cnf,
     string mipath = ipath;
     Status ret = interner.internfile(doc, mipath);
     if (ret == FileInterner::FIError) {
-	LOGERR(("FileInterner::idocTempFile: internfile() failed\n"));
+	LOGERR(("FileInterner::idocToFile: internfile() failed\n"));
 	return false;
     }
-    TempFile temp(new TempFileInternal(cnf->getSuffixFromMimeType(mtype)));
-    if (!temp->ok()) {
-	LOGERR(("FileInterner::idocTempFile: cannot create temporary file"));
-	return false;
+
+    string filename;
+    TempFile temp;
+    if (tofile.empty()) {
+	TempFile temp1(new TempFileInternal(cnf->getSuffixFromMimeType(mtype)));
+	temp = temp1;
+	if (!temp->ok()) {
+	    LOGERR(("FileInterner::idocToFile: cant create temporary file"));
+	    return false;
+	}
+	filename = temp->filename();
+    } else {
+	filename = tofile;
     }
-    int fd = open(temp->filename(), O_WRONLY);
+    int fd = open(filename.c_str(), O_WRONLY|O_CREAT, 0600);
     if (fd < 0) {
-	LOGERR(("FileInterner::idocTempFile: open(%s) failed errno %d\n",
-		temp->filename(), errno));
+	LOGERR(("FileInterner::idocToFile: open(%s) failed errno %d\n",
+		filename.c_str(), errno));
 	return false;
     }
     const string& dt = doc.text;
     if (write(fd, dt.c_str(), dt.length()) != (int)dt.length()) {
 	close(fd);
-	LOGERR(("FileInterner::idocTempFile: write to %s failed errno %d\n",
-		temp->filename(), errno));
+	LOGERR(("FileInterner::idocToFile: write to %s failed errno %d\n",
+		filename.c_str(), errno));
 	return false;
     }
     close(fd);
-    otemp = temp;
+    if (tofile.empty())
+	otemp = temp;
     return true;
 }
 

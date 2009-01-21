@@ -530,6 +530,11 @@ RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
     popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
     popup->insertItem(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
     popup->insertItem(tr("Copy &URL"), this, SLOT(menuCopyURL()));
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc) && !doc.ipath.empty()) {
+	popup->insertItem(tr("Save to File"), this, SLOT(menuSaveToFile()));
+    }
+
     popup->insertItem(tr("Find &similar documents"), this, SLOT(menuExpand()));
     popup->insertItem(tr("P&arent document/folder"), 
 		      this, SLOT(menuSeeParent()));
@@ -539,6 +544,10 @@ RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
 void ResList::menuPreview()
 {
     emit docPreviewClicked(m_popDoc, 0);
+}
+void ResList::menuSaveToFile()
+{
+    emit docSaveToFileClicked(m_popDoc);
 }
 
 void ResList::menuSeeParent()
