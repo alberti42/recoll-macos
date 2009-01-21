@@ -28,8 +28,6 @@ decoder="antiword -t -i 1 -m UTF-8"
 #decoder="wvWare -1 -c UTF-8"
 
 
-
-
 #RECFILTCOMMONCODE
 ##############################################################################
 # !! Leave the previous line unmodified!! Code imported from the
@@ -108,8 +106,11 @@ awk 'BEGIN'\
   print "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">"
   print "</head>\n<body>\n<p>"
   cont = ""
+  gotdata = 0
 }
 {
+  if (!($0 ~ /^[ 	]*$/))
+    gotdata = 1
   $0 = cont $0
   cont = ""
 
@@ -133,8 +134,17 @@ awk 'BEGIN'\
   print $0 "<br>"
 }
 END {
+    if (gotdata == 0)
+       exit(1)
     print "</p></body></html>"
-}' | iconv -f UTF-8 -t UTF-8 -c -s 
+}' 
 
-# exit normally
-exit 0
+# wvWare is much slower and we don't use it by default, but it handles
+# some files that antiword won't, so use it as a last resort. Yes the
+# html document will have a second header section, but this doesn't
+# seem to be an issue with our brave html input handler...
+if test $? -eq 1 ; then
+    if iscmd wvWare ; then
+	wvWare --nographics --charset=utf-8 $infile
+    fi
+fi
