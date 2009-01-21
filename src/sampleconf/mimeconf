@@ -32,6 +32,10 @@ application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 # actually not needed because antiword apparently does it too
 # application/msword = exec rcldoc
 application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=utf-8
+# Alternatively you can use wvWare for msword. It's much slower than
+# antiword, but will handle documents which provoke the 'I'm afraid the
+# text stream of this file is too small to handle' antiword error
+# application/msword = exec wvWare --charset=utf-8 --nographics
 application/ogg = exec rclogg
 application/pdf = exec rclpdf
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
