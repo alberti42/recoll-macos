@@ -35,9 +35,11 @@ using std::pair;
 #include <qtabwidget.h>
 #if (QT_VERSION < 0x040000)
 #include <qtextedit.h>
+#include <qpopupmenu.h>
 #include <qprogressdialog.h>
 #define THRFINISHED finished
 #else
+#include <q3popupmenu.h>
 #include <q3textedit.h>
 #include <q3progressdialog.h>
 #include <q3stylesheet.h>
@@ -93,7 +95,7 @@ using std::pair;
 //
 // Problem is, it uses the sem-private qrichtext_p.h, which is not
 // even installed under qt4. We use a local copy, which is not nice.
-void QTextEditFixed::moveToAnchor(const QString& name)
+void PreviewTextEdit::moveToAnchor(const QString& name)
 {
     if (name.isEmpty())
 	return;
@@ -135,7 +137,7 @@ void Preview::init()
     QWidget *unnamed = new QWidget(pvTab, "unnamed");
     QVBoxLayout *unnamedLayout = 
 	new QVBoxLayout(unnamed, 0, 6, "unnamedLayout"); 
-    QTextEditFixed *pvEdit = new QTextEditFixed(unnamed, "pvEdit");
+    PreviewTextEdit *pvEdit = new PreviewTextEdit(unnamed, "pvEdit", this);
     pvEdit->setReadOnly(TRUE);
     pvEdit->setUndoRedoEnabled(FALSE);
     unnamedLayout->addWidget(pvEdit);
@@ -267,9 +269,9 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	    return QApplication::sendEvent(searchTextLine, event);
     } else {
 	QWidget *tw = pvTab->currentPage();
-	QTextEditFixed *e = 0;
+	PreviewTextEdit *e = 0;
 	if (tw)
-	    e = (QTextEditFixed *)tw->child("pvEdit");
+	    e = (PreviewTextEdit *)tw->child("pvEdit");
 	LOGDEB1(("Widget: %p, edit %p, target %p\n", tw, e, target));
 	if (e && target == e) {
 	    if (keyEvent->key() == Qt::Key_Slash) {
@@ -311,12 +313,12 @@ void Preview::searchTextLine_textChanged(const QString & text)
 #define QStyleSheetItem Q3StyleSheetItem
 #endif
 
-QTextEditFixed *Preview::getCurrentEditor()
+PreviewTextEdit *Preview::getCurrentEditor()
 {
     QWidget *tw = pvTab->currentPage();
-    QTextEditFixed *edit = 0;
+    PreviewTextEdit *edit = 0;
     if (tw) {
-	edit = (QTextEditFixed*)tw->child("pvEdit");
+	edit = (PreviewTextEdit*)tw->child("pvEdit");
     }
     return edit;
 }
@@ -334,7 +336,7 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     QString text = _text;
 
     bool matchCase = matchCheck->isChecked();
-    QTextEditFixed *edit = getCurrentEditor();
+    PreviewTextEdit *edit = getCurrentEditor();
     if (edit == 0) {
 	// ??
 	return;
@@ -453,7 +455,7 @@ void Preview::selecChanged()
     LOGDEB1(("Selection changed\n"));
     if (!m_currentW)
 	return;
-    QTextEditFixed *edit = (QTextEditFixed*)m_currentW->child("pvEdit");
+    PreviewTextEdit *edit = (PreviewTextEdit*)m_currentW->child("pvEdit");
     if (edit == 0) {
 	LOGERR(("Editor child not found\n"));
 	return;
@@ -479,7 +481,7 @@ void Preview::textDoubleClicked(int, int)
     LOGDEB2(("Preview::textDoubleClicked\n"));
     if (!m_currentW)
 	return;
-    QTextEditFixed *edit = (QTextEditFixed *)m_currentW->child("pvEdit");
+    PreviewTextEdit *edit = (PreviewTextEdit *)m_currentW->child("pvEdit");
     if (edit == 0) {
 	LOGERR(("Editor child not found\n"));
 	return;
@@ -513,11 +515,11 @@ void Preview::closeCurrentTab()
     }
 }
 
-QTextEditFixed *Preview::addEditorTab()
+PreviewTextEdit *Preview::addEditorTab()
 {
     QWidget *anon = new QWidget((QWidget *)pvTab);
     QVBoxLayout *anonLayout = new QVBoxLayout(anon, 1, 1, "anonLayout"); 
-    QTextEditFixed *editor = new QTextEditFixed(anon, "pvEdit");
+    PreviewTextEdit *editor = new PreviewTextEdit(anon, "pvEdit", this);
     editor->setReadOnly(TRUE);
     editor->setUndoRedoEnabled(FALSE );
     anonLayout->addWidget(editor);
@@ -559,14 +561,11 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
 	tiptxt += meta_it->second + "\n";
     pvTab->setTabToolTip(w,QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
 
-    for (list<TabData>::iterator it = m_tabData.begin(); 
-	 it != m_tabData.end(); it++) {
-	if (it->w == w) {
-	    it->fn = fn;
-	    it->ipath = doc.ipath;
-	    it->docnum = docnum;
-	    break;
-	}
+    TabData *d = tabDataForCurrent();
+    if (d) {
+	d->fn = fn;
+	d->ipath = doc.ipath;
+	d->docnum = docnum;
     }
 }
 
@@ -897,7 +896,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     }
 	    
     // Load into editor
-    QTextEditFixed *editor = getCurrentEditor();
+    PreviewTextEdit *editor = getCurrentEditor();
     editor->setText("");
     if (highlightTerms) {
 	QStyleSheetItem *item = 
@@ -931,7 +930,11 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     }
 
     progress.close();
-
+    TabData *d = tabDataForCurrent();
+    if (d) {
+	fdoc.text.clear();
+	d->fdoc = fdoc;
+    }
     m_haveAnchors = m_plaintorich.lastanchor != 0;
     if (searchTextLine->text().length() != 0) {
 	// If there is a current search string, perform the search
@@ -955,4 +958,42 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     emit(previewExposed(this, m_searchId, docnum));
     LOGDEB(("LoadFileInCurrentTab: returning true\n"));
     return true;
+}
+
+
+RCLPOPUP *PreviewTextEdit::createPopupMenu(const QPoint&)
+{
+    RCLPOPUP *popup = new RCLPOPUP(this);
+    if (m_savedText.isEmpty()) {
+	popup->insertItem(tr("Show fields"), this, SLOT(menuToggleFields()));
+    } else {
+	popup->insertItem(tr("Show main text"), this, SLOT(menuToggleFields()));
+    }
+    return popup;
+}
+
+void PreviewTextEdit::menuToggleFields()
+{
+    if (!m_savedText.isEmpty()) {
+	setText(m_savedText);
+	m_savedText = "";
+	return;
+    }
+    TabData *d = m_preview->tabDataForCurrent();
+    if (!d) 
+	return;
+    QString txt = "<html><head></head><body>\n";
+    txt += "<b>" + QString::fromLocal8Bit(d->fn.c_str());
+    if (!d->ipath.empty())
+	txt += "|" + QString::fromUtf8(d->ipath.c_str());
+    txt += "</b><br><br>";
+    txt += "<dl>\n";
+    for (map<string,string>::const_iterator it = d->fdoc.meta.begin();
+	 it != d->fdoc.meta.end(); it++) {
+	txt += "<dt>" + QString::fromUtf8(it->first.c_str()) + "</dt> " 
+	    + "<dd>" + QString::fromUtf8(it->second.c_str()) + "</dd>\n";
+    }
+    txt += "</dl></body></html>";
+    m_savedText = text();
+    setText(txt);
 }

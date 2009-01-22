@@ -30,25 +30,36 @@ class QLabel;
 class QLineEdit;
 class QPushButton;
 class QCheckBox;
-class QTextEditFixed;
+class PreviewTextEdit;
+class Preview;
 
 #if (QT_VERSION < 0x040000)
 #include <qtextedit.h>
 #include <private/qrichtext_p.h>
 #define QTEXTEDIT QTextEdit
+class QPopupMenu;
+#define RCLPOPUP QPopupMenu
 #else
 #include <q3textedit.h>
 #include <q3richtext_p.h>
+class Q3PopupMenu;
+#define RCLPOPUP Q3PopupMenu
 #define QTEXTEDIT Q3TextEdit
 #endif
 
-class QTextEditFixed : public QTEXTEDIT {
+class PreviewTextEdit : public QTEXTEDIT {
     Q_OBJECT
 public:
-    QTextEditFixed( QWidget* parent=0, const char* name=0 ) 
-	: QTEXTEDIT(parent, name)
+    PreviewTextEdit(QWidget* parent, const char* name, Preview *pv) 
+	: QTEXTEDIT(parent, name), m_preview(pv)
     {}
     void moveToAnchor(const QString& name);
+public slots:
+    virtual void menuToggleFields();
+private:
+    virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
+    Preview *m_preview;
+    QString  m_savedText;
 };
 
 
@@ -59,7 +70,9 @@ class TabData {
     string ipath; // Internal doc path inside file
     QWidget *w; // widget for setCurrent
     int docnum;  // Index of doc in db search results.
-
+    // doc out of internfile (previous fields come from the index) with
+    // main text erased (for space).
+    Rcl::Doc fdoc; 
     TabData(QWidget *wi) 
 	: w(wi), docnum(-1) 
     {}
@@ -116,7 +129,7 @@ public:
     virtual bool makeDocCurrent(const string &fn, size_t sz, 
 				const Rcl::Doc& idoc, int docnum, 
 				bool sametab = false);
-
+    friend class PreviewTextEdit;
 public slots:
     virtual void searchTextLine_textChanged(const QString& text);
     virtual void doSearch(const QString& str, bool next, bool reverse,
@@ -164,11 +177,12 @@ private:
     void init();
     virtual void setCurTabProps(const string& fn, const Rcl::Doc& doc, 
 				int docnum);
-    virtual QTextEditFixed *getCurrentEditor();
-    virtual QTextEditFixed *addEditorTab();
+    virtual PreviewTextEdit *getCurrentEditor();
+    virtual PreviewTextEdit *addEditorTab();
     virtual bool loadFileInCurrentTab(string fn, size_t sz, 
 				      const Rcl::Doc& idoc, int dnm);
-    TabData *tabDataForCurrent(); // Return auxiliary data pointer for cur tab
+    // Return auxiliary data pointer for cur tab
+    TabData *tabDataForCurrent(); 
 };
 
 #endif /* _PREVIEW_W_H_INCLUDED_ */
