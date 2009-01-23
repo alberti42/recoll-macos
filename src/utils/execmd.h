@@ -125,9 +125,14 @@ class ExecCmd {
 
     /**
      * Utility routine: check if/where a command is found according to the
-     * current PATH
+     * current PATH (or the specified one
+     * @param cmd command name
+     * @param exe on return, executable path name if found
+     * @param path exec seach path to use instead of getenv(PATH)
+     * @return true if found
      */
-    static bool which(const string& cmd, string& path);
+    static bool which(const string& cmd, string& exepath, 
+		      const char* path = 0);
 
  private:
     vector<string>   m_env;

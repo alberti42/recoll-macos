@@ -68,22 +68,28 @@ exec_is_there(const char *candidate)
     return false;
 }
 
-bool ExecCmd::which(const string& cmd, string& path)
+bool ExecCmd::which(const string& cmd, string& exepath, const char* path)
 {
     if (cmd.empty()) 
 	return false;
     if (cmd[0] == '/') {
 	if (exec_is_there(cmd.c_str())) {
-	    path = cmd;
+	    exepath = cmd;
 	    return true;
 	} else {
 	    return false;
 	}
     }
 
-    const char *pp = getenv("PATH");
+    const char *pp;
+    if (path) {
+	pp = path;
+    } else {
+	pp = getenv("PATH");
+    }
     if (pp == 0)
 	return false;
+
     list<string> pels;
     stringToTokens(pp, pels, ":");
     for (list<string>::iterator it = pels.begin(); it != pels.end(); it++) {
@@ -91,7 +97,7 @@ bool ExecCmd::which(const string& cmd, string& path)
 	    *it = ".";
 	string candidate = (it->empty() ? string(".") : *it) + "/" + cmd;
 	if (exec_is_there(candidate.c_str())) {
-	    path = candidate;
+	    exepath = candidate;
 	    return true;
 	}
     }
