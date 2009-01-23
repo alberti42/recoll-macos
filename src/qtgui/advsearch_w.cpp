@@ -116,7 +116,7 @@ void AdvSearch::init()
     restrictCtCB->setEnabled(false);
     restrictCtCB->setChecked(m_ignByCats);
     fillFileTypes();
-
+    setHelpIndex("RCL.SEARCH.COMPLEX");
     subtreeCMB->insertStringList(prefs.asearchSubdirHist);
     subtreeCMB->setEditText("");
 
@@ -158,6 +158,7 @@ void AdvSearch::saveCnf()
 
 bool AdvSearch::close()
 {
+    setHelpIndex("RCL.SEARCH.SIMPLE");
     saveCnf();
     return QWidget::close();
 }

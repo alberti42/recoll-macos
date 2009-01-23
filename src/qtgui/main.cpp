@@ -89,6 +89,11 @@ int recollNeedsExit;
 int startIndexingAfterConfig;
 RclMain *mainWindow;
 static string recollsharedir;
+const char *g_helpIndex;
+void setHelpIndex(const char *index)
+{
+    g_helpIndex = index;
+}
 
 bool maybeOpenDb(string &reason, bool force)
 {
@@ -303,8 +308,8 @@ int main(int argc, char **argv)
 
 	//    }
 #else
-    RclMain w;
-    mainWindow = &w;
+	RclMain w;
+	mainWindow = &w;
 #endif
 
     if (prefs.mainwidth > 100) {

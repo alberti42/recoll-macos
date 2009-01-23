@@ -161,6 +161,8 @@ void RclMain::init()
     }
     preferencesMenu->setItemChecked(curid, true);
 
+    setHelpIndex("RCL.SEARCH.SIMPLE");
+
     // Document categories buttons
     catgBGRP->setColumnLayout(1, Qt::Vertical);
     list<string> cats;
@@ -977,6 +979,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	g_dynconf->enterDoc(fn, doc.ipath);
     // We should actually monitor these processes so that we can
     // delete the temp files when they exit
+    LOGDEB(("Executing: [%s]\n", ncmd.c_str()));
     system(ncmd.c_str());
 }
 
@@ -989,6 +992,12 @@ void RclMain::startManual()
     doc.url = path_cat(doc.url, rclconfig->getDatadir());
     doc.url = path_cat(doc.url, "doc");
     doc.url = path_cat(doc.url, "usermanual.html");
+    LOGDEB(("RclMain::startManual: help index is %s\n", 
+	    g_helpIndex?g_helpIndex:"(null)"));
+    if (g_helpIndex && *g_helpIndex) {
+	doc.url += "#";
+	doc.url += g_helpIndex;
+    }
     doc.mimetype = "text/html";
     startNativeViewer(doc);
 }
