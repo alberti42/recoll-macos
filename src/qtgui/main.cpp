@@ -87,7 +87,7 @@ RclConfig* RclConfig::getMainConfig()
 RclHistory *g_dynconf;
 int recollNeedsExit;
 int startIndexingAfterConfig;
-static RclMain *mainWindow;
+RclMain *mainWindow;
 static string recollsharedir;
 
 bool maybeOpenDb(string &reason, bool force)

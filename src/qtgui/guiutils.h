@@ -74,7 +74,6 @@ class PrefsPack {
     int pvwidth; // Preview window geom
     int pvheight;
     int ssearchTyp;
-    QString htmlBrowser;
     bool    useDesktopOpen; // typically xdg-open, instead of mimeview settings
     bool    keepSort; // remember sort status between invocations
     bool    sortActive; // Remembered sort state.

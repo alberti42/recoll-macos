@@ -827,13 +827,35 @@ void RclMain::saveDocToFile(int docnum)
     }
 }
 
+/* Look for html browser. We make a special effort for html because it's
+ * used for reading help */
+static bool lookForHtmlBrowser(string &exefile)
+{
+    static const char *htmlbrowserlist = 
+	"opera konqueror firefox mozilla netscape epiphany";
+    list<string> blist;
+    stringToTokens(htmlbrowserlist, blist, " ");
+
+    const char *path = getenv("PATH");
+    if (path == 0)
+	path = "/bin:/usr/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/bin";
+
+    // Look for each browser 
+    for (list<string>::const_iterator bit = blist.begin(); 
+	 bit != blist.end(); bit++) {
+	if (ExecCmd::which(*bit, exefile, path)) 
+	    return true;
+    }
+    exefile.clear();
+    return false;
+}
+
 void RclMain::startNativeViewer(int docnum)
 {
     Rcl::Doc doc;
     if (!resList->getDoc(docnum, doc)) {
-	QMessageBox::warning(0, "Recoll",
-			     tr("Cannot retrieve document info" 
-				" from database"));
+	QMessageBox::warning(0, "Recoll", tr("Cannot retrieve document info" 
+					     " from database"));
 	return;
     }
     startNativeViewer(doc);
@@ -868,7 +890,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     string cmdpath;
     if (prefs.useDesktopOpen) {
 	// Findfilter searches the recoll filters directory in
-	// addition to the path
+	// addition to the path. We store a copy of xdg-open there, to be 
+	// used as last resort
 	cmdpath = rclconfig->findFilter(lcmd.front());
 	// Substitute path for cmd
 	if (!cmdpath.empty()) {
@@ -880,6 +903,12 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	ExecCmd::which(lcmd.front(), cmdpath);
     }
 
+    // Specialcase text/html because of the help browser need
+    if (cmdpath.empty() && !doc.mimetype.compare("text/html")) {
+	if (lookForHtmlBrowser(cmdpath)) {
+	    cmd = cmdpath + " %u";
+	}
+    }
     if (cmdpath.empty()) {
 	QString mt = QString::fromAscii(doc.mimetype.c_str());
 	QString message = tr("The viewer specified in mimeconf for %1: %2"
@@ -895,9 +924,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 		uiprefs->showViewAction(mt);
 	    break;
 	case 1:
-	    
-	    return;
+	    break;
 	}
+	return;
     }
 
     // For files with an ipath, we do things differently depending if the 
@@ -953,11 +982,15 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
 void RclMain::startManual()
 {
-    QString msg = tr("Starting help browser ");
-    if (prefs.htmlBrowser != QString(""))
-	msg += prefs.htmlBrowser;
+    QString msg = tr("Starting html help browser ");
     statusBar()->message(msg, 3000);
-    startHelpBrowser();
+    Rcl::Doc doc;
+    doc.url = "file://";
+    doc.url = path_cat(doc.url, rclconfig->getDatadir());
+    doc.url = path_cat(doc.url, "doc");
+    doc.url = path_cat(doc.url, "usermanual.html");
+    doc.mimetype = "text/html";
+    startNativeViewer(doc);
 }
 
 // Search for document 'like' the selected one. We ask rcldb/xapian to find

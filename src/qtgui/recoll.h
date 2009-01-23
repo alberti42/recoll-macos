@@ -29,6 +29,8 @@
 // Open the database if needed. We now force a close/open by default
 extern bool maybeOpenDb(std::string &reason, bool force = true);
 
+class RclMain;
+extern RclMain *mainWindow;
 extern RclConfig *rclconfig;
 extern Rcl::Db *rcldb;
 extern int recollNeedsExit;

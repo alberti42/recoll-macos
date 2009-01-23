@@ -67,7 +67,6 @@ void UIPrefsDialog::init()
 
     connect(viewActionPB, SIGNAL(clicked()), this, SLOT(showViewAction()));
     connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
-    connect(helpBrowserPB, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
     connect(extraDbLE,SIGNAL(textChanged(const QString&)), this, 
 	    SLOT(extraDbTextChanged(const QString&)));
@@ -123,7 +122,6 @@ void UIPrefsDialog::setFromPrefs()
 			       s.setNum(reslistFontSize));
     }
     rlfTE->setText(prefs.reslistformat);
-    helpBrowserLE->setText(prefs.htmlBrowser);
 
     // Stemming language combobox
     stemLangCMB->clear();
@@ -193,8 +191,6 @@ void UIPrefsDialog::accept()
 	rlfTE->setText(prefs.reslistformat);
     }
     prefs.creslistformat = (const char*)prefs.reslistformat.utf8();
-
-    prefs.htmlBrowser =  helpBrowserLE->text();
 
     if (stemLangCMB->currentItem() == 0) {
 	prefs.queryStemLang = "";
@@ -294,17 +290,6 @@ void UIPrefsDialog::resetReslistFont()
     reslistFontSize = 0;
     reslistFontPB->setText(this->font().family() + "-" +
 			   QString().setNum(this->font().pointSize()));
-}
-
-void UIPrefsDialog::showBrowserDialog()
-{
-    QString s = QFileDialog::getOpenFileName("/usr",
-					     "",
-					     this,
-					     "open file dialog",
-					     "Choose a file");
-    if (!s.isEmpty()) 
-	helpBrowserLE->setText(s);
 }
 
 void UIPrefsDialog::showViewAction()

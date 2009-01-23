@@ -43,74 +43,6 @@ bool getStemLangs(list<string>& langs)
     return true;
 }
 
-static const char *htmlbrowserlist = 
-    "opera konqueror firefox mozilla netscape";
-
-/** 
- * Search for and launch an html browser for the documentation. If the
- * user has set a preference, we use it directly instead of guessing.
- */
-bool startHelpBrowser(const string &iurl)
-{
-    string url;
-    if (iurl.empty()) {
-	url = path_cat(rclconfig->getDatadir(), "doc");
-	url = path_cat(url, "usermanual.html");
-	url = string("file://") + url;
-    } else
-	url = iurl;
-
-    // If the user set a preference with an absolute path then things are
-    // simple
-    if (!prefs.htmlBrowser.isEmpty() && prefs.htmlBrowser.find('/') != -1) {
-	if (access(prefs.htmlBrowser.ascii(), X_OK) != 0) {
-	    LOGERR(("startHelpBrowser: %s not found or not executable\n",
-		    prefs.htmlBrowser.ascii()));
-	}
-	string cmd = string(prefs.htmlBrowser.ascii()) + " " + url + "&";
-	if (system(cmd.c_str()) == 0)
-	    return true;
-	else 
-	    return false;
-    }
-
-    string searched;
-    if (prefs.htmlBrowser.isEmpty()) {
-	searched = htmlbrowserlist;
-    } else {
-	searched = prefs.htmlBrowser.ascii();
-    }
-    list<string> blist;
-    stringToTokens(searched, blist, " ");
-
-    const char *path = getenv("PATH");
-    if (path == 0)
-	path = "/bin:/usr/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/bin";
-
-    list<string> pathl;
-    stringToTokens(path, pathl, ":");
-    
-    // For each browser name, search path and exec/stop if found
-    for (list<string>::const_iterator bit = blist.begin(); 
-	 bit != blist.end(); bit++) {
-	for (list<string>::const_iterator pit = pathl.begin(); 
-	     pit != pathl.end(); pit++) {
-	    string exefile = path_cat(*pit, *bit);
-	    LOGDEB1(("startHelpBrowser: trying %s\n", exefile.c_str()));
-	    if (access(exefile.c_str(), X_OK) == 0) {
-		string cmd = exefile + " " + url + "&";
-		if (system(cmd.c_str()) == 0) {
-		    return true;
-		}
-	    }
-	}
-    }
-
-    LOGERR(("startHelpBrowser: no html browser found. Looked for: %s\n", 
-	    searched.c_str()));
-    return false;
-}
-
 // The global preferences structure
 PrefsPack prefs;
 
@@ -142,7 +74,6 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.pvwidth, "/Recoll/geometry/pvwidth", Num, 0);
     SETTING_RW(prefs.pvheight, "/Recoll/geometry/pvheight", Num, 0);
     SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Num, 1);
-    SETTING_RW(prefs.htmlBrowser, "/Recoll/prefs/htmlBrowser", , "");
     SETTING_RW(prefs.startWithAdvSearchOpen, 
 	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
     SETTING_RW(prefs.startWithSortToolOpen, 
