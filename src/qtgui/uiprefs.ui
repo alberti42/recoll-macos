@@ -276,39 +276,13 @@
                                             </widget>
                                         </hbox>
                                     </widget>
-                                    <widget class="QLayoutWidget">
+                                    <widget class="QPushButton">
                                         <property name="name">
-                                            <cstring>layout37</cstring>
+                                             <cstring>viewActionPB</cstring>
                                         </property>
-                                        <hbox>
-                                            <property name="name">
-                                                <cstring>unnamed</cstring>
-                                            </property>
-                                            <widget class="QLabel">
-                                                <property name="name">
-                                                    <cstring>textLabel1_5</cstring>
-                                                </property>
-                                                <property name="sizePolicy">
-                                                    <sizepolicy>
-                                                        <hsizetype>5</hsizetype>
-                                                        <vsizetype>5</vsizetype>
-                                                        <horstretch>1</horstretch>
-                                                        <verstretch>0</verstretch>
-                                                    </sizepolicy>
-                                                </property>
-                                                <property name="text">
-                                                    <string>Choose external viewer applications</string>
-                                                </property>
-                                            </widget>
-                                            <widget class="QPushButton">
-                                                <property name="name">
-                                                    <cstring>viewActionPB</cstring>
-                                                </property>
-                                                <property name="text">
-                                                    <string>Manage</string>
-                                                </property>
-                                            </widget>
-                                        </hbox>
+                                        <property name="text">
+                                            <string>Choose editor applications</string>
+                                        </property>
                                     </widget>
                                     <widget class="QCheckBox">
                                         <property name="name">
