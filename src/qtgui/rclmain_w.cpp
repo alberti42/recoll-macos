@@ -816,7 +816,7 @@ void RclMain::saveDocToFile(int docnum)
 				     "",  this,
 				     tr("Save file dialog"),
 				     tr("Choose a file name to save under"));
-    string tofile((const char *)s.toLocal8Bit());
+    string tofile((const char *)s.local8Bit());
     TempFile temp; // not used
     if (!FileInterner::idocToFile(temp, tofile, rclconfig, fn, 
 				  doc.ipath, doc.mimetype)) {
