@@ -4,24 +4,10 @@
 
     <script language="JavaScript">
       function recollsearch() {
-        if (navigator.appName != 'Microsoft Internet Explorer') {
           var t = document.getSelection();
-          recoll(t);
-        } else {
-          var t = document.selection.createRange();
-          if (document.selection.type == 'Text' && t.text > '') {
-            document.selection.empty();
-	    recoll(t.text);
-          }
-        }
-      }
-
-     function recoll(t) {
-       if (t) {
-         window.location.href = 'recoll://search/query?qtp=a&p=0&q=' +
+          window.location.href = 'recoll://search/query?qtp=a&p=0&q=' +
               encodeURIComponent(t);
-       }   
-     }
+      }   
    </script>
 
   </head>
