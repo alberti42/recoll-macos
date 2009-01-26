@@ -40,10 +40,20 @@ using std::string;
 #define ICV_P2_TYPE char**
 #endif
 
+// We gain approximately 28% exec time for word at a time conversions by
+// caching the iconv_open thing. This is probably not worth it.
+//#define ICONV_CACHE_OPEN
+
 bool transcode(const string &in, string &out, const string &icode,
 	       const string &ocode, int *ecnt)
 {
+#ifdef ICONV_CACHE_OPEN
+    static iconv_t ic;
+    static string cachedicode;
+    static string cachedocode;
+#else 
     iconv_t ic;
+#endif
     bool ret = false;
     const int OBSIZ = 8192;
     char obuf[OBSIZ], *op;
@@ -54,12 +64,23 @@ bool transcode(const string &in, string &out, const string &icode,
     out.reserve(isiz);
     const char *ip = in.c_str();
 
-    if((ic = iconv_open(ocode.c_str(), icode.c_str())) == (iconv_t)-1) {
-	out = string("iconv_open failed for ") + icode
-	    + " -> " + ocode;
-	goto error;
+#ifdef ICONV_CACHE_OPEN
+    if (cachedicode.compare(icode) || cachedocode.compare(ocode)) {
+#endif
+	if((ic = iconv_open(ocode.c_str(), icode.c_str())) == (iconv_t)-1) {
+	    out = string("iconv_open failed for ") + icode
+		+ " -> " + ocode;
+	    goto error;
+	}
+#ifdef ICONV_CACHE_OPEN
+	cachedicode.assign(icode);
+	cachedocode.assign(ocode);
+    } else {
+	iconv(ic, 0, 0, 0, 0);
     }
+#else
     icopen = true;
+#endif
 
     while (isiz > 0) {
 	size_t osiz;
@@ -89,6 +110,7 @@ bool transcode(const string &in, string &out, const string &icode,
 	out.append(obuf, OBSIZ - osiz);
     }
 
+#ifndef ICONV_CACHE_OPEN
     if(iconv_close(ic) == -1) {
 	out.erase();
 	out = string("iconv_close failed for ") + icode
@@ -96,10 +118,13 @@ bool transcode(const string &in, string &out, const string &icode,
 	goto error;
     }
     icopen = false;
+#endif
     ret = true;
  error:
+#ifndef ICONV_CACHE_OPEN
     if (icopen)
 	iconv_close(ic);
+#endif
     if (mecnt)
 	LOGDEB(("transcode: [%s]->[%s] %d errors\n", 
 		 icode.c_str(), ocode.c_str(), mecnt));
@@ -124,8 +149,28 @@ using namespace std;
 #include "readfile.h"
 #include "transcode.h"
 
+// Repeatedly transcode a small string for timing measurements
+static const string testword("\xc3\xa9\x6c\x69\x6d\x69\x6e\xc3\xa9\xc3\xa0");
+// Without cache 10e6 reps on macpro -> 1.88 S
+// With cache -> 1.56
+void looptest()
+{
+    cout << testword << endl;
+    string out;
+    for (int i = 0; i < 1000*1000; i++) {
+	if (!transcode(testword, out, "UTF-8", "UTF-16BE")) {
+	    cerr << "Transcode failed" << endl;
+	    break;
+	}
+    }
+}
+
 int main(int argc, char **argv)
 {
+#if 0
+    looptest();
+    exit(0);
+#endif
     if (argc != 5) {
 	cerr << "Usage: trcsguess ifilename icode ofilename ocode" << endl;
 	exit(1);
