@@ -357,17 +357,22 @@ void trimstring(string &s, const char *ws)
 }
 
 // Remove some chars and replace them with spaces
-string neutchars(const string &str, string delims)
+string neutchars(const string &str, const string &chars)
 {
     string out;
+    neutchars(str, out, chars);
+    return out;
+}
+void neutchars(const string &str, string &out, const string& chars)
+{
     string::size_type startPos, pos;
 
     for (pos = 0;;) { 
-        // Skip initial delims, break if this eats all.
-        if ((startPos = str.find_first_not_of(delims, pos)) == string::npos)
+        // Skip initial chars, break if this eats all.
+        if ((startPos = str.find_first_not_of(chars, pos)) == string::npos)
 	    break;
         // Find next delimiter or end of string (end of token)
-        pos = str.find_first_of(delims, startPos);
+        pos = str.find_first_of(chars, startPos);
         // Add token to the output. Note: token cant be empty here
 	if (pos == string::npos) {
 	    out += str.substr(startPos);
@@ -375,7 +380,6 @@ string neutchars(const string &str, string delims)
 	    out += str.substr(startPos, pos - startPos) + " ";
 	}
     }
-    return out;
 }
 
 
@@ -711,6 +715,8 @@ int main(int argc, char **argv)
 #elif 1
     std::string testit("ligne\ndeuxieme ligne\r3eme ligne\r\n");
     cout << "[" << neutchars(testit, "\r\n") << "]" << endl;
+    string i, o;
+    cout << "neutchars(null) is [" << neutchars(i, "\r\n") << "]" << endl;
 #endif
 
 }

@@ -80,7 +80,8 @@ extern string escapeHtml(const string &in);
 
 /** Replace some chars with spaces (ie: newline chars). This is not utf8-aware
  *  so chars should only contain ascii */
-extern string neutchars(const string &str, string chars);
+extern string neutchars(const string &str, const string &chars);
+extern void neutchars(const string &str, string& out, const string &chars);
 
 /** turn string into something that won't be expanded by a shell. In practise
  * quote with single-quotes and escape internal singlequotes */
