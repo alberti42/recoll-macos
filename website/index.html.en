@@ -48,7 +48,7 @@
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
 	<a class="important" href="download.html">1.11.4</a> 
-	(<a href="CHANGES.txt">Changes</a>).</p>
+	(<a href="CHANGES.html">Changes</a>).</p>
 
       <h2>Features: </h2>
 
@@ -57,14 +57,15 @@
 	  web server, desktop environment or exotic language necessary.</li>
 	<li>Will run on most unix-based <a
 	    href="features.html#systems">systems</a></li> 
-        <li>QT-based GUI.</li>
+        <li>Qt-based GUI. Can use either Qt 3 or Qt 4.</li>
 
-        <li>Supports most common <a
-	    href="features.html#doctypes">document types.</a></li>
+        <li>Searches most common 
+	  <a href="features.html#doctypes">document types</a>, emails and
+	    their attachments.</li>
 
         <li>Powerful query facilities, with boolean searches,
 	  phrases, proximity, wildcards, filter on file types and directory
-	  tree.</li>
+	  tree. </li>
 
         <li>Multi-language and multi-character set with Unicode based
 	  internals.</li> 
@@ -79,7 +80,7 @@
 
       <h2>News: </h2>
       <ul>
-	<li>2008-10-14 : <a href="download.html#source">1.11.0</a> is
+	<li>2008-12-22 : <a href="download.html#source">1.11.4</a> is
 	  out.</li> 
 	<li>2008-09-01 : <a href="filters/filters.html">A new
 	    filter</a> for Office Open XML formats (docx ...).</li>

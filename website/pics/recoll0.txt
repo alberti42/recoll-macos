@@ -1,1 +1,2 @@
-A result list with the mime type icons feature turned on.
+Search results.
+

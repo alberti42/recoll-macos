@@ -38,11 +38,11 @@
 	<dt><a name="systems">Supported systems</a></dt>
 	<dd><span class="application">Recoll</span> has been compiled and
 	  tested on FreeBSD, Linux, Darwin and Solaris (versions
-	  FreeBSD 5.5, Redhat 7.3, Fedora Core 5, Suse 10.1, Gentoo,
-	  Debian 3.1, Solaris 8/9, but other not too distant releases
-	  should be ok too).</dd>
+	  FreeBSD 5/6, Redhat 7/8/9, Fedora Core 5/6/7, Suse 10/11,
+	  Gentoo, Debian 3.1, Solaris 8/9/10. Other not too distant
+	  releases should be ok too).</dd>
 
-	<dd>Qt versions from 3.1</dd>
+	<dd>Qt versions from 3.1 to 4.4</dd>
 
         <dt><a name="doctypes">Document types</a></dt>
 	<dd>Supports the following document types (along with their
@@ -57,7 +57,16 @@
 
                 <li><span class="literal">html</span>.</li>
 
+                <li><span class="literal">maildir</span> and <span
+		    class="literal">mailbox</span> (<span class=
+		    "literal">Mozilla</span>, <span class=
+		    "literal">Thunderbird</span> and <span class=
+		    "literal">Evolution</span> mail ok).</li>
+
                 <li><span class="literal">OpenOffice</span>
+                files (needs <span class="command">unzip</span> command).</li>
+
+                <li><span class="literal">Microsoft Office Open XML</span>
                 files (needs <span class="command">unzip</span> command).</li>
 
                 <li><span class="literal">Abiword</span>
@@ -65,12 +74,6 @@
 
                 <li><span class="literal">Kword</span>
                 files.</li>
-
-                <li><span class="literal">maildir</span> and <span
-		    class="literal">mailbox</span> (<span class=
-		    "literal">Mozilla</span>, <span class=
-		    "literal">Thunderbird</span> and <span class=
-		    "literal">Evolution</span> mail ok).</li>
 
                 <li><span class="literal">gaim</span> log files.</li>
 
@@ -146,10 +149,14 @@
 	<dt>Other features</dt>
 	<dd>
 	  <ul>
+	    <li>Processes all email attachments.</li>
+
 	    <li>Multiple selectable databases.</li>
 
 	    <li>Powerful query facilities, with boolean searches,
 	      phrases, filter on file types and directory tree.</li>
+
+	    <li>Xesam-compatible query language.</li>
 
 	    <li>Specific file name searches with wildcards.</li>
 

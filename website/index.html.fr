@@ -69,10 +69,11 @@
 	  Unix.</li> 
 
         <li>Interface conçue avec <a href="http://www.trolltech.com">
-	    QT</a>.</li> 
+	    Qt</a>. Peut utiliser la version 3 ou 4.</li> 
 
         <li>Traite la plupart des <a href="fr/features.html#doctypes">
-	    types de document</a> courants.</li>
+	    types de document</a> courants, les messages et leurs fichiers
+	    attachés.</li>
 
         <li>Fonctions de recherche puissantes, avec expressions Booléennes,
         phrases et proximité, wildcards, filtrage sur les types de fichiers
@@ -93,8 +94,8 @@
 
       <h2>Nouvelles: </h2>
       <ul>
-	<li>2008-10-14 : la version 
-	<a href="download.html#source">1.11.0</a> vient de sortir.</li> 
+	<li>2008-12-22 : la version 
+	<a href="download.html#source">1.11.4</a> vient de sortir.</li> 
 
 	<li>2008-09-01 : <a href="filters/filters.html">Un nouveau
 	    filtre</a> pour les formats Office Open XML (docx ...).</li>

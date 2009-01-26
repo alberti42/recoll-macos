@@ -49,42 +49,45 @@
 	<li> When Recoll is built with qt 4.4.0, the icons in the
 	  result list are all displayed at the top of the page and
 	  garbled. This appears to be a qt bug, fixed in 4.4.1. Use
-	  either qt 4.3.x or 4.4.1
+	  either qt 4.3.x or 4.4.1</li>
 
 	<li> If the user-chosen result list entry format results in
 	  several paragraphs (in the qt textedit sense), right clicks
-	  will only work inside the first one for each entry.
-
-	  <li>The "Copy file name" and "Copy URL" entries of the
-	  right-click menus only copy the data to the X11 primary
-	  selection (use middle-button click to paste). This is
-	  probably a mistake, the data should be copied to the
-	  clipboard too (permitting the use of the "Paste" edit menu
-	  entry or Ctrl+V in the target).
+	  will only work inside the first one for each entry.</li>
 
 	<li> When a mime type has an external viewer defined, but the
 	  actual file is compressed (ie: xxx.txt.gz), recoll will try
 	  to start the external viewer on the compressed file, which
-	  will not work in most cases.
+	  will not work in most cases.</li>
 
-	<li> NEAR crashes: 1.6 has added NEAR searches. Unlike what
-	  recoll did with PHRASES, stemming expansion is performed on
-	  terms inside NEAR clauses (except if prevented by a
-	  capitalized entry of course). There is a bug in Xapian (all
-	  versions as far as I know), where NEAR does not support
-	  multiple OR subclauses, as would result from a multiple
-	  expansion. This manifests itself by a 'not implemented'
-	  Xapian exception. Workarounds:
+	<li>NEAR expansion errors: recoll performs stemming expansion
+	  inside NEAR clauses (except if prevented by a capitalized
+	  entry). Because of a Xapian bug (at least up to 1.0.10),
+	  NEAR does not support multiple OR subclauses. This manifests
+	  itself by a 'not implemented' Xapian exception or an
+	  explicit error message. Workarounds:
 	  <ul>
 	    <li>Prevent expansion of NEAR terms (possibly except one) by
               capitalizing them.
 
 	    <li>Or apply the following patch to xapian, inside the
-              "api/" directory: 
-              http://www.recoll.org/xapian/xapNearDistrib-1.0.patch
-              or fetch the already patched source:
-	      http://www.recoll.org/xapian/xapian-core-1.0.7-recollNEARpatch.tar.gz
-              then recompile, and install.
+              "api/" directory:<br>
+	      0.x versions:
+              <a href="xapian/xapNearDistrib-0.x.patch">
+		xapian/xapNearDistrib-0.x.patch</a>
+	      <br>
+	      1.0.[0-9]:
+              <a href="xapian/xapNearDistrib-1.0.0_9.patch">
+		xapian/xapNearDistrib-1.0.0_9.patch</a>
+	      <br>
+	      1.0.10:
+              <a href="xapian/xapNearDistrib-1.0.10.patch">
+		xapian/xapNearDistrib-1.0.10.patch</a>
+	      <br>
+
+              or fetch the already patched source from
+	      <a href="xapian/">xapian/</a>
+	      then recompile, and install. 
 	    </li>
 	  </ul>
 
@@ -97,7 +100,7 @@
 	  instance, try changing the result list font in the query
 	  preferences. This is not a recoll problem, I don't know the
 	  exact cause (I've seen it happen with "Sans Serif" and go
-	  away with Helvetica or Arial).
+	  away with Helvetica or Arial).</li>
 
 	<li> Under some versions of KDE (ie: Fedora FC5 KDE
 	  3.5.4-0.5.fc5), there is a problem with the window stacking
@@ -106,13 +109,27 @@
 	  window, possibly making it invisible. This is quite probably
 	  a Kwin bug, possibly related to
 	  http://bugs.kde.org/show_bug.cgi?id=79183 or a correction
-	  thereof.
+	  thereof.</li>
 
 	<li> Under Solaris, it is necessary to perform initial indexing with the
 	  recollindex program (the recoll index thread doesn't work for creating
 	  the database). Don't know the reason. Only idea I have is problem with
 	  exception handling (recoll catches an exception while trying the
 	  yet inexistant db).</li>
+	
+	<li>The default filter for files in microsoft word format
+	  (application/msword, .doc), antiword, has trouble with some
+	  relatively rare files with a very small text, resulting in the
+	  following error message:
+	  <blockquote>
+  	     I'm afraid the text stream of this file is too small to
+  	     handle.
+	  </blockquote>
+	  Only small files produced by Microsoft Word on a Mac, or by
+	  OpenOffice will trigger this message. As a workaround, install
+	  wvWare and modify mimeconf to use the rcldoc filter, which
+	  will use vwWare if it is available. This will result in
+	  slower indexing for doc files.</li>
       </ul>
 
       <h2><a name="b_1_11_1">1.11.1</a></h2>
@@ -137,6 +154,13 @@
 	  before the OR part and check the resulting query: 
 	      "champagne bogusxyztv ext:odt OR ext:sxw OR ext:lyx"
 	</li>
+	<li>The "Copy file name" and "Copy URL" entries of the
+	  right-click menus only copy the data to the X11 primary
+	  selection (use middle-button click to paste). This is
+	  probably a mistake, the data should be copied to the
+	  clipboard too (permitting the use of the "Paste" edit menu
+	  entry or Ctrl+V in the target).</li>
+
       </ul>
 
       <h2>1.10.6</h2>
