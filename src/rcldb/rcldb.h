@@ -243,9 +243,6 @@ private:
     Db& operator=(const Db &) {return *this;};
 };
 
-// Unaccent and lowercase data.
-extern bool dumb_string(const string &in, string &out);
-
 #ifndef NO_NAMESPACES
 }
 #endif // NO_NAMESPACES

@@ -42,6 +42,7 @@ using std::set;
 #include "smallut.h"
 #include "plaintorich.h"
 #include "cancelcheck.h"
+#include "unacpp.h"
 
 const string PlainToRich::snull = "";
 
@@ -84,7 +85,10 @@ class myTextSplitCB : public TextSplitCB {
     // Callback called by the text-to-words breaker for each word
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
 	string dumb;
-	Rcl::dumb_string(term, dumb);
+	if (!unacmaybefold(term, dumb, "UTF-8", true)) {
+	    LOGINFO(("PlainToRich::splitter::takeword: unac failed for [%s]\n", term.c_str()));
+	    return true;
+	}
 	//LOGDEB2(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
 	// pos, bts, bte));
 

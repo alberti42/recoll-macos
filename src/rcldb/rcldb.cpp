@@ -784,27 +784,33 @@ private:
 };
 
 // Callback for the document to word splitting class during indexation
-bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
+bool mySplitterCB::takeword(const std::string &_term, int pos, int, int)
 {
 #if 0
-    LOGDEB(("mySplitterCB::takeword:splitCb: [%s]\n", term.c_str()));
-    string printable;
-    if (transcode(term, printable, "UTF-8", "ISO-8859-1")) {
-	LOGDEB(("                                [%s]\n", printable.c_str()));
-    }
+    LOGDEB(("mySplitterCB::takeword:splitCb: [%s]\n", _term.c_str()));
 #endif
+    string term;
+    if (!unacmaybefold(_term, term, "UTF-8", true)) {
+	LOGINFO(("Db::splitter::takeword: unac failed for [%s]\n", _term.c_str()));
+	term.clear();
+	// We don't generate a fatal error because of a bad term
+	return true;
+    }
 
+    if (stops.hasStops() && stops.isStop(term)) {
+	LOGDEB1(("Db: takeword [%s] in stop list\n", term.c_str()));
+	return true;
+    }
+
+    // Compute absolute position (pos is relative to current segment),
+    // and remember relative.
+    curpos = pos;
+    pos += basepos;
     string ermsg;
     try {
-	if (stops.hasStops() && stops.isStop(term)) {
-	    LOGDEB1(("Db: takeword [%s] in stop list\n", term.c_str()));
-	    return true;
-	}
 	// Note: 1 is the within document frequency increment. It would 
 	// be possible to assign different weigths to doc parts (ie title)
 	// by using a higher value
-	curpos = pos;
-	pos += basepos;
 	doc.add_posting(term, pos, 1);
 	if (!prefix.empty()) {
 	    doc.add_posting(prefix + term, pos, 1);
@@ -813,28 +819,6 @@ bool mySplitterCB::takeword(const std::string &term, int pos, int, int)
     } XCATCHERROR(ermsg);
     LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
     return false;
-}
-
-// Unaccent and lowercase data, replace \n\r with spaces
-// Removing crlfs is so that we can use the text in the document data fields.
-// Use unac (with folding extension) for removing accents and casefolding
-//
-// Note that we always return true (but set out to "" on error). We don't
-// want to stop indexation because of a bad string
-bool dumb_string(const string &in, string &out)
-{
-    out.clear();
-    if (in.empty())
-	return true;
-
-    string s1 = neutchars(in, "\n\r");
-    if (!unacmaybefold(s1, out, "UTF-8", true)) {
-	LOGINFO(("dumb_string: unac failed for [%s]\n", in.c_str()));
-	out.clear();
-	// See comment at start of func
-	return true;
-    }
-    return true;
 }
 
 // Let our user set the parameters for abstract processing
@@ -891,14 +875,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     Xapian::Document newdocument;
     mySplitterCB splitData(newdocument, m_stops);
     TextSplit splitter(&splitData);
-    string noacc;
 
     // Split and index file name as document term(s)
     LOGDEB2(("Db::add: split file name [%s]\n", fn.c_str()));
-    if (dumb_string(doc.utf8fn, noacc)) {
-	splitter.text_to_words(noacc);
-	splitData.basepos += splitData.curpos + 100;
-    }
+    splitter.text_to_words(doc.utf8fn);
+    splitData.basepos += splitData.curpos + 100;
 
     // Index textual metadata.  These are all indexed as text with
     // positions, as we may want to do phrase searches with them (this
@@ -918,12 +899,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	    LOGDEB0(("Db::add: field [%s] pfx [%s]: [%s]\n", 
 		    meta_it->first.c_str(), pfx.c_str(), 
 		    meta_it->second.c_str()));
-	    if (!dumb_string(meta_it->second, noacc)) {
-		LOGERR(("Db::add: dumb_string failed\n"));
-		return false;
-	    }
 	    splitData.setprefix(pfx); // Subject
-	    splitter.text_to_words(noacc);
+	    splitter.text_to_words(meta_it->second);
 	    splitData.setprefix(string());
 	    splitData.basepos += splitData.curpos + 100;
 	}
@@ -936,31 +913,28 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 
     // Split and index body text
     LOGDEB2(("Db::add: split body\n"));
-    if (!dumb_string(doc.text, noacc)) {
-	LOGERR(("Db::add: dumb_string failed\n"));
-	return false;
-    }
-    splitter.text_to_words(noacc);
+    splitter.text_to_words(doc.text);
 
     ////// Special terms for other metadata. No positions for these.
     // Mime type
     newdocument.add_term("T" + doc.mimetype);
 
-    // Simple file name. This is used for file name searches only. We index
-    // it with a term prefix. utf8fn used to be the full path, but it's now
-    // the simple file name.
+    // Simple file name indexed for file name searches with a term prefix
     // We also add a term for the filename extension if any.
-    if (dumb_string(doc.utf8fn, noacc) && !noacc.empty()) {
-	// We should truncate after extracting the extension, but this is
-	// a pathological case anyway
-	if (noacc.size() > 230)
-	    utf8truncate(noacc, 230);
-	string::size_type pos = noacc.rfind('.');
-	if (pos != string::npos && pos != noacc.length() -1) {
-	    newdocument.add_term(string("XE") + noacc.substr(pos+1));
+    if (!doc.utf8fn.empty()) {
+	string fn;
+	if (unacmaybefold(doc.utf8fn, fn, "UTF-8", true)) {
+	    // We should truncate after extracting the extension, but this is
+	    // a pathological case anyway
+	    if (fn.size() > 230)
+		utf8truncate(fn, 230);
+	    string::size_type pos = fn.rfind('.');
+	    if (pos != string::npos && pos != fn.length() - 1) {
+		newdocument.add_term(string("XE") + fn.substr(pos + 1));
+	    }
+	    fn = string("XSFN") + fn;
+	    newdocument.add_term(fn);
 	}
-	noacc = string("XSFN") + noacc;
-	newdocument.add_term(noacc);
     }
 
     // Udi unique term: this is used for file existence/uptodate
@@ -1329,7 +1303,10 @@ bool Db::purgeFile(const string &udi)
 bool Db::filenameWildExp(const string& fnexp, list<string>& names)
 {
     string pattern;
-    dumb_string(fnexp, pattern);
+    if (!unacmaybefold(fnexp, pattern, "UTF-8", true)) {
+	LOGERR(("Db::filenameWildExp: unac error for [%s]\n", fnexp.c_str()));
+	return false;
+    }
     names.clear();
 
     // If pattern is not quoted, and has no wildcards, we add * at
@@ -1415,7 +1392,10 @@ bool Db::termMatch(MatchType typ, const string &lang,
 
     // Get rid of capitals and accents
     string droot;
-    dumb_string(root, droot);
+    if (!unacmaybefold(root, droot, "UTF-8", true)) {
+	LOGERR(("Db::termMatch: unac failed for [%s]\n", root.c_str()));
+	return false;
+    }
     string nochars = typ == ET_WILD ? wildSpecChars : regSpecChars;
 
     string prefix;

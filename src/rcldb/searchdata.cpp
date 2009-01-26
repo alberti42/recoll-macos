@@ -183,17 +183,39 @@ class wsQData : public TextSplitCB {
     wsQData(const StopList &_stops) 
 	: stops(_stops), alltermcount(0)
     {}
-    vector<string> terms;
-    bool takeword(const std::string &term, int , int, int) {
+    bool takeword(const std::string &interm, int , int, int) {
 	alltermcount++;
-	LOGDEB1(("wsQData::takeword: %s\n", term.c_str()));
-	if (stops.hasStops() && stops.isStop(term)) {
-	    LOGDEB1(("wsQData::takeword [%s] in stop list\n", term.c_str()));
+	LOGDEB1(("wsQData::takeword: %s\n", interm.c_str()));
+
+	// Check if the first letter is a majuscule in which
+	// case we do not want to do stem expansion. Note that
+	// the test is convoluted and possibly problematic
+	string noacterm, noaclowterm;
+	if (!unacmaybefold(interm, noacterm, "UTF-8", false)) {
+	    LOGINFO(("SearchData::splitter::takeword: unac failed for [%s]\n", interm.c_str()));
+	    return true;
+	} 
+	if (!unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
+	    LOGINFO(("SearchData::splitter::takeword: unac failed for [%s]\n", noacterm.c_str()));
 	    return true;
 	}
-	terms.push_back(term);
+	bool nostemexp = false;
+	Utf8Iter it1(noacterm);
+	Utf8Iter it2(noaclowterm);
+	if (*it1 != *it2)
+	    nostemexp = true;
+
+	if (stops.hasStops() && stops.isStop(noaclowterm)) {
+	    LOGDEB1(("wsQData::takeword [%s] in stop list\n", noaclowterm.c_str()));
+	    return true;
+	}
+	terms.push_back(noaclowterm);
+	nostemexps.push_back(nostemexp);
 	return true;
     }
+
+    vector<string> terms;
+    vector<bool>   nostemexps;
     const StopList &stops;
     // Count of terms including stopwords: this is for adjusting
     // phrase/near slack
@@ -232,7 +254,7 @@ private:
     void expandTerm(bool dont, const string& term, list<string>& exp, 
 		      string& sterm);
     // After splitting entry on whitespace: process non-phrase element
-    void processSimpleSpan(const string& span, list<Xapian::Query> &pqueries);
+    void processSimpleSpan(const string& span, bool nostemexp, list<Xapian::Query> &pqueries);
     // Process phrase/near element
     void processPhraseOrNear(wsQData *splitData, 
 			     list<Xapian::Query> &pqueries,
@@ -279,18 +301,6 @@ void StringToXapianQ::expandTerm(bool nostemexp,
 	nostemexp = true;
 
     if (!nostemexp) {
-	// Check if the first letter is a majuscule in which
-	// case we do not want to do stem expansion. Note that
-	// the test is convoluted and possibly problematic
-
-	string noacterm, noaclowterm;
-	if (unacmaybefold(term, noacterm, "UTF-8", false) &&
-	    unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
-	    Utf8Iter it1(noacterm);
-	    Utf8Iter it2(noaclowterm);
-	    if (*it1 != *it2)
-		nostemexp = true;
-	}
     }
 
     if (nostemexp && !haswild) {
@@ -356,12 +366,12 @@ static void addPrefix(list<string>& terms, const string& prefix)
 	it->insert(0, prefix);
 }
 
-void StringToXapianQ::processSimpleSpan(const string& span, 
+void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
 					list<Xapian::Query> &pqueries)
 {
     list<string> exp;  
     string sterm; // dumb version of user term
-    expandTerm(false, span, exp, sterm);
+    expandTerm(nostemexp, span, exp, sterm);
     m_terms.insert(m_terms.end(), exp.begin(), exp.end());
     addPrefix(exp, m_prefix);
     // Push either term or OR of stem-expanded set
@@ -396,12 +406,13 @@ void StringToXapianQ::processPhraseOrNear(wsQData *splitData,
     vector<vector<string> >groups;
 
     // Go through the list and perform stem/wildcard expansion for each element
+    vector<bool>::iterator nxit = splitData->nostemexps.begin();
     for (vector<string>::iterator it = splitData->terms.begin();
-	 it != splitData->terms.end(); it++) {
+	 it != splitData->terms.end(); it++, nxit++) {
 	// Adjust when we do stem expansion. Not inside phrases, and
 	// some versions of xapian will accept only one OR clause
 	// inside NEAR, all others must be leafs.
-	bool nostemexp = (op == Xapian::Query::OP_PHRASE) || hadmultiple;
+	bool nostemexp = *nxit || (op == Xapian::Query::OP_PHRASE) || hadmultiple;
 
 	string sterm;
 	list<string>exp;
@@ -434,7 +445,10 @@ void StringToXapianQ::processPhraseOrNear(wsQData *splitData,
 
 /** 
  * Turn user entry string (NOT query language) into a list of xapian queries.
- * We just separate words and phrases, and do wildcard and stemp expansion,
+ * We just separate words and phrases, and do wildcard and stem expansion,
+ *
+ * This is used to process data entered into an OR/AND/NEAR/PHRASE field of
+ * the GUI.
  *
  * The final list contains one query for each term or phrase
  *   - Elements corresponding to a stem-expanded part are an OP_OR
@@ -444,7 +458,7 @@ void StringToXapianQ::processPhraseOrNear(wsQData *splitData,
  * @return the subquery count (either or'd stem-expanded terms or phrase word
  *   count)
  */
-bool StringToXapianQ::processUserString(const string &_iq,
+bool StringToXapianQ::processUserString(const string &iq,
 					string &ermsg,
 					list<Xapian::Query> &pqueries,
 					const StopList& stops,
@@ -452,25 +466,18 @@ bool StringToXapianQ::processUserString(const string &_iq,
 					bool useNear
 					)
 {
-    LOGDEB(("StringToXapianQ:: query string: [%s]\n", _iq.c_str()));
+    LOGDEB(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
     ermsg.erase();
     m_terms.clear();
     m_groups.clear();
 
-    // First unaccent/normalize the input: do it first so that it
-    // happens in the same order as when indexing: unac then split. As
-    // the character count can change during normalisation, this is
-    // specially important for cjk because the artificial cjk split is
-    // based on character counts
-    string iq;
-    dumb_string(_iq, iq);
-
     // Simple whitespace-split input into user-level words and
-    // double-quoted phrases: word1 word2 "this is a phrase". The text
-    // splitter may further still decide that the resulting "words"
-    // are really phrases, this depends on separators: [paul@dom.net]
-    // would still be a word (span), but [about:me] will probably be
-    // handled as a phrase.
+    // double-quoted phrases: word1 word2 "this is a phrase". 
+    //
+    // The text splitter may further still decide that the resulting
+    // "words" are really phrases, this depends on separators:
+    // [paul@dom.net] would still be a word (span), but [about:me]
+    // will probably be handled as a phrase.
     list<string> phrases;
     TextSplit::stringToStrings(iq, phrases);
 
@@ -516,7 +523,7 @@ bool StringToXapianQ::processUserString(const string &_iq,
 	    case 0: 
 		continue;// ??
 	    case 1: 
-		processSimpleSpan(splitData->terms.front(), pqueries);
+		processSimpleSpan(splitData->terms.front(), splitData->nostemexps.front(), pqueries);
 		break;
 	    default:
 		processPhraseOrNear(splitData, pqueries, useNear, slack);
