@@ -6,7 +6,8 @@ topdir=`dirname $0`/..
 initvariables $0
 
 # check indexing of an empty directory name
-recollq EmptyUniqueTerm > $mystdout 2> $mystderr
+recollq EmptyUniqueTerm 2> $mystderr | 
+	egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 

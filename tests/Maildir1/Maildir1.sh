@@ -6,7 +6,8 @@ topdir=`dirname $0`/..
 initvariables $0
 
 # This is supposed to find an html attachment
-recollq '"EMI is releasing albums for download"' > $mystdout 2> $mystderr
+recollq '"EMI is releasing albums for download"' 2> $mystderr | 
+	egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 

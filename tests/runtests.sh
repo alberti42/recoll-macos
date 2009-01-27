@@ -7,6 +7,8 @@ fi
 
 . shared.sh
 
+recollindex -z
+
 # Yes, we could/should use the $toptmp from shared.sh here, but what if
 # this is unset ?
 toptmp=${TMPDIR:-/tmp}/recolltsttmp

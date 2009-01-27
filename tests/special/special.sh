@@ -5,12 +5,21 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq uppercase_uniqueterm  > $mystdout 2> $mystderr
+# Needs utf-8 locale
+LANG=en_US.UTF-8
+export LANG
+
+recollq uppercase_uniqueterm 2> $mystderr | 
+	egrep -v '^Recoll query: ' > $mystdout
 # The term is the lowercase utf8 version of the term in casefolding.txt
-recollq 'àstrangewordþ'         >> $mystdout 2>> $mystderr
-recollq '"Modernite/efficience/pertinence"' >> $mystdout 2>> $mystderr
-recollq  dom.popup_allowed_events    >> $mystdout 2>> $mystderr
-recollq  toto@jean-23.fr   >> $mystdout 2>> $mystderr
+recollq 'àstrangewordþ'          2>> $mystderr | 
+	egrep -v '^Recoll query: ' >> $mystdout
+recollq '"Modernite/efficience/pertinence"'  2>> $mystderr | 
+	egrep -v '^Recoll query: ' >> $mystdout
+recollq  dom.popup_allowed_events     2>> $mystderr | 
+	egrep -v '^Recoll query: ' >> $mystdout
+recollq  toto@jean-23.fr    2>> $mystderr | 
+	egrep -v '^Recoll query: ' >> $mystdout
 
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1

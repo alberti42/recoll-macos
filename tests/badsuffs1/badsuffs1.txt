@@ -1,4 +1,3 @@
-Recoll query: (badsufffilename:(wqf=11))
 6 results
 	[file:///home/dockes/projets/fulltext/testrecoll/badsuffs/badsufffilename.log.gz]	[badsufffilename.log.gz]	19	bytes	
 	[file:///home/dockes/projets/fulltext/testrecoll/badsuffs/badsufffilename.md5]	[badsufffilename.md5]	19	bytes	

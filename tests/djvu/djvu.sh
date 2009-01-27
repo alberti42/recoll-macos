@@ -5,7 +5,8 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq aharonov algorithm neural> $mystdout 2> $mystderr
+recollq aharonov algorithm neural 2> $mystderr | 
+	egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 

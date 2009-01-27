@@ -1,10 +1,6 @@
-Recoll query: (enerveuniquenameterm:(wqf=11))
-0 results 
-Recoll query: (enerveuniquefilenameterm:(wqf=11))
-0 results 
-Recoll query: (epatantuniquenameterm:(wqf=11))
-0 results 
-Recoll query: (epatantuniquefilenameterm:(wqf=11))
-2 results 
-application/octet-stream	[file:///home/dockes/projets/fulltext/testrecoll/rfc2231/thunder]	[épatantuniquefilenameterm.bin]	42579	bytes	
+0 results
+0 results
+0 results
+2 results
 message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/rfc2231/thunder]	[vrai attach]	42579	bytes	
+application/octet-stream	[file:///home/dockes/projets/fulltext/testrecoll/rfc2231/thunder]	[épatantuniquefilenameterm.bin]	42579	bytes	

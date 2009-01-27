@@ -1,3 +1,2 @@
-Recoll query: ((emi PHRASE 6 is PHRASE 6 releasing PHRASE 6 albums PHRASE 6 for PHRASE 6 download))
 1 results 
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/Maildir/a.tager/cur/1134632779.000001.mbox:2,S]	[00/05/05 - Mix&Match Meeting in the Zydeco room]	10825	bytes	

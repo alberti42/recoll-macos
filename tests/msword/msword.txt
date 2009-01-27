@@ -1,3 +1,2 @@
-Recoll query: ((evenements PHRASE 4 et PHRASE 4 programme PHRASE 4 2006))
 1 results 
 application/msword	[file:///home/dockes/projets/fulltext/testrecoll/msword/programme.doc]	[programme.doc]	58880	bytes	

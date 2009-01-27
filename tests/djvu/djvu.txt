@@ -1,3 +1,2 @@
-Recoll query: ((aharonov:(wqf=11) AND (algorithm:(wqf=11) OR algorithms OR algorithmic OR algorithme) AND neural:(wqf=11)))
 1 results 
 image/vnd.djvu	[file:///home/dockes/projets/fulltext/testrecoll/djvu/Aharonov-BarkiMeilijsonRuppin.djvu]	[Who Does What? A Novel Algorithm to Determine Function Localization]	74911	bytes	

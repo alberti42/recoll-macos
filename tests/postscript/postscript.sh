@@ -5,7 +5,8 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq '"Udi Manber and Sun Wu"' > $mystdout 2> $mystderr
+recollq '"Udi Manber and Sun Wu"' 2> $mystderr | 
+	egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 

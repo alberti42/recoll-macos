@@ -6,7 +6,8 @@ topdir=`dirname $0`/..
 initvariables $0
 
 # File names for files with skipped suffixes should be indexed
-recollq Badsufffilename > $mystdout 2> $mystderr
+recollq Badsufffilename 2> $mystderr | 
+	egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 

@@ -1,3 +1,2 @@
-Recoll query: (dirwithblanksunique:(wqf=11))
 1 results 
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/dir with blanks/dwb.txt]	[dwb.txt]	20	bytes	

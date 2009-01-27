@@ -1,6 +1,4 @@
-Recoll query: (enerve_uniqueterm:(wqf=11))
 1 results 
 application/x-empty	[file:///home/dockes/projets/fulltext/testrecoll/notypes/énervé_uniqueTerm.xfy]	[Ã©nervÃ©_uniqueTerm.xfy]	0	bytes	
-Recoll query: (notype1_uniqueterm:(wqf=11))
 1 results 
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/notypes/notype1.xfx]	[notype1.xfx]	64	bytes	

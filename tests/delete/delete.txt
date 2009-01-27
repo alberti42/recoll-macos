@@ -1,5 +1,3 @@
-Recoll query: (deletedfileunique:(wqf=11))
 1 results 
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/delete/tobedeleted.txt]	[tobedeleted.txt]	18	bytes	
-Recoll query: (deletedfileunique:(wqf=11))
 0 results 

@@ -1,10 +1,7 @@
-Recoll query: (qmapconstiterator:(wqf=11))
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/qtl.html]	[Qt Template Library Classes]	2817	bytes	
-Recoll query: ((qtextedit:(wqf=11) AND widget:(wqf=11) AND provides:(wqf=11) AND powerful:(wqf=11) AND single-page:(wqf=11)))
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/qtextedit.html]	[QTextEdit Class]	108921	bytes	
-Recoll query: ((this PHRASE 6 is PHRASE 6 the PHRASE 6 mysql PHRASE 6 reference PHRASE 6 manual))
 2 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/mysqlmanualSmall.html]	[MySQL 3.23, 4.0, 4.1 Reference Manual]	1480354	bytes	
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/mysqlmanual.html]	[MySQL 3.23, 4.0, 4.1 Reference Manual]	8136414	bytes	

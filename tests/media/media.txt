@@ -1,3 +1,2 @@
-Recoll query: (maldon:(wqf=11))
-1 results 
-audio/mpeg	[file:///home/dockes/projets/fulltext/testrecoll/media/11-maldon.mp3]	[11-maldon.mp3]	5717570	bytes	
+1 results
+audio/mpeg	[file:///home/dockes/projets/fulltext/testrecoll/media/11-maldon.mp3]	[Maldon]	5717570	bytes	

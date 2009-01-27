@@ -1,3 +1,2 @@
-Recoll query: (openofficewriter_uniqueterm:(wqf=11))
 1 results
 application/vnd.sun.xml.writer	[file:///home/dockes/projets/fulltext/testrecoll/ooff/writer.odt]	[Ceci est le titre du document openoffice élément <> "toto"]	6637	bytes	

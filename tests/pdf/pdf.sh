@@ -5,7 +5,8 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq '"sequences of moveto and lineto"' OR 'ANSIX3.4' > $mystdout 2> $mystderr
+recollq '"sequences of moveto and lineto"' OR 'ANSIX3.4' 2> $mystderr | 
+	egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 
