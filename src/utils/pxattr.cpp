@@ -38,7 +38,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/extattr.h>
 #include <sys/uio.h>
 #elif defined(__gnu_linux__)
-#include <attr/xattr.h>
+#include <sys/xattr.h>
 #elif defined(__APPLE__)
 #include <sys/xattr.h>
 #else
