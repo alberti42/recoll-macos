@@ -201,15 +201,17 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
  * @return true if ok, false for error. Splitting should stop in this case.
  * @param spanerase Set if the current span is at its end. Reset it.
  * @param bp        The current BYTE position in the stream
+ * @param spanemit  This is set for intermediate spans: glue char changed.
  */
-inline bool TextSplit::doemit(bool spanerase, int bp)
+inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 {
     LOGDEB3(("TextSplit::doemit:spn [%s] sp %d wrdS %d wrdL %d spe %d bp %d\n",
 	     span.c_str(), spanpos, wordStart, wordLen, spanerase, bp));
 
     // Emit span. When splitting for query, we only emit final spans
     bool spanemitted = false;
-    if (spanerase && !(m_flags & TXTS_NOSPANS)) {
+    if (!(m_flags & TXTS_NOSPANS) && 
+	((spanemit && !(m_flags & TXTS_ONLYSPANS)) || spanerase) ) {
 	// Maybe trim at end. These are chars that we would keep inside 
 	// a span, but not at the end
 	while (m_span.length() > 0) {
@@ -274,6 +276,7 @@ bool TextSplit::text_to_words(const string &in)
     m_span.erase();
     m_inNumber = false;
     m_wordStart = m_wordLen = m_prevpos = m_prevlen = m_wordpos = m_spanpos = 0;
+    int curspanglue = 0;
 
     Utf8Iter it(in);
 
@@ -319,6 +322,7 @@ bool TextSplit::text_to_words(const string &in)
 
 	case SPACE:
 	SPACE:
+	    curspanglue = 0;
 	    if (m_wordLen || m_span.length()) {
 		if (!doemit(true, it.getBpos()))
 		    return false;
@@ -340,9 +344,11 @@ bool TextSplit::text_to_words(const string &in)
 		} else {
 		    m_wordStart += it.appendchartostring(m_span);
 		}
+		curspanglue = cc;
 	    } else {
 		if (!doemit(false, it.getBpos()))
 		    return false;
+		curspanglue = cc;
 		m_inNumber = false;
 		m_wordStart += it.appendchartostring(m_span);
 	    }
@@ -354,6 +360,7 @@ bool TextSplit::text_to_words(const string &in)
 		if (whatcc(it[it.getCpos()+1]) != DIGIT)
 		    goto SPACE;
 		m_wordLen += it.appendchartostring(m_span);
+		curspanglue = cc;
 		break;
 	    } else {
 		// If . inside a word, keep it, else, this is whitespace. 
@@ -364,8 +371,13 @@ bool TextSplit::text_to_words(const string &in)
 		// A final comma in a word will be removed by doemit
 		if (cc == '.') {
 		    if (m_wordLen) {
-			if (!doemit(false, it.getBpos()))
+			// Disputable special case: set spanemit to
+			// true when encountering a '.' while spanglue is '_'. Think of
+			// a_b.c Done because to avoid breaking stuff after changing
+			// '_' from wordchar to spanglue
+			if (!doemit(false, it.getBpos(), curspanglue == '_'))
 			    return false;
+			curspanglue = cc;
 			// span length could have been adjusted by trimming
 			// inside doemit
 			if (m_span.length())
@@ -373,6 +385,7 @@ bool TextSplit::text_to_words(const string &in)
 			break;
 		    } else {
 			m_wordStart += it.appendchartostring(m_span);
+			curspanglue = cc;
 			break;
 		    }
 		}
@@ -383,6 +396,7 @@ bool TextSplit::text_to_words(const string &in)
 	    if (m_wordLen) {
 		if (!doemit(false, it.getBpos()))
 		    return false;
+		curspanglue = cc;
 		m_inNumber = false;
 	    }
 	    m_wordStart += it.appendchartostring(m_span);
@@ -391,6 +405,7 @@ bool TextSplit::text_to_words(const string &in)
 	    if (m_wordLen) {
 		if (!doemit(false, it.getBpos()))
 		    return false;
+		curspanglue = cc;
 		m_inNumber = false;
 	    }
 	    m_wordStart += it.appendchartostring(m_span);
@@ -401,6 +416,7 @@ bool TextSplit::text_to_words(const string &in)
 	    if (m_wordLen) {
 		if (!doemit(false, it.getBpos()))
 		    return false;
+		curspanglue = cc;
 		m_inNumber = false;
 		m_wordStart += it.appendchartostring(m_span);
 	    }

@@ -129,7 +129,7 @@ private:
     bool cjk_to_words(Utf8Iter *it, unsigned int *cp);
 
     bool emitterm(bool isspan, string &term, int pos, int bs, int be);
-    bool doemit(bool spanerase, int bp);
+    bool doemit(bool spanerase, int bp, bool spanemit=false);
 };
 
 
