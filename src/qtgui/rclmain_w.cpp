@@ -939,7 +939,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     string url;
     rclconfig->setKeyDir(path_getfather(fn));
     if (doc.ipath.empty() || wantsipath) {
-	url = url_encode(doc.url, 7);
+	url = doc.url;
     } else {
 	// There is an ipath and the command does not know about
 	// them. We need a temp file.
