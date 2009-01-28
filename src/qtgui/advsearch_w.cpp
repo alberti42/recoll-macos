@@ -25,13 +25,16 @@ static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.21 2008-09-25 06:00:24 dockes
 #include <qlineedit.h>
 #include <qframe.h>
 #include <qcheckbox.h>
+#include <qevent.h>
 
 #if (QT_VERSION < 0x040000)
 #include <qcombobox.h>
 #include <qlistbox.h>
+#define Q34EVOVERRIDE QEvent::AccelOverride
 #else
 #include <q3combobox.h>
 #include <q3listbox.h>
+#define Q34EVOVERRIDE QEvent::ShortcutOverride
 #endif
 
 #include <qlayout.h>
@@ -57,6 +60,7 @@ using std::unique;
 #include "debuglog.h"
 #include "searchdata.h"
 #include "guiutils.h"
+#include "rclhelp.h"
 
 extern RclConfig *rclconfig;
 
@@ -68,6 +72,11 @@ static map<QString,QString> cat_rtranslations;
 
 void AdvSearch::init()
 {
+    (void)new HelpClient(this);
+    HelpClient::installMap(this->name(), "RCL.SEARCH.COMPLEX");
+
+    this->installEventFilter(this);
+
     // signals and slots connections
     connect(delFiltypPB, SIGNAL(clicked()), this, SLOT(delFiltypPB_clicked()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(runSearch()));
@@ -108,6 +117,7 @@ void AdvSearch::init()
 	    }
 	}
     }
+    (*m_clauseWins.begin())->wordsLE->setFocus();
 
     // Initialize lists of accepted and ignored mime types from config
     // and settings
@@ -116,7 +126,7 @@ void AdvSearch::init()
     restrictCtCB->setEnabled(false);
     restrictCtCB->setChecked(m_ignByCats);
     fillFileTypes();
-    setHelpIndex("RCL.SEARCH.COMPLEX");
+
     subtreeCMB->insertStringList(prefs.asearchSubdirHist);
     subtreeCMB->setEditText("");
 
@@ -146,6 +156,19 @@ void AdvSearch::init()
     cat_rtranslations[tr("other")] = QString::fromUtf8("other"); 
 }
 
+bool AdvSearch::eventFilter(QObject *, QEvent *event)
+{
+    //    LOGDEB(("AdvSearch::eventFilter. Type %d\n", (int)event->type()));
+    if (event->type() == QEvent::KeyPress || event->type() == Q34EVOVERRIDE) {
+	QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+	if (ke->key() == Qt::Key_Q && (ke->state() & Qt::ControlButton)) {
+	    recollNeedsExit = 1;
+	    return true;
+	}
+    }
+    return false;
+}
+
 void AdvSearch::saveCnf()
 {
     // Save my state
@@ -158,7 +181,6 @@ void AdvSearch::saveCnf()
 
 bool AdvSearch::close()
 {
-    setHelpIndex("RCL.SEARCH.SIMPLE");
     saveCnf();
     return QWidget::close();
 }

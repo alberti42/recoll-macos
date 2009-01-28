@@ -84,6 +84,7 @@ public slots:
     virtual void showAboutDialog();
     virtual void showMissingHelpers();
     virtual void startManual();
+    virtual void startManual(const string&);
     virtual void showDocHistory();
     virtual void showExtIdxDialog();
     virtual void showUIPrefs();

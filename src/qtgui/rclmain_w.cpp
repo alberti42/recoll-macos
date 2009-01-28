@@ -84,6 +84,7 @@ using std::pair;
 using namespace confgui;
 
 #include "rclmain_w.h"
+#include "rclhelp.h"
 #include "moc_rclmain_w.cpp"
 
 extern "C" int XFlush(void *);
@@ -118,6 +119,9 @@ void RclMain::init()
     indexConfig = 0;
     spellform = 0;
     m_idxStatusAck = false;
+
+    (void)new HelpClient(this);
+    HelpClient::installMap(this->name(), "RCL.SEARCH.SIMPLE");
 
     // Set the focus to the search terms entry:
     sSearch->queryText->setFocus();
@@ -160,8 +164,6 @@ void RclMain::init()
 	}
     }
     preferencesMenu->setItemChecked(curid, true);
-
-    setHelpIndex("RCL.SEARCH.SIMPLE");
 
     // Document categories buttons
     catgBGRP->setColumnLayout(1, Qt::Vertical);
@@ -985,6 +987,11 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
 void RclMain::startManual()
 {
+    startManual(string());
+}
+
+void RclMain::startManual(const string& index)
+{
     QString msg = tr("Starting html help browser ");
     statusBar()->message(msg, 3000);
     Rcl::Doc doc;
@@ -993,10 +1000,10 @@ void RclMain::startManual()
     doc.url = path_cat(doc.url, "doc");
     doc.url = path_cat(doc.url, "usermanual.html");
     LOGDEB(("RclMain::startManual: help index is %s\n", 
-	    g_helpIndex?g_helpIndex:"(null)"));
-    if (g_helpIndex && *g_helpIndex) {
+	    index.empty()?"(null)":index.c_str()));
+    if (!index.empty()) {
 	doc.url += "#";
-	doc.url += g_helpIndex;
+	doc.url += index;
     }
     doc.mimetype = "text/html";
     startNativeViewer(doc);
@@ -1110,3 +1117,4 @@ void RclMain::catgFilter(int id)
     resList->setFilterParams(spec);
     resList->setDocSource();
 }
+

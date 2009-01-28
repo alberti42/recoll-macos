@@ -89,10 +89,11 @@ int recollNeedsExit;
 int startIndexingAfterConfig;
 RclMain *mainWindow;
 static string recollsharedir;
-const char *g_helpIndex;
-void setHelpIndex(const char *index)
+
+void startManual(const string& helpindex)
 {
-    g_helpIndex = index;
+    if (mainWindow)
+	mainWindow->startManual(helpindex);
 }
 
 bool maybeOpenDb(string &reason, bool force)

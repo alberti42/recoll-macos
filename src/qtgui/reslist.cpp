@@ -45,6 +45,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 
 #include "reslist.h"
 #include "moc_reslist.cpp"
+#include "rclhelp.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
@@ -68,6 +69,9 @@ ResList::ResList(QWidget* parent, const char* name)
     languageChange();
 
     setTabChangesFocus(true);
+
+    (void)new HelpClient(this);
+    HelpClient::installMap(this->name(), "RCL.SEARCH.RESLIST");
 
     // signals and slots connections
     connect(this, SIGNAL(linkClicked(const QString &, int)), 

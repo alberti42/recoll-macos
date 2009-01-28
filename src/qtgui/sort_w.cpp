@@ -26,7 +26,7 @@ static char rcsid[] = "@(#$Id: sort_w.cpp,v 1.7 2008-09-28 14:20:50 dockes Exp $
 #include "sortseq.h"
 #include "debuglog.h"
 #include "guiutils.h"
-
+#include "rclhelp.h"
 #include "sort_w.h"
 
 void SortForm::init()
@@ -69,6 +69,9 @@ void SortForm::init()
     spec >>= 4;
     fldCMB2->setCurrentItem(v < 3 ? v : 0);
     descCB2->setChecked(d !=0 ? true : false);
+
+    (void)new HelpClient(this);
+    HelpClient::installMap(this->name(), "RCL.SEARCH.SORT");
 
     // signals and slots connections
     connect(applyPB, SIGNAL(clicked()), this, SLOT(apply()));

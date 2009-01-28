@@ -34,8 +34,7 @@ extern Rcl::Db *rcldb;
 extern int recollNeedsExit;
 extern int startIndexingAfterConfig; // 1st startup
 extern RclHistory *g_dynconf;
-extern const char *g_helpIndex;
-extern void setHelpIndex(const char *index);
+extern void startManual(const string& helpindex);
 
 #ifdef RCL_USE_ASPELL
 class Aspell;

@@ -9,6 +9,7 @@ HEADERS	+= \
 	preview_w.h \
 	rclmain_w.h \
 	reslist.h \
+	rclhelp.h \
 	sort_w.h \
 	searchclause_w.h \
 	ssearch_w.h \
@@ -25,6 +26,7 @@ SOURCES	+= \
 	rclmain_w.cpp \
 	reslist.cpp \
         advsearch_w.cpp \
+	rclhelp.cpp \
 	spell_w.cpp \
         preview_w.cpp \
         sort_w.cpp \

@@ -44,6 +44,7 @@ static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.11 2007-02-19 16:28:05 dockes Exp
 #include "spell_w.h"
 #include "guiutils.h"
 #include "rcldb.h"
+#include "rclhelp.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -80,6 +81,9 @@ void SpellW::init()
 	    insertItem(QString::fromAscii(it->c_str(), it->length()));
     }
     stemLangCMB->setEnabled(expTypeCMB->currentItem()==2);
+
+    (void)new HelpClient(this);
+    HelpClient::installMap(this->name(), "RCL.SEARCH.TERMEXPLORER");
 
     // signals and slots connections
     connect(baseWordLE, SIGNAL(textChanged(const QString&)), 

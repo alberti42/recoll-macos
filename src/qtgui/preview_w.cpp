@@ -85,6 +85,9 @@ using std::pair;
 #define QTEXTPARAGRAPH Q3TextParagraph
 #define QTEXTSTRINGCHAR Q3TextStringChar
 #endif
+
+#include "rclhelp.h"
+
 // QTextEdit's scrollToAnchor() is supposed to make the anchor visible, but
 // actually, it only moves to the top of the paragraph containing the anchor.
 // As we only have one paragraph, this doesnt' help a lot (qt3 and qt4)
@@ -188,6 +191,9 @@ void Preview::init()
 #endif
 
     pvTab->setCornerWidget(bt);
+
+    (void)new HelpClient(this);
+    HelpClient::installMap(this->name(), "RCL.SEARCH.PREVIEW");
 
     // signals and slots connections
     connect(searchTextLine, SIGNAL(textChanged(const QString&)), 
