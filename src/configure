@@ -665,7 +665,7 @@ CXX
 CXXFLAGS
 ac_ct_CXX
 XAPIAN_CONFIG
-QMAKE
+QMAKEPATH
 UIC3
 XMKMF
 CXXCPP
@@ -677,6 +677,7 @@ INCICONV
 LIBICONV
 LIBXAPIAN
 LIBFAM
+QMAKE
 QTGUI
 QTRECOLL_DATADIR
 XAPIANCXXFLAGS
@@ -4560,28 +4561,20 @@ if test X$QTDIR != X ; then
    export PATH
 fi
 
-# MacosX stuff: we don't support this (the native search tool is more than
-# good enough), but we make things work just enough so that the program can
-# be compiled and roughly installed (not as a .app, but to /usr/local),
-# basically to enable using a Macbook for development
-if test X$sys = XDarwin ; then
-   # The defaults tends to be macx-xcode, which we cant use
-    QMAKESPEC=macx-g++
-    export QMAKESPEC
-    #QMAKESPEC_SPEC="-spec max-g++"
-    #AC_SUBST(QMAKESPEC_SPEC)
+if test X$QMAKE = X ; then
+   QMAKE=qmake
 fi
 
-# Extract the first word of "qmake", so it can be a program name with args.
-set dummy qmake; ac_word=$2
+# Extract the first word of "$QMAKE", so it can be a program name with args.
+set dummy $QMAKE; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_path_QMAKE+set}" = set; then
+if test "${ac_cv_path_QMAKEPATH+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  case $QMAKE in
+  case $QMAKEPATH in
   [\\/]* | ?:[\\/]*)
-  ac_cv_path_QMAKE="$QMAKE" # Let the user override the test with a path.
+  ac_cv_path_QMAKEPATH="$QMAKEPATH" # Let the user override the test with a path.
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
@@ -4591,7 +4584,7 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_path_QMAKE="$as_dir/$ac_word$ac_exec_ext"
+    ac_cv_path_QMAKEPATH="$as_dir/$ac_word$ac_exec_ext"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4599,29 +4592,35 @@ done
 done
 IFS=$as_save_IFS
 
-  test -z "$ac_cv_path_QMAKE" && ac_cv_path_QMAKE="NOTFOUND"
+  test -z "$ac_cv_path_QMAKEPATH" && ac_cv_path_QMAKEPATH="NOTFOUND"
   ;;
 esac
 fi
-QMAKE=$ac_cv_path_QMAKE
-if test -n "$QMAKE"; then
-  { echo "$as_me:$LINENO: result: $QMAKE" >&5
-echo "${ECHO_T}$QMAKE" >&6; }
+QMAKEPATH=$ac_cv_path_QMAKEPATH
+if test -n "$QMAKEPATH"; then
+  { echo "$as_me:$LINENO: result: $QMAKEPATH" >&5
+echo "${ECHO_T}$QMAKEPATH" >&6; }
 else
   { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
 fi
 
 
-if test X$QMAKE = XNOTFOUND ; then
+if test X$QMAKEPATH = XNOTFOUND ; then
    { { echo "$as_me:$LINENO: error: Cannot find the qmake program. Maybe you need to install
 qt development files and tools and/or set the QTDIR environment variable?" >&5
 echo "$as_me: error: Cannot find the qmake program. Maybe you need to install
 qt development files and tools and/or set the QTDIR environment variable?" >&2;}
    { (exit 1); exit 1; }; }
 fi
+QMAKE=$QMAKEPATH
 
+# MAC OS X: we don't support this (the native search tool is more than
+# good enough), but we make things work just enough so that the program can
+# be compiled and roughly installed (not as a .app, but to /usr/local),
+# basically to enable using a Macbook for development
 if test X$sys = XDarwin ; then
+   # The default is xcode
    QMAKE="${QMAKE} -spec macx-g++"
 fi
 
@@ -6974,7 +6973,7 @@ CXX!$CXX$ac_delim
 CXXFLAGS!$CXXFLAGS$ac_delim
 ac_ct_CXX!$ac_ct_CXX$ac_delim
 XAPIAN_CONFIG!$XAPIAN_CONFIG$ac_delim
-QMAKE!$QMAKE$ac_delim
+QMAKEPATH!$QMAKEPATH$ac_delim
 UIC3!$UIC3$ac_delim
 XMKMF!$XMKMF$ac_delim
 CXXCPP!$CXXCPP$ac_delim
@@ -6986,6 +6985,7 @@ INCICONV!$INCICONV$ac_delim
 LIBICONV!$LIBICONV$ac_delim
 LIBXAPIAN!$LIBXAPIAN$ac_delim
 LIBFAM!$LIBFAM$ac_delim
+QMAKE!$QMAKE$ac_delim
 QTGUI!$QTGUI$ac_delim
 QTRECOLL_DATADIR!$QTRECOLL_DATADIR$ac_delim
 XAPIANCXXFLAGS!$XAPIANCXXFLAGS$ac_delim
@@ -6994,7 +6994,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 70; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 71; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
