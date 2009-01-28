@@ -1062,10 +1062,12 @@ void RclMain::showDocHistory()
 void RclMain::eraseDocHistory()
 {
     // Clear file storage
-    g_dynconf->eraseAll(RclHistory::docSubkey);
+    if (g_dynconf)
+	g_dynconf->eraseAll(RclHistory::docSubkey);
     // Clear possibly displayed history
-    if (resList->displayingHistory())
+    if (resList->displayingHistory()) {
 	showDocHistory();
+    }
 }
 
 // Called when the uiprefs dialog is ok'd

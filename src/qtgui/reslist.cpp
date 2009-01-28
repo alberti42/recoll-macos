@@ -178,6 +178,8 @@ bool ResList::displayingHistory()
     // We want to reset the displayed history if it is currently
     // shown. Using the title value is an ugly hack
     string htstring = string((const char *)tr("Document history").utf8());
+    if (m_docSource.isNull() || m_docSource->title().empty())
+	return false;
     return m_docSource->title().find(htstring) == 0;
 }
 
