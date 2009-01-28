@@ -19,9 +19,11 @@ all: mk/sysconf common/rclversion.h
 mk/sysconf:
 	@echo "You need to run configure first" ; exit 1
 
-common/rclversion.h: VERSION
-	echo 'static const char *rclversion = "'`cat VERSION`'";' \
-	   > common/rclversion.h
+versfile=common/rclversion.h
+${versfile} : VERSION
+	echo '#include <xapian/version.h>' > ${versfile}
+	echo 'static const char *rclversion = "'`cat VERSION`'"' >> ${versfile}
+	echo '" + Xapian " XAPIAN_VERSION;' 	   >> ${versfile}
 
 static: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
