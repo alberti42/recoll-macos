@@ -376,7 +376,6 @@ void RclMain::periodic100()
     // Check if indexing thread done
     if (idxthread_getStatus() != IDXTS_NULL) {
 	// Indexing is stopped
-	statusBar()->message("");
 	fileToggleIndexingAction->setText(tr("Update &Index"));
 	fileToggleIndexingAction->setEnabled(TRUE);
 	if (m_idxStatusAck == false) {
@@ -430,7 +429,7 @@ void RclMain::periodic100()
 		mf = url_encode(status.fn, 0);
 	    }
 	    msg += QString::fromUtf8(mf.c_str());
-	    statusBar()->message(msg);
+	    statusBar()->message(msg, 4000);
 	} else if (toggle == 9) {
 	    statusBar()->message("");
 	}
@@ -992,8 +991,6 @@ void RclMain::startManual()
 
 void RclMain::startManual(const string& index)
 {
-    QString msg = tr("Starting html help browser ");
-    statusBar()->message(msg, 3000);
     Rcl::Doc doc;
     doc.url = "file://";
     doc.url = path_cat(doc.url, rclconfig->getDatadir());
