@@ -319,6 +319,7 @@ int main(int argc, char **argv)
     }
 
     mainWindow->sSearch->searchTypCMB->setCurrentItem(prefs.ssearchTyp);
+    mainWindow->sSearch->searchTypeChanged(prefs.ssearchTyp);
     string dbdir = rclconfig->getDbDir();
     if (dbdir.empty()) {
 	// Note: this will have to be replaced by a call to a

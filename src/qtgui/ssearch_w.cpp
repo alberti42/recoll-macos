@@ -35,6 +35,7 @@ static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.26 2008-12-05 11:09:31 dockes E
 #include "refcntr.h"
 #include "textsplit.h"
 #include "wasatorcl.h"
+#include "rclhelp.h"
 
 void SSearch::init()
 {
@@ -53,6 +54,7 @@ void SSearch::init()
     connect(clearqPB, SIGNAL(clicked()), 
 	    queryText->lineEdit(), SLOT(clear()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(startSimpleSearch()));
+    connect(searchTypCMB, SIGNAL(activated(int)), this, SLOT(searchTypeChanged(int)));
 
 #if QT_VERSION >= 0x040000
     queryText->installEventFilter(this);
@@ -62,7 +64,7 @@ void SSearch::init()
     m_escape = false;
 }
 
-void SSearch::searchTextChanged( const QString & text )
+void SSearch::searchTextChanged(const QString& text)
 {
     if (text.isEmpty()) {
 	searchPB->setEnabled(false);
@@ -72,6 +74,15 @@ void SSearch::searchTextChanged( const QString & text )
 	searchPB->setEnabled(true);
 	clearqPB->setEnabled(true);
     }
+}
+
+void SSearch::searchTypeChanged(int typ)
+{
+    LOGDEB(("Search type now %d\n", typ));
+    if (typ == SST_LANG)
+	HelpClient::installMap(this->name(), "RCL.SEARCH.LANG");
+    else 
+	HelpClient::installMap(this->name(), "RCL.SEARCH.SIMPLE");
 }
 
 void SSearch::startSimpleSearch()

@@ -64,6 +64,7 @@ public:
 
 public slots:
     virtual void searchTextChanged(const QString & text);
+    virtual void searchTypeChanged(int);
     virtual void setSearchString(const QString& text);
     virtual void startSimpleSearch();
 
