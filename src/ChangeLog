@@ -1,3 +1,117 @@
+2009-01-29 11:04  dockes
+
+	* VERSION: 1.12.0 une
+
+2009-01-29 10:08  dockes
+
+	* qtgui/main.cpp, qtgui/ssearch_w.cpp, qtgui/ssearch_w.h: have
+	  ssearch install the lang help section when needed
+
+2009-01-28 17:41  dockes
+
+	* qtgui/rclmain_w.cpp, qtgui/reslist.cpp: erase history would crash
+	  with empty reslist docsource
+
+2009-01-28 17:21  dockes
+
+	* qtgui/rclmain_w.cpp: fixed status bar messages (were cleared by
+	  periodic100 every 100ms)
+
+2009-01-28 17:05  dockes
+
+	* qtgui/rclhelp.cpp, qtgui/rclhelp.h: F1 context-enhanced help
+
+2009-01-28 16:56  dockes
+
+	* qt4gui/recoll.pro.in: F1 context-enhanced help
+
+2009-01-28 16:56  dockes
+
+	* qtgui/advsearch_w.cpp, qtgui/advsearch_w.h, qtgui/main.cpp,
+	  qtgui/preview_w.cpp, qtgui/rclmain_w.cpp, qtgui/rclmain_w.h,
+	  qtgui/recoll.h, qtgui/recoll.pro.in, qtgui/reslist.cpp,
+	  qtgui/sort_w.cpp, qtgui/spell_w.cpp: F1 context-enhanced help
+
+2009-01-28 14:58  dockes
+
+	* qtgui/rclmain_w.cpp: dont encode urls used for starting help
+	  browser
+
+2009-01-28 14:22  dockes
+
+	* Makefile.in: add xapian version to version string
+
+2009-01-28 08:45  dockes
+
+	* qtgui/advsearch.ui, qtgui/sort.ui, qtgui/spell.ui,
+	  qtgui/uiprefs.ui: avoid setting 0 sizes
+
+2009-01-28 08:40  dockes
+
+	* configure, configure.ac: allow setting QMAKE in the environment
+
+2009-01-27 18:12  dockes
+
+	* utils/pxattr.cpp:
+
+2009-01-27 10:25  dockes
+
+	* common/textsplit.cpp, common/textsplit.h: Emit a_b intermediary
+	  span when splitting a_b.c
+
+2009-01-26 18:30  dockes
+
+	* query/plaintorich.cpp, rcldb/rcldb.cpp, rcldb/rcldb.h,
+	  rcldb/searchdata.cpp: modified the time at which we unaccent so
+	  that we can do the Capitalized->nostemming test on single words
+	  (this had been broken by the change of noac/split order done
+	  earlier to get japanese to work)
+
+2009-01-26 13:29  dockes
+
+	* utils/smallut.cpp, utils/smallut.h: add overloaded neutchars with
+	  different parameters
+
+2009-01-26 13:27  dockes
+
+	* utils/transcode.cpp: tested and decided against cacheing
+	  iconv_open
+
+2009-01-23 15:56  dockes
+
+	* ChangeLog, qtgui/advsearch_w.cpp, qtgui/main.cpp,
+	  qtgui/rclmain_w.cpp, qtgui/recoll.h: temp ckpt: need to test on
+	  real unix
+
+2009-01-23 11:07  dockes
+
+	* qtgui/uiprefs.ui: avoid name duplication
+
+2009-01-23 11:03  dockes
+
+	* qtgui/uiprefs.ui: one button for choosing native editors
+
+2009-01-23 10:38  dockes
+
+	* kde/kioslave/recoll/data/searchable.html: simplified javascrip:
+	  no ie here!
+
+2009-01-23 09:41  dockes
+
+	* qtgui/rclmain_w.cpp: toLocal8Bit->local8bit
+
+2009-01-23 09:30  dockes
+
+	* qtgui/guiutils.cpp, qtgui/guiutils.h, qtgui/main.cpp,
+	  qtgui/rclmain_w.cpp, qtgui/recoll.h, qtgui/uiprefs.ui,
+	  qtgui/uiprefs_w.cpp, qtgui/uiprefs_w.h: use normal text/html ext
+	  app for viewing help
+
+2009-01-23 09:27  dockes
+
+	* utils/execmd.cpp, utils/execmd.h: accept additional path argument
+	  to execmd::which
+
 2009-01-22 14:25  dockes
 
 	* qtgui/preview_w.cpp, qtgui/preview_w.h: allow toggle show
