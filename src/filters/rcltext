@@ -83,27 +83,9 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds awk iconv
+checkcmds awk
+echo '<html><head><title></title></head><body><pre>'
 
-# The strange 'BEGIN' setup is to prevent 'file' from thinking this file
-# is an awk program
-sed -e 's/.//g' -e 's/.//g' "$infile" |\
-awk 'BEGIN'\
-' {
-  print "<html><head><title></title>"
-  print "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">"
-  print "</head>\n<body>\n<p>"
-}
-{
-  gsub(/&/, "\\&amp;", $0)
-  gsub(/</, "\\&lt;", $0)
-  gsub(/>/, "\\&gt;", $0)
+sed -e 's/\&/\&amp;/g' -e 's/</\&lt;/g' "$infile" 
 
-  print $0 "<br>"
-}
-END {
-    print "</p></body></html>"
-}' | iconv -f iso-8859-1 -t UTF-8 -c -s 
-
-# exit normally
-exit 0
+echo '</pre></body></html>'
