@@ -1,6 +1,6 @@
 Summary:	Desktop full text search tool with a qt gui
 Name:           recoll
-Version:        1.8.1
+Version:        1.12.0
 Release:        %mkrel 1
 License:	GPL
 Group:          Databases
@@ -65,7 +65,7 @@ desktop-file-install --vendor="" \
 
 
 %changelog
-* Fri Apr 20 2007 Tomasz Pawel Gajc <tpg@mandriva.org> 1.8.1-1mdv2008.0
+* Fri Apr 20 2007 Tomasz Pawel Gajc <tpg@mandriva.org> 1.12.1-1mdv2008.0
 + Revision: 16093
 - new version
 - drop P0
