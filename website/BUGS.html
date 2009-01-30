@@ -35,16 +35,17 @@
 	  supposedly fixed in later versions. Bugs listed in the
 	  topmost section may also exist in older versions.</i></p>
 
-      <h2>Latest (recoll 1.11.4 + xapian 1.0.x)</h2>
+      <h2><a name="b_latest">Latest (recoll 1.12.0 + xapian 1.0.10)</a></h2>
       <ul>
 
-	<li>Performing a full index with release 1.11, over a version
-	  created with a much older recoll release may sometimes end
-	  with an error saying  "backend doesn't implement metadata".
-	  If this happens, you need to delete the index directory
-	  (typically <em>~/.recoll/xapiandb/</em>) and restart
-	  indexing. For big indexes, removing the directory preventively
-	  may be a smart move to avoid losing time.</li>
+	<li>Performing a full index with release 1.11 or later, over a
+	  version created with a much older recoll release may
+	  sometimes end with an error saying "backend doesn't
+	  implement metadata".  If this happens, you need to delete
+	  the index directory (typically <em>~/.recoll/xapiandb/</em>)
+	  and restart indexing. For big indexes, removing the
+	  directory preventively may be preferable to avoid losing
+	  time.</li>
 
 	<li> When Recoll is built with qt 4.4.0, the icons in the
 	  result list are all displayed at the top of the page and
@@ -132,6 +133,11 @@
 	  slower indexing for doc files.</li>
       </ul>
 
+      <h2><a name="b_1_11_4">1.11.4</a></h2>
+      <ul>
+	<li>Possibly harmful bug in strerror_r usage (GNU case).</li>
+      </ul>
+
       <h2><a name="b_1_11_1">1.11.1</a></h2>
       <ul>
 	<li>Unicode space characters like 
@@ -161,6 +167,7 @@
 	  clipboard too (permitting the use of the "Paste" edit menu
 	  entry or Ctrl+V in the target).</li>
 
+	<li>Possibly harmful bug in strerror_r usage (GNU case).</li>
       </ul>
 
       <h2>1.10.6</h2>
