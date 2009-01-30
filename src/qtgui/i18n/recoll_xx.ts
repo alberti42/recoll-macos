@@ -49,10 +49,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Delete clause</source>
         <translation type="unfinished"></translation>
     </message>
@@ -124,13 +120,13 @@
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
-    <message>
-        <source>Configuration problem: </source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Configuration problem (dynconf</source>
         <translation type="unfinished"></translation>
@@ -201,6 +197,17 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Match &amp;Case</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PreviewTextEdit</name>
+    <message>
+        <source>Show fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show main text</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -352,10 +359,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Starting help browser </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>History data</source>
         <translation type="unfinished"></translation>
     </message>
@@ -423,6 +426,14 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Missing helper programs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save file dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a file name to save under</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -564,35 +575,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show query details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>(show query)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unavailable document</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Previous</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -633,6 +616,10 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Document history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save to File</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -702,11 +689,11 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
+        <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
+        <source>Choose search type.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -927,22 +914,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>HTML help browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose external viewer applications</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Manage</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Auto-start simple search on whitespace entry.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1068,6 +1039,18 @@ May be slow for big documents.</source>
         <source>Prefer Html to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>If checked, results with the same content under different names will only be shown once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide duplicate results.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose editor applications</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1102,6 +1085,10 @@ May be slow for big documents.</source>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select one or several mime types then click &quot;Change Action&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
@@ -1132,6 +1119,14 @@ May be slow for big documents.</source>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

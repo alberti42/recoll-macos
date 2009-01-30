@@ -142,7 +142,7 @@
     </message>
     <message>
         <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation>Tous les champs renseignés seront combinés avec des conjonctions OU ou ET.&lt;br&gt;Les champs &quot;Un de ces mots&quot;, &quot;Tous ces mots&quot;, ou &quot;Aucun de ces mots&quot; peuvent accepter des mots et des phrases entre guillemets (&quot;).&lt;br&gt;Les champs non renseignés sont ignorés.</translation>
+        <translation type="obsolete">Tous les champs renseignés seront combinés avec des conjonctions OU ou ET.&lt;br&gt;Les champs &quot;Un de ces mots&quot;, &quot;Tous ces mots&quot;, ou &quot;Aucun de ces mots&quot; peuvent accepter des mots et des phrases entre guillemets (&quot;).&lt;br&gt;Les champs non renseignés sont ignorés.</translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -168,12 +168,16 @@
         <source>Close</source>
         <translation>Fermer</translation>
     </message>
+    <message>
+        <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
+        <translation>Tous les champs de droite non vides seront combinés par une conjonction ET (choix &quot;Toutes les clauses&quot;) ou OU (choix &quot;Une des clauses&quot;). &lt;br&gt; Les champs de type  &quot;Un de ces mots&quot;, &quot;Tous ces mots&quot; et &quot;Aucun de ces mots&quot; acceptent un mélange de mots et de phrases contenues dans des apostrophes &quot;une phrase&quot;.&lt;br&gt;Les champs non renseignés sont ignorés.</translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
     <message>
         <source>Configuration problem: </source>
-        <translation>Problème de configuration: </translation>
+        <translation type="obsolete">Problème de configuration: </translation>
     </message>
     <message>
         <source>No db directory in configuration</source>
@@ -320,6 +324,17 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
 </context>
 <context>
+    <name>PreviewTextEdit</name>
+    <message>
+        <source>Show fields</source>
+        <translation>Afficher les valeurs des champs</translation>
+    </message>
+    <message>
+        <source>Show main text</source>
+        <translation>Afficher le corps du texte</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
@@ -460,7 +475,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Starting help browser </source>
-        <translation>Démarrage de l&apos;outil de consultation de l&apos;aide</translation>
+        <translation type="obsolete">Démarrage de l&apos;outil de consultation de l&apos;aide</translation>
     </message>
     <message>
         <source>Indexing in progress: </source>
@@ -589,6 +604,14 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>Missing helper programs</source>
         <translation>Applications manquantes</translation>
+    </message>
+    <message>
+        <source>Save file dialog</source>
+        <translation>Dialogue de sauvegarde de fichier</translation>
+    </message>
+    <message>
+        <source>Choose a file name to save under</source>
+        <translation>Choisir un nom pour le nouveau fichier</translation>
     </message>
 </context>
 <context>
@@ -847,11 +870,11 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation>Document inaccessible</translation>
+        <translation type="obsolete">Document inaccessible</translation>
     </message>
     <message>
         <source>Show query details</source>
-        <translation>Afficher la requête</translation>
+        <translation type="obsolete">Afficher la requête</translation>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
@@ -861,15 +884,15 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Previous</source>
-        <translation>Précédent</translation>
+        <translation type="obsolete">Précédent</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation>Suivant</translation>
+        <translation type="obsolete">Suivant</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -913,11 +936,11 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation>Résultats  &lt;b&gt;%1-%2&lt;b&gt; (total au moins &lt;b&gt;%3&lt;/b&gt;) pour </translation>
+        <translation type="obsolete">Résultats  &lt;b&gt;%1-%2&lt;b&gt; (total au moins &lt;b&gt;%3&lt;/b&gt;) pour </translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
-        <translation>Résultats &lt;b&gt;%1-%2&lt;/b&gt; pour </translation>
+        <translation type="obsolete">Résultats &lt;b&gt;%1-%2&lt;/b&gt; pour </translation>
     </message>
     <message>
         <source>filtered</source>
@@ -930,6 +953,10 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>Document history</source>
         <translation>Historique des documents consultés</translation>
+    </message>
+    <message>
+        <source>Save to File</source>
+        <translation>Sauver dans un fichier</translation>
     </message>
 </context>
 <context>
@@ -1036,7 +1063,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
-        <translation>Choisir le type de recherche: termes, tous les termes, nom de fichiers avec *? possibles.</translation>
+        <translation type="obsolete">Choisir le type de recherche: termes, tous les termes, nom de fichiers avec *? possibles.</translation>
     </message>
     <message>
         <source>Any term</source>
@@ -1065,6 +1092,10 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
         <translation>Entrer les termes recherchés ici. Taper ESC SPC pour afficher les mots commençant par l&apos;entrée en cours.</translation>
+    </message>
+    <message>
+        <source>Choose search type.</source>
+        <translation>Choisir le type de recherche.</translation>
     </message>
 </context>
 <context>
@@ -1459,11 +1490,11 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>HTML help browser</source>
-        <translation>Outil de consultation de l&apos;aide HTML</translation>
+        <translation type="obsolete">Outil de consultation de l&apos;aide HTML</translation>
     </message>
     <message>
         <source>Select file</source>
-        <translation>Selectionner un fichier</translation>
+        <translation type="obsolete">Selectionner un fichier</translation>
     </message>
     <message>
         <source>Show document type icons in result list.</source>
@@ -1607,11 +1638,11 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Choose external viewer applications</source>
-        <translation>Choisir les applications externes de visualisation</translation>
+        <translation type="obsolete">Choisir les applications externes de visualisation</translation>
     </message>
     <message>
         <source>Manage</source>
-        <translation>Choisir</translation>
+        <translation type="obsolete">Choisir</translation>
     </message>
     <message>
         <source>User preferences</source>
@@ -1677,6 +1708,18 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Prefer Html to plain text for preview.</source>
         <translation>Utiliser le format Html pour la previsualisation.</translation>
     </message>
+    <message>
+        <source>If checked, results with the same content under different names will only be shown once.</source>
+        <translation>N&apos;afficher qu&apos;une entrée pour les résultats de contenu identique.</translation>
+    </message>
+    <message>
+        <source>Hide duplicate results.</source>
+        <translation>Cacher les doublons.</translation>
+    </message>
+    <message>
+        <source>Choose editor applications</source>
+        <translation>Choisir les éditeurs pour les différents types de fichiers</translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1718,6 +1761,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>Native Viewers</source>
         <translation>Applications de visualisation</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then click &quot;Change Action&quot;</source>
+        <translation>Sélectionner un ou plusieurs types mime, puis cliker &quot;Changer&quot;</translation>
     </message>
 </context>
 <context>
@@ -1837,6 +1884,14 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>Global</source>
         <translation>Global</translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation>Taill maximale pour les fichiers à décomprimer (Ko)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation>Cette valeur définit un seuil au delà duquel les fichiers comprimés ne seront pas traités. Utiliser -1 pour désactiver la limitation, 0 pour ne traiter aucun fichier comprimé.</translation>
     </message>
 </context>
 <context>

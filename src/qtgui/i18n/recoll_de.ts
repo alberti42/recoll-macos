@@ -143,7 +143,7 @@
     </message>
     <message>
         <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation>Alle angegebenen Felder werden mit ODER oder UND Bedingungen verknüpft. &lt;br&gt;In Felder der Typen &quot;Irgendein&quot;, &quot;Alle&quot; und &quot;Kein&quot; können mehrere Einzelwörter und Sätze, die durch Anführungszeichen eingeschlossen werden, eingegeben werden.&lt;br&gt; Leere Felder werden ignoriert. </translation>
+        <translation type="obsolete">Alle angegebenen Felder werden mit ODER oder UND Bedingungen verknüpft. &lt;br&gt;In Felder der Typen &quot;Irgendein&quot;, &quot;Alle&quot; und &quot;Kein&quot; können mehrere Einzelwörter und Sätze, die durch Anführungszeichen eingeschlossen werden, eingegeben werden.&lt;br&gt; Leere Felder werden ignoriert. </translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -169,12 +169,16 @@
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
+    <message>
+        <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
     <message>
         <source>Configuration problem: </source>
-        <translation>Konfigurationsproblem:</translation>
+        <translation type="obsolete">Konfigurationsproblem:</translation>
     </message>
     <message>
         <source>No db directory in configuration</source>
@@ -322,6 +326,17 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
 </context>
 <context>
+    <name>PreviewTextEdit</name>
+    <message>
+        <source>Show fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show main text</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
@@ -462,7 +477,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Starting help browser </source>
-        <translation>Starte Hilfebrowser</translation>
+        <translation type="obsolete">Starte Hilfebrowser</translation>
     </message>
     <message>
         <source>Indexing in progress: </source>
@@ -588,6 +603,14 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>Missing helper programs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save file dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a file name to save under</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -847,11 +870,11 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation>Dokument nicht verfügbar</translation>
+        <translation type="obsolete">Dokument nicht verfügbar</translation>
     </message>
     <message>
         <source>Show query details</source>
-        <translation>Anzeige der Suchdetails</translation>
+        <translation type="obsolete">Anzeige der Suchdetails</translation>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
@@ -861,15 +884,15 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>Previous</source>
-        <translation>Voriges</translation>
+        <translation type="obsolete">Voriges</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation>Nächstes</translation>
+        <translation type="obsolete">Nächstes</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;p&gt;&lt;b&gt;keine Ergebnisse&lt;/b&gt;&lt;br&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;&lt;b&gt;keine Ergebnisse&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -913,11 +936,11 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation>Dokumente  &lt;b&gt;%1-%2&lt;b&gt; von mindestens &lt;b&gt;%3&lt;/b&gt; für </translation>
+        <translation type="obsolete">Dokumente  &lt;b&gt;%1-%2&lt;b&gt; von mindestens &lt;b&gt;%3&lt;/b&gt; für </translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
-        <translation>Dokumente &lt;b&gt;%1-%2&lt;/b&gt; für </translation>
+        <translation type="obsolete">Dokumente &lt;b&gt;%1-%2&lt;/b&gt; für </translation>
     </message>
     <message>
         <source>filtered</source>
@@ -930,6 +953,10 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     <message>
         <source>Document history</source>
         <translation type="unfinished">Dokumenthistorie</translation>
+    </message>
+    <message>
+        <source>Save to File</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1036,7 +1063,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
-        <translation>Wählen Sie die Art der Suche: irgendein Ausdruck, alle Ausdrücke, Dateiname (ggf. mit Wildcards)</translation>
+        <translation type="obsolete">Wählen Sie die Art der Suche: irgendein Ausdruck, alle Ausdrücke, Dateiname (ggf. mit Wildcards)</translation>
     </message>
     <message>
         <source>Any term</source>
@@ -1065,6 +1092,10 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
         <translation>Suchausdruck hier eingeben. Drücken Sie ESC SPC für Vervollständigungen des aktuellen Ausdrucks</translation>
+    </message>
+    <message>
+        <source>Choose search type.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1459,11 +1490,11 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>HTML help browser</source>
-        <translation>Browser für HTML-Hilfe</translation>
+        <translation type="obsolete">Browser für HTML-Hilfe</translation>
     </message>
     <message>
         <source>Select file</source>
-        <translation>Auswählen</translation>
+        <translation type="obsolete">Auswählen</translation>
     </message>
     <message>
         <source>Show document type icons in result list.</source>
@@ -1618,11 +1649,11 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Choose external viewer applications</source>
-        <translation>Festlegung der externen Programme zum Öffnen der Dokumente</translation>
+        <translation type="obsolete">Festlegung der externen Programme zum Öffnen der Dokumente</translation>
     </message>
     <message>
         <source>Manage</source>
-        <translation>Auswählen</translation>
+        <translation type="obsolete">Auswählen</translation>
     </message>
     <message>
         <source>User preferences</source>
@@ -1680,6 +1711,18 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
         <source>Prefer Html to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>If checked, results with the same content under different names will only be shown once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide duplicate results.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose editor applications</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1721,6 +1764,10 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <message>
         <source>Native Viewers</source>
         <translation>Anzeigeprogramme</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then click &quot;Change Action&quot;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1840,6 +1887,14 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <message>
         <source>Global</source>
         <translation>Global</translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

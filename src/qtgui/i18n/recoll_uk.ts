@@ -147,7 +147,7 @@
     </message>
     <message>
         <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation>Всі непусті поля буде об&apos;єднано за допомогою АБО або ТА.&lt;br&gt;Поля типу &quot;будь-які слова&quot;, &quot;усі слова&quot; та &quot;без цих слів&quot; приймають слова та фрази у подвійних лапках.&lt;br&gt;Поля без даних не беруться до уваги.</translation>
+        <translation type="obsolete">Всі непусті поля буде об&apos;єднано за допомогою АБО або ТА.&lt;br&gt;Поля типу &quot;будь-які слова&quot;, &quot;усі слова&quot; та &quot;без цих слів&quot; приймають слова та фрази у подвійних лапках.&lt;br&gt;Поля без даних не беруться до уваги.</translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -173,12 +173,16 @@
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
+    <message>
+        <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
     <message>
         <source>Configuration problem: </source>
-        <translation>Проблема конфіґурації: </translation>
+        <translation type="obsolete">Проблема конфіґурації: </translation>
     </message>
     <message>
         <source>No db directory in configuration</source>
@@ -323,6 +327,17 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
 </context>
 <context>
+    <name>PreviewTextEdit</name>
+    <message>
+        <source>Show fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show main text</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <source>Global parameters</source>
@@ -437,7 +452,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Starting help browser </source>
-        <translation>Запускаю перегляд довідки </translation>
+        <translation type="obsolete">Запускаю перегляд довідки </translation>
     </message>
     <message>
         <source>Document history</source>
@@ -575,6 +590,14 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Missing helper programs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save file dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a file name to save under</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -794,11 +817,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation>Документ недосяжний</translation>
+        <translation type="obsolete">Документ недосяжний</translation>
     </message>
     <message>
         <source>Show query details</source>
-        <translation>Показати запит</translation>
+        <translation type="obsolete">Показати запит</translation>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
@@ -808,15 +831,15 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Previous</source>
-        <translation>Попередня</translation>
+        <translation type="obsolete">Попередня</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation>Наступна</translation>
+        <translation type="obsolete">Наступна</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;p&gt;&lt;b&gt;Не знайдено&lt;/b&gt;&lt;br&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Не знайдено&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -856,11 +879,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation>Документи &lt;b&gt;%1-%2&lt;/b&gt; з принаймні &lt;b&gt;%3&lt;/b&gt; по </translation>
+        <translation type="obsolete">Документи &lt;b&gt;%1-%2&lt;/b&gt; з принаймні &lt;b&gt;%3&lt;/b&gt; по </translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
-        <translation>Документи &lt;b&gt;%1-%2&lt;/b&gt; по </translation>
+        <translation type="obsolete">Документи &lt;b&gt;%1-%2&lt;/b&gt; по </translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
@@ -877,6 +900,10 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Document history</source>
         <translation type="unfinished">Історія документів</translation>
+    </message>
+    <message>
+        <source>Save to File</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -946,7 +973,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
-        <translation>Оберіть тип запиту: будь-яке слово, усі слова, ім&apos;я файлу (можливі шаблони).</translation>
+        <translation type="obsolete">Оберіть тип запиту: будь-яке слово, усі слова, ім&apos;я файлу (можливі шаблони).</translation>
     </message>
     <message>
         <source>Enter search terms here</source>
@@ -979,6 +1006,10 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
         <translation>Введіть пошукові слова.  Можна використовувати Esc-пробіл для доповнення.</translation>
+    </message>
+    <message>
+        <source>Choose search type.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1369,11 +1400,11 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>HTML help browser</source>
-        <translation>Переглядач довідки у HTML</translation>
+        <translation type="obsolete">Переглядач довідки у HTML</translation>
     </message>
     <message>
         <source>Select file</source>
-        <translation>Оберіть файл</translation>
+        <translation type="obsolete">Оберіть файл</translation>
     </message>
     <message>
         <source>Show document type icons in result list.</source>
@@ -1513,11 +1544,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Choose external viewer applications</source>
-        <translation>Оберіть зовнішні програми перегляду</translation>
+        <translation type="obsolete">Оберіть зовнішні програми перегляду</translation>
     </message>
     <message>
         <source>Manage</source>
-        <translation>Впорядкувати</translation>
+        <translation type="obsolete">Впорядкувати</translation>
     </message>
     <message>
         <source>User preferences</source>
@@ -1579,6 +1610,18 @@ This should give higher precedence to the results where the search terms appear 
         <source>Prefer Html to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>If checked, results with the same content under different names will only be shown once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide duplicate results.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose editor applications</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1612,6 +1655,10 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Native Viewers</source>
         <translation>Рідні переглядачі</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then click &quot;Change Action&quot;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1727,6 +1774,14 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Global</source>
         <translation>Глобальні</translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

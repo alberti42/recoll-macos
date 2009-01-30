@@ -51,7 +51,7 @@
     </message>
     <message>
         <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation>Tüm boş alanlar VEYA ya da VE bağlaçları ile birleştirilecek. &lt;br&gt; &quot;Herhangi biri&quot; &quot;Tümü&quot; ve &quot;Hiçbiri&quot; alan tipleri basit sözcüklerin karışımını ve çift tırnak içine alınmış ifadeleri kabul edebilir.&lt;br&gt;Veri içermeyen alanlar yoksayılır.</translation>
+        <translation type="obsolete">Tüm boş alanlar VEYA ya da VE bağlaçları ile birleştirilecek. &lt;br&gt; &quot;Herhangi biri&quot; &quot;Tümü&quot; ve &quot;Hiçbiri&quot; alan tipleri basit sözcüklerin karışımını ve çift tırnak içine alınmış ifadeleri kabul edebilir.&lt;br&gt;Veri içermeyen alanlar yoksayılır.</translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -125,12 +125,16 @@
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
+    <message>
+        <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
     <message>
         <source>Configuration problem: </source>
-        <translation>Yapılandırma sorunu: </translation>
+        <translation type="obsolete">Yapılandırma sorunu: </translation>
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
@@ -247,6 +251,17 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Alt+C</source>
         <translation type="obsolete">Alt+R</translation>
+    </message>
+</context>
+<context>
+    <name>PreviewTextEdit</name>
+    <message>
+        <source>Show fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show main text</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -404,7 +419,7 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>Starting help browser </source>
-        <translation>Yardım tarayıcıyı başlat </translation>
+        <translation type="obsolete">Yardım tarayıcıyı başlat </translation>
     </message>
     <message>
         <source>History data</source>
@@ -474,6 +489,14 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>Missing helper programs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save file dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a file name to save under</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -616,19 +639,19 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>Show query details</source>
-        <translation>Sorgu detaylarını göster</translation>
+        <translation type="obsolete">Sorgu detaylarını göster</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;p&gt;&lt;b&gt;Sonuç bulunamadı&lt;/b&gt;&lt;br&gt;</translation>
+        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Sonuç bulunamadı&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation>Toplam &lt;b&gt;%3&lt;/b&gt; sonucun &lt;b&gt;%1-%2&lt;/b&gt; arası, sorgu </translation>
+        <translation type="obsolete">Toplam &lt;b&gt;%3&lt;/b&gt; sonucun &lt;b&gt;%1-%2&lt;/b&gt; arası, sorgu </translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
-        <translation>Sonuçlar &lt;b&gt;%1-%2&lt;/b&gt; arası, sorgu </translation>
+        <translation type="obsolete">Sonuçlar &lt;b&gt;%1-%2&lt;/b&gt; arası, sorgu </translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -636,15 +659,15 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation>Erişilemez belge</translation>
+        <translation type="obsolete">Erişilemez belge</translation>
     </message>
     <message>
         <source>Previous</source>
-        <translation>Önceki</translation>
+        <translation type="obsolete">Önceki</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation>Sonraki</translation>
+        <translation type="obsolete">Sonraki</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -685,6 +708,10 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     <message>
         <source>Document history</source>
         <translation type="unfinished">Belge geçmişi</translation>
+    </message>
+    <message>
+        <source>Save to File</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -754,11 +781,15 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
-        <translation>Arama tipini seçin: herhangi bir sözcük, tüm sözcükler, özel karakterler de kullanılabilen dosya adı.</translation>
+        <translation type="obsolete">Arama tipini seçin: herhangi bir sözcük, tüm sözcükler, özel karakterler de kullanılabilen dosya adı.</translation>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
         <translation>Aranacak ifadeleri buraya girin. Geçerli sözcüğün tamamlanması için ESC SPACE kullanın.</translation>
+    </message>
+    <message>
+        <source>Choose search type.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -979,19 +1010,19 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>HTML help browser</source>
-        <translation>HTML yardım tarayıcı</translation>
+        <translation type="obsolete">HTML yardım tarayıcı</translation>
     </message>
     <message>
         <source>Select file</source>
-        <translation>Dosya seç</translation>
+        <translation type="obsolete">Dosya seç</translation>
     </message>
     <message>
         <source>Choose external viewer applications</source>
-        <translation>Dış gösterici uygulamaları seç</translation>
+        <translation type="obsolete">Dış gösterici uygulamaları seç</translation>
     </message>
     <message>
         <source>Manage</source>
-        <translation>Yönet</translation>
+        <translation type="obsolete">Yönet</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -1121,6 +1152,18 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
         <source>Prefer Html to plain text for preview.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>If checked, results with the same content under different names will only be shown once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide duplicate results.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose editor applications</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1155,6 +1198,10 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
+    <message>
+        <source>Select one or several mime types then click &quot;Change Action&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
@@ -1186,6 +1233,14 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     <message>
         <source>Global</source>
         <translation>Genel</translation>
+    </message>
+    <message>
+        <source>Max. compressed file size (KB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
