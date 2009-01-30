@@ -1,5 +1,6 @@
 <!DOCTYPE BOOK PUBLIC "-//FreeBSD//DTD DocBook V4.1-Based Extension//EN" [
 <!ENTITY RCL "<application>Recoll</application>">
+<!ENTITY RCLVERSION "1.12">
 <!ENTITY XAP "<application>Xapian</application>">
 
 ]>
@@ -29,7 +30,7 @@
     <abstract>
       <para>This document introduces full text search notions
       and describes the installation and use of the &RCL;
-      application. It currently describes &RCL; 1.10.</para>
+      application. It currently describes &RCL; &RCLVERSION;.</para>
     </abstract>
 
 
@@ -421,11 +422,11 @@ recoll
       <sect2 id="rcl.indexing.config.gui">
 	<title>The indexing configuration GUI</title>
 
-	<para>As of &RCL; 1.10, most parameters
-	for a given indexing configuration can be set from a
-	<command>recoll</command> GUI running on this configuration
-	(either as default, or by setting <literal>RECOLL_CONFDIR</literal>
-          or the <literal>-c</literal> option.)</para>
+	<para>Most parameters for a given indexing configuration can
+	be set from a <command>recoll</command> GUI running on this
+	configuration (either as default, or by setting
+	<literal>RECOLL_CONFDIR</literal> or the <literal>-c</literal>
+	option.)</para> 
 
 	<para>The interface is started from the
 	<guilabel>Preferences</guilabel> menu. It has two main
@@ -605,8 +606,8 @@ fvwm
 	and all.</para>
 
     <para>The main case where you should enter text differently from
-      how it is printed is for east-oriental languages written with
-      Chinese characters. Words composed of single or multiple
+      how it is printed is for east-asian languages (Chinese,
+      Japanese, Korean). Words composed of single or multiple
       characters should be entered separated by white space in this
       case (they would typically be printed without white
       space).</para>
@@ -640,7 +641,9 @@ fvwm
         names. The entry will be split at white space characters,
         and each pattern will be separately expanded. If you want
         to search for a pattern including white space, you need
-        to use double quotes.</para>
+        to use double quotes. The point of having a separate file name
+        search is that wild card expansion can be performed more
+        efficiently on a relatively small subset of the index.</para>
 
       <para>The fourth entry (<guilabel>Query Language</guilabel>) is
       described in <link linkend="rcl.search.lang">its own
@@ -661,8 +664,8 @@ fvwm
       a search for <literal>floor</literal> will also normally look for 
       <literal>flooring</literal>, <literal>floored</literal>, etc., but
       a search for <literal>Floor</literal> will only look for
-      <literal>floor</literal>, in any character case (stemming can
-      also be disabled globally in the preferences). </para>
+      <literal>floor</literal>, in any character case. Sstemming can
+      also be disabled globally in the preferences. </para>
 
       <para>&RCL; remembers the last few searches that you
         performed. You can use the simple search text entry widget (a
@@ -687,8 +690,9 @@ fvwm
       <guilabel>Query Language</guilabel> mode, where you have to care
       about the syntax.</para>
 
-      <para>You can use the <guilabel>Tools</guilabel> / <guilabel>Advanced
-        search</guilabel> dialog for more complex searches.</para>
+      <para>You can use the <link linkend="rcl.search.complex">
+       <guilabel>Tools</guilabel> / <guilabel>Advanced search</guilabel>
+        </link> dialog for more complex searches.</para>
     </sect1>
 
     <sect1 id="rcl.search.reslist">
@@ -716,20 +720,25 @@ fvwm
        window).</para> 
 
       <para>Clicking the <literal>Edit</literal> link will attempt to 
-       start an external viewer. The viewers can be configured through the
-       user preferences dialog, or by editing the
+       start an external editor. The editors can be configured through
+       the user preferences dialog, or by editing the
        <filename>mimeview</filename> configuration file.</para>
 
       <para>The <literal>Preview</literal> and <literal>Edit</literal>
        edit links may not be present for all entries, meaning that
        &RCL; has no configured way to preview a given file type (which
-       was indexed by name only), or no configured external viewer for
+       was indexed by name only), or no configured external editor for
        the file type. This can sometimes be adjusted simply by tweaking
        the <link linkend="rclinstall.config.mimemap">
              <filename>mimemap</filename></link> and  
        <link linkend="rclinstall.config.mimeview">
        <filename>mimeview</filename></link> configuration files (the latter
        can be modified with the user preferences dialog).</para> 
+
+      <para>The format of the result list entries is entirely
+      configurable by using the preference dialog to 
+      <link linkend="rcl.search.custom.resultpara">edit an HTML
+      fragment</link>.  
 
       <para>You can click on the <literal>Query details</literal> link
         at the top of the results page to see the query actually 
@@ -756,7 +765,7 @@ fvwm
 	  <listitem><para><guilabel>Edit</guilabel></para></listitem>
 	  <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
 	  <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
-	  <listitem><para><guilabel>Find similar</guilabel></para></listitem>
+	  <listitem><para><guilabel>Save to File</guilabel></para></listitem>
 	  <listitem><para><guilabel>Find similar</guilabel></para></listitem>
 	  <listitem><para><guilabel>Parent document</guilabel></para></listitem>
 	</itemizedlist>
@@ -768,6 +777,13 @@ fvwm
 	<para>The <guilabel>Copy File Name</guilabel> and
 	<guilabel>Copy Url</guilabel> copy the relevant data to the
 	clipboard, for later pasting.</para> 
+
+	<para><guilabel>Save to File</guilabel> allows saving the
+	contents of a result document to a chosen file. This entry
+	will only appear if the document does not correspond to an
+	existing file, but is a subdocument inside such a file (ie: an
+	email attachment). It is especially useful to extract attachments
+	with no associated editor.</para> 
 
         <para>The <guilabel>Find similar</guilabel> entry will select
           a number of relevant term from the current document and enter
@@ -832,6 +848,12 @@ fvwm
       to browse the results, the search is initiated for each successive
       document. If the string is found, the cursor will be positioned
       at the first occurrence of the search string.</para>
+
+      <para>A right-click menu in the text area allows switching
+      between displaying the main text or the contents of fields
+      associated to the document (ie: author, abtract, etc.). This is
+      especially useful in cases where the term match did not occur in
+      the main text but in one of the fields.</para>
 
     </sect1>
 
@@ -1487,8 +1509,9 @@ fvwm
 	config (try the <command>qtconfig</command> command).</para>
 	</listitem>
 
-	<listitem><para><guilabel>Result paragraph format
-	string</guilabel>: allows you to change the presentation of
+	<listitem><anchor id="rcl.search.custom.resultpara"> <para>
+        <guilabel>Result paragraph format string</guilabel>: 
+        allows you to change the presentation of
 	each result list entry. This is a qt-html string where the
 	following printf-like <literal>%</literal> substitutions will
 	be performed:
