@@ -17,7 +17,7 @@
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
 /* @(#$Id: execmd.h,v 1.12 2007-05-21 13:30:22 dockes Exp $  (C) 2004 J.F.Dockes */
-
+#include <signal.h>
 #include <string>
 #include <list>
 #include <vector>
@@ -27,15 +27,23 @@ using std::string;
 using std::vector;
 #endif
 
-/** Callback function object to advise of new data arrival (or just heartbeat)  * if cnt is 0 */
+/** 
+ * Callback function object to advise of new data arrival, or just periodic 
+ * heartbeat if cnt is 0. 
+ *
+ * The code using ExeCmd should raise an exception inside newData() 
+ * (and catch it doexec's caller) to interrupt the command.
+ * 
+ */
 class ExecCmdAdvise {
  public:
     virtual ~ExecCmdAdvise() {}
     virtual void newData(int cnt) = 0;
 };
 
-/** Callback function object to get more input data. Data has to be provided
- *  in the initial input string, set it to empty to signify eof
+/** 
+ * Callback function object to get more input data. Data has to be provided
+ * in the initial input string, set it to empty to signify eof.
  */
 class ExecCmdProvide {
  public:
@@ -63,6 +71,38 @@ class ExecCmdProvide {
  */
 class ExecCmd {
  public:
+    /** 
+     * Add/replace environment variable before executing command. This must
+     * be called before doexec() to have an effect (possibly multiple
+     * times for several variables).
+     * @param envassign an environment assignment string (name=value)
+     */
+    void putenv(const string &envassign);
+
+    /** 
+     * Set function objects to call whenever new data is available or on
+     * select timeout / whenever new data is needed to send. Must be called
+     * before doexec()
+     */
+    void setAdvise(ExecCmdAdvise *adv) {m_advise = adv;}
+    void setProvide(ExecCmdProvide *p) {m_provide = p;}
+
+    /**
+     * Set select timeout in milliseconds. The default is 1 S. 
+     * This is NOT a time after which an error will occur, but the period of
+     * the calls to the cancellation check routine.
+     */
+    void setTimeout(int mS) {if (mS > 30) m_timeoutMs = mS;}
+
+    /** 
+     * Set destination for stderr data. The default is to let it alone (will 
+     * usually go to the terminal or to wherever the desktop messages go).
+     * There is currently no option to put stderr data into a program variable
+     * If the parameter can't be opened for writing, the command's
+     * stderr will be closed.
+     */
+    void setStderr(const string &stderrFile) {m_stderrFile = stderrFile;}
+
     /**
      * Execute command. 
      *
@@ -83,34 +123,12 @@ class ExecCmd {
     int doexec(const string &cmd, const list<string>& args, 
 	       const string *input = 0, 
 	       string *output = 0);
-    /** 
-     * Add/replace environment variable before executing command. This must
-     * be called before doexec to have an effect (possibly multiple
-     * times for several variables).
-     * @param envassign an environment assignment string (name=value)
-     */
-    void putenv(const string &envassign);
 
-    /** 
-     * Set function objects to call whenever new data is available or on
-     * select timeout / whenever new data is needed to send.
-     */
-    void setAdvise(ExecCmdAdvise *adv) {m_advise = adv;}
-    void setProvide(ExecCmdProvide *p) {m_provide = p;}
-
-    /**
-     * Set select timeout in milliseconds. The default is 1 S. 
-     */
-    void setTimeout(int mS) {if (mS > 30) m_timeoutMs = mS;}
-
-    /** 
-     * Set destination for stderr data. The default is to let it alone (will 
-     * usually go to the terminal or to wherever the desktop messages go).
-     * There is currently no option to put stderr data into a program variable
-     * If the parameter can't be opened for writing, the command's
-     * stderr will be closed.
-     */
-    void setStderr(const string &stderrFile) {m_stderrFile = stderrFile;}
+    int startExec(const string &cmd, const list<string>& args, 
+		  bool has_input, bool has_output);
+    int send(const string& data);
+    int receive(string& data);
+    int wait(bool haderror = false);
 
     /** 
      * Cancel/kill command. This can be called from another thread or
@@ -120,8 +138,11 @@ class ExecCmd {
     void setCancel() {m_cancelRequest = true;}
 
     ExecCmd() 
-	: m_advise(0), m_provide(0), m_cancelRequest(false), m_timeoutMs(1000)
-	{}
+	: m_advise(0), m_provide(0), m_timeoutMs(1000)
+    {
+	reset();
+    }
+    ~ExecCmd();
 
     /**
      * Utility routine: check if/where a command is found according to the
@@ -134,6 +155,7 @@ class ExecCmd {
     static bool which(const string& cmd, string& exepath, 
 		      const char* path = 0);
 
+    friend class ExecCmdRsrc;
  private:
     vector<string>   m_env;
     ExecCmdAdvise   *m_advise;
@@ -141,6 +163,25 @@ class ExecCmd {
     bool             m_cancelRequest;
     int              m_timeoutMs;
     string           m_stderrFile;
+    // Pipe for data going to the command
+    int              m_pipein[2];
+    // Pipe for data coming out
+    int              m_pipeout[2];
+    // Subprocess id
+    pid_t            m_pid;
+    // Saved sigmask
+    sigset_t         m_blkcld;
+
+    // Reset internal execution state
+    void reset() {
+	m_cancelRequest = false;
+	m_pipein[0] = m_pipein[1] = m_pipeout[0] = m_pipeout[1] = -1;
+	m_pid = -1;
+	sigemptyset(&m_blkcld);
+    }
+    // Child process code
+    void dochild(const string &cmd, const list<string>& args, 
+		 bool has_input, bool has_output);
 };
 
 
