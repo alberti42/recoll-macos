@@ -9,7 +9,7 @@ public:
     RefCntr() 
 	: rep(0), pcount(0) 
     {}
-    RefCntr(X *pp) 
+    explicit RefCntr(X *pp) 
 	: rep(pp), pcount(new int(1)) 
     {}
     RefCntr(const RefCntr &r) 
