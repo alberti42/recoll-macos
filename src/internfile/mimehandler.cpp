@@ -74,11 +74,13 @@ bool RecollFilter::set_document_file(const string& path)
     return true;
 }
 
-// Pool of already known and created handlers. There can be several instance
-// for a given mime type (think email attachment in email message)
+// Pool of already known and created handlers. There can be several
+// instances for a given mime type (think email attachment in email
+// message: 2 rfc822 handlers are needed simulteanously)
 static multimap<string, Dijon::Filter*>  o_handlers;
 
-/** Create internal handler object appropriate for given mime type */
+/** For mime types set as "internal" in mimeconf: 
+  * create appropriate handler object. */
 static Dijon::Filter *mhFactory(const string &mime)
 {
     string lmime(mime);
