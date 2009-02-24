@@ -60,6 +60,9 @@ extern bool startHelpBrowser(const string& url = "");
 class PrefsPack {
  public:
     bool autoSearchOnWS;
+    // Decide if we display the doc category filter control as a
+    // toolbar+combobox or as a button group under simple search
+    bool catgToolBar;
     int respagesize;
     int maxhltextmbs;
     QString reslistfontfamily;

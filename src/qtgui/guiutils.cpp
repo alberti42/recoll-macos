@@ -103,6 +103,7 @@ void rwSettings(bool writing)
 
     SETTING_RW(prefs.autoSearchOnWS, "/Recoll/prefs/reslist/autoSearchOnWS", 
 	       Bool, false);
+    SETTING_RW(prefs.catgToolBar, "/Recoll/prefs/catgToolBar", Bool, false);
     SETTING_RW(prefs.ssearchAutoPhrase, 
 	       "/Recoll/prefs/ssearchAutoPhrase", Bool, false);
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Num, 8);

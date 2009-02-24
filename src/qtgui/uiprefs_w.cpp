@@ -98,6 +98,7 @@ void UIPrefsDialog::setFromPrefs()
     pageLenSB->setValue(prefs.respagesize);
     collapseDupsCB->setChecked(prefs.collapseDuplicates);
     maxHLTSB->setValue(prefs.maxhltextmbs);
+    catgToolBarCB->setChecked(prefs.catgToolBar);
     autoSearchCB->setChecked(prefs.autoSearchOnWS);
     syntlenSB->setValue(prefs.syntAbsLen);
     syntctxSB->setValue(prefs.syntAbsCtx);
@@ -171,6 +172,7 @@ void UIPrefsDialog::setFromPrefs()
 void UIPrefsDialog::accept()
 {
     prefs.autoSearchOnWS = autoSearchCB->isChecked();
+    prefs.catgToolBar = catgToolBarCB->isChecked();
     prefs.respagesize = pageLenSB->value();
     prefs.collapseDuplicates = collapseDupsCB->isChecked();
     prefs.maxhltextmbs = maxHLTSB->value();

@@ -43,6 +43,8 @@ using std::pair;
 #else
 #include <q3filedialog.h>
 #define QFileDialog  Q3FileDialog
+#include <q3toolbar.h>
+#define QToolBar  Q3ToolBar
 #endif
 
 #include <qtabwidget.h>
@@ -165,6 +167,14 @@ void RclMain::init()
     }
     preferencesMenu->setItemChecked(curid, true);
 
+    // Toolbar+combobox version of the category selector
+    QComboBox *catgCMB = 0;
+    if (prefs.catgToolBar) {
+	catgCMB = new QComboBox(FALSE, new QToolBar(this), "catCMB");
+	catgCMB->insertItem(tr("All"));
+	catgCMB->setToolTip(tr("Document category filter"));
+    }
+
     // Document categories buttons
     catgBGRP->setColumnLayout(1, Qt::Vertical);
     list<string> cats;
@@ -178,9 +188,12 @@ void RclMain::init()
 	QString catgnm = QString::fromUtf8(it->c_str(), it->length());
 	m_catgbutvec.push_back(*it);
 	but->setText(tr(catgnm));
+	if (prefs.catgToolBar && catgCMB)
+	    catgCMB->insertItem(tr(catgnm));
     }
     catgBGRP->setButton(0);
-
+    if (prefs.catgToolBar)
+	catgBGRP->hide();
     // Connections
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
@@ -243,6 +256,8 @@ void RclMain::init()
     connect(queryPrefsAction, SIGNAL(activated()), this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), this, SLOT(showExtIdxDialog()));
     connect(catgBGRP, SIGNAL(clicked(int)), this, SLOT(catgFilter(int)));
+    if (prefs.catgToolBar && catgCMB)
+	connect(catgCMB, SIGNAL(activated(int)), this, SLOT(catgFilter(int)));
 
 #if (QT_VERSION < 0x040000)
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
