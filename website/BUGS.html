@@ -99,6 +99,9 @@
 	  some point (the current fix is not completely correct but
 	  still handles most useful cases).</li>
 
+	<li>It seems that the recoll program sometimes segfaults when
+	  exiting after the first execution ?</li>
+
 	<li> If you are seeing a delay of a few seconds before the
 	  result list displays for the first query of a recoll
 	  instance, try changing the result list font in the query
@@ -139,6 +142,10 @@
       <h2><a name="b_1_11_4">1.11.4</a></h2>
       <ul>
 	<li>Possibly harmful bug in strerror_r usage (GNU case).</li>
+	<li>Incorrect handling of  "accents" inside Japanese katakana
+	  text.</li>
+	<li>Using the "Erase history" command on an empty history
+	  would cause recoll to crash.</li>
       </ul>
 
       <h2><a name="b_1_11_1">1.11.1</a></h2>
