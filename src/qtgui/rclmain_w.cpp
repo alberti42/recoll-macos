@@ -172,7 +172,9 @@ void RclMain::init()
     if (prefs.catgToolBar) {
 	catgCMB = new QComboBox(FALSE, new QToolBar(this), "catCMB");
 	catgCMB->insertItem(tr("All"));
+#if (QT_VERSION >= 0x040000)
 	catgCMB->setToolTip(tr("Document category filter"));
+#endif
     }
 
     // Document categories buttons
@@ -379,7 +381,11 @@ void RclMain::fileExit()
     prefs.ssearchTyp = sSearch->searchTypCMB->currentItem();
     if (asearchform)
 	delete asearchform;
-    // Let the exit handler clean up things
+    // We'd prefer to do this in the exit handler, but it's apparently to late
+    // and some of the qt stuff is already dead at this point?
+    LOGDEB2(("RclMain::fileExit() : stopping idx thread\n"));
+    stop_idxthread();
+    // Let the exit handler clean up the rest (internal recoll stuff).
     exit(0);
 }
 
@@ -417,6 +423,7 @@ void RclMain::periodic100()
 	// Indexing is running
 	m_idxStatusAck = false;
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+	fileToggleIndexingAction->setEnabled(TRUE);
 	// The toggle thing is for the status to flash
 	if (toggle == 0) {
 	    QString msg = tr("Indexing in progress: ");
@@ -455,6 +462,9 @@ void RclMain::periodic100()
 	fileExit();
 }
 
+// This gets called when the indexing action is activated. It starts
+// the requested action, and disables the menu entry. This will be
+// re-enabled by the indexing status check
 void RclMain::toggleIndexing()
 {
     if (idxthread_getStatus() == IDXTS_NULL) {

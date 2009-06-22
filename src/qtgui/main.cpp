@@ -124,8 +124,6 @@ static void recollCleanup()
 {
     LOGDEB(("recollCleanup: writing settings\n"));
     rwSettings(true);
-    LOGDEB2(("recollCleanup: stopping idx thread\n"));
-    stop_idxthread();
     LOGDEB2(("recollCleanup: closing database\n"));
     deleteZ(rcldb);
     deleteZ(rclconfig);

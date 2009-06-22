@@ -20,6 +20,7 @@
 
 #include <qthread.h>
 #include <qmutex.h>
+#include <qwaitcondition.h>
 
 #include "indexer.h"
 #include "debuglog.h"
@@ -35,10 +36,14 @@ static string indexingReason;
 static int stopidxthread;
 
 static QMutex curfile_mutex;
+static QMutex         action_mutex;
+static QWaitCondition action_wait;
 
 class IdxThread : public QThread , public DbIxStatusUpdater {
     virtual void run();
  public:
+    // This gets called at intervals by the file system walker to check for 
+    // a requested interrupt and update the current status.
     virtual bool update() {
 	QMutexLocker locker(&curfile_mutex);
 	m_statusSnap = status;
@@ -59,12 +64,12 @@ class IdxThread : public QThread , public DbIxStatusUpdater {
 void IdxThread::run()
 {
     recoll_threadinit();
+    action_mutex.lock();
     for (;;) {
-	if (stopidxthread) {
-	    return;
-	}
 	if (startindexing) {
 	    startindexing = 0;
+            action_mutex.unlock();
+
 	    m_interrupted = false;
 	    indexingstatus = IDXTS_NULL;
 	    // We have to make a copy of the config (setKeydir changes
@@ -84,12 +89,20 @@ void IdxThread::run()
 	    }
 	    rezero = false;
 	    delete indexer;
-	} 
-	msleep(100);
+            action_mutex.lock();
+	}
+
+	if (stopidxthread) {
+            action_mutex.unlock();
+	    return;
+	}
+        action_wait.wait(&action_mutex);
     }
 }
 
 static IdxThread idxthread;
+
+// Functions called by the main thread
 
 void start_idxthread(const RclConfig& cnf)
 {
@@ -99,32 +112,49 @@ void start_idxthread(const RclConfig& cnf)
 
 void stop_idxthread()
 {
+    action_mutex.lock();
+    startindexing = 0;
     stopindexing = 1;
     stopidxthread = 1;
+    action_mutex.unlock();
+    action_wait.wakeAll();
     idxthread.wait();
 }
+
 void stop_indexing()
 {
+    action_mutex.lock();
+    startindexing = 0;
     stopindexing = 1;
+    action_mutex.unlock();
+    action_wait.wakeAll();
 }
+
 void start_indexing(bool raz)
 {
+    action_mutex.lock();
     startindexing = 1;
     rezero = raz;
+    action_mutex.unlock();
+    action_wait.wakeAll();
 }
+
 DbIxStatus idxthread_idxStatus()
 {
     QMutexLocker locker(&curfile_mutex);
     return idxthread.m_statusSnap;
 }
+
 bool idxthread_idxInterrupted()
 {
     return idxthread.m_interrupted;
 }
+
 string idxthread_getReason()
 {
     return indexingReason;
 }
+
 IdxThreadStatus idxthread_getStatus()
 {
     return indexingstatus;
