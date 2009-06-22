@@ -411,6 +411,9 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	return FsTreeWalker::FtwOk;
     }
 
+    LOGDEB0(("processone: processing: [%s] %s\n", 
+            displayableBytes(stp->st_size).c_str(), fn.c_str()));
+
     FileInterner interner(fn, stp, m_config, m_tmpdir);
 
     // File name transcoded to utf8 for indexation. 
