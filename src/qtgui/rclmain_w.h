@@ -123,6 +123,7 @@ private:
     UIPrefsDialog  *uiprefs;
     ConfIndexW     *indexConfig;
     SpellW         *spellform;
+    QTimer         *periodictimer;
 
     vector<TempFile>  m_tempfiles;
     map<QString, int> m_stemLangToId;

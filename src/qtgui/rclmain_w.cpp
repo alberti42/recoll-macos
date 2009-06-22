@@ -122,6 +122,8 @@ void RclMain::init()
     spellform = 0;
     m_idxStatusAck = false;
 
+    periodictimer = new QTimer(this);
+
     (void)new HelpClient(this);
     HelpClient::installMap(this->name(), "RCL.SEARCH.SIMPLE");
 
@@ -260,6 +262,10 @@ void RclMain::init()
     connect(catgBGRP, SIGNAL(clicked(int)), this, SLOT(catgFilter(int)));
     if (prefs.catgToolBar && catgCMB)
 	connect(catgCMB, SIGNAL(activated(int)), this, SLOT(catgFilter(int)));
+    connect(periodictimer, SIGNAL(timeout()), this, SLOT(periodic100()));
+    // Start timer on a slow period (used for checking ^C). Will be
+    // speeded up during indexing
+    periodictimer->start(1000);
 
 #if (QT_VERSION < 0x040000)
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
@@ -470,9 +476,13 @@ void RclMain::toggleIndexing()
     if (idxthread_getStatus() == IDXTS_NULL) {
 	// Indexing in progress
 	stop_indexing();
+        periodictimer->stop();
+        periodictimer->start(1000);
 	fileToggleIndexingAction->setText(tr("Update &Index"));
     } else {
 	start_indexing(false);
+        periodictimer->stop();
+        periodictimer->start(100);
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
     }
     fileToggleIndexingAction->setEnabled(FALSE);

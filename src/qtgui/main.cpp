@@ -37,8 +37,8 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.73 2008-12-17 08:01:40 dockes Exp $ 
 #endif
 
 #include <qtextcodec.h> 
-#include <qthread.h>
 #include <qtimer.h>
+#include <qthread.h>
 #include <qmessagebox.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
@@ -372,13 +372,12 @@ int main(int argc, char **argv)
     // after mainWindow->show() , else the QMessageBox above never
     // returns.
     app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
-    QTimer *timer = new QTimer(&app);
-    mainWindow->connect(timer, SIGNAL(timeout()), 
-			mainWindow, SLOT(periodic100()));
-    timer->start(100);
     app.connect(&app, SIGNAL(aboutToQuit()), mainWindow, SLOT(close()));
 
+    // Start the indexing thread. It will immediately go to sleep waiting for 
+    // something to do.
     start_idxthread(*rclconfig);
+
     if (op_flags & OPT_q) {
 	SSearch::SSearchType stype;
 	if (op_flags & OPT_o) {
@@ -393,9 +392,7 @@ int main(int argc, char **argv)
 	mainWindow->sSearch->searchTypCMB->setCurrentItem(int(stype));
 	mainWindow->
 	    sSearch->setSearchString(QString::fromLocal8Bit(question.c_str()));
-	// The 200 ms are a hack to jump over the first db close by 
-	// periodic100()... 
-	QTimer::singleShot(200, mainWindow->sSearch, SLOT(startSimpleSearch()));
+	QTimer::singleShot(0, mainWindow->sSearch, SLOT(startSimpleSearch()));
     }
     //    fprintf(stderr, "Go\n");
     // Let's go
