@@ -395,8 +395,8 @@ void RclMain::fileExit()
     exit(0);
 }
 
-// This is called on a 100ms timer checks the status of the indexing
-// thread and a possible need to exit
+// This is called by a periodic timer to check the status of the
+// indexing thread and a possible need to exit
 void RclMain::periodic100()
 {
     static int toggle = 0;
@@ -424,14 +424,16 @@ void RclMain::periodic100()
 	    // relatively complicated (keep an open/close gen number
 	    // and check this / restart query in DocSeqDb() ?)
 	    rcldb->close();
+            periodictimer->changeInterval(1000);
 	}
     } else {
 	// Indexing is running
 	m_idxStatusAck = false;
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
 	fileToggleIndexingAction->setEnabled(TRUE);
+        periodictimer->changeInterval(100);
 	// The toggle thing is for the status to flash
-	if (toggle == 0) {
+	if (toggle < 9) {
 	    QString msg = tr("Indexing in progress: ");
 	    DbIxStatus status = idxthread_idxStatus();
 	    QString phs;
@@ -474,15 +476,13 @@ void RclMain::periodic100()
 void RclMain::toggleIndexing()
 {
     if (idxthread_getStatus() == IDXTS_NULL) {
-	// Indexing in progress
+	// Indexing was in progress, stop it
 	stop_indexing();
-        periodictimer->stop();
-        periodictimer->start(1000);
+        periodictimer->changeInterval(1000);
 	fileToggleIndexingAction->setText(tr("Update &Index"));
     } else {
 	start_indexing(false);
-        periodictimer->stop();
-        periodictimer->start(100);
+        periodictimer->changeInterval(100);
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
     }
     fileToggleIndexingAction->setEnabled(FALSE);

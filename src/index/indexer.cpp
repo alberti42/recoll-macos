@@ -508,14 +508,13 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 
 	// Tell what we are doing and check for interrupt request
 	if (m_updater) {
-	    if ((++(m_updater->status.docsdone) % 10) == 0) {
-		m_updater->status.fn = fn;
-		if (!ipath.empty())
-		    m_updater->status.fn += "|" + ipath;
-		if (!m_updater->update()) {
-		    return FsTreeWalker::FtwStop;
-		}
-	    }
+	    ++(m_updater->status.docsdone);
+            m_updater->status.fn = fn;
+            if (!ipath.empty())
+                m_updater->status.fn += "|" + ipath;
+            if (!m_updater->update()) {
+                return FsTreeWalker::FtwStop;
+            }
 	}
     }
 
