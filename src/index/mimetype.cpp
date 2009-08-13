@@ -29,6 +29,7 @@ static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.22 2008-11-18 13:25:48 dockes Ex
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+#include "autoconfig.h"
 #include "mimetype.h"
 #include "debuglog.h"
 #include "execmd.h"
@@ -36,30 +37,25 @@ using namespace std;
 #include "smallut.h"
 #include "idfile.h"
 
-// Solaris8's 'file' command doesnt understand -i
-#ifndef sun
-#define USE_SYSTEM_FILE_COMMAND
-#endif
-
 /// Identification of file from contents. This is called for files with
-/// unrecognized extensions (none, or not known either for indexing or
-/// stop list)
+/// unrecognized extensions.
 ///
-/// The system 'file' utility is not that great for us. For exemple it
-/// will mistake mail folders for simple text files if there is no
-/// 'Received' header, which would be the case, for exemple in a 'Sent'
-/// folder. Also "file -i" does not exist on all systems, and it's
-/// quite costly.  
+/// The system 'file' utility does not always work for us. For exemple
+/// it will mistake mail folders for simple text files if there is no
+/// 'Received' header, which would be the case, for exemple in a
+/// 'Sent' folder. Also "file -i" does not exist on all systems, and
+/// is quite costly to execute.
 /// So we first call the internal file identifier, which currently
 /// only knows about mail, but in which we can add the more
 /// current/interesting file types.
-/// As a last resort we execute 'file'
+/// As a last resort we execute 'file' (except if forbidden by config)
 
 static string mimetypefromdata(const string &fn, bool usfc)
 {
-    // In any case first try the internal identifier
+    // First try the internal identifying routine
     string mime = idFile(fn.c_str());
 
+    // Then exec 'file -i'
 #ifdef USE_SYSTEM_FILE_COMMAND
     if (usfc && mime.empty()) {
 	// Last resort: use "file -i"
@@ -69,7 +65,7 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	args.push_back(fn);
 	ExecCmd ex;
 	string result;
-	string cmd = "file";
+	string cmd = FILE_PROG;
 	int status = ex.doexec(cmd, args, 0, &result);
 	if (status) {
 	    LOGERR(("mimetypefromdata: doexec: status 0x%x\n", status));
@@ -96,48 +92,50 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	if(mime.find("/") == string::npos) 
 	    mime.clear();
     }
-#endif
+#endif //USE_SYSTEM_FILE_COMMAND
 
     return mime;
 }
 
 /// Guess mime type, first from suffix, then from file data. We also
-/// have a list of suffixes that we don't touch at all (ie: .jpg,
-/// etc...)
+/// have a list of suffixes that we don't touch at all.
 string mimetype(const string &fn, const struct stat *stp,
 		RclConfig *cfg, bool usfc)
 {
+    // Use stat data if available to check for non regular files
     if (stp) {
 	if (S_ISDIR(stp->st_mode))
 	    return "application/x-fsdirectory";
 	if (!S_ISREG(stp->st_mode))
 	    return "application/x-fsspecial";
     }
-    if (cfg == 0)
-	return string();
+
+    string mtype;
+
+    if (cfg == 0) // ?!?
+	return mtype;
 
     if (cfg->inStopSuffixes(fn)) {
 	LOGDEB(("mimetype: fn [%s] in stopsuffixes\n", fn.c_str()));
-	return string();
+	return mtype;
     }
 
-    // First look for suffix in mimetype map
+    // Compute file name suffix and search the mimetype map
     string::size_type dot = fn.find_last_of(".");
     string suff;
     if (dot != string::npos) {
-        suff = fn.substr(dot);
-	for (unsigned int i = 0; i < suff.length(); i++)
-	    suff[i] = tolower(suff[i]);
-
-	string mtype = cfg->getMimeTypeFromSuffix(suff);
-	if (!mtype.empty())
-	    return mtype;
+        suff = stringtolower(fn.substr(dot));
+	mtype = cfg->getMimeTypeFromSuffix(suff);
     }
 
-    // Finally examine data
-    if (!stp)
-	return string();
-    return mimetypefromdata(fn, usfc);
+    // If type was not determined from suffix, examine file data. Can
+    // only do this if we have an actual file (as opposed to a pure
+    // name).
+    if (mtype.empty() && stp)
+	mtype = mimetypefromdata(fn, usfc);
+
+ out:
+    return mtype;
 }
 
 

@@ -17,6 +17,30 @@ fi
 
 AC_CHECK_HEADERS(sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h)
 
+# Use specific 'file' command ? (Useful on solaris to specify
+# /usr/local/bin/file instead of the system's which doesn't understand '-i'
+AC_ARG_WITH(file-command, 
+    AC_HELP_STRING([--with-file-command],
+   [Specify version of 'file' command (ie: --with-file-command=/usr/local/bin/file)]),
+        withFileCommand=$withval, withFileCommand=file)
+case $withFileCommand in
+  file)
+    AC_PATH_PROG(fileProg, file);;
+  *) 
+    fileProg=$withFileCommand;;
+esac
+
+if test ! -x "$fileProg"; then
+   AC_MSG_ERROR([$fileProg does not exist or is not executable])
+fi
+AC_DEFINE_UNQUOTED(FILE_PROG, "$fileProg", [Path to the file program])
+
+# Can't use Solaris standard 'file' command, it doesn't support -i
+if test X$sys != XSunOS -o X$fileProg != X/usr/bin/file; then
+   AC_DEFINE(USE_SYSTEM_FILE_COMMAND)
+fi
+
+
 # Use aspell to provide spelling expansions ?
 # The default is yes. If we do find an aspell installation, we use it. Else
 # we do compile the aspell module using an internal copy of aspell.h
