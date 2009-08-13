@@ -9,6 +9,12 @@
 /* Path to the aspell program */
 #undef ASPELL_PROG
 
+/* Path to the file program */
+#undef FILE_PROG
+
+/* Enable using the system's 'file' command to id mime if we fail internally */
+#undef USE_SYSTEM_FILE_COMMAND
+
 /* Real time monitoring option */
 #undef RCL_MONITOR
 
