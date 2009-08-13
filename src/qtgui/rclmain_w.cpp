@@ -423,7 +423,8 @@ void RclMain::periodic100()
 	    // looking at them either). Fixing this would be
 	    // relatively complicated (keep an open/close gen number
 	    // and check this / restart query in DocSeqDb() ?)
-	    rcldb->close();
+	    string reason;
+	    maybeOpenDb(reason, 1);
             periodictimer->changeInterval(1000);
 	}
     } else {
