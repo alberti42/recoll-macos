@@ -1,3 +1,103 @@
+2009-06-22 16:41  dockes
+
+	* qtgui/main.cpp, qtgui/rclmain_w.cpp, qtgui/rclmain_w.h: moved
+	  periodic timer control from main.cpp to rclmain_w.cpp
+
+2009-06-22 15:25  dockes
+
+	* qtgui/idxthread.cpp, qtgui/main.cpp, qtgui/rclmain_w.cpp: use
+	  proper locking/sleeping object for idx thread sync
+
+2009-06-22 08:58  dockes
+
+	* filters/rclman: use groff html output!
+
+2009-06-22 08:57  dockes
+
+	* index/indexer.cpp: debug trace
+
+2009-06-01 06:32  dockes
+
+	* qtgui/main.cpp: fixed bug in handling remaining arguments as
+	  question pieces
+
+2009-05-29 06:28  dockes
+
+	* bincimapmime/convert.h, utils/base64.cpp: change strchr() return
+	  parameter to const for new libc
+
+2009-05-25 08:59  dockes
+
+	* filters/rcllyx: bug report from d.prost: spaces and accents in
+	  lyx file names
+
+2009-05-04 08:06  dockes
+
+	* qtgui/guiutils.cpp, qtgui/preview_w.h, qtgui/spell_w.cpp: gcc44
+
+2009-04-27 08:05  dockes
+
+	* utils/md5.cpp, utils/readfile.cpp: gcc 4.4 includes fixes
+
+2009-04-27 08:03  dockes
+
+	* python/recoll/setup.py: pathhash->fileudi
+
+2009-02-24 18:30  dockes
+
+	* qtgui/guiutils.cpp, qtgui/guiutils.h, qtgui/rclmain_w.cpp,
+	  qtgui/uiprefs.ui, qtgui/uiprefs_w.cpp: implement option to
+	  display the catg filter as a toolbar combobox
+
+2009-02-23 07:57  dockes
+
+	* qtgui/i18n/recoll_ru.ts, qtgui/i18n/recoll_uk.ts: new ru/uk
+	  translations from Michael
+
+2009-02-06 16:49  dockes
+
+	* utils/refcntr.h: make RefCntr(x*) explicit
+
+2009-02-06 16:48  dockes
+
+	* internfile/mimehandler.cpp: comments
+
+2009-02-05 14:35  dockes
+
+	* utils/execmd.cpp, utils/execmd.h: 1st execcmd cleanup
+
+2009-01-30 13:27  dockes
+
+	* qtgui/i18n/recoll_de.ts, qtgui/i18n/recoll_fr.ts,
+	  qtgui/i18n/recoll_it.ts, qtgui/i18n/recoll_ru.ts,
+	  qtgui/i18n/recoll_tr.ts, qtgui/i18n/recoll_uk.ts,
+	  qtgui/i18n/recoll_xx.ts, qtgui/reslist.cpp: small pbs with
+	  reslist translations
+
+2009-01-30 11:43  dockes
+
+	* INSTALL, README:
+
+2009-01-30 11:42  dockes
+
+	* doc/user/usermanual.sgml: 1.12 manual
+
+2009-01-30 10:22  dockes
+
+	* qtgui/i18n/recoll_de.ts, qtgui/i18n/recoll_fr.ts,
+	  qtgui/i18n/recoll_it.ts, qtgui/i18n/recoll_ru.ts,
+	  qtgui/i18n/recoll_tr.ts, qtgui/i18n/recoll_uk.ts,
+	  qtgui/i18n/recoll_xx.ts: updated message files, translated french
+
+2009-01-29 14:24  dockes
+
+	* filters/rcltext: simplified rcltext. No need for awk and no
+	  assumptions on charset
+
+2009-01-29 11:27  dockes
+
+	* ChangeLog:
+
 2009-01-29 11:04  dockes
 
 	* VERSION: 1.12.0 une
