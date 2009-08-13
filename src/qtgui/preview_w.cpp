@@ -691,6 +691,8 @@ class LoadThread : public QThread {
 		// a mysterious error. Happens when the file name matches a
 		// a search term of course.
 		*statusp = 0;
+		// If we prefer html and it is available, replace the
+		// text/plain document text
 		if (prefs.previewHtml && !interner.get_html().empty()) {
 		    out->text = interner.get_html();
 		    out->mimetype = "text/html";
