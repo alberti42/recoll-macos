@@ -7,37 +7,43 @@ template <class X> class RefCntr {
     int *pcount;
 public:
     RefCntr() 
-	: rep(0), pcount(0) 
+        : rep(0), pcount(0) 
     {}
     explicit RefCntr(X *pp) 
-	: rep(pp), pcount(new int(1)) 
+        : rep(pp), pcount(new int(1)) 
     {}
     RefCntr(const RefCntr &r) 
-	: rep(r.rep), pcount(r.pcount) 
+        : rep(r.rep), pcount(r.pcount) 
     { 
-	if (pcount)
-	    (*pcount)++;
+        if (pcount)
+            (*pcount)++;
     }
     RefCntr& operator=(const RefCntr& r) 
     {
-	if (rep == r.rep) 
-	    return *this;
-	if (pcount && --(*pcount) == 0) {
-	    delete rep;
-	    delete pcount;
-	}
-	rep = r.rep;
-	pcount = r.pcount;
-	if (pcount)
-	    (*pcount)++;
-	return  *this;
+        if (rep == r.rep) 
+            return *this;
+        if (pcount && --(*pcount) == 0) {
+            delete rep;
+            delete pcount;
+        }
+        rep = r.rep;
+        pcount = r.pcount;
+        if (pcount)
+            (*pcount)++;
+        return  *this;
+    }
+    void release()
+    {
+        if (pcount && --(*pcount) == 0) {
+            delete rep;
+            delete pcount;
+        }
+        rep = 0;
+        pcount = 0;
     }
     ~RefCntr() 
     {
-	if (pcount && --(*pcount) == 0) {
-	    delete rep; 
-	    delete pcount; 
-	}
+        release();
     }
     X *operator->() {return rep;}
     X *getptr() const {return rep;}
