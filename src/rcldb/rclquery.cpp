@@ -242,6 +242,8 @@ bool Query::getMatchTerms(const Doc& doc, list<string>& terms)
 // Mset size
 static const int qquantum = 30;
 
+// Get estimated result count for query. Xapian actually does most of
+// the search job in there, this can be long
 int Query::getResCnt()
 {
     if (ISNULL(m_nq) || !m_nq->enquire) {
@@ -249,24 +251,21 @@ int Query::getResCnt()
 	return -1;
     }
     string ermsg;
+    int ret = -1;
     if (m_nq->mset.size() <= 0) {
+        Chrono chron;
 	try {
-	    m_nq->mset = m_nq->enquire->get_mset(0, qquantum, 
-						   0, m_nq->decider);
+	    m_nq->mset = m_nq->enquire->get_mset(0, qquantum,0, m_nq->decider);
+            ret = m_nq->mset.get_matches_lower_bound();
 	} catch (const Xapian::DatabaseModifiedError &error) {
 	    m_db->m_ndb->db.reopen();
-	    m_nq->mset = m_nq->enquire->get_mset(0, qquantum,
-						   0, m_nq->decider);
+	    m_nq->mset = m_nq->enquire->get_mset(0, qquantum,0, m_nq->decider);
+            ret = m_nq->mset.get_matches_lower_bound();
 	} XCATCHERROR(ermsg);
-	if (!ermsg.empty()) {
+        LOGDEB(("Query::getResCnt: %d mS\n", chron.millis()));
+	if (!ermsg.empty())
 	    LOGERR(("enquire->get_mset: exception: %s\n", ermsg.c_str()));
-	    return -1;
-	}
     }
-    int ret = -1;
-    try {
-    ret = m_nq->mset.get_matches_lower_bound();
-    } catch (...) {}
     return ret;
 }
 
@@ -310,7 +309,7 @@ bool Query::getDoc(int exti, Doc &doc)
 		} catch (const Xapian::Error & error) {
 		  LOGERR(("enquire->get_mset: exception: %s\n", 
 			  error.get_msg().c_str()));
-		  abort();
+                  return false;
 		}
 
 		if (m_nq->mset.empty()) {
@@ -349,8 +348,8 @@ bool Query::getDoc(int exti, Doc &doc)
 
 	} catch (const Xapian::Error & error) {
 	  LOGERR(("enquire->get_mset: exception: %s\n", 
-		  error.get_msg().c_str()));
-	  abort();
+                  error.get_msg().c_str()));
+          return false;
 	}
 	if (m_nq->mset.empty())
 	    return false;
@@ -359,9 +358,8 @@ bool Query::getDoc(int exti, Doc &doc)
     }
 
     LOGDEB1(("Query::getDoc: Qry [%s] win [%d-%d] Estimated results: %d",
-	     m_nq->query.get_description().c_str(), 
-	     first, last,
-	     m_nq->mset.get_matches_lower_bound()));
+            m_nq->query.get_description().c_str(), 
+            first, last, m_nq->mset.get_matches_lower_bound()));
 
     Xapian::Document xdoc = m_nq->mset[xapi-first].get_document();
     Xapian::docid docid = *(m_nq->mset[xapi-first]);
