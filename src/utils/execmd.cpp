@@ -45,6 +45,7 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.27 2008-10-06 06:22:47 dockes Exp 
 #include "pathut.h"
 #include "debuglog.h"
 #include "smallut.h"
+#include "netcon.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -145,6 +146,8 @@ public:
 	    close(m_parent->m_pipeout[0]);
 	if (m_parent->m_pipeout[1] >= 0)
 	    close(m_parent->m_pipeout[1]);
+	m_parent->m_tocmd.release();
+	m_parent->m_fromcmd.release();
 	pthread_sigmask(SIG_UNBLOCK, &m_parent->m_blkcld, 0);
 	m_parent->reset();
     }
@@ -152,11 +155,10 @@ private:
     ExecCmd *m_parent;
     bool    m_active;
 };
+
 ExecCmd::~ExecCmd()
 {
-    {
-	ExecCmdRsrc(this);
-    }
+    ExecCmdRsrc(this);
 }
 
 int ExecCmd::startExec(const string &cmd, const list<string>& args,
@@ -171,6 +173,8 @@ int ExecCmd::startExec(const string &cmd, const list<string>& args,
 	LOGDEB(("ExecCmd::startExec: (%d|%d) %s\n", 
 		has_input, has_output, command.c_str()));
     }
+
+    // The resource manager ensures resources are freed if we return early
     ExecCmdRsrc e(this);
 
     if (has_input && pipe(m_pipein) < 0) {
@@ -202,128 +206,166 @@ int ExecCmd::startExec(const string &cmd, const list<string>& args,
     if (has_input) {
 	close(m_pipein[0]);
 	m_pipein[0] = -1;
-	fcntl(m_pipein[1], F_SETFL, O_NONBLOCK);
+	NetconCli *iclicon = new NetconCli();
+	iclicon->setconn(m_pipein[1]);
+	m_tocmd = NetconP(iclicon);
+	m_pipein[1] = 0;
     }
     if (has_output) {
 	close(m_pipeout[1]);
 	m_pipeout[1] = -1;
-	fcntl(m_pipeout[0], F_SETFL, O_NONBLOCK);
+	NetconCli *oclicon = new NetconCli();
+	oclicon->setconn(m_pipeout[0]);
+	m_fromcmd = NetconP(oclicon);
+	m_pipeout[0] = -1;
     }
+
+    /* Don't want to undo what we just did ! */
     e.inactivate();
+
     return 0;
 }
 
+// Netcon callback. Send data to the command's input
+class ExecWriter : public NetconWorker {
+public:
+    ExecWriter(const string *input, ExecCmdProvide *provide) 
+	: m_input(input), m_cnt(0), m_provide(provide)
+    {}				    
+    virtual int data(NetconData *con, Netcon::Event reason)
+    {
+	if (!m_input) return -1;
+	LOGDEB(("ExecWriter: input m_cnt %d input length %d\n", m_cnt, 
+		m_input->length()));
+	if (m_cnt >= m_input->length()) {
+	    // Fd ready for more but we got none.
+	    if (m_provide) {
+		m_provide->newData();
+		if (m_input->empty()) {
+		    return 0;
+		} else {
+		    m_cnt = 0;
+		}
+		LOGDEB2(("ExecWriter: provide m_cnt %d input length %d\n", 
+			m_cnt, m_input->length()));
+	    } else {
+		return 0;
+	    }
+	}
+	int ret = con->send(m_input->c_str() + m_cnt, 
+			    m_input->length() - m_cnt);
+	LOGDEB2(("ExecWriter: wrote %d to command\n", ret));
+	if (ret <= 0) {
+	    LOGERR(("ExecWriter: data: can't write\n"));
+	    return -1;
+	}
+	m_cnt += ret;
+	return ret;
+    }
+private:
+    const string   *m_input;
+    unsigned int    m_cnt; // Current offset inside m_input
+    ExecCmdProvide *m_provide;
+};
+
+// Netcon callback. Get data from the command output.
+class ExecReader : public NetconWorker {
+public:
+    ExecReader(string *output, ExecCmdAdvise *advise) 
+	: m_output(output), m_advise(advise)
+    {}				    
+    virtual int data(NetconData *con, Netcon::Event reason)
+    {
+	char buf[8192];
+	int n = con->receive(buf, 8192);
+	LOGDEB(("ExecReader: got %d from command\n", n));
+	if (n < 0) {
+	    LOGERR(("ExecCmd::doexec: receive failed. errno %d\n", errno));
+	} else if (n > 0) {
+	    m_output->append(buf, n);
+	    if (m_advise)
+		m_advise->newData(n);
+	} // else n == 0, just return
+	return n;
+    }
+private:
+    string        *m_output;
+    ExecCmdAdvise *m_advise;
+};
 
 int ExecCmd::doexec(const string &cmd, const list<string>& args,
-		    const string *inputstring, string *output)
+		    const string *input, string *output)
 {
-    if (startExec(cmd, args, inputstring != 0, output != 0) < 0) {
+    if (startExec(cmd, args, input != 0, output != 0) < 0) {
 	return -1;
     }
 
-    // Need something to take note of my own errors (apart from the command's)
-    bool haderror = false;
-    const char *input = inputstring ? inputstring->data() : 0;
-    unsigned int inputlen = inputstring ? inputstring->length() : 0;
+    // Cleanup in case we return early
     ExecCmdRsrc e(this);
 
+    int ret = 0;
     if (input || output) {
-	unsigned int nwritten = 0;
-	int nfds = MAX(m_pipein[1], m_pipeout[0]) + 1;
-	fd_set readfds, writefds;
-	struct timeval tv;
-	tv.tv_sec = m_timeoutMs / 1000;
-	tv.tv_usec = 1000 * (m_timeoutMs % 1000);
-	for(; nfds > 0;) {
-	    if (m_cancelRequest)
-		break;
+        // Setup output
+	if (output) {
+	    NetconCli *oclicon = dynamic_cast<NetconCli *>(m_fromcmd.getptr());
+	    if (!oclicon) {
+		LOGERR(("ExecCmd::doexec: no connection from command\n"));
+		return -1;
+	    }
+	    oclicon->setcallback(RefCntr<NetconWorker>
+				 (new ExecReader(output, m_advise)));
+	    Netcon::addselcon(m_fromcmd, Netcon::NETCONPOLL_READ);
+	    // Give up ownership 
+	    m_fromcmd.release();
+	} 
+        // Setup input
+	if (input) {
+	    NetconCli *iclicon = dynamic_cast<NetconCli *>(m_tocmd.getptr());
+	    if (!iclicon) {
+		LOGERR(("ExecCmd::doexec: no connection from command\n"));
+		return -1;
+	    }
+	    iclicon->setcallback(RefCntr<NetconWorker>
+				 (new ExecWriter(input, m_provide)));
+	    Netcon::addselcon(m_tocmd, Netcon::NETCONPOLL_WRITE);
+	    // Give up ownership 
+	    m_tocmd.release();
+	}
 
-	    FD_ZERO(&writefds);
-	    FD_ZERO(&readfds);
-	    if (m_pipein[1] >= 0)
-		FD_SET(m_pipein[1], &writefds);
-	    if (m_pipeout[0] >= 0)
-		FD_SET(m_pipeout[0], &readfds);
-	    nfds = MAX(m_pipein[1], m_pipeout[0]) + 1;
-	    //struct timeval to; to.tv_sec = 1;to.tv_usec=0;
-	    //cerr << "m_pipein[1] "<< m_pipein[1] << " m_pipeout[0] " << 
-	    //m_pipeout[0] << " nfds " << nfds << endl;
-	    int ss;
-	    if ((ss = select(nfds, &readfds, &writefds, 0, &tv)) <= 0) {
-		if (ss == 0) {
-		    // Timeout, is ok.
-		    if (m_advise)
-			m_advise->newData(0);
-		    continue;
-		}
-		LOGERR(("ExecCmd::doexec: select(2) failed. errno %d\n", 
-			errno));
-		haderror = true;
+        // Do the actual reading/writing/waiting
+	Netcon::setperiodichandler(0, 0, m_timeoutMs);
+	while ((ret = Netcon::selectloop()) > 0) {
+	    LOGDEB(("ExecCmd::doexec: selectloop returned %d\n", ret));
+	    if (m_advise)
+		m_advise->newData(0);
+	    if (m_cancelRequest) {
+		LOGINFO(("ExecCmd::doexec: cancel request\n"));
 		break;
-	    }
-	    if (m_pipein[1] >= 0 && FD_ISSET(m_pipein[1], &writefds)) {
-		int n = write(m_pipein[1], input + nwritten, 
-			      inputlen - nwritten);
-		if (n < 0) {
-		    LOGERR(("ExecCmd::doexec: write(2) failed. errno %d\n",
-			    errno));
-		    haderror = true;
-		    goto out;
-		}
-		nwritten += n;
-		if (nwritten == inputlen) {
-		    if (m_provide) {
-			m_provide->newData();
-			if (inputstring->empty()) {
-			    close(m_pipein[1]);
-			    m_pipein[1] = -1;
-			} else {
-			    input = inputstring->data();
-			    inputlen = inputstring->length();
-			    nwritten = 0;
-			}
-		    } else {
-			// cerr << "Closing output" << endl;
-			close(m_pipein[1]);
-			m_pipein[1] = -1;
-		    }
-		}
-	    }
-	    if (m_pipeout[0] > 0 && FD_ISSET(m_pipeout[0], &readfds)) {
-		char buf[8192];
-		int n = read(m_pipeout[0], buf, 8192);
-		if (n == 0) {
-		    goto out;
-		} else if (n < 0) {
-		    LOGERR(("ExecCmd::doexec: read(2) failed. errno %d\n",
-			    errno));
-		    haderror = true;
-		    goto out;
-		} else if (n > 0) {
-		    // cerr << "READ: " << n << endl;
-		    output->append(buf, n);
-		    if (m_advise)
-			m_advise->newData(n);
-		}
 	    }
 	}
+	LOGDEB(("ExecCmd::doexec: selectloop returned %d\n", ret));
     }
 
- out:
+    // Normal return: deactivate cleaner, wait() will do the cleanup
     e.inactivate();
-    return wait(haderror);
+
+    return ExecCmd::wait(ret);
 }
 
 int ExecCmd::send(const string& data)
 {
+    NetconCli *con = dynamic_cast<NetconCli *>(m_tocmd.getptr());
+    if (con == 0) {
+	LOGERR(("ExecCmd::send: outpipe is closed\n"));
+	return -1;
+    }
     unsigned int nwritten = 0;
     while (nwritten < data.length()) {
 	if (m_cancelRequest)
 	    break;
-	int n = write(m_pipein[1], data.c_str() + nwritten, 
-		      data.length() - nwritten);
+	int n = con->send(data.c_str() + nwritten, data.length() - nwritten);
 	if (n < 0) {
-	    LOGERR(("ExecCmd::doexec: write(2) failed. errno %d\n", errno));
+	    LOGERR(("ExecCmd::doexec: send failed\n"));
 	    return -1;
 	}
 	nwritten += n;
@@ -333,51 +375,29 @@ int ExecCmd::send(const string& data)
 
 int ExecCmd::receive(string& data)
 {
-    if (m_pipeout[0] < 0) {
-	LOGERR(("ExecCmd::receive: pipe is closed\n"));
-	return -1;
-    }
-    int nfds = m_pipeout[0] + 1;
-    fd_set readfds;
-    struct timeval tv;
-    tv.tv_sec = m_timeoutMs / 1000;
-    tv.tv_usec = 1000 * (m_timeoutMs % 1000);
-    FD_ZERO(&readfds);
-    FD_SET(m_pipeout[0], &readfds);
-    int ss;
-    if ((ss = select(nfds, &readfds, 0, 0, &tv)) <= 0) {
-	if (ss == 0) {
-	    // timeout
-	    return 0;
-	}
-	LOGERR(("ExecCmd::receive: select(2) failed. errno %d\n", errno));
-	return -1;
-    }
-
-    if (!FD_ISSET(m_pipeout[0], &readfds)) {
-	LOGERR(("ExecCmd::receive: fd not ready after select ??\n"));
+    NetconCli *con = dynamic_cast<NetconCli *>(m_fromcmd.getptr());
+    if (con == 0) {
+	LOGERR(("ExecCmd::receive: outpipe is closed\n"));
 	return -1;
     }
     char buf[8192];
-    int n = read(m_pipeout[0], buf, 8192);
-    if (n == 0) {
-	return 0;
-    } else if (n < 0) {
-	LOGERR(("ExecCmd::doexec: read(2) failed. errno %d\n", errno));
-	return -1;
-    } else {
-	// cerr << "READ: " << n << endl;
-	data.assign(buf, n);
+    int n = con->receive(buf, 8192);
+    if (n < 0) {
+	LOGERR(("ExecCmd::receive: error\n"));
+    } else if (n > 0) {
+	data.append(buf, n);
     }
     return n;
 }
 
+// Wait for command status and clean up all resources.
 int ExecCmd::wait(bool haderror)
 {
     ExecCmdRsrc e(this);
     int status = -1;
     if (!m_cancelRequest) {
-	(void)waitpid(m_pid, &status, 0);
+	if (waitpid(m_pid, &status, 0) < 0) 
+	    status = -1;
 	m_pid = -1;
     }
     LOGDEB(("ExecCmd::wait: got status 0x%x\n", status));
@@ -479,11 +499,23 @@ using namespace std;
 
 #include "execmd.h"
 
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_b	  0x4 
+#define OPT_w     0x8
+#define OPT_c     0x10
+
 const char *data = "Une ligne de donnees\n";
 class MEAdv : public ExecCmdAdvise {
 public:
     ExecCmd *cmd;
     void newData(int cnt) {
+	if (op_flags & OPT_c) {
+	    static int  callcnt;
+	    if (callcnt++ == 3) {
+		throw CancelExcept();
+	    }
+	}
 	cerr << "newData(" << cnt << ")" << endl;
 	//	CancelCheck::instance().setCancel();
 	//	CancelCheck::instance().checkCancel();
@@ -517,8 +549,9 @@ public:
 
 static char *thisprog;
 static char usage [] =
-"execmd cmd [arg1 arg2 ...]\n" 
-"  \n\n"
+"trexecmd [-c] cmd [arg1 arg2 ...]\n" 
+" -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
+"trexecmd -w cmd : do the which thing\n"
 ;
 static void Usage(void)
 {
@@ -526,14 +559,8 @@ static void Usage(void)
     exit(1);
 }
 
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_s	  0x2 
-#define OPT_b	  0x4 
-#define OPT_w     0x8
 int main(int argc, char **argv)
 {
-    int count = 10;
     thisprog = argv[0];
     argc--; argv++;
 
@@ -544,13 +571,8 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'b':	op_flags |= OPT_b; if (argc < 2)  Usage();
-		if ((sscanf(*(++argv), "%d", &count)) != 1) 
-		    Usage(); 
-		argc--; 
-		goto b1;
-	    case 's':	op_flags |= OPT_s; break;
 	    case 'w':	op_flags |= OPT_w; break;
+	    case 'c':	op_flags |= OPT_c; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
@@ -567,7 +589,7 @@ int main(int argc, char **argv)
 
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
-
+    signal(SIGPIPE, SIG_IGN);
     if (op_flags & OPT_w) {
 	string path;
 	if (ExecCmd::which(cmd, path)) {
@@ -580,7 +602,7 @@ int main(int argc, char **argv)
     MEAdv adv;
     adv.cmd = &mexec;
     mexec.setAdvise(&adv);
-    mexec.setTimeout(500);
+    mexec.setTimeout(5);
     mexec.setStderr("/tmp/trexecStderr");
     mexec.putenv("TESTVARIABLE1=TESTVALUE1");
     mexec.putenv("TESTVARIABLE2=TESTVALUE2");
@@ -598,11 +620,11 @@ int main(int argc, char **argv)
     try {
 	status = mexec.doexec(cmd, l, ip, &output);
     } catch (CancelExcept) {
-	cerr << "CANCELED" << endl;
+	cerr << "CANCELLED" << endl;
     }
 
     fprintf(stderr, "Status: 0x%x\n", status);
-    cout << "Output:[" << output << "]" << endl;
+    cout << output;
     exit (status >> 8);
 }
 #endif // TEST

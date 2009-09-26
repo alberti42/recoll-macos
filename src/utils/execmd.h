@@ -27,12 +27,15 @@ using std::string;
 using std::vector;
 #endif
 
+#include "netcon.h"
+
 /** 
  * Callback function object to advise of new data arrival, or just periodic 
  * heartbeat if cnt is 0. 
  *
- * The code using ExeCmd should raise an exception inside newData() 
- * (and catch it doexec's caller) to interrupt the command.
+ * To interrupt the command, the code using ExecCmd should either
+ * raise an exception inside newData() (and catch it in doexec's caller), or 
+ * call ExecCmd::setCancel() 
  * 
  */
 class ExecCmdAdvise {
@@ -75,7 +78,7 @@ class ExecCmd {
      * Add/replace environment variable before executing command. This must
      * be called before doexec() to have an effect (possibly multiple
      * times for several variables).
-     * @param envassign an environment assignment string (name=value)
+     * @param envassign an environment assignment string ("name=value")
      */
     void putenv(const string &envassign);
 
@@ -124,6 +127,10 @@ class ExecCmd {
 	       const string *input = 0, 
 	       string *output = 0);
 
+    /*
+     * The next four methods can be used when a Q/A dialog needs to be 
+     * performed with the command
+     */
     int startExec(const string &cmd, const list<string>& args, 
 		  bool has_input, bool has_output);
     int send(const string& data);
@@ -152,8 +159,7 @@ class ExecCmd {
      * @param path exec seach path to use instead of getenv(PATH)
      * @return true if found
      */
-    static bool which(const string& cmd, string& exepath, 
-		      const char* path = 0);
+    static bool which(const string& cmd, string& exe, const char* path = 0);
 
     friend class ExecCmdRsrc;
  private:
@@ -165,14 +171,17 @@ class ExecCmd {
     string           m_stderrFile;
     // Pipe for data going to the command
     int              m_pipein[2];
+    NetconP          m_tocmd;
     // Pipe for data coming out
     int              m_pipeout[2];
+    NetconP          m_fromcmd;
     // Subprocess id
     pid_t            m_pid;
     // Saved sigmask
     sigset_t         m_blkcld;
 
-    // Reset internal execution state
+    // Reset internal state indicators. Any resources should have been
+    // previously freed
     void reset() {
 	m_cancelRequest = false;
 	m_pipein[0] = m_pipein[1] = m_pipeout[0] = m_pipeout[1] = -1;

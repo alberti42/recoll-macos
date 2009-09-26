@@ -6,8 +6,8 @@ LIBS = librcl.a
 
 all: $(LIBS)
 
-OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o csguess.o indexer.o mimetype.o htmlparse.o myhtmlparse.o mimehandler.o internfile.o mh_exec.o mh_html.o mh_mail.o mh_mbox.o mh_text.o docseq.o docseqdb.o docseqhist.o filtseq.o history.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o rcldb.o rcldoc.o rclquery.o searchdata.o stemdb.o stoplist.o base64.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o pathut.o pxattr.o readfile.o smallut.o transcode.o wipedir.o x11mon.o mime-getpart.o mime-parsefull.o mime-parseonlyheader.o mime-printbody.o mime-printdoc.o mime-printheader.o mime.o convert.o iodevice.o iofactory.o
-DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp csguess.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp myhtmlparse.dep.stamp mimehandler.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp history.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rclquery.dep.stamp searchdata.dep.stamp stemdb.dep.stamp stoplist.dep.stamp base64.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp pathut.dep.stamp pxattr.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp mime-getpart.dep.stamp mime-parsefull.dep.stamp mime-parseonlyheader.dep.stamp mime-printbody.dep.stamp mime-printdoc.dep.stamp mime-printheader.dep.stamp mime.dep.stamp convert.dep.stamp iodevice.dep.stamp iofactory.dep.stamp
+OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o csguess.o indexer.o mimetype.o htmlparse.o myhtmlparse.o mimehandler.o internfile.o mh_exec.o mh_html.o mh_mail.o mh_mbox.o mh_text.o docseq.o docseqdb.o docseqhist.o filtseq.o history.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o rcldb.o rcldoc.o rclquery.o searchdata.o stemdb.o stoplist.o base64.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o netcon.o pathut.o pxattr.o readfile.o smallut.o transcode.o wipedir.o x11mon.o mime-getpart.o mime-parsefull.o mime-parseonlyheader.o mime-printbody.o mime-printdoc.o mime-printheader.o mime.o convert.o iodevice.o iofactory.o
+DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp csguess.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp myhtmlparse.dep.stamp mimehandler.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp history.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rclquery.dep.stamp searchdata.dep.stamp stemdb.dep.stamp stoplist.dep.stamp base64.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp netcon.dep.stamp pathut.dep.stamp pxattr.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp mime-getpart.dep.stamp mime-parsefull.dep.stamp mime-parseonlyheader.dep.stamp mime-printbody.dep.stamp mime-printdoc.dep.stamp mime-printheader.dep.stamp mime.dep.stamp convert.dep.stamp iodevice.dep.stamp iofactory.dep.stamp
 
 librcl.a : $(DEPS) $(OBJS) unac.o
 	ar ru librcl.a $(OBJS) unac.o
@@ -103,6 +103,8 @@ md5.o : ../utils/md5.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../utils/md5.cpp
 mimeparse.o : ../utils/mimeparse.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../utils/mimeparse.cpp
+netcon.o : ../utils/netcon.cpp
+	$(CXX) $(ALL_CXXFLAGS) -c ../utils/netcon.cpp
 pathut.o : ../utils/pathut.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../utils/pathut.cpp
 pxattr.o : ../utils/pxattr.cpp
@@ -275,6 +277,9 @@ md5.dep.stamp : ../utils/md5.cpp
 mimeparse.dep.stamp : ../utils/mimeparse.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../utils/mimeparse.cpp > mimeparse.dep
 	touch mimeparse.dep.stamp
+netcon.dep.stamp : ../utils/netcon.cpp
+	$(CXX) -M $(ALL_CXXFLAGS) ../utils/netcon.cpp > netcon.dep
+	touch netcon.dep.stamp
 pathut.dep.stamp : ../utils/pathut.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../utils/pathut.cpp > pathut.dep
 	touch pathut.dep.stamp
@@ -340,6 +345,7 @@ include idfile.dep
 include fileudi.dep
 include md5.dep
 include mimeparse.dep
+include netcon.dep
 include pathut.dep
 include pxattr.dep
 include readfile.dep
