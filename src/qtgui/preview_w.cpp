@@ -33,18 +33,28 @@ using std::pair;
 #include <qvariant.h>
 #include <qpushbutton.h>
 #include <qtabwidget.h>
+#include <qprinter.h>
+#include <qprintdialog.h>
+
 #if (QT_VERSION < 0x040000)
 #include <qtextedit.h>
 #include <qpopupmenu.h>
 #include <qprogressdialog.h>
 #define THRFINISHED finished
+#include <qpaintdevicemetrics.h>
+#include <qsimplerichtext.h>
 #else
 #include <q3popupmenu.h>
 #include <q3textedit.h>
 #include <q3progressdialog.h>
 #include <q3stylesheet.h>
+#include <q3paintdevicemetrics.h>
+#define QPaintDeviceMetrics Q3PaintDeviceMetrics
+#include <q3simplerichtext.h>
+#define QSimpleRichText Q3SimpleRichText
 #define THRFINISHED isFinished
 #endif
+
 #include <qevent.h>
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -204,6 +214,8 @@ void Preview::init()
     connect(pvTab, SIGNAL(currentChanged(QWidget *)), 
 	    this, SLOT(currentChanged(QWidget *)));
     connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
+    connect(this, SIGNAL(printCurrentPreviewRequest()), 
+            this, SLOT(printCurrent()));
 
     m_dynSearchActive = false;
     m_canBeep = true;
@@ -265,6 +277,11 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	       (keyEvent->state() & Qt::ControlButton)) {
 	// LOGDEB(("Preview::eventFilter: got ^W\n"));
 	closeCurrentTab();
+	return true;
+    } else if (keyEvent->key() == Qt::Key_P &&
+	       (keyEvent->state() & Qt::ControlButton)) {
+	// LOGDEB(("Preview::eventFilter: got ^P\n"));
+	emit(printCurrentPreviewRequest());
 	return true;
     } else if (m_dynSearchActive) {
 	if (keyEvent->key() == Qt::Key_F3) {
@@ -447,6 +464,64 @@ void Preview::currentChanged(QWidget * tw)
     TabData *d = tabDataForCurrent();
     if (d) 
 	emit(previewExposed(this, m_searchId, d->docnum));
+}
+
+void Preview::printCurrent()
+{
+    PreviewTextEdit *edit = Preview::getCurrentEditor();
+    if (edit == 0) 
+        return;
+    TabData *d = tabDataForCurrent();
+    if (d == 0) 
+        return;
+	
+#ifndef QT_NO_PRINTER
+    QPrinter printer;
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+#if (QT_VERSION >= 0x040000)
+    dialog->setWindowTitle(tr("Print Current Preview"));
+#endif
+    if (dialog->exec() != QDialog::Accepted)
+        return;
+
+    // A qt4 version of this would just be :
+    // edit->document()->print(&printer); But as we are using a
+    // q3textedit, we have to do the q3 printing dance, even under
+    // qt4. The following code is taken from
+    // qt3/examples/textdrawing/qtextedit.cpp
+    printer.setFullPage(TRUE);
+    QPaintDeviceMetrics screen( edit );
+    printer.setResolution( screen.logicalDpiY() );
+    QPainter p( &printer );
+    QPaintDeviceMetrics metrics( p.device() );
+    int dpix = metrics.logicalDpiX();
+    int dpiy = metrics.logicalDpiY();
+    const int margin = 72; // pt
+    QRect body( margin * dpix / 72, margin * dpiy / 72,
+                metrics.width() - margin * dpix / 72 * 2,
+                metrics.height() - margin * dpiy / 72 * 2 );
+    QFont font( "times", 10 );
+    // Dont want to use edit->text() here, this is the plain text. We 
+    // want the rich text.
+    QSimpleRichText richText(d->richtxt, font, edit->context(), 
+                             edit->styleSheet(),
+                             edit->mimeSourceFactory(), body.height() );
+    richText.setWidth( &p, body.width() );
+    QRect view( body );
+    int page = 1;
+    do {
+        richText.draw( &p, body.left(), body.top(), view, colorGroup() );
+        view.moveBy( 0, body.height() );
+        p.translate( 0 , -body.height() );
+        p.setFont( font );
+        p.drawText( view.right() - p.fontMetrics().width( QString::number( page ) ),
+                    view.bottom() + p.fontMetrics().ascent() + 5, QString::number( page ) );
+        if ( view.top()  >= richText.height() )
+            break;
+        printer.newPage();
+        page++;
+    } while (TRUE);
+#endif
 }
 
 #if (QT_VERSION >= 0x040000)
@@ -912,6 +987,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	item->setColor(prefs.qtermcolor);
 	item->setFontWeight(QFont::Bold);
     }
+    TabData *d = tabDataForCurrent();
 
     prog = 2 * nsteps / 3;
     progress.setLabelText(tr("Loading preview text into editor"));
@@ -923,6 +999,10 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	qApp->processEvents();
 
 	editor->append(*it);
+        // We need to save the rich text for printing, the editor does
+        // not do it for us
+        if (d)
+            d->richtxt.append(*it);
 
 	// Stay at top
 	if (instep < 5) {
@@ -938,9 +1018,8 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     }
 
     progress.close();
-    TabData *d = tabDataForCurrent();
     if (d) {
-	fdoc.text.clear();
+	fdoc.text.clear(); 
 	d->fdoc = fdoc;
     }
     m_haveAnchors = m_plaintorich.lastanchor != 0;

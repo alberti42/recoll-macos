@@ -74,6 +74,7 @@ class TabData {
     // doc out of internfile (previous fields come from the index) with
     // main text erased (for space).
     Rcl::Doc fdoc; 
+    QString  richtxt;
     TabData(QWidget *wi) 
 	: w(wi), docnum(-1) 
     {}
@@ -141,6 +142,7 @@ public slots:
     virtual void closeCurrentTab();
     virtual void textDoubleClicked(int, int);
     virtual void selecChanged();
+    virtual void printCurrent();
 
 signals:
     void previewClosed(Preview *);
@@ -148,6 +150,7 @@ signals:
     void showNext(Preview *w, int sid, int docnum);
     void showPrev(Preview *w, int sid, int docnum);
     void previewExposed(Preview *w, int sid, int docnum);
+    void printCurrentPreviewRequest();
 
 private:
     // Identifier of search in main window. This is used to check that

@@ -854,6 +854,11 @@ fvwm
       associated to the document (ie: author, abtract, etc.). This is
       especially useful in cases where the term match did not occur in
       the main text but in one of the fields.</para>
+	
+      <para>You can print the current preview window contents by typing
+	 <keycap>^P</keycap> (<keycap>Ctrl</keycap> + <keycap>P</keycap>) in 
+	the window text.</para> 
+	
 
     </sect1>
 
@@ -1460,6 +1465,11 @@ fvwm
         close it (and, for the last tab, close the preview
         window). Entering <keycap>Esc</keycap> will close the preview
         window and all its tabs.</para>
+      </formalpara>
+
+      <formalpara><title>Printing previews</title> 
+       <para>Entering <keycap>^P</keycap> in a preview window will print 
+	the currently displayed text.</para>
       </formalpara>
 
       <formalpara><title>Quitting</title>
