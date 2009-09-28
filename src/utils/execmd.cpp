@@ -235,7 +235,7 @@ public:
     virtual int data(NetconData *con, Netcon::Event reason)
     {
 	if (!m_input) return -1;
-	LOGDEB(("ExecWriter: input m_cnt %d input length %d\n", m_cnt, 
+	LOGDEB1(("ExecWriter: input m_cnt %d input length %d\n", m_cnt, 
 		m_input->length()));
 	if (m_cnt >= m_input->length()) {
 	    // Fd ready for more but we got none.
@@ -278,7 +278,7 @@ public:
     {
 	char buf[8192];
 	int n = con->receive(buf, 8192);
-	LOGDEB(("ExecReader: got %d from command\n", n));
+	LOGDEB1(("ExecReader: got %d from command\n", n));
 	if (n < 0) {
 	    LOGERR(("ExecCmd::doexec: receive failed. errno %d\n", errno));
 	} else if (n > 0) {
