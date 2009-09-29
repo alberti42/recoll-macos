@@ -121,7 +121,7 @@ public:
     ~ExecCmdRsrc() {
 	if (!m_active || !m_parent)
 	    return;
-	LOGDEB(("~ExecCmdRsrc: working\n"));
+	LOGDEB0(("~ExecCmdRsrc: working\n"));
 	int status;
 	if (m_parent->m_pid > 0) {
 	    LOGDEB(("ExecCmd: killing cmd\n"));
@@ -343,7 +343,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		break;
 	    }
 	}
-	LOGDEB(("ExecCmd::doexec: selectloop returned %d\n", ret));
+	LOGDEB0(("ExecCmd::doexec: selectloop returned %d\n", ret));
     }
 
     // Normal return: deactivate cleaner, wait() will do the cleanup
