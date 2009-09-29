@@ -155,7 +155,6 @@ void Preview::init()
     pvEdit->setUndoRedoEnabled(FALSE);
     unnamedLayout->addWidget(pvEdit);
     pvTab->insertTab(unnamed, QString::fromLatin1(""));
-    m_tabData.push_back(TabData(pvTab->currentPage()));
 
     previewLayout->addWidget(pvTab);
 
@@ -249,6 +248,8 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	return false;
     
     LOGDEB1(("Preview::eventFilter: keyEvent\n"));
+
+    PreviewTextEdit *edit = currentEditor();
     QKeyEvent *keyEvent = (QKeyEvent *)event;
     if (keyEvent->key() == Qt::Key_Q && 
 	(keyEvent->state() & Qt::ControlButton)) {
@@ -260,16 +261,14 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     } else if (keyEvent->key() == Qt::Key_Down &&
 	       (keyEvent->state() & Qt::ShiftButton)) {
 	// LOGDEB(("Preview::eventFilter: got Shift-Up\n"));
-	TabData *d = tabDataForCurrent();
-	if (d) 
-	    emit(showNext(this, m_searchId, d->docnum));
+	if (edit) 
+	    emit(showNext(this, m_searchId, edit->m_data.docnum));
 	return true;
     } else if (keyEvent->key() == Qt::Key_Up &&
 	       (keyEvent->state() & Qt::ShiftButton)) {
 	// LOGDEB(("Preview::eventFilter: got Shift-Down\n"));
-	TabData *d = tabDataForCurrent();
-	if (d) 
-	    emit(showPrev(this, m_searchId, d->docnum));
+	if (edit) 
+	    emit(showPrev(this, m_searchId, edit->m_data.docnum));
 	return true;
     } else if (keyEvent->key() == Qt::Key_W &&
 	       (keyEvent->state() & Qt::ControlButton)) {
@@ -289,21 +288,16 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	if (target != searchTextLine)
 	    return QApplication::sendEvent(searchTextLine, event);
     } else {
-	QWidget *tw = pvTab->currentPage();
-	PreviewTextEdit *e = 0;
-	if (tw)
-	    e = (PreviewTextEdit *)tw->child("pvEdit");
-	LOGDEB1(("Widget: %p, edit %p, target %p\n", tw, e, target));
-	if (e && target == e) {
+	if (edit && target == edit) {
 	    if (keyEvent->key() == Qt::Key_Slash) {
 		searchTextLine->setFocus();
 		m_dynSearchActive = true;
 		return true;
 	    } else if (keyEvent->key() == Qt::Key_Space) {
-		e->scrollBy(0, e->visibleHeight());
+		edit->scrollBy(0, edit->visibleHeight());
 		return true;
 	    } else if (keyEvent->key() == Qt::Key_BackSpace) {
-		e->scrollBy(0, -e->visibleHeight());
+		edit->scrollBy(0, -edit->visibleHeight());
 		return true;
 	    }
 	}
@@ -334,12 +328,12 @@ void Preview::searchTextLine_textChanged(const QString & text)
 #define QStyleSheetItem Q3StyleSheetItem
 #endif
 
-PreviewTextEdit *Preview::getCurrentEditor()
+PreviewTextEdit *Preview::currentEditor()
 {
     QWidget *tw = pvTab->currentPage();
     PreviewTextEdit *edit = 0;
     if (tw) {
-	edit = (PreviewTextEdit*)tw->child("pvEdit");
+	edit = dynamic_cast<PreviewTextEdit*>(tw->child("pvEdit"));
     }
     return edit;
 }
@@ -357,7 +351,7 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     QString text = _text;
 
     bool matchCase = matchCheck->isChecked();
-    PreviewTextEdit *edit = getCurrentEditor();
+    PreviewTextEdit *edit = currentEditor();
     if (edit == 0) {
 	// ??
 	return;
@@ -440,7 +434,8 @@ void Preview::prevPressed()
 // Called when user clicks on tab
 void Preview::currentChanged(QWidget * tw)
 {
-    QWidget *edit = (QWidget *)tw->child("pvEdit");
+    PreviewTextEdit *edit = 
+        dynamic_cast<PreviewTextEdit*>(tw->child("pvEdit"));
     m_currentW = tw;
     LOGDEB1(("Preview::currentChanged(). Editor: %p\n", edit));
     
@@ -463,9 +458,7 @@ void Preview::currentChanged(QWidget * tw)
 #endif
     tw->installEventFilter(this);
     edit->installEventFilter(this);
-    TabData *d = tabDataForCurrent();
-    if (d) 
-	emit(previewExposed(this, m_searchId, d->docnum));
+    emit(previewExposed(this, m_searchId, edit->m_data.docnum));
 }
 
 #if (QT_VERSION >= 0x040000)
@@ -527,14 +520,6 @@ void Preview::closeCurrentTab()
 	if (!tw) 
 	    return;
 	pvTab->removePage(tw);
-	// Have to remove from tab data list
-	for (list<TabData>::iterator it = m_tabData.begin(); 
-	     it != m_tabData.end(); it++) {
-	    if (it->w == tw) {
-		m_tabData.erase(it);
-		return;
-	    }
-	}
     } else {
 	close();
     }
@@ -550,7 +535,6 @@ PreviewTextEdit *Preview::addEditorTab()
     anonLayout->addWidget(editor);
     pvTab->addTab(anon, "Tab");
     pvTab->showPage(anon);
-    m_tabData.push_back(TabData(anon));
     return editor;
 }
 
@@ -586,41 +570,33 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
 	tiptxt += meta_it->second + "\n";
     pvTab->setTabToolTip(w,QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
 
-    TabData *d = tabDataForCurrent();
-    if (d) {
-	d->fn = fn;
-	d->ipath = doc.ipath;
-	d->docnum = docnum;
+    PreviewTextEdit *e = currentEditor();
+    if (e) {
+	e->m_data.fn = fn;
+	e->m_data.ipath = doc.ipath;
+	e->m_data.docnum = docnum;
     }
-}
-
-TabData *Preview::tabDataForCurrent()
-{
-    QWidget *w = pvTab->currentPage();
-    if (w == 0)
-	return 0;
-    for (list<TabData>::iterator it = m_tabData.begin(); 
-	 it != m_tabData.end(); it++) {
-	if (it->w == w) {
-	    return &(*it);
-	}
-    }
-    return 0;
 }
 
 bool Preview::makeDocCurrent(const string &fn, size_t sz, 
 			     const Rcl::Doc& doc, int docnum, bool sametab)
 {
     LOGDEB(("Preview::makeDocCurrent: %s\n", fn.c_str()));
-    for (list<TabData>::iterator it = m_tabData.begin(); 
-	 it != m_tabData.end(); it++) {
-	LOGDEB2(("Preview::makeFileCurrent: compare to w %p, file %s\n", 
-		 it->w, it->fn.c_str()));
-	if (!it->fn.compare(fn) && !it->ipath.compare(doc.ipath)) {
-	    pvTab->showPage(it->w);
-	    return true;
-	}
+
+    /* Check if we already have this page */
+    for (int i = 0; i < pvTab->count(); i++) {
+        QWidget *tw = pvTab->widget(i);
+        if (tw) {
+            PreviewTextEdit *edit = 
+                dynamic_cast<PreviewTextEdit*>(tw->child("pvEdit"));
+            if (edit && !edit->m_data.fn.compare(fn) && 
+                !edit->m_data.ipath.compare(doc.ipath)) {
+                pvTab->showPage(tw);
+                return true;
+            }
+        }
     }
+
     // if just created the first tab was created during init
     if (!sametab && !m_justCreated && !addEditorTab()) {
 	return false;
@@ -923,7 +899,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     }
 	    
     // Load into editor
-    PreviewTextEdit *editor = getCurrentEditor();
+    PreviewTextEdit *editor = currentEditor();
     editor->setText("");
     if (highlightTerms) {
 	QStyleSheetItem *item = 
@@ -931,7 +907,6 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 	item->setColor(prefs.qtermcolor);
 	item->setFontWeight(QFont::Bold);
     }
-    TabData *d = tabDataForCurrent();
 
     prog = 2 * nsteps / 3;
     progress.setLabelText(tr("Loading preview text into editor"));
@@ -944,9 +919,8 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 
 	editor->append(*it);
         // We need to save the rich text for printing, the editor does
-        // not do it for us
-        if (d)
-            d->richtxt.append(*it);
+        // not do it consistently for us.
+        editor->m_data.richtxt.append(*it);
 
 	// Stay at top
 	if (instep < 5) {
@@ -962,10 +936,10 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     }
 
     progress.close();
-    if (d) {
-	fdoc.text.clear(); 
-	d->fdoc = fdoc;
-    }
+
+    fdoc.text.clear(); 
+    editor->m_data.fdoc = fdoc;
+
     m_haveAnchors = m_plaintorich.lastanchor != 0;
     if (searchTextLine->text().length() != 0) {
 	// If there is a current search string, perform the search
@@ -994,7 +968,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 RCLPOPUP *PreviewTextEdit::createPopupMenu(const QPoint&)
 {
     RCLPOPUP *popup = new RCLPOPUP(this);
-    if (m_savedText.isEmpty()) {
+    if (!m_dspflds) {
 	popup->insertItem(tr("Show fields"), this, SLOT(toggleFields()));
     } else {
 	popup->insertItem(tr("Show main text"), this, SLOT(toggleFields()));
@@ -1009,38 +983,32 @@ void PreviewTextEdit::toggleFields()
 //    fprintf(stderr, "%s", (const char *)text().ascii());
 
     // If currently displaying fields, switch to body text
-    if (!m_savedText.isEmpty()) {
-	setText(m_savedText);
-	m_savedText = "";
+    if (m_dspflds) {
+	setText(m_data.richtxt);
+        m_dspflds = false;
 	return;
     }
 
     // Else display fields
-    TabData *d = m_preview->tabDataForCurrent();
-    if (!d) 
-	return;
+    m_dspflds = true;
     QString txt = "<html><head></head><body>\n";
-    txt += "<b>" + QString::fromLocal8Bit(d->fn.c_str());
-    if (!d->ipath.empty())
-	txt += "|" + QString::fromUtf8(d->ipath.c_str());
+    txt += "<b>" + QString::fromLocal8Bit(m_data.fn.c_str());
+    if (!m_data.ipath.empty())
+	txt += "|" + QString::fromUtf8(m_data.ipath.c_str());
     txt += "</b><br><br>";
     txt += "<dl>\n";
-    for (map<string,string>::const_iterator it = d->fdoc.meta.begin();
-	 it != d->fdoc.meta.end(); it++) {
+    for (map<string,string>::const_iterator it = m_data.fdoc.meta.begin();
+	 it != m_data.fdoc.meta.end(); it++) {
 	txt += "<dt>" + QString::fromUtf8(it->first.c_str()) + "</dt> " 
 	    + "<dd>" + QString::fromUtf8(it->second.c_str()) + "</dd>\n";
     }
     txt += "</dl></body></html>";
-    m_savedText = text();
     setText(txt);
 }
 
 void PreviewTextEdit::print()
 {
     if (!m_preview)
-        return;
-    TabData *d = m_preview->tabDataForCurrent();
-    if (d == 0) 
         return;
 	
 #ifndef QT_NO_PRINTER
@@ -1070,8 +1038,9 @@ void PreviewTextEdit::print()
                 metrics.height() - margin * dpiy / 72 * 2 );
     QFont font( "times", 10 );
     // Dont want to use text() here, this is the plain text. We 
-    // want the rich text.
-    QSimpleRichText richText(d->richtxt, font, this->context(), 
+    // want the rich text. For some reason we don't need this for fields??
+    const QString &richtxt  = m_dspflds ? text() : m_data.richtxt;
+    QSimpleRichText richText(richtxt, font, this->context(), 
                              this->styleSheet(),
                              this->mimeSourceFactory(), body.height() );
     richText.setWidth( &p, body.width() );

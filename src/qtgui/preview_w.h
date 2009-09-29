@@ -48,38 +48,42 @@ class Q3PopupMenu;
 #define QTEXTEDIT Q3TextEdit
 #endif
 
+// We keep a list of data associated to each tab
+class TabData {
+public:
+    string fn; // filename for this tab
+    string ipath; // Internal doc path inside file
+    int docnum;  // Index of doc in db search results.
+    // doc out of internfile (previous fields come from the index) with
+    // main text erased (for space).
+    Rcl::Doc fdoc; 
+    // Saved rich text: the textedit seems to sometimes (but not
+    // always) return its text stripped of tags, so this is needed
+    // (for printing for example)
+    QString  richtxt; 
+    TabData() 
+	: docnum(-1) 
+    {}
+};
+
 class PreviewTextEdit : public QTEXTEDIT {
     Q_OBJECT
 public:
     PreviewTextEdit(QWidget* parent, const char* name, Preview *pv) 
-	: QTEXTEDIT(parent, name), m_preview(pv)
+	: QTEXTEDIT(parent, name), m_preview(pv), m_dspflds(false)
     {}
     void moveToAnchor(const QString& name);
 public slots:
     virtual void toggleFields();
     virtual void print();
+    friend class Preview;
 private:
     virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
     Preview *m_preview;
-    QString  m_savedText;
+    TabData  m_data;
+    bool     m_dspflds;
 };
 
-
-// We keep a list of data associated to each tab
-class TabData {
- public:
-    string fn; // filename for this tab
-    string ipath; // Internal doc path inside file
-    QWidget *w; // widget for setCurrent
-    int docnum;  // Index of doc in db search results.
-    // doc out of internfile (previous fields come from the index) with
-    // main text erased (for space).
-    Rcl::Doc fdoc; 
-    QString  richtxt;
-    TabData(QWidget *wi) 
-	: w(wi), docnum(-1) 
-    {}
-};
 
 // Subclass plainToRich to add <termtag>s and anchors to the preview text
 class PlainToRichQtPreview : public PlainToRich {
@@ -161,7 +165,6 @@ private:
     bool          m_dynSearchActive;
     bool          m_canBeep;
     bool          m_loading;
-    list<TabData> m_tabData;
     QWidget      *m_currentW;
     HiliteData    m_hData;
     bool          m_justCreated; // First tab create is different
@@ -181,12 +184,10 @@ private:
     void init();
     virtual void setCurTabProps(const string& fn, const Rcl::Doc& doc, 
 				int docnum);
-    virtual PreviewTextEdit *getCurrentEditor();
+    virtual PreviewTextEdit *currentEditor();
     virtual PreviewTextEdit *addEditorTab();
     virtual bool loadFileInCurrentTab(string fn, size_t sz, 
 				      const Rcl::Doc& idoc, int dnm);
-    // Return auxiliary data pointer for cur tab
-    TabData *tabDataForCurrent(); 
 };
 
 #endif /* _PREVIEW_W_H_INCLUDED_ */
