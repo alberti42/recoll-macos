@@ -17,6 +17,9 @@ static char rcsid[] = "@(#$Id: mh_text.cpp,v 1.6 2006-12-15 12:40:02 dockes Exp 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include <unistd.h>
+#include <sys/stat.h>
+#include <errno.h>
 
 #include <iostream>
 #include <string>
@@ -30,16 +33,35 @@ using namespace std;
 #include "readfile.h"
 #include "transcode.h"
 #include "md5.h"
+#include "rclconfig.h"
+
+const int MB = 1024*1024;
 
 // Process a plain text file
 bool MimeHandlerText::set_document_file(const string &fn)
 {
     RecollFilter::set_document_file(fn);
+
+    // file size
+    struct stat st;
+    if (stat(fn.c_str(), &st) < 0) {
+        LOGERR(("MimeHandlerText::set_document_file: stat(%s) errno %d\n",
+                fn.c_str(), errno));
+        return false;
+    }
+
+    // Handle max file size parameter. If it's too big, we just don't index
+    // the text at all (should we index the first maxmbs instead ?)
+    int maxmbs = -1;
+    RclConfig::getMainConfig()->getConfParam("textfilemaxmbs", &maxmbs);
+
     string otext;
-    string reason;
-    if (!file_to_string(fn, otext, &reason)) {
-	LOGERR(("MimeHandlerText: can't read file: %s\n", reason.c_str()));
-	return false;
+    if (st.st_size / MB <= maxmbs) {
+        string reason;
+        if (!file_to_string(fn, otext, &reason)) {
+            LOGERR(("MimeHandlerText: can't read file: %s\n", reason.c_str()));
+            return false;
+        }
     }
     return set_document_string(otext);
 }

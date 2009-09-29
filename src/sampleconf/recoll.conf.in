@@ -104,6 +104,9 @@ indexallfilenames = 1
 # processing of any compressed file
 # compressedfilemaxkbs = -1
 
+# Size limit for text files. This is for skipping monster logs
+textfilemaxmbs = -1
+
 # Length of abstracts we store while indexing. Longer will make for a
 # bigger db
 # idxabsmlen = 250

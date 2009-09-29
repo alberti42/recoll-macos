@@ -365,6 +365,18 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		      -1, 1000000);
     m_widgets.push_back(ezfmaxkbs);
 
+    ConfLink lnktxtmaxmbs(new ConfLinkRclRep(config, 
+					    "textfilemaxmbs"));
+    ConfParamIntW *etxtmaxmbs = new 
+	ConfParamIntW(m_groupbox, lnktxtmaxmbs, 
+		      tr("Max. text file size (MB)"),
+		      tr("This value sets a threshold beyond which text "
+			 "files will not be processed. Set to -1 for no "
+			 "limit. This is for excluding monster "
+                         "log files from the index."),
+		      -1, 1000000);
+    m_widgets.push_back(etxtmaxmbs);
+
     vboxLayout->addWidget(m_groupbox);
     subDirChanged();
 }
