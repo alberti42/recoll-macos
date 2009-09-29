@@ -56,7 +56,8 @@ public:
     {}
     void moveToAnchor(const QString& name);
 public slots:
-    virtual void menuToggleFields();
+    virtual void toggleFields();
+    virtual void print();
 private:
     virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
     Preview *m_preview;
@@ -142,7 +143,6 @@ public slots:
     virtual void closeCurrentTab();
     virtual void textDoubleClicked(int, int);
     virtual void selecChanged();
-    virtual void printCurrent();
 
 signals:
     void previewClosed(Preview *);

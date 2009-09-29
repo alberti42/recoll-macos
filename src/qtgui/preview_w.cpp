@@ -214,8 +214,6 @@ void Preview::init()
     connect(pvTab, SIGNAL(currentChanged(QWidget *)), 
 	    this, SLOT(currentChanged(QWidget *)));
     connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
-    connect(this, SIGNAL(printCurrentPreviewRequest()), 
-            this, SLOT(printCurrent()));
 
     m_dynSearchActive = false;
     m_canBeep = true;
@@ -456,6 +454,10 @@ void Preview::currentChanged(QWidget * tw)
     disconnect(edit, SIGNAL(doubleClicked(int, int)), this, 0);
     connect(edit, SIGNAL(doubleClicked(int, int)), 
 	    this, SLOT(textDoubleClicked(int, int)));
+    // Disconnect the print signal and reconnect it to the current editor
+    LOGDEB(("Disconnecting reconnecting print signal\n"));
+    disconnect(this, SIGNAL(printCurrentPreviewRequest()), 0, 0);
+    connect(this, SIGNAL(printCurrentPreviewRequest()), edit, SLOT(print()));
 #if (QT_VERSION >= 0x040000)
     connect(edit, SIGNAL(selectionChanged()), this, SLOT(selecChanged()));
 #endif
@@ -464,64 +466,6 @@ void Preview::currentChanged(QWidget * tw)
     TabData *d = tabDataForCurrent();
     if (d) 
 	emit(previewExposed(this, m_searchId, d->docnum));
-}
-
-void Preview::printCurrent()
-{
-    PreviewTextEdit *edit = Preview::getCurrentEditor();
-    if (edit == 0) 
-        return;
-    TabData *d = tabDataForCurrent();
-    if (d == 0) 
-        return;
-	
-#ifndef QT_NO_PRINTER
-    QPrinter printer;
-    QPrintDialog *dialog = new QPrintDialog(&printer, this);
-#if (QT_VERSION >= 0x040000)
-    dialog->setWindowTitle(tr("Print Current Preview"));
-#endif
-    if (dialog->exec() != QDialog::Accepted)
-        return;
-
-    // A qt4 version of this would just be :
-    // edit->document()->print(&printer); But as we are using a
-    // q3textedit, we have to do the q3 printing dance, even under
-    // qt4. The following code is taken from
-    // qt3/examples/textdrawing/qtextedit.cpp
-    printer.setFullPage(TRUE);
-    QPaintDeviceMetrics screen( edit );
-    printer.setResolution( screen.logicalDpiY() );
-    QPainter p( &printer );
-    QPaintDeviceMetrics metrics( p.device() );
-    int dpix = metrics.logicalDpiX();
-    int dpiy = metrics.logicalDpiY();
-    const int margin = 72; // pt
-    QRect body( margin * dpix / 72, margin * dpiy / 72,
-                metrics.width() - margin * dpix / 72 * 2,
-                metrics.height() - margin * dpiy / 72 * 2 );
-    QFont font( "times", 10 );
-    // Dont want to use edit->text() here, this is the plain text. We 
-    // want the rich text.
-    QSimpleRichText richText(d->richtxt, font, edit->context(), 
-                             edit->styleSheet(),
-                             edit->mimeSourceFactory(), body.height() );
-    richText.setWidth( &p, body.width() );
-    QRect view( body );
-    int page = 1;
-    do {
-        richText.draw( &p, body.left(), body.top(), view, colorGroup() );
-        view.moveBy( 0, body.height() );
-        p.translate( 0 , -body.height() );
-        p.setFont( font );
-        p.drawText( view.right() - p.fontMetrics().width( QString::number( page ) ),
-                    view.bottom() + p.fontMetrics().ascent() + 5, QString::number( page ) );
-        if ( view.top()  >= richText.height() )
-            break;
-        printer.newPage();
-        page++;
-    } while (TRUE);
-#endif
 }
 
 #if (QT_VERSION >= 0x040000)
@@ -1047,25 +991,31 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     return true;
 }
 
-
 RCLPOPUP *PreviewTextEdit::createPopupMenu(const QPoint&)
 {
     RCLPOPUP *popup = new RCLPOPUP(this);
     if (m_savedText.isEmpty()) {
-	popup->insertItem(tr("Show fields"), this, SLOT(menuToggleFields()));
+	popup->insertItem(tr("Show fields"), this, SLOT(toggleFields()));
     } else {
-	popup->insertItem(tr("Show main text"), this, SLOT(menuToggleFields()));
+	popup->insertItem(tr("Show main text"), this, SLOT(toggleFields()));
     }
+    popup->insertItem(tr("Print"), this, SLOT(print()));
     return popup;
 }
 
-void PreviewTextEdit::menuToggleFields()
+// Either display document fields or main text
+void PreviewTextEdit::toggleFields()
 {
+//    fprintf(stderr, "%s", (const char *)text().ascii());
+
+    // If currently displaying fields, switch to body text
     if (!m_savedText.isEmpty()) {
 	setText(m_savedText);
 	m_savedText = "";
 	return;
     }
+
+    // Else display fields
     TabData *d = m_preview->tabDataForCurrent();
     if (!d) 
 	return;
@@ -1084,3 +1034,61 @@ void PreviewTextEdit::menuToggleFields()
     m_savedText = text();
     setText(txt);
 }
+
+void PreviewTextEdit::print()
+{
+    if (!m_preview)
+        return;
+    TabData *d = m_preview->tabDataForCurrent();
+    if (d == 0) 
+        return;
+	
+#ifndef QT_NO_PRINTER
+    QPrinter printer;
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+#if (QT_VERSION >= 0x040000)
+    dialog->setWindowTitle(tr("Print Current Preview"));
+#endif
+    if (dialog->exec() != QDialog::Accepted)
+        return;
+
+    // A qt4 version of this would just be :
+    // document()->print(&printer); But as we are using a
+    // q3textedit, we have to do the q3 printing dance, even under
+    // qt4. The following code is taken from
+    // qt3/examples/textdrawing/qtextedit.cpp
+    printer.setFullPage(TRUE);
+    QPaintDeviceMetrics screen( this );
+    printer.setResolution( screen.logicalDpiY() );
+    QPainter p( &printer );
+    QPaintDeviceMetrics metrics( p.device() );
+    int dpix = metrics.logicalDpiX();
+    int dpiy = metrics.logicalDpiY();
+    const int margin = 72; // pt
+    QRect body( margin * dpix / 72, margin * dpiy / 72,
+                metrics.width() - margin * dpix / 72 * 2,
+                metrics.height() - margin * dpiy / 72 * 2 );
+    QFont font( "times", 10 );
+    // Dont want to use text() here, this is the plain text. We 
+    // want the rich text.
+    QSimpleRichText richText(d->richtxt, font, this->context(), 
+                             this->styleSheet(),
+                             this->mimeSourceFactory(), body.height() );
+    richText.setWidth( &p, body.width() );
+    QRect view( body );
+    int page = 1;
+    do {
+        richText.draw( &p, body.left(), body.top(), view, colorGroup() );
+        view.moveBy( 0, body.height() );
+        p.translate( 0 , -body.height() );
+        p.setFont( font );
+        p.drawText( view.right() - p.fontMetrics().width( QString::number( page ) ),
+                    view.bottom() + p.fontMetrics().ascent() + 5, QString::number( page ) );
+        if ( view.top()  >= richText.height() )
+            break;
+        printer.newPage();
+        page++;
+    } while (TRUE);
+#endif
+}
+
