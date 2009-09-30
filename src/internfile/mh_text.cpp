@@ -128,10 +128,17 @@ bool MimeHandlerText::next_document()
         m_havedoc = false;
         return true;
     } else {
-        // Paging: set ipath then read next chunk
+        // Paging: set ipath then read next chunk. 
+
+        // Don't set ipath for the first chunk to avoid having 2
+        // records for small files (one for the file, one for the
+        // first chunk). This is a hack. The right thing to do would
+        // be to use a different mtype for files over the page size,
+        // and keep text/plain only for smaller files.
         char buf[20];
         sprintf(buf, "%lld", m_offs - m_text.length());
-        m_metaData["ipath"] = buf;
+        if (m_offs - m_text.length() != 0)
+            m_metaData["ipath"] = buf;
         readnext();
         return true;
     }
