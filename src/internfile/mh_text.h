@@ -17,6 +17,7 @@
 #ifndef _MH_TEXT_H_INCLUDED_
 #define _MH_TEXT_H_INCLUDED_
 /* @(#$Id: mh_text.h,v 1.5 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
+#include <sys/types.h>
 
 #include <string>
 using std::string;
@@ -30,7 +31,8 @@ using std::string;
  */
 class MimeHandlerText : public RecollFilter {
  public:
-    MimeHandlerText(const string& mt) : RecollFilter(mt) {}
+    MimeHandlerText(const string& mt) 
+        : RecollFilter(mt), m_paging(false), m_offs(0) {}
     virtual ~MimeHandlerText() {}
     virtual bool set_document_file(const string &file_path);
     virtual bool set_document_string(const string&);
@@ -40,13 +42,23 @@ class MimeHandlerText : public RecollFilter {
 	return false;
     }
     virtual bool next_document();
+    virtual bool skip_to_document(const string& s);
     virtual void clear() 
     {
+        m_paging = false;
 	m_text.erase(); 
+        m_fn.erase();
+        m_offs = 0;
 	RecollFilter::clear();
     }
 private:
+    bool   m_paging;
     string m_text;
+    string m_fn;
+    off_t  m_offs; // Offset of next read in file if we're paging
+    size_t m_pagesz;
+    
+    bool readnext();
 };
 
 #endif /* _MH_TEXT_H_INCLUDED_ */

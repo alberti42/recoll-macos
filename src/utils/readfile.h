@@ -21,19 +21,30 @@
 #include <string>
 using std::string;
 
-/**
- * Read whole file into string. 
- * @return true for ok, false else
+/** 
+ * Read file in chunks, calling an accumulator for each chunk. Can be used 
+ * for reading in a file, computing an md5...
  */
-bool file_to_string(const string &filename, string &data, string *reason = 0);
-
 class FileScanDo {
 public:
     virtual ~FileScanDo() {}
     virtual bool init(unsigned int size, string *reason) = 0;
     virtual bool data(const char *buf, int cnt, string* reason) = 0;
 };
-bool file_scan(const std::string &filename, FileScanDo* doer,  
-	       std::string *reason = 0);
+bool file_scan(const string &filename, FileScanDo* doer, string *reason = 0);
+/* Same but only process count cnt from offset offs. Set cnt to size_t(-1) 
+ * for no limit */
+bool file_scan(const string &fn, FileScanDo* doer, off_t offs, size_t cnt,
+               string *reason = 0);
+
+/**
+ * Read file into string.
+ * @return true for ok, false else
+ */
+bool file_to_string(const string &filename, string &data, string *reason = 0);
+
+/** Read file chunk into string. Set cnt to size_t(-1) for whole file */
+bool file_to_string(const string &filename, string &data, 
+                    off_t offs, size_t cnt, string *reason = 0);
 
 #endif /* _READFILE_H_INCLUDED_ */

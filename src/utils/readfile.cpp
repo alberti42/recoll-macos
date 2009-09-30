@@ -39,6 +39,10 @@ using std::string;
 
 #include "readfile.h"
 
+#ifndef MIN
+#define MIN(A,B) ((A) < (B) ? (A) : (B))
+#endif
+
 static void caterrno(string *reason, const char *what, int _errno)
 {
     if (reason) {
@@ -94,15 +98,27 @@ public:
 
 bool file_to_string(const string &fn, string &data, string *reason)
 {
+    return file_to_string(fn, data, 0, size_t(-1), reason);
+}
+bool file_to_string(const string &fn, string &data, off_t offs, size_t cnt,
+                    string *reason)
+{
     FileToString accum(data);
-    return file_scan(fn, &accum, reason);
+    return file_scan(fn, &accum, offs, cnt, reason);
 }
 
+bool file_scan(const string &fn, FileScanDo* doer, string *reason)
+{
+    return file_scan(fn, doer, 0, size_t(-1), reason);
+}
+
+const int RDBUFSZ = 4096;
 // Note: the fstat() + reserve() (in init()) calls divide cpu usage almost by 2
 // on both linux i586 and macosx (compared to just append())
 // Also tried a version with mmap, but it's actually slower on the mac and not
 // faster on linux.
-bool file_scan(const string &fn, FileScanDo* doer, string *reason)
+bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs, 
+               size_t cnttoread, string *reason)
 {
     bool ret = false;
     bool noclosing = true;
@@ -120,13 +136,36 @@ bool file_scan(const string &fn, FileScanDo* doer, string *reason)
 	}
 	noclosing = false;
     }
-    if (st.st_size > 0)
+
+    if (st.st_size > 0) {
 	doer->init(st.st_size+1, reason);
-    else 
+    } else if (cnttoread) {
+	doer->init(cnttoread+1, reason);
+    } else {
 	doer->init(0, reason);
-    char buf[4096];
+    }
+
+    off_t curoffs = 0;
+    if (startoffs > 0 && !fn.empty()) {
+        if (lseek(fd, startoffs, SEEK_SET) != startoffs) {
+            caterrno(reason, "lseek", errno);
+            return false;
+        }
+        curoffs = startoffs;
+    }
+
+    char buf[RDBUFSZ];
+    size_t totread = 0;
     for (;;) {
-	int n = read(fd, buf, 4096);
+        size_t toread = RDBUFSZ;
+        if (startoffs > 0 && curoffs < startoffs) {
+            toread = MIN(RDBUFSZ, startoffs - curoffs);
+        }
+
+        if (cnttoread != size_t(-1)) {
+            toread = MIN(toread, cnttoread - totread);
+        }
+	int n = read(fd, buf, toread);
 	if (n < 0) {
 	    caterrno(reason, "read", errno);
 	    goto out;
@@ -134,9 +173,16 @@ bool file_scan(const string &fn, FileScanDo* doer, string *reason)
 	if (n == 0)
 	    break;
 
+        curoffs += n;
+        if (curoffs - n < startoffs) 
+            continue;
+            
 	if (!doer->data(buf, n, reason)) {
 	    goto out;
 	}
+        totread += n;
+        if (cnttoread > 0 && totread >= cnttoread) 
+            break;
     }
 
     ret = true;
@@ -150,6 +196,8 @@ bool file_scan(const string &fn, FileScanDo* doer, string *reason)
 
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 #include <string>
 #include <iostream>
@@ -159,11 +207,6 @@ using namespace std;
 #include "fstreewalk.h"
 
 using namespace std;
-
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_f	  0x2
-#define OPT_F	  0x4
 
 class myCB : public FsTreeWalkerCB {
  public:
@@ -192,9 +235,14 @@ class myCB : public FsTreeWalkerCB {
     }
 };
 
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_c     0x2
+#define OPT_o     0x4
+
 static const char *thisprog;
 static char usage [] =
-"trreadfile topdirorfile\n\n"
+"trreadfile [-o offs] [-c cnt] topdirorfile\n\n"
 ;
 static void
 Usage(void)
@@ -205,8 +253,8 @@ Usage(void)
 
 int main(int argc, const char **argv)
 {
-    list<string> patterns;
-    list<string> paths;
+    off_t offs = 0;
+    size_t cnt = size_t(-1);
     thisprog = argv[0];
     argc--; argv++;
 
@@ -217,31 +265,36 @@ int main(int argc, const char **argv)
       Usage();
     while (**argv)
       switch (*(*argv)++) {
-      case 'f':	op_flags |= OPT_f;break;
-      case 'F':	op_flags |= OPT_F;break;
+      case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
+	  cnt = atol(*(++argv)); argc--; 
+	goto b1;
+      case 'o':	op_flags |= OPT_c; if (argc < 2)  Usage();
+	  offs = strtoul(*(++argv), 0, 0); argc--; 
+	goto b1;
       default: Usage();	break;
       }
-    argc--; argv++;
+  b1: argc--; argv++;
   }
 
   if (argc != 1)
     Usage();
   string top = *argv++;argc--;
+  cerr << "filename " << top << " offs " << offs << " cnt " << cnt << endl;
 
   struct stat st;
-  if (stat(top.c_str(), &st) < 0) {
+  if (!top.empty() && stat(top.c_str(), &st) < 0) {
       perror("stat");
       exit(1);
   }
-  if (S_ISDIR(st.st_mode)) {
+  if (!top.empty() && S_ISDIR(st.st_mode)) {
       FsTreeWalker walker;
       myCB cb;
       walker.walk(top, cb);
       if (walker.getErrCnt() > 0)
 	  cout << walker.getReason();
-  } else if (S_ISREG(st.st_mode)) {
+  } else {
       string s, reason;
-      if (!file_to_string(top, s, &reason)) {
+      if (!file_to_string(top, s, offs, cnt, &reason)) {
 	  cerr << reason << endl;
 	  exit(1);
       } else {

@@ -36,36 +36,54 @@ using namespace std;
 #include "rclconfig.h"
 
 const int MB = 1024*1024;
+const int KB = 1024;
 
 // Process a plain text file
 bool MimeHandlerText::set_document_file(const string &fn)
 {
-    RecollFilter::set_document_file(fn);
+    LOGDEB(("MimeHandlerText::set_document_file: [%s]\n", fn.c_str()));
 
-    // file size
+    RecollFilter::set_document_file(fn);
+    m_fn = fn;
+
+    // file size for oversize check
     struct stat st;
-    if (stat(fn.c_str(), &st) < 0) {
+    if (stat(m_fn.c_str(), &st) < 0) {
         LOGERR(("MimeHandlerText::set_document_file: stat(%s) errno %d\n",
-                fn.c_str(), errno));
+                m_fn.c_str(), errno));
         return false;
     }
 
-    // Handle max file size parameter. If it's too big, we just don't index
-    // the text at all (should we index the first maxmbs instead ?)
+    // Max file size parameter: texts over this size are not indexed
     int maxmbs = -1;
     RclConfig::getMainConfig()->getConfParam("textfilemaxmbs", &maxmbs);
 
-    string otext;
-    if (st.st_size / MB <= maxmbs) {
+    if (maxmbs == -1 || st.st_size / MB <= maxmbs) {
+        // Text file page size: if set, we split text files into
+        // multiple documents
+        int ps = -1;
+        RclConfig::getMainConfig()->getConfParam("textfilepagekbs", &ps);
+        if (ps != -1) {
+            ps *= KB;
+            m_paging = true;
+        }
+        m_pagesz = size_t(ps);
         string reason;
-        if (!file_to_string(fn, otext, &reason)) {
+        // file_to_string() takes pagesz == size_t(-1) to mean read all.
+        if (!file_to_string(fn, m_text, 0, m_pagesz, &reason)) {
             LOGERR(("MimeHandlerText: can't read file: %s\n", reason.c_str()));
             return false;
         }
+        m_offs = m_text.length();
     }
-    return set_document_string(otext);
+
+    string md5, xmd5;
+    MD5String(m_text, md5);
+    m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+    m_havedoc = true;
+    return true;
 }
-    
+
 bool MimeHandlerText::set_document_string(const string& otext)
 {
     m_text = otext;
@@ -76,29 +94,72 @@ bool MimeHandlerText::set_document_string(const string& otext)
     return true;
 }
 
+bool MimeHandlerText::skip_to_document(const string& ipath)
+{
+    sscanf(ipath.c_str(), "%lld", &m_offs);
+    readnext();
+    return true;
+}
+
 bool MimeHandlerText::next_document()
-{	
+{
+    LOGDEB(("MimeHandlerText::next_document: m_havedoc %d\n", int(m_havedoc)));
+
     if (m_havedoc == false)
 	return false;
-    m_havedoc = false;
+
+    // We transcode even if defcharset is already utf-8: 
+    // this validates the encoding.
     LOGDEB1(("MimeHandlerText::mkDoc: transcod from %s to utf-8\n", 
 	     m_defcharset.c_str()));
-
-    // Avoid unneeded copy. This gets a reference to an empty string which is
-    // the entry for "content"
-    string& utf8 = m_metaData["content"];
-
-    // Note that we transcode always even if defcharset is already utf-8: 
-    // this validates the encoding.
-    if (!transcode(m_text, utf8, m_defcharset, "UTF-8")) {
+    if (!transcode(m_text, m_metaData["content"], m_defcharset, "UTF-8")) {
 	LOGERR(("MimeHandlerText::mkDoc: transcode to utf-8 failed "
 		"for charset [%s]\n", m_defcharset.c_str()));
-	utf8.erase();
+	m_metaData["content"].erase();
 	return false;
     }
-
     m_metaData["origcharset"] = m_defcharset;
     m_metaData["charset"] = "utf-8";
     m_metaData["mimetype"] = "text/plain";
+
+    // If text length is 0 (the file is empty or oversize), or we have
+    // read all at once, we're done
+    if (m_text.length() == 0 || !m_paging) {
+        m_havedoc = false;
+        return true;
+    } else {
+        // Paging: set ipath then read next chunk
+        char buf[20];
+        sprintf(buf, "%lld", m_offs - m_text.length());
+        m_metaData["ipath"] = buf;
+        readnext();
+        return true;
+    }
+}
+
+bool MimeHandlerText::readnext()
+{
+    string reason;
+    m_text.erase();
+    if (!file_to_string(m_fn, m_text, m_offs, m_pagesz, &reason)) {
+        LOGERR(("MimeHandlerText: can't read file: %s\n", reason.c_str()));
+        m_havedoc = false;
+        return false;
+    }
+    if (m_text.length() == 0) {
+        // EOF
+        m_havedoc = false;
+        return true;
+    }
+
+    // If possible try to adjust the chunk to end right after a line 
+    // Don't do this for the last chunk
+    if (m_text.length() == m_pagesz) {
+        string::size_type pos = m_text.find_last_of("\n\r");
+        if (pos != string::npos && pos != 0) {
+            m_text.erase(pos);
+        }
+    }
+    m_offs += m_text.length();
     return true;
 }

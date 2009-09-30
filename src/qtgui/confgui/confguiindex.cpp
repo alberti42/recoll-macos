@@ -354,8 +354,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 			  "unsupported mime type). Default true"));
     m_widgets.push_back(eafln);
 
-    ConfLink lnkzfmaxkbs(new ConfLinkRclRep(config, 
-					    "compressedfilemaxkbs"));
+    ConfLink lnkzfmaxkbs(new ConfLinkRclRep(config, "compressedfilemaxkbs"));
     ConfParamIntW *ezfmaxkbs = new 
 	ConfParamIntW(m_groupbox, lnkzfmaxkbs, 
 		      tr("Max. compressed file size (KB)"),
@@ -365,17 +364,27 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		      -1, 1000000);
     m_widgets.push_back(ezfmaxkbs);
 
-    ConfLink lnktxtmaxmbs(new ConfLinkRclRep(config, 
-					    "textfilemaxmbs"));
+    ConfLink lnktxtmaxmbs(new ConfLinkRclRep(config, "textfilemaxmbs"));
     ConfParamIntW *etxtmaxmbs = new 
 	ConfParamIntW(m_groupbox, lnktxtmaxmbs, 
 		      tr("Max. text file size (MB)"),
 		      tr("This value sets a threshold beyond which text "
 			 "files will not be processed. Set to -1 for no "
-			 "limit. This is for excluding monster "
+			 "limit. \nThis is for excluding monster "
                          "log files from the index."),
 		      -1, 1000000);
     m_widgets.push_back(etxtmaxmbs);
+
+    ConfLink lnktxtpagekbs(new ConfLinkRclRep(config, "textfilepagekbs"));
+    ConfParamIntW *etxtpagekbs = new 
+	ConfParamIntW(m_groupbox, lnktxtpagekbs, 
+		      tr("Text file page size (KB)"),
+		      tr("If this value is set (not equal to -1), text "
+                         "files will be split in chunks of this size for "
+                         "indexing.\nThis will help searching very big text "
+                         " files (ie: log files)."),
+		      -1, 1000000);
+    m_widgets.push_back(etxtpagekbs);
 
     vboxLayout->addWidget(m_groupbox);
     subDirChanged();

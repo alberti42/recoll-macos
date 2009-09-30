@@ -107,6 +107,12 @@ indexallfilenames = 1
 # Size limit for text files. This is for skipping monster logs
 textfilemaxmbs = -1
 
+# Page size for text files. If this is set, text/plain files will be
+# divided into documents of approximately this size. May be useful to
+# access pieces of big text files which would be problematic to load as one
+# piece into the preview window. Might be useful for big logs
+textfilepagekbs = -1
+
 # Length of abstracts we store while indexing. Longer will make for a
 # bigger db
 # idxabsmlen = 250
