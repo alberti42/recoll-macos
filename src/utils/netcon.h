@@ -6,12 +6,15 @@
 /// A set of classes to manage client-server communication over a
 /// connection-oriented network, or a pipe.
 ///
-/// Currently only uses TCP. The classes include client-side and
-/// server-side (accepting) endpoints, and server-side code to handle
-/// a set of client connections in parallel.
+/// The listening/connection-accepting code currently only uses
+/// TCP. The classes include client-side and server-side (accepting)
+/// endpoints. Netcon also has server-side static code to handle a set
+/// of client connections in parallel. This should be moved to a
+/// friend class.
 /// 
 /// The client data transfer class can also be used for
-/// timeout-protected/asynchronous io using a given fd.
+/// timeout-protected/asynchronous io using a given fd (ie a pipe
+/// descriptor)
 
 /// Base class for all network endpoints:
 class Netcon;
@@ -21,7 +24,7 @@ class Netcon {
 public:
     enum Event {NETCONPOLL_READ = 0x1, NETCONPOLL_WRITE=0x2};
     Netcon() 
-	: m_peer(0), m_fd(-1), m_didtimo(0), m_wantedEvents(0)
+	: m_peer(0), m_fd(-1), m_ownfd(true), m_didtimo(0), m_wantedEvents(0)
     {}
     virtual ~Netcon();
     /// Remember whom we're talking to. We let external code do this because 
@@ -65,7 +68,7 @@ public:
     /// All the interface is static (independant of any given object).
 
     /// Loop waiting for events on the connections and call the
-    /// cando() method on the object where something happens (this will in 
+    /// cando() method on the object when something happens (this will in 
     /// turn typically call the app callback set on the netcon). Possibly
     /// call the periodic handler (if set) at regular intervals.
     /// @return -1 for error. 0 if no descriptors left for i/o. 1 for periodic
@@ -89,19 +92,20 @@ public:
     /// @param handler the function to be called. 
     ///  - if it is 0, selectloop() will return after ms mS (and can be called
     ///    again
-    /// - if it is not 0, it will be called at ms mS intervals. If its return 
-    ///   value is <= 0, selectloop will return. 
+    ///  - if it is not 0, it will be called at ms mS intervals. If its return 
+    ///    value is <= 0, selectloop will return. 
     /// @param clp client data to be passed to handler at every call.
-    /// @param ms  milliseconds interval between handler calls or before return.
-    ///   set ms to 0 for no periodic handler
+    /// @param ms milliseconds interval between handler calls or
+    ///   before return. Set to 0 for no periodic handler.
     static  void setperiodichandler(int (*handler)(void *), void *clp, int ms);
 
 protected:
     static bool o_selectloopDoReturn;
     static int  o_selectloopReturnValue;
     char *m_peer;	// Name of the connected host
-    int  m_fd;
-    int m_didtimo;
+    int   m_fd;
+    bool  m_ownfd;
+    int   m_didtimo;
     // Used when part of the selectloop map.
     short m_wantedEvents;
     // Method called by the selectloop when something can be done with a netcon
@@ -125,7 +129,7 @@ public:
     virtual int data(NetconData *con, Netcon::Event reason) = 0;
 };
 
-/// Base class for connections that actually transfer data.
+/// Base class for connections that actually transfer data. T
 class NetconData : public Netcon {
 public:
     NetconData() : m_buf(0), m_bufbase(0), m_bufbytes(0), m_bufsize(0)
@@ -142,7 +146,8 @@ public:
 
     /// Read from the connection
     /// @param buf the data buffer
-    /// @param cnt the number of bytes we should try to read
+    /// @param cnt the number of bytes we should try to read (but we return 
+    ///   as soon as we get data)
     /// @param timeo maximum number of seconds we should be waiting for data.
     /// @return the count of bytes actually read. 0 for timeout (call
     ///        didtimo() to discriminate from EOF). -1 if an error occurred.
@@ -172,16 +177,24 @@ private:
 class NetconCli : public NetconData {	
 public:
     NetconCli(int silent = 0) {m_silentconnectfailure = silent;}
+
     /// Open connection to specified host and named service. 
     int openconn(const char *host, char *serv, int timeo = -1);
+
     /// Open connection to specified host and numeric port. port is in
     /// HOST byte order
     int openconn(const char *host, unsigned int port, int timeo = -1);
-    /// Reuse existing fd. We DONT take ownership of the fd, and do no closin'
-    /// EVEN on an explicit closeconn() (use getfd(), close, setconn(-1)).
+
+    /// Reuse existing fd. 
+    /// We DONT take ownership of the fd, and do no closin' EVEN on an
+    /// explicit closeconn() or setconn() (use getfd(), close,
+    /// setconn(-1) if you need to really close the fd and have no
+    /// other copy).
     int setconn(int fd);
+
     /// Do not log message if openconn() fails.
     void setSilentFail(int onoff) {m_silentconnectfailure = onoff;}
+
 private:
     int m_silentconnectfailure;	// No logging of connection failures if set
 };

@@ -59,6 +59,7 @@ static const int zero = 0;
 #define MILLIS(OLD, NEW) ( (long)(((NEW).tv_sec - (OLD).tv_sec) * 1000 + \
 				  ((NEW).tv_usec - (OLD).tv_usec) / 1000))
 
+// Static method
 // Simplified interface to 'select()'. Only use one fd, for either
 // reading or writing. This is only used when not using the
 // selectloop() style of network i/o.
@@ -116,9 +117,9 @@ void Netcon::setperiodichandler(int (*handler)(void *), void *p, int ms)
 	gettimeofday(&lasthdlcall, 0);
 }
 
-// set the appropriate timeout so that the select call returns in time
-// to call the periodic routine.
-void periodictimeout(struct timeval *tv)
+// Compute the appropriate timeout so that the select call returns in
+// time to call the periodic routine.
+static void periodictimeout(struct timeval *tv)
 {
     // If periodic not set, the select call times out and we loop
     // after a very long time (we'd need to pass NULL to select for an
@@ -143,7 +144,7 @@ void periodictimeout(struct timeval *tv)
 
 // Check if it's time to call the handler. selectloop will return to
 // caller if it or we return 0
-int maybecallperiodic()
+static int maybecallperiodic()
 {
     if (periodicmillis <= 0)
 	return 1;
@@ -310,10 +311,11 @@ Netcon::~Netcon() {
 
 void Netcon::closeconn() 
 {
-    if (m_fd >= 0) {
+    if (m_ownfd && m_fd >= 0) {
 	close(m_fd);
-	m_fd = -1;
     }
+    m_fd = -1;
+    m_ownfd = true;
 }
 
 char *Netcon::sterror()
@@ -418,22 +420,24 @@ int NetconData::writeready()
 // Receive at most cnt bytes (maybe less)
 int NetconData::receive(char *buf, int cnt, int timeo)
 {
-    LOGDEB2(("NetconData::receive: cnt %d timeo %d m_buf 0x%x m_bufbytes %d\n", 
+    LOGDEB2(("NetconData::receive: cnt %d timeo %d m_buf 0x%x m_bufbytes %d\n",
 	     cnt, timeo, m_buf, m_bufbytes));
     if (m_fd < 0) {
 	LOGERR(("NetconData::receive: connection not opened\n"));
 	return -1;
     }
+    int fromibuf = 0;
     // Get whatever might have been left in the buffer by a previous 
     // getline, except if we're called to fill the buffer of course
     if (m_buf && m_bufbytes > 0 && (buf < m_buf || buf > m_buf + m_bufsize)) {
-	int frombuf = MIN(m_bufbytes, cnt);
-	memcpy(buf, m_bufbase, frombuf);
-	m_bufbytes -= frombuf;
-	m_bufbase += frombuf;
-	cnt -= frombuf;
+	fromibuf = MIN(m_bufbytes, cnt);
+	memcpy(buf, m_bufbase, fromibuf);
+	m_bufbytes -= fromibuf;
+	m_bufbase += fromibuf;
+	cnt -= fromibuf;
+        LOGDEB2(("NetconData::receive: transferred %d from mbuf\n", fromibuf));
 	if (cnt <= 0)
-	    return frombuf;
+	    return fromibuf;
     }
     if (timeo > 0) {
 	int ret = select1(m_fd, timeo);
@@ -448,14 +452,13 @@ int NetconData::receive(char *buf, int cnt, int timeo)
 	}
     }
     m_didtimo = 0;
-    int flags = 0;
-    if ((cnt = read(m_fd, buf, cnt)) < 0) {
+    if ((cnt = read(m_fd, buf + fromibuf, cnt)) < 0) {
 	char fdcbuf[10];sprintf(fdcbuf, "%d", m_fd);
 	LOGSYSERR("NetconData::receive", "read", fdcbuf);
 	return -1;
     }
     LOGDEB2(("NetconData::receive: normal return, cnt %d\n", cnt));
-    return cnt;
+    return fromibuf + cnt;
 }
 
 // Receive exactly cnt bytes (except for timeout)
@@ -510,9 +513,9 @@ int NetconData::getline(char *buf, int cnt, int timeo)
 	LOGDEB2(("Before loop, bufbytes %d, maxtransf %d, nn: %d\n", 
 		 m_bufbytes, maxtransf, nn));
 	for (nn = maxtransf; nn > 0;) {
-	    // This is not pretty but we want nn to be decremented for each
-	    // byte copied (even newline), and not become -1 if we go to the end
-	    // Better ways welcome!
+	    // This is not pretty but we want nn to be decremented for
+	    // each byte copied (even newline), and not become -1 if
+	    // we go to the end. Better ways welcome!
 	    nn--;
 	    if ((*cp++ = *m_bufbase++) == '\n')
 		break;
@@ -657,10 +660,10 @@ int NetconCli::openconn(const char *host, char *serv, int timeo)
 int NetconCli::setconn(int fd)
 {
     LOGDEB2(("Netconcli::setconn: fd %d\n", fd));
-
     closeconn();
 
     m_fd = fd;
+    m_ownfd = false;
     setpeer("");
 
     return 0;

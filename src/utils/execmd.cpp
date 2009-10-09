@@ -51,7 +51,12 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.27 2008-10-06 06:22:47 dockes Exp 
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+#ifndef MAX
 #define MAX(A,B) ((A) > (B) ? (A) : (B))
+#endif
+#ifndef MIN
+#define MIN(A,B) ((A) < (B) ? (A) : (B))
+#endif
 
 /* From FreeBSD's which command */
 static bool
@@ -373,19 +378,49 @@ int ExecCmd::send(const string& data)
     return nwritten;
 }
 
-int ExecCmd::receive(string& data)
+int ExecCmd::receive(string& data, int cnt)
 {
     NetconCli *con = dynamic_cast<NetconCli *>(m_fromcmd.getptr());
     if (con == 0) {
-	LOGERR(("ExecCmd::receive: outpipe is closed\n"));
+	LOGERR(("ExecCmd::receive: inpipe is closed\n"));
 	return -1;
     }
-    char buf[8192];
-    int n = con->receive(buf, 8192);
+    const int BS = 4096;
+    char buf[BS];
+    int ntot = 0;
+    do {
+        int toread = cnt > 0 ? MIN(cnt - ntot, BS) : BS;
+        int n = con->receive(buf, toread);
+        if (n < 0) {
+            LOGERR(("ExecCmd::receive: error\n"));
+            return -1;
+        } else if (n > 0) {
+            ntot += n;
+            data.append(buf, n);
+        } else {
+            LOGDEB(("ExecCmd::receive: got 0\n"));
+            break;
+        }
+    } while (cnt > 0 && ntot < cnt);
+    return ntot;
+}
+
+int ExecCmd::getline(string& data)
+{
+    NetconCli *con = dynamic_cast<NetconCli *>(m_fromcmd.getptr());
+    if (con == 0) {
+	LOGERR(("ExecCmd::receive: inpipe is closed\n"));
+	return -1;
+    }
+    const int BS = 1024;
+    char buf[BS];
+    int n = con->getline(buf, BS);
     if (n < 0) {
-	LOGERR(("ExecCmd::receive: error\n"));
+	LOGERR(("ExecCmd::getline: error\n"));
     } else if (n > 0) {
 	data.append(buf, n);
+    } else {
+	LOGDEB(("ExecCmd::getline: got 0\n"));
     }
     return n;
 }
@@ -395,7 +430,7 @@ int ExecCmd::wait(bool haderror)
 {
     ExecCmdRsrc e(this);
     int status = -1;
-    if (!m_cancelRequest) {
+    if (!m_cancelRequest && m_pid > 0) {
 	if (waitpid(m_pid, &status, 0) < 0) 
 	    status = -1;
 	m_pid = -1;

@@ -134,8 +134,11 @@ class ExecCmd {
     int startExec(const string &cmd, const list<string>& args, 
 		  bool has_input, bool has_output);
     int send(const string& data);
-    int receive(string& data);
+    int receive(string& data, int cnt = -1);
+    int getline(string& data);
     int wait(bool haderror = false);
+
+    pid_t getChildPid() {return m_pid;}
 
     /** 
      * Cancel/kill command. This can be called from another thread or
