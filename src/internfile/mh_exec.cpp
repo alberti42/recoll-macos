@@ -108,7 +108,15 @@ bool MimeHandlerExec::next_document()
 	return false;
     }
 
-    // if output is text, we must handle the conversion to utf-8
+    finaldetails();
+    return true;
+}
+
+
+void MimeHandlerExec::finaldetails()
+{
+    string& output = m_metaData["content"];
+    // if output is text/plain (not text/html), we must convert it to utf-8
     string charset = cfgCharset.empty() ? "utf-8" : cfgCharset;
     string mt = cfgMtype.empty() ? "text/html" : cfgMtype;
     if (!mt.compare("text/plain") && charset.compare("utf-8")) {
@@ -139,6 +147,4 @@ bool MimeHandlerExec::next_document()
 	LOGERR(("MimeHandlerExec: cant compute md5 for [%s]: %s\n", 
 		m_fn.c_str(), reason.c_str()));
     }
-
-    return true;
 }

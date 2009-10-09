@@ -30,21 +30,31 @@ using std::string;
  *
  * The command to execute, and its parameters, are stored in the "params" 
  * which is built in mimehandler.cpp out of data from the mimeconf file.
+ *
+ * As any RecollFilter, a MimeHandlerExec object can be reset
+ * by calling clear(), and will stay initialised for the same mtype
+ * (cmd, params etc.)
  */
 class MimeHandlerExec : public RecollFilter {
  public:
-    // Members not reset by clear().  params, cfgMtype and chgCharset
-    // actually define what I am.  missingHelper is a permanent error
+    ///////////////////////
+    // Members not reset by clear(). params, cfgMtype and chgCharset
+    // define what I am.  missingHelper is a permanent error
     // (no use to try and execute over and over something that's not
     // here).
+
+    // Parameter list: this has been built by our creator, from config file 
+    // data. We always add the file name at the end before actual execution
     list<string> params;
-    // The defaults for external filters is to output html except if defined 
-    // otherwise in the config.
+    // Filter output type. The default for ext. filters is to output html, 
+    // but some don't, in which case the type is defined in the config.
     string cfgMtype;
-    // For ext programs which don't output html, the output charset
-    // has to be known: ie they have a --charset utf-8 like option.
+    // Output character set if the above type is not text/html. For
+    // those filters, the output charset has to be known: ie set by a command
+    // line option.
     string cfgCharset; 
     bool missingHelper;
+    ////////////////
 
     MimeHandlerExec(const string& mt) : RecollFilter(mt), missingHelper(false) 
     {}
@@ -66,9 +76,11 @@ class MimeHandlerExec : public RecollFilter {
 	RecollFilter::clear(); 
     }
 
-private:
+protected:
     string m_fn;
     string m_ipath;
+
+    virtual void finaldetails();
 };
 
 #endif /* _MH_EXEC_H_INCLUDED_ */

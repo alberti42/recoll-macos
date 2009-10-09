@@ -31,6 +31,7 @@ using namespace std;
 #include "smallut.h"
 
 #include "mh_exec.h"
+#include "mh_execm.h"
 #include "mh_html.h"
 #include "mh_mail.h"
 #include "mh_mbox.h"
@@ -68,7 +69,8 @@ static Dijon::Filter *mhFactory(const string &mime)
  * We don't support ';' inside a quoted string for now. Can't see a use
  * for it
  */
-MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs)
+MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
+                               bool multiple)
 {
     list<string>semicolist;
     stringToTokens(hs, semicolist, ";");
@@ -86,7 +88,9 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs)
 	return 0;
     }
 
-    MimeHandlerExec *h = new MimeHandlerExec(mtype.c_str());
+    MimeHandlerExec *h = multiple ? 
+        new MimeHandlerExecMultiple(mtype.c_str()) :
+        new MimeHandlerExec(mtype.c_str());
 
     list<string>::iterator it;
 
@@ -181,7 +185,14 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 			mtype.c_str(), hs.c_str()));
 		return 0;
 	    }
-	    return mhExecFactory(cfg, mtype, hs);
+	    return mhExecFactory(cfg, mtype, hs, false);
+	} else if (!stringlowercmp("execm", *it)) {
+	    if (toks.size() < 2) {
+		LOGERR(("getMimeHandler: bad line for %s: %s\n", 
+			mtype.c_str(), hs.c_str()));
+		return 0;
+	    }
+	    return mhExecFactory(cfg, mtype, hs, true);
 	}
     }
 

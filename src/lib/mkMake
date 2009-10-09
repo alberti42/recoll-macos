@@ -17,6 +17,7 @@ ${depth}/internfile/myhtmlparse.cpp \
 ${depth}/internfile/mimehandler.cpp \
 ${depth}/internfile/internfile.cpp \
 ${depth}/internfile/mh_exec.cpp \
+${depth}/internfile/mh_execm.cpp \
 ${depth}/internfile/mh_html.cpp \
 ${depth}/internfile/mh_mail.cpp \
 ${depth}/internfile/mh_mbox.cpp \

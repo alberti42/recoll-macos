@@ -55,8 +55,81 @@ sub xapianTag {
 	return undef;
 }
 
+sub imgTagsToHtml {
+    my $imageFile = shift;
+    my $output = "";
+    $imageFile = '-' if $imageFile eq '';
+    unless ( open(IMGF, $imageFile)  ) {
+	print STDERR "$0: can't open file $imageFile\n";
+	return $output; # file doesn't exist or can't be read
+    }
+    $info = ImageInfo(\*IMGF);
+    return $output unless $info;
+    $fields = [];
+    $other = [];
+    $titleHtmlTag = "";
+    foreach $tagname ( sort keys %{$info} ) {
+	$xapiantag = xapianTag($tagname);
+	if (defined $xapiantag ) {
+	    push @{$fields}, [ $xapiantag, $info->{$tagname} ];
+	    if ($xapiantag eq 'title') {
+		$titleHtmlTag = "<title>$info->{$tagname}</title>";
+	    }
+	    push @{$other}, [ $tagname, $info->{$tagname} ] if $headAndBody;
+	} else {
+	    push @{$other}, [ $tagname, $info->{$tagname} ];
+	}
+    }
+    $output = "<html>\n<head>\n$titleHtmlTag\n" .
+    "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n";
+    foreach $tagpair ( @{$fields} ) {
+	($tagname, $value) = @{$tagpair};
+	$output = $output . "<meta name=\"$tagname\" content=\"$value\">\n";
+    }
+    $output = $output . "</head><body>\n";
+    foreach $tagpair (@{$other} ) {
+	($tagname, $value) = @{$tagpair};
+	$output = $output . sprintf("%30s : %s<br>\n", $tagname, $value);
+    }
+    $output = $output . "</body>\n</html>\n";
+    return $output;
+}
+
+# Get one line from stdin, exit on eof
+sub readlineorexit {
+    my $s = <STDIN>;
+    unless ($s) {
+        # print STDERR "RCLIMG: EOF\n";
+	exit 0;
+    }
+    return $s
+}
+
+# Read one named parameter
+sub readparam {
+    my $s = readlineorexit();
+    if ($s eq "\n") {
+        return ("","");
+    }
+    my @l = split(' ', $s);
+
+    if (scalar(@l) != 2) {
+        print STDERR "RCLIMG: bad line:", $s;
+	exit 1;
+    }
+    my $paramname = lc $l[0];
+    my $paramsize = $l[1];
+    my $n = read STDIN, $paramdata, $paramsize;
+    if ($n != $paramsize) {
+	print STDERR "RCLIMG: [$paramname] expected $paramsize, got $n\n";
+        exit 1;
+    }
+    # print STDERR "RCLIMG: [$paramname] $paramsize bytes: [$paramdata]\n";
+    return ($paramname, $paramdata);
+}
+
 #
-# start here
+# Main program starts here
 #
 
 # JFD: replaced the "use" call with a runtime load with error checking,
@@ -68,37 +141,30 @@ if ($@) {
 	exit(1);
 }
 
+$| = 1;
+while (1) {
+    # print STDERR "RCLIMG: waiting for command\n";
 
-$imageFile = shift;
-$imageFile = '-' if $imageFile eq '';
-unless ( open(IMGF, $imageFile)  ) {
-	print STDERR "$0: can't open file $imageFile\n";
-	exit(1); # file doesn't exist or can't be read
-}
-$info = ImageInfo(\*IMGF);
-die unless $info;
-$fields = [];
-$other = [];
-$titleHtmlTag = "";
-foreach $tagname ( sort keys %{$info} ) {
-	$xapiantag = xapianTag($tagname);
-	if (defined $xapiantag ) {
-		push @{$fields}, [ $xapiantag, $info->{$tagname} ];
-		$titleHtmlTag = "<title>$info->{$tagname}</title>" if $xapiantag eq 'title';
-		push @{$other}, [ $tagname, $info->{$tagname} ] if $headAndBody;
-	} else {
-		push @{$other}, [ $tagname, $info->{$tagname} ];
+    my %params = ();
+    # Read at most 10 parameters (we only actually use one), stop at empty line
+    for($i = 1; $i < 10; $i++) {
+        my ($name, $value) = readparam;
+        if ($name eq "") {
+            last;
 	}
+        $params{$name} = $value;
+    }
+    unless (defined $params{"filename:"}) {
+        print STDERR "RCLIMG: no filename ??\n";
+	exit 1;
+    }
+
+    my $data = imgTagsToHtml($params{"filename:"});
+    my $l = length($data);
+    print "Data: $l\n";
+    # print STDERR "RCLIMG: writing $l bytes of data\n";
+    print $data;
+    # End of output parameters: print empty line
+    print "\n";
+    # print STDERR "RCLIMG: done writing data\n";
 }
-print "<html>\n<head>\n$titleHtmlTag\n";
-print "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n";
-foreach $tagpair ( @{$fields} ) {
-	($tagname, $value) = @{$tagpair};
-	print "<meta name=\"$tagname\" content=\"$value\">\n";
-}
-print "</head><body>\n";
-foreach $tagpair (@{$other} ) {
-	($tagname, $value) = @{$tagpair};
-	printf "%30s : %s<br>\n", $tagname, $value;
-}
-print "</body>\n</html>\n";
