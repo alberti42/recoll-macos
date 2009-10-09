@@ -19,6 +19,8 @@ static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.38 2008-12-12 11:53:45 dockes E
  */
 #ifndef TEST_TEXTSPLIT
 
+#include <assert.h>
+
 #include <iostream>
 #include <string>
 #include <set>
@@ -26,11 +28,8 @@ static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.38 2008-12-12 11:53:45 dockes E
 
 #include "textsplit.h"
 #include "debuglog.h"
-#include "assert.h"
-
 //#define UTF8ITER_CHECK
 #include "utf8iter.h"
-
 #include "uproplist.h"
 
 #ifndef NO_NAMESPACES
@@ -39,11 +38,7 @@ using namespace std;
 
 /**
  * Splitting a text into words. The code in this file works with utf-8
- * in a semi-clean way (see uproplist.h)
- *
- * We are also not using capitalization information.
- *
- * There are a few remnants of the initial utf8-ignorant version in this file.
+ * in a semi-clean way (see uproplist.h). Ascii still gets special treatment.
  */
 
 // Character classes: we have three main groups, and then some chars
@@ -52,37 +47,43 @@ using namespace std;
 // We have an array with 256 slots where we keep the character types. 
 // The array could be fully static, but we use a small function to fill it 
 // once.
-// The array is actually a remnant of the original version which did no utf8
-// It could be reduced to 128, because real (over 128) utf8 chars are now 
-// handled with a set holding all the separator values.
-enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259};
+// The array is actually a remnant of the original version which did no utf8.
+// Only the lower 127 slots are  now used, but keep it at 256
+// because it makes some tests in the code simpler.
+enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259, 
+                A_ULETTER=260, A_LLETTER=261};
 static int charclasses[256];
 
+// Real UTF-8 characters are handled with sets holding all characters
+// with interesting properties. This is far from full-blown management
+// of Unicode properties, but seems to do the job well enough in most
+// common cases
 static set<unsigned int> unicign;
 static set<unsigned int> visiblewhite;
+
+// Set up character classes array and the additional unicode sets
 static void setcharclasses()
 {
     static int init = 0;
     if (init)
 	return;
     unsigned int i;
-    for (i = 0 ; i < 256 ; i ++)
-	charclasses[i] = LETTER;
 
-    for (i = 0; i < ' ';i++)
+    // Set default value for all: SPACE
+    for (i = 0 ; i < 256 ; i ++)
 	charclasses[i] = SPACE;
 
     char digits[] = "0123456789";
     for (i = 0; i  < strlen(digits); i++)
 	charclasses[int(digits[i])] = DIGIT;
 
-    char blankspace[] = "\t\v\f ";
-    for (i = 0; i < strlen(blankspace); i++)
-	charclasses[int(blankspace[i])] = SPACE;
+    char upper[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (i = 0; i  < strlen(upper); i++)
+	charclasses[int(upper[i])] = A_ULETTER;
 
-    char seps[] = "!\"$%&()/<=>\\^{|}~:;`";
-    for (i = 0; i  < strlen(seps); i++)
-	charclasses[int(seps[i])] = SPACE;
+    char lower[] = "abcdefghijklmnopqrstuvwxyz";
+    for (i = 0; i  < strlen(lower); i++)
+	charclasses[int(lower[i])] = A_LLETTER;
 
     char wild[] = "*?[]";
     for (i = 0; i  < strlen(wild); i++)
@@ -116,6 +117,9 @@ static inline int whatcc(unsigned int c)
     }
 }
 
+
+// CJK Unicode character detection:
+//
 // 2E80..2EFF; CJK Radicals Supplement
 // 3000..303F; CJK Symbols and Punctuation
 // 3040..309F; Hiragana
@@ -168,12 +172,13 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 
     unsigned int l = w.length();
     if (l > 0 && l < (unsigned)m_maxWordLength) {
-	// 1 char word: we index single letters and digits, but
-	// nothing else. We might want to turn this into a test for a single
-	// utf8 character instead.
+	// 1 byte word: we index single ascii letters and digits, but
+	// nothing else. We might want to turn this into a test for a
+	// single utf8 character instead ?
 	if (l == 1) {
 	    int c = (int)w[0];
-	    if (charclasses[c] != LETTER && charclasses[c] != DIGIT) {
+	    if (charclasses[c] != A_ULETTER && charclasses[c] != A_LLETTER && 
+                charclasses[c] != DIGIT) {
 		//cerr << "ERASING single letter term " << c << endl;
 		return true;
 	    }
@@ -195,7 +200,7 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
  * handler/emitter. Emit and reset the current word, possibly emit the current
  * span (if different). In query mode, words are not emitted, only final spans
  * 
- * This is purely for factoring common code from different places
+ * This is purely for factoring common code from different places in
  * text_to_words(). 
  * 
  * @return true if ok, false for error. Splitting should stop in this case.
@@ -259,7 +264,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 /** 
  * Splitting a text into terms to be indexed.
  * We basically emit a word every time we see a separator, but some chars are
- * handled specially so that special cases, ie, c++ and dockes@okyz.com etc, 
+ * handled specially so that special cases, ie, c++ and jfd@recoll.com etc, 
  * are handled properly,
  */
 bool TextSplit::text_to_words(const string &in)
@@ -310,10 +315,6 @@ bool TextSplit::text_to_words(const string &in)
 
 	int cc = whatcc(c);
 	switch (cc) {
-	case LETTER:
-	    m_wordLen += it.appendchartostring(m_span);
-	    break;
-
 	case DIGIT:
 	    if (m_wordLen == 0)
 		m_inNumber = true;
@@ -447,6 +448,41 @@ bool TextSplit::text_to_words(const string &in)
 		goto SPACE;
 	    }
 	    break;
+
+            // Camelcase handling. 
+            // If we get uppercase ascii after lowercase ascii, emit word.
+            // This emits "camel" when hitting the 'C' of camelCase
+	case A_ULETTER:
+	    if (m_span.length() && 
+                charclasses[(unsigned int)m_span[m_span.length() - 1]] == 
+                A_LLETTER) {
+                if (m_wordLen) {
+                    if (!doemit(false, it.getBpos()))
+                        return false;
+                }
+            }
+            goto NORMALCHAR;
+
+            // CamelCase handling.
+            // If we get lowercase after uppercase and the current
+            // word length is bigger than one, it means we had a
+            // string of several upper-case letters:  an
+            // acronym (readHTML) or a single letter article (ALittleHelp).
+            // Emit the uppercase word before proceeding
+        case A_LLETTER:
+	    if (m_span.length() && 
+                charclasses[(unsigned int)m_span[m_span.length() - 1]] == 
+                A_ULETTER && m_wordLen > 1) {
+                // Multiple upper-case letters. Single letter word
+                // or acronym which we want to emit now
+                m_wordLen--;
+                if (!doemit(false, it.getBpos()))
+                    return false;
+                m_wordStart--;
+                m_wordLen++;
+            }
+            goto NORMALCHAR;
+
 
 	default:
 	NORMALCHAR:
@@ -678,6 +714,7 @@ bool TextSplit::stringToStrings(const string &s, list<string> &tokens)
 #include "textsplit.h"
 #include "readfile.h"
 #include "debuglog.h"
+#include "transcode.h"
 
 using namespace std;
 
@@ -711,6 +748,7 @@ static string teststring =
 	    "Debut-\ncontinue\n" 
 	    "[olala][ululu]  (valeur) (23)\n"
 	    "utf-8 ucs-4© \\nodef\n"
+            "A b C 2 . +"
 	    "','this\n"
 	    " ,able,test-domain "
 	    " -wl,--export-dynamic "
@@ -727,6 +765,7 @@ static string usage =
     "   -w:  only words\n"
     "   -k:  preserve wildcards (?*)\n"
     "   -c: just count words\n"
+    "   -C [charset] : input charset\n"
     " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
     ;
@@ -748,6 +787,7 @@ static int        op_flags;
 
 int main(int argc, char **argv)
 {
+    string charset;
     thisprog = argv[0];
     argc--; argv++;
 
@@ -759,14 +799,16 @@ int main(int argc, char **argv)
 	while (**argv)
 	    switch (*(*argv)++) {
 	    case 'c':	op_flags |= OPT_c; break;
-	    case 'C':	op_flags |= OPT_C; break;
+            case 'C':	op_flags |= OPT_C; if (argc < 2)  Usage();
+                charset = *(++argv); argc--; 
+                goto b1;
 	    case 'k':	op_flags |= OPT_k; break;
 	    case 's':	op_flags |= OPT_s; break;
 	    case 'S':	op_flags |= OPT_S; break;
 	    case 'w':	op_flags |= OPT_w; break;
 	    default: Usage();	break;
 	    }
-	argc--; argv++;
+    b1: argc--; argv++;
     }
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
@@ -784,21 +826,35 @@ int main(int argc, char **argv)
     if (op_flags & OPT_k) 
 	flags = (TextSplit::Flags)(flags | TextSplit::TXTS_KEEPWILD); 
 
-    string data;
+    string odata, reason;
     if (argc == 1) {
 	const char *filename = *argv++;	argc--;
 	if (!strcmp(filename, "stdin")) {
 	    char buf[1024];
 	    int nread;
 	    while ((nread = read(0, buf, 1024)) > 0) {
-		data.append(buf, nread);
+		odata.append(buf, nread);
 	    }
-	} else if (!file_to_string(filename, data)) 
+	} else if (!file_to_string(filename, odata, &reason)) {
+            cerr << "Failed: file_to_string(" << filename << ") failed: " 
+                 << reason << endl;
 	    exit(1);
+        }
     } else {
 	cout << endl << teststring << endl << endl;  
-	data = teststring;
+	odata = teststring;
     }
+    string& data = odata;
+    string ndata;
+    if ((op_flags & OPT_C)) {
+        if (!transcode(odata, ndata, charset, "UTF-8")) {
+            cerr << "Failed: transcode error" << endl;
+            exit(1);
+        } else {
+            data = ndata;
+        }
+    }
+
     if (op_flags & OPT_c) {
 	int n = TextSplit::countWords(data, flags);
 	cout << n << " words" << endl;
