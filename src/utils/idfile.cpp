@@ -57,19 +57,13 @@ static const int nmh = sizeof(mailhs) / sizeof(char *);
 
 const int wantnhead = 3;
 
-string idFile(const char *fn)
+// fn is for message printing
+static string idFileInternal(istream& input, const char *fn)
 {
     static int treat_mbox_as_rfc822;
     if (treat_mbox_as_rfc822 == 0) {
 	treat_mbox_as_rfc822 = getenv("RECOLL_TREAT_MBOX_AS_RFC822") ? 1 : -1;
     }
-
-    ifstream input;
-    input.open(fn, ios::in);
-    if (!input.is_open()) {
-	LOGERR(("idFile: could not open [%s]\n", fn));
-	return string();
-    }	    
 
     bool line1HasFrom = false;
     bool gotnonempty = false;
@@ -162,6 +156,22 @@ string idFile(const char *fn)
     return string();
 }
 
+string idFile(const char *fn)
+{
+    ifstream input;
+    input.open(fn, ios::in);
+    if (!input.is_open()) {
+	LOGERR(("idFile: could not open [%s]\n", fn));
+	return string();
+    }
+    return idFileInternal(input, fn);
+}
+
+string idFileMem(const string& data)
+{
+    stringstream s(data, stringstream::in);
+    return idFileInternal(s, "");
+}
 
 #else
 

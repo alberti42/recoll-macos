@@ -21,10 +21,13 @@
 #include <string>
 #include <list>
 
-// Return mime type for file or empty string. The system's file utility does
-// a bad job on mail folders. idFile only looks for mail file types for now, 
-// but this may change
+// Look at data inside file or string, and return mime type or empty string. 
+//
+// The system's file utility does a bad job on mail folders. idFile
+// only looks for mail file types for now, but this may change
+
 extern std::string idFile(const char *fn);
+extern std::string idFileMem(const std::string& data);
 
 // Return all types known to us
 extern std::list<std::string> idFileAllTypes();
