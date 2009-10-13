@@ -130,7 +130,9 @@ public:
 	int status;
 	if (m_parent->m_pid > 0) {
 	    LOGDEB(("ExecCmd: killing cmd\n"));
-	    if (kill(m_parent->m_pid, SIGTERM) == 0) {
+            pid_t grp = getpgid(m_parent->m_pid);
+            int ret = killpg(grp, SIGTERM);
+	    if (ret == 0) {
 		for (int i = 0; i < 3; i++) {
 		    (void)waitpid(m_parent->m_pid, &status, WNOHANG);
 		    if (kill(m_parent->m_pid, 0) != 0)
@@ -138,10 +140,13 @@ public:
 		    sleep(1);
 		    if (i == 2) {
 			LOGDEB(("ExecCmd: killing (KILL) cmd\n"));
-			kill(m_parent->m_pid, SIGKILL);
+			killpg(grp, SIGKILL);
 		    }
 		}
-	    }
+	    } else {
+                LOGERR(("ExecCmd: error killing process group %d: %d\n",
+                        grp, errno));
+            }
 	}
 	if (m_parent->m_pipein[0] >= 0)
 	    close(m_parent->m_pipein[0]);
@@ -204,6 +209,13 @@ int ExecCmd::startExec(const string &cmd, const list<string>& args,
     }
 
     // Father process
+
+    // Set the process group for the child. This is also done in the
+    // child process see wikipedia(Process_group)
+    if (setpgid(m_pid, m_pid)) {
+        LOGERR(("ExecCmd: father failed setting pgid of son process\n"));
+    }
+
     sigemptyset(&m_blkcld);
     sigaddset(&m_blkcld, SIGCHLD);
     pthread_sigmask(SIG_BLOCK, &m_blkcld, 0);
@@ -444,6 +456,9 @@ int ExecCmd::wait(bool haderror)
 void ExecCmd::dochild(const string &cmd, const list<string>& args,
 		      bool has_input, bool has_output)
 {
+    // Start our own process group
+    setpgid(0, getpid());
+    
     if (has_input) {
 	close(m_pipein[1]);
 	m_pipein[1] = -1;
