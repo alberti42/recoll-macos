@@ -142,11 +142,12 @@ bool MimeHandlerExec::next_document()
     return true;
 }
 
-
 void MimeHandlerExec::finaldetails()
 {
     string& output = m_metaData["content"];
-    // if output is text/plain (not text/html), we must convert it to utf-8
+
+    // if output is text/plain (not text/html), we may have to convert
+    // it to utf-8. cfgCharset comes from the mimeconf filter definition line
     string charset = cfgCharset.empty() ? "utf-8" : cfgCharset;
     string mt = cfgMtype.empty() ? "text/html" : cfgMtype;
     if (!mt.compare("text/plain") && charset.compare("utf-8")) {
@@ -166,7 +167,7 @@ void MimeHandlerExec::finaldetails()
     // Success. Store some external metadata
     m_metaData["origcharset"] = m_defcharset;
     // Default charset: all recoll filters output utf-8, but this
-    // could still be overridden by the content-type meta tag.
+    // could still be overridden by the content-type meta tag for html
     m_metaData["charset"] = charset;
     m_metaData["mimetype"] = mt;
 
