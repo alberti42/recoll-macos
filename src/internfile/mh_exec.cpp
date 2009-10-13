@@ -26,6 +26,7 @@ static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.14 2008-10-09 09:19:37 dockes Exp
 #include "smallut.h"
 #include "transcode.h"
 #include "md5.h"
+#include "rclconfig.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -34,12 +35,28 @@ static char rcsid[] = "@(#$Id: mh_exec.cpp,v 1.14 2008-10-09 09:19:37 dockes Exp
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+// This is called periodically by ExeCmd when it is waiting for data,
+// or when it does receive some. We may choose to interrupt the
+// command.
 class MEAdv : public ExecCmdAdvise {
 public:
-    void newData(int) {
+    MEAdv(int maxsecs) : m_filtermaxseconds(maxsecs) {m_start = time(0L);}
+    void newData(int n) {
+        LOGDEB1(("MHExec: new data, count %d\n", n));
+        if (time(0L) - m_start > m_filtermaxseconds) {
+            LOGERR(("MimeHandlerExec: filter timeout (%d S)\n",
+                    m_filtermaxseconds));
+            CancelCheck::instance().setCancel();
+        }
+        // If a cancel request was set by the signal handler (or by us
+        // just above), this will raise an exception. Another approach
+        // would be to call ExeCmd::setCancel().
 	CancelCheck::instance().checkCancel();
     }
+    time_t m_start;
+    int m_filtermaxseconds;
 };
+
 
 // Execute an external program to translate a file from its native
 // format to text or html.
@@ -59,6 +76,12 @@ bool MimeHandlerExec::next_document()
 	return false;
     }
 
+    int filtermaxseconds = 900;
+    RclConfig *conf = RclConfig::getMainConfig();
+    if (conf) {
+        conf->getConfParam("filtermaxseconds", &filtermaxseconds);
+    }
+
     // Command name
     string cmd = params.front();
     
@@ -73,11 +96,18 @@ bool MimeHandlerExec::next_document()
     string& output = m_metaData["content"];
     output.erase();
     ExecCmd mexec;
-    MEAdv adv;
+    MEAdv adv(filtermaxseconds);
     mexec.setAdvise(&adv);
     mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
-    int status = mexec.doexec(cmd, myparams, 0, &output);
+
+    int status;
+    try {
+        status = mexec.doexec(cmd, myparams, 0, &output);
+    } catch (CancelExcept) {
+	LOGERR(("MimeHandlerExec: cancelled\n"));
+        status = 0x110f;
+    }
 
     if (status) {
 	LOGERR(("MimeHandlerExec: command status 0x%x for %s\n", 
