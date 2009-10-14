@@ -28,7 +28,8 @@
  * which is built in mimehandler.cpp out of data from the mimeconf file.
  *
  * This version uses persistent filters which can handle multiple requests 
- * without exiting, with a simple question/response protocol.
+ * without exiting (both multiple files and multiple documents per file), 
+ * with a simple question/response protocol.
  *
  * The data is exchanged in TLV fashion, in a way that should be
  * usable in most script languages. The basic unit has one line with a
@@ -49,11 +50,11 @@ text/plainData: 10
 0123456789
 <Message ends here because of empty line
  *        
- * Until proven otherwise, this format is both extensible and
- * reasonably easy to parse. While it's more destined for python or
- * perl on the script side, it should even be sort of usable from the shell
- * (ie: use dd to read the counted data). Most alternatives would need data
- * encoding in some cases.
+ * This format is both extensible and reasonably easy to parse. 
+ * While it's more destined for python or perl on the script side, it
+ * should even be sort of usable from the shell (ie: use dd to read
+ * the counted data). Most alternatives would need data encoding in
+ * some cases.
  */
 class MimeHandlerExecMultiple : public MimeHandlerExec {
     /////////
@@ -71,9 +72,14 @@ class MimeHandlerExecMultiple : public MimeHandlerExec {
     virtual void clear() {
 	MimeHandlerExec::clear(); 
     }
+    virtual bool set_document_file(const string &file_path) {
+        m_filefirst = true;
+        return MimeHandlerExec::set_document_file(file_path);
+    }
 private:
     bool startCmd();
-    bool readDataElement(string& name);
+    bool readDataElement(string& name, string& data);
+    bool m_filefirst;
 };
 
 #endif /* _MH_EXECM_H_INCLUDED_ */

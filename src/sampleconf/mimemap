@@ -39,6 +39,7 @@
 .Z = application/x-gzip
 .bz2 = application/x-bzip2
 #.Z  = application/x-compress
+.zip = application/zip
 
 .doc = application/msword
 .ppt = application/vnd.ms-powerpoint

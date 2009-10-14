@@ -71,6 +71,7 @@ application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-scribus = exec rclscribus
 application/x-tex = exec rcltex
+application/zip = execm rclzip
 audio/mpeg = exec rclid3
 image/gif = execm rclimg
 image/jpeg = execm rclimg

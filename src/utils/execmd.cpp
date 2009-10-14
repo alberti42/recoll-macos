@@ -226,7 +226,6 @@ int ExecCmd::startExec(const string &cmd, const list<string>& args,
 	NetconCli *iclicon = new NetconCli();
 	iclicon->setconn(m_pipein[1]);
 	m_tocmd = NetconP(iclicon);
-	m_pipein[1] = 0;
     }
     if (has_output) {
 	close(m_pipeout[1]);
@@ -234,7 +233,6 @@ int ExecCmd::startExec(const string &cmd, const list<string>& args,
 	NetconCli *oclicon = new NetconCli();
 	oclicon->setconn(m_pipeout[0]);
 	m_fromcmd = NetconP(oclicon);
-	m_pipeout[0] = -1;
     }
 
     /* Don't want to undo what we just did ! */
@@ -361,6 +359,18 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	    }
 	}
 	LOGDEB0(("ExecCmd::doexec: selectloop returned %d\n", ret));
+
+        // The netcons don't take ownership of the fds: we have to close them
+        // (have to do it before wait, this may be the signal the child is 
+        // waiting for exiting).
+        if (input) {
+            close(m_pipein[1]);
+            m_pipein[1] = -1;
+        }
+        if (output) {
+            close(m_pipeout[0]);
+            m_pipeout[0] = -1;
+        }
     }
 
     // Normal return: deactivate cleaner, wait() will do the cleanup
