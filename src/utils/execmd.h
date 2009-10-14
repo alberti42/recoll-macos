@@ -35,7 +35,7 @@ using std::vector;
  *
  * To interrupt the command, the code using ExecCmd should either
  * raise an exception inside newData() (and catch it in doexec's caller), or 
- * call ExecCmd::setCancel() 
+ * call ExecCmd::setKill() 
  * 
  */
 class ExecCmdAdvise {
@@ -145,7 +145,7 @@ class ExecCmd {
      * from the advise callback, which could also raise an exception to 
      * accomplish the same thing
      */
-    void setCancel() {m_cancelRequest = true;}
+    void setKill() {m_killRequest = true;}
 
     ExecCmd() 
 	: m_advise(0), m_provide(0), m_timeoutMs(1000)
@@ -169,7 +169,7 @@ class ExecCmd {
     vector<string>   m_env;
     ExecCmdAdvise   *m_advise;
     ExecCmdProvide  *m_provide;
-    bool             m_cancelRequest;
+    bool             m_killRequest;
     int              m_timeoutMs;
     string           m_stderrFile;
     // Pipe for data going to the command
@@ -186,7 +186,7 @@ class ExecCmd {
     // Reset internal state indicators. Any resources should have been
     // previously freed
     void reset() {
-	m_cancelRequest = false;
+	m_killRequest = false;
 	m_pipein[0] = m_pipein[1] = m_pipeout[0] = m_pipeout[1] = -1;
 	m_pid = -1;
 	sigemptyset(&m_blkcld);

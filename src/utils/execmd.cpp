@@ -46,6 +46,7 @@ static char rcsid[] = "@(#$Id: execmd.cpp,v 1.27 2008-10-06 06:22:47 dockes Exp 
 #include "debuglog.h"
 #include "smallut.h"
 #include "netcon.h"
+#include "closefrom.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -353,12 +354,15 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	    LOGDEB(("ExecCmd::doexec: selectloop returned %d\n", ret));
 	    if (m_advise)
 		m_advise->newData(0);
-	    if (m_cancelRequest) {
+	    if (m_killRequest) {
 		LOGINFO(("ExecCmd::doexec: cancel request\n"));
 		break;
 	    }
 	}
 	LOGDEB0(("ExecCmd::doexec: selectloop returned %d\n", ret));
+        // Check for interrupt request: we won't want to waitpid()
+        if (m_advise)
+            m_advise->newData(0);
 
         // The netcons don't take ownership of the fds: we have to close them
         // (have to do it before wait, this may be the signal the child is 
@@ -388,7 +392,7 @@ int ExecCmd::send(const string& data)
     }
     unsigned int nwritten = 0;
     while (nwritten < data.length()) {
-	if (m_cancelRequest)
+	if (m_killRequest)
 	    break;
 	int n = con->send(data.c_str() + nwritten, data.length() - nwritten);
 	if (n < 0) {
@@ -452,7 +456,7 @@ int ExecCmd::wait(bool haderror)
 {
     ExecCmdRsrc e(this);
     int status = -1;
-    if (!m_cancelRequest && m_pid > 0) {
+    if (!m_killRequest && m_pid > 0) {
 	if (waitpid(m_pid, &status, 0) < 0) 
 	    status = -1;
 	m_pid = -1;
@@ -507,6 +511,9 @@ void ExecCmd::dochild(const string &cmd, const list<string>& args,
 	    lseek(2, 0, 2);
 	}
     }
+
+    // Close all descriptors except 0,1,2
+    libclf_closefrom(3);
 
     // Allocate arg vector (2 more for arg0 + final 0)
     typedef const char *Ccharp;
