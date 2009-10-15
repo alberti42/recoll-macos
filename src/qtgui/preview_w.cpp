@@ -585,7 +585,11 @@ bool Preview::makeDocCurrent(const string &fn, size_t sz,
 
     /* Check if we already have this page */
     for (int i = 0; i < pvTab->count(); i++) {
+#if (QT_VERSION < 0x040000)
+        QWidget *tw = pvTab->page(i);
+#else
         QWidget *tw = pvTab->widget(i);
+#endif
         if (tw) {
             PreviewTextEdit *edit = 
                 dynamic_cast<PreviewTextEdit*>(tw->child("pvEdit"));
