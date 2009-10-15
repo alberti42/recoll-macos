@@ -552,7 +552,7 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-
+#include <string.h>
 #include <sstream>
 #include <iostream>
 #include <list>

@@ -214,7 +214,10 @@ int ExecCmd::startExec(const string &cmd, const list<string>& args,
     // Set the process group for the child. This is also done in the
     // child process see wikipedia(Process_group)
     if (setpgid(m_pid, m_pid)) {
-        LOGERR(("ExecCmd: father failed setting pgid of son process\n"));
+        // This can fail with EACCES if the son has already done execve 
+        // (linux at least)
+        LOGDEB(("ExecCmd: father setpgid(son)(%d,%d) errno %d (ok)\n",
+                m_pid, m_pid, errno));
     }
 
     sigemptyset(&m_blkcld);
@@ -556,6 +559,7 @@ void ExecCmd::dochild(const string &cmd, const list<string>& args,
 ////////////////////////////////////////////////////////////////////
 #else // TEST
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <iostream>
 #include <list>
