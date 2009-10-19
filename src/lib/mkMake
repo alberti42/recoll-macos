@@ -40,6 +40,7 @@ ${depth}/rcldb/searchdata.cpp \
 ${depth}/rcldb/stemdb.cpp \
 ${depth}/rcldb/stoplist.cpp \
 ${depth}/utils/base64.cpp \
+${depth}/utils/closefrom.cpp \
 ${depth}/utils/conftree.cpp \
 ${depth}/utils/copyfile.cpp \
 ${depth}/utils/debuglog.cpp \
