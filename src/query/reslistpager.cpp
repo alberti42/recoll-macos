@@ -201,12 +201,8 @@ void ResListPager::displayPage()
 	    sizebuf = displayableBytes(fsize);
 	}
 
-	string abstract;
-	if (m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
-	    abstract = m_docSource->getAbstract(doc);
-	} else {
-	    abstract = doc.meta[Rcl::Doc::keyabs];
-	}
+	string abstract = m_docSource->getAbstract(doc);
+
 	// No need to call escapeHtml(), plaintorich handles it
 	list<string> lr;
 	m_hiliter->set_inputhtml(false);
@@ -237,20 +233,23 @@ void ResListPager::displayPage()
 	    chunk += "<p>";
 
 	// Configurable stuff
-	map<char,string> subs;
-	subs['A'] = !richabst.empty() ? richabst + "<br>" : "";
-	subs['D'] = datebuf;
-	subs['I'] = iconpath;
-	subs['i'] = doc.ipath;
-	subs['K'] = !doc.meta[Rcl::Doc::keykw].empty() ? 
+	map<string,string> subs;
+	subs["A"] = !richabst.empty() ? richabst + "<br>" : "";
+	subs["D"] = datebuf;
+	subs["I"] = iconpath;
+	subs["i"] = doc.ipath;
+	subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
 	    escapeHtml(doc.meta[Rcl::Doc::keykw]) + "<br>" : "";
-	subs['L'] = linksbuf;
-	subs['N'] = numbuf;
-	subs['M'] = doc.mimetype;
-	subs['R'] = perbuf;
-	subs['S'] = sizebuf;
-	subs['T'] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
-	subs['U'] = url;
+	subs["L"] = linksbuf;
+	subs["N"] = numbuf;
+	subs["M"] = doc.mimetype;
+	subs["R"] = perbuf;
+	subs["S"] = sizebuf;
+	subs["T"] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
+	subs["U"] = url;
+
+        // Let %(xx) access all metadata.
+        subs.insert(doc.meta.begin(), doc.meta.end());
 
 	string formatted;
 	pcSubst(parFormat(), formatted, subs);
@@ -281,10 +280,13 @@ void ResListPager::displayPage()
     append(chunk);
 }
 
+// Default implementations for things that should be implemented by 
+// specializations
 string ResListPager::nextUrl()
 {
     return "n-1";
 }
+
 string ResListPager::prevUrl()
 {
     return "p-1";
@@ -298,7 +300,6 @@ string ResListPager::iconPath(const string& mtype)
     return iconpath;
 }
 
-// Default implementations for things that should be re-implemented by our user.
 bool ResListPager::append(const string& data)
 {
     fprintf(stderr, "%s", data.c_str());

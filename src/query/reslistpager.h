@@ -16,12 +16,6 @@ class PlainToRich;
 class ResListPager {
 public:
     ResListPager(int pagesize=10) : m_pagesize(pagesize) {initall();}
-    ResListPager(RefCntr<DocSequence> src, int pagesize)
-	: m_pagesize(pagesize)
-    {
-	initall();
-	m_docSource = src;
-    }
     virtual ~ResListPager() {}
 
     void setHighLighter(PlainToRich *ptr) {m_hiliter = ptr;}
@@ -79,8 +73,6 @@ private:
 	m_winfirst = -1;
 	m_hasNext = false;
 	m_respage.clear();
-	m_queryBuildAbstract = true;
-	m_queryReplaceAbstract = false;
 	m_hiliter = 0;
     }
 
@@ -91,8 +83,6 @@ private:
 
     bool                 m_hasNext;
     vector<ResListEntry> m_respage;
-    bool                 m_queryBuildAbstract;
-    bool                 m_queryReplaceAbstract;
     PlainToRich         *m_hiliter;
 };
 

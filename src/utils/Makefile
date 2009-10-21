@@ -72,12 +72,14 @@ trmimeparse.o : mimeparse.cpp
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_MIMEPARSE -c -o trmimeparse.o \
 	       mimeparse.cpp
 
-SMALLUT_OBJS= trsmallut.o  $(BIGLIB) 
-smallut : $(SMALLUT_OBJS)
+SMALLUT_OBJS= trsmallut.o ../lib/smallut.o
+smallut : $(SMALLUT_OBJS) smallut.h
 	$(CXX) $(ALL_CXXFLAGS) -o smallut $(SMALLUT_OBJS) $(LIBICONV)
-trsmallut.o : smallut.cpp 
+trsmallut.o : smallut.cpp smallut.h
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_SMALLUT -c -o trsmallut.o \
 	       smallut.cpp
+../lib/smallut.o: smallut.cpp smallut.h
+	cd ../lib;make smallut.o
 
 WIPEDIR_OBJS= trwipedir.o  $(BIGLIB) 
 wipedir : $(WIPEDIR_OBJS)

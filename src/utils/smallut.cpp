@@ -492,10 +492,57 @@ bool pcSubst(const string& in, string& out, map<char, string>& subs)
 	    if ((tr = subs.find(*it)) != subs.end()) {
 		out += tr->second;
 	    } else {
-		out += *it;
+		// We used to do "out += *it;" here but this does not make
+                // sense
 	    }
 	} else {
 	    out += *it;
+	}
+    }
+    return true;
+}
+
+bool pcSubst(const string& in, string& out, map<string, string>& subs)
+{
+    out.erase();
+    string::size_type i;
+    for (i = 0; i < in.size(); i++) {
+	if (in[i] == '%') {
+	    if (++i == in.size()) {
+		out += '%';
+		break;
+	    }
+	    if (in[i] == '%') {
+		out += '%';
+		continue;
+	    }
+            string key = "";
+            if (in[i] == '(') {
+                if (++i == in.size()) {
+                    out += string("%(");
+                    break;
+                }
+                string::size_type j = in.find_first_of(")", i);
+                if (j == string::npos) {
+                    // ??concatenate remaining part and stop
+                    out += in.substr(i-2);
+                    break;
+                }
+                key = in.substr(i, j-i);
+                i = j;
+            } else {
+                key = in[i];
+            }
+	    map<string,string>::iterator tr;
+	    if ((tr = subs.find(key)) != subs.end()) {
+		out += tr->second;
+	    } else {
+                // Substitute to nothing, that's the reasonable thing to do
+                // instead of keeping the %(key)
+                // out += key.size()==1? key : string("(") + key + string(")");
+	    }
+	} else {
+	    out += in[i];
 	}
     }
     return true;
@@ -712,11 +759,34 @@ int main(int argc, char **argv)
 	utf8truncate(testit, sz);
 	cout << testit << endl;
     }
-#elif 1
+#elif 0
     std::string testit("ligne\ndeuxieme ligne\r3eme ligne\r\n");
     cout << "[" << neutchars(testit, "\r\n") << "]" << endl;
     string i, o;
     cout << "neutchars(null) is [" << neutchars(i, "\r\n") << "]" << endl;
+#elif 1
+    map<string, string> substs;
+    substs["a"] = "A_SUBST";
+    substs["title"] = "TITLE_SUBST";
+    string in = "a: %a title: %(title) pcpc: %% %";
+    string out;
+    pcSubst(in, out, substs);
+    cout << in << " => " << out << endl;
+
+    in = "unfinished: %(unfinished";
+    pcSubst(in, out, substs);
+    cout << in << " => " << out << endl;
+    in = "unfinished: %(";
+    pcSubst(in, out, substs);
+    cout << in << " => " << out << endl;
+    in = "empty: %()";
+    pcSubst(in, out, substs);
+    cout << in << " => " << out << endl;
+    substs.clear();
+    in = "a: %a title: %(title) pcpc: %% %";
+    pcSubst(in, out, substs);
+    cout << "After map clear: " << in << " => " << out << endl;
+
 #endif
 
 }

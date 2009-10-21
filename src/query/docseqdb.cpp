@@ -27,7 +27,9 @@ static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.9 2008-11-13 10:57:46 dockes Exp
 DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
 			     RefCntr<Rcl::SearchData> sdata) 
     : DocSequence(t), m_q(q), m_sdata(sdata), m_fsdata(sdata),
-      m_rescnt(-1), m_filt(false)
+      m_rescnt(-1), m_filt(false),
+      m_queryBuildAbstract(true),
+      m_queryReplaceAbstract(false)
 {
 }
 
@@ -66,7 +68,13 @@ string DocSequenceDb::getAbstract(Rcl::Doc &doc)
     if (!m_q->whatDb())
 	return doc.meta[Rcl::Doc::keyabs];
     string abstract;
-    m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), abstract);
+
+     if (m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
+        m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), abstract);
+    } else {
+        abstract = doc.meta[Rcl::Doc::keyabs];
+    }
+
     return abstract.empty() ? doc.meta[Rcl::Doc::keyabs] : abstract;
 }
 

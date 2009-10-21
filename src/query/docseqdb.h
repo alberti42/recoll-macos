@@ -43,12 +43,20 @@ class DocSequenceDb : public DocSequence {
     virtual bool canSort() {return false;} 
     virtual bool setSortSpec(DocSeqSortSpec &sortspec);
     virtual string title();
+    virtual void setAbstractParams(bool qba, bool qra)
+    {
+        m_queryBuildAbstract = qba;
+        m_queryReplaceAbstract = qra;
+    }
+
  private:
     RefCntr<Rcl::Query>      m_q;
     RefCntr<Rcl::SearchData> m_sdata;
     RefCntr<Rcl::SearchData> m_fsdata; // Filtered 
     int                      m_rescnt;
     bool                     m_filt;
+    bool                     m_queryBuildAbstract;
+    bool                     m_queryReplaceAbstract;
 };
 
 #endif /* _DOCSEQDB_H_INCLUDED_ */

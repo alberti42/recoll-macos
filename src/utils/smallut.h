@@ -102,6 +102,8 @@ string breakIntoLines(const string& in, unsigned int ll = 100,
 		      unsigned int maxlines= 50);
 /** Small utility to substitute printf-like percents cmds in a string */
 bool pcSubst(const string& in, string& out, map<char, string>& subs);
+/** Substitute printf-like percents and also %(key) */
+bool pcSubst(const string& in, string& out, map<string, string>& subs);
 
 class Chrono {
  public:

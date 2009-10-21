@@ -529,6 +529,9 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     DocSequenceDb *src = 
 	new DocSequenceDb(RefCntr<Rcl::Query>(query), 
 			  string(tr("Query results").utf8()), sdata);
+    src->setAbstractParams(prefs.queryBuildAbstract, 
+                           prefs.queryReplaceAbstract);
+
     resList->setDocSource(RefCntr<DocSequence>(src));
     QApplication::restoreOverrideCursor();
 }
