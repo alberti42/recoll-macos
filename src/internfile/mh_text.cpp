@@ -96,7 +96,9 @@ bool MimeHandlerText::set_document_string(const string& otext)
 
 bool MimeHandlerText::skip_to_document(const string& ipath)
 {
-    sscanf(ipath.c_str(), "%lld", &m_offs);
+    long long t;
+    sscanf(ipath.c_str(), "%lld", &t);
+    m_offs = (off_t)t;
     readnext();
     return true;
 }
@@ -136,7 +138,7 @@ bool MimeHandlerText::next_document()
         // be to use a different mtype for files over the page size,
         // and keep text/plain only for smaller files.
         char buf[20];
-        sprintf(buf, "%lld", m_offs - m_text.length());
+        sprintf(buf, "%lld", (long long)(m_offs - m_text.length()));
         if (m_offs - m_text.length() != 0)
             m_metaData["ipath"] = buf;
         readnext();

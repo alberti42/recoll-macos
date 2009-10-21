@@ -47,6 +47,7 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 #include <sys/param.h>
 
 /* #define DEBUG_CLOSEFROM*/
