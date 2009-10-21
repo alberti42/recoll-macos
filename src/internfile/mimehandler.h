@@ -55,7 +55,7 @@ public:
     /// This does nothing right now but should be called from the
     /// subclass method in case we need some common processing one day
     /// (was used for xattrs at some point).
-    virtual bool set_document_file(const string &file_path) {return true;}
+    virtual bool set_document_file(const string & /*file_path*/) {return true;}
 
     // Default implementations
     virtual bool set_document_string(const std::string &) {return false;}
