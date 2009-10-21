@@ -40,6 +40,8 @@ else
     read rep 
     if test $rep = 'y';then
     	rm -rf $topdir/*
+    else
+	exit 1
     fi
 fi
 
@@ -58,11 +60,20 @@ desktop/recoll.png desktop/recoll-searchgui.desktop"
 $TAR chf - $files  | (cd $topdir; $TAR xf -)
 
 # Remove any install dependancy
-chmod +w $topdir/Makefile
+chmod +w $topdir/Makefile || exit 1
 sed -e '/^install:/c\
 install: ' < $topdir/Makefile > $topdir/toto && \
 	 mv $topdir/toto $topdir/Makefile
 
+# Clean up .svn directories from target. This would be easier with a
+# --exclude tar option, but we want this to work with non-gnu tars
+cd $topdir || exit 1
+svndirs=`find . -name .svn -print`
+echo "In: `pwd`. Removing $svndirs ok ?"
+read rep 
+test "$rep" = 'y' -o "$rep" = 'Y' && rm -rf $svndirs
+
+cd $targetdir
 
 (cd $targetdir ; \
     $TAR chf - $topdirsimple | \
