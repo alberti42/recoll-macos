@@ -2,6 +2,11 @@
 #set -x
 # A shell-script to make a recoll static binary distribution:
 
+fatal()
+{
+    echo $*;exit 1
+}
+
 TAR=tar
  
 targetdir=${targetdir-/tmp}
@@ -14,6 +19,14 @@ fi
 version=`cat VERSION`
 sys=`uname -s`
 sysrel=`uname -r`
+
+qtguiassign=`egrep '^QTGUI=' recollinstall`
+stripassign=`egrep '^STRIP=' recollinstall`
+test ! -z "$qtguiassign" || fatal "Can't find qt version"
+test ! -z "$stripassign" || fatal "Can't find strip string"
+eval $qtguiassign
+eval $stripassign
+echo "QTGUI: " $QTGUI "STRIP: " $STRIP
 
 topdirsimple=recoll-${version}-${sys}-${sysrel}
 topdir=$targetdir/$topdirsimple
@@ -30,14 +43,15 @@ else
     fi
 fi
 
+rm -f index/recollindex ${QTGUI}/recoll
 
-rm -f index/recollindex qtgui/recoll
 make static || exit 1
-strip index/recollindex qtgui/recoll
+
+${STRIP} index/recollindex ${QTGUI}/recoll
 
 files="COPYING README INSTALL VERSION Makefile recollinstall
 filters desktop sampleconf doc/user doc/man
-index/recollindex index/rclmon.sh qtgui/recoll qtgui/i18n/*.qm 
+index/recollindex index/rclmon.sh ${QTGUI}/recoll qtgui/i18n/*.qm 
 qtgui/mtpics/*.png 
 desktop/recoll.png desktop/recoll-searchgui.desktop"
 
