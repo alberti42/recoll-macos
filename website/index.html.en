@@ -47,7 +47,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.12.0</a> 
+	<a class="important" href="download.html">1.12.2</a> 
 	(<a href="CHANGES.html">Changes</a>).</p>
 
       <h2>Features: </h2>
@@ -55,7 +55,7 @@
       <ul>
         <li>Easy installation, few dependancies. No database daemon,
 	  web server, desktop environment or exotic language necessary.</li>
-	<li>Will run on most unix-based <a
+	<li>Will run on most Unix-based <a
 	    href="features.html#systems">systems</a></li> 
         <li>Qt-based GUI. Can use either Qt 3 or Qt 4.</li>
 
@@ -80,9 +80,12 @@
 
       <h2>News: </h2>
       <ul>
-	<li>2009-01-30 : <a href="download.html#source">1.12.0</a> is
-	  out. Please give it a try, I'll wait a few weeks for initial
-	  problem reports before generating the packages.</li> 
+	<li>2009-10-22 : <a href="download.html#source">1.12.2</a> is
+	  out. It fixes a number of 
+	  <a href="CHANGES.html">ennoying bugs</a>.</li>
+	<li>2009-06-23 : <a href="download.html#source">1.12.1</a> is
+	  out. It fixes a couple of minor bugs, and build errors with the
+	  latest gcc and gnu libc.</li>
 	<li>2008-09-01 : <a href="filters/filters.html">A new
 	    filter</a> for Office Open XML formats (docx ...).</li>
 	<li>2008-05-22 : we now have a mailing list:
