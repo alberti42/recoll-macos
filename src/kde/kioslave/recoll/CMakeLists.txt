@@ -46,6 +46,7 @@ ${rcltop}/internfile/internfile.cpp
 ${rcltop}/internfile/myhtmlparse.cpp
 ${rcltop}/internfile/mimehandler.cpp
 ${rcltop}/internfile/mh_exec.cpp
+${rcltop}/internfile/mh_execm.cpp
 ${rcltop}/internfile/mh_html.cpp
 ${rcltop}/internfile/mh_mail.cpp
 ${rcltop}/internfile/mh_mbox.cpp
@@ -64,6 +65,7 @@ ${rcltop}/rcldb/stemdb.cpp
 ${rcltop}/rcldb/stoplist.cpp
 ${rcltop}/unac/unac.c
 ${rcltop}/utils/base64.cpp
+${rcltop}/utils/closefrom.cpp
 ${rcltop}/utils/conftree.cpp
 ${rcltop}/utils/copyfile.cpp
 ${rcltop}/utils/debuglog.cpp
@@ -72,6 +74,7 @@ ${rcltop}/utils/idfile.cpp
 ${rcltop}/utils/fileudi.cpp
 ${rcltop}/utils/md5.cpp
 ${rcltop}/utils/mimeparse.cpp
+${rcltop}/utils/netcon.cpp
 ${rcltop}/utils/pathut.cpp
 ${rcltop}/utils/readfile.cpp
 ${rcltop}/utils/smallut.cpp
