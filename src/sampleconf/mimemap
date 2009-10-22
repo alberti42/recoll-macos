@@ -15,6 +15,9 @@
 .c   = text/x-c
 .cc  = text/x-c
 .py  = text/x-python
+.awk = application/x-awk
+.pl = application/x-perl
+.sh = application/x-shellscript
 
 .rtf  = text/rtf
 
@@ -22,6 +25,7 @@
 .htm = text/html
 .shtml = text/html
 .php = text/html
+.ics = text/calendar
 
 .pdf = application/pdf
 
@@ -103,13 +107,12 @@
 .tif  = image/tiff
 
 # A list of stuff that we don't want to touch at all (for now). Having the
-# suffixes listed in there speeds up things quite a lot by avoiding
+# suffixes listed in there speeds things up a bit by avoiding
 # unneeded decompression or 'file' calls. File names still get indexed if
 # indexallfilenames is set
 recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
-       .m4 .tcl .js .sh .pl .awk \
        .o .lib .dll .a \
-       .dat .bak .rdf .log .db .ini .msf .pid \
+       .dat .bak .rdf .log .db .msf .pid \
        .gnm .gnumeric \
        .gif .bmp .xpm \
        ,v ~ #
