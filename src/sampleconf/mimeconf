@@ -179,6 +179,7 @@ text = \
       application/x-shellscript \
       application/x-tex \
       image/vnd.djvu \
+      text/calendar \
       text/html \
       text/plain \
       text/rtf \
