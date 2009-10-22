@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 ###########################################
 ## Generic recoll multifilter communication code
 import sys
@@ -6,12 +8,15 @@ import os
 class RclExecM:
     def __init__(self):
         self.myname = os.path.basename(sys.argv[0])
+        self.mimetype = ""
 
     def rclog(self, s, doexit = 0, exitvalue = 1):
         print >> sys.stderr, "RCLMFILT:", self.myname, ":", s
         if doexit:
             exit(exitvalue)
-
+    # Our worker sometimes knows the mime types of the data it sends
+    def setmimetype(self, mt):
+        self.mimetype = mt
     def readparam(self):
         s = sys.stdin.readline()
         if s == '':
@@ -48,6 +53,10 @@ class RclExecM:
         if len(ipath):
             print "Ipath:", len(ipath)
             sys.stdout.write(ipath)
+
+        if len(self.mimetype):
+            print "Mimetype:", len(self.mimetype)
+            sys.stdout.write(self.mimetype)
 
         # If we're at the end of the contents, say so
         if iseof:

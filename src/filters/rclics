@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+import rclexecm
+from icalendar import Calendar, Event
+
+
+class IcalExtractor:
+    def __init__(self, em):
+        self.file = ""
+        self.em = em
+        em.setmimetype("text/plain")
+
+    def extractone(self, index):
+        if index >= len(self.contents):
+            return(False, "", "", True)
+        docdata = self.contents[index].as_string()
+	#self.em.rclog(docdata)
+        eof = (self.currentindex >= len(self.contents) -1)
+        return (True, docdata, str(index), eof)
+
+    ###### File type handler api, used by rclexecm ---------->
+    def openfile(self, params):
+        self.file = params["filename:"]
+        try:
+            self.cal = Calendar.from_string(open(self.file,'rb').read())
+        except:
+            return False
+        # Skip the top level object
+        self.currentindex = 1
+        self.contents = self.cal.walk()
+        return True
+
+    def getipath(self, params):
+        try:
+            index = int(params["ipath:"])
+        except:
+            return False
+        return self.extractone(index)
+        
+    def getnext(self, params):
+        if self.currentindex >= len(self.contents):
+            #em.rclog("getnext: EOF hit")
+            return (False, "", "", 1)
+        else:
+            ret= self.extractone(self.currentindex)
+            self.currentindex += 1
+            return ret
+
+e = rclexecm.RclExecM()
+e.mainloop(IcalExtractor(e))
