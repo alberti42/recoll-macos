@@ -7,15 +7,15 @@ import os
 
 myname = os.path.basename(sys.argv[0])
 
-def ermsg(s, fatal=0, exitvalue=1):
+def rclog(s, doexit = 0, exitvalue = 1):
     print >> sys.stderr, "RCLMFILT:", myname, ":", s
-    if fatal:
+    if doexit:
         exit(exitvalue)
 
 def readparam():
     s = sys.stdin.readline()
     if s == '':
-        ermsg(": EOF on input", 1, 0)
+        rclog(": EOF on input", 1, 0)
 
     s = s.rstrip("\n")
 
@@ -23,20 +23,20 @@ def readparam():
         return ("","")
     l = s.split()
     if len(l) != 2:
-        ermsg("bad line: [" + s + "]", 1, 1)
+        rclog("bad line: [" + s + "]", 1, 1)
 
     paramname = l[0].lower()
     paramsize = int(l[1])
     if paramsize > 0:
         paramdata = sys.stdin.read(paramsize)
         if len(paramdata) != paramsize:
-            ermsg("Bad read: wanted %d, got %d" % (paramsize, len(paramdata)),
+            rclog("Bad read: wanted %d, got %d" % (paramsize, len(paramdata)),
                   1,1)
     else:
         paramdata = ""
     
-    ermsg("paramname [%s] paramsize %d value [%s]" %
-          (paramname, paramsize, paramdata))
+    #rclog("paramname [%s] paramsize %d value [%s]" %
+    #      (paramname, paramsize, paramdata))
     return (paramname, paramdata)
 
 # Send answer: document, ipath, possible eof.
@@ -55,24 +55,47 @@ def answer(docdata, ipath, iseof):
     # End of message
     print
     sys.stdout.flush()
-    ermsg("done writing data")
+    #rclog("done writing data")
 
+def processmessage(processor, params):
+
+    # We must have a filename entry (even empty). Else exit
+    if not params.has_key("filename:"):
+        rclog("no filename ??", 1, 1)
+
+    # If we're given a file name, open it. 
+    if len(params["filename:"]) != 0:
+        processor.openfile(params)
+
+    # If we have an ipath, that's what we look for, else ask for next entry
+    ipath = ""
+    if params.has_key("ipath:") and len(params["ipath:"]):
+        ok, data, ipath, eof = processor.getipath(params)
+    else:
+        ok, data, ipath, eof = processor.getnext(params)
+    #rclog("processmessage: ok %s eof %s ipath %s"%(ok, eof, ipath))
+    if ok:
+        answer(data, ipath, eof)
+    else:
+        answer("", "", eof)
+
+# Loop on messages from our master
 def mainloop(processor):
     while 1:
-        ermsg("waiting for command")
+        #rclog("waiting for command")
 
         params = dict()
 
-        # Read at most 10 parameters (we only actually use one), stop
-        # at empty line
+        # Read at most 10 parameters (normally 1 or 2), stop at empty line
+        # End of message is signalled by empty paramname
         for i in range(10):
-            paramname,paramdata = readparam()
+            paramname, paramdata = readparam()
             if paramname == "":
                 break
             params[paramname] = paramdata
 
-        # Call worker
-        processor.extractone(params)
+        # Got message, act on it
+        processmessage(processor, params)
     
 ###################################################################
 # Code specific to the zip file filter from here
@@ -83,51 +106,48 @@ class ZipExtractor:
         self.contents = []
         self.zipfile = ""
         
-    # Open zipfile and retrieve TOC
-    def listzip(self, fname):
-        cmd = "unzip -Z -1 " + fname
+    # Execute unzip to retrieve TOC list. Store in self.contents
+    def listzip(self):
+        cmd = "unzip -Z -1 '%s'"%(self.zipfile)
         f = os.popen(cmd, "r")
         self.contents = f.readlines()
-        f.close()
-        return self.contents
-
-    # Extract given file
-    def extractzipentry(self, fname, name):
-        cmd = " ".join(["unzip -p ", fname, name])
-        f = os.popen(cmd, "r")
-        data = f.read()
-        # ermsg("data: %s" % data)
-        f.close
-        return data
-
-    def extractone(self, params):
-        # See what's asked of us: open new zip file, next entry or specific one
-        if not params.has_key("filename:"):
-            ermsg("no filename ??", 1, 1)
-
-        # If we're given a file name, open it. Else increment position in
-        # current file (but wait for possible ipath)
-        if len(params["filename:"]) != 0:
-            self.zipfile = params["filename:"]
-            self.currentindex = 0
-            ermsg("opening [%s]" % (self.zipfile,))
-            self.listzip(self.zipfile)
-        else:
-            self.currentindex += 1
-
-        # If we have an ipath, that's what we look for, else process next entry
-        if params.has_key("ipath:") and len(params["ipath:"]):
-            entryname = params["ipath:"]
-        else:
-            if self.currentindex >= len(self.contents):
-                # EOF: "Document: 0\n\n"
-                answer("", "", 0)
-                return True
-            else:
-                entryname = self.contents[self.currentindex].rstrip("\n")
-        
-        docdata = self.extractzipentry(self.zipfile, entryname)
-        answer(docdata,entryname, (self.currentindex >= len(self.contents) -1))
+	status = f.close()
+	if status:
+            return False
         return True
 
+    # Execute unzip to extract and return data for single entry in zip file
+    def extractzipentry(self, name):
+        cmd = "unzip -p '%s' '%s'"%(self.zipfile, name)
+        f = os.popen(cmd, "r")
+        data = f.read()
+        # rclog("data: %s" % data)
+        status = f.close()
+        if status:
+            return (False, "")
+        return (True, data)
+
+    def extractone(self, ipath):
+        (ok, docdata) = self.extractzipentry(ipath)
+        eof = (self.currentindex >= len(self.contents) -1)
+        return (ok, docdata, ipath, eof)
+
+    ###### File type handler api, used by the protocol handler above:
+    def openfile(self, params):
+        self.zipfile = params["filename:"]
+        self.currentindex = 0
+        return self.listzip()
+
+    def getipath(self, params):
+        return self.extractone(params["ipath:"])
+        
+    def getnext(self, params):
+        if self.currentindex >= len(self.contents):
+            #rclog("getnext: EOF hit")
+            return (False, "", "", 1)
+        else:
+            ret= self.extractone(self.contents[self.currentindex].rstrip("\n"))
+            self.currentindex += 1
+            return ret
+        
 mainloop(ZipExtractor())
