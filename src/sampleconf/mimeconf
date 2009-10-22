@@ -65,11 +65,14 @@ application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
+application/x-awk = exec rcltext
 application/x-dvi = exec rcldvi
 application/x-flac = exec rclflac
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
+application/x-perl = exec rcltext
 application/x-scribus = exec rclscribus
+application/x-shellscript = exec rcltext
 application/x-tex = exec rcltex
 application/zip = execm rclzip
 audio/mpeg = exec rclid3
@@ -80,16 +83,19 @@ image/tiff = execm rclimg
 image/vnd.djvu = exec rcldjvu
 image/svg+xml = exec rclsvg
 message/rfc822 = internal
+text/calendar = execm rclics;mimetype=text/plain;charset=utf-8
 text/html  = internal 
 text/plain = internal 
 text/rtf = exec unrtf --nopict --html;charset=iso-8859-1;mimetype=text/html
 text/x-c = exec rcltext
+text/x-c++ = exec rcltext
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
 text/x-mail = internal
 text/x-man = exec rclman
 text/x-purple-log = exec rclpurple
 text/x-python = exec rclpython
+text/x-shellscript = exec rcltext
 
 ## #############################################
 # Icons to be used in the result list if required by gui config
@@ -130,6 +136,9 @@ application/x-kword = wordprocessing
 application/x-lyx = wordprocessing
 application/x-scribus = document
 application/x-tex = wordprocessing
+application/x-awk = source
+application/x-perl = source
+application/x-shellscript = source
 audio/mpeg = sownd
 image/gif = image
 image/jpeg = image
@@ -141,6 +150,7 @@ message/rfc822 = message
 text/html = html
 text/plain = txt
 text/x-c = source
+text/x-c++ = source
 text/x-html-sidux-man = sidux-book
 text/x-mail = message
 text/x-man = document
@@ -160,19 +170,24 @@ text = \
       application/vnd.sun.xml.writer.template \
       application/vnd.wordperfect \
       application/x-abiword \
+      application/x-awk \
       application/x-dvi \
       application/x-kword \
       application/x-lyx \
+      application/x-perl \
       application/x-scribus \
+      application/x-shellscript \
       application/x-tex \
       image/vnd.djvu \
       text/html \
       text/plain \
       text/rtf \
       text/x-c \
+      text/x-c++ \
       text/x-html-sidux-man \
       text/x-man \
-      text/x-python
+      text/x-python \
+      text/x-shellscript
 
 spreadsheet = \
    application/vnd.ms-excel \
