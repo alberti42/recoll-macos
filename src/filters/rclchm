@@ -6,12 +6,24 @@ from chm import chm,chmlib
 from HTMLParser import HTMLParser
 
 class ChmTopicsParser(HTMLParser):
+    """Use HTMLParser to parse the chm's Topic file which is basically
+    a listing of internal nodes (html files mostly). Build a list of
+    all nodes (self.contents), which will then be used to walk and index
+    the chm.
+    Most nodes in the Topic file look like the following:
+    <LI> <OBJECT type="text/sitemap">
+           <param name="Name" value="Global Module Index">
+           <param name="Local" value="modindex.html">
+          </OBJECT>
+    Maybe we should filter out non "text/sitemap" Objects, and maybe there are
+    things of interest whose name is not Local, but for now, we just take
+    all values for parameters named "Local", and this seems to work ok.
+    """
     def __init__(self):
         HTMLParser.__init__(self)
         self.contents = []
 
     def handle_starttag(self, tag, attrs):
-        # print "Encountered the beginning of a %s tag" % tag
         # If this is a param tag with name Local, we're interested in
         # the value which lists an internal file. Discard those with #
         # in them (references inside files)
@@ -25,41 +37,44 @@ class ChmTopicsParser(HTMLParser):
             if name == 'Local':
                 if value.find("#") == -1:
                     self.contents.append(value)
-        #print "nm: %s val %s"%(nm,uval)
-            
-    def handle_endtag(self, tag):
-        #print "Encountered the end of a %s tag" % tag
-        return None
+
 
 class rclCHM:
+    """RclExecM slave worker for extracting all files from an Msoft chm (.ics)
+    file. We first extract the list of internal nodes, and them return them
+    one by one. The ipath is the node path"""
     def __init__(self, em):
-        self.filename = ""
         self.chm = chm.CHMFile()
         self.tp = ChmTopicsParser()
         self.currentindex = 0
         self.em = em
+
         
     def extractone(self, path):
-        self.em.rclog("extractone: [%s]"%(path))
+        """Extract one path-named internal file from the chm file"""
+        #self.em.rclog("extractone: [%s]"%(path))
         eof = (self.currentindex >= len(self.tp.contents) -1)
         res, ui = self.chm.ResolveObject("/" + path)
         #self.em.rclog("extract: ResolveO: %d [%s]" % (res, ui))
         if res != chmlib.CHM_RESOLVE_SUCCESS:
             return (False, "", path, eof)
-        # Retrieve object returns len,value
+        # RetrieveObject() returns len,value
         res, doc = self.chm.RetrieveObject(ui)
-        # self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
+        #self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
         if res > 0:
             return (True, doc, path, eof)
         return (False, "", path, eof)
     
     def openfile(self, params):
-        self.filename = params["filename:"]
-        self.chm.LoadCHM(self.filename)
+        """Open the chm file and build the contents list by extracting and
+        parsing the Topics object"""
+        self.chm.LoadCHM(params["filename:"])
         self.chm.GetArchiveInfo()
         self.topics = self.chm.GetTopicsTree()
         if self.topics == None:
             return False
+        #self.em.rclog(self.topics)
+        # Parse Topics file and extract list of internal nodes
         self.tp.feed(self.topics)
         self.tp.close()
         return True
