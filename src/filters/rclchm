@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+import sys
+import rclexecm
+from chm import chm,chmlib
+from HTMLParser import HTMLParser
+
+class ChmTopicsParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.contents = []
+
+    def handle_starttag(self, tag, attrs):
+        # print "Encountered the beginning of a %s tag" % tag
+        # If this is a param tag with name Local, we're interested in
+        # the value which lists an internal file. Discard those with #
+        # in them (references inside files)
+        if tag == 'param':
+            name = ''
+            for (nm,val) in attrs:
+                if nm == 'name':
+                    name = val
+                if nm == 'value':
+                    value = val.encode('utf-8')
+            if name == 'Local':
+                if value.find("#") == -1:
+                    self.contents.append(value)
+        #print "nm: %s val %s"%(nm,uval)
+            
+    def handle_endtag(self, tag):
+        #print "Encountered the end of a %s tag" % tag
+        return None
+
+class rclCHM:
+    def __init__(self, em):
+        self.filename = ""
+        self.chm = chm.CHMFile()
+        self.tp = ChmTopicsParser()
+        self.currentindex = 0
+        self.em = em
+        
+    def extractone(self, path):
+        self.em.rclog("extractone: [%s]"%(path))
+        eof = (self.currentindex >= len(self.tp.contents) -1)
+        res, ui = self.chm.ResolveObject("/" + path)
+        #self.em.rclog("extract: ResolveO: %d [%s]" % (res, ui))
+        if res != chmlib.CHM_RESOLVE_SUCCESS:
+            return (False, "", path, eof)
+        # Retrieve object returns len,value
+        res, doc = self.chm.RetrieveObject(ui)
+        # self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
+        if res > 0:
+            return (True, doc, path, eof)
+        return (False, "", path, eof)
+    
+    def openfile(self, params):
+        self.filename = params["filename:"]
+        self.chm.LoadCHM(self.filename)
+        self.chm.GetArchiveInfo()
+        self.topics = self.chm.GetTopicsTree()
+        if self.topics == None:
+            return False
+        self.tp.feed(self.topics)
+        self.tp.close()
+        return True
+
+    def getipath(self, params):
+        return self.extractone(params["ipath:"])
+        
+    def getnext(self, params):
+        if self.currentindex >= len(self.tp.contents):
+            return (False, "", "", 1)
+        else:
+            ret= self.extractone(self.tp.contents[self.currentindex])
+            self.currentindex += 1
+            return ret
+
+e = rclexecm.RclExecM()
+e.mainloop(rclCHM(e))
