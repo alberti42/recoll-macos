@@ -26,7 +26,7 @@ class ZipExtractor:
         cmd = "unzip -p '%s' '%s'"%(self.zipfile, name)
         f = os.popen(cmd, "r")
         data = f.read()
-        # em.rclog("data: %s" % data)
+        # self.em.rclog("data: %s" % data)
         status = f.close()
         if status:
             return (False, "")
@@ -48,7 +48,7 @@ class ZipExtractor:
         
     def getnext(self, params):
         if self.currentindex >= len(self.contents):
-            #em.rclog("getnext: EOF hit")
+            #self.em.rclog("getnext: EOF hit")
             return (False, "", "", 1)
         else:
             ret= self.extractone(self.contents[self.currentindex].rstrip("\n"))
