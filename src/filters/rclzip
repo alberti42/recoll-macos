@@ -2,7 +2,6 @@
 
 # Zip file filter for Recoll
 
-import os
 import rclexecm
 from zipfile import ZipFile, error
 

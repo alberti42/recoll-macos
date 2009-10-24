@@ -3,10 +3,10 @@
 import rclexecm
 from icalendar import Calendar, Event
 
-
 class IcalExtractor:
     def __init__(self, em):
         self.file = ""
+	self.contents = []
         self.em = em
         em.setmimetype("text/plain")
 
