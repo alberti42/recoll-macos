@@ -74,8 +74,10 @@ class RclExecM:
 
         # If we're given a file name, open it. 
         if len(params["filename:"]) != 0:
-            processor.openfile(params)
-
+            if not processor.openfile(params):
+                self.answer("", "", True)
+                return
+            
         # If we have an ipath, that's what we look for, else ask for next entry
         ipath = ""
         if params.has_key("ipath:") and len(params["ipath:"]):

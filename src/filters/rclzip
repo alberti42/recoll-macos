@@ -4,54 +4,46 @@
 
 import os
 import rclexecm
+from zipfile import ZipFile, error
 
 class ZipExtractor:
     def __init__(self, em):
         self.currentindex = 0
-        self.contents = []
-        self.zipfile = ""
         self.em = em
-    # Execute unzip to retrieve TOC list. Store in self.contents
-    def listzip(self):
-        cmd = "unzip -Z -1 '%s'"%(self.zipfile)
-        f = os.popen(cmd, "r")
-        self.contents = f.readlines()
-	status = f.close()
-	if status:
-            return False
-        return True
 
-    # Execute unzip to extract and return data for single entry in zip file
     def extractzipentry(self, name):
-        cmd = "unzip -p '%s' '%s'"%(self.zipfile, name)
-        f = os.popen(cmd, "r")
-        data = f.read()
-        # self.em.rclog("data: %s" % data)
-        status = f.close()
-        if status:
-            return (False, "")
-        return (True, data)
+        return (ret, data)
 
     def extractone(self, ipath):
-        (ok, docdata) = self.extractzipentry(ipath)
-        eof = (self.currentindex >= len(self.contents) -1)
+        #self.em.rclog("extractone: [%s]" % ipath)
+        docdata = ""
+        try:
+            docdata = self.zip.read(ipath)
+            ok = True
+        except error, err:
+            self.em.rclog("extractone: failed: [%s]" % err)
+            ok = False
+        eof = (self.currentindex >= len(self.zip.namelist()) -1)
         return (ok, docdata, ipath, eof)
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
-        self.zipfile = params["filename:"]
         self.currentindex = 0
-        return self.listzip()
+        try:
+            self.zip = ZipFile(params["filename:"])
+            return True
+        except:
+            return False
 
     def getipath(self, params):
         return self.extractone(params["ipath:"])
         
     def getnext(self, params):
-        if self.currentindex >= len(self.contents):
+        if self.currentindex >= len(self.zip.namelist()):
             #self.em.rclog("getnext: EOF hit")
             return (False, "", "", 1)
         else:
-            ret= self.extractone(self.contents[self.currentindex].rstrip("\n"))
+            ret= self.extractone(self.zip.namelist()[self.currentindex])
             self.currentindex += 1
             return ret
 
