@@ -155,7 +155,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
     string ermsg;
     string d;
     try {
-	m_nq->enquire = new Xapian::Enquire(m_db->m_ndb->db);
+	m_nq->enquire = new Xapian::Enquire(m_db->m_ndb->xrdb);
 	if (m_collapseDuplicates) {
 	    m_nq->enquire->set_collapse_key(Rcl::VALUE_MD5);
 	} else {
@@ -258,7 +258,7 @@ int Query::getResCnt()
 	    m_nq->mset = m_nq->enquire->get_mset(0, qquantum,0, m_nq->decider);
             ret = m_nq->mset.get_matches_lower_bound();
 	} catch (const Xapian::DatabaseModifiedError &error) {
-	    m_db->m_ndb->db.reopen();
+	    m_db->m_ndb->xrdb.reopen();
 	    m_nq->mset = m_nq->enquire->get_mset(0, qquantum,0, m_nq->decider);
             ret = m_nq->mset.get_matches_lower_bound();
 	} XCATCHERROR(ermsg);
@@ -304,7 +304,7 @@ bool Query::getDoc(int exti, Doc &doc)
 		try {
 		    m_nq->mset = m_nq->enquire->get_mset(first, qquantum);
 		} catch (const Xapian::DatabaseModifiedError &error) {
-		    m_db->m_ndb->db.reopen();
+		    m_db->m_ndb->xrdb.reopen();
 		    m_nq->mset = m_nq->enquire->get_mset(first, qquantum);
 		} catch (const Xapian::Error & error) {
 		  LOGERR(("enquire->get_mset: exception: %s\n", 
@@ -343,7 +343,7 @@ bool Query::getDoc(int exti, Doc &doc)
 	    m_nq->mset = m_nq->enquire->get_mset(xapi, qquantum,
 						   0, m_nq->decider);
 	} catch (const Xapian::DatabaseModifiedError &error) {
-	    m_db->m_ndb->db.reopen();
+	    m_db->m_ndb->xrdb.reopen();
 	    m_nq->mset = m_nq->enquire->get_mset(xapi, qquantum,
 						   0, m_nq->decider);
 

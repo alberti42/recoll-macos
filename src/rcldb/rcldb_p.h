@@ -39,18 +39,23 @@ class Query;
 // common.
 class Db::Native {
  public:
-    Db  *m_db;
+    Db  *m_rcldb; // Parent
     bool m_isopen;
     bool m_iswritable;
     bool m_noversionwrite; //Set if open failed because of version mismatch!
-    // Indexing
-    Xapian::WritableDatabase wdb;
 
-    // Querying
-    Xapian::Database db;
-    
+    // Indexing 
+    Xapian::WritableDatabase xwdb;
+    // Querying (active even if the wdb is too)
+    Xapian::Database xrdb;
+
+    // We sometimes go through the wdb for some query ops, don't
+    // really know if this makes sense
+    Xapian::Database& xdb() {return m_iswritable ? xwdb : xrdb;}
+
     Native(Db *db) 
-	: m_db(db), m_isopen(false), m_iswritable(false),m_noversionwrite(false)
+	: m_rcldb(db), m_isopen(false), m_iswritable(false),
+          m_noversionwrite(false)
     { }
 
     ~Native() {

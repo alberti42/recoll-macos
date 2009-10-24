@@ -233,8 +233,9 @@ private:
     vector<bool> updated;
 
     StopList m_stops;
-
-    bool reOpen(); // Close/open, same mode/opts
+    
+    // Reinitialize when adding/removing additional dbs
+    bool adjustdbs(); 
     bool stemExpand(const string &lang, const string &s, 
 		    list<TermMatchEntry>& result, int max = -1);
 
