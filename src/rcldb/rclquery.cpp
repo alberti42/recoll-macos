@@ -151,34 +151,44 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
 	m_reason += sdata->getReason();
 	return false;
     }
-    m_nq->query = xq;
-    string ermsg;
+    m_nq->xquery = xq;
+
     string d;
-    try {
-	m_nq->enquire = new Xapian::Enquire(m_db->m_ndb->xrdb);
-	if (m_collapseDuplicates) {
-	    m_nq->enquire->set_collapse_key(Rcl::VALUE_MD5);
-	} else {
-	    m_nq->enquire->set_collapse_key(Xapian::BAD_VALUENO);
-	}
-	if (!m_sortField.empty()) {
-	    if (m_sorter) {
-		delete (QSorter*)m_sorter;
-		m_sorter = 0;
-	    }
-	    m_sorter = new QSorter(m_sortField);
-	    // It really seems there is a xapian bug about sort order, we 
-	    // invert here.
-	    m_nq->enquire->set_sort_by_key((QSorter*)m_sorter, 
-					   !m_sortAscending);
-	}
-	m_nq->enquire->set_query(m_nq->query);
-	m_nq->mset = Xapian::MSet();
-	// Get the query description and trim the "Xapian::Query"
-	d = m_nq->query.get_description();
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGDEB(("Query::SetQuery: xapian error %s\n", ermsg.c_str()));
+    for (int tries = 0; tries < 2; tries++) {
+	try {
+            m_nq->xenquire = new Xapian::Enquire(m_db->m_ndb->xrdb);
+            if (m_collapseDuplicates) {
+                m_nq->xenquire->set_collapse_key(Rcl::VALUE_MD5);
+            } else {
+                m_nq->xenquire->set_collapse_key(Xapian::BAD_VALUENO);
+            }
+            if (!m_sortField.empty()) {
+                if (m_sorter) {
+                    delete (QSorter*)m_sorter;
+                    m_sorter = 0;
+                }
+                m_sorter = new QSorter(m_sortField);
+                // It really seems there is a xapian bug about sort order, we 
+                // invert here.
+                m_nq->xenquire->set_sort_by_key((QSorter*)m_sorter, 
+                                                !m_sortAscending);
+            }
+            m_nq->xenquire->set_query(m_nq->xquery);
+            m_nq->xmset = Xapian::MSet();
+            // Get the query description and trim the "Xapian::Query"
+            d = m_nq->xquery.get_description();
+            m_reason.erase();
+            break;
+	} catch (const Xapian::DatabaseModifiedError &e) {
+            m_reason = e.get_msg();
+	    m_db->m_ndb->xrdb.reopen();
+            continue;
+	} XCATCHERROR(m_reason);
+        break;
+    }
+
+    if (!m_reason.empty()) {
+	LOGDEB(("Query::SetQuery: xapian error %s\n", m_reason.c_str()));
 	return false;
     }
 	
@@ -202,8 +212,8 @@ bool Query::getQueryTerms(list<string>& terms)
     Xapian::TermIterator it;
     string ermsg;
     try {
-	for (it = m_nq->query.get_terms_begin(); 
-	     it != m_nq->query.get_terms_end(); it++) {
+	for (it = m_nq->xquery.get_terms_begin(); 
+	     it != m_nq->xquery.get_terms_end(); it++) {
 	    terms.push_back(*it);
 	}
     } XCATCHERROR(ermsg);
@@ -216,7 +226,7 @@ bool Query::getQueryTerms(list<string>& terms)
 
 bool Query::getMatchTerms(const Doc& doc, list<string>& terms)
 {
-    if (ISNULL(m_nq) || !m_nq->enquire) {
+    if (ISNULL(m_nq) || !m_nq->xenquire) {
 	LOGERR(("Query::getMatchTerms: no query opened\n"));
 	return -1;
     }
@@ -224,15 +234,14 @@ bool Query::getMatchTerms(const Doc& doc, list<string>& terms)
     terms.clear();
     Xapian::TermIterator it;
     Xapian::docid id = Xapian::docid(doc.xdocid);
-    string ermsg;
-    try {
-	for (it=m_nq->enquire->get_matching_terms_begin(id);
-	     it != m_nq->enquire->get_matching_terms_end(id); it++) {
-	    terms.push_back(*it);
-	}
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGERR(("getQueryTerms: xapian error: %s\n", ermsg.c_str()));
+
+    XAPTRY(terms.insert(terms.begin(),
+                        m_nq->xenquire->get_matching_terms_begin(id),
+                        m_nq->xenquire->get_matching_terms_end(id)),
+           m_db->m_ndb->xrdb, m_reason);
+
+    if (!m_reason.empty()) {
+	LOGERR(("getQueryTerms: xapian error: %s\n", m_reason.c_str()));
 	return false;
     }
 
@@ -246,25 +255,23 @@ static const int qquantum = 30;
 // the search job in there, this can be long
 int Query::getResCnt()
 {
-    if (ISNULL(m_nq) || !m_nq->enquire) {
+    if (ISNULL(m_nq) || !m_nq->xenquire) {
 	LOGERR(("Query::getResCnt: no query opened\n"));
 	return -1;
     }
-    string ermsg;
+
     int ret = -1;
-    if (m_nq->mset.size() <= 0) {
+    if (m_nq->xmset.size() <= 0) {
         Chrono chron;
-	try {
-	    m_nq->mset = m_nq->enquire->get_mset(0, qquantum,0, m_nq->decider);
-            ret = m_nq->mset.get_matches_lower_bound();
-	} catch (const Xapian::DatabaseModifiedError &error) {
-	    m_db->m_ndb->xrdb.reopen();
-	    m_nq->mset = m_nq->enquire->get_mset(0, qquantum,0, m_nq->decider);
-            ret = m_nq->mset.get_matches_lower_bound();
-	} XCATCHERROR(ermsg);
+
+        XAPTRY(m_nq->xmset = 
+               m_nq->xenquire->get_mset(0, qquantum,0, m_nq->decider);
+               ret = m_nq->xmset.get_matches_lower_bound(),
+               m_db->m_ndb->xrdb, m_reason);
+
         LOGDEB(("Query::getResCnt: %d mS\n", chron.millis()));
-	if (!ermsg.empty())
-	    LOGERR(("enquire->get_mset: exception: %s\n", ermsg.c_str()));
+	if (!m_reason.empty())
+	    LOGERR(("xenquire->get_mset: exception: %s\n", m_reason.c_str()));
     }
     return ret;
 }
@@ -282,7 +289,7 @@ int Query::getResCnt()
 bool Query::getDoc(int exti, Doc &doc)
 {
     LOGDEB1(("Query::getDoc: exti %d\n", exti));
-    if (ISNULL(m_nq) || !m_nq->enquire) {
+    if (ISNULL(m_nq) || !m_nq->xenquire) {
 	LOGERR(("Query::getDoc: no query opened\n"));
 	return false;
     }
@@ -301,31 +308,29 @@ bool Query::getDoc(int exti, Doc &doc)
 	    while (exti >= (int)m_nq->m_dbindices.size()) {
 		LOGDEB(("Query::getDoc: fetching %d starting at %d\n",
 			qquantum, first));
-		try {
-		    m_nq->mset = m_nq->enquire->get_mset(first, qquantum);
-		} catch (const Xapian::DatabaseModifiedError &error) {
-		    m_db->m_ndb->xrdb.reopen();
-		    m_nq->mset = m_nq->enquire->get_mset(first, qquantum);
-		} catch (const Xapian::Error & error) {
-		  LOGERR(("enquire->get_mset: exception: %s\n", 
-			  error.get_msg().c_str()));
-                  m_reason = error.get_msg();
-                  return false;
+
+		XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(first, qquantum),
+                       m_db->m_ndb->xrdb, m_reason);
+
+                if (!m_reason.empty()) {
+                    LOGERR(("enquire->get_mset: exception: %s\n", 
+                            m_reason.c_str()));
+                    return false;
 		}
 
-		if (m_nq->mset.empty()) {
+		if (m_nq->xmset.empty()) {
 		    LOGDEB(("Query::getDoc: got empty mset\n"));
 		    return false;
 		}
-		first = m_nq->mset.get_firstitem();
-		for (unsigned int i = 0; i < m_nq->mset.size() ; i++) {
+		first = m_nq->xmset.get_firstitem();
+		for (unsigned int i = 0; i < m_nq->xmset.size() ; i++) {
 		    LOGDEB(("Query::getDoc: [%d]\n", i));
-		    Xapian::Document xdoc = m_nq->mset[i].get_document();
+		    Xapian::Document xdoc = m_nq->xmset[i].get_document();
 		    if ((*m_nq->postfilter)(xdoc)) {
 			m_nq->m_dbindices.push_back(first + i);
 		    }
 		}
-		first = first + m_nq->mset.size();
+		first = first + m_nq->xmset.size();
 	    }
 	}
 	xapi = m_nq->m_dbindices[exti];
@@ -334,34 +339,31 @@ bool Query::getDoc(int exti, Doc &doc)
     }
 
     // From there on, we work with a xapian enquire item number. Fetch it
-    int first = m_nq->mset.get_firstitem();
-    int last = first + m_nq->mset.size() -1;
+    int first = m_nq->xmset.get_firstitem();
+    int last = first + m_nq->xmset.size() -1;
 
     if (!(xapi >= first && xapi <= last)) {
 	LOGDEB(("Fetching for first %d, count %d\n", xapi, qquantum));
-	try {
-	    m_nq->mset = m_nq->enquire->get_mset(xapi, qquantum,
-						   0, m_nq->decider);
-	} catch (const Xapian::DatabaseModifiedError &error) {
-	    m_db->m_ndb->xrdb.reopen();
-	    m_nq->mset = m_nq->enquire->get_mset(xapi, qquantum,
-						   0, m_nq->decider);
 
-	} catch (const Xapian::Error & error) {
-	  LOGERR(("enquire->get_mset: exception: %s\n", 
-                  error.get_msg().c_str()));
-          m_reason = error.get_msg();
-          return false;
+	XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(xapi, qquantum,
+                                                      0, m_nq->decider),
+               m_db->m_ndb->xrdb, m_reason);
+
+        if (!m_reason.empty()) {
+            LOGERR(("enquire->get_mset: exception: %s\n", m_reason.c_str()));
+            return false;
 	}
-	if (m_nq->mset.empty())
+	if (m_nq->xmset.empty()) {
+            LOGDEB(("enquire->get_mset: got empty result\n"));
 	    return false;
-	first = m_nq->mset.get_firstitem();
-	last = first + m_nq->mset.size() -1;
+        }
+	first = m_nq->xmset.get_firstitem();
+	last = first + m_nq->xmset.size() -1;
     }
 
     LOGDEB1(("Query::getDoc: Qry [%s] win [%d-%d] Estimated results: %d",
             m_nq->query.get_description().c_str(), 
-            first, last, m_nq->mset.get_matches_lower_bound()));
+            first, last, m_nq->xmset.get_matches_lower_bound()));
 
     Xapian::Document xdoc;
     Xapian::docid docid = 0;
@@ -370,41 +372,42 @@ bool Query::getDoc(int exti, Doc &doc)
     m_reason.erase();
     for (int xaptries=0; xaptries < 2; xaptries++) {
         try {
-            xdoc = m_nq->mset[xapi-first].get_document();
-            docid = *(m_nq->mset[xapi-first]);
-            pc = m_nq->mset.convert_to_percent(m_nq->mset[xapi-first]);
+            xdoc = m_nq->xmset[xapi-first].get_document();
+            docid = *(m_nq->xmset[xapi-first]);
+            pc = m_nq->xmset.convert_to_percent(m_nq->xmset[xapi-first]);
             data = xdoc.get_data();
             m_reason.erase();
             break;
         } catch (Xapian::DatabaseModifiedError &error) {
             // retry or end of loop
-            LOGDEB(("getDoc: caught DatabaseModified\n"));
             m_reason = error.get_msg();
             continue;
         }
         XCATCHERROR(m_reason);
         break;
     }
-
+    if (!m_reason.empty()) {
+        LOGERR(("Query::getDoc: %s\n", m_reason.c_str()));
+        return false;
+    }
     // Parse xapian document's data and populate doc fields
-    return m_reason.empty() ? 
-        m_db->m_ndb->dbDataToRclDoc(docid, data, doc, pc) : false;
+    return m_db->m_ndb->dbDataToRclDoc(docid, data, doc, pc);
 }
 
 list<string> Query::expand(const Doc &doc)
 {
     list<string> res;
-    if (ISNULL(m_nq) || !m_nq->enquire) {
+    if (ISNULL(m_nq) || !m_nq->xenquire) {
 	LOGERR(("Query::expand: no query opened\n"));
 	return res;
     }
-    string ermsg;
+
     for (int tries = 0; tries < 2; tries++) {
 	try {
 	    Xapian::RSet rset;
 	    rset.add_document(Xapian::docid(doc.xdocid));
 	    // We don't exclude the original query terms.
-	    Xapian::ESet eset = m_nq->enquire->get_eset(20, rset, false);
+	    Xapian::ESet eset = m_nq->xenquire->get_eset(20, rset, false);
 	    LOGDEB(("ESet terms:\n"));
 	    // We filter out the special terms
 	    for (Xapian::ESetIterator it = eset.begin(); 
@@ -416,14 +419,19 @@ list<string> Query::expand(const Doc &doc)
 		if (res.size() >= 10)
 		    break;
 	    }
-	} catch (const Xapian::DatabaseModifiedError &error) {
-	    continue;
-	} XCATCHERROR(ermsg);
-	if (!ermsg.empty()) {
-	    LOGERR(("Query::expand: xapian error %s\n", ermsg.c_str()));
-	    res.clear();
-	}
+            m_reason.erase();
+            break;
+	} catch (const Xapian::DatabaseModifiedError &e) {
+            m_reason = e.get_msg();                    
+            m_db->m_ndb->xrdb.reopen();
+            continue;
+	} XCATCHERROR(m_reason);
 	break;
+    }
+
+    if (!m_reason.empty()) {
+        LOGERR(("Query::expand: xapian error %s\n", m_reason.c_str()));
+        res.clear();
     }
 
     return res;

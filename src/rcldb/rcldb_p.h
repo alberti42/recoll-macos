@@ -31,6 +31,20 @@ enum value_slot {
     MSG = "Caught unknown xapian exception";	   \
  } 
 
+#define XAPTRY(STMTTOTRY, XAPDB, ERSTR)       \
+    for (int tries = 0; tries < 2; tries++) { \
+	try {                                 \
+            STMTTOTRY;                        \
+            ERSTR.erase();                    \
+            break;                            \
+	} catch (const Xapian::DatabaseModifiedError &e) { \
+            ERSTR = e.get_msg();                           \
+	    XAPDB.reopen();                                \
+            continue;                                      \
+	} XCATCHERROR(ERSTR);                              \
+        break;                                             \
+    }
+
 class Query;
 
 // A class for data and methods that would have to expose

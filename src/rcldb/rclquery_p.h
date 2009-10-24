@@ -20,7 +20,7 @@ public:
     /** query descriptor: terms and subqueries joined by operators
      * (or/and etc...)
      */
-    Xapian::Query    query; 
+    Xapian::Query    xquery; 
 
     /** In case there is a postq filter: sequence of db indices that match */
     vector<int> m_dbindices; 
@@ -47,13 +47,13 @@ public:
     Xapian::MatchDecider *decider;   // Xapian does the filtering
     Xapian::MatchDecider *postfilter; // Result filtering done by Recoll
 
-    Xapian::Enquire      *enquire; // Open query descriptor.
-    Xapian::MSet          mset;    // Partial result set
+    Xapian::Enquire      *xenquire; // Open query descriptor.
+    Xapian::MSet          xmset;    // Partial result set
     // Term frequencies for current query. See makeAbstract, setQuery
     map<string, double>  termfreqs; 
 
     Native(Query *q)
-	: m_q(q), decider(0), postfilter(0), enquire(0)
+	: m_q(q), decider(0), postfilter(0), xenquire(0)
     { }
     ~Native() {
 	clear();
@@ -62,7 +62,7 @@ public:
 	m_dbindices.clear();
 	delete decider; decider = 0;
 	delete postfilter; postfilter = 0;
-	delete enquire; enquire = 0;
+	delete xenquire; xenquire = 0;
 	termfreqs.clear();
     }
 };

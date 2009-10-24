@@ -108,25 +108,20 @@ static inline string make_parentterm(const string& udi)
 bool Db::Native::subDocs(const string &udi, vector<Xapian::docid>& docids) 
 {
     LOGDEB2(("subDocs: [%s]\n", uniterm.c_str()));
-    string ermsg;
     string pterm = make_parentterm(udi);
-    for (int tries = 0; tries < 2; tries++) {
-	try {
-	    Xapian::PostingIterator it = xrdb.postlist_begin(pterm);
-	    for (; it != xrdb.postlist_end(pterm); it++) {
-		docids.push_back(*it);
-	    }
-	    LOGDEB(("Db::Native::subDocs: returning %d ids\n", docids.size()));
-	    return true;
-	} catch (const Xapian::DatabaseModifiedError &e) {
-	    LOGDEB(("Db::subDocs: got modified error. reopen/retry\n"));
-	    xrdb.reopen();
-	} XCATCHERROR(ermsg);
-	if (!ermsg.empty()) 
-	    break;
+
+    XAPTRY(docids.clear();
+           docids.insert(docids.begin(), xrdb.postlist_begin(pterm), 
+                         xrdb.postlist_end(pterm)),
+           xrdb, m_rcldb->m_reason);
+
+    if (!m_rcldb->m_reason.empty()) {
+        LOGERR(("Rcl::Db::subDocs: %s\n", m_rcldb->m_reason.c_str()));
+        return false;
+    } else {
+        LOGDEB(("Db::Native::subDocs: returning %d ids\n", docids.size()));
+        return true;
     }
-    LOGERR(("Rcl::Db::subDocs: %s\n", ermsg.c_str()));
-    return false;
 }
 
 // Only ONE field name inside the index data record differs from the
@@ -206,6 +201,9 @@ static list<string> noPrefixList(const list<string>& in)
 
 // Build a document abstract by extracting text chunks around the query terms
 // This uses the db termlists, not the original document.
+//
+// DatabaseModified and other general exceptions are catched and
+// possibly retried by our caller
 string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 {
     Chrono chron;
@@ -655,20 +653,14 @@ bool Db::adjustdbs()
 int Db::docCnt()
 {
     int res = -1;
-    string ermsg;
-    if (m_ndb && m_ndb->m_isopen) {
-	try {
-	    res = m_ndb->xdb().get_doccount();
-	} catch (const Xapian::DatabaseModifiedError &e) {
-	    LOGDEB(("Db::docCnt: got modified error. reopen/retry\n"));
-            // Doesn't make sense if we are the writer !
-            if (m_ndb->m_iswritable)
-                return -1;
-	    m_ndb->xdb().reopen();
-	    res = m_ndb->xdb().get_doccount();
-	} XCATCHERROR(ermsg);
-	if (!ermsg.empty())
-	    LOGERR(("Db::docCnt: got error: %s\n", ermsg.c_str()));
+    if (!m_ndb || !m_ndb->m_isopen)
+        return -1;
+
+    XAPTRY(res = m_ndb->xdb().get_doccount(), m_ndb->xrdb, m_reason);
+
+    if (!m_reason.empty()) {
+        LOGERR(("Db::docCnt: got error: %s\n", m_reason.c_str()));
+        return -1;
     }
     return res;
 }
@@ -1125,15 +1117,14 @@ bool Db::needUpdate(const string &udi, const string& sig)
     // the actual document file, or, for a multi-document file, the
     // pseudo-doc we create to stand for the file itself.
 
-    // We try twice in case database needs to be reopened. (Ulterior
-    // note: this does not make sense as we are the sole writer!)
+    // We try twice in case database needs to be reopened.
     for (int tries = 0; tries < 2; tries++) {
 	try {
 	    // Get the doc or pseudo-doc
 	    Xapian::PostingIterator docid =m_ndb->xrdb.postlist_begin(uniterm);
 	    if (docid == m_ndb->xrdb.postlist_end(uniterm)) {
 		// If no document exist with this path, we do need update
-		LOGDEB(("Db::needUpdate: no path: [%s]\n", uniterm.c_str()));
+		LOGDEB(("Db::needUpdate:yes (new): [%s]\n", uniterm.c_str()));
 		return true;
 	    }
 	    Xapian::Document doc = m_ndb->xrdb.get_document(*docid);
@@ -1148,9 +1139,9 @@ bool Db::needUpdate(const string &udi, const string& sig)
 			osig.c_str(), sig.c_str()));
 		// Db is not up to date. Let's index the file
 		return true;
-	    } 
+	    }
 
-	    LOGDEB(("Db::needUpdate: uptodate: [%s]\n", uniterm.c_str()));
+	    LOGDEB(("Db::needUpdate:no: [%s]\n", uniterm.c_str()));
 
 	    // Up to date. 
 
@@ -1173,13 +1164,14 @@ bool Db::needUpdate(const string &udi, const string& sig)
 	    return false;
 	} catch (const Xapian::DatabaseModifiedError &e) {
 	    LOGDEB(("Db::needUpdate: got modified error. reopen/retry\n"));
-	    m_ndb->xdb().reopen();
-	} XCATCHERROR(ermsg);
-	if (!ermsg.empty())
-	    break;
+            m_reason = e.get_msg();
+	    m_ndb->xrdb.reopen();
+            continue;
+	} XCATCHERROR(m_reason);
+        break;
     }
     LOGERR(("Db::needUpdate: error while checking existence: %s\n", 
-	    ermsg.c_str()));
+	    m_reason.c_str()));
     return true;
 }
 
@@ -1393,7 +1385,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
 {
     if (!m_ndb || !m_ndb->m_isopen)
 	return false;
-    Xapian::Database db = m_ndb->xdb();
+    Xapian::Database xdb = m_ndb->xdb();
 
     res.clear();
 
@@ -1417,7 +1409,10 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	res.unique();
 	for (list<TermMatchEntry>::iterator it = res.begin(); 
 	     it != res.end(); it++) {
-	    it->wcf = db.get_collection_freq(it->term);
+	    XAPTRY(it->wcf = xdb.get_collection_freq(it->term),
+                   xdb, m_reason);
+            if (!m_reason.empty())
+                return false;
 	    LOGDEB1(("termMatch: %d [%s]\n", it->wcf, it->term.c_str()));
 	}
     } else {
@@ -1446,34 +1441,44 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	}
 	LOGDEB(("termMatch: initsec: [%s]\n", is.c_str()));
 
-	string ermsg;
-	try {
-	    Xapian::TermIterator it = db.allterms_begin(); 
-	    if (!is.empty())
-		it.skip_to(is.c_str());
-	    for (int n = 0; it != db.allterms_end(); it++) {
-		// If we're beyond the terms matching the initial string, end
-		if (!is.empty() && (*it).find(is) != 0)
-		    break;
-		string term;
-		if (!prefix.empty())
-		    term = (*it).substr(prefix.length());
-		else
-		    term = *it;
-		if (typ == ET_WILD) {
-		    if (fnmatch(droot.c_str(), term.c_str(), 0) == FNM_NOMATCH)
-			continue;
-		} else {
-		    if (regexec(&reg, term.c_str(), 0, 0, 0))
-			continue;
-		}
-		// Do we want stem expansion here? We don't do it for now
-		res.push_back(TermMatchEntry(term, it.get_termfreq()));
-		++n;
-	    }
-	} XCATCHERROR(ermsg);
-	if (!ermsg.empty()) {
-	    LOGERR(("termMatch: %s\n", ermsg.c_str()));
+        for (int tries = 0; tries < 2; tries++) { 
+            try {
+                Xapian::TermIterator it = xdb.allterms_begin(); 
+                if (!is.empty())
+                    it.skip_to(is.c_str());
+                for (int n = 0; it != xdb.allterms_end(); it++) {
+                    // If we're beyond the terms matching the initial
+                    // string, end
+                    if (!is.empty() && (*it).find(is) != 0)
+                        break;
+                    string term;
+                    if (!prefix.empty())
+                        term = (*it).substr(prefix.length());
+                    else
+                        term = *it;
+                    if (typ == ET_WILD) {
+                        if (fnmatch(droot.c_str(), term.c_str(), 0) == 
+                            FNM_NOMATCH)
+                            continue;
+                    } else {
+                        if (regexec(&reg, term.c_str(), 0, 0, 0))
+                            continue;
+                    }
+                    // Do we want stem expansion here? We don't do it for now
+                    res.push_back(TermMatchEntry(term, it.get_termfreq()));
+                    ++n;
+                }
+                m_reason.erase();
+                break;
+            } catch (const Xapian::DatabaseModifiedError &e) {
+                m_reason = e.get_msg();
+                xdb.reopen();
+                continue;
+            } XCATCHERROR(m_reason);
+            break;
+        }
+	if (!m_reason.empty()) {
+	    LOGERR(("termMatch: %s\n", m_reason.c_str()));
 	    return false;
 	}
 
@@ -1508,12 +1513,9 @@ TermIter *Db::termWalkOpen()
     TermIter *tit = new TermIter;
     if (tit) {
 	tit->db = m_ndb->xdb();
-	string ermsg;
-	try {
-	    tit->it = tit->db.allterms_begin();
-	} XCATCHERROR(ermsg);
-	if (!ermsg.empty()) {
-	    LOGERR(("Db::termWalkOpen: xapian error: %s\n", ermsg.c_str()));
+        XAPTRY(tit->it = tit->db.allterms_begin(), tit->db, m_reason);
+	if (!m_reason.empty()) {
+	    LOGERR(("Db::termWalkOpen: xapian error: %s\n", m_reason.c_str()));
 	    return 0;
 	}
     }
@@ -1521,15 +1523,15 @@ TermIter *Db::termWalkOpen()
 }
 bool Db::termWalkNext(TermIter *tit, string &term)
 {
-    string ermsg;
-    try {
+    XAPTRY(
 	if (tit && tit->it != tit->db.allterms_end()) {
 	    term = *(tit->it)++;
 	    return true;
 	}
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGERR(("Db::termWalkOpen: xapian error: %s\n", ermsg.c_str()));
+        , tit->db, m_reason);
+
+    if (!m_reason.empty()) {
+	LOGERR(("Db::termWalkOpen: xapian error: %s\n", m_reason.c_str()));
     }
     return false;
 }
@@ -1544,13 +1546,12 @@ bool Db::termExists(const string& word)
 {
     if (!m_ndb || !m_ndb->m_isopen)
 	return 0;
-    string ermsg;
-    try {
-	if (!m_ndb->xdb().term_exists(word))
-	    return false;
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGERR(("Db::termWalkOpen: xapian error: %s\n", ermsg.c_str()));
+
+    XAPTRY(if (!m_ndb->xdb().term_exists(word)) return false,
+           m_ndb->xrdb, m_reason);
+
+    if (!m_reason.empty()) {
+	LOGERR(("Db::termWalkOpen: xapian error: %s\n", m_reason.c_str()));
 	return false;
     }
     return true;
@@ -1573,27 +1574,14 @@ bool Db::stemDiffers(const string& lang, const string& word,
 bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
 {
     LOGDEB1(("Db::makeDocAbstract: exti %d\n", exti));
-    if (!m_ndb) {
+    if (!m_ndb || !m_ndb->m_isopen) {
 	LOGERR(("Db::makeDocAbstract: no db\n"));
 	return false;
     }
-    m_reason.erase();
-    for (int i = 0; i < 2; i++) {
-        try {
-            abstract = m_ndb->makeAbstract(doc.xdocid, query);
-            m_reason.erase();
-            break;
-        } catch (const Xapian::DatabaseModifiedError &error) {
-            LOGDEB(("Db:makeDocAbstract: caught DatabaseModified\n"));
-            m_reason = error.get_msg();
-            m_ndb->xdb().reopen();
-        } catch (const Xapian::Error & error) {
-            LOGERR(("Db::makeDocAbstract: exception: %s\n", 
-                    error.get_msg().c_str()));
-            m_reason = error.get_msg();
-            break;
-        }
-    }
+
+    XAPTRY(abstract = m_ndb->makeAbstract(doc.xdocid, query),
+           m_ndb->xrdb, m_reason);
+
     return m_reason.empty() ? true : false;
 }
 
@@ -1609,25 +1597,32 @@ bool Db::getDoc(const string &udi, Doc &doc)
     doc.pc = 100;
 
     string uniterm = make_uniterm(udi);
-    string ermsg;
-    try {
-	if (!m_ndb->xrdb.term_exists(uniterm)) {
-	    // Document found in history no longer in the database.
-	    // We return true (because their might be other ok docs further)
-	    // but indicate the error with pc = -1
-	    doc.pc = -1;
-	    LOGINFO(("Db:getDoc: no such doc in index: [%s] (len %d)\n",
-		     uniterm.c_str(), uniterm.length()));
-	    return true;
-	}
-	Xapian::PostingIterator docid = m_ndb->xrdb.postlist_begin(uniterm);
-	Xapian::Document xdoc = m_ndb->xrdb.get_document(*docid);
-	string data = xdoc.get_data();
-	return m_ndb->dbDataToRclDoc(*docid, data, doc, 100);
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGERR(("Db::getDoc: %s\n", ermsg.c_str()));
+    for (int tries = 0; tries < 2; tries++) {
+	try {
+            if (!m_ndb->xrdb.term_exists(uniterm)) {
+                // Document found in history no longer in the
+                // database.  We return true (because their might be
+                // other ok docs further) but indicate the error with
+                // pc = -1
+                doc.pc = -1;
+                LOGINFO(("Db:getDoc: no such doc in index: [%s] (len %d)\n",
+                         uniterm.c_str(), uniterm.length()));
+                return true;
+            }
+            Xapian::PostingIterator docid = 
+                m_ndb->xrdb.postlist_begin(uniterm);
+            Xapian::Document xdoc = m_ndb->xrdb.get_document(*docid);
+            string data = xdoc.get_data();
+            return m_ndb->dbDataToRclDoc(*docid, data, doc, 100);
+	} catch (const Xapian::DatabaseModifiedError &e) {
+            m_reason = e.get_msg();
+	    m_ndb->xrdb.reopen();
+            continue;
+	} XCATCHERROR(m_reason);
+        break;
     }
+
+    LOGERR(("Db::getDoc: %s\n", m_reason.c_str()));
     return false;
 }
 
