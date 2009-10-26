@@ -87,6 +87,8 @@ void UIPrefsDialog::init()
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(buildAbsCB, SIGNAL(toggled(bool)), 
 	    replAbsCB, SLOT(setEnabled(bool)));
+    connect(useDesktopOpenCB, SIGNAL(toggled(bool)), 
+	    viewActionPB, SLOT(setDisabled(bool)));
 
     setFromPrefs();
 }
@@ -105,7 +107,11 @@ void UIPrefsDialog::setFromPrefs()
 
     initStartAdvCB->setChecked(prefs.startWithAdvSearchOpen);
     initStartSortCB->setChecked(prefs.startWithSortToolOpen);
+
+    // External editor. Can use desktop prefs or internal
     useDesktopOpenCB->setChecked(prefs.useDesktopOpen);
+    viewActionPB->setEnabled(!prefs.useDesktopOpen);
+
     keepSortCB->setChecked(prefs.keepSort);
     previewHtmlCB->setChecked(prefs.previewHtml);
     // Query terms color
