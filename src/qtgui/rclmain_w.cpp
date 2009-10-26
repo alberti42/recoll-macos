@@ -200,6 +200,12 @@ void RclMain::init()
     // Connections
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
+#if QT_VERSION >= 0x040000
+    sSearch->queryText->installEventFilter(this);
+#else
+    sSearch->queryText->lineEdit()->installEventFilter(this);
+#endif
+
     connect(preferencesMenu, SIGNAL(activated(int)),
 	    this, SLOT(setStemLang(int)));
     connect(preferencesMenu, SIGNAL(aboutToShow()),
@@ -1156,3 +1162,21 @@ void RclMain::catgFilter(int id)
     resList->setDocSource();
 }
 
+bool RclMain::eventFilter(QObject *, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)  {
+        LOGDEB2(("RclMain::eventFilter: keypress\n"));
+	QKeyEvent *ke = (QKeyEvent *)event;
+	if (ke->key() == Qt::Key_PageDown || ke->key() == Qt::Key_PageUp ) {
+            // Page up down are sent to the resList where they make sense
+            QApplication::sendEvent(resList, event);
+            return true;
+        } else if (ke->key() == Qt::Key_Home &&
+                   (ke->state() & Qt::ShiftButton)) {
+            // Shift-Home -> first page of results
+            resList->resultPageFirst();
+            return true;
+        }
+    }
+    return false;
+}

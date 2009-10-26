@@ -70,6 +70,7 @@ public:
 	init();
     }
     ~RclMain() {}
+    virtual bool eventFilter(QObject *target, QEvent *event);
 
 public slots:
     virtual bool close();
