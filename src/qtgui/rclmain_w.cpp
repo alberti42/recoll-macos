@@ -123,6 +123,10 @@ void RclMain::init()
 
     periodictimer = new QTimer(this);
 
+    // At least some versions of qt4 don't display the status bar if
+    // it's not created here.
+    (void)statusBar();
+
     (void)new HelpClient(this);
     HelpClient::installMap(this->name(), "RCL.SEARCH.SIMPLE");
 
