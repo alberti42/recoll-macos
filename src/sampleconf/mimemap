@@ -48,6 +48,7 @@
 .doc = application/msword
 .ppt = application/vnd.ms-powerpoint
 .xls = application/vnd.ms-excel
+.chm = application/x-chm
 
 # OpenOffice / opendocument. We handle opendocument as old openoffice files
 # for now
@@ -106,10 +107,12 @@
 .tiff = image/tiff
 .tif  = image/tiff
 
-# A list of stuff that we don't want to touch at all (for now). Having the
-# suffixes listed in there speeds things up a bit by avoiding
+# A list of suffixes (name endings) that we don't want to touch at all.
+# Having these explicitely listed speeds things up a bit by avoiding
 # unneeded decompression or 'file' calls. File names still get indexed if
-# indexallfilenames is set
+# indexallfilenames is set (so this is different from skippedNames). It's a
+# bit unconsistent to have it listed among the suffix translations, but no
+# problem in practice.
 recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
        .o .lib .dll .a \
        .dat .bak .rdf .log .db .msf .pid \

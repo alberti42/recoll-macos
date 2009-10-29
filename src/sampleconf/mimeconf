@@ -74,6 +74,7 @@ application/x-perl = exec rcltext
 application/x-scribus = exec rclscribus
 application/x-shellscript = exec rcltext
 application/x-tex = exec rcltex
+application/x-chm = execm rclchm
 application/zip = execm rclzip
 audio/mpeg = exec rclid3
 image/gif = execm rclimg
@@ -154,6 +155,7 @@ text/x-c++ = source
 text/x-html-sidux-man = sidux-book
 text/x-mail = message
 text/x-man = document
+application/x-chm = document
 text/x-purple-log = pidgin
 text/x-python = text-x-python
 
@@ -171,6 +173,7 @@ text = \
       application/vnd.wordperfect \
       application/x-abiword \
       application/x-awk \
+      application/x-chm \
       application/x-dvi \
       application/x-kword \
       application/x-lyx \
