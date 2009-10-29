@@ -83,6 +83,13 @@ class RclConfig {
     /** Variant with autoconversion to bool */
     bool getConfParam(const std::string &name, bool *value);
 
+    /** 
+     * Get list of config names under current sk, with possible 
+     * wildcard filtering 
+     */
+    list<string> getConfNames(const char *pattern = 0) {
+	return m_conf->getNames(m_keydir, pattern);
+    }
     /** Get default charset for current keydir (was set during setKeydir) 
      * filenames are handled differently */
     const string &getDefCharset(bool filename = false);
@@ -186,9 +193,6 @@ class RclConfig {
 	    initFrom(r);
 	}
 	return *this;
-    }
-    list<string> getConfNames(const string &sk) {
-	return m_conf->getNames(sk);
     }
 
  private:

@@ -934,13 +934,15 @@ using namespace std;
 
 static char *thisprog;
 
-static char usage [] =
-"  \n\n"
+static char usage [] = "\n"
+"-c: check a few things in the configuration files\n"
+"[-s subkey] -q param : query parameter value\n"
+"  : default: print parameters\n"
 ;
 static void
 Usage(void)
 {
-    fprintf(stderr, "%s: usage:\n%s [-s subkey] [-q param]", thisprog, usage);
+    fprintf(stderr, "%s: usage: %s\n", thisprog, usage);
     exit(1);
 }
 
@@ -948,7 +950,7 @@ static int     op_flags;
 #define OPT_MOINS 0x1
 #define OPT_s	  0x2 
 #define OPT_q	  0x4 
-
+#define OPT_c     0x8
 int main(int argc, char **argv)
 {
     string pname, skey;
@@ -963,6 +965,7 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
+	    case 'c':	op_flags |= OPT_c; break;
 	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
 		skey = *(++argv);
 		argc--; 
@@ -994,8 +997,42 @@ int main(int argc, char **argv)
 	    exit(1);
 	}
 	printf("[%s] -> [%s]\n", pname.c_str(), value.c_str());
+    } else if (op_flags & OPT_c) {
+        // Check that all known mime types have an icon and belong to
+        // some category
+        list<string> catnames;
+        config->getMimeCategories(catnames);
+        cout << "Categories: ";
+        set<string> allmtsfromcats;
+        for (list<string>::const_iterator it = catnames.begin(); 
+             it != catnames.end(); it++) {
+            cout << *it << " ";
+        }
+        cout << endl;
+        for (list<string>::const_iterator it = catnames.begin(); 
+             it != catnames.end(); it++) {
+            list<string> cts;
+            config->getMimeCatTypes(*it, cts);
+            for (list<string>::const_iterator it1 = cts.begin(); 
+                 it1 != cts.end(); it1++) {
+                // Already in map -> duplicate
+                if (allmtsfromcats.find(*it1) != allmtsfromcats.end()) {
+                    cout << "Duplicate: [" << *it1 << "]" << endl;
+                }
+                allmtsfromcats.insert(*it1);
+            }
+        }
+
+        list<string> mtypes = config->getAllMimeTypes();
+        for (list<string>::const_iterator it = mtypes.begin();
+             it != mtypes.end(); it++) {
+            if (allmtsfromcats.find(*it) == allmtsfromcats.end()) {
+                cout << "Not found in catgs: [" << *it << "]" << endl;
+            }
+        }
     } else {
-	list<string> names = config->getConfNames("");
+        config->setKeyDir("");
+	list<string> names = config->getConfNames();
 	names.sort();
 	names.unique();
 	for (list<string>::iterator it = names.begin(); 
