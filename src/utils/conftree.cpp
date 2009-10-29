@@ -25,6 +25,7 @@ static char rcsid [] = "@(#$Id: conftree.cpp,v 1.16 2008-07-01 11:51:51 dockes E
 
 #include <unistd.h> // for access(2)
 #include <ctype.h>
+#include <fnmatch.h>
 
 #include <fstream>
 #include <sstream>
@@ -59,6 +60,7 @@ void ConfSimple::parseinput(istream &input)
     char cline[LL];
     bool appending = false;
     string line;
+    bool eof = false;
 
     for (;;) {
 	input.getline(cline, LL-1);
@@ -68,21 +70,31 @@ void ConfSimple::parseinput(istream &input)
 		status = STATUS_ERROR;
 		return;
 	    }
-	    // Must be eof ?
+	    // Must be eof ? But maybe we have a partial line which
+	    // must be processed. This happens if the last line before
+	    // eof ends with a backslash
+            if (appending) {
+                eof = true;
+                goto processline;
+            }
+
 	    break;
 	}
 
-	int ll = strlen(cline);
-	while (ll > 0 && (cline[ll-1] == '\n' || cline[ll-1] == '\r')) {
-	    cline[ll-1] = 0;
-	    ll--;
-	}
+        {
+            int ll = strlen(cline);
+            while (ll > 0 && (cline[ll-1] == '\n' || cline[ll-1] == '\r')) {
+                cline[ll-1] = 0;
+                ll--;
+            }
+        }
 
 	if (appending)
 	    line += cline;
 	else
 	    line = cline;
 
+    processline:
 	// Note that we trim whitespace before checking for backslash-eol
 	// This avoids invisible problems.
 	trimstring(line);
@@ -130,6 +142,8 @@ void ConfSimple::parseinput(istream &input)
 	    continue;
 	}
 	i_set(nm, val, submapkey, true);
+        if (eof == true)
+            break;
     }
 }
 
@@ -483,7 +497,7 @@ void ConfSimple::listall()
     write(std::cout);
 }
 
-list<string> ConfSimple::getNames(const string &sk)
+list<string> ConfSimple::getNames(const string &sk, const char *pattern)
 {
     std::list<string> mylist;
     if (!ok())
@@ -494,6 +508,8 @@ list<string> ConfSimple::getNames(const string &sk)
     }
     map<string, string>::const_iterator it;
     for (it = ss->second.begin();it != ss->second.end();it++) {
+        if (pattern && FNM_NOMATCH == fnmatch(pattern, it->first.c_str(), 0))
+            continue;
 	mylist.push_back(it->first);
     }
     mylist.sort();
@@ -992,10 +1008,16 @@ int main(int argc, char **argv)
 	//printf("WALK\n");conf->sortwalk(mywalker, 0);
 	printf("\nNAMES in global space:\n");
 	list<string> names = conf->getNames("");
-	for (list<string>::iterator it = names.begin();it!=names.end();
-	     it++) 
-	    printf("%s\n", (*it).c_str());
-
+	for (list<string>::iterator it = names.begin();
+             it!=names.end(); it++) 
+	    cout << *it << " ";
+        cout << endl;
+	printf("\nNAMES in global space matching t* \n");
+	names = conf->getNames("", "t*");
+	for (list<string>::iterator it = names.begin();
+             it!=names.end(); it++) 
+	    cout << *it << " ";
+        cout << endl;
     }
 }
 

@@ -99,7 +99,7 @@ public:
     virtual int set(const string &nm, const string &val, 
 		    const string &sk = string()) = 0;
     virtual bool ok() = 0;
-    virtual list<string> getNames(const string &sk) = 0;
+    virtual list<string> getNames(const string &sk, const char* = 0) = 0;
     virtual int erase(const string &, const string &) = 0;
     virtual int eraseKey(const string &) = 0;
     virtual void listall()  {};
@@ -193,10 +193,8 @@ public:
     /** List all values to stdout */
     virtual void listall();
 
-    /**
-     * Return all names in given submap
-     */
-    virtual list<string> getNames(const string &sk);
+    /** Return all names in given submap. */
+    virtual list<string> getNames(const string &sk, const char *pattern = 0);
 
     /**
      * Return all subkeys 
@@ -272,6 +270,9 @@ private:
  * NOTE: contrary to common behaviour, the global or root space is NOT
  * designated by '/' but by '' (empty subkey). A '/' subkey will not
  * be searched at all.
+ *
+ * Note: getNames() : uses ConfSimple method, this does *not* inherit 
+ *     names from englobing submaps.
  */
 class ConfTree : public ConfSimple {
 
@@ -405,13 +406,13 @@ public:
 	return m_confs.front()->holdWrites(on);
     }
 
-    virtual list<string> getNames(const string &sk) 
+    virtual list<string> getNames(const string &sk, const char *pattern = 0)
     {
 	list<string> nms;
 	typename list<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end(); it++) {
 	    list<string> lst;
-	    lst = (*it)->getNames(sk);
+	    lst = (*it)->getNames(sk, pattern);
 	    nms.insert(nms.end(), lst.begin(), lst.end());
 	}
 	nms.sort();
