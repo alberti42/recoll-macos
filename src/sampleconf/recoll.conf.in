@@ -4,6 +4,10 @@
 # @prefix@/share/recoll/examples and provides default values. You can
 # override selected parameters by adding assigments to
 # ~/.recoll/recoll.conf (or $RECOLL_CONFDIR/recoll.conf)
+#
+# Almost all values in this file can be set from the GUI configuration menus,
+# which maybe an easier approach than direct editing
+#
 
 # Space-separated list of directories to index. Next line indexes $HOME
 topdirs = ~
