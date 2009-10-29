@@ -276,14 +276,6 @@
                                             </widget>
                                         </hbox>
                                     </widget>
-                                    <widget class="QPushButton">
-                                        <property name="name">
-                                             <cstring>viewActionPB</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Choose editor applications</string>
-                                        </property>
-                                    </widget>
                                     <widget class="QCheckBox">
                                         <property name="name">
                                             <cstring>useDesktopOpenCB</cstring>
@@ -293,6 +285,14 @@
                                         </property>
                                         <property name="checked">
                                             <bool>false</bool>
+                                        </property>
+                                    </widget>
+                                    <widget class="QPushButton">
+                                        <property name="name">
+                                             <cstring>viewActionPB</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Choose editor applications</string>
                                         </property>
                                     </widget>
                                     <widget class="QCheckBox">
