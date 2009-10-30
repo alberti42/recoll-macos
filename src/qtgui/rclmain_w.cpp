@@ -933,6 +933,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 			     + doc.mimetype.c_str());
 	return;
     }
+
+    // Split the command line
     list<string> lcmd;
     if (!stringToStrings(cmd, lcmd)) {
 	QMessageBox::warning(0, "Recoll", 
@@ -943,6 +945,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	return;
     }
 
+    // Look for the command to execute in the exec path and a few
+    // other places
     string cmdpath;
     if (prefs.useDesktopOpen) {
 	// Findfilter searches the recoll filters directory in
@@ -965,6 +969,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	    cmd = cmdpath + " %u";
 	}
     }
+
+    // Command not found: start the user dialog to help find another one:
     if (cmdpath.empty()) {
 	QString mt = QString::fromAscii(doc.mimetype.c_str());
 	QString message = tr("The viewer specified in mimeconf for %1: %2"
@@ -982,11 +988,14 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	case 1:
 	    break;
 	}
+        // The user will have to click on the link again to try the
+        // new command.
 	return;
     }
 
-    // For files with an ipath, we do things differently depending if the 
-    // configured command seems to be able to grok it or not.
+    // For files with an ipath, we do things differently depending if
+    // the configured command seems to be able to grok it or not: if
+    // not, create a temporary file
     bool wantsipath = cmd.find("%i") != string::npos;
     bool istempfile = false;
     string fn = urltolocalpath(doc.url);
@@ -1012,11 +1021,28 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     }
 
     // Substitute %xx inside prototype command
+    string efftime;
+    if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
+        efftime = doc.dmtime.empty() ? doc.fmtime : doc.dmtime;
+    } else {
+        efftime = "0";
+    }
+    // Try to keep the letters used more or less consistent with the reslist
+    // paragraph format.
     string ncmd;
-    map<char, string> subs;
-    subs['u'] = escapeShell(url);
-    subs['f'] = escapeShell(fn);
-    subs['i'] = escapeShell(doc.ipath);
+    map<string, string> subs;
+    subs["D"] = escapeShell(efftime);
+    subs["f"] = escapeShell(fn);
+    subs["i"] = escapeShell(doc.ipath);
+    subs["M"] = escapeShell(doc.mimetype);
+    subs["U"] = escapeShell(url);
+    subs["u"] = escapeShell(url);
+    // Let %(xx) access all metadata.
+    for (map<string,string>::const_iterator it = doc.meta.begin();
+         it != doc.meta.end(); it++) {
+        subs[it->first] = escapeShell(it->second);
+    }
+
     pcSubst(cmd, ncmd, subs);
 
     ncmd += " &";
