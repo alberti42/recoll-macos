@@ -386,7 +386,7 @@ bool RclConfig::inStopSuffixes(const string& fni)
     }
 }
 
-string RclConfig::getMimeTypeFromSuffix(const string &suff)
+string RclConfig::getMimeTypeFromSuffix(const string& suff)
 {
     string mtype;
     mimemap->get(suff, mtype, m_keydir);
@@ -611,10 +611,14 @@ string RclConfig::fieldCanon(const string& f)
     return fld;
 }
 
-string RclConfig::getMimeViewerDef(const string &mtype)
+string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag)
 {
+    LOGDEB(("RclConfig::getMimeViewerDef: mtype %s apptag %s\n",
+            mtype.c_str(), apptag.c_str()));
     string hs;
-    mimeview->get(mtype, hs, "view");
+    if (apptag.empty() || !mimeview->get(mtype + string("|") + apptag,
+                                         hs, "view"))
+        mimeview->get(mtype, hs, "view");
     return hs;
 }
 
@@ -624,7 +628,7 @@ bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs)
 	return false;
     list<string>tps = mimeview->getNames("view");
     for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
-	defs.push_back(pair<string, string>(*it, getMimeViewerDef(*it)));
+	defs.push_back(pair<string, string>(*it, getMimeViewerDef(*it, "")));
     }
     return true;
 }

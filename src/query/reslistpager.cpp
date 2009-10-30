@@ -217,7 +217,13 @@ void ResListPager::displayPage()
 	    linksbuf += string("<a href=") + vlbuf + ">" + trans("Preview") 
 		+ "</a>&nbsp;&nbsp;";
 	}
-	if (!RclConfig::getMainConfig()->getMimeViewerDef(doc.mimetype).empty()) {
+
+        string apptag;
+        map<string,string>::const_iterator it;
+        if ((it = doc.meta.find("apptag")) != doc.meta.end())
+            apptag = it->second;
+
+	if (!RclConfig::getMainConfig()->getMimeViewerDef(doc.mimetype, apptag).empty()) {
 	    sprintf(vlbuf, "E%d", docnumforlinks);
 	    linksbuf += string("<a href=") + vlbuf + ">" + trans("Open")
 		+ "</a>";

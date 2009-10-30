@@ -918,9 +918,13 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     // Look for appropriate viewer
     string cmd;
     if (prefs.useDesktopOpen) {
-	cmd = rclconfig->getMimeViewerDef("application/x-all");
+	cmd = rclconfig->getMimeViewerDef("application/x-all", "");
     } else {
-	cmd = rclconfig->getMimeViewerDef(doc.mimetype);
+        string apptag;
+        map<string,string>::const_iterator it;
+        if ((it = doc.meta.find("apptag")) != doc.meta.end())
+            apptag = it->second;
+	cmd = rclconfig->getMimeViewerDef(doc.mimetype, apptag);
     }
 
     if (cmd.length() == 0) {

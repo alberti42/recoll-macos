@@ -35,10 +35,11 @@ recipient = XTO
 #
 # Some fields are stored by default, don't add them here, else they will be
 # stored twice: caption, keywords, abstract, filename, mimetype, url
-# "author" used to be stored by default, now set here as optional
 # Only canonical names should be used here, not aliases.
+# "author" used to be stored by default, now set here as optional
+# "apptag" is used for viewer specialization (depending on local config)
 [stored]
-stored = author
+stored = author apptag
 
 ##########################
 # This section defines field names aliases or synonyms. Any right hand side
