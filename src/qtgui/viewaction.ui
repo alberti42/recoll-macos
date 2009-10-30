@@ -32,7 +32,7 @@
                   <cstring>textLabel1</cstring>
                 </property>
                 <property name="text">
-                  <string>Select one or several mime types then click "Change Action"</string>
+                  <string>Select one or several mime types then click "Change Action"&lt;br&gt;You can also close this dialog and check "Use desktop preferences"&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</string>
                 </property>
               </widget>
                 <widget class="QListView">
