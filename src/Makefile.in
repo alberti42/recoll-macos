@@ -71,6 +71,6 @@ maintainer-clean: distclean
 install: all
 	DESTDIR=${DESTDIR} bindir=${bindir} datadir=${datadir} \
 	mandir=${mandir} \
-	./recollinstall ${prefix}
+	/bin/sh ./recollinstall ${prefix}
 
 .PHONY: all static clean distclean install
