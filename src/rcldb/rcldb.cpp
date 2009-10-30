@@ -134,7 +134,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
 				Doc &doc, int percent)
 {
     LOGDEB0(("Db::dbDataToRclDoc: data: %s\n", data.c_str()));
-    ConfSimple parms(&data);
+    ConfSimple parms(data);
     if (!parms.ok())
 	return false;
     parms.get(Doc::keyurl, doc.url);

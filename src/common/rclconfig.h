@@ -90,6 +90,14 @@ class RclConfig {
     list<string> getConfNames(const char *pattern = 0) {
 	return m_conf->getNames(m_keydir, pattern);
     }
+
+    /** Check if name exists anywhere in config */
+    bool hasNameAnywhere(const string& nm) 
+    {
+        return m_conf? m_conf->hasNameAnywhere(nm) : false;
+    }
+
+
     /** Get default charset for current keydir (was set during setKeydir) 
      * filenames are handled differently */
     const string &getDefCharset(bool filename = false);

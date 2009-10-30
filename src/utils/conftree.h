@@ -96,6 +96,7 @@ public:
     virtual ~ConfNull() {};
     virtual int get(const string &name, string &value, 
 		    const string &sk = string()) = 0;
+    virtual bool hasNameAnywhere(const string& nm) = 0;
     virtual int set(const string &nm, const string &val, 
 		    const string &sk = string()) = 0;
     virtual bool ok() = 0;
@@ -127,7 +128,7 @@ public:
      * @param readonly if true open readonly, else rw
      * @param tildexp  try tilde (home dir) expansion for subsection names
      */
-    ConfSimple(string *data, int readonly = 0, bool tildexp = false);
+    ConfSimple(const string& data, int readonly = 0, bool tildexp = false);
 
     /**
      * Build an empty object. This will be memory only, with no backing store.
@@ -196,6 +197,10 @@ public:
     /** Return all names in given submap. */
     virtual list<string> getNames(const string &sk, const char *pattern = 0);
 
+    /** Check if name is present in any submap. This is relatively expensive
+     * but useful for saving further processing sometimes */
+    virtual bool hasNameAnywhere(const string& nm);
+
     /**
      * Return all subkeys 
      */
@@ -207,13 +212,11 @@ public:
      * Copy constructor. Expensive but less so than a full rebuild
      */
     ConfSimple(const ConfSimple &rhs) 
-	: ConfNull(), m_data(0) 
+	: ConfNull()
     {
 	if ((status = rhs.status) == STATUS_ERROR)
 	    return;
 	m_filename = rhs.m_filename;
-	// Note: we just share the pointer, this doesnt belong to us
-	m_data = rhs.m_data;
 	m_submaps = rhs.m_submaps;
     }
 
@@ -224,8 +227,6 @@ public:
     {
 	if (this != &rhs && (status = rhs.status) != STATUS_ERROR) {
 	    m_filename = rhs.m_filename;
-	    // Note: we don't own data. Just share the pointer
-	    m_data = rhs.m_data;
 	    m_submaps = rhs.m_submaps;
 	}
 	return *this;
@@ -237,8 +238,6 @@ protected:
 private:
     // Set if we're working with a file
     string                            m_filename; 
-    // Set if we're working with an in-memory string
-    string                           *m_data;
     // Configuration data submaps (one per subkey, the main data has a
     // null subkey)
     map<string, map<string, string> > m_submaps;
@@ -281,7 +280,7 @@ public:
      * expansion */
     ConfTree(const char *fname, int readonly = 0) 
 	: ConfSimple(fname, readonly, true) {}
-    ConfTree(string *data, int readonly = 0)
+    ConfTree(const string &data, int readonly = 0)
 	: ConfSimple(data, readonly, true) {}
     ConfTree(int readonly = 0)
 	: ConfSimple(readonly, true) {}
@@ -359,6 +358,16 @@ public:
 	typename list<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    if ((*it)->get(name, value, sk))
+		return true;
+	}
+	return false;
+    }
+
+    virtual bool hasNameAnywhere(const string& nm)
+    {
+	typename list<T*>::iterator it;
+	for (it = m_confs.begin();it != m_confs.end();it++) {
+	    if ((*it)->hasNameAnywhere(nm))
 		return true;
 	}
 	return false;

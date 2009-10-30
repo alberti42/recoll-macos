@@ -20,10 +20,12 @@
 
 #include <string>
 #include <list>
+#include <map>
 
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
+using std::map;
 #endif
 
 #include "rclconfig.h"
@@ -101,7 +103,9 @@ class DbIndexer : public FsTreeWalkerCB {
 	      DbIxStatusUpdater *updfunc = 0 // status updater callback
 	      ) 
 	: m_config(cnf), m_db(cnf), m_updater(updfunc)
-    {}
+    {
+        m_havelocalfields = m_config->hasNameAnywhere("localfields");
+    }
 	
     virtual ~DbIndexer();
 
@@ -150,7 +154,16 @@ class DbIndexer : public FsTreeWalkerCB {
     string       m_tmpdir;
     DbIxStatusUpdater *m_updater;
 
+    // The configuration can set attribute fields to be inherited by
+    // all files in a file system area. Ie: set "apptag = thunderbird"
+    // inside ~/.thunderbird. The boolean is set at init to avoid
+    // further wasteful processing if no local fields are set.
+    bool         m_havelocalfields;
+    map<string, string> m_localfields;
+
     bool init(bool rst = false, bool rdonly = false);
+    void localfieldsfromconf();
+    void setlocalfields(Rcl::Doc& doc);
 };
 
 /** Helper methods in recollindex.cpp for initial checks/setup to index 

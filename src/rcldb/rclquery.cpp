@@ -42,7 +42,7 @@ public:
     {
 	// Parse xapian document's data and populate doc fields
 	string data = xdoc.get_data();
-	ConfSimple parms(&data);
+	ConfSimple parms(data);
 
 	// The only filtering for now is on file path (subtree)
 	string url;

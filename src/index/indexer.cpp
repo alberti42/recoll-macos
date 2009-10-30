@@ -362,6 +362,46 @@ bool DbIndexer::purgeFiles(const list<string> &filenames)
     return true;
 }
 
+// Local fields can be set for fs subtrees in the configuration file 
+void DbIndexer::localfieldsfromconf()
+{
+    LOGDEB(("DbIndexer::localfieldsfromconf\n"));
+    m_localfields.clear();
+    string sfields;
+    if (!m_config->getConfParam("localfields", sfields))
+        return;
+    list<string> lfields;
+    if (!stringToStrings(sfields, lfields)) {
+        LOGERR(("DbIndexer::localfieldsfromconf: bad syntax for [%s]\n", 
+                sfields.c_str()));
+        return;
+    }
+    for (list<string>::const_iterator it = lfields.begin();
+         it != lfields.end(); it++) {
+        ConfSimple conf(*it, 1, true);
+        list<string> nmlst = conf.getNames("");
+        for (list<string>::const_iterator it1 = nmlst.begin();
+             it1 != nmlst.end(); it1++) {
+            conf.get(*it1, m_localfields[*it1]);
+            LOGDEB2(("DbIndexer::localfieldsfromconf: [%s] => [%s]\n",
+                    (*it1).c_str(), m_localfields[*it1].c_str()));
+        }
+    }
+}
+
+// 
+void DbIndexer::setlocalfields(Rcl::Doc& doc)
+{
+    for (map<string, string>::const_iterator it = m_localfields.begin();
+         it != m_localfields.end(); it++) {
+        // Should local fields override those coming from the document
+        // ? I think not, but not too sure
+        if (doc.meta.find(it->second) == doc.meta.end()) {
+            doc.meta[it->first] = it->second;
+        }
+    }
+}
+
 
 /// This method gets called for every file and directory found by the
 /// tree walker. 
@@ -381,28 +421,37 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     if (m_updater && !m_updater->update()) {
 	    return FsTreeWalker::FtwStop;
     }
+
     // If we're changing directories, possibly adjust parameters (set
     // the current directory in configuration object)
     if (flg == FsTreeWalker::FtwDirEnter || 
 	flg == FsTreeWalker::FtwDirReturn) {
 	m_config->setKeyDir(fn);
+
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
 	    m_db.setAbstractParams(abslen, -1, -1);
+
+        // Adjust local fields from config for this subtree
+        if (m_havelocalfields)
+            localfieldsfromconf();
+
 	if (flg == FsTreeWalker::FtwDirReturn)
 	    return FsTreeWalker::FtwOk;
     }
 
+    ////////////////////
     // Check db up to date ? Doing this before file type
     // identification means that, if usesystemfilecommand is switched
     // from on to off it may happen that some files which are now
     // without mime type will not be purged from the db, resulting
     // in possible 'cannot intern file' messages at query time...
-    char cbuf[100]; 
+
     // Document signature. This is based on m/ctime and size and used
     // for the uptodate check (the value computed here is checked
     // against the stored one). Changing the computation forces a full
     // reindex of course.
+    char cbuf[100]; 
     sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->RCL_STTIME);
     string sig = cbuf;
     string udi;
@@ -507,6 +556,9 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	    doc.sig += plus;
 	}
 
+        // Possibly add fields from local config
+        if (m_havelocalfields) 
+            setlocalfields(doc);
 	// Add document to database. If there is an ipath, add it as a children
 	// of the file document.
 	string udi;

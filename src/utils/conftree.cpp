@@ -46,7 +46,7 @@ using std::list;
 #define MIN(A,B) ((A)<(B) ? (A) : (B))
 #endif
 
-//#define DEBUG
+#undef DEBUG
 #ifdef DEBUG
 #define LOGDEB(X) fprintf X
 #else
@@ -63,22 +63,20 @@ void ConfSimple::parseinput(istream &input)
     bool eof = false;
 
     for (;;) {
+        cline[0] = 0;
 	input.getline(cline, LL-1);
 	LOGDEB((stderr, "Parse:line: [%s] status %d\n", cline, int(status)));
 	if (!input.good()) {
 	    if (input.bad()) {
+                LOGDEB((stderr, "Parse: input.bad()\n"));
 		status = STATUS_ERROR;
 		return;
 	    }
+            LOGDEB((stderr, "Parse: eof\n"));
 	    // Must be eof ? But maybe we have a partial line which
 	    // must be processed. This happens if the last line before
-	    // eof ends with a backslash
-            if (appending) {
-                eof = true;
-                goto processline;
-            }
-
-	    break;
+	    // eof ends with a backslash, or there is no final \n
+            eof = true;
 	}
 
         {
@@ -94,11 +92,12 @@ void ConfSimple::parseinput(istream &input)
 	else
 	    line = cline;
 
-    processline:
 	// Note that we trim whitespace before checking for backslash-eol
-	// This avoids invisible problems.
+	// This avoids invisible whitespace problems.
 	trimstring(line);
 	if (line.empty() || line.at(0) == '#') {
+            if (eof)
+                break;
 	    m_order.push_back(ConfLine(ConfLine::CFL_COMMENT, line));
 	    continue;
 	}
@@ -142,29 +141,29 @@ void ConfSimple::parseinput(istream &input)
 	    continue;
 	}
 	i_set(nm, val, submapkey, true);
-        if (eof == true)
+        if (eof)
             break;
     }
 }
 
 
 ConfSimple::ConfSimple(int readonly, bool tildexp)
-    : dotildexpand(tildexp), m_data(0), m_holdWrites(false)
+    : dotildexpand(tildexp), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
 }
 
-ConfSimple::ConfSimple(string *d, int readonly, bool tildexp)
-    : dotildexpand(tildexp), m_data(d), m_holdWrites(false)
+ConfSimple::ConfSimple(const string& d, int readonly, bool tildexp)
+    : dotildexpand(tildexp), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
 
-    stringstream input(*d, ios::in);
+    stringstream input(d, ios::in);
     parseinput(input);
 }
 
 ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp)
-    : dotildexpand(tildexp), m_filename(fname), m_data(0), m_holdWrites(false)
+    : dotildexpand(tildexp), m_filename(fname), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
 
@@ -418,7 +417,8 @@ ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
     return WALK_CONTINUE;
 }
 
-// Write to default output:
+// Write to default output. This currently only does something if output is
+// a file
 bool ConfSimple::write()
 {
     if (!ok())
@@ -430,11 +430,11 @@ bool ConfSimple::write()
 	if (!output.is_open())
 	    return 0;
 	return write(output);
-    } else if (m_data) {
-	ostringstream output(*m_data, ios::out | ios::trunc);
-	return write(output);
     } else {
-	// No backing store, no writing
+	// No backing store, no writing. Maybe one day we'll need it with
+        // some kind of output string. This can't be the original string which
+        // is currently readonly.
+	//ostringstream output(m_ostring, ios::out | ios::trunc);
 	return 1;
     }
 }
@@ -527,6 +527,18 @@ list<string> ConfSimple::getSubKeys()
 	mylist.push_back(ss->first);
     }
     return mylist;
+}
+
+bool ConfSimple::hasNameAnywhere(const string& nm)
+{
+    list<string>keys = getSubKeys();
+    for (list<string>::const_iterator it = keys.begin(); 
+         it != keys.end(); it++) {
+        string val;
+        if (get(nm, val, *it))
+            return true;
+    }
+    return false;
 }
 
 // //////////////////////////////////////////////////////////////////////////
@@ -917,7 +929,7 @@ int main(int argc, char **argv)
 	if (argc != 0)
 	    Usage();
 	string s;
-	ConfSimple c(&s);
+	ConfSimple c(s);
 	memtest(c);
 	exit(0);
     } else if  ((op_flags & OPT_V)) {
