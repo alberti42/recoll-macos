@@ -474,7 +474,7 @@ static bool rfc2047_decodeParsed(const std::string& charset,
 // Bugs: 
 //    - We should turn off decoding while inside quoted strings
 //
-typedef enum  {rfc2047base, rfc2047ready, rfc2047open_eq, 
+typedef enum  {rfc2047ready, rfc2047open_eq, 
 	       rfc2047charset, rfc2047encoding, 
 	       rfc2047value, rfc2047close_q} Rfc2047States;
 
@@ -490,30 +490,23 @@ bool rfc2047_decode(const std::string& in, std::string &out)
     for (string::size_type ii = 0; ii < in.length(); ii++) {
 	char ch = in[ii];
 	switch (state) {
-	case rfc2047base:
-	    {
-		value += ch;
-		switch (ch) {
-		// Linear whitespace
-		case ' ': case '	': state = rfc2047ready; break;
-		default: break;
-		}
-	    }
-	    break;
 	case rfc2047ready: 
 	    {
+                DPRINT((stderr, "STATE: ready, ch %c\n", ch));
 		switch (ch) {
 		    // Whitespace: stay ready
 		case ' ': case '	': value += ch;break;
 		    // '=' -> forward to next state
 		case '=': state = rfc2047open_eq; break;
+                    DPRINT((stderr, "STATE: open_eq\n"));
 		    // Other: go back to sleep
-		default: value += ch; state = rfc2047base;
+		default: value += ch; state = rfc2047ready;
 		}
 	    }
 	    break;
 	case rfc2047open_eq: 
 	    {
+                DPRINT((stderr, "STATE: open_eq, ch %c\n", ch));
 		switch (ch) {
 		case '?': 
 		    {
@@ -528,12 +521,13 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 			state = rfc2047charset; 
 		    }
 		    break;
-		default: state = rfc2047base; out += '='; out += ch;break;
+		default: state = rfc2047ready; out += '='; out += ch;break;
 		}
 	    } 
 	    break;
 	case rfc2047charset: 
 	    {
+                DPRINT((stderr, "STATE: charset, ch %c\n", ch));
 		switch (ch) {
 		case '?': state = rfc2047encoding; break;
 		default: charset += ch; break;
@@ -542,6 +536,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 	    break;
 	case rfc2047encoding: 
 	    {
+                DPRINT((stderr, "STATE: encoding, ch %c\n", ch));
 		switch (ch) {
 		case '?': state = rfc2047value; break;
 		default: encoding += ch; break;
@@ -550,6 +545,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 	    break;
 	case rfc2047value: 
 	    {
+                DPRINT((stderr, "STATE: value, ch %c\n", ch));
 		switch (ch) {
 		case '?': state = rfc2047close_q; break;
 		default: value += ch;break;
@@ -558,11 +554,13 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 	    break;
 	case rfc2047close_q: 
 	    {
+                DPRINT((stderr, "STATE: close_q, ch %c\n", ch));
 		switch (ch) {
 		case '=': 
 		    {
+                        DPRINT((stderr, "End of encoded area. Charset %s, Encoding %s\n", charset.c_str(), encoding.c_str()));
 			string utf8;
-			state = rfc2047base; 
+			state = rfc2047ready; 
 			if (!rfc2047_decodeParsed(charset, encoding, value, 
 						  utf8)) {
 			    return false;
@@ -578,6 +576,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 	    }
 	    break;
 	default: // ??
+            DPRINT((stderr, "STATE: default ?? ch %c\n", ch));
 	    return false;
 	}
     }
@@ -587,7 +586,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 	out += utf8;
 	value.clear();
     }
-    if (state != rfc2047base) 
+    if (state != rfc2047ready) 
 	return false;
     return true;
 }
