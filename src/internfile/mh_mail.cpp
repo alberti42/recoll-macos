@@ -52,6 +52,8 @@ static const string cstr_author = "author";
 static const string cstr_recipient = "recipient";
 static const string cstr_modificationdate = "modificationdate";
 static const string cstr_title = "title";
+static const string cstr_msgid = "msgid";
+static const string cstr_abstract = "abstract";
 
 MimeHandlerMail::~MimeHandlerMail() 
 {
@@ -165,7 +167,11 @@ bool MimeHandlerMail::next_document()
 	res = processMsg(m_bincdoc, 0);
 	LOGDEB1(("MimeHandlerMail::next_document: mimetype %s\n",
 		m_metaData[cstr_mimetype].c_str()));
+        const string& txt = m_metaData[cstr_content];
+        if (m_startoftext < txt.size())
+            m_metaData[cstr_abstract] = txt.substr(m_startoftext, 250);
     } else {
+        m_metaData[cstr_abstract] = "";
 	res = processAttach();
     }
     m_idx++;
@@ -313,6 +319,12 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	    m_metaData[cstr_recipient] += " " + transcoded;
 	}
     }
+    if (doc->h.getFirstHeader("Message-Id", hi)) {
+	if (depth == 1) {
+	    m_metaData[cstr_msgid] =  hi.getValue();
+            trimstring(m_metaData[cstr_msgid], "<>");
+	}
+    }
     if (doc->h.getFirstHeader("Date", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
 	if (depth == 1) {
@@ -337,7 +349,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	text += string("Subject: ") + transcoded + string("\n");
     }
     text += '\n';
-
+    m_startoftext = text.size();
     LOGDEB2(("MimeHandlerMail::processMsg:ismultipart %d mime subtype '%s'\n",
 	    doc->isMultipart(), doc->getSubType().c_str()));
     walkmime(doc, depth);

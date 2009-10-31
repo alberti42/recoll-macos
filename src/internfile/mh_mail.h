@@ -37,7 +37,7 @@ class MHMailAttach;
  * file. 
  */
 class MimeHandlerMail : public RecollFilter {
- public:
+public:
     MimeHandlerMail(const string &mt) 
 	: RecollFilter(mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
     {}
@@ -53,15 +53,20 @@ class MimeHandlerMail : public RecollFilter {
     virtual bool skip_to_document(const string& ipath);
     virtual void clear();
 
- private:
+private:
     bool processMsg(Binc::MimePart *doc, int depth);
     void walkmime(Binc::MimePart* doc, int depth);
     bool processAttach();
     Binc::MimeDocument     *m_bincdoc;
     int                     m_fd;
     std::stringstream      *m_stream;
-    int                     m_idx; // starts at -1 for self, then index into
-                                    // attachments;
+
+    // Current index in parts. starts at -1 for self, then index into
+    // attachments
+    int                     m_idx; 
+    // Start of actual text (after the reprinted headers. This is for 
+    // generating a semi-meaningful "abstract")
+    string::size_type       m_startoftext; 
     string                  m_subject; 
     vector<MHMailAttach *>  m_attachments;
 };
