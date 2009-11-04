@@ -70,7 +70,10 @@ const static int margin = 6;
 
 void ConfParamW::setValue(const QString& value)
 {
-    m_cflink->set(string((const char *)value.utf8()));
+    if (m_fsencoding)
+        m_cflink->set(string((const char *)value.local8Bit()));
+    else
+        m_cflink->set(string((const char *)value.utf8()));
 }
 
 void ConfParamW::setValue(int value)
@@ -169,7 +172,10 @@ void ConfParamStrW::loadValue()
 {
     string s;
     m_cflink->get(s);
-    m_le->setText(QString::fromUtf8(s.c_str()));
+    if (m_fsencoding)
+        m_le->setText(QString::fromLocal8Bit(s.c_str()));
+    else
+        m_le->setText(QString::fromUtf8(s.c_str()));
 }
 
 ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink cflink, 
@@ -200,7 +206,12 @@ void ConfParamCStrW::loadValue()
 {
     string s;
     m_cflink->get(s);
-    QString cs = QString::fromUtf8(s.c_str());
+    QString cs;
+    if (m_fsencoding)
+        cs = QString::fromLocal8Bit(s.c_str());
+    else
+        cs = QString::fromUtf8(s.c_str());
+        
     for (int i = 0; i < m_cmb->count(); i++) {
 	if (!cs.compare(m_cmb->text(i))) {
 	    m_cmb->setCurrentItem(i);
@@ -257,6 +268,7 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
     if (!createCommon(lbltxt, tltptxt))
 	return;
 
+    m_fsencoding = true;
     m_le = new QLineEdit(this);
     m_le->setMinimumSize(QSize(150, 0 ));
     m_le->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
@@ -285,7 +297,7 @@ void ConfParamFNW::loadValue()
 {
     string s;
     m_cflink->get(s);
-    m_le->setText(QString::fromUtf8(s.c_str()));
+    m_le->setText(QString::fromLocal8Bit(s.c_str()));
 }
 
 void ConfParamFNW::showBrowserDialog()
@@ -366,7 +378,10 @@ void ConfParamSLW::loadValue()
     stringToStrings(s, ls);
     QStringList qls;
     for (list<string>::const_iterator it = ls.begin(); it != ls.end(); it++) {
-	qls.push_back(QString::fromUtf8(it->c_str()));
+        if (m_fsencoding)
+            qls.push_back(QString::fromLocal8Bit(it->c_str()));
+        else
+            qls.push_back(QString::fromUtf8(it->c_str()));
     }
     m_lb->clear();
     m_lb->insertStringList(qls);
@@ -394,7 +409,13 @@ void ConfParamSLW::listToConf()
 {
     list<string> ls;
     for (unsigned int i = 0; i < m_lb->count(); i++) {
-	ls.push_back((const char *)m_lb->text(i));
+        // General parameters are encoded as utf-8. File names as
+        // local8bit There is no hope for 8bit file names anyway
+        // except for luck: the original encoding is unknown.
+        if (m_fsencoding)
+            ls.push_back((const char *)(m_lb->text(i).local8Bit()));
+        else
+            ls.push_back((const char *)(m_lb->text(i).utf8()));
     }
     string s;
     stringsToString(ls, s);

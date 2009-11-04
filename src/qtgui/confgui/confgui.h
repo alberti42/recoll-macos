@@ -76,15 +76,17 @@ namespace confgui {
 	Q_OBJECT
     public:
 	ConfParamW(QWidget *parent, ConfLink cflink)
-	    : QWidget(parent), m_cflink(cflink)
+	    : QWidget(parent), m_cflink(cflink), m_fsencoding(false)
 	{
 	}
 	virtual void loadValue() = 0;
-
+        virtual void setFsEncoding(bool onoff) {m_fsencoding = onoff;}
     protected:
 	ConfLink     m_cflink;
 	QHBOXLAYOUT *m_hl;
-
+        // File names are encoded as local8bit in the config files. Other
+        // are encoded as utf-8
+        bool         m_fsencoding;
 	virtual bool createCommon(const QString& lbltxt,
 				  const QString& tltptxt);
 
@@ -176,7 +178,6 @@ namespace confgui {
     protected:
 	QLISTBOX *m_lb;
 	void listToConf();
-	
     };
 
     // Dir name list
@@ -188,6 +189,7 @@ namespace confgui {
 		      const QString& tltptxt)
 	    : ConfParamSLW(parent, cflink, lbltxt, tltptxt)
 	    {
+                m_fsencoding = true;
 	    }
     protected slots:
 	virtual void showInputDialog();

@@ -157,6 +157,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			"to '/usr/home', a correct skippedPath entry "
 			"would be '/home/me/tmp*', not '/usr/home/me/tmp*')"));
     vboxLayout->addWidget(eskp);
+    eskp->setFsEncoding(true);
 
     list<string> cstemlangs = Rcl::Db::getStemmerNames();
     QStringList stemlangs;
@@ -304,6 +305,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		     QObject::tr("These are patterns for file or directory "
 				 " names which should not be indexed."));
     m_widgets.push_back(eskn);
+    eskn->setFsEncoding(true);
 
     list<string> args;
     args.push_back("-l");
