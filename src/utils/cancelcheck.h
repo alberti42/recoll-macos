@@ -32,7 +32,7 @@
  *    a side-effect of some other progress-reporting call. If cancellation has
  *    been requested, this will raise an exception, to be catched and processed
  *    wherever the worker was invoked.
- * Of course, the worker side must be exception-clean, but this otherwise avoids
+ * The worker side must be exception-clean, but this otherwise avoids
  * having to set-up code to handle a special cancellation error along
  * the whole worker call stack.
  */
