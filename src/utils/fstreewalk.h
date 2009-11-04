@@ -39,6 +39,9 @@ struct stat;
  */
 class FsTreeWalker {
  public:
+    // Flags for call to processone(). FtwDirEnter is used when
+    // entering a directory. FtwDirReturn is used when returning to it
+    // after processing a subdirectory.
     enum CbFlag {FtwRegular, FtwDirEnter, FtwDirReturn};
     enum Status {FtwOk=0, FtwError=1, FtwStop=2, 
 		 FtwStatAll = FtwError|FtwStop};
