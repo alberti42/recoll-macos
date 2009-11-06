@@ -44,6 +44,8 @@ using namespace std;
 #include "wipedir.h"
 #include "rclconfig.h"
 #include "mh_html.h"
+#include "fileudi.h"
+
 #ifdef RCL_USE_XATTR
 #include "pxattr.h"
 #endif // RCL_USE_XATTR
@@ -85,7 +87,7 @@ void FileInterner::reapXAttrs(const string& path)
 // This is used when the user wants to retrieve a search result doc's parent
 // (ie message having a given attachment)
 bool FileInterner::getEnclosing(const string &url, const string &ipath,
-				string &eurl, string &eipath)
+				string &eurl, string &eipath, string& udi)
 {
     eurl = url;
     eipath = ipath;
@@ -98,6 +100,8 @@ bool FileInterner::getEnclosing(const string &url, const string &ipath,
     } else {
 	eipath.erase();
     }
+    make_udi(url_gpath(eurl), eipath, udi);
+
     LOGDEB(("FileInterner::getEnclosing() after: [%s]\n", eipath.c_str()));
     return true;
 }

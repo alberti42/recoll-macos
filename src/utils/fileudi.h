@@ -24,9 +24,8 @@ using std::string;
 // indexer).  Document Ids are built from a concatenation of the file
 // path and the internal path (ie: email number inside
 // folder/attachment number/etc.)  As the size of Xapian terms is
-// limited, the path is truncated to a maximum length, and completed
-// by a hash of the remainder. So the unique id looks like:
-// /some/truncated/paHASHVALUE|ipath
+// limited, the Id path is truncated to a maximum length, and completed
+// by a hash of the remainder (including the ipath)
 
 extern void make_udi(const string& fn, const string& ipath, string &udi);
 

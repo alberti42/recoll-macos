@@ -104,6 +104,8 @@ class DocSequence {
 	return doc.meta[Rcl::Doc::keyabs];
     }
 
+    virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&) {return false;}
+
     /** Get estimated total count in results */
     virtual int getResCnt() = 0;
 

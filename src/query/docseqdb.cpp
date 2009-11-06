@@ -23,6 +23,7 @@ static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.9 2008-11-13 10:57:46 dockes Exp
 #include "docseqdb.h"
 #include "rcldb.h"
 #include "debuglog.h"
+#include "internfile.h"
 
 DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
 			     RefCntr<Rcl::SearchData> sdata) 
@@ -76,6 +77,15 @@ string DocSequenceDb::getAbstract(Rcl::Doc &doc)
     }
 
     return abstract.empty() ? doc.meta[Rcl::Doc::keyabs] : abstract;
+}
+
+bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
+{
+    string udi;
+    if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
+                                    udi))
+        return false;
+    return m_q->whatDb()->getDoc(udi, pdoc);
 }
 
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)

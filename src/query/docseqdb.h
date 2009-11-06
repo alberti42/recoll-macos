@@ -36,6 +36,7 @@ class DocSequenceDb : public DocSequence {
 			  vector<vector<string> >& groups, 
 			  vector<int>& gslks);
     virtual string getAbstract(Rcl::Doc &doc);
+    virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc);
     virtual string getDescription();
     virtual list<string> expand(Rcl::Doc &doc);
     virtual bool canFilter() {return true;}

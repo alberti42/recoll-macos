@@ -50,10 +50,15 @@ extern string path_canon(const string &s);
 extern list<string> path_dirglob(const string &dir, 
 					   const string pattern);
 /// Encode according to rfc 1738
-extern string url_encode(const string url, 
+extern string url_encode(const string& url, 
 			      string::size_type offs = 0);
+/// Transcode to utf-8 if possible or url encoding, for display.
 extern bool printableUrl(const string &fcharset, 
 			 const string &in, string &out);
+
+/// Return the host+path part of an url. This is not a general
+/// routine, it does the right thing only in the recoll context
+extern string url_gpath(const string& url);
 
 /// Stat parameter and check if it's a directory
 extern bool path_isdir(const string& path);

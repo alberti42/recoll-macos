@@ -91,6 +91,22 @@ ResList::ResList(QWidget* parent, const char* name)
 
 ResList::~ResList()
 {
+    // These have to exist somewhere for translations to work
+#ifdef __GNUC__
+    __attribute__((unused))
+#endif
+    static const char* strings[] = {
+	QT_TR_NOOP("<p><b>No results found</b><br>"),
+	QT_TR_NOOP("Documents <b>%d-%d</b> out of at least <b>%d</b> for "),
+	QT_TR_NOOP("Documents <b>%d-%d</b> for "),
+	QT_TR_NOOP("Previous"),
+	QT_TR_NOOP("Next"),
+	QT_TR_NOOP("Unavailable document"),
+	QT_TR_NOOP("Preview"),
+	QT_TR_NOOP("Open"),
+	QT_TR_NOOP("(show query)"),
+    };
+
 }
 
 int ResList::newListId()
@@ -346,18 +362,6 @@ void ResList::resultPageFirst()
 
 void ResList::append(const QString &text)
 {
-    // These has to go somewhere for translations to work
-    static const char* strings[] = {
-	QT_TR_NOOP("<p><b>No results found</b><br>"),
-	QT_TR_NOOP("Documents <b>%d-%d</b> out of at least <b>%d</b> for "),
-	QT_TR_NOOP("Documents <b>%d-%d</b> for "),
-	QT_TR_NOOP("Previous"),
-	QT_TR_NOOP("Next"),
-	QT_TR_NOOP("Unavailable document"),
-	QT_TR_NOOP("Preview"),
-	QT_TR_NOOP("Open"),
-	QT_TR_NOOP("(show query)"),
-    };
     QTEXTBROWSER::append(text);
 #if 0
     {
@@ -565,12 +569,14 @@ RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
     popup->insertItem(tr("Copy &URL"), this, SLOT(menuCopyURL()));
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc) && !doc.ipath.empty()) {
-	popup->insertItem(tr("Save to File"), this, SLOT(menuSaveToFile()));
+	popup->insertItem(tr("&Write to File"), this, SLOT(menuSaveToFile()));
     }
 
     popup->insertItem(tr("Find &similar documents"), this, SLOT(menuExpand()));
-    popup->insertItem(tr("P&arent document/folder"), 
-		      this, SLOT(menuSeeParent()));
+    popup->insertItem(tr("Preview P&arent document/folder"), 
+		      this, SLOT(menuPreviewParent()));
+    popup->insertItem(tr("&Open Parent document/folder"), 
+		      this, SLOT(menuOpenParent()));
     return popup;
 }
 
@@ -583,20 +589,37 @@ void ResList::menuSaveToFile()
     emit docSaveToFileClicked(m_popDoc);
 }
 
-void ResList::menuSeeParent()
+void ResList::menuPreviewParent()
 {
     Rcl::Doc doc;
-    if (!getDoc(m_popDoc, doc)) 
+    if (!getDoc(m_popDoc, doc) || m_baseDocSource.isNull()) 
 	return;
-    Rcl::Doc doc1;
-    if (FileInterner::getEnclosing(doc.url, doc.ipath, doc1.url, doc1.ipath)) {
-	emit previewRequested(doc1);
+    Rcl::Doc pdoc;
+    if (m_baseDocSource->getEnclosing(doc, pdoc)) {
+	emit previewRequested(pdoc);
     } else {
 	// No parent doc: show enclosing folder with app configured for
 	// directories
-	doc1.url = path_getfather(doc.url);
-	doc1.mimetype = "application/x-fsdirectory";
-	emit editRequested(doc1);
+	pdoc.url = path_getfather(doc.url);
+	pdoc.mimetype = "application/x-fsdirectory";
+	emit editRequested(pdoc);
+    }
+}
+
+void ResList::menuOpenParent()
+{
+    Rcl::Doc doc;
+    if (!getDoc(m_popDoc, doc) || m_baseDocSource.isNull()) 
+	return;
+    Rcl::Doc pdoc;
+    if (m_baseDocSource->getEnclosing(doc, pdoc)) {
+	emit editRequested(pdoc);
+    } else {
+	// No parent doc: show enclosing folder with app configured for
+	// directories
+	pdoc.url = path_getfather(doc.url);
+	pdoc.mimetype = "application/x-fsdirectory";
+	emit editRequested(pdoc);
     }
 }
 

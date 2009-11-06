@@ -929,8 +929,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
     if (cmd.length() == 0) {
 	QMessageBox::warning(0, "Recoll", 
-			     tr("No external viewer configured for mime type ")
-			     + doc.mimetype.c_str());
+			     tr("No external viewer configured for mime type [")
+			     + doc.mimetype.c_str() + "]");
 	return;
     }
 

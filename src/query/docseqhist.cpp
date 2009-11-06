@@ -24,6 +24,7 @@ static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.4 2008-09-29 08:59:20 dockes E
 #include "docseqhist.h"
 #include "rcldb.h"
 #include "fileudi.h"
+#include "internfile.h"
 
 bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh) 
 {
@@ -64,6 +65,15 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
 	doc.ipath = m_it->ipath;
     }
     return ret;
+}
+
+bool DocSequenceHistory::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
+{
+    string udi;
+    if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
+                                    udi))
+        return false;
+    return m_db->getDoc(udi, pdoc);
 }
 
 int DocSequenceHistory::getResCnt()

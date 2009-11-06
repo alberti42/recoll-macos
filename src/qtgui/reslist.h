@@ -95,7 +95,8 @@ class ResList : public QTEXTBROWSER
     virtual void menuCopyFN();
     virtual void menuCopyURL();
     virtual void menuExpand();
-    virtual void menuSeeParent();
+    virtual void menuPreviewParent();
+    virtual void menuOpenParent();
     virtual void previewExposed(int);
     virtual void append(const QString &text);
     // Only used for qt ver >=4 but seems we cant undef it

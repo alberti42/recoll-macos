@@ -53,7 +53,7 @@ class FileInterner {
      * with Rcl::Db::addOrUpdate(). The latter is generally the enclosing file. 
      */
     static bool getEnclosing(const string &url, const string &ipath,
-			     string &eurl, string &eipath);
+			     string &eurl, string &eipath, string& udi);
     /**
      * Identify and possibly decompress file, create adequate
      * handler. The mtype parameter is only set when the object is

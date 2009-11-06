@@ -176,13 +176,13 @@ TempFileInternal::~TempFileInternal()
 }
 
 
-void path_catslash(std::string &s) {
+void path_catslash(string &s) {
     if (s.empty() || s[s.length() - 1] != '/')
 	s += '/';
 }
 
-std::string path_cat(const std::string &s1, const std::string &s2) {
-    std::string res = s1;
+string path_cat(const string &s1, const string &s2) {
+    string res = s1;
     path_catslash(res);
     res +=  s2;
     return res;
@@ -274,7 +274,7 @@ extern string path_tildexpand(const string &s)
     return o;
 }
 
-extern std::string path_absolute(const std::string &is)
+extern string path_absolute(const string &is)
 {
     if (is.length() == 0)
 	return is;
@@ -290,7 +290,7 @@ extern std::string path_absolute(const std::string &is)
 }
 
 #include <smallut.h>
-extern std::string path_canon(const std::string &is)
+extern string path_canon(const string &is)
 {
     if (is.length() == 0)
 	return is;
@@ -330,8 +330,8 @@ extern std::string path_canon(const std::string &is)
 
 #include <glob.h>
 #include <sys/stat.h>
-list<std::string> path_dirglob(const std::string &dir, 
-				    const std::string pattern)
+list<string> path_dirglob(const string &dir, 
+				    const string pattern)
 {
     list<string> res;
     glob_t mglob;
@@ -356,7 +356,7 @@ bool path_isdir(const string& path)
     return false;
 }
 
-std::string url_encode(const std::string url, string::size_type offs)
+string url_encode(const string& url, string::size_type offs)
 {
     string out = url.substr(0, offs);
     const char *cp = url.c_str();
@@ -390,6 +390,26 @@ std::string url_encode(const std::string url, string::size_type offs)
 	}
     }
     return out;
+}
+
+string url_gpath(const string& url)
+{
+    // Remove the access schema part (or whatever it's called)
+    string::size_type colon = url.find_first_of(":");
+    if (colon == string::npos || colon == url.size() - 1)
+        return url;
+    // If there are non-alphanum chars before the ':', then there
+    // probably is no scheme. Whatever...
+    for (string::size_type i = 0; i < colon; i++) {
+        if (!isalnum(url.at(i)))
+            return url;
+    }
+
+    // In addition we canonize the path to remove empty host parts
+    // (for compatibility with older versions of recoll where file://
+    // was hardcoded, but the local path was used for doc
+    // identification.
+    return path_canon(url.substr(colon+1));
 }
 
 // Printable url: this is used to transcode from the system charset
