@@ -95,11 +95,11 @@ public:
     enum StatusCode {STATUS_ERROR=0, STATUS_RO=1, STATUS_RW=2};
     virtual ~ConfNull() {};
     virtual int get(const string &name, string &value, 
-		    const string &sk = string()) = 0;
+		    const string &sk = string()) const = 0;
     virtual bool hasNameAnywhere(const string& nm) = 0;
     virtual int set(const string &nm, const string &val, 
 		    const string &sk = string()) = 0;
-    virtual bool ok() = 0;
+    virtual bool ok() const = 0;
     virtual list<string> getNames(const string &sk, const char* = 0) = 0;
     virtual int erase(const string &, const string &) = 0;
     virtual int eraseKey(const string &) = 0;
@@ -157,7 +157,8 @@ public:
      * global space if sk is empty).
      * @return 0 if name not found, 1 else
      */
-    virtual int get(const string &name, string &value, const string &sk = string());
+    virtual int get(const string &name, string &value, 
+                    const string &sk = string()) const;
 
     /** 
      * Set value for named parameter in specified subsection (or global)
@@ -175,8 +176,8 @@ public:
      */
     virtual int eraseKey(const string &sk);
 
-    virtual StatusCode getStatus(); 
-    virtual bool ok() {return getStatus() != STATUS_ERROR;}
+    virtual StatusCode getStatus() const;
+    virtual bool ok() const {return getStatus() != STATUS_ERROR;}
 
     /** 
      * Walk the configuration values, calling function for each.
@@ -232,6 +233,11 @@ public:
 	return *this;
     }
 
+    /**
+     * Write in file format to out
+     */
+    bool write(ostream& out) const;
+
 protected:
     bool dotildexpand;
     StatusCode status;
@@ -250,7 +256,6 @@ private:
 
     void parseinput(istream& input);
     bool write();
-    bool write(ostream& out);
     // Internal version of set: no RW checking
     virtual int i_set(const string &nm, const string &val, 
 		      const string &sk, bool init = false);
@@ -296,7 +301,7 @@ public:
      * parents.
      * @return 0 if name not found, 1 else
      */
-    virtual int get(const string &name, string &value, const string &sk);
+    virtual int get(const string &name, string &value, const string &sk) const;
 };
 
 /** 
@@ -353,9 +358,9 @@ public:
 	return *this;
     }
 
-    virtual int get(const string &name, string &value, const string &sk) 
+    virtual int get(const string &name, string &value, const string &sk) const
     {
-	typename list<T*>::iterator it;
+	typename list<T*>::const_iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    if ((*it)->get(name, value, sk))
 		return true;
@@ -373,7 +378,8 @@ public:
 	return false;
     }
 
-    virtual int set(const string &nm, const string &val, const string &sk = string()) 
+    virtual int set(const string &nm, const string &val, 
+                    const string &sk = string()) 
     {
 	if (!m_ok)
 	    return 0;
@@ -443,7 +449,7 @@ public:
 	return sks;
     }
 
-    virtual bool ok() {return m_ok;}
+    virtual bool ok() const {return m_ok;}
 
 private:
     bool     m_ok;

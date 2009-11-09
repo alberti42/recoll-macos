@@ -198,7 +198,7 @@ ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp)
     parseinput(input);
 }
 
-ConfSimple::StatusCode ConfSimple::getStatus()
+ConfSimple::StatusCode ConfSimple::getStatus() const
 {
     switch (status) {
     case STATUS_RO: return STATUS_RO;
@@ -207,18 +207,18 @@ ConfSimple::StatusCode ConfSimple::getStatus()
     }
 }
 
-int ConfSimple::get(const string &nm, string &value, const string &sk)
+int ConfSimple::get(const string &nm, string &value, const string &sk) const
 {
     if (!ok())
 	return 0;
 
     // Find submap
-    map<string, map<string, string> >::iterator ss;
+    map<string, map<string, string> >::const_iterator ss;
     if ((ss = m_submaps.find(sk)) == m_submaps.end()) 
 	return 0;
 
     // Find named value
-    map<string, string>::iterator s;
+    map<string, string>::const_iterator s;
     if ((s = ss->second.find(nm)) == ss->second.end()) 
 	return 0;
     value = s->second;
@@ -442,7 +442,7 @@ bool ConfSimple::write()
 // Write out the tree in configuration file format:
 // This does not check holdWrites, this is done by write(void), which
 // lets ie: listall work even when holdWrites is set
-bool ConfSimple::write(ostream& out)
+bool ConfSimple::write(ostream& out) const
 {
     if (!ok())
 	return false;
@@ -546,6 +546,7 @@ bool ConfSimple::hasNameAnywhere(const string& nm)
 // //////////////////////////////////////////////////////////////////////////
 
 int ConfTree::get(const std::string &name, string &value, const string &sk)
+    const
 {
     if (sk.empty() || sk[0] != '/') {
 	//	LOGDEB((stderr, "ConfTree::get: looking in global space\n"));
