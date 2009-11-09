@@ -40,6 +40,7 @@ ${depth}/rcldb/searchdata.cpp \
 ${depth}/rcldb/stemdb.cpp \
 ${depth}/rcldb/stoplist.cpp \
 ${depth}/utils/base64.cpp \
+${depth}/utils/circache.cpp \
 ${depth}/utils/closefrom.cpp \
 ${depth}/utils/conftree.cpp \
 ${depth}/utils/copyfile.cpp \
@@ -126,7 +127,7 @@ done
 cat >> $mk <<EOF
 depend: \$(DEPS)
 clean:
-	rm -f \$(OBJS) \$(LIBS) \$(DEPS) unac.o
+	rm -f \$(OBJS) \$(LIBS) \$(DEPS) *.stamp unac.o
 	for i in *.dep;do test -f \$\$i && cp /dev/null \$\$i;done
 distclean: clean
 	rm -f *.dep   
