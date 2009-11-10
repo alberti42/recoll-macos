@@ -1,3 +1,19 @@
+/*
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the
+ *   Free Software Foundation, Inc.,
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 #ifndef lint
 static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 #endif
@@ -17,19 +33,20 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 
 #include "circache.h"
 #include "conftree.h"
+#include "debuglog.h"
 
 using namespace std;
 
 /*
  * File structure:
- * - Starts with a 1-KB header block, with a param dictionary, ascii-space 
- *   filled. 
- * - Stored items follow. Each item has 2 segments for the metadata and the 
- *   data. The segment sizes are stored in an ascii header/marker.
+ * - Starts with a 1-KB header block, with a param dictionary.
+ * - Stored items follow. Each item has a header and 2 segments for
+ *   the metadata and the data. 
+ *   The segment sizes are stored in the ascii header/marker:
  *     circacheSizes = xxx yyy zzz
  *     xxx bytes of metadata
  *     yyy bytes of data
- *     zzz bytes of padding up to next object
+ *     zzz bytes of padding up to next object (only one entry has non zero)
  *
  * There is a write position, which can be at eof while 
  * the file is growing, or inside the file if we are recycling. This is stored
@@ -40,7 +57,7 @@ using namespace std;
  * pad it with neutral data and store the size in the new header.
  */
 
-// First block in file. 
+// First block size
 #define CIRCACHE_FIRSTBLOCK_SIZE 1024
 
 // Entry header.
@@ -111,7 +128,7 @@ public:
     // Name for the cache file
     string datafn(const string& d)
     {
-        return  path_cat(d, "circache");
+        return  path_cat(d, "circache.crch");
     }
 
     bool writefirstblock()
@@ -228,17 +245,33 @@ public:
         return true;
     }
 
-    CCScanHook::status scan(off_t startoffset, CCScanHook *user)
+    CCScanHook::status scan(off_t startoffset, CCScanHook *user, 
+                            bool fold = false)
     {
         assert(m_fd >= 0);
 
+        off_t so0 = startoffset;
+        bool already_folded = false;
+        
         while (true) {
+            if (already_folded && startoffset == so0)
+                return CCScanHook::Eof;
+
             EntryHeaderData d;
             CCScanHook::status st;
-            if ((st = readentryheader(startoffset, d)) != 
-                CCScanHook::Continue) {
+            switch ((st = readentryheader(startoffset, d))) {
+            case CCScanHook::Continue: break;
+            case CCScanHook::Eof:
+                if (fold && !already_folded) {
+                    already_folded = true;
+                    startoffset = CIRCACHE_FIRSTBLOCK_SIZE;
+                    continue;
+                }
+                /* FALLTHROUGH */
+            default:
                 return st;
             }
+
             char *bf;
             if ((bf = buf(d.dicsize+1)) == 0) {
                 return CCScanHook::Error;
@@ -296,8 +329,8 @@ bool CirCache::create(off_t m_maxsize)
     struct stat st;
     if (stat(m_dir.c_str(), &st) < 0) {
         if (mkdir(m_dir.c_str(), 0777) < 0) {
-            m_d->m_reason << "CirCache::create: mkdir(" << m_dir << ") failed" <<
-                " errno " << errno;
+            m_d->m_reason << "CirCache::create: mkdir(" << m_dir << 
+                ") failed" << " errno " << errno;
             return false;
         }
     }
@@ -317,22 +350,12 @@ bool CirCache::create(off_t m_maxsize)
     memset(buf, 0, CIRCACHE_FIRSTBLOCK_SIZE);
     if (::write(m_d->m_fd, buf, CIRCACHE_FIRSTBLOCK_SIZE) != 
         CIRCACHE_FIRSTBLOCK_SIZE) {
-        m_d->m_reason << "CirCache::create: write header failed, errno " << errno;
+        m_d->m_reason << "CirCache::create: write header failed, errno " 
+                      << errno;
         return false;
     }
     return m_d->writefirstblock();
 }
-
-class CCScanHookDump : public  CCScanHook {
-public:
-    virtual status takeone(off_t offs, const string& udi, unsigned int dicsize, 
-                           unsigned int datasize, unsigned int padsize) 
-    {
-        cout << "udi [" << udi << "] dicsize " << dicsize << " datasize "
-             << datasize << " padsize " << padsize << endl;
-        return Continue;
-    }
-};
 
 bool CirCache::open(OpMode mode)
 {
@@ -346,31 +369,121 @@ bool CirCache::open(OpMode mode)
             ") failed " << "errno " << errno;
         return false;
     }
-    bool ret = m_d->readfirstblock();
-
-    if (mode == CC_OPREAD) {
-        CCScanHookDump dumper;
-        switch (m_d->scan(CIRCACHE_FIRSTBLOCK_SIZE, &dumper)) {
-        case CCScanHook::Stop: 
-            cerr << "Scan returns Stop" << endl;
-            break;
-        case CCScanHook::Continue: 
-            cerr << "Scan returns Continue ?? " << CCScanHook::Continue << " " <<
-                getReason() << endl;
-            break;
-        case CCScanHook::Error: 
-            cerr << "Scan returns Error: " << getReason() << endl;
-            break;
-        case CCScanHook::Eof:
-            cerr << "Scan returns Eof" << endl;
-            break;
-        }
-    }
-    return ret;
+    return m_d->readfirstblock();
 }
 
-bool CirCache::get(const string& udi, string dic, string data)
+class CCScanHookDump : public  CCScanHook {
+public:
+    virtual status takeone(off_t offs, const string& udi, unsigned int dicsize, 
+                           unsigned int datasize, unsigned int padsize) 
+    {
+        cout << "Scan: offs " << offs << " dicsize " << dicsize 
+             << " datasize " << datasize << " padsize " << padsize << 
+            " udi [" << udi << "]" << endl;
+        return Continue;
+    }
+};
+
+bool CirCache::dump()
 {
+    CCScanHookDump dumper;
+    off_t start = m_d->m_nheadoffs > CIRCACHE_FIRSTBLOCK_SIZE ? 
+        m_d->m_nheadoffs : CIRCACHE_FIRSTBLOCK_SIZE;
+    switch (m_d->scan(start, &dumper, true)) {
+    case CCScanHook::Stop: 
+        cout << "Scan returns Stop??" << endl;
+        return false;
+    case CCScanHook::Continue: 
+        cout << "Scan returns Continue ?? " << CCScanHook::Continue << " " <<
+            getReason() << endl;
+        return false;
+    case CCScanHook::Error: 
+        cout << "Scan returns Error: " << getReason() << endl;
+        return false;
+    case CCScanHook::Eof:
+        cout << "Scan returns Eof" << endl;
+        return true;
+    default:
+        cout << "Scan returns Unknown ??" << endl;
+        return false;
+    }
+}
+
+class CCScanHookGetter : public  CCScanHook {
+public:
+    string  m_udi;
+    int     m_targinstance;
+    int     m_instance;
+    off_t   m_offs;
+    EntryHeaderData m_hd;
+
+    CCScanHookGetter(const string &udi, int ti)
+        : m_udi(udi), m_targinstance(ti), m_instance(0), m_offs(0){}
+
+    virtual status takeone(off_t offs, const string& udi, unsigned int dicsize, 
+                           unsigned int datasize, unsigned int padsize) 
+    {
+        cerr << "offs " << offs << " udi [" << udi << "] dicsize " << dicsize 
+             << " datasize " << datasize << " padsize " << padsize << endl;
+        if (!m_udi.compare(udi)) {
+            m_instance++;
+            m_offs = offs;
+            m_hd.dicsize = dicsize;
+            m_hd.datasize = datasize;
+            m_hd.padsize = padsize;
+            if (m_instance == m_targinstance)
+                return Stop;
+        }
+        return Continue;
+    }
+};
+
+// instance == -1 means get latest. Otherwise specify from 1+
+bool CirCache::get(const string& udi, string& dict, string& data, int instance)
+{
+    assert(m_d != 0);
+    if (m_d->m_fd < 0) {
+        m_d->m_reason << "CirCache::get: not open";
+        return false;
+    }
+
+    LOGDEB(("CirCache::get: udi [%s], instance\n", udi.c_str(), instance));
+
+    CCScanHookGetter getter(udi, instance);
+    off_t start = m_d->m_nheadoffs > CIRCACHE_FIRSTBLOCK_SIZE ? 
+        m_d->m_nheadoffs : CIRCACHE_FIRSTBLOCK_SIZE;
+
+    CCScanHook::status ret = m_d->scan(start, &getter, true);
+    if (ret == CCScanHook::Eof) {
+        if (getter.m_instance == 0)
+            return false;
+    } else if (ret != CCScanHook::Stop) {
+        return false;
+    }
+    off_t offs = getter.m_offs + CIRCACHE_HEADER_SIZE;
+    if (lseek(m_d->m_fd, offs, 0) != offs) {
+        m_d->m_reason << "CirCache::get: lseek(" << offs << ") failed: " << 
+            errno;
+        return false;
+    }
+    char *bf = m_d->buf(getter.m_hd.dicsize);
+    if (bf == 0)
+        return false;
+    if (read(m_d->m_fd, bf, getter.m_hd.dicsize) != int(getter.m_hd.dicsize)) {
+        m_d->m_reason << "CirCache::get: read() failed: errno " << errno;
+        return false;
+    }
+    dict.assign(bf, getter.m_hd.dicsize);
+
+    bf = m_d->buf(getter.m_hd.datasize);
+    if (bf == 0)
+        return false;
+    if (read(m_d->m_fd, bf, getter.m_hd.datasize) != int(getter.m_hd.datasize)){
+        m_d->m_reason << "CirCache::get: read() failed: errno " << errno;
+        return false;
+    }
+    data.assign(bf, getter.m_hd.datasize);
+
     return true;
 }
 
@@ -385,8 +498,8 @@ public:
     virtual status takeone(off_t offs, const string& udi, unsigned int dicsize, 
                            unsigned int datasize, unsigned int padsize) 
     {
-        cout << "udi [" << udi << "] dicsize " << dicsize << " datasize "
-             << datasize << " padsize " << padsize << endl;
+        LOGDEB(("ScanSpacer: offs %u dicsz %u datasz %u padsz %u udi[%s]\n",
+                (unsigned int)offs, dicsize, datasize, padsize, udi.c_str()));
         sizeseen += CIRCACHE_HEADER_SIZE + dicsize + datasize + padsize;
         if (sizeseen >= sizewanted)
             return Stop;
@@ -425,8 +538,8 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
     int npadsize = 0;
     bool extending = false;
 
-    cerr << "CirCache::PUT: nsize " << nsize << 
-        " oheadoffs " << m_d->m_oheadoffs << endl;
+    LOGDEB2(("CirCache::put: nsize %d oheadoffs %d\n", 
+             nsize, m_d->m_oheadoffs));
 
     if (st.st_size < m_d->m_maxsize) {
         // If we are still growing the file, things are simple
@@ -450,8 +563,8 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
                 return false;
             }
             assert(int(pd.padsize) == m_d->m_npadsize);
-            cerr << "CirCache::put: recovering previous padsize " << 
-                pd.padsize << endl;
+            LOGDEB2(("CirCache::put: recovering previous padsize %d\n",
+                     pd.padsize));
             pd.padsize = 0;
             if (!m_d->writeentryheader(m_d->m_nheadoffs, pd)) {
                 return false;
@@ -463,19 +576,20 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
         if (nsize <= recovpadsize) {
             // If the new entry fits entirely in the pad area from the
             // latest one, no need to recycle the oldest entries.
-            cerr << "CirCache::put: new fits in old padsize " << 
-                recovpadsize << endl;
+            LOGDEB2(("CirCache::put: new fits in old padsize %d\n,"
+                     recovpadsize));
             npadsize = recovpadsize - nsize;
         } else {
             // Scan the file until we have enough space for the new entry,
             // and determine the pad size up to the 1st preserved entry
             int scansize = nsize - recovpadsize;
-            cerr << "CirCache::put: scanning for size " << scansize << 
-                " from offset " << m_d->m_oheadoffs << endl;
+            LOGDEB2(("CirCache::put: scanning for size %d from offs %u\n",
+                    scansize, (unsigned int)m_d->m_oheadoffs));
             CCScanHookSpacer spacer(scansize);
             switch (m_d->scan(m_d->m_oheadoffs, &spacer)) {
             case CCScanHook::Stop: 
-                cerr << "put: Scan ok, sizeseen " << spacer.sizeseen << endl;
+                LOGDEB2(("CirCache::put: Scan ok, sizeseen %d\n", 
+                         spacer.sizeseen));
                 npadsize = spacer.sizeseen - scansize;
                 break;
             case CCScanHook::Eof:
@@ -489,8 +603,8 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
         }
     }
     
-    cerr << "CirCache::put: writing " << nsize << " at " << nwriteoffs << 
-        " padsize " << npadsize << endl;
+    LOGDEB2(("CirCache::put: writing %d at %d padsize %d\n", 
+             nsize, nwriteoffs, npadsize));
     if (lseek(m_d->m_fd, nwriteoffs, 0) != nwriteoffs) {
         m_d->m_reason << "CirCache::put: lseek failed: " << errno;
         return false;
@@ -551,6 +665,8 @@ static char *thisprog;
 static char usage [] =
 " -c <dirname> : create\n"
 " -p <dirname> <apath> [apath ...] : put files\n"
+" -d <dirname> : dump\n"
+" -g [-i instance] <dirname> <udi>: get\n"
 ;
 static void
 Usage(FILE *fp = stderr)
@@ -562,14 +678,15 @@ Usage(FILE *fp = stderr)
 static int     op_flags;
 #define OPT_MOINS 0x1
 #define OPT_c	  0x2 
-#define OPT_b	  0x4 
 #define OPT_p     0x8
 #define OPT_g     0x10
+#define OPT_d     0x20
+#define OPT_i     0x40
 
 int main(int argc, char **argv)
 {
-  int count = 10;
-    
+  int instance = -1;
+
   thisprog = argv[0];
   argc--; argv++;
 
@@ -583,8 +700,9 @@ int main(int argc, char **argv)
       case 'c':	op_flags |= OPT_c; break;
       case 'p':	op_flags |= OPT_p; break;
       case 'g':	op_flags |= OPT_g; break;
-      case 'b':	op_flags |= OPT_b; if (argc < 2)  Usage();
-	if ((sscanf(*(++argv), "%d", &count)) != 1) 
+      case 'd':	op_flags |= OPT_d; break;
+      case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
+	if ((sscanf(*(++argv), "%d", &instance)) != 1) 
 	  Usage(); 
 	argc--; 
 	goto b1;
@@ -633,10 +751,23 @@ int main(int argc, char **argv)
       }
       cc.open(CirCache::CC_OPREAD);
   } else if (op_flags & OPT_g) {
+      string udi = *argv++;argc--;
       if (!cc.open(CirCache::CC_OPREAD)) {
           cerr << "Open failed: " << cc.getReason() << endl;
           exit(1);
       }
+      string dic, data;
+      if (!cc.get(udi, dic, data, instance)) {
+          cerr << "Get failed: " << cc.getReason() << endl;
+          exit(1);
+      }
+      cout << "Dict: [" << dic << "]" << endl;
+  } else if (op_flags & OPT_d) {
+      if (!cc.open(CirCache::CC_OPREAD)) {
+          cerr << "Open failed: " << cc.getReason() << endl;
+          exit(1);
+      }
+      cc.dump();
   } else
       Usage();
 
