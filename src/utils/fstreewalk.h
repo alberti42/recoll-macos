@@ -45,9 +45,10 @@ class FsTreeWalker {
     enum CbFlag {FtwRegular, FtwDirEnter, FtwDirReturn};
     enum Status {FtwOk=0, FtwError=1, FtwStop=2, 
 		 FtwStatAll = FtwError|FtwStop};
-    enum Options {FtwOptNone = 0, FtwNoRecurse = 1, FtwFollow = 2};
+    enum Options {FtwOptNone = 0, FtwNoRecurse = 1, FtwFollow = 2,
+                  FtwNoCanon = 4};
 
-    FsTreeWalker(Options opts = FtwOptNone);
+    FsTreeWalker(int opts = FtwOptNone);
     ~FsTreeWalker();
 
     void setOpts(Options opts);

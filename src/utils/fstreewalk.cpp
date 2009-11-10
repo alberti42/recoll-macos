@@ -39,7 +39,7 @@ using namespace std;
 #endif /* NO_NAMESPACES */
 
 class FsTreeWalker::Internal {
-    Options options;
+    int options;
     stringstream reason;
     list<string> skippedNames;
     list<string> skippedPaths;
@@ -53,7 +53,7 @@ class FsTreeWalker::Internal {
     friend class FsTreeWalker;
 };
 
-FsTreeWalker::FsTreeWalker(Options opts)
+FsTreeWalker::FsTreeWalker(int opts)
 {
     data = new Internal;
     if (data) {
@@ -112,7 +112,7 @@ bool FsTreeWalker::inSkippedNames(const string& name)
 
 bool FsTreeWalker::addSkippedPath(const string& ipath)
 {
-    string path = path_canon(ipath);
+    string path = (data->options & FtwNoCanon) ? ipath : path_canon(ipath);
     if (find(data->skippedPaths.begin(), 
 	     data->skippedPaths.end(), path) == data->skippedPaths.end())
 	data->skippedPaths.push_back(path);
@@ -123,7 +123,8 @@ bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
     data->skippedPaths = paths;
     for (list<string>::iterator it = data->skippedPaths.begin();
 	 it != data->skippedPaths.end(); it++)
-	*it = path_canon(*it);
+        if (!(data->options & FtwNoCanon))
+            *it = path_canon(*it);
     data->skippedPaths.sort();
     data->skippedPaths.unique();
     return true;
@@ -142,7 +143,7 @@ bool FsTreeWalker::inSkippedPaths(const string& path)
 FsTreeWalker::Status FsTreeWalker::walk(const string& _top, 
 					FsTreeWalkerCB& cb)
 {
-    string top = path_canon(_top);
+    string top = (data->options & FtwNoCanon) ? _top : path_canon(_top);
 
     struct stat st;
     int statret;
@@ -225,9 +226,12 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 		}
 		if (status & (FtwStop|FtwError))
 		    goto out;
-		if ((status = cb.processone(top, &st, FtwDirReturn)) 
-		    & (FtwStop|FtwError))
-		    goto out;
+
+                // No DirReturn call when not recursing
+                if (!(data->options & FtwNoRecurse)) 
+                    if ((status = cb.processone(top, &st, FtwDirReturn)) 
+                        & (FtwStop|FtwError))
+                        goto out;
 	    } else if (S_ISREG(st.st_mode)) {
 		if ((status = cb.processone(fn, &st, FtwRegular)) & 
 		    (FtwStop|FtwError)) {
@@ -256,14 +260,24 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
 using namespace std;
 
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_p	  0x2 
+#define OPT_P	  0x4 
+#define OPT_r     0x8
+#define OPT_c     0x10
+
 class myCB : public FsTreeWalkerCB {
  public:
     FsTreeWalker::Status processone(const string &path, 
-				 const struct stat *st,
-				 FsTreeWalker::CbFlag flg)
+                                    const struct stat *st,
+                                    FsTreeWalker::CbFlag flg)
     {
 	if (flg == FsTreeWalker::FtwDirEnter) {
-	    cout << "[Entering " << path << "]" << endl;
+            if (op_flags & OPT_r) 
+                cout << path << endl;
+            else
+                cout << "[Entering " << path << "]" << endl;
 	} else if (flg == FsTreeWalker::FtwDirReturn) {
 	    cout << "[Returning to " << path << "]" << endl;
 	} else if (flg == FsTreeWalker::FtwRegular) {
@@ -276,7 +290,9 @@ class myCB : public FsTreeWalkerCB {
 static const char *thisprog;
 
 static char usage [] =
-"trfstreewalk [-p pattern] [-P ignpath] topdir\n\n"
+"trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] topdir\n"
+" -r : norecurse\n"
+" -c : no path canonification\n"
 ;
 static void
 Usage(void)
@@ -284,11 +300,6 @@ Usage(void)
     fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
     exit(1);
 }
-
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_p	  0x2 
-#define OPT_P	  0x4 
 
 int main(int argc, const char **argv)
 {
@@ -304,6 +315,8 @@ int main(int argc, const char **argv)
       Usage();
     while (**argv)
       switch (*(*argv)++) {
+      case 'r':	op_flags |= OPT_r; break;
+      case 'c':	op_flags |= OPT_c; break;
       case 'p':	op_flags |= OPT_p; if (argc < 2)  Usage();
 	  patterns.push_back(*(++argv));
 	  argc--; 
@@ -321,7 +334,12 @@ int main(int argc, const char **argv)
     Usage();
   string topdir = *argv++;argc--;
 
-  FsTreeWalker walker;
+  int opt = 0;
+  if (op_flags & OPT_r)
+      opt |= FsTreeWalker::FtwNoRecurse;
+  if (op_flags & OPT_c)
+      opt |= FsTreeWalker::FtwNoCanon;
+  FsTreeWalker walker(opt);
   walker.setSkippedNames(patterns);
   walker.setSkippedPaths(paths);
   myCB cb;
