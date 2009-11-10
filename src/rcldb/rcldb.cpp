@@ -512,7 +512,7 @@ list<string> Db::getStemmerNames()
     return res;
 }
 
-bool Db::open(OpenMode mode, bool keep_updated)
+bool Db::open(OpenMode mode)
 {
     if (m_ndb == 0 || m_config == 0) {
 	m_reason = "Null configuration or Xapian Db";
@@ -547,12 +547,10 @@ bool Db::open(OpenMode mode, bool keep_updated)
 		m_ndb->xrdb = Xapian::Database(dir);
 		LOGDEB(("Db::open: lastdocid: %d\n", 
 			m_ndb->xwdb.get_lastdocid()));
-		if (!keep_updated) {
-		    LOGDEB2(("Db::open: resetting updated\n"));
-		    updated.resize(m_ndb->xwdb.get_lastdocid() + 1);
-		    for (unsigned int i = 0; i < updated.size(); i++)
-			updated[i] = false;
-		}
+                LOGDEB2(("Db::open: resetting updated\n"));
+                updated.resize(m_ndb->xwdb.get_lastdocid() + 1);
+                for (unsigned int i = 0; i < updated.size(); i++)
+                    updated[i] = false;
 	    }
 	    break;
 	case DbRO:
@@ -640,10 +638,14 @@ bool Db::i_close(bool final)
 // Reopen the db with a changed list of additional dbs
 bool Db::adjustdbs()
 {
+    if (m_mode != DbRO) {
+        LOGERR(("Db::adjustdbs: mode not RO\n"));
+        return false;
+    }
     if (m_ndb && m_ndb->m_isopen) {
 	if (!close())
 	    return false;
-	if (!open(m_mode, true)) {
+	if (!open(m_mode)) {
 	    return false;
 	}
     }

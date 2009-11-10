@@ -44,7 +44,7 @@ using std::vector;
 // user interface. In other words, this is not exhaustive or well-designed or 
 // reusable.
 //
-// Unique Document Identifier: unically identifies a document in its
+// Unique Document Identifier: uniquely identifies a document in its
 // source storage (file system or other). Used for up to date checks
 // etc. "udi". Our user is responsible for making sure it's not too
 // big, cause it's stored as a Xapian term (< 150 bytes would be
@@ -86,7 +86,7 @@ class Db {
     ~Db();
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
-    bool open(OpenMode mode, bool keep_updated = false);
+    bool open(OpenMode mode);
     bool close();
     bool isopen();
 
