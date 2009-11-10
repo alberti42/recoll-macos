@@ -1,3 +1,456 @@
+2009-11-06 11:33  dockes
+
+	* internfile/internfile.cpp, internfile/internfile.h,
+	  qtgui/rclmain_w.cpp, qtgui/reslist.cpp, qtgui/reslist.h,
+	  query/docseq.h, query/docseqdb.cpp, query/docseqdb.h,
+	  query/docseqhist.cpp, query/docseqhist.h, utils/fileudi.h,
+	  utils/pathut.cpp, utils/pathut.h: allow opening parent/enclosing
+	  doc with native editor in reslist
+
+2009-11-06 11:26  dockes
+
+	* sampleconf/mimeview: added okular as chm viewer
+
+2009-11-04 13:52  dockes
+
+	* qtgui/confgui/confgui.cpp, qtgui/confgui/confgui.h,
+	  qtgui/confgui/confguiindex.cpp: store file names using local8bit
+	  qstring conversions
+
+2009-11-04 13:43  dockes
+
+	* utils/fstreewalk.h: comment
+
+2009-11-04 13:42  dockes
+
+	* utils/cancelcheck.h: comment
+
+2009-10-31 09:00  dockes
+
+	* internfile/mh_mail.cpp, internfile/mh_mail.h: extract msgid +
+	  generate abstract at start of txt, excluding headers
+
+2009-10-31 08:59  dockes
+
+	* utils/mimeparse.cpp: change rfc2047 mail header decoding
+	  (=?iso-xx stuff) so that a start of encoding section can be
+	  recognized even not after white space
+
+2009-10-30 19:05  dockes
+
+	* qtgui/rclmain_w.cpp: allow substituting all doc fields in viewer
+	  command line
+
+2009-10-30 19:04  dockes
+
+	* qtgui/viewaction.ui: clarify using desktop defs in action choice
+	  dialog
+
+2009-10-30 10:16  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, qtgui/rclmain_w.cpp,
+	  query/reslistpager.cpp, sampleconf/fields: Allow setting fields
+	  in fs subtree. Use for an application tag used for starting a
+	  specialized viewer
+
+2009-10-30 08:59  dockes
+
+	* VERSION, common/rclconfig.h, index/indexer.cpp, index/indexer.h,
+	  internfile/mimehandler.cpp, rcldb/rcldb.cpp, rcldb/rclquery.cpp,
+	  utils/conftree.cpp, utils/conftree.h: Allow fields local to a
+	  subtree to be set in the configuration
+
+2009-10-30 08:53  dockes
+
+	* configure.ac: use /bin/sh to execute recollinstall instead of
+	  making it executable
+
+2009-10-30 08:53  dockes
+
+	* Makefile.in, configure: use /bin/sh to execute recollinstall
+	  instead of making it executable
+
+2009-10-29 18:11  dockes
+
+	* qtgui/uiprefs.ui: move the use-desktop-preference checkbox close
+	  to the choose editors button
+
+2009-10-29 18:10  dockes
+
+	* sampleconf/mimeconf:
+
+2009-10-29 18:09  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h: support wildcard
+	  filtering in getConfNames() + implement config checking function
+	  in test driver
+
+2009-10-29 18:08  dockes
+
+	* utils/conftree.cpp, utils/conftree.h: bugfix: if last line ended
+	  with backslash, entry was ignored.
+	  new function: filter by wildcard expr in getNames()
+
+2009-10-29 13:44  dockes
+
+	* sampleconf/mimeconf, sampleconf/mimemap: chm+comments
+
+2009-10-29 13:34  dockes
+
+	* sampleconf/recoll.conf.in: comment
+
+2009-10-28 13:08  dockes
+
+	* qtgui/reslist.cpp, qtgui/reslist.h: fix signal/slot type mismatch
+	  for setSortParams
+
+2009-10-26 13:19  dockes
+
+	* qtgui/uiprefs_w.cpp: disable app-choosing button when
+	  use-desktop-prefs is activated
+
+2009-10-26 11:16  dockes
+
+	* qtgui/rclmain_w.cpp: qt4 sometimes doesnt display the status bar
+	  if its not created in init
+
+2009-10-26 10:00  dockes
+
+	* qtgui/rclmain_w.cpp, qtgui/rclmain_w.h: arrange to send
+	  pageup/down and shift-home to the reslist
+
+2009-10-24 15:02  dockes
+
+	* rcldb/rcldb.cpp, rcldb/rcldb_p.h, rcldb/rclquery.cpp,
+	  rcldb/rclquery_p.h: unified retrying for databaseModified errors
+
+2009-10-24 11:00  dockes
+
+	* rcldb/rcldb.cpp, rcldb/rcldb.h, rcldb/rcldb_p.h,
+	  rcldb/rclquery.cpp: renamed fields for clarity
+
+2009-10-24 06:37  dockes
+
+	* filters/rclchm, filters/rclics, filters/rclzip: cleanup
+
+2009-10-24 06:17  dockes
+
+	* filters/rclexecm.py, filters/rclzip: use python zipfile
+
+2009-10-23 16:45  dockes
+
+	* filters/rclchm: comments
+
+2009-10-23 16:03  dockes
+
+	* filters/rclchm: first working
+
+2009-10-23 16:03  dockes
+
+	* filters/rclzip: comment
+
+2009-10-22 17:28  dockes
+
+	* doc/user/usermanual.sgml: %(fldname) specs
+
+2009-10-22 17:27  dockes
+
+	* doc/user/docbook.css: new freebsd version
+
+2009-10-22 17:27  dockes
+
+	* sampleconf/mimeconf: ics
+
+2009-10-22 17:16  dockes
+
+	* sampleconf/mimeconf: add ics + more programming languages
+
+2009-10-22 17:16  dockes
+
+	* sampleconf/mimemap: add ics + more programming languages
+
+2009-10-22 17:13  dockes
+
+	* filters/rclexecm.py, filters/rclics: initial support for
+	  icalendar splitting
+
+2009-10-22 12:24  dockes
+
+	* filters/rclexecm.py, filters/rclzip: made rclexecm a class in a
+	  separate module
+
+2009-10-22 11:58  dockes
+
+	* filters/rclzip: fully extracted common code
+
+2009-10-21 21:00  dockes
+
+	* filters/rclzip: initial
+
+2009-10-21 12:02  dockes
+
+	* qtgui/rclmain_w.cpp, query/docseqdb.cpp, query/docseqdb.h,
+	  query/reslistpager.cpp, query/reslistpager.h, utils/Makefile,
+	  utils/smallut.cpp, utils/smallut.h: fix queryBuildAbstract option
+	  functionality. Allow substituting %(fieldname) in reslist
+	  paragraph format
+
+2009-10-21 12:00  dockes
+
+	* internfile/mimehandler.h: warning
+
+2009-10-21 11:58  dockes
+
+	* kde/kioslave/recoll/CMakeLists.txt, utils/closefrom.cpp: linux
+
+2009-10-21 11:32  dockes
+
+	* internfile/mh_text.cpp, utils/closefrom.cpp: gcc43+linux compile
+
+2009-10-21 07:48  dockes
+
+	* makestaticdist.sh: cleanup .svn directories
+
+2009-10-21 07:24  dockes
+
+	* makestaticdist.sh: get makestaticdist to work with qt4
+
+2009-10-19 16:20  dockes
+
+	* lib/Makefile, lib/mkMake: add closefrom
+
+2009-10-19 16:19  dockes
+
+	* README, doc/man/recoll.conf.5, doc/man/recollindex.1,
+	  doc/user/usermanual.sgml, filters/rclsvg: explict(e)ly errors
+	  again
+
+2009-10-19 10:51  dockes
+
+	* qtgui/uiprefs.ui: move the use-desktop-preference checkbox close
+	  to the choose editors button
+
+2009-10-19 07:30  dockes
+
+	* rcldb/rcldb.cpp, rcldb/rclquery.cpp: catch xapian exceptions in 2
+	  more places.
+
+2009-10-18 07:57  dockes
+
+	* qtgui/reslist.cpp: reslist: rightclick popup would not work
+	  inside table
+
+2009-10-17 06:38  dockes
+
+	* Makefile.in, index/recollindex.cpp, qtgui/main.cpp,
+	  qtgui/rclmain_w.cpp, rcldb/rcldb.cpp, rcldb/rcldb.h: rclversion.h
+	  must not include xapian.h. Replace with Rcl::version_string()
+
+2009-10-15 15:50  dockes
+
+	* qtgui/preview_w.cpp: compile with qt3
+
+2009-10-15 12:32  dockes
+
+	* index/rclmonprc.cpp: only call x11IsAlive from the main thread
+
+2009-10-15 12:32  dockes
+
+	* utils/Makefile, utils/conftree.cpp, utils/execmd.cpp: small linux
+	  include and makefile adjustments
+
+2009-10-14 12:25  dockes
+
+	* utils/execmd.cpp, utils/execmd.h: m_cancelRequest->m_killRequest
+	  to avoid confusion with cancelcheck + close descriptors before
+	  exec
+
+2009-10-14 12:24  dockes
+
+	* internfile/mh_exec.cpp: no timeout if filtermaxseconds is -1
+
+2009-10-14 12:23  dockes
+
+	* qtgui/confgui/confguiindex.cpp, sampleconf/recoll.conf.in: add
+	  filtermaxseconds to config
+
+2009-10-14 12:22  dockes
+
+	* utils/closefrom.cpp, utils/closefrom.h:
+
+2009-10-14 06:21  dockes
+
+	* filters/rclimg, index/recollindex.cpp, internfile/mh_execm.cpp,
+	  internfile/mh_execm.h, sampleconf/mimeconf, sampleconf/mimemap,
+	  utils/execmd.cpp: execm first working zip version
+
+2009-10-13 17:32  dockes
+
+	* utils/idfile.cpp, utils/idfile.h: allow working on memory string
+
+2009-10-13 16:37  dockes
+
+	* internfile/mh_exec.cpp: comments
+
+2009-10-13 12:22  dockes
+
+	* internfile/mh_exec.cpp: handle interrupt requests and set timeout
+	  on execs
+
+2009-10-13 12:21  dockes
+
+	* utils/execmd.cpp: use process group to control/kill execd
+	  processes
+
+2009-10-13 12:20  dockes
+
+	* sampleconf/recoll.conf.in: added loop.ps to skippedFiles
+
+2009-10-12 16:27  dockes
+
+	* common/rclinit.cpp: also block USR1 USR2
+
+2009-10-09 13:58  dockes
+
+	* filters/rclimg, internfile/mh_exec.cpp, internfile/mh_exec.h,
+	  internfile/mh_execm.cpp, internfile/mh_execm.h,
+	  internfile/mimehandler.cpp, lib/Makefile, lib/mkMake,
+	  sampleconf/mimeconf: execm persistent filters
+
+2009-10-09 13:57  dockes
+
+	* common/textsplit.cpp: process camelCase
+
+2009-10-09 13:34  dockes
+
+	* utils/execmd.cpp, utils/execmd.h, utils/netcon.cpp,
+	  utils/netcon.h: Execmd: added count parameter to receive(), and
+	  new getline() function
+	  Netcon: fix receive() to properly handle the case where there is
+	  initially
+	  data in the line buffer
+
+2009-10-04 13:25  dockes
+
+	* utils/readfile.cpp:
+
+2009-10-04 13:24  dockes
+
+	* mk/commondefs: remove -I/usr/local/include from commondefs!
+
+2009-09-30 15:53  dockes
+
+	* internfile/mh_text.cpp: dont set ipath for the first page in text
+	  files to avoid dual records for files under the page size
+
+2009-09-30 15:45  dockes
+
+	* internfile/mh_text.cpp, internfile/mh_text.h,
+	  qtgui/confgui/confguiindex.cpp, sampleconf/recoll.conf.in,
+	  utils/readfile.cpp, utils/readfile.h: implemented paged text
+	  files
+
+2009-09-29 15:58  dockes
+
+	* internfile/mh_text.cpp, qtgui/confgui/confguiindex.cpp,
+	  sampleconf/recoll.conf.in: textfilemaxmbs
+
+2009-09-29 15:58  dockes
+
+	* utils/execmd.cpp: loglevels
+
+2009-09-29 14:49  dockes
+
+	* utils/netcon.cpp, utils/netcon.h:
+
+2009-09-29 14:49  dockes
+
+	* utils/netcon.cpp, utils/netcon.h:
+
+2009-09-29 08:47  dockes
+
+	* qtgui/preview_w.cpp, qtgui/preview_w.h: got rid of the preview
+	  tabdata array
+
+2009-09-29 07:48  dockes
+
+	* qtgui/preview_w.cpp, qtgui/preview_w.h: make print a slot in the
+	  editor, not the preview
+
+2009-09-28 18:19  dockes
+
+	* doc/user/usermanual.sgml, qtgui/preview_w.cpp, qtgui/preview_w.h:
+	  Preview printing
+
+2009-09-28 17:53  dockes
+
+	* utils/execmd.cpp: adjust log levels
+
+2009-09-26 09:30  dockes
+
+	* lib/Makefile, lib/mkMake, utils/execmd.cpp, utils/execmd.h,
+	  utils/netcon.cpp, utils/netcon.h: execmd uses netcon
+
+2009-09-26 09:05  dockes
+
+	* rcldb/rclquery.cpp: dont abort on get_mset exception
+
+2009-08-13 06:34  dockes
+
+	* utils/refcntr.h: add release() method
+
+2009-08-13 06:32  dockes
+
+	* index/indexer.cpp, internfile/internfile.cpp,
+	  internfile/internfile.h, internfile/mimehandler.cpp,
+	  internfile/mimehandler.h: xattrs: make them work with non-text
+	  files. Use ctime for up to date checks
+
+2009-08-13 06:29  dockes
+
+	* common/autoconfig.h.in: allow choosing the "file" command from
+	  configure
+
+2009-08-13 06:28  dockes
+
+	* qtgui/rclmain_w.cpp: Make sure db is open at all times (caused
+	  problems when sorting query started from the command line)
+
+2009-08-13 06:27  dockes
+
+	* qtgui/preview_w.cpp:
+
+2009-08-13 06:26  dockes
+
+	* configure, configure.ac, index/mimetype.cpp: allow choosing the
+	  "file" command from configure
+
+2009-08-13 06:24  dockes
+
+	* ChangeLog:
+
+2009-08-13 06:23  dockes
+
+	* sampleconf/recoll.conf.in: add indexedmimetypes to sample file
+
+2009-07-02 13:26  dockes
+
+	* filters/rclman:
+
+2009-07-02 10:26  dockes
+
+	* index/indexer.cpp, qtgui/rclmain_w.cpp: improve periodic indexing
+	  status reporting and timer processing
+
+2009-07-02 06:17  dockes
+
+	* qtgui/main.cpp, rcldb/searchdata.h, utils/mimeparse.cpp,
+	  utils/mimeparse.h: explicitely->explicitly
+
+2009-06-26 09:25  dockes
+
+	* filters/rclman, sampleconf/mimemap: improve man page handling
+
 2009-06-22 16:41  dockes
 
 	* qtgui/main.cpp, qtgui/rclmain_w.cpp, qtgui/rclmain_w.h: moved
