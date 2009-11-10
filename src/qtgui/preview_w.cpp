@@ -675,7 +675,9 @@ class LoadThread : public QThread {
 	    return;
 	}
 	
-	FileInterner interner(filename, &st, rclconfig, tmpdir, mtype);
+	FileInterner interner(filename, &st, rclconfig, tmpdir, 
+                              FileInterner::FIF_forPreview,
+                              mtype);
 	// We don't set the interner's target mtype to html because we
 	// do want the html filter to do its work: we won't use the
 	// text, but we need the conversion to utf-8

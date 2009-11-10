@@ -249,7 +249,10 @@ void RecollProtocol::showPreview(const Rcl::Doc& doc)
 	return;
     }
     o_rclconfig->setKeyDir(path_getfather(fn));
-    FileInterner interner(fn, &st, o_rclconfig, tmpdir, &doc.mimetype);
+    FileInterner interner(fn, &st, o_rclconfig, tmpdir, 
+                          FileInterner::FIF_forPreview | 
+                          FileInterner::FIF_doUseInputMimetype,
+                          &doc.mimetype);
     Rcl::Doc fdoc;
     string ipath = doc.ipath;
     if (!interner.internfile(fdoc, ipath)) {

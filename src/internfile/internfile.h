@@ -54,6 +54,9 @@ class FileInterner {
      */
     static bool getEnclosing(const string &url, const string &ipath,
 			     string &eurl, string &eipath, string& udi);
+    /// Operation modifier flags
+    enum Flags {FIF_none, FIF_forPreview, FIF_doUseInputMimetype};
+
     /**
      * Identify and possibly decompress file, create adequate
      * handler. The mtype parameter is only set when the object is
@@ -70,7 +73,7 @@ class FileInterner {
      *   to indicate that this object is for previewing (not indexing).
      */
     FileInterner(const string &fn, const struct stat *stp, 
-		 RclConfig *cnf, const string& td,
+		 RclConfig *cnf, const string& td, int flags,
 		 const string *mtype = 0);
 
     ~FileInterner();

@@ -168,23 +168,34 @@ void FileInterner::tmpcleanup()
 // processed by the first call to internfile().
 FileInterner::FileInterner(const string &f, const struct stat *stp,
 			   RclConfig *cnf, 
-			   const string& td, const string *imime)
-    : m_cfg(cnf), m_fn(f), m_forPreview(imime?true:false), m_tdir(td)
+			   const string& td, int flags, const string *imime)
+    : m_cfg(cnf), m_fn(f), m_forPreview(flags & FIF_forPreview), 
+      m_tdir(td)
 {
+    string l_mime;
     bool usfci = false;
     cnf->getConfParam("usesystemfilecommand", &usfci);
-    LOGDEB(("FileInterner::FileInterner: [%s] mime [%s] preview %d\n", 
-	    f.c_str(), imime?imime->c_str() : "(null)", m_forPreview));
 
-    // We need to run mime type identification in any case to check
-    // for a compressed file.
-    string l_mime = mimetype(m_fn, stp, m_cfg, usfci);
+    if (flags & FIF_doUseInputMimetype) {
+        if (!imime) {
+            LOGERR(("FileInterner::FileInterner: told to use null imime\n"));
+            return;
+        }
+        l_mime = *imime;
+    } else {
+        LOGDEB(("FileInterner::FileInterner: [%s] mime [%s] preview %d\n", 
+                f.c_str(), imime?imime->c_str() : "(null)", m_forPreview));
 
-    // If identification fails, try to use the input parameter. This
-    // is then normally not a compressed type (it's the mime type from
-    // the db), and is only set when previewing, not for indexing
-    if (l_mime.empty() && imime)
-	l_mime = *imime;
+        // We need to run mime type identification in any case to check
+        // for a compressed file.
+        l_mime = mimetype(m_fn, stp, m_cfg, usfci);
+
+        // If identification fails, try to use the input parameter. This
+        // is then normally not a compressed type (it's the mime type from
+        // the db), and is only set when previewing, not for indexing
+        if (l_mime.empty() && imime)
+            l_mime = *imime;
+    }
 
     if (!l_mime.empty()) {
 	// Has mime: check for a compressed file. If so, create a
@@ -702,7 +713,8 @@ class DirWiper {
 
 // Extract subdoc out of multidoc into temporary file. 
 // We do the usual internfile stuff: create a temporary directory,
-// then create an interner and call internfile. 
+// then create an interner and call internfile. The target mtype is set to
+// the input mtype, so that no data conversion is performed.
 // We then write the data out of the resulting document into the output file.
 // There are two temporary objects:
 // - The internfile temporary directory gets destroyed before we
@@ -726,7 +738,10 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
 	return false;
     DirWiper wiper(tmpdir);
 
-    FileInterner interner(fn, &st, cnf, tmpdir, &mtype);
+    // We set FIF_forPreview for consistency with the previous version
+    // which determined this by looking at mtype!=null. Probably
+    // doesn't change anything in this case.
+    FileInterner interner(fn, &st, cnf, tmpdir, FIF_forPreview, &mtype);
     interner.setTargetMType(mtype);
     Rcl::Doc doc;
     string mipath = ipath;
