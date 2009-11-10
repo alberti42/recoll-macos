@@ -29,7 +29,6 @@ static char rcsid[] = "@(#$Id: rclmonrcv.cpp,v 1.15 2008-11-18 13:25:48 dockes E
 #include "rclmon.h"
 #include "rclinit.h"
 #include "fstreewalk.h"
-#include "indexer.h"
 #include "pathut.h"
 
 /**
