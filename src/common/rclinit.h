@@ -50,7 +50,9 @@ inline RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int),
 			     string &reason, const string *argcnf = 0) {
     return recollinit(RCLINIT_NONE, cleanup, sigcleanup, reason, argcnf);
 }
-// Threads need to call this. The main thread handles all signals.
+
+// Threads need to call this to block signals.  
+// The main thread handles all signals.
 extern void recoll_threadinit();
 
 #endif /* _RCLINIT_H_INCLUDED_ */
