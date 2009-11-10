@@ -41,12 +41,23 @@ using namespace std;
 #include "x11mon.h"
 #include "cancelcheck.h"
 #include "rcldb.h"
+#include "beaglequeue.h"
 
-// Globals for exit cleanup
-ConfIndexer *confindexer;
-DbIndexer *dbindexer;
+// Globals for atexit cleanup
+static ConfIndexer *confindexer;
+static DbIndexer *dbindexer;
 
+// This is set as an atexit routine, 
+static void cleanup()
+{
+    deleteZ(confindexer);
+    deleteZ(dbindexer);
+}
+
+// Global stop request flag. This is checked in a number of place in the
+// indexing routines.
 int stopindexing;
+
 // Mainly used to request indexing stop, we currently do not use the
 // current file name
 class MyUpdater : public DbIxStatusUpdater {
@@ -58,41 +69,34 @@ class MyUpdater : public DbIxStatusUpdater {
 	return true;
     }
 };
-MyUpdater updater;
+static MyUpdater updater;
 
 static void sigcleanup(int sig)
 {
-    fprintf(stderr, "sigcleanup\n");
-    LOGDEB(("sigcleanup\n"));
+    fprintf(stderr, "Got signal, registering stop request\n");
+    LOGDEB(("Got signal, registering stop request\n"));
     CancelCheck::instance().setCancel();
     stopindexing = 1;
 }
 
 static bool makeDbIndexer(RclConfig *config)
 {
-    string dbdir = config->getDbDir();
-    if (dbdir.empty()) {
-	fprintf(stderr, "makeDbIndexer: no database directory in "
-		"configuration for %s\n", config->getKeyDir().c_str());
-	return false;
-    }
-    // Check if there is already an indexer for the right db
-    if (dbindexer && dbindexer->getDbDir().compare(dbdir)) {
-	deleteZ(dbindexer);
-    }
-
     if (!dbindexer)
-	dbindexer = new DbIndexer(config, dbdir, &updater);
-
-    return true;
+	dbindexer = new DbIndexer(config, &updater);
+    return dbindexer ? true : false;
 }
 
 // The list of top directories/files wont change during program run,
 // let's cache it:
 static list<string> o_tdl;
 
-// Index a list of files. We just check that they belong to one of the topdirs
-// subtrees, and call the indexer method
+// Index a list of files. We just check that they belong to one of the
+// topdirs subtrees, and call the indexer method. 
+//
+// This is called either from the command line or from the monitor. In
+// this case we're called repeatedly in the same process, and the
+// dbIndexer is only created once by makeDbIndexer (but the db is
+// flushed anyway)
 bool indexfiles(RclConfig *config, const list<string> &filenames)
 {
     if (filenames.empty())
@@ -135,13 +139,13 @@ bool indexfiles(RclConfig *config, const list<string> &filenames)
     // go:
     config->setKeyDir(path_getfather(*myfiles.begin()));
 
-    if (!makeDbIndexer(config) || !dbindexer)
+    if (!makeDbIndexer(config))
 	return false;
-    else
-	return dbindexer->indexFiles(myfiles);
+
+    return dbindexer->indexFiles(myfiles);
 }
 
-// Delete a list of files.
+// Delete a list of files. Same comments about call contexts as indexfiles.
 bool purgefiles(RclConfig *config, const list<string> &filenames)
 {
     if (filenames.empty())
@@ -169,16 +173,15 @@ bool purgefiles(RclConfig *config, const list<string> &filenames)
     // go:
     config->setKeyDir(path_getfather(*myfiles.begin()));
 
-    if (!makeDbIndexer(config) || !dbindexer)
+    if (!makeDbIndexer(config))
 	return false;
-    else
-	return dbindexer->purgeFiles(myfiles);
+    return dbindexer->purgeFiles(myfiles);
 }
 
 // Create stemming and spelling databases
 bool createAuxDbs(RclConfig *config)
 {
-    if (!makeDbIndexer(config) || !dbindexer)
+    if (!makeDbIndexer(config))
 	return false;
 
     if (!dbindexer->createStemmingDatabases())
@@ -193,17 +196,9 @@ bool createAuxDbs(RclConfig *config)
 // Create additional stem database 
 static bool createstemdb(RclConfig *config, const string &lang)
 {
-    makeDbIndexer(config);
-    if (dbindexer)
-	return dbindexer->createStemDb(lang);
-    else
-	return false;
-}
-
-static void cleanup()
-{
-    deleteZ(confindexer);
-    deleteZ(dbindexer);
+    if (!makeDbIndexer(config))
+        return false;
+    return dbindexer->createStemDb(lang);
 }
 
 static const char *thisprog;
@@ -221,6 +216,7 @@ static int     op_flags;
 #define OPT_w     0x400
 #define OPT_x     0x800
 #define OPT_l     0x1000
+#define OPT_b     0x2000
 
 static const char usage [] =
 "\n"
@@ -243,6 +239,8 @@ static const char usage [] =
 "    List available stemming languages\n"
 "recollindex -s <lang>\n"
 "    Build stem database for additional language <lang>\n"
+"recollindex -b\n"
+"    Process the Beagle queue\n"
 #ifdef RCL_USE_ASPELL
 "recollindex -S\n"
 "    Build aspell spelling dictionary.>\n"
@@ -280,6 +278,7 @@ int main(int argc, const char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
+	    case 'b': op_flags |= OPT_b; break;
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
@@ -396,18 +395,19 @@ int main(int argc, const char **argv)
 
 #ifdef RCL_USE_ASPELL
     } else if (op_flags & OPT_S) {
-	makeDbIndexer(config);
-	if (dbindexer)
-	    exit(!dbindexer->createAspellDict());
-	else
-	    exit(1);
+	if (!makeDbIndexer(config))
+            exit(1);
+        exit(!dbindexer->createAspellDict());
 #endif // ASPELL
-
+    } else if (op_flags & OPT_b) {
+        BeagleQueueIndexer beagler(config);
+        bool status = beagler.processqueue();
+        return !status;
     } else {
 	confindexer = new ConfIndexer(config, &updater);
 	bool status = confindexer->index(rezero);
 	if (!status) 
 	    cerr << "Indexing failed" << endl;
-	exit(!status);
+	return !status;
     }
 }
