@@ -143,12 +143,12 @@ bool DbIndexer::indexDb(bool resetbefore, list<string> *topdirs)
     createStemmingDatabases();
     createAspellDict();
 
-    // The close would be done in our destructor, but we want status here
     if (m_updater) {
 	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
 	m_updater->status.fn.erase();
 	m_updater->update();
     }
+    // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("DbIndexer::index: error closing database in %s\n", 
 		getDbDir().c_str()));
@@ -195,7 +195,7 @@ bool DbIndexer::createStemmingDatabases()
 
 bool DbIndexer::init(bool resetbefore, bool rdonly)
 {
-    if (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0) {
+    if (!rdonly && (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0)) {
 	string reason;
 	if (!maketmpdir(m_tmpdir, reason)) {
 	    LOGERR(("DbIndexer: cannot create temporary directory: %s\n",
@@ -252,13 +252,6 @@ bool DbIndexer::createAspellDict()
     if (!aspell.buildDict(m_db, reason)) {
 	LOGERR(("DbIndexer::createAspellDict: aspell buildDict failed: %s\n", 
 		reason.c_str()));
-	noaspell = true;
-	return false;
-    }
-    // The close would be done in our destructor, but we want status here
-    if (!m_db.close()) {
-	LOGERR(("DbIndexer::indexfiles: error closing database in %s\n", 
-		getDbDir().c_str()));
 	noaspell = true;
 	return false;
     }
@@ -419,7 +412,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 		      FsTreeWalker::CbFlag flg)
 {
     if (m_updater && !m_updater->update()) {
-	    return FsTreeWalker::FtwStop;
+        return FsTreeWalker::FtwStop;
     }
 
     // If we're changing directories, possibly adjust parameters (set
@@ -469,9 +462,9 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     }
 
     LOGDEB0(("processone: processing: [%s] %s\n", 
-            displayableBytes(stp->st_size).c_str(), fn.c_str()));
+             displayableBytes(stp->st_size).c_str(), fn.c_str()));
 
-    FileInterner interner(fn, stp, m_config, m_tmpdir);
+    FileInterner interner(fn, stp, m_config, m_tmpdir, FileInterner::FIF_none);
 
     // File name transcoded to utf8 for indexation. 
     string charset = m_config->getDefCharset(true);
@@ -503,28 +496,11 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	doc.erase();
 	string ipath;
 	fis = interner.internfile(doc, ipath);
-	if (fis == FileInterner::FIError) {
-	    // We used to return at this point. 
-	    //
-	    // The nice side was that if a filter failed because of a
-	    // lacking supporting app, the file would be indexed once
-	    // the app was installed.
-	    //
-	    // The not so nice point was that the file name was not
-	    // indexed.
-	    //
-	    // We now index at least the file name and the mod time. 
-	    // We change the signature to ensure that the indexing will 
-	    // be retried every time. This can make indexing passes quite
-	    // slower if there are many files of types with no helper
-	    doc.fmtime.erase();
-	    // Go through:
-	} 
 
-	if (doc.fmtime.empty()) {
-	    // Set the date if this was not done in the document handler
-	    doc.fmtime = ascdate;
-	}
+        // Index at least the file name even if there was an error.
+        // We'll change the signature to ensure that the indexing will
+        // be retried every time.
+
 
 	// Internal access path for multi-document files
 	if (ipath.empty())
@@ -532,19 +508,21 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	else
 	    doc.ipath = ipath;
 
-	doc.url = string("file://") + fn;
-
-	// Note that the filter may have its own idea of the file name 
-	// (ie: mail attachment)
+	// Set file name, mod time and url if not done by filter
+	if (doc.fmtime.empty())
+	    doc.fmtime = ascdate;
+        if (doc.url.empty())
+            doc.url = string("file://") + fn;
 	if (doc.utf8fn.empty())
 	    doc.utf8fn = utf8fn;
 
 	char cbuf[100]; 
 	sprintf(cbuf, "%ld", (long)stp->st_size);
 	doc.fbytes = cbuf;
-	// Document signature for up to date checks: concatenate mtime and 
-	// size. Note: looking for changes only, no need to parseback so no
-	// need for reversible formatting
+	// Document signature for up to date checks: concatenate
+	// m/ctime and size. Looking for changes only, no need to
+	// parseback so no need for reversible formatting. Also set,
+	// but never used, for subdocs.
 	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->RCL_STTIME);
 	doc.sig = cbuf;
 	// If there was an error, ensure indexing will be
@@ -603,8 +581,9 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// ConIndexer methods: ConfIndexer is the top-level object, that can index
-// multiple directories to multiple databases.
+// ConIndexer methods: ConfIndexer is the top-level object, that could
+// in theory index multiple directories to multiple databases. In practise we
+// have a single database per configuration.
 
 ConfIndexer::~ConfIndexer()
 {
@@ -620,10 +599,13 @@ bool ConfIndexer::index(bool resetbefore)
 	return false;
     }
     
-    // Each top level directory to be indexed can be associated with a
-    // different database. We first group the directories by database:
-    // it is important that all directories for a database be indexed
-    // at once so that deleted file cleanup works
+    // (In theory) Each top level directory to be indexed can be
+    // associated with a different database. We first group the
+    // directories by database: it is important that all directories
+    // for a database be indexed at once so that deleted file cleanup
+    // works.
+    // In practise we have a single db per configuration, but this
+    // code doesn't hurt anyway
     list<string>::iterator dirit;
     map<string, list<string> > dbmap;
     map<string, list<string> >::iterator dbit;
@@ -652,13 +634,7 @@ bool ConfIndexer::index(bool resetbefore)
     // The dbmap now has dbdir as key and directory lists as values.
     // Index each directory group in turn
     for (dbit = dbmap.begin(); dbit != dbmap.end(); dbit++) {
-	//cout << dbit->first << " -> ";
-	//list<string>::const_iterator dit;
-	//for (dit = dbit->second.begin(); dit != dbit->second.end(); dit++) {
-	//    cout << *dit << " ";
-	//}
-	//cout << endl;
-	m_dbindexer = new DbIndexer(m_config, dbit->first, m_updater);
+	m_dbindexer = new DbIndexer(m_config, m_updater);
 	if (!m_dbindexer->indexDb(resetbefore, &dbit->second)) {
 	    deleteZ(m_dbindexer);
 	    m_reason = "Failed indexing in " + dbit->first;
