@@ -62,7 +62,8 @@ dmtime = date dc:date dc:datemodified datemodified contentmodified \
        xesam:contentmodified
 ext = fileextension xesam:fileextension
 # Don't add subject to keywords aliases, it's better to keep it for email
-keywords = keyword xesam:keyword tag tags dc:subject xesam:subject
+keywords = keyword xesam:keyword tag tags dc:subject xesam:subject \
+	 dc:description
 mtype = mime mimetype xesam:mimetype contenttype xesam:contenttype dc:format
 recipient = to xesam:recipient
 url = dc:identifier xesam:url
