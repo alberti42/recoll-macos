@@ -39,7 +39,7 @@ static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.14 2008-11-18 13:25:48 dockes E
 #include "debuglog.h"
 #include "rclmon.h"
 #include "debuglog.h"
-#include "indexer.h"
+#include "recollindex.h"
 #include "pathut.h"
 #include "x11mon.h"
 
@@ -167,8 +167,6 @@ RclConfig *RclMonEventQueue::getConfig()
 {
     return m_data->m_config;
 }
-
-extern int stopindexing;
 
 bool RclMonEventQueue::ok()
 {

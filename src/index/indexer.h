@@ -29,8 +29,7 @@ using std::map;
 #endif
 
 #include "rclconfig.h"
-#include "fstreewalk.h"
-#include "rcldb.h"
+#include "fsindexer.h"
 
 /* Forward decl for lower level indexing object */
 class DbIndexer;
@@ -71,7 +70,7 @@ class ConfIndexer {
  public:
     enum runStatus {IndexerOk, IndexerError};
     ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0)
-	: m_config(cnf), m_dbindexer(0), m_updater(updfunc)
+	: m_config(cnf), m_fsindexer(0), m_updater(updfunc)
 	{}
     virtual ~ConfIndexer();
     /** Worker function: doe the actual indexing */
@@ -79,96 +78,9 @@ class ConfIndexer {
     const string &getReason() {return m_reason;}
  private:
     RclConfig *m_config;
-    DbIndexer *m_dbindexer; // Object to process directories for a given db
+    FsIndexer *m_fsindexer; // Object to process directories for a given db
     DbIxStatusUpdater *m_updater;
     string m_reason;
 };
-
-/** Index things into one database
- 
-Tree indexing: we inherits FsTreeWalkerCB so that, the processone()
-  method is called by the file-system tree walk code for each file and
-  directory. We keep all state needed while indexing, and finally call
-  the methods to purge the db of stale entries and create the stemming
-  databases.
-
-Single file(s) indexing: no database purging or stem db updating.
-*/
-class DbIndexer : public FsTreeWalkerCB {
- public:
-    /** Constructor does nothing but store parameters 
-     *
-     * @param cnf Configuration data
-     * @param updfunc Status updater callback
-     */
-    DbIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0) 
-	: m_config(cnf), m_db(cnf), m_updater(updfunc)
-    {
-        m_havelocalfields = m_config->hasNameAnywhere("localfields");
-    }
-	
-    virtual ~DbIndexer();
-
-    /** Top level file system tree index method for updating a
-	given database.
-
-	The list is supposed to have all the filename space for the
-	db, and we shall purge entries for non-existing files at the
-	end. We create the temporary directory, open the database,
-	then call a file system walk for each top-level directory.
-	When walking is done, we create the stem databases and close
-	the main db.
-    */
-    bool indexDb(bool resetbefore, std::list<string> *topdirs);
-
-    /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(const std::list<string> &files);
-
-    /** Purge a list of files. */
-    bool purgeFiles(const std::list<string> &files);
-
-    /** Stemming reset to config: create needed, delete unconfigured */
-    bool createStemmingDatabases();
-
-    /** Create stem database for given language */
-    bool createStemDb(const string &lang);
-
-    /** Create misspelling expansion dictionary if aspell i/f is available */
-    bool createAspellDict();
-
-    /**  Tree walker callback method */
-    FsTreeWalker::Status 
-    processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
-
-    /** Return my db dir */
-    string getDbDir() {return m_config->getDbDir();}
-
-    /** List possible stemmer names */
-    static list<string> getStemmerNames();
-
- private:
-    FsTreeWalker m_walker;
-    RclConfig   *m_config;
-    Rcl::Db      m_db;
-    string       m_tmpdir;
-    DbIxStatusUpdater *m_updater;
-
-    // The configuration can set attribute fields to be inherited by
-    // all files in a file system area. Ie: set "apptag = thunderbird"
-    // inside ~/.thunderbird. The boolean is set at init to avoid
-    // further wasteful processing if no local fields are set.
-    bool         m_havelocalfields;
-    map<string, string> m_localfields;
-
-    bool init(bool rst = false, bool rdonly = false);
-    void localfieldsfromconf();
-    void setlocalfields(Rcl::Doc& doc);
-};
-
-/** Helper methods in recollindex.cpp for initial checks/setup to index 
- * a list of files (either from the monitor or the command line) */
-extern bool indexfiles(RclConfig *config, const list<string> &filenames);
-extern bool purgefiles(RclConfig *config, const list<string> &filenames);
-extern bool createAuxDbs(RclConfig *config);
 
 #endif /* _INDEXER_H_INCLUDED_ */

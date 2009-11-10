@@ -42,16 +42,18 @@ using namespace std;
 #include "cancelcheck.h"
 #include "rcldb.h"
 #include "beaglequeue.h"
+#include "recollindex.h"
+#include "fsindexer.h"
 
 // Globals for atexit cleanup
 static ConfIndexer *confindexer;
-static DbIndexer *dbindexer;
+static FsIndexer *fsindexer;
 
 // This is set as an atexit routine, 
 static void cleanup()
 {
     deleteZ(confindexer);
-    deleteZ(dbindexer);
+    deleteZ(fsindexer);
 }
 
 // Global stop request flag. This is checked in a number of place in the
@@ -79,11 +81,11 @@ static void sigcleanup(int sig)
     stopindexing = 1;
 }
 
-static bool makeDbIndexer(RclConfig *config)
+static bool makeFsIndexer(RclConfig *config)
 {
-    if (!dbindexer)
-	dbindexer = new DbIndexer(config, &updater);
-    return dbindexer ? true : false;
+    if (!fsindexer)
+	fsindexer = new FsIndexer(config, &updater);
+    return fsindexer ? true : false;
 }
 
 // The list of top directories/files wont change during program run,
@@ -95,7 +97,7 @@ static list<string> o_tdl;
 //
 // This is called either from the command line or from the monitor. In
 // this case we're called repeatedly in the same process, and the
-// dbIndexer is only created once by makeDbIndexer (but the db is
+// fsindexer is only created once by makeFsIndexer (but the db is
 // flushed anyway)
 bool indexfiles(RclConfig *config, const list<string> &filenames)
 {
@@ -139,10 +141,10 @@ bool indexfiles(RclConfig *config, const list<string> &filenames)
     // go:
     config->setKeyDir(path_getfather(*myfiles.begin()));
 
-    if (!makeDbIndexer(config))
+    if (!makeFsIndexer(config))
 	return false;
 
-    return dbindexer->indexFiles(myfiles);
+    return fsindexer->indexFiles(myfiles);
 }
 
 // Delete a list of files. Same comments about call contexts as indexfiles.
@@ -173,21 +175,21 @@ bool purgefiles(RclConfig *config, const list<string> &filenames)
     // go:
     config->setKeyDir(path_getfather(*myfiles.begin()));
 
-    if (!makeDbIndexer(config))
+    if (!makeFsIndexer(config))
 	return false;
-    return dbindexer->purgeFiles(myfiles);
+    return fsindexer->purgeFiles(myfiles);
 }
 
 // Create stemming and spelling databases
 bool createAuxDbs(RclConfig *config)
 {
-    if (!makeDbIndexer(config))
+    if (!makeFsIndexer(config))
 	return false;
 
-    if (!dbindexer->createStemmingDatabases())
+    if (!fsindexer->createStemmingDatabases())
 	return false;
 
-    if (!dbindexer->createAspellDict())
+    if (!fsindexer->createAspellDict())
 	return false;
 
     return true;
@@ -196,9 +198,9 @@ bool createAuxDbs(RclConfig *config)
 // Create additional stem database 
 static bool createstemdb(RclConfig *config, const string &lang)
 {
-    if (!makeDbIndexer(config))
+    if (!makeFsIndexer(config))
         return false;
-    return dbindexer->createStemDb(lang);
+    return fsindexer->createStemDb(lang);
 }
 
 static const char *thisprog;
@@ -352,7 +354,7 @@ int main(int argc, const char **argv)
     } else if (op_flags & OPT_l) {
 	if (argc != 0) 
 	    Usage();
-	list<string> stemmers = DbIndexer::getStemmerNames();
+	list<string> stemmers = FsIndexer::getStemmerNames();
 	for (list<string>::const_iterator it = stemmers.begin(); 
 	     it != stemmers.end(); it++) {
 	    cout << *it << endl;
@@ -395,9 +397,9 @@ int main(int argc, const char **argv)
 
 #ifdef RCL_USE_ASPELL
     } else if (op_flags & OPT_S) {
-	if (!makeDbIndexer(config))
+	if (!makeFsIndexer(config))
             exit(1);
-        exit(!dbindexer->createAspellDict());
+        exit(!fsindexer->createAspellDict());
 #endif // ASPELL
     } else if (op_flags & OPT_b) {
         BeagleQueueIndexer beagler(config);
