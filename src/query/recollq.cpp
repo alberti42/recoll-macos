@@ -60,7 +60,8 @@ bool dump_contents(RclConfig *rclconfig, string& tmpdir, Rcl::Doc& doc)
 	}
     }
     wipedir(tmpdir);
-    FileInterner interner(fn, &st, rclconfig, tmpdir, &doc.mimetype);
+    FileInterner interner(fn, &st, rclconfig, tmpdir, 
+                          FileInterner::FIF_forPreview, &doc.mimetype);
     if (interner.internfile(doc, doc.ipath)) {
 	cout << doc.text << endl;
     } else {
