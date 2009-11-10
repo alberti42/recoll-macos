@@ -135,6 +135,8 @@ class Doc {
 	xdocid = 0;
     }
 
+    void dump(bool dotext=false);
+
     // The official names for recoll native fields when used in a text
     // context (ie: the python interface duplicates some of the fixed
     // fields in the meta array, these are the names used). Defined in
