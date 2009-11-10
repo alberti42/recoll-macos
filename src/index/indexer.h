@@ -96,12 +96,12 @@ Single file(s) indexing: no database purging or stem db updating.
 */
 class DbIndexer : public FsTreeWalkerCB {
  public:
-    /** Constructor does nothing but store parameters */
-    DbIndexer(RclConfig *cnf,         // Configuration data
-	      // Db dir not used anymore, rcl::db gets it from the cfg
-	      const string &,      
-	      DbIxStatusUpdater *updfunc = 0 // status updater callback
-	      ) 
+    /** Constructor does nothing but store parameters 
+     *
+     * @param cnf Configuration data
+     * @param updfunc Status updater callback
+     */
+    DbIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0) 
 	: m_config(cnf), m_db(cnf), m_updater(updfunc)
     {
         m_havelocalfields = m_config->hasNameAnywhere("localfields");
@@ -138,8 +138,7 @@ class DbIndexer : public FsTreeWalkerCB {
 
     /**  Tree walker callback method */
     FsTreeWalker::Status 
-	processone(const string &, const struct stat *, 
-		   FsTreeWalker::CbFlag);
+    processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
 
     /** Return my db dir */
     string getDbDir() {return m_config->getDbDir();}
