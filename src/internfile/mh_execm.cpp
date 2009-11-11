@@ -227,6 +227,7 @@ bool MimeHandlerExecMultiple::next_document()
         MD5String(m_metaData["content"], md5);
         m_metaData["md5"] = MD5HexPrint(md5, xmd5);
     } else {
+        m_metaData["mimetype"] = mtype.empty() ? "text/html" : mtype;
         m_metaData.erase("ipath");
         string md5, xmd5, reason;
         if (MD5File(m_fn, md5, &reason)) {
