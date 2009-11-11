@@ -143,6 +143,7 @@ if ($@) {
 	exit(1);
 }
 
+#print STDERR "RCLIMG: Starting\n";
 $| = 1;
 while (1) {
     # print STDERR "RCLIMG: waiting for command\n";
@@ -164,6 +165,7 @@ while (1) {
 	next;
     }
 
+    print "Mimetype: 9\ntext/html";
     my $data = imgTagsToHtml($params{"filename:"});
     my $l = length($data);
     print "Document: $l\n";
@@ -175,3 +177,4 @@ while (1) {
     print "\n";
     # print STDERR "RCLIMG: done writing data\n";
 }
+#print STDERR "RCLIMG: Exiting\n";
