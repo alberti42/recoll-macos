@@ -47,13 +47,11 @@ using namespace std;
 
 // Globals for atexit cleanup
 static ConfIndexer *confindexer;
-static FsIndexer *fsindexer;
 
 // This is set as an atexit routine, 
 static void cleanup()
 {
     deleteZ(confindexer);
-    deleteZ(fsindexer);
 }
 
 // Global stop request flag. This is checked in a number of place in the
@@ -81,11 +79,11 @@ static void sigcleanup(int sig)
     stopindexing = 1;
 }
 
-static bool makeFsIndexer(RclConfig *config)
+static bool makeIndexer(RclConfig *config)
 {
-    if (!fsindexer)
-	fsindexer = new FsIndexer(config, &updater);
-    return fsindexer ? true : false;
+    if (!confindexer)
+	confindexer = new ConfIndexer(config, &updater);
+    return confindexer ? true : false;
 }
 
 // The list of top directories/files wont change during program run,
@@ -97,7 +95,7 @@ static list<string> o_tdl;
 //
 // This is called either from the command line or from the monitor. In
 // this case we're called repeatedly in the same process, and the
-// fsindexer is only created once by makeFsIndexer (but the db is
+// confindexer is only created once by makeIndexer (but the db is
 // flushed anyway)
 bool indexfiles(RclConfig *config, const list<string> &filenames)
 {
@@ -141,10 +139,10 @@ bool indexfiles(RclConfig *config, const list<string> &filenames)
     // go:
     config->setKeyDir(path_getfather(*myfiles.begin()));
 
-    if (!makeFsIndexer(config))
+    if (!makeIndexer(config))
 	return false;
 
-    return fsindexer->indexFiles(myfiles);
+    return confindexer->indexFiles(myfiles);
 }
 
 // Delete a list of files. Same comments about call contexts as indexfiles.
@@ -175,21 +173,21 @@ bool purgefiles(RclConfig *config, const list<string> &filenames)
     // go:
     config->setKeyDir(path_getfather(*myfiles.begin()));
 
-    if (!makeFsIndexer(config))
+    if (!makeIndexer(config))
 	return false;
-    return fsindexer->purgeFiles(myfiles);
+    return confindexer->purgeFiles(myfiles);
 }
 
 // Create stemming and spelling databases
 bool createAuxDbs(RclConfig *config)
 {
-    if (!makeFsIndexer(config))
+    if (!makeIndexer(config))
 	return false;
 
-    if (!fsindexer->createStemmingDatabases())
+    if (!confindexer->createStemmingDatabases())
 	return false;
 
-    if (!fsindexer->createAspellDict())
+    if (!confindexer->createAspellDict())
 	return false;
 
     return true;
@@ -198,9 +196,9 @@ bool createAuxDbs(RclConfig *config)
 // Create additional stem database 
 static bool createstemdb(RclConfig *config, const string &lang)
 {
-    if (!makeFsIndexer(config))
+    if (!makeIndexer(config))
         return false;
-    return fsindexer->createStemDb(lang);
+    return confindexer->createStemDb(lang);
 }
 
 static const char *thisprog;
@@ -354,7 +352,7 @@ int main(int argc, const char **argv)
     } else if (op_flags & OPT_l) {
 	if (argc != 0) 
 	    Usage();
-	list<string> stemmers = FsIndexer::getStemmerNames();
+	list<string> stemmers = ConfIndexer::getStemmerNames();
 	for (list<string>::const_iterator it = stemmers.begin(); 
 	     it != stemmers.end(); it++) {
 	    cout << *it << endl;
@@ -397,9 +395,9 @@ int main(int argc, const char **argv)
 
 #ifdef RCL_USE_ASPELL
     } else if (op_flags & OPT_S) {
-	if (!makeFsIndexer(config))
+	if (!makeIndexer(config))
             exit(1);
-        exit(!fsindexer->createAspellDict());
+        exit(!confindexer->createAspellDict());
 #endif // ASPELL
     } else if (op_flags & OPT_b) {
         BeagleQueueIndexer beagler(config);

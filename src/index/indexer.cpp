@@ -28,6 +28,9 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.71 2008-12-17 08:01:40 dockes Exp
 
 #include "debuglog.h"
 #include "indexer.h"
+#ifdef RCL_USE_ASPELL
+#include "rclaspell.h"
+#endif
 
 ConfIndexer::~ConfIndexer()
 {
@@ -36,55 +39,164 @@ ConfIndexer::~ConfIndexer()
 
 bool ConfIndexer::index(bool resetbefore)
 {
-    list<string> tdl = m_config->getTopdirs();
-    if (tdl.empty()) {
-	m_reason = "Top directory list (topdirs param.) not found in config"
-	    "or Directory list parse error";
+    Rcl::Db::OpenMode mode = resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
+    if (!m_db.open(mode)) {
+	LOGERR(("ConfIndexer: error opening database %s\n", 
+                m_config->getDbDir().c_str()));
 	return false;
     }
-    
-    // (In theory) Each top level directory to be indexed can be
-    // associated with a different database. We first group the
-    // directories by database: it is important that all directories
-    // for a database be indexed at once so that deleted file cleanup
-    // works.
-    // In practise we have a single db per configuration, but this
-    // code doesn't hurt anyway
-    list<string>::iterator dirit;
-    map<string, list<string> > dbmap;
-    map<string, list<string> >::iterator dbit;
-    for (dirit = tdl.begin(); dirit != tdl.end(); dirit++) {
-	string dbdir;
-	string doctopdir = *dirit;
-	m_config->setKeyDir(doctopdir);
-	dbdir = m_config->getDbDir();
-	if (dbdir.empty()) {
-	    LOGERR(("ConfIndexer::index: no database directory in "
-		    "configuration for %s\n", doctopdir.c_str()));
-	    m_reason = "No database directory set for " + doctopdir;
-	    return false;
-	}
-	dbit = dbmap.find(dbdir);
-	if (dbit == dbmap.end()) {
-	    list<string> l;
-	    l.push_back(doctopdir);
-	    dbmap[dbdir] = l;
-	} else {
-	    dbit->second.push_back(doctopdir);
-	}
+
+    m_config->setKeyDir("");
+    m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+    bool ret = m_fsindexer->index(resetbefore);
+    deleteZ(m_fsindexer);
+
+    if (m_updater) {
+	m_updater->status.fn.erase();
+	m_updater->status.phase = DbIxStatus::DBIXS_PURGE;
+	m_updater->update();
+    }
+    // Get rid of all database entries that don't exist in the
+    // filesystem anymore.
+    m_db.purge();
+
+    if (m_updater) {
+	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
+	m_updater->status.fn.erase();
+	m_updater->update();
+    }
+    // The close would be done in our destructor, but we want status here
+    if (!m_db.close()) {
+	LOGERR(("ConfIndexer::index: error closing database in %s\n", 
+		m_config->getDbDir().c_str()));
+	return false;
+    }
+
+    createStemmingDatabases();
+    createAspellDict();
+
+    return true;
+}
+
+bool ConfIndexer::indexFiles(const std::list<string> &files)
+{
+    if (!m_db.open(Rcl::Db::DbUpd)) {
+	LOGERR(("ConfIndexer: indexFiles error opening database %s\n", 
+                m_config->getDbDir().c_str()));
+	return false;
     }
     m_config->setKeyDir("");
+    m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+    bool ret = m_fsindexer->indexFiles(files);
+    deleteZ(m_fsindexer);
+    // The close would be done in our destructor, but we want status here
+    if (!m_db.close()) {
+	LOGERR(("ConfIndexer::index: error closing database in %s\n", 
+		m_config->getDbDir().c_str()));
+	return false;
+    }
+    return ret;
+}
 
-    // The dbmap now has dbdir as key and directory lists as values.
-    // Index each directory group in turn
-    for (dbit = dbmap.begin(); dbit != dbmap.end(); dbit++) {
-	m_fsindexer = new FsIndexer(m_config, m_updater);
-	if (!m_fsindexer->indexTrees(resetbefore, &dbit->second)) {
-	    deleteZ(m_fsindexer);
-	    m_reason = "Failed indexing in " + dbit->first;
-	    return false;
+bool ConfIndexer::purgeFiles(const std::list<string> &files)
+{
+    if (!m_db.open(Rcl::Db::DbUpd)) {
+	LOGERR(("ConfIndexer: purgeFiles error opening database %s\n", 
+                m_config->getDbDir().c_str()));
+	return false;
+    }
+    m_config->setKeyDir("");
+    m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+    bool ret = m_fsindexer->purgeFiles(files);
+    deleteZ(m_fsindexer);
+    // The close would be done in our destructor, but we want status here
+    if (!m_db.close()) {
+	LOGERR(("ConfIndexer::index: error closing database in %s\n", 
+		m_config->getDbDir().c_str()));
+	return false;
+    }
+    return ret;
+}
+
+// Create stemming databases. We also remove those which are not
+// configured. 
+bool ConfIndexer::createStemmingDatabases()
+{
+    string slangs;
+    if (m_config->getConfParam("indexstemminglanguages", slangs)) {
+	list<string> langs;
+	stringToStrings(slangs, langs);
+
+	// Get the list of existing stem dbs from the database (some may have 
+	// been manually created, we just keep those from the config
+	list<string> dblangs = m_db.getStemLangs();
+	list<string>::const_iterator it;
+	for (it = dblangs.begin(); it != dblangs.end(); it++) {
+	    if (find(langs.begin(), langs.end(), *it) == langs.end())
+		m_db.deleteStemDb(*it);
 	}
-	deleteZ(m_fsindexer);
+	for (it = langs.begin(); it != langs.end(); it++) {
+	    if (m_updater) {
+		m_updater->status.phase = DbIxStatus::DBIXS_STEMDB;
+		m_updater->status.fn = *it;
+		m_updater->update();
+	    }
+	    m_db.createStemDb(*it);
+	}
     }
     return true;
+}
+
+bool ConfIndexer::createStemDb(const string &lang)
+{
+    if (!m_db.open(Rcl::Db::DbRO)) {
+	return false;
+    }
+    return m_db.createStemDb(lang);
+}
+
+// The language for the aspell dictionary is handled internally by the aspell
+// module, either from a configuration variable or the NLS environment.
+bool ConfIndexer::createAspellDict()
+{
+    LOGDEB2(("FsIndexer::createAspellDict()\n"));
+#ifdef RCL_USE_ASPELL
+    // For the benefit of the real-time indexer, we only initialize
+    // noaspell from the configuration once. It can then be set to
+    // true if dictionary generation fails, which avoids retrying
+    // it forever.
+    static int noaspell = -12345;
+    if (noaspell == -12345) {
+	noaspell = false;
+	m_config->getConfParam("noaspell", &noaspell);
+    }
+    if (noaspell)
+	return true;
+
+    if (!m_db.open(Rcl::Db::DbRO)) {
+	return false;
+    }
+
+    Aspell aspell(m_config);
+    string reason;
+    if (!aspell.init(reason)) {
+	LOGERR(("FsIndexer::createAspellDict: aspell init failed: %s\n", 
+		reason.c_str()));
+	noaspell = true;
+	return false;
+    }
+    LOGDEB(("FsIndexer::createAspellDict: creating dictionary\n"));
+    if (!aspell.buildDict(m_db, reason)) {
+	LOGERR(("FsIndexer::createAspellDict: aspell buildDict failed: %s\n", 
+		reason.c_str()));
+	noaspell = true;
+	return false;
+    }
+#endif
+    return true;
+}
+
+list<string> ConfIndexer::getStemmerNames()
+{
+    return Rcl::Db::getStemmerNames();
 }

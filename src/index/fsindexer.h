@@ -41,25 +41,21 @@ class FsIndexer : public FsTreeWalkerCB {
      * @param cnf Configuration data
      * @param updfunc Status updater callback
      */
-    FsIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0) 
-	: m_config(cnf), m_db(cnf), m_updater(updfunc)
+    FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc = 0) 
+	: m_config(cnf), m_db(db), m_updater(updfunc)
     {
         m_havelocalfields = m_config->hasNameAnywhere("localfields");
     }
 	
     virtual ~FsIndexer();
 
-    /** Top level file system tree index method for updating a
-	given database.
-
-	The list is supposed to have all the filename space for the
-	db, and we shall purge entries for non-existing files at the
-	end. We create the temporary directory, open the database,
-	then call a file system walk for each top-level directory.
-	When walking is done, we create the stem databases and close
-	the main db.
-    */
-    bool indexTrees(bool resetbefore, std::list<string> *topdirs);
+    /** 
+     * Top level file system tree index method for updating a given database.
+     *
+     * We create the temporary directory, open the database,
+     * then call a file system walk for each top-level directory.
+     */
+    bool index(bool resetbefore);
 
     /** Index a list of files. No db cleaning or stemdb updating */
     bool indexFiles(const std::list<string> &files);
@@ -67,30 +63,16 @@ class FsIndexer : public FsTreeWalkerCB {
     /** Purge a list of files. */
     bool purgeFiles(const std::list<string> &files);
 
-    /** Stemming reset to config: create needed, delete unconfigured */
-    bool createStemmingDatabases();
-
-    /** Create stem database for given language */
-    bool createStemDb(const string &lang);
-
-    /** Create misspelling expansion dictionary if aspell i/f is available */
-    bool createAspellDict();
-
     /**  Tree walker callback method */
     FsTreeWalker::Status 
-    processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
-
-    /** Return my db dir */
-    string getDbDir() {return m_config->getDbDir();}
-
-    /** List possible stemmer names */
-    static list<string> getStemmerNames();
+    processone(const string &fn, const struct stat *, FsTreeWalker::CbFlag);
 
  private:
     FsTreeWalker m_walker;
     RclConfig   *m_config;
-    Rcl::Db      m_db;
+    Rcl::Db     *m_db;
     string       m_tmpdir;
+    string       m_reason;
     DbIxStatusUpdater *m_updater;
 
     // The configuration can set attribute fields to be inherited by
@@ -100,9 +82,10 @@ class FsIndexer : public FsTreeWalkerCB {
     bool         m_havelocalfields;
     map<string, string> m_localfields;
 
-    bool init(bool rst = false, bool rdonly = false);
+    bool init();
     void localfieldsfromconf();
     void setlocalfields(Rcl::Doc& doc);
+    string getDbDir() {return m_config->getDbDir();}
 };
 
 #endif /* _fsindexer_h_included_ */

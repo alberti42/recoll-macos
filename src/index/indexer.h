@@ -70,15 +70,37 @@ class ConfIndexer {
  public:
     enum runStatus {IndexerOk, IndexerError};
     ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0)
-	: m_config(cnf), m_fsindexer(0), m_updater(updfunc)
+	: m_config(cnf), m_db(cnf), m_fsindexer(0), m_updater(updfunc)
 	{}
     virtual ~ConfIndexer();
+
     /** Worker function: doe the actual indexing */
     bool index(bool resetbefore = false);
+
     const string &getReason() {return m_reason;}
+
+    /** Stemming reset to config: create needed, delete unconfigured */
+    bool createStemmingDatabases();
+
+    /** Create stem database for given language */
+    bool createStemDb(const string &lang);
+
+    /** Create misspelling expansion dictionary if aspell i/f is available */
+    bool createAspellDict();
+
+    /** List possible stemmer names */
+    static list<string> getStemmerNames();
+
+    /** Index a list of files. No db cleaning or stemdb updating */
+    bool indexFiles(const std::list<string> &files);
+
+    /** Purge a list of files. */
+    bool purgeFiles(const std::list<string> &files);
+
  private:
     RclConfig *m_config;
-    FsIndexer *m_fsindexer; // Object to process directories for a given db
+    Rcl::Db    m_db;
+    FsIndexer *m_fsindexer; 
     DbIxStatusUpdater *m_updater;
     string m_reason;
 };

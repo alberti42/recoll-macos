@@ -49,10 +49,6 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 #include "wipedir.h"
 #include "fileudi.h"
 
-#ifdef RCL_USE_ASPELL
-#include "rclaspell.h"
-#endif
-
 // When using extended attributes, we have to use the ctime. 
 // This is quite an expensive price to pay...
 #ifdef RCL_USE_XATTR
@@ -71,36 +67,49 @@ using namespace std;
 
 FsIndexer::~FsIndexer() {
     // Maybe clean up temporary directory
-    if (m_tmpdir.length()) {
+    if (!m_tmpdir.empty()) {
 	wipedir(m_tmpdir);
 	if (rmdir(m_tmpdir.c_str()) < 0) {
 	    LOGERR(("FsIndexer::~FsIndexer: cannot clear temp dir %s\n",
 		    m_tmpdir.c_str()));
 	}
     }
-    m_db.close();
 }
 
-list<string> FsIndexer::getStemmerNames()
+bool FsIndexer::init()
 {
-    return Rcl::Db::getStemmerNames();
+    if (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0) {
+	if (!maketmpdir(m_tmpdir, m_reason)) {
+	    LOGERR(("FsIndexer: cannot create temporary directory: %s\n",
+		    m_reason.c_str()));
+            m_tmpdir.erase();
+	    return false;
+	}
+    }
+    return true;
 }
 
-// Index each directory in the topdirs for a given db
-bool FsIndexer::indexTrees(bool resetbefore, list<string> *topdirs)
+// Recursively index each directory in the topdirs:
+bool FsIndexer::index(bool resetbefore)
 {
-    if (!init(resetbefore))
+    list<string> topdirs = m_config->getTopdirs();
+    if (topdirs.empty()) {
+        LOGERR(("FsIndexer::indexTrees: no valid topdirs in config\n"));
+        return false;
+    }
+
+    if (!init())
 	return false;
 
     if (m_updater) {
 	m_updater->status.reset();
-	m_updater->status.dbtotdocs = m_db.docCnt();
+	m_updater->status.dbtotdocs = m_db->docCnt();
     }
 
     m_walker.setSkippedPaths(m_config->getSkippedPaths());
 
-    for (list<string>::const_iterator it = topdirs->begin();
-	 it != topdirs->end(); it++) {
+    for (list<string>::const_iterator it = topdirs.begin();
+	 it != topdirs.end(); it++) {
 	LOGDEB(("FsIndexer::index: Indexing %s into %s\n", it->c_str(), 
 		getDbDir().c_str()));
 
@@ -118,7 +127,7 @@ bool FsIndexer::indexTrees(bool resetbefore, list<string> *topdirs)
 
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
-	    m_db.setAbstractParams(abslen, -1, -1);
+	    m_db->setAbstractParams(abslen, -1, -1);
 
 	// Set up skipped patterns for this subtree. This probably should be
 	// done in the directory change code in processone() instead.
@@ -131,30 +140,7 @@ bool FsIndexer::indexTrees(bool resetbefore, list<string> *topdirs)
 	    return false;
 	}
     }
-    if (m_updater) {
-	m_updater->status.fn.erase();
-	m_updater->status.phase = DbIxStatus::DBIXS_PURGE;
-	m_updater->update();
-    }
 
-    // Get rid of all database entries that don't exist in the
-    // filesystem anymore.
-    m_db.purge();
-
-    createStemmingDatabases();
-    createAspellDict();
-
-    if (m_updater) {
-	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
-	m_updater->status.fn.erase();
-	m_updater->update();
-    }
-    // The close would be done in our destructor, but we want status here
-    if (!m_db.close()) {
-	LOGERR(("FsIndexer::index: error closing database in %s\n", 
-		getDbDir().c_str()));
-	return false;
-    }
     string missing;
     FileInterner::getMissingDescription(missing);
     if (!missing.empty()) {
@@ -165,107 +151,13 @@ bool FsIndexer::indexTrees(bool resetbefore, list<string> *topdirs)
     return true;
 }
 
-// Create stemming databases. We also remove those which are not
-// configured. 
-bool FsIndexer::createStemmingDatabases()
-{
-    string slangs;
-    if (m_config->getConfParam("indexstemminglanguages", slangs)) {
-	list<string> langs;
-	stringToStrings(slangs, langs);
-
-	// Get the list of existing stem dbs from the database (some may have 
-	// been manually created, we just keep those from the config
-	list<string> dblangs = m_db.getStemLangs();
-	list<string>::const_iterator it;
-	for (it = dblangs.begin(); it != dblangs.end(); it++) {
-	    if (find(langs.begin(), langs.end(), *it) == langs.end())
-		m_db.deleteStemDb(*it);
-	}
-	for (it = langs.begin(); it != langs.end(); it++) {
-	    if (m_updater) {
-		m_updater->status.phase = DbIxStatus::DBIXS_STEMDB;
-		m_updater->status.fn = *it;
-		m_updater->update();
-	    }
-	    m_db.createStemDb(*it);
-	}
-    }
-    return true;
-}
-
-bool FsIndexer::init(bool resetbefore, bool rdonly)
-{
-    if (!rdonly && (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0)) {
-	string reason;
-	if (!maketmpdir(m_tmpdir, reason)) {
-	    LOGERR(("FsIndexer: cannot create temporary directory: %s\n",
-		    reason.c_str()));
-	    return false;
-	}
-    }
-    Rcl::Db::OpenMode mode = rdonly ? Rcl::Db::DbRO :
-	resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
-    if (!m_db.open(mode)) {
-	LOGERR(("FsIndexer: error opening database %s\n", getDbDir().c_str()));
-	return false;
-    }
-
-    return true;
-}
-
-bool FsIndexer::createStemDb(const string &lang)
-{
-    if (!init(false, true))
-	return false;
-    return m_db.createStemDb(lang);
-}
-
-// The language for the aspell dictionary is handled internally by the aspell
-// module, either from a configuration variable or the NLS environment.
-bool FsIndexer::createAspellDict()
-{
-    LOGDEB2(("FsIndexer::createAspellDict()\n"));
-#ifdef RCL_USE_ASPELL
-    // For the benefit of the real-time indexer, we only initialize
-    // noaspell from the configuration once. It can then be set to
-    // true if dictionary generation fails, which avoids retrying
-    // it forever.
-    static int noaspell = -12345;
-    if (noaspell == -12345) {
-	noaspell = false;
-	m_config->getConfParam("noaspell", &noaspell);
-    }
-    if (noaspell)
-	return true;
-
-    if (!init(false, true))
-	return false;
-    Aspell aspell(m_config);
-    string reason;
-    if (!aspell.init(reason)) {
-	LOGERR(("FsIndexer::createAspellDict: aspell init failed: %s\n", 
-		reason.c_str()));
-	noaspell = true;
-	return false;
-    }
-    LOGDEB(("FsIndexer::createAspellDict: creating dictionary\n"));
-    if (!aspell.buildDict(m_db, reason)) {
-	LOGERR(("FsIndexer::createAspellDict: aspell buildDict failed: %s\n", 
-		reason.c_str()));
-	noaspell = true;
-	return false;
-    }
-#endif
-    return true;
-}
-
 /** 
  * Index individual files, out of a full tree run. No database purging
  */
 bool FsIndexer::indexFiles(const list<string> &filenames)
 {
-    bool called_init = false;
+    if (!init())
+        return false;
 
     list<string>::const_iterator it;
     for (it = filenames.begin(); it != filenames.end(); it++) {
@@ -273,7 +165,7 @@ bool FsIndexer::indexFiles(const list<string> &filenames)
 	m_config->setKeyDir(dir);
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
-	    m_db.setAbstractParams(abslen, -1, -1);
+	    m_db->setAbstractParams(abslen, -1, -1);
 	struct stat stb;
 	if (lstat(it->c_str(), &stb) != 0) {
 	    LOGERR(("FsIndexer::indexFiles: lstat(%s): %s", it->c_str(),
@@ -306,12 +198,6 @@ bool FsIndexer::indexFiles(const list<string> &filenames)
 		}
 	    }
 	}
-	// Defer opening db until really needed.
-	if (!called_init) {
-	    if (!init())
-		return false;
-	    called_init = true;
-	}
 	if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexer::indexFiles: processone failed\n"));
@@ -321,12 +207,6 @@ bool FsIndexer::indexFiles(const list<string> &filenames)
 	false; // Need a statement here to make compiler happy ??
     }
 
-    // The close would be done in our destructor, but we want status here
-    if (!m_db.close()) {
-	LOGERR(("FsIndexer::indexfiles: error closing database in %s\n", 
-		getDbDir().c_str()));
-	return false;
-    }
     return true;
 }
 
@@ -341,18 +221,12 @@ bool FsIndexer::purgeFiles(const list<string> &filenames)
     for (it = filenames.begin(); it != filenames.end(); it++) {
 	string udi;
 	make_udi(*it, "", udi);
-	if (!m_db.purgeFile(udi)) {
+	if (!m_db->purgeFile(udi)) {
 	    LOGERR(("FsIndexer::purgeFiles: Database error\n"));
 	    return false;
 	}
     }
 
-    // The close would be done in our destructor, but we want status here
-    if (!m_db.close()) {
-	LOGERR(("FsIndexer::purgefiles: error closing database in %s\n", 
-		getDbDir().c_str()));
-	return false;
-    }
     return true;
 }
 
@@ -424,7 +298,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
-	    m_db.setAbstractParams(abslen, -1, -1);
+	    m_db->setAbstractParams(abslen, -1, -1);
 
         // Adjust local fields from config for this subtree
         if (m_havelocalfields)
@@ -450,7 +324,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     string sig = cbuf;
     string udi;
     make_udi(fn, "", udi);
-    if (!m_db.needUpdate(udi, sig)) {
+    if (!m_db->needUpdate(udi, sig)) {
 	LOGDEB(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {
 	    // Status bar update, abort request etc.
@@ -542,7 +416,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	// of the file document.
 	string udi;
 	make_udi(fn, ipath, udi);
-	if (!m_db.addOrUpdate(udi, ipath.empty() ? "" : parent_udi, doc)) 
+	if (!m_db->addOrUpdate(udi, ipath.empty() ? "" : parent_udi, doc)) 
 	    return FsTreeWalker::FtwError;
 
 	// Tell what we are doing and check for interrupt request
@@ -574,7 +448,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	// Document signature for up to date checks.
 	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->RCL_STTIME);
 	fileDoc.sig = cbuf;
-	if (!m_db.addOrUpdate(parent_udi, "", fileDoc)) 
+	if (!m_db->addOrUpdate(parent_udi, "", fileDoc)) 
 	    return FsTreeWalker::FtwError;
     }
 
