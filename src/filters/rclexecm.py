@@ -6,6 +6,10 @@ import sys
 import os
 
 class RclExecM:
+    noteof  = 0
+    eofnext = 1
+    eofnow = 2
+    
     def __init__(self):
         self.myname = os.path.basename(sys.argv[0])
         self.mimetype = ""
@@ -45,7 +49,7 @@ class RclExecM:
         return (paramname, paramdata)
 
     # Send answer: document, ipath, possible eof.
-    def answer(self, docdata, ipath, iseof):
+    def answer(self, docdata, ipath, iseof = noteof):
 
         print "Document:", len(docdata)
         sys.stdout.write(docdata)
@@ -59,8 +63,11 @@ class RclExecM:
             sys.stdout.write(self.mimetype)
 
         # If we're at the end of the contents, say so
-        if iseof:
-            print "Eof: 0"
+        if iseof == self.eofnow:
+            print "Eofnow: 0"
+        elif iseof == self.eofnext:
+            print "Eofnext: 0"
+            
         # End of message
         print
         sys.stdout.flush()

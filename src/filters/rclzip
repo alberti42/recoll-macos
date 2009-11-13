@@ -22,8 +22,10 @@ class ZipExtractor:
         except error, err:
             self.em.rclog("extractone: failed: [%s]" % err)
             ok = False
-        eof = (self.currentindex >= len(self.zip.namelist()) -1)
-        return (ok, docdata, ipath, eof)
+        iseof = rclexecm.RclExecM.noteof
+        if self.currentindex >= len(self.zip.namelist()) -1:
+            iseof = rclexecm.RclExecM.eofnext
+        return (ok, docdata, ipath, iseof)
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
@@ -40,7 +42,7 @@ class ZipExtractor:
     def getnext(self, params):
         if self.currentindex >= len(self.zip.namelist()):
             #self.em.rclog("getnext: EOF hit")
-            return (False, "", "", 1)
+            return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
             ret= self.extractone(self.zip.namelist()[self.currentindex])
             self.currentindex += 1

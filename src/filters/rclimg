@@ -95,7 +95,7 @@ sub imgTagsToHtml {
     return $output;
 }
 
-# Get one line from stdin, exit on eof
+# Get one line from stdin (from recollindex), exit on eof
 sub readlineorexit {
     my $s = <STDIN>;
     unless ($s) {
@@ -131,7 +131,7 @@ sub readparam {
 }
 
 #
-# Main program starts here
+# Main program starts here. Talks the rclexecm protocol
 #
 
 # JFD: replaced the "use" call with a runtime load with error checking,
@@ -159,9 +159,9 @@ while (1) {
     }
     unless (defined $params{"filename:"}) {
         print STDERR "RCLIMG: no filename ??\n";
-	# Recoll is requesting next subdocument, but we have none, just say
-	# so:
-        print "Document: 0\n\n";
+	# Recoll is requesting next subdocument (it shouldn't cause we 
+	# returned eofnext last time), but we have none, just say so:
+        print "Eofnow:0\nDocument: 0\n\n";
 	next;
     }
 
@@ -172,7 +172,7 @@ while (1) {
     # print STDERR "RCLIMG: writing $l bytes of data\n";
     print $data;
     # Say we have no further documents for this file
-    print "Eof: 0\n";
+    print "Eofnext: 0\n";
     # End of output parameters: print empty line
     print "\n";
     # print STDERR "RCLIMG: done writing data\n";

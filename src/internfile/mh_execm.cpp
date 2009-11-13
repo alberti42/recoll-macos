@@ -166,7 +166,8 @@ bool MimeHandlerExecMultiple::next_document()
 
     // Read answer (multiple elements)
     LOGDEB1(("MHExecMultiple: reading answer\n"));
-    bool eof_received = false;
+    bool eofnext_received = false;
+    bool eofnow_received = false;
     string ipath;
     string mtype;
     for (int loop=0;;loop++) {
@@ -176,9 +177,13 @@ bool MimeHandlerExecMultiple::next_document()
         }
         if (name.empty())
             break;
-        if (!stringlowercmp("eof:", name)) {
-            LOGDEB(("MHExecMultiple: got EOF\n"));
-            eof_received = true;
+        if (!stringlowercmp("eofnext:", name)) {
+            LOGDEB(("MHExecMultiple: got EOFNEXT\n"));
+            eofnext_received = true;
+        }
+        if (!stringlowercmp("eofnow:", name)) {
+            LOGDEB(("MHExecMultiple: got EOFNOW\n"));
+            eofnow_received = true;
         }
         if (!stringlowercmp("ipath:", name)) {
             ipath = data;
@@ -194,15 +199,19 @@ bool MimeHandlerExecMultiple::next_document()
             return false;
         }
     }
-    // The end of data can be signaled from the filter in two ways:
-    // either by returning an empty document (if the filter just hits
-    // eof while trying to read the doc), or with an "eof:" field
-    // accompanying a normal document (if the filter hit eof at the
-    // end of the current doc, which is the preferred way).
-    if (m_metaData["content"].length() == 0) {
-        LOGDEB(("MHExecMultiple: got empty document\n"));
+
+    if (eofnow_received) {
+        // No more docs
         m_havedoc = false;
         return false;
+    }
+
+    // It used to be that eof could be signalled just by an empty document, but
+    // this was wrong. Empty documents can be found ie in zip files and should 
+    // not be interpreted as eof.
+    if (m_metaData["content"].length() == 0) {
+        LOGDEB0(("MHExecMultiple: got empty document inside [%s]: [%s]\n", 
+                m_fn.c_str(), ipath.c_str()));
     }
 
     // If this has an ipath, it is an internal doc from a
@@ -217,7 +226,10 @@ bool MimeHandlerExecMultiple::next_document()
                 // mimetype() won't call idFile when there is no file. Do it
                 mtype = idFileMem(m_metaData["content"]);
                 if (mtype.empty()) {
-                    LOGERR(("MHExecMultiple: cant guess mime type\n"));
+                    // Note this happens for example for directory zip members
+                    // We could recognize them by the end /, but wouldn't know
+                    // what to do with them anyway.
+                    LOGINFO(("MHExecMultiple: cant guess mime type\n"));
                     mtype = "application/octet-stream";
                 }
             }
@@ -238,7 +250,7 @@ bool MimeHandlerExecMultiple::next_document()
         }
     }
 
-    if (eof_received)
+    if (eofnext_received)
         m_havedoc = false;
 
     return true;

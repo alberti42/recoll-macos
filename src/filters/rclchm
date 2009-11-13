@@ -91,17 +91,20 @@ class rclCHM:
         """Extract one path-named internal file from the chm file"""
 
         #self.em.rclog("extractone: [%s]"%(path))
-        eof = (self.currentindex >= len(self.tp.contents) -1)
+        iseof = rclexecm.RclExecM.noteof
+        if self.currentindex >= len(self.tp.contents) -1:
+            iseof = rclexecm.RclExecM.eofnext
+
         res, ui = self.chm.ResolveObject(path)
         #self.em.rclog("extract: ResolveO: %d [%s]" % (res, ui))
         if res != chmlib.CHM_RESOLVE_SUCCESS:
-            return (False, "", path, eof)
+            return (False, "", path, iseof)
         # RetrieveObject() returns len,value
         res, doc = self.chm.RetrieveObject(ui)
         #self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
         if res > 0:
-            return (True, doc, path, eof)
-        return (False, "", path, eof)
+            return (True, doc, path, iseof)
+        return (False, "", path, iseof)
     
     def openfile(self, params):
         """Open the chm file and build the contents list by extracting and
@@ -128,7 +131,7 @@ class rclCHM:
         
     def getnext(self, params):
         if self.currentindex >= len(self.tp.contents):
-            return (False, "", "", 1)
+            return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
             ret= self.extractone(self.tp.contents[self.currentindex])
             self.currentindex += 1

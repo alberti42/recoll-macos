@@ -15,8 +15,11 @@ class IcalExtractor:
             return(False, "", "", True)
         docdata = self.contents[index].as_string()
 	#self.em.rclog(docdata)
-        eof = (self.currentindex >= len(self.contents) -1)
-        return (True, docdata, str(index), eof)
+
+        iseof = rclexecm.RclExecM.noteof
+        if self.currentindex >= len(self.contents) -1:
+            iseof = rclexecm.RclExecM.eofnext
+        return (True, docdata, str(index), iseof)
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
@@ -40,7 +43,7 @@ class IcalExtractor:
     def getnext(self, params):
         if self.currentindex >= len(self.contents):
             #em.rclog("getnext: EOF hit")
-            return (False, "", "", 1)
+            return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
             ret= self.extractone(self.currentindex)
             self.currentindex += 1
