@@ -41,7 +41,7 @@ namespace Rcl {
     const string Doc::keykw("keywords");
     const string Doc::keymd5("md5");
 
-    void Doc::dump(bool dotext)
+    void Doc::dump(bool dotext) const
     {
         LOGDEB(("Rcl::Doc::dump: url: [%s]\n", url.c_str()));
         LOGDEB(("Rcl::Doc::dump: utf8fn: [%s]\n", utf8fn.c_str()));
