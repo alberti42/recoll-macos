@@ -29,10 +29,10 @@ using std::map;
 #endif
 
 #include "rclconfig.h"
-#include "fsindexer.h"
+#include "rcldb.h"
 
-/* Forward decl for lower level indexing object */
-class DbIndexer;
+class FsIndexer;
+class BeagleQueueIndexer;
 
 class DbIxStatus {
  public:
@@ -55,27 +55,20 @@ class DbIxStatusUpdater {
 };
 
 /**
-   The top level indexing object. Processes the configuration, then invokes
-   file system walking to populate/update the database(s).
-
-   Fiction:
-      Multiple top-level directories can be listed in the
-      configuration. Each can be indexed to a different
-      database. Directories are first grouped by database, then an
-      internal class (DbIndexer) is used to process each group.
-   Fact: we've had one db per config forever. The multidb/config code has been 
-   kept around for no good reason, this fiction only affects indexer.cpp
+ * The top level indexing object. Processes the configuration, then invokes
+ * file system walking or other to populate/update the database(s).
 */
 class ConfIndexer {
  public:
     enum runStatus {IndexerOk, IndexerError};
-    ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0)
-	: m_config(cnf), m_db(cnf), m_fsindexer(0), m_updater(updfunc)
-	{}
+    ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc = 0);
     virtual ~ConfIndexer();
 
-    /** Worker function: doe the actual indexing */
-    bool index(bool resetbefore = false);
+    // Indexer types. Maybe we'll have something more dynamic one day
+    enum ixType {IxTNone, IxTFs=1, IxTBeagleQueue=2, 
+                 IxTAll = IxTFs | IxTBeagleQueue};
+    /** Run indexers */
+    bool index(bool resetbefore, ixType typestorun);
 
     const string &getReason() {return m_reason;}
 
@@ -101,8 +94,13 @@ class ConfIndexer {
     RclConfig *m_config;
     Rcl::Db    m_db;
     FsIndexer *m_fsindexer; 
-    DbIxStatusUpdater *m_updater;
+    bool                m_dobeagle;
+    BeagleQueueIndexer *m_beagler; 
+    DbIxStatusUpdater  *m_updater;
     string m_reason;
+    list<string> m_tdl;
+
+    bool initTopDirs();
 };
 
 #endif /* _INDEXER_H_INCLUDED_ */

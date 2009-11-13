@@ -55,7 +55,7 @@ class FsIndexer : public FsTreeWalkerCB {
      * We create the temporary directory, open the database,
      * then call a file system walk for each top-level directory.
      */
-    bool index(bool resetbefore);
+    bool index();
 
     /** Index a list of files. No db cleaning or stemdb updating */
     bool indexFiles(const std::list<string> &files);

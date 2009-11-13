@@ -83,66 +83,27 @@ static bool makeIndexer(RclConfig *config)
 {
     if (!confindexer)
 	confindexer = new ConfIndexer(config, &updater);
-    return confindexer ? true : false;
+    if (!confindexer) {
+        cerr << "Cannot create indexer" << endl;
+        exit(1);
+    }
+    return true;
 }
-
-// The list of top directories/files wont change during program run,
-// let's cache it:
-static list<string> o_tdl;
 
 // Index a list of files. We just check that they belong to one of the
 // topdirs subtrees, and call the indexer method. 
 //
 // This is called either from the command line or from the monitor. In
 // this case we're called repeatedly in the same process, and the
-// confindexer is only created once by makeIndexer (but the db is
-// flushed anyway)
+// confindexer is only created once by makeIndexer (but the db closed and
+// flushed every time)
 bool indexfiles(RclConfig *config, const list<string> &filenames)
 {
     if (filenames.empty())
 	return true;
-    
-    if (o_tdl.empty()) {
-	o_tdl = config->getTopdirs();
-	if (o_tdl.empty()) {
-	    fprintf(stderr, "Top directory list (topdirs param.) "
-		    "not found in config or Directory list parse error");
-	    return false;
-	}
-    }
-
-    list<string> myfiles;
-    for (list<string>::const_iterator it = filenames.begin(); 
-	 it != filenames.end(); it++) {
-	string fn = path_canon(*it);
-	bool ok = false;
-	// Check that this file name belongs to one of our subtrees
-	for (list<string>::iterator dit = o_tdl.begin(); 
-	     dit != o_tdl.end(); dit++) {
-	    if (fn.find(*dit) == 0) {
-		myfiles.push_back(fn);
-		ok = true;
-		break;
-	    }
-	}
-	if (!ok) {
-	    fprintf(stderr, "File %s not in indexed area\n", fn.c_str());
-	}
-    }
-    if (myfiles.empty())
-	return true;
-
-    // Note: we should sort the file names against the topdirs here
-    // and check for different databases. But we can for now only have
-    // one database per config, so we set the keydir from the first
-    // file (which is not really needed...), create the indexer/db and
-    // go:
-    config->setKeyDir(path_getfather(*myfiles.begin()));
-
     if (!makeIndexer(config))
 	return false;
-
-    return confindexer->indexFiles(myfiles);
+    return confindexer->indexFiles(filenames);
 }
 
 // Delete a list of files. Same comments about call contexts as indexfiles.
@@ -150,32 +111,9 @@ bool purgefiles(RclConfig *config, const list<string> &filenames)
 {
     if (filenames.empty())
 	return true;
-    
-    if (o_tdl.empty()) {
-	o_tdl = config->getTopdirs();
-	if (o_tdl.empty()) {
-	    fprintf(stderr, "Top directory list (topdirs param.) "
-		    "not found in config or Directory list parse error");
-	    return false;
-	}
-    }
-
-    list<string> myfiles;
-    for (list<string>::const_iterator it = filenames.begin(); 
-	 it != filenames.end(); it++) {
-	myfiles.push_back(path_canon(*it));
-    }
-
-    // Note: we should sort the file names against the topdirs here
-    // and check for different databases. But we can for now only have
-    // one database per config, so we set the keydir from the first
-    // file (which is not really needed...), create the indexer/db and
-    // go:
-    config->setKeyDir(path_getfather(*myfiles.begin()));
-
     if (!makeIndexer(config))
 	return false;
-    return confindexer->purgeFiles(myfiles);
+    return confindexer->purgeFiles(filenames);
 }
 
 // Create stemming and spelling databases
@@ -343,12 +281,14 @@ int main(int argc, const char **argv)
 		filenames.push_back(*argv++);
 	    }
 	}
-
+        bool status;
 	if (op_flags & OPT_i)
-	    exit(!indexfiles(config, filenames));
+	    status = indexfiles(config, filenames);
 	else 
-	    exit(!purgefiles(config, filenames));
-
+	    status = purgefiles(config, filenames);
+        if (!confindexer->getReason().empty())
+            cerr << confindexer->getReason() << endl;
+        exit(status ? 0 : 1);
     } else if (op_flags & OPT_l) {
 	if (argc != 0) 
 	    Usage();
@@ -400,14 +340,15 @@ int main(int argc, const char **argv)
         exit(!confindexer->createAspellDict());
 #endif // ASPELL
     } else if (op_flags & OPT_b) {
-        BeagleQueueIndexer beagler(config);
-        bool status = beagler.processqueue();
-        return !status;
+        cerr << "Not yet" << endl;
+        return 1;
     } else {
 	confindexer = new ConfIndexer(config, &updater);
-	bool status = confindexer->index(rezero);
+	bool status = confindexer->index(rezero, ConfIndexer::IxTAll);
 	if (!status) 
 	    cerr << "Indexing failed" << endl;
+        if (!confindexer->getReason().empty())
+            cerr << confindexer->getReason() << endl;
 	return !status;
     }
 }

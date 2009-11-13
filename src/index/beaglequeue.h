@@ -28,21 +28,30 @@
 #include "fstreewalk.h"
 #include "rcldb.h"
 
+class DbIxStatusUpdater;
+class CirCache;
+
 class BeagleQueueIndexer : public FsTreeWalkerCB {
 public:
-    BeagleQueueIndexer(RclConfig *cnf);
+    BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db, 
+                       DbIxStatusUpdater *updfunc = 0);
     ~BeagleQueueIndexer();
     
-    bool processqueue();
+    bool index();
 
     FsTreeWalker::Status 
     processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
 
 private:
     RclConfig *m_config;
-    Rcl::Db m_db;
-    string  m_queuedir;
-    string  m_tmpdir;
+    Rcl::Db   *m_db;
+    CirCache  *m_cache;
+    string     m_queuedir;
+    string     m_tmpdir;
+    DbIxStatusUpdater *m_updater;
+
+    bool indexFromCache(const string& udi);
+
 };
 
 #endif /* _beaglequeue_h_included_ */

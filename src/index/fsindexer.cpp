@@ -90,7 +90,7 @@ bool FsIndexer::init()
 }
 
 // Recursively index each directory in the topdirs:
-bool FsIndexer::index(bool resetbefore)
+bool FsIndexer::index()
 {
     list<string> topdirs = m_config->getTopdirs();
     if (topdirs.empty()) {
@@ -375,7 +375,6 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
         // Index at least the file name even if there was an error.
         // We'll change the signature to ensure that the indexing will
         // be retried every time.
-
 
 	// Internal access path for multi-document files
 	if (ipath.empty())

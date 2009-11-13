@@ -28,37 +28,63 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.71 2008-12-17 08:01:40 dockes Exp
 
 #include "debuglog.h"
 #include "indexer.h"
+#include "fsindexer.h"
+#include "beaglequeue.h"
+
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
 #endif
 
+ConfIndexer::ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc)
+    : m_config(cnf), m_db(cnf), m_fsindexer(0), 
+      m_dobeagle(false), m_beagler(0),
+      m_updater(updfunc)
+{
+    m_config->getConfParam("processbeaglequeue", &m_dobeagle);
+}
+
 ConfIndexer::~ConfIndexer()
 {
      deleteZ(m_fsindexer);
+     deleteZ(m_beagler);
 }
 
-bool ConfIndexer::index(bool resetbefore)
+bool ConfIndexer::index(bool resetbefore, ixType typestorun)
 {
     Rcl::Db::OpenMode mode = resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
     if (!m_db.open(mode)) {
-	LOGERR(("ConfIndexer: error opening database %s\n", 
-                m_config->getDbDir().c_str()));
+	LOGERR(("ConfIndexer: error opening database %s : %s\n", 
+                m_config->getDbDir().c_str(), m_db.getReason().c_str()));
 	return false;
     }
 
     m_config->setKeyDir("");
-    m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
-    bool ret = m_fsindexer->index(resetbefore);
-    deleteZ(m_fsindexer);
-
-    if (m_updater) {
-	m_updater->status.fn.erase();
-	m_updater->status.phase = DbIxStatus::DBIXS_PURGE;
-	m_updater->update();
+    if (typestorun & IxTFs) {
+        deleteZ(m_fsindexer);
+        m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+        if (!m_fsindexer || !m_fsindexer->index()) {
+            return false;
+        }
     }
-    // Get rid of all database entries that don't exist in the
-    // filesystem anymore.
-    m_db.purge();
+
+    if (m_dobeagle && (typestorun & IxTBeagleQueue)) {
+        deleteZ(m_beagler);
+        m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
+        if (!m_beagler || !m_beagler->index()) {
+            return false;
+        }
+    }
+
+    if (typestorun == IxTAll) {
+        // Get rid of all database entries that don't exist in the
+        // filesystem anymore. Only if all *configured* indexers ran.
+        if (m_updater) {
+            m_updater->status.fn.erase();
+            m_updater->status.phase = DbIxStatus::DBIXS_PURGE;
+            m_updater->update();
+        }
+        m_db.purge();
+    }
 
     if (m_updater) {
 	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
@@ -78,17 +104,55 @@ bool ConfIndexer::index(bool resetbefore)
     return true;
 }
 
+bool ConfIndexer::initTopDirs()
+{
+    if (m_tdl.empty()) {
+	m_tdl = m_config->getTopdirs();
+	if (m_tdl.empty()) {
+	    m_reason = "Top directory list (topdirs param.) "
+		    "not found in config or Directory list parse error";
+	    return false;
+	}
+    }
+    return true;
+}
+
 bool ConfIndexer::indexFiles(const std::list<string> &files)
 {
+    if (!initTopDirs())
+        return false;
+
+    list<string> myfiles;
+    for (list<string>::const_iterator it = files.begin(); 
+	 it != files.end(); it++) {
+	string fn = path_canon(*it);
+	bool ok = false;
+	// Check that this file name belongs to one of our subtrees
+	for (list<string>::iterator dit = m_tdl.begin(); 
+	     dit != m_tdl.end(); dit++) {
+	    if (fn.find(*dit) == 0) {
+		myfiles.push_back(fn);
+		ok = true;
+		break;
+	    }
+	}
+	if (!ok) {
+	    m_reason += string("File ") + fn + string(" not in indexed area\n");
+	}
+    }
+    if (myfiles.empty())
+	return true;
+
     if (!m_db.open(Rcl::Db::DbUpd)) {
 	LOGERR(("ConfIndexer: indexFiles error opening database %s\n", 
                 m_config->getDbDir().c_str()));
 	return false;
     }
     m_config->setKeyDir("");
-    m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+    if (!m_fsindexer)
+        m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
     bool ret = m_fsindexer->indexFiles(files);
-    deleteZ(m_fsindexer);
+
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("ConfIndexer::index: error closing database in %s\n", 
@@ -100,15 +164,26 @@ bool ConfIndexer::indexFiles(const std::list<string> &files)
 
 bool ConfIndexer::purgeFiles(const std::list<string> &files)
 {
+    if (!initTopDirs())
+        return false;
+
+    list<string> myfiles;
+    for (list<string>::const_iterator it = files.begin(); 
+	 it != files.end(); it++) {
+	myfiles.push_back(path_canon(*it));
+    }
+
     if (!m_db.open(Rcl::Db::DbUpd)) {
 	LOGERR(("ConfIndexer: purgeFiles error opening database %s\n", 
                 m_config->getDbDir().c_str()));
 	return false;
     }
+
     m_config->setKeyDir("");
-    m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+    if (!m_fsindexer)
+        m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
     bool ret = m_fsindexer->purgeFiles(files);
-    deleteZ(m_fsindexer);
+
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("ConfIndexer::index: error closing database in %s\n", 
@@ -159,7 +234,7 @@ bool ConfIndexer::createStemDb(const string &lang)
 // module, either from a configuration variable or the NLS environment.
 bool ConfIndexer::createAspellDict()
 {
-    LOGDEB2(("FsIndexer::createAspellDict()\n"));
+    LOGDEB2(("ConfIndexer::createAspellDict()\n"));
 #ifdef RCL_USE_ASPELL
     // For the benefit of the real-time indexer, we only initialize
     // noaspell from the configuration once. It can then be set to
@@ -180,14 +255,14 @@ bool ConfIndexer::createAspellDict()
     Aspell aspell(m_config);
     string reason;
     if (!aspell.init(reason)) {
-	LOGERR(("FsIndexer::createAspellDict: aspell init failed: %s\n", 
+	LOGERR(("ConfIndexer::createAspellDict: aspell init failed: %s\n", 
 		reason.c_str()));
 	noaspell = true;
 	return false;
     }
-    LOGDEB(("FsIndexer::createAspellDict: creating dictionary\n"));
+    LOGDEB(("ConfIndexer::createAspellDict: creating dictionary\n"));
     if (!aspell.buildDict(m_db, reason)) {
-	LOGERR(("FsIndexer::createAspellDict: aspell buildDict failed: %s\n", 
+	LOGERR(("ConfIndexer::createAspellDict: aspell buildDict failed: %s\n", 
 		reason.c_str()));
 	noaspell = true;
 	return false;
