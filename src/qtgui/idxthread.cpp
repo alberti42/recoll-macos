@@ -80,7 +80,7 @@ void IdxThread::run()
 	    myconf->getConfParam("loglevel", &loglevel);
 	    DebugLog::getdbl()->setloglevel(loglevel);
 	    ConfIndexer *indexer = new ConfIndexer(myconf, this);
-	    if (indexer->index(rezero)) {
+	    if (indexer->index(rezero, ConfIndexer::IxTAll)) {
 		indexingstatus = IDXTS_OK;
 		indexingReason = "";
 	    } else {
