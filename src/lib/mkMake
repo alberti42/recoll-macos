@@ -9,7 +9,9 @@ ${depth}/common/rclconfig.cpp \
 ${depth}/common/rclinit.cpp \
 ${depth}/common/textsplit.cpp \
 ${depth}/common/unacpp.cpp \
+${depth}/index/beaglequeue.cpp \
 ${depth}/index/csguess.cpp \
+${depth}/index/fsindexer.cpp \
 ${depth}/index/indexer.cpp \
 ${depth}/index/mimetype.cpp \
 ${depth}/internfile/htmlparse.cpp \
