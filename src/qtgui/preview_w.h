@@ -51,7 +51,7 @@ class Q3PopupMenu;
 // We keep a list of data associated to each tab
 class TabData {
 public:
-    string fn; // filename for this tab
+    string url; // filename for this tab
     string ipath; // Internal doc path inside file
     int docnum;  // Index of doc in db search results.
     // doc out of internfile (previous fields come from the index) with
@@ -133,8 +133,13 @@ public:
 
     virtual void closeEvent(QCloseEvent *e );
     virtual bool eventFilter(QObject *target, QEvent *event );
-    virtual bool makeDocCurrent(const string &fn, size_t sz, 
-				const Rcl::Doc& idoc, int docnum, 
+    /** 
+     * Arrange for the document to be displayed either by exposing the tab 
+     * if already loaded, or by creating a new tab and loading it.
+     * @para docnum is used to link back to the result list (to highlight 
+     *   paragraph when tab exposed etc.
+     */
+    virtual bool makeDocCurrent(const Rcl::Doc& idoc, int docnum, 
 				bool sametab = false);
     friend class PreviewTextEdit;
 public slots:
@@ -182,12 +187,10 @@ private:
     QCheckBox* matchCheck;
 
     void init();
-    virtual void setCurTabProps(const string& fn, const Rcl::Doc& doc, 
-				int docnum);
+    virtual void setCurTabProps(const Rcl::Doc& doc, int docnum);
     virtual PreviewTextEdit *currentEditor();
     virtual PreviewTextEdit *addEditorTab();
-    virtual bool loadFileInCurrentTab(string fn, size_t sz, 
-				      const Rcl::Doc& idoc, int dnm);
+    virtual bool loadDocInCurrentTab(const Rcl::Doc& idoc, int dnm);
 };
 
 #endif /* _PREVIEW_W_H_INCLUDED_ */

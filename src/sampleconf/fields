@@ -43,7 +43,7 @@ recipient = XTO
 # "author" used to be stored by default, now set here as optional
 # "apptag" is used for viewer specialization (depending on local config)
 [stored]
-stored = author apptag
+stored = author apptag rclbes
 
 ##########################
 # This section defines field names aliases or synonyms. Any right hand side

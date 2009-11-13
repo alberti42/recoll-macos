@@ -45,6 +45,7 @@ using namespace std;
 #include "rclconfig.h"
 #include "mh_html.h"
 #include "fileudi.h"
+#include "beaglequeue.h"
 
 #ifdef RCL_USE_XATTR
 #include "pxattr.h"
@@ -166,12 +167,23 @@ void FileInterner::tmpcleanup()
 //
 // Empty handler on return says that we're in error, this will be
 // processed by the first call to internfile().
+// Split into "constructor calls init()" to allow use from other constructor
 FileInterner::FileInterner(const string &f, const struct stat *stp,
 			   RclConfig *cnf, 
 			   const string& td, int flags, const string *imime)
-    : m_cfg(cnf), m_fn(f), m_forPreview(flags & FIF_forPreview), 
-      m_tdir(td)
+    : m_tdir(td)
 {
+    initcommon(cnf, flags);
+    init(f, stp, cnf, td, flags, imime);
+}
+
+void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
+                        const string& td, int flags, const string *imime)
+{
+    m_fn = f;
+
+    cnf->setKeyDir(path_getfather(m_fn));
+
     string l_mime;
     bool usfci = false;
     cnf->getConfParam("usesystemfilecommand", &usfci);
@@ -237,8 +249,8 @@ FileInterner::FileInterner(const string &f, const struct stat *stp,
     if (!df) {
 	// No handler for this type, for now :( if indexallfilenames
 	// is set in the config, this normally wont happen (we get mh_unknown)
-	LOGERR(("FileInterner:: ignored: [%s] mime [%s]\n", 
-		f.c_str(), l_mime.c_str()));
+	LOGINFO(("FileInterner:: ignored: [%s] mime [%s]\n", 
+                 f.c_str(), l_mime.c_str()));
 	return;
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
@@ -258,13 +270,141 @@ FileInterner::FileInterner(const string &f, const struct stat *stp,
 	LOGERR(("FileInterner:: error parsing %s\n", m_fn.c_str()));
 	return;
     }
-    m_handlers.reserve(MAXHANDLERS);
-    for (unsigned int i = 0; i < MAXHANDLERS; i++)
-	m_tmpflgs[i] = false;
+
     m_handlers.push_back(df);
     LOGDEB(("FileInterner::FileInterner: %s [%s]\n", l_mime.c_str(), 
 	     m_fn.c_str()));
+}
+
+// Setup from memory data (ie: out of the web cache). imime needs to be set.
+FileInterner::FileInterner(const string &data, RclConfig *cnf, 
+                           const string& td, int flags, const string& imime)
+    : m_tdir(td)
+{
+    initcommon(cnf, flags);
+    init(data, cnf, td, flags, imime);
+}
+
+void FileInterner::init(const string &data, RclConfig *cnf, 
+                        const string& td, int flags, const string& imime)
+{
+    if (imime.empty()) {
+	LOGERR(("FileInterner: inmemory constructor needs input mime type\n"));
+        return;
+    }
+    m_mimetype = imime;
+
+    // Look for appropriate handler (might still return empty)
+    Dijon::Filter *df = getMimeHandler(m_mimetype, m_cfg, !m_forPreview);
+
+    if (!df) {
+	// No handler for this type, for now :( if indexallfilenames
+	// is set in the config, this normally wont happen (we get mh_unknown)
+	LOGINFO(("FileInterner:: ignored: mime [%s]\n", m_mimetype.c_str()));
+	return;
+    }
+    df->set_property(Dijon::Filter::OPERATING_MODE, 
+			    m_forPreview ? "view" : "index");
+
+    string charset = m_cfg->getDefCharset();
+    df->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
+
+    bool setres = false;
+    if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
+	setres = df->set_document_string(data);
+    } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
+	setres = df->set_document_data(data.c_str(), data.length());
+    } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
+	string filename;
+	if (dataToTempFile(data, m_mimetype, filename)) {
+	    if (!(setres=df->set_document_file(filename))) {
+		m_tmpflgs[0] = false;
+		m_tempfiles.pop_back();
+	    }
+	}
+    }
+    if (!setres) {
+	LOGINFO(("FileInterner:: set_doc failed inside for mtype %s\n", 
+                 m_mimetype.c_str()));
+	delete df;
+	return;
+    }
+    m_handlers.push_back(df);
+}
+
+void FileInterner::initcommon(RclConfig *cnf, int flags)
+{
+    m_cfg = cnf;
+    m_forPreview = ((flags & FIF_forPreview) != 0);
+    // Initialize handler stack.
+    m_handlers.reserve(MAXHANDLERS);
+    for (unsigned int i = 0; i < MAXHANDLERS; i++)
+	m_tmpflgs[i] = false;
     m_targetMType = stxtplain;
+}
+
+FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, 
+                           const string& td, int flags)
+    : m_tdir(td)
+{
+    initcommon(cnf, flags);
+
+    // We do insist on having an url...
+    if (idoc.url.empty()) {
+        LOGERR(("FileInterner::FileInterner:: no url!\n"));
+        return;
+    }
+
+    // This stuff will be moved to some kind of generic function:
+    //   get(idoc, ofn, odata, ometa) 
+    // and use some kind of backstore object factory next time we add a 
+    // backend (if ever). 
+    string backend;
+    map<string, string>::const_iterator it;
+    if ((it = idoc.meta.find(Rcl::Doc::keybcknd)) != idoc.meta.end())
+        backend = it->second;
+    
+    if (backend.empty() || !backend.compare("FS")) {
+        // The url has to be like file://
+        if (idoc.url.find("file://") != 0) {
+            LOGERR(("FileInterner: FS backend and non fs url: [%s]\n",
+                    idoc.url.c_str()));
+            return;
+        }
+        string fn = idoc.url.substr(7, string::npos);
+        struct stat st;
+        if (stat(fn.c_str(), &st) < 0) {
+            LOGERR(("InternFile: cannot access document file: [%s]\n",
+                    fn.c_str()));
+            return;
+        }
+        init(fn, &st, cnf, td, flags, &idoc.mimetype);
+    } else if (!backend.compare("BGL")) {
+        // Retrieve from our webcache (beagle data)
+        BeagleQueueIndexer beagler(cnf);
+        string data;
+        Rcl::Doc dotdoc;
+        map<string,string>::const_iterator it = 
+            idoc.meta.find(Rcl::Doc::keyudi);
+        if (it == idoc.meta.end() || it->second.empty()) {
+            LOGERR(("Internfile: no udi in idoc\n"));
+            return;
+        }
+        string udi = it->second;
+        if (!beagler.getFromCache(udi, dotdoc, data)) {
+            LOGINFO(("Internfile: failed fetch from Beagle cache for [%s]\n",
+                     udi.c_str()));
+            return;
+        }
+        if (dotdoc.mimetype.compare(idoc.mimetype)) {
+            LOGINFO(("Internfile: udi [%s], mimetype mismatch: in: [%s], bgl "
+                     "[%s]\n", idoc.mimetype.c_str(), dotdoc.mimetype.c_str()));
+        }
+        init(data, cnf, td, flags, dotdoc.mimetype);
+    } else {
+        LOGERR(("InternFile: unknown backend: [%s]\n", backend.c_str()));
+        return;
+    }
 }
 
 FileInterner::~FileInterner()
@@ -286,7 +426,10 @@ bool FileInterner::dataToTempFile(const string& dt, const string& mt,
     // Find appropriate suffix for mime type
     TempFile temp(new TempFileInternal(m_cfg->getSuffixFromMimeType(mt)));
     if (temp->ok()) {
-	m_tmpflgs[m_handlers.size()-1] = true;
+        // We are called before the handler is actually on the stack, so the
+        // index is m_handlers.size(). m_tmpflgs is a static array, so this is
+        // no problem
+	m_tmpflgs[m_handlers.size()] = true;
 	m_tempfiles.push_back(temp);
     } else {
 	LOGERR(("FileInterner::dataToTempFile: cant create tempfile: %s\n",
@@ -550,7 +693,7 @@ int FileInterner::addHandler()
 	string filename;
 	if (dataToTempFile(*txt, mimetype, filename)) {
 	    if (!(setres = newflt->set_document_file(filename))) {
-		m_tmpflgs[m_handlers.size()-1] = false;
+		m_tmpflgs[m_handlers.size()] = false;
 		m_tempfiles.pop_back();
 	    }
 	}
@@ -711,6 +854,12 @@ class DirWiper {
     }
 };
 
+// Temporary while we fix backend things
+static string urltolocalpath(string url)
+{
+    return url.substr(7, string::npos);
+}
+
 // Extract subdoc out of multidoc into temporary file. 
 // We do the usual internfile stuff: create a temporary directory,
 // then create an interner and call internfile. The target mtype is set to
@@ -722,11 +871,13 @@ class DirWiper {
 // - The output temporary file which is held in a reference-counted
 //   object and will be deleted when done with.
 bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
-			      RclConfig *cnf, 
-			      const string& fn,
-			      const string& ipath,
-			      const string& mtype)
+			      RclConfig *cnf, const Rcl::Doc& idoc)
 {
+    LOGDEB(("FileInterner::idocToFile\n"));
+    idoc.dump();
+    string fn = urltolocalpath(idoc.url);
+    string ipath = idoc.ipath;
+    string mtype = idoc.mimetype;
     struct stat st;
     if (stat(fn.c_str(), &st) < 0) {
 	LOGERR(("FileInterner::idocToFile: can't stat [%s]\n", fn.c_str()));

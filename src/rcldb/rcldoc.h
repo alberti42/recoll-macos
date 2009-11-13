@@ -44,9 +44,9 @@ class Doc {
     // can be accessed after a query without fetching the actual document).
     // We indicate the routine that sets them up during indexing
     
-    // This is just "file://" + binary or url-encoded filename. No
-    // transcoding: this is used to access files Index: computed from
-    // fn by Db::add caller. Query: from doc data.
+    // Binary or url-encoded url. No transcoding: this is used to access files 
+    // Index: computed by Db::add caller. 
+    // Query: from doc data.
     string url;
 
     // Transcoded version of the simple file name for SFN-prefixed
@@ -160,6 +160,9 @@ class Doc {
     static const string keytt;  // title
     static const string keykw;  // keywords
     static const string keymd5; // file md5 checksum
+    static const string keybcknd; // backend type for data not from the filesys
+    // udi back from index. Only set by Rcl::Query::getdoc().
+    static const string keyudi;
 };
 
 

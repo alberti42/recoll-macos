@@ -498,12 +498,6 @@ void RclMain::toggleIndexing()
     fileToggleIndexingAction->setEnabled(FALSE);
 }
 
-// Note that all our 'urls' are like : file://...
-static string urltolocalpath(string url)
-{
-    return url.substr(7, string::npos);
-}
-
 // Start a db query and set the reslist docsource
 void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 {
@@ -688,14 +682,6 @@ void RclMain::startPreview(int docnum, int mod)
 	return;
     }
 	
-    // Check file exists in file system
-    string fn = urltolocalpath(doc.url);
-    struct stat st;
-    if (stat(fn.c_str(), &st) < 0) {
-	QMessageBox::warning(0, "Recoll", tr("Cannot access document file: ") +
-			     fn.c_str());
-	return;
-    }
     if (mod & Qt::ShiftButton) {
 	// User wants new preview window
 	curPreview = 0;
@@ -724,7 +710,7 @@ void RclMain::startPreview(int docnum, int mod)
 	curPreview->setCaption(resList->getDescription());
 	curPreview->show();
     } 
-    curPreview->makeDocCurrent(fn, st.st_size, doc, docnum);
+    curPreview->makeDocCurrent(doc, docnum);
 }
 
 /** 
@@ -736,14 +722,6 @@ void RclMain::startPreview(int docnum, int mod)
  */
 void RclMain::startPreview(Rcl::Doc doc)
 {
-    // Check file exists in file system
-    string fn = urltolocalpath(doc.url);
-    struct stat st;
-    if (stat(fn.c_str(), &st) < 0) {
-	QMessageBox::warning(0, "Recoll", tr("Cannot access document file: ") +
-			     fn.c_str());
-	return;
-    }
     Preview *preview = new Preview(0, HiliteData());
     if (preview == 0) {
 	QMessageBox::warning(0, tr("Warning"), 
@@ -755,7 +733,7 @@ void RclMain::startPreview(Rcl::Doc doc)
     connect(preview, SIGNAL(wordSelect(QString)),
 	    this, SLOT(ssearchAddTerm(QString)));
     preview->show();
-    preview->makeDocCurrent(fn, st.st_size, doc, 0);
+    preview->makeDocCurrent(doc, 0);
 }
 
 // Show next document from result list in current preview tab
@@ -802,15 +780,7 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
     }
 	
     // Check that file exists in file system
-    string fn = urltolocalpath(doc.url);
-    struct stat st;
-    if (stat(fn.c_str(), &st) < 0) {
-	QMessageBox::warning(0, "Recoll", tr("Cannot access document file: ") +
-			     fn.c_str());
-	return;
-    }
-
-    w->makeDocCurrent(fn, st.st_size, doc, docnum, true);
+    w->makeDocCurrent(doc, docnum, true);
 }
 
 // Preview tab exposed: if the preview comes from the currently
@@ -862,7 +832,6 @@ void RclMain::saveDocToFile(int docnum)
 				" from database"));
 	return;
     }
-    string fn = urltolocalpath(doc.url);
     QString s = 
 	QFileDialog::getSaveFileName(path_home().c_str(),
 				     "",  this,
@@ -870,8 +839,7 @@ void RclMain::saveDocToFile(int docnum)
 				     tr("Choose a file name to save under"));
     string tofile((const char *)s.local8Bit());
     TempFile temp; // not used
-    if (!FileInterner::idocToFile(temp, tofile, rclconfig, fn, 
-				  doc.ipath, doc.mimetype)) {
+    if (!FileInterner::idocToFile(temp, tofile, rclconfig, doc)) {
 	QMessageBox::warning(0, "Recoll",
 			     tr("Cannot extract document or create "
 				"temporary file"));
@@ -911,6 +879,14 @@ void RclMain::startNativeViewer(int docnum)
 	return;
     }
     startNativeViewer(doc);
+}
+
+// Convert to file path if url is like file://
+static string fileurltolocalpath(string url)
+{
+    if (url.find("file://") == 0)
+        return url.substr(7, string::npos);
+    return string();
 }
 
 void RclMain::startNativeViewer(Rcl::Doc doc)
@@ -993,22 +969,20 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	return;
     }
 
-    // For files with an ipath, we do things differently depending if
-    // the configured command seems to be able to grok it or not: if
-    // not, create a temporary file
+    // We may need a temp file, or not depending on the command arguments
+    // and the fact that this is a subdoc or not.
     bool wantsipath = cmd.find("%i") != string::npos;
+    bool wantsfile = cmd.find("%f") != string::npos;
     bool istempfile = false;
-    string fn = urltolocalpath(doc.url);
-    string url;
+    string fn = fileurltolocalpath(doc.url);
+    string url = doc.url;
+
+    // If the command wants a file but this is not a file url, or
+    // there is an ipath that it won't understand, we need a temp file:
     rclconfig->setKeyDir(path_getfather(fn));
-    if (doc.ipath.empty() || wantsipath) {
-	url = doc.url;
-    } else {
-	// There is an ipath and the command does not know about
-	// them. We need a temp file.
+    if ((wantsfile && fn.empty()) || (!wantsipath && !doc.ipath.empty())) {
 	TempFile temp;
-	if (!FileInterner::idocToFile(temp, string(), rclconfig, fn, 
-					doc.ipath, doc.mimetype)) {
+	if (!FileInterner::idocToFile(temp, string(), rclconfig, doc)) {
 	    QMessageBox::warning(0, "Recoll",
 				 tr("Cannot extract document or create "
 				    "temporary file"));

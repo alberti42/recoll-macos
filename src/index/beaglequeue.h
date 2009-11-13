@@ -19,21 +19,30 @@
 /* @(#$Id: $  (C) 2009 J.F.Dockes */
 
 /**
- * Code to process the Beagle indexing queue. Beagle MUST NOT be
- * running, else mayhem will ensue. Interesting to reuse the beagle
- * firefox visited page indexing plugin for example.
+ * Process the Beagle indexing queue. 
+ *
+ * Beagle MUST NOT be running, else mayhem will ensue. 
+ *
+ * This is mainly written to reuse the Beagle Firefox plug-in (which
+ * copies visited pages and bookmarks to the queue).
  */
 
-#include "rclconfig.h"
 #include "fstreewalk.h"
-#include "rcldb.h"
+#include "rcldoc.h"
 
 class DbIxStatusUpdater;
 class CirCache;
+class RclConfig;
+namespace Rcl {
+    class Db;
+}
 
 class BeagleQueueIndexer : public FsTreeWalkerCB {
 public:
-    BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db, 
+    /**
+     * @para db can be null when using readonly for calling getFromCache()
+     */
+    BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db = 0,
                        DbIxStatusUpdater *updfunc = 0);
     ~BeagleQueueIndexer();
     
@@ -42,6 +51,8 @@ public:
     FsTreeWalker::Status 
     processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
 
+    bool getFromCache(const string& udi, Rcl::Doc &doc, string& data,
+                      string *hittype = 0);
 private:
     RclConfig *m_config;
     Rcl::Db   *m_db;
@@ -51,7 +62,6 @@ private:
     DbIxStatusUpdater *m_updater;
 
     bool indexFromCache(const string& udi);
-
 };
 
 #endif /* _beaglequeue_h_included_ */

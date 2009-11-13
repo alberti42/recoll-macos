@@ -369,6 +369,7 @@ bool Query::getDoc(int exti, Doc &doc)
     Xapian::docid docid = 0;
     int pc = 0;
     string data;
+    string udi;
     m_reason.erase();
     for (int xaptries=0; xaptries < 2; xaptries++) {
         try {
@@ -377,6 +378,16 @@ bool Query::getDoc(int exti, Doc &doc)
             pc = m_nq->xmset.convert_to_percent(m_nq->xmset[xapi-first]);
             data = xdoc.get_data();
             m_reason.erase();
+            Chrono chron;
+            Xapian::TermIterator it = xdoc.termlist_begin();
+            it.skip_to("Q");
+            if (it != xdoc.termlist_end()) {
+                udi = *it;
+                if (!udi.empty())
+                    udi = udi.substr(1);
+            }
+            LOGDEB2(("Query::getDoc: %d ms to get udi [%s]\n", chron.millis(),
+                     udi.c_str()));
             break;
         } catch (Xapian::DatabaseModifiedError &error) {
             // retry or end of loop
@@ -390,6 +401,7 @@ bool Query::getDoc(int exti, Doc &doc)
         LOGERR(("Query::getDoc: %s\n", m_reason.c_str()));
         return false;
     }
+    doc.meta[Rcl::Doc::keyudi] = udi;
     // Parse xapian document's data and populate doc fields
     return m_db->m_ndb->dbDataToRclDoc(docid, data, doc, pc);
 }

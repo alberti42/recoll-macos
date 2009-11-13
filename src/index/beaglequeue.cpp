@@ -175,7 +175,7 @@ BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
     if (!m_config->getConfParam("beaglequeuedir", m_queuedir))
         m_queuedir = path_tildexpand("~/.beagle/ToIndex");
 
-    if (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0) {
+    if (m_db && m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0) {
 	string reason;
         if (!maketmpdir(m_tmpdir, reason)) {
 	    LOGERR(("DbIndexer: cannot create temporary directory: %s\n",
@@ -212,26 +212,23 @@ BeagleQueueIndexer::~BeagleQueueIndexer()
     deleteZ(m_cache);
 }
 
-bool BeagleQueueIndexer::indexFromCache(const string& udi)
+bool BeagleQueueIndexer::getFromCache(const string& udi, Rcl::Doc &dotdoc, 
+                                      string& data, string *htt)
 {
-    string dict, data;
+    string dict;
 
-    // This is horribly inefficient and needs fixing either by saving
-    // the offsets during the forward scan, or using an auxiliary isam
-    // map
+    // This is horribly inefficient, especially while reindexing from
+    // cache, and needs fixing either by saving the offsets during the
+    // forward scan, or using an auxiliary isam map
     if (!m_cache->get(udi, dict, data))
         return false;
 
     ConfSimple cf(dict, 1);
-
-    string hittype;
-    if (!cf.get(keybght, hittype, "")) {
-        LOGERR(("BeagleIndexer::index: cc entry has no hit type\n"));
-        return false;
-    }
+    
+    if (htt)
+        cf.get(keybght, *htt, "");
 
     // Build a doc from saved metadata 
-    Rcl::Doc dotdoc;
     cf.get("url", dotdoc.url, "");
     cf.get("mimetype", dotdoc.mimetype, "");
     cf.get("fmtime", dotdoc.fmtime, "");
@@ -242,9 +239,29 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
          it != names.end(); it++) {
         cf.get(*it, dotdoc.meta[*it], "");
     }
+    return true;
+}
 
+bool BeagleQueueIndexer::indexFromCache(const string& udi)
+{
+    if (!m_db)
+        return false;
+
+    Rcl::Doc dotdoc;
+    string data;
+    string hittype;
+
+    if (!getFromCache(udi, dotdoc, data, &hittype))
+        return false;
+
+    if (hittype.empty()) {
+        LOGERR(("BeagleIndexer::index: cc entry has no hit type\n"));
+        return false;
+    }
+        
     if (!stringlowercmp("bookmark", hittype)) {
         // Just index the dotdoc
+        dotdoc.meta[Rcl::Doc::keybcknd] = "BGL";
         return m_db->addOrUpdate(udi, "", dotdoc);
     } else if (stringlowercmp("webhistory", dotdoc.meta[keybght]) ||
                (dotdoc.mimetype.compare("text/html") &&
@@ -269,13 +286,15 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
         doc.url = dotdoc.url;
         doc.fbytes = dotdoc.fbytes;
         doc.sig = "";
-
+        doc.meta[Rcl::Doc::keybcknd] = "BGL";
         return m_db->addOrUpdate(udi, "", doc);
     }
 }
 
 bool BeagleQueueIndexer::index()
 {
+    if (!m_db)
+        return false;
     LOGDEB(("BeagleQueueIndexer::processqueue: dir: [%s]\n", 
             m_queuedir.c_str()));
     m_config->setKeyDir(m_queuedir);
@@ -322,6 +341,9 @@ BeagleQueueIndexer::processone(const string &path,
                                const struct stat *stp,
                                FsTreeWalker::CbFlag flg)
 {
+    if (!m_db) //??
+        return FsTreeWalker::FtwError;
+
     bool dounlink = false;
 
     if (flg != FsTreeWalker::FtwRegular) 
@@ -365,6 +387,7 @@ BeagleQueueIndexer::processone(const string &path,
         dotfile.m_fields.set("fmtime", dotdoc.fmtime, "");
         dotfile.m_fields.set("fbytes", dotdoc.fbytes, "");
 
+        dotdoc.meta[Rcl::Doc::keybcknd] = "BGL";
         if (!m_db->addOrUpdate(udi, "", dotdoc)) 
             return FsTreeWalker::FtwError;
 
@@ -402,6 +425,7 @@ BeagleQueueIndexer::processone(const string &path,
         dotfile.m_fields.set("fmtime", dotdoc.fmtime, "");
         dotfile.m_fields.set("fbytes", dotdoc.fbytes, "");
 
+        doc.meta[Rcl::Doc::keybcknd] = "BGL";
         if (!m_db->addOrUpdate(udi, "", doc)) 
             return FsTreeWalker::FtwError;
 

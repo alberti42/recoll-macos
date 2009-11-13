@@ -156,10 +156,10 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnk1(new ConfLinkRclRep(config, "processbeaglequeue"));
     ConfParamBoolW* cp1 = 
-        new ConfParamBoolW(gb1, lnk1, tr("Process Beagle queue"),
+        new ConfParamBoolW(gb1, lnk1, tr("Steal Beagle indexing queue"),
                            tr("Beagle MUST NOT be running. Enables processing "
-                            "the beagle queue to index Firefox web history.<br>"
-                          "(you must also install the Firefox Beagle Plugin)"
+                          "the beagle queue to index Firefox web history.<br>"
+                          "(you should also install the Firefox Beagle plugin)"
 			  ));
 
     ConfLink lnk2(new ConfLinkRclRep(config, "webcachedir"));

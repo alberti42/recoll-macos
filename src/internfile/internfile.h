@@ -50,7 +50,8 @@ class FileInterner {
      * Get immediate parent for document. 
      *
      * This is not in general the same as the "parent" document used 
-     * with Rcl::Db::addOrUpdate(). The latter is generally the enclosing file. 
+     * with Rcl::Db::addOrUpdate(). The latter is generally the enclosing file,
+     * this would be for exemple the email containing the attachment.
      */
     static bool getEnclosing(const string &url, const string &ipath,
 			     string &eurl, string &eipath, string& udi);
@@ -58,9 +59,9 @@ class FileInterner {
     enum Flags {FIF_none, FIF_forPreview, FIF_doUseInputMimetype};
 
     /**
-     * Identify and possibly decompress file, create adequate
-     * handler. The mtype parameter is only set when the object is
-     * created for previewing a file. Filter output may be
+     * Identify and possibly decompress file, and create the top filter
+     * The mtype parameter is not always set (it is when the object is
+     * created for previewing a file). Filter output may be
      * different for previewing and indexing.
      *
      * @param fn file name 
@@ -69,12 +70,27 @@ class FileInterner {
      * @param td  temporary directory to use as working space if 
      *   decompression needed. Must be private and will be wiped clean.
      * @param mtype mime type if known. For a compressed file this is the 
-     *   mime type for the uncompressed version. This currently doubles up 
-     *   to indicate that this object is for previewing (not indexing).
+     *   mime type for the uncompressed version. 
      */
     FileInterner(const string &fn, const struct stat *stp, 
 		 RclConfig *cnf, const string& td, int flags,
 		 const string *mtype = 0);
+    
+    /** 
+     * Alternate constructor for the case where the data is in memory.
+     * This is mainly for data extracted from the web cache. The mime type
+     * must be set, input must be uncompressed.
+     */
+    FileInterner(const string &data, RclConfig *cnf, const string& td, 
+                 int flags, const string& mtype);
+
+    /**
+     * Alternate constructor for the case where it is not known where
+     * the data will come from. We'll use the doc fields and try our
+     * best...
+     */
+    FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, const string& td, 
+                 int flags);
 
     ~FileInterner();
 
@@ -121,8 +137,7 @@ class FileInterner {
      * @param mtype The target mime type (we don't want to decode to text!)
      */
     static bool idocToFile(TempFile& temp, const string& tofile, 
-			   RclConfig *cnf, const string& fn, 
-			   const string& ipath, const string& mtype);
+			   RclConfig *cnf, const Rcl::Doc& doc);
 
     const string& getReason() const {return m_reason;}
     static void getMissingExternal(string& missing);
@@ -159,6 +174,14 @@ class FileInterner {
     // Missing external programs
     static set<string>           o_missingExternal;
     static map<string, set<string> > o_typesForMissing;
+
+    // Pseudo-constructors
+    void init(const string &fn, const struct stat *stp, 
+              RclConfig *cnf, const string& td, int flags,
+              const string *mtype = 0);
+    void init(const string &data, RclConfig *cnf, const string& td, 
+              int flags, const string& mtype);
+    void initcommon(RclConfig *cnf, int flags);
 
     void tmpcleanup();
     bool dijontorcl(Rcl::Doc&);

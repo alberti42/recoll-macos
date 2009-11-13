@@ -538,14 +538,16 @@ PreviewTextEdit *Preview::addEditorTab()
     return editor;
 }
 
-void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
-			     int docnum)
+void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
 {
     QString title;
     map<string,string>::const_iterator meta_it;
-    if ((meta_it = doc.meta.find("title")) != doc.meta.end()) {
+    if ((meta_it = doc.meta.find(Rcl::Doc::keytt)) != doc.meta.end()
+        && !meta_it->second.empty()) {
 	    title = QString::fromUtf8(meta_it->second.c_str(), 
 				      meta_it->second.length());
+    } else {
+        title = QString::fromLocal8Bit(path_getsimple(doc.url).c_str());
     }
     if (title.length() > 20) {
 	title = title.left(10) + "..." + title.right(10);
@@ -572,16 +574,15 @@ void Preview::setCurTabProps(const string &fn, const Rcl::Doc &doc,
 
     PreviewTextEdit *e = currentEditor();
     if (e) {
-	e->m_data.fn = fn;
+	e->m_data.url = doc.url;
 	e->m_data.ipath = doc.ipath;
 	e->m_data.docnum = docnum;
     }
 }
 
-bool Preview::makeDocCurrent(const string &fn, size_t sz, 
-			     const Rcl::Doc& doc, int docnum, bool sametab)
+bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
 {
-    LOGDEB(("Preview::makeDocCurrent: %s\n", fn.c_str()));
+    LOGDEB(("Preview::makeDocCurrent: %s\n", doc.url.c_str()));
 
     /* Check if we already have this page */
     for (int i = 0; i < pvTab->count(); i++) {
@@ -593,7 +594,7 @@ bool Preview::makeDocCurrent(const string &fn, size_t sz,
         if (tw) {
             PreviewTextEdit *edit = 
                 dynamic_cast<PreviewTextEdit*>(tw->child("pvEdit"));
-            if (edit && !edit->m_data.fn.compare(fn) && 
+            if (edit && !edit->m_data.url.compare(doc.url) && 
                 !edit->m_data.ipath.compare(doc.ipath)) {
                 pvTab->showPage(tw);
                 return true;
@@ -606,7 +607,7 @@ bool Preview::makeDocCurrent(const string &fn, size_t sz,
 	return false;
     }
     m_justCreated = false;
-    if (!loadFileInCurrentTab(fn, sz, doc, docnum)) {
+    if (!loadDocInCurrentTab(doc, docnum)) {
 	closeCurrentTab();
 	return false;
     }
@@ -637,16 +638,15 @@ bool Preview::makeDocCurrent(const string &fn, size_t sz,
 /* A thread to to the file reading / format conversion */
 class LoadThread : public QThread {
     int *statusp;
-    Rcl::Doc *out;
+    Rcl::Doc& out;
+    const Rcl::Doc& idoc;
     string filename;
-    string ipath;
-    string *mtype;
     string tmpdir;
     int loglevel;
  public: 
     string missing;
-    LoadThread(int *stp, Rcl::Doc *odoc, string fn, string ip, string *mt) 
-	: statusp(stp), out(odoc), filename(fn), ipath(ip), mtype(mt) 
+    LoadThread(int *stp, Rcl::Doc& odoc, const Rcl::Doc& idc) 
+	: statusp(stp), out(odoc), idoc(idc)
 	{
 	    loglevel = DebugLog::getdbl()->getlevel();
 	}
@@ -666,40 +666,35 @@ class LoadThread : public QThread {
 	    *statusp = -1;
 	    return;
 	}
-	struct stat st;
-	if (stat(filename.c_str(), &st) < 0) {
-	    LOGERR(("Preview: can't stat [%s]\n", filename.c_str()));
-	    QMessageBox::critical(0, "Recoll",
-				  Preview::tr("File does not exist"));
-	    *statusp = -1;
-	    return;
-	}
+
+      // QMessageBox::critical(0, "Recoll", Preview::tr("File does not exist"));
 	
-	FileInterner interner(filename, &st, rclconfig, tmpdir, 
-                              FileInterner::FIF_forPreview,
-                              mtype);
+	FileInterner interner(idoc, rclconfig, tmpdir, 
+                              FileInterner::FIF_forPreview);
+
 	// We don't set the interner's target mtype to html because we
 	// do want the html filter to do its work: we won't use the
 	// text, but we need the conversion to utf-8
 	// interner.setTargetMType("text/html");
 	try {
-	    FileInterner::Status ret = interner.internfile(*out, ipath);
+            string ipath = idoc.ipath;
+	    FileInterner::Status ret = interner.internfile(out, ipath);
 	    if (ret == FileInterner::FIDone || ret == FileInterner::FIAgain) {
 		// FIAgain is actually not nice here. It means that the record
 		// for the *file* of a multidoc was selected. Actually this
 		// shouldn't have had a preview link at all, but we don't know
 		// how to handle it now. Better to show the first doc than
 		// a mysterious error. Happens when the file name matches a
-		// a search term of course.
+		// a search term.
 		*statusp = 0;
 		// If we prefer html and it is available, replace the
 		// text/plain document text
 		if (prefs.previewHtml && !interner.get_html().empty()) {
-		    out->text = interner.get_html();
-		    out->mimetype = "text/html";
+		    out.text = interner.get_html();
+		    out.mimetype = "text/html";
 		}
 	    } else {
-		out->mimetype = interner.getMimetype();
+		out.mimetype = interner.getMimetype();
 		interner.getMissingExternal(missing);
 		*statusp = -1;
 	    }
@@ -754,8 +749,7 @@ public:
     ~LoadGuard() {*m_bp = false; CancelCheck::instance().setCancel(false);}
 };
 
-bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
-				   int docnum)
+bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 {
     if (m_loading) {
 	LOGERR(("ALready loading\n"));
@@ -767,18 +761,11 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
 
     m_haveAnchors = false;
 
-    Rcl::Doc doc = idoc;
+    setCurTabProps(idoc, docnum);
 
-    if (doc.meta[Rcl::Doc::keytt].empty()) 
-	doc.meta[Rcl::Doc::keytt] = path_getsimple(doc.url);
-
-    setCurTabProps(fn, doc, docnum);
-
-    char csz[20];
-    sprintf(csz, "%lu", (unsigned long)sz);
     QString msg = QString("Loading: %1 (size %2 bytes)")
-	.arg(QString::fromLocal8Bit(fn.c_str()))
-	.arg(csz);
+	.arg(QString::fromLocal8Bit(idoc.url.c_str()))
+	.arg(QString::fromAscii(idoc.fbytes.c_str()));
 
     // Create progress dialog and aux objects
     const int nsteps = 20;
@@ -786,12 +773,12 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     progress.setMinimumDuration(2000);
     WaiterThread waiter(100);
 
-    // Load and convert file
+    // Load and convert document
+    // idoc came out of the index data (main text and other fields missing). 
+    // foc is the complete one what we are going to extract from storage.
     Rcl::Doc fdoc;
-    // Need to setup config to retrieve possibly local parameters
-    rclconfig->setKeyDir(path_getfather(fn));
     int status = 1;
-    LoadThread lthr(&status, &fdoc, fn, doc.ipath, &doc.mimetype);
+    LoadThread lthr(&status, fdoc, idoc);
     lthr.start();
     int prog;
     for (prog = 1;;prog++) {
@@ -963,7 +950,7 @@ bool Preview::loadFileInCurrentTab(string fn, size_t sz, const Rcl::Doc &idoc,
     }
 
     // Enter document in document history
-    g_dynconf->enterDoc(fn, doc.ipath);
+    g_dynconf->enterDoc(idoc.url, idoc.ipath);
 
     editor->setFocus();
     emit(previewExposed(this, m_searchId, docnum));
@@ -998,7 +985,7 @@ void PreviewTextEdit::toggleFields()
     // Else display fields
     m_dspflds = true;
     QString txt = "<html><head></head><body>\n";
-    txt += "<b>" + QString::fromLocal8Bit(m_data.fn.c_str());
+    txt += "<b>" + QString::fromLocal8Bit(m_data.url.c_str());
     if (!m_data.ipath.empty())
 	txt += "|" + QString::fromUtf8(m_data.ipath.c_str());
     txt += "</b><br><br>";
