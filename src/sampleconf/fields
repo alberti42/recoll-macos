@@ -1,9 +1,10 @@
 # @(#$Id: fields,v 1.5 2008-10-08 08:27:34 dockes Exp $  (C) 2007 J.F.Dockes
 # Field names configuration. This defines how one may search ie for 
-# author:Hemingway
+#   author:Hemingway
+#
 # Important: 
 #   - the field names MUST be all lowercase here. They can be anycased
-#     in the documents:
+#     in the documents.
 
 #####################################################
 # This section defines what prefix the terms inside named fields will be
@@ -22,7 +23,9 @@ caption = S
 author = A
 keyword = K
 
-# extension examples. This are actually used by default by Recoll:
+# Extension examples. These are actually used by default by Recoll, you can
+# add your own to search for fields produced by the filters and not handled
+# by default.
 ext = XE
 filename = XSFN
 recipient = XTO
@@ -30,8 +33,9 @@ recipient = XTO
 ############################
 # Some fields are stored in the document data record inside the index and
 # can be returned in result lists. There is no necessity that stored fields
-# should be indexed (have a prefix) (example: url but this one doesn't need
-# to be listed here)
+# should be indexed (have a prefix in the preceding section) (example:
+# "url", but this one doesn't need to be listed here, it's stored by hard
+# code)
 #
 # Some fields are stored by default, don't add them here, else they will be
 # stored twice: caption, keywords, abstract, filename, mimetype, url
