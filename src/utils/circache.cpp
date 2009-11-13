@@ -34,6 +34,7 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 #include "circache.h"
 #include "conftree.h"
 #include "debuglog.h"
+#include "smallut.h"
 
 using namespace std;
 
@@ -85,6 +86,7 @@ public:
 class CirCacheInternal {
 public:
     int m_fd;
+    ////// These are cache persistent state and written to the first block:
     // Maximum file size, after which we begin reusing old space
     off_t m_maxsize; 
     // Offset of the oldest header. 
@@ -93,11 +95,17 @@ public:
     off_t m_nheadoffs;
     // Pad size for newest entry. 
     int   m_npadsize;
+    ///////////////////// End header entries
+
     // A place to hold data when reading
     char *m_buffer;
     size_t m_bufsiz;
     // Error messages
     ostringstream m_reason;
+
+    // State for rewind/next/getcurrent operation
+    off_t  m_itoffs;
+    EntryHeaderData m_ithd;
 
     CirCacheInternal()
         : m_fd(-1), m_maxsize(-1), m_oheadoffs(-1), 
@@ -194,6 +202,25 @@ public:
         return true;
     }            
 
+    bool writeentryheader(off_t offset, const EntryHeaderData& d)
+    {
+        char *bf = buf(CIRCACHE_HEADER_SIZE);
+        if (bf == 0)
+            return false;
+        memset(bf, 0, CIRCACHE_HEADER_SIZE);
+        sprintf(bf, headerformat, d.dicsize, d.datasize, d.padsize);
+        if (lseek(m_fd, offset, 0) != offset) {
+            m_reason << "CirCache::weh: lseek(" << offset << 
+                ") failed: errno " << errno;
+            return false;
+        }
+        if (write(m_fd, bf, CIRCACHE_HEADER_SIZE) !=  CIRCACHE_HEADER_SIZE) {
+            m_reason << "CirCache::weh: write failed. errno " << errno;
+            return false;
+        }
+        return true;
+    }
+
     CCScanHook::status readentryheader(off_t offset, EntryHeaderData& d)
     {
         assert(m_fd >= 0);
@@ -224,25 +251,6 @@ public:
             return CCScanHook::Error;
         }
         return CCScanHook::Continue;
-    }
-
-    bool writeentryheader(off_t offset, const EntryHeaderData& d)
-    {
-        char *bf = buf(CIRCACHE_HEADER_SIZE);
-        if (bf == 0)
-            return false;
-        memset(bf, 0, CIRCACHE_HEADER_SIZE);
-        sprintf(bf, headerformat, d.dicsize, d.datasize, d.padsize);
-        if (lseek(m_fd, offset, 0) != offset) {
-            m_reason << "CirCache::weh: lseek(" << offset << 
-                ") failed: errno " << errno;
-            return false;
-        }
-        if (write(m_fd, bf, CIRCACHE_HEADER_SIZE) !=  CIRCACHE_HEADER_SIZE) {
-            m_reason << "CirCache::weh: write failed. errno " << errno;
-            return false;
-        }
-        return true;
     }
 
     CCScanHook::status scan(off_t startoffset, CCScanHook *user, 
@@ -304,12 +312,46 @@ public:
                 d.datasize + d.padsize;
         }
     }
+
+    bool readDicData(off_t hoffs, unsigned int dicsize, string& dict, 
+                     unsigned int datasize, string* data)
+    {
+        off_t offs = hoffs + CIRCACHE_HEADER_SIZE;
+        if (lseek(m_fd, offs, 0) != offs) {
+            m_reason << "CirCache::get: lseek(" << offs << ") failed: " << 
+                errno;
+            return false;
+        }
+        char *bf = buf(dicsize);
+        if (bf == 0)
+            return false;
+        if (read(m_fd, bf, dicsize) != int(dicsize)) {
+            m_reason << "CirCache::get: read() failed: errno " << errno;
+            return false;
+        }
+        dict.assign(bf, dicsize);
+        if (data == 0)
+            return true;
+
+        bf = buf(datasize);
+        if (bf == 0)
+            return false;
+        if (read(m_fd, bf, datasize) != int(datasize)){
+            m_reason << "CirCache::get: read() failed: errno " << errno;
+            return false;
+        }
+        data->assign(bf, datasize);
+
+        return true;
+    }
+
 };
 
 CirCache::CirCache(const string& dir)
     : m_dir(dir)
 {
     m_d = new CirCacheInternal;
+    LOGDEB(("CirCache: [%s]\n", m_dir.c_str()));
 }
 
 CirCache::~CirCache()
@@ -323,8 +365,9 @@ string CirCache::getReason()
     return m_d ? m_d->m_reason.str() : "Not initialized";
 }
 
-bool CirCache::create(off_t m_maxsize)
+bool CirCache::create(off_t m_maxsize, bool onlyifnotexists)
 {
+    LOGDEB(("CirCache::create: [%s]\n", m_dir.c_str()));
     assert(m_d != 0);
     struct stat st;
     if (stat(m_dir.c_str(), &st) < 0) {
@@ -333,6 +376,9 @@ bool CirCache::create(off_t m_maxsize)
                 ") failed" << " errno " << errno;
             return false;
         }
+    } else {
+        if (onlyifnotexists)
+            return open(CC_OPWRITE);
     }
 
     if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(), 
@@ -460,32 +506,10 @@ bool CirCache::get(const string& udi, string& dict, string& data, int instance)
     } else if (ret != CCScanHook::Stop) {
         return false;
     }
-    off_t offs = getter.m_offs + CIRCACHE_HEADER_SIZE;
-    if (lseek(m_d->m_fd, offs, 0) != offs) {
-        m_d->m_reason << "CirCache::get: lseek(" << offs << ") failed: " << 
-            errno;
-        return false;
-    }
-    char *bf = m_d->buf(getter.m_hd.dicsize);
-    if (bf == 0)
-        return false;
-    if (read(m_d->m_fd, bf, getter.m_hd.dicsize) != int(getter.m_hd.dicsize)) {
-        m_d->m_reason << "CirCache::get: read() failed: errno " << errno;
-        return false;
-    }
-    dict.assign(bf, getter.m_hd.dicsize);
-
-    bf = m_d->buf(getter.m_hd.datasize);
-    if (bf == 0)
-        return false;
-    if (read(m_d->m_fd, bf, getter.m_hd.datasize) != int(getter.m_hd.datasize)){
-        m_d->m_reason << "CirCache::get: read() failed: errno " << errno;
-        return false;
-    }
-    data.assign(bf, getter.m_hd.datasize);
-
-    return true;
+    return m_d->readDicData(getter.m_offs, getter.m_hd.dicsize, dict,
+                            getter.m_hd.datasize, &data);
 }
+
 
 class CCScanHookSpacer : public  CCScanHook {
 public:
@@ -638,6 +662,70 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
         m_d->m_oheadoffs = CIRCACHE_FIRSTBLOCK_SIZE;
     }
     return m_d->writefirstblock();
+    return true;
+}
+
+bool CirCache::rewind(bool& eof)
+{
+    assert(m_d != 0);
+    eof = false;
+    m_d->m_itoffs = m_d->m_oheadoffs;
+    CCScanHook::status st = m_d->readentryheader(m_d->m_itoffs, m_d->m_ithd);
+    switch(st) {
+    case CCScanHook::Eof:
+        eof = true;
+        return false;
+    case CCScanHook::Continue:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool CirCache::next(bool& eof)
+{
+    assert(m_d != 0);
+
+    eof = false;
+
+    m_d->m_itoffs += CIRCACHE_HEADER_SIZE + m_d->m_ithd.dicsize + 
+        m_d->m_ithd.datasize + m_d->m_ithd.padsize;
+    if (m_d->m_itoffs == m_d->m_oheadoffs) {
+        eof = true;
+        return false;
+    }
+
+    CCScanHook::status st = m_d->readentryheader(m_d->m_itoffs, m_d->m_ithd);
+    if (st == CCScanHook::Eof) {
+        m_d->m_itoffs = CIRCACHE_FIRSTBLOCK_SIZE;
+        if (m_d->m_itoffs == m_d->m_oheadoffs) {
+            eof = true;
+            return false;
+        }
+        st = m_d->readentryheader(m_d->m_itoffs, m_d->m_ithd);
+    }
+    if (st == CCScanHook::Continue)
+        return true;
+    return false;
+}
+
+bool CirCache::getcurrentdict(string& dict)
+{
+    assert(m_d != 0);
+    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd.dicsize, dict, 0, 0))
+        return false;
+    return true;
+}
+
+bool CirCache::getcurrent(string& udi, string& dict, string& data)
+{
+    assert(m_d != 0);
+    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd.dicsize, dict,
+                          m_d->m_ithd.datasize, &data))
+        return false;
+
+    ConfSimple conf(dict, 1);
+    conf.get("udi", udi, "");
     return true;
 }
 

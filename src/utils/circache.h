@@ -49,7 +49,7 @@ public:
 
     virtual string getReason();
 
-    virtual bool create(off_t maxsize);
+    virtual bool create(off_t maxsize, bool onlyifnotexists = true);
 
     enum OpMode {CC_OPREAD, CC_OPWRITE};
     virtual bool open(OpMode mode);
@@ -59,12 +59,23 @@ public:
 
     virtual bool put(const string& udi, const string& dic, const string& data);
 
+    /* Maybe we'll have separate iterators one day, but this is good enough for
+     * now. No put() operations should be performed while using these.
+     */
+    virtual bool rewind(bool& eof);
+    virtual bool next(bool& eof);
+    virtual bool getcurrent(string& udi, string& dic, string& data);
+    virtual bool getcurrentdict(string& dict);
+
     /* Debug */
     virtual bool dump();
 
 protected:
     CirCacheInternal *m_d;
     string m_dir;
+private:
+    CirCache(const CirCache&) {}
+    CirCache& operator=(const CirCache&) {return *this;}
 };
 
 #endif /* _circache_h_included_ */
