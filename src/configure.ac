@@ -255,7 +255,7 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 #
 
 if test X$QTDIR != X ; then
-   PATH=$QTDIR/bin:$PATH
+   PATH=$PATH:$QTDIR/bin
    export PATH
 fi
 
