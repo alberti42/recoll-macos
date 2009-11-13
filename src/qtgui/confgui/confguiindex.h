@@ -54,6 +54,11 @@ public:
     ConfTopPanelW(QWidget *parent, ConfNull *config);
 };
 
+#if QT_VERSION < 0x040000
+#include <qgroupbox.h>
+#else
+#include <Q3GroupBox>
+#endif
 
 /**
  * A panel for the parameters that can be changed in subdirectories:
@@ -72,9 +77,21 @@ private:
     ConfParamDNLW    *m_subdirs;
     list<ConfParamW*> m_widgets;
     ConfNull         *m_config;
+#if QT_VERSION < 0x040000
     QGroupBox        *m_groupbox;
-
+#else
+    Q3GroupBox        *m_groupbox;
+#endif
     void reloadAll();
+};
+
+/** 
+ * Extra or little used parameters
+ */
+class ConfBeaglePanelW : public QWidget {
+    Q_OBJECT
+public:
+    ConfBeaglePanelW(QWidget *parent, ConfNull *config);
 };
 
 } // Namespace confgui

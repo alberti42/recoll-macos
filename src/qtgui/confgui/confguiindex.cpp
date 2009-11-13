@@ -45,6 +45,7 @@ static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.13 2008-09-30 12:38:29 docke
 #include QLISTBOX_INCLUDE
 #include <qtimer.h>
 #include <qmessagebox.h>
+#include <qcheckbox.h>
 
 #include <list>
 using std::list;
@@ -130,6 +131,57 @@ void ConfIndexW::reloadPanels()
     w = new ConfSubPanelW(this, m_conf);
     m_widgets.push_back(w);
     addTab(w, QObject::tr("Local parameters"));
+
+    w = new ConfBeaglePanelW(this, m_conf);
+    m_widgets.push_back(w);
+    addTab(w, QObject::tr("Beagle web history"));
+
+}
+
+ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
+    : QWidget(parent)
+{
+    QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(this);
+    vboxLayout->setSpacing(spacing);
+    vboxLayout->setMargin(margin);
+    QGROUPBOX *gb1 = new QGROUPBOX(1, Qt::Horizontal, this);
+    gb1->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
+					  QSizePolicy::Preferred,
+					  1,  // Horizontal stretch
+					  3,  // Vertical stretch
+			    gb1->sizePolicy().hasHeightForWidth()));
+    gb1->setFlat(1);
+    // gb1->setInsideMargin(0);
+    // gb1->setInsideSpacing(0);
+
+    ConfLink lnk1(new ConfLinkRclRep(config, "processbeaglequeue"));
+    ConfParamBoolW* cp1 = 
+        new ConfParamBoolW(gb1, lnk1, tr("Process Beagle queue"),
+                           tr("Beagle MUST NOT be running. Enables processing "
+                            "the beagle queue to index Firefox web history.<br>"
+                          "(you must also install the Firefox Beagle Plugin)"
+			  ));
+
+    ConfLink lnk2(new ConfLinkRclRep(config, "webcachedir"));
+    ConfParamFNW* cp2 = 
+        new ConfParamFNW(gb1, lnk2, tr("Web cache directory name"),
+		     tr("The name for a directory where to store the cache "
+			"for visited web pages.<br>"
+                        "A non-absolute path is taken relative to the "
+			"configuration directory."), true);
+    cp2->setEnabled(cp1->m_cb->isOn());
+    connect(cp1->m_cb, SIGNAL(toggled(bool)), cp2, SLOT(setEnabled(bool)));
+
+    ConfLink lnk3(new ConfLinkRclRep(config, "webcachemaxmbs"));
+    ConfParamIntW *cp3 =
+        new ConfParamIntW(gb1, lnk3, tr("Max. size for the web cache (MB)"),
+		      tr("Entries will be recycled once the size is reached"),
+		      -1, 1000);
+    cp3->setEnabled(cp1->m_cb->isOn());
+    connect(cp1->m_cb, SIGNAL(toggled(bool)), cp3, SLOT(setEnabled(bool)));
+
+    vboxLayout->addWidget(gb1);
+
 }
 
 ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
@@ -179,44 +231,65 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			"Use 'stderr' for terminal output"), false);
     vboxLayout->addWidget(e4);
 
+    QGROUPBOX *groupbox1 = new QGROUPBOX(2, Qt::Horizontal, this);
+    groupbox1->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
+					  QSizePolicy::Preferred,
+					  1,  // Horizontal stretch
+					  3,  // Vertical stretch
+			    groupbox1->sizePolicy().hasHeightForWidth()));
+    groupbox1->setFlat(1);
+    groupbox1->setInsideMargin(0);
+    groupbox1->setInsideSpacing(0);
+
     ConfLink lnk1(new ConfLinkRclRep(config, "loglevel"));
-    ConfParamIntW *e1 = new 
-	ConfParamIntW(this, lnk1, tr("Log verbosity level"),
+    new ConfParamIntW(groupbox1, lnk1, tr("Log verbosity level"),
 		      tr("This value adjusts the amount of "
 			 "messages,<br>from only errors to a "
 			 "lot of debugging data."), 0, 6);
-    vboxLayout->addWidget(e1);
 
     ConfLink lnkidxflsh(new ConfLinkRclRep(config, "idxflushmb"));
-    ConfParamIntW *eidxflsh = new 
-	ConfParamIntW(this, lnkidxflsh, tr("Index flush megabytes interval"),
+
+    new ConfParamIntW(groupbox1, lnkidxflsh, 
+                      tr("Index flush megabytes interval"),
 		      tr("This value adjust the amount of "
 			 "data which is indexed between flushes to disk.<br>"
 			 "This helps control the indexer memory usage. "
 			 "Default 10MB "), 0, 1000);
-    vboxLayout->addWidget(eidxflsh);
 
     ConfLink lnkfsocc(new ConfLinkRclRep(config, "maxfsoccuppc"));
-    ConfParamIntW *efsocc = new 
-	ConfParamIntW(this, lnkfsocc, tr("Max disk occupation (%)"),
+    new ConfParamIntW(groupbox1, lnkfsocc, tr("Max disk occupation (%)"),
 		      tr("This is the percentage of disk occupation where "
 			 "indexing will fail and stop (to avoid filling up "
 			 "your disk).<br>"
 			 "0 means no limit (this is the default)."), 0, 100);
-    vboxLayout->addWidget(efsocc);
 
+    ConfLink lnkusfc(new ConfLinkRclRep(config, "usesystemfilecommand"));
+    new ConfParamBoolW(groupbox1, lnkusfc, tr("Use system's 'file' command"),
+		       tr("Use the system's 'file' command if internal<br>"
+			  "mime type identification fails."));
+    vboxLayout->addWidget(groupbox1);
+
+
+    QGROUPBOX *groupbox2 = new QGROUPBOX(2, Qt::Horizontal, this);
+    groupbox2->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
+					  QSizePolicy::Preferred,
+					  1,  // Horizontal stretch
+					  3,  // Vertical stretch
+			    groupbox1->sizePolicy().hasHeightForWidth()));
+    groupbox2->setFlat(1);
+    groupbox2->setInsideMargin(0);
+    groupbox2->setInsideSpacing(0);
 
     ConfLink lnknaspl(new ConfLinkRclRep(config, "noaspell"));
-    ConfParamBoolW *enaspl = new 
-	ConfParamBoolW(this, lnknaspl, tr("No aspell usage"),
+    ConfParamBoolW* cpasp =
+    new ConfParamBoolW(groupbox2, lnknaspl, tr("No aspell usage"),
 		       tr("Disables use of aspell to generate spelling "
 			  "approximation in the term explorer tool.<br> "
 			  "Useful if aspell is absent or does not work. "));
-    vboxLayout->addWidget(enaspl);
 
     ConfLink lnk2(new ConfLinkRclRep(config, "aspellLanguage"));
-    ConfParamStrW *e2 = new 
-	ConfParamStrW(this, lnk2, tr("Aspell language"),
+    ConfParamStrW* cpaspl =
+        new ConfParamStrW(groupbox2, lnk2, tr("Aspell language"),
 		      tr("The language for the aspell dictionary. "
 			 "This should look like 'en' or 'fr' ...<br>"
 			 "If this value is not set, the NLS environment "
@@ -224,7 +297,10 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			 "To get an idea of what is installed on your system, "
 			 "type 'aspell config' and look for .dat files inside "
 			 "the 'data-dir' directory. "));
-    vboxLayout->addWidget(e2);
+    cpaspl->setEnabled(!cpasp->m_cb->isOn());
+    connect(cpasp->m_cb, SIGNAL(toggled(bool)), cpaspl,SLOT(setDisabled(bool)));
+
+    vboxLayout->addWidget(groupbox2);
 
     ConfLink lnkdbd(new ConfLinkRclRep(config, "dbdir"));
     ConfParamFNW *edbd = new 
@@ -235,12 +311,6 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			), true);
     vboxLayout->addWidget(edbd);
 
-    ConfLink lnkusfc(new ConfLinkRclRep(config, "usesystemfilecommand"));
-    ConfParamBoolW *eusfc = new 
-	ConfParamBoolW(this, lnkusfc, tr("Use system's 'file' command"),
-		       tr("Use the system's 'file' command if internal<br>"
-			  "mime type identification fails."));
-    vboxLayout->addWidget(eusfc);
 }
 
 ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
@@ -257,11 +327,6 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		      QObject::tr("The list of subdirectories in the indexed "
 				  "hierarchy <br>where some parameters need "
 				  "to be redefined. Default: empty."));
-    m_subdirs->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-					  QSizePolicy::Preferred,
-					  1,  // Horizontal stretch
-					  1,  // Vertical stretch
-			    m_subdirs->sizePolicy().hasHeightForWidth()));
     m_subdirs->getListBox()->setSelectionMode(QLISTBOX::Single);
     connect(m_subdirs->getListBox(), SIGNAL(selectionChanged()),
 	    this, SLOT(subDirChanged()));
@@ -276,6 +341,11 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     m_subdirs->getListBox()->insertStringList(qls);
     vboxLayout->addWidget(m_subdirs);
 
+    QFRAME *line2 = new QFRAME(this);
+    line2->setFrameShape(QFRAME::HLine);
+    line2->setFrameShadow(QFRAME::Sunken);
+    vboxLayout->addWidget(line2);
+
     QLabel *explain = new QLabel(this);
     explain->setText(
 		     QObject::
@@ -287,10 +357,6 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 			"the +/- buttons."));
     vboxLayout->addWidget(explain);
 
-    QFRAME *line2 = new QFRAME(this);
-    line2->setFrameShape(QFRAME::HLine);
-    line2->setFrameShadow(QFRAME::Sunken);
-    vboxLayout->addWidget(line2);
 
     m_groupbox = new QGROUPBOX(1, Qt::Horizontal, this);
     m_groupbox->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
@@ -338,9 +404,19 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 			  ), charsets);
     m_widgets.push_back(e21);
 
+    QGROUPBOX *groupbox1 = new QGROUPBOX(2, Qt::Horizontal, m_groupbox);
+    groupbox1->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
+					  QSizePolicy::Preferred,
+					  1,  // Horizontal stretch
+					  3,  // Vertical stretch
+			    groupbox1->sizePolicy().hasHeightForWidth()));
+    groupbox1->setFlat(1);
+    groupbox1->setInsideMargin(0);
+    groupbox1->setInsideSpacing(0);
+
     ConfLink lnk3(new ConfLinkRclRep(config, "followLinks", &m_sk));
     ConfParamBoolW *e3 = new 
-	ConfParamBoolW(m_groupbox, lnk3, 
+	ConfParamBoolW(groupbox1, lnk3, 
 		        QObject::tr("Follow symbolic links"),
 		        QObject::tr("Follow symbolic links while "
 			  "indexing. The default is no, "
@@ -349,7 +425,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnkafln(new ConfLinkRclRep(config, "indexallfilenames", &m_sk));
     ConfParamBoolW *eafln = new 
-	ConfParamBoolW(m_groupbox, lnkafln, 
+	ConfParamBoolW(groupbox1, lnkafln, 
 		       QObject::tr("Index all file names"),
 		       QObject::tr("Index the names of files for which the contents "
 			  "cannot be identified or processed (no or "
@@ -358,7 +434,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnkzfmaxkbs(new ConfLinkRclRep(config, "compressedfilemaxkbs"));
     ConfParamIntW *ezfmaxkbs = new 
-	ConfParamIntW(m_groupbox, lnkzfmaxkbs, 
+	ConfParamIntW(groupbox1, lnkzfmaxkbs, 
 		      tr("Max. compressed file size (KB)"),
 		      tr("This value sets a threshold beyond which compressed"
 			 "files will not be processed. Set to -1 for no "
@@ -368,7 +444,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnktxtmaxmbs(new ConfLinkRclRep(config, "textfilemaxmbs"));
     ConfParamIntW *etxtmaxmbs = new 
-	ConfParamIntW(m_groupbox, lnktxtmaxmbs, 
+	ConfParamIntW(groupbox1, lnktxtmaxmbs, 
 		      tr("Max. text file size (MB)"),
 		      tr("This value sets a threshold beyond which text "
 			 "files will not be processed. Set to -1 for no "
@@ -379,7 +455,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnktxtpagekbs(new ConfLinkRclRep(config, "textfilepagekbs"));
     ConfParamIntW *etxtpagekbs = new 
-	ConfParamIntW(m_groupbox, lnktxtpagekbs, 
+	ConfParamIntW(groupbox1, lnktxtpagekbs, 
 		      tr("Text file page size (KB)"),
 		      tr("If this value is set (not equal to -1), text "
                          "files will be split in chunks of this size for "
@@ -388,12 +464,9 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		      -1, 1000000);
     m_widgets.push_back(etxtpagekbs);
 
-    vboxLayout->addWidget(m_groupbox);
-    subDirChanged();
-
     ConfLink lnkfiltmaxsecs(new ConfLinkRclRep(config, "filtermaxseconds"));
     ConfParamIntW *efiltmaxsecs = new 
-	ConfParamIntW(m_groupbox, lnkfiltmaxsecs, 
+	ConfParamIntW(groupbox1, lnkfiltmaxsecs, 
 		      tr("Max. filter exec. time (S)"),
 		      tr("External filters working longer than this will be "
                          "aborted. This is for the rare case (ie: postscript) "
@@ -402,6 +475,9 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		      -1, 10000);
     m_widgets.push_back(efiltmaxsecs);
 
+
+    vboxLayout->addWidget(m_groupbox);
+    subDirChanged();
 }
 
 void ConfSubPanelW::reloadAll()

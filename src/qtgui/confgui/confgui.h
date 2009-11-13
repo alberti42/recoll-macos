@@ -45,6 +45,7 @@ class QLISTBOX;
 class QSpinBox;
 class QComboBox;
 class QCheckBox;
+class QPushButton;
 
 namespace confgui {
 
@@ -89,18 +90,19 @@ namespace confgui {
         bool         m_fsencoding;
 	virtual bool createCommon(const QString& lbltxt,
 				  const QString& tltptxt);
-
+    public slots:
+        virtual void setEnabled(bool) = 0;
     protected slots:
         void setValue(const QString& newvalue);
         void setValue(int newvalue);
         void setValue(bool newvalue);
     };
 
-
     // Widgets for setting the different types of configuration parameters:
 
     // Int
     class ConfParamIntW : public ConfParamW {
+	Q_OBJECT
     public:
 	ConfParamIntW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
@@ -108,40 +110,51 @@ namespace confgui {
 		      int minvalue = INT_MIN, 
 		      int maxvalue = INT_MAX);
 	virtual void loadValue();
+    public slots:
+        virtual void setEnabled(bool i) {if(m_sb) ((QWidget*)m_sb)->setEnabled(i);}
     protected:
 	QSpinBox *m_sb;
     };
 
     // Arbitrary string
     class ConfParamStrW : public ConfParamW {
+	Q_OBJECT
     public:
 	ConfParamStrW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
 		      const QString& tltptxt);
 	virtual void loadValue();
+    public slots:
+        virtual void setEnabled(bool i) {if(m_le) ((QWidget*)m_le)->setEnabled(i);}
     protected:
 	QLineEdit *m_le;
     };
 
     // Constrained string: choose from list
     class ConfParamCStrW : public ConfParamW {
+	Q_OBJECT
     public:
 	ConfParamCStrW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
 		      const QString& tltptxt, const QStringList& sl);
 	virtual void loadValue();
+    public slots:
+        virtual void setEnabled(bool i) {if(m_cmb) ((QWidget*)m_cmb)->setEnabled(i);}
     protected:
 	QComboBox *m_cmb;
     };
 
     // Boolean
     class ConfParamBoolW : public ConfParamW {
+	Q_OBJECT
     public:
 	ConfParamBoolW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
 		      const QString& tltptxt);
 	virtual void loadValue();
-    protected:
+    public slots:
+        virtual void setEnabled(bool i) {if(m_cb) ((QWidget*)m_cb)->setEnabled(i);}
+    public:
 	QCheckBox *m_cb;
     };
 
@@ -155,8 +168,15 @@ namespace confgui {
 	virtual void loadValue();
     protected slots:
 	void showBrowserDialog();
+    public slots:
+        virtual void setEnabled(bool i) 
+        {
+            if(m_le) ((QWidget*)m_le)->setEnabled(i);
+            if(m_pb) ((QWidget*)m_pb)->setEnabled(i);
+        }
     protected:
 	QLineEdit *m_le;
+        QPushButton *m_pb;
 	bool       m_isdir;
     };
 
@@ -170,6 +190,8 @@ namespace confgui {
 	virtual void loadValue();
 	QLISTBOX *getListBox() {return m_lb;}
 	
+    public slots:
+        virtual void setEnabled(bool i) {if(m_lb) ((QWidget*)m_lb)->setEnabled(i);}
     protected slots:
 	virtual void showInputDialog();
 	void deleteSelected();

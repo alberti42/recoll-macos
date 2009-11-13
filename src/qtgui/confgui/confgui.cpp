@@ -278,17 +278,17 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
 				    m_le->sizePolicy().hasHeightForWidth()));
     m_hl->addWidget(m_le);
 
-    QPushButton *pb = new QPushButton(this);
-    pb->setText(tr("Browse"));
-    pb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, 
-				  QSizePolicy::Fixed,
-				  0,  // Horizontal stretch
-				  0,  // Vertical stretch
-				  pb->sizePolicy().hasHeightForWidth()));
-    m_hl->addWidget(pb);
+    m_pb = new QPushButton(this);
+    m_pb->setText(tr("Browse"));
+    m_pb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, 
+                                    QSizePolicy::Fixed,
+                                    0,  // Horizontal stretch
+                                    0,  // Vertical stretch
+                                    m_pb->sizePolicy().hasHeightForWidth()));
+    m_hl->addWidget(m_pb);
 
     loadValue();
-    QObject::connect(pb, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
+    QObject::connect(m_pb, SIGNAL(clicked()), this, SLOT(showBrowserDialog()));
     QObject::connect(m_le, SIGNAL(textChanged(const QString&)), 
 		     this, SLOT(setValue(const QString&)));
 }
