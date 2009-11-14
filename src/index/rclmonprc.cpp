@@ -294,7 +294,13 @@ bool startMonitor(RclConfig *conf, int opts)
     LOGDEB(("start_monitoring: entering main loop\n"));
     bool timedout;
     time_t lastauxtime = time(0);
+    time_t lastixtime = lastauxtime;
     bool didsomething = false;
+    const int auxinterval = 60 *60;
+    const int ixinterval = 30;
+
+    list<string> modified;
+    list<string> deleted;
 
     // Set a relatively short timeout for better monitoring of exit requests
     while (rclEQ.wait(2, &timedout)) {
@@ -310,9 +316,6 @@ bool startMonitor(RclConfig *conf, int opts)
 	    break;
 	}
 	    
-	list<string> modified;
-	list<string> deleted;
-
 	// Process event queue
 	while (!rclEQ.empty()) {
 	    // Retrieve event
@@ -333,20 +336,30 @@ bool startMonitor(RclConfig *conf, int opts)
 	// Unlock queue before processing lists
 	rclEQ.unlock();
 
-	// Process
-	if (!modified.empty()) {
-	    if (!indexfiles(conf, modified))
-		break;
-	    didsomething = true;
-	}
-	if (!deleted.empty()) {
-	    if (!purgefiles(conf, deleted))
-		break;
-	    didsomething = true;
-	}
+	// Process. We don't do this everytime but let the lists accumulate
+        // a little, this saves processing.
+        time_t now = time(0);
+        if (now - lastixtime > ixinterval) {
+            lastixtime = now;
+            if (!modified.empty()) {
+                modified.sort();
+                modified.unique();
+                if (!indexfiles(conf, modified))
+                    break;
+                modified.clear();
+                didsomething = true;
+            }
+            if (!deleted.empty()) {
+                deleted.sort();
+                deleted.unique();
+                if (!purgefiles(conf, deleted))
+                    break;
+                deleted.clear();
+                didsomething = true;
+            }
+        }
 
 	// Recreate the auxiliary dbs every hour at most.
-	const int auxinterval = 60 *60;
 	if (didsomething && time(0) - lastauxtime > auxinterval) {
 	    lastauxtime = time(0);
 	    didsomething = false;
