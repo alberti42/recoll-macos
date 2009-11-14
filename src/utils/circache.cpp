@@ -27,6 +27,8 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <memory.h>
 
 #include <sstream>
 #include <iostream>

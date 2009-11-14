@@ -321,7 +321,7 @@ int main(int argc, const char **argv)
 	    exit(0);
 
 	confindexer = new ConfIndexer(config, &updater);
-	confindexer->index(rezero);
+	confindexer->index(rezero, ConfIndexer::IxTAll);
 	deleteZ(confindexer);
 	int opts = RCLMON_NONE;
 	if (op_flags & OPT_D)

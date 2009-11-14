@@ -106,11 +106,11 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
     return true;
 }
 
-bool ConfIndexer::indexFiles(std::list<string> &files)
+bool ConfIndexer::indexFiles(std::list<string>& ifiles)
 {
     list<string> myfiles;
-    for (list<string>::const_iterator it = files.begin(); 
-	 it != files.end(); it++) {
+    for (list<string>::const_iterator it = ifiles.begin(); 
+	 it != ifiles.end(); it++) {
 	myfiles.push_back(path_canon(*it));
     }
     myfiles.sort();
@@ -125,7 +125,9 @@ bool ConfIndexer::indexFiles(std::list<string> &files)
     if (!m_fsindexer)
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
     if (m_fsindexer)
-        ret = m_fsindexer->indexFiles(files);
+        ret = m_fsindexer->indexFiles(myfiles);
+    LOGDEB2(("ConfIndexer::indexFiles: fsindexer returned %d, "
+            "%d files remainining\n", ret, myfiles.size()));
 
     if (m_dobeagle && !myfiles.empty()) {
         if (!m_beagler)
@@ -143,6 +145,7 @@ bool ConfIndexer::indexFiles(std::list<string> &files)
 		m_config->getDbDir().c_str()));
 	return false;
     }
+    ifiles = myfiles;
     return ret;
 }
 

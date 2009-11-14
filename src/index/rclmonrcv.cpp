@@ -112,6 +112,7 @@ void *rclMonRcvRun(void *q)
     LOGDEB(("rclMonRcvRun: running\n"));
     recoll_threadinit();
 
+
     // Create the fam/whatever interface object
     RclMonitor *mon;
     if ((mon = makeMonitor()) == 0) {
@@ -154,6 +155,15 @@ void *rclMonRcvRun(void *q)
 	walker.addSkippedPath(queue->getConfig()->getDbDir());
 	LOGDEB(("rclMonRcvRun: walking %s\n", it->c_str()));
 	walker.walk(*it, walkcb);
+    }
+
+    bool dobeagle = false;
+    queue->getConfig()->getConfParam("processbeaglequeue", &dobeagle);
+    if (dobeagle) {
+        string beaglequeuedir;
+        if (!queue->getConfig()->getConfParam("beaglequeuedir", beaglequeuedir))
+            beaglequeuedir = path_tildexpand("~/.beagle/ToIndex/");
+        mon->addWatch(beaglequeuedir, true);
     }
 
     // Forever wait for monitoring events and add them to queue:

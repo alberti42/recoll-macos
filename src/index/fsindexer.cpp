@@ -222,21 +222,20 @@ bool FsIndexer::indexFiles(list<string>& files)
     if (!init())
         return false;
 
-    for (list<string>::iterator it = files.begin(); 
-         it != files.end(); it++) {
-
+    for (list<string>::iterator it = files.begin(); it != files.end(); ) {
+        LOGDEB2(("FsIndexer::indexFiles: [%s]\n", it->c_str()));
 	struct stat stb;
 	if (lstat(it->c_str(), &stb) != 0) {
 	    LOGERR(("FsIndexer::indexFiles: lstat(%s): %s", it->c_str(),
 		    strerror(errno)));
-	    continue;
+            it++; continue;
 	}
 	// If we get to indexing directory names one day, will need to test 
 	// against dbdir here to avoid modification loops (with rclmon).
 	if (!S_ISREG(stb.st_mode)) {
 	    LOGDEB(("FsIndexer::indexFiles: skipping [%s] (nr)\n", 
 		    it->c_str()));
-	    continue;
+            it++; continue;
 	}
 
 	string dir = path_getfather(*it);
@@ -252,8 +251,9 @@ bool FsIndexer::indexFiles(list<string>& files)
 	}
 
 	// Check path against indexed areas and skipped names/paths
-        if (matchesSkipped(m_tdl, skpnl, skppl, *it))
-            continue;
+        if (matchesSkipped(m_tdl, skpnl, skppl, *it)) {
+            it++; continue;
+        }
 
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
@@ -264,7 +264,7 @@ bool FsIndexer::indexFiles(list<string>& files)
 	    LOGERR(("FsIndexer::indexFiles: processone failed\n"));
 	    return false;
 	}
-        files.erase(it);
+        it = files.erase(it);
     }
 
     return true;
@@ -276,8 +276,7 @@ bool FsIndexer::purgeFiles(list<string>& files)
 {
     if (!init())
 	return false;
-    for (list<string>::iterator it = files.begin(); 
-         it != files.end(); it++) {
+    for (list<string>::iterator it = files.begin(); it != files.end(); ) {
 	string udi;
 	make_udi(*it, "", udi);
         // rcldb::purgefile returns true if the udi was either not
@@ -289,7 +288,9 @@ bool FsIndexer::purgeFiles(list<string>& files)
 	}
         // If we actually deleted something, take it off the list
         if (existed) {
-            files.erase(it);
+            it = files.erase(it);
+        } else {
+            it++;
         }
     }
 

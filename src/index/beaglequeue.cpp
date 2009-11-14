@@ -20,6 +20,7 @@ static char rcsid[] = "@(#$Id: $ (C) 2005 J.F.Dockes";
 #include "autoconfig.h"
 
 #include <sys/types.h>
+#include <string.h>
 
 #include "autoconfig.h"
 #include "pathut.h"
@@ -169,14 +170,15 @@ public:
 const string badtmpdirname = "/no/such/dir/really/can/exist";
 BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
                                        DbIxStatusUpdater *updfunc)
-    : m_config(cnf), m_db(db), m_cache(0), m_updater(updfunc)
+    : m_config(cnf), m_db(db), m_cache(0), m_updater(updfunc), 
+      m_nocacheindex(false)
 {
 
     if (!m_config->getConfParam("beaglequeuedir", m_queuedir))
         m_queuedir = path_tildexpand("~/.beagle/ToIndex/");
     path_catslash(m_queuedir);
 
-    if (m_db && m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0) {
+    if (m_db && (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0)) {
 	string reason;
         if (!maketmpdir(m_tmpdir, reason)) {
 	    LOGERR(("DbIndexer: cannot create temporary directory: %s\n",
@@ -300,33 +302,30 @@ bool BeagleQueueIndexer::index()
             m_queuedir.c_str()));
     m_config->setKeyDir(m_queuedir);
 
-    // First walk the cache to set the existence flags. We do not
-    // actually check uptodateness because all files in the cache are
-    // supposedly already indexed.
-    //TBD: change this as the cache needs reindexing after an index reset!
-    // Also, we need to read the cache backwards so that the newest
-    // version of each file gets indexed? Or find a way to index
-    // multiple versions ?
-    bool eof;
-    if (!m_cache->rewind(eof)) {
-        if (!eof)
-            return false;
-    }
-    vector<string> alludis;
-    alludis.reserve(20000);
-    while (m_cache->next(eof)) {
-        string dict;
-        m_cache->getcurrentdict(dict);
-        ConfSimple cf(dict, 1);
-        string udi;
-        if (!cf.get("udi", udi, ""))
-            continue;
-        alludis.push_back(udi);
-    }
-    for (vector<string>::reverse_iterator it = alludis.rbegin();
-         it != alludis.rend(); it++) {
-        if (m_db->needUpdate(*it, "")) {
-            indexFromCache(*it);
+    // First check that files in the cache are in the index, in case this
+    // has been reset. We don't do this when called from indexFiles
+    if (!m_nocacheindex) {
+        bool eof;
+        if (!m_cache->rewind(eof)) {
+            if (!eof)
+                return false;
+        }
+        vector<string> alludis;
+        alludis.reserve(20000);
+        while (m_cache->next(eof)) {
+            string dict;
+            m_cache->getcurrentdict(dict);
+            ConfSimple cf(dict, 1);
+            string udi;
+            if (!cf.get("udi", udi, ""))
+                continue;
+            alludis.push_back(udi);
+        }
+        for (vector<string>::reverse_iterator it = alludis.rbegin();
+             it != alludis.rend(); it++) {
+            if (m_db->needUpdate(*it, "")) {
+                indexFromCache(*it);
+            }
         }
     }
 
@@ -339,37 +338,51 @@ bool BeagleQueueIndexer::index()
 
 bool BeagleQueueIndexer::indexFiles(list<string>& files)
 {
+    LOGDEB(("BeagleQueueIndexer::indexFiles\n"));
+
     if (!m_db) {
         LOGERR(("BeagleQueueIndexer::indexfiles no db??\n"));
         return false;
     }
-    for (list<string>::iterator it = files.begin(); it != files.end(); it++) {
-        if (it->empty())
-            continue;//??
+    for (list<string>::iterator it = files.begin(); it != files.end();) {
+        if (it->empty()) {//??
+            it++; continue;
+        }
         string father = path_getfather(*it);
         if (father.compare(m_queuedir)) {
             LOGDEB(("BeagleQueueIndexer::indexfiles: skipping [%s] (nq)\n", 
                     it->c_str()));
-            continue;
+            it++; continue;
         }
+        // Pb: we are often called with the dot file, before the
+        // normal file exists, and sometimes never called for the
+        // normal file afterwards (ie for bookmarks where the normal
+        // file is empty). So we perform a normal queue run at the end
+        // of the function to catch older stuff. Still this is not
+        // perfect, sometimes some files will not be indexed before
+        // the next run.
         string fn = path_getsimple(*it);
-        if (fn.empty() || fn.at(0) == '.')
-            continue;
+        if (fn.empty() || fn.at(0) == '.') {
+            it++; continue;
+        }
         struct stat st;
         if (lstat(it->c_str(), &st) != 0) {
             LOGERR(("BeagleQueueIndexer::indexfiles: cant stat [%s]\n", 
                     it->c_str()));
-            continue;
+            it++; continue;
         }
 	if (!S_ISREG(st.st_mode)) {
 	    LOGDEB(("BeagleQueueIndexer::indexfiles: skipping [%s] (nr)\n", 
 		    it->c_str()));
-	    continue;
+            it++; continue;
 	}
 
         processone(*it, &st, FsTreeWalker::FtwRegular);
-        files.erase(it);
+        it = files.erase(it);
     }
+    m_nocacheindex = true;
+    index();
+    // Note: no need to reset nocacheindex, we're in the monitor now
     return true;
 }
 

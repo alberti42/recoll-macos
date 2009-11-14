@@ -67,6 +67,7 @@ private:
     string     m_queuedir;
     string     m_tmpdir;
     DbIxStatusUpdater *m_updater;
+    bool       m_nocacheindex;
 
     bool indexFromCache(const string& udi);
 };
