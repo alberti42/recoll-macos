@@ -121,7 +121,7 @@ class Db {
 		     const Doc &doc);
 
     /** Delete document(s) for given UDI, including subdocs */
-    bool purgeFile(const string &udi);
+    bool purgeFile(const string &udi, bool *existed = 0);
 
     /** Remove documents that no longer exist in the file system. This
      * depends on the update map, which is built during

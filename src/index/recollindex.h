@@ -20,8 +20,8 @@
 
 /** Helper methods in recollindex.cpp for initial checks/setup to index 
  * a list of files (either from the monitor or the command line) */
-extern bool indexfiles(RclConfig *config, const list<string> &filenames);
-extern bool purgefiles(RclConfig *config, const list<string> &filenames);
+extern bool indexfiles(RclConfig *config, list<string> &filenames);
+extern bool purgefiles(RclConfig *config, list<string> &filenames);
 extern bool createAuxDbs(RclConfig *config);
 
 extern int stopindexing;

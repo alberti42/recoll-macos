@@ -18,6 +18,11 @@
 #define _fsindexer_h_included_
 /* @(#$Id: $  (C) 2009 J.F.Dockes */
 
+#include <list>
+#ifndef NO_NAMESPACES
+using std::list;
+#endif
+
 #include "fstreewalk.h"
 #include "rcldb.h"
 
@@ -58,10 +63,10 @@ class FsIndexer : public FsTreeWalkerCB {
     bool index();
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(const std::list<string> &files);
+    bool indexFiles(list<string> &files);
 
     /** Purge a list of files. */
-    bool purgeFiles(const std::list<string> &files);
+    bool purgeFiles(list<string> &files);
 
     /**  Tree walker callback method */
     FsTreeWalker::Status 
@@ -74,6 +79,7 @@ class FsIndexer : public FsTreeWalkerCB {
     string       m_tmpdir;
     string       m_reason;
     DbIxStatusUpdater *m_updater;
+    list<string> m_tdl;
 
     // The configuration can set attribute fields to be inherited by
     // all files in a file system area. Ie: set "apptag = thunderbird"

@@ -97,7 +97,7 @@ static bool makeIndexer(RclConfig *config)
 // this case we're called repeatedly in the same process, and the
 // confindexer is only created once by makeIndexer (but the db closed and
 // flushed every time)
-bool indexfiles(RclConfig *config, const list<string> &filenames)
+bool indexfiles(RclConfig *config, list<string> &filenames)
 {
     if (filenames.empty())
 	return true;
@@ -107,7 +107,7 @@ bool indexfiles(RclConfig *config, const list<string> &filenames)
 }
 
 // Delete a list of files. Same comments about call contexts as indexfiles.
-bool purgefiles(RclConfig *config, const list<string> &filenames)
+bool purgefiles(RclConfig *config, list<string> &filenames)
 {
     if (filenames.empty())
 	return true;

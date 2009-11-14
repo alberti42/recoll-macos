@@ -86,18 +86,19 @@ bool FsIndexer::init()
 	    return false;
 	}
     }
+    if (m_tdl.empty()) {
+        m_tdl = m_config->getTopdirs();
+        if (m_tdl.empty()) {
+            LOGERR(("FsIndexers: no topdirs list defined\n"));
+            return false;
+        }
+    }
     return true;
 }
 
 // Recursively index each directory in the topdirs:
 bool FsIndexer::index()
 {
-    list<string> topdirs = m_config->getTopdirs();
-    if (topdirs.empty()) {
-        LOGERR(("FsIndexer::indexTrees: no valid topdirs in config\n"));
-        return false;
-    }
-
     if (!init())
 	return false;
 
@@ -108,8 +109,8 @@ bool FsIndexer::index()
 
     m_walker.setSkippedPaths(m_config->getSkippedPaths());
 
-    for (list<string>::const_iterator it = topdirs.begin();
-	 it != topdirs.end(); it++) {
+    for (list<string>::const_iterator it = m_tdl.begin();
+	 it != m_tdl.end(); it++) {
 	LOGDEB(("FsIndexer::index: Indexing %s into %s\n", it->c_str(), 
 		getDbDir().c_str()));
 
@@ -151,60 +152,119 @@ bool FsIndexer::index()
     return true;
 }
 
+static bool matchesSkipped(const list<string>& tdl,
+                           const list<string>& skpnl,
+                           const list<string>& skppl,
+                           const string& path)
+{
+    // First check what (if any) topdir this is in:
+    string td;
+    for (list<string>::const_iterator it = tdl.begin(); it != tdl.end(); it++) {
+        if (path.find(*it) == 0) {
+            td = *it;
+            break;
+        }
+    }
+    if (td.empty()) {
+        LOGDEB(("FsIndexer::indexFiles: skipping [%s] (ntd)\n", path.c_str()));
+        return true;
+    }
+
+    // Check path against skippedPaths. If we find a system where 
+    // FNM_LEADING_DIR is undefined (its unposixy), will have to do this for
+    // all ascendant paths up to the topdir
+    for (list<string>::const_iterator it = skppl.begin();
+         it != skppl.end(); it++) {
+        if (fnmatch(it->c_str(), path.c_str(), FNM_PATHNAME|FNM_LEADING_DIR) 
+            == 0) {
+            LOGDEB(("FsIndexer::indexFiles: skipping [%s] (skpp)\n", 
+                    path.c_str()));
+            return true;
+        }
+    }
+
+    // Then check all path components up to the topdir against skippedNames
+    if (!skpnl.empty()) {
+        string mpath = path;
+        while (mpath.length() >= td.length() && mpath.length() > 1) {
+            string fn = path_getsimple(mpath);
+            for (list<string>::const_iterator it = skpnl.begin(); 
+                 it != skpnl.end(); it++) {
+                LOGDEB2(("Checking [%s] against [%s]\n", 
+                        fn.c_str(), it->c_str()));
+                if (fnmatch(it->c_str(), fn.c_str(), 0) == 0) {
+                    LOGDEB(("FsIndexer::indexFiles: skipping [%s] (skpn)\n", 
+                            path.c_str()));
+                    return true;
+                }
+            }
+            string::size_type len = mpath.length();
+            mpath = path_getfather(mpath);
+            // getfather normally returns a path ending with /, getsimple 
+            // would then return ''
+            if (!mpath.empty() && mpath[mpath.size()-1] == '/')
+                mpath.erase(mpath.size()-1);
+            // should not be necessary, but lets be prudent. If the
+            // path did not shorten, something is seriously amiss
+            // (could be an assert actually)
+            if (mpath.length() >= len)
+                return true;
+        }
+    }
+    return false;
+}
+
 /** 
  * Index individual files, out of a full tree run. No database purging
  */
-bool FsIndexer::indexFiles(const list<string> &filenames)
+bool FsIndexer::indexFiles(list<string>& files)
 {
     if (!init())
         return false;
 
-    list<string>::const_iterator it;
-    for (it = filenames.begin(); it != filenames.end(); it++) {
-	string dir = path_getfather(*it);
-	m_config->setKeyDir(dir);
-	int abslen;
-	if (m_config->getConfParam("idxabsmlen", &abslen))
-	    m_db->setAbstractParams(abslen, -1, -1);
+    for (list<string>::iterator it = files.begin(); 
+         it != files.end(); it++) {
+
 	struct stat stb;
 	if (lstat(it->c_str(), &stb) != 0) {
 	    LOGERR(("FsIndexer::indexFiles: lstat(%s): %s", it->c_str(),
 		    strerror(errno)));
 	    continue;
 	}
-
 	// If we get to indexing directory names one day, will need to test 
 	// against dbdir here to avoid modification loops (with rclmon).
 	if (!S_ISREG(stb.st_mode)) {
-	    LOGDEB2(("FsIndexer::indexFiles: %s: not a regular file\n", 
+	    LOGDEB(("FsIndexer::indexFiles: skipping [%s] (nr)\n", 
 		    it->c_str()));
 	    continue;
 	}
 
+	string dir = path_getfather(*it);
+	m_config->setKeyDir(dir);
 	static string lstdir;
-	static list<string> skpl;
+	static list<string> skpnl;
+	static list<string> skppl;
 	if (lstdir.compare(dir)) {
 	    LOGDEB(("Recomputing list of skipped names\n"));
-	    skpl = m_config->getSkippedNames();
+	    skpnl = m_config->getSkippedNames();
+	    skppl = m_config->getSkippedPaths();
 	    lstdir = dir;
 	}
-	if (!skpl.empty()) {
-	    list<string>::const_iterator skit;
-	    string fn = path_getsimple(*it);
-	    for (skit = skpl.begin(); skit != skpl.end(); skit++) {
-		if (fnmatch(skit->c_str(), fn.c_str(), 0) == 0) {
-		    LOGDEB(("Skipping [%s] :matches skip list\n", fn.c_str()));
-		    goto skipped;
-		}
-	    }
-	}
+
+	// Check path against indexed areas and skipped names/paths
+        if (matchesSkipped(m_tdl, skpnl, skppl, *it))
+            continue;
+
+	int abslen;
+	if (m_config->getConfParam("idxabsmlen", &abslen))
+	    m_db->setAbstractParams(abslen, -1, -1);
+        
 	if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexer::indexFiles: processone failed\n"));
 	    return false;
 	}
-    skipped: 
-	false; // Need a statement here to make compiler happy ??
+        files.erase(it);
     }
 
     return true;
@@ -212,19 +272,25 @@ bool FsIndexer::indexFiles(const list<string> &filenames)
 
 
 /** Purge docs for given files out of the database */
-bool FsIndexer::purgeFiles(const list<string> &filenames)
+bool FsIndexer::purgeFiles(list<string>& files)
 {
     if (!init())
 	return false;
-
-    list<string>::const_iterator it;
-    for (it = filenames.begin(); it != filenames.end(); it++) {
+    for (list<string>::iterator it = files.begin(); 
+         it != files.end(); it++) {
 	string udi;
 	make_udi(*it, "", udi);
-	if (!m_db->purgeFile(udi)) {
+        // rcldb::purgefile returns true if the udi was either not
+        // found or deleted, false only in case of actual error
+        bool existed;
+	if (!m_db->purgeFile(udi, &existed)) {
 	    LOGERR(("FsIndexer::purgeFiles: Database error\n"));
 	    return false;
 	}
+        // If we actually deleted something, take it off the list
+        if (existed) {
+            files.erase(it);
+        }
     }
 
     return true;

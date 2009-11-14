@@ -51,6 +51,13 @@ public:
     FsTreeWalker::Status 
     processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
 
+    /** Index a list of files. No db cleaning or stemdb updating */
+    bool indexFiles(list<string>& files);
+    /** Purge a list of files. No way to do this currently and dont want
+     *  to do anything as this is mostly called by the monitor when *I* delete
+     *  files inside the queue dir */
+    bool purgeFiles(list<string>& files) {return true;}
+
     bool getFromCache(const string& udi, Rcl::Doc &doc, string& data,
                       string *hittype = 0);
 private:

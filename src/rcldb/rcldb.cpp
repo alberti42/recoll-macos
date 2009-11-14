@@ -1270,7 +1270,7 @@ bool Db::purge()
 }
 
 /* Delete document(s) for given unique identifier (doc and descendents) */
-bool Db::purgeFile(const string &udi)
+bool Db::purgeFile(const string &udi, bool *existed)
 {
     LOGDEB(("Db:purgeFile: [%s]\n", udi.c_str()));
     if (m_ndb == 0 || !m_ndb->m_iswritable)
@@ -1280,8 +1280,12 @@ bool Db::purgeFile(const string &udi)
     string ermsg;
     try {
 	Xapian::PostingIterator docid = db.postlist_begin(uniterm);
-	if (docid == db.postlist_end(uniterm))
+	if (docid == db.postlist_end(uniterm)) {
+            if (existed)
+                *existed = false;
 	    return true;
+        }
+        *existed = true;
 	LOGDEB(("purgeFile: delete docid %d\n", *docid));
 	db.delete_document(*docid);
 	vector<Xapian::docid> docids;

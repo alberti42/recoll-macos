@@ -26,6 +26,8 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.71 2008-12-17 08:01:40 dockes Exp
 #include <unistd.h>
 #include <errno.h>
 
+#include <algorithm>
+
 #include "debuglog.h"
 #include "indexer.h"
 #include "fsindexer.h"
@@ -104,44 +106,14 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
     return true;
 }
 
-bool ConfIndexer::initTopDirs()
+bool ConfIndexer::indexFiles(std::list<string> &files)
 {
-    if (m_tdl.empty()) {
-	m_tdl = m_config->getTopdirs();
-	if (m_tdl.empty()) {
-	    m_reason = "Top directory list (topdirs param.) "
-		    "not found in config or Directory list parse error";
-	    return false;
-	}
-    }
-    return true;
-}
-
-bool ConfIndexer::indexFiles(const std::list<string> &files)
-{
-    if (!initTopDirs())
-        return false;
-
     list<string> myfiles;
     for (list<string>::const_iterator it = files.begin(); 
 	 it != files.end(); it++) {
-	string fn = path_canon(*it);
-	bool ok = false;
-	// Check that this file name belongs to one of our subtrees
-	for (list<string>::iterator dit = m_tdl.begin(); 
-	     dit != m_tdl.end(); dit++) {
-	    if (fn.find(*dit) == 0) {
-		myfiles.push_back(fn);
-		ok = true;
-		break;
-	    }
-	}
-	if (!ok) {
-	    m_reason += string("File ") + fn + string(" not in indexed area\n");
-	}
+	myfiles.push_back(path_canon(*it));
     }
-    if (myfiles.empty())
-	return true;
+    myfiles.sort();
 
     if (!m_db.open(Rcl::Db::DbUpd)) {
 	LOGERR(("ConfIndexer: indexFiles error opening database %s\n", 
@@ -149,9 +121,21 @@ bool ConfIndexer::indexFiles(const std::list<string> &files)
 	return false;
     }
     m_config->setKeyDir("");
+    bool ret = false;
     if (!m_fsindexer)
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
-    bool ret = m_fsindexer->indexFiles(files);
+    if (m_fsindexer)
+        ret = m_fsindexer->indexFiles(files);
+
+    if (m_dobeagle && !myfiles.empty()) {
+        if (!m_beagler)
+            m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
+        if (m_beagler) {
+            ret = ret && m_beagler->indexFiles(myfiles);
+        } else {
+            ret = false;
+        }
+    }
 
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
@@ -162,31 +146,40 @@ bool ConfIndexer::indexFiles(const std::list<string> &files)
     return ret;
 }
 
-bool ConfIndexer::purgeFiles(const std::list<string> &files)
+bool ConfIndexer::purgeFiles(std::list<string> &files)
 {
-    if (!initTopDirs())
-        return false;
-
     list<string> myfiles;
     for (list<string>::const_iterator it = files.begin(); 
 	 it != files.end(); it++) {
 	myfiles.push_back(path_canon(*it));
     }
+    myfiles.sort();
 
     if (!m_db.open(Rcl::Db::DbUpd)) {
 	LOGERR(("ConfIndexer: purgeFiles error opening database %s\n", 
                 m_config->getDbDir().c_str()));
 	return false;
     }
-
+    bool ret = false;
     m_config->setKeyDir("");
     if (!m_fsindexer)
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
-    bool ret = m_fsindexer->purgeFiles(files);
+    if (m_fsindexer)
+        ret = m_fsindexer->purgeFiles(myfiles);
+
+    if (m_dobeagle && !myfiles.empty()) {
+        if (!m_beagler)
+            m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
+        if (m_beagler) {
+            ret = ret && m_beagler->purgeFiles(myfiles);
+        } else {
+            ret = false;
+        }
+    }
 
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
-	LOGERR(("ConfIndexer::index: error closing database in %s\n", 
+	LOGERR(("ConfIndexer::purgefiles: error closing database in %s\n", 
 		m_config->getDbDir().c_str()));
 	return false;
     }

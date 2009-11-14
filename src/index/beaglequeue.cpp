@@ -173,7 +173,8 @@ BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
 {
 
     if (!m_config->getConfParam("beaglequeuedir", m_queuedir))
-        m_queuedir = path_tildexpand("~/.beagle/ToIndex");
+        m_queuedir = path_tildexpand("~/.beagle/ToIndex/");
+    path_catslash(m_queuedir);
 
     if (m_db && m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0) {
 	string reason;
@@ -333,6 +334,42 @@ bool BeagleQueueIndexer::index()
     walker.addSkippedName(".*");
     FsTreeWalker::Status status =walker.walk(m_queuedir, *this);
     LOGDEB(("BeagleQueueIndexer::processqueue: done: status %d\n", status));
+    return true;
+}
+
+bool BeagleQueueIndexer::indexFiles(list<string>& files)
+{
+    if (!m_db) {
+        LOGERR(("BeagleQueueIndexer::indexfiles no db??\n"));
+        return false;
+    }
+    for (list<string>::iterator it = files.begin(); it != files.end(); it++) {
+        if (it->empty())
+            continue;//??
+        string father = path_getfather(*it);
+        if (father.compare(m_queuedir)) {
+            LOGDEB(("BeagleQueueIndexer::indexfiles: skipping [%s] (nq)\n", 
+                    it->c_str()));
+            continue;
+        }
+        string fn = path_getsimple(*it);
+        if (fn.empty() || fn.at(0) == '.')
+            continue;
+        struct stat st;
+        if (lstat(it->c_str(), &st) != 0) {
+            LOGERR(("BeagleQueueIndexer::indexfiles: cant stat [%s]\n", 
+                    it->c_str()));
+            continue;
+        }
+	if (!S_ISREG(st.st_mode)) {
+	    LOGDEB(("BeagleQueueIndexer::indexfiles: skipping [%s] (nr)\n", 
+		    it->c_str()));
+	    continue;
+	}
+
+        processone(*it, &st, FsTreeWalker::FtwRegular);
+        files.erase(it);
+    }
     return true;
 }
 

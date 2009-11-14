@@ -85,10 +85,10 @@ class ConfIndexer {
     static list<string> getStemmerNames();
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(const std::list<string> &files);
+    bool indexFiles(std::list<string> &files);
 
     /** Purge a list of files. */
-    bool purgeFiles(const std::list<string> &files);
+    bool purgeFiles(std::list<string> &files);
 
  private:
     RclConfig *m_config;
@@ -97,10 +97,7 @@ class ConfIndexer {
     bool                m_dobeagle;
     BeagleQueueIndexer *m_beagler; 
     DbIxStatusUpdater  *m_updater;
-    string m_reason;
-    list<string> m_tdl;
-
-    bool initTopDirs();
+    string              m_reason;
 };
 
 #endif /* _INDEXER_H_INCLUDED_ */
