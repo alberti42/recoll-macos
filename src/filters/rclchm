@@ -5,8 +5,17 @@ Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
 import sys
 import os
 import rclexecm
-from chm import chm,chmlib
-from HTMLParser import HTMLParser
+try:
+    from chm import chm,chmlib
+except:
+    print "RECFILTERROR HELPERNOTFOUND python:chm"
+    exit(1);
+
+try:
+    from HTMLParser import HTMLParser
+except:
+    print "RECFILTERROR HELPERNOTFOUND python:HTMLParser"
+    exit(1);
 
 class ChmTopicsParser(HTMLParser):
     """Parse the chm's Topic file which is basically

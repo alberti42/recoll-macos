@@ -83,7 +83,7 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds awk
+checkcmds sed
 echo '<html><head><title></title></head><body><pre>'
 
 sed -e 's/\&/\&amp;/g' -e 's/</\&lt;/g' "$infile" 
