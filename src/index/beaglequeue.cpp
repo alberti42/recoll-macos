@@ -36,6 +36,7 @@ static char rcsid[] = "@(#$Id: $ (C) 2005 J.F.Dockes";
 #include "readfile.h"
 #include "conftree.h"
 #include "transcode.h"
+#include "cancelcheck.h"
 
 #include <vector>
 #include <fstream>
@@ -250,6 +251,8 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
     if (!m_db)
         return false;
 
+    CancelCheck::instance().checkCancel();
+
     Rcl::Doc dotdoc;
     string data;
     string hittype;
@@ -278,7 +281,13 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
                               FileInterner::FIF_doUseInputMimetype,
                               dotdoc.mimetype);
         string ipath;
-        FileInterner::Status fis = interner.internfile(doc, ipath);
+        FileInterner::Status fis;
+        try {
+            fis = interner.internfile(doc, ipath);
+        } catch (CancelExcept) {
+            LOGERR(("BeagleQueueIndexer: interrupted\n"));
+            return false;
+        }
         if (fis != FileInterner::FIDone) {
             LOGERR(("BeagleQueueIndexer: bad status from internfile\n"));
             return false;
@@ -324,7 +333,12 @@ bool BeagleQueueIndexer::index()
         for (vector<string>::reverse_iterator it = alludis.rbegin();
              it != alludis.rend(); it++) {
             if (m_db->needUpdate(*it, "")) {
-                indexFromCache(*it);
+                try {
+                    indexFromCache(*it);
+                } catch (CancelExcept) {
+                    LOGERR(("BeagleQueueIndexer: interrupted\n"));
+                    return false;
+                }
             }
         }
     }
@@ -455,7 +469,13 @@ BeagleQueueIndexer::processone(const string &path,
                               FileInterner::FIF_doUseInputMimetype,
                               &dotdoc.mimetype);
         string ipath;
-        FileInterner::Status fis = interner.internfile(doc, ipath);
+        FileInterner::Status fis;
+        try {
+            fis = interner.internfile(doc, ipath);
+        } catch (CancelExcept) {
+            LOGERR(("BeagleQueueIndexer: interrupted\n"));
+            goto out;
+        }
         if (fis != FileInterner::FIDone) {
             LOGERR(("BeagleQueueIndexer: bad status from internfile\n"));
             goto out;

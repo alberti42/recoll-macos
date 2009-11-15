@@ -471,8 +471,8 @@ public:
     virtual status takeone(off_t offs, const string& udi, unsigned int dicsize, 
                            unsigned int datasize, unsigned int padsize) 
     {
-        cerr << "offs " << offs << " udi [" << udi << "] dicsize " << dicsize 
-             << " datasize " << datasize << " padsize " << padsize << endl;
+//        cerr << "offs " << offs << " udi [" << udi << "] dicsize " << dicsize 
+//             << " datasize " << datasize << " padsize " << padsize << endl;
         if (!m_udi.compare(udi)) {
             m_instance++;
             m_offs = offs;

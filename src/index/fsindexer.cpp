@@ -48,6 +48,7 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 #include "smallut.h"
 #include "wipedir.h"
 #include "fileudi.h"
+#include "cancelcheck.h"
 
 // When using extended attributes, we have to use the ctime. 
 // This is quite an expensive price to pay...
@@ -418,7 +419,12 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     while (fis == FileInterner::FIAgain) {
 	doc.erase();
 	string ipath;
-	fis = interner.internfile(doc, ipath);
+        try {
+            fis = interner.internfile(doc, ipath);
+        } catch (CancelExcept) {
+            LOGERR(("fsIndexer::processone: interrupted\n"));
+            return FsTreeWalker::FtwStop;
+        }
 
         // Index at least the file name even if there was an error.
         // We'll change the signature to ensure that the indexing will
