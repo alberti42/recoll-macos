@@ -94,8 +94,6 @@ bool FsTreeWalker::addSkippedName(const string& pattern)
 bool FsTreeWalker::setSkippedNames(const list<string> &patterns)
 {
     data->skippedNames = patterns;
-    data->skippedNames.sort();
-    data->skippedNames.unique();
     return true;
 }
 bool FsTreeWalker::inSkippedNames(const string& name)
@@ -125,8 +123,6 @@ bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
 	 it != data->skippedPaths.end(); it++)
         if (!(data->options & FtwNoCanon))
             *it = path_canon(*it);
-    data->skippedPaths.sort();
-    data->skippedPaths.unique();
     return true;
 }
 bool FsTreeWalker::inSkippedPaths(const string& path)
@@ -134,7 +130,14 @@ bool FsTreeWalker::inSkippedPaths(const string& path)
     list<string>::const_iterator it;
     for (it = data->skippedPaths.begin(); 
 	 it != data->skippedPaths.end(); it++) {
-	if (fnmatch(it->c_str(), path.c_str(), FNM_PATHNAME) == 0) 
+        // If we find a system where FNM_LEADING_DIR is undefined (its
+        // unposixy), will have to do this for all ascendant paths up
+        // to the topdir. We'll then have a constructor option because
+        // this is only useful when called externally. When used
+        // internally, we don't descend in skipped paths, and so don't
+        // need FNM_LEADING_DIR
+	if (fnmatch(it->c_str(), path.c_str(), FNM_PATHNAME | 
+                    FNM_LEADING_DIR) == 0) 
 	    return true;
     }
     return false;

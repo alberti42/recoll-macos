@@ -130,10 +130,6 @@ bool FsIndexer::index()
 	if (m_config->getConfParam("idxabsmlen", &abslen))
 	    m_db->setAbstractParams(abslen, -1, -1);
 
-	// Set up skipped patterns for this subtree. This probably should be
-	// done in the directory change code in processone() instead.
-	m_walker.setSkippedNames(m_config->getSkippedNames());
-
 	// Walk the directory tree
 	if (m_walker.walk(*it, *this) != FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexer::index: error while indexing %s: %s\n", 
@@ -153,8 +149,7 @@ bool FsIndexer::index()
 }
 
 static bool matchesSkipped(const list<string>& tdl,
-                           const list<string>& skpnl,
-                           const list<string>& skppl,
+                           FsTreeWalker& walker,
                            const string& path)
 {
     // First check what (if any) topdir this is in:
@@ -170,46 +165,33 @@ static bool matchesSkipped(const list<string>& tdl,
         return true;
     }
 
-    // Check path against skippedPaths. If we find a system where 
-    // FNM_LEADING_DIR is undefined (its unposixy), will have to do this for
-    // all ascendant paths up to the topdir
-    for (list<string>::const_iterator it = skppl.begin();
-         it != skppl.end(); it++) {
-        if (fnmatch(it->c_str(), path.c_str(), FNM_PATHNAME|FNM_LEADING_DIR) 
-            == 0) {
-            LOGDEB(("FsIndexer::indexFiles: skipping [%s] (skpp)\n", 
-                    path.c_str()));
-            return true;
-        }
+    // Check path against skippedPaths. 
+    if (walker.inSkippedPaths(path)) {
+        LOGDEB(("FsIndexer::indexFiles: skipping [%s] (skpp)\n", path.c_str()));
+        return true;
     }
 
     // Then check all path components up to the topdir against skippedNames
-    if (!skpnl.empty()) {
-        string mpath = path;
-        while (mpath.length() >= td.length() && mpath.length() > 1) {
-            string fn = path_getsimple(mpath);
-            for (list<string>::const_iterator it = skpnl.begin(); 
-                 it != skpnl.end(); it++) {
-                LOGDEB2(("Checking [%s] against [%s]\n", 
-                        fn.c_str(), it->c_str()));
-                if (fnmatch(it->c_str(), fn.c_str(), 0) == 0) {
-                    LOGDEB(("FsIndexer::indexFiles: skipping [%s] (skpn)\n", 
-                            path.c_str()));
-                    return true;
-                }
-            }
-            string::size_type len = mpath.length();
-            mpath = path_getfather(mpath);
-            // getfather normally returns a path ending with /, getsimple 
-            // would then return ''
-            if (!mpath.empty() && mpath[mpath.size()-1] == '/')
-                mpath.erase(mpath.size()-1);
-            // should not be necessary, but lets be prudent. If the
-            // path did not shorten, something is seriously amiss
-            // (could be an assert actually)
-            if (mpath.length() >= len)
-                return true;
+    string mpath = path;
+    while (mpath.length() >= td.length() && mpath.length() > 1) {
+        string fn = path_getsimple(mpath);
+        if (walker.inSkippedNames(fn)) {
+            LOGDEB(("FsIndexer::indexFiles: skipping [%s] (skpn)\n", 
+                    path.c_str()));
+            return true;
         }
+
+        string::size_type len = mpath.length();
+        mpath = path_getfather(mpath);
+        // getfather normally returns a path ending with /, getsimple 
+        // would then return ''
+        if (!mpath.empty() && mpath[mpath.size()-1] == '/')
+            mpath.erase(mpath.size()-1);
+        // should not be necessary, but lets be prudent. If the
+        // path did not shorten, something is seriously amiss
+        // (could be an assert actually)
+        if (mpath.length() >= len)
+            return true;
     }
     return false;
 }
@@ -222,8 +204,21 @@ bool FsIndexer::indexFiles(list<string>& files)
     if (!init())
         return false;
 
+    // We use an FsTreeWalker just for handling the skipped path/name lists
+    FsTreeWalker walker;
+    walker.setSkippedPaths(m_config->getSkippedPaths());
+
     for (list<string>::iterator it = files.begin(); it != files.end(); ) {
         LOGDEB2(("FsIndexer::indexFiles: [%s]\n", it->c_str()));
+
+        m_config->setKeyDir(path_getfather(*it));
+        walker.setSkippedNames(m_config->getSkippedNames());
+
+	// Check path against indexed areas and skipped names/paths
+        if (matchesSkipped(m_tdl, walker, *it)) {
+            it++; continue;
+        }
+
 	struct stat stb;
 	if (lstat(it->c_str(), &stb) != 0) {
 	    LOGERR(("FsIndexer::indexFiles: lstat(%s): %s", it->c_str(),
@@ -237,23 +232,6 @@ bool FsIndexer::indexFiles(list<string>& files)
 		    it->c_str()));
             it++; continue;
 	}
-
-	string dir = path_getfather(*it);
-	m_config->setKeyDir(dir);
-	static string lstdir;
-	static list<string> skpnl;
-	static list<string> skppl;
-	if (lstdir.compare(dir)) {
-	    LOGDEB(("Recomputing list of skipped names\n"));
-	    skpnl = m_config->getSkippedNames();
-	    skppl = m_config->getSkippedPaths();
-	    lstdir = dir;
-	}
-
-	// Check path against indexed areas and skipped names/paths
-        if (matchesSkipped(m_tdl, skpnl, skppl, *it)) {
-            it++; continue;
-        }
 
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
@@ -362,6 +340,9 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     if (flg == FsTreeWalker::FtwDirEnter || 
 	flg == FsTreeWalker::FtwDirReturn) {
 	m_config->setKeyDir(fn);
+
+	// Set up skipped patterns for this subtree. 
+	m_walker.setSkippedNames(m_config->getSkippedNames());
 
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))

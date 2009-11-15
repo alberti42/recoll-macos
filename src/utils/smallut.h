@@ -54,6 +54,7 @@ extern bool samecharset(const string &cs1, const string &cs2);
  */
 extern bool stringToStrings(const string &s, list<string> &tokens);
 extern bool stringToStrings(const string &s, vector<string> &tokens);
+extern bool stringToStrings(const string &s, set<string> &tokens);
 
 /**
  * Inverse operation:

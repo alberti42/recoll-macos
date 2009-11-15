@@ -182,71 +182,71 @@ template <class T> bool stringToStrings(const string &s, T &tokens)
     states state = SPACE;
     for (unsigned int i = 0; i < s.length(); i++) {
 	switch (s[i]) {
-	    case '"': 
+        case '"': 
 	    switch(state) {
-	      case SPACE: 
+            case SPACE: 
 		state=INQUOTE; continue;
-	      case TOKEN: 
+            case TOKEN: 
 	        current += '"';
 		continue;
-	      case INQUOTE: 
-		tokens.push_back(current);
+            case INQUOTE: 
+                tokens.insert(tokens.end(), current);
 		current.clear();
 		state = SPACE;
 		continue;
-	      case ESCAPE:
+            case ESCAPE:
 	        current += '"';
 	        state = INQUOTE;
-	      continue;
+                continue;
 	    }
 	    break;
-	    case '\\': 
+        case '\\': 
 	    switch(state) {
-	      case SPACE: 
-	      case TOKEN: 
-		  current += '\\';
-		  state=TOKEN; 
-		  continue;
-	      case INQUOTE: 
-		  state = ESCAPE;
-		  continue;
-	      case ESCAPE:
-		  current += '\\';
-		  state = INQUOTE;
-		  continue;
+            case SPACE: 
+            case TOKEN: 
+                current += '\\';
+                state=TOKEN; 
+                continue;
+            case INQUOTE: 
+                state = ESCAPE;
+                continue;
+            case ESCAPE:
+                current += '\\';
+                state = INQUOTE;
+                continue;
 	    }
 	    break;
 
-	    case ' ': 
-	    case '\t': 
-	    case '\n': 
-	    case '\r': 
+        case ' ': 
+        case '\t': 
+        case '\n': 
+        case '\r': 
 	    switch(state) {
-	      case SPACE: 
-		  continue;
-	      case TOKEN: 
-		tokens.push_back(current);
+            case SPACE: 
+                continue;
+            case TOKEN: 
+		tokens.insert(tokens.end(), current);
 		current.clear();
 		state = SPACE;
 		continue;
-	      case INQUOTE: 
-	      case ESCAPE:
-		  current += s[i];
-		  continue;
+            case INQUOTE: 
+            case ESCAPE:
+                current += s[i];
+                continue;
 	    }
 	    break;
 
-	    default:
+        default:
 	    switch(state) {
-	      case ESCAPE:
-		  state = INQUOTE;
-		  break;
-	      case SPACE: 
-		  state = TOKEN;
-		  break;
-	      case TOKEN: 
-	      case INQUOTE: 
-		  break;
+            case ESCAPE:
+                state = INQUOTE;
+                break;
+            case SPACE: 
+                state = TOKEN;
+                break;
+            case TOKEN: 
+            case INQUOTE: 
+                break;
 	    }
 	    current += s[i];
 	}
@@ -255,7 +255,7 @@ template <class T> bool stringToStrings(const string &s, T &tokens)
     case SPACE: 
 	break;
     case TOKEN: 
-	tokens.push_back(current);
+	tokens.insert(tokens.end(), current);
 	break;
     case INQUOTE: 
     case ESCAPE:
@@ -270,6 +270,10 @@ bool stringToStrings(const string &s, list<string> &tokens)
 bool stringToStrings(const string &s, vector<string> &tokens)
 {
     return stringToStrings<vector<string> >(s, tokens);
+}
+bool stringToStrings(const string &s, set<string> &tokens)
+{
+    return stringToStrings<set<string> >(s, tokens);
 }
 
 template <class T> void stringsToString(const T &tokens, string &s) 

@@ -79,8 +79,11 @@ class FsTreeWalker {
     /** Set the ignored paths list */
     bool setSkippedPaths(const list<string> &pathlist);
 
+    /** Test if path/name should be skipped. This can be used independantly of
+      * an actual tree walk */
     bool inSkippedPaths(const string& path);
     bool inSkippedNames(const string& name);
+
  private:
     Status iwalk(const string &dir, struct stat *stp, FsTreeWalkerCB& cb);
     class Internal;

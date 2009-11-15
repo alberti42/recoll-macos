@@ -55,6 +55,44 @@ using namespace std;
 #define MAX(A,B) (((A)>(B)) ? (A) : (B))
 #endif
 
+bool ParamStale::needrecompute()
+{
+    if (parent->m_keydirgen != savedkeydirgen) {
+        savedkeydirgen = parent->m_keydirgen;
+        string newvalue;
+        if (!conffile)
+            return false;
+        conffile->get(paramname, newvalue, parent->m_keydir);
+        if (newvalue.compare(savedvalue)) {
+            savedvalue = newvalue;
+            return true;
+        }
+    }
+    return false;
+}
+void ParamStale::init(RclConfig *rconf, ConfNull *cnf, const string& nm)
+{
+    parent = rconf;
+    conffile = cnf;
+    paramname = nm;
+    savedkeydirgen = -1;
+}
+
+void RclConfig::zeroMe() {
+    m_ok = false; 
+    m_keydirgen = 0;
+    m_conf = 0; 
+    mimemap = 0; 
+    mimeconf = 0; 
+    mimeview = 0; 
+    m_fields = 0;
+    m_stopsuffixes = 0;
+    m_maxsufflen = 0;
+    m_stpsuffstate.init(this, 0, "recoll_noindex");
+    m_skpnstate.init(this, 0, "skippedNames");
+    m_rmtstate.init(this, 0, "indexedmimetypes");
+}
+
 RclConfig::RclConfig(const string *argcnf)
 {
     zeroMe();
@@ -134,6 +172,10 @@ RclConfig::RclConfig(const string *argcnf)
 
     m_ok = true;
     setKeyDir("");
+
+    m_stpsuffstate.init(this, mimemap, "recoll_noindex");
+    m_skpnstate.init(this, m_conf, "skippedNames");
+    m_rmtstate.init(this, m_conf, "indexedmimetypes");
     return;
 }
 
@@ -145,6 +187,8 @@ bool RclConfig::updateMainConfig()
 	stringsToString(m_cdirs, where);
 	m_reason = string("No/bad main configuration file in: ") + where;
 	m_ok = false;
+        m_skpnstate.init(this, 0, "skippedNames");
+        m_rmtstate.init(this, 0, "indexedmimetypes");
 	return false;
     }
     setKeyDir("");
@@ -159,6 +203,8 @@ bool RclConfig::updateMainConfig()
 	    TextSplit::cjkProcessing(true);
 	}
     }
+    m_skpnstate.init(this, m_conf, "skippedNames");
+    m_rmtstate.init(this, m_conf, "indexedmimetypes");
     return true;
 }
 
@@ -176,6 +222,10 @@ ConfNull *RclConfig::cloneMainConfig()
 // prefetch a few common values.
 void RclConfig::setKeyDir(const string &dir) 
 {
+    if (!dir.compare(m_keydir))
+        return;
+
+    m_keydirgen++;
     m_keydir = dir;
     if (m_conf == 0)
 	return;
@@ -184,21 +234,6 @@ void RclConfig::setKeyDir(const string &dir)
 	defcharset.erase();
 
     getConfParam("guesscharset", &guesscharset);
-
-    string rmtstr;
-    if (m_conf->get("indexedmimetypes", rmtstr, m_keydir)) {
-	stringtolower(rmtstr);
-	if (rmtstr != m_rmtstr) {
-	    LOGDEB2(("RclConfig::setKeyDir: rmtstr [%s]\n", rmtstr.c_str()));
-	    m_rmtstr = rmtstr;
-	    list<string> l;
-	    // Yea, no good to go string->list->set. Lazy me.
-	    stringToStrings(rmtstr, l);
-	    for (list<string>::iterator it = l.begin(); it !=l.end(); it++) {
-		m_restrictMTypes.insert(*it);
-	    }
-	}
-    }
 }
 
 bool RclConfig::getConfParam(const std::string &name, int *ivp)
@@ -250,15 +285,17 @@ list<string> RclConfig::getTopdirs()
 
 // Get charset to be used for transcoding to utf-8 if unspecified by doc
 // For document contents:
-//   If defcharset was set (from the config or a previous call), use it.
-//   Else, try to guess it from the locale
-//   Use iso8859-1 as ultimate default
-//   defcharset is reset on setKeyDir()
+//  If defcharset was set (from the config or a previous call, this
+//   is done in setKeydir), use it.
+//  Else, try to guess it from the locale
+//  Use iso8859-1 as ultimate default
+//
 // For filenames, same thing except that we do not use the config file value
 // (only the locale).
 const string& RclConfig::getDefCharset(bool filename) 
 {
-    static string localecharset; // This supposedly never changes
+    // This can't change once computed inside a process.
+    static string localecharset; 
     if (localecharset.empty()) {
 	const char *cp;
 	cp = nl_langinfo(CODESET);
@@ -301,7 +338,6 @@ std::list<string> RclConfig::getAllMimeTypes()
     std::list<string> lst;
     if (mimeconf == 0)
 	return lst;
-    //    mimeconf->sortwalk(mtypesWalker, &lst);
     lst = mimeconf->getNames("index");
     lst.sort();
     lst.unique();
@@ -349,24 +385,20 @@ typedef multiset<SfString, SuffCmp> SuffixStore;
 
 bool RclConfig::inStopSuffixes(const string& fni)
 {
-    if (m_stopsuffixes == 0) {
+    if (m_stopsuffixes == 0 || m_stpsuffstate.needrecompute()) {
 	// Need to initialize the suffixes
+        delete STOPSUFFIXES;
 	if ((m_stopsuffixes = new SuffixStore) == 0) {
 	    LOGERR(("RclConfig::inStopSuffixes: out of memory\n"));
 	    return false;
 	}
-	string stp;
 	list<string> stoplist;
-	if (mimemap && mimemap->get("recoll_noindex", stp, m_keydir)) {
-	    stringToStrings(stp, stoplist);
-	}
+        stringToStrings(m_stpsuffstate.savedvalue, stoplist);
 	for (list<string>::const_iterator it = stoplist.begin(); 
 	     it != stoplist.end(); it++) {
-	    string lower(*it);
-	    stringtolower(lower);
-	    STOPSUFFIXES->insert(SfString(lower));
-	    if (m_maxsufflen < lower.length())
-		m_maxsufflen = lower.length();
+	    STOPSUFFIXES->insert(SfString(stringtolower(*it)));
+	    if (m_maxsufflen < it->length())
+		m_maxsufflen = it->length();
 	}
     }
 
@@ -444,9 +476,14 @@ bool RclConfig::getMimeCatTypes(const string& cat, list<string>& tps)
 string RclConfig::getMimeHandlerDef(const std::string &mtype, bool filtertypes)
 {
     string hs;
+    if (filtertypes && m_rmtstate.needrecompute()) {
+        m_restrictMTypes.clear();
+        stringToStrings(stringtolower((const string&)m_rmtstate.savedvalue), 
+                        m_restrictMTypes);
+    }
     if (filtertypes && !m_restrictMTypes.empty()) {
 	string mt = mtype;
-	stringtolower(mt);
+        stringtolower(mt);
 	if (m_restrictMTypes.find(mt) == m_restrictMTypes.end())
 	    return hs;
     }
@@ -455,6 +492,7 @@ string RclConfig::getMimeHandlerDef(const std::string &mtype, bool filtertypes)
     }
     return hs;
 }
+
 string RclConfig::getMissingHelperDesc()
 {
     string fmiss = path_cat(getConfDir(), "missing");
@@ -462,6 +500,7 @@ string RclConfig::getMissingHelperDesc()
     file_to_string(fmiss, out);
     return out;
 }
+
 void RclConfig::storeMissingHelperDesc(const string &s)
 {
     string fmiss = path_cat(getConfDir(), "missing");
@@ -709,14 +748,12 @@ string RclConfig::getStopfile()
     return path_cat(getConfDir(), "stoplist.txt");
 }
 
-list<string> RclConfig::getSkippedNames()
+list<string>& RclConfig::getSkippedNames()
 {
-    list<string> skpl;
-    string skipped;
-    if (getConfParam("skippedNames", skipped)) {
-	stringToStrings(skipped, skpl);
+    if (m_skpnstate.needrecompute()) {
+	stringToStrings(m_skpnstate.savedvalue, m_skpnlist);
     }
-    return skpl;
+    return m_skpnlist;
 }
 
 list<string> RclConfig::getSkippedPaths()
@@ -726,7 +763,9 @@ list<string> RclConfig::getSkippedPaths()
     if (getConfParam("skippedPaths", skipped)) {
 	stringToStrings(skipped, skpl);
     }
-    // Always add the dbdir and confdir to the skipped paths
+    // Always add the dbdir and confdir to the skipped paths. This is 
+    // especially important for the rt monitor which will go into a loop if we
+    // don't do this.
     skpl.push_back(getDbDir());
     skpl.push_back(getConfDir());
     for (list<string>::iterator it = skpl.begin(); it != skpl.end(); it++) {
@@ -916,8 +955,10 @@ void RclConfig::initFrom(const RclConfig& r)
     m_maxsufflen = r.m_maxsufflen;
     defcharset = r.defcharset;
     guesscharset = r.guesscharset;
-    m_rmtstr = r.m_rmtstr;
-    m_restrictMTypes = r.m_restrictMTypes;
+
+    m_stpsuffstate.init(this, mimemap, r.m_stpsuffstate.paramname);
+    m_skpnstate.init(this, m_conf, r.m_skpnstate.paramname);
+    m_rmtstate.init(this, m_conf, r.m_rmtstate.paramname);
 }
 
 #else // -> Test

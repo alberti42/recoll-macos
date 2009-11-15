@@ -59,17 +59,26 @@ static RclMonitor *makeMonitor();
     while we create the watches)*/
 class WalkCB : public FsTreeWalkerCB {
 public:
-    WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue)
-	: m_conf(conf), m_mon(mon), m_queue(queue)
+    WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue
+        FsTreeWalker& walker)
+	: m_config(conf), m_mon(mon), m_queue(queue), m_walker(walker)
     {}
     virtual ~WalkCB() 
     {}
 
     virtual FsTreeWalker::Status 
-    processone(const string &fn, const struct stat *st, FsTreeWalker::CbFlag flg)
+    processone(const string &fn, const struct stat *st, 
+               FsTreeWalker::CbFlag flg)
     {
 	LOGDEB2(("rclMonRcvRun: processone %s m_mon %p m_mon->ok %d\n", 
 		 fn.c_str(), m_mon, m_mon?m_mon->ok():0));
+
+        if (flg == FsTreeWalker::FtwDirEnter || 
+            flg == FsTreeWalker::FtwDirReturn) {
+            m_config->setKeyDir(fn);
+            // Set up skipped patterns for this subtree. 
+            m_walker.setSkippedNames(m_config->getSkippedNames());
+        }
 
 	if (flg == FsTreeWalker::FtwDirEnter) {
 	    // Create watch when entering directory, but first empty
@@ -99,9 +108,10 @@ public:
     }
 
 private:
-    RclConfig         *m_conf;
+    RclConfig         *m_config;
     RclMonitor        *m_mon;
     RclMonEventQueue  *m_queue;
+    FsTreeWalker&      m_walker;
 };
 
 /** Main thread routine: create watches, then forever wait for and queue events */
@@ -133,7 +143,7 @@ void *rclMonRcvRun(void *q)
     // Walk the directory trees to add watches
     FsTreeWalker walker;
     walker.setSkippedPaths(queue->getConfig()->getDaemSkippedPaths());
-    WalkCB walkcb(queue->getConfig(), mon, queue);
+    WalkCB walkcb(queue->getConfig(), mon, queue, walker);
     for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	queue->getConfig()->setKeyDir(*it);
 	// Adjust the follow symlinks options
@@ -144,15 +154,6 @@ void *rclMonRcvRun(void *q)
 	} else {
 	    walker.setOpts(FsTreeWalker::FtwOptNone);
 	}
-	// Adjust the skipped names according to config
-	walker.setSkippedNames(queue->getConfig()->getSkippedNames());
-	// Add the dbdir to skipped paths. Note that adding the dbdir
-	// is probably not useful as we'll probably never have
-	// multiple dbs per config file, and the global dbdir is
-	// included by
-	// config->getSkippedPaths(). Still, better to be safe here as
-	// config->including dbdir in the walk will get us into a loop
-	walker.addSkippedPath(queue->getConfig()->getDbDir());
 	LOGDEB(("rclMonRcvRun: walking %s\n", it->c_str()));
 	walker.walk(*it, walkcb);
     }

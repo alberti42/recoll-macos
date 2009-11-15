@@ -38,6 +38,24 @@ using std::set;
 #include "conftree.h"
 #include "smallut.h"
 
+class RclConfig;
+
+// A small class used for parameters that need to be computed from the
+// config string, and which can change with the keydir. Minimize work
+// by using the keydirgen and a saved string to avoid unneeded
+// recomputations
+class ParamStale {
+public:
+    RclConfig *parent;
+    ConfNull  *conffile;
+    string    paramname;
+    int       savedkeydirgen;
+    string    savedvalue;
+
+    void init(RclConfig *rconf, ConfNull *cnf, const string& nm);
+    bool needrecompute();
+};
+
 class RclConfig {
  public:
 
@@ -115,11 +133,10 @@ class RclConfig {
     string getStopfile();
 
     /** Get list of skipped file names for current keydir */
-    list<string> getSkippedNames();
+    list<string>& getSkippedNames();
 
     /** Get list of skipped paths patterns. Doesn't depend on the keydir */
     list<string> getSkippedPaths();
-
     /** Get list of skipped paths patterns, daemon version (may add some)
 	Doesn't depend on the keydir */
     list<string> getDaemSkippedPaths();
@@ -203,12 +220,16 @@ class RclConfig {
 	return *this;
     }
 
+    friend class ParamStale;
+
  private:
     int m_ok;
     string m_reason;    // Explanation for bad state
     string m_confdir;   // User directory where the customized files are stored
     string m_datadir;   // Example: /usr/local/share/recoll
     string m_keydir;    // Current directory used for parameter fetches.
+    int    m_keydirgen; // To help with knowing when to update computed data.
+
     list<string> m_cdirs; // directory stack for the confstacks
 
     ConfStack<ConfTree> *m_conf;   // Parsed configuration files
@@ -223,12 +244,16 @@ class RclConfig {
 
     void        *m_stopsuffixes;
     unsigned int m_maxsufflen;
+    ParamStale   m_stpsuffstate;
+
+    ParamStale   m_skpnstate;
+    list<string> m_skpnlist;
 
     // Parameters auto-fetched on setkeydir
     string defcharset;   // These are stored locally to avoid 
     bool   guesscharset; // They are fetched initially or on setKeydir()
     // Limiting set of mime types to be processed. Normally empty.
-    string        m_rmtstr;
+    ParamStale    m_rmtstate;
     set<string>   m_restrictMTypes; 
 
     /** Create initial user configuration */
@@ -236,16 +261,7 @@ class RclConfig {
     /** Copy from other */
     void initFrom(const RclConfig& r);
     /** Init pointers to 0 */
-    void zeroMe() {
-	m_ok = false; 
-	m_conf = 0; 
-	mimemap = 0; 
-	mimeconf = 0; 
-	mimeview = 0; 
-	m_fields = 0;
-	m_stopsuffixes = 0;
-	m_maxsufflen = 0;
-    }
+    void zeroMe();
     /** Free data then zero pointers */
     void freeAll();
     bool readFieldsConfig(const string& errloc);
