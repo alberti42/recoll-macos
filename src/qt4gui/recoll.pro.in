@@ -1,9 +1,9 @@
-TEMPLATE	= app
-LANGUAGE	= C++
+TEMPLATE        = app
+LANGUAGE        = C++
 
-CONFIG	+= qt warn_on thread release debug
+CONFIG  += qt warn_on thread release debug
 
-HEADERS	+= \
+HEADERS += \
         ../qtgui/advsearch_w.h \
         ../qtgui/confgui/confgui.h \
         ../qtgui/confgui/confguiindex.h \
@@ -16,7 +16,7 @@ HEADERS	+= \
         ../qtgui/spell_w.h \
         ../qtgui/ssearch_w.h \
         ../qtgui/uiprefs_w.h \
-        ../qtgui/viewaction_w.h
+        ../qtgui/viewaction_w.h \
 
 
 SOURCES += \
@@ -35,18 +35,18 @@ SOURCES += \
         ../qtgui/spell_w.cpp \
         ../qtgui/ssearch_w.cpp \
         ../qtgui/uiprefs_w.cpp \
-        ../qtgui/viewaction_w.cpp
-	
+        ../qtgui/viewaction_w.cpp \
 
 
-FORMS	= \
-        advsearch.ui \
-        rclmain.ui \
-        sort.ui \
-        spell.ui \
-        ssearchb.ui \
-        uiprefs.ui \
-        viewaction.ui
+
+FORMS   = \
+        ../qtgui/advsearch.ui \
+        ../qtgui/rclmain.ui \
+        ../qtgui/sort.ui \
+        ../qtgui/spell.ui \
+        ../qtgui/ssearchb.ui \
+        ../qtgui/uiprefs.ui \
+        ../qtgui/viewaction.ui \
 
 
 RESOURCES = recoll.qrc
@@ -61,27 +61,30 @@ unix {
            -lz
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
-	      ../utils ../aspell ../rcldb ../qt4gui/.ui \
-	      ../qtgui ../../qtgui \
-	      ../qtgui/confgui ../../qtgui/confgui
+              ../utils ../aspell ../rcldb ../qt4gui/.ui \
+              ../qtgui ../../qtgui \
+              ../qtgui/confgui ../../qtgui/confgui
 
   POST_TARGETDEPS = ../lib/librcl.a
 }
 
 UNAME = $$system(uname -s)
 contains( UNAME, [lL]inux ) {
-          LIBS -= -liconv
+          LIBS -= -liconv 
+	  LIBS += -ldl -lX11
 }
 contains( UNAME, SunOS ) {
           LIBS += -ldl
 }
 
-TRANSLATIONS = ../qtgui/i18n/recoll_de.ts \
-	     ../qtgui/i18n/recoll_fr.ts \
-	     ../qtgui/i18n/recoll_it.ts \
-	     ../qtgui/i18n/recoll_ru.ts \
-	     ../qtgui/i18n/recoll_tr.ts \
-	     ../qtgui/i18n/recoll_uk.ts \
-	     ../qtgui/i18n/recoll_xx.ts
+TRANSLATIONS = \
+	     ../qtgui/i18n/recoll_de.ts \
+             ../qtgui/i18n/recoll_fr.ts \
+             ../qtgui/i18n/recoll_it.ts \
+             ../qtgui/i18n/recoll_ru.ts \
+             ../qtgui/i18n/recoll_tr.ts \
+             ../qtgui/i18n/recoll_uk.ts \
+             ../qtgui/i18n/recoll_xx.ts \
+
 
 QT += qt3support 
