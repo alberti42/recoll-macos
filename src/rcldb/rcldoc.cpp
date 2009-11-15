@@ -42,6 +42,7 @@ namespace Rcl {
     const string Doc::keymd5("md5");
     const string Doc::keybcknd("rclbes");
     const string Doc::keyudi("rcludi");
+    const string Doc::keyapptg("rclaptg");
 
     void Doc::dump(bool dotext) const
     {

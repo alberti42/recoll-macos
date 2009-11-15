@@ -898,7 +898,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     } else {
         string apptag;
         map<string,string>::const_iterator it;
-        if ((it = doc.meta.find("apptag")) != doc.meta.end())
+        if ((it = doc.meta.find(Rcl::Doc::keyapptg)) != doc.meta.end())
             apptag = it->second;
 	cmd = rclconfig->getMimeViewerDef(doc.mimetype, apptag);
     }

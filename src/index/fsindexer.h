@@ -82,7 +82,7 @@ class FsIndexer : public FsTreeWalkerCB {
     list<string> m_tdl;
 
     // The configuration can set attribute fields to be inherited by
-    // all files in a file system area. Ie: set "apptag = thunderbird"
+    // all files in a file system area. Ie: set "rclaptg = thunderbird"
     // inside ~/.thunderbird. The boolean is set at init to avoid
     // further wasteful processing if no local fields are set.
     bool         m_havelocalfields;

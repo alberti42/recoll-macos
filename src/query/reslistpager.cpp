@@ -220,7 +220,7 @@ void ResListPager::displayPage()
 
         string apptag;
         map<string,string>::const_iterator it;
-        if ((it = doc.meta.find("apptag")) != doc.meta.end())
+        if ((it = doc.meta.find(Rcl::Doc::keyapptg)) != doc.meta.end())
             apptag = it->second;
 
 	if (!RclConfig::getMainConfig()->getMimeViewerDef(doc.mimetype, apptag).empty()) {
