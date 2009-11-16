@@ -40,13 +40,14 @@ SOURCES += \
 
 
 FORMS   = \
-        ../qtgui/advsearch.ui \
-        ../qtgui/rclmain.ui \
-        ../qtgui/sort.ui \
-        ../qtgui/spell.ui \
-        ../qtgui/ssearchb.ui \
-        ../qtgui/uiprefs.ui \
-        ../qtgui/viewaction.ui \
+        advsearch.ui \
+        preview.ui \
+        rclmain.ui \
+	sort.ui \
+	spell.ui \
+        ssearchb.ui \
+        uiprefs.ui \
+        viewaction.ui \
 
 
 RESOURCES = recoll.qrc
