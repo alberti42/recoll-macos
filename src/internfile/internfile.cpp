@@ -46,6 +46,7 @@ using namespace std;
 #include "mh_html.h"
 #include "fileudi.h"
 #include "beaglequeue.h"
+#include "cancelcheck.h"
 
 #ifdef RCL_USE_XATTR
 #include "pxattr.h"
@@ -758,6 +759,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     // security in the form of a maximum handler stack size.
     int loop = 0;
     while (!m_handlers.empty()) {
+        CancelCheck::instance().checkCancel();
 	if (loop++ > 1000) {
 	    LOGERR(("FileInterner:: looping!\n"));
 	    return FIError;
@@ -765,6 +767,15 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	// If there are no more docs at the current top level we pop and
 	// see if there is something at the previous one
 	if (!m_handlers.back()->has_documents()) {
+            // If looking for a specific doc, this is an error. Happens if
+            // the index is stale, and the ipath points to the wrong message
+            // for exemple (one with less attachments)
+	    if (m_forPreview) {
+                m_reason += "Requested document does not exist. ";
+                m_reason += m_handlers.back()->get_error();
+                LOGERR(("FileInterner: requested document does not exist\n"));
+		return FIError;
+            }
 	    popHandler();
 	    continue;
 	}
@@ -774,8 +785,12 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	// still want to process the rest of the mbox! For preview: fatal.
 	if (!m_handlers.back()->next_document()) {
 	    processNextDocError(doc, ipath);
-	    if (m_forPreview) 
+	    if (m_forPreview) {
+                m_reason += "Requested document does not exist. ";
+                m_reason += m_handlers.back()->get_error();
+                LOGERR(("FileInterner: requested document does not exist\n"));
 		return FIError;
+            }
 	    popHandler();
 	    continue;
 	}
