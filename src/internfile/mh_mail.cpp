@@ -176,6 +176,9 @@ bool MimeHandlerMail::next_document()
     }
     m_idx++;
     m_havedoc = m_idx < (int)m_attachments.size();
+    if (!m_havedoc) {
+        m_reason = "Subdocument index too high";
+    }
     return res;
 }
 
