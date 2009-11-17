@@ -17,6 +17,7 @@
 #ifndef _circache_h_included_
 #define _circache_h_included_
 /* @(#$Id: $  (C) 2009 J.F.Dockes */
+
 /**
  * A data cache implemented as a circularly managed file
  *
@@ -27,10 +28,18 @@
  * Data objects inside the cache each have two parts: a data segment and an 
  * attribute (metadata) dictionary.
  * They are named using the same identifiers that are used inside the Recoll
- * index, but any unique identifier scheme would work.
+ * index (the UDI).
  *
- * The names are stored in an auxiliary index for fast access. This index can
- * be rebuilt from the main file.
+ * Inside the file. the UDIs are stored inside the entry dictionary
+ * under the key "udi", which will appear when the dictionary is read
+ * back even if not there when wrote.
+ * 
+ * It is assumed that the dictionary are small (they are routinely read/parsed)
+ *
+ * A problem with this approach is that repetitively storing the same
+ * object will evict all others. This could be somewhat optimized by reusing 
+ * the last entry if it has the same udi as the one written, but not done 
+ * currently.
  */
 
 #include <sys/types.h>
@@ -59,15 +68,22 @@ public:
 
     virtual bool put(const string& udi, const string& dic, const string& data);
 
-    /* Maybe we'll have separate iterators one day, but this is good enough for
-     * now. No put() operations should be performed while using these.
+    /** Walk the archive.
+     *
+     * Maybe we'll have separate iterators one day, but this is good
+     * enough for now. No put() operations should be performed while
+     * using these.
      */
+    /** Back to oldest */
     virtual bool rewind(bool& eof);
-    virtual bool next(bool& eof);
+    /** Get entry under cursor */
     virtual bool getcurrent(string& udi, string& dic, string& data);
+    /** Get current entry dict only (ie: udi is in dict */
     virtual bool getcurrentdict(string& dict);
+    /** Skip to next. (false && !eof) -> error, (false&&eof)->EOF. */
+    virtual bool next(bool& eof);
 
-    /* Debug */
+    /* Debug. This writes the entry headers to stdout */
     virtual bool dump();
 
 protected:

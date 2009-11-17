@@ -32,11 +32,13 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 
 #include <sstream>
 #include <iostream>
+#include <map>
 
 #include "circache.h"
 #include "conftree.h"
 #include "debuglog.h"
 #include "smallut.h"
+#include "md5.h"
 
 using namespace std;
 
@@ -53,12 +55,18 @@ using namespace std;
  *
  * There is a write position, which can be at eof while 
  * the file is growing, or inside the file if we are recycling. This is stored
- * in the header, together with the maximum size
+ * in the header (oheadoffs), together with the maximum size
  *
  * If we are recycling, we have to take care to compute the size of the 
  * possible remaining area from the last object invalidated by the write, 
- * pad it with neutral data and store the size in the new header.
+ * pad it with neutral data and store the size in the new header. To help with
+ * this, the address for the last object written is also kept in the header
+ * (nheadoffs, npadsize)
+ * 
  */
+
+typedef unsigned long ULONG;
+typedef unsigned int  UINT;
 
 // First block size
 #define CIRCACHE_FIRSTBLOCK_SIZE 1024
@@ -71,9 +79,9 @@ const char *headerformat = "circacheSizes = %x %x %x";
 class EntryHeaderData {
 public:
     EntryHeaderData() : dicsize(0), datasize(0), padsize(0) {}
-    unsigned int dicsize;
-    unsigned int datasize;
-    unsigned int padsize;
+    UINT dicsize;
+    UINT datasize;
+    UINT padsize;
 };
 
 // A callback class for the header-hopping function.
@@ -81,9 +89,60 @@ class CCScanHook {
 public:
     virtual ~CCScanHook() {}
     enum status {Stop, Continue, Error, Eof};
-    virtual status takeone(off_t offs, const string& udi, unsigned int dicsize, 
-                           unsigned int datasize, unsigned int padsize) = 0;
+    virtual status takeone(off_t offs, const string& udi, UINT dicsize, 
+                           UINT datasize, UINT padsize) = 0;
 };
+
+// We have an auxiliary in-memory multimap of hashed-udi -> offset to
+// speed things up. This is created the first time the file is scanned
+// (on the first get), and not saved to disk. 
+
+// The map key: hashed udi. As a very short hash seems sufficient,
+// maybe we could find something faster/simpler than md5?
+#define UDIHLEN 4
+class UdiH {
+public:
+    unsigned char h[UDIHLEN];
+
+    UdiH(const string& udi)
+    {
+        MD5_CTX ctx;
+        MD5Init(&ctx);
+        MD5Update(&ctx, (const unsigned char*)udi.c_str(), udi.length());
+        unsigned char md[16];
+        MD5Final(md, &ctx);
+        memcpy(h, md, UDIHLEN);
+    }
+
+    string asHexString() const {
+        static const char hex[]="0123456789abcdef";
+        string out;
+        for (int i = 0; i < UDIHLEN; i++) {
+            out.append(1, hex[h[i] >> 4]);
+            out.append(1, hex[h[i] & 0x0f]);
+        }
+        return out;
+    }
+    bool operator==(const UdiH& r) const
+    {
+        for (int i = 0; i < UDIHLEN; i++)
+            if (h[i] != r.h[i])
+                return false;
+        return true;
+    }
+    bool operator<(const UdiH& r) const
+    {
+        for (int i = 0; i < UDIHLEN; i++) {
+            if (h[i] < r.h[i])
+                return true;
+            if (h[i] > r.h[i])
+                return false;
+        }
+        return false;
+    }
+};
+typedef multimap<UdiH, off_t> kh_type;
+typedef multimap<UdiH, off_t>::value_type kh_value_type;
 
 class CirCacheInternal {
 public:
@@ -102,16 +161,87 @@ public:
     // A place to hold data when reading
     char *m_buffer;
     size_t m_bufsiz;
+
     // Error messages
     ostringstream m_reason;
 
-    // State for rewind/next/getcurrent operation
+    // State for rewind/next/getcurrent operation. This could/should
+    // be moved to a separate iterator.
     off_t  m_itoffs;
     EntryHeaderData m_ithd;
 
+    // Offset cache
+    kh_type m_ofskh;
+    bool    m_ofskhcplt; // Has cache been fully read since open?
+
+    // Add udi->offset translation to map
+    bool khEnter(const string& udi, off_t ofs)
+    {
+        UdiH h(udi);
+
+        LOGDEB2(("Circache::khEnter: h %s offs %lu udi [%s]\n", 
+                h.asHexString().c_str(), (ULONG)ofs, udi.c_str()));
+
+        pair<kh_type::iterator, kh_type::iterator> p = m_ofskh.equal_range(h);
+
+        if (p.first != m_ofskh.end() && p.first->first == h) {
+            for (kh_type::iterator it = p.first; it != p.second; it++) {
+                LOGDEB2(("Circache::khEnter: col h %s, ofs %lu\n", 
+                        it->first.asHexString().c_str(),
+                        (ULONG)it->second));
+                if (it->second == ofs) {
+                    // (h,offs) already there. Happens
+                    LOGDEB2(("Circache::khEnter: already there\n"));
+                    return true;
+                }
+            }
+        }
+        m_ofskh.insert(kh_value_type(h, ofs));
+        LOGDEB2(("Circache::khEnter: inserted\n"));
+        return true;
+    }
+    void khDump()
+    {
+        for (kh_type::const_iterator it = m_ofskh.begin(); 
+             it != m_ofskh.end(); it++) {
+            LOGDEB(("Circache::KHDUMP: %s %d\n", 
+                    it->first.asHexString().c_str(), (ULONG)it->second));
+        }
+    }
+    bool khFind(const string& udi, vector<off_t>& ofss)
+    {
+        ofss.clear();
+
+        UdiH h(udi);
+
+        LOGDEB2(("Circache::khFind: h %s udi [%s]\n", 
+                h.asHexString().c_str(), udi.c_str()));
+
+        pair<kh_type::iterator, kh_type::iterator> p = 
+            m_ofskh.equal_range(h);
+
+#if 0
+        if (p.first == m_ofskh.end()) LOGDEB(("KHFIND: FIRST END()\n"));
+        if (p.second == m_ofskh.end()) LOGDEB(("KHFIND: SECOND END()\n"));
+        if (!(p.first->first == h))
+            LOGDEB(("KHFIND: NOKEY: %s %s\n", 
+                    p.first->first.asHexString().c_str(),
+                    p.second->first.asHexString().c_str()));
+#endif 
+
+        if (p.first == m_ofskh.end() || !(p.first->first == h))
+            return false;
+
+        for (kh_type::iterator it = p.first; it != p.second; it++) {
+            ofss.push_back(it->second);
+        }
+        return true;
+    }
+
     CirCacheInternal()
         : m_fd(-1), m_maxsize(-1), m_oheadoffs(-1), 
-          m_nheadoffs(0), m_npadsize(0), m_buffer(0), m_bufsiz(0)
+          m_nheadoffs(0), m_npadsize(0), m_buffer(0), m_bufsiz(0), 
+          m_ofskhcplt(false)
     {}
 
     ~CirCacheInternal()
@@ -151,6 +281,7 @@ public:
             "oheadoffs = " << m_oheadoffs << "\n" <<
             "nheadoffs = " << m_nheadoffs << "\n" <<
             "npadsize = " << m_npadsize << "\n" <<
+            "                                                              " <<
             "                                                              " <<
             "                                                              " <<
             "\0";
@@ -264,8 +395,10 @@ public:
         bool already_folded = false;
         
         while (true) {
-            if (already_folded && startoffset == so0)
+            if (already_folded && startoffset == so0) {
+                m_ofskhcplt = true;
                 return CCScanHook::Eof;
+            }
 
             EntryHeaderData d;
             CCScanHook::status st;
@@ -299,7 +432,8 @@ public:
                 m_reason << "scan: no udi in dic";
                 return CCScanHook::Error;
             }
-                
+            khEnter(udi, startoffset);
+
             // Call callback
             CCScanHook::status a = 
                 user->takeone(startoffset, udi, d.dicsize, d.datasize, 
@@ -315,10 +449,21 @@ public:
         }
     }
 
-    bool readDicData(off_t hoffs, unsigned int dicsize, string& dict, 
-                     unsigned int datasize, string* data)
+    bool readHDicData(off_t hoffs, EntryHeaderData& d, string& dic, 
+                      string* data)
+    {
+        if (readentryheader(hoffs, d) != CCScanHook::Continue)
+            return false;
+        return readDicData(hoffs, d.dicsize, dic, d.datasize, data);
+    }
+
+    bool readDicData(off_t hoffs, UINT dicsize, string& dic, 
+                     UINT datasize, string* data)
     {
         off_t offs = hoffs + CIRCACHE_HEADER_SIZE;
+        // This syscall could be avoided in some cases if we saved the offset
+        // at each seek. In most cases, we just read the header and we are
+        // at the right position
         if (lseek(m_fd, offs, 0) != offs) {
             m_reason << "CirCache::get: lseek(" << offs << ") failed: " << 
                 errno;
@@ -331,7 +476,8 @@ public:
             m_reason << "CirCache::get: read() failed: errno " << errno;
             return false;
         }
-        dict.assign(bf, dicsize);
+        dic.assign(bf, dicsize);
+
         if (data == 0)
             return true;
 
@@ -353,7 +499,7 @@ CirCache::CirCache(const string& dir)
     : m_dir(dir)
 {
     m_d = new CirCacheInternal;
-    LOGDEB(("CirCache: [%s]\n", m_dir.c_str()));
+    LOGDEB0(("CirCache: [%s]\n", m_dir.c_str()));
 }
 
 CirCache::~CirCache()
@@ -422,8 +568,8 @@ bool CirCache::open(OpMode mode)
 
 class CCScanHookDump : public  CCScanHook {
 public:
-    virtual status takeone(off_t offs, const string& udi, unsigned int dicsize, 
-                           unsigned int datasize, unsigned int padsize) 
+    virtual status takeone(off_t offs, const string& udi, UINT dicsize, 
+                           UINT datasize, UINT padsize) 
     {
         cout << "Scan: offs " << offs << " dicsize " << dicsize 
              << " datasize " << datasize << " padsize " << padsize << 
@@ -435,8 +581,11 @@ public:
 bool CirCache::dump()
 {
     CCScanHookDump dumper;
-    off_t start = m_d->m_nheadoffs > CIRCACHE_FIRSTBLOCK_SIZE ? 
-        m_d->m_nheadoffs : CIRCACHE_FIRSTBLOCK_SIZE;
+
+    // Start at oldest header. This is eof while the file is growing, scan will
+    // fold to bot at once.
+    off_t start = m_d->m_oheadoffs;
+
     switch (m_d->scan(start, &dumper, true)) {
     case CCScanHook::Stop: 
         cout << "Scan returns Stop??" << endl;
@@ -449,7 +598,7 @@ bool CirCache::dump()
         cout << "Scan returns Error: " << getReason() << endl;
         return false;
     case CCScanHook::Eof:
-        cout << "Scan returns Eof" << endl;
+        cout << "Scan returns Eof (ok)" << endl;
         return true;
     default:
         cout << "Scan returns Unknown ??" << endl;
@@ -468,11 +617,12 @@ public:
     CCScanHookGetter(const string &udi, int ti)
         : m_udi(udi), m_targinstance(ti), m_instance(0), m_offs(0){}
 
-    virtual status takeone(off_t offs, const string& udi, unsigned int dicsize, 
-                           unsigned int datasize, unsigned int padsize) 
+    virtual status takeone(off_t offs, const string& udi, UINT dicsize, 
+                           UINT datasize, UINT padsize) 
     {
-//        cerr << "offs " << offs << " udi [" << udi << "] dicsize " << dicsize 
-//             << " datasize " << datasize << " padsize " << padsize << endl;
+        LOGDEB2(("Circache:Scan: off %ld udi [%s] dcsz %u dtsz %u pdsz %u\n",
+                 long(offs), udi.c_str(), (UINT)dicsize, 
+                 (UINT)datasize, (UINT)padsize));
         if (!m_udi.compare(udi)) {
             m_instance++;
             m_offs = offs;
@@ -487,19 +637,68 @@ public:
 };
 
 // instance == -1 means get latest. Otherwise specify from 1+
-bool CirCache::get(const string& udi, string& dict, string& data, int instance)
+bool CirCache::get(const string& udi, string& dic, string& data, int instance)
 {
+    Chrono chron;
+
     assert(m_d != 0);
     if (m_d->m_fd < 0) {
         m_d->m_reason << "CirCache::get: not open";
         return false;
     }
 
-    LOGDEB(("CirCache::get: udi [%s], instance\n", udi.c_str(), instance));
+    LOGDEB0(("CirCache::get: udi [%s], instance %d\n", udi.c_str(), instance));
+
+    // If memory map is up to date, use it:
+    if (m_d->m_ofskhcplt) {
+        LOGDEB1(("CirCache::get: using ofskh\n"));
+        //m_d->khDump();
+        vector<off_t> ofss;
+        if (m_d->khFind(udi, ofss)) {
+            LOGDEB1(("Circache::get: h found, colls %d\n", ofss.size()));
+            int finst = 1;
+            EntryHeaderData d_good;
+            off_t           o_good = 0;
+            for (vector<off_t>::iterator it = ofss.begin();
+                 it != ofss.end(); it++) {
+                LOGDEB1(("Circache::get: trying offs %lu\n", (ULONG)*it));
+                string fdic;
+                EntryHeaderData d;
+                if (!m_d->readHDicData(*it, d, fdic, 0)) 
+                    return false;
+                ConfSimple conf(fdic);
+                string fudi;
+                if (!conf.get("udi", fudi, "")) {
+                    m_d->m_reason << "get: bad file: no udi in dic";
+                    return false;
+                }
+                if (!fudi.compare(udi)) {
+                    // Found one, memorize offset. Done if instance
+                    // matches, else go on. If instance is -1 need to
+                    // go to the end of the list anyway
+                    d_good = d;
+                    o_good = *it;
+                    if (finst == instance) {
+                        break;
+                    } else {
+                        finst++;
+                    }
+                }
+            }
+            // Did we read an appropriate entry ?
+            if (o_good != 0 && (instance == -1 || instance == finst)) {
+                bool ret = m_d->readDicData(o_good, d_good.dicsize, dic,
+                                            d_good.datasize, &data);
+                LOGDEB0(("Circache::get: hfound, %d mS\n", 
+                         chron.millis()));
+                return ret;
+            }
+            // Else try to scan anyway.
+        }
+    }
 
     CCScanHookGetter getter(udi, instance);
-    off_t start = m_d->m_nheadoffs > CIRCACHE_FIRSTBLOCK_SIZE ? 
-        m_d->m_nheadoffs : CIRCACHE_FIRSTBLOCK_SIZE;
+    off_t start = m_d->m_oheadoffs;
 
     CCScanHook::status ret = m_d->scan(start, &getter, true);
     if (ret == CCScanHook::Eof) {
@@ -508,24 +707,29 @@ bool CirCache::get(const string& udi, string& dict, string& data, int instance)
     } else if (ret != CCScanHook::Stop) {
         return false;
     }
-    return m_d->readDicData(getter.m_offs, getter.m_hd.dicsize, dict,
-                            getter.m_hd.datasize, &data);
+    bool bret = 
+        m_d->readDicData(getter.m_offs, getter.m_hd.dicsize, dic,
+                         getter.m_hd.datasize, &data);
+    LOGDEB0(("Circache::get: scanfound, %d mS\n", chron.millis()));
+
+    return bret;
 }
 
-
+// Used to scan the file ahead until we accumulated enough space for the new
+// entry. 
 class CCScanHookSpacer : public  CCScanHook {
 public:
-    unsigned int sizewanted;
-    unsigned int sizeseen;
+    UINT sizewanted;
+    UINT sizeseen;
     
     CCScanHookSpacer(int sz)
         : sizewanted(sz), sizeseen(0) {assert(sz > 0);}
 
-    virtual status takeone(off_t offs, const string& udi, unsigned int dicsize, 
-                           unsigned int datasize, unsigned int padsize) 
+    virtual status takeone(off_t offs, const string& udi, UINT dicsize, 
+                           UINT datasize, UINT padsize) 
     {
-        LOGDEB(("ScanSpacer: offs %u dicsz %u datasz %u padsz %u udi[%s]\n",
-                (unsigned int)offs, dicsize, datasize, padsize, udi.c_str()));
+        LOGDEB2(("Circache:ScanSpacer:off %u dcsz %u dtsz %u pdsz %u udi[%s]\n",
+                (UINT)offs, dicsize, datasize, padsize, udi.c_str()));
         sizeseen += CIRCACHE_HEADER_SIZE + dicsize + datasize + padsize;
         if (sizeseen >= sizewanted)
             return Stop;
@@ -610,7 +814,7 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
             // and determine the pad size up to the 1st preserved entry
             int scansize = nsize - recovpadsize;
             LOGDEB2(("CirCache::put: scanning for size %d from offs %u\n",
-                    scansize, (unsigned int)m_d->m_oheadoffs));
+                    scansize, (UINT)m_d->m_oheadoffs));
             CCScanHookSpacer spacer(scansize);
             switch (m_d->scan(m_d->m_oheadoffs, &spacer)) {
             case CCScanHook::Stop: 
@@ -654,9 +858,12 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
         return false;
     }
 
+    m_d->khEnter(udi, nwriteoffs);
+
     // Update first block information
     m_d->m_nheadoffs = nwriteoffs;
     m_d->m_npadsize  = npadsize;
+    // New oldest header is the one just after the one we just wrote.
     m_d->m_oheadoffs = nwriteoffs + nsize + npadsize;
     if (nwriteoffs + nsize >= m_d->m_maxsize) {
         // If we are at the biggest allowed size or we are currently
@@ -670,9 +877,13 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
 bool CirCache::rewind(bool& eof)
 {
     assert(m_d != 0);
+
     eof = false;
+
+    // Read oldest header
     m_d->m_itoffs = m_d->m_oheadoffs;
     CCScanHook::status st = m_d->readentryheader(m_d->m_itoffs, m_d->m_ithd);
+
     switch(st) {
     case CCScanHook::Eof:
         eof = true;
@@ -690,43 +901,49 @@ bool CirCache::next(bool& eof)
 
     eof = false;
 
+    // Skip to next header, using values stored from previous one
     m_d->m_itoffs += CIRCACHE_HEADER_SIZE + m_d->m_ithd.dicsize + 
         m_d->m_ithd.datasize + m_d->m_ithd.padsize;
+
+    // Looped back ?
     if (m_d->m_itoffs == m_d->m_oheadoffs) {
         eof = true;
         return false;
     }
 
+    // Read. If we hit physical eof, fold.
     CCScanHook::status st = m_d->readentryheader(m_d->m_itoffs, m_d->m_ithd);
     if (st == CCScanHook::Eof) {
         m_d->m_itoffs = CIRCACHE_FIRSTBLOCK_SIZE;
         if (m_d->m_itoffs == m_d->m_oheadoffs) {
+            // Then the file is not folded yet (still growing)
             eof = true;
             return false;
         }
         st = m_d->readentryheader(m_d->m_itoffs, m_d->m_ithd);
     }
+
     if (st == CCScanHook::Continue)
         return true;
     return false;
 }
 
-bool CirCache::getcurrentdict(string& dict)
+bool CirCache::getcurrentdict(string& dic)
 {
     assert(m_d != 0);
-    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd.dicsize, dict, 0, 0))
+    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd.dicsize, dic, 0, 0))
         return false;
     return true;
 }
 
-bool CirCache::getcurrent(string& udi, string& dict, string& data)
+bool CirCache::getcurrent(string& udi, string& dic, string& data)
 {
     assert(m_d != 0);
-    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd.dicsize, dict,
+    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd.dicsize, dic,
                           m_d->m_ithd.datasize, &data))
         return false;
 
-    ConfSimple conf(dict, 1);
+    ConfSimple conf(dic, 1);
     conf.get("udi", udi, "");
     return true;
 }
@@ -841,17 +1058,19 @@ int main(int argc, char **argv)
       }
       cc.open(CirCache::CC_OPREAD);
   } else if (op_flags & OPT_g) {
-      string udi = *argv++;argc--;
       if (!cc.open(CirCache::CC_OPREAD)) {
           cerr << "Open failed: " << cc.getReason() << endl;
           exit(1);
       }
-      string dic, data;
-      if (!cc.get(udi, dic, data, instance)) {
-          cerr << "Get failed: " << cc.getReason() << endl;
-          exit(1);
+      while (argc) {
+          string udi = *argv++;argc--;
+          string dic, data;
+          if (!cc.get(udi, dic, data, instance)) {
+              cerr << "Get failed: " << cc.getReason() << endl;
+              exit(1);
+          }
+          cout << "Dict: [" << dic << "]" << endl;
       }
-      cout << "Dict: [" << dic << "]" << endl;
   } else if (op_flags & OPT_d) {
       if (!cc.open(CirCache::CC_OPREAD)) {
           cerr << "Open failed: " << cc.getReason() << endl;
