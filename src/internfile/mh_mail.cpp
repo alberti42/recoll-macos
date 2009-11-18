@@ -169,7 +169,8 @@ bool MimeHandlerMail::next_document()
 		m_metaData[cstr_mimetype].c_str()));
         const string& txt = m_metaData[cstr_content];
         if (m_startoftext < txt.size())
-            m_metaData[cstr_abstract] = txt.substr(m_startoftext, 250);
+            m_metaData[cstr_abstract] = 
+                truncate_to_word(txt.substr(m_startoftext), 250);
     } else {
         m_metaData[cstr_abstract] = "";
 	res = processAttach();

@@ -879,7 +879,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 
     // Split and index file name as document term(s)
     LOGDEB2(("Db::add: split file name [%s]\n", fn.c_str()));
-    splitter.text_to_words(doc.utf8fn);
+    if (!splitter.text_to_words(doc.utf8fn))
+        LOGDEB(("Db::addOrUpdate: split failed for file name\n"));
     splitData.basepos += splitData.curpos + 100;
 
     // Index textual metadata.  These are all indexed as text with
@@ -901,7 +902,9 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 		    meta_it->first.c_str(), pfx.c_str(), 
 		    meta_it->second.c_str()));
 	    splitData.setprefix(pfx); // Subject
-	    splitter.text_to_words(meta_it->second);
+	    if (!splitter.text_to_words(meta_it->second))
+                LOGDEB(("Db::addOrUpdate: split failed for %s\n", 
+                        meta_it->first.c_str()));
 	    splitData.setprefix(string());
 	    splitData.basepos += splitData.curpos + 100;
 	}
@@ -914,7 +917,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 
     // Split and index body text
     LOGDEB2(("Db::add: split body\n"));
-    splitter.text_to_words(doc.text);
+    if (!splitter.text_to_words(doc.text))
+        LOGDEB(("Db::addOrUpdate: split failed for main text\n"));
 
     ////// Special terms for other metadata. No positions for these.
     // Mime type
