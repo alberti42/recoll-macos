@@ -41,6 +41,7 @@ ${rcltop}/common/rclinit.cpp
 ${rcltop}/common/textsplit.cpp
 ${rcltop}/common/unacpp.cpp
 ${rcltop}/index/mimetype.cpp
+${rcltop}/index/beaglequeue.cpp
 ${rcltop}/internfile/htmlparse.cpp
 ${rcltop}/internfile/internfile.cpp
 ${rcltop}/internfile/myhtmlparse.cpp
@@ -65,11 +66,13 @@ ${rcltop}/rcldb/stemdb.cpp
 ${rcltop}/rcldb/stoplist.cpp
 ${rcltop}/unac/unac.c
 ${rcltop}/utils/base64.cpp
+${rcltop}/utils/circache.cpp
 ${rcltop}/utils/closefrom.cpp
 ${rcltop}/utils/conftree.cpp
 ${rcltop}/utils/copyfile.cpp
 ${rcltop}/utils/debuglog.cpp
 ${rcltop}/utils/execmd.cpp
+${rcltop}/utils/fstreewalk.cpp
 ${rcltop}/utils/idfile.cpp
 ${rcltop}/utils/fileudi.cpp
 ${rcltop}/utils/md5.cpp
