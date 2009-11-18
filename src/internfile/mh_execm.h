@@ -68,14 +68,14 @@ class MimeHandlerExecMultiple : public MimeHandlerExec {
     {}
     // No resources to clean up, the ExecCmd destructor does it.
     virtual ~MimeHandlerExecMultiple() {}
-    virtual bool next_document();
-    virtual void clear() {
-	MimeHandlerExec::clear(); 
-    }
     virtual bool set_document_file(const string &file_path) {
         m_filefirst = true;
         return MimeHandlerExec::set_document_file(file_path);
     }
+    virtual bool next_document();
+
+    // skip_to and clear inherited from MimeHandlerExec
+
 private:
     bool startCmd();
     bool readDataElement(string& name, string& data);

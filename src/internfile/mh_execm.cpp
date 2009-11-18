@@ -60,6 +60,7 @@ bool MimeHandlerExecMultiple::startCmd()
     m_cmd.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
     if (m_cmd.startExec(cmd, myparams, 1, 1) < 0) {
+        m_reason = string("RECFILTERROR HELPERNOTFOUND ") + cmd;
         missingHelper = true;
         return false;
     }
@@ -88,6 +89,15 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
         LOGDEB(("MHExecMultiple: Got empty line\n"));
         name = "";
         return true;
+    }
+
+    // Filters will sometimes abort before entering the real protocol, ie if
+    // a module can't be loaded. Check the special filter error first word:
+    if (ibuf.find("RECFILTERROR ") == 0) {
+        m_reason = ibuf;
+        if (ibuf.find("HELPERNOTFOUND") != string::npos)
+            missingHelper = true;
+        return false;
     }
 
     // We're expecting something like Name: len\n

@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 import rclexecm
+import sys
+
 try:
     from icalendar import Calendar, Event
 except:
     print "RECFILTERROR HELPERNOTFOUND python:icalendar"
-    exit(1);
+    sys.exit(1);
 
 class IcalExtractor:
     def __init__(self, em):

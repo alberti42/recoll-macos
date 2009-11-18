@@ -9,13 +9,13 @@ try:
     from chm import chm,chmlib
 except:
     print "RECFILTERROR HELPERNOTFOUND python:chm"
-    exit(1);
+    sys.exit(1);
 
 try:
     from HTMLParser import HTMLParser
 except:
     print "RECFILTERROR HELPERNOTFOUND python:HTMLParser"
-    exit(1);
+    sys.exit(1);
 
 class ChmTopicsParser(HTMLParser):
     """Parse the chm's Topic file which is basically

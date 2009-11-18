@@ -17,7 +17,7 @@ class RclExecM:
     def rclog(self, s, doexit = 0, exitvalue = 1):
         print >> sys.stderr, "RCLMFILT:", self.myname, ":", s
         if doexit:
-            exit(exitvalue)
+            sys.exit(exitvalue)
     # Our worker sometimes knows the mime types of the data it sends
     def setmimetype(self, mt):
         self.mimetype = mt
