@@ -31,8 +31,7 @@
  * index (the UDI).
  *
  * Inside the file. the UDIs are stored inside the entry dictionary
- * under the key "udi", which will appear when the dictionary is read
- * back even if not there when wrote.
+ * under the key "udi".
  * 
  * It is assumed that the dictionary are small (they are routinely read/parsed)
  *
@@ -50,7 +49,9 @@
 using std::string;
 #endif
 
+class ConfSimple;
 class CirCacheInternal;
+
 class CirCache {
 public:
     CirCache(const string& dir);
@@ -66,7 +67,10 @@ public:
     virtual bool get(const string& udi, string& dic, string& data, 
                      int instance = -1);
 
-    virtual bool put(const string& udi, const string& dic, const string& data);
+    // Note: the dicp MUST have an udi entry
+    enum PutFlags {NoCompHint = 1};
+    virtual bool put(const string& udi, const ConfSimple *dicp, 
+                     const string& data, unsigned int flags = 0);
 
     /** Walk the archive.
      *

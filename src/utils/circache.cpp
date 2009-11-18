@@ -29,6 +29,7 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 #include <unistd.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <zlib.h>
 
 #include <sstream>
 #include <iostream>
@@ -41,6 +42,11 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 #include "md5.h"
 
 using namespace std;
+typedef unsigned char UCHAR;
+typedef unsigned int UINT;
+typedef unsigned long ULONG;
+
+static bool inflateToDynBuf(void *inp, UINT inlen, void **outpp, UINT *outlenp);
 
 /*
  * File structure:
@@ -65,32 +71,32 @@ using namespace std;
  * 
  */
 
-typedef unsigned long ULONG;
-typedef unsigned int  UINT;
-
 // First block size
 #define CIRCACHE_FIRSTBLOCK_SIZE 1024
 
 // Entry header.
-// The 32 bits size are stored as hex integers so the maximum size is
-// 13 + 3x8 + 6 = 43
-#define CIRCACHE_HEADER_SIZE 50
-const char *headerformat = "circacheSizes = %x %x %x";
+// 3 x 32 bits sizes as hex integers + 1 x 16 bits flag + at least 1 zero
+//                          15 +             3x(9)  + 3 + 1 = 46
+const char *headerformat = "circacheSizes = %x %x %x %hx";
+#define CIRCACHE_HEADER_SIZE 64
+
 class EntryHeaderData {
 public:
-    EntryHeaderData() : dicsize(0), datasize(0), padsize(0) {}
+    EntryHeaderData() : dicsize(0), datasize(0), padsize(0), flags(0) {}
     UINT dicsize;
     UINT datasize;
     UINT padsize;
+    unsigned short flags;
 };
+enum EntryFlags {EFNone = 0, EFDataCompressed = 1};
 
 // A callback class for the header-hopping function.
 class CCScanHook {
 public:
     virtual ~CCScanHook() {}
     enum status {Stop, Continue, Error, Eof};
-    virtual status takeone(off_t offs, const string& udi, UINT dicsize, 
-                           UINT datasize, UINT padsize) = 0;
+    virtual status takeone(off_t offs, const string& udi, 
+                           const EntryHeaderData& d) = 0;
 };
 
 // We have an auxiliary in-memory multimap of hashed-udi -> offset to
@@ -102,14 +108,14 @@ public:
 #define UDIHLEN 4
 class UdiH {
 public:
-    unsigned char h[UDIHLEN];
+    UCHAR h[UDIHLEN];
 
     UdiH(const string& udi)
     {
         MD5_CTX ctx;
         MD5Init(&ctx);
-        MD5Update(&ctx, (const unsigned char*)udi.c_str(), udi.length());
-        unsigned char md[16];
+        MD5Update(&ctx, (const UCHAR*)udi.c_str(), udi.length());
+        UCHAR md[16];
         MD5Final(md, &ctx);
         memcpy(h, md, UDIHLEN);
     }
@@ -159,7 +165,7 @@ public:
     ///////////////////// End header entries
 
     // A place to hold data when reading
-    char *m_buffer;
+    char  *m_buffer;
     size_t m_bufsiz;
 
     // Error messages
@@ -341,7 +347,7 @@ public:
         if (bf == 0)
             return false;
         memset(bf, 0, CIRCACHE_HEADER_SIZE);
-        sprintf(bf, headerformat, d.dicsize, d.datasize, d.padsize);
+        sprintf(bf, headerformat, d.dicsize, d.datasize, d.padsize, d.flags);
         if (lseek(m_fd, offset, 0) != offset) {
             m_reason << "CirCache::weh: lseek(" << offset << 
                 ") failed: errno " << errno;
@@ -378,11 +384,13 @@ public:
             return CCScanHook::Error;
         }
         if (sscanf(bf, headerformat, &d.dicsize, &d.datasize, 
-                   &d.padsize) != 3) {
+                   &d.padsize, &d.flags) != 4) {
             m_reason << " readentryheader: bad header at " << 
                 offset << " [" << bf << "]";
             return CCScanHook::Error;
         }
+        LOGDEB2(("Circache:readentryheader: dcsz %u dtsz %u pdsz %u flgs %hu\n",
+                 d.dicsize, d.datasize, d.padsize, d.flags));
         return CCScanHook::Continue;
     }
 
@@ -436,8 +444,7 @@ public:
 
             // Call callback
             CCScanHook::status a = 
-                user->takeone(startoffset, udi, d.dicsize, d.datasize, 
-                              d.padsize);
+                user->takeone(startoffset, udi, d);
             switch (a) {
             case CCScanHook::Continue: 
                 break;
@@ -454,11 +461,11 @@ public:
     {
         if (readentryheader(hoffs, d) != CCScanHook::Continue)
             return false;
-        return readDicData(hoffs, d.dicsize, dic, d.datasize, data);
+        return readDicData(hoffs, d, dic, data);
     }
 
-    bool readDicData(off_t hoffs, UINT dicsize, string& dic, 
-                     UINT datasize, string* data)
+    bool readDicData(off_t hoffs, EntryHeaderData& hd, string& dic, 
+                     string* data)
     {
         off_t offs = hoffs + CIRCACHE_HEADER_SIZE;
         // This syscall could be avoided in some cases if we saved the offset
@@ -469,26 +476,41 @@ public:
                 errno;
             return false;
         }
-        char *bf = buf(dicsize);
+        char *bf = buf(hd.dicsize);
         if (bf == 0)
             return false;
-        if (read(m_fd, bf, dicsize) != int(dicsize)) {
+        if (read(m_fd, bf, hd.dicsize) != int(hd.dicsize)) {
             m_reason << "CirCache::get: read() failed: errno " << errno;
             return false;
         }
-        dic.assign(bf, dicsize);
+        dic.assign(bf, hd.dicsize);
 
         if (data == 0)
             return true;
 
-        bf = buf(datasize);
+        bf = buf(hd.datasize);
         if (bf == 0)
             return false;
-        if (read(m_fd, bf, datasize) != int(datasize)){
+        if (read(m_fd, bf, hd.datasize) != int(hd.datasize)){
             m_reason << "CirCache::get: read() failed: errno " << errno;
             return false;
         }
-        data->assign(bf, datasize);
+
+        if (hd.flags & EFDataCompressed) {
+            LOGDEB1(("Circache:readdicdata: data compressed\n"));
+            char *uncomp;
+            unsigned int uncompsize;
+            if (!inflateToDynBuf(bf, hd.datasize, 
+                                 (void **)&uncomp, &uncompsize)) {
+                m_reason << "CirCache: decompression failed ";
+                return false;
+            }
+            data->assign(uncomp, uncompsize);
+            free(uncomp);
+        } else {
+            LOGDEB1(("Circache:readdicdata: data NOT compressed\n"));
+            data->assign(bf, hd.datasize);
+        }
 
         return true;
     }
@@ -568,11 +590,12 @@ bool CirCache::open(OpMode mode)
 
 class CCScanHookDump : public  CCScanHook {
 public:
-    virtual status takeone(off_t offs, const string& udi, UINT dicsize, 
-                           UINT datasize, UINT padsize) 
+    virtual status takeone(off_t offs, const string& udi, 
+                           const EntryHeaderData& d)
     {
-        cout << "Scan: offs " << offs << " dicsize " << dicsize 
-             << " datasize " << datasize << " padsize " << padsize << 
+        cout << "Scan: offs " << offs << " dicsize " << d.dicsize 
+             << " datasize " << d.datasize << " padsize " << d.padsize << 
+            " flags " << d.flags <<
             " udi [" << udi << "]" << endl;
         return Continue;
     }
@@ -617,18 +640,17 @@ public:
     CCScanHookGetter(const string &udi, int ti)
         : m_udi(udi), m_targinstance(ti), m_instance(0), m_offs(0){}
 
-    virtual status takeone(off_t offs, const string& udi, UINT dicsize, 
-                           UINT datasize, UINT padsize) 
+    virtual status takeone(off_t offs, const string& udi, 
+                           const EntryHeaderData& d)
     {
-        LOGDEB2(("Circache:Scan: off %ld udi [%s] dcsz %u dtsz %u pdsz %u\n",
-                 long(offs), udi.c_str(), (UINT)dicsize, 
-                 (UINT)datasize, (UINT)padsize));
+        LOGDEB2(("Circache:Scan: off %ld udi [%s] dcsz %u dtsz %u pdsz %u "
+                 " flgs %hu\n",
+                 long(offs), udi.c_str(), (UINT)d.dicsize, 
+                 (UINT)d.datasize, (UINT)d.padsize, d.flags));
         if (!m_udi.compare(udi)) {
             m_instance++;
             m_offs = offs;
-            m_hd.dicsize = dicsize;
-            m_hd.datasize = datasize;
-            m_hd.padsize = padsize;
+            m_hd = d;
             if (m_instance == m_targinstance)
                 return Stop;
         }
@@ -687,8 +709,7 @@ bool CirCache::get(const string& udi, string& dic, string& data, int instance)
             }
             // Did we read an appropriate entry ?
             if (o_good != 0 && (instance == -1 || instance == finst)) {
-                bool ret = m_d->readDicData(o_good, d_good.dicsize, dic,
-                                            d_good.datasize, &data);
+                bool ret = m_d->readDicData(o_good, d_good, dic, &data);
                 LOGDEB0(("Circache::get: hfound, %d mS\n", 
                          chron.millis()));
                 return ret;
@@ -708,8 +729,7 @@ bool CirCache::get(const string& udi, string& dic, string& data, int instance)
         return false;
     }
     bool bret = 
-        m_d->readDicData(getter.m_offs, getter.m_hd.dicsize, dic,
-                         getter.m_hd.datasize, &data);
+        m_d->readDicData(getter.m_offs, getter.m_hd, dic, &data);
     LOGDEB0(("Circache::get: scanfound, %d mS\n", chron.millis()));
 
     return bret;
@@ -725,35 +745,57 @@ public:
     CCScanHookSpacer(int sz)
         : sizewanted(sz), sizeseen(0) {assert(sz > 0);}
 
-    virtual status takeone(off_t offs, const string& udi, UINT dicsize, 
-                           UINT datasize, UINT padsize) 
+    virtual status takeone(off_t offs, const string& udi, 
+                           const EntryHeaderData& d)
     {
         LOGDEB2(("Circache:ScanSpacer:off %u dcsz %u dtsz %u pdsz %u udi[%s]\n",
-                (UINT)offs, dicsize, datasize, padsize, udi.c_str()));
-        sizeseen += CIRCACHE_HEADER_SIZE + dicsize + datasize + padsize;
+                (UINT)offs, d.dicsize, d.datasize, d.padsize, udi.c_str()));
+        sizeseen += CIRCACHE_HEADER_SIZE + d.dicsize + d.datasize + d.padsize;
         if (sizeseen >= sizewanted)
             return Stop;
         return Continue;
     }
 };
 
-bool CirCache::put(const string& udi, const string& idic, const string& data)
+bool CirCache::put(const string& udi, const ConfSimple *iconf, 
+                   const string& data, unsigned int iflags)
 {
     assert(m_d != 0);
     if (m_d->m_fd < 0) {
         m_d->m_reason << "CirCache::put: not open";
         return false;
     }
-    string dic = idic;
 
-    // If udi is not already in the metadata, need to add it
-    string u;
-    ConfSimple conf(dic, 0);
-    if (!conf.get("udi", u, "")) {
-        ostringstream s;
-        conf.set("udi", udi, "");
-        conf.write(s);
-        dic = s.str();
+    // We want udi in metadata
+    string dic;
+    if (!iconf || !iconf->get("udi", dic) || dic.empty() || dic.compare(udi)) {
+        m_d->m_reason << "No/bad 'udi' entry in input dic";
+        LOGERR(("Circache::put: no/bad udi: DIC:[%s] UDI [%s]\n", 
+                dic.c_str(), udi.c_str()));
+        iconf->write(cerr);
+        return false;
+    }
+    ostringstream s;
+    iconf->write(s);
+    dic = s.str();
+
+    // Data compression ?
+    const char *datap = data.c_str();
+    unsigned int datalen = data.size();
+    unsigned short flags = 0;
+    if (!(iflags & NoCompHint)) {
+        ULONG len = compressBound(data.size());
+        char *bf = m_d->buf(len);
+        if (bf != 0 && 
+            compress((Bytef*)bf, &len, (Bytef*)data.c_str(), data.size()) 
+            == Z_OK) {
+            if (float(len) < 0.9 * float(data.size())) {
+                // bf is local but it's our static buffer address
+                datap = bf;
+                datalen = len;
+                flags |= EFDataCompressed;
+            }
+        }
     }
 
     struct stat st;
@@ -763,13 +805,12 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
     }
 
     // Characteristics for the new entry
-    int nsize = CIRCACHE_HEADER_SIZE + dic.size() + data.size();
+    int nsize = CIRCACHE_HEADER_SIZE + dic.size() + datalen;
     int nwriteoffs = 0;
     int npadsize = 0;
     bool extending = false;
 
-    LOGDEB2(("CirCache::put: nsize %d oheadoffs %d\n", 
-             nsize, m_d->m_oheadoffs));
+    LOGDEB2(("CirCache::put: nsz %d oheadoffs %d\n", nsize, m_d->m_oheadoffs));
 
     if (st.st_size < m_d->m_maxsize) {
         // If we are still growing the file, things are simple
@@ -842,15 +883,16 @@ bool CirCache::put(const string& udi, const string& idic, const string& data)
     char *bf = m_d->buf(CIRCACHE_HEADER_SIZE);
     if (bf == 0) 
         return false;
-    memset(bf, 0, CIRCACHE_HEADER_SIZE);
-    sprintf(bf, headerformat, dic.size(), data.size(), npadsize);
+    char head[CIRCACHE_HEADER_SIZE];
+    memset(head, 0, CIRCACHE_HEADER_SIZE);
+    sprintf(head, headerformat, dic.size(), datalen, npadsize, flags);
     struct iovec vecs[3];
-    vecs[0].iov_base = bf;
+    vecs[0].iov_base = head;
     vecs[0].iov_len = CIRCACHE_HEADER_SIZE;
     vecs[1].iov_base = (void *)dic.c_str();
     vecs[1].iov_len = dic.size();
-    vecs[2].iov_base = (void *)data.c_str();
-    vecs[2].iov_len = data.size();
+    vecs[2].iov_base = (void *)datap;
+    vecs[2].iov_len = datalen;
     if (writev(m_d->m_fd, vecs, 3) !=  nsize) {
         m_d->m_reason << "put: write failed. errno " << errno;
         if (extending)
@@ -931,7 +973,7 @@ bool CirCache::next(bool& eof)
 bool CirCache::getcurrentdict(string& dic)
 {
     assert(m_d != 0);
-    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd.dicsize, dic, 0, 0))
+    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd, dic, 0))
         return false;
     return true;
 }
@@ -939,12 +981,95 @@ bool CirCache::getcurrentdict(string& dic)
 bool CirCache::getcurrent(string& udi, string& dic, string& data)
 {
     assert(m_d != 0);
-    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd.dicsize, dic,
-                          m_d->m_ithd.datasize, &data))
+    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd, dic, &data))
         return false;
 
     ConfSimple conf(dic, 1);
     conf.get("udi", udi, "");
+    return true;
+}
+
+void *
+allocmem(void 	*cp,	/* The array to grow. may be NULL */
+	 int	 sz,	/* Unit size in bytes */
+	 int 	*np,    /* Pointer to current allocation number */
+	 int	 min,   /* Number to allocate the first time */
+	 int	 maxinc) /* Maximum increment */
+{
+    if (cp == 0) {
+        cp = malloc(min * sz);
+        *np = cp ? min : 0;
+        return cp;
+    }
+
+    int inc = (*np > maxinc) ?  : *np;
+    if (cp = realloc(cp, (*np + inc) * sz))
+        *np += inc;
+    return cp;
+}
+
+static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
+{
+    z_stream d_stream; /* decompression stream */
+
+    LOGDEB0(("inflateToDynBuf: inlen %u\n", inlen));
+
+    d_stream.zalloc = (alloc_func)0;
+    d_stream.zfree = (free_func)0;
+    d_stream.opaque = (voidpf)0;
+    // Compression works well on html files, 4-6 is quite common, Otoh we
+    // maybe passed a big, little if at all compressed image or pdf file,
+    // So we set the initial allocation at 3 times the input size
+    const int imul = 3;
+    const int mxinc = 20;
+    char *outp = 0;
+    int alloc = 0;
+    d_stream.next_in  = (Bytef*)inp;
+    d_stream.avail_in = inlen;
+    d_stream.next_out = 0;
+    d_stream.avail_out = 0;
+
+    int err;
+    if ((err = inflateInit(&d_stream)) != Z_OK) {
+        LOGERR(("Inflate: inflateInit: err %d msg %s\n", err, d_stream.msg));
+        free(outp);
+        return false;
+    }
+
+    for (;;) {
+        LOGDEB2(("InflateToDynBuf: avail_in %d total_in %d avail_out %d "
+                 "total_out %d\n", d_stream.avail_in, d_stream.total_in,
+                 d_stream.avail_out, d_stream.total_out));
+        if (d_stream.avail_out == 0) {
+            if ((outp = (char*)allocmem(outp, inlen, &alloc, 
+                                                 imul, mxinc)) == 0) {
+                LOGERR(("Inflate: out of memory, current alloc %d\n", 
+                        alloc*inlen));
+                inflateEnd(&d_stream);
+                return false;
+            } else {
+                LOGDEB2(("inflateToDynBuf: realloc(%d) ok\n", alloc * inlen));
+            }
+            d_stream.avail_out = alloc * inlen - d_stream.total_out;
+            d_stream.next_out = (Bytef*)(outp + d_stream.total_out);
+        }
+        err = inflate(&d_stream, Z_NO_FLUSH);
+        if (err == Z_STREAM_END) break;
+        if (err != Z_OK) {
+            LOGERR(("Inflate: error %d msg %s\n", err, d_stream.msg));
+            inflateEnd(&d_stream);
+            free(outp);
+            return false;
+        }
+    }
+    *outlenp = d_stream.total_out;
+    *outpp = (Bytef *)outp;
+
+    if ((err = inflateEnd(&d_stream)) != Z_OK) {
+        LOGERR(("Inflate: inflateEnd error %d msg %s\n", err, d_stream.msg));
+        return false;
+    }
+    LOGDEB0(("inflateToDynBuf: ok, output size %d\n", d_stream.total_out));
     return true;
 }
 
@@ -973,7 +1098,8 @@ static char usage [] =
 " -c <dirname> : create\n"
 " -p <dirname> <apath> [apath ...] : put files\n"
 " -d <dirname> : dump\n"
-" -g [-i instance] <dirname> <udi>: get\n"
+" -g [-i instance] [-D] <dirname> <udi>: get\n"
+"   -D: also dump data\n"
 ;
 static void
 Usage(FILE *fp = stderr)
@@ -989,7 +1115,7 @@ static int     op_flags;
 #define OPT_g     0x10
 #define OPT_d     0x20
 #define OPT_i     0x40
-
+#define OPT_D     0x80
 int main(int argc, char **argv)
 {
   int instance = -1;
@@ -1008,6 +1134,7 @@ int main(int argc, char **argv)
       case 'p':	op_flags |= OPT_p; break;
       case 'g':	op_flags |= OPT_g; break;
       case 'd':	op_flags |= OPT_d; break;
+      case 'D':	op_flags |= OPT_D; break;
       case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
 	if ((sscanf(*(++argv), "%d", &instance)) != 1) 
 	  Usage(); 
@@ -1042,7 +1169,6 @@ int main(int argc, char **argv)
       while (argc) {
           string fn = *argv++;argc--;
           char dic[1000];
-          sprintf(dic, "#whatever...\nmimetype = text/plain\n");
           string data, reason;
           if (!file_to_string(fn, data, &reason)) {
               cerr << "File_to_string: " << reason << endl;
@@ -1050,9 +1176,15 @@ int main(int argc, char **argv)
           }
           string udi;
           make_udi(fn, "", udi);
+          sprintf(dic, "#whatever...\nmimetype = text/plain\nudi=%s\n", 
+                  udi.c_str());
+          string sdic;
+          sdic.assign(dic, strlen(dic));
+          ConfSimple conf(sdic);
    
-          if (!cc.put(udi, dic, data)) {
+          if (!cc.put(udi, &conf, data, 0)) {
               cerr << "Put failed: " << cc.getReason() << endl;
+              cerr << "conf: ["; conf.write(cerr); cerr << "]" << endl;
               exit(1);
           }
       }
@@ -1070,6 +1202,8 @@ int main(int argc, char **argv)
               exit(1);
           }
           cout << "Dict: [" << dic << "]" << endl;
+          if (op_flags & OPT_D)
+              cout << "Data: [" << data << "]" << endl;
       }
   } else if (op_flags & OPT_d) {
       if (!cc.open(CirCache::CC_OPREAD)) {
