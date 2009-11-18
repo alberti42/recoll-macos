@@ -5,31 +5,35 @@ import recoll
 allmeta = ("title", "keywords", "abstract", "url", "mimetype", "mtime",
            "ipath", "fbytes", "dbytes", "relevancyrating")
 
-
+def Usage():
+    print >> sys.stderr, "Usage: recollq.py <recoll query>"
+    sys.exit(1);
+    
 def dotest(db, q):
     query = db.query()
-#query1 = db.query()
 
     nres = query.execute(q)
     print "Result count: ", nres
-    if nres > 10:
-        nres = 10
     while query.next >= 0 and query.next < nres: 
         doc = query.fetchone()
-        print query.next
-        for k in ("title",):
+        print query.next, ":",
+        for k in ("title", "url"):
             print k, ":", getattr(doc, k).encode('utf-8')
-            abs = db.makeDocAbstract(doc, query).encode('utf-8')
-            print abs
-            print
+        abs = db.makeDocAbstract(doc, query).encode('utf-8')
+        print abs
+        print
 
 # End dotest
+if len(sys.argv) < 2:
+    Usage()
 
-q = "essaouira"
+q = ""
+for word in sys.argv[1:]:
+    q += word + " "
 
-print "TESTING WITH .recoll"
+print "TESTING WITH .recoll, question: [" + q + "]"
 db = recoll.connect()
-db.setAbstractParams(maxchars=80, contextwords=2)
+db.setAbstractParams(maxchars=120, contextwords=4)
 dotest(db, q)
 
 sys.exit(0)
