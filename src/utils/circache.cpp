@@ -1003,7 +1003,7 @@ allocmem(void 	*cp,	/* The array to grow. may be NULL */
     }
 
     int inc = (*np > maxinc) ?  : *np;
-    if (cp = realloc(cp, (*np + inc) * sz))
+    if ((cp = realloc(cp, (*np + inc) * sz)) != 0)
         *np += inc;
     return cp;
 }
