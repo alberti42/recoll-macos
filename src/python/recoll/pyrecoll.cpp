@@ -70,10 +70,10 @@ static int
 SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("SearchData_init\n"));
-    static char *kwlist[] = {"type", NULL};
+    static const char* kwlist[] = {"type", NULL};
     char *stp = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|s", kwlist, &stp))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|s", (char**)kwlist, &stp))
 	return -1;
     Rcl::SClType tp = Rcl::SCLT_AND;
 
@@ -165,15 +165,15 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
         PyErr_SetString(PyExc_AttributeError, "sd");
         return 0;
     }
-    static char *kwlist[] = {"type", "qstring", "slack", "field", "stemming",
-			     "subsearch", NULL};
+    static const char *kwlist[] = {"type", "qstring", "slack", "field", 
+                                   "stemming", "subsearch", NULL};
     char *tp = 0;
     char *qs = 0; // needs freeing
     int slack = 0;
     char *fld = 0; // needs freeing
     int  dostem = 1; // needs freeing
     recoll_SearchDataObject *sub = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesiO!", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesiO!", (char**)kwlist,
 				     &tp, "utf-8", &qs, &slack,
 				     "utf-8", &fld, &dostem,
 				     &recoll_SearchDataType, &sub))
@@ -605,8 +605,8 @@ static PyObject *
 Query_sortby(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Query_sortby\n"));
-    static char *kwlist[] = {"field", "ascending", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", kwlist, 
+    static const char *kwlist[] = {"field", "ascending", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", (char**)kwlist,
 				     &self->sortfield,
 				     &self->ascending))
 	return 0;
@@ -626,11 +626,11 @@ static PyObject *
 Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Query_execute\n"));
-    static char *kwlist[] = {"query_string", "stemming", NULL};
+    static const char *kwlist[] = {"query_string", "stemming", NULL};
     char *sutf8 = 0; // needs freeing
     int dostem = 1;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|i:Query_execute", 
-				     kwlist, "utf-8", &sutf8,
+				     (char**)kwlist, "utf-8", &sutf8,
 				     &dostem)) {
 	return 0;
     }
@@ -673,11 +673,11 @@ PyDoc_STRVAR(doc_Query_executesd,
 static PyObject *
 Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
-    static char *kwlist[] = {"searchdata", NULL};
+    static const char *kwlist[] = {"searchdata", NULL};
     recoll_SearchDataObject *pysd = 0;
     LOGDEB(("Query_executeSD\n"));
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:Query_execute", 
-				     kwlist,
+				     (char **)kwlist,
 				     &recoll_SearchDataType, &pysd)) {
 	return 0;
     }
@@ -759,8 +759,8 @@ static PyMethodDef Query_methods[] = {
 };
 
 static PyMemberDef Query_members[] = {
-    {"next", T_INT, offsetof(recoll_QueryObject, next), 0,
-     "Next index to be fetched from results. Normally increments after\n"
+    {(char*)"next", T_INT, offsetof(recoll_QueryObject, next), 0,
+     (char*)"Next index to be fetched from results. Normally increments after\n"
      "each fetchone() call, but can be set/reset before the call effect\n"
      "seeking. Starts at 0"
     },
@@ -850,12 +850,12 @@ static int
 Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Db_init\n"));
-    static char *kwlist[] = {"confdir", "extra_dbs", "writable", NULL};
+    static const char *kwlist[] = {"confdir", "extra_dbs", "writable", NULL};
     PyObject *extradbs = 0;
     char *confdir = 0;
     int writable = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|sOi", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|sOi", (char**)kwlist,
 				     &confdir, &extradbs, &writable))
 	return -1;
 
@@ -945,9 +945,9 @@ static PyObject *
 Db_setAbstractParams(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Db_setAbstractParams\n"));
-    static char *kwlist[] = {"maxchars", "contextwords", NULL};
+    static const char *kwlist[] = {"maxchars", "contextwords", NULL};
     int ctxwords = -1, maxchars = -1;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|ii", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|ii", (char**)kwlist,
 				     &maxchars, &ctxwords))
 	return 0;
     if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
