@@ -272,6 +272,8 @@ int Query::getResCnt()
         LOGDEB(("Query::getResCnt: %d mS\n", chron.millis()));
 	if (!m_reason.empty())
 	    LOGERR(("xenquire->get_mset: exception: %s\n", m_reason.c_str()));
+    } else {
+        ret = m_nq->xmset.get_matches_lower_bound();
     }
     return ret;
 }
