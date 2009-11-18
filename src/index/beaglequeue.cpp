@@ -221,9 +221,6 @@ bool BeagleQueueIndexer::getFromCache(const string& udi, Rcl::Doc &dotdoc,
 {
     string dict;
 
-    // This is horribly inefficient, especially while reindexing from
-    // cache, and needs fixing either by saving the offsets during the
-    // forward scan, or using an auxiliary isam map
     if (!m_cache->get(udi, dict, data))
         return false;
 
@@ -447,10 +444,6 @@ BeagleQueueIndexer::processone(const string &path,
         // Document signature for up to date checks: none. 
         dotdoc.sig = "";
         
-        // doc fields not in meta, needing saving to the cache
-        dotfile.m_fields.set("fmtime", dotdoc.fmtime, "");
-        dotfile.m_fields.set("fbytes", dotdoc.fbytes, "");
-
         dotdoc.meta[Rcl::Doc::keybcknd] = "BGL";
         if (!m_db->addOrUpdate(udi, "", dotdoc)) 
             return FsTreeWalker::FtwError;
@@ -491,24 +484,25 @@ BeagleQueueIndexer::processone(const string &path,
         doc.sig = "";
         doc.url = dotdoc.url;
 
-        // doc fields not in meta, needing saving to the cache
-        dotfile.m_fields.set("fmtime", dotdoc.fmtime, "");
-        dotfile.m_fields.set("fbytes", dotdoc.fbytes, "");
-
         doc.meta[Rcl::Doc::keybcknd] = "BGL";
         if (!m_db->addOrUpdate(udi, "", doc)) 
             return FsTreeWalker::FtwError;
-
     }
+
 
     // Copy to cache
     {
-        stringstream o;
-        dotfile.m_fields.write(o);
+        // doc fields not in meta, needing saving to the cache
+        dotfile.m_fields.set("fmtime", dotdoc.fmtime, "");
+        dotfile.m_fields.set("fbytes", dotdoc.fbytes, "");
+        dotfile.m_fields.set("udi", udi, "");
         string fdata;
         file_to_string(path, fdata);
-        if (!m_cache->put(udi, o.str(), fdata))
+        if (!m_cache->put(udi, &dotfile.m_fields, fdata, 0)) {
+            LOGERR(("BeagleQueueIndexer::prc1: cache_put failed; %s\n",
+                    m_cache->getReason().c_str()));
             goto out;
+        }
     }
 
     dounlink = true;
