@@ -59,7 +59,7 @@ static RclMonitor *makeMonitor();
     while we create the watches)*/
 class WalkCB : public FsTreeWalkerCB {
 public:
-    WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue
+    WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue,
         FsTreeWalker& walker)
 	: m_config(conf), m_mon(mon), m_queue(queue), m_walker(walker)
     {}
