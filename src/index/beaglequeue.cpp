@@ -47,16 +47,20 @@ using namespace std;
 
 const string keybght("beagleHitType");
 
-#define LL 2048
 
+// Beagle creates a file named .xxx (where xxx is the name for the main file
+// in the queue), to hold external metadata (http or created by Beagle).
+// This class reads the .xxx, dotfile, and turns it into an Rcl::Doc holder
 class BeagleDotFile {
 public:
     BeagleDotFile(RclConfig *conf, const string& fn)
         : m_conf(conf), m_fn(fn)
-    { }
+    {}
 
+    // Read input line, strip it of eol and return as c++ string
     bool readLine(string& line)
     {
+        static const int LL = 2048;
         char cline[LL]; 
         cline[0] = 0;
         m_input.getline(cline, LL-1);
@@ -101,8 +105,8 @@ public:
             return false;
         doc.mimetype = line;
 
-        // We set the bookmarks mtype as html, the text is empty
-        // anyway, so that the html viewer will be called on 'Open'
+        // We set the bookmarks mtype as html (the text is empty
+        // anyway), so that the html viewer will be called on 'Open'
         bool isbookmark = false;
         if (!stringlowercmp("bookmark", doc.meta[keybght])) {
             isbookmark = true;
@@ -150,8 +154,11 @@ public:
         }
 
         // Finally build the confsimple that we will save to the
-        // cache, out of document fields. This could also be done in
-        // parallel with the doc.meta build above, but simpler this way.
+        // cache, from the doc fields. This could also be done in
+        // parallel with the doc.meta build above, but simpler this
+        // way.  We need it because not all interesting doc fields are
+        // in the meta array (ie: mimetype, url), and we want
+        // something homogenous and easy to save.
         for (map<string,string>::const_iterator it = doc.meta.begin();
              it != doc.meta.end(); it++) {
             m_fields.set((*it).first, (*it).second, "");
@@ -169,6 +176,9 @@ public:
 };
 
 const string badtmpdirname = "/no/such/dir/really/can/exist";
+
+// Initialize. Compute paths and create a temporary directory that will be
+// used by internfile()
 BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
                                        DbIxStatusUpdater *updfunc)
     : m_config(cnf), m_db(db), m_cache(0), m_updater(updfunc), 
@@ -216,6 +226,8 @@ BeagleQueueIndexer::~BeagleQueueIndexer()
     deleteZ(m_cache);
 }
 
+// Read  document from cache. Return the metadata as an Rcl::Doc
+// @param htt Beagle Hit Type 
 bool BeagleQueueIndexer::getFromCache(const string& udi, Rcl::Doc &dotdoc, 
                                       string& data, string *htt)
 {
@@ -243,6 +255,7 @@ bool BeagleQueueIndexer::getFromCache(const string& udi, Rcl::Doc &dotdoc,
     return true;
 }
 
+// Index document stored in the cache. 
 bool BeagleQueueIndexer::indexFromCache(const string& udi)
 {
     if (!m_db)
@@ -304,18 +317,31 @@ bool BeagleQueueIndexer::index()
 {
     if (!m_db)
         return false;
-    LOGDEB(("BeagleQueueIndexer::processqueue: dir: [%s]\n", 
-            m_queuedir.c_str()));
+    LOGDEB(("BeagleQueueIndexer::processqueue: [%s]\n", m_queuedir.c_str()));
     m_config->setKeyDir(m_queuedir);
 
-    // First check that files in the cache are in the index, in case this
-    // has been reset. We don't do this when called from indexFiles
+    // First check/index files found in the cache. If the index was reset,
+    // this actually does work, else it sets the existence flags (avoid
+    // purging). We don't do this when called from indexFiles
     if (!m_nocacheindex) {
         bool eof;
         if (!m_cache->rewind(eof)) {
+            // rewind can return eof if the cache is empty
             if (!eof)
                 return false;
         }
+
+        // The cache is walked in chronogical order, but we want to
+        // index the newest files first (there can be several versions
+        // of a given file in the cache). Have to revert the
+        // list. This would be a problem with a big cache, because the
+        // udis can be big (ie 150 chars), and would be more
+        // efficiently performed by the cache, which could use the
+        // smaller offsets.
+        //
+        // Another approach would be to just walk chronogical and
+        // reindex all versions: would waste processing but save
+        // memory
         vector<string> alludis;
         alludis.reserve(20000);
         while (m_cache->next(eof)) {
@@ -340,6 +366,7 @@ bool BeagleQueueIndexer::index()
         }
     }
 
+    // Finally index the queue
     FsTreeWalker walker(FsTreeWalker::FtwNoRecurse);
     walker.addSkippedName(".*");
     FsTreeWalker::Status status =walker.walk(m_queuedir, *this);
@@ -347,6 +374,7 @@ bool BeagleQueueIndexer::index()
     return true;
 }
 
+// Index a list of files (sent by the real time monitor)
 bool BeagleQueueIndexer::indexFiles(list<string>& files)
 {
     LOGDEB(("BeagleQueueIndexer::indexFiles\n"));
@@ -488,7 +516,6 @@ BeagleQueueIndexer::processone(const string &path,
         if (!m_db->addOrUpdate(udi, "", doc)) 
             return FsTreeWalker::FtwError;
     }
-
 
     // Copy to cache
     {
