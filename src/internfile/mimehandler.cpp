@@ -65,7 +65,7 @@ static Dijon::Filter *mhFactory(const string &mime)
 /**
  * Create a filter that executes an external program or script
  * A filter def can look like:
- *      exec someprog -v -t " h i j";charset= xx; mimetype=yy
+ *      someprog -v -t " h i j";charset= xx; mimetype=yy
  * A semi-colon list of attr=value pairs may come after the exec spec.
  * This list is treated by replacing semi-colons with newlines and building
  * a confsimple. This is done quite brutally and we don't support having
@@ -74,20 +74,18 @@ static Dijon::Filter *mhFactory(const string &mime)
 MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
                                bool multiple)
 {
-    string::size_type semicol0 = hs.find_first_of(";");
-    string cmdstr, attrstr;
-    if (semicol0 != string::npos) {
-        cmdstr = hs.substr(0, semicol0);
-        if (semicol0 < hs.size() - 1)
-            attrstr = hs.substr(semicol0+1);
-    } else {
-        cmdstr = hs;
+    ConfSimple attrs;
+    string cmdstr;
+    if (!cfg->valueSplitAttributes(hs, cmdstr, attrs)) {
+	LOGERR(("mhExecFactory: bad config line for [%s]: [%s]\n", 
+		mtype.c_str(), hs.c_str()));
+        return 0;
     }
 
     // Split command name and args, and build exec object
     list<string> cmdtoks;
     stringToStrings(cmdstr, cmdtoks);
-    if (cmdtoks.size() < 2) {
+    if (cmdtoks.empty()) {
 	LOGERR(("mhExecFactory: bad config line for [%s]: [%s]\n", 
 		mtype.c_str(), hs.c_str()));
 	return 0;
@@ -95,35 +93,26 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     MimeHandlerExec *h = multiple ? 
         new MimeHandlerExecMultiple(mtype.c_str()) :
         new MimeHandlerExec(mtype.c_str());
-
-    // cmdtoks size is at least 2, this has been checked just before
     list<string>::iterator it = cmdtoks.begin();
-    it++;
     h->params.push_back(cfg->findFilter(*it++));
     h->params.insert(h->params.end(), it, cmdtoks.end());
 
     // Handle additional attributes. We substitute the semi-colons
     // with newlines and use a ConfSimple
-    if (!attrstr.empty()) {
-        for (string::size_type i = 0; i < attrstr.size(); i++)
-            if (attrstr[i] == ';')
-                attrstr[i] = '\n';
-        ConfSimple attrs(attrstr);
-        string value;
-        if (attrs.get("charset", value)) 
-	    h->cfgCharset = stringtolower((const string&)value);
-        if (attrs.get("mimetype", value))
-	    h->cfgMtype = stringtolower((const string&)value);
-    }
+    string value;
+    if (attrs.get("charset", value)) 
+        h->cfgCharset = stringtolower((const string&)value);
+    if (attrs.get("mimetype", value))
+        h->cfgMtype = stringtolower((const string&)value);
 
-#if 0
-    string sparams;
+#if 1
+    string scmd;
     for (it = h->params.begin(); it != h->params.end(); it++) {
-	sparams += string("[") + *it + "] ";
+	scmd += string("[") + *it + "] ";
     }
-    LOGDEB(("mhExecFactory:mt [%s] cfgmt [%s] cfgcs [%s] params: [%s]\n",
+    LOGDEB(("mhExecFactory:mt [%s] cfgmt [%s] cfgcs [%s] cmd: [%s]\n",
 	    mtype.c_str(), h->cfgMtype.c_str(), h->cfgCharset.c_str(),
-	    sparams.c_str()));
+	    scmd.c_str()));
 #endif
 
     return h;
@@ -160,34 +149,29 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     hs = cfg->getMimeHandlerDef(mtype, filtertypes);
 
     if (!hs.empty()) {
-	// Break definition into type and name 
-	list<string> toks;
-	stringToStrings(hs, toks);
-	if (toks.empty()) {
-	    LOGERR(("getMimeHandler: bad mimeconf line for %s\n", 
-		    mtype.c_str()));
-	    return 0;
-	}
-
-	// Retrieve handler function according to type
-	list<string>::iterator it = toks.begin();
-	if (!stringlowercmp("internal", *it)) {
+	// Break definition into type and name/command string
+        string::size_type b1 = hs.find_first_of(" \t");
+        string handlertype = hs.substr(0, b1);
+	if (!stringlowercmp("internal", handlertype)) {
 	    return mhFactory(mtype);
-	} else if (!stringlowercmp("dll", *it)) {
-	} else if (!stringlowercmp("exec", *it)) {
-	    if (toks.size() < 2) {
+	} else if (!stringlowercmp("dll", handlertype)) {
+	} else {
+            string cmdstr = hs.substr(b1);
+            trimstring(cmdstr);
+            if (cmdstr.empty()) {
 		LOGERR(("getMimeHandler: bad line for %s: %s\n", 
 			mtype.c_str(), hs.c_str()));
 		return 0;
 	    }
-	    return mhExecFactory(cfg, mtype, hs, false);
-	} else if (!stringlowercmp("execm", *it)) {
-	    if (toks.size() < 2) {
+            if (!stringlowercmp("exec", handlertype)) {
+                return mhExecFactory(cfg, mtype, cmdstr, false);
+            } else if (!stringlowercmp("execm", handlertype)) {
+                return mhExecFactory(cfg, mtype, cmdstr, true);
+            } else {
 		LOGERR(("getMimeHandler: bad line for %s: %s\n", 
 			mtype.c_str(), hs.c_str()));
 		return 0;
-	    }
-	    return mhExecFactory(cfg, mtype, hs, true);
+            }
 	}
     }
 

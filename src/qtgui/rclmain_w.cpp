@@ -892,23 +892,31 @@ static string fileurltolocalpath(string url)
 void RclMain::startNativeViewer(Rcl::Doc doc)
 {
     // Look for appropriate viewer
-    string cmd;
+    string cmdplusattr;
     if (prefs.useDesktopOpen) {
-	cmd = rclconfig->getMimeViewerDef("application/x-all", "");
+	cmdplusattr = rclconfig->getMimeViewerDef("application/x-all", "");
     } else {
         string apptag;
         map<string,string>::const_iterator it;
         if ((it = doc.meta.find(Rcl::Doc::keyapptg)) != doc.meta.end())
             apptag = it->second;
-	cmd = rclconfig->getMimeViewerDef(doc.mimetype, apptag);
+	cmdplusattr = rclconfig->getMimeViewerDef(doc.mimetype, apptag);
     }
 
-    if (cmd.length() == 0) {
+    if (cmdplusattr.length() == 0) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("No external viewer configured for mime type [")
 			     + doc.mimetype.c_str() + "]");
 	return;
     }
+
+    // Extract possible attributes
+    ConfSimple attrs;
+    string cmd;
+    rclconfig->valueSplitAttributes(cmdplusattr, cmd, attrs);
+    bool ignoreipath = false;
+    if (attrs.get("ignoreipath", cmdplusattr))
+        ignoreipath = stringToBool(cmdplusattr);
 
     // Split the command line
     list<string> lcmd;
@@ -949,7 +957,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     // Command not found: start the user dialog to help find another one:
     if (cmdpath.empty()) {
 	QString mt = QString::fromAscii(doc.mimetype.c_str());
-	QString message = tr("The viewer specified in mimeconf for %1: %2"
+	QString message = tr("The viewer specified in mimeview for %1: %2"
 			     " is not found.\nDo you want to start the "
 			     " preferences dialog ?")
 	    .arg(mt).arg(QString::fromLocal8Bit(lcmd.front().c_str()));
@@ -971,7 +979,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
     // We may need a temp file, or not depending on the command arguments
     // and the fact that this is a subdoc or not.
-    bool wantsipath = cmd.find("%i") != string::npos;
+    bool wantsipath = (cmd.find("%i") != string::npos) || ignoreipath;
     bool wantsfile = cmd.find("%f") != string::npos;
     bool istempfile = false;
     string fn = fileurltolocalpath(doc.url);
