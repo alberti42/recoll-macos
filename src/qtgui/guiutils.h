@@ -133,7 +133,7 @@ class PrefsPack {
     static const char *getDfltResListFormat() {
 	return 	"<img src=\"%I\" align=\"left\">"
 	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>"
 	"%A %K";
     }
     static const char *getV18DfltResListFormat() {
