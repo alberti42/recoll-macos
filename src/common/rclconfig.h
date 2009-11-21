@@ -167,6 +167,10 @@ class RclConfig {
 
     /** mimeconf: get input filter for mimetype */
     string getMimeHandlerDef(const string &mimetype, bool filtertypes=false);
+    /** For lines like: "name = some value; and additional; attributes"
+     * Split the value and store the attributes in a ConfSimple */
+    bool valueSplitAttributes(const string& whole, string& value, 
+                              ConfSimple& attrs);
 
     /** mimeconf: get icon name for mimetype */
     string getMimeIconName(const string &mtype, string *path = 0);

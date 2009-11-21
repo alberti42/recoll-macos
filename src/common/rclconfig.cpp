@@ -493,6 +493,32 @@ string RclConfig::getMimeHandlerDef(const std::string &mtype, bool filtertypes)
     return hs;
 }
 
+/** 
+ * @param whole is like "base value ; attr1 = somthing; attr2 = somethelse"
+ * There is no way to escape a semi-colon inside whole
+ */
+bool RclConfig::valueSplitAttributes(const string& whole, string& value, 
+                              ConfSimple& attrs)
+{
+    string::size_type semicol0 = whole.find_first_of(";");
+    value = whole.substr(0, semicol0);
+    string attrstr;
+    if (semicol0 != string::npos && semicol0 < whole.size() - 1) {
+        attrstr = whole.substr(semicol0+1);
+    }
+
+    // Handle additional attributes. We substitute the semi-colons
+    // with newlines and use a ConfSimple
+    if (!attrstr.empty()) {
+        for (string::size_type i = 0; i < attrstr.size(); i++)
+            if (attrstr[i] == ';')
+                attrstr[i] = '\n';
+        attrs = ConfSimple(attrstr);
+    }
+    return true;
+}
+
+
 string RclConfig::getMissingHelperDesc()
 {
     string fmiss = path_cat(getConfDir(), "missing");
