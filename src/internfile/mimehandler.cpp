@@ -64,61 +64,56 @@ static Dijon::Filter *mhFactory(const string &mime)
 
 /**
  * Create a filter that executes an external program or script
- * A filter def can look like. 
- * exec someprog -v -t " h i j";charset= xx; mimetype=yy
- * We don't support ';' inside a quoted string for now. Can't see a use
- * for it
+ * A filter def can look like:
+ *      exec someprog -v -t " h i j";charset= xx; mimetype=yy
+ * A semi-colon list of attr=value pairs may come after the exec spec.
+ * This list is treated by replacing semi-colons with newlines and building
+ * a confsimple. This is done quite brutally and we don't support having
+ * a ';' inside a quoted string for now. Can't see a use for it.
  */
 MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
                                bool multiple)
 {
-    list<string>semicolist;
-    stringToTokens(hs, semicolist, ";");
-    if (hs.size() < 1) {
-	LOGERR(("mhExecFactory: bad filter def: [%s]\n", hs.c_str()));
-	return 0;
+    string::size_type semicol0 = hs.find_first_of(";");
+    string cmdstr, attrstr;
+    if (semicol0 != string::npos) {
+        cmdstr = hs.substr(0, semicol0);
+        if (semicol0 < hs.size() - 1)
+            attrstr = hs.substr(semicol0+1);
+    } else {
+        cmdstr = hs;
     }
-    string& cmd = *(semicolist.begin());
 
-    list<string> toks;
-    stringToStrings(cmd, toks);
-    if (toks.size() < 2) {
+    // Split command name and args, and build exec object
+    list<string> cmdtoks;
+    stringToStrings(cmdstr, cmdtoks);
+    if (cmdtoks.size() < 2) {
 	LOGERR(("mhExecFactory: bad config line for [%s]: [%s]\n", 
 		mtype.c_str(), hs.c_str()));
 	return 0;
     }
-
     MimeHandlerExec *h = multiple ? 
         new MimeHandlerExecMultiple(mtype.c_str()) :
         new MimeHandlerExec(mtype.c_str());
 
-    list<string>::iterator it;
-
-    // toks size is at least 2, this has been checked by caller.
-    it = toks.begin();
+    // cmdtoks size is at least 2, this has been checked just before
+    list<string>::iterator it = cmdtoks.begin();
     it++;
     h->params.push_back(cfg->findFilter(*it++));
-    h->params.insert(h->params.end(), it, toks.end());
+    h->params.insert(h->params.end(), it, cmdtoks.end());
 
-    // Handle additional parameters
-    it = semicolist.begin();
-    it++;
-    for (;it != semicolist.end(); it++) {
-	string &line = *it;
-	string::size_type eqpos = line.find("=");
-	if (eqpos == string::npos)
-	    continue;
-	// Compute name and value, trim white space
-	string nm, val;
-	nm = line.substr(0, eqpos);
-	trimstring(nm);
-	val = line.substr(eqpos+1, string::npos);
-	trimstring(val);
-	if (!nm.compare("charset")) {
-	    h->cfgCharset = stringtolower((const string&)val);
-	} else if (!nm.compare("mimetype")) {
-	    h->cfgMtype = stringtolower((const string&)val);
-	}
+    // Handle additional attributes. We substitute the semi-colons
+    // with newlines and use a ConfSimple
+    if (!attrstr.empty()) {
+        for (string::size_type i = 0; i < attrstr.size(); i++)
+            if (attrstr[i] == ';')
+                attrstr[i] = '\n';
+        ConfSimple attrs(attrstr);
+        string value;
+        if (attrs.get("charset", value)) 
+	    h->cfgCharset = stringtolower((const string&)value);
+        if (attrs.get("mimetype", value))
+	    h->cfgMtype = stringtolower((const string&)value);
     }
 
 #if 0
