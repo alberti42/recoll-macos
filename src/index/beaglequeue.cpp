@@ -210,7 +210,7 @@ BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
     int maxmbs = 20;
     m_config->getConfParam("webcachemaxmbs", &maxmbs);
     m_cache = new CirCache(ccdir);
-    m_cache->create(off_t(maxmbs)*1000*1024, true);
+    m_cache->create(off_t(maxmbs)*1000*1024, CirCache::CC_CRUNIQUE);
 }
 
 BeagleQueueIndexer::~BeagleQueueIndexer()

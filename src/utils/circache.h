@@ -59,7 +59,8 @@ public:
 
     virtual string getReason();
 
-    virtual bool create(off_t maxsize, bool onlyifnotexists = true);
+    enum CreateFlags {CC_CRNONE=0, CC_CRUNIQUE=1, CC_CRTRUNCATE = 2};
+    virtual bool create(off_t maxsize, int flags);
 
     enum OpMode {CC_OPREAD, CC_OPWRITE};
     virtual bool open(OpMode mode);
@@ -71,6 +72,8 @@ public:
     enum PutFlags {NoCompHint = 1};
     virtual bool put(const string& udi, const ConfSimple *dicp, 
                      const string& data, unsigned int flags = 0);
+
+    virtual bool erase(const string& udi);
 
     /** Walk the archive.
      *
