@@ -348,6 +348,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
                            const string& td, int flags)
     : m_tdir(td)
 {
+    LOGDEB(("FileInterner::FileInterner(idoc)\n"));
     initcommon(cnf, flags);
 
     // We do insist on having an url...
@@ -366,6 +367,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
         backend = it->second;
     
     if (backend.empty() || !backend.compare("FS")) {
+        // Filesystem document. Intern from file.
         // The url has to be like file://
         if (idoc.url.find("file://") != 0) {
             LOGERR(("FileInterner: FS backend and non fs url: [%s]\n",
@@ -375,35 +377,41 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
         string fn = idoc.url.substr(7, string::npos);
         struct stat st;
         if (stat(fn.c_str(), &st) < 0) {
-            LOGERR(("InternFile: cannot access document file: [%s]\n",
+            LOGERR(("FileInterner:: cannot access document file: [%s]\n",
                     fn.c_str()));
             return;
         }
         init(fn, &st, cnf, td, flags, &idoc.mimetype);
     } else if (!backend.compare("BGL")) {
-        // Retrieve from our webcache (beagle data)
-        BeagleQueueIndexer beagler(cnf);
+        // Retrieve from our webcache (beagle data). There should
+        // probably be a separate object type for readonly cache
+        // access (distinct from the one used for indexing). 
+        // Anyway, we're not called in the same thread as indexing ops, and
+        // even, at worse, this would duplicate the memory used. The beagler
+        // object is created at the first call of this routine and deleted 
+        // when the program exits.
+        static BeagleQueueIndexer beagler(cnf);
         string data;
         Rcl::Doc dotdoc;
         map<string,string>::const_iterator it = 
             idoc.meta.find(Rcl::Doc::keyudi);
         if (it == idoc.meta.end() || it->second.empty()) {
-            LOGERR(("Internfile: no udi in idoc\n"));
+            LOGERR(("FileInterner:: no udi in idoc\n"));
             return;
         }
         string udi = it->second;
         if (!beagler.getFromCache(udi, dotdoc, data)) {
-            LOGINFO(("Internfile: failed fetch from Beagle cache for [%s]\n",
+            LOGINFO(("FileInterner:: failed fetch from Beagle cache for [%s]\n",
                      udi.c_str()));
             return;
         }
         if (dotdoc.mimetype.compare(idoc.mimetype)) {
-            LOGINFO(("Internfile: udi [%s], mimetype mismatch: in: [%s], bgl "
+            LOGINFO(("FileInterner:: udi [%s], mimetp mismatch: in: [%s], bgl "
                      "[%s]\n", idoc.mimetype.c_str(), dotdoc.mimetype.c_str()));
         }
         init(data, cnf, td, flags, dotdoc.mimetype);
     } else {
-        LOGERR(("InternFile: unknown backend: [%s]\n", backend.c_str()));
+        LOGERR(("FileInterner:: unknown backend: [%s]\n", backend.c_str()));
         return;
     }
 }
