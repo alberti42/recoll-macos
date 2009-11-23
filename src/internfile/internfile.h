@@ -87,7 +87,8 @@ class FileInterner {
     /**
      * Alternate constructor for the case where it is not known where
      * the data will come from. We'll use the doc fields and try our
-     * best...
+     * best. This is only used at query time, the idoc was built from index 
+     * data.
      */
     FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, const string& td, 
                  int flags);
