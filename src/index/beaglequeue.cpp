@@ -473,6 +473,10 @@ BeagleQueueIndexer::processone(const string &path,
         goto out;
     } else {
         Rcl::Doc doc;
+        // Store the dotdoc fields in the future doc. In case someone wants
+        // to use beagle-generated fields like beagle:inurl
+        doc.meta = dotdoc.meta;
+
         FileInterner interner(path, stp, m_config, m_tmpdir, 
                               FileInterner::FIF_doUseInputMimetype,
                               &dotdoc.mimetype);
