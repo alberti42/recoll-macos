@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: history.cpp,v 1.9 2007-12-13 06:58:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: dynconf.cpp,v 1.9 2007-12-13 06:58:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ static char rcsid[] = "@(#$Id: history.cpp,v 1.9 2007-12-13 06:58:21 dockes Exp 
 #include <time.h>
 #include <cstdlib>
 
-#include "history.h"
+#include "dynconf.h"
 #include "base64.h"
 #include "smallut.h"
 #include "debuglog.h"
@@ -32,63 +32,20 @@ static char rcsid[] = "@(#$Id: history.cpp,v 1.9 2007-12-13 06:58:21 dockes Exp 
 using namespace std;
 #endif
 
-
-// Encode/decode document history entry: Unix time + base64 of fn +
-// base64 of ipath separated by a space. If ipath is not set, there
-// are only 2 parts
-bool RclDHistoryEntry::encode(string& value)
-{
-    char chartime[20];
-    sprintf(chartime, "%ld", unixtime);
-    string bfn, bipath;
-    base64_encode(fn, bfn);
-    base64_encode(ipath, bipath);
-    value = string(chartime) + " " + bfn + " " + bipath;
-    return true;
-}
-bool RclDHistoryEntry::decode(const string &value)
-{
-    list<string> vall;
-    stringToStrings(value, vall);
-    list<string>::const_iterator it1 = vall.begin();
-    if (vall.size() < 2)
-	return false;
-    unixtime = atol((*it1++).c_str());
-    base64_decode(*it1++, fn);
-    if (vall.size() == 3)
-	base64_decode(*it1, ipath);
-    else
-	ipath.erase();
-    return true;
-}
-bool RclDHistoryEntry::equal(const HistoryEntry& other)
-{
-    const RclDHistoryEntry& e = dynamic_cast<const RclDHistoryEntry&>(other);
-    return e.fn == fn && e.ipath == ipath;
-}
+// Well known keys for history and external indexes.
+const string docHistSubKey = "docs";
+const string allEdbsSk = "allExtDbs";
+const string actEdbsSk = "actExtDbs";
 
 
-// Encode/decode simple string. base64 used to avoid problems with
-// strange chars
-bool RclSListEntry::encode(string& enc)
+// @param sk section this is for
+// @param n  new entry
+// @param s a scratch entry used for decoding and comparisons. 
+//    This avoids templating this routine for the actual entry type.
+bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
+    int maxlen)
 {
-    base64_encode(value, enc);
-    return true;
-}
-bool RclSListEntry::decode(const string &enc)
-{
-    base64_decode(enc, value);
-    return true;
-}
-bool RclSListEntry::equal(const HistoryEntry& other)
-{
-    const RclSListEntry& e = dynamic_cast<const RclSListEntry&>(other);
-    return e.value == value;
-}
-
-bool RclHistory::insertNew(const string &sk, HistoryEntry &n, HistoryEntry &s)
-{
-    // Is this doc already in history ? If it is we remove the old entry
+    // Is this doc already in list ? If it is we remove the old entry
     list<string> names = m_data.getNames(sk);
     list<string>::const_iterator it;
     bool changed = false;
@@ -111,13 +68,13 @@ bool RclHistory::insertNew(const string &sk, HistoryEntry &n, HistoryEntry &s)
     if (changed)
 	names = m_data.getNames(sk);
 
-    // How many do we have
-    if (names.size() >= m_mlen) {
+    // Need to prune ?
+    if (maxlen > 0 && names.size() >= (unsigned int)maxlen) {
 	// Need to erase entries until we're back to size. Note that
 	// we don't ever reset numbers. Problems will arise when
 	// history is 4 billion entries old
 	it = names.begin();
-	for (unsigned int i = 0; i < names.size() - m_mlen + 1; i++, it++) {
+	for (unsigned int i = 0; i < names.size() - maxlen + 1; i++, it++) {
 	    m_data.erase(*it, sk);
 	}
     }
@@ -137,12 +94,10 @@ bool RclHistory::insertNew(const string &sk, HistoryEntry &n, HistoryEntry &s)
 	return false;
     }
     return true;
-
 }
 
-bool RclHistory::eraseAll(const string &sk)
+bool RclDynConf::eraseAll(const string &sk)
 {
-    // Is this doc already in history ? If it is we remove the old entry
     list<string> names = m_data.getNames(sk);
     list<string>::const_iterator it;
     for (it = names.begin(); it != names.end(); it++) {
@@ -150,31 +105,36 @@ bool RclHistory::eraseAll(const string &sk)
     }
     return true;
 }
-bool RclHistory::truncate(const string &sk, unsigned int n)
+
+
+// Generic string list specialization ///////////////////////////////////
+
+// Encode/decode simple string. base64 used to avoid problems with
+// strange chars
+bool RclSListEntry::encode(string& enc)
 {
-    // Is this doc already in history ? If it is we remove the old entry
-    list<string> names = m_data.getNames(sk);
-    if (names.size() <= n)
-	return true;
-    unsigned int i = 0;
-    for (list<string>::const_iterator it = names.begin(); 
-	 it != names.end(); it++, i++) {
-	if (i >= n)
-	    m_data.erase(*it, sk);
-    }
+    base64_encode(value, enc);
     return true;
 }
-
-
-bool RclHistory::enterString(const string sk, const string value)
+bool RclSListEntry::decode(const string &enc)
+{
+    base64_decode(enc, value);
+    return true;
+}
+bool RclSListEntry::equal(const DynConfEntry& other)
+{
+    const RclSListEntry& e = dynamic_cast<const RclSListEntry&>(other);
+    return e.value == value;
+}
+bool RclDynConf::enterString(const string sk, const string value, int maxlen)
 {
     RclSListEntry ne(value);
     RclSListEntry scratch;
-    return insertNew(sk, ne, scratch);
+    return insertNew(sk, ne, scratch, maxlen);
 }
-list<string> RclHistory::getStringList(const string sk) 
+list<string> RclDynConf::getStringList(const string sk) 
 {
-    list<RclSListEntry> el = getHistory<RclSListEntry>(sk);
+    list<RclSListEntry> el = getList<RclSListEntry>(sk);
     list<string> sl;
     for (list<RclSListEntry>::const_iterator it = el.begin(); 
 	 it != el.end(); it++) 
@@ -182,26 +142,8 @@ list<string> RclHistory::getStringList(const string sk)
     return sl;
 }
 
-string RclHistory::docSubkey = "docs";
-
-/// *************** History entries specific methods
-bool RclHistory::enterDoc(const string fn, const string ipath)
-{
-    LOGDEB(("RclDHistory::enterDoc: [%s] [%s] into %s\n", 
-	    fn.c_str(), ipath.c_str(), m_data.getFilename().c_str()));
-    RclDHistoryEntry ne(time(0), fn, ipath);
-    RclDHistoryEntry scratch;
-    return insertNew(docSubkey, ne, scratch);
-}
-
-list<RclDHistoryEntry> RclHistory::getDocHistory()
-{
-    return getHistory<RclDHistoryEntry>(docSubkey);
-}
-
-
-
 #else
+
 #include <string>
 #include <iostream>
 
@@ -216,7 +158,7 @@ static string thisprog;
 
 static string usage =
     "trhist [opts] <filename>\n"
-    " [-s <subkey>]: specify subkey (default: RclHistory::docSubkey)\n"
+    " [-s <subkey>]: specify subkey (default: RclDynConf::docHistSubKey)\n"
     " [-e] : erase all\n"
     " [-a <string>] enter string (needs -s, no good for history entries\n"
     "\n"
@@ -236,7 +178,7 @@ static int        op_flags;
 
 int main(int argc, char **argv)
 {
-    string sk = RclHistory::docSubkey;
+    string sk = "docs";
     string value;
 
     thisprog = argv[0];
@@ -264,7 +206,7 @@ int main(int argc, char **argv)
 	Usage();
     string filename = *argv++;argc--;
 
-    RclHistory hist(filename, 5);
+    RclDynConf hist(filename, 5);
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
 

@@ -184,8 +184,6 @@ void rwSettings(bool writing)
     // variable.
     // This are stored inside the dynamic configuration file (aka: history), 
     // as they are likely to depend on RECOLL_CONFDIR.
-    const string allEdbsSk = "allExtDbs";
-    const string actEdbsSk = "actExtDbs";
     if (writing) {
 	g_dynconf->eraseAll(allEdbsSk);
 	for (list<string>::const_iterator it = prefs.allExtraDbs.begin();

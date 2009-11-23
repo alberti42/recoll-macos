@@ -83,7 +83,7 @@ RclConfig* RclConfig::getMainConfig()
     return rclconfig;
 }
 
-RclHistory *g_dynconf;
+RclDynConf *g_dynconf;
 int recollNeedsExit;
 int startIndexingAfterConfig;
 RclMain *mainWindow;
@@ -276,7 +276,7 @@ int main(int argc, char **argv)
 #endif
 
     string historyfile = path_cat(rclconfig->getConfDir(), "history");
-    g_dynconf = new RclHistory(historyfile);
+    g_dynconf = new RclDynConf(historyfile);
     if (!g_dynconf || !g_dynconf->ok()) {
 	QString msg = app.translate("Main", "Configuration problem (dynconf");
 	QMessageBox::critical(0, "Recoll",  msg);

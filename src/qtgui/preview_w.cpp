@@ -75,6 +75,7 @@ using std::pair;
 #include "cancelcheck.h"
 #include "preview_w.h"
 #include "guiutils.h"
+#include "docseqhist.h"
 
 #if (QT_VERSION < 0x030300)
 #define wasCanceled wasCancelled
@@ -950,7 +951,9 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     }
 
     // Enter document in document history
-    g_dynconf->enterDoc(idoc.url, idoc.ipath);
+    map<string,string>::const_iterator udit = idoc.meta.find(Rcl::Doc::keyudi);
+    if (udit != idoc.meta.end())
+        historyEnterDoc(g_dynconf, udit->second);
 
     editor->setFocus();
     emit(previewExposed(this, m_searchId, docnum));

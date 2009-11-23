@@ -28,7 +28,7 @@ ${depth}/query/docseq.cpp \
 ${depth}/query/docseqdb.cpp \
 ${depth}/query/docseqhist.cpp \
 ${depth}/query/filtseq.cpp \
-${depth}/query/history.cpp \
+${depth}/query/dynconf.cpp \
 ${depth}/query/plaintorich.cpp \
 ${depth}/query/recollq.cpp \
 ${depth}/query/reslistpager.cpp \

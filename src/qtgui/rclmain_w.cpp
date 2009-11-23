@@ -779,7 +779,6 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 	return;
     }
 	
-    // Check that file exists in file system
     w->makeDocCurrent(doc, docnum, true);
 }
 
@@ -910,7 +909,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	return;
     }
 
-    // Extract possible attributes
+    // Extract possible viewer attributes
     ConfSimple attrs;
     string cmd;
     rclconfig->valueSplitAttributes(cmdplusattr, cmd, attrs);
@@ -1037,8 +1036,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	    QString::fromUtf8(prcmd.c_str()) + "]";
 	stb->message(msg, 5000);
     }
+
     if (!istempfile)
-	g_dynconf->enterDoc(fn, doc.ipath);
+	historyEnterDoc(g_dynconf, doc.meta[Rcl::Doc::keyudi]);
     // We should actually monitor these processes so that we can
     // delete the temp files when they exit
     LOGDEB(("Executing: [%s]\n", ncmd.c_str()));
@@ -1124,7 +1124,7 @@ void RclMain::eraseDocHistory()
 {
     // Clear file storage
     if (g_dynconf)
-	g_dynconf->eraseAll(RclHistory::docSubkey);
+	g_dynconf->eraseAll(docHistSubKey);
     // Clear possibly displayed history
     if (resList->displayingHistory()) {
 	showDocHistory();

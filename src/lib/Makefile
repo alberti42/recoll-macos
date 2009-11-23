@@ -6,8 +6,8 @@ LIBS = librcl.a
 
 all: $(LIBS)
 
-OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o beaglequeue.o csguess.o fsindexer.o indexer.o mimetype.o htmlparse.o myhtmlparse.o mimehandler.o internfile.o mh_exec.o mh_execm.o mh_html.o mh_mail.o mh_mbox.o mh_text.o docseq.o docseqdb.o docseqhist.o filtseq.o history.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o rcldb.o rcldoc.o rclquery.o searchdata.o stemdb.o stoplist.o base64.o circache.o closefrom.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o netcon.o pathut.o pxattr.o readfile.o smallut.o transcode.o wipedir.o x11mon.o mime-getpart.o mime-parsefull.o mime-parseonlyheader.o mime-printbody.o mime-printdoc.o mime-printheader.o mime.o convert.o iodevice.o iofactory.o
-DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp beaglequeue.dep.stamp csguess.dep.stamp fsindexer.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp myhtmlparse.dep.stamp mimehandler.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_execm.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp history.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rclquery.dep.stamp searchdata.dep.stamp stemdb.dep.stamp stoplist.dep.stamp base64.dep.stamp circache.dep.stamp closefrom.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp netcon.dep.stamp pathut.dep.stamp pxattr.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp mime-getpart.dep.stamp mime-parsefull.dep.stamp mime-parseonlyheader.dep.stamp mime-printbody.dep.stamp mime-printdoc.dep.stamp mime-printheader.dep.stamp mime.dep.stamp convert.dep.stamp iodevice.dep.stamp iofactory.dep.stamp
+OBJS =  rclaspell.o rclconfig.o rclinit.o textsplit.o unacpp.o beaglequeue.o csguess.o fsindexer.o indexer.o mimetype.o htmlparse.o myhtmlparse.o mimehandler.o internfile.o mh_exec.o mh_execm.o mh_html.o mh_mail.o mh_mbox.o mh_text.o docseq.o docseqdb.o docseqhist.o filtseq.o dynconf.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o rcldb.o rcldoc.o rclquery.o searchdata.o stemdb.o stoplist.o base64.o circache.o closefrom.o conftree.o copyfile.o debuglog.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o netcon.o pathut.o pxattr.o readfile.o smallut.o transcode.o wipedir.o x11mon.o mime-getpart.o mime-parsefull.o mime-parseonlyheader.o mime-printbody.o mime-printdoc.o mime-printheader.o mime.o convert.o iodevice.o iofactory.o
+DEPS =  rclaspell.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp beaglequeue.dep.stamp csguess.dep.stamp fsindexer.dep.stamp indexer.dep.stamp mimetype.dep.stamp htmlparse.dep.stamp myhtmlparse.dep.stamp mimehandler.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_execm.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp dynconf.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rclquery.dep.stamp searchdata.dep.stamp stemdb.dep.stamp stoplist.dep.stamp base64.dep.stamp circache.dep.stamp closefrom.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp netcon.dep.stamp pathut.dep.stamp pxattr.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp mime-getpart.dep.stamp mime-parsefull.dep.stamp mime-parseonlyheader.dep.stamp mime-printbody.dep.stamp mime-printdoc.dep.stamp mime-printheader.dep.stamp mime.dep.stamp convert.dep.stamp iodevice.dep.stamp iofactory.dep.stamp
 
 librcl.a : $(DEPS) $(OBJS) unac.o
 	ar ru librcl.a $(OBJS) unac.o
@@ -63,8 +63,8 @@ docseqhist.o : ../query/docseqhist.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../query/docseqhist.cpp
 filtseq.o : ../query/filtseq.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../query/filtseq.cpp
-history.o : ../query/history.cpp
-	$(CXX) $(ALL_CXXFLAGS) -c ../query/history.cpp
+dynconf.o : ../query/dynconf.cpp
+	$(CXX) $(ALL_CXXFLAGS) -c ../query/dynconf.cpp
 plaintorich.o : ../query/plaintorich.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c ../query/plaintorich.cpp
 recollq.o : ../query/recollq.cpp
@@ -227,9 +227,9 @@ docseqhist.dep.stamp : ../query/docseqhist.cpp
 filtseq.dep.stamp : ../query/filtseq.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../query/filtseq.cpp > filtseq.dep
 	touch filtseq.dep.stamp
-history.dep.stamp : ../query/history.cpp
-	$(CXX) -M $(ALL_CXXFLAGS) ../query/history.cpp > history.dep
-	touch history.dep.stamp
+dynconf.dep.stamp : ../query/dynconf.cpp
+	$(CXX) -M $(ALL_CXXFLAGS) ../query/dynconf.cpp > dynconf.dep
+	touch dynconf.dep.stamp
 plaintorich.dep.stamp : ../query/plaintorich.cpp
 	$(CXX) -M $(ALL_CXXFLAGS) ../query/plaintorich.cpp > plaintorich.dep
 	touch plaintorich.dep.stamp
@@ -350,7 +350,7 @@ include docseq.dep
 include docseqdb.dep
 include docseqhist.dep
 include filtseq.dep
-include history.dep
+include dynconf.dep
 include plaintorich.dep
 include recollq.dep
 include reslistpager.dep

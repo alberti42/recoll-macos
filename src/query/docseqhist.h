@@ -19,18 +19,32 @@
 /* @(#$Id: docseqhist.h,v 1.3 2008-09-29 08:59:20 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include "docseq.h"
-#include "history.h"
+#include "dynconf.h"
 
 namespace Rcl {
     class Db;
 }
+
+/** DynConf Document history entry */
+class RclDHistoryEntry : public DynConfEntry {
+ public:
+    RclDHistoryEntry() : unixtime(0) {}
+    RclDHistoryEntry(long t, const string& u) 
+	: unixtime(t), udi(u) {}
+    virtual ~RclDHistoryEntry() {}
+    virtual bool decode(const string &value);
+    virtual bool encode(string& value);
+    virtual bool equal(const DynConfEntry& other);
+    long unixtime;
+    string udi;
+};
 
 /** A DocSequence coming from the history file. 
  *  History is kept as a list of urls. This queries the db to fetch
  *  metadata for an url key */
 class DocSequenceHistory : public DocSequence {
  public:
-    DocSequenceHistory(Rcl::Db *d, RclHistory *h, const string &t) 
+    DocSequenceHistory(Rcl::Db *d, RclDynConf *h, const string &t) 
 	: DocSequence(t), m_db(d), m_hist(h), m_prevnum(-1), m_prevtime(-1) {}
     virtual ~DocSequenceHistory() {}
 
@@ -41,12 +55,14 @@ class DocSequenceHistory : public DocSequence {
     void setDescription(const string& desc) {m_description = desc;}
  private:
     Rcl::Db    *m_db;
-    RclHistory *m_hist;
+    RclDynConf *m_hist;
     int         m_prevnum;
     long        m_prevtime;
     string      m_description; // This is just an nls translated 'doc history'
     list<RclDHistoryEntry> m_hlist;
     list<RclDHistoryEntry>::const_iterator m_it;
 };
+
+extern bool historyEnterDoc(RclDynConf *dncf, const string& udi);
 
 #endif /* _DOCSEQ_H_INCLUDED_ */
