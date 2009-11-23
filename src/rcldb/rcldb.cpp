@@ -1595,7 +1595,8 @@ bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
     return m_reason.empty() ? true : false;
 }
 
-// Retrieve document defined by file name and internal path. 
+// Retrieve document defined by Unique doc identifier. This is mainly used
+// by the GUI history feature
 bool Db::getDoc(const string &udi, Doc &doc)
 {
     LOGDEB(("Db:getDoc: [%s]\n", udi.c_str()));
@@ -1623,6 +1624,7 @@ bool Db::getDoc(const string &udi, Doc &doc)
                 m_ndb->xrdb.postlist_begin(uniterm);
             Xapian::Document xdoc = m_ndb->xrdb.get_document(*docid);
             string data = xdoc.get_data();
+            doc.meta[Rcl::Doc::keyudi] = udi;
             return m_ndb->dbDataToRclDoc(*docid, data, doc, 100);
 	} catch (const Xapian::DatabaseModifiedError &e) {
             m_reason = e.get_msg();
