@@ -252,6 +252,7 @@ bool BeagleQueueIndexer::getFromCache(const string& udi, Rcl::Doc &dotdoc,
          it != names.end(); it++) {
         cf.get(*it, dotdoc.meta[*it], "");
     }
+    dotdoc.meta[Rcl::Doc::keyudi] = udi;
     return true;
 }
 
@@ -330,34 +331,20 @@ bool BeagleQueueIndexer::index()
             if (!eof)
                 return false;
         }
-
-        // The cache is walked in chronogical order, but we want to
-        // index the newest files first (there can be several versions
-        // of a given file in the cache). Have to revert the
-        // list. This would be a problem with a big cache, because the
-        // udis can be big (ie 150 chars), and would be more
-        // efficiently performed by the cache, which could use the
-        // smaller offsets.
-        //
-        // Another approach would be to just walk chronogical and
-        // reindex all versions: would waste processing but save
-        // memory
-        vector<string> alludis;
-        alludis.reserve(20000);
         while (m_cache->next(eof)) {
-            string dict;
-            m_cache->getcurrentdict(dict);
-            ConfSimple cf(dict, 1);
             string udi;
-            if (!cf.get("udi", udi, ""))
+            if (!m_cache->getCurrentUdi(udi)) {
+                LOGERR(("BeagleQueueIndexer:: cache file damaged\n"));
+                break;
+            }
+            if (udi.empty())
                 continue;
-            alludis.push_back(udi);
-        }
-        for (vector<string>::reverse_iterator it = alludis.rbegin();
-             it != alludis.rend(); it++) {
-            if (m_db->needUpdate(*it, "")) {
+            if (m_db->needUpdate(udi, "")) {
                 try {
-                    indexFromCache(*it);
+                    // indexFromCache does a CirCache::get(). We could
+                    // arrange to use a getCurrent() instead, would be more 
+                    // efficient
+                    indexFromCache(udi);
                 } catch (CancelExcept) {
                     LOGERR(("BeagleQueueIndexer: interrupted\n"));
                     return false;

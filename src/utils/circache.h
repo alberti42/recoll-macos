@@ -84,9 +84,10 @@ public:
     /** Back to oldest */
     virtual bool rewind(bool& eof);
     /** Get entry under cursor */
-    virtual bool getcurrent(string& udi, string& dic, string& data);
-    /** Get current entry dict only (ie: udi is in dict */
-    virtual bool getcurrentdict(string& dict);
+    virtual bool getCurrent(string& udi, string& dic, string& data);
+    /** Get current entry udi only. Udi can be empty (erased empty), caller
+     * should call again */
+    virtual bool getCurrentUdi(string& udi);
     /** Skip to next. (false && !eof) -> error, (false&&eof)->EOF. */
     virtual bool next(bool& eof);
 

@@ -508,7 +508,7 @@ public:
         if (!readDicData(hoffs, d, dic, 0))
             return false;
         if (d.dicsize == 0) {
-            // This is an erase entry
+            // This is an erased entry
             udi.erase();
             return true;
         }
@@ -1082,15 +1082,16 @@ bool CirCache::next(bool& eof)
     return false;
 }
 
-bool CirCache::getcurrentdict(string& dic)
+bool CirCache::getCurrentUdi(string& udi)
 {
     assert(m_d != 0);
-    if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd, dic, 0))
+    
+    if (!m_d->readHUdi(m_d->m_itoffs, m_d->m_ithd, udi))
         return false;
     return true;
 }
 
-bool CirCache::getcurrent(string& udi, string& dic, string& data)
+bool CirCache::getCurrent(string& udi, string& dic, string& data)
 {
     assert(m_d != 0);
     if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd, dic, &data))
