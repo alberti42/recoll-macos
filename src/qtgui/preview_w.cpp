@@ -931,8 +931,14 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     progress.close();
 
-    fdoc.text.clear(); 
+    // Maybe the text was actually empty ? Switch to fields then. Else free-up 
+    // the text memory.
+    bool textempty = fdoc.text.empty();
+    if (!textempty)
+        fdoc.text.clear(); 
     editor->m_data.fdoc = fdoc;
+    if (textempty)
+        editor->toggleFields();
 
     m_haveAnchors = m_plaintorich.lastanchor != 0;
     if (searchTextLine->text().length() != 0) {
