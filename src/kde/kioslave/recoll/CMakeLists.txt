@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.6)
+
 project(kio_recoll)
 
 find_package(KDE4 REQUIRED)
@@ -11,6 +13,15 @@ add_definitions(-DKDE_DEFAULT_DEBUG_AREA=7130
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}") 
 
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
+
+# Execute minimum recoll configuration to create autoconfig.h and version.h
+execute_process(COMMAND ${rcltop}/configure --without-gui --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
+		WORKING_DIRECTORY ${rcltop}
+)
+execute_process(COMMAND make common/rclversion.h
+		WORKING_DIRECTORY ${rcltop}
+)
+
 
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
   ${rcltop}/aspell 
