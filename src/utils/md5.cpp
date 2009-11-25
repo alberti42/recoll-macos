@@ -368,12 +368,12 @@ string& MD5HexScan(const string& xdigest, string& digest)
 class FileScanMd5 : public FileScanDo {
 public:
     FileScanMd5(string& d) : digest(d) {}
-    virtual bool init(unsigned int size, string *reason) 
+    virtual bool init(unsigned int size, string *)
     {
 	MD5Init(&ctx);
 	return true;
     }
-    virtual bool data(const char *buf, int cnt, string* reason) 
+    virtual bool data(const char *buf, int cnt, string*)
     {
 	MD5Update(&ctx, (const unsigned char*)buf, cnt);
 	return true;
