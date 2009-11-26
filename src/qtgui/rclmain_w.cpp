@@ -258,12 +258,8 @@ void RclMain::init()
 	    this, SLOT(showAdvSearchDialog()));
     connect(toolsSort_parametersAction, SIGNAL(activated()), 
 	    this, SLOT(showSortDialog()));
-#ifdef RCL_USE_ASPELL
     connect(toolsSpellAction, SIGNAL(activated()), 
 	    this, SLOT(showSpellDialog()));
-#else
-    toolsSpellAction->setEnabled(FALSE);
-#endif
 
     connect(indexConfigAction, SIGNAL(activated()), this, SLOT(showIndexConfig()));
     connect(queryPrefsAction, SIGNAL(activated()), this, SLOT(showUIPrefs()));
