@@ -176,6 +176,10 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat",
 	       Bool, false);
 
+    if (g_dynconf == 0) {
+        // Happens
+        return;
+    }
     // The extra databases settings. These are stored as a list of
     // xapian directory names, encoded in base64 to avoid any
     // binary/charset conversion issues. There are 2 lists for all
