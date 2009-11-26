@@ -173,9 +173,8 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
 }
 
 // Remove prefixes (caps) from a list of terms.
-static list<string> noPrefixList(const list<string>& in) 
+static void noPrefixList(const list<string>& in, list<string>& out) 
 {
-    list<string> out;
     for (list<string>::const_iterator qit = in.begin(); 
 	 qit != in.end(); qit++) {
 	if ('A' <= qit->at(0) && qit->at(0) <= 'Z') {
@@ -189,7 +188,6 @@ static list<string> noPrefixList(const list<string>& in)
 	    out.push_back(*qit);
 	}
     }
-    return out;
 }
 
 //#define DEBUGABSTRACT  1
@@ -198,6 +196,14 @@ static list<string> noPrefixList(const list<string>& in)
 #else
 #define LOGABS LOGDEB2
 #endif
+static void listList(const string& what, const list<string>&l)
+{
+    string a;
+    for (list<string>::const_iterator it = l.begin(); it != l.end(); it++) {
+        a = a + *it + " ";
+    }
+    LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
+}
 
 // Build a document abstract by extracting text chunks around the query terms
 // This uses the db termlists, not the original document.
@@ -210,22 +216,32 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     LOGDEB(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
 	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen));
 
-    list<string> iterms;
-    query->getQueryTerms(iterms);
+    list<string> terms;
 
-    list<string> terms = noPrefixList(iterms);
-    if (terms.empty()) {
-	return string();
+    {
+        list<string> iterms;
+        query->getMatchTerms(docid, iterms);
+        noPrefixList(iterms, terms);
+        if (terms.empty()) {
+            LOGDEB(("makeAbstract::Empty term list\n"));
+            return string();
+        }
     }
+//    listList("Match terms: ", terms);
 
-    // Retrieve db-wide frequencies for the query terms
+    // Retrieve db-wide frequencies for the query terms (we do this once per
+    // query, using all the query terms, not only the document match terms)
     if (query->m_nq->termfreqs.empty()) {
+        list<string> iqterms, qterms;
+        query->getQueryTerms(iqterms);
+        noPrefixList(iqterms, qterms);
+//        listList("Query terms: ", qterms);
 	double doccnt = xrdb.get_doccount();
 	if (doccnt == 0) doccnt = 1;
-	for (list<string>::const_iterator qit = terms.begin(); 
-	     qit != terms.end(); qit++) {
+	for (list<string>::const_iterator qit = qterms.begin(); 
+	     qit != qterms.end(); qit++) {
 	    query->m_nq->termfreqs[*qit] = xrdb.get_termfreq(*qit) / doccnt;
-	    LOGABS(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
+	    LOGDEB(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
 		    query->m_nq->termfreqs[*qit]));
 	}
 	LOGABS(("makeAbstract:%d: got termfreqs\n", chron.ms()));
@@ -450,7 +466,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     }
 #endif
 
-    LOGDEB(("makeAbstract:%d: extracting\n", chron.millis()));
+    LOGABS(("makeAbstract:%d: extracting\n", chron.millis()));
 
     // Finally build the abstract by walking the map (in order of position)
     string abstract;

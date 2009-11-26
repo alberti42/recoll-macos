@@ -226,6 +226,10 @@ bool Query::getQueryTerms(list<string>& terms)
 
 bool Query::getMatchTerms(const Doc& doc, list<string>& terms)
 {
+    return getMatchTerms(doc.xdocid, terms);
+}
+bool Query::getMatchTerms(unsigned long xdocid, list<string>& terms)
+{
     if (ISNULL(m_nq) || !m_nq->xenquire) {
 	LOGERR(("Query::getMatchTerms: no query opened\n"));
 	return -1;
@@ -233,7 +237,7 @@ bool Query::getMatchTerms(const Doc& doc, list<string>& terms)
 
     terms.clear();
     Xapian::TermIterator it;
-    Xapian::docid id = Xapian::docid(doc.xdocid);
+    Xapian::docid id = Xapian::docid(xdocid);
 
     XAPTRY(terms.insert(terms.begin(),
                         m_nq->xenquire->get_matching_terms_begin(id),

@@ -77,6 +77,7 @@ class Query {
 
     /** Return a list of terms which matched for a specific result document */
     bool getMatchTerms(const Doc& doc, list<string>& terms);
+    bool getMatchTerms(unsigned long xdocid, list<string>& terms);
 
     /** Expand query to look for documents like the one passed in */
     list<string> expand(const Doc &doc);
