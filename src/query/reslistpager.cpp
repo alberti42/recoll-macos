@@ -98,6 +98,22 @@ void ResListPager::displayPage()
 
     if (pageEmpty()) {
 	chunk += trans("<p><b>No results found</b><br>");
+        vector<string>uterms;
+        m_docSource->getUTerms(uterms);
+        if (!uterms.empty()) {
+            vector<string> spellings;
+            suggest(uterms, spellings);
+            if (!spellings.empty()) {
+                chunk += 
+                 trans("<p><i>Alternate spellings (accents suppressed): </i>");
+                for (vector<string>::iterator it = spellings.begin();
+                     it != spellings.end(); it++) {
+                    chunk += *it;
+                    chunk += " ";
+                }
+                chunk += "</p>";
+            }
+        }
     } else {
 	unsigned int resCnt = m_docSource->getResCnt();
 	if (m_winfirst + m_respage.size() < resCnt) {

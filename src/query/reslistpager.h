@@ -67,6 +67,9 @@ public:
     virtual string prevUrl();
     virtual string pageTop() {return string();}
     virtual string iconPath(const string& mtype);
+    virtual void suggest(const vector<string>, vector<string>&sugg) {
+        sugg.clear();
+    }
 private:
     void initall() 
     {

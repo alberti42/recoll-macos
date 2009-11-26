@@ -31,8 +31,7 @@ class AspellData;
 
 class Aspell {
  public:
-    Aspell(RclConfig *cnf)
-	: m_config(cnf), m_data(0) {};
+    Aspell(RclConfig *cnf);
     ~Aspell();
 
     /** Check health */
@@ -45,8 +44,11 @@ class Aspell {
      * of an indexing pass. */
     bool buildDict(Rcl::Db &db, string &reason);
 
+    /** Check that word is in dictionary. ret==false && !reason.empty() => err*/
+    bool check(Rcl::Db &db, const string& term, string& reason);
+
     /** Return a list of possible expansions for a given word */
-    bool suggest(Rcl::Db &db, string &term, list<string> &suggestions, 
+    bool suggest(Rcl::Db &db, const string& term, list<string> &suggestions, 
 		 string &reason);
 
  private:
@@ -54,6 +56,8 @@ class Aspell {
     RclConfig  *m_config;
     string      m_lang;
     AspellData *m_data;
+
+    bool make_speller(string& reason);
 };
 
 #endif /* RCL_USE_ASPELL */

@@ -35,6 +35,7 @@ class DocSequenceDb : public DocSequence {
     virtual bool getTerms(vector<string>& terms, 
 			  vector<vector<string> >& groups, 
 			  vector<int>& gslks);
+    virtual void getUTerms(vector<string>& terms);
     virtual string getAbstract(Rcl::Doc &doc);
     virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc);
     virtual string getDescription();

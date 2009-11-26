@@ -123,6 +123,11 @@ class DocSequence {
     {
 	terms.clear(); groups.clear(); gslks.clear(); return true;
     }
+    /** Get user-input terms (before stemming etc.) */
+    virtual void getUTerms(vector<string>& terms)
+    {
+	terms.clear(); 
+    }
     virtual list<string> expand(Rcl::Doc &) {return list<string>();}
 
     /** Optional functionality. Yeah, not nice */
@@ -158,6 +163,10 @@ public:
 			  vector<int>& gslks) 
     {
 	return m_seq->getTerms(terms, groups, gslks);
+    }
+    virtual void getUTerms(vector<string>& terms)
+    {
+	m_seq->getUTerms(terms);
     }
 
 protected:

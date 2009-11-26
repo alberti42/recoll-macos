@@ -22,6 +22,7 @@ static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.32 2008-12-19 09:55:36 dockes 
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "xapian.h"
 
@@ -173,6 +174,15 @@ bool SearchData::getTerms(vector<string>& terms,
 	(*it)->getTerms(terms, groups, gslks);
     return true;
 }
+// Extract user terms
+void SearchData::getUTerms(vector<string>& terms) const
+{
+    for (qlist_cit_t it = m_query.begin(); it != m_query.end(); it++)
+	(*it)->getUTerms(terms);
+    sort(terms.begin(), terms.end());
+    vector<string>::iterator it = unique(terms.begin(), terms.end());
+    terms.erase(it, terms.end());
+}
 
 // Splitter callback for breaking a user string into simple terms and
 // phrases. This is for parts of the user entry which would appear as
@@ -249,6 +259,11 @@ public:
 	groups.insert(groups.end(), m_groups.begin(), m_groups.end());
 	return true;
     }
+    bool getUTerms(vector<string>& terms) 
+    {
+	terms.insert(terms.end(), m_uterms.begin(), m_uterms.end());
+	return true;
+    }
 
 private:
     void expandTerm(bool dont, const string& term, list<string>& exp, 
@@ -265,9 +280,21 @@ private:
     const string& m_stemlang;
     bool          m_doBoostUserTerms;
     // Single terms and phrases resulting from breaking up text;
+    vector<string>          m_uterms;
     vector<string>          m_terms;
     vector<vector<string> > m_groups; 
 };
+
+#if 0
+static void listVector(const string& what, const vector<string>&l)
+{
+    string a;
+    for (vector<string>::const_iterator it = l.begin(); it != l.end(); it++) {
+        a = a + *it + " ";
+    }
+    LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
+}
+#endif
 
 /** Expand stem and wildcards
  *
@@ -300,12 +327,10 @@ void StringToXapianQ::expandTerm(bool nostemexp,
     if (haswild || m_stemlang.empty())
 	nostemexp = true;
 
-    if (!nostemexp) {
-    }
-
     if (nostemexp && !haswild) {
 	// Neither stemming nor wildcard expansion: just the word
 	sterm = term;
+        m_uterms.push_back(sterm);
 	exp.push_front(term);
 	exp.resize(1);
     } else {
@@ -314,6 +339,7 @@ void StringToXapianQ::expandTerm(bool nostemexp,
 	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, l);
 	} else {
 	    sterm = term;
+            m_uterms.push_back(sterm);
 	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, l);
 	}
 	for (list<TermMatchEntry>::const_iterator it = l.begin(); 
@@ -321,6 +347,7 @@ void StringToXapianQ::expandTerm(bool nostemexp,
 	    exp.push_back(it->term);
 	}
     }
+    //listVector("ExpandTerm:uterms now: ", m_uterms);
 }
 
 // Do distribution of string vectors: a,b c,d -> a,c a,d b,c b,d
@@ -383,10 +410,10 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
     // less wqf). This does not happen if there are wildcards anywhere
     // in the search.
     if (m_doBoostUserTerms && !sterm.empty()) {
-	xq = Xapian::Query(Xapian::Query::OP_OR, 
-			   xq, 
-			   Xapian::Query(m_prefix+sterm, 
-					 original_term_wqf_booster));
+        xq = Xapian::Query(Xapian::Query::OP_OR, 
+                           xq, 
+                           Xapian::Query(m_prefix+sterm, 
+                                         original_term_wqf_booster));
     }
     pqueries.push_back(xq);
 }
@@ -468,6 +495,7 @@ bool StringToXapianQ::processUserString(const string &iq,
 {
     LOGDEB(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
     ermsg.erase();
+    m_uterms.clear();
     m_terms.clear();
     m_groups.clear();
 
@@ -589,6 +617,8 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	return false;
     }
     tr.getTerms(m_terms, m_groups);
+    tr.getUTerms(m_uterms);
+    //listVector("SearchDataClauseSimple: Uterms: ", m_uterms);
     *qp = Xapian::Query(op, pqueries.begin(), pqueries.end());
     return true;
 }
@@ -659,6 +689,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
 	return true;
     }
     tr.getTerms(m_terms, m_groups);
+    tr.getUTerms(m_uterms);
     *qp = *pqueries.begin();
     return true;
 }
@@ -674,6 +705,10 @@ bool SearchDataClauseSub::getTerms(vector<string>& terms,
 				   vector<int>& gslks) const
 {
     return m_sub.getconstptr()->getTerms(terms, groups, gslks);
+}
+void SearchDataClauseSub::getUTerms(vector<string>& terms) const
+{
+    m_sub.getconstptr()->getUTerms(terms);
 }
 
 } // Namespace Rcl

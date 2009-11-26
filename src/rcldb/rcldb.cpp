@@ -196,6 +196,7 @@ static void noPrefixList(const list<string>& in, list<string>& out)
 #else
 #define LOGABS LOGDEB2
 #endif
+#if 0
 static void listList(const string& what, const list<string>&l)
 {
     string a;
@@ -204,6 +205,7 @@ static void listList(const string& what, const list<string>&l)
     }
     LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
 }
+#endif
 
 // Build a document abstract by extracting text chunks around the query terms
 // This uses the db termlists, not the original document.

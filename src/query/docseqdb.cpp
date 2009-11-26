@@ -45,6 +45,11 @@ bool DocSequenceDb::getTerms(vector<string>& terms,
     return m_fsdata->getTerms(terms, groups, gslks);
 }
 
+void DocSequenceDb::getUTerms(vector<string>& terms)
+{
+    m_sdata->getUTerms(terms);
+}
+
 string DocSequenceDb::getDescription() 
 {
     return m_fsdata->getDescription();

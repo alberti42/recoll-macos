@@ -28,24 +28,7 @@ class Q3PopupMenu;
 #include "reslistpager.h"
 
 class ResList;
-
-class QtGuiResListPager : public ResListPager {
-public:
-    QtGuiResListPager(ResList *p, int ps) 
-	: ResListPager(ps), m_parent(p) 
-    {}
-    virtual bool append(const string& data);
-    virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
-    virtual string trans(const string& in);
-    virtual string detailsLink();
-    virtual const string &parFormat();
-    virtual string nextUrl();
-    virtual string prevUrl();
-    virtual string pageTop();
-    virtual string iconPath(const string& mt);
-private:
-    ResList *m_parent;
-};
+class QtGuiResListPager;
 
 /**
  * Display a list of document records. The data can be out of the history 

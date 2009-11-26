@@ -98,6 +98,9 @@ public:
      */
     bool getTerms(vector<string>& terms, 
 		  vector<vector<string> >& groups, vector<int>& gslks) const;
+    /** Get user-input terms (before expansion etc.) */
+    void getUTerms(vector<string>& terms) const;
+
     /** 
      * Get/set the description field which is retrieved from xapian after
      * initializing the query. It is stored here for usage in the GUI.
@@ -140,7 +143,8 @@ public:
     virtual string getReason() const {return m_reason;}
     virtual bool getTerms(vector<string>&, vector<vector<string> >&,
 			  vector<int>&) const = 0;
-    //    {return true;}
+    virtual void getUTerms(vector<string>&) const = 0;
+
     SClType getTp() {return m_tp;}
     void setParent(SearchData *p) {m_parentSearch = p;}
     virtual void setModifiers(Modifier mod) {m_modifiers = mod;}
@@ -187,14 +191,19 @@ public:
 	gslks.insert(gslks.end(), m_groups.size(), m_slack);
 	return true;
     }
-
+    virtual void getUTerms(vector<string>& terms) const
+    {
+	terms.insert(terms.end(), m_uterms.begin(), m_uterms.end());
+    }
 protected:
     string  m_text;  // Raw user entry text.
     string  m_field; // Field specification if any
     // Single terms and phrases resulting from breaking up m_text;
     // valid after toNativeQuery() call
     vector<string>          m_terms;
-    vector<vector<string> > m_groups; 
+    vector<vector<string> > m_groups;
+    // User terms before expansion
+    vector<string>          m_uterms;
     // Declare m_slack here. Always 0, but allows getTerms to work for
     // SearchDataClauseDist
     int m_slack;
@@ -249,6 +258,7 @@ public:
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
     virtual bool getTerms(vector<string>&, vector<vector<string> >&,
 			  vector<int>&) const;
+    virtual void getUTerms(vector<string>&) const;
 protected:
     RefCntr<SearchData> m_sub;
 };

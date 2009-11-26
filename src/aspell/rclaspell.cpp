@@ -19,25 +19,7 @@ static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.10 2007-12-13 06:58:21 dockes E
 #include "pathut.h"
 #include "execmd.h"
 #include "rclaspell.h"
-
-// Stuff that we don't wish to see in the .h (possible sysdeps, etc.)
-class AspellData {
-public:
-    AspellData() : m_handle(0) {}
-    ~AspellData() {
-	if (m_handle) 
-	    dlclose(m_handle);
-    }
-
-    void  *m_handle;
-    string m_exec;
-};
-
-Aspell::~Aspell()
-{
-    if (m_data)
-	delete m_data;
-}
+#include "debuglog.h"
 
 // Just a place where we keep the Aspell library entry points together
 class AspellApi {
@@ -52,6 +34,7 @@ public:
     struct AspellConfig * (*aspell_speller_config)(struct AspellSpeller *);
     const struct AspellWordList * (*aspell_speller_suggest)
 	(struct AspellSpeller *, const char *, int);
+    int (*aspell_speller_check)(struct AspellSpeller *, const char *, int);
     struct AspellStringEnumeration * (*aspell_word_list_elements)
 	(const struct AspellWordList * ths);
     const char * (*aspell_string_enumeration_next)
@@ -86,10 +69,45 @@ static const char *aspell_lib_suffixes[] = {
 };
 static const unsigned int nlibsuffs  = sizeof(aspell_lib_suffixes) / sizeof(char *);
 
+// Stuff that we don't wish to see in the .h (possible sysdeps, etc.)
+class AspellData {
+public:
+    AspellData() 
+        : m_handle(0), m_speller(0) 
+    {}
+    ~AspellData() {
+        LOGDEB2(("~AspellData\n"));
+	if (m_handle) {
+	    dlclose(m_handle);
+            m_handle = 0;
+        }
+        if (m_speller) {
+            // Dumps core if I do this?? 
+            //aapi.delete_aspell_speller(m_speller);
+            m_speller = 0;
+            LOGDEB2(("~AspellData: speller done\n"));
+        }
+    }
+
+    void  *m_handle;
+    string m_exec;
+    AspellSpeller *m_speller;    
+};
+
+Aspell::Aspell(RclConfig *cnf)
+    : m_config(cnf), m_data(0) 
+{
+}
+
+Aspell::~Aspell()
+{
+    deleteZ(m_data);
+}
+
 bool Aspell::init(string &reason)
 {
-    delete m_data;
-    m_data = 0;
+    deleteZ(m_data);
+
     // Language: we get this from the configuration, else from the NLS
     // environment. The aspell language names used for selecting language 
     // definition files (used to create dictionaries) are like en, fr
@@ -114,6 +132,7 @@ bool Aspell::init(string &reason)
     }
     if (m_data->m_exec.empty()) {
 	reason = "aspell program not found or not executable";
+        deleteZ(m_data);
 	return false;
     }
 
@@ -151,8 +170,9 @@ bool Aspell::init(string &reason)
     
  found:
     if (m_data->m_handle == 0) {
-      reason += string(" : ") + dlerror();
-      return false;
+        reason += string(" : ") + dlerror();
+        deleteZ(m_data);
+        return false;
     }
 
     string badnames;
@@ -172,6 +192,8 @@ bool Aspell::init(string &reason)
     NMTOPTR(aspell_speller_suggest, 
 	    (const struct AspellWordList *(*)(struct AspellSpeller *, 
 					       const char *, int)));
+    NMTOPTR(aspell_speller_check, 
+	    (int (*)(struct AspellSpeller *, const char *, int)));
     NMTOPTR(aspell_word_list_elements, 
 	    (struct AspellStringEnumeration *(*)
 	     (const struct AspellWordList *)));
@@ -189,6 +211,7 @@ bool Aspell::init(string &reason)
 
     if (!badnames.empty()) {
 	reason = string("Aspell::init: symbols not found:") + badnames;
+        deleteZ(m_data);
 	return false;
     }
 
@@ -279,18 +302,16 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
 }
 
 
-bool Aspell::suggest(Rcl::Db &db,
-		     string &term, list<string> &suggestions, string &reason)
+bool Aspell::make_speller(string& reason)
 {
     if (!ok())
 	return false;
+    if (m_data->m_speller != 0)
+        return true;
 
     AspellCanHaveError *ret;
-    AspellSpeller *speller;
-    AspellConfig *config;
 
-    config = aapi.new_aspell_config();
-
+    AspellConfig *config = aapi.new_aspell_config();
     aapi.aspell_config_replace(config, "lang", m_lang.c_str());
     aapi.aspell_config_replace(config, "encoding", "utf-8");
     aapi.aspell_config_replace(config, "master", dicPath().c_str());
@@ -304,12 +325,48 @@ bool Aspell::suggest(Rcl::Db &db,
 	aapi.delete_aspell_can_have_error(ret);
 	return false;
     }
-    speller = aapi.to_aspell_speller(ret);
-    config = aapi.aspell_speller_config(speller);
+    m_data->m_speller = aapi.to_aspell_speller(ret);
+    return true;
+}
+
+bool Aspell::check(Rcl::Db &db, const string &term, string& reason)
+{
+    LOGDEB2(("Aspell::check [%s]\n", term.c_str()));
+
+    if (!ok() || !make_speller(reason))
+	return false;
+    if (term.empty())
+        return true; //??
+
+    int ret = aapi.aspell_speller_check(m_data->m_speller, 
+                                        term.c_str(), term.length());
+    reason.clear();
+    switch (ret) {
+    case 0: return false;
+    case 1: return true;
+    default:
+    case -1:
+        reason.append("Aspell error: ");
+        reason.append(aapi.aspell_speller_error_message(m_data->m_speller));
+        return false;
+    }
+}
+
+bool Aspell::suggest(Rcl::Db &db, const string &term, 
+                     list<string>& suggestions, string& reason)
+{
+    if (!ok() || !make_speller(reason))
+	return false;
+    if (term.empty())
+        return true; //??
+
+    AspellCanHaveError *ret;
+
     const AspellWordList *wl = 
-	aapi.aspell_speller_suggest(speller, term.c_str(), term.length());
+	aapi.aspell_speller_suggest(m_data->m_speller, 
+                                    term.c_str(), term.length());
     if (wl == 0) {
-	reason = aapi.aspell_speller_error_message(speller);
+	reason = aapi.aspell_speller_error_message(m_data->m_speller);
 	return false;
     }
     AspellStringEnumeration *els = aapi.aspell_word_list_elements(wl);
@@ -326,8 +383,6 @@ bool Aspell::suggest(Rcl::Db &db,
 	    suggestions.push_back(word);
     }
     aapi.delete_aspell_string_enumeration(els);
-    aapi.delete_aspell_speller(speller);
-    // Config belongs to speller here? aapi.delete_aspell_config(config);
     return true;
 }
 

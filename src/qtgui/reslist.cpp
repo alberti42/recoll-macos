@@ -2,6 +2,8 @@
 static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
+#include "autoconfig.h"
+
 #include <time.h>
 #include <stdlib.h>
 
@@ -46,10 +48,33 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include "reslist.h"
 #include "moc_reslist.cpp"
 #include "rclhelp.h"
+#ifdef RCL_USE_ASPELL
+#include "rclaspell.h"
+#endif
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
+
+class QtGuiResListPager : public ResListPager {
+public:
+    QtGuiResListPager(ResList *p, int ps) 
+	: ResListPager(ps), m_parent(p) 
+    {}
+    virtual bool append(const string& data);
+    virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
+    virtual string trans(const string& in);
+    virtual string detailsLink();
+    virtual const string &parFormat();
+    virtual string nextUrl();
+    virtual string prevUrl();
+    virtual string pageTop();
+    virtual string iconPath(const string& mt);
+    virtual void suggest(const vector<string>uterms, vector<string>&sugg);
+private:
+    ResList *m_parent;
+};
+
 
 class PlainToRichQtReslist : public PlainToRich {
 public:
@@ -105,6 +130,7 @@ ResList::~ResList()
 	QT_TR_NOOP("Preview"),
 	QT_TR_NOOP("Open"),
 	QT_TR_NOOP("(show query)"),
+        QT_TR_NOOP("<p><i>Alternate spellings (accents suppressed): </i>"),
     };
 
 }
@@ -423,6 +449,39 @@ string QtGuiResListPager::iconPath(const string& mtype)
     string iconpath;
     RclConfig::getMainConfig()->getMimeIconName(mtype, &iconpath);
     return iconpath;
+}
+
+void QtGuiResListPager::suggest(const vector<string>uterms, vector<string>&sugg)
+{
+    sugg.clear();
+#ifdef RCL_USE_ASPELL
+    bool noaspell = false;
+    rclconfig->getConfParam("noaspell", &noaspell);
+    if (noaspell)
+        return;
+    if (!aspell) {
+        LOGERR(("QtGuiResListPager:: aspell not initialized\n"));
+        return;
+    }
+    for (vector<string>::const_iterator uit = uterms.begin();
+         uit != uterms.end(); uit++) {
+        list<string> asuggs;
+        string reason;
+        if (aspell->check(*rcldb, *uit, reason))
+            continue;
+        else if (!reason.empty())
+            return;
+        if (!aspell->suggest(*rcldb, *uit, asuggs, reason)) {
+            LOGERR(("QtGuiResListPager::suggest: aspell failed: %s\n", 
+                    reason.c_str()));
+            continue;
+        }
+        if (!asuggs.empty()) {
+            sugg.push_back(*asuggs.begin());
+        }
+    }
+#endif
+
 }
 
 // Fill up result list window with next screen of hits
