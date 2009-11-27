@@ -1038,7 +1038,7 @@ int main(int argc, char **argv)
 	perror("stat");
 	exit(1);
     }
-    FileInterner interner(fn, &st, config, "/tmp");
+    FileInterner interner(fn, &st, config, "/tmp", 0);
     Rcl::Doc doc;
     FileInterner::Status status = interner.internfile(doc, ipath);
     switch (status) {
