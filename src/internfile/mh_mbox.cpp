@@ -24,8 +24,9 @@ static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.5 2008-10-04 14:26:59 dockes Exp 
 #include <unistd.h>
 #include <time.h>
 #include <regex.h>
-#include <cstring>
+#include <sys/stat.h>
 
+#include <cstring>
 #include <map>
 #include <sstream>
 #include <fstream>
