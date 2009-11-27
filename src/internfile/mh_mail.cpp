@@ -492,7 +492,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     // mailer used by yahoo support ('KANA') does this. We could convert 
     // to iso-8859 only if the transfer-encoding is 8 bit, or test for
     // actual 8 bit chars, but what the heck, le'ts use 8859-1 as default
-    string charset = "iso-8859-1";
+    string charset;
     it = content_type.params.find(string("charset"));
     if (it != content_type.params.end())
 	charset = it->second;
@@ -502,7 +502,9 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	!stringlowercmp("x-user-defined", charset) || 
 	!stringlowercmp("x-unknown", charset) || 
 	!stringlowercmp("unknown", charset) ) {
-	charset = "iso-8859-1";
+        RclConfig::getMainConfig()->getConfParam("maildefcharset", charset);
+        if (charset.empty())
+            charset = "iso-8859-1";
     }
 
     // Content transfer encoding
