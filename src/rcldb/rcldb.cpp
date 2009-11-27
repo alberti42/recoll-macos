@@ -119,7 +119,7 @@ bool Db::Native::subDocs(const string &udi, vector<Xapian::docid>& docids)
         LOGERR(("Rcl::Db::subDocs: %s\n", m_rcldb->m_reason.c_str()));
         return false;
     } else {
-        LOGDEB(("Db::Native::subDocs: returning %d ids\n", docids.size()));
+        LOGDEB0(("Db::Native::subDocs: returning %d ids\n", docids.size()));
         return true;
     }
 }
