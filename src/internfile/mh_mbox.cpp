@@ -129,22 +129,22 @@ static inline void stripendnl(line_type& line, int& ll)
 // in "Date: " header format, like:   From - Mon, 8 May 2006 10:57:32
 // This was added as an alternative format. By the way it also fools "mail" and
 // emacs-vm, Recoll is not alone
-//
+// Update: 2009-11-27: word after From may be quoted string: From "john bull"
 static const  char *frompat =  
 #if 0 //1.9.0
     "^From .* [1-2][0-9][0-9][0-9]$";
 #endif
 #if 1
-"^From[ ]+[^ ]+[ ]+"                                  // From whatever
-"[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Date
+"^From[ ]+([^ ]+|\"[^\"]+\")[ ]+"    // 'From (toto@tutu|"john bull") '
+"[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Fri Oct 26
 "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?[ ]+"             // Time, seconds optional
 "([^ ]+[ ]+)?"                                        // Optional tz
 "[12][0-9][0-9][0-9]"            // Year, unanchored, more data may follow
 "|"      // Or standard mail Date: header format
-"^From[ ]+[^ ]+[ ]+"                                  // From toto@tutu
-"[[:alpha:]]{3},[ ]+[0-3]?[0-9][ ]+[[:alpha:]]{3}[ ]+" // Date Mon, 8 May
-"[12][0-9][0-9][0-9][ ]+"            // Year
-"[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?" // Time, secs optional: 10:57(:32)?
+"^From[ ]+[^ ]+[ ]+"                                   // From toto@tutu
+"[[:alpha:]]{3},[ ]+[0-3]?[0-9][ ]+[[:alpha:]]{3}[ ]+" // Mon, 8 May
+"[12][0-9][0-9][0-9][ ]+"                              // Year
+"[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?"                  // Time, secs optional
     ;
 #endif
     //    "([ ]+[-+][0-9]{4})?$"
@@ -335,6 +335,15 @@ int main(int argc, char **argv)
 	  cerr << "next_document failed" << endl;
 	  exit(1);
       }
+      map<string, string>::const_iterator it = 
+	mh.get_meta_data().find("content");
+      int size;
+      if (it == mh.get_meta_data().end()) {
+	size = -1;
+      } else {
+	size = it->second.length();
+      }
+      cout << "Doc " << docnt << " size " << size  << endl;
       docnt++;
   }
   cout << docnt << " documents found in " << filename << endl;
