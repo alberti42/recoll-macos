@@ -28,14 +28,174 @@ static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.5 2008-10-04 14:26:59 dockes Exp 
 
 #include <map>
 #include <sstream>
+#include <fstream>
 
 #include "mimehandler.h"
 #include "debuglog.h"
 #include "readfile.h"
 #include "mh_mbox.h"
 #include "smallut.h"
+#include "rclconfig.h"
+#include "md5.h"
+#include "conftree.h"
 
 using namespace std;
+
+/**
+ * Handles a cache for message numbers to offset translations. Permits direct
+ * accesses inside big folders instead of having to scan up to the right place
+ *
+ * Message offsets are saved to files stored under cfg(mboxcachedir), default
+ * confdir/mboxcache. Mbox files smaller than cfg(mboxcacheminmbs) are not
+ * cached.
+ * Cache files are named as the md5 of the file UDI, which is kept in
+ * the first block for possible collision detection. The 64 bits
+ * offsets for all message "From_" lines follow. The format is purely
+ * binary, values are not even byte-swapped to be proc-idependant.
+ */
+class MboxCache {
+public:
+    typedef MimeHandlerMbox::mbhoff_type mbhoff_type;
+    MboxCache()
+        : m_ok(false), m_minfsize(0)
+    { 
+        // Can't access rclconfig here, we're a static object, would
+        // have to make sure it's initialized.
+    }
+
+    ~MboxCache() {}
+
+    mbhoff_type get_offset(const string& udi, int msgnum)
+    {
+        if (!ok())
+            return -1;
+        string fn = makefilename(udi);
+        ifstream input(fn.c_str(), ios::in | ios::binary);
+        if (!input.is_open())
+            return -1;
+        char blk1[o_b1size];
+        input.read(blk1, o_b1size);
+        if (!input)
+            return -1;
+        ConfSimple cf(string(blk1, o_b1size));
+        string fudi;
+        if (!cf.get("udi", fudi) || fudi.compare(udi)) {
+            LOGINFO(("MboxCache::get_offset:badudi fn %s udi [%s], fudi [%s]\n",
+                     fn.c_str(), udi.c_str(), fudi.c_str()));
+            input.close();
+            return -1;
+        }
+        input.seekg(cacheoffset(msgnum));
+        if (!input) {
+            LOGINFO(("MboxCache::get_offset: fn %s, seek(%ld) failed\n", 
+                     fn.c_str(), cacheoffset(msgnum)));
+            input.close();
+            return -1;
+        }
+        mbhoff_type offset = -1;
+        input.read((char *)&offset, sizeof(mbhoff_type));
+        input.close();
+        return offset;
+    }
+
+    // Save array of offsets for a given file, designated by Udi
+    void put_offsets(const string& udi, mbhoff_type fsize,
+                     vector<mbhoff_type>& offs)
+    {
+        LOGDEB0(("MboxCache::put_offsets: %u offsets\n", offs.size()));
+        if (!ok() || !maybemakedir())
+            return;
+        if (fsize < m_minfsize)
+            return;
+        string fn = makefilename(udi);
+        ofstream output(fn.c_str(), ios::out|ios::trunc|ios::binary);
+        if (!output.is_open())
+            return;
+        string blk1;
+        blk1.append("udi=");
+        blk1.append(udi);
+        blk1.append("\n");
+        blk1.resize(o_b1size, 0);
+        output << blk1;
+        if (!output.good()) 
+            return;
+        for (vector<mbhoff_type>::const_iterator it = offs.begin();
+             it != offs.end(); it++) {
+            mbhoff_type off = *it;
+            output.write((char*)&off, sizeof(mbhoff_type));
+            if (!output.good()) {
+                output.close();
+                return;
+            }
+        }
+        output.close();
+    }
+
+    // Check state, possibly initialize
+    bool ok() {
+        if (m_minfsize == -1)
+            return false;
+        if (!m_ok) {
+            RclConfig *config = RclConfig::getMainConfig();
+            if (config == 0)
+                return false;
+            int minmbs = 10;
+            config->getConfParam("mboxcacheminmbs", &minmbs);
+            if (minmbs < 0) {
+                // minmbs set to negative to disable cache
+                m_minfsize = -1;
+                return false;
+            }
+            m_minfsize = minmbs * 1000 * 1000;
+
+            config->getConfParam("mboxcachedir", m_dir);
+            if (m_dir.empty())
+                m_dir = "mboxcache";
+            m_dir = path_tildexpand(m_dir);
+            // If not an absolute path, compute relative to config dir
+            if (m_dir.at(0) != '/')
+                m_dir = path_cat(config->getConfDir(), m_dir);
+            m_ok = true;
+        }
+        return m_ok;
+    }
+
+private:
+    bool m_ok;
+
+    // Place where we store things
+    string m_dir;
+    // Don't cache smaller files. If -1, don't do anything.
+    mbhoff_type m_minfsize;
+    static const int o_b1size;
+
+    // Create the cache directory if it does not exist
+    bool maybemakedir()
+    {
+        struct stat st;
+        if (stat(m_dir.c_str(), &st) != 0 && mkdir(m_dir.c_str(), 0700) != 0) {
+            return false;
+        }
+        return true;
+    }
+    // Compute file name from udi
+    string makefilename(const string& udi)
+    {
+        string digest, xdigest;
+        MD5String(udi, digest);
+        MD5HexPrint(digest, xdigest);
+        return path_cat(m_dir, xdigest);
+    }
+
+    // Compute offset in cache file for the mbox offset of msgnum
+    mbhoff_type cacheoffset(int msgnum)
+    {// Msgnums are from 1
+        return o_b1size + (msgnum-1) * sizeof(mbhoff_type);
+    }
+};
+
+const int MboxCache::o_b1size = 1024;
+static class MboxCache mcache;
 
 MimeHandlerMbox::~MimeHandlerMbox()
 {
@@ -51,6 +211,7 @@ void MimeHandlerMbox::clear()
     }
     m_msgnum =  m_lineno = 0;
     m_ipath.erase();
+    m_offsets.clear();
     RecollFilter::clear();
 }
 
@@ -70,7 +231,11 @@ bool MimeHandlerMbox::set_document_file(const string &fn)
 		fn.c_str()));
 	return false;
     }
+    fseek((FILE *)m_vfp, 0, SEEK_END);
+    m_fsize = ftell((FILE*)m_vfp);
+    fseek((FILE*)m_vfp, 0, SEEK_SET);
     m_havedoc = true;
+    m_offsets.clear();
     return true;
 }
 
@@ -186,8 +351,22 @@ bool MimeHandlerMbox::next_document()
     // we're ever used in this way (multiple retrieves on same
     // object).  So:
     if (mtarg > 0) {
-	fseek(fp, 0, SEEK_SET);
-	m_msgnum = 0;
+        mbhoff_type off;
+        line_type line;
+        LOGDEB0(("MimeHandlerMbox::next_doc: mtarg %d m_udi[%s]\n",
+                mtarg, m_udi.c_str()));
+        if (!m_udi.empty() && 
+            (off = mcache.get_offset(m_udi, mtarg)) >= 0 && 
+            fseeko(fp, (off_t)off, SEEK_SET) >= 0 && 
+            fgets(line, LL, fp) &&
+            !regexec(&fromregex, line, 0, 0, 0)) {
+                LOGDEB0(("MimeHandlerMbox: Cache: From_ Ok\n"));
+                fseeko(fp, (off_t)off, SEEK_SET);
+                m_msgnum = mtarg -1;
+        } else {
+            fseek(fp, 0, SEEK_SET);
+            m_msgnum = 0;
+        }
     }
 
     off_t start, end;
@@ -200,6 +379,7 @@ bool MimeHandlerMbox::next_document()
 	// line after this
 	line_type line;
 	for (;;) {
+            mbhoff_type off_From = ftello(fp);
 	    if (!fgets(line, LL, fp)) {
 		// Eof hit while looking for 'From ' -> file done. We'd need
 		// another return code here
@@ -217,9 +397,10 @@ bool MimeHandlerMbox::next_document()
 		continue;
 	    }
 	    if (hademptyline && !regexec(&fromregex, line, 0, 0, 0)) {
-		LOGDEB0(("MimeHandlerMbox: From_ at line %d: [%s]\n",
-			m_lineno, line));
+		LOGDEB0(("MimeHandlerMbox: msgnum %d, From_ at line %d: [%s]\n",
+                         m_msgnum, m_lineno, line));
 		start = ftello(fp);
+		m_offsets.push_back(off_From);
 		m_msgnum++;
 		break;
 	    }
@@ -267,6 +448,9 @@ bool MimeHandlerMbox::next_document()
     if (iseof) {
 	LOGDEB2(("MimeHandlerMbox::next: eof hit\n"));
 	m_havedoc = false;
+	if (!m_udi.empty()) {
+	  mcache.put_offsets(m_udi, m_fsize, m_offsets);
+	}
     }
     return msgtxt.empty() ? false : true;
 }

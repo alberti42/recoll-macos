@@ -36,6 +36,9 @@ public:
     virtual ~RecollFilter() {}
     virtual bool set_property(Properties p, const string &v) {
 	switch (p) {
+	case DJF_UDI: 
+	    m_udi = v;
+	    break;
 	case DEFAULT_CHARSET: 
 	    m_defcharset = v;
 	    break;
@@ -94,6 +97,7 @@ protected:
     string m_defcharset;
     string m_reason;
     bool   m_havedoc;
+    string m_udi; // May be set by creator as a hint
 };
 
 /**

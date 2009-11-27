@@ -79,7 +79,7 @@ bool RclDHistoryEntry::decode(const string &value)
         // Old style entry found, make an udi, using the fs udi maker
         make_udi(fn, ipath, udi);
     }
-    LOGDEB(("RclDHistoryEntry::decode: udi [%s]\n", udi.c_str()));
+    LOGDEB1(("RclDHistoryEntry::decode: udi [%s]\n", udi.c_str()));
     return true;
 }
 
@@ -91,7 +91,7 @@ bool RclDHistoryEntry::equal(const DynConfEntry& other)
 
 bool historyEnterDoc(RclDynConf *dncf, const string& udi)
 {
-    LOGDEB(("historyEnterDoc: [%s] into %s\n", 
+    LOGDEB1(("historyEnterDoc: [%s] into %s\n", 
 	    udi.c_str(), dncf->getFilename().c_str()));
     RclDHistoryEntry ne(time(0), udi);
     RclDHistoryEntry scratch;

@@ -67,8 +67,10 @@ namespace Dijon
 	 * - DEFAULT_CHARSET is the charset preferred by the client application.
 	 * The filter will convert document's content to this charset if possible.
 	 * - OPERATING_MODE can be set to either view or index.
+	 * - DJF_UDI Unique document identifier. This can be useful if the
+	 *     filter wants to manage a persistent cache.
 	 */
-	typedef enum { DEFAULT_CHARSET=0, OPERATING_MODE } Properties;
+	typedef enum { DEFAULT_CHARSET=0, OPERATING_MODE, DJF_UDI } Properties;
 
 
 	// Information.

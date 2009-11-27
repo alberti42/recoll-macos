@@ -183,6 +183,12 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 {
     m_fn = f;
 
+    // This is used by filters which manage some kind of cache.
+    // Indexing by udi makes things easier (because they sometimes get a temp 
+    // as input
+    string udi;
+    make_udi(f, "", udi);
+
     cnf->setKeyDir(path_getfather(m_fn));
 
     string l_mime;
@@ -259,6 +265,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 
     string charset = m_cfg->getDefCharset();
     df->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
+    df->set_property(Dijon::Filter::DJF_UDI, udi);
 
 #ifdef RCL_USE_XATTR
     // Get fields computed from extended attributes. We use the

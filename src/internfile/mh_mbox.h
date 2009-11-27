@@ -19,7 +19,9 @@
 /* @(#$Id: mh_mbox.h,v 1.3 2008-10-04 14:26:59 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+#include <vector>
 using std::string;
+using std::vector;
 
 #include "mimehandler.h"
 
@@ -31,7 +33,7 @@ using std::string;
 class MimeHandlerMbox : public RecollFilter {
  public:
     MimeHandlerMbox(const string& mime) 
-	: RecollFilter(mime), m_vfp(0), m_msgnum(0), m_lineno(0)
+      : RecollFilter(mime), m_vfp(0), m_msgnum(0), m_lineno(0), m_fsize(0)
     {}
     virtual ~MimeHandlerMbox();
     virtual bool set_document_file(const string &file_path);
@@ -41,12 +43,15 @@ class MimeHandlerMbox : public RecollFilter {
 	return true;
     }
     virtual void clear();
+    typedef long long mbhoff_type;
  private:
     string     m_fn;     // File name
     void      *m_vfp;    // File pointer for folder
     int        m_msgnum; // Current message number in folder. Starts at 1
     string     m_ipath;
     int        m_lineno; // debug 
+    mbhoff_type m_fsize;
+    vector<mbhoff_type> m_offsets;
 };
 
 #endif /* _MBOX_H_INCLUDED_ */
