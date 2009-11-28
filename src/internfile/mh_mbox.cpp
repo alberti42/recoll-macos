@@ -25,11 +25,10 @@ static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.5 2008-10-04 14:26:59 dockes Exp 
 #include <time.h>
 #include <regex.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include <cstring>
 #include <map>
-#include <sstream>
-#include <fstream>
 
 #include "mimehandler.h"
 #include "debuglog.h"
@@ -41,6 +40,19 @@ static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.5 2008-10-04 14:26:59 dockes Exp 
 #include "conftree.h"
 
 using namespace std;
+class FpKeeper { 
+public:
+    FpKeeper(FILE **fpp) : m_fpp(fpp) {}
+    ~FpKeeper() 
+    {
+        if (m_fpp && *m_fpp) {
+            fclose(*m_fpp);
+            *m_fpp = 0;
+        }
+    }
+private: FILE **m_fpp;
+};
+
 
 /**
  * Handles a cache for message numbers to offset translations. Permits direct
@@ -65,37 +77,48 @@ public:
     }
 
     ~MboxCache() {}
-
     mbhoff_type get_offset(const string& udi, int msgnum)
     {
-        if (!ok())
+        LOGDEB0(("MboxCache::get_offsets: udi [%s] msgnum %d\n", udi.c_str(),
+                 msgnum));
+        if (!ok()) {
+            LOGDEB0(("MboxCache::get_offsets: init failed\n"));
             return -1;
+        }
         string fn = makefilename(udi);
-        ifstream input(fn.c_str(), ios::in | ios::binary);
-        if (!input.is_open())
+        FILE *fp = 0;
+        if ((fp = fopen(fn.c_str(), "r")) == 0) {
+            LOGDEB(("MboxCache::get_offsets: open failed, errno %d\n", errno));
             return -1;
+        }
+        FpKeeper keeper(&fp);
+
         char blk1[o_b1size];
-        input.read(blk1, o_b1size);
-        if (!input)
+        if (fread(blk1, 1, o_b1size, fp) != o_b1size) {
+            LOGDEB0(("MboxCache::get_offsets: read blk1 errno %d\n", errno));
             return -1;
+        }
         ConfSimple cf(string(blk1, o_b1size));
         string fudi;
         if (!cf.get("udi", fudi) || fudi.compare(udi)) {
             LOGINFO(("MboxCache::get_offset:badudi fn %s udi [%s], fudi [%s]\n",
                      fn.c_str(), udi.c_str(), fudi.c_str()));
-            input.close();
             return -1;
         }
-        input.seekg(cacheoffset(msgnum));
-        if (!input) {
-            LOGINFO(("MboxCache::get_offset: fn %s, seek(%ld) failed\n", 
-                     fn.c_str(), cacheoffset(msgnum)));
-            input.close();
+        if (fseeko(fp, cacheoffset(msgnum), SEEK_SET) != 0) {
+            LOGDEB0(("MboxCache::get_offsets: seek %ld errno %d\n",
+                     (long)cacheoffset(msgnum), errno));
             return -1;
         }
         mbhoff_type offset = -1;
-        input.read((char *)&offset, sizeof(mbhoff_type));
-        input.close();
+        int ret;
+        if ((ret = fread(&offset, 1, sizeof(mbhoff_type), fp))
+            != sizeof(mbhoff_type)) {
+            LOGDEB0(("MboxCache::get_offsets: read ret %d errno %d\n", 
+                     ret, errno));
+            return -1;
+        }
+        LOGDEB0(("MboxCache::get_offsets: ret %lld\n", (long long)offset));
         return offset;
     }
 
@@ -109,27 +132,30 @@ public:
         if (fsize < m_minfsize)
             return;
         string fn = makefilename(udi);
-        ofstream output(fn.c_str(), ios::out|ios::trunc|ios::binary);
-        if (!output.is_open())
+        FILE *fp;
+        if ((fp = fopen(fn.c_str(), "w")) == 0) {
+            LOGDEB(("MboxCache::put_offsets: fopen errno %d\n", errno));
             return;
+        }
+        FpKeeper keeper(&fp);
         string blk1;
         blk1.append("udi=");
         blk1.append(udi);
         blk1.append("\n");
         blk1.resize(o_b1size, 0);
-        output << blk1;
-        if (!output.good()) 
+        if (fwrite(blk1.c_str(), 1, o_b1size, fp) != o_b1size) {
+            LOGDEB(("MboxCache::put_offsets: fwrite errno %d\n", errno));
             return;
+        }
+
         for (vector<mbhoff_type>::const_iterator it = offs.begin();
              it != offs.end(); it++) {
             mbhoff_type off = *it;
-            output.write((char*)&off, sizeof(mbhoff_type));
-            if (!output.good()) {
-                output.close();
+            if (fwrite((char*)&off, 1, sizeof(mbhoff_type), fp) != 
+                sizeof(mbhoff_type)) {
                 return;
             }
         }
-        output.close();
     }
 
     // Check state, possibly initialize
@@ -140,7 +166,7 @@ public:
             RclConfig *config = RclConfig::getMainConfig();
             if (config == 0)
                 return false;
-            int minmbs = 10;
+            int minmbs = 5;
             config->getConfParam("mboxcacheminmbs", &minmbs);
             if (minmbs < 0) {
                 // minmbs set to negative to disable cache
@@ -168,7 +194,7 @@ private:
     string m_dir;
     // Don't cache smaller files. If -1, don't do anything.
     mbhoff_type m_minfsize;
-    static const int o_b1size;
+    static const size_t o_b1size;
 
     // Create the cache directory if it does not exist
     bool maybemakedir()
@@ -195,7 +221,7 @@ private:
     }
 };
 
-const int MboxCache::o_b1size = 1024;
+const size_t MboxCache::o_b1size = 1024;
 static class MboxCache mcache;
 
 MimeHandlerMbox::~MimeHandlerMbox()
