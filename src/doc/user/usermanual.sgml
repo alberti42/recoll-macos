@@ -1,6 +1,6 @@
 <!DOCTYPE BOOK PUBLIC "-//FreeBSD//DTD DocBook V4.1-Based Extension//EN" [
 <!ENTITY RCL "<application>Recoll</application>">
-<!ENTITY RCLVERSION "1.12">
+<!ENTITY RCLVERSION "1.12-1.13">
 <!ENTITY XAP "<application>Xapian</application>">
 
 ]>
@@ -188,28 +188,28 @@
 
       <itemizedlist>
 
-	<listitem>
-	  <formalpara><title>Periodic indexing:</title>
-	    <para>indexing takes place at discrete
-	times, by executing the <command>recollindex</command>
-	command. The typical usage is to have a nightly indexing run 
+        <listitem>
+          <formalpara><title>Periodic indexing:</title>
+            <para>indexing takes place at discrete
+        times, by executing the <command>recollindex</command>
+        command. The typical usage is to have a nightly indexing run 
       <link linkend="rcl.indexing.periodic.automat">programmed</link> into your
       <command>cron</command> file.</para>
-	  </formalpara>
-	</listitem>
+          </formalpara>
+        </listitem>
 
-	<listitem>
-	  <formalpara><title>Real time indexing:</title>
-	    <para>indexing takes place as soon as a file is created or
-	    changed. <command>recollindex</command> runs as a daemon
-	    and uses a file system alteration monitor such as
-	    <application>Fam</application>, 
-	    <application>Gamin</application> or
-	    <application>inotify</application> do detect file changes.
+        <listitem>
+          <formalpara><title>Real time indexing:</title>
+            <para>indexing takes place as soon as a file is created or
+            changed. <command>recollindex</command> runs as a daemon
+            and uses a file system alteration monitor such as
+            <application>Fam</application>, 
+            <application>Gamin</application> or
+            <application>inotify</application> do detect file changes.
             Monitoring a big directory tree can consume significant
             system resources.</para>
-	  </formalpara>
-	</listitem>
+          </formalpara>
+        </listitem>
       </itemizedlist>
 
       <para>The choice between the two methods is mostly a matter of
@@ -224,12 +224,12 @@
       processing are set in 
        <link linkend="rcl.indexing.config">configuration files</link>
       Most file types, like HTML or word processing files, only hold
-      one document. Some file types, like mail folder files can hold
+      one document. Some file types, like mail folder files, can hold
       many individually indexed documents.
       </para>
 
       <para>&RCL; indexing processes plain text, HTML, openoffice
-      and e-mail files internally.</para>
+      and e-mail files internally (a few more actually).</para>
 
       <para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
       need external applications for preprocessing. The list is in the
@@ -246,12 +246,23 @@
       set of defaults.</para>
 
       <para>In some cases, it may be interesting to index different
-      areas of the file system to separate databases. You can do this
-      by using multiple configuration directories, each indexing a
-      file system area to a specific database. See the <link
-      linkend="rcl.search.multidb">section about using multiple
-      databases</link> for more information on multiple configurations
-      and indexes. </para>
+	areas of the file system to separate databases. You can do this
+	by using multiple configuration directories, each indexing a
+	file system area to a specific database. See the 
+	<link linkend="rcl.search.multidb">section about using multiple
+	  databases</link> for more information on multiple configurations
+	and indexes. </para>
+
+      <para>In the rare case where the index becomes corrupted (which can
+	signal itself by weird search results or crashes), the index files
+	need to be erased before restarting a clean indexing pass. Just delete
+	the <filename>xapiandb</filename> directory (see 
+	<link linkend="rcl.indexing.storage">next section</link>), or, 
+	alternatively, start the next <command>recollindex</command> with the 
+	<literal>-z</literal> option, which will reset the database before
+	indexing.</para>
+
+
     </sect1>
 
     <sect1 id="rcl.indexing.storage">
@@ -265,8 +276,8 @@
 
       <itemizedlist>
 
-	  <listitem><para>You can specify a different configuration
-	  directory by setting the <literal>RECOLL_CONFDIR</literal>
+          <listitem><para>You can specify a different configuration
+          directory by setting the <literal>RECOLL_CONFDIR</literal>
           environment variable, or using the <literal>-c</literal>
           option to the &RCL; commands. This method would typically be
           used to index different areas of the file system to
@@ -287,21 +298,21 @@ recoll
           and indexes to handle whatever subset of the available data
           that you wish to make searchable.</para>
 
-	  </listitem>
-	  <listitem><para>You can also specify a different storage
-	  location for the index by setting the <literal>dbdir</literal>
-	  parameter in the configuration file 
+          </listitem>
+          <listitem><para>You can also specify a different storage
+          location for the index by setting the <literal>dbdir</literal>
+          parameter in the configuration file 
           (see the <link linkend="rcl.install.config.recollconf">configuration
           section</link>). This method would mainly be of use if you
           wanted to keep the configuration directory in its default location,
           but desired another location for the index, typically out of
           disk occupation concerns.</para>
-	  </listitem>
+          </listitem>
 
-	</itemizedlist>
+        </itemizedlist>
 
-      <para>The size of the index is determined by the size of the set
-      of documents, but the ratio can vary a lot. For a typical mixed
+      <para>The size of the index is determined by the document set size,
+      but the ratio can vary a lot. For a typical mixed
       set of documents, the index size will often be close to
       the data set size. In specific cases (a set of compressed
       mbox files for example), the index can become much bigger than
@@ -316,68 +327,68 @@ recoll
       total amount of data on the computer.</para>
       
       <para>The index data directory (<filename>xapiandb</filename>)
-      only contains data that can be completely rebuilt by an index
-      run, and it can always be destroyed safely.</para>
+	only contains data that can be completely rebuilt by an index
+	run, and it can always be destroyed safely.</para>
 
       <sect2 id="rcl.indexing.storage.format">
-	<title>Xapian index formats</title>
+        <title>Xapian index formats</title>
 
-	<para>If your first installation of &RCL; was 1.9.0 or more
-	recent, you can skip this section.</para>
+        <para>If your first installation of &RCL; was 1.9.0 or more
+          recent, you can skip this section.</para>
 
-	<para>&XAP; has had two possible index formats for quite some
-	time. The "old" one named <literal>Quartz</literal>, and the
-	new one named <literal>Flint</literal>. &XAP; 0.9 used
-	<literal>Quartz</literal> by default, but could use
-	<literal>Flint</literal> if a specific environment variable
-	(<literal>XAPIAN_PREFER_FLINT</literal>) was set. &XAP; 1.0
-	still supports <literal>Quartz</literal> but will use
-        <literal>Flint</literal> by default for new index
-        creations.</para>
+        <para>&XAP; has had two possible index formats for quite some
+          time. The "old" one named <literal>Quartz</literal>, and the
+          new one named <literal>Flint</literal>. &XAP; 0.9 used
+          <literal>Quartz</literal> by default, but could use
+          <literal>Flint</literal> if a specific environment variable
+          (<literal>XAPIAN_PREFER_FLINT</literal>) was set. &XAP; 1.0
+          still supports <literal>Quartz</literal> but will use
+          <literal>Flint</literal> by default for new index
+          creations.</para>
 
-	<para>The number of disk accesses performed during indexing
-	has been much optimized in the new <literal>Flint</literal>
-	engine and you may see indexing times improved by 50% in some
-	cases (compared to <literal>Quartz</literal>), typically for
-	big indexes where disk accesses dominate the indexing
-	time. There is also a more modest improvement of index
-	size.</para>
+        <para>The number of disk accesses performed during indexing
+          has been much optimized in the new <literal>Flint</literal>
+          engine and you may see indexing times improved by 50% in some
+          cases (compared to <literal>Quartz</literal>), typically for
+          big indexes where disk accesses dominate the indexing
+          time. There is also a more modest improvement of index
+          size.</para>
 
-	<para>&XAP; will not convert automatically an existing index
-	from the <literal>Quartz</literal> to the
-	<literal>Flint</literal> format. If you have an older index
-	and want to take advantage of the new format (which can be
-	done without setting the environment variable as of &RCL;
-	1.8.2 and &XAP; 1.0.0), you will have to explicitly delete
-	the old index, then run a normal indexing process.</para>
+        <para>&XAP; will not convert automatically an existing index
+          from the <literal>Quartz</literal> to the
+          <literal>Flint</literal> format. If you have an older index
+          and want to take advantage of the new format (which can be
+          done without setting the environment variable as of &RCL;
+          1.8.2 and &XAP; 1.0.0), you will have to explicitly delete
+          the old index, then run a normal indexing process.</para>
 
-	<para>Unfortunately, using the <literal>-z</literal> option to
-	<command>recollindex</command> is not sufficient to change the
-	format, you have to delete all files inside the index
-	directory (typically <filename>~/.recoll/xapiandb</filename>)
-	before starting indexing.</para>
+        <para>Unfortunately, using the <literal>-z</literal> option to
+          <command>recollindex</command> is not sufficient to change the
+          format, you have to delete all files inside the index
+          directory (typically <filename>~/.recoll/xapiandb</filename>)
+          before starting indexing.</para>
 
       </sect2>
 
       <sect2 id="rcl.indexing.storage.security">
-	<title>Security aspects</title>
+        <title>Security aspects</title>
 
-	<para>The &RCL; index does not hold copies of the indexed
-	documents. But it does hold enough data to allow for an almost
-	complete reconstruction. If confidential data is indexed,
-	access to the database directory should be restricted. </para>
+        <para>The &RCL; index does not hold copies of the indexed
+        documents. But it does hold enough data to allow for an almost
+        complete reconstruction. If confidential data is indexed,
+        access to the database directory should be restricted. </para>
 
-	<para>As of version 1.4, &RCL; will create the configuration
-	directory with a mode of 0700 (access by owner only). As the
-	index data directory is by default a sub-directory of the
-	configuration directory, this should result in appropriate
-	protection.</para> 
+        <para>As of version 1.4, &RCL; will create the configuration
+        directory with a mode of 0700 (access by owner only). As the
+        index data directory is by default a sub-directory of the
+        configuration directory, this should result in appropriate
+        protection.</para> 
 
-	<para>If you use another setup, you should think of the kind
-	of protection you need for your index, set the directory
-	and files access modes appropriately, and also maybe adjust
-	the <literal>umask</literal> used during index updates.</para>
-	
+        <para>If you use another setup, you should think of the kind
+        of protection you need for your index, set the directory
+        and files access modes appropriately, and also maybe adjust
+        the <literal>umask</literal> used during index updates.</para>
+        
 
       </sect2>
 
@@ -399,11 +410,12 @@ recoll
       the organization of your data to improve search precision.</para> 
 
       <para>The first time you start <command>recoll</command>, you
-      will be asked whether or not you would like recoll to build the
+      will be asked whether or not you would like it to build the
       index. If you want to adjust the configuration before indexing,
-      just click <guilabel>Cancel</guilabel> at this point. That way,
-      recoll will have created a ~/.recoll directory containing empty
-      configuration files.</para>
+      just click <guilabel>Cancel</guilabel> at this point, which will get
+      you into the configuration interface. If you exit, 
+      <filename>recoll</filename> will have created a ~/.recoll directory
+      containing empty configuration files, which you can edit by hand.</para>
 
       <para>The configuration is documented inside the <link
       linkend="rcl.install.config">installation chapter</link> of this
@@ -420,89 +432,115 @@ recoll
       packages section</link></para>
 
       <sect2 id="rcl.indexing.config.gui">
-	<title>The indexing configuration GUI</title>
+        <title>The indexing configuration GUI</title>
 
-	<para>Most parameters for a given indexing configuration can
-	be set from a <command>recoll</command> GUI running on this
-	configuration (either as default, or by setting
-	<literal>RECOLL_CONFDIR</literal> or the <literal>-c</literal>
-	option.)</para> 
+        <para>Most parameters for a given indexing configuration can
+        be set from a <command>recoll</command> GUI running on this
+        configuration (either as default, or by setting
+        <literal>RECOLL_CONFDIR</literal> or the <literal>-c</literal>
+        option.)</para> 
 
-	<para>The interface is started from the
-	<guilabel>Preferences</guilabel> menu. It has two main
-	panels. The first panel allows setting global variables, like
-	the list of top directories or the list of skipped paths. The
-	second panel allows setting variables that can be redefined
-	for subdirectories. This second panel has an initially empty list of
-	customisation directories, to which you can add. The variables
-	are then set for the currently selected directory (or at the top
-	level if the empty line is selected).</para>
+        <para>The interface is started from the
+        <guilabel>Preferences</guilabel> menu. It has two main
+        panels. The first panel allows setting global variables, like
+        the list of top directories or the list of skipped paths. The
+        second panel allows setting variables that can be redefined
+        for subdirectories. This second panel has an initially empty list of
+        customisation directories, to which you can add. The variables
+        are then set for the currently selected directory (or at the top
+        level if the empty line is selected).</para>
 
-	<para>The meaning for most entries in the interface is 
-	self-evident and documented by a <literal>ToolTip</literal>
-	popup on the text label. For more detail, you will need to
-	refer to the <link linkend="rcl.install.config">configuration
-	section</link> of this guide.</para>
+        <para>The meaning for most entries in the interface is 
+        self-evident and documented by a <literal>ToolTip</literal>
+        popup on the text label. For more detail, you will need to
+        refer to the <link linkend="rcl.install.config">configuration
+        section</link> of this guide.</para>
 
-	<para>The configuration tool normally respects the comments
-	and most of the formatting inside the configuration file, so
-	that it is quite possible to use it on hand-edited files,
-	which you might nevertheless want to backup first...</para>
+        <para>The configuration tool normally respects the comments
+        and most of the formatting inside the configuration file, so
+        that it is quite possible to use it on hand-edited files,
+        which you might nevertheless want to backup first...</para>
 
       </sect2>
 
-
     </sect1>
+
+    <sect1 id="rcl.indexing.beaglequeue">
+      <title>Using Beagle WEB browser plugins</title>
+
+      <para><application>Beagle</application> is a concurrent desktop
+	indexer, built on Lucene and the Mono project (C#), for which a
+	number of add-on browser plugins were written. These work by
+	copying visited web pages to an indexing queue directory, which the
+	indexer then processes.</para>
+
+      <para>If, for any reason, you so happen to prefer &RCL; to
+	<application>Beagle</application>, you can still use
+	the browser plugins (they are written in Javascript and completely
+	independant of C#, Beagle, Lucene...). &RCL; can process the
+	<application>Beagle</application> queue directory. Of course, this
+	supposes that <application>Beagle</application> is not running,
+	else both programs will fight for the same files.</para>
+
+      <para>This feature can be enabled in the GUI indexing configuration
+	panel, or by editing the configuration file (set
+	<literal>processbeaglequeue</literal> to 1).</para>
+      </sect1>
 
     <sect1 id="rcl.indexing.periodic">
       <title>Periodic indexing</title>
 
       <sect2 id="rcl.indexing.periodic.exec">
-	<title>Starting indexing</title>
+        <title>Starting indexing</title>
 
-	<para>Indexing is performed either by the
-        <command>recollindex</command> program, or by the
-        indexing thread inside the <command>recoll</command>
-        program (use the <guimenu>File</guimenu> menu). Both programs
-        will use the <literal>RECOLL_CONFDIR</literal>
-        variable or accept a <literal>-c</literal>
-        <replaceable>confdir</replaceable> option to specify a non-default
-        configuration directory.</para>
+        <para>Indexing is performed either by the
+          <command>recollindex</command> program, or by the
+          indexing thread inside the <command>recoll</command>
+          program (use the <guimenu>File</guimenu> menu). Both programs
+          will use the <literal>RECOLL_CONFDIR</literal>
+          variable or accept a <literal>-c</literal>
+          <replaceable>confdir</replaceable> option to specify a non-default
+          configuration directory.</para>
 
-	<para>If the <command>recoll</command> program finds no index
-	  when it starts, it will automatically start indexing (except
-	  if canceled).</para>
+        <para>If the <command>recoll</command> program finds no index
+          when it starts, it will automatically start indexing (except
+          if canceled).</para>
 
-	<para>It is best to avoid interrupting the indexing process, as
-          this may sometimes leave the index in a bad state.  This is
-          not a serious problem, as you then just need to delete 
-          the index files and restart the indexing. The index files are
-          normally stored in the <filename>$HOME/.recoll/xapiandb</filename>
-          directory, which you can just delete if needed. Alternatively,
-          you can start <command>recollindex</command> with option
-          <literal>-z</literal>, which will reset the database before
-          indexing.</para> 
+        <para>The indexing process can be interrupted by sending an
+          interrupt (^C, SIGINT) or terminate (SIGTERM) signal. Some time may
+          elapse before the process exits, because it needs to properly flush
+          and close the index. The indexing will restart at the
+          interruption point the next time (the full file tree will still be
+          traversed, but files that were indexed up to the interruption and
+          are still up to date will not need to be reindexed).</para>
+
+	<para>After such an interruption, the index will be somewhat
+	  inconsistent because some operations which are normally performed
+	  at the end of the indexing pass will have been skipped (for
+	  exemple, the stemming and spelling databases will be inexistant
+	  or out of date). You just need to restart indexing at a later
+	  time to restore consistency.</para>
 
       </sect2>
 
       <sect2 id="rcl.indexing.periodic.automat">
-	<title>Using <command>cron</command> to automate
-	  indexing</title>
+        <title>Using <command>cron</command> to automate
+          indexing</title>
 
-	<para>The most common way to set up indexing is to have a cron
-	  task execute it every night. For example the following
-	  <filename>crontab</filename> entry would do it every day at
-	  3:30AM (supposing <command>recollindex</command> is in your
-	  PATH):</para> 
+        <para>The most common way to set up indexing is to have a cron
+          task execute it every night. For example the following
+          <filename>crontab</filename> entry would do it every day at
+          3:30AM (supposing <command>recollindex</command> is in your
+          PATH):</para> 
 
-	<programlisting>30 3 * * * recollindex > /tmp/recolltrace 2>&1</programlisting>
+        <programlisting>30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&1</programlisting>
 
-	<para>The usual command to edit your
-	  <filename>crontab</filename> is 
+        <para>The usual command to edit your
+          <filename>crontab</filename> is 
           <userinput>crontab -e</userinput> (which will usually start
-	  the <command>vi</command> editor to edit the file). You may
-	  have more sophisticated tools available on your
-	  system.</para>
+          the <command>vi</command> editor to edit the file). You may
+          have more sophisticated tools available on your
+          system.</para>
 
       </sect2>
     </sect1>
@@ -557,22 +595,21 @@ fvwm
       <para>There is a similar mechanism under Gnome (find the session
       control tool in the menus and use the "Startup programs" tab).</para>
 
-      <para>By default, the indexing daemon will write its messages to
-	a file inside the configuration directory (this is controlled
-	by the <literal>daemlogfilename</literal>
-	and <literal>daemloglevel</literal> configuration
-	parameters). You may want to change this. Also the log file
-	will only be truncated when the daemon starts. If the daemon
-	runs permanently, the log file may grow quite big, depending
-	on the log level.</para>
+      <para>By default, the messages from the indexing daemon will be
+        discarded. You may want to change this by setting the
+        <literal>daemlogfilename</literal> and
+        <literal>daemloglevel</literal> configuration parameters. Also the
+        log file will only be truncated when the daemon starts. If the
+        daemon runs permanently, the log file may grow quite big, depending
+        on the log level.</para>
 
       <para>While it is convenient that data is indexed in real time,
-	repeated indexing can generate a significant load on the
-	system when files such as email folders change. Also,
-	monitoring large file trees by itself significantly taxes
-	system resources. You probably do not want to enable it if
-	your system is short on resources. Periodic indexing is
-	adequate in most cases.</para>
+        repeated indexing can generate a significant load on the
+        system when files such as email folders change. Also,
+        monitoring large file trees by itself significantly taxes
+        system resources. You probably do not want to enable it if
+        your system is short on resources. Periodic indexing is
+        adequate in most cases.</para>
 
     </sect1>
 
@@ -588,22 +625,22 @@ fvwm
     <para><command>recoll</command> has two search modes:</para>
     <itemizedlist>
       <listitem><para>Simple search (the default, on the main screen) has
-	a single entry field where you can enter multiple words.</para>
+        a single entry field where you can enter multiple words.</para>
       </listitem>
       <listitem><para>Advanced search (a panel accessed through the
-	<guilabel>Tools</guilabel> menu or the toolbox bar icon) shas
-	multiple entry fields, which you may use to build a logical
-	condition, with additional filtering on file type and location
-	in the file system.</para>
+        <guilabel>Tools</guilabel> menu or the toolbox bar icon) shas
+        multiple entry fields, which you may use to build a logical
+        condition, with additional filtering on file type and location
+        in the file system.</para>
       </listitem>
     </itemizedlist>
 
     <para>In most cases, you can enter the terms as you
-	think them, even if they contain embedded punctuation or other
-	non-textual characters. For
-	exemple, &RCL; can handle things like e-mail addresses, or
-	arbitrary cut and paste from another text window, punctation
-	and all.</para>
+        think them, even if they contain embedded punctuation or other
+        non-textual characters. For
+        exemple, &RCL; can handle things like e-mail addresses, or
+        arbitrary cut and paste from another text window, punctation
+        and all.</para>
 
     <para>The main case where you should enter text differently from
       how it is printed is for east-asian languages (Chinese,
@@ -616,19 +653,19 @@ fvwm
       <title>Simple search</title>
 
       <procedure>
-	<step><para>Start the <command>recoll</command> program.</para>
-	</step>
-	<step><para>Possibly choose a search mode: <guilabel>Any
-	term</guilabel>, <guilabel>All terms</guilabel>, 
+        <step><para>Start the <command>recoll</command> program.</para>
+        </step>
+        <step><para>Possibly choose a search mode: <guilabel>Any
+        term</guilabel>, <guilabel>All terms</guilabel>, 
         <guilabel>File name</guilabel> or
-	<guilabel>Query language</guilabel>.</para>
-	</step>
-	<step><para>Enter search term(s) in the text field at the top of the
+        <guilabel>Query language</guilabel>.</para>
+        </step>
+        <step><para>Enter search term(s) in the text field at the top of the
         window.</para>
-	</step>
-	<step><para>Click the <guilabel>Search</guilabel> button or
+        </step>
+        <step><para>Click the <guilabel>Search</guilabel> button or
         hit the <keycap>Enter</keycap> key to start the search.</para>
-	</step>
+        </step>
       </procedure>
 
       <para>The initial default search mode is <guilabel>All
@@ -640,8 +677,8 @@ fvwm
       <para><guilabel>File name</guilabel> will specifically look for file
         names. The entry will be split at white space characters,
         and each pattern will be separately expanded. If you want
-        to search for a pattern including white space, you need
-        to use double quotes. The point of having a separate file name
+        to search for a pattern including white space, use
+        double quotes. The point of having a separate file name
         search is that wild card expansion can be performed more
         efficiently on a relatively small subset of the index.</para>
 
@@ -664,7 +701,7 @@ fvwm
       a search for <literal>floor</literal> will also normally look for 
       <literal>flooring</literal>, <literal>floored</literal>, etc., but
       a search for <literal>Floor</literal> will only look for
-      <literal>floor</literal>, in any character case. Sstemming can
+      <literal>floor</literal>, in any character case. Stemming can
       also be disabled globally in the preferences. </para>
 
       <para>&RCL; remembers the last few searches that you
@@ -681,14 +718,13 @@ fvwm
       <para>Double-clicking on a word in the result list or a preview
       window will insert it into the simple search entry field.</para>
 
-      <para>Note that, apart from wildcard characters (single
-      <literal>?</literal> characters are ok), you can cut and paste
-      any text into an <guilabel>All terms</guilabel> or
-      <guilabel>Any term</guilabel> search field, punctuation,
-      newlines and all. &RCL; will process it and produce a meaningful
-      search. This is what most differentiates this mode from the
-      <guilabel>Query Language</guilabel> mode, where you have to care
-      about the syntax.</para>
+      <para>You can cut and paste any text into an <guilabel>All
+      terms</guilabel> or <guilabel>Any term</guilabel> search field,
+      punctuation, newlines and all - except for wildcard characters
+      (single <literal>?</literal> characters are ok). &RCL; will process
+      it and produce a meaningful search. This is what most differentiates
+      this mode from the <guilabel>Query Language</guilabel> mode, where
+      you have to care about the syntax.</para>
 
       <para>You can use the <link linkend="rcl.search.complex">
        <guilabel>Tools</guilabel> / <guilabel>Advanced search</guilabel>
@@ -719,12 +755,16 @@ fvwm
        <keycap>Shift</keycap>+<keycap>ArrowUp/Down</keycap> in the
        window).</para> 
 
-      <para>Clicking the <literal>Edit</literal> link will attempt to 
-       start an external editor. The editors can be configured through
-       the user preferences dialog, or by editing the
-       <filename>mimeview</filename> configuration file.</para>
+      <para>Clicking the <literal>Open</literal> link will attempt to 
+       start an external viewer. The viewer for each document type can be
+       configured through the user preferences dialog, or by editing the
+       <filename>mimeview</filename> configuration file. You can also check
+       the <guilabel>Use desktop preferences</guilabel> option in the user
+       preferences dialog to use the desktop defaults for all
+       documents. This is probably the best option if you are using a well
+       configured Gnome or KDE desktop.</para>
 
-      <para>The <literal>Preview</literal> and <literal>Edit</literal>
+      <para>The <literal>Preview</literal> and <literal>Open</literal>
        edit links may not be present for all entries, meaning that
        &RCL; has no configured way to preview a given file type (which
        was indexed by name only), or no configured external editor for
@@ -737,7 +777,7 @@ fvwm
 
       <para>The format of the result list entries is entirely
       configurable by using the preference dialog to 
-      <link linkend="rcl.search.custom.resultpara">edit an HTML
+      <link linkend="rcl.search.custom.reslistpara">edit an HTML
       fragment</link>.  
 
       <para>You can click on the <literal>Query details</literal> link
@@ -754,44 +794,47 @@ fvwm
 
 
       <sect2 id="rcl.search.resultlist.menu">
-	<title>The result list right-click menu</title>
+        <title>The result list right-click menu</title>
 
-	<para>Apart from the preview and edit links, you can display a
+        <para>Apart from the preview and edit links, you can display a
           pop-up menu by right-clicking over a paragraph in the result
          list. This menu has the following entries:</para>
 
-	<itemizedlist>
-	  <listitem><para><guilabel>Preview</guilabel></para></listitem>
-	  <listitem><para><guilabel>Edit</guilabel></para></listitem>
-	  <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
-	  <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
-	  <listitem><para><guilabel>Save to File</guilabel></para></listitem>
-	  <listitem><para><guilabel>Find similar</guilabel></para></listitem>
-	  <listitem><para><guilabel>Parent document</guilabel></para></listitem>
-	</itemizedlist>
+        <itemizedlist>
+          <listitem><para><guilabel>Preview</guilabel></para></listitem>
+          <listitem><para><guilabel>Edit</guilabel></para></listitem>
+          <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
+          <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
+          <listitem><para><guilabel>Save to File</guilabel></para></listitem>
+          <listitem><para><guilabel>Find similar</guilabel></para></listitem>
+          <listitem><para><guilabel>Preview Parent
+          document</guilabel></para></listitem> 
+          <listitem><para><guilabel>Open Parent
+          document</guilabel></para></listitem> 
+        </itemizedlist>
 
-	<para>The <guilabel>Preview</guilabel> and
+        <para>The <guilabel>Preview</guilabel> and
           <guilabel>Edit</guilabel> entries do the same thing as the 
           corresponding links.</para>
 
-	<para>The <guilabel>Copy File Name</guilabel> and
-	<guilabel>Copy Url</guilabel> copy the relevant data to the
-	clipboard, for later pasting.</para> 
+        <para>The <guilabel>Copy File Name</guilabel> and
+        <guilabel>Copy Url</guilabel> copy the relevant data to the
+        clipboard, for later pasting.</para> 
 
-	<para><guilabel>Save to File</guilabel> allows saving the
-	contents of a result document to a chosen file. This entry
-	will only appear if the document does not correspond to an
-	existing file, but is a subdocument inside such a file (ie: an
-	email attachment). It is especially useful to extract attachments
-	with no associated editor.</para> 
+        <para><guilabel>Save to File</guilabel> allows saving the
+        contents of a result document to a chosen file. This entry
+        will only appear if the document does not correspond to an
+        existing file, but is a subdocument inside such a file (ie: an
+        email attachment). It is especially useful to extract attachments
+        with no associated editor.</para> 
 
         <para>The <guilabel>Find similar</guilabel> entry will select
           a number of relevant term from the current document and enter
           them into the simple search field. You can then start a simple
           search, with a good chance of finding documents related to the
-         current result.</para>
+          current result.</para>
 
-        <para>The <guilabel>Parent document</guilabel> entry will
+        <para>The <guilabel>Parent document</guilabel> entries will
           appear for documents which are not actually files but are
           part of, or attached to, a higher level document. This entry
           is mainly useful for email attachments and permits viewing
@@ -800,7 +843,9 @@ fvwm
           folder file, but that you can't actually visualize the
           folder (there will be an error dialog if you try). &RCL; is
           unfortunately not yet smart enough to disable the entry in
-          this case.</para>
+          this case. In other cases, the Open option makes sense, for
+          exemple to start a chm viewer on the parent document for a help
+          page.</para> 
 
       </sect2>
     </sect1>
@@ -854,11 +899,11 @@ fvwm
       associated to the document (ie: author, abtract, etc.). This is
       especially useful in cases where the term match did not occur in
       the main text but in one of the fields.</para>
-	
+        
       <para>You can print the current preview window contents by typing
-	 <keycap>^P</keycap> (<keycap>Ctrl</keycap> + <keycap>P</keycap>) in 
-	the window text.</para> 
-	
+         <keycap>^P</keycap> (<keycap>Ctrl</keycap> + <keycap>P</keycap>) in 
+        the window text.</para> 
+        
 
     </sect1>
 
@@ -931,58 +976,58 @@ fvwm
 
       <para>&RCL; currently manages the following default fields:</para>
       <itemizedlist>
-	<listitem><para><literal>title</literal>,
-	<literal>subject</literal> or <literal>caption</literal> are
-	synonyms which specify data to be searched for in the
-	document title or subject.</para>
-	</listitem>
-	<listitem><para><literal>author</literal> or
-	<literal>from</literal> for searching the documents originators.</para>
-	</listitem>
-	<listitem><para><literal>recipient</literal> or
-	<literal>to</literal> for searching the documents recipients.</para>
-	</listitem>
-	<listitem><para><literal>keyword</literal> for searching the
-	document-specified keywords (few documents actually have any).</para>
-	</listitem>
-	<listitem><para><literal>filename</literal> for the document's
-	file name.</listitem>
-	<listitem><para><literal>ext</literal> specifies the file
-	name extension (Ex: <literal>ext:html</literal>)</para>
-	</listitem>
+        <listitem><para><literal>title</literal>,
+        <literal>subject</literal> or <literal>caption</literal> are
+        synonyms which specify data to be searched for in the
+        document title or subject.</para>
+        </listitem>
+        <listitem><para><literal>author</literal> or
+        <literal>from</literal> for searching the documents originators.</para>
+        </listitem>
+        <listitem><para><literal>recipient</literal> or
+        <literal>to</literal> for searching the documents recipients.</para>
+        </listitem>
+        <listitem><para><literal>keyword</literal> for searching the
+        document-specified keywords (few documents actually have any).</para>
+        </listitem>
+        <listitem><para><literal>filename</literal> for the document's
+        file name.</listitem>
+        <listitem><para><literal>ext</literal> specifies the file
+        name extension (Ex: <literal>ext:html</literal>)</para>
+        </listitem>
       </itemizedlist>
 
       <para>The field syntax also supports a few field-like, but
       special, criteria:</para>
       <itemizedlist>
-	<listitem><para><literal>dir</literal> for filtering the
-	results on file	location (Ex:
-	<literal>dir:/home/me/somedir</literal>). Please note
-	that this is quite inefficient, that it may produce very
-	slow searches, and that it may be worth in some
-	cases to set up separate databases instead.</para>
-	</listitem>
+        <listitem><para><literal>dir</literal> for filtering the
+        results on file location (Ex:
+        <literal>dir:/home/me/somedir</literal>). Please note
+        that this is quite inefficient, that it may produce very
+        slow searches, and that it may be worth in some
+        cases to set up separate databases instead.</para>
+        </listitem>
 
-	<listitem><para><literal>mime</literal> or
-	<literal>format</literal> for specifying the
-	mime type. This one is quite special because you can specify
-	several values which will be OR'ed (the normal default for the
-	language is AND). Ex: <literal>mime:text/plain
-	mime:text/html</literal>. Specifying an explicit boolean
-	operator or negation (<literal>-</literal>) before a
-	<literal>mime</literal> specification is not supported and
-	will produce strange results.</para>
-	</listitem>
+        <listitem><para><literal>mime</literal> or
+        <literal>format</literal> for specifying the
+        mime type. This one is quite special because you can specify
+        several values which will be OR'ed (the normal default for the
+        language is AND). Ex: <literal>mime:text/plain
+        mime:text/html</literal>. Specifying an explicit boolean
+        operator or negation (<literal>-</literal>) before a
+        <literal>mime</literal> specification is not supported and
+        will produce strange results.</para>
+        </listitem>
 
-	<listitem><para><literal>type</literal> or
-	<literal>rclcat</literal> for specifying the category (as in
-	text/media/presentation/etc.). The classification of mime
-	types in categories is defined in the &RCL; configuration
-	(<filename>mimeconf</filename>), and can be modified or
-	extended. The default category names are those which permit
-	filtering results in the main GUI screen. Categories are OR'ed
-	like mime types above.</para>
-	</listitem>
+        <listitem><para><literal>type</literal> or
+        <literal>rclcat</literal> for specifying the category (as in
+        text/media/presentation/etc.). The classification of mime
+        types in categories is defined in the &RCL; configuration
+        (<filename>mimeconf</filename>), and can be modified or
+        extended. The default category names are those which permit
+        filtering results in the main GUI screen. Categories are OR'ed
+        like mime types above.</para>
+        </listitem>
 
       </itemizedlist>
 
@@ -1007,7 +1052,7 @@ fvwm
 
       <para>Most Xesam phrase modifiers are unsupported, except for
       <literal>l</literal> (small ell) to disable stemming, and
-      <literal>p</literal> to turn an phrase into a NEAR (unordered)
+      <literal>p</literal> to turn a phrase into a NEAR (unordered)
       search. Exemple: <replaceable>"prejudice pride"p</replaceable></para>
 
     </sect1>
@@ -1022,26 +1067,26 @@ fvwm
       <para>The dialog has three parts:</para>
 
       <itemizedlist>
-	<listitem><para>The top part allows constructing a query by
+        <listitem><para>The top part allows constructing a query by
           combining multiple clauses of different types.
           Each entry field is configurable for the following modes:</para>
 
         <itemizedlist>
-	  <listitem><para>All terms.</para>
-	  </listitem>
-	  <listitem><para>Any term.</para>
-	  </listitem>
-	  <listitem><para>None of the terms.</para>
-	  </listitem>
-	  <listitem><para>Phrase (exact terms in order within an
-	  adjustable window).</para>
-	  </listitem>
-	  <listitem><para>Proximity (terms in any order within an
-	  adjustable window).</para>
-	  </listitem>
-	  <listitem><para>Filename search.</para>
-	  </listitem>
-	</itemizedlist>
+          <listitem><para>All terms.</para>
+          </listitem>
+          <listitem><para>Any term.</para>
+          </listitem>
+          <listitem><para>None of the terms.</para>
+          </listitem>
+          <listitem><para>Phrase (exact terms in order within an
+          adjustable window).</para>
+          </listitem>
+          <listitem><para>Proximity (terms in any order within an
+          adjustable window).</para>
+          </listitem>
+          <listitem><para>Filename search.</para>
+          </listitem>
+        </itemizedlist>
 
         <para>Additional entry fields can be created by clicking the
           <guilabel>Add clause</guilabel> button.</para>
@@ -1055,22 +1100,22 @@ fvwm
           a mix of single words and phrases enclosed in double quotes. 
           Stemming and wildcard expansion will be performed as for simple
           search. </para>
-	</listitem>
+        </listitem>
 
-	<listitem><para>The next part allows filtering the
+        <listitem><para>The next part allows filtering the
           results by their mime types.</para> 
-	  <para>The state of the file type selection can be saved as
-  	    the default (the file type filter will not be activated at
-  	    program start-up, but the lists will be in the restored
-  	    state).</para> 
-	</listitem>
+          <para>The state of the file type selection can be saved as
+            the default (the file type filter will not be activated at
+            program start-up, but the lists will be in the restored
+            state).</para> 
+        </listitem>
 
-	<listitem>
+        <listitem>
           <para>The bottom part allows restricting the search results to a
             sub-tree of the indexed area. If you need to do this often, 
             you may think of setting up multiple indexes instead, as the
             performance will be much better.</para>
-	</listitem>
+        </listitem>
 
       </itemizedlist>
 
@@ -1117,7 +1162,7 @@ fvwm
         <variablelist>
 
           <varlistentry>
-	    <term>Wildcard</term>
+            <term>Wildcard</term>
             <listitem><para>In this mode of operation, you can enter a
             search string with shell-like wildcards (*, ?, []). ie:
             <replaceable>xapi*</replaceable> would display all index terms
@@ -1127,8 +1172,8 @@ fvwm
           </varlistentry>
 
           <varlistentry>
-	  <term>Regular expression</term>
-	  <listitem><para>This mode will accept a regular expression
+          <term>Regular expression</term>
+          <listitem><para>This mode will accept a regular expression
             as input. Example:
             <replaceable>word[0-9]+</replaceable>. The expression is
             implicitely anchored at the beginning. Ie:
@@ -1138,19 +1183,19 @@ fvwm
             <replaceable>.*press</replaceable> to match the latter,
             but be aware that this will cause a full index term list
             scan, which can be quite long.</para>
-	  </listitem>
+          </listitem>
           </varlistentry>
           <varlistentry>
 
-	  <term>Stem expansion</term>
-	  <listitem><para>This mode will perform the usual stem expansion
-	  normally done as part user input processing. As such it is
-	  probably mostly useful to demonstrate the process.
-	  </para></listitem>
+          <term>Stem expansion</term>
+          <listitem><para>This mode will perform the usual stem expansion
+          normally done as part user input processing. As such it is
+          probably mostly useful to demonstrate the process.
+          </para></listitem>
           </varlistentry>
 
           <varlistentry>
-	    <term>Spelling/Phonetic</term> <listitem><para>In this
+            <term>Spelling/Phonetic</term> <listitem><para>In this
             mode, you enter the term as you think it is spelled, and
             &RCL; will do its best to find index terms that sound like
             your entry. This mode uses the
@@ -1192,38 +1237,38 @@ fvwm
       <itemizedlist>
        <listitem><para><literal>*</literal> which matches 0 or more 
         characters.</para>
-	</listitem>
-	<listitem><para><literal>?</literal> which matches
+        </listitem>
+        <listitem><para><literal>?</literal> which matches
            a single character.</para>
-	</listitem>
+        </listitem>
         <listitem><para><literal>[]</literal> which allow
          defining sets of characters to be matched (ex:
          <literal>[</literal><userinput>abc</userinput><literal>]</literal> 
           matches a single character which may be 'a' or 'b' or 'c',
          <literal>[</literal><userinput>0-9</userinput><literal>]</literal>
          matches any number.</para>
-	</listitem>
+        </listitem>
       </itemizedlist>
 
       <para>You should be aware of a few things before using
-	wildcards.</para>
+        wildcards.</para>
 
       <itemizedlist>
-	<listitem><para>Using a wildcard character at the beginning of
-	a word can make for a slow search because &RCL; will have to
-	scan the whole index term list to find the matches.</para>
-	</listitem>
-	<listitem><para>Using a <literal>*</literal> at the end of a
-	word can produce more matches than you would think, and
-	strange search results. You can use the <link
-	linkend="rcl.search.termexplorer">term explorer</link> tool to
-	check what completions exist for a given term. You can also
-	see exactly what search was performed by clicking on the link
-	at the top of the result list. In general, for natural
-	language terms, stem expansion will produce better results
-	than an ending <literal>*</literal> (stem expansion is turned
-	off when any wildcard character appears in the term).</para>
-	</listitem>
+        <listitem><para>Using a wildcard character at the beginning of
+        a word can make for a slow search because &RCL; will have to
+        scan the whole index term list to find the matches.</para>
+        </listitem>
+        <listitem><para>Using a <literal>*</literal> at the end of a
+        word can produce more matches than you would think, and
+        strange search results. You can use the <link
+        linkend="rcl.search.termexplorer">term explorer</link> tool to
+        check what completions exist for a given term. You can also
+        see exactly what search was performed by clicking on the link
+        at the top of the result list. In general, for natural
+        language terms, stem expansion will produce better results
+        than an ending <literal>*</literal> (stem expansion is turned
+        off when any wildcard character appears in the term).</para>
+        </listitem>
       </itemizedlist>
 
     </sect1>
@@ -1344,22 +1389,22 @@ fvwm
       <title>Terms and search expansion</title>
 
       <formalpara><title>Term completion</title>
-	<para>Typing <keycap>Esc</keycap> <keycap>Space</keycap> in
-	the simple search entry field while entering a word will
-	either complete the current word if its beginning matches a
-	unique term in the index, or open a window to propose a list
-	of completions.</para>
+        <para>Typing <keycap>Esc</keycap> <keycap>Space</keycap> in
+        the simple search entry field while entering a word will
+        either complete the current word if its beginning matches a
+        unique term in the index, or open a window to propose a list
+        of completions.</para>
       </formalpara>
 
       <formalpara><title>Picking up new terms from result or preview 
                    text</title>
-	<para>Double-clicking on a word in the result list or in a
-	preview window will copy it to the simple search entry field.</para>
+        <para>Double-clicking on a word in the result list or in a
+        preview window will copy it to the simple search entry field.</para>
       </formalpara>
 
       <formalpara><title>Wildcards</title>
-	  <para>Wildcards can be used inside search terms in all forms
-	    of searches. <link linkend="rcl.search.wildcards">
+          <para>Wildcards can be used inside search terms in all forms
+            of searches. <link linkend="rcl.search.wildcards">
             More about wildcards</link>.
           </para>
       </formalpara>
@@ -1376,12 +1421,12 @@ fvwm
       </formalpara>
 
       <formalpara><title>Finding related documents</title>
-	<para>Selecting the <guilabel>Find similar documents</guilabel> entry
-	in the result list paragraph right-click menu will select a
-	set of "interesting" terms from the current result, and insert
-	them into the simple search entry field. You can then possibly
-	edit the list and start a search to find documents which may
-	be apparented to the current result.</para>
+        <para>Selecting the <guilabel>Find similar documents</guilabel> entry
+        in the result list paragraph right-click menu will select a
+        set of "interesting" terms from the current result, and insert
+        them into the simple search entry field. You can then possibly
+        edit the list and start a search to find documents which may
+        be apparented to the current result.</para>
       </formalpara>
 
       <formalpara><title>File names</title>
@@ -1428,7 +1473,7 @@ fvwm
     <sect2 id="rcl.search.tips.misc">
       <title>Others</title>
 
-	
+        
       <formalpara><title>Using fields</title>
         <para>You can use the <link linkend="rcl.search.lang">query
         language </link> and field specifications
@@ -1454,6 +1499,13 @@ fvwm
        the new document.</para>
       </formalpara>
 
+      <formalpara><title>Scrolling the result list from the keyboard</title>
+       <para>You can use <keycap>PageUp</keycap> and <keycap>PageDown</keycap>
+	 to scroll the result list, <keycap>Shift+Home</keycap> to go back
+	 to the first page. These work even while the focus is in the
+	 search entry.</para>
+      </formalpara>
+      
       <formalpara><title>Forced opening of a preview window</title>
        <para>You can use <keycap>Shift</keycap>+Click on a result list
        <literal>Preview</literal> link to force the creation of a
@@ -1469,7 +1521,7 @@ fvwm
 
       <formalpara><title>Printing previews</title> 
        <para>Entering <keycap>^P</keycap> in a preview window will print 
-	the currently displayed text.</para>
+        the currently displayed text.</para>
       </formalpara>
 
       <formalpara><title>Quitting</title>
@@ -1482,102 +1534,257 @@ fvwm
     <sect1 id="rcl.search.custom">
       <title>Customizing the search interface</title>
 
-      <para>It is possible to customize some aspects of the search
-      interface by using <guimenu>Query configuration</guimenu> entry
-      in the <guimenu>Preferences</guimenu> menu.</para>
+      <para>You can customize some aspects of the search interface by using
+      the <guimenu>Query configuration</guimenu> entry in the
+      <guimenu>Preferences</guimenu> menu.</para>
 
-      <para>There are two tabs in the dialog, dealing with the
-      interface itself, and with the parameters used for searching and
-      returning results.</para> 
+      <para>There are several tabs in the dialog, dealing with the
+      interface itself, the parameters used for searching and
+      returning results, and what indexes are searched.</para> 
 
       <formalpara><title>User interface parameters:</title>
-	<para>
+        <para>
       <itemizedlist>
 
-	<listitem><para><guilabel>Number of results in a result
-	      page</guilabel>: </para> 
-	</listitem>
+            <listitem><para><guilabel>Number of results in a result
+              page</guilabel>: </para> 
+            </listitem>
 
-	<listitem><para><guilabel>Hide duplicate results</guilabel>:
-	decides if result list entries are shown for identical
-	documents found in different places.</para> 
-	</listitem>
+            <listitem><para><guilabel>Hide duplicate results</guilabel>:
+            decides if result list entries are shown for identical
+            documents found in different places.</para>
+            </listitem>
 
-	<listitem><para><guilabel>Highlight color for query
-	      terms</guilabel>:
-	    Terms from the user query are highlighted in the result
-	    list samples and the preview window. The color can be
-	    chosen here. Any QT color string should work
-	    (ie <literal>red</literal>, <literal>#ff0000</literal>). The
-	    default is <literal>blue</literal>.</para>
-	</listitem>
+            <listitem><para><guilabel>Highlight color for query
+            terms</guilabel>: Terms from the user query are highlighted in
+            the result list samples and the preview window. The color can
+            be chosen here. Any QT color string should work (ie
+            <literal>red</literal>, <literal>#ff0000</literal>). The
+            default is <literal>blue</literal>.</para>
+            </listitem>
 
-	<listitem><para><guilabel>Result list font</guilabel>: There
-	is quite a lot of information shown in the result list, and
-	you may want to customize the font and/or font size. The rest
-	of the fonts used by &RCL; are determined by your generic QT
-	config (try the <command>qtconfig</command> command).</para>
-	</listitem>
+            <listitem><para><guilabel>Result list font</guilabel>: There is
+            quite a lot of information shown in the result list, and you
+            may want to customize the font and/or font size. The rest of
+            the fonts used by &RCL; are determined by your generic QT
+            config (try the <command>qtconfig</command> command).</para>
+            </listitem>
 
-	<listitem><anchor id="rcl.search.custom.resultpara"> <para>
-        <guilabel>Result paragraph format string</guilabel>: 
-        allows you to change the presentation of
-	each result list entry. This is a qt-html string where the
-	following printf-like <literal>%</literal> substitutions will
-	be performed:
+            <listitem><anchor id="rcl.search.custom.resultpara">
+            <para><guilabel>Result paragraph format string</guilabel>:
+            allows you to change the presentation of each result list
+            entry. This is <link linkend="rcl.search.custom.reslistpara">
+            described in its own section.</link></para>
+            </listitem>
+
+	    <listitem><para><guilabel>Maximum text size highlighted for
+            preview</guilabel> Inserting highlights on search term inside
+            the text before inserting it in the preview window involves
+            quite a lot of processing, and can be disabled over the given
+            text size to speed up loading.</para>
+            </listitem>
+
+            <listitem><para><guilabel>Use desktop preferences to choose
+            document editor</guilabel>: if this is checked, the
+            <command>xdg-open</command> utility will be used to open files
+            when you click the <guilabel>Edit</guilabel> link in the result
+            list, instead of the application defined in
+            <filename>mimeview</filename>. <command>xdg-open</command> will
+            in term use your desktop preferences to choose an appropriate
+            application.</para>
+           </listitem>
+
+            <listitem><para><guilabel>Choose editor applications</guilabel>
+            this will let you choose the command started by the
+            <guilabel>Edit</guilabel> links inside the result list, for
+            specific document types.</para>
+            </listitem>
+	    
+	    <listitem><para><guilabel>Display category filter as
+	    toolbar...</guilabel> this will let you choose if the document
+	    categories are displayed as a list or a set of buttons.</para>
+	    </listitem>
+
+            <listitem><para><guilabel>Auto-start simple search on white
+            space entry</guilabel>: if this is checked, a search will be
+            executed each time you enter a space in the simple search input
+            field. This lets you look at the result list as you enter new
+            terms. This is off by default, you may like it or not...</para>
+            </listitem>
+
+	    <listitem><para><guilabel>Start with advanced search dialog open
+            </guilabel> and <guilabel>Start with sort dialog
+            open</guilabel>: If you use these dialogs all the time, checking
+            these entries will get them to open when recoll starts.</para>
+	    </listitem>
+	    
+	    <listitem><para><guilabel>Remember sort activation
+	    state</guilabel> if set, Recoll will remember the sort tool
+	    stat between invocations. It normally starts with sorting
+	    disabled.</para>
+	    </listitem>
+	    <listitem><para><guilabel>Prefer HTML to plain text for preview
+
+	    </guilabel> if set, Recoll will display HTML as such inside the
+	    preview window. If this causes problems with the Qt HTML
+	    display, you can uncheck it to display the plain text version
+	    instead. </para>
+	    </listitem>
+
+	  </itemizedlist>
+      </para>
+      </formalpara>
+
+
+      <formalpara><title>Search parameters:</title>
+        <para>
+      <itemizedlist>
+
+	    <listitem><para><guilabel>Stemming language</guilabel>:
+            stemming obviously depends on the document's language. This
+            listbox will let you chose among the stemming databases which
+            were built during indexing (this is set in the <link
+            linkend="rcl.install.config.recollconf">main configuration
+            file</link>), or later added with <command>recollindex
+            -s</command> (See the recollindex manual). Stemming languages
+            which are dynamically added will be deleted at the next
+            indexing pass unless they are also added in the configuration
+            file.</para>
+            </listitem>
+
+            <listitem><para><guilabel>Dynamically add phrase to simple
+            searches</guilabel>: a phrase will be automatically built and
+            added to simple searches when looking for <literal>Any
+            terms</literal>. This will give a relevance boost to the
+            results where the search terms appear as a phrase (consecutive
+            and in order).</para>
+            </listitem>
+
+            <listitem><para><guilabel>Replace abstracts from
+            documents</guilabel>: this decides if we should synthesize and
+            display an abstract in place of an explicit abstract found
+            within the document itself.</para>
+            </listitem>
+
+            <listitem><para><guilabel>Dynamically build
+            abstracts</guilabel>: this decides if &RCL; tries to build
+            document abstracts when displaying the result list. Abstracts
+            are constructed by taking context from the document
+            information, around the search terms. This can slow down
+            result list display significantly for big documents, and you
+            may want to turn it off.</para>
+            </listitem>
+
+            <listitem><para><guilabel>Replace abstracts from
+            documents</guilabel>: this decides if we should synthesize and
+            display an abstract in place of an explicit abstract found
+            within the document itself.</para>
+            </listitem>
+
+            <listitem><para><guilabel>Synthetic abstract size</guilabel>:
+            adjust to taste...</para>
+            </listitem>
+
+            <listitem><para><guilabel>Synthetic abstract context
+            words</guilabel>: how many words should be displayed around
+            each term occurrence.</para>
+            </listitem>
+
+      </itemizedlist>
+       </para>
+      </formalpara>
+
+      <formalpara id="rcl.search.custom.extradb">
+        <title>External indexes:</title> 
+      <para>This panel will let you browse for additional indexes
+      that you may want to search. External indexes are designated by
+      their database directory (ie:
+      <filename>/home/someothergui/.recoll/xapiandb</filename>,
+      <filename>/usr/local/recollglobal/xapiandb</filename>).</para>
+
+      <para>Once entered, the indexes will appear in the
+        <guilabel>External indexes</guilabel> list, and you can
+        chose which ones you want to use at any moment by checking or
+        unchecking their entries.</para> 
+
+      <para>Your main database (the one the current configuration
+      indexes to), is always implicitly active. If this is not
+      desirable, you can set up your configuration so that it indexes,
+      for example, an empty directory. An alternative indexer may also
+      need to implement a way of purging the index from stale data,
+      </para>
+
+    <sect2 id="rcl.search.custom.reslistpara">
+      <title>The result list paragraph format</title>
+
+        <para>The presentation of each result inside the result list can be
+        customized by setting the result list paragraph format inside the
+        <guilabel>User Interface</guilabel> tab of the <guilabel>Query
+        configuration</guilabel>.</para> 
+
+        <para>This is a Qt HTML string where the following printf-like
+        <literal>%</literal> substitutions will be performed:
+
         <itemizedlist>
           <listitem>
-	    <formalpara><title>%A</title><para>Abstract</para></formalpara>
-	  </listitem>
-	  <listitem><formalpara><title>%D</title><para>Date</para></formalpara>
-	  </listitem>
-	  <listitem><formalpara><title>%I</title><para>Icon image name
-	  </para></formalpara> 
-	  </listitem>
-	  <listitem><formalpara><title>%K</title><para>Keywords (if
-	  any)</para></formalpara> 
-	  </listitem>
-	  <listitem><formalpara><title>%L</title><para>Preview and
-	  Edit links</para></formalpara> 
-	  </listitem>
-	  <listitem><formalpara><title>%M</title><para>Mime
-		  type</para></formalpara> 
-	  </listitem>
-	  <listitem><formalpara><title>%N</title><para>result Number
-		  </para></formalpara> 
-	  </listitem>
-	  <listitem><formalpara><title>%R</title><para>Relevance
-	  percentage</para></formalpara> 
-	  </listitem>
-	  <listitem><formalpara><title>%S</title><para>Size
-	  information</para></formalpara> 
-	  </listitem>
-	  <listitem><formalpara><title>%T</title><para>Title</para>
-		    </formalpara> 
-	  </listitem>
-	  <listitem><formalpara><title>%U</title><para>Url</para></formalpara>
-	  </listitem>
-	</itemizedlist>
+            <formalpara><title>%A</title><para>Abstract</para></formalpara>
+          </listitem>
+          <listitem><formalpara><title>%D</title><para>Date</para></formalpara>
+          </listitem>
+          <listitem><formalpara><title>%I</title><para>Icon image name
+          </para></formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%K</title><para>Keywords (if
+          any)</para></formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%L</title><para>Preview and
+          Edit links</para></formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%M</title><para>Mime
+                  type</para></formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%N</title><para>result Number
+                  </para></formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%R</title><para>Relevance
+          percentage</para></formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%S</title><para>Size
+          information</para></formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%T</title><para>Title</para>
+                    </formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%U</title><para>Url</para></formalpara>
+          </listitem>
+        </itemizedlist>
 
-	In addition to the predefined values above, all strings like
-	<literal>%(fieldname)</literal> will be replaced by the value
-	of the field named <literal>fieldname</literal> for this
-	document. Only stored fields can be accessed in this way, the
-	value of indexed but not stored fields is not known at this
-	point (see <link linkend="rcl.program.fields">field
-	configuration</link>). There are currently very few fields
-	stored by default, apart from the values above (only
-	<literal>author</literal>), so this feature will need some
-	custom local configuration to be useful. For example, you
-	could look at the fields for the document types of interest
-	(use the right-click menu inside the preview window), and add
-	what you want to the list of stored fields. A candidate
-	example would be the <literal>recipient</literal> field
-	which is generated by the message filters.</para>
+        The format of the Preview and Edit links is 
+        <literal>&lt;a href="P%N"&gt;</literal>
+        and 
+        <literal>&lt;a href="E%N"&gt;</literal>
+        where <replaceable>docnum</replaceable> (%N expands to the document
+        number inside the result list).</para>
+
+        <para>In addition to the predefined values above, all strings like
+        <literal>%(fieldname)</literal> will be replaced by the value of
+        the field named <literal>fieldname</literal> for this
+        document. Only stored fields can be accessed in this way, the value
+        of indexed but not stored fields is not known at this point in the
+        search process (see <link linkend="rcl.program.fields">field
+        configuration</link>). There are currently very few fields stored
+        by default, apart from the values above (only
+        <literal>author</literal>), so this feature will need some custom
+        local configuration to be useful. For example, you could look at
+        the fields for the document types of interest (use the right-click
+        menu inside the preview window), and add what you want to the list
+        of stored fields. A candidate example would be the
+        <literal>recipient</literal> field which is generated by the
+        message filters.</para>
 
         <para>The default value for the paragraph format string is:
         <programlisting>&lt;img src="%I" align="left">%R %S %L &amp;nbsp;&amp;nbsp;&lt;b>%T&lt;/b>&lt;br>
-%M&amp;nbsp;%D&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i>%U&lt;/i>&lt;br>
+%M&amp;nbsp;%D&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i>%U&lt;/i>&amp;nbsp;%i&lt;br>
 %A %K
         </programlisting>
         You may, for example, try the following for a more web-like
@@ -1593,122 +1800,17 @@ fvwm
 &lt;tr>&lt;td>&lt;div>%A&lt;/div>&lt;/td>&lt;/tr>
 &lt;/table>%K
         </programlisting>
-	The format of the Preview and Edit links is 
-	<literal>&lt;a href="P<replaceable>docnum</replaceable>"&gt;</literal>
-	and 
-        <literal>&lt;a href="E<replaceable>docnum</replaceable>"&gt;</literal>
-        where <replaceable>docnum</replaceable> is what %N would
-        print. This makes the title a preview link in the above format.
-	</para>
-        <para>Please note that, due to the way the program
-	handles right mouse clicks in the result list, if the custom
-	formatting results in multiple paragraphs per result, right
-	clicks will only work inside the first one.</para>
+           Note that the P%N link in the above paragraph makes the title a
+           preview link.
+        </para>
 
-	</listitem>
-
-	<listitem><para><guilabel>HTML help browser</guilabel>: this
-	will let you chose your preferred browser which will be
-	started from the <guimenu>Help</guimenu> menu to read the user
-	manual. You can enter a simple name if the command is in your
-	PATH, or browse for a full pathname.</para>
-	</listitem>
-
-	<listitem><para><guilabel>Auto-start simple search on
-	white space entry</guilabel>: if this is checked, a search will
-	be executed each time you enter a space in the simple search
-	input field. This lets you look at the result list as you
-	enter new terms. This is off by default, you may like it or
-	not...</para> 
-	</listitem>
-
-	<listitem><para><guilabel>Start with advanced search dialog open
-	</guilabel> and <guilabel>Start with sort dialog open</guilabel>: 
-          If you use these dialogs all the time, checking these
-          entries will get them to open when recoll starts.</para> 
-	</listitem>
-
-	<listitem><para><guilabel>Use desktop preferences to choose 
-	document editor</guilabel>: if this is checked, the
-	<command>xdg-open</command> 
-	utility will be used to open files when you click the
-	<guilabel>Edit</guilabel> link in the result list, instead of
-	the application defined in
-	<filename>mimeview</filename>. <command>xdg-open</command>
-	will in term use your desktop preferences to choose an
-	appropriate application.</para> 
-	</listitem>
+        <para>Due to the way the program handles right mouse clicks in the
+        result list, if the custom formatting results in multiple
+        paragraphs per result, right clicks will only work inside the first
+        one.</para>
 
 
-      </itemizedlist>
-      </para>
-      </formalpara>
-
-
-      <formalpara><title>Search parameters:</title>
-	<para>
-      <itemizedlist>
-
-	<listitem><para><guilabel>Stemming language</guilabel>:
-	stemming obviously depends on the document's language. This
-	listbox will let you chose among the stemming databases which
-	were built during indexing (this is set in the <link
-	linkend="rcl.install.config.recollconf">main configuration
-	file</link>), or later added with
-        <command>recollindex -s</command> (See the recollindex
-        manual). Stemming languages which are dynamically added will be
-        deleted at the next indexing pass unless they are also added in
-        the configuration file.</para>
-	</listitem>
-
-	<listitem><para><guilabel>Dynamically build
-	abstracts</guilabel>: this decides if &RCL; tries to build
-	document abstracts when displaying the result list. Abstracts
-	are constructed by taking context from the document
-	information, around the search terms. This can slow down
-	result list display significantly for big documents, and you
-	may want to turn it off.</para>
-	</listitem>
-
-	<listitem><para><guilabel>Replace abstracts from
-	documents</guilabel>: this decides if we should synthesize and
-	display an abstract in place of an explicit abstract found
-	within the document itself.</para>
-	</listitem>
-
-	<listitem><para><guilabel>Synthetic abstract size</guilabel>:
-	adjust to taste...</para>
-	</listitem>
-
-	<listitem><para><guilabel>Synthetic abstract context
-	words</guilabel>: how many words should be displayed around
-	each term occurrence.</para>
-	</listitem>
-
-      </itemizedlist>
-       </para>
-      </formalpara>
-
-      <formalpara id="rcl.search.custom.extradb">
-	<title>External indexes:</title> 
-      <para>This panel will let you browse for additional indexes
-      that you may want to search. External indexes are designated by
-      their database directory (ie:
-      <filename>/home/someothergui/.recoll/xapiandb</filename>,
-      <filename>/usr/local/recollglobal/xapiandb</filename>).</para>
-
-      <para>Once entered, the indexes will appear in the
-	<guilabel>External indexes</guilabel> list, and you can
-	chose which ones you want to use at any moment by checking or
-	unchecking their entries.</para> 
-
-      <para>Your main database (the one the current configuration
-      indexes to), is always implicitly active. If this is not
-      desirable, you can set up your configuration so that it indexes,
-      for example, an empty directory. An alternative indexer may also
-      need to implement a way of purging the index from stale data,
-      </para>
-
+      </sect2>
     </sect1>
 
   </chapter>
@@ -1834,10 +1936,10 @@ Common options:
 Recoll query: ((((ilur:(wqf=11) OR ilurs) AND_NOT (nautique:(wqf=11)
   OR nautiques OR nautiqu OR nautiquement)) FILTER Ttext/html))
 4 results
-text/html	[file:///Users/uncrypted-dockes/projets/bateaux/ilur/comptes.html]	[comptes.html]	18593	bytes	
-text/html	[file:///Users/uncrypted-dockes/projets/nautique/webnautique/articles/ilur1/index.html]	[Constructio...
-text/html	[file:///Users/uncrypted-dockes/projets/pagepers/index.html]	[psxtcl/writemime/recoll]...
-text/html	[file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
+text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/comptes.html]      [comptes.html]  18593   bytes   
+text/html       [file:///Users/uncrypted-dockes/projets/nautique/webnautique/articles/ilur1/index.html] [Constructio...
+text/html       [file:///Users/uncrypted-dockes/projets/pagepers/index.html]    [psxtcl/writemime/recoll]...
+text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
 </programlisting>
 
   </chapter>
@@ -1856,34 +1958,58 @@ text/html	[file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-ch
     (<literal>fields</literal>) is highly configurable.</para>
 
     <sect1 id="rcl.program.filters">
-	<title>Writing a document filter</title>
+        <title>Writing a document filter</title>
 
-	<para>&RCL; filters are executable programs which 
-	translate from a specific format (ie:
-	<application>openoffice</application>,
-	<application>acrobat</application>, etc.) to the &RCL;
-	indexing input format, which may be
-	<literal>text/plain</literal> or
-	<literal>text/html</literal>.</para> 
+      <para>&RCL; filters are executable programs which 
+        translate from a specific format (ie:
+        <application>openoffice</application>,
+        <application>acrobat</application>, etc.) to the &RCL;
+        indexing input format, which may be
+        <literal>text/plain</literal> or
+        <literal>text/html</literal>.</para> 
 
-	<para>&RCL; filters are usually shell-scripts, but this is in
-	no way necessary. These programs are extremely simple and most
-	of the difficulty lies in extracting the text from the native
-	format, not outputting what is expected by &RCL;. Happily
-	enough, most document formats already have translators or text
-	extractors which handle the difficult part and can be called
-	from the filter. In some case the output of the translating
-	program is appropriate, and no intermediate shell-script is
-	needed.</para> 
+      <para>As of &RCL; 1.13, there are two kinds of filters:
+        <itemizedlist>
+	  <listitem><para>Simple filters (the old ones) run once and
+	  exit. They can be bare programs like
+	  <application>antiword</application>, or shell-scripts using other
+	  programs. They are very simple to write, just having to write the
+	  text to the standard output.</para>
+	  </listitem>
+	  <listitem><para>Multiple filters, new in 1.13, run as long as
+	  their master process (ie: recollindex) is active. They can
+	  process multiple files (sparing the process startup time which
+	  can be very significant), or multiple documents per file (ie: for
+	  zip or chm files). They communicate with the indexer through a
+	  simple protocol, but are nevertheless a bit more complicated than
+	  the older kind. Most of these new filters are written in
+	  <application>Python</application>, using a common module to
+	  handle the protocol.</para>
+	  </listitem>
+	</itemizedlist>
+      The following will just describe the simple filters, if you are
+      programmer enough to write one of the other kind, it shouldn't be too
+      difficult to make sense of one of the existing modules (ie:
+      rclzip).</para> 
 
-	<para>Filters are called with a single argument which is the
-	source file name. They should output the result to stdout.</para>
+      <para>&RCL; simple filters are usually shell-scripts, but this is in
+        no way necessary. These programs are extremely simple and most
+        of the difficulty lies in extracting the text from the native
+        format, not outputting what is expected by &RCL;. Happily
+        enough, most document formats already have translators or text
+        extractors which handle the difficult part and can be called
+        from the filter. In some case the output of the translating
+        program is appropriate, and no intermediate shell-script is
+        needed.</para> 
 
-	<para>The <literal>RECOLL_FILTER_FORPREVIEW</literal>
-	environment variable (values <literal>yes</literal>,
-	<literal>no</literal>) tells the filter if the operation is
-	for indexing or previewing. Some filters use this to output a
-	slightly different format. This is not essential.</para>
+        <para>Filters are called with a single argument which is the
+        source file name. They should output the result to stdout.</para>
+
+        <para>The <literal>RECOLL_FILTER_FORPREVIEW</literal>
+        environment variable (values <literal>yes</literal>,
+        <literal>no</literal>) tells the filter if the operation is
+        for indexing or previewing. Some filters use this to output a
+        slightly different format. This is not essential.</para>
 
       <para>The association of file types to filters is performed in
       the <filename>mimeconf</filename> file. A sample:</para>
@@ -1891,42 +2017,46 @@ text/html	[file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-ch
 
 [index]
 application/msword = exec antiword -t -i 1 -m UTF-8;\
-     mimetype=text/plain;charset=utf-8
+     mimetype = text/plain ; charset=utf-8
 
 application/ogg = exec rclogg
 
 text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
+
+application/x-chm = execm rclchm
 </programlisting>
 
-      <para>The fragment specifies that:</para>
+      <para>The fragment specifies that:
 
       <itemizedlist>
-
-	<listitem><para><literal>application/msword</literal> files
-	are processed by executing the <command>antiword</command>
-	program, which outputs
-        <literal>text/plain</literal> encoded in
-        <literal>iso-8859-1</literal>.</para> 
-	</listitem>
-	
-	<listitem><para><literal>application/ogg</literal> files are
-	processed by the <command>rclogg</command> script, with
-	default output type (<literal>text/html</literal>, with
-	encoding specified in the header, or <literal>utf-8</literal>
-	by default).</para>
-	</listitem>
-	
-	<listitem><para><literal>text/rtf</literal> is processed by
-	<command>unrtf</command>, which outputs
-	<literal>text/html</literal>. The 
-	<literal>iso-8859-1</literal> encoding is specified because it
-	is not the <literal>utf-8</literal> default, and not output by
-	<command>unrtf</command> in the HTML header section.</para>
-	</listitem>
-      </itemizedlist>
-
-      <para>The easiest way to write a new filter is probably to start
-          from an existing one.</para>
+	  <listitem><para><literal>application/msword</literal> files
+            are processed by executing the <command>antiword</command>
+            program, which outputs
+            <literal>text/plain</literal> encoded in
+            <literal>utf-8</literal>.</para> 
+	  </listitem>
+	  
+	  <listitem><para><literal>application/ogg</literal> files are
+            processed by the <command>rclogg</command> script, with
+            default output type (<literal>text/html</literal>, with
+            encoding specified in the header, or <literal>utf-8</literal>
+            by default).</para>
+	  </listitem>
+	  
+	  <listitem><para><literal>text/rtf</literal> is processed by
+            <command>unrtf</command>, which outputs
+            <literal>text/html</literal>. The 
+            <literal>iso-8859-1</literal> encoding is specified because it
+            is not the <literal>utf-8</literal> default, and not output by
+            <command>unrtf</command> in the HTML header section.</para>
+	  </listitem>
+	  <listitem><para><literal>application/x-chm</literal> is processed
+	      by a persistant filter. This is determined by the
+	      <literal>execm</literal> keyword.</para>
+	  </listitem>
+	</itemizedlist>
+      The easiest way to write a new filter is probably to start from an
+      existing one.</para> 
 
       <para>Filters which output <literal>text/plain</literal> text
       are generally simpler, but they cannot specify the character set
@@ -1935,41 +2065,41 @@ text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
 
 
     <sect2 id="rcl.program.filters.html">
-	<title>Filter HTML output</title>
+        <title>Filter HTML output</title>
 
-	<para>The output HTML could be very minimal like the following
-	example:</para>
+        <para>The output HTML could be very minimal like the following
+        example:</para>
 
-	<programlisting>&lt;html>&lt;head>
+        <programlisting>&lt;html>&lt;head>
 &lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 &lt/head>
 &lt;body>some text content&lt;/body>&lt;/html>
           </programlisting>
 
-	<para>You should take care to escape some
-	characters inside
-	  the text by transforming them into appropriate
-	  entities. "<literal>&amp;</literal>" should be transformed into
-	  "<literal>&amp;amp;</literal>", "<literal>&lt;</literal>"
-	  should be transformed into
-	  "<literal>&amp;lt;</literal>". This is not always properly
-	  done by translating programs which output HTML, and of
-	  course nerver by those which output plain text.</para>
+        <para>You should take care to escape some
+        characters inside
+          the text by transforming them into appropriate
+          entities. "<literal>&amp;</literal>" should be transformed into
+          "<literal>&amp;amp;</literal>", "<literal>&lt;</literal>"
+          should be transformed into
+          "<literal>&amp;lt;</literal>". This is not always properly
+          done by translating programs which output HTML, and of
+          course nerver by those which output plain text.</para>
 
-	<para>The character set needs to be specified in the
-	  header. It does not need to be UTF-8 (&RCL; will take care
-	  of translating it), but it must be accurate for good
-	  results.</para>
+        <para>The character set needs to be specified in the
+          header. It does not need to be UTF-8 (&RCL; will take care
+          of translating it), but it must be accurate for good
+          results.</para>
 
-	<para>&RCL; will also make use of other header fields if
-	  they are present: <literal>title</literal>,
-	  <literal>description</literal>,
-	  <literal>keywords</literal>.</para>
+        <para>&RCL; will also make use of other header fields if
+          they are present: <literal>title</literal>,
+          <literal>description</literal>,
+          <literal>keywords</literal>.</para>
 
-	<para>Filters also have the possibility to "invent" field
-	names. This should be output as meta tags:</para>
+        <para>Filters also have the possibility to "invent" field
+        names. This should be output as meta tags:</para>
 
-	<programlisting>
+        <programlisting>
 &lt;meta name="somefield" content="Some textual data" /&gt;
 </programlisting>
 
@@ -1981,7 +2111,7 @@ text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
     </sect1>
 
     <sect1 id="rcl.program.fields">
-	<title>Field data processing configuration</title>
+        <title>Field data processing configuration</title>
 
       <para><literal>Fields</literal> are named pieces of information
       in or about documents, like <literal>title</literal>,
@@ -2003,15 +2133,15 @@ text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
       <para>Fields can be:</para>
       <itemizedlist>
 
-	<listitem><para><literal>indexed</literal>, meaning that their
-	terms are separately stored in inverted lists (with a specific
-	prefix), and that a field-specific search is possible.</para>
-	</listitem>
+        <listitem><para><literal>indexed</literal>, meaning that their
+        terms are separately stored in inverted lists (with a specific
+        prefix), and that a field-specific search is possible.</para>
+        </listitem>
 
-	<listitem><para><literal>stored</literal>, meaning that their
+        <listitem><para><literal>stored</literal>, meaning that their
         value is recorded in the index data record for the document,
         and can be returned and displayed with search results.</para>
-	</listitem>
+        </listitem>
 
       </itemizedlist>
 
@@ -2042,8 +2172,8 @@ text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
 
       <variablelist>
 
-	<varlistentry>
-	  <term>udi</term> <listitem><para>An udi (unique document
+        <varlistentry>
+          <term>udi</term> <listitem><para>An udi (unique document
             identifier) identifies a document. Because of limitations
             inside the index engine, it is restricted in length (to
             200 bytes), which is why a regular URI cannot be used. The
@@ -2053,34 +2183,34 @@ text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
             document path (file path + internal path), truncated to
             length, the suppressed part being replaced by a hash
             value.</para> </listitem>
-	</varlistentry>
+        </varlistentry>
 
-	<varlistentry> 
-	  <term>ipath</term> 
-	  
-	  <listitem><para>This data value (set as a field in the Doc
-	  object) is stored, along with the URL, but not indexed by
-	  &RCL;. Its contents are not interpreted, and its use is up
-	  to the application. For example, the &RCL; internal file
-	  system indexer stores the part of the document access path
-	  internal to the container file (<literal>ipath</literal> in
-	  this case is a list of subdocument sequential numbers). url
-	  and ipath are returned in every search result and permit
-	  access to the original document.</para>
-	  </listitem>
-	</varlistentry>
+        <varlistentry> 
+          <term>ipath</term> 
+          
+          <listitem><para>This data value (set as a field in the Doc
+          object) is stored, along with the URL, but not indexed by
+          &RCL;. Its contents are not interpreted, and its use is up
+          to the application. For example, the &RCL; internal file
+          system indexer stores the part of the document access path
+          internal to the container file (<literal>ipath</literal> in
+          this case is a list of subdocument sequential numbers). url
+          and ipath are returned in every search result and permit
+          access to the original document.</para>
+          </listitem>
+        </varlistentry>
 
-	<varlistentry> 
-	  <term>Stored and indexed fields</term> 
-	  
-	  <listitem><para>The <filename>fields</filename> file inside
-	  the &RCL; configuration defines which document fields are
-	  either "indexed" (searchable), "stored" (retrievable with
-	  search results), or both.</para>
-	  </listitem>
-	</varlistentry>
+        <varlistentry> 
+          <term>Stored and indexed fields</term> 
+          
+          <listitem><para>The <filename>fields</filename> file inside
+          the &RCL; configuration defines which document fields are
+          either "indexed" (searchable), "stored" (retrievable with
+          search results), or both.</para>
+          </listitem>
+        </varlistentry>
 
-	</variablelist>
+        </variablelist>
 
       <para>Data for an external indexer, should be stored in a
       separate index, not the one for the &RCL; internal file system
@@ -2096,18 +2226,18 @@ text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
       <title>Python interface</title>
 
       <sect3 id="rcl.program.python.intro">
-	<title>Introduction</title>
+        <title>Introduction</title>
 
-	  <para>&RCL; versions after 1.11 define a Python programming
-	  interface, both for searching and indexing.</para> 
+          <para>&RCL; versions after 1.11 define a Python programming
+          interface, both for searching and indexing.</para> 
 
-	<para>The python interface is not built by default and can be
-	found in the source package, under python/recoll. The
-	directory contains the usual <filename>setup.py</filename>
-	script which you can use to build and install the
-	module:
+        <para>The python interface is not built by default and can be
+        found in the source package, under python/recoll. The
+        directory contains the usual <filename>setup.py</filename>
+        script which you can use to build and install the
+        module:
 
-	  <screen>
+          <screen>
         <userinput>cd recoll-xxx/python/recoll</userinput>
         <userinput>python setup.py build</userinput>
         <userinput>python setup.py install</userinput>
@@ -2118,7 +2248,7 @@ text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
 
 
       <sect3 id="rcl.program.python.manual">
-	<title>Interface manual</title>
+        <title>Interface manual</title>
 
       <literalLayout>
 NAME
@@ -2307,16 +2437,16 @@ FUNCTIONS
 
 
 </literalLayout>
-	</sect3>
+        </sect3>
 
       <sect3 id="rcl.program.python.examples">
-	<title>Example code</title>
+        <title>Example code</title>
 
-	<para>The following sample would query the index with a user
-	language string. See the <filename>python/samples</filename>
-	directory inside the &RCL; source for other examples.</para>
+        <para>The following sample would query the index with a user
+        language string. See the <filename>python/samples</filename>
+        directory inside the &RCL; source for other examples.</para>
 
-	<programlisting>
+        <programlisting>
 #!/usr/bin/env python
 
 import recoll
@@ -2353,44 +2483,66 @@ while query.next >= 0 and query.next < nres:
     <title>Installation</title>
 
     <sect1 id="rcl.install.binary">
-      <title>Installing a prebuilt copy</title>
+      <title>Installing a binary copy</title>
 
-      <para>&RCL; binary packages from the &RCL; web site are always
-      linked statically to the &XAP; libraries, and have no other
-      dependencies. You will only have to check or install <link
+      <para>There are three types of binary &RCL; installations:
+	<itemizedlist>
+	  <listitem><para>Through your system normal software distribution
+	      framework (ie, <application>Debian/Ubuntu apt</application>,
+	      <application>FreeBSD</application> ports, etc.).</para>
+	  </listitem> 
+
+	  <listitem><para>From a package downloaded from the
+	      &RCL; web site.</para> 
+	  </listitem> 
+
+	  <listitem><para>From a prebuilt tree downloaded from the &RCL;
+	  web site.</para> 
+	  </listitem>
+	</itemizedlist>
+
+      In all cases, the strict software dependancies (ie on &XAP; or
+      <application>iconv</application>) will be automatically satisfied,
+      you should not have to worry about them.</para>
+
+      <para>You will only have to check or install <link
       linkend="rcl.install.external">supporting applications</link>
-      for the file types that you want to index beyond text, HTML and
-      mail files, and maybe have a look at the 
+      for the file types that you want to index beyond those that are
+      natively processed by &RCL; (text, HTML, mail files, and a few
+      others).</para>
+
+      <para>You should also maybe have a look at the 
       <link linkend="rcl.install.config">configuration section</link>
       (but this may not be necessary for a quick test with default
-      parameters).</para>
+      parameters). Most parameters can be more conveniently set from the
+      GUI interface.</para>
 
       <sect2 id="rcl.install.binary.package">
         <title>Installing through a package system</title>
 
-        <para>If you use a BSD-type port system or a prebuilt package
-        (RPM or other), just follow the usual  procedure for your
-        system.</para> 
+        <para>If you use a BSD-type port system or a prebuilt package (DEB,
+        RPM, manually or through the system software configuration
+        utility), just follow the usual procedure for your system.</para>
 
       </sect2>
 
       <sect2 id="rcl.install.binary.rcl">
         <title>Installing a prebuilt &RCL;</title>
 
-	<para>The unpackaged binary versions on the &RCL; web site are
+        <para>The unpackaged binary versions on the &RCL; web site are
         just compressed tar files of a build tree, where only the
         useful parts were kept (executables and sample
         configuration).</para>
 
-	<para>The executable binary files are built with a static link to
+        <para>The executable binary files are built with a static link to
         libxapian and libiconv, to make installation easier (no
         dependencies).</para> 
 
-	<para>After extracting the tar file, you can proceed with
+        <para>After extracting the tar file, you can proceed with
         <link linkend="rcl.install.building.install">installation</link> as
         if you had built the package from source (that is, just type
         <literal>make install</literal>). The binary trees are built for
-        installation to	<filename>/usr/local</filename>.</para>
+        installation to <filename>/usr/local</filename>.</para>
 
       </sect2>
     </sect1>
@@ -2400,8 +2552,9 @@ while query.next >= 0 and query.next < nres:
 
       <para>&RCL; uses external applications to index some file
         types. You need to install them for the file types that you wish to
-        have indexed (these are run-time dependencies. None is needed for
-        building &RCL;).</para>
+        have indexed (these are run-time optional dependencies. None is
+        needed for building or running &RCL; except for indexing their
+        specific file type).</para>
 
       <para>After an indexing pass, the commands that were found
       missing can be displayed from the <command>recoll</command>
@@ -2445,11 +2598,11 @@ while query.next >= 0 and query.next < nres:
             <para>RTF: <ulink
             url="http://www.gnu.org/software/unrtf/unrtf.html">unrtf</ulink>
           </para>
-	</listitem>
+        </listitem>
 
-	<listitem>
-	  <para>TeX: &RCL; uses the <application>untex</application>
-	  program. Your distribution may have a package for it. If it doesn't, 
+        <listitem>
+          <para>TeX: &RCL; uses the <application>untex</application>
+          program. Your distribution may have a package for it. If it doesn't, 
             <ulink url="http://www.recoll.org/untex/untex-1.3.jf.tar.gz">
             there is a copy of the source on the &RCL; web site</ulink>,
             because the program has no obvious home. The filter can
@@ -2458,39 +2611,61 @@ while query.next >= 0 and query.next < nres:
              detex</ulink> and will use it if it is installed.</para>
         </listitem>
 
-	<listitem>
+        <listitem>
             <para>dvi: <ulink
-	       url="http://www.radicaleye.com/dvips.html">dvips</ulink></para>
+               url="http://www.radicaleye.com/dvips.html">dvips</ulink></para>
         </listitem>
-
-	<listitem>
-            <para>djvu: 
-	    <ulink
-	       url="http://djvu.sourceforge.net">DjVuLibre
-	    </ulink></para>
-        </listitem>
-          
-        <listitem><para>MP3: &RCL; will use the
-        <command>id3info</command> command from the <ulink
-        url="http://id3lib.sourceforge.net/">id3lib</ulink> package to
-        extract tag information. Without it, only the file names will
-        be indexed.</para>
-          </listitem>
 
         <listitem>
-	<para>Pictures: &RCL; uses the 
-	<ulink url="http://www.sno.phy.queensu.ca/~phil/exiftool/">
-	 Exiftool</ulink> <application>Perl</application> package to
-	 extract tag information. Most image file formats are
-	 supported.</para>
+            <para>djvu: 
+            <ulink
+               url="http://djvu.sourceforge.net">DjVuLibre
+            </ulink></para>
+        </listitem>
+          
+        <listitem><para>mp3: &RCL; will use the
+          <command>id3info</command> command from the <ulink
+          url="http://id3lib.sourceforge.net/">id3lib</ulink> package to
+          extract tag information. Without it, only the file names will
+          be indexed.</para>
+	</listitem>
+	<listitem><para>flac files need metaflac.</para>
+	</listitem>
+	<listitem><para>ogg files need ogginfo.</para>
+	</listitem>
+        <listitem>
+        <para>Pictures: &RCL; uses the 
+        <ulink url="http://www.sno.phy.queensu.ca/~phil/exiftool/">
+         Exiftool</ulink> <application>Perl</application> package to
+         extract tag information. Most image file formats are
+         supported. Note that there may not be much interest in indexing
+         the technical tags (image size, aperture, etc.). This is only of
+         interest if you store personal tags or textual descriptions inside
+         the image files.</para> 
           </listitem>
 
+	<listitem><para>chm: files in microsoft help format need Python and
+          the <ulink
+          url="http://gnochm.sourceforge.net/pychm.html">pychm</ulink>
+          module (which needs <ulink
+          url="http://www.jedrea.com/chmlib/">chmlib</ulink>).</para>
+	</listitem>
+
+	<listitem><para>ics: iCalendar files need Python and the 
+        <ulink url=" http://codespeak.net/icalendar/">icalendar</ulink>
+        module.</para>
+	</listitem>
+
+	<listitem><para>zip: Zip archives need Python (and the standard
+	zipfile module).</para>
+	</listitem>
+	
         </itemizedlist>
 
-	<para>Text, HTML, mail folders Openoffice and Scribus files
-	are processed internally. Lyx is used to index Lyx files. Many
-	filters need <command>sed</command> and <command>awk</command>.
-	</para>
+        <para>Text, HTML, mail folders, Openoffice and Scribus files
+        are processed internally. Lyx is used to index Lyx files. Many
+        filters need <command>sed</command> and <command>awk</command>.
+        </para>
 
     </sect1>
 
@@ -2503,12 +2678,12 @@ while query.next >= 0 and query.next < nres:
 
       <para>At the very least, you will need to download and install the
         <ulink url="http://www.xapian.org">xapian core package</ulink>
-        (&RCL; 1.9 normally uses version 1.0.2, but any 0.9 or 1.0.x
-        version will work too), and the <ulink
-        url="http://www.trolltech.com/products/qt/index.html">qt
-          run-time and development packages</ulink> (&RCL; development
-          currently uses version 3.3.5, but any 3.3 version is
-          probably OK).</para> 
+          and the <ulink
+          url="http://www.trolltech.com/products/qt/index.html">qt
+          run-time and development packages</ulink>.
+          Check the <ulink url="http://www.recoll.org/download.html">
+         &RCL; download page</ulink> for up to date version
+         information.</para>
 
       <para>You will most probably be able to find a binary package for
         <application>qt</application> for your system. You may have to
@@ -2526,9 +2701,9 @@ while query.next >= 0 and query.next < nres:
       <sect2 id="rcl.install.building.build">
         <title>Building</title>
 
-      <para>&RCL; has been built on
-        Linux (redhat7.3, mandriva 2005/6, Fedora Core 3/4/5/6),
-        FreeBSD 5/6, macosx, and Solaris 8. If you build on another system, and
+      <para>&RCL; has been built on Linux, FreeBSD, macosx, and Solaris,
+      most versions after 2005 should be ok, maybe some older ones too
+      (Solaris 8 is ok). If you build on another system, and
         need to modify things,
         <ulink url="mailto:jean-francois.dockes@wanadoo.fr">I would
         very much welcome patches</ulink>.</para>
@@ -2554,15 +2729,40 @@ while query.next >= 0 and query.next < nres:
         <para>On many Linux systems, <literal>QTDIR</literal> is set
         by the login scripts, and <literal>QMAKESPECS</literal> is not
         needed because there is a <filename>default</filename> link in
-        <filename>mkspecs/</filename>.</para>
+        <filename>mkspecs/</filename>. Neither should be needed with 
+        Qt&nbsp;4.</para> 
 
-	<formalpara><title>Configure
-	options:</title><para><literal>--without-aspell</literal> 
-	will disable the code for phonetic matching of search
-	terms. <literal>--with-fam</literal> or
-	<literal>--with-inotify</literal> will enable the code for
-	real time indexing. Inotify support is enabled by default on
-	recent Linux systems.</para>
+        <formalpara><title>Configure options:</title>
+	  <para>
+        <itemizedlist>
+	  <listitem><para><literal>--without-aspell</literal> 
+            will disable the code for phonetic matching of search
+            terms. </para>
+          </listitem>
+	  <listitem><para><literal>--with-fam</literal> or
+            <literal>--with-inotify</literal> will enable the code for
+            real time indexing. Inotify support is enabled by default on
+            recent Linux systems.</para>
+	  </listitem>
+	  <listitem><para><literal>--enable-xattr</literal> will enable
+ 	    code to fetch data from file extended attributes. This is only
+	    useful is some application stores data in there, and also needs
+	    some simple configuration (see comments in the
+	    <filename>fields</filename> configuration file).</para>
+	  </listitem>
+	  <listitem><para><literal>--with-file-command</literal> Specify
+	    the version of the 'file' command to use (ie:
+            --with-file-command=/usr/local/bin/file). Can be useful to
+            enable the gnu version on systems where the native one is
+            bad.</para> 
+	  </listitem>
+	  <listitem><para><literal>--without-gui</literal> Disable the Qt
+	    interface, and auxiliary uses of X11, and compile the command
+	    line version.</para> 
+	  </listitem>
+         </itemizedlist>
+         </para>
+	</formalpara>
 
       <para>Normal procedure:</para>
       <screen>
@@ -2573,7 +2773,7 @@ while query.next >= 0 and query.next < nres:
       </screen>
 
 
-      <para>There little auto-configuration. The
+      <para>There is little auto-configuration. The
         <command>configure</command> script will mainly link one of
         the system-specific files in the <filename>mk</filename>
         directory to <filename>mk/sysconf</filename>. If your system
@@ -2593,14 +2793,14 @@ while query.next >= 0 and query.next < nres:
         and the sample configuration files, scripts and other shared
         data to
         <filename><replaceable>prefix</replaceable>/share/recoll</filename>.</para>
-	<para>If the installation prefix given to
-	<command>recollinstall</command> is different from what was
-	specified when executing <command>configure</command>, you
-	will have to set the <literal>RECOLL_DATADIR</literal>
-	environment variable to indicate where the shared data is to
-	be found.</para>
+        <para>If the installation prefix given to
+        <command>recollinstall</command> is different from what was
+        specified when executing <command>configure</command>, you
+        will have to set the <literal>RECOLL_DATADIR</literal>
+        environment variable to indicate where the shared data is to
+        be found.</para>
 
-	<para>You can then proceed to <link
+        <para>You can then proceed to <link
        linkend="rcl.install.config">configuration</link>. </para>
 
       </sect2>
@@ -2717,27 +2917,17 @@ while query.next >= 0 and query.next < nres:
          the configuration file before restarting the command. This
          will start the initial indexing, which may take some time.</para>
         
-        <para>Paramers:</para>
+        <para>Paramers affecting what we index:</para>
 
         <variablelist>
 
           <varlistentry id="rcl.install.config.recollconf.topdirs">
-	    <term><literal>topdirs</literal></term>
+            <term><literal>topdirs</literal></term>
             <listitem><para>Specifies the list of directories or files to
             index (recursively for directories). The indexer will not
             follow symbolic links inside the indexed trees by default
             (see the <literal>followLinks</literal> options though).</para>
             </listitem> 
-          </varlistentry>
-
-          <varlistentry><term><literal>dbdir</literal></term>
-            <listitem><para>The name of the Xapian data directory. It
-            will be created if needed when the index is
-            initialized. If this is not an absolute path, it will be
-            interpreted relative to the configuration directory. The
-            value can have embedded spaces but starting or trailing
-            spaces will be trimmed. You cannot use quotes here.</para>
-            </listitem>
           </varlistentry>
 
           <varlistentry><term><literal>skippedNames</literal></term>
@@ -2747,12 +2937,12 @@ while query.next >= 0 and query.next < nres:
                ignored. The list defined in the default file is: </para>
 <programlisting>
 skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
-	     *~ recollrc
+ 	       *~ .beagle .git .hg .bzr loop.ps .xsession-errors \
+	       .recoll* xapiandb recollrc recoll.conf 
 </programlisting>
-              <para>The list can be redefined for sub-directories, but is only
-               actually changed for the top level ones in
-               <literal>topdirs</literal>.</para>
-               <para>The top-level directories are not affected by this
+              <para>The list can be redefined at any sub-directory in the
+		indexed area.</para>
+              <para>The top-level directories are not affected by this
                 list (that is, a directory in <literal>topdirs</literal>
                 might match and would still be indexed).</para>
                 <para>The list in the default configuration does not
@@ -2784,21 +2974,21 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
                There is no default in the sample configuration file,
                but the code always adds the configuration and database
                directories in there.</para>
-	      <para><literal>skippedPaths</literal> is used both by
-	      batch and real time
-	      indexing. <literal>daemSkippedPaths</literal> can be
-	      used to specify things that should be indexed at
-	      startup, but not monitored.</para>
-	      <para>Example of use for skipping text files only in a
-	      specific directory:</para>
-	      <programlisting>
+              <para><literal>skippedPaths</literal> is used both by
+              batch and real time
+              indexing. <literal>daemSkippedPaths</literal> can be
+              used to specify things that should be indexed at
+              startup, but not monitored.</para>
+              <para>Example of use for skipping text files only in a
+              specific directory:</para>
+              <programlisting>
 skippedPaths = ~/somedir/&lowast;.txt
               </programlisting>
             </listitem>
           </varlistentry>
 
           <varlistentry id="rcl.install.config.recollconf.followlinks">
-	    <term><literal>followLinks</literal></term>
+            <term><literal>followLinks</literal></term>
             <listitem><para>Specifies if the indexer should follow
             symbolic links while walking the file tree. The default is
             to ignore symbolic links to avoid multiple indexing of
@@ -2810,6 +3000,151 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem> 
           </varlistentry>
 
+          <varlistentry><term><literal>indexedmimetypes</literal></term>
+            <listitem><para>&RCL; normally indexes any file which it
+            knows how to read. This list lets you restrict the indexed
+            mime types to what you specify. If the variable is
+            unspecified or the list empty (the default), all supported
+            types are processed.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>compressedfilemaxkbs</literal></term>
+            <listitem><para>Size limit for compressed (.gz or .bz2)
+            files. These need to be decompressed in a temporary
+            directory for identification, which can be very wasteful
+            if 'uninteresting' big compressed files are present.
+            Negative means no limit, 0 means no processing of any
+            compressed file. Defaults to -1.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>textfilemaxmbs</literal></term>
+            <listitem><para>Maximum size for text files. Very big text
+            files are often uninteresting logs. Set to -1 to disable
+            (default).</para>  
+            </listitem>
+           </varlistentry>
+
+          <varlistentry><term><literal>textfilepagekbs</literal></term>
+            <listitem><para>If set to other than -1 (the default), text
+            files will be indexed as multiple documents of the given page
+            size. This may be useful if you do want to index very big text
+            files as it will both reduce memory usage at index time and
+            help with loading data to the preview window. A size of a few
+            megabytes would seem reasonable.</para>
+            </listitem>
+           </varlistentry>
+
+          <varlistentry><term><literal>indexallfilenames</literal></term>
+            <listitem><para>&RCL; indexes file names in a special
+            section of the database to allow specific file names
+            searches using wild cards. This parameter decides if 
+            file name indexing is performed only for files with mime
+            types that would qualify them for full text indexing, or
+            for all files inside the selected subtrees, independently of
+            mime type.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>usesystemfilecommand</literal></term>
+            <listitem><para>Decide if we use the <command>file -i</command>
+            system command as a final step for determining the mime
+            type for a file (the main procedure uses suffix
+            associations as defined in the  <filename>mimemap</filename>
+            file). This can be useful for files with suffix-less names,
+            but it will also cause the indexing of many bogus "text"
+            files.</para> 
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>processbeaglequeue</literal></term>
+            <listitem><para>If this is set, process the directory where
+            Beagle Web browser plugins copy visited pages for indexing. Of
+            course, Beagle MUST NOT be running, else things will behave
+            strangely.</para>
+            </listitem>
+           </varlistentry>
+
+          <varlistentry><term><literal>beaglequeuedir</literal></term>
+            <listitem><para>The path to the Beagle indexing queue. This is
+            hard-coded in the Beagle plugin as
+            <filename>~/.beagle/ToIndex</filename> so there should be no
+            need to change it.</para> 
+            </listitem>
+           </varlistentry>
+
+        </variablelist>
+
+
+	<para>Parameters affecting where and how we store things:</para>
+
+	<variablelist>
+          <varlistentry><term><literal>dbdir</literal></term>
+            <listitem><para>The name of the Xapian data directory. It
+            will be created if needed when the index is
+            initialized. If this is not an absolute path, it will be
+            interpreted relative to the configuration directory. The
+            value can have embedded spaces but starting or trailing
+            spaces will be trimmed. You cannot use quotes here.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>maxfsoccuppc</literal></term>
+            <listitem><para>Maximum file system occupation before we
+            stop indexing. The value is a percentage, corresponding to
+            what the "Capacity" df output column shows.  The default
+            value is 0, meaning no checking. </para>
+            </listitem>
+          </varlistentry>
+
+	  <varlistentry><term><literal>mboxcachedir</literal></term>
+	    <listitem><para>The directory where mbox message offsets cache
+	    files are held. This is normally $RECOLL_CONFDIR/mboxcache, but
+	    it may be useful to share a directory between different
+	    configurations.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry><term><literal>mboxcacheminmbs</literal></term>
+	    <listitem><para>The minimum mbox file size over which we
+		cache the offsets. There is really no sense in caching
+		offsets for small files. The default is 5 MB.</para>
+	    </listitem>
+	   </varlistentry>
+
+          <varlistentry><term><literal>webcachedir</literal></term>
+            <listitem><para>This is only used by the Beagle web browser
+            plugin indexing code, and defines where the cache for visited
+            pages will live. Default:
+            <filename>$RECOLL_CONFDIR/webcache</filename></para> 
+            </listitem>
+
+           </varlistentry>
+          <varlistentry><term><literal>webcachemaxmbs</literal></term>
+            <listitem><para>This is only used by the Beagle web browser
+            plugin indexing code, and defines the maximum size for the web
+            page cache. Default: 40 MB.</para> 
+            </listitem>
+           </varlistentry>
+
+
+          <varlistentry><term><literal>idxflushmb</literal></term>
+            <listitem><para>Threshold (megabytes of new text data)
+            where we flush from memory to disk index. Setting this can
+            help control memory usage. A value of 0 means no explicit
+            flushing, letting Xapian use its own default, which is
+            flushing every 10000 documents (memory usage depends on
+            average document size). The default value is 10.</para>
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+	<para>Miscellani:</para>
+
+	 <variablelist>
+
           <varlistentry><term><literal>loglevel,daemloglevel</literal></term>
             <listitem><para>Verbosity level for recoll and
             recollindex. A value of 4 lists quite a lot of
@@ -2820,7 +3155,7 @@ skippedPaths = ~/somedir/&lowast;.txt
           </varlistentry>
 
           <varlistentry><term><literal>logfilename,
-          daemlogfilename</literal></term> 
+		daemlogfilename</literal></term> 
             <listitem><para>Where the messages should go. 'stderr' can
             be used as a special value, and is the default. The
             <literal>daem</literal>version is specific to the indexing monitor
@@ -2847,24 +3182,34 @@ skippedPaths = ~/somedir/&lowast;.txt
             sub-directory. If it is not set at all, the character set
             used is the one defined by the nls environment (LC_ALL,
             LC_CTYPE, LANG), or iso8859-1 if nothing is set.</para> 
+	   </listitem>
+         </varlistentry>
 
-          <varlistentry><term><literal>maxfsoccuppc</literal></term>
-            <listitem><para>Maximum file system occupation before we
-            stop indexing. The value is a percentage, corresponding to
-            what the "Capacity" df output column shows.  The default
-            value is 0, meaning no checking. </para>
+          <varlistentry><term><literal>filtermaxseconds</literal></term>
+            <listitem><para>Maximum filter execution time, after which it
+            is aborted. Some postscript programs just loop...</para> 
+            </listitem>
+           </varlistentry>
+
+          <varlistentry><term><literal>maildefcharset</literal></term>
+            <listitem><para>This can be used to define the default
+		character set specifically for mail messages which don't
+		specify it. This is mainly useful for readpst (libpst) dumps,
+		which are utf-8 but do not say so.</para>
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>idxflushmb</literal></term>
-            <listitem><para>Threshold (megabytes of new text data)
-            where we flush from memory to disk index. Setting this can
-            help control memory usage. A value of 0 means no explicit
-            flushing, letting Xapian use its own default, which is
-            flushing every 10000 documents (memory usage depends on
-            average document size). The default value is 10.</para>
+          <varlistentry><term><literal>localfields</literal></term>
+            <listitem><para>This allows setting fields for all documents
+            under a given directory. Typical usage would be to set an
+            "rclaptg" field, to be used in <filename>mimeview</filename> to
+            select a specific viewer. Ie: 
+		<literal>localfields=rclaptg=gnus;other=val</literal>, then
+		select specifier viewer with
+		<literal>mimetype|tag=...</literal> in
+		<filename>mimeview</filename>.</para>  
             </listitem>
-          </varlistentry>
+           </varlistentry>
 
           <varlistentry><term><literal>filtersdir</literal></term>
             <listitem><para>A directory to search for the external
@@ -2883,72 +3228,23 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>guesscharset</literal></term>
-            <listitem><para>Decide if we try to guess the character
-            set of files if no internal value is available (ie: for
-            plain text files). This does not work well in general, and
-            should probably not be used. </para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry><term><literal>usesystemfilecommand</literal></term>
-            <listitem><para>Decide if we use the <command>file -i</command>
-            system command as a final step for determining the mime
-            type for a file (the main procedure uses suffix
-            associations as defined in the  <filename>mimemap</filename>
-            file). This can be useful for files with suffix-less names,
-            but it will also cause the indexing of many bogus "text"
-            files.</para> 
-            </listitem>
-          </varlistentry>
-
-	  <varlistentry><term><literal>indexedmimetypes</literal></term>
-	    <listitem><para>&RCL; normally indexes any file which it
-	    knows how to read. This list lets you restrict the indexed
-	    mime types to what you specify. If the variable is
-	    unspecified or the list empty (the default), all supported
-	    types are processed.</para>
-	    </listitem>
-	  </varlistentry>
-
-	  <varlistentry><term><literal>compressedfilemaxkbs</literal></term>
-	    <listitem><para>Size limit for compressed (.gz or .bz2)
-	    files. These need to be decompressed in a temporary
-	    directory for identification, which can be very wasteful
-	    if 'uninteresting' big compressed files are present.
-	    Negative means no limit, 0 means no processing of any
-	    compressed file. Defaults to -1.</para>
-	    </listitem>
-	  </varlistentry>
-
-	  <varlistentry><term><literal>indexallfilenames</literal></term>
-	    <listitem><para>&RCL; indexes file names in a special
-	    section of the database to allow specific file names
-	    searches using wild cards. This parameter decides if 
-            file name indexing is performed only for files with mime
-            types that would qualify them for full text indexing, or
-            for all files inside the selected subtrees, independently of
-            mime type.</para>
-	    </listitem>
-	  </varlistentry>
-
-	  <varlistentry><term><literal>idxabsmlen</literal></term>
-	    <listitem><para>&RCL; stores an abstract for each indexed
-	    file inside the database. The text can come from an actual
-	    'abstract' section in the document or will just be the
-	    beginning of the document. It is stored in the index so
-	    that it can be displayed inside the result lists without
-  	    decoding the original
-  	    file. The <literal>idxabsmlen</literal> parameter defines
-	    the size of the stored abstract. The default value is 250 bytes.
-	    The search interface gives you the choice to display this
-	    stored text or a synthetic abstract built by extracting
-	    text around the search terms. If you always
-	    prefer the synthetic abstract, you can reduce this value
-	    and save a little space.
+          <varlistentry><term><literal>idxabsmlen</literal></term>
+            <listitem><para>&RCL; stores an abstract for each indexed
+            file inside the database. The text can come from an actual
+            'abstract' section in the document or will just be the
+            beginning of the document. It is stored in the index so
+            that it can be displayed inside the result lists without
+            decoding the original
+            file. The <literal>idxabsmlen</literal> parameter defines
+            the size of the stored abstract. The default value is 250 bytes.
+            The search interface gives you the choice to display this
+            stored text or a synthetic abstract built by extracting
+            text around the search terms. If you always
+            prefer the synthetic abstract, you can reduce this value
+            and save a little space.
             </para>
-	    </listitem>
-	  </varlistentry>
+            </listitem>
+          </varlistentry>
 
           <varlistentry><term><literal>aspellLanguage</literal></term>
             <listitem><para>Language definitions to use when creating
@@ -2969,24 +3265,33 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-	  <varlistentry><term><literal>nocjk</literal></term>
-	    <listitem><para>If this set to true, specific east asian
-	    (Chinese Korean Japanese) characters/word splitting is
-	    turned off. This will save a small amount of cpu if you
-	    have no CJK documents. If your document base does include
-	    such text but you are not interested in searching it,
-	    setting <literal>nocjk</literal> may be a significant time
-	    and space saver.</para>
-	    </listitem>
-	  </varlistentry>
-	  <varlistentry><term><literal>cjkngramlen</literal></term>
-	    <listitem><para>This lets you adjust the size of n-grams
-	    used for indexing CJK text. The default value of 2 is
-	    probably appropriate in most cases. A value of 3 would
-	    allow more precision and efficiency on longer words, but
-	    the index will be approximately twice as large.</para>
-	    </listitem>
-	  </varlistentry>
+          <varlistentry><term><literal>nocjk</literal></term>
+            <listitem><para>If this set to true, specific east asian
+            (Chinese Korean Japanese) characters/word splitting is
+            turned off. This will save a small amount of cpu if you
+            have no CJK documents. If your document base does include
+            such text but you are not interested in searching it,
+            setting <literal>nocjk</literal> may be a significant time
+            and space saver.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>cjkngramlen</literal></term>
+            <listitem><para>This lets you adjust the size of n-grams
+            used for indexing CJK text. The default value of 2 is
+            probably appropriate in most cases. A value of 3 would
+            allow more precision and efficiency on longer words, but
+            the index will be approximately twice as large.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>guesscharset</literal></term>
+            <listitem><para>Decide if we try to guess the character
+            set of files if no internal value is available (ie: for
+            plain text files). This does not work well in general, and
+            should probably not be used. </para>
+            </listitem>
+          </varlistentry>
 
         </variablelist>
 
@@ -2998,7 +3303,7 @@ skippedPaths = ~/somedir/&lowast;.txt
         <para><filename>mimemap</filename> specifies the
         file name extension to mime type mappings.</para> 
 
-	<para>For file names without an extension, or with an unknown
+        <para>For file names without an extension, or with an unknown
         one, the system's <command>file -i</command> command will be
         executed to determine the mime type (this can be switched off
         inside the main configuration file).</para>
@@ -3033,7 +3338,7 @@ skippedPaths = ~/somedir/&lowast;.txt
 
         <para><filename>mimeconf</filename> specifies how the
          different mime types are handled for indexing, and which icons
-	 are displayed in the <command>recoll</command> result lists.</para>
+         are displayed in the <command>recoll</command> result lists.</para>
 
         <para>Changing the parameters in the [index] section is
          probably not a good idea except if you are a &RCL;
@@ -3062,16 +3367,22 @@ skippedPaths = ~/somedir/&lowast;.txt
         <para>Changes to this file can be done by direct editing, or
         through the <command>recoll</command> user preferences dialog.</para>
 
-	<para>As for the other configuration files, the normal usage
-	is to have a <filename>mimeview</filename> inside your own
-	configuration directory, with just the non-default entries,
-	which will override those from the central configuration
-	file.</para>
-	<para>Please note that these entries must be placed under a
-	<literal>[view]</literal> section.</para>
+        <para>As for the other configuration files, the normal usage
+        is to have a <filename>mimeview</filename> inside your own
+        configuration directory, with just the non-default entries,
+        which will override those from the central configuration
+        file.</para>
+        <para>Please note that these entries must be placed under a
+        <literal>[view]</literal> section.</para>
 
-	<para>If <guilabel>Use desktop preferences to choose 
-	document editor</guilabel> is checked in the user preferences,
+	<para>The keys in the file are normally mime types. You can add an
+	  application tag to specialize the choice for an area of the
+	  filesystem (using a <literal>localfields</literal> specification
+	  in <filename>mimeconf</filename>). The syntax for the key is 
+<replaceable>mimetype</replaceable><literal>|</literal><replaceable>tag</replaceable></para>
+
+        <para>If <guilabel>Use desktop preferences to choose 
+        document editor</guilabel> is checked in the user preferences,
         all <filename>mimeview</filename> entries will be ignored
         except the one labelled <literal>application/x-all</literal>
         (which is set to use <command>xdg-open</command> by default).</para>
@@ -3080,98 +3391,98 @@ skippedPaths = ~/somedir/&lowast;.txt
       <sect2 id="rclinstall.config.examples">
         <title>Examples of configuration adjustments</title>
 
-	<sect3 id="rclinstall.config.examples.addview">
-	  <title>Adding an external viewer for an non-indexed type</title>
+        <sect3 id="rclinstall.config.examples.addview">
+          <title>Adding an external viewer for an non-indexed type</title>
 
-	<para>Imagine that you have some kind of file which does not
-	have indexable content, but for which you would like to have a
-	functional <guilabel>Edit</guilabel> link in the result list
-	(when found by file name). The file names end in
-	<replaceable>.blob</replaceable> and can be displayed by
-	application <replaceable>blobviewer</replaceable>.</para>
+        <para>Imagine that you have some kind of file which does not
+        have indexable content, but for which you would like to have a
+        functional <guilabel>Edit</guilabel> link in the result list
+        (when found by file name). The file names end in
+        <replaceable>.blob</replaceable> and can be displayed by
+        application <replaceable>blobviewer</replaceable>.</para>
 
-	  <para>You need two entries in the configuration files for this
-	to work:</para>
-	  <itemizedlist>
-	  <listitem><para>In <filename>$RECOLL_CONFDIR/mimemap</filename>
-	  (typically <filename>~/.recoll/mimemap</filename>), add the
-	  following line:</para>
-	  <programlisting>
+          <para>You need two entries in the configuration files for this
+        to work:</para>
+          <itemizedlist>
+          <listitem><para>In <filename>$RECOLL_CONFDIR/mimemap</filename>
+          (typically <filename>~/.recoll/mimemap</filename>), add the
+          following line:</para>
+          <programlisting>
              application/x-blobapp = .blob
            </programlisting>
-	  <para>Note that the mime type is made up here, and you could
-	  call it <replaceable>diesel/oil</replaceable> just the
-	  same.</para>
-	    </listitem>
-	  <listitem><para>In
-	  <filename>$RECOLL_CONFDIR/mimeview</filename> under the
-	  <literal>[view]</literal> section:</para>
-	      <programlisting>
+          <para>Note that the mime type is made up here, and you could
+          call it <replaceable>diesel/oil</replaceable> just the
+          same.</para>
+            </listitem>
+          <listitem><para>In
+          <filename>$RECOLL_CONFDIR/mimeview</filename> under the
+          <literal>[view]</literal> section:</para>
+              <programlisting>
                  application/x-blobapp = blobviewer %f
               </programlisting>
 
-	      <para>We are supposing that
-	      <replaceable>blobviewer</replaceable> wants a file name
-	      parameter here, you would use <literal>%u</literal> if
-	      it liked URLs better.</para>
-	    </listitem>
-	  </itemizedlist>
+              <para>We are supposing that
+              <replaceable>blobviewer</replaceable> wants a file name
+              parameter here, you would use <literal>%u</literal> if
+              it liked URLs better.</para>
+            </listitem>
+          </itemizedlist>
 
-	  <para>If you just wanted to change the application used by
-	  &RCL; to display a mime type which it already knows, you
-	  would just need to edit <filename>mimeview</filename>. The
-	  entries you add in your personal file override those in the
-	  central configuration, which you do not need to alter</para>
+          <para>If you just wanted to change the application used by
+          &RCL; to display a mime type which it already knows, you
+          would just need to edit <filename>mimeview</filename>. The
+          entries you add in your personal file override those in the
+          central configuration, which you do not need to alter</para>
 
-	</sect3>
+        </sect3>
 
-	<sect3 id="rclinstall.config.examples.addindex">
-	  <title>Adding indexing support for a new file type</title>
+        <sect3 id="rclinstall.config.examples.addindex">
+          <title>Adding indexing support for a new file type</title>
 
-	  <para>Let us now imagine that the above
-	  <replaceable>.blob</replaceable> files actually contain
-	  indexable text and that you know how to extract it with a
-	  command line program. Getting &RCL; to index the files is
-	  easy. You need to perform the above alteration, and also to
-	  add data to the <filename>mimeconf</filename> file
-	  (typically in <filename>~/.recoll/mimeconf</filename>):</para>
+          <para>Let us now imagine that the above
+          <replaceable>.blob</replaceable> files actually contain
+          indexable text and that you know how to extract it with a
+          command line program. Getting &RCL; to index the files is
+          easy. You need to perform the above alteration, and also to
+          add data to the <filename>mimeconf</filename> file
+          (typically in <filename>~/.recoll/mimeconf</filename>):</para>
 
-	  <itemizedlist>
-	    <listitem><para>Under the <literal>[index]</literal>
-	    section, add the following line (more about the
-	    <replaceable>rclblob</replaceable> indexing script later):</para>
-	      <programlisting>
+          <itemizedlist>
+            <listitem><para>Under the <literal>[index]</literal>
+            section, add the following line (more about the
+            <replaceable>rclblob</replaceable> indexing script later):</para>
+              <programlisting>
                  application/x-blobapp = exec rclblob
               </programlisting>
-	      <para></para>
-	    </listitem>
+              <para></para>
+            </listitem>
 
-	    <listitem><para>Under the <literal>[icons]</literal>
-	    section, you should choose an icon to be displayed for the
-	    files inside the result lists. Icons are normally 64x64
-	    pixels PNG files which live in
-	    <filename>/usr/[local/]share/recoll/images</filename>.
+            <listitem><para>Under the <literal>[icons]</literal>
+            section, you should choose an icon to be displayed for the
+            files inside the result lists. Icons are normally 64x64
+            pixels PNG files which live in
+            <filename>/usr/[local/]share/recoll/images</filename>.
             </para>
-	    </listitem>
+            </listitem>
 
-	    <listitem><para>Under the <literal>[categories]</literal>
-	    section, you should add the mime type where it makes sense
-	    (you can also create a category). Categories may be used
-	    for filtering in advanced search.</para>
-	    </listitem>
+            <listitem><para>Under the <literal>[categories]</literal>
+            section, you should add the mime type where it makes sense
+            (you can also create a category). Categories may be used
+            for filtering in advanced search.</para>
+            </listitem>
 
-	  </itemizedlist>
+          </itemizedlist>
 
-	  <para>The <replaceable>rclblob</replaceable> filter should
-	  be an executable program or script which exists inside
-	  <filename>/usr/[local/]share/recoll/filters</filename>. It
-	  will be given a file name as argument and should output the
-	  text contents on the standard output.</para>
+          <para>The <replaceable>rclblob</replaceable> filter should
+          be an executable program or script which exists inside
+          <filename>/usr/[local/]share/recoll/filters</filename>. It
+          will be given a file name as argument and should output the
+          text contents on the standard output.</para>
 
-	  <para>The <link linkend="rcl.program.filters">filter
-	  programming</link> section describes in more detail how to
-	  write a filter.</para> 
-	</sect3>
+          <para>The <link linkend="rcl.program.filters">filter
+          programming</link> section describes in more detail how to
+          write a filter.</para> 
+        </sect3>
 
       </sect2>
 
@@ -3181,9 +3492,9 @@ skippedPaths = ~/somedir/&lowast;.txt
       <title>The KDE Kicker Recoll applet</title>
 
       <para>The &RCL; source tree contains the source code to the
-	<literal>recoll_applet</literal>, a small application derived
-	from the <literal>find_applet</literal>. This can be used to
-	add a small &RCL; launcher to the KDE panel.</para>
+        <literal>recoll_applet</literal>, a small application derived
+        from the <literal>find_applet</literal>. This can be used to
+        add a small &RCL; launcher to the KDE panel.</para>
 
       <para>The applet is not automatically built with the main &RCL;
       programs, nor is it included with the main source distribution
