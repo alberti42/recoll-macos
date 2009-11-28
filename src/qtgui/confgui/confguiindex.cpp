@@ -176,7 +176,7 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
     ConfParamIntW *cp3 =
         new ConfParamIntW(gb1, lnk3, tr("Max. size for the web cache (MB)"),
 		      tr("Entries will be recycled once the size is reached"),
-		      -1, 1000);
+                          -1, 1000);
     cp3->setEnabled(cp1->m_cb->isOn());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp3, SLOT(setEnabled(bool)));
 

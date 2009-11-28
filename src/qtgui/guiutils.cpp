@@ -131,7 +131,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", ,
 	       "english");
     SETTING_RW(prefs.useDesktopOpen, 
-	       "/Recoll/prefs/useDesktopOpen", Bool, false);
+	       "/Recoll/prefs/useDesktopOpen", Bool, true);
     SETTING_RW(prefs.keepSort, 
 	       "/Recoll/prefs/keepSort", Bool, false);
     SETTING_RW(prefs.sortActive, 

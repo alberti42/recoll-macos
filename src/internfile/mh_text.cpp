@@ -55,13 +55,13 @@ bool MimeHandlerText::set_document_file(const string &fn)
     }
 
     // Max file size parameter: texts over this size are not indexed
-    int maxmbs = -1;
+    int maxmbs = 20;
     RclConfig::getMainConfig()->getConfParam("textfilemaxmbs", &maxmbs);
 
     if (maxmbs == -1 || st.st_size / MB <= maxmbs) {
         // Text file page size: if set, we split text files into
         // multiple documents
-        int ps = -1;
+        int ps = 1000;
         RclConfig::getMainConfig()->getConfParam("textfilepagekbs", &ps);
         if (ps != -1) {
             ps *= KB;
