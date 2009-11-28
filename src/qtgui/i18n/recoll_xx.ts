@@ -156,10 +156,6 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>File does not exist</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -208,6 +204,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Show main text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Current Preview</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -265,6 +269,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Beagle web history</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMain</name>
@@ -317,10 +325,6 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Cannot access document file: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -333,17 +337,8 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No external viewer configured for mime type </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The viewer specified in mimeconf for %1: %2 is not found.
-Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -434,6 +429,19 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Choose a file name to save under</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document category filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No external viewer configured for mime type [</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The viewer specified in mimeview for %1: %2 is not found.
+Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -599,10 +607,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>P&amp;arent document/folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Query details</source>
         <translation type="unfinished"></translation>
     </message>
@@ -616,10 +620,6 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Document history</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Save to File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -652,6 +652,22 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;i&gt;Alternate spellings (accents suppressed): &lt;/i&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1083,6 +1099,10 @@ May be slow for big documents.</source>
         <source>Choose editor applications</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Display category filter as toolbar instead of button panel (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1118,7 +1138,34 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select one or several mime types then click &quot;Change Action&quot;</source>
+        <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>confgui::ConfBeaglePanelW</name>
+    <message>
+        <source>Steal Beagle indexing queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Web cache directory name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the cache for visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. size for the web cache (MB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1159,6 +1206,33 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (S)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

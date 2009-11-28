@@ -269,7 +269,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>File does not exist</source>
-        <translation>Le fichier n&apos;existe pas</translation>
+        <translation type="obsolete">Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>Missing helper program: </source>
@@ -333,6 +333,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Show main text</source>
         <translation>Afficher le corps du texte</translation>
     </message>
+    <message>
+        <source>Print</source>
+        <translation>Imprimer</translation>
+    </message>
+    <message>
+        <source>Print Current Preview</source>
+        <translation>Imprimer la fenêtre de prévisualisation</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -388,6 +396,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
         <translation>Indexer les noms des fichiers dont le contenu n&apos;est pas identifié ou traité (pas de type mime, ou type non supporté). Vrai par défaut</translation>
     </message>
+    <message>
+        <source>Beagle web history</source>
+        <translation>Queue Beagle</translation>
+    </message>
 </context>
 <context>
     <name>QtGuiResListPager</name>
@@ -428,7 +440,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>No external viewer configured for mime type </source>
-        <translation>Pas de visualiseur défini pour le type mime </translation>
+        <translation type="obsolete">Pas de visualiseur défini pour le type mime </translation>
     </message>
     <message>
         <source>Executing: [</source>
@@ -440,7 +452,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Cannot access document file: </source>
-        <translation>Impossible d&apos;accéder au fichier du document: </translation>
+        <translation type="obsolete">Impossible d&apos;accéder au fichier du document: </translation>
     </message>
     <message>
         <source>Preview</source>
@@ -545,7 +557,7 @@ Vérifier le fichier mimeconf</translation>
     <message>
         <source>The viewer specified in mimeconf for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>L&apos;application spécifiée dans mimeconf pour %1: %2 n&apos;est pas trouvée.
+        <translation type="obsolete">L&apos;application spécifiée dans mimeconf pour %1: %2 n&apos;est pas trouvée.
 Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
@@ -635,6 +647,20 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>Choose a file name to save under</source>
         <translation>Choisir un nom pour le nouveau fichier</translation>
+    </message>
+    <message>
+        <source>Document category filter</source>
+        <translation>Filtre de catégories de documents</translation>
+    </message>
+    <message>
+        <source>No external viewer configured for mime type [</source>
+        <translation>Pas de visualiseur configuré pour le type MIME [</translation>
+    </message>
+    <message>
+        <source>The viewer specified in mimeview for %1: %2 is not found.
+Do you want to start the  preferences dialog ?</source>
+        <translation>Le visualiseur spécifié dans mimeview pour %1: %2 est introuvable.
+Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
 </context>
 <context>
@@ -955,7 +981,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>P&amp;arent document/folder</source>
-        <translation>Document ou répertoire P&amp;arent</translation>
+        <translation type="obsolete">Document ou répertoire P&amp;arent</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
@@ -979,7 +1005,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Save to File</source>
-        <translation>Sauver dans un fichier</translation>
+        <translation type="obsolete">Sauver dans un fichier</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
@@ -996,6 +1022,22 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>Open</source>
         <translation>Ouvrir</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;i&gt;Alternate spellings (accents suppressed): &lt;/i&gt;</source>
+        <translation>&lt;p&gt;&lt;i&gt;Orthographes proposés (sans accents): &lt;/i&gt;</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation>&amp;Sauver sous</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation>Prévisualiser le document p&amp;arent</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation>&amp;Ouvrir le document parent</translation>
     </message>
 </context>
 <context>
@@ -1759,6 +1801,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Choose editor applications</source>
         <translation>Choisir les éditeurs pour les différents types de fichiers</translation>
     </message>
+    <message>
+        <source>Display category filter as toolbar instead of button panel (needs restart).</source>
+        <translation>Afficher le filtre de catégorie comme une barre d&apos;outils plutot que comme un panneau de boutons (après le redémarrage).</translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1803,7 +1849,11 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;</source>
-        <translation>Sélectionner un ou plusieurs types mime, puis cliker &quot;Changer&quot;</translation>
+        <translation type="obsolete">Sélectionner un ou plusieurs types mime, puis cliker &quot;Changer&quot;</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
+        <translation>Sélectionner un ou plusieurs types MIME puis cliquer &quot;Modifier l&apos;Action&quot;&lt;br&gt;Vous pouvez aussi fermer ce dialogue et choisir &quot;Utiliser les préférences du bureau&quot;&lt;br&gt; dans le dialogue principal pour ignorer cette liste.</translation>
     </message>
 </context>
 <context>
@@ -1894,6 +1944,33 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
 </context>
 <context>
+    <name>confgui::ConfBeaglePanelW</name>
+    <message>
+        <source>Steal Beagle indexing queue</source>
+        <translation>Voler la queue d&apos;indexation de Beagle</translation>
+    </message>
+    <message>
+        <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
+        <translation>Beagle NE DOIT PAS être actif. Permet de traiter la queue de Beagle pour indexer l&apos;historique des pages visitées de Firefox.&lt;br&gt; (Il faut aussi installer le plugin Beagle pour Firefox)</translation>
+    </message>
+    <message>
+        <source>Web cache directory name</source>
+        <translation>Nom du répertoire cache de pages WEB</translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the cache for visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation>Le nom d&apos;un répertoire où stocker les copies des pages WEB visitées.&lt;br&gt;Le chemin peut être relatif au répertoire de configuration.</translation>
+    </message>
+    <message>
+        <source>Max. size for the web cache (MB)</source>
+        <translation>Taille maximum pour le cache (MB)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached</source>
+        <translation>Les pages seront écrasées quand la taille spécifiée est atteinte</translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
@@ -1931,6 +2008,35 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
         <translation>Cette valeur définit un seuil au delà duquel les fichiers comprimés ne seront pas traités. Utiliser -1 pour désactiver la limitation, 0 pour ne traiter aucun fichier comprimé.</translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation>Taille maximum d&apos;un fichier texte (MB)</translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation>Cette valeur est un seuil au delà duquel les fichiers texte ne seront pas indexés. Spécifier -1 pour supprimer la limite.
+Utilisé pour éviter d&apos;indexer des fichiers monstres.</translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation>Taille de découpe pour les fichiers texte (KB)</translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation>Si cette valeur est spécifiée et positive, les fichiers texte seront découpés en tranches de cette taille pour l&apos;indexation.
+Ceci diminue les ressources consommées par l&apos;indexation et aide le chargement pour prévisualisation.</translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (S)</source>
+        <translation>Temps d&apos;exécution maximum pour un filtre (S)</translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
+</source>
+        <translation>Un filtre externe sera interrompu si l&apos;attente dépasse ce temps. Utile dans le cas rare (programme postscript par exemple) où un document pourrait forcer un filtre à boucler indéfiniment. Positionner à -1 pour supprimer la limite.</translation>
     </message>
 </context>
 <context>

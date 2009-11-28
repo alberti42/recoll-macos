@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="uk">
+<!DOCTYPE TS><TS>
 <defaultcodec></defaultcodec>
 <context>
     <name>AdvSearch</name>
@@ -273,7 +272,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>File does not exist</source>
-        <translation>Файл не існує</translation>
+        <translation type="obsolete">Файл не існує</translation>
     </message>
     <message>
         <source>Missing helper program: </source>
@@ -337,6 +336,14 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Show main text</source>
         <translation>Показувати основний текст</translation>
     </message>
+    <message>
+        <source>Print</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print Current Preview</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -391,6 +398,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
         <translation>Індексувати також назви файлів, вміст яких не може бути впізнано чи оброблено (невідомий або непідтримуваний тип MIME).  Типово &quot;так&quot;</translation>
+    </message>
+    <message>
+        <source>Beagle web history</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -452,7 +463,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Cannot access document file: </source>
-        <translation>Не можу прочитати файл: </translation>
+        <translation type="obsolete">Не можу прочитати файл: </translation>
     </message>
     <message>
         <source>Preview</source>
@@ -468,7 +479,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>No external viewer configured for mime type </source>
-        <translation>Не знаю переглядача для mime-типа </translation>
+        <translation type="obsolete">Не знаю переглядача для mime-типа </translation>
     </message>
     <message>
         <source>Executing: [</source>
@@ -535,7 +546,7 @@ Please check the mimeconf file</source>
     <message>
         <source>The viewer specified in mimeconf for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>Не знайдено вказаний в mimeconf для %1 переглядач %2.
+        <translation type="obsolete">Не знайдено вказаний в mimeconf для %1 переглядач %2.
 Відкрити діалог налаштувань?</translation>
     </message>
     <message>
@@ -629,6 +640,19 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Choose a file name to save under</source>
         <translation>Оберіть ім&apos;я файла для збереження</translation>
+    </message>
+    <message>
+        <source>Document category filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No external viewer configured for mime type [</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The viewer specified in mimeview for %1: %2 is not found.
+Do you want to start the  preferences dialog ?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -905,7 +929,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>P&amp;arent document/folder</source>
-        <translation>&amp;Батьківський документ/тека</translation>
+        <translation type="obsolete">&amp;Батьківський документ/тека</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
@@ -933,7 +957,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Save to File</source>
-        <translation>Зберегти в файл</translation>
+        <translation type="obsolete">Зберегти в файл</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
@@ -950,6 +974,22 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Open</source>
         <translation>Відкрити</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;i&gt;Alternate spellings (accents suppressed): &lt;/i&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1668,6 +1708,10 @@ This should give higher precedence to the results where the search terms appear 
         <source>Choose editor applications</source>
         <translation>Оберіть редактори</translation>
     </message>
+    <message>
+        <source>Display category filter as toolbar instead of button panel (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1704,7 +1748,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;</source>
-        <translation>Виділіть один чи декілька MIME-типів та натисніть &quot;Змінити дію&quot;</translation>
+        <translation type="obsolete">Виділіть один чи декілька MIME-типів та натисніть &quot;Змінити дію&quot;</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1791,6 +1839,33 @@ This should give higher precedence to the results where the search terms appear 
     </message>
 </context>
 <context>
+    <name>confgui::ConfBeaglePanelW</name>
+    <message>
+        <source>Steal Beagle indexing queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Web cache directory name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the cache for visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. size for the web cache (MB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
@@ -1828,6 +1903,33 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
         <translation>Це значення встановлює поріг розміру стиснених файлів, більші за нього не буде опрацьовано.  -1 вимикає ліміт, 0 вимикає декомпресію.</translation>
+    </message>
+    <message>
+        <source>Max. text file size (MB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
+This is for excluding monster log files from the index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text file page size (KB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
+This will help searching very big text  files (ie: log files).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. filter exec. time (S)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
+</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
