@@ -17,6 +17,7 @@ static char rcsid[] = "@(#$Id: mh_text.cpp,v 1.6 2006-12-15 12:40:02 dockes Exp 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include <stdio.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
