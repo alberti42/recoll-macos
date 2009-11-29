@@ -3022,17 +3022,17 @@ skippedPaths = ~/somedir/&lowast;.txt
           <varlistentry><term><literal>textfilemaxmbs</literal></term>
             <listitem><para>Maximum size for text files. Very big text
             files are often uninteresting logs. Set to -1 to disable
-            (default).</para>  
+            (default 20MB).</para>  
             </listitem>
            </varlistentry>
 
           <varlistentry><term><literal>textfilepagekbs</literal></term>
-            <listitem><para>If set to other than -1 (the default), text
-            files will be indexed as multiple documents of the given page
-            size. This may be useful if you do want to index very big text
-            files as it will both reduce memory usage at index time and
-            help with loading data to the preview window. A size of a few
-            megabytes would seem reasonable.</para>
+            <listitem><para>If set to other than -1, text files will be
+            indexed as multiple documents of the given page size. This may
+            be useful if you do want to index very big text files as it
+            will both reduce memory usage at index time and help with
+            loading data to the preview window. A size of a few megabytes
+            would seem reasonable (default: 1MB).</para>
             </listitem>
            </varlistentry>
 
