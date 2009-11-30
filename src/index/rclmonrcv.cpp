@@ -195,6 +195,9 @@ void *rclMonRcvRun(void *q)
     return 0;
 }
 
+// We dont compile both the inotify and the fam interface and inotify
+// has preference
+#ifndef RCL_USE_INOTIFY
 #ifdef RCL_USE_FAM
 //////////////////////////////////////////////////////////////////////////
 /** Fam/gamin -based monitor class */
@@ -376,7 +379,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     return true;
 }
 #endif // RCL_USE_FAM
-
+#endif // ! INOTIFY
 
 #ifdef RCL_USE_INOTIFY
 //////////////////////////////////////////////////////////////////////////
@@ -568,12 +571,16 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
 // The monitor 'factory'
 static RclMonitor *makeMonitor()
 {
-#ifdef RCL_USE_FAM    
-    return new RclFAM;
-#endif
 #ifdef RCL_USE_INOTIFY
     return new RclIntf;
 #endif
+#ifndef RCL_USE_INOTIFY
+#ifdef RCL_USE_FAM    
+    return new RclFAM;
+#endif
+#endif
+    LOGINFO(("RclMonitor: neither Inotify nor Fam was compiled as "
+             "file system change notification interface\n"));
     return 0;
 }
 #endif // RCL_MONITOR
