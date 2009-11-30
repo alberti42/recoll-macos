@@ -99,6 +99,10 @@ using std::pair;
 
 #include "rclhelp.h"
 
+#ifndef MIN
+#define MIN(A,B) ((A)<(B)?(A):(B))
+#endif
+
 // QTextEdit's scrollToAnchor() is supposed to make the anchor visible, but
 // actually, it only moves to the top of the paragraph containing the anchor.
 // As we only have one paragraph, this doesnt' help a lot (qt3 and qt4)
@@ -111,6 +115,7 @@ using std::pair;
 // even installed under qt4. We use a local copy, which is not nice.
 void PreviewTextEdit::moveToAnchor(const QString& name)
 {
+    LOGDEB0(("PreviewTextEdit::moveToAnchor\n"));
     if (name.isEmpty())
 	return;
     sync();
@@ -245,10 +250,11 @@ void Preview::closeEvent(QCloseEvent *e)
 
 bool Preview::eventFilter(QObject *target, QEvent *event)
 {
+    LOGDEB2(("Preview::eventFilter()\n"));
     if (event->type() != QEvent::KeyPress) 
 	return false;
     
-    LOGDEB1(("Preview::eventFilter: keyEvent\n"));
+    LOGDEB2(("Preview::eventFilter: keyEvent\n"));
 
     PreviewTextEdit *edit = currentEditor();
     QKeyEvent *keyEvent = (QKeyEvent *)event;
@@ -309,7 +315,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 
 void Preview::searchTextLine_textChanged(const QString & text)
 {
-    LOGDEB1(("search line text changed. text: '%s'\n", text.ascii()));
+    LOGDEB2(("search line text changed. text: '%s'\n", text.ascii()));
     if (text.isEmpty()) {
 	m_dynSearchActive = false;
 	//	nextButton->setEnabled(false);
@@ -331,6 +337,7 @@ void Preview::searchTextLine_textChanged(const QString & text)
 
 PreviewTextEdit *Preview::currentEditor()
 {
+    LOGDEB2(("Preview::currentEditor()\n"));
     QWidget *tw = pvTab->currentPage();
     PreviewTextEdit *edit = 0;
     if (tw) {
@@ -347,8 +354,8 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 		       bool wordOnly)
 {
     LOGDEB(("Preview::doSearch: text [%s] txtlen %d next %d rev %d word %d\n", 
-	    (const char *)_text.utf8(), _text.length(), int(next), 
-	    int(reverse), int(wordOnly)));
+             (const char *)_text.utf8(), _text.length(), int(next), 
+             int(reverse), int(wordOnly)));
     QString text = _text;
 
     bool matchCase = matchCheck->isChecked();
@@ -393,10 +400,11 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 	LOGDEB(("Preview::doSearch: setting cursor to %d %d\n", ps, is));
 	edit->setCursorPosition(ps, is);
     }
-
+    Chrono chron;
     LOGDEB(("Preview::doSearch: first find call\n"));
     bool found = edit->find(text, matchCase, wordOnly, !reverse, 0, 0);
-    LOGDEB(("Preview::doSearch: first find call return\n"));
+    LOGDEB(("Preview::doSearch: first find call return: %.2f S\n", 
+            chron.secs()));
     // If not found, try to wrap around. 
     if (!found && next) { 
 	LOGDEB(("Preview::doSearch: wrapping around\n"));
@@ -408,8 +416,10 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 	    mspara = msindex = 0;
 	}
 	LOGDEB(("Preview::doSearch: 2nd find call\n"));
+        chron.restart();
 	found = edit->find(text,matchCase, false, !reverse, &mspara, &msindex);
-	LOGDEB(("Preview::doSearch: 2nd find call return\n"));
+	LOGDEB(("Preview::doSearch: 2nd find call return %.2f S\n",
+                chron.secs()));
     }
 
     if (found) {
@@ -424,17 +434,20 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 
 void Preview::nextPressed()
 {
+    LOGDEB2(("PreviewTextEdit::nextPressed\n"));
     doSearch(searchTextLine->text(), true, false);
 }
 
 void Preview::prevPressed()
 {
+    LOGDEB2(("PreviewTextEdit::prevPressed\n"));
     doSearch(searchTextLine->text(), true, true);
 }
 
 // Called when user clicks on tab
 void Preview::currentChanged(QWidget * tw)
 {
+    LOGDEB2(("PreviewTextEdit::currentChanged\n"));
     PreviewTextEdit *edit = 
         dynamic_cast<PreviewTextEdit*>(tw->child("pvEdit"));
     m_currentW = tw;
@@ -471,7 +484,7 @@ void Preview::currentChanged(QWidget * tw)
 // qt version.
 void Preview::selecChanged()
 {
-    LOGDEB1(("Selection changed\n"));
+    LOGDEB1(("Preview::selecChanged\n"));
     if (!m_currentW)
 	return;
     PreviewTextEdit *edit = (PreviewTextEdit*)m_currentW->child("pvEdit");
@@ -511,7 +524,7 @@ void Preview::textDoubleClicked(int, int)
 
 void Preview::closeCurrentTab()
 {
-    LOGDEB(("Preview::closeCurrentTab: m_loading %d\n", m_loading));
+    LOGDEB1(("Preview::closeCurrentTab: m_loading %d\n", m_loading));
     if (m_loading) {
 	CancelCheck::instance().setCancel();
 	return;
@@ -528,6 +541,7 @@ void Preview::closeCurrentTab()
 
 PreviewTextEdit *Preview::addEditorTab()
 {
+    LOGDEB1(("PreviewTextEdit::addEditorTab()\n"));
     QWidget *anon = new QWidget((QWidget *)pvTab);
     QVBoxLayout *anonLayout = new QVBoxLayout(anon, 1, 1, "anonLayout"); 
     PreviewTextEdit *editor = new PreviewTextEdit(anon, "pvEdit", this);
@@ -541,6 +555,7 @@ PreviewTextEdit *Preview::addEditorTab()
 
 void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
 {
+    LOGDEB1(("PreviewTextEdit::setCurTabProps\n"));
     QString title;
     map<string,string>::const_iterator meta_it;
     if ((meta_it = doc.meta.find(Rcl::Doc::keytt)) != doc.meta.end()
@@ -705,6 +720,11 @@ class LoadThread : public QThread {
     }
 };
 
+// Insert into editor by chunks so that the top becomes visible
+// earlier for big texts. This provokes some artifacts (adds empty line),
+// so we can't set it too low.
+#define CHUNKL 500*1000
+
 /* A thread to convert to rich text (mark search terms) */
 class ToRichThread : public QThread {
     string &in;
@@ -723,7 +743,7 @@ class ToRichThread : public QThread {
     {
 	DebugLog::getdbl()->setloglevel(loglevel);
 	try {
-	    ptr.plaintorich(in, out, hdata);
+	    ptr.plaintorich(in, out, hdata, CHUNKL);
 	} catch (CancelExcept) {
 	}
     }
@@ -739,10 +759,6 @@ class WaiterThread : public QThread {
     }
 };
 
-#define CHUNKL 50*1000
-#ifndef MIN
-#define MIN(A,B) ((A)<(B)?(A):(B))
-#endif
 class LoadGuard {
     bool *m_bp;
 public:
@@ -752,6 +768,7 @@ public:
 
 bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 {
+    LOGDEB1(("PreviewTextEdit::loadDocInCurrentTab()\n"));
     if (m_loading) {
 	LOGERR(("ALready loading\n"));
 	return false;
@@ -828,14 +845,36 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // Final text is produced in chunks so that we can display the top
     // while still inserting at bottom
     list<QString> qrichlst;
+    PreviewTextEdit *editor = currentEditor();
+    editor->setText("");
+    editor->setTextFormat(Qt::RichText);
     bool inputishtml = !fdoc.mimetype.compare("text/html");
+
+#if 0
+    // For testing qtextedit bugs...
+    highlightTerms = true;
+    const char *textlist[] =
+    {
+        "Du plain text avec un\n <termtag>termtag</termtag> fin de ligne:",
+        "texte apres le tag\n",
+    };
+    const int listl = sizeof(textlist) / sizeof(char*);
+    for (int i = 0 ; i < listl ; i++)
+        qrichlst.push_back(QString::fromUtf8(textlist[i]));
+#else
     if (highlightTerms) {
+	QStyleSheetItem *item = 
+	    new QStyleSheetItem(editor->styleSheet(), "termtag" );
+	item->setColor(prefs.qtermcolor);
+	item->setFontWeight(QFont::Bold);
 	progress.setLabelText(tr("Creating preview text"));
 	qApp->processEvents();
+
 	if (inputishtml) {
 	    LOGDEB1(("Preview: got html %s\n", fdoc.text.c_str()));
 	    m_plaintorich.set_inputhtml(true);
 	} else {
+	    LOGDEB1(("Preview: got plain %s\n", fdoc.text.c_str()));
 	    m_plaintorich.set_inputhtml(false);
 	}
 	list<string> richlst;
@@ -885,22 +924,14 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	if (inputishtml) {
 	    qrichlst.push_back(qr);
 	} else {
+            editor->setTextFormat(Qt::PlainText);
 	    for (int pos = 0; pos < (int)qr.length(); pos += l) {
 		l = MIN(CHUNKL, qr.length() - pos);
 		qrichlst.push_back(qr.mid(pos, l));
 	    }
 	}
     }
-	    
-    // Load into editor
-    PreviewTextEdit *editor = currentEditor();
-    editor->setText("");
-    if (highlightTerms) {
-	QStyleSheetItem *item = 
-	    new QStyleSheetItem(editor->styleSheet(), "termtag" );
-	item->setColor(prefs.qtermcolor);
-	item->setFontWeight(QFont::Bold);
-    }
+#endif
 
     prog = 2 * nsteps / 3;
     progress.setLabelText(tr("Loading preview text into editor"));
@@ -969,6 +1000,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
 RCLPOPUP *PreviewTextEdit::createPopupMenu(const QPoint&)
 {
+    LOGDEB1(("PreviewTextEdit::createPopupMenu()\n"));
     RCLPOPUP *popup = new RCLPOPUP(this);
     if (!m_dspflds) {
 	popup->insertItem(tr("Show fields"), this, SLOT(toggleFields()));
@@ -982,7 +1014,7 @@ RCLPOPUP *PreviewTextEdit::createPopupMenu(const QPoint&)
 // Either display document fields or main text
 void PreviewTextEdit::toggleFields()
 {
-//    fprintf(stderr, "%s", (const char *)text().ascii());
+    LOGDEB1(("PreviewTextEdit::toggleFields()\n"));
 
     // If currently displaying fields, switch to body text
     if (m_dspflds) {
@@ -1010,6 +1042,7 @@ void PreviewTextEdit::toggleFields()
 
 void PreviewTextEdit::print()
 {
+    LOGDEB1(("PreviewTextEdit::print\n"));
     if (!m_preview)
         return;
 	

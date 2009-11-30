@@ -78,6 +78,7 @@ public:
     virtual string endMatch() {return snull;}
     virtual string startAnchor(int) {return snull;}
     virtual string endAnchor() {return snull;}
+    virtual string startChunk() {return snull;}
 
 protected:
     static const string snull;

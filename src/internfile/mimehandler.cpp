@@ -50,16 +50,24 @@ static Dijon::Filter *mhFactory(const string &mime)
 {
     string lmime(mime);
     stringtolower(lmime);
-    if ("text/plain" == lmime)
+    if ("text/plain" == lmime) {
 	return new MimeHandlerText(lmime);
-    else if ("text/html" == lmime)
+    } else if ("text/html" == lmime) {
 	return new MimeHandlerHtml(lmime);
-    else if ("text/x-mail" == lmime)
+    } else if ("text/x-mail" == lmime) {
 	return new MimeHandlerMbox(lmime);
-    else if ("message/rfc822" == lmime)
+    } else if ("message/rfc822" == lmime) {
 	return new MimeHandlerMail(lmime);
-    else 
+    } else if (lmime.find("text/") == 0) {
+        // Try to handle unknown text/xx as text/plain. This
+        // only happen if the text/xx was defined as "internal" in
+        // mimeconf, not at random. For programs, for example this
+        // allows indexing and previewing as text/plain (no filter
+        // exec) but still opening with a specific editor.
+        return new MimeHandlerText(lmime); 
+    } else {
 	return new MimeHandlerUnknown(lmime);
+    }
 }
 
 /**

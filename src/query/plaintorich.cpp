@@ -327,6 +327,7 @@ bool PlainToRich::plaintorich(const string& in,
 	    sterms += "\n";
 	}
 	LOGDEB0(("  %s", sterms.c_str()));
+        LOGDEB2(("  TEXT:[%s]\n", in.c_str()));
     }
 
     // Compute the positions for the query terms.  We use the text
@@ -364,13 +365,19 @@ bool PlainToRich::plaintorich(const string& in,
 
     // Input character iterator
     Utf8Iter chariter(in);
-    // State variable used to limit the number of consecutive empty lines 
-    int ateol = 0;
+
+    // State variable used to limit the number of consecutive empty lines,
+    // and convert all eol to '\n'
+    int eol = 0;
+    int hadcr = 0;
 
     // Value for numbered anchors at each term match
     int anchoridx = 1;
-    // html state
+    // HTML state
     bool intag = false, inparamvalue = false;
+    // My tag state
+    int inrcltag = 0;
+
     unsigned int headend = 0;
     if (m_inputhtml) {
 	headend = in.find("</head>");
@@ -379,6 +386,7 @@ bool PlainToRich::plaintorich(const string& in,
 	if (headend != string::npos)
 	    headend += 7;
     }
+
     for (string::size_type pos = 0; pos != string::npos; pos = chariter++) {
 	// Check from time to time if we need to stop
 	if ((pos & 0xfff) == 0) {
@@ -395,8 +403,9 @@ bool PlainToRich::plaintorich(const string& in,
 		    *olit += startMatch();
 		}
 		anchoridx++;
+                inrcltag = 1;
 	    } else if (ibyteidx == tPosIt->second) {
-		// Output end or match region tags
+		// Output end of match region tags
 		if (!intag && ibyteidx > (int)headend) {
 		    *olit += endMatch();
 		    *olit += endAnchor();
@@ -405,60 +414,76 @@ bool PlainToRich::plaintorich(const string& in,
 		int crend = tPosIt->second;
 		while (tPosIt != cb.tboffs.end() && tPosIt->first < crend)
 		    tPosIt++;
-
-		// Maybe end this chunk, begin next. Don't do it on html
-		// there is just no way to do it right (qtextedit cant grok
-		// chunks cut in the middle of <a></a> for example).
-		if (!m_inputhtml && olit->size() > (unsigned int)chunksize) {
-		    out.push_back("");
-		    olit++;
-		}
+                inrcltag = 0;
 	    }
 	}
+        
+        unsigned int car = *chariter;
 
-	if (m_inputhtml) {
-	    switch (*chariter) {
-	    case '<':
-		if (!inparamvalue)
-		    intag = true;
-		break;
-	    case '>':
-		if (!inparamvalue)
-		    intag = false;
-		break;
-	    case '"':
-		if (intag) {
-		    inparamvalue = !inparamvalue;
-		}
-		break;
-	    }
-	    chariter.appendchartostring(*olit);
-	} else switch (*chariter) {
-	    case '\n':
-		if (ateol < 2) {
-		    *olit += "<br>\n";
-		    ateol++;
-		}
-		break;
-	    case '\r': 
-		break;
-	    case '<':
-		ateol = 0;
-		*olit += "&lt;";
-		break;
-	    case '&':
-		ateol = 0;
-		*olit += "&amp;";
-		break;
-	    default:
-		// We don't change the eol status for whitespace, want
-		// a real line
-		if (!(*chariter == ' ' || *chariter == '\t')) {
-		    ateol = 0;
-		}
-		chariter.appendchartostring(*olit);
-	    }
-    }
+        if (car == '\n') {
+            if (!hadcr)
+                eol++;
+            hadcr = 0;
+            continue;
+        } else if (car == '\r') {
+            hadcr++;
+            eol++;
+            continue;
+        } else if (eol) {
+            // Do line break;
+            hadcr = 0;
+            if (eol > 2)
+                eol = 2;
+            while (eol) {
+                *olit += "\n";
+                eol--;
+            }
+            // Maybe end this chunk, begin next. Don't do it on html
+            // there is just no way to do it right (qtextedit cant grok
+            // chunks cut in the middle of <a></a> for example).
+            if (!m_inputhtml && !inrcltag && 
+                olit->size() > (unsigned int)chunksize) {
+                out.push_back(string(startChunk()));
+                olit++;
+            }
+        }
+
+        switch (car) {
+        case '<':
+            if (m_inputhtml) {
+                if (!inparamvalue)
+                    intag = true;
+                chariter.appendchartostring(*olit);    
+            } else {
+                *olit += "&lt;";
+            }
+            break;
+        case '>':
+            if (m_inputhtml) {
+                if (!inparamvalue)
+                    intag = false;
+            }
+            chariter.appendchartostring(*olit);    
+            break;
+        case '&':
+            if (m_inputhtml) {
+                chariter.appendchartostring(*olit);
+            } else {
+                *olit += "&amp;";
+            }
+            break;
+        case '"':
+            if (m_inputhtml && intag) {
+                inparamvalue = !inparamvalue;
+            }
+            chariter.appendchartostring(*olit);
+            break;
+        default:
+            chariter.appendchartostring(*olit);
+        }
+
+    } // End chariter loop
+
 #if 0
     {
 	FILE *fp = fopen("/tmp/debugplaintorich", "a");

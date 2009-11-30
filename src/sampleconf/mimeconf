@@ -65,14 +65,14 @@ application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
-application/x-awk = exec rcltext
+application/x-awk = internal
 application/x-dvi = exec rcldvi
 application/x-flac = exec rclflac
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
-application/x-perl = exec rcltext
+application/x-perl = internal
 application/x-scribus = exec rclscribus
-application/x-shellscript = exec rcltext
+application/x-shellscript = internal
 application/x-tex = exec rcltex
 application/x-chm = execm rclchm
 application/zip = execm rclzip
@@ -88,15 +88,14 @@ text/calendar = execm rclics;mimetype=text/plain;charset=utf-8
 text/html  = internal 
 text/plain = internal 
 text/rtf = exec unrtf --nopict --html;charset=iso-8859-1;mimetype=text/html
-text/x-c = exec rcltext
-text/x-c++ = exec rcltext
+text/x-c = internal
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
 text/x-mail = internal
 text/x-man = exec rclman
 text/x-purple-log = exec rclpurple
 text/x-python = exec rclpython
-text/x-shellscript = exec rcltext
+text/x-shellscript = internal
 
 ## #############################################
 # Icons to be used in the result list if required by gui config

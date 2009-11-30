@@ -98,7 +98,7 @@ public:
 	if (m_inputhtml) {
 	    return snull;
 	} else {
-	    return string("<qt><head><title></title></head><body><p>");
+	    return string("<qt><head><title></title></head><body><pre>");
 	}
     }
     virtual string startMatch() {return string("<termtag>");}
@@ -115,6 +115,10 @@ public:
     virtual string startAnchor(int i) {
 	return string("<a name=\"") + termAnchorName(i) + "\">";
     }
+    virtual string endAnchor() {
+	return string("</a>");
+    }
+    virtual string startChunk() { return "<pre>";}
 };
 
 class Preview : public QWidget {

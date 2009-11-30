@@ -223,7 +223,7 @@ public:
 		       "<META http-equiv=\"Content-Type\""
 		       "content=\"text/html;charset=UTF-8\"><title>") + 
 		m_name + 
-		string("</title></head><body><p>");
+		string("</title></head><body><pre>");
 	}
     }
     virtual string startMatch() {return string("<font color=\"blue\">");}
