@@ -80,11 +80,36 @@ if test X$withAspell != Xno ; then
    fi
 fi
 
+if test -f /usr/include/sys/inotify.h ; then
+   inot_default=yes
+else
+   inot_default=no
+fi
+
+# Real time monitoring with inotify
+AC_ARG_WITH(inotify, 
+    AC_HELP_STRING([--with-inotify],
+   [Use inotify for almost real time indexing of modified files.]),
+        withInotify=$withval, withInotify=$inot_default)
+
+if test X$withInotify != Xno ; then
+   AC_MSG_NOTICE([enabled support for inotify monitoring])
+   AC_DEFINE(RCL_MONITOR, 1, [Real time monitoring option])
+   AC_DEFINE(RCL_USE_INOTIFY, 1, [Compile the inotify interface])
+else
+   AC_MSG_NOTICE([inotify monitoring disabled])
+fi
+
 # Real time monitoring with FAM
 AC_ARG_WITH(fam, 
     AC_HELP_STRING([--with-fam],
    [Use File Alteration Monitor for almost real time indexing of modified files. Give the fam/gamin library as argument (ie: /usr/lib/libfam.so) if configure does not find the right one.]),
         withFam=$withval, withFam=no)
+if test X$withFam != Xno -a X$withInotify != Xno ; then
+   AC_MSG_NOTICE([FAM support enabled but inotify support also enabled. Disabling FAM support and using inotify])
+   withFam=no
+fi
+
 case $withFam in
      no);;
      yes)
@@ -114,26 +139,6 @@ if test X$withFam != Xno ; then
    else
 	AC_MSG_ERROR([fam library not found])
    fi
-fi
-
-if test -f /usr/include/sys/inotify.h -a X$withFam = Xno ; then
-   inot_default=yes
-else
-   inot_default=no
-fi
-
-# Real time monitoring with inotify
-AC_ARG_WITH(inotify, 
-    AC_HELP_STRING([--with-inotify],
-   [Use inotify for almost real time indexing of modified files.]),
-        withInotify=$withval, withInotify=$inot_default)
-
-if test X$withInotify != Xno ; then
-   AC_MSG_NOTICE([enabled support for inotify monitoring])
-   AC_DEFINE(RCL_MONITOR, 1, [Real time monitoring option])
-   AC_DEFINE(RCL_USE_INOTIFY, 1, [Compile the inotify interface])
-else
-   AC_MSG_NOTICE([inotify monitoring disabled])
 fi
 
 # Enable use of file extended attributes. 
