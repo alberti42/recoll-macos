@@ -992,6 +992,9 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     if (udit != idoc.meta.end())
         historyEnterDoc(g_dynconf, udit->second);
 
+    // Switch format back to plaintext so that selections generate plain text
+    editor->setTextFormat(Qt::PlainText);
+
     editor->setFocus();
     emit(previewExposed(this, m_searchId, docnum));
     LOGDEB(("LoadFileInCurrentTab: returning true\n"));
