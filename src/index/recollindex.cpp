@@ -23,7 +23,10 @@ static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.38 2008-10-14 06:07:42 dockes
 
 #include <stdio.h>
 #include <signal.h>
+#include <errno.h>
 #include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include <iostream>
 #include <list>
@@ -264,6 +267,10 @@ int main(int argc, const char **argv)
 	exit(1);
     }
     bool rezero(op_flags & OPT_z);
+
+    if (setpriority(PRIO_PGRP, 0, 20) != 0) {
+        LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
+    }
     
     if (op_flags & (OPT_i|OPT_e)) {
 	list<string> filenames;
@@ -312,6 +319,11 @@ int main(int argc, const char **argv)
 	    LOGDEB(("recollindex: daemonizing\n"));
 	    daemon(0,0);
 	}
+        // Not too sure if I have to redo the nice thing after daemon(),
+        // can't hurt anyway (easier than testing on all platforms...)
+        if (setpriority(PRIO_PGRP, 0, 20) != 0) {
+            LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
+        }
 	if (sleepsecs > 0) {
 	    LOGDEB(("recollindex: sleeping %d\n", sleepsecs));
 	    sleep(sleepsecs);
