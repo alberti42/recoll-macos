@@ -158,7 +158,9 @@ class Db {
     enum MatchType {ET_WILD, ET_REGEXP, ET_STEM};
     bool termMatch(MatchType typ, const string &lang, const string &s, 
 		   list<TermMatchEntry>& result, int max = -1, 
-		   const string& field = "");
+		   const string& field = "",
+                   string *prefix = 0
+        );
 
     /** Special filename wildcard to XSFN terms expansion.
 	internal/searchdata use only */

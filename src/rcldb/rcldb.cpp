@@ -1329,11 +1329,7 @@ bool Db::purgeFile(const string &udi, bool *existed)
 // File name wild card expansion. This is a specialisation ot termMatch
 bool Db::filenameWildExp(const string& fnexp, list<string>& names)
 {
-    string pattern;
-    if (!unacmaybefold(fnexp, pattern, "UTF-8", true)) {
-	LOGERR(("Db::filenameWildExp: unac error for [%s]\n", fnexp.c_str()));
-	return false;
-    }
+    string pattern = fnexp;
     names.clear();
 
     // If pattern is not quoted, and has no wildcards, we add * at
@@ -1350,12 +1346,12 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
 	return false;
     for (list<TermMatchEntry>::const_iterator it = entries.begin();
 	 it != entries.end(); it++) 
-	names.push_back("XSFN"+it->term);
+	names.push_back(it->term);
 
     if (names.empty()) {
 	// Build an impossible query: we know its impossible because we
 	// control the prefixes!
-	names.push_back("XIMPOSSIBLE");
+	names.push_back("XNONENoMatchingTerms");
     }
     return true;
 }
@@ -1398,6 +1394,16 @@ bool Db::stemExpand(const string &lang, const string &term,
     return true;
 }
 
+/** Add prefix to all strings in list */
+static void addPrefix(list<TermMatchEntry>& terms, const string& prefix)
+{
+    if (prefix.empty())
+	return;
+    for (list<TermMatchEntry>::iterator it = terms.begin(); 
+         it != terms.end(); it++)
+	it->term.insert(0, prefix);
+}
+
 // Characters that can begin a wildcard or regexp expression. We use skipto
 // to begin the allterms search with terms that begin with the portion of
 // the input string prior to these chars.
@@ -1409,7 +1415,9 @@ bool Db::termMatch(MatchType typ, const string &lang,
 		   const string &root, 
 		   list<TermMatchEntry>& res,
 		   int max, 
-		   const string& field)
+		   const string& field,
+                   string *prefixp
+    )
 {
     if (!m_ndb || !m_ndb->m_isopen)
 	return false;
@@ -1428,6 +1436,12 @@ bool Db::termMatch(MatchType typ, const string &lang,
     string prefix;
     if (!field.empty()) {
 	(void)fieldToPrefix(field, prefix); 
+        if (prefix.empty()) {
+            LOGDEB(("Db::termMatch: field is not indexed (no prefix): [%s]\n", 
+                    field.c_str()));
+        }
+        if (prefixp)
+            *prefixp = prefix;
     }
 
     if (typ == ET_STEM) {
@@ -1443,6 +1457,8 @@ bool Db::termMatch(MatchType typ, const string &lang,
                 return false;
 	    LOGDEB1(("termMatch: %d [%s]\n", it->wcf, it->term.c_str()));
 	}
+        if (!prefix.empty())
+            addPrefix(res, prefix);
     } else {
 	regex_t reg;
 	int errcode;
@@ -1493,7 +1509,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
                             continue;
                     }
                     // Do we want stem expansion here? We don't do it for now
-                    res.push_back(TermMatchEntry(term, it.get_termfreq()));
+                    res.push_back(TermMatchEntry(*it, it.get_termfreq()));
                     ++n;
                 }
                 m_reason.erase();

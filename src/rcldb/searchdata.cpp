@@ -240,9 +240,9 @@ class wsQData : public TextSplitCB {
 // translating.
 class StringToXapianQ {
 public:
-    StringToXapianQ(Db& db, const string& prefix, 
+    StringToXapianQ(Db& db, const string& field, 
 		    const string &stmlng, bool boostUser)
-	: m_db(db), m_prefix(prefix), m_stemlang(stmlng), 
+	: m_db(db), m_field(field), m_stemlang(stmlng), 
 	  m_doBoostUserTerms(boostUser)
     { }
 
@@ -267,7 +267,7 @@ public:
 
 private:
     void expandTerm(bool dont, const string& term, list<string>& exp, 
-		      string& sterm);
+                    string& sterm, string *prefix);
     // After splitting entry on whitespace: process non-phrase element
     void processSimpleSpan(const string& span, bool nostemexp, list<Xapian::Query> &pqueries);
     // Process phrase/near element
@@ -276,7 +276,7 @@ private:
 			     bool useNear, int slack);
 
     Db&           m_db;
-    const string& m_prefix;
+    const string& m_field;
     const string& m_stemlang;
     bool          m_doBoostUserTerms;
     // Single terms and phrases resulting from breaking up text;
@@ -309,9 +309,9 @@ static void listVector(const string& what, const vector<string>&l)
  * @param sterm output original input term if there were no wildcards
  */
 void StringToXapianQ::expandTerm(bool nostemexp, 
-				      const string& term, 
-				      list<string>& exp,
-				      string &sterm)
+                                 const string& term, 
+                                 list<string>& exp,
+                                 string &sterm, string *prefix)
 {
     LOGDEB2(("expandTerm: term [%s] stemlang [%s] nostemexp %d\n", 
 	     term.c_str(), m_stemlang.c_str(), nostemexp));
@@ -336,11 +336,13 @@ void StringToXapianQ::expandTerm(bool nostemexp,
     } else {
 	list<TermMatchEntry> l;
 	if (haswild) {
-	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, l);
+	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, l, -1, m_field,
+                           prefix);
 	} else {
 	    sterm = term;
             m_uterms.push_back(sterm);
-	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, l);
+	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, l, -1, m_field,
+                           prefix);
 	}
 	for (list<TermMatchEntry>::const_iterator it = l.begin(); 
 	     it != l.end(); it++) {
@@ -384,23 +386,14 @@ void multiply_groups(vector<vector<string> >::const_iterator vvit,
     }
 }
 
-/** Add prefix to all strings in list */
-static void addPrefix(list<string>& terms, const string& prefix)
-{
-    if (prefix.empty())
-	return;
-    for (list<string>::iterator it = terms.begin(); it != terms.end(); it++)
-	it->insert(0, prefix);
-}
-
 void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
 					list<Xapian::Query> &pqueries)
 {
     list<string> exp;  
     string sterm; // dumb version of user term
-    expandTerm(nostemexp, span, exp, sterm);
+    string prefix;
+    expandTerm(nostemexp, span, exp, sterm, &prefix);
     m_terms.insert(m_terms.end(), exp.begin(), exp.end());
-    addPrefix(exp, m_prefix);
     // Push either term or OR of stem-expanded set
     Xapian::Query xq(Xapian::Query::OP_OR, exp.begin(), exp.end());
 
@@ -412,7 +405,7 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
     if (m_doBoostUserTerms && !sterm.empty()) {
         xq = Xapian::Query(Xapian::Query::OP_OR, 
                            xq, 
-                           Xapian::Query(m_prefix+sterm, 
+                           Xapian::Query(prefix+sterm, 
                                          original_term_wqf_booster));
     }
     pqueries.push_back(xq);
@@ -443,9 +436,9 @@ void StringToXapianQ::processPhraseOrNear(wsQData *splitData,
 
 	string sterm;
 	list<string>exp;
-	expandTerm(nostemexp, *it, exp, sterm);
+        string prefix;
+	expandTerm(nostemexp, *it, exp, sterm, &prefix);
 	groups.push_back(vector<string>(exp.begin(), exp.end()));
-	addPrefix(exp, m_prefix);
 	orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 					  exp.begin(), exp.end()));
 #ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
@@ -597,9 +590,6 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	LOGERR(("SearchDataClauseSimple: bad m_tp %d\n", m_tp));
 	return false;
     }
-    string prefix;
-    if (!m_field.empty())
-	db.fieldToPrefix(m_field, prefix);
     list<Xapian::Query> pqueries;
 
     // We normally boost the original term in the stem expansion list. Don't
@@ -608,7 +598,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	(m_parentSearch && !m_parentSearch->haveWildCards()) || 
 	(m_parentSearch == 0 && !m_haveWildCards);
 
-    StringToXapianQ tr(db, prefix, l_stemlang, doBoostUserTerm);
+    StringToXapianQ tr(db, m_field, l_stemlang, doBoostUserTerm);
     if (!tr.processUserString(m_text, m_reason, pqueries, 
 			      db.getStopList()))
 	return false;
@@ -623,7 +613,8 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
     return true;
 }
 
-// Translate a FILENAME search clause. 
+// Translate a FILENAME search clause. Actually this is now mostly
+// a "filename" field search.
 bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p, 
 					     const string&)
 {
@@ -660,10 +651,6 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     list<Xapian::Query> pqueries;
     Xapian::Query nq;
 
-    string prefix;
-    if (!m_field.empty())
-	db.fieldToPrefix(m_field, prefix);
-
     // We normally boost the original term in the stem expansion list. Don't
     // do it if there are wildcards anywhere, this would skew the results.
     bool doBoostUserTerm = 
@@ -680,7 +667,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     }
     string s = string("\"") + m_text + string("\"");
     bool useNear = (m_tp == SCLT_NEAR);
-    StringToXapianQ tr(db, prefix, l_stemlang, doBoostUserTerm);
+    StringToXapianQ tr(db, m_field, l_stemlang, doBoostUserTerm);
     if (!tr.processUserString(s, m_reason, pqueries, db.getStopList(),
 			      m_slack, useNear))
 	return false;
