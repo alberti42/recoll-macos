@@ -75,7 +75,7 @@ static char *thisprog;
 static char usage [] =
 " [-o|-a|-f] <query string>\n"
 " Runs a recoll query and displays result lines. \n"
-"  Default: will interpret the argument(s) as a wasabi query string\n"
+"  Default: will interpret the argument(s) as a xesam query string\n"
 "    query may be like: \n"
 "    implicit AND, Exclusion, field spec:    t1 -t2 title:t3\n"
 "    OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)\n"
@@ -115,12 +115,13 @@ static int     op_flags;
 #define OPT_m     0x800
 #define OPT_D     0x1000
 #define OPT_S     0x2000
-
+#define OPT_s     0x4000
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
     string a_config;
     string sortfield;
+    string stemlang("english");
 
     int limit = 2000;
     thisprog = argv[0];
@@ -151,6 +152,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             case 'q':   op_flags |= OPT_q; break;
 	    case 'S':	op_flags |= OPT_S; if (argc < 2)  Usage();
 		sortfield = *(++argv);
+		argc--; goto b1;
+	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
+		stemlang = *(++argv);
 		argc--; goto b1;
             case 't':   op_flags |= OPT_t; break;
             default: Usage();   break;
@@ -224,7 +228,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	cerr << "Query string interpretation failed: " << reason << endl;
 	return 1;
     }
-    sd->setStemlang("english");
+    sd->setStemlang(stemlang);
 
     RefCntr<Rcl::SearchData> rq(sd);
     Rcl::Query query(&rcldb);
