@@ -27,6 +27,10 @@ recollq \- command line / standard output Recoll query command.
 |
 .B -a
 ]
+[
+.B -s
+<stemming language>
+]
 <query string>
 
 .SH DESCRIPTION
@@ -66,6 +70,11 @@ can be used to set the maximum number of results that should be printed.
 If 
 .B -d
 is set, the text for the result files contents will be dumped to stdout.
+.B -s
+<language>
+selects the word stemming language. The value should match an existing
+stemming database (as set in the configuration or added with recollindex -s).
+
 .SH SEE ALSO
 .PP 
 recollindex(1) recollq(1) recoll.conf(5) 

@@ -125,41 +125,44 @@ databases will not be updated.
 will build the stem expansion database for a given language, which may or
 may not be part of the list in the configuration file. If the language is
 not part of the configuration, the stem expansion database will be deleted
-during the next normal run. You can get the list of stemmer names from the
-.B recollindex -m
-command. At the time of this writbng, the following languages
-(abbreviations) are recognized (out of Xapian's stem.h):
-.RS
+at the end of the next normal indexing run. You can get the list of stemmer
+names from the 
+.B recollindex -l
+command. Note that this is mostly for experimental use, the normal way to
+add a stemming language is to set it in the configuration, either by
+editing "recoll.conf" or by using the GUI indexing configuration dialog.
+.br
+At the time of this writing, the following languages
+are recognized (out of Xapian's stem.h):
 .IP \(bu
-danish (da)
+danish
 .IP \(bu
-dutch (nl)
+dutch
 .IP \(bu
-english (en) Martin Porter's 2002 revision of his stemmer
+english Martin Porter's 2002 revision of his stemmer
 .IP \(bu
-english_lovins (lovins) Lovin's stemmer
+english_lovins Lovin's stemmer
 .IP \(bu
-english_porter (porter) Porter's stemmer as described in his 1980 paper
+english_porter Porter's stemmer as described in his 1980 paper
 .IP \(bu
-finnish (fi)
+finnish 
 .IP \(bu
-french (fr)
+french 
 .IP \(bu
-german (de)
+german 
 .IP \(bu
-italian (it)
+italian
 .IP \(bu
-norwegian (no)
+norwegian
 .IP \(bu
-portuguese (pt)
+portuguese
 .IP \(bu
-russian (ru)
+russian
 .IP \(bu
-spanish (es)
+spanish
 .IP \(bu
-swedish (sv)
-.RE
-
+swedish
+.PP
 .B recollindex -S
 will rebuild the phonetic/orthographic index. This feature uses the 
 .B aspell
