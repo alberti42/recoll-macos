@@ -235,7 +235,8 @@ static bool stemExpandOne(const std::string& dbdir,
     try {
 	Xapian::Stem stemmer(lang);
 	string stem = stemmer(term);
-	LOGDEB(("stemExpand: [%s] stem-> [%s]\n", term.c_str(), stem.c_str()));
+	LOGDEB(("stemExpand:%s: [%s] stem-> [%s]\n", 
+                lang.c_str(), term.c_str(), stem.c_str()));
 
 	// Open stem database
 	string stemdbdir = stemdbname(dbdir, lang);
@@ -276,7 +277,7 @@ static bool stemExpandOne(const std::string& dbdir,
 	if (find(result.begin(), result.end(), stem) == result.end()) {
 	    result.push_back(stem);
 	}
-	LOGDEB0(("stemExpand: %s ->  %s\n", stem.c_str(),
+	LOGDEB0(("stemExpand:%s: %s ->  %s\n", lang.c_str(), stem.c_str(),
 		 stringlistdisp(result).c_str()));
 
     } catch (...) {
