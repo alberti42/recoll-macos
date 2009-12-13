@@ -531,9 +531,13 @@ recoll
           task execute it every night. For example the following
           <filename>crontab</filename> entry would do it every day at
           3:30AM (supposing <command>recollindex</command> is in your
-          PATH):</para> 
+          PATH):
 
         <programlisting>30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&1</programlisting>
+
+	  Or, using <command>anacron</command>:
+<programlisting>1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&1"</programlisting>
+        </para>
 
         <para>The usual command to edit your
           <filename>crontab</filename> is 
