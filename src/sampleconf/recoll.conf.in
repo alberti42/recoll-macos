@@ -165,3 +165,8 @@ webcachemaxmbs = 40
 # You could specify different parameters for a subdirectory like this:
 #[~/hungariandocs/plain]
 #defaultcharset = iso-8859-2
+
+# You can set fields on all files of a specific fs area. (rclaptg can be
+# used for application selection inside mimeview
+#[/some/app/directory]
+#localfields = rclaptg = someapp; otherfield = somevalue
