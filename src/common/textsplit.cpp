@@ -50,9 +50,10 @@ using namespace std;
 // The array is actually a remnant of the original version which did no utf8.
 // Only the lower 127 slots are  now used, but keep it at 256
 // because it makes some tests in the code simpler.
+const unsigned int charclasses_size = 256;
 enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259, 
                 A_ULETTER=260, A_LLETTER=261};
-static int charclasses[256];
+static int charclasses[charclasses_size];
 
 // Real UTF-8 characters are handled with sets holding all characters
 // with interesting properties. This is far from full-blown management
@@ -454,7 +455,7 @@ bool TextSplit::text_to_words(const string &in)
             // This emits "camel" when hitting the 'C' of camelCase
 	case A_ULETTER:
 	    if (m_span.length() && 
-                charclasses[(unsigned int)m_span[m_span.length() - 1]] == 
+                charclasses[(unsigned char)m_span[m_span.length() - 1]] == 
                 A_LLETTER) {
                 if (m_wordLen) {
                     if (!doemit(false, it.getBpos()))
@@ -471,7 +472,7 @@ bool TextSplit::text_to_words(const string &in)
             // Emit the uppercase word before proceeding
         case A_LLETTER:
 	    if (m_span.length() && 
-                charclasses[(unsigned int)m_span[m_span.length() - 1]] == 
+                charclasses[(unsigned char)m_span[m_span.length() - 1]] == 
                 A_ULETTER && m_wordLen > 1) {
                 // Multiple upper-case letters. Single letter word
                 // or acronym which we want to emit now
@@ -611,7 +612,7 @@ bool TextSplit::hasVisibleWhite(const string &in)
     setcharclasses();
     Utf8Iter it(in);
     for (; !it.eof(); it++) {
-	unsigned int c = *it;
+	unsigned int c = (unsigned char)*it;
 	LOGDEB3(("TextSplit::hasVisibleWhite: testing 0x%04x\n", c));
 	if (c == (unsigned int)-1) {
 	    LOGERR(("hasVisibleWhite: error while scanning UTF-8 string\n"));

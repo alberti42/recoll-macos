@@ -125,7 +125,7 @@ bool base64_decode(const string& in, string& out)
 	    for (; ii < in.length(); ch = in[ii++])
 		if (!isspace((unsigned char)ch)) {
 		    DPRINT((stderr, "base64_dec: non-white at eod: 0x%x\n", 
-			    (unsigned int)ch));
+			    (unsigned int)((unsigned char)ch)));
 		    // Well, there are bad encoders out there. Let it pass
 		    //return false;
 		}

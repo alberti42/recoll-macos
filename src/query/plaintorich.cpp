@@ -378,7 +378,7 @@ bool PlainToRich::plaintorich(const string& in,
     // My tag state
     int inrcltag = 0;
 
-    unsigned int headend = 0;
+    string::size_type headend = 0;
     if (m_inputhtml) {
 	headend = in.find("</head>");
 	if (headend == string::npos)

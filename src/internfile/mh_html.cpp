@@ -131,7 +131,7 @@ bool MimeHandlerHtml::next_document()
 		    // because the file was transcoded. It seems that just
 		    // inserting one is enough (only the 1st one seems to
 		    // be used by browsers/qtextedit).
-		    unsigned int idx = m_html.find("<head>");
+                    string::size_type idx = m_html.find("<head>");
 		    if (idx == string::npos)
 			idx = m_html.find("<HEAD>");
 		    if (idx != string::npos)
