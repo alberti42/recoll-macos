@@ -58,7 +58,7 @@ distclean: clean
 	   recollinstall \
 	   lib/*.dep common/autoconfig.h \
 	   wasabi/Makefile wasabi/client/Makefile wasabi/server/Makefile
-	rm -f index/alldeps lib/alldeps query/alldeps
+	rm -f index/alldeps lib/alldeps query/alldeps bincimapmime/alldeps
 	rm -rf autom4te.cache
 	@NOQTMAKE@(cd qt4gui; make -f uifrom3 distclean)
 
