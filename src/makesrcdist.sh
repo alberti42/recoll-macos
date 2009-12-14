@@ -34,11 +34,11 @@ if test ! -d qtgui;then
 fi
 
 case $version in
-*.*.*) relname=recoll-$version;;
+*.*.*) releasename=recoll-$version;;
 *) releasename=betarecoll-$version;;
 esac
 
-topdir=$targetdir/releasename
+topdir=$targetdir/$releasename
 if test ! -d $topdir ; then
     mkdir $topdir || exit 1
 else 
