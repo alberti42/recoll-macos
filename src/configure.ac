@@ -154,6 +154,25 @@ if test X$xattrEnabled = Xyes ; then
   AC_DEFINE(RCL_USE_XATTR, 1, [Use file extended attributes])
 fi
 
+# Enable CamelCase word splitting. This is optional because it causes 
+# problems with phrases: with camelcase enabled, "MySQL manual"
+# will be matched by "MySQL manual" and "my sql manual" but not 
+# "mysql manual" (which would need increased slack as manual is now at pos
+# 2 instead of 1
+AC_ARG_ENABLE(camelcase,
+    AC_HELP_STRING([--enable-camelcase],
+   [Enable splitting camelCase words. This is not enabled by default as
+   this makes phrase matches more difficult: you need to use matching
+   case in the phrase query to get a match. Ie querying for 
+   "MySQL manual" and "my sql manual" are the same, but not the same as
+   "mysql manual" (in phrases only and you could raise the phrase slack to
+   get a match).]),
+        camelcaseEnabled=$enableval, camelcaseEnabled=no)
+
+if test X$camelcaseEnabled = Xyes ; then
+  AC_DEFINE(RCL_SPLIT_CAMELCASE, 1, [Split camelCase words])
+fi
+
 
 AC_CHECK_FUNCS(mkdtemp)
 

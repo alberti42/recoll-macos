@@ -18,6 +18,7 @@ static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.38 2008-12-12 11:53:45 dockes E
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_TEXTSPLIT
+#include "autoconfig.h"
 
 #include <assert.h>
 
@@ -450,9 +451,14 @@ bool TextSplit::text_to_words(const string &in)
 	    }
 	    break;
 
+#ifdef RCL_SPLIT_CAMELCASE
             // Camelcase handling. 
             // If we get uppercase ascii after lowercase ascii, emit word.
             // This emits "camel" when hitting the 'C' of camelCase
+            // Not enabled by defaults as this makes phrase searches quite 
+            // confusing. 
+            // ie "MySQL manual" is matched by "MySQL manual" and 
+            // "my sql manual" but not "mysql manual"
 	case A_ULETTER:
 	    if (m_span.length() && 
                 charclasses[(unsigned char)m_span[m_span.length() - 1]] == 
@@ -483,6 +489,7 @@ bool TextSplit::text_to_words(const string &in)
                 m_wordLen++;
             }
             goto NORMALCHAR;
+#endif /* CAMELCASE */
 
 
 	default:

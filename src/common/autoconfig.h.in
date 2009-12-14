@@ -44,5 +44,8 @@
 /* Use file extended attributes */
 #undef RCL_USE_XATTR
 
+/* Split camelCase words */
+#undef RCL_SPLIT_CAMELCASE
+
 /* No X11 */
 #undef WITHOUT_X11
