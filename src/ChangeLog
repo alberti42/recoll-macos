@@ -1,3 +1,493 @@
+2009-12-07 17:43  dockes
+
+	* qtgui/preview_w.cpp, qtgui/preview_w.h: reimplemented
+	  Q3TextDocument::find() to be like the qt3 version
+
+2009-12-07 14:32  dockes
+
+	* qtgui/preview_w.cpp: switch preview qtextedit format back to
+	  plain text after loading so that selections copy plain text not
+	  html
+
+2009-12-07 13:27  dockes
+
+	* rcldb/rcldb.cpp, rcldb/rcldb.h, rcldb/searchdata.cpp: Term
+	  expansion: handle field issues inside rcldb::termmatch, ensuring
+	  that we take the field name into account for all expansions.
+	  Ensures that File Name searches and filename: query language
+	  searches work the same, + overall better consistency
+
+2009-12-07 13:24  dockes
+
+	* configure.ac: Israel G. Lugo: make sure that only one of inotify
+	  or FAM gets enabled, giving priority to inotify.
+
+2009-11-30 10:04  dockes
+
+	* VERSION, internfile/mimehandler.cpp,
+	  kde/kioslave/recoll/htmlif.cpp, qtgui/preview_w.cpp,
+	  qtgui/preview_w.h, query/plaintorich.cpp, query/plaintorich.h,
+	  sampleconf/mimeconf: add <pre> tag to text/plain translated into
+	  qt html to preserve indentation. Removes need for rcltext (which
+	  did just this). Allow specifying any text/xxx as internal (allows
+	  having specific editor but no filter)
+
+2009-11-30 06:34  dockes
+
+	* index/rclmonrcv.cpp: compile either fam or inotify not both
+
+2009-11-29 15:00  dockes
+
+	* doc/user/usermanual.sgml: change defaults for big text params
+
+2009-11-29 12:56  dockes
+
+	* sampleconf/recoll.conf.in: add new 1.13 variables and defaults
+
+2009-11-28 09:15  dockes
+
+	* internfile/mh_execm.cpp, internfile/mh_text.cpp,
+	  query/docseqhist.cpp, utils/circache.cpp: new glibc missing
+	  includes
+
+2009-11-28 08:45  dockes
+
+	* qtgui/i18n/recoll_de.ts, qtgui/i18n/recoll_fr.ts,
+	  qtgui/i18n/recoll_it.ts, qtgui/i18n/recoll_ru.ts,
+	  qtgui/i18n/recoll_tr.ts, qtgui/i18n/recoll_uk.ts,
+	  qtgui/i18n/recoll_xx.ts:
+
+2009-11-28 08:14  dockes
+
+	* index/beaglequeue.cpp, internfile/mh_text.cpp,
+	  qtgui/confgui/confguiindex.cpp, qtgui/guiutils.cpp: set defaults
+	  usedesktoprefs, maxtext 20mb pagesz 1000k webcache 40m
+
+2009-11-28 08:11  dockes
+
+	* doc/user/usermanual.sgml: clean-up + documented 1.13 new features
+
+2009-11-28 06:39  dockes
+
+	* internfile/mh_mbox.cpp: converted iostream to stdio because of
+	  mysterious read errors at the last position in the offsets file
+
+2009-11-27 13:23  dockes
+
+	* internfile/mh_mail.cpp: add cnf(maildefcharset) to set specific
+	  mail default charset (mainly for readpst extracts which are utf-8
+	  but have no charset set)
+
+2009-11-27 13:11  dockes
+
+	* rcldb/rcldb.cpp: loglevel
+
+2009-11-27 13:08  dockes
+
+	* internfile/mh_mbox.cpp: include sys/stat
+
+2009-11-27 12:41  dockes
+
+	* internfile/Filter.h, internfile/internfile.cpp,
+	  internfile/mh_mbox.cpp, internfile/mh_mbox.h,
+	  internfile/mimehandler.h, query/docseqhist.cpp: implemented a
+	  cache for mbox message header offsets
+
+2009-11-27 07:07  dockes
+
+	* internfile/mh_mbox.cpp: Support From "bla bla" (quoted) From
+	  lines
+
+2009-11-27 07:00  dockes
+
+	* internfile/internfile.cpp: update test driver
+
+2009-11-26 14:03  dockes
+
+	* aspell/rclaspell.cpp, aspell/rclaspell.h, qtgui/reslist.cpp,
+	  qtgui/reslist.h, query/docseq.h, query/docseqdb.cpp,
+	  query/docseqdb.h, query/reslistpager.cpp, query/reslistpager.h,
+	  rcldb/rcldb.cpp, rcldb/searchdata.cpp, rcldb/searchdata.h:
+	  suggest alternate spellings if no results
+
+2009-11-26 13:52  dockes
+
+	* qtgui/guiutils.cpp: suppressed core dump at exit on unexisting
+	  config
+
+2009-11-26 07:17  dockes
+
+	* rcldb/rcldb.cpp, rcldb/rclquery.cpp, rcldb/rclquery.h: use only
+	  match terms to build doc abstract, not all query terms (might
+	  save a little effort)
+
+2009-11-26 07:15  dockes
+
+	* qtgui/rclmain_w.cpp: spell tool must be created even is
+	  USE_ASPELL is undefined
+
+2009-11-25 14:37  dockes
+
+	* utils/md5.cpp: suppress unused parm warning
+
+2009-11-24 10:25  dockes
+
+	* kde/kioslave/recoll/CMakeLists.txt: execute minimum recoll config
+	  inside cmakelists to create rclversion and autoconfig includes
+
+2009-11-24 10:24  dockes
+
+	* utils/smallut.h: gcc4
+
+2009-11-23 19:51  dockes
+
+	* index/beaglequeue.cpp: store beagle fields before interning the
+	  file
+
+2009-11-23 17:38  dockes
+
+	* qtgui/preview_w.cpp: if text is empty, display fields by default
+
+2009-11-23 17:37  dockes
+
+	* internfile/internfile.cpp: in
+	  FileInterner::FileInterner(Rcl::Doc) (query), declare the
+	  BeagleQueue static so that the cache persists between
+	  FileInterner objects
+
+2009-11-23 17:36  dockes
+
+	* internfile/internfile.h: comments
+
+2009-11-23 16:12  dockes
+
+	* lib/Makefile, lib/mkMake, qtgui/guiutils.cpp, qtgui/main.cpp,
+	  qtgui/preview_w.cpp, qtgui/rclmain_w.cpp, qtgui/recoll.h,
+	  query/docseqhist.cpp, query/docseqhist.h, query/dynconf.cpp,
+	  query/dynconf.h, query/history.cpp, query/history.h: revamped
+	  history feature to be udi-based while supporting old format
+
+2009-11-23 16:11  dockes
+
+	* rcldb/rcldb.cpp: set udi in meta from getDoc(udi)
+
+2009-11-23 16:10  dockes
+
+	* index/beaglequeue.cpp, utils/circache.cpp, utils/circache.h:
+	  Beaglequeue: simplify index from cache now that udi entries are
+	  unique in cache
+
+2009-11-22 17:27  dockes
+
+	* index/beaglequeue.cpp, utils/circache.cpp, utils/circache.h: only
+	  keep the latest entry for a given udi in the cache
+
+2009-11-22 17:26  dockes
+
+	* utils/smallut.h: added tempbuf class
+
+2009-11-21 13:36  dockes
+
+	* internfile/mimehandler.cpp, qtgui/rclmain_w.cpp: allow setting
+	  attrs on mimeview defs, factorize some code with mhExecFactory
+
+2009-11-21 13:35  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h: added
+	  valueSplitAttributes() method
+
+2009-11-21 11:18  dockes
+
+	* internfile/mimehandler.cpp: use a confsimple to parse the
+	  additional filter attributes
+
+2009-11-21 11:14  dockes
+
+	* qtgui/guiutils.h: add ipath to default paragraph format
+
+2009-11-18 15:32  dockes
+
+	* kde/kioslave/recoll/CMakeLists.txt: added beaglequeue/circache to
+	  kio build because of internfile dependancy
+
+2009-11-18 14:27  dockes
+
+	* utils/circache.cpp: warning
+
+2009-11-18 14:26  dockes
+
+	* rcldb/rclquery.cpp: query::getrescnt() would only work once
+	  following 1.13 mods (affects python api)
+
+2009-11-18 14:25  dockes
+
+	* python/samples/recollq.py:
+
+2009-11-18 14:03  dockes
+
+	* python/recoll/pyrecoll.cpp: add some casts to avoid kwargs const
+	  warnings
+
+2009-11-18 13:46  dockes
+
+	* index/rclmonrcv.cpp: typo
+
+2009-11-18 12:33  dockes
+
+	* filters/rclchm, filters/rclexecm.py, filters/rclics,
+	  internfile/mh_execm.cpp, internfile/mh_execm.h: handle
+	  REFILTERROR in execm
+
+2009-11-18 10:26  dockes
+
+	* internfile/mh_mail.cpp, rcldb/rcldb.cpp: mh_mail: use
+	  truncate_to_word to avoid cutting an utf8 char. rcldb: logdeb
+	  text_to_word errors
+
+2009-11-18 08:24  dockes
+
+	* index/beaglequeue.cpp, mk/FreeBSD: beaglequeue fully functional,
+	  small fixes remaining?
+
+2009-11-18 07:57  dockes
+
+	* index/beaglequeue.cpp: ok with compression
+
+2009-11-18 07:46  dockes
+
+	* utils/circache.cpp, utils/circache.h: compression works
+
+2009-11-17 14:52  dockes
+
+	* utils/circache.cpp, utils/circache.h: circache ok
+
+2009-11-16 16:18  dockes
+
+	* internfile/internfile.cpp: Lack of error checking after
+	  have_document() in preview case could lead to looping, and
+	  cancellation was not checked to make things worse
+
+2009-11-16 16:16  dockes
+
+	* configure: --without-gui
+
+2009-11-16 16:12  dockes
+
+	* qt4gui/recoll.pro.in: stupid mistake in previous cosmetic change
+
+2009-11-16 16:11  dockes
+
+	* index/fsindexer.cpp: make very sure ~/.beagle is in the
+	  skippedPaths
+
+2009-11-16 16:10  dockes
+
+	* internfile/mh_mail.cpp: reason msg
+
+2009-11-16 12:50  dockes
+
+	* Makefile.in, common/autoconfig.h.in, configure.ac,
+	  index/Makefile, mk/localdefs.in, utils/x11mon.cpp: add
+	  --without-gui configure option
+
+2009-11-15 16:41  dockes
+
+	* index/beaglequeue.cpp, index/fsindexer.cpp, utils/circache.cpp:
+	  catch cancel exceptions cast by internfile()
+
+2009-11-15 14:39  dockes
+
+	* index/fsindexer.h, qtgui/rclmain_w.cpp, query/reslistpager.cpp,
+	  rcldb/rcldoc.cpp, rcldb/rcldoc.h, sampleconf/fields: changed
+	  apptag field name to rclaptg
+
+2009-11-15 14:18  dockes
+
+	* qt4gui/recoll.pro.in, qtgui/recoll.pro.in: add -ldl -lX11 for
+	  binutils-gold
+
+2009-11-15 08:38  dockes
+
+	* common/rclconfig.cpp, common/rclconfig.h, index/fsindexer.cpp,
+	  index/rclmonrcv.cpp, utils/fstreewalk.cpp, utils/fstreewalk.h,
+	  utils/smallut.cpp, utils/smallut.h: rationalized how we recompute
+	  things on setkeydir. recoll_noindex and skippedNames can now be
+	  changed at any point in the tree
+
+2009-11-14 11:34  dockes
+
+	* index/rclmonprc.cpp: monitor: accumulate mods during 30S before
+	  indexing
+
+2009-11-14 10:29  dockes
+
+	* index/beaglequeue.cpp, index/beaglequeue.h, index/fsindexer.cpp,
+	  index/indexer.cpp, index/rclmonrcv.cpp, index/recollindex.cpp,
+	  utils/circache.cpp: monitor the beagle queue
+
+2009-11-14 10:25  dockes
+
+	* filters/rclchm, filters/rclics, filters/rcltext: emit
+	  helpernotfound
+
+2009-11-14 08:21  dockes
+
+	* index/beaglequeue.cpp, index/beaglequeue.h, index/fsindexer.cpp,
+	  index/fsindexer.h, index/indexer.cpp, index/indexer.h,
+	  index/recollindex.cpp, index/recollindex.h, rcldb/rcldb.cpp,
+	  rcldb/rcldb.h: beaglequeue indexFiles
+
+2009-11-13 13:29  dockes
+
+	* index/beaglequeue.cpp, index/beaglequeue.h,
+	  internfile/internfile.cpp, internfile/internfile.h,
+	  qtgui/confgui/confguiindex.cpp, qtgui/preview_w.cpp,
+	  qtgui/preview_w.h, qtgui/rclmain_w.cpp, rcldb/rcldoc.cpp,
+	  rcldb/rcldoc.h, rcldb/rclquery.cpp, sampleconf/fields: 1st beagle
+	  version with index/preview working
+
+2009-11-13 09:08  dockes
+
+	* qtgui/idxthread.cpp: integrate beaglequeueindexer for indexing.
+	  Work remains for indexfiles() at least
+
+2009-11-13 09:08  dockes
+
+	* utils/circache.cpp, utils/circache.h: integrate
+	  beaglequeueindexer for indexing. Work remains for indexfiles() at
+	  least
+
+2009-11-13 09:07  dockes
+
+	* index/beaglequeue.cpp, index/beaglequeue.h, index/fsindexer.cpp,
+	  index/fsindexer.h, index/indexer.cpp, index/indexer.h,
+	  index/recollindex.cpp: integrate beaglequeueindexer for indexing.
+	  Work remains for indexfiles() at least
+
+2009-11-13 09:04  dockes
+
+	* configure.ac: Israel G. Lugo: give priority to the user's PATH
+	  when looking for qmake (fixes detecting the wrong qmake when more
+	  than one exists).
+
+2009-11-13 09:01  dockes
+
+	* rcldb/rcldoc.cpp, rcldb/rcldoc.h: make dump const
+
+2009-11-13 09:01  dockes
+
+	* lib/Makefile, lib/mkMake: add beaglequeue, fsindexer
+
+2009-11-13 08:58  dockes
+
+	* qtgui/confgui/confgui.cpp, qtgui/confgui/confgui.h,
+	  qtgui/confgui/confguiindex.cpp, qtgui/confgui/confguiindex.h: add
+	  panel for beaglequeue parameters + arrange so that a checkbox can
+	  enable/disable other params
+
+2009-11-13 08:54  dockes
+
+	* sampleconf/fields: comments
+
+2009-11-13 08:15  dockes
+
+	* filters/rclchm, filters/rclexecm.py, filters/rclics,
+	  filters/rclimg, filters/rclzip, internfile/mh_execm.cpp: dont use
+	  0-sized doc to mean eof now
+
+2009-11-11 18:09  dockes
+
+	* filters/rclimg: send mimetype
+
+2009-11-11 18:07  dockes
+
+	* internfile/mh_execm.cpp: set mimetype for the non-ipath case
+
+2009-11-11 07:47  dockes
+
+	* index/fsindexer.cpp, index/fsindexer.h, index/indexer.cpp,
+	  index/indexer.h, index/recollindex.cpp: moved common db code from
+	  fsindexer to confindexer
+
+2009-11-10 18:11  dockes
+
+	* index/beaglequeue.cpp, index/beaglequeue.h:
+
+2009-11-10 18:10  dockes
+
+	* index/fsindexer.cpp, index/fsindexer.h, index/indexer.cpp,
+	  index/indexer.h, index/rclmonprc.cpp, index/recollindex.cpp,
+	  index/recollindex.h: dbindexer->fsindexer, split into its own
+	  file
+
+2009-11-10 17:42  dockes
+
+	* ChangeLog:
+
+2009-11-10 17:42  dockes
+
+	* index/recollindex.cpp: small cleanups and add option to call
+	  beaglequeue
+
+2009-11-10 17:41  dockes
+
+	* index/indexer.cpp: small cleanups and comments
+
+2009-11-10 17:39  dockes
+
+	* index/indexer.h: comments
+
+2009-11-10 17:38  dockes
+
+	* index/rclmonrcv.cpp: remove indexer.h include
+
+2009-11-10 17:38  dockes
+
+	* common/rclinit.h: comment
+
+2009-11-10 17:37  dockes
+
+	* utils/fstreewalk.cpp, utils/fstreewalk.h: add nocanon option
+
+2009-11-10 17:34  dockes
+
+	* utils/circache.cpp, utils/circache.h: intermediary checkpoint
+	  (things work, no index, no compression)
+
+2009-11-10 17:32  dockes
+
+	* rcldb/rcldb.cpp, rcldb/rcldb.h: removed the useless keep_updated
+	  flag
+
+2009-11-10 17:31  dockes
+
+	* rcldb/rcldoc.cpp, rcldb/rcldoc.h: added dump function
+
+2009-11-10 17:30  dockes
+
+	* query/recollq.cpp: added explicit flag parameter to Internfile
+	  constructeur for helping with beagle queue integration
+
+2009-11-10 17:29  dockes
+
+	* sampleconf/fields: add dc:description as keywords alias
+
+2009-11-10 09:39  dockes
+
+	* internfile/internfile.cpp, internfile/internfile.h,
+	  kde/kioslave/recoll/htmlif.cpp, qtgui/preview_w.cpp: added
+	  explicit flag parameter to Internfile constructeur for helping
+	  with beagle queue integration
+
+2009-11-09 09:26  dockes
+
+	* lib/Makefile, lib/mkMake, utils/Makefile, utils/circache.cpp,
+	  utils/circache.h: circache
+
+2009-11-09 09:26  dockes
+
+	* utils/conftree.cpp, utils/conftree.h: add some constness
+
 2009-11-06 11:33  dockes
 
 	* internfile/internfile.cpp, internfile/internfile.h,
