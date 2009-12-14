@@ -2754,6 +2754,15 @@ while query.next >= 0 and query.next < nres:
 	    some simple configuration (see comments in the
 	    <filename>fields</filename> configuration file).</para>
 	  </listitem>
+	  <listitem><para><literal>--enable-camelcase</literal> will enable
+ 	    splitting <replaceable>camelCase</replaceable> words. This
+	    is not enabled by default as it has the unfortunate
+	    side-effect of making some phrase searches quite
+	    confusing: ie, <literal>"MySQL manual"</literal> would be
+	    matched by <literal>"MySQL manual"</literal> and
+	    <literal>"my sql manual"</literal> but not <literal>"mysql
+	    manual"</literal> (only inside phrase searches).</para>
+	  </listitem>
 	  <listitem><para><literal>--with-file-command</literal> Specify
 	    the version of the 'file' command to use (ie:
             --with-file-command=/usr/local/bin/file). Can be useful to

@@ -12,7 +12,7 @@ JADEFLAGS+=	-V %generate-article-toc%
 
 # The purpose for this is to replace the FreeBSD file which contains the 
 # blurb about file being hosted on FreeBSD.org. To work, it also
-# needs a modification to /usr/share/doc/mk/doc.docbook.mk. Around line
+# needs a modification to /usr/doc/share/mk/doc.docbook.mk. Around line
 # 121, replace LANGUAGECATALOG= with LANGUAGECATALOG?=
 LANGUAGECATALOG=/usr/doc/share/sgml/catalog
 
