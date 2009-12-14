@@ -206,6 +206,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        there, and also needs some simple configuration (see comments in the
        fields configuration file).
 
+     * --enable-camelcase will enable splitting camelCase words. This is not
+       enabled by default as it has the unfortunate side-effect of making
+       some phrase searches quite confusing: ie, "MySQL manual" would be
+       matched by "MySQL manual" and "my sql manual" but not "mysql manual"
+       (only inside phrase searches).
+
      * --with-file-command Specify the version of the 'file' command to use
        (ie: --with-file-command=/usr/local/bin/file). Can be useful to enable
        the gnu version on systems where the native one is bad.
@@ -551,9 +557,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
            This allows setting fields for all documents under a given
            directory. Typical usage would be to set an "rclaptg" field, to be
-           used in mimeview to select a specific viewer. Ie:
-           localfields=rclaptg=gnus;other=val, then select specifier viewer
-           with mimetype|tag=... in mimeview.
+           used in mimeview to select a specific viewer. If several fields
+           are to be set, they should be separated with a ':' character
+           (which there is currently no way to escape). Ie: localfields=
+           rclaptg=gnus:other = val, then select specifier viewer with
+           mimetype|tag=... in mimeview.
 
    filtersdir
 
