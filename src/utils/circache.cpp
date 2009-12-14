@@ -559,14 +559,13 @@ public:
 
             if (hd.flags & EFDataCompressed) {
                 LOGDEB1(("Circache:readdicdata: data compressed\n"));
-                char *uncomp;
+                void *uncomp;
                 unsigned int uncompsize;
-                if (!inflateToDynBuf(bf, hd.datasize, 
-                                     (void **)&uncomp, &uncompsize)) {
+                if (!inflateToDynBuf(bf, hd.datasize, &uncomp, &uncompsize)) {
                     m_reason << "CirCache: decompression failed ";
                     return false;
                 }
-                data->assign(uncomp, uncompsize);
+                data->assign((char *)uncomp, uncompsize);
                 free(uncomp);
             } else {
                 LOGDEB1(("Circache:readdicdata: data NOT compressed\n"));
