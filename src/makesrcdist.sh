@@ -33,7 +33,12 @@ if test ! -d qtgui;then
     exit 1
 fi
 
-topdir=$targetdir/recoll-$version
+case $version in
+*.*.*) relname=recoll-$version;;
+*) releasename=betarecoll-$version;;
+esac
+
+topdir=$targetdir/releasename
 if test ! -d $topdir ; then
     mkdir $topdir || exit 1
 else 
@@ -100,8 +105,8 @@ TAG="RECOLL_$versionforcvs"
 # the top Makefile here (its' output by configure on the target system):
 rm -f $topdir/Makefile
 
-out=recoll-$version.tar.gz
+out=$releasename.tar.gz
 (cd $targetdir ; \
-    $TAR chf - recoll-$version | \
+    $TAR chf - $releasename | \
     	gzip > $out)
 echo "$targetdir/$out created"
