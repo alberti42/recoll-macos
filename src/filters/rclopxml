@@ -12,6 +12,7 @@ LC_ALL=C ; export LC_ALL
 progname=rclopxml
 filetype=openxml
 
+
 #RECFILTCOMMONCODE
 ##############################################################################
 # !! Leave the previous line unmodified!! Code imported from the
@@ -35,10 +36,10 @@ iscmd()
     cmd=$1
     case $cmd in
     */*)
-	if test -x $cmd ; then return 0; else return 1; fi ;;
+	if test -x $cmd -a ! -d $cmd ; then return 0; else return 1; fi ;;
     *)
       oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
-      for d in $*;do test -x $d/$cmd && return 0;done
+      for d in $*;do test -x $d/$cmd -a ! -d $d/$cmd && return 0;done
       return 1 ;;
     esac
 }
