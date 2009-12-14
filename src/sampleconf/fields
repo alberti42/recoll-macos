@@ -21,7 +21,7 @@
 # remnant of omega compatibility inside the data record
 caption = S
 author = A
-keyword = K
+keywords = K
 
 # Extension examples. These are actually used by default by Recoll, you can
 # add your own to search for fields produced by the filters and not handled
