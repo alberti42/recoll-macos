@@ -15,7 +15,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Table of Contents
 
-   7.1. Installing a prebuilt copy
+   7.1. Installing a binary copy
 
    7.2. Supporting packages
 
@@ -25,19 +25,33 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    7.5. The KDE Kicker Recoll applet
 
-                        7.1. Installing a prebuilt copy
+                         7.1. Installing a binary copy
 
-   Recoll binary packages from the Recoll web site are always linked
-   statically to the Xapian libraries, and have no other dependencies. You
-   will only have to check or install supporting applications for the file
-   types that you want to index beyond text, HTML and mail files, and maybe
-   have a look at the configuration section (but this may not be necessary
-   for a quick test with default parameters).
+   There are three types of binary Recoll installations:
+
+     * Through your system normal software distribution framework (ie,
+       Debian/Ubuntu apt, FreeBSD ports, etc.).
+
+     * From a package downloaded from the Recoll web site.
+
+     * From a prebuilt tree downloaded from the Recoll web site.
+
+   In all cases, the strict software dependancies (ie on Xapian or iconv)
+   will be automatically satisfied, you should not have to worry about them.
+
+   You will only have to check or install supporting applications for the
+   file types that you want to index beyond those that are natively processed
+   by Recoll (text, HTML, mail files, and a few others).
+
+   You should also maybe have a look at the configuration section (but this
+   may not be necessary for a quick test with default parameters). Most
+   parameters can be more conveniently set from the GUI interface.
 
 7.1.1. Installing through a package system
 
-   If you use a BSD-type port system or a prebuilt package (RPM or other),
-   just follow the usual procedure for your system.
+   If you use a BSD-type port system or a prebuilt package (DEB, RPM,
+   manually or through the system software configuration utility), just
+   follow the usual procedure for your system.
 
 7.1.2. Installing a prebuilt Recoll
 
@@ -70,7 +84,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Recoll uses external applications to index some file types. You need to
    install them for the file types that you wish to have indexed (these are
-   run-time dependencies. None is needed for building Recoll).
+   run-time optional dependencies. None is needed for building or running
+   Recoll except for indexing their specific file type).
 
    After an indexing pass, the commands that were found missing can be
    displayed from the recoll File menu. The list is stored in the missing
@@ -102,14 +117,28 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * djvu: DjVuLibre
 
-     * MP3: Recoll will use the id3info command from the id3lib package to
+     * mp3: Recoll will use the id3info command from the id3lib package to
        extract tag information. Without it, only the file names will be
        indexed.
 
-     * Pictures: Recoll uses the Exiftool Perl package to extract tag
-       information. Most image file formats are supported.
+     * flac files need metaflac.
 
-   Text, HTML, mail folders Openoffice and Scribus files are processed
+     * ogg files need ogginfo.
+
+     * Pictures: Recoll uses the Exiftool Perl package to extract tag
+       information. Most image file formats are supported. Note that there
+       may not be much interest in indexing the technical tags (image size,
+       aperture, etc.). This is only of interest if you store personal tags
+       or textual descriptions inside the image files.
+
+     * chm: files in microsoft help format need Python and the pychm module
+       (which needs chmlib).
+
+     * ics: iCalendar files need Python and the icalendar module.
+
+     * zip: Zip archives need Python (and the standard zipfile module).
+
+   Text, HTML, mail folders, Openoffice and Scribus files are processed
    internally. Lyx is used to index Lyx files. Many filters need sed and awk.
 
    --------------------------------------------------------------------------
@@ -131,10 +160,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 7.3.1. Prerequisites
 
    At the very least, you will need to download and install the xapian core
-   package (Recoll 1.9 normally uses version 1.0.2, but any 0.9 or 1.0.x
-   version will work too), and the qt run-time and development packages
-   (Recoll development currently uses version 3.3.5, but any 3.3 version is
-   probably OK).
+   package and the qt run-time and development packages. Check the Recoll
+   download page for up to date version information.
 
    You will most probably be able to find a binary package for qt for your
    system. You may have to compile Xapian but this is not difficult (if you
@@ -146,9 +173,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 7.3.2. Building
 
-   Recoll has been built on Linux (redhat7.3, mandriva 2005/6, Fedora Core
-   3/4/5/6), FreeBSD 5/6, macosx, and Solaris 8. If you build on another
-   system, and need to modify things, I would very much welcome patches.
+   Recoll has been built on Linux, FreeBSD, macosx, and Solaris, most
+   versions after 2005 should be ok, maybe some older ones too (Solaris 8 is
+   ok). If you build on another system, and need to modify things, I would
+   very much welcome patches.
 
    Depending on the qt configuration on your system, you may have to set the
    QTDIR and QMAKESPECS variables in your environment:
@@ -161,12 +189,29 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        sub-directories (ie: linux-g++).
 
    On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
-   is not needed because there is a default link in mkspecs/.
+   is not needed because there is a default link in mkspecs/. Neither should
+   be needed with Qt 4.
 
-   Configure options: --without-aspell will disable the code for phonetic
-   matching of search terms. --with-fam or --with-inotify will enable the
-   code for real time indexing. Inotify support is enabled by default on
-   recent Linux systems.
+   Configure options:
+
+     * --without-aspell will disable the code for phonetic matching of search
+       terms.
+
+     * --with-fam or --with-inotify will enable the code for real time
+       indexing. Inotify support is enabled by default on recent Linux
+       systems.
+
+     * --enable-xattr will enable code to fetch data from file extended
+       attributes. This is only useful is some application stores data in
+       there, and also needs some simple configuration (see comments in the
+       fields configuration file).
+
+     * --with-file-command Specify the version of the 'file' command to use
+       (ie: --with-file-command=/usr/local/bin/file). Can be useful to enable
+       the gnu version on systems where the native one is bad.
+
+     * --without-gui Disable the Qt interface, and auxiliary uses of X11, and
+       compile the command line version.
 
    Normal procedure:
 
@@ -176,10 +221,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
          (practices usual hardship-repelling invocations)
      
 
-   There little auto-configuration. The configure script will mainly link one
-   of the system-specific files in the mk directory to mk/sysconf. If your
-   system is not known yet, it will tell you as much, and you may want to
-   manually copy and modify one of the existing files (the new file name
+   There is little auto-configuration. The configure script will mainly link
+   one of the system-specific files in the mk directory to mk/sysconf. If
+   your system is not known yet, it will tell you as much, and you may want
+   to manually copy and modify one of the existing files (the new file name
    should be the output of uname -s).
 
 7.3.3. Installation
@@ -291,7 +336,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    and edit the configuration file before restarting the command. This will
    start the initial indexing, which may take some time.
 
-   Paramers:
+   Paramers affecting what we index:
 
    topdirs
 
@@ -300,14 +345,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            inside the indexed trees by default (see the followLinks options
            though).
 
-   dbdir
-
-           The name of the Xapian data directory. It will be created if
-           needed when the index is initialized. If this is not an absolute
-           path, it will be interpreted relative to the configuration
-           directory. The value can have embedded spaces but starting or
-           trailing spaces will be trimmed. You cannot use quotes here.
-
    skippedNames
 
            A space-separated list of patterns for names of files or
@@ -315,10 +352,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            the default file is:
 
  skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
-          *~ recollrc
+            *~ .beagle .git .hg .bzr loop.ps .xsession-errors \
+            .recoll* xapiandb recollrc recoll.conf
 
-           The list can be redefined for sub-directories, but is only
-           actually changed for the top level ones in topdirs.
+           The list can be redefined at any sub-directory in the indexed
+           area.
 
            The top-level directories are not affected by this list (that is,
            a directory in topdirs might match and would still be indexed).
@@ -361,6 +399,114 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            be set individually for each of the topdirs members by using
            sections. It can not be changed below the topdirs level.
 
+   indexedmimetypes
+
+           Recoll normally indexes any file which it knows how to read. This
+           list lets you restrict the indexed mime types to what you specify.
+           If the variable is unspecified or the list empty (the default),
+           all supported types are processed.
+
+   compressedfilemaxkbs
+
+           Size limit for compressed (.gz or .bz2) files. These need to be
+           decompressed in a temporary directory for identification, which
+           can be very wasteful if 'uninteresting' big compressed files are
+           present. Negative means no limit, 0 means no processing of any
+           compressed file. Defaults to -1.
+
+   textfilemaxmbs
+
+           Maximum size for text files. Very big text files are often
+           uninteresting logs. Set to -1 to disable (default 20MB).
+
+   textfilepagekbs
+
+           If set to other than -1, text files will be indexed as multiple
+           documents of the given page size. This may be useful if you do
+           want to index very big text files as it will both reduce memory
+           usage at index time and help with loading data to the preview
+           window. A size of a few megabytes would seem reasonable (default:
+           1MB).
+
+   indexallfilenames
+
+           Recoll indexes file names in a special section of the database to
+           allow specific file names searches using wild cards. This
+           parameter decides if file name indexing is performed only for
+           files with mime types that would qualify them for full text
+           indexing, or for all files inside the selected subtrees,
+           independently of mime type.
+
+   usesystemfilecommand
+
+           Decide if we use the file -i system command as a final step for
+           determining the mime type for a file (the main procedure uses
+           suffix associations as defined in the mimemap file). This can be
+           useful for files with suffix-less names, but it will also cause
+           the indexing of many bogus "text" files.
+
+   processbeaglequeue
+
+           If this is set, process the directory where Beagle Web browser
+           plugins copy visited pages for indexing. Of course, Beagle MUST
+           NOT be running, else things will behave strangely.
+
+   beaglequeuedir
+
+           The path to the Beagle indexing queue. This is hard-coded in the
+           Beagle plugin as ~/.beagle/ToIndex so there should be no need to
+           change it.
+
+   Parameters affecting where and how we store things:
+
+   dbdir
+
+           The name of the Xapian data directory. It will be created if
+           needed when the index is initialized. If this is not an absolute
+           path, it will be interpreted relative to the configuration
+           directory. The value can have embedded spaces but starting or
+           trailing spaces will be trimmed. You cannot use quotes here.
+
+   maxfsoccuppc
+
+           Maximum file system occupation before we stop indexing. The value
+           is a percentage, corresponding to what the "Capacity" df output
+           column shows. The default value is 0, meaning no checking.
+
+   mboxcachedir
+
+           The directory where mbox message offsets cache files are held.
+           This is normally $RECOLL_CONFDIR/mboxcache, but it may be useful
+           to share a directory between different configurations.
+
+   mboxcacheminmbs
+
+           The minimum mbox file size over which we cache the offsets. There
+           is really no sense in caching offsets for small files. The default
+           is 5 MB.
+
+   webcachedir
+
+           This is only used by the Beagle web browser plugin indexing code,
+           and defines where the cache for visited pages will live. Default:
+           $RECOLL_CONFDIR/webcache
+
+   webcachemaxmbs
+
+           This is only used by the Beagle web browser plugin indexing code,
+           and defines the maximum size for the web page cache. Default: 40
+           MB.
+
+   idxflushmb
+
+           Threshold (megabytes of new text data) where we flush from memory
+           to disk index. Setting this can help control memory usage. A value
+           of 0 means no explicit flushing, letting Xapian use its own
+           default, which is flushing every 10000 documents (memory usage
+           depends on average document size). The default value is 10.
+
+   Miscellani:
+
    loglevel,daemloglevel
 
            Verbosity level for recoll and recollindex. A value of 4 lists
@@ -390,19 +536,24 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            character set used is the one defined by the nls environment
            (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
 
-   maxfsoccuppc
+   filtermaxseconds
 
-           Maximum file system occupation before we stop indexing. The value
-           is a percentage, corresponding to what the "Capacity" df output
-           column shows. The default value is 0, meaning no checking.
+           Maximum filter execution time, after which it is aborted. Some
+           postscript programs just loop...
 
-   idxflushmb
+   maildefcharset
 
-           Threshold (megabytes of new text data) where we flush from memory
-           to disk index. Setting this can help control memory usage. A value
-           of 0 means no explicit flushing, letting Xapian use its own
-           default, which is flushing every 10000 documents (memory usage
-           depends on average document size). The default value is 10.
+           This can be used to define the default character set specifically
+           for mail messages which don't specify it. This is mainly useful
+           for readpst (libpst) dumps, which are utf-8 but do not say so.
+
+   localfields
+
+           This allows setting fields for all documents under a given
+           directory. Typical usage would be to set an "rclaptg" field, to be
+           used in mimeview to select a specific viewer. Ie:
+           localfields=rclaptg=gnus;other=val, then select specifier viewer
+           with mimetype|tag=... in mimeview.
 
    filtersdir
 
@@ -415,44 +566,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
            The name of the directory where recoll result list icons are
            stored. You can change this if you want different images.
-
-   guesscharset
-
-           Decide if we try to guess the character set of files if no
-           internal value is available (ie: for plain text files). This does
-           not work well in general, and should probably not be used.
-
-   usesystemfilecommand
-
-           Decide if we use the file -i system command as a final step for
-           determining the mime type for a file (the main procedure uses
-           suffix associations as defined in the mimemap file). This can be
-           useful for files with suffix-less names, but it will also cause
-           the indexing of many bogus "text" files.
-
-   indexedmimetypes
-
-           Recoll normally indexes any file which it knows how to read. This
-           list lets you restrict the indexed mime types to what you specify.
-           If the variable is unspecified or the list empty (the default),
-           all supported types are processed.
-
-   compressedfilemaxkbs
-
-           Size limit for compressed (.gz or .bz2) files. These need to be
-           decompressed in a temporary directory for identification, which
-           can be very wasteful if 'uninteresting' big compressed files are
-           present. Negative means no limit, 0 means no processing of any
-           compressed file. Defaults to -1.
-
-   indexallfilenames
-
-           Recoll indexes file names in a special section of the database to
-           allow specific file names searches using wild cards. This
-           parameter decides if file name indexing is performed only for
-           files with mime types that would qualify them for full text
-           indexing, or for all files inside the selected subtrees,
-           independently of mime type.
 
    idxabsmlen
 
@@ -495,6 +608,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            text. The default value of 2 is probably appropriate in most
            cases. A value of 3 would allow more precision and efficiency on
            longer words, but the index will be approximately twice as large.
+
+   guesscharset
+
+           Decide if we try to guess the character set of files if no
+           internal value is available (ie: for plain text files). This does
+           not work well in general, and should probably not be used.
 
 7.4.2. The mimemap file
 
@@ -548,6 +667,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    configuration file.
 
    Please note that these entries must be placed under a [view] section.
+
+   The keys in the file are normally mime types. You can add an application
+   tag to specialize the choice for an area of the filesystem (using a
+   localfields specification in mimeconf). The syntax for the key is
+   mimetype|tag
 
    If Use desktop preferences to choose document editor is checked in the
    user preferences, all mimeview entries will be ignored except the one
