@@ -3204,11 +3204,14 @@ skippedPaths = ~/somedir/&lowast;.txt
           </varlistentry>
 
           <varlistentry><term><literal>localfields</literal></term>
-            <listitem><para>This allows setting fields for all documents
-            under a given directory. Typical usage would be to set an
-            "rclaptg" field, to be used in <filename>mimeview</filename> to
-            select a specific viewer. Ie: 
-		<literal>localfields=rclaptg=gnus;other=val</literal>, then
+            <listitem><para>This allows setting fields for all
+            documents under a given directory. Typical usage would be
+            to set an "rclaptg" field, to be used in
+            <filename>mimeview</filename> to select a specific
+            viewer. If several fields are to be set, they should be
+            separated with a ':' character (which there is currently no way to
+            escape). Ie:
+		<literal>localfields= rclaptg=gnus:other = val</literal>, then
 		select specifier viewer with
 		<literal>mimetype|tag=...</literal> in
 		<filename>mimeview</filename>.</para>  

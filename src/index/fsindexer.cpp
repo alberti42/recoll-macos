@@ -214,6 +214,8 @@ bool FsIndexer::indexFiles(list<string>& files)
         LOGDEB2(("FsIndexer::indexFiles: [%s]\n", it->c_str()));
 
         m_config->setKeyDir(path_getfather(*it));
+        if (m_havelocalfields)
+            localfieldsfromconf();
         walker.setSkippedNames(m_config->getSkippedNames());
 
 	// Check path against indexed areas and skipped names/paths
@@ -285,22 +287,18 @@ void FsIndexer::localfieldsfromconf()
     string sfields;
     if (!m_config->getConfParam("localfields", sfields))
         return;
-    list<string> lfields;
-    if (!stringToStrings(sfields, lfields)) {
-        LOGERR(("FsIndexer::localfieldsfromconf: bad syntax for [%s]\n", 
-                sfields.c_str()));
-        return;
-    }
-    for (list<string>::const_iterator it = lfields.begin();
-         it != lfields.end(); it++) {
-        ConfSimple conf(*it, 1, true);
-        list<string> nmlst = conf.getNames("");
-        for (list<string>::const_iterator it1 = nmlst.begin();
-             it1 != nmlst.end(); it1++) {
-            conf.get(*it1, m_localfields[*it1]);
-            LOGDEB2(("FsIndexer::localfieldsfromconf: [%s] => [%s]\n",
-                    (*it1).c_str(), m_localfields[*it1].c_str()));
-        }
+    // Substitute ':' with '\n' inside the string. There is no way to escape ':'
+    for (string::size_type i = 0; i < sfields.size(); i++)
+        if (sfields[i] == ':')
+            sfields[i] = '\n';
+    // Parse the result with a confsimple and add the results to the metadata
+    ConfSimple conf(sfields, 1, true);
+    list<string> nmlst = conf.getNames("");
+    for (list<string>::const_iterator it = nmlst.begin();
+         it != nmlst.end(); it++) {
+        conf.get(*it, m_localfields[*it]);
+        LOGDEB(("FsIndexer::localfieldsfromconf: [%s] => [%s]\n",
+                    (*it).c_str(), m_localfields[*it].c_str()));
     }
 }
 
