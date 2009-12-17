@@ -3410,45 +3410,45 @@ skippedPaths = ~/somedir/&lowast;.txt
         <sect3 id="rclinstall.config.examples.addview">
           <title>Adding an external viewer for an non-indexed type</title>
 
-        <para>Imagine that you have some kind of file which does not
-        have indexable content, but for which you would like to have a
-        functional <guilabel>Edit</guilabel> link in the result list
-        (when found by file name). The file names end in
-        <replaceable>.blob</replaceable> and can be displayed by
-        application <replaceable>blobviewer</replaceable>.</para>
+          <para>Imagine that you have some kind of file which does not
+            have indexable content, but for which you would like to have a
+            functional <guilabel>Edit</guilabel> link in the result list
+            (when found by file name). The file names end in
+            <replaceable>.blob</replaceable> and can be displayed by
+            application <replaceable>blobviewer</replaceable>.</para>
 
           <para>You need two entries in the configuration files for this
-        to work:</para>
-          <itemizedlist>
-          <listitem><para>In <filename>$RECOLL_CONFDIR/mimemap</filename>
-          (typically <filename>~/.recoll/mimemap</filename>), add the
-          following line:</para>
-          <programlisting>
-             application/x-blobapp = .blob
-           </programlisting>
-          <para>Note that the mime type is made up here, and you could
-          call it <replaceable>diesel/oil</replaceable> just the
-          same.</para>
-            </listitem>
-          <listitem><para>In
-          <filename>$RECOLL_CONFDIR/mimeview</filename> under the
-          <literal>[view]</literal> section:</para>
-              <programlisting>
-                 application/x-blobapp = blobviewer %f
-              </programlisting>
+	    to work:</para>
 
-              <para>We are supposing that
-              <replaceable>blobviewer</replaceable> wants a file name
-              parameter here, you would use <literal>%u</literal> if
+          <itemizedlist>
+            <listitem><para>In <filename>$RECOLL_CONFDIR/mimemap</filename>
+		(typically <filename>~/.recoll/mimemap</filename>), add the
+		following line:<programlisting>
+.blob = application/x-blobapp
+</programlisting>
+		Note that the mime type is made up here, and you could
+		call it <replaceable>diesel/oil</replaceable> just the
+		same.</para>
+            </listitem>
+            <listitem><para>In <filename>$RECOLL_CONFDIR/mimeview</filename>
+		under the <literal>[view]</literal> section, add:</para>
+              <programlisting>
+application/x-blobapp = blobviewer %f
+</programlisting>
+              <para>We are supposing
+              that <replaceable>blobviewer</replaceable> wants a file
+              name parameter here, you would use <literal>%u</literal> if
               it liked URLs better.</para>
             </listitem>
           </itemizedlist>
 
           <para>If you just wanted to change the application used by
-          &RCL; to display a mime type which it already knows, you
-          would just need to edit <filename>mimeview</filename>. The
-          entries you add in your personal file override those in the
-          central configuration, which you do not need to alter</para>
+            &RCL; to display a mime type which it already knows, you
+            would just need to edit <filename>mimeview</filename>. The
+            entries you add in your personal file override those in the
+            central configuration, which you do not need to
+            alter. <filename>mimeview</filename> can also be modified
+            from the Gui.</para>
 
         </sect3>
 
@@ -3456,48 +3456,43 @@ skippedPaths = ~/somedir/&lowast;.txt
           <title>Adding indexing support for a new file type</title>
 
           <para>Let us now imagine that the above
-          <replaceable>.blob</replaceable> files actually contain
-          indexable text and that you know how to extract it with a
-          command line program. Getting &RCL; to index the files is
-          easy. You need to perform the above alteration, and also to
-          add data to the <filename>mimeconf</filename> file
-          (typically in <filename>~/.recoll/mimeconf</filename>):</para>
-
+            <replaceable>.blob</replaceable> files actually contain
+            indexable text and that you know how to extract it with a
+            command line program. Getting &RCL; to index the files is
+            easy. You need to perform the above alteration, and also to
+            add data to the <filename>mimeconf</filename> file
+            (typically in <filename>~/.recoll/mimeconf</filename>):</para>
           <itemizedlist>
             <listitem><para>Under the <literal>[index]</literal>
-            section, add the following line (more about the
-            <replaceable>rclblob</replaceable> indexing script later):</para>
-              <programlisting>
-                 application/x-blobapp = exec rclblob
-              </programlisting>
-              <para></para>
+		section, add the following line (more about the
+		<replaceable>rclblob</replaceable> indexing script
+		later):<programlisting>
+application/x-blobapp = exec rclblob
+</programlisting></para>
             </listitem>
-
             <listitem><para>Under the <literal>[icons]</literal>
-            section, you should choose an icon to be displayed for the
-            files inside the result lists. Icons are normally 64x64
-            pixels PNG files which live in
-            <filename>/usr/[local/]share/recoll/images</filename>.
-            </para>
+		section, you should choose an icon to be displayed for the
+		files inside the result lists. Icons are normally 64x64
+		pixels PNG files which live in
+		<filename>/usr/[local/]share/recoll/images</filename>.</para>
             </listitem>
-
             <listitem><para>Under the <literal>[categories]</literal>
-            section, you should add the mime type where it makes sense
-            (you can also create a category). Categories may be used
-            for filtering in advanced search.</para>
+		section, you should add the mime type where it makes sense
+		(you can also create a category). Categories may be used
+		for filtering in advanced search.</para>
             </listitem>
-
           </itemizedlist>
 
           <para>The <replaceable>rclblob</replaceable> filter should
-          be an executable program or script which exists inside
-          <filename>/usr/[local/]share/recoll/filters</filename>. It
-          will be given a file name as argument and should output the
-          text contents on the standard output.</para>
+            be an executable program or script which exists inside
+            <filename>/usr/[local/]share/recoll/filters</filename>. It
+            will be given a file name as argument and should output the
+            text or html contents on the standard output.</para>
 
           <para>The <link linkend="rcl.program.filters">filter
-          programming</link> section describes in more detail how to
-          write a filter.</para> 
+              programming</link> section describes in more detail how
+              to write a filter.</para> 
+
         </sect3>
 
       </sect2>
