@@ -283,7 +283,7 @@ AC_ARG_WITH(gui,
         withQT=$withval, withQT="yes")
 
 if test "$withQT" != "yes" ; then
-   AC_DEFINE(WIHOUT_X11)
+   AC_DEFINE(WITHOUT_X11)
    NOQTMAKE="#"
    NOCMDLINE=""
 else

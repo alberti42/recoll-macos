@@ -4815,7 +4815,7 @@ fi
 
 if test "$withQT" != "yes" ; then
    cat >>confdefs.h <<\_ACEOF
-#define WIHOUT_X11 1
+#define WITHOUT_X11 1
 _ACEOF
 
    NOQTMAKE="#"
