@@ -2627,16 +2627,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * In $RECOLL_CONFDIR/mimemap (typically ~/.recoll/mimemap), add the
        following line:
 
-              application/x-blobapp = .blob
-          
+ .blob = application/x-blobapp
 
        Note that the mime type is made up here, and you could call it
        diesel/oil just the same.
 
-     * In $RECOLL_CONFDIR/mimeview under the [view] section:
+     * In $RECOLL_CONFDIR/mimeview under the [view] section, add:
 
-                  application/x-blobapp = blobviewer %f
-             
+ application/x-blobapp = blobviewer %f
 
        We are supposing that blobviewer wants a file name parameter here, you
        would use %u if it liked URLs better.
@@ -2644,7 +2642,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    If you just wanted to change the application used by Recoll to display a
    mime type which it already knows, you would just need to edit mimeview.
    The entries you add in your personal file override those in the central
-   configuration, which you do not need to alter
+   configuration, which you do not need to alter. mimeview can also be
+   modified from the Gui.
 
      ----------------------------------------------------------------------
 
@@ -2659,8 +2658,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * Under the [index] section, add the following line (more about the
        rclblob indexing script later):
 
-                  application/x-blobapp = exec rclblob
-             
+ application/x-blobapp = exec rclblob
 
      * Under the [icons] section, you should choose an icon to be displayed
        for the files inside the result lists. Icons are normally 64x64 pixels
@@ -2672,7 +2670,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The rclblob filter should be an executable program or script which exists
    inside /usr/[local/]share/recoll/filters. It will be given a file name as
-   argument and should output the text contents on the standard output.
+   argument and should output the text or html contents on the standard
+   output.
 
    The filter programming section describes in more detail how to write a
    filter.
