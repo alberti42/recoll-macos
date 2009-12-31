@@ -46,13 +46,14 @@ INSTALL=${INSTALL:="install -c"}
 STRIP=${STRIP:=strip}
 
 sys=`uname`
-if test "$sys" = Darwin ; then
-    RECOLLPROG=${QTGUI}/recoll.app/Contents/MacOS/recoll
-else
-    RECOLLPROG=${QTGUI}/recoll
-fi
+@NOQTMAKE@if test "$sys" = Darwin ; then
+@NOQTMAKE@    RECOLLPROG=${QTGUI}/recoll.app/Contents/MacOS/recoll
+@NOQTMAKE@else
+@NOQTMAKE@    RECOLLPROG=${QTGUI}/recoll
+@NOQTMAKE@fi
 
-test -x ${RECOLLPROG} || fatal "${QTGUI}/recoll does not exist." \
+TESTPROG=index/recollindex
+test -x $TESTPROG || fatal "$TESTPROG does not exist." \
      " You need to build first (type 'make')."
 
 for d in \
@@ -85,8 +86,10 @@ ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 ${INSTALL} -m 0444 doc/man/recoll.1 doc/man/recollindex.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 
-${INSTALL} -m 0755 ${RECOLLPROG} index/recollindex ${bindir} || exit 1
-${STRIP} ${bindir}/recoll ${bindir}/recollindex
+@NOQTMAKE@${INSTALL} -m 0755 ${RECOLLPROG} ${bindir} || exit 1
+@NOQTMAKE@${STRIP} ${bindir}/recoll 
+${INSTALL} -m 0755 index/recollindex ${bindir} || exit 1
+${STRIP} ${bindir}/recollindex
 
 ${INSTALL} -m 0755 filters/rcl* ${datadir}/recoll/filters/ || exit 1
 ${INSTALL} -m 0755 desktop/xdg-utils-1.0.1/scripts/xdg-open \
