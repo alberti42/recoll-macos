@@ -581,7 +581,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Chapter 3. Searching with the Qt graphical user interface
 
    The recoll program provides the main user interface for searching. It is
-   based on the QT library.
+   based on the Qt library.
 
    recoll has two search modes:
 
@@ -1249,12 +1249,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Highlight color for query terms: Terms from the user query are
        highlighted in the result list samples and the preview window. The
-       color can be chosen here. Any QT color string should work (ie red,
+       color can be chosen here. Any Qt color string should work (ie red,
        #ff0000). The default is blue.
 
      * Result list font: There is quite a lot of information shown in the
        result list, and you may want to customize the font and/or font size.
-       The rest of the fonts used by Recoll are determined by your generic QT
+       The rest of the fonts used by Recoll are determined by your generic Qt
        config (try the qtconfig command).
 
      * Result paragraph format string: allows you to change the presentation
@@ -1434,7 +1434,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    appropriate URL in a KDE open dialog, or with an HTML-based interface
    displayed in Konqueror.
 
-   The HTML-based interface is similar to the QT-based interface, but
+   The HTML-based interface is similar to the Qt-based interface, but
    slightly less powerful for now. Its advantage is that you can perform your
    search while staying fully within the KDE framework: drag and drop from
    the result list works normally and you have your normal choice of
@@ -2181,7 +2181,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 7.4. Configuration overview
 
    Most of the parameters specific to the recoll GUI are set through the
-   Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
+   Preferences menu and stored in the standard Qt place ($HOME/.qt/recollrc).
    You probably do not want to edit this by hand.
 
    Recoll indexing options are set inside text configuration files located in

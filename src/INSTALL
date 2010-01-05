@@ -263,7 +263,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
                           7.4. Configuration overview
 
    Most of the parameters specific to the recoll GUI are set through the
-   Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
+   Preferences menu and stored in the standard Qt place ($HOME/.qt/recollrc).
    You probably do not want to edit this by hand.
 
    Recoll indexing options are set inside text configuration files located in
