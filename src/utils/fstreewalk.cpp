@@ -125,20 +125,29 @@ bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
             *it = path_canon(*it);
     return true;
 }
-bool FsTreeWalker::inSkippedPaths(const string& path)
+bool FsTreeWalker::inSkippedPaths(const string& path, bool ckparents)
 {
+    int fnmflags = FNM_PATHNAME;
+#ifdef FNM_LEADING_DIR
+    if (ckparents)
+        fnmflags |= FNM_LEADING_DIR;
+#endif
     list<string>::const_iterator it;
     for (it = data->skippedPaths.begin(); 
 	 it != data->skippedPaths.end(); it++) {
-        // If we find a system where FNM_LEADING_DIR is undefined (its
-        // unposixy), will have to do this for all ascendant paths up
-        // to the topdir. We'll then have a constructor option because
-        // this is only useful when called externally. When used
-        // internally, we don't descend in skipped paths, and so don't
-        // need FNM_LEADING_DIR
-	if (fnmatch(it->c_str(), path.c_str(), FNM_PATHNAME | 
-                    FNM_LEADING_DIR) == 0) 
-	    return true;
+#ifndef FNM_LEADING_DIR
+        if (ckparents) {
+            string mpath = path;
+            while (mpath.length() > 2) {
+                if (fnmatch(it->c_str(), mpath.c_str(), fnmflags) == 0) 
+                    return true;
+                mpath = path_getfather(mpath);
+            }
+        } else 
+#endif /* FNM_LEADING_DIR */
+        if (fnmatch(it->c_str(), path.c_str(), fnmflags) == 0) {
+            return true;
+        }
     }
     return false;
 }
@@ -217,7 +226,12 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 		continue;
 	    }
 	    if (!data->skippedPaths.empty()) {
-		if (inSkippedPaths(fn))
+                // We do not check the ancestors. This means that you can have
+                // a topdirs member under a skippedPath, to index a portion of
+                // an ignored area. This is the way it had always worked, but
+                // this was broken by 1.13.00 and the systematic use of 
+                // FNM_LEADING_DIR
+		if (inSkippedPaths(fn, false))
 		    goto skip;
 	    }
 

@@ -1,6 +1,6 @@
 2 results
-message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/outmail]	[Re: CDNow, mkfichcom.tcl and "]	2248233	bytes	
-message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/outmail]	[Home Ip]	2248233	bytes	
+message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/outmail]	[Re: CDNow, mkfichcom.tcl and "]	2248254	bytes	
+message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/outmail]	[Home Ip]	2248254	bytes	
 1 results
 message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/BadHtmlInMail]	[Prochaine rando]	3637	bytes	
 1 results

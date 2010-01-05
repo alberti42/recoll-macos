@@ -126,6 +126,10 @@
 	<a href="CHANGES.html">Changes</a>. <a href="BUGS.html">Bugs</a>.
 	</p>
 
+      <p>For building on Solaris (at least 5.8), you need to apply
+	this <a href="sunos/recoll11300solaris.patch">patch</a> to the
+	Recoll source.</p>
+
       <p>In order to build Recoll from source, you will need to install
 	the Xapian core development libraries. You will find source and binary
 	packages on the <a href="http://www.xapian.org/download.php">
@@ -289,21 +293,11 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
       <blockquote>
       <p>Note to Solaris users: you need to perform the initial
        indexing pass with "recollindex", not the recoll GUI indexing
-       thread. See <a href="BUGS.html">errata</a>.</p>
-      <p>Also you need a small patch to compile on solaris (version 8 at
-      least). In directory utils, you need to
-      include <tt>&lt;limits.h></tt> in <tt>closefrom.cpp</tt>
-<pre><tt>
-diff -w closefrom.cpp.orig closefrom.cpp
-145a146,148
-> #ifdef sun
-> #include <limits.h>
-> #endif
-</tt></pre>
+       thread. See <a href="BUGS.html">errata</a>.
 
        <p><b>Solaris 8 SPARC</b>: 
-       <a href="sunos/recoll-1.12.3-SunOS-5.8.tgz">
-        recoll-1.12.3-SunOS-5.8.tgz</a>. </p>
+       <a href="sunos/recoll-1.13.00-SunOS-5.8.tgz">
+        recoll-1.13.00-SunOS-5.8.tgz</a>. </p>
 
       <p>Recoll also builds and runs on Solaris 10, but, given the
 	situation (2008) of open source packages for Solaris (very old

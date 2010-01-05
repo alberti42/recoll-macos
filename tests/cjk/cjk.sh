@@ -8,9 +8,9 @@ initvariables $0
 # We need an UTF-8 locale here for recollq arg transcoding
 LANG=en_US.UTF-8
 export LANG
-recollq 'まず'  2> $mystderr | 
+recollq 'keyword:ckjtsthuniique まず'  2> $mystderr | 
 	egrep -v '^Recoll query: ' > $mystdout
-recollq 'ます'  2>> $mystderr | 
+recollq 'keyword:ckjtsthuniique ます'  2>> $mystderr | 
 	egrep -v '^Recoll query: ' >> $mystdout
 
 

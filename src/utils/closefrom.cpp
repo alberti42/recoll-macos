@@ -143,6 +143,9 @@ void libclf_setmaxfd(int max)
     closefrom_maxfd = max;
 }
 
+#ifdef sun
+#include <limits.h>
+#endif
 int libclf_closefrom(int fd0)
 {
     int i, maxfd = closefrom_maxfd;
