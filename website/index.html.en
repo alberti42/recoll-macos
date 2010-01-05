@@ -42,12 +42,12 @@
 
       <p>It is based on the very strong <a href=
 	  "http://www.xapian.org">Xapian</a> back-end, for which it
-	provides a feature-rich yet easy to use front-end with a QT
+	provides a feature-rich yet easy to use front-end with a Qt
 	graphical interface.</p>
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.12.2</a> 
+	<a class="important" href="download.html">1.13.00</a> 
 	(<a href="CHANGES.html">Changes</a>).</p>
 
       <h2>Features: </h2>
@@ -80,14 +80,16 @@
 
       <h2>News: </h2>
       <ul>
-	<li>2009-10-22 : <a href="download.html#source">1.12.2</a> is
-	  out. It fixes a number of 
-	  <a href="CHANGES.html">ennoying bugs</a>.</li>
-	<li>2009-06-23 : <a href="download.html#source">1.12.1</a> is
-	  out. It fixes a couple of minor bugs, and build errors with the
-	  latest gcc and gnu libc.</li>
-	<li>2008-09-01 : <a href="filters/filters.html">A new
-	    filter</a> for Office Open XML formats (docx ...).</li>
+
+	<li>2010-01-05 : a <a href="download.html#source">1.13.00</a> is
+	  out. It brings some nice <a
+	  href="CHANGES.html#1.13.0">improvements and new functions</a>. 
+	  Please try it and report any problems.</li>
+
+	<li>2009-12-10 : <a href="download.html#source">1.12.4</a> is
+	  out. It fixes a <a href="CHANGES.html#1.12.4">problem in the preview
+	  window search function (qt4 only)</a>.</li>
+
 	<li>2008-05-22 : we now have a mailing list:
 	  <ul>
 	    <li><a href="http://www.freelists.org/list/recoll-user">
@@ -103,7 +105,7 @@
       <p>If you have any problem with Recoll, or a suggestion for
   	improvement, <em>please</em> provide feedback, preferably on the 
 	recoll-user mailing list, or directly to 
-	<a href="mailto:jean-francois.dockes@wanadoo.fr">me</a>.</p>
+	<a href="mailto:jfd@recoll.org">me</a>.</p>
 
       <p>Mailing list information:
 	<ul>

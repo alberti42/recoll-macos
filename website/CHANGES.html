@@ -31,9 +31,139 @@
 
       <h1>Recoll journal of user-visible changes </h1>
 
-      <h2><a name="1.12.2">1.12.2</a></h2>
+      <h2><a name="1.13.0">Development version</a></h2>
+
+      <ul>
+       <li>Recoll has a new class of persistent external filters
+         with the capability to process several documents, or
+         multi-document files, in the same instance. Benefits: much
+         faster image tag indexing, and new file formats. Except for
+         the Perl image tag filter (because of ExifTool), the new
+         filters are written in Python.<li>
+
+       <li>New file formats: chm (microsoft help), zip archives, .ics
+	 calendar files. Individual pages in chm files are indexed and
+	 can be previewed. Zip is quite convenient for maildir
+	 archives (for example).</li>
+
+       <li>Recoll can now use the output of the Beagle Firefox plugin
+	 to index visited web pages and bookmarks. This is only usable
+	 if Beagle itself is not running, else Recoll and Beagle will be
+	 fighting for the same queue.</li>
+
+       <li>Big text files (like application logs) can now be paged for
+         indexing, avoiding excess memory usage during indexing and
+         improving the usability at query time. They can also be
+         altogether skipped by setting a maximum size configuration
+         parameter. These parameters have default values (1 MB and 20
+         MB) which change Recoll behaviour compared to previous
+         versions. You can set <i>textfilepagekbs</i>
+         and <i>textfilemaxmbs</i> to -1 in the configuration to
+         restore the old behaviour.</li>
+
+       <li>A cache was implemented for mbox message header offsets. This
+	 speeds up message previews for big mbox files.</li>
+
+       <li>Miscellaneous usability improvements: 
+	 <ul>
+	   <li>Allow using page-up/down and shift-home to scroll the
+	     result list while the focus is in the search entry. </li>
+	   <li>Make 'Use desktop preferences' the default for new
+	     Recoll installations, and make this choice more
+	     prominent in the external viewer dialog.</li> 
+	   <li>^P starts the print dialog on a preview window.</li>
+	   <li>If a search has no result, alternate spellings are
+	     suggested. This feature is still a bit raw and will be
+	     improved.</li> 
+	   <li>If the text of a document is empty, preview will switch to
+	     displaying the document fields.</li>
+	   <li>New entry in the result list contextual menu for opening
+	     the parent document of a result list hit with its native
+	     application. Useful for exemple for pages inside chm files.</li>
+	 </ul>
+       </li>
+
+       <li>Indentation is now preserved when displaying text documents
+	 inside the preview window. This is particularly welcome for
+	 program source files.</li>
+
+       <li>Allow substituting arbitrary fields in the result
+         paragraph, using a %(fieldname) syntax</li>
+
+       <li>The real-time indexing monitor will now accumulate
+	 modifications during 30&nbsp;S before indexing.</li>
+
+       <li>The indexer can now split camelCase words, allowing search on
+	 component terms. This is not enabled by default as it can
+	 confuse phrase searches (ie: "MySQL&nbsp;manual" is matched by
+	 phrase queries for "my&nbsp;sql&nbsp;manual" and "MySQL&nbsp;manual"
+	 but not "mysql&nbsp;manual"). Use "configure&nbsp;--enable-camelcase"
+	 to activate it.
+       </li>
+
+       <li>The ipath is now printed by default after the url in the
+	 default result list format.</li>
+       
+       <li><i>recoll_noindex</i> and <i>skippedNames</i> can now be
+	 changed at any point in the tree (only for topdirs previously).</li>
+
+       <li>Allow using location/application sensitivity in external viewer
+         choice. This uses several new functions: 
+         <ul>
+           <li>Allow the substitution of arbitrary document fields inside
+             external viewer command line arguments.</li>
+           <li>Allow field values to be set on all documents
+             in a file system subtree. For example, you can 
+             set an application tag (ie: rclaptg = gnus) on all mailbox
+             files under a specific directory.</li>
+           <li>New syntax in mimeview for including the rclaptg field in
+             viewer choice
+             (<i>mimetype</i>|<i>tagvalue</i>&nbsp;=&nbsp;...).</li> 
+         </ul>
+       </li>
+
+       <li>Allow specifiying a specific default character set for mail
+	 messages. This is mainly useful for readpst dumps. All
+	 reasonable non-ascii messages specify their character set.</li>
+
+       <li>Added a --without-gui configure option. Removes all X11 and
+	 Qt dependancies and only compiles the command-line interface.</li>
+
+       <li>Improved the kio_recoll build. There is no need to run
+	 configure manually in the main directory any more. Ubuntu
+	 packages for kio_recoll are now built on the
+	 <a href="http://launchpad.net/~recoll-backports/+archive/ppa">
+	   recoll-backports PPA on launchpad.net</a>.</li>
+
+      </ul>
+
+
+      <h2><a name="1.12.4">1.12.4</a></h2>
+      <p>Bugs fixed:</p>
+      <ul>
+	<li>Qt4 version only: the search inside the preview window
+	could become unbearably slow for big documents (quadratically
+	so), and could not be interrupted (Qt bug). The Qt3 version of
+	the code was included in the preview tool to restore good
+	performance. This bug is the main reason for this release.</li>
+      </ul>
+      <p>Build system improvements:</p>
+      <ul>
+	<li>Perform minimal base package configuration inside the kio
+	  cmake code to permit building it from scratch (without a build
+	  of the main code). Mainly useful for builds on the Ubuntu
+	  PPA.</li>
+	<li>Implement a --without-gui option to build a pure
+	  command-line version with no Qt or X11 dependancies.</li>
+	<li>Ensure that the user's PATH settings determine where we
+	  look first for qmake in all cases.</li>
+      </ul>
+
+      <h2><a name="1.12.3">1.12.3</a></h2>
       <p>This is a bug fix release.</p>
       <ul>
+      <li>Fix the sort tool which had been broken since 1.11  with
+         some (or all?) qt3 versions.<li>
       <li>Catch two Xapian exceptions which could crash the GUI when a query
         was run while the index was being updated.</li>
       <li>Ensure that the result list right-click pop up menu will appear even

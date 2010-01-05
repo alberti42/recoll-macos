@@ -1,7 +1,7 @@
 #!/bin/sh
 set -x 
-#docdir=/home/dockes/projets/fulltext/recoll/src/doc/user/
-docdir=/Users/dockes/projets/fulltext/recoll/src/doc/user/
+docdir=/home/dockes/projets/fulltext/recoll/src/doc/user/
+#docdir=/Users/dockes/projets/fulltext/recoll/src/doc/user/
 
 #(cd $docdir;make) || exit 1
 
@@ -14,4 +14,4 @@ cp $docdir/docbook.css .
 # The freebsd tool chain generates a link to book.html in the index. Too
 # lazy to check if this can be changed
 cp usermanual.html book.html
-cp usermanual.html index.html
+#cp usermanual.html index.html
