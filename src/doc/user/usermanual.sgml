@@ -624,7 +624,7 @@ fvwm
 
     <para>The <command>recoll</command> program provides the main user
       interface for searching. It is based on the
-      <application>QT</application> library.</para>
+      <application>Qt</application> library.</para>
 
     <para><command>recoll</command> has two search modes:</para>
     <itemizedlist>
@@ -1562,7 +1562,7 @@ fvwm
             <listitem><para><guilabel>Highlight color for query
             terms</guilabel>: Terms from the user query are highlighted in
             the result list samples and the preview window. The color can
-            be chosen here. Any QT color string should work (ie
+            be chosen here. Any Qt color string should work (ie
             <literal>red</literal>, <literal>#ff0000</literal>). The
             default is <literal>blue</literal>.</para>
             </listitem>
@@ -1570,7 +1570,7 @@ fvwm
             <listitem><para><guilabel>Result list font</guilabel>: There is
             quite a lot of information shown in the result list, and you
             may want to customize the font and/or font size. The rest of
-            the fonts used by &RCL; are determined by your generic QT
+            the fonts used by &RCL; are determined by your generic Qt
             config (try the <command>qtconfig</command> command).</para>
             </listitem>
 
@@ -1830,7 +1830,7 @@ fvwm
       HTML-based interface displayed in
       <command>Konqueror</command>.</para>  
 
-      <para>The HTML-based interface is similar to the QT-based
+      <para>The HTML-based interface is similar to the Qt-based
       interface, but slightly less powerful for now. Its advantage is
       that you can perform your search while staying fully within the
       KDE framework: drag and drop from the result list works normally
@@ -2825,7 +2825,7 @@ while query.next >= 0 and query.next < nres:
       <para>Most of the parameters specific to the
         <command>recoll</command> GUI are set through the
         <guilabel>Preferences</guilabel> menu and stored in the
-        standard QT place (<filename>$HOME/.qt/recollrc</filename>). 
+        standard Qt place (<filename>$HOME/.qt/recollrc</filename>). 
         You probably do not want to edit this by hand.</para>
 
       <para>&RCL; indexing options are set inside text configuration
