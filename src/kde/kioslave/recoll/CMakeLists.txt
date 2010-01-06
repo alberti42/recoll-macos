@@ -107,7 +107,7 @@ ENDIF(PTHREAD_IN_LIBPTHREAD)
 
 kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
 
-target_link_libraries(kio_recoll xapian ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
+target_link_libraries(kio_recoll xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
 
 install(TARGETS kio_recoll DESTINATION ${PLUGIN_INSTALL_DIR})
 
