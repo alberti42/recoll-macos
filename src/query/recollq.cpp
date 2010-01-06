@@ -43,14 +43,8 @@ using namespace std;
 #include "wipedir.h"
 #include "transcode.h"
 
-bool dump_contents(RclConfig *rclconfig, string& tmpdir, Rcl::Doc& doc)
+bool dump_contents(RclConfig *rclconfig, string& tmpdir, Rcl::Doc& idoc)
 {
-    string fn = doc.url.substr(7);
-    struct stat st;
-    if (stat(fn.c_str(), &st) != 0) {
-	cout << "No such file: " << fn << endl;
-	return true;
-    } 
     if (tmpdir.empty() || access(tmpdir.c_str(), 0) < 0) {
 	string reason;
 	if (!maketmpdir(tmpdir, reason)) {
@@ -60,12 +54,14 @@ bool dump_contents(RclConfig *rclconfig, string& tmpdir, Rcl::Doc& doc)
 	}
     }
     wipedir(tmpdir);
-    FileInterner interner(fn, &st, rclconfig, tmpdir, 
-                          FileInterner::FIF_forPreview, &doc.mimetype);
-    if (interner.internfile(doc, doc.ipath)) {
-	cout << doc.text << endl;
+    FileInterner interner(idoc, rclconfig, tmpdir, 
+                          FileInterner::FIF_forPreview);
+    Rcl::Doc fdoc;
+    string ipath = idoc.ipath;
+    if (interner.internfile(fdoc, ipath)) {
+	cout << fdoc.text << endl;
     } else {
-	cout << "Cant intern: " << fn << endl;
+	cout << "Cant turn to text:" << idoc.url << " | " << idoc.ipath << endl;
     }
     return true;
 }

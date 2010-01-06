@@ -17,6 +17,7 @@ static char rcsid[] = "@(#$Id: xadump.cpp,v 1.20 2008-12-18 14:11:01 dockes Exp 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <strings.h>

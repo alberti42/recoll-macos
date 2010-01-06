@@ -231,30 +231,18 @@ public:
     const string &m_name;
 };
 
-void RecollProtocol::showPreview(const Rcl::Doc& doc)
+void RecollProtocol::showPreview(const Rcl::Doc& idoc)
 {
-    string fn = doc.url.substr(7);
-    kDebug() << fn.c_str();
-
-    struct stat st;
-    if (::stat(fn.c_str(), &st) != 0) {
-	string reason = string("File not found: ") + fn.c_str();
-	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
-	return;
-    } 
     string tmpdir;
     string reason;
     if (!maketmpdir(tmpdir, reason)) {
 	error(KIO::ERR_SLAVE_DEFINED, "Cannot create temporary directory");
 	return;
     }
-    o_rclconfig->setKeyDir(path_getfather(fn));
-    FileInterner interner(fn, &st, o_rclconfig, tmpdir, 
-                          FileInterner::FIF_forPreview | 
-                          FileInterner::FIF_doUseInputMimetype,
-                          &doc.mimetype);
+    FileInterner interner(idoc, o_rclconfig, tmpdir, 
+                          FileInterner::FIF_forPreview);
     Rcl::Doc fdoc;
-    string ipath = doc.ipath;
+    string ipath = idoc.ipath;
     if (!interner.internfile(fdoc, ipath)) {
 	wipedir(tmpdir);
 	rmdir(tmpdir.c_str());
@@ -271,7 +259,7 @@ void RecollProtocol::showPreview(const Rcl::Doc& doc)
 
     mimeType("text/html");
 
-    string fname =  path_getsimple(doc.url).c_str();
+    string fname =  path_getsimple(fdoc.url).c_str();
     PlainToRichKio ptr(fname);
     ptr.set_inputhtml(!fdoc.mimetype.compare("text/html"));
     list<string> otextlist;
