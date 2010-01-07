@@ -56,10 +56,10 @@ distclean: clean
 	   qtgui/recoll.pro qt4gui/recoll.pro \
 	   config.log config.status \
 	   recollinstall \
-	   lib/*.dep common/autoconfig.h \
-	   wasabi/Makefile wasabi/client/Makefile wasabi/server/Makefile
+	   lib/*.dep common/autoconfig.h
 	rm -f index/alldeps lib/alldeps query/alldeps bincimapmime/alldeps
 	rm -rf autom4te.cache
+	rm -f filters/rclexecm.pyc
 	@NOQTMAKE@(cd qt4gui; make -f uifrom3 distclean)
 
 maintainer-clean: distclean
