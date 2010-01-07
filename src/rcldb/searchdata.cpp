@@ -267,7 +267,7 @@ public:
 
 private:
     void expandTerm(bool dont, const string& term, list<string>& exp, 
-                    string& sterm, string *prefix);
+                    string& sterm, string *prefix = 0);
     // After splitting entry on whitespace: process non-phrase element
     void processSimpleSpan(const string& span, bool nostemexp, list<Xapian::Query> &pqueries);
     // Process phrase/near element
@@ -313,8 +313,8 @@ void StringToXapianQ::expandTerm(bool nostemexp,
                                  list<string>& exp,
                                  string &sterm, string *prefix)
 {
-    LOGDEB2(("expandTerm: term [%s] stemlang [%s] nostemexp %d\n", 
-	     term.c_str(), m_stemlang.c_str(), nostemexp));
+    LOGDEB2(("expandTerm: field [%s] term [%s] stemlang [%s] nostemexp %d\n", 
+             m_field.c_str(), term.c_str(), m_stemlang.c_str(), nostemexp));
     sterm.erase();
     exp.clear();
     if (term.empty()) {
@@ -329,10 +329,15 @@ void StringToXapianQ::expandTerm(bool nostemexp,
 
     if (nostemexp && !haswild) {
 	// Neither stemming nor wildcard expansion: just the word
+        string pfx;
+        if (!m_field.empty())
+            m_db.fieldToPrefix(m_field, pfx);
 	sterm = term;
         m_uterms.push_back(sterm);
-	exp.push_front(term);
+	exp.push_front(pfx+term);
 	exp.resize(1);
+        if (prefix)
+            *prefix = pfx;
     } else {
 	list<TermMatchEntry> l;
 	if (haswild) {
@@ -436,8 +441,7 @@ void StringToXapianQ::processPhraseOrNear(wsQData *splitData,
 
 	string sterm;
 	list<string>exp;
-        string prefix;
-	expandTerm(nostemexp, *it, exp, sterm, &prefix);
+	expandTerm(nostemexp, *it, exp, sterm);
 	groups.push_back(vector<string>(exp.begin(), exp.end()));
 	orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 					  exp.begin(), exp.end()));
