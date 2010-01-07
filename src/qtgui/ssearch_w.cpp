@@ -191,9 +191,15 @@ void SSearch::startSimpleSearch()
     RefCntr<Rcl::SearchData> rsdata(sdata);
     emit startSearch(rsdata);
 }
+
 void SSearch::setSearchString(const QString& txt)
 {
     queryText->setEditText(txt);
+}
+
+bool SSearch::hasSearchString()
+{
+    return !queryText->lineEdit()->text().isEmpty();
 }
 
 void SSearch::setAnyTermMode()

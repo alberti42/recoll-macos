@@ -316,12 +316,8 @@ int main(int argc, char **argv)
 	mainWindow->resize(s);
     }
 
-    mainWindow->sSearch->searchTypCMB->setCurrentItem(prefs.ssearchTyp);
-    mainWindow->sSearch->searchTypeChanged(prefs.ssearchTyp);
     string dbdir = rclconfig->getDbDir();
     if (dbdir.empty()) {
-	// Note: this will have to be replaced by a call to a
-	// configuration buildin dialog for initial configuration
 	QMessageBox::critical(0, "Recoll",
 			      app.translate("Main", 
 					  "No db directory in configuration"));
@@ -330,47 +326,11 @@ int main(int argc, char **argv)
 
     rcldb = new Rcl::Db(rclconfig);
 
-    bool needindexconfig = false;
-    if (!maybeOpenDb(reason)) {
-
-	switch (QMessageBox::
-#if (QT_VERSION >= 0x030200)
-		question
-#else
-		information
-#endif
-		(0, "Recoll",
-		 app.translate("Main", "Could not open database in ") +
-		 QString::fromLocal8Bit(dbdir.c_str()) +
-		 app.translate("Main", 
-			       ".\n"
-			       "Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed."),
-		 "Ok", "Cancel", 0,   0)) {
-
-	case 0: // Ok: indexing is going to start.
-	    start_indexing(true);
-	    break;
-
-	case 1: // Cancel
-	    needindexconfig = true;
-	    break;
-	}
-    }
-
     mainWindow->show();
-    if (needindexconfig) {
-	startIndexingAfterConfig = 1;
-	mainWindow->showIndexConfig();
-    } else {
-	if (prefs.startWithAdvSearchOpen)
-	    mainWindow->showAdvSearchDialog();
-	if (prefs.startWithSortToolOpen)
-	    mainWindow->showSortDialog();
-    }
+    QTimer::singleShot(0, mainWindow, SLOT(initDbOpen()));
 
     // Connect exit handlers etc.. Beware, apparently this must come
-    // after mainWindow->show() , else the QMessageBox above never
-    // returns.
+    // after mainWindow->show()?
     app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
     app.connect(&app, SIGNAL(aboutToQuit()), mainWindow, SLOT(close()));
 
@@ -378,6 +338,8 @@ int main(int argc, char **argv)
     // something to do.
     start_idxthread(*rclconfig);
 
+    mainWindow->sSearch->searchTypCMB->setCurrentItem(prefs.ssearchTyp);
+    mainWindow->sSearch->searchTypeChanged(prefs.ssearchTyp);
     if (op_flags & OPT_q) {
 	SSearch::SSearchType stype;
 	if (op_flags & OPT_o) {
@@ -392,10 +354,7 @@ int main(int argc, char **argv)
 	mainWindow->sSearch->searchTypCMB->setCurrentItem(int(stype));
 	mainWindow->
 	    sSearch->setSearchString(QString::fromLocal8Bit(question.c_str()));
-	QTimer::singleShot(0, mainWindow->sSearch, SLOT(startSimpleSearch()));
     }
-    //    fprintf(stderr, "Go\n");
-    // Let's go
     return app.exec();
 }
 

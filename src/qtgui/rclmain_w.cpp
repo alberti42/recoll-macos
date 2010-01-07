@@ -302,6 +302,54 @@ void RclMain::init()
     }
 }
 
+// This is called by a timer right after we come up. Try to open
+// the database and talk to the user if we can't
+void RclMain::initDbOpen()
+{
+    bool needindexconfig = false;
+    bool nodb = false;
+    string reason;
+    if (!maybeOpenDb(reason)) {
+        nodb = true;
+	switch (QMessageBox::
+#if (QT_VERSION >= 0x030200)
+		question
+#else
+		information
+#endif
+		(this, "Recoll",
+		 qApp->translate("Main", "Could not open database in ") +
+		 QString::fromLocal8Bit(rclconfig->getDbDir().c_str()) +
+		 qApp->translate("Main", 
+			       ".\n"
+			       "Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed."),
+		 "Ok", "Cancel", 0,   0)) {
+
+	case 0: // Ok: indexing is going to start.
+	    start_indexing(true);
+	    break;
+
+	case 1: // Cancel
+	    needindexconfig = true;
+	    break;
+	}
+    }
+
+    if (needindexconfig) {
+	startIndexingAfterConfig = 1;
+	showIndexConfig();
+    } else {
+	if (prefs.startWithAdvSearchOpen)
+	    showAdvSearchDialog();
+	if (prefs.startWithSortToolOpen)
+	    showSortDialog();
+        // If we have something in the search entry, it comes from a
+        // command line argument
+        if (!nodb && sSearch->hasSearchString())
+            QTimer::singleShot(0, sSearch, SLOT(startSimpleSearch()));
+    }
+}
+
 void RclMain::setStemLang(int id)
 {
     LOGDEB(("RclMain::setStemLang(%d)\n", id));

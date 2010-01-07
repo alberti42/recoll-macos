@@ -110,6 +110,7 @@ public slots:
     // Prefs menu about to show, set the checked lang entry
     virtual void adjustPrefsMenu();
     virtual void catgFilter(int);
+    virtual void initDbOpen();
 
 signals:
     void stemLangChanged(const QString& lang);

@@ -61,6 +61,7 @@ public:
     virtual void setAnyTermMode();
     virtual void completion();
     virtual bool eventFilter(QObject *target, QEvent *event);
+    virtual bool hasSearchString();
 
 public slots:
     virtual void searchTextChanged(const QString & text);
