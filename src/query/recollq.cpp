@@ -85,6 +85,7 @@ static char usage [] =
 "    -n <cnt> limit the maximum number of results (0->no limit, default 2000)\n"
 "    -b : basic. Just output urls, no mime types or titles\n"
 "    -m : dump the whole document meta[] array\n"
+"    -A : output the document abstracts\n"
 "    -S fld : sort by field name\n"
 "    -D : sort descending\n"
 ;
@@ -112,6 +113,7 @@ static int     op_flags;
 #define OPT_D     0x1000
 #define OPT_S     0x2000
 #define OPT_s     0x4000
+#define OPT_A     0x8000
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -130,6 +132,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             Usage();
         while (**argv)
             switch (*(*argv)++) {
+            case 'A':   op_flags |= OPT_A; break;
             case 'a':   op_flags |= OPT_a; break;
             case 'b':   op_flags |= OPT_b; break;
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
@@ -264,11 +267,18 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		    cout << it->first << " = " << it->second << endl;
 		}
 	    }
-	}
-
-	if (op_flags & OPT_d) {
-	    dump_contents(rclconfig, tmpdir, doc);
-	}	
+            if (op_flags & OPT_A) {
+                string abstract;
+                if (rcldb.makeDocAbstract(doc, &query, abstract)) {
+                    cout << "ABSTRACT" << endl;
+                    cout << abstract << endl;
+                    cout << "/ABSTRACT" << endl;
+                }
+            }
+        }
+        if (op_flags & OPT_d) {
+            dump_contents(rclconfig, tmpdir, doc);
+        }	
     }
 
     // Maybe clean up temporary directory
