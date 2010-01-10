@@ -1,19 +1,19 @@
 Name:           recoll
-Version:        1.12.0
-Release:        1%{?dist}
+Version:        1.13.01
+Release:        2%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
 Group:          Applications/Databases
 License:        GPL
 URL:            http://www.recoll.org/
-Source0:        http://www.recoll.org/recoll-1.12.0.tar.gz 
+Source0:        http://www.recoll.org/recoll-1.13.01.tar.gz 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 # Not sure how easy it is to find a xapian-core rpm. Will be easier to
 # build by hand for many. Run time uses a static link to xapian, doesnt
 # depend on libxapian.so
-BuildRequires:  qt-devel
-Requires:       qt
+BuildRequires:  qt-devel xapian-core-devel zlib-devel
+Requires:       qt xapian-core-libs zlib
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -25,9 +25,10 @@ interface.
 %setup -q
 
 %build
-[ -n "$QTDIR" ] || . %{_sysconfdir}/profile.d/qt.sh
+QMAKE=qmake-qt4 
+export QMAKE
 %configure
-make %{?_smp_mflags} static
+make %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -48,6 +49,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jan 10 2010 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.13.01-2
+- Rpm Spec file updated for recent fedoras: depend on xapian packages, use qt4
+* Thu Jan 07 2010 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.13.01-1
+- Update to release 1.13.01
+* Thu Dec 10 2009 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.12.4-1
+- Update to release 1.12.4
 * Thu Jan 29 2009 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.12.0-1
 - Update to release 1.12.0
 * Mon Oct 13 2008 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.11.0-1
