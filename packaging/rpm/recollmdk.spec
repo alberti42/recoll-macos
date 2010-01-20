@@ -59,37 +59,37 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
-* Mon Oct 19 2009 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.12.2-1
+* Mon Oct 19 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.2-1
 - Update to release 1.12.2
-* Thu Jan 29 2009 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.12.0-1
+* Thu Jan 29 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.0-1
 - Update to release 1.12.0
-* Mon Oct 13 2008 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.11.0-1
+* Mon Oct 13 2008 Jean-Francois Dockes <jfd@recoll.org> 1.11.0-1
 - Update to release 1.11.0
-* Thu May 27 2008 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.10.2-1
+* Thu May 27 2008 Jean-Francois Dockes <jfd@recoll.org> 1.10.2-1
 - Update to release 1.10.2
-* Thu Jan 31 2008 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.10.1-1
+* Thu Jan 31 2008 Jean-Francois Dockes <jfd@recoll.org> 1.10.1-1
 - Update to release 1.10.1
-* Wed Nov 21 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.10.0-1
+* Wed Nov 21 2007 Jean-Francois Dockes <jfd@recoll.org> 1.10.0-1
 - Update to release 1.10.0
-* Tue Sep 11 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.9.0-1
+* Tue Sep 11 2007 Jean-Francois Dockes <jfd@recoll.org> 1.9.0-1
 - Update to release 1.9.0
-* Tue Mar 6 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.8.1-1
+* Tue Mar 6 2007 Jean-Francois Dockes <jfd@recoll.org> 1.8.1-1
 - Update to release 1.8.1
-* Mon Jan 15 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.7.5-1
+* Mon Jan 15 2007 Jean-Francois Dockes <jfd@recoll.org> 1.7.5-1
 - Update to release 1.7.5
-* Mon Jan 08 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.7.3-1
+* Mon Jan 08 2007 Jean-Francois Dockes <jfd@recoll.org> 1.7.3-1
 - Update to release 1.7.3
-* Tue Nov 28 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.6.1-1
+* Tue Nov 28 2006 Jean-Francois Dockes <jfd@recoll.org> 1.6.1-1
 - Update to release 1.6.1
-* Mon Nov 20 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.5.11-1
+* Mon Nov 20 2006 Jean-Francois Dockes <jfd@recoll.org> 1.5.11-1
 - Update to release 1.5.11
-* Mon Oct 2 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.5.2-1
+* Mon Oct 2 2006 Jean-Francois Dockes <jfd@recoll.org> 1.5.2-1
 - Update to release 1.5.2
-* Sun May 7 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.4.3-1
+* Sun May 7 2006 Jean-Francois Dockes <jfd@recoll.org> 1.4.3-1
 - Update to release 1.4.3
-* Fri Mar 31 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.3.3-1
+* Fri Mar 31 2006 Jean-Francois Dockes <jfd@recoll.org> 1.3.3-1
 - Update to release 1.3.3
-* Thu Feb  2 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.2.2-1
+* Thu Feb  2 2006 Jean-Francois Dockes <jfd@recoll.org> 1.2.2-1
 - Update to release 1.2.2
-* Thu Jan 10 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.1.0-1
+* Thu Jan 10 2006 Jean-Francois Dockes <jfd@recoll.org> 1.1.0-1
 - Initial packaging
