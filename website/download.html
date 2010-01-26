@@ -117,18 +117,18 @@
 
       <h2><a name="source">Source</a></h2>
 
-      <p><b>Current version:</b> 1.13.00: 
+      <p><b>Current version:</b> 1.13.02: 
       <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches( -->
       
-	<a href="recoll-1.13.00.tar.gz">recoll-1.13.00.tar.gz</a>.
+	<a href="recoll-1.13.02.tar.gz">recoll-1.13.02.tar.gz</a>.
+	Recoll 1.13.02 was issued only to work around a problem in Qt
+	4.6.1 (it will manifest itself as a completely garbled main
+        window). If you are using another Qt version, you have no reason
+	to upgrade from 1.13.01.
 	<a href="CHANGES.html">Changes</a>. <a href="BUGS.html">Bugs</a>.
 	</p>
-
-      <p>For building on Solaris (at least 5.8), you need to apply
-	this <a href="sunos/recoll11300solaris.patch">patch</a> to the
-	Recoll source.</p>
 
       <p>In order to build Recoll from source, you will need to install
 	the Xapian core development libraries. You will find source and binary
@@ -155,6 +155,7 @@
       </table>
 
       <p>Older recoll releases:
+	<a href="recoll-1.13.01.tar.gz">1.13.01</a>.
 	<a href="recoll-1.12.4.tar.gz">1.12.4</a>.
 	<a href="recoll-1.11.4.tar.gz">1.11.4</a>.
 	<a href="recoll-1.10.6.tar.gz">1.10.6</a>.
@@ -207,47 +208,83 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
        </p>
       </blockquote>
 
-      <h3>RPMS</h3>      
-      <p><i>The executables inside the binary rpms which follow have a
-        static link to Xapian 1.0.16, there is no real dependency except Qt 3
-	or Qt 4.<br>
+      <h3>RPMS</h3> <p><i>Except if specified otherwise, the
+	  executables inside the binary rpms which follow have a
+          static link to Xapian 1.0.16, there is no real dependency except Qt 3
+	  or Qt 4.<br>
 	Some Fedora and Mandriva packages unfortunately think that they
 	depend on exiftool (which is needed by the little used jpeg
 	info filter), due to excessive rpmbuild	cleverness.
-	<br>You need to install the Xapian library development
-	  package if you want use the source rpms.</i></p>
+	<br>You need to install the Xapian, Qt, and zlib development
+	  packages if you want use the source rpms.</i></p>
 	  
       <h3>Fedora</h3>
       <blockquote>
       <p><b>Fedora Core 6 with Qt 3.3.8</b>
-	<a href="fc6/recoll-1.13.00-1.i586.rpm">
-	  recoll-1.13.00-1.i586.rpm</a>. 
+	<a href="fc6/recoll-1.13.01-1.i586.rpm">
+	  recoll-1.13.01-1.i586.rpm</a>. 
 	Source: 
-	<a href="fc6/recoll-1.13.00-1.src.rpm">
-	  recoll-1.13.00-1.src.rpm</a>
+	<a href="fc6/recoll-1.13.01-1.src.rpm">
+	  recoll-1.13.01-1.src.rpm</a>
 	This package usually also installs and runs on Fedora 9.
       </p>
       <p><b>Fedora Core 10 with Qt 4</b>
-	<a href="fc10/recoll-1.13.00-1.fc10.i586.rpm">
-	  recoll-1.13.00-1.fc10.i586.rpm</a>. 
+	<a href="fc10/recoll-1.13.01-1.fc10.i586.rpm">
+	  recoll-1.13.01-1.fc10.i586.rpm</a>. 
 	Source: 
-	<a href="fc10/recoll-1.13.00-1.fc10.src.rpm">
-	  recoll-1.13.00-1.fc10.src.rpm</a>
+	<a href="fc10/recoll-1.13.01-1.fc10.src.rpm">
+	  recoll-1.13.01-1.fc10.src.rpm</a>
       </p>
+      <p><b>Fedora Core 12 with Qt 4</b>
+	This build is not statically linked, but depends on the
+	regular Xapian and zlib rpms from the Fedora repositories.
+	<a href="fc12/recoll-1.13.01-2.fc12.i586.rpm">
+	  recoll-1.13.01-2.fc12.i586.rpm</a>. 
+	Source: 
+	<a href="fc12/recoll-1.13.01-2.fc12.src.rpm">
+	  recoll-1.13.01-2.fc12.src.rpm</a>
+      </p>
+      <p>More builds contributed by Terry, thanks. 64 bits versions
+	are included and the spec file is improved and should help
+	those who want to rebuild from the source rpms. Normally linked
+	(need Xapian and zlib libraries):</p>
+      <blockquote>
+      <p><b>Fedora Core 11 with Qt 4</b>
+	<a href="fc11/recoll-1.13.01-3.fc11.i586.rpm">
+	 recoll-1.13.01-3.fc11.i586.rpm</a>. 
+	<a href="fc11/recoll-1.13.01-3.fc11.x86_64.rpm">
+	 recoll-1.13.01-3.fc11.x86_64.rpm</a>. 
+	Source: 
+	<a href="fc11/recoll-1.13.01-3.fc11.src.rpm">
+	 recoll-1.13.01-3.fc11.src.rpm</a>
+      </p>
+      <p><b>Fedora Core 12 with Qt 4</b>
+	This build is not statically linked, but depends on the
+	regular Xapian and zlib rpms from the Fedora repositories.
+	<a href="fc12/recoll-1.13.01-3.fc12.i686.rpm">
+	  recoll-1.13.01-3.fc12.i686.rpm</a>. 
+	<a href="fc12/recoll-1.13.01-3.fc12.x86_64.rpm">
+	  recoll-1.13.01-3.fc12.x86_64.rpm</a>. 
+	Source: 
+	<a href="fc12/recoll-1.13.01-3.fc12.src.rpm">
+	  recoll-1.13.01-3.fc12.src.rpm</a>
+      </p>
+	
+      </blockquote>
       </blockquote>
 
       <h3>OpenSUSE</h3>
       <blockquote>
         <p><b>OpenSUSE 11.0 with qt3</b>:
- 	  <a href="suse11.0/recoll-1.13.00-0.i586.rpm">
-	    recoll-1.13.00-0.i586.rpm</a>. 
-	  Source: <a href="suse11.0/recoll-1.13.00-0.src.rpm">
-	     recoll-1.13.00-0.src.rpm</a></p>
+ 	  <a href="suse11.0/recoll-1.13.01-0.i586.rpm">
+	    recoll-1.13.01-0.i586.rpm</a>. 
+	  Source: <a href="suse11.0/recoll-1.13.01-0.src.rpm">
+	     recoll-1.13.01-0.src.rpm</a></p>
         <p><b>OpenSUSE 11.2 with qt4</b>:
-	<a href="suse11.2/recoll-1.13.00-0.i586.rpm">
-	  recoll-1.13.00-0.i586.rpm</a>. 
-	  Source: <a href="suse11.2/recoll-1.13.00-0.src.rpm">
-	    recoll-1.13.00-0.src.rpm</a></p>
+	<a href="suse11.2/recoll-1.13.01-0.i586.rpm">
+	  recoll-1.13.01-0.i586.rpm</a>. 
+	  Source: <a href="suse11.2/recoll-1.13.01-0.src.rpm">
+	    recoll-1.13.01-0.src.rpm</a></p>
 	 <p>If you build from source on OpenSUSE 11, note that the default
 	   qt4 version on some systems is 4.4.0 which will badly
 	   display the the result list icons. Use qt3 or install a
@@ -258,11 +295,11 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
       <blockquote>
 
         <p><b>Mandriva 2008 with Qt 4</b>: 
-	  <a href="mandriva2008spring/recoll-1.13.00-1mdv2008.1.i586.rpm">
-	  recoll-1.13.00-1mdv2008.1.i586.rpm</a>. 
+	  <a href="mandriva2008spring/recoll-1.13.01-1mdv2008.1.i586.rpm">
+	  recoll-1.13.01-1mdv2008.1.i586.rpm</a>. 
 	Source: 
-	<a href="mandriva2008spring/recoll-1.13.00-1mdv2008.1.src.rpm">
-	  recoll-1.13.00-1mdv2008.1.src.rpm</a>
+	<a href="mandriva2008spring/recoll-1.13.01-1mdv2008.1.src.rpm">
+	  recoll-1.13.01-1mdv2008.1.src.rpm</a>
         </p>
       </blockquote>
 
@@ -284,8 +321,8 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
         closely, so there is actually little point in using the
         following. Only for the <i>really</i> impatient:</p>
          <p><b>FreeBSD 7.2 i386 Qt 4.5.3</b>: 
-	   <a href="freebsd/recoll-1.13.00-FreeBSD-7.2-STABLE.tgz">
-	     recoll-1.13.00-FreeBSD-7.2-STABLE.tgz</a>
+	   <a href="freebsd/recoll-1.13.01-FreeBSD-7.2-STABLE.tgz">
+	     recoll-1.13.01-FreeBSD-7.2-STABLE.tgz</a>
         </p>
       </blockquote>
 
@@ -296,8 +333,8 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
        thread. See <a href="BUGS.html">errata</a>.
 
        <p><b>Solaris 8 SPARC</b>: 
-       <a href="sunos/recoll-1.13.00-SunOS-5.8.tgz">
-        recoll-1.13.00-SunOS-5.8.tgz</a>. </p>
+       <a href="sunos/recoll-1.13.01-SunOS-5.8.tgz">
+        recoll-1.13.01-SunOS-5.8.tgz</a>. </p>
 
       <p>Recoll also builds and runs on Solaris 10, but, given the
 	situation (2008) of open source packages for Solaris (very old

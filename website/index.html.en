@@ -47,7 +47,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.13.00</a> 
+	<a class="important" href="download.html">1.13.02</a> 
 	(<a href="CHANGES.html">Changes</a>).</p>
 
       <h2>Features: </h2>
@@ -81,9 +81,9 @@
       <h2>News: </h2>
       <ul>
 
-	<li>2010-01-05 : a <a href="download.html#source">1.13.00</a> is
+	<li>2010-01-05 : a <a href="download.html#source">1.13.01</a> is
 	  out. It brings some nice <a
-	  href="CHANGES.html#1.13.0">improvements and new functions</a>. 
+	  href="CHANGES.html#1.13.01">improvements and new functions</a>. 
 	  Please try it and report any problems.</li>
 
 	<li>2009-12-10 : <a href="download.html#source">1.12.4</a> is
