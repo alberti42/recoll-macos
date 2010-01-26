@@ -2712,7 +2712,7 @@ while query.next >= 0 and query.next < nres:
         <ulink url="mailto:jean-francois.dockes@wanadoo.fr">I would
         very much welcome patches</ulink>.</para>
 
-      <para>Depending on the <application>qt</application>
+      <para>Depending on the <application>Qt&nbsp;3</application>
       configuration on your system, you may have to set the
       <literal>QTDIR</literal> and <literal>QMAKESPECS</literal>
       variables in your environment:</para>
@@ -2733,8 +2733,13 @@ while query.next >= 0 and query.next < nres:
         <para>On many Linux systems, <literal>QTDIR</literal> is set
         by the login scripts, and <literal>QMAKESPECS</literal> is not
         needed because there is a <filename>default</filename> link in
-        <filename>mkspecs/</filename>. Neither should be needed with 
-        Qt&nbsp;4.</para> 
+        <filename>mkspecs/</filename>. 
+
+	<para>Neither <literal>QTDIR</literal> nor 
+	<literal>QMAKESPECS</literal> should be needed with 
+        Qt&nbsp;4, configuration details are entirely determined by 
+	<command>qmake</command> (which is quite often installed as 
+	<command>qmake-qt4</command>).</para> 
 
         <formalpara><title>Configure options:</title>
 	  <para>
@@ -2773,6 +2778,10 @@ while query.next >= 0 and query.next < nres:
 	    interface, and auxiliary uses of X11, and compile the command
 	    line version.</para> 
 	  </listitem>
+	  <listitem><para>Of course the usual 
+	  <application>autoconf</application> <command>configure</command>
+	  options, like <literal>--prefix</literal> apply.</para> 
+	  </listitem>
          </itemizedlist>
          </para>
 	</formalpara>
@@ -2807,11 +2816,15 @@ while query.next >= 0 and query.next < nres:
         data to
         <filename><replaceable>prefix</replaceable>/share/recoll</filename>.</para>
         <para>If the installation prefix given to
-        <command>recollinstall</command> is different from what was
-        specified when executing <command>configure</command>, you
+        <command>recollinstall</command> is different from either the 
+	system default or the value which was
+        specified when executing <command>configure</command> (as in 
+	<userinput>configure --prefix /some/path</userinput>), you
         will have to set the <literal>RECOLL_DATADIR</literal>
         environment variable to indicate where the shared data is to
-        be found.</para>
+        be found (ie for (ba)sh: 
+	<userinput>export RECOLL_DATADIR=/some/path/share/recoll</userinput>).
+	</para> 
 
         <para>You can then proceed to <link
        linkend="rcl.install.config">configuration</link>. </para>
@@ -2898,13 +2911,15 @@ while query.next >= 0 and query.next < nres:
           </listitem>
         </itemizedlist>
 
-        <para>Section definitions allow redefining some parameters for
-        a directory sub-tree. They stay in effect until another
-        section definition, or the end of file, is encountered. Some
-        of the parameters used for indexing are looked up
-        hierarchically from the current directory location
-        upwards. Not all parameters can be meaningfully redefined,
-        this is specified for each in the next section. </para>
+        <para>Depending on the type of configuration file, section
+        definitions either separate groups of parameters or allow
+        redefining some parameters for a directory sub-tree. They stay
+        in effect until another section definition, or the end of
+        file, is encountered. Some of the parameters used for indexing
+        are looked up hierarchically from the current directory
+        location upwards. Not all parameters can be meaningfully
+        redefined, this is specified for each in the next
+        section. </para>
 
         <para>When found at the beginning of a file path, the tilde
         character (~) is expanded to the name of the user's home
