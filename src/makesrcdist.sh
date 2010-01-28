@@ -10,19 +10,29 @@ fatal()
 #set -x
 
 TAR=/usr/bin/tar
-SVNREPOS=svn+ssh://y/home/subversion/recoll/
+
+#VCCMD=svn
+#SVNREPOS=svn+ssh://y/home/subversion/recoll/
+
+VCCMD=hg
 
 version=`cat VERSION`
 versionforcvs=`echo $version | sed -e 's/\./_/g'`
 
-editedfiles=`svn status | egrep -v '^\?'`
+editedfiles=`$VCCMD status . | egrep -v '^\?'`
 if test ! -z "$editedfiles"; then
 	fatal  "Edited files exist: " $editedfiles
 fi
 
+tagtopsvn() {
+    (cd ..; svn copy -m "Release $version tagged" . $SVNREPOS/tags/$1) \
+    	|| fatal tag failed
+}
+tagtophg() {
+    hg tag -f -m "Release $version tagged" $1 || fatal tag failed
+}
 tagtop() {
-	(cd ..;	svn copy -m "Release $version tagged" . $SVNREPOS/tags/$1) \
-	    	|| fatal tag failed
+    tagtophg $*
 }
 
 targetdir=${targetdir-/tmp}
@@ -77,7 +87,7 @@ links -dump ${RECOLLDOC}/rcl.install.external.html >> INSTALL
 links -dump ${RECOLLDOC}/rcl.install.building.html >> INSTALL
 links -dump ${RECOLLDOC}/rcl.install.config.html >> INSTALL
 
-svn commit -m '' README INSTALL
+$VCCMD commit -m "release $version" README INSTALL
 
 # Clean up this dir and copy the dist-specific files 
 make distclean
