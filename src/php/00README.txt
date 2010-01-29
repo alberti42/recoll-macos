@@ -4,17 +4,19 @@ Recoll PHP extension:
 
 This has minimum features for now. 
 
-The sample/ subdirectory has a minimal script which demonstrates the
+The php/sample/ subdirectory has a minimal script which demonstrates the
 interface.
 
 Building the extension needs the librcl.a library (recoll-xxx/lib/librcl.a)
-to have been built with PIC objects. This will be handled by the Recoll
-build system in the future, but, for now, if using gcc, just add -fPIC
--DPIC to LOCALCXXFLAGS inside mk/localdefs, and run "make clean;make" inside
-lib/ . For other compilers, adjust to taste :)
+to have been built with PIC objects. 
 
-The recoll/ subdirectory has the C++ code and the build script
+Use "configure --enable-pic" in the top Recoll directory, then
+"make". There is no significant disadvantage in using PIC objects for
+everything so you need not bother having different builds for the
+extensions and the programs.
+
+The php/recoll/ subdirectory has the C++ code and the build script
 (make.sh). You'll need to "make install" after building.
 
-If you want to clean up the recoll/ directory, you can run phpize --clean
+If you want to clean up the php/recoll/ directory, you can run phpize --clean
 in there.

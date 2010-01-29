@@ -3,9 +3,9 @@ import os
 
 sys = os.uname()[0]
 if sys == 'Linux':
-    libs = ['xapian']
+    libs = ['rcl', 'xapian']
 else:
-    libs = ['xapian', 'iconv']
+    libs = ['rcl', 'xapian', 'iconv']
 
 if 'RECOLL_DATADIR' in os.environ:
     datadirs = [os.environ['RECOLL_DATADIR']]
@@ -36,31 +36,8 @@ module1 = Extension('recoll',
                                     os.path.join(top, 'unac')
                                     ],
                     libraries = libs,
-                    library_dirs = ['/usr/local/lib'],
+                    library_dirs = [os.path.join(top, 'lib'), '/usr/local/lib'],
                     sources = ['pyrecoll.cpp',
-                               os.path.join(top, 'common/rclconfig.cpp'),
-                               os.path.join(top, 'common/rclinit.cpp'),
-                               os.path.join(top, 'common/textsplit.cpp'),
-                               os.path.join(top, 'common/unacpp.cpp'),
-                               os.path.join(top, 'query/wasastringtoquery.cpp'),
-                               os.path.join(top, 'query/wasatorcl.cpp'),
-                               os.path.join(top, 'utils/fileudi.cpp'),
-                               os.path.join(top, 'rcldb/rcldb.cpp'),
-                               os.path.join(top, 'rcldb/rcldoc.cpp'),
-                               os.path.join(top, 'rcldb/rclquery.cpp'),
-                               os.path.join(top, 'rcldb/searchdata.cpp'),
-                               os.path.join(top, 'rcldb/stemdb.cpp'),
-                               os.path.join(top, 'rcldb/stoplist.cpp'),
-                               os.path.join(top, 'unac/unac.c'),
-                               os.path.join(top, 'utils/base64.cpp'),
-                               os.path.join(top, 'utils/conftree.cpp'),
-                               os.path.join(top, 'utils/debuglog.cpp'),
-                               os.path.join(top, 'utils/md5.cpp'),
-                               os.path.join(top, 'utils/pathut.cpp'),
-                               os.path.join(top, 'utils/readfile.cpp'),
-                               os.path.join(top, 'utils/smallut.cpp'),
-                               os.path.join(top, 'utils/transcode.cpp'),
-                               os.path.join(top, 'utils/wipedir.cpp')
                                ])
 
 setup (name = 'Recoll',

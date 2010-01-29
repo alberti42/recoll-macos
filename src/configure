@@ -708,6 +708,7 @@ XAPIANCXXFLAGS
 HAVE_MKDTEMP
 NOQTMAKE
 NOCMDLINE
+NOPIC
 LIBOBJS
 LTLIBOBJS'
 ac_subst_files=''
@@ -719,6 +720,7 @@ with_inotify
 with_fam
 enable_xattr
 enable_camelcase
+enable_pic
 with_gui
 with_x
 '
@@ -1373,6 +1375,9 @@ Optional Features:
                           manual" and "my sql manual" are the same, but not
                           the same as "mysql manual" (in phrases only and you
                           could raise the phrase slack to get a match).
+  --enable-pic            Compile library objects as position independant
+                          code. This is necessary for building the php
+                          extension.
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3878,6 +3883,22 @@ _ACEOF
 
 fi
 
+# Build PIC objects for the library. This is necessary when building the
+# php extension, would be useful for the others, and costs little. I wonder
+# if this should be made the default.
+# Not by default as these are little used for now.
+# Check whether --enable-pic was given.
+if test "${enable_pic+set}" = set; then
+  enableval=$enable_pic; picEnabled=$enableval
+else
+  picEnabled=no
+fi
+
+if test X$picEnabled = Xyes ; then
+  NOPIC=""
+else
+  NOPIC="#"
+fi
 
 
 for ac_func in mkdtemp
@@ -6618,6 +6639,7 @@ m_prefix=$prefix
 test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
 QTRECOLL_DATADIR=${m_datadir}/recoll
+
 
 
 

@@ -2232,21 +2232,35 @@ application/x-chm = execm rclchm
       <sect3 id="rcl.program.python.intro">
         <title>Introduction</title>
 
-          <para>&RCL; versions after 1.11 define a Python programming
+        <para>&RCL; versions after 1.11 define a Python programming
           interface, both for searching and indexing.</para> 
 
-        <para>The python interface is not built by default and can be
-        found in the source package, under python/recoll. The
-        directory contains the usual <filename>setup.py</filename>
-        script which you can use to build and install the
-        module:
+        <para>The Python interface is not built by default and can be
+          found in the source package,
+          under <filename>python/recoll</filename>.</para>
+	<para>In order to build the module, you should first build
+	  or re-build the Recoll library using position-independant
+	  objects:
+<screen>
+  <userinput>cd recoll-xxx/</userinput>
+  <userinput>configure --enable-pic</userinput>
+  <userinput>make</userinput>
+</screen>
+	  There is no significant disadvantage in using PIC objects
+	  for the main Recoll executables, so you can use the
+	  <literal>--enable-pic</literal> option for the main build
+	  too.</para> 
 
-          <screen>
-        <userinput>cd recoll-xxx/python/recoll</userinput>
-        <userinput>python setup.py build</userinput>
-        <userinput>python setup.py install</userinput>
-      </screen>
-          </para> 
+	<para>The <filename>python/recoll/</filename> directory
+	  contains the usual <filename>setup.py</filename> 
+          script which you can then use to build and install the
+          module:
+<screen>
+  <userinput>cd recoll-xxx/python/recoll</userinput>
+  <userinput>python setup.py build</userinput>
+  <userinput>python setup.py install</userinput>
+</screen>
+        </para> 
 
       </sect3>
 

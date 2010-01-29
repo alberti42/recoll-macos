@@ -173,6 +173,20 @@ if test X$camelcaseEnabled = Xyes ; then
   AC_DEFINE(RCL_SPLIT_CAMELCASE, 1, [Split camelCase words])
 fi
 
+# Build PIC objects for the library. This is necessary when building the
+# php extension, would be useful for the others, and costs little. I wonder
+# if this should be made the default.
+# Not by default as these are little used for now.
+AC_ARG_ENABLE(pic,
+    AC_HELP_STRING([--enable-pic],
+   [Compile library objects as position independant code. This is necessary
+   for building the php extension.]),
+        picEnabled=$enableval, picEnabled=no)
+if test X$picEnabled = Xyes ; then
+  NOPIC=""
+else
+  NOPIC="#"
+fi
 
 AC_CHECK_FUNCS(mkdtemp)
 
@@ -397,6 +411,7 @@ AC_SUBST(XAPIANCXXFLAGS)
 AC_SUBST(HAVE_MKDTEMP)
 AC_SUBST(NOQTMAKE)
 AC_SUBST(NOCMDLINE)
+AC_SUBST(NOPIC)
 
 AC_CONFIG_FILES(mk/localdefs)
 AC_CONFIG_FILES(recollinstall)
