@@ -122,20 +122,10 @@ PHP_METHOD(Query, query)
     pRclDb->setAbstractParams(-1, maxchars, ctxwords);
     Rcl::SearchData *sd = 0;
 
-    sd = new Rcl::SearchData(Rcl::SCLT_AND);
-    Rcl::SearchDataClause *clp = 0;
-
-    // If there is no white space inside the query, then the user
-    // certainly means it as a phrase.
-    bool isreallyaphrase = false;
-    if (!TextSplit::hasVisibleWhite(qs))
-	isreallyaphrase = true;
-    clp = isreallyaphrase ? 
-	new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, 0) :
-	new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, qs);
-
-    if (sd)
-	sd->addClause(clp);
+    // jf: the original implementation built an AND clause. It would
+    // be nice to offer an option, but the next best thing is to
+    // default to the query language
+    sd = wasaStringToRcl(qs, reason);
 
     if (!sd) {
 	cerr << "Query string interpretation failed: " << reason << endl;
