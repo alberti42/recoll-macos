@@ -10,9 +10,11 @@
 #include <qwidget.h>
 #include <qstring.h>
 #if QT_VERSION < 0x040000
+#include <qgroupbox.h>
 #include <qtabdialog.h>
 #define QTABDIALOG QTabDialog
 #else // Qt4 -> 
+#include <Q3GroupBox>
 #include <Q3TabDialog>
 #define QTABDIALOG Q3TabDialog
 #endif // QT 3/4
@@ -26,7 +28,6 @@ class ConfNull;
 class RclConfig;
 class ConfParamW;
 class ConfParamDNLW;
-class QGroupBox;
 
 namespace confgui {
 
@@ -53,12 +54,6 @@ class ConfTopPanelW : public QWidget {
 public:
     ConfTopPanelW(QWidget *parent, ConfNull *config);
 };
-
-#if QT_VERSION < 0x040000
-#include <qgroupbox.h>
-#else
-#include <Q3GroupBox>
-#endif
 
 /**
  * A panel for the parameters that can be changed in subdirectories:

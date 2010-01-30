@@ -2,7 +2,7 @@
 # by "configure"
 # Convert the uic files from qt3 to qt4. 
 
-UIFILES = advsearch.ui preview.ui rclmain.ui sort.ui spell.ui \
+UIFILES = advsearch.ui preview.ui sort.ui spell.ui \
      ssearchb.ui uiprefs.ui viewaction.ui
 
 all: always $(UIFILES)
@@ -11,8 +11,6 @@ advsearch.ui : ../qtgui/advsearch.ui
 	uic3 -convert ../qtgui/advsearch.ui > advsearch.ui 
 preview.ui : ../qtgui/preview.ui 
 	uic3 -convert ../qtgui/preview.ui > preview.ui 
-rclmain.ui : ../qtgui/rclmain.ui 
-	uic3 -convert ../qtgui/rclmain.ui > rclmain.ui 
 sort.ui : ../qtgui/sort.ui 
 	uic3 -convert ../qtgui/sort.ui > sort.ui 
 spell.ui : ../qtgui/spell.ui 

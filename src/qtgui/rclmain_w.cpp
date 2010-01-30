@@ -33,18 +33,13 @@ using std::pair;
 
 #include <qapplication.h>
 #include <qmessagebox.h>
+#include <qfiledialog.h>
 
 #if (QT_VERSION < 0x040000)
 #include <qcstring.h>
 #include <qpopupmenu.h>
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
-#include <qfiledialog.h>
-#else
-#include <q3filedialog.h>
-#define QFileDialog  Q3FileDialog
-#include <q3toolbar.h>
-#define QToolBar  Q3ToolBar
 #endif
 
 #include <qtabwidget.h>
@@ -175,15 +170,29 @@ void RclMain::init()
     // Toolbar+combobox version of the category selector
     QComboBox *catgCMB = 0;
     if (prefs.catgToolBar) {
-	catgCMB = new QComboBox(FALSE, new QToolBar(this), "catCMB");
+        QToolBar *catgToolBar = new QToolBar(this);
+	catgCMB = new QComboBox(FALSE, catgToolBar, "catCMB");
 	catgCMB->insertItem(tr("All"));
 #if (QT_VERSION >= 0x040000)
+        catgToolBar->setObjectName(QString::fromUtf8("catgToolBar"));
 	catgCMB->setToolTip(tr("Document category filter"));
+        catgToolBar->addWidget(catgCMB);
+        this->addToolBar(Qt::TopToolBarArea, catgToolBar);
 #endif
     }
 
     // Document categories buttons
+#if (QT_VERSION < 0x040000)
     catgBGRP->setColumnLayout(1, Qt::Vertical);
+    connect(catgBGRP, SIGNAL(clicked(int)), this, SLOT(catgFilter(int)));
+#else
+    QHBoxLayout *bgrphbox = new QHBoxLayout(catgBGRP);
+    QButtonGroup *bgrp  = new QButtonGroup(catgBGRP);
+    bgrphbox->addWidget(allRDB);
+    int bgrpid = 0;
+    bgrp->addButton(allRDB, bgrpid++);
+    connect(bgrp, SIGNAL(buttonClicked(int)), this, SLOT(catgFilter(int)));
+#endif
     list<string> cats;
     rclconfig->getMimeCategories(cats);
     // Text for button 0 is not used. Next statement just avoids unused
@@ -197,8 +206,17 @@ void RclMain::init()
 	but->setText(tr(catgnm));
 	if (prefs.catgToolBar && catgCMB)
 	    catgCMB->insertItem(tr(catgnm));
+#if (QT_VERSION >= 0x040000)
+        bgrphbox->addWidget(but);
+        bgrp->addButton(but, bgrpid++);
+#endif
     }
+#if (QT_VERSION < 0x040000)
     catgBGRP->setButton(0);
+#else
+    catgBGRP->setLayout(bgrphbox);
+#endif
+
     if (prefs.catgToolBar)
 	catgBGRP->hide();
     // Connections
@@ -264,7 +282,6 @@ void RclMain::init()
     connect(indexConfigAction, SIGNAL(activated()), this, SLOT(showIndexConfig()));
     connect(queryPrefsAction, SIGNAL(activated()), this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), this, SLOT(showExtIdxDialog()));
-    connect(catgBGRP, SIGNAL(clicked(int)), this, SLOT(catgFilter(int)));
     if (prefs.catgToolBar && catgCMB)
 	connect(catgCMB, SIGNAL(activated(int)), this, SLOT(catgFilter(int)));
     connect(periodictimer, SIGNAL(timeout()), this, SLOT(periodic100()));

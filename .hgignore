@@ -62,7 +62,6 @@ src/qt4gui/advsearch.ui
 src/qt4gui/images
 src/qt4gui/preview.ui
 src/qt4gui/qrc_recoll.cpp
-src/qt4gui/rclmain.ui
 src/qt4gui/recoll
 src/qt4gui/recoll.pro
 src/qt4gui/sort.ui

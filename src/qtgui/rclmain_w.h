@@ -34,12 +34,7 @@
 #if QT_VERSION < 0x040000
 #include "rclmain.h"
 #else
-#if QT_VERSION >= 0x040601
-// 4.6.1 uic is broken
-#include "ui_rclmain.h-4.5"
-#else
 #include "ui_rclmain.h"
-#endif
 #endif
 
 //MOC_SKIP_BEGIN
@@ -50,10 +45,10 @@ class DummyRclMainBase : public RclMainBase
 };
 #define RCLMAINPARENT QWidget
 #else
-class DummyRclMainBase : public Q3MainWindow, public Ui::RclMainBase
+class DummyRclMainBase : public QMainWindow, public Ui::RclMainBase
 {
-public: DummyRclMainBase(QWidget *parent) :Q3MainWindow(parent){setupUi(this);}
-#define RCLMAINPARENT Q3MainWindow
+public: DummyRclMainBase(QWidget *parent) :QMainWindow(parent){setupUi(this);}
+#define RCLMAINPARENT QMainWindow
 };
 #endif
 //MOC_SKIP_END
