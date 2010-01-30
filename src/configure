@@ -721,7 +721,8 @@ with_fam
 enable_xattr
 enable_camelcase
 enable_pic
-with_gui
+enable_qtgui
+enable_x11mon
 with_x
 '
       ac_precious_vars='build_alias
@@ -1378,6 +1379,9 @@ Optional Features:
   --enable-pic            Compile library objects as position independant
                           code. This is necessary for building the php
                           extension.
+  --disable-qtgui         Disable the QT-based graphical user interface.
+  --disable-x11mon        Disable recollindex support for X11 session
+                          monitoring.
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1392,8 +1396,6 @@ Optional Packages:
                           indexing of modified files. Give the fam/gamin
                           library as argument (ie: /usr/lib/libfam.so) if
                           configure does not find the right one.
-  --without-gui           Disable the QT user interface and auxiliary x11
-                          uses.
   --with-x                use the X Window System
 
 Some influential environment variables:
@@ -4825,20 +4827,15 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 # If QMAKESPEC is not set and needed, the qmake test at the previous test
 # will have failed, and we tell the user to check his environment.
 #
-
-# Check whether --with-gui was given.
-if test "${with_gui+set}" = set; then
-  withval=$with_gui; withQT=$withval
+# Check whether --enable-qtgui was given.
+if test "${enable_qtgui+set}" = set; then
+  enableval=$enable_qtgui; enableQT=$enableval
 else
-  withQT="yes"
+  enableQT="yes"
 fi
 
 
-if test "$withQT" != "yes" ; then
-   cat >>confdefs.h <<\_ACEOF
-#define WITHOUT_X11 1
-_ACEOF
-
+if test "$enableQT" != "yes" ; then
    NOQTMAKE="#"
    NOCMDLINE=""
 else
@@ -5011,8 +5008,14 @@ fi
 
 
 ### X11: this is needed for the session monitoring code (in recollindex -m)
-# We disable it if without-gui has been specified, but it could be separated
-if test "$withQT" = "yes" ; then
+# Check whether --enable-x11mon was given.
+if test "${enable_x11mon+set}" = set; then
+  enableval=$enable_x11mon; enableX11mon=$enableval
+else
+  enableX11mon="yes"
+fi
+
+if test "$enableX11mon" = "yes" ; then
   ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -6625,6 +6628,11 @@ fi
 
   X_LIBX11=-lX11
 else
+
+cat >>confdefs.h <<\_ACEOF
+#define DISABLE_X11MON 1
+_ACEOF
+
   X_LIBX11=""
 fi
 #echo X_CFLAGS "'$X_CFLAGS'" X_PRE_LIBS "'$X_PRE_LIBS'" X_LIBS \

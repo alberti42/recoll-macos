@@ -47,5 +47,5 @@
 /* Split camelCase words */
 #undef RCL_SPLIT_CAMELCASE
 
-/* No X11 */
-#undef WITHOUT_X11
+/* No X11 session monitoring support */
+#undef DISABLE_X11MON

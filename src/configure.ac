@@ -382,7 +382,7 @@ if test "$enableX11mon" = "yes" ; then
   AC_PATH_XTRA
   X_LIBX11=-lX11
 else
-  AC_DEFINE(WITHOUT_X11, 1, [No X11 session monitoring support])
+  AC_DEFINE(DISABLE_X11MON, 1, [No X11 session monitoring support])
   X_LIBX11=""
 fi
 #echo X_CFLAGS "'$X_CFLAGS'" X_PRE_LIBS "'$X_PRE_LIBS'" X_LIBS \

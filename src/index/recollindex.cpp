@@ -170,8 +170,10 @@ static const char usage [] =
 "recollindex -m [-w <secs>] -x [-D]\n"
 "    Perform real time indexation. Don't become a daemon if -D is set.\n"
 "    -w sets number of seconds to wait before starting.\n"
+#ifndef DISABLE_X11MON
 "    -x disables exit on end of x11 session\n"
-#endif
+#endif /* DISABLE_X11MON */
+#endif /* RCL_MONITOR */
 "recollindex -e <filename [filename ...]>\n"
 "    Purge data for individual files. No stem database updates\n"
 "recollindex -i <filename [filename ...]>\n"
