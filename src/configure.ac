@@ -291,13 +291,12 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 # If QMAKESPEC is not set and needed, the qmake test at the previous test
 # will have failed, and we tell the user to check his environment.
 #
-AC_ARG_WITH(gui, 
-    AC_HELP_STRING([--without-gui],
-   [Disable the QT user interface and auxiliary x11 uses.]),
-        withQT=$withval, withQT="yes")
+AC_ARG_ENABLE(qtgui, 
+    AC_HELP_STRING([--disable-qtgui],
+   [Disable the QT-based graphical user interface.]),
+        enableQT=$enableval, enableQT="yes")
 
-if test "$withQT" != "yes" ; then
-   AC_DEFINE(WITHOUT_X11)
+if test "$enableQT" != "yes" ; then
    NOQTMAKE="#"
    NOCMDLINE=""
 else
@@ -375,11 +374,15 @@ fi
 
 
 ### X11: this is needed for the session monitoring code (in recollindex -m)
-# We disable it if without-gui has been specified, but it could be separated
-if test "$withQT" = "yes" ; then
+AC_ARG_ENABLE(x11mon, 
+    AC_HELP_STRING([--disable-x11mon],
+   [Disable recollindex support for X11 session monitoring.]),
+        enableX11mon=$enableval, enableX11mon="yes")
+if test "$enableX11mon" = "yes" ; then
   AC_PATH_XTRA
   X_LIBX11=-lX11
 else
+  AC_DEFINE(WITHOUT_X11, 1, [No X11 session monitoring support])
   X_LIBX11=""
 fi
 #echo X_CFLAGS "'$X_CFLAGS'" X_PRE_LIBS "'$X_PRE_LIBS'" X_LIBS \
