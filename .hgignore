@@ -48,6 +48,7 @@ src/doc/user/rcl.searchkio.searchabledocs.html
 src/doc/user/usermanual.html
 src/doc/user/usermanual.html-text
 src/doc/user/usermanual.txt
+src/filters/rclexecm.pyc
 src/index/alldeps
 src/index/recollindex
 src/lib/alldeps
@@ -69,6 +70,7 @@ src/qt4gui/spell.ui
 src/qt4gui/ssearchb.ui
 src/qt4gui/uiprefs.ui
 src/qt4gui/viewaction.ui
+src/qtgui/recoll.pro
 src/qtgui/i18n/*.qm
 src/query/alldeps
 src/recollinstall

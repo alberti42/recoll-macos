@@ -35,8 +35,10 @@
           supposedly fixed in later versions. Bugs listed in the
           topmost section may also exist in older versions.</i></p>
 
-      <h2><a name="b_latest">recoll 1.13.01 + xapian 1.0.16</a></h2> 
+      <h2><a name="b_latest">recoll 1.13.02 + xapian 1.0.16</a></h2> 
       <ul>
+	<li>Mac OS X + Qt 4.6.1 : the index configuration dialog
+	  crashes.</li>
         <li>Performing a full index with release 1.11 or later, over a
           version created with a much older recoll release may
           sometimes end with an error saying "backend doesn't
@@ -100,7 +102,21 @@
           slower indexing for doc files.</li>
       </ul>
 
-      <h2><a name="b_latest">recoll 1.13.00 + xapian 1.0.16</a></h2> 
+      <h2><a name="b_1_13_01">recoll 1.13.01 + xapian
+      1.0.16</a></h2> <li>The GUI display is completely garbled under
+      Qt 4.6.1 and newer. This is a Qt bug, and a workaround was put
+      in place in Recoll 1.13.02 for Qt 4.6.1. If you are using a
+      newer version and the problem is still there, you can fix the
+      4.6.1 fix to hopefully work with your Qt version: edit
+      qtgui/rclmain_w.h, around line 37 (there is only one instance),
+      change:
+<pre>
+  #if QT_VERSION == 0x040601
+  to  
+  #if QT_VERSION >= 0x040601
+</pre>
+      </li>
+      <h2><a name="b_1_13_00">recoll 1.13.01 + xapian 1.0.16</a></h2> 
       <li>The field value was ignored in field searches for phrases or
 	capitalized words (ie: author:John or title:"the title").</li>
       <li>The GUI would sometimes crash during the first execution,
