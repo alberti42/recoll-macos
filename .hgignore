@@ -65,7 +65,6 @@ src/qt4gui/qrc_recoll.cpp
 src/qt4gui/recoll
 src/qt4gui/recoll.pro
 src/qt4gui/sort.ui
-src/qt4gui/spell.ui
 src/qt4gui/ssearchb.ui
 src/qt4gui/uiprefs.ui
 src/qt4gui/viewaction.ui

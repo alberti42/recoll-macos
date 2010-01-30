@@ -53,7 +53,11 @@ public:
 public slots:
     virtual void doExpand();
     virtual void wordChanged(const QString&);
+#if (QT_VERSION < 0x040000)
     virtual void textDoubleClicked();
+#else
+    virtual void textDoubleClicked(int, int);
+#endif
     virtual void modeSet(int);
 
 signals:
