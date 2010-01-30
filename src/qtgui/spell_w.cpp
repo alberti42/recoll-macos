@@ -210,11 +210,11 @@ void SpellW::doExpand()
         suggsLV->setItem(0, 0, new QTableWidgetItem(tr("No expansion found")));
 #endif
     } else {
-        int row = 0;
 #if (QT_VERSION < 0x040000)
 	for (list<Rcl::TermMatchEntry>::reverse_iterator it = entries.rbegin(); 
 	     it != entries.rend(); it++) {
 #else
+        int row = 0;
 	for (list<Rcl::TermMatchEntry>::iterator it = entries.begin(); 
 	     it != entries.end(); it++) {
 #endif
@@ -247,15 +247,21 @@ void SpellW::wordChanged(const QString &text)
 {
     if (text.isEmpty()) {
 	expandPB->setEnabled(false);
-	suggsLV->clear();
+#if (QT_VERSION < 0x040000)
+        suggsLV->clear();
+#else
+        suggsLV->setRowCount(0);
+#endif
     } else {
 	expandPB->setEnabled(true);
     }
 }
 
 #if (QT_VERSION < 0x040000)
+void SpellW::textDoubleClicked(int, int){}
 void SpellW::textDoubleClicked()
 #else
+void SpellW::textDoubleClicked() {}
 void SpellW::textDoubleClicked(int row, int)
 #endif
 {
