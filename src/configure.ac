@@ -378,6 +378,11 @@ AC_ARG_ENABLE(x11mon,
     AC_HELP_STRING([--disable-x11mon],
    [Disable recollindex support for X11 session monitoring.]),
         enableX11mon=$enableval, enableX11mon="yes")
+
+if test X$withInotify = Xno -a X$withFam = Xno ; then
+  enableX11mon=no
+fi
+
 if test "$enableX11mon" = "yes" ; then
   AC_PATH_XTRA
   X_LIBX11=-lX11
