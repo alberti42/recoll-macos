@@ -60,7 +60,6 @@ for d in \
     ${bindir} \
     ${mandir}/man1 \
     ${mandir}/man5 \
-    ${datadir}/applications \
     ${datadir}/icons \
     ${datadir}/recoll/doc \
     ${datadir}/recoll/examples \
@@ -72,22 +71,30 @@ do
     test -d $d || mkdir -p $d || exit 1
 done
 
+@NOQTMAKE@test -d ${datadir}/applications \
+@NOQTMAKE@  || mkdir -p ${datadir}/applications || exit 1
+
+
 # Use the xdg utilies to install the desktop file and icon? Couldn't find
 # out how to get this to work sanely. So keep the old way
 #PATH=$PATH:desktop/xdg-utils-1.0.1/scripts
 #export PATH
 #xdg-desktop-menu install desktop/recoll-searchgui.desktop
 #xdg-icon-resource install --size 48 desktop/recoll.png
-${INSTALL} -m 0444 desktop/recoll-searchgui.desktop ${datadir}/applications
+@NOQTMAKE@${INSTALL} -m 0444 desktop/recoll-searchgui.desktop ${datadir}/applications
 ${INSTALL} -m 0444 desktop/recoll.png ${datadir}/icons/hicolor/48x48/apps
 
 ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 			${datadir}/recoll/doc 
-${INSTALL} -m 0444 doc/man/recoll.1 doc/man/recollindex.1 ${mandir}/man1/
+@NOQTMAKE@${INSTALL} -m 0444 doc/man/recoll.1 ${mandir}/man1/
+@NOCMDLINE@${INSTALL} -m 0444 doc/man/recollq.1 ${mandir}/man1/
+${INSTALL} -m 0444 doc/man/recollindex.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 
 @NOQTMAKE@${INSTALL} -m 0755 ${RECOLLPROG} ${bindir} || exit 1
 @NOQTMAKE@${STRIP} ${bindir}/recoll 
+@NOCMDLINE@${INSTALL} -m 0755 query/recollq ${bindir} || exit 1
+@NOCMDLINE@${STRIP} ${bindir}/recollq 
 ${INSTALL} -m 0755 index/recollindex ${bindir} || exit 1
 ${STRIP} ${bindir}/recollindex
 
