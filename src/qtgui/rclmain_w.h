@@ -111,6 +111,7 @@ public slots:
     virtual void adjustPrefsMenu();
     virtual void catgFilter(int);
     virtual void initDbOpen();
+    virtual void toggleFullScreen();
 
 signals:
     void stemLangChanged(const QString& lang);

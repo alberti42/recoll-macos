@@ -46,6 +46,14 @@
        <number>0</number>
       </property>
       <widget class="QRadioButton" name="allRDB">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>45</width>
+         <height>29</height>
+        </rect>
+       </property>
        <property name="text">
         <string>All</string>
        </property>
@@ -111,6 +119,8 @@
     <addaction name="separator"/>
     <addaction name="fileEraseDocHistoryAction"/>
     <addaction name="showMissingHelpers_Action"/>
+    <addaction name="separator"/>
+    <addaction name="toggleFullScreenAction"/>
     <addaction name="separator"/>
     <addaction name="fileExitAction"/>
    </widget>
@@ -310,6 +320,20 @@
    </property>
    <property name="name" stdset="0">
     <cstring>extIdxAction</cstring>
+   </property>
+  </action>
+  <action name="toggleFullScreenAction">
+   <property name="text">
+    <string>&amp;Full Screen</string>
+   </property>
+   <property name="iconText">
+    <string>Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>toggleFullScreenAction</cstring>
    </property>
   </action>
  </widget>

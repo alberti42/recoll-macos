@@ -284,6 +284,8 @@ void RclMain::init()
     connect(extIdxAction, SIGNAL(activated()), this, SLOT(showExtIdxDialog()));
     if (prefs.catgToolBar && catgCMB)
 	connect(catgCMB, SIGNAL(activated(int)), this, SLOT(catgFilter(int)));
+    connect(toggleFullScreenAction, SIGNAL(activated()), 
+            this, SLOT(toggleFullScreen()));
     connect(periodictimer, SIGNAL(timeout()), this, SLOT(periodic100()));
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
@@ -452,8 +454,11 @@ void RclMain::fileExit()
 {
     LOGDEB(("RclMain: fileExit\n"));
     m_tempfiles.clear();
-    prefs.mainwidth = width();
-    prefs.mainheight = height();
+    // Don't save geometry if we're currently fullscreened
+    if (!isFullScreen()) {
+        prefs.mainwidth = width();
+        prefs.mainheight = height();
+    }
     prefs.ssearchTyp = sSearch->searchTypCMB->currentItem();
     if (asearchform)
 	delete asearchform;
@@ -1239,6 +1244,14 @@ void RclMain::catgFilter(int id)
     resList->setDocSource();
 }
 
+void RclMain::toggleFullScreen()
+{
+    if (isFullScreen())
+        showNormal();
+    else
+        showFullScreen();
+}
+
 bool RclMain::eventFilter(QObject *, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress)  {
@@ -1253,7 +1266,7 @@ bool RclMain::eventFilter(QObject *, QEvent *event)
             // Shift-Home -> first page of results
             resList->resultPageFirst();
             return true;
-        }
+        } 
     }
     return false;
 }

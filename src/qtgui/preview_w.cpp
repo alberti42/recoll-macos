@@ -732,6 +732,7 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
 	closeCurrentTab();
 	return false;
     }
+    raise();
     return true;
 }
 

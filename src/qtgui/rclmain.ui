@@ -120,6 +120,8 @@
         <action name="fileEraseDocHistoryAction"/>
         <action name="showMissingHelpers_Action"/>
         <separator/>
+        <action name="toggleFullScreenAction"/>
+        <separator/>
         <action name="fileExitAction"/>
     </item>
     <item text="&amp;Tools" name="toolsMenu">
@@ -364,6 +366,17 @@
         </property>
         <property name="menuText">
             <string>External index dialog</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>toggleFullScreenAction</cstring>
+        </property>
+        <property name="menuText">
+            <string>&amp;Full Screen</string>
+        </property>
+        <property name="accel">
+            <string>F11</string>
         </property>
     </action>
 </actions>
