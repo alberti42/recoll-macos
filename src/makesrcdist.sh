@@ -2,11 +2,24 @@
 # @(#$Id: makesrcdist.sh,v 1.16 2008-11-21 16:43:42 dockes Exp $  (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
-fatal()
-{
-	echo $*
-	exit 1
+fatal() {
+    echo $*
+    exit 1
 }
+tagtopsvn() {
+    (cd ..; svn copy -m "Release $version tagged" . $SVNREPOS/tags/$1) \
+    	|| fatal tag failed
+}
+tagtophg() {
+    hg tag -m "Release $version tagged" $1 || fatal tag failed
+}
+tagexists() {
+    hg tags | cut -d' ' -f 1 | egrep '^'$1'$'
+}
+tagtop() {
+    tagtophg $*
+}
+
 #set -x
 
 TAR=/usr/bin/tar
@@ -16,32 +29,26 @@ TAR=/usr/bin/tar
 
 VCCMD=hg
 
+if test ! -d qtgui;then
+    echo "Should be executed in the master recoll directory"
+    exit 1
+fi
+
 version=`cat VERSION`
 versionforcvs=`echo $version | sed -e 's/\./_/g'`
+TAG="RECOLL_$versionforcvs"
+
+echo Creating version $versionforcvs
+sleep 2
+tagexists $TAG  && fatal "Tag $TAG already exists"
 
 editedfiles=`$VCCMD status . | egrep -v '^\?'`
 if test ! -z "$editedfiles"; then
 	fatal  "Edited files exist: " $editedfiles
 fi
 
-tagtopsvn() {
-    (cd ..; svn copy -m "Release $version tagged" . $SVNREPOS/tags/$1) \
-    	|| fatal tag failed
-}
-tagtophg() {
-    hg tag -f -m "Release $version tagged" $1 || fatal tag failed
-}
-tagtop() {
-    tagtophg $*
-}
-
 targetdir=${targetdir-/tmp}
 dotag=${dotag-yes}
-
-if test ! -d qtgui;then
-    echo "Should be executed in the master recoll directory"
-    exit 1
-fi
 
 case $version in
 *.*.*) releasename=recoll-$version;;
@@ -106,11 +113,6 @@ sed -e '/\.\/index\.html/d' -e '/\.\/book\.html/d' \
 diff $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
 mv -f $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
 
-# We tag .. as there is the 'packaging/' directory in there
-TAG="RECOLL_$versionforcvs"
-#[ $dotag = "yes" ] && (cd ..;cvs tag -F $CVSTAG .)
-[ $dotag = "yes" ] && tagtop $TAG
-
 # Can't now put ./Makefile in excludefile, gets ignored everywhere. So delete
 # the top Makefile here (its' output by configure on the target system):
 rm -f $topdir/Makefile
@@ -120,3 +122,10 @@ out=$releasename.tar.gz
     $TAR chf - $releasename | \
     	gzip > $out)
 echo "$targetdir/$out created"
+
+# Check manifest against current reference
+tar tzf $targetdir/$out | sort | cut -d / -f 2- | \
+    diff mk/manifest.txt - || fatal "Please fix file list"
+
+# We tag .. as there is the 'packaging/' directory in there
+[ $dotag = "yes" ] && tagtop $TAG

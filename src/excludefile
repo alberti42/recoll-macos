@@ -21,6 +21,7 @@ kde/recoll_applet
 lib/librcl.a
 makesrcdist.sh
 mk/localdefs
+mk/manifest.txt
 qtgui/Makefile
 qtgui/preview/Makefile
 qtgui/preview/preview.pro
