@@ -263,6 +263,9 @@
    <property name="toolTip">
     <string>Next page of results</string>
    </property>
+   <property name="shortcut">
+    <string>PgDown</string>
+   </property>
    <property name="name" stdset="0">
     <cstring>nextPageAction</cstring>
    </property>
@@ -277,6 +280,9 @@
    <property name="toolTip">
     <string>Go to first page of results</string>
    </property>
+   <property name="shortcut">
+    <string>Shift+Home</string>
+   </property>
    <property name="name" stdset="0">
     <cstring>firstPageAction</cstring>
    </property>
@@ -290,6 +296,9 @@
    </property>
    <property name="toolTip">
     <string>Previous page of results</string>
+   </property>
+   <property name="shortcut">
+    <string>PgUp</string>
    </property>
    <property name="name" stdset="0">
     <cstring>prevPageAction</cstring>

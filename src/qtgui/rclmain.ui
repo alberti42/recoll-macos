@@ -87,11 +87,11 @@
                     <widget class="QRadioButton">
                         <property name="name">
                             <cstring>allRDB</cstring>
-                         </property>
-                         <property name="text">
-                             <string>All</string>
-                         </property>
-                     </widget>
+                        </property>
+                        <property name="text">
+                            <string>All</string>
+                        </property>
+                    </widget>
                 </widget>
                 <widget class="ResList">
                     <property name="name">
@@ -312,6 +312,9 @@
         <property name="toolTip">
             <string>Next page of results</string>
         </property>
+        <property name="accel">
+            <string>PgDown</string>
+        </property>
     </action>
     <action>
         <property name="name">
@@ -326,6 +329,9 @@
         <property name="toolTip">
             <string>Go to first page of results</string>
         </property>
+        <property name="accel">
+            <string>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</string>
+        </property>
     </action>
     <action>
         <property name="name">
@@ -339,6 +345,9 @@
         </property>
         <property name="toolTip">
             <string>Previous page of results</string>
+        </property>
+        <property name="accel">
+            <string>PgUp</string>
         </property>
     </action>
     <action>

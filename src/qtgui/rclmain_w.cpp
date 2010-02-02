@@ -1257,12 +1257,11 @@ bool RclMain::eventFilter(QObject *, QEvent *event)
     if (event->type() == QEvent::KeyPress)  {
         LOGDEB2(("RclMain::eventFilter: keypress\n"));
 	QKeyEvent *ke = (QKeyEvent *)event;
-	if (ke->key() == Qt::Key_PageDown || ke->key() == Qt::Key_PageUp ) {
-            // Page up down are sent to the resList where they make sense
-            QApplication::sendEvent(resList, event);
-            return true;
-        } else if (ke->key() == Qt::Key_Home &&
-                   (ke->state() & Qt::ShiftButton)) {
+        // Shift-Home is the shortcut for the 1st result page action, but it is
+        // filtered by the search entry to mean "select all line". We prefer to
+        // keep it for the action as it's easy to find another combination to
+        // select all (ie: home, then shift-end)
+        if (ke->key() == Qt::Key_Home && (ke->state() & Qt::ShiftButton)) {
             // Shift-Home -> first page of results
             resList->resultPageFirst();
             return true;
