@@ -5,8 +5,6 @@
 #include <set>
 #include <string>
 
-#include "textsplit.h"
-
 #ifndef NO_NAMESPACES
 using std::set;
 using std::string;
@@ -14,7 +12,7 @@ namespace Rcl
 {
 #endif
 
-class StopList : public TextSplitCB {
+class StopList {
 public:
     StopList() : m_hasStops(false) {}
     StopList(const string &filename) {setFile(filename);}
@@ -23,7 +21,6 @@ public:
     bool setFile(const string &filename);
     bool isStop(const string &term) const;
     bool hasStops() const {return m_hasStops;}
-    virtual bool takeword(const string& term, int pos, int bts, int bte); 
 
 private:
     bool m_hasStops;

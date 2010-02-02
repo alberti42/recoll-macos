@@ -42,6 +42,7 @@ using namespace std;
 #include "internfile.h"
 #include "wipedir.h"
 #include "transcode.h"
+#include "textsplit.h"
 
 bool dump_contents(RclConfig *rclconfig, string& tmpdir, Rcl::Doc& idoc)
 {

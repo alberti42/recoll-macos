@@ -781,16 +781,15 @@ bool Db::fieldToPrefix(const string& fld, string &pfx)
 }
 
 
-// The text splitter callback class which receives words from the
-// splitter and adds postings to the Xapian document.
-class mySplitterCB : public TextSplitCB {
+// The splitter breaks text into words and adds postings to the Xapian document.
+class TextSplitDb : public TextSplit {
  public:
     Xapian::Document &doc;   // Xapian document 
     Xapian::termpos basepos; // Base for document section
     Xapian::termpos curpos;  // Current position. Used to set basepos for the
                              // following section
     StopList &stops;
-    mySplitterCB(Xapian::Document &d, StopList &_stops) 
+    TextSplitDb(Xapian::Document &d, StopList &_stops) 
 	: doc(d), basepos(1), curpos(0), stops(_stops)
     {}
     bool takeword(const std::string &term, int pos, int, int);
@@ -802,15 +801,16 @@ private:
     string  prefix; 
 };
 
-// Callback for the document to word splitting class during indexation
-bool mySplitterCB::takeword(const std::string &_term, int pos, int, int)
+// Get one term from the doc, remove accents and lowercase, then add posting
+bool TextSplitDb::takeword(const std::string &_term, int pos, int, int)
 {
 #if 0
-    LOGDEB(("mySplitterCB::takeword:splitCb: [%s]\n", _term.c_str()));
+    LOGDEB(("TextSplitDb::takeword: [%s]\n", _term.c_str()));
 #endif
     string term;
     if (!unacmaybefold(_term, term, "UTF-8", true)) {
-	LOGINFO(("Db::splitter::takeword: unac failed for [%s]\n", _term.c_str()));
+	LOGINFO(("Db::splitter::takeword: unac failed for [%s]\n", 
+                 _term.c_str()));
 	term.clear();
 	// We don't generate a fatal error because of a bad term
 	return true;
@@ -892,14 +892,13 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     Doc doc = idoc;
 
     Xapian::Document newdocument;
-    mySplitterCB splitData(newdocument, m_stops);
-    TextSplit splitter(&splitData);
+    TextSplitDb splitter(newdocument, m_stops);
 
     // Split and index file name as document term(s)
     LOGDEB2(("Db::add: split file name [%s]\n", fn.c_str()));
     if (!splitter.text_to_words(doc.utf8fn))
         LOGDEB(("Db::addOrUpdate: split failed for file name\n"));
-    splitData.basepos += splitData.curpos + 100;
+    splitter.basepos += splitter.curpos + 100;
 
     // Index textual metadata.  These are all indexed as text with
     // positions, as we may want to do phrase searches with them (this
@@ -919,19 +918,19 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	    LOGDEB0(("Db::add: field [%s] pfx [%s]: [%s]\n", 
 		    meta_it->first.c_str(), pfx.c_str(), 
 		    meta_it->second.c_str()));
-	    splitData.setprefix(pfx); // Subject
+	    splitter.setprefix(pfx); // Subject
 	    if (!splitter.text_to_words(meta_it->second))
                 LOGDEB(("Db::addOrUpdate: split failed for %s\n", 
                         meta_it->first.c_str()));
-	    splitData.setprefix(string());
-	    splitData.basepos += splitData.curpos + 100;
+	    splitter.setprefix(string());
+	    splitter.basepos += splitter.curpos + 100;
 	}
     }
 
-    if (splitData.curpos < baseTextPosition)
-	splitData.basepos = baseTextPosition;
+    if (splitter.curpos < baseTextPosition)
+	splitter.basepos = baseTextPosition;
     else
-	splitData.basepos += splitData.curpos + 100;
+	splitter.basepos += splitter.curpos + 100;
 
     // Split and index body text
     LOGDEB2(("Db::add: split body\n"));

@@ -58,15 +58,15 @@ static string vecStringToString(const vector<string>& t)
 
 // Text splitter callback used to take note of the position of query terms 
 // inside the result text. This is then used to insert highlight tags. 
-class myTextSplitCB : public TextSplitCB {
+class TextSplitPTR : public TextSplit {
  public:
 
     // Out: begin and end byte positions of query terms/groups in text
     vector<pair<int, int> > tboffs;  
 
-    myTextSplitCB(const vector<string>& its, 
-		  const vector<vector<string> >&groups, 
-		  const vector<int>& slacks) 
+    TextSplitPTR(const vector<string>& its, 
+                 const vector<vector<string> >&groups, 
+                 const vector<int>& slacks) 
 	:  m_wcount(0), m_groups(groups), m_slacks(slacks)
     {
 	for (vector<string>::const_iterator it = its.begin(); 
@@ -86,7 +86,8 @@ class myTextSplitCB : public TextSplitCB {
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
 	string dumb;
 	if (!unacmaybefold(term, dumb, "UTF-8", true)) {
-	    LOGINFO(("PlainToRich::splitter::takeword: unac failed for [%s]\n", term.c_str()));
+	    LOGINFO(("PlainToRich::splitter::takeword: unac failed for [%s]\n",
+                     term.c_str()));
 	    return true;
 	}
 	//LOGDEB2(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
@@ -186,9 +187,9 @@ static bool do_proximity_test(int window, vector<vector<int>* >& plists,
 }
 
 // Check if there is a NEAR match for the group of terms
-bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
+bool TextSplitPTR::matchGroup(const vector<string>& terms, int window)
 {
-    LOGDEB0(("myTextSplitCB::matchGroup:d %d: %s\n", window,
+    LOGDEB0(("TextSplitPTR::matchGroup:d %d: %s\n", window,
 	    vecStringToString(terms).c_str()));
 
     // The position lists we are going to work with. We extract them from the 
@@ -207,7 +208,7 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	 it != terms.end(); it++) {
 	map<string, vector<int> >::iterator pl = m_plists.find(*it);
 	if (pl == m_plists.end()) {
-	    LOGDEB0(("myTextSplitCB::matchGroup: [%s] not found in m_plists\n",
+	    LOGDEB0(("TextSplitPTR::matchGroup: [%s] not found in m_plists\n",
 		    (*it).c_str()));
 	    continue;
 	}
@@ -215,10 +216,10 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	plistToTerm[&(pl->second)] = *it;
 	realgroup.push_back(*it);
     }
-    LOGDEB0(("myTextSplitCB::matchGroup:d %d:real group after expansion %s\n", 
+    LOGDEB0(("TextSplitPTR::matchGroup:d %d:real group after expansion %s\n", 
 	     window, vecStringToString(realgroup).c_str()));
     if (plists.size() < 2) {
-	LOGDEB0(("myTextSplitCB::matchGroup: no actual groups found\n"));
+	LOGDEB0(("TextSplitPTR::matchGroup: no actual groups found\n"));
 	return false;
     }
     // Sort the positions lists so that the shorter is first
@@ -243,7 +244,7 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	int sta = int(10E9), sto = 0;
 	LOGDEB0(("MatchGroup: Testing at pos %d\n", pos));
 	if (do_proximity_test(window, plists, 1, pos, pos, &sta, &sto)) {
-	    LOGDEB0(("myTextSplitCB::matchGroup: MATCH termpos [%d,%d]\n", 
+	    LOGDEB0(("TextSplitPTR::matchGroup: MATCH termpos [%d,%d]\n", 
 		     sta, sto)); 
 	    // Maybe extend the window by 1st term position, this was not
 	    // done by do_prox..
@@ -253,7 +254,7 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
 	    map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
 	    if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
-		LOGDEB0(("myTextSplitCB::matchGroup: pushing bpos %d %d\n",
+		LOGDEB0(("TextSplitPTR::matchGroup: pushing bpos %d %d\n",
 			i1->second.first, i2->second.second));
 		tboffs.push_back(pair<int, int>(i1->second.first, 
 						i2->second.second));
@@ -278,7 +279,7 @@ public:
 };
 
 // Do the phrase match thing, then merge the highlight lists
-bool myTextSplitCB::matchGroups()
+bool TextSplitPTR::matchGroups()
 {
     vector<vector<string> >::const_iterator vit = m_groups.begin();
     vector<int>::const_iterator sit = m_slacks.begin();
@@ -333,15 +334,14 @@ bool PlainToRich::plaintorich(const string& in,
     // Compute the positions for the query terms.  We use the text
     // splitter to break the text into words, and compare the words to
     // the search terms,
-    myTextSplitCB cb(terms, groups, slacks);
-    TextSplit splitter(&cb);
+    TextSplitPTR splitter(terms, groups, slacks);
     // Note: the splitter returns the term locations in byte, not
     // character, offsets.
     splitter.text_to_words(in);
     LOGDEB0(("plaintorich: split done %d mS\n", chron.millis()));
 
     // Compute the positions for NEAR and PHRASE groups.
-    cb.matchGroups();
+    splitter.matchGroups();
 
     out.clear();
     out.push_back("");
@@ -353,12 +353,12 @@ bool PlainToRich::plaintorich(const string& in,
     // Iterator for the list of input term positions. We use it to
     // output highlight tags and to compute term positions in the
     // output text
-    vector<pair<int, int> >::iterator tPosIt = cb.tboffs.begin();
-    vector<pair<int, int> >::iterator tPosEnd = cb.tboffs.end();
+    vector<pair<int, int> >::iterator tPosIt = splitter.tboffs.begin();
+    vector<pair<int, int> >::iterator tPosEnd = splitter.tboffs.end();
 
 #if 0
-    for (vector<pair<int, int> >::const_iterator it = cb.tboffs.begin();
-	 it != cb.tboffs.end(); it++) {
+    for (vector<pair<int, int> >::const_iterator it = splitter.tboffs.begin();
+	 it != splitter.tboffs.end(); it++) {
 	LOGDEB2(("plaintorich: region: %d %d\n", it->first, it->second));
     }
 #endif
@@ -412,7 +412,7 @@ bool PlainToRich::plaintorich(const string& in,
 		}
 		// Skip all highlight areas that would overlap this one
 		int crend = tPosIt->second;
-		while (tPosIt != cb.tboffs.end() && tPosIt->first < crend)
+		while (tPosIt != splitter.tboffs.end() && tPosIt->first < crend)
 		    tPosIt++;
                 inrcltag = 0;
 	    }

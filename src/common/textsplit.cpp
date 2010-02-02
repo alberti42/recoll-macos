@@ -186,7 +186,7 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	    }
 	}
 	if (pos != m_prevpos || l != m_prevlen) {
-	    bool ret = m_cb->takeword(w, pos, btstart, btend);
+	    bool ret = takeword(w, pos, btstart, btend);
 	    m_prevpos = pos;
 	    m_prevlen = w.length();
 	    return ret;
@@ -558,7 +558,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 	    unsigned int loopbeg = (m_flags & TXTS_NOSPANS) ? nchars-1 : 0;
 	    unsigned int loopend = (m_flags & TXTS_ONLYSPANS) ? 1 : nchars;
 	    for (unsigned int i = loopbeg; i < loopend; i++) {
-		if (!m_cb->takeword(it.buffer().substr(boffs[i], 
+		if (!takeword(it.buffer().substr(boffs[i], 
 						       btend-boffs[i]),
 				m_wordpos - (nchars-i-1), boffs[i], btend)) {
 		    return false;
@@ -579,7 +579,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     // first
     if ((m_flags & TXTS_ONLYSPANS) && nchars > 0 && nchars != o_CJKNgramLen)  {
 	unsigned int btend = it.getBpos(); // Current char is out
-	if (!m_cb->takeword(it.buffer().substr(boffs[0], 
+	if (!takeword(it.buffer().substr(boffs[0], 
 					       btend-boffs[0]),
 			    m_wordpos - nchars,
 			    boffs[0], btend)) {
@@ -595,12 +595,12 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     return true;
 }
 
-// Callback class for countWords 
-class utSplitterCB : public TextSplitCB {
+// Specialization for countWords 
+class TextSplitCW : public TextSplit {
  public:
     int wcnt;
-    utSplitterCB() : wcnt(0) {}
-    bool takeword(const string &term, int pos, int bs, int be) {
+    TextSplitCW(Flags flags) : TextSplit(flags), wcnt(0) {}
+    bool takeword(const string &, int, int, int) {
 	wcnt++;
 	return true;
     }
@@ -608,10 +608,9 @@ class utSplitterCB : public TextSplitCB {
 
 int TextSplit::countWords(const string& s, TextSplit::Flags flgs)
 {
-    utSplitterCB cb;
-    TextSplit splitter(&cb, flgs);
+    TextSplitCW splitter(flgs);
     splitter.text_to_words(s);
-    return cb.wcnt;
+    return splitter.wcnt;
 }
 
 bool TextSplit::hasVisibleWhite(const string &in)
@@ -726,12 +725,13 @@ bool TextSplit::stringToStrings(const string &s, list<string> &tokens)
 
 using namespace std;
 
-// A small class to hold state while splitting text
-class mySplitterCB : public TextSplitCB {
+class myTextSplit : public TextSplit {
     int first;
     bool nooutput;
  public:
-    mySplitterCB() : first(1), nooutput(false) {}
+    myTextSplit(Flags flags = Flags(TXTS_NONE)) : 
+        TextSplit(flags),first(1), nooutput(false) 
+    {}
     void setNoOut(bool val) {nooutput = val;}
     bool takeword(const string &term, int pos, int bs, int be) {
 	if (nooutput)
@@ -821,11 +821,7 @@ int main(int argc, char **argv)
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
 
-    mySplitterCB cb;
     TextSplit::Flags flags = TextSplit::TXTS_NONE;
-
-    if (op_flags&OPT_S)
-	cb.setNoOut(true);
 
     if (op_flags&OPT_s)
 	flags = TextSplit::TXTS_ONLYSPANS;
@@ -867,7 +863,9 @@ int main(int argc, char **argv)
 	int n = TextSplit::countWords(data, flags);
 	cout << n << " words" << endl;
     } else {
-	TextSplit splitter(&cb,  flags);
+	myTextSplit splitter(flags);
+        if (op_flags&OPT_S)
+            splitter.setNoOut(true);
 	splitter.text_to_words(data);
     }    
 }

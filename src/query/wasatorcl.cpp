@@ -31,6 +31,7 @@ using std::list;
 #include "smallut.h"
 #include "rclconfig.h"
 #include "refcntr.h"
+#include "textsplit.h"
 
 Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason)
 {

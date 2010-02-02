@@ -25,19 +25,6 @@ using std::string;
 using std::list;
 #endif
 
-/**
- * Function class whose takeword method is called for every detected word while * splitting text.
- */
-class TextSplitCB {
-public:
-    virtual ~TextSplitCB() {}
-    virtual bool takeword(const string& term, 
-			  int pos,  // term pos
-			  int bts,  // byte offset of first char in term
-			  int bte   // byte offset of first char after term
-			  ) = 0; 
-};
-
 class Utf8Iter;
 
 
@@ -67,20 +54,25 @@ public:
 		TXTS_KEEPWILD = 4 // Handle wildcards as letters
     };
 
-    /**
-     * Constructor: just store callback object
-     */
-    TextSplit(TextSplitCB *t, Flags flags = Flags(TXTS_NONE))
-	: m_flags(flags), m_cb(t), m_maxWordLength(40), 
-	  m_prevpos(-1)
+    
+    TextSplit(Flags flags = Flags(TXTS_NONE))
+	: m_flags(flags), m_maxWordLength(40), m_prevpos(-1)
     {
     }
+    virtual ~TextSplit() {}
 
     /** Split text, emit words and positions. */
     bool text_to_words(const string &in);
 
-    //Utility functions : these does not need the user to setup a callback 
-    // etc.
+    /** Process one output word: to be implemented by the actual user class */
+    virtual bool takeword(const string& term, 
+			  int pos,  // term pos
+			  int bts,  // byte offset of first char in term
+			  int bte   // byte offset of first char after term
+			  ) = 0; 
+
+
+    // Static utility functions:
 
     /** Count words in string, as the splitter would generate them */
     static int countWords(const string &in, Flags flgs = TXTS_ONLYSPANS);
@@ -102,7 +94,6 @@ public:
 
 private:
     Flags         m_flags;
-    TextSplitCB  *m_cb;
     int           m_maxWordLength;
 
     // Current span. Might be jf.dockes@wanadoo.f
@@ -131,6 +122,5 @@ private:
     bool emitterm(bool isspan, string &term, int pos, int bs, int be);
     bool doemit(bool spanerase, int bp, bool spanemit=false);
 };
-
 
 #endif /* _TEXTSPLIT_H_INCLUDED_ */

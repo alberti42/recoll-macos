@@ -5,12 +5,28 @@ static char rcsid[] = "@(#$Id: stoplist.cpp,v 1.1 2007-06-02 08:30:42 dockes Exp
 #include "debuglog.h"
 #include "readfile.h"
 #include "unacpp.h"
+#include "textsplit.h"
 #include "stoplist.h"
 
 #ifndef NO_NAMESPACES
 namespace Rcl 
 {
 #endif
+
+class TextSplitSW : public TextSplit {
+public:
+    set<string>& stops;
+    TextSplitSW(Flags flags, set<string>& stps) 
+        : TextSplit(flags), stops(stps) 
+    {}
+    virtual bool takeword(const string& term, int, int, int)
+    {
+        string dterm;
+        unacmaybefold(term, dterm, "UTF-8", true);
+        stops.insert(dterm);
+        return true;
+    }
+};
 
 bool StopList::setFile(const string &filename)
 {
@@ -22,18 +38,9 @@ bool StopList::setFile(const string &filename)
 		filename.c_str(), reason.c_str()));
 	return false;
     }
-    TextSplit ts(this, TextSplit::TXTS_ONLYSPANS);
+    TextSplitSW ts(TextSplit::TXTS_ONLYSPANS, m_stops);
     ts.text_to_words(stoptext);
-    return true;
-}
-
-bool StopList::takeword(const string& term, int, int, int)
-{
-    string dterm;
-    unacmaybefold(term, dterm, "UTF-8", true);
-    LOGDEB2(("StopList::takeword: inserting [%s]\n", dterm.c_str()));
-    m_hasStops = true;
-    m_stops.insert(dterm);
+    m_hasStops = !m_stops.empty();
     return true;
 }
 

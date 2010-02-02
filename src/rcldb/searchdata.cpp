@@ -188,25 +188,27 @@ void SearchData::getUTerms(vector<string>& terms) const
 // phrases. This is for parts of the user entry which would appear as
 // a single word because there is no white space inside, but are
 // actually multiple terms to rcldb (ie term1,term2)
-class wsQData : public TextSplitCB {
+class TextSplitQ : public TextSplit {
  public:
-    wsQData(const StopList &_stops) 
-	: stops(_stops), alltermcount(0)
+    TextSplitQ(Flags flags, const StopList &_stops) 
+	: TextSplit(flags), stops(_stops), alltermcount(0)
     {}
     bool takeword(const std::string &interm, int , int, int) {
 	alltermcount++;
-	LOGDEB1(("wsQData::takeword: %s\n", interm.c_str()));
+	LOGDEB1(("TextSplitQ::takeword: %s\n", interm.c_str()));
 
 	// Check if the first letter is a majuscule in which
 	// case we do not want to do stem expansion. Note that
 	// the test is convoluted and possibly problematic
 	string noacterm, noaclowterm;
 	if (!unacmaybefold(interm, noacterm, "UTF-8", false)) {
-	    LOGINFO(("SearchData::splitter::takeword: unac failed for [%s]\n", interm.c_str()));
+	    LOGINFO(("SearchData::splitter::takeword: unac failed for [%s]\n", 
+                     interm.c_str()));
 	    return true;
 	} 
 	if (!unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
-	    LOGINFO(("SearchData::splitter::takeword: unac failed for [%s]\n", noacterm.c_str()));
+	    LOGINFO(("SearchData::splitter::takeword: unac failed for [%s]\n", 
+                     noacterm.c_str()));
 	    return true;
 	}
 	bool nostemexp = false;
@@ -216,7 +218,8 @@ class wsQData : public TextSplitCB {
 	    nostemexp = true;
 
 	if (stops.hasStops() && stops.isStop(noaclowterm)) {
-	    LOGDEB1(("wsQData::takeword [%s] in stop list\n", noaclowterm.c_str()));
+	    LOGDEB1(("TextSplitQ::takeword [%s] in stop list\n", 
+                     noaclowterm.c_str()));
 	    return true;
 	}
 	terms.push_back(noaclowterm);
@@ -271,7 +274,7 @@ private:
     // After splitting entry on whitespace: process non-phrase element
     void processSimpleSpan(const string& span, bool nostemexp, list<Xapian::Query> &pqueries);
     // Process phrase/near element
-    void processPhraseOrNear(wsQData *splitData, 
+    void processPhraseOrNear(TextSplitQ *splitData, 
 			     list<Xapian::Query> &pqueries,
 			     bool useNear, int slack);
 
@@ -420,7 +423,7 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
 // NEAR xapian query, the elements of which can themselves be OR
 // queries if the terms get expanded by stemming or wildcards (we
 // don't do stemming for PHRASE though)
-void StringToXapianQ::processPhraseOrNear(wsQData *splitData, 
+void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData, 
 					  list<Xapian::Query> &pqueries,
 					  bool useNear, int slack)
 {
@@ -527,31 +530,31 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    // We now adjust the phrase/near slack by the term count
 	    // difference (this is mainly better for cjk where this is a very
 	    // common occurrence because of the ngrams thing.
-	    wsQData splitDataS(stops), splitDataW(stops);
-	    TextSplit splitterS(&splitDataS, 
-				TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
-						 TextSplit::TXTS_KEEPWILD));
+	    TextSplitQ splitterS(TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
+                                                  TextSplit::TXTS_KEEPWILD), 
+                                 stops);
 	    splitterS.text_to_words(*it);
-	    TextSplit splitterW(&splitDataW, 
-				TextSplit::Flags(TextSplit::TXTS_NOSPANS | 
-						 TextSplit::TXTS_KEEPWILD));
+	    TextSplitQ splitterW(TextSplit::Flags(TextSplit::TXTS_NOSPANS | 
+                                                  TextSplit::TXTS_KEEPWILD),
+                                 stops);
 	    splitterW.text_to_words(*it);
-	    wsQData *splitData = &splitDataS;
-	    if (splitDataS.terms.size() > 1 && 
-		splitDataS.terms.size() != splitDataW.terms.size()) {
-		slack += splitDataW.terms.size() - splitDataS.terms.size();
+	    TextSplitQ *splitter = &splitterS;
+	    if (splitterS.terms.size() > 1 && 
+		splitterS.terms.size() != splitterW.terms.size()) {
+		slack += splitterW.terms.size() - splitterS.terms.size();
 		// used to: splitData = &splitDataW;
 	    }
 
-	    LOGDEB0(("strToXapianQ: termcount: %d\n", splitData->terms.size()));
-	    switch (splitData->terms.size()) {
+	    LOGDEB0(("strToXapianQ: termcount: %d\n", splitter->terms.size()));
+	    switch (splitter->terms.size()) {
 	    case 0: 
 		continue;// ??
 	    case 1: 
-		processSimpleSpan(splitData->terms.front(), splitData->nostemexps.front(), pqueries);
+		processSimpleSpan(splitter->terms.front(), 
+                                  splitter->nostemexps.front(), pqueries);
 		break;
 	    default:
-		processPhraseOrNear(splitData, pqueries, useNear, slack);
+		processPhraseOrNear(splitter, pqueries, useNear, slack);
 	    }
 	}
     } catch (const Xapian::Error &e) {
