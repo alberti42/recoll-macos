@@ -179,6 +179,8 @@ void ResList::setDocSource()
 							    m_sortspecs,
 							    title));
     }
+    // Reset the page size in case the preference was changed
+    m_pager->setPageSize(prefs.respagesize);
     m_pager->setDocSource(m_docSource);
     resultPageNext();
 }
@@ -382,6 +384,8 @@ void ResList::resultPageBack()
 // Go to the first page
 void ResList::resultPageFirst()
 {
+    // In case the preference was changed
+    m_pager->setPageSize(prefs.respagesize);
     m_pager->resultPageFirst();
     displayPage();
 }

@@ -15,18 +15,32 @@ class PlainToRich;
  */
 class ResListPager {
 public:
-    ResListPager(int pagesize=10) : m_pagesize(pagesize) {initall();}
+    ResListPager(int pagesize=10) :
+        m_pagesize(pagesize),
+        m_newpagesize(pagesize),
+        m_winfirst(-1),
+        m_hasNext(false),
+        m_hiliter(0)
+    {
+    }
     virtual ~ResListPager() {}
 
-    void setHighLighter(PlainToRich *ptr) {m_hiliter = ptr;}
+    void setHighLighter(PlainToRich *ptr) 
+    {
+        m_hiliter = ptr;
+    }
     void setDocSource(RefCntr<DocSequence> src)
     {
+        m_pagesize = m_newpagesize;
 	m_winfirst = -1;
 	m_hasNext = false;
-	m_respage.clear();
 	m_docSource = src;
+	m_respage.clear();
     }
-
+    void setPageSize(int ps) 
+    {
+        m_newpagesize = ps;
+    }
     int pageNumber() 
     {
 	if (m_winfirst < 0 || m_pagesize <= 0)
@@ -38,13 +52,14 @@ public:
     bool hasNext() {return m_hasNext;}
     bool hasPrev() {return m_winfirst > 0;}
     bool atBot() {return m_winfirst <= 0;}
+    void resultPageFirst() {
+	m_winfirst = -1;
+        m_pagesize = m_newpagesize;
+	resultPageNext();
+    }
     void resultPageBack() {
 	if (m_winfirst <= 0) return;
 	m_winfirst -= 2 * m_pagesize;
-	resultPageNext();
-    }
-    void resultPageFirst() {
-	m_winfirst = -1;
 	resultPageNext();
     }
     void resultPageNext();
@@ -70,23 +85,16 @@ public:
     virtual void suggest(const vector<string>, vector<string>&sugg) {
         sugg.clear();
     }
-private:
-    void initall() 
-    {
-	m_winfirst = -1;
-	m_hasNext = false;
-	m_respage.clear();
-	m_hiliter = 0;
-    }
 
+private:
+    int                  m_pagesize;
+    int                  m_newpagesize;
     // First docnum (from docseq) in current page
     int                  m_winfirst;
-    RefCntr<DocSequence> m_docSource;
-    const int            m_pagesize;
-
     bool                 m_hasNext;
-    vector<ResListEntry> m_respage;
     PlainToRich         *m_hiliter;
+    RefCntr<DocSequence> m_docSource;
+    vector<ResListEntry> m_respage;
 };
 
 #endif /* _reslistpager_h_included_ */
