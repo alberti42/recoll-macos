@@ -9,7 +9,7 @@ Homepage: http://www.recoll.org/
 Package: kio-recoll
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Description: an Recoll KIO slave for KDE 4
+Description: A Recoll KIO slave for KDE 4
  A Recoll KIO slave for KDE 4, allows performing a Recoll search by
  entering an appropriate URL in a KDE open dialog, or with an HTML-based
  interface displayed in Konqueror.  

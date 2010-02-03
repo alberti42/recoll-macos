@@ -1,4 +1,20 @@
-recoll (1.12.2-0~ppa3~jaunty1) jaunty; urgency=low
+recoll (1.13.01-0~ppa1~SERIES1) SERIES; urgency=low
+  * Updated package to recoll version 1.13.01
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 07 Jan 2010 10:52:00 +0100
+
+recoll (1.13.00-0~ppa1~SERIES1) SERIES; urgency=low
+  * Updated package to recoll version 1.13.00
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 05 Jan 2010 09:52:20 +0100
+
+recoll (1.12.4-0~ppa1~SERIES1) SERIES; urgency=low
+  * Updated package to recoll version 1.12.4
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 28 Oct 2009 17:16:20 +0200
+
+recoll (1.12.3-0~ppa3~SERIES1) SERIES; urgency=low
+  * Updated package to recoll version 1.12.3
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 28 Oct 2009 17:16:20 +0200
+
+recoll (1.12.2-0~ppa3~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.12.2
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 19 Oct 2009 16:17:46 +0200
 
