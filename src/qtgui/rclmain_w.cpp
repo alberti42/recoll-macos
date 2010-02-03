@@ -237,9 +237,9 @@ void RclMain::init()
     connect(firstPageAction, SIGNAL(activated()), 
 	    resList, SLOT(resultPageFirst()));
     connect(prevPageAction, SIGNAL(activated()), 
-	    resList, SLOT(resultPageBack()));
+	    resList, SLOT(resPageUpOrBack()));
     connect(nextPageAction, SIGNAL(activated()),
-	    resList, SLOT(resultPageNext()));
+	    resList, SLOT(resPageDownOrNext()));
 
     connect(resList, SIGNAL(docExpand(int)), this, SLOT(docExpand(int)));
     connect(resList, SIGNAL(wordSelect(QString)),
