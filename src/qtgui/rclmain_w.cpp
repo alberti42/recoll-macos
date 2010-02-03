@@ -40,6 +40,13 @@ using std::pair;
 #include <qpopupmenu.h>
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
+#include <qaccel.h>
+#undef RCLQT4
+#define RCLQT3 1
+#else
+#undef RCLQT3
+#define RCLQT4 1
+#include <qshortcut.h>
 #endif
 
 #include <qtabwidget.h>
@@ -58,7 +65,6 @@ using std::pair;
 #include <qiconset.h>
 #include <qapplication.h>
 #include <qcursor.h>
-
 #include "recoll.h"
 #include "debuglog.h"
 #include "mimehandler.h"
@@ -87,7 +93,7 @@ extern "C" int XFlush(void *);
 QString g_stringAllStem, g_stringNoStem;
 
 // Taken from qt designer. Don't know why it's needed.
-#if (QT_VERSION < 0x040000)
+#if RCLQT3
 static QIconSet createIconSet(const QString &name)
 {
     QIconSet ic(QPixmap::fromMimeSource(name));
@@ -167,13 +173,25 @@ void RclMain::init()
     }
     preferencesMenu->setItemChecked(curid, true);
 
+    // A shortcut to get the focus back to the search entry. 
+    QKeySequence seq("Ctrl+Shift+s");
+#if RCLQT4
+    QShortcut *sc = new QShortcut(seq, this);
+    connect(sc, SIGNAL (activated()), this, SLOT (focusToSearch()));
+#else
+    QAccel *sc = new QAccel(this);
+    sc->insertItem(seq);
+    connect(sc, SIGNAL (activated(int)), this, SLOT (focusToSearch()));
+#endif
+
+
     // Toolbar+combobox version of the category selector
     QComboBox *catgCMB = 0;
     if (prefs.catgToolBar) {
         QToolBar *catgToolBar = new QToolBar(this);
 	catgCMB = new QComboBox(FALSE, catgToolBar, "catCMB");
 	catgCMB->insertItem(tr("All"));
-#if (QT_VERSION >= 0x040000)
+#if RCLQT4
         catgToolBar->setObjectName(QString::fromUtf8("catgToolBar"));
 	catgCMB->setToolTip(tr("Document category filter"));
         catgToolBar->addWidget(catgCMB);
@@ -182,7 +200,7 @@ void RclMain::init()
     }
 
     // Document categories buttons
-#if (QT_VERSION < 0x040000)
+#if RCLQT3
     catgBGRP->setColumnLayout(1, Qt::Vertical);
     connect(catgBGRP, SIGNAL(clicked(int)), this, SLOT(catgFilter(int)));
 #else
@@ -206,12 +224,12 @@ void RclMain::init()
 	but->setText(tr(catgnm));
 	if (prefs.catgToolBar && catgCMB)
 	    catgCMB->insertItem(tr(catgnm));
-#if (QT_VERSION >= 0x040000)
+#if RCLQT4
         bgrphbox->addWidget(but);
         bgrp->addButton(but, bgrpid++);
 #endif
     }
-#if (QT_VERSION < 0x040000)
+#if RCLQT3
     catgBGRP->setButton(0);
 #else
     catgBGRP->setLayout(bgrphbox);
@@ -222,7 +240,7 @@ void RclMain::init()
     // Connections
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
-#if QT_VERSION >= 0x040000
+#if RCLQT4
     sSearch->queryText->installEventFilter(this);
 #else
     sSearch->queryText->lineEdit()->installEventFilter(this);
@@ -291,7 +309,7 @@ void RclMain::init()
     // speeded up during indexing
     periodictimer->start(1000);
 
-#if (QT_VERSION < 0x040000)
+#if RCLQT3
     nextPageAction->setIconSet(createIconSet("nextpage.png"));
     prevPageAction->setIconSet(createIconSet("prevpage.png"));
     firstPageAction->setIconSet(createIconSet("firstpage.png"));
@@ -367,6 +385,16 @@ void RclMain::initDbOpen()
         if (!nodb && sSearch->hasSearchString())
             QTimer::singleShot(0, sSearch, SLOT(startSimpleSearch()));
     }
+}
+
+void RclMain::focusToSearch()
+{
+    LOGDEB(("Giving focus to sSearch\n"));
+    sSearch->queryText->setFocus(
+#if RCLQT4
+        Qt::ShortcutFocusReason
+#endif
+        );
 }
 
 void RclMain::setStemLang(int id)

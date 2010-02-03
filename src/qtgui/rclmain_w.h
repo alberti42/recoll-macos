@@ -112,6 +112,7 @@ public slots:
     virtual void catgFilter(int);
     virtual void initDbOpen();
     virtual void toggleFullScreen();
+    virtual void focusToSearch();
 
 signals:
     void stemLangChanged(const QString& lang);
