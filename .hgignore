@@ -68,8 +68,12 @@ src/qt4gui/sort.ui
 src/qt4gui/ssearchb.ui
 src/qt4gui/uiprefs.ui
 src/qt4gui/viewaction.ui
-src/qtgui/recoll.pro
+src/qtgui/.moc/*
+src/qtgui/.ui/*
+src/qtgui/Makefile
 src/qtgui/i18n/*.qm
+src/qtgui/recoll
+src/qtgui/recoll.pro
 src/query/alldeps
 src/recollinstall
 src/sampleconf/recoll.conf

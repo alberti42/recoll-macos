@@ -3643,7 +3643,8 @@ _ACEOF
 
 # Can't use Solaris standard 'file' command, it doesn't support -i
 if test X$sys != XSunOS -o X$fileProg != X/usr/bin/file; then
-   cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define USE_SYSTEM_FILE_COMMAND 1
 _ACEOF
 
@@ -5013,6 +5014,11 @@ if test "${enable_x11mon+set}" = set; then
   enableval=$enable_x11mon; enableX11mon=$enableval
 else
   enableX11mon="yes"
+fi
+
+
+if test X$withInotify = Xno -a X$withFam = Xno ; then
+  enableX11mon=no
 fi
 
 if test "$enableX11mon" = "yes" ; then

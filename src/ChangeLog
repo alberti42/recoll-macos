@@ -1,10 +1,140 @@
-2010-01-29 21:05  Israel G. Lugo
+2010-02-02 15:33 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (d11da0283f03 [tip])
 
-	* configure.ac: Rename without-gui to disable-qtgui and make it
-	affect only the creation of the GUI. New option disable-x11mon to
-	provide separate control over X11 session monitoring.
+	* src/common/textsplit.cpp, src/common/textsplit.h,
+	src/query/plaintorich.cpp, src/query/recollq.cpp,
+	src/query/wasatorcl.cpp, src/rcldb/rcldb.cpp,
+	src/rcldb/searchdata.cpp, src/rcldb/stoplist.cpp,
+	src/rcldb/stoplist.h:
+	cosmetics: use derived class for actual splitter instead of callback
 
-2010-01-28 18:22 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (45e7ec5e16c5 [tip])
+2010-02-02 10:24 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (a8caf709bcd3)
+
+	* src/qt4gui/rclmain.ui, src/qtgui/rclmain.ui,
+	src/qtgui/rclmain_w.cpp:
+	QT GUI: define accelerators for res list page movements
+
+2010-02-02 08:20 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (ec31e285a553)
+
+	* src/qtgui/reslist.cpp, src/query/reslistpager.h:
+	Qt GUI: ensure that new page size is taken into account ASAP (no
+	need for restarting app)
+
+2010-02-01 17:51 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (db953bb94c7f)
+
+	* src/qt4gui/rclmain.ui, src/qtgui/preview_w.cpp,
+	src/qtgui/rclmain.ui, src/qtgui/rclmain_w.cpp,
+	src/qtgui/rclmain_w.h:
+	QT GUI: add fullscreen mode
+
+2010-02-01 10:31 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (1eda55ae3be9)
+
+	* src/mk/manifest.txt: new file.
+	* src/excludefile, src/makesrcdist.sh, src/mk/manifest.txt:
+	Making a source dist: check the new list against old reference +
+	other checks
+
+2010-01-31 19:53 +0100  Israel G. Lugo  <Israel G. Lugo>  (74d4e25d43c2)
+
+	* src/recollinstall.in:
+	Install recollq and its manpage when in cmdline mode. Don't install
+	the recoll.1 manpage when in cmdline mode.
+
+2010-01-31 19:47 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (c88b0ef40512)
+
+	* src/common/autoconfig.h.in:
+	use 3-arg version of ac_define as the 1-arg one is being obsoleted
+
+2010-01-31 19:45 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (1960435ccb68)
+
+	* src/configure.ac:
+	Dispense with the x11-monitoring when neither fam nor inotify are
+	configured
+
+2010-01-31 19:35 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (08e6abfc5fdf)
+
+	* src/configure.ac:
+	use 3-arg version of ac_define as the 1-arg one is being obsoleted
+
+2010-01-31 19:34 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (c0add9dd8ad4)
+
+	* website/download.html:
+	none
+
+2010-01-30 17:47 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (5ed138ff2230)
+
+	* src/qtgui/spell_w.cpp, src/qtgui/spell_w.h:
+	QT GUI: fix small problems in newly native qt4 term expander
+
+2010-01-30 17:31 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (6ecf959a8e01)
+
+	* src/qt4gui/spell.ui: new file.
+	* src/qt4gui/recollmain.ui: deleted file.
+	* .hgignore, src/qt4gui/recollmain.ui, src/qt4gui/spell.ui,
+	src/qt4gui/uifrom3, src/qtgui/spell_w.cpp, src/qtgui/spell_w.h:
+	QT GUI: converted the qt4 term expander dialog to native qt4
+
+2010-01-30 14:09 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (df8a91aaff88)
+
+	* src/qt4gui/rclmain.ui: new file.
+	* .hgignore, src/qt4gui/rclmain.ui, src/qt4gui/uifrom3,
+	src/qtgui/confgui/confguiindex.h, src/qtgui/rclmain_w.cpp,
+	src/qtgui/rclmain_w.h:
+	Qt GUI: made the Qt4 main window native Qt4 (no more use of
+	Q3MainWindow)
+
+2010-01-30 08:23 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (ed18703563b7)
+
+	* .hgignore, src/ChangeLog, website/BUGS.html, website/devel.html,
+	website/doc.html, website/download.html, website/index.html.en:
+	none
+
+2010-01-30 08:23 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (22044a3b2e2c)
+
+	* src/qtgui/rclmain_w.h:
+	Qt 4.6.1 Uic bug: change qt version test from == to <= as bug still
+	here in 4.6.2
+
+2010-01-30 08:21 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (b1cb8c664953)
+
+	* src/common/autoconfig.h.in, src/configure, src/configure.ac,
+	src/index/recollindex.cpp, src/utils/x11mon.cpp:
+	Renamed WITHOUT_X11 to DISABLE_X11MON for clarification
+
+2010-01-30 08:18 +0100  Israel G. Lugo  <Israel G. Lugo>  (be03b72e1258)
+
+	* src/configure.ac:
+	Rename option without-gui to disable-qtgui. New option disable-
+	x11mon. Separate control of creation of the gui and X11 session
+	monitoring.
+
+2010-01-29 19:00 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (d95c21312a15)
+
+	* src/kde/kioslave/recoll/CMakeLists.txt:
+	KIO slave: fixed CMakeList to configure Recoll with --enable-pic
+
+2010-01-29 17:22 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (266941720a99)
+
+	* src/python/README.txt: new file.
+	* src/configure, src/configure.ac, src/doc/user/usermanual.sgml,
+	src/lib/Makefile, src/lib/mkMake, src/mk/commondefs,
+	src/mk/localdefs.in, src/php/00README.txt, src/python/README.txt,
+	src/python/recoll/setup.py:
+	Implemented configure --enable-pic flag to build the main lib with
+	position-independant objects. This avoids having to edit localdefs
+	by hand to build the new php extension, and voids the need for the
+	Python module to recompile Recoll source files.
+
+2010-01-29 15:47 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (69c42078b8d3)
+
+	* src/php/00README.txt: new file.
+	* src/php/00README.txt, src/php/recoll/make.sh,
+	src/php/recoll/recoll.cpp:
+	PHP extension by Wenqiang Song : make ready for external use.
+	- added minimal doc
+	- fixed build script to work around php/libtool issue
+	- have the module default to Query Language (instead of AND)
+
+2010-01-28 18:22 +0100  Jean-Francois Dockes  <jfd@recoll.org>  (45e7ec5e16c5)
 
 	* .hgignore, website/usermanual/README-dir.txt: new file.
 	* packaging/debian/changelog, packaging/debian/compat,
