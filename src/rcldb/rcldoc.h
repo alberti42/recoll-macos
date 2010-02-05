@@ -164,6 +164,7 @@ class Doc {
     // udi back from index. Only set by Rcl::Query::getdoc().
     static const string keyudi;
     static const string keyapptg; // apptag. Set from localfields (fsindexer)
+    static const string keybght;  // beagle hit type ("beagleHitType")
 };
 
 

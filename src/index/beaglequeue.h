@@ -33,6 +33,7 @@
 class DbIxStatusUpdater;
 class CirCache;
 class RclConfig;
+class BeagleQueueCache;
 namespace Rcl {
     class Db;
 }
@@ -63,7 +64,7 @@ public:
 private:
     RclConfig *m_config;
     Rcl::Db   *m_db;
-    CirCache  *m_cache;
+    BeagleQueueCache  *m_cache;
     string     m_queuedir;
     string     m_tmpdir;
     DbIxStatusUpdater *m_updater;

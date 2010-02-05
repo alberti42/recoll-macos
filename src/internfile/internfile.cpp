@@ -45,7 +45,7 @@ using namespace std;
 #include "rclconfig.h"
 #include "mh_html.h"
 #include "fileudi.h"
-#include "beaglequeue.h"
+#include "beaglequeuecache.h"
 #include "cancelcheck.h"
 
 #ifdef RCL_USE_XATTR
@@ -390,14 +390,10 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
         }
         init(fn, &st, cnf, td, flags, &idoc.mimetype);
     } else if (!backend.compare("BGL")) {
-        // Retrieve from our webcache (beagle data). There should
-        // probably be a separate object type for readonly cache
-        // access (distinct from the one used for indexing). 
-        // Anyway, we're not called in the same thread as indexing ops, and
-        // even, at worse, this would duplicate the memory used. The beagler
-        // object is created at the first call of this routine and deleted 
-        // when the program exits.
-        static BeagleQueueIndexer beagler(cnf);
+        // Retrieve from our webcache (beagle data). The beagler
+        // object is created at the first call of this routine and
+        // deleted when the program exits.
+        static BeagleQueueCache beagler(cnf);
         string data;
         Rcl::Doc dotdoc;
         map<string,string>::const_iterator it = 

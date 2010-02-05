@@ -494,6 +494,7 @@ bool MimeHandlerMbox::next_document()
 #include <string>
 using namespace std;
 
+#include "rclconfig.h"
 #include "rclinit.h"
 #include "mh_mbox.h"
 
@@ -507,6 +508,11 @@ Usage(void)
 {
     fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
     exit(1);
+}
+static RclConfig *config;
+RclConfig *RclConfig::getMainConfig()
+{
+    return config;
 }
 
 int main(int argc, char **argv)
@@ -530,8 +536,8 @@ int main(int argc, char **argv)
     Usage();
   string filename = *argv++;argc--;
   string reason;
-  RclConfig *conf = recollinit(RclInitFlags(0), 0, 0, reason, 0);
-  if (conf == 0) {
+  config = recollinit(RclInitFlags(0), 0, 0, reason, 0);
+  if (config == 0) {
       cerr << "init failed " << reason << endl;
       exit(1);
   }

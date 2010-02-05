@@ -43,6 +43,7 @@ namespace Rcl {
     const string Doc::keybcknd("rclbes");
     const string Doc::keyudi("rcludi");
     const string Doc::keyapptg("rclaptg");
+    const string Doc::keybght("beagleHitType");
 
     void Doc::dump(bool dotext) const
     {

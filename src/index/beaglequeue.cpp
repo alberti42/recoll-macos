@@ -27,11 +27,12 @@ static char rcsid[] = "@(#$Id: $ (C) 2005 J.F.Dockes";
 #include "debuglog.h"
 #include "fstreewalk.h"
 #include "beaglequeue.h"
+#include "beaglequeuecache.h"
+#include "circache.h"
 #include "smallut.h"
 #include "fileudi.h"
 #include "internfile.h"
 #include "wipedir.h"
-#include "circache.h"
 #include "indexer.h"
 #include "readfile.h"
 #include "conftree.h"
@@ -44,8 +45,6 @@ static char rcsid[] = "@(#$Id: $ (C) 2005 J.F.Dockes";
 using namespace std;
 
 #include <sys/stat.h>
-
-const string keybght("beagleHitType");
 
 
 // Beagle creates a file named .xxx (where xxx is the name for the main file
@@ -100,7 +99,7 @@ public:
         doc.url = line;
         if (!readLine(line))
             return false;
-        doc.meta[keybght] = line;
+        doc.meta[Rcl::Doc::keybght] = line;
         if (!readLine(line))
             return false;
         doc.mimetype = line;
@@ -108,7 +107,7 @@ public:
         // We set the bookmarks mtype as html (the text is empty
         // anyway), so that the html viewer will be called on 'Open'
         bool isbookmark = false;
-        if (!stringlowercmp("bookmark", doc.meta[keybght])) {
+        if (!stringlowercmp("bookmark", doc.meta[Rcl::Doc::keybght])) {
             isbookmark = true;
             doc.mimetype = "text/html";
         }
@@ -197,20 +196,7 @@ BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
             m_tmpdir = badtmpdirname;
 	}
     }
-
-    string ccdir;
-    m_config->getConfParam("webcachedir", ccdir);
-    if (ccdir.empty())
-        ccdir = "webcache";
-    ccdir = path_tildexpand(ccdir);
-    // If not an absolute path, compute relative to config dir
-    if (ccdir.at(0) != '/')
-        ccdir = path_cat(m_config->getConfDir(), ccdir);
-
-    int maxmbs = 40;
-    m_config->getConfParam("webcachemaxmbs", &maxmbs);
-    m_cache = new CirCache(ccdir);
-    m_cache->create(off_t(maxmbs)*1000*1024, CirCache::CC_CRUNIQUE);
+    m_cache = new BeagleQueueCache(cnf);
 }
 
 BeagleQueueIndexer::~BeagleQueueIndexer()
@@ -226,36 +212,6 @@ BeagleQueueIndexer::~BeagleQueueIndexer()
     deleteZ(m_cache);
 }
 
-// Read  document from cache. Return the metadata as an Rcl::Doc
-// @param htt Beagle Hit Type 
-bool BeagleQueueIndexer::getFromCache(const string& udi, Rcl::Doc &dotdoc, 
-                                      string& data, string *htt)
-{
-    string dict;
-
-    if (!m_cache->get(udi, dict, data))
-        return false;
-
-    ConfSimple cf(dict, 1);
-    
-    if (htt)
-        cf.get(keybght, *htt, "");
-
-    // Build a doc from saved metadata 
-    cf.get("url", dotdoc.url, "");
-    cf.get("mimetype", dotdoc.mimetype, "");
-    cf.get("fmtime", dotdoc.fmtime, "");
-    cf.get("fbytes", dotdoc.fbytes, "");
-    dotdoc.sig = "";
-    list<string> names = cf.getNames("");
-    for (list<string>::const_iterator it = names.begin();
-         it != names.end(); it++) {
-        cf.get(*it, dotdoc.meta[*it], "");
-    }
-    dotdoc.meta[Rcl::Doc::keyudi] = udi;
-    return true;
-}
-
 // Index document stored in the cache. 
 bool BeagleQueueIndexer::indexFromCache(const string& udi)
 {
@@ -268,7 +224,7 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
     string data;
     string hittype;
 
-    if (!getFromCache(udi, dotdoc, data, &hittype))
+    if (!m_cache || !m_cache->getFromCache(udi, dotdoc, data, &hittype))
         return false;
 
     if (hittype.empty()) {
@@ -280,11 +236,11 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
         // Just index the dotdoc
         dotdoc.meta[Rcl::Doc::keybcknd] = "BGL";
         return m_db->addOrUpdate(udi, "", dotdoc);
-    } else if (stringlowercmp("webhistory", dotdoc.meta[keybght]) ||
+    } else if (stringlowercmp("webhistory", dotdoc.meta[Rcl::Doc::keybght]) ||
                (dotdoc.mimetype.compare("text/html") &&
                 dotdoc.mimetype.compare("text/plain"))) {
         LOGDEB(("BeagleQueueIndexer: skipping: hittype %s mimetype %s\n",
-                dotdoc.meta[keybght].c_str(), dotdoc.mimetype.c_str()));
+                dotdoc.meta[Rcl::Doc::keybght].c_str(), dotdoc.mimetype.c_str()));
         return true;
     } else {
         Rcl::Doc doc;
@@ -320,20 +276,24 @@ bool BeagleQueueIndexer::index()
         return false;
     LOGDEB(("BeagleQueueIndexer::processqueue: [%s]\n", m_queuedir.c_str()));
     m_config->setKeyDir(m_queuedir);
-
+    if (!m_cache || !m_cache->cc()) {
+        LOGERR(("BeagleQueueIndexer: cache initialization failed\n"));
+        return false;
+    }
+    CirCache *cc = m_cache->cc();
     // First check/index files found in the cache. If the index was reset,
     // this actually does work, else it sets the existence flags (avoid
     // purging). We don't do this when called from indexFiles
     if (!m_nocacheindex) {
         bool eof;
-        if (!m_cache->rewind(eof)) {
+        if (!cc->rewind(eof)) {
             // rewind can return eof if the cache is empty
             if (!eof)
                 return false;
         }
-        while (m_cache->next(eof)) {
+        while (cc->next(eof)) {
             string udi;
-            if (!m_cache->getCurrentUdi(udi)) {
+            if (!cc->getCurrentUdi(udi)) {
                 LOGERR(("BeagleQueueIndexer:: cache file damaged\n"));
                 break;
             }
@@ -438,7 +398,7 @@ BeagleQueueIndexer::processone(const string &path,
 
     // Have to use the hit type for the udi, because the same url can exist
     // as a bookmark or a page.
-    udipath = path_cat(dotdoc.meta[keybght], url_gpath(dotdoc.url));
+    udipath = path_cat(dotdoc.meta[Rcl::Doc::keybght], url_gpath(dotdoc.url));
     make_udi(udipath, "", udi);
 
     LOGDEB(("BeagleQueueIndexer: prc1: udi [%s]\n", udi.c_str()));
@@ -446,7 +406,7 @@ BeagleQueueIndexer::processone(const string &path,
     sprintf(ascdate, "%ld", long(stp->st_mtime));
 
     // We only process bookmarks or text/html and text/plain files.
-    if (!stringlowercmp("bookmark", dotdoc.meta[keybght])) {
+    if (!stringlowercmp("bookmark", dotdoc.meta[Rcl::Doc::keybght])) {
         // For bookmarks, we just index the doc that was built from the
         // metadata.
         if (dotdoc.fmtime.empty())
@@ -463,11 +423,11 @@ BeagleQueueIndexer::processone(const string &path,
         if (!m_db->addOrUpdate(udi, "", dotdoc)) 
             return FsTreeWalker::FtwError;
 
-    } else if (stringlowercmp("webhistory", dotdoc.meta[keybght]) ||
+    } else if (stringlowercmp("webhistory", dotdoc.meta[Rcl::Doc::keybght]) ||
                (dotdoc.mimetype.compare("text/html") &&
                 dotdoc.mimetype.compare("text/plain"))) {
         LOGDEB(("BeagleQueueIndexer: skipping: hittype %s mimetype %s\n",
-                dotdoc.meta[keybght].c_str(), dotdoc.mimetype.c_str()));
+                dotdoc.meta[Rcl::Doc::keybght].c_str(), dotdoc.mimetype.c_str()));
         // Unlink them anyway
         dounlink = true;
         goto out;
@@ -516,9 +476,13 @@ BeagleQueueIndexer::processone(const string &path,
         dotfile.m_fields.set("udi", udi, "");
         string fdata;
         file_to_string(path, fdata);
-        if (!m_cache->put(udi, &dotfile.m_fields, fdata, 0)) {
+        if (!m_cache || !m_cache->cc()) {
+            LOGERR(("BeagleQueueIndexer: cache initialization failed\n"));
+            goto out;
+        }
+        if (!m_cache->cc()->put(udi, &dotfile.m_fields, fdata, 0)) {
             LOGERR(("BeagleQueueIndexer::prc1: cache_put failed; %s\n",
-                    m_cache->getReason().c_str()));
+                    m_cache->cc()->getReason().c_str()));
             goto out;
         }
     }
