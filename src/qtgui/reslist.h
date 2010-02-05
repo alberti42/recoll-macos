@@ -87,6 +87,7 @@ class ResList : public QTEXTBROWSER
     virtual void setDocSource();
     virtual void setSortParams(DocSeqSortSpec spec);
     virtual void setFilterParams(const DocSeqFiltSpec &spec);
+    virtual void highlighted(const QString& link);
 
  signals:
     void nextPageAvailable(bool);

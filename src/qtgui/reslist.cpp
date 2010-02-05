@@ -101,6 +101,11 @@ ResList::ResList(QWidget* parent, const char* name)
     // signals and slots connections
     connect(this, SIGNAL(linkClicked(const QString &, int)), 
 	    this, SLOT(linkWasClicked(const QString &, int)));
+#if 0
+    // See comments in "highlighted
+    connect(this, SIGNAL(highlighted(const QString &)), 
+	    this, SLOT(highlighted(const QString &)));
+#endif
     connect(this, SIGNAL(headerClicked()), this, SLOT(showQueryDetails()));
     connect(this, SIGNAL(doubleClicked(int,int)), 
 	    this, SLOT(doubleClicked(int, int)));
@@ -343,6 +348,13 @@ int ResList::getResCnt()
     if (m_docSource.isNull())
 	return -1;
     return m_docSource->getResCnt();
+}
+
+void ResList::highlighted(const QString& )
+{
+    // This is supposedly called when a link is preactivated (hover or tab
+    // traversal, but is not actually called for tabs. We would have liked to
+    // give some kind of visual feedback for tab traversal
 }
 
 
