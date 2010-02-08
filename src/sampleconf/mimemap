@@ -107,6 +107,8 @@
 .tiff = image/tiff
 .tif  = image/tiff
 
+.fb2 = text/x-fictionbook
+
 # A list of suffixes (name endings) that we don't want to touch at all.
 # Having these explicitely listed speeds things up a bit by avoiding
 # unneeded decompression or 'file' calls. File names still get indexed if

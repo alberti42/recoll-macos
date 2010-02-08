@@ -89,6 +89,7 @@ text/html  = internal
 text/plain = internal 
 text/rtf = exec unrtf --nopict --html;charset=iso-8859-1;mimetype=text/html
 text/x-c = internal
+text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
 text/x-mail = internal
@@ -151,6 +152,7 @@ text/html = html
 text/plain = txt
 text/x-c = source
 text/x-c++ = source
+text/x-fictionbook = document
 text/x-html-sidux-man = sidux-book
 text/x-mail = message
 text/x-man = document
@@ -187,6 +189,7 @@ text = \
       text/rtf \
       text/x-c \
       text/x-c++ \
+      text/x-fictionbook \
       text/x-html-sidux-man \
       text/x-man \
       text/x-python \
