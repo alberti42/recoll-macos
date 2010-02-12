@@ -2590,7 +2590,8 @@ while query.next >= 0 and query.next < nres:
           </listitem>
 
         <listitem><para>PDF: pdftotext is part of the <ulink
-            url="http://www.foolabs.com/xpdf/">Xpdf</ulink> package.</para>
+            url="http://www.foolabs.com/xpdf/">Xpdf</ulink> or <ulink
+            url="http://poppler.freedesktop.org/">Poppler</a> packages.</para>
           </listitem>
 
         <listitem><para>Postscript: <ulink
