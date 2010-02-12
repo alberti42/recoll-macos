@@ -66,7 +66,8 @@ for d in \
     ${datadir}/recoll/filters \
     ${datadir}/recoll/images \
     ${datadir}/recoll/translations \
-    ${datadir}/icons/hicolor/48x48/apps
+    ${datadir}/icons/hicolor/48x48/apps \
+    ${datadir}/pixmaps
 do
     test -d $d || mkdir -p $d || exit 1
 done
@@ -82,7 +83,8 @@ done
 #xdg-desktop-menu install desktop/recoll-searchgui.desktop
 #xdg-icon-resource install --size 48 desktop/recoll.png
 @NOQTMAKE@${INSTALL} -m 0444 desktop/recoll-searchgui.desktop ${datadir}/applications
-${INSTALL} -m 0444 desktop/recoll.png ${datadir}/icons/hicolor/48x48/apps
+@NOQTMAKE@${INSTALL} -m 0444 desktop/recoll.png ${datadir}/icons/hicolor/48x48/apps
+@NOQTMAKE@${INSTALL} -m 0444 desktop/recoll.png ${datadir}/pixmaps/
 
 ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 			${datadir}/recoll/doc 
