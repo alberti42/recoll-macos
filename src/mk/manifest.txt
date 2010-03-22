@@ -121,6 +121,7 @@ filters/rcldjvu
 filters/rcldoc
 filters/rcldvi
 filters/rclexecm.py
+filters/rclfb2
 filters/rclflac
 filters/rclgaim
 filters/rclics
@@ -218,6 +219,7 @@ makestaticdist.sh
 mk/
 mk/AIX
 mk/Darwin
+mk/Default
 mk/FreeBSD
 mk/Linux
 mk/OpenBSD
