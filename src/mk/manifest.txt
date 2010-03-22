@@ -38,6 +38,8 @@ bincimapmime/trbinc.cc
 common/
 common/Makefile
 common/autoconfig.h.in
+common/beaglequeuecache.cpp
+common/beaglequeuecache.h
 common/rclconfig.cpp
 common/rclconfig.h
 common/rclinit.cpp
