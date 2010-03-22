@@ -1737,14 +1737,26 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Recoll versions after 1.11 define a Python programming interface, both for
    searching and indexing.
 
-   The python interface is not built by default and can be found in the
-   source package, under python/recoll. The directory contains the usual
-   setup.py script which you can use to build and install the module:
+   The Python interface is not built by default and can be found in the
+   source package, under python/recoll.
 
-         cd recoll-xxx/python/recoll
-         python setup.py build
-         python setup.py install
-     
+   In order to build the module, you should first build or re-build the
+   Recoll library using position-independant objects:
+
+   cd recoll-xxx/
+   configure --enable-pic
+   make
+
+   There is no significant disadvantage in using PIC objects for the main
+   Recoll executables, so you can use the --enable-pic option for the main
+   build too.
+
+   The python/recoll/ directory contains the usual setup.py script which you
+   can then use to build and install the module:
+
+   cd recoll-xxx/python/recoll
+   python setup.py build
+   python setup.py install
 
      ----------------------------------------------------------------------
 
@@ -2034,7 +2046,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * Openoffice: supported natively, but needs the unzip command to be
        installed.
 
-     * PDF: pdftotext is part of the Xpdf package.
+     * PDF: pdftotext is part of the Xpdf or Poppler packages.
 
      * Postscript: pstotext.
 

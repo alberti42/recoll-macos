@@ -96,7 +96,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * Openoffice: supported natively, but needs the unzip command to be
        installed.
 
-     * PDF: pdftotext is part of the Xpdf package.
+     * PDF: pdftotext is part of the Xpdf or Poppler packages.
 
      * Postscript: pstotext.
 
