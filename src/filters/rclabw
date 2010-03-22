@@ -82,88 +82,98 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds iconv sed
+checkcmds xsltproc
 
-encoding=`sed -e  '/<?xml version=/s/"?>$//' \
-	      -e '/^<?xml version=/s/.*encoding="//p;D;q' \
-	      -e D \
-< $infile`
-if test X$encoding = X ; then encoding=UTF-8;fi
+xsltproc - $infile <<EOF
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:ab="http://www.abisource.com/awml.dtd" 
+  exclude-result-prefixes="ab"
+  >
 
-# Note: there can be newlines inside the description field, we don't want
-# them... Have 2 use 2 different selectors for the single-line and
-# multiple-line cases because of the generic tag end (</m> for all meta
-# tags)
-descsedprog='
-/<m key="dc.description">\([^<]*\)<\/m>/ {
-s//\1/
-p
-q
-}
-/<m key="dc.description">/,/<\/m>/ {
-s!.*<m key="dc.description">!!
-s!</m>.*!!
-H
-}
-${
-g
-s/\n/ /g
-p
-}
-'
+<xsl:output method="html" encoding="UTF-8"/>
 
-description=`sed -n -e "$descsedprog" < "$infile"`
-#echo description: "$description"
+<xsl:template match="/">
+<html>
+  <head>
+    <xsl:apply-templates select="ab:abiword/ab:metadata"/>
+  </head>
+  <body>
 
-# Set program for the single line meta elements. Takes element name as
-# parameter 
-setmetasedprog() {
-metasedprog='/<m key="'$1'">/{
-s/.*<m key="'$1'">\([^<]*\).*/\1/
-'"s/\"/'/g"'
-p
-}'
-}
+    <!-- This is for the older abiword format with no namespaces -->
+    <xsl:for-each select="abiword/section">
+      <xsl:apply-templates select="p"/>
+    </xsl:for-each>
 
-setmetasedprog dc.subject
-subject=`sed -n -e "$metasedprog" "$infile"`
-#echo subject: "$subject"
+    <!-- Newer namespaced format -->
+    <xsl:for-each select="ab:abiword/ab:section">
+      <xsl:for-each select="ab:p">
+        <p><xsl:value-of select="."/></p><xsl:text>
+        </xsl:text>
+      </xsl:for-each>
+    </xsl:for-each>
 
-setmetasedprog dc.title
-title=`sed -n -e "$metasedprog" "$infile"`
-#echo titre: "$title"
+  </body>
+</html>
+</xsl:template>
 
-setmetasedprog abiword.keywords
-keywords=`sed -n -e "$metasedprog" "$infile"`
-#echo keywords: "$keywords"
+<xsl:template match="p">
+  <p><xsl:value-of select="."/></p><xsl:text>
+      </xsl:text>
+</xsl:template>
 
-setmetasedprog dc.creator
-creator=`sed -n -e "$metasedprog" "$infile"`
-#echo creator: "$creator"
+<xsl:template match="ab:metadata">
+    <xsl:for-each select="ab:m">
+      <xsl:choose>
+        <xsl:when test="@key = 'dc.creator'">
+	  <meta>
+	    <xsl:attribute name="name">author</xsl:attribute>
+	    <xsl:attribute name="content">
+	    <xsl:value-of select="."/>
+	    </xsl:attribute>
+          </meta><xsl:text>
+	    </xsl:text>
+        </xsl:when>
+        <xsl:when test="@key = 'abiword.keywords'">
+	  <meta>
+	    <xsl:attribute name="name">keywords</xsl:attribute>
+	    <xsl:attribute name="content">
+	    <xsl:value-of select="."/>
+	    </xsl:attribute>
+          </meta><xsl:text>
+	    </xsl:text>
+        </xsl:when>
+        <xsl:when test="@key = 'dc.subject'">
+	  <meta>
+	    <xsl:attribute name="name">keywords</xsl:attribute>
+	    <xsl:attribute name="content">
+	    <xsl:value-of select="."/>
+	    </xsl:attribute>
+          </meta><xsl:text>
+	    </xsl:text>
+        </xsl:when>
+        <xsl:when test="@key = 'dc.description'">
+	  <meta>
+	    <xsl:attribute name="name">abstract</xsl:attribute>
+	    <xsl:attribute name="content">
+	    <xsl:value-of select="."/>
+	    </xsl:attribute>
+          </meta><xsl:text>
+	    </xsl:text>
+        </xsl:when>
+        <xsl:when test="@key = 'dc.title'">
+	  <title><xsl:value-of select="."/></title><xsl:text>
+	    </xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:for-each>
+</xsl:template>
 
-# Note: next expr supposes that paragraphs are always all by themselves on
-# a single line in the xml (no multiple <p> per line, no embedded newlines
-# in text).
-contentsedprog='
-/<p[ >]/{
-s/<[^>]*>/ /g
-p
-}
-'
-content=`sed -n -e "$contentsedprog" "$infile"`
-#echo content: "$content"
-
-# output the result
-(echo '<html><head><title>' "$title" '</title>'
-echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
-echo '<meta name="description" content="' "$description $subject" '">'
-echo '<meta name="keywords" content="' "$keywords" '">'
-echo '<meta name="author" content="' "$creator" '">'
-echo '</head><body><pre>'
-echo "$content" 
-echo '</pre></body></html>') \
-| iconv -f $encoding -t UTF-8 -c -s 
-
+</xsl:stylesheet>
+EOF
 
 # exit normally
 exit 0

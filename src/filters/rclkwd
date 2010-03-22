@@ -86,7 +86,7 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds awk unzip gunzip tar
+checkcmds unzip gunzip tar xsltproc
 
 # We need a temporary directory
 if test z"$RECOLL_TMPDIR" != z; then
@@ -115,7 +115,6 @@ if file $infile | grep -qi gzip ; then
    # Unzip the input file and change to the unzipped directory
    gunzip < "$infile" | (cd $tmpdir/rclkwdtmp;tar xf -)
 else
-    echo new kwd
    # Unzip the input file and change to the unzipped directory
    unzip -q -d $tmpdir/rclkwdtmp "$infile"
 fi
@@ -124,74 +123,98 @@ cd $tmpdir/rclkwdtmp
 metafile=documentinfo.xml
 contentfile=maindoc.xml
 
-if test -f $metafile ; then
+echo '<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
 
-  # Note: there can be newlines inside the description field, we don't want
-  # them...
-  abssedprog='/<abstract>/,/<\/abstract>/{
-s!.*<abstract>!!
-s!</abstract>.*!!
-p
-}
-'
-  abstract=`sed -n -e "$abssedprog" < $metafile | tr '\n' ' ' | \
-	sed -e '1s/<!\[CDATA\[//' -e 's/\]\]>//'`
-  subject=`sed -e "s/\"/'/" -e 's/.*<subject>\([^<]*\).*/\1/p;d' \
-	     < $metafile`
-  title=`sed -e "s/\"/'/" -e 's/.*<title>\([^<]*\).*/\1/p;d' \
-	     < $metafile | tr '\n' ' '`
-  keywords=`sed -e "s/\"/'/" -e 's/.*<keyword>\([^<]*\).*/\1/p;d' \
-	      < $metafile`
+if test -f $metafile ; then
+  xsltproc --novalid - $metafile <<EOF
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:kw="http://www.koffice.org/DTD/document-info"
+  exclude-result-prefixes="kw"
+  >
+
+<xsl:output method="html" encoding="UTF-8"/>
+
+<xsl:template match="/">
+  <xsl:apply-templates select="kw:document-info|document-info"/>
+</xsl:template>
+<xsl:template match="/kw:document-info|/document-info">
+  <xsl:apply-templates select="kw:author|author"/>
+  <xsl:apply-templates select="kw:about/kw:abstract|abstract"/>
+  <xsl:apply-templates select="kw:about/kw:title|title"/>
+  <xsl:apply-templates select="kw:about/kw:keyword|keyword"/>
+  <xsl:apply-templates select="kw:about/kw:subject|subject"/>
+</xsl:template>
+
+<xsl:template match="kw:author|author">
+  <meta>
+    <xsl:attribute name="name">author</xsl:attribute>
+    <xsl:attribute name="content">
+    <xsl:value-of select="kw:full-name|full-name"/>
+    </xsl:attribute>
+         </meta><xsl:text>
+    </xsl:text>
+</xsl:template>
+
+<xsl:template match="kw:abstract|abstract">
+  <meta>
+    <xsl:attribute name="name">abtract</xsl:attribute>
+    <xsl:attribute name="content">
+    <xsl:value-of select="."/>
+    </xsl:attribute>
+         </meta><xsl:text>
+    </xsl:text>
+</xsl:template>
+
+<xsl:template match="kw:keyword|kw:subject|keyword|subject">
+  <meta>
+    <xsl:attribute name="name">keywords</xsl:attribute>
+    <xsl:attribute name="content">
+    <xsl:value-of select="."/>
+    </xsl:attribute>
+         </meta><xsl:text>
+    </xsl:text>
+</xsl:template>
+
+<xsl:template match="kw:title|title">
+  <title><xsl:value-of select="."/></title><xsl:text>
+    </xsl:text>
+</xsl:template>
+
+</xsl:stylesheet>
+
+EOF
 fi
 
-# Note: next expr inserts a newline at each end of paragraph (for preview)
-content="`sed -e 's!</TEXT>!\\
-!g' -e 's/<[^>]*>/ /g' < $contentfile | sed -e '/^[ 	]*$/d'`"
+echo '</head><body>'
+xsltproc --novalid - $contentfile <<EOF
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:kw="http://www.koffice.org/DTD/kword"
+  exclude-result-prefixes="kw"
+  >
 
-#echo abstract "$abstract"
-#echo subject "$subject"
-#echo title "$title"
-#echo keywords "$keywords"
-#echo content "$content"
+<xsl:output method="html" encoding="UTF-8"/>
 
-# output the result
-echo '<html><head>'
-echo '<title>' "$title" '</title>'
-echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
-echo '<meta name="abstract" content="' "$abstract $subject" '">'
-echo '<meta name="keywords" content="' "$keywords" '">'
-echo '</head><body><p>'
+<xsl:template match="/">
+  <xsl:apply-templates select="//kw:TEXT|//TEXT"/>
+</xsl:template>
 
-# The strange 'BEGIN' setup is to prevent 'file' from thinking this file
-# is an awk program
-echo "$content" | sed -e "s/&apos;/'/g" -e 's/&quot;/"/g' |\
-awk 'BEGIN'\
-' {
-  cont = ""
-}
-{
-    $0 = cont $0
-    cont = ""
+<xsl:template match="kw:TEXT|TEXT">
+  <xsl:if test="normalize-space(.) != ''">
+    <p><xsl:value-of select="."/></p><xsl:text>
+    </xsl:text>
+  </xsl:if>
+</xsl:template>
 
-    if ($0 ~ /[­-]$/) {
-      # Note : soft-hyphen is iso8859 0xad
-      # Break at last whitespace
-      match($0, "[ \t][^ \t]+$")
-      line = substr($0, 0, RSTART)
-      cont = substr($0, RSTART, RLENGTH-1)
-      $0 = line
-    }
+</xsl:stylesheet>
 
-    if($0 == "\f") {
-        print "</p>\n<hr>\n<p>"
-        next
-    } 
+EOF
 
-    print $0 "<br>"
-}
-END {
-    printf("</p></body></html>\n");
-}' | iconv -f UTF-8 -t UTF-8 -c -s 
+echo '</body></html>'
 
 cd /
 # exit normally

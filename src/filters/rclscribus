@@ -13,14 +13,15 @@
 # We just hack into the scribus XML, taking advantage that the tag of
 # interest is apparently always output on a single line.
 # The text seems to be found in attribute CH of tag ITEXT, it is utf-8
+#
+# Tried to convert this to xsltproc but it seems that quite a few
+# Scribus document are not actually proper xml
 
 # set variables
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclscribus"
 filetype=Scribus
-
-
 
 
 
