@@ -48,7 +48,7 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL. 
 	La dernière version est 
-	<a class="important" href="download.html">1.13.02</a></p>
+	<a class="important" href="download.html">1.13.04</a></p>
 
       <p>L'interface utilisateur de 
 	<span class="application">Recoll</span> est traduite en
@@ -94,8 +94,12 @@
 
       <h2>Nouvelles: </h2>
       <ul>
+	<li>2010-01-05 : la version <a
+	href="download.html#source">1.13.04</a> vient de sortir. Elle
+	corrige un gros bug de la 1.13.02 (le stemming ne marchait plus).</li>
+
 	<li>2009-10-28 : la version 
-	<a href="download.html#source">1.13.01</a> vient de sortir. Elle
+	<a href="download.html#source">1.13.02</a> vient de sortir. Elle
 	contient de nombreuses améliorations, entre autres le support des
 	archives Zip et des fichiers MS help (.chm). Voir <a
 	href="CHANGES.html">les modifications (en anglais)</a>.</li>  

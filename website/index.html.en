@@ -47,7 +47,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.13.02</a> 
+	<a class="important" href="download.html">1.13.04</a> 
 	(<a href="CHANGES.html">Changes</a>).</p>
 
       <h2>Features: </h2>
@@ -80,6 +80,8 @@
 
       <h2>News: </h2>
       <ul>
+	<li>2010-01-05 : a <a href="download.html#source">1.13.04</a> is
+	  out. It fixes a nasty bug (broken stemming) in 1.13.02.</li>
 
         <li>2010-01-29 : the full Recoll source repository is now
           hosted on
