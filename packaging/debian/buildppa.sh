@@ -7,7 +7,7 @@ debdir=debianrclqt3
 rm -rf recoll-${RCLVERSION}/debian
 cp -rp $debdir recoll-${RCLVERSION}/debian
 
-for series in dapper hardy interpid jaunty ;do 
+for series in dapper hardy intrepid jaunty ;do 
   sed -e s/SERIES/$series/g < ${debdir}/changelog > \
     recoll-${RCLVERSION}/debian/changelog ;
   (cd recoll-${RCLVERSION};debuild -S -sa) 
