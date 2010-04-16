@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.12.2
+%define version 1.13.04
 %define release  %mkrel 1
 
 Name:           %{name}
@@ -30,7 +30,7 @@ interface.
 # ---------------------------------------------------------------------------
 
 %build
-[ -n "$QTDIR" ] || . %{_sysconfdir}/profile.d/qt.sh
+[ -n "$QTDIR" ] || . %{_sysconfdir}/profile.d/60qt4.sh
 %configure
 make %{?_smp_mflags} static
 
@@ -52,6 +52,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/*
 %{_datadir}/applications/recoll-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/recoll.png
+%{_datadir}/pixmaps/recoll.png
 %{_datadir}/%{name}
 %{_mandir}/man1/recoll*
 %{_mandir}/man5/recoll*
@@ -59,6 +60,12 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Thu Apr 14 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.04-1
+- Update to release 1.13.01
+* Thu Jan 07 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.01-1
+- Update to release 1.13.01
+* Thu Dec 10 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.4-1
+- Update to release 1.12.2
 * Mon Oct 19 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.2-1
 - Update to release 1.12.2
 * Thu Jan 29 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.0-1

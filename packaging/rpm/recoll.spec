@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.12.0
+%define version 1.13.04
 %define release 0
 
 Name:           %{name}
@@ -15,8 +15,8 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
 
 # We build with a static link to xapian to avoid depending on xapian
-BuildRequires: qt3-devel
-Requires:      qt3
+BuildRequires: libqt4-devel
+Requires:      libqt4
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -32,7 +32,7 @@ interface.
 # ---------------------------------------------------------------------------
 
 %build
-[ -n "$QTDIR" ] || . %{_sysconfdir}/profile.d/qt.sh
+
 %configure
 make %{?_smp_mflags} static
 
@@ -55,12 +55,23 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}
 %{_datadir}/applications/recoll-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/recoll.png
+%{_datadir}/pixmaps/recoll.png
 %{_mandir}/man1/recoll*
 %{_mandir}/man5/recoll*
 
 # ---------------------------------------------------------------------------
 
 %changelog
+* Thu Apr 14 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.04-1
+- Update to release 1.13.04
+* Thu Jan 07 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.01-1
+- Update to release 1.13.01
+* Thu Dec 10 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.4-1
+- Update to release 1.12.4
+* Wed Oct 28 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.3-1
+- Update to release 1.12.3
+* Tue Sep 20 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.2-1
+- Update to release 1.12.0
 * Thu Jan 29 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.0-1
 - Update to release 1.12.0
 * Mon Oct 13 2008 Jean-Francois Dockes <jfd@recoll.org> 1.11.0-1
