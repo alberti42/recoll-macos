@@ -1,19 +1,19 @@
 Name:           recoll
-Version:        1.13.02
+Version:        1.13.04
 Release:        1%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
 Group:          Applications/Databases
 License:        GPL
 URL:            http://www.recoll.org/
-Source0:        http://www.recoll.org/recoll-1.13.02.tar.gz 
+Source0:        http://www.recoll.org/recoll-1.13.04.tar.gz 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 # Not sure how easy it is to find a xapian-core rpm. Will be easier to
 # build by hand for many. Run time uses a static link to xapian, doesnt
 # depend on libxapian.so
-BuildRequires:  qt-devel xapian-core-devel zlib-devel desktop-file-utils
-Requires:       qt xapian-core-libs zlib
+BuildRequires:  qt-devel
+Requires:       qt
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -25,47 +25,36 @@ interface.
 %setup -q
 
 %build
-QMAKE=qmake-qt4 
-export QMAKE
+[ -n "$QTDIR" ] || . %{_sysconfdir}/profile.d/qt.sh
 %configure
-make %{?_smp_mflags}
+make %{?_smp_mflags} static
 
 %install
-rm -rf %{buildroot}
-make install DESTDIR=%{buildroot}
-
-desktop-file-install --delete-original \
-  --dir=%{buildroot}/%{_datadir}/applications \
-  %{buildroot}/%{_datadir}/applications/%{name}-searchgui.desktop
-
-
+rm -rf $RPM_BUILD_ROOT
+%makeinstall
 
 %clean
-rm -rf %{buildroot}
+rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}-searchgui.desktop
-%{_datadir}/pixmaps/%{name}.png
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+%{_datadir}/pixmaps/%{name}.png
 %{_mandir}/man1/recoll*
 %{_mandir}/man5/recoll*
 %doc
 
 
 %changelog
-* Fri Feb 12 2010 Terry Duell 1.13.02
-- updated to release 1.13.02
-* Mon Jan 12 2010 Terry Duell 1.13.01-3
-- rpm spec file updated to fix Fedora desktop-file-install and install icon
-* Sun Jan 10 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.01-2
-- Rpm Spec file updated for recent fedoras: depend on xapian packages, use qt4
+* Thu Apr 14 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.04-1
+- Update to release 1.13.04
 * Thu Jan 07 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.01-1
 - Update to release 1.13.01
-* Thu Dec 10 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.4-1
-- Update to release 1.12.4
+* Wed Oct 28 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.3-1
+- Update to release 1.12.3
 * Thu Jan 29 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.0-1
 - Update to release 1.12.0
 * Mon Oct 13 2008 Jean-Francois Dockes <jfd@recoll.org> 1.11.0-1
