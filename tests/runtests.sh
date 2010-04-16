@@ -7,7 +7,14 @@ fi
 
 . shared.sh
 
-recollindex -z
+makeindex() {
+  echo "Zeroing Index" 
+  rm -rf $RECOLL_CONFDIR/xapiandb $RECOLL_CONFDIR/aspdict.*.rws
+  echo "Indexing" 
+  recollindex -z
+}
+
+makeindex
 
 # Yes, we could/should use the $toptmp from shared.sh here, but what if
 # this is unset ?
@@ -20,8 +27,13 @@ fi
 
 dirs=`ls -F | grep / | grep -v CVS`
 
+echo
+echo "Running query tests:"
+
 for dir in $dirs ; do
-    cd $dir && echo $dir
+    cd $dir && echo -n "$dir "
     sh `basename $dir`.sh
     cd ..
 done
+
+echo

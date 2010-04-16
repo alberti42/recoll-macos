@@ -16,13 +16,15 @@ initvariables() {
 }
 
 fatal () {
+      set -f
+      echo
       echo $*
       exit 1
 }
 
 checkresult() {
   if test -s "$mydiffs" ; then
-    fatal $myname FAILED
+    fatal '*** ' $myname FAILED
   else
     rm -f $mydiffs
     exit 0
