@@ -25,15 +25,16 @@
 # Of course this only means anything if the djvu document actually has
 # a text layer !
 #
+# djvu utilities (04-2010) have a bug in which they try to interpret
+# and convert file paths as character data, and fail miserably if the
+# locale is not consistent with the actual encoding of the path (which
+# could be arbitrary binary for all they know). We use a temporary
+# symbolic link to get around this.
+# 
 #================================================================
 
-LANG=C ; export LANG
-LC_ALL=C ; export LC_ALL
 progname="rcldjvu"
 filetype=dejavu
-
-
-
 
 
 #RECFILTCOMMONCODE
@@ -104,11 +105,30 @@ umask 77
 
 checkcmds djvutxt djvused awk
 
+# We need a temporary symlink to avoid path encoding issues
+if test z"$RECOLL_TMPDIR" != z; then
+   ttdir=$RECOLL_TMPDIR
+elif test z"$TMPDIR" != z ; then
+   ttdir=$TMPDIR
+else
+   ttdir=/tmp
+fi
+tmplink=$ttdir/rcldjvu_tmp$$.djvu
+rm -f $tmplink
+ln -s $infile $tmplink || exit 1
+
+cleanup()
+{
+    rm -f $tmplink
+}
+    
+trap cleanup EXIT HUP QUIT INT TERM
+
 # Title: we try to extract it from the annotations. djvused outputs string
 # in C/awk \-escaped notation. Awk can only process this in string
 # constants, so we have a first awk pass to create an awk program to parse
 # the string as a constant (...). This is not exactly robust or nice
-title=`djvused "$infile" -e 'select 1;output-ant' | \
+title=`djvused "$tmplink" -e 'select 1;output-ant' | \
 grep ' (title ' | sed -e 's/^.* (title //' -e 's/)$//' |\
 awk '
 {
@@ -128,7 +148,7 @@ EOF
 
 # The strange 'BEGIN' setup is to prevent 'file' from thinking this file
 # is an awk program
-djvutxt "$infile" | sed -e 's/[ 	][ 	]*$//' | \
+djvutxt "$tmplink" | sed -e 's/[ 	][ 	]*$//' | \
 awk 'BEGIN'\
 ' {
   cont = ""
