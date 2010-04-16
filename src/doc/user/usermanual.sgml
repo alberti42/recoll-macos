@@ -2967,10 +2967,11 @@ while query.next >= 0 and query.next < nres:
           <varlistentry id="rcl.install.config.recollconf.topdirs">
             <term><literal>topdirs</literal></term>
             <listitem><para>Specifies the list of directories or files to
-            index (recursively for directories). The indexer will not
-            follow symbolic links inside the indexed trees by default
-            (see the <literal>followLinks</literal> options though).</para>
-            </listitem> 
+            index (recursively for directories). You can use symbolic links
+            as elements of this list. See the
+            <literal>followLinks</literal> option about following symbolic links
+            found under the top elements (not followed by default).</para>
+            </listitem>
           </varlistentry>
 
           <varlistentry><term><literal>skippedNames</literal></term>

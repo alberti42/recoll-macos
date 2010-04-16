@@ -75,6 +75,8 @@ src/qtgui/i18n/*.qm
 src/qtgui/recoll
 src/qtgui/recoll.pro
 src/query/alldeps
+src/query/recollq
+src/query/xadump
 src/recollinstall
 src/sampleconf/recoll.conf
 website/usermanual/*

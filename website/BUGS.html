@@ -102,13 +102,17 @@
           slower indexing for doc files.</li>
       </ul>
 
-      <h2><a name="b_1_13_02">recoll 1.13.02</h2>
-      <p>Stemming is completely broken. The stemming database is not
-        created at all. Things may sort of work as long as an older stemming
-        database is around (which is why this was not discovered earlier.</p>
 
-      <h2><a name="b_1_13_01">recoll 1.13.01 + xapian
-      1.0.16</a></h2> 
+      <h2><a name="b_1_13_02">recoll 1.13.02</h2>
+        <li>Fix stemming which was completely broken in the 1.13
+        series. The stemming database was not 
+        created at all. Things would sort of work as long as an older stemming
+        database was around (which is why this was not discovered earlier.</li>
+       <li>Fix the lyx filter to properly handle embedded white space in
+        file paths.</li>
+
+
+      <h2><a name="b_1_13_01">recoll 1.13.01 + xapian 1.0.16</a></h2> 
 
       <li>The GUI display is completely garbled under
       Qt 4.6.1 and newer. This is a Qt bug, and a workaround was put
@@ -123,13 +127,17 @@
   #if QT_VERSION >= 0x040601
 </pre>
       </li>
+
       <h2><a name="b_1_13_00">recoll 1.13.01 + xapian 1.0.16</a></h2> 
+
       <li>The field value was ignored in field searches for phrases or
 	capitalized words (ie: author:John or title:"the title").</li>
       <li>The GUI would sometimes crash during the first execution,
 	after the dialog about starting configuration.</li>
       <li>kio-recoll was not fully updated for 1.13 internals.</li>
       <li>Would not compile on Solaris 8.</li>
+
+
 
       <h2><a name="b_1_12_4">1.12.4</a></h2>
         <li>There are two bugs specific to 64 bits system, affecting
