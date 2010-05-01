@@ -46,19 +46,25 @@ public:
     BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db = 0,
                        DbIxStatusUpdater *updfunc = 0);
     ~BeagleQueueIndexer();
-    
+
+    /** This is called by the top indexer in recollindex. 
+     *  Does the walking and the talking */
     bool index();
 
+    /** Called when we fstreewalk the queue dir */
     FsTreeWalker::Status 
     processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
 
-    /** Index a list of files. No db cleaning or stemdb updating */
+    /** Index a list of files. No db cleaning or stemdb updating. 
+     *  Used by the real time monitor */
     bool indexFiles(list<string>& files);
     /** Purge a list of files. No way to do this currently and dont want
      *  to do anything as this is mostly called by the monitor when *I* delete
      *  files inside the queue dir */
     bool purgeFiles(list<string>& files) {return true;}
 
+    /** Called when indexing data from the cache, and from internfile for
+     * search result preview */
     bool getFromCache(const string& udi, Rcl::Doc &doc, string& data,
                       string *hittype = 0);
 private:
