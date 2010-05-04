@@ -1,5 +1,6 @@
-<!DOCTYPE TS><TS>
-<defaultcodec></defaultcodec>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="ru_RU">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -341,11 +342,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Print</source>
-        <translation type="unfinished"></translation>
+        <translation>Печать</translation>
     </message>
     <message>
         <source>Print Current Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Печать текущего окна предпросмотра</translation>
     </message>
 </context>
 <context>
@@ -404,7 +405,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Beagle web history</source>
-        <translation type="unfinished"></translation>
+        <translation>Web-история Beagle</translation>
     </message>
 </context>
 <context>
@@ -650,16 +651,17 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Document category filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Фильтр категории документа</translation>
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
-        <translation type="unfinished"></translation>
+        <translation>Не указана внешняя программа просмотра для [</translation>
     </message>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Программа просмотра, указанная в mimeview для %1: %2, не найдена.
+Открыть диалог настроек?</translation>
     </message>
 </context>
 <context>
@@ -994,9 +996,9 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
-<byte value="x9"/></source>
+	</source>
         <translation type="obsolete">&lt;b&gt;Результаты с %1 из %2&lt;/b&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;
-<byte value="x9"/></translation>
+	</translation>
     </message>
     <message>
         <source>Sort criteria</source>
@@ -1117,19 +1119,19 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings (accents suppressed): &lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;&lt;i&gt;Альтернативная орфография (без диакритических знаков): &lt;/i&gt;</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Сохранить в файл</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Предпросмотр родительского документа/каталога</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Открыть родительский документ/каталог</translation>
     </message>
 </context>
 <context>
@@ -1879,7 +1881,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать фильтр категории документа в виде выпадающего списка, а не панели с кнопками (требуется перезапуск).</translation>
     </message>
 </context>
 <context>
@@ -1921,7 +1923,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите один или несколько MIME-типов и нажмите&quot;Сменить действие&quot;&lt;br&gt;Также Вы можете закрыть этот диалог и установить флаг &quot;Использовать десктопные настройки&quot;&lt;br&gt; в основной панели, чтобы использовать десктопные настройки вместо данного списка.</translation>
     </message>
 </context>
 <context>
@@ -2015,27 +2017,27 @@ This should give higher precedence to the results where the search terms appear 
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Steal Beagle indexing queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Воспользоваться очередью индексирования Beagle</translation>
     </message>
     <message>
         <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
-        <translation type="unfinished"></translation>
+        <translation>Beagle НЕ должен выполняться. Включить обработку очереди Beagle для индексирования Web-истории Firefox.&lt;br&gt;(для этого следует также установить плагин Beagle для Firefox)</translation>
     </message>
     <message>
         <source>Web cache directory name</source>
-        <translation type="unfinished"></translation>
+        <translation>Каталог Веб-кэша</translation>
     </message>
     <message>
         <source>The name for a directory where to store the cache for visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя каталога, в котором хранится кэш посещенных Веб-страниц.&lt;br&gt;Путь указывается относительно каталога с конфигурацией и не является абсолютным.</translation>
     </message>
     <message>
         <source>Max. size for the web cache (MB)</source>
-        <translation type="unfinished"></translation>
+        <translation>Предел размера Веб-кэша (MB)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached</source>
-        <translation type="unfinished"></translation>
+        <translation>При достижении указанного размера кэша старые записи будут удаляться</translation>
     </message>
 </context>
 <context>
@@ -2079,30 +2081,32 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation type="unfinished"></translation>
+        <translation>Предел размера текстового файла (MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Это значение устанавливает порог размера текстовых файлов, которые будут обрабатываться. -1 отключает порог.
+Данная настройка может быть полезна для предотвращения индексирования больших файлов: журналов сообщений и т.п.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер страницы текстового файла (KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation type="unfinished"></translation>
+        <translation>Если это значение установлено (т.е. не равно -1), то при индексировании текстовые файлы разбиваются на фрагменты соответствующего размера.
+Данная опция может помочь при выполнении поиска в очень больших текстовых файлах (например, файлах журналов).</translation>
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
-        <translation type="unfinished"></translation>
+        <translation>Предельное время работы фильтра (сек)</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Внешние фильтры, выполняющиеся дольше указанного предельного времени работы, принудительно завершаются. Это может помочь в тех редких случаях, когда фильтр (например, postscript) зацикливается при обработке некоторого документа. Значение, равное -1, выключает проверку времени работы.</translation>
     </message>
 </context>
 <context>
