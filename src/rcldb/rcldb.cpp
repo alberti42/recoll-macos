@@ -33,7 +33,7 @@ static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.154 2008-12-17 16:19:58 dockes Exp 
 using namespace std;
 #endif /* NO_NAMESPACES */
 
-#include "xapian/version.h"
+#include "xapian.h"
 
 #include "rclconfig.h"
 #include "rcldb.h"

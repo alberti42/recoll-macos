@@ -12,7 +12,6 @@ static char rcsid[] = "@(#$Id: stemdb.cpp,v 1.12 2008-07-30 13:16:13 dockes Exp 
 #include <map>
 
 #include <xapian.h>
-#include <xapian/stem.h>
 
 #include "stemdb.h"
 #include "wipedir.h"
