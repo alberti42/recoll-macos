@@ -1,5 +1,12 @@
-recoll (1.13.02-0~ppa1~SERIES1) SERIES; urgency=low
+recoll (1.13.04-0~ppa2~SERIES1) SERIES; urgency=low
+  * Switch to qt4 on Jaunty. 
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 01 May 2010 12:15:00 +0200
 
+recoll (1.13.04-0~ppa1~SERIES1) SERIES; urgency=low
+  * Updated package to recoll version 1.13.04
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 14 Apr 2010 13:42:00 +0200
+
+recoll (1.13.02-0~ppa1~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.13.02
   * Imported current goodness from debian maintainer control and rules
     files. Thanks to Kartik Mistry <kartik@debian.org>
