@@ -77,6 +77,7 @@ private:
     bool       m_nocacheindex;
 
     bool indexFromCache(const string& udi);
+    void updstatus(const string& udi);
 };
 
 #endif /* _beaglequeue_h_included_ */

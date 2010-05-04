@@ -474,6 +474,8 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	// Tell what we are doing and check for interrupt request
 	if (m_updater) {
 	    ++(m_updater->status.docsdone);
+            if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
+                m_updater->status.dbtotdocs = m_updater->status.docsdone;
             m_updater->status.fn = fn;
             if (!ipath.empty())
                 m_updater->status.fn += "|" + ipath;

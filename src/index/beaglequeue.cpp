@@ -270,6 +270,17 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
     }
 }
 
+void BeagleQueueIndexer::updstatus(const string& udi)
+{
+    if (m_updater) {
+        ++(m_updater->status.docsdone);
+        if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
+            m_updater->status.dbtotdocs = m_updater->status.docsdone;
+        m_updater->status.fn = udi;
+        m_updater->update();
+    }
+}
+
 bool BeagleQueueIndexer::index()
 {
     if (!m_db)
@@ -305,6 +316,7 @@ bool BeagleQueueIndexer::index()
                     // arrange to use a getCurrent() instead, would be more 
                     // efficient
                     indexFromCache(udi);
+                    updstatus(udi);
                 } catch (CancelExcept) {
                     LOGERR(("BeagleQueueIndexer: interrupted\n"));
                     return false;
@@ -448,8 +460,12 @@ BeagleQueueIndexer::processone(const string &path,
             LOGERR(("BeagleQueueIndexer: interrupted\n"));
             goto out;
         }
-        if (fis != FileInterner::FIDone) {
+        if (fis != FileInterner::FIDone && fis != FileInterner::FIAgain) {
             LOGERR(("BeagleQueueIndexer: bad status from internfile\n"));
+            // TOBEDONE: internfile can return FIAgain here if it is
+            // paging a big text file, we should loop. Means we're
+            // only indexing the first page for text/plain files
+            // bigger than the page size (dlft: 1MB) for now.
             goto out;
         }
 
@@ -486,7 +502,7 @@ BeagleQueueIndexer::processone(const string &path,
             goto out;
         }
     }
-
+    updstatus(udi);
     dounlink = true;
 out:
     if (dounlink) {
