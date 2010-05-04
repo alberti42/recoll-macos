@@ -94,7 +94,7 @@
 
       <h2>Nouvelles: </h2>
       <ul>
-	<li>2010-01-05 : la version <a
+	<li>2010-04-14 : la version <a
 	href="download.html#source">1.13.04</a> vient de sortir. Elle
 	corrige un gros bug de la 1.13.02 (le stemming ne marchait plus).</li>
 

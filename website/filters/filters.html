@@ -41,7 +41,9 @@
       <p>For updated filters, you just need to copy the script to the
       filters directory which may be typically either <span
       class="filename">/usr/share/recoll/filters</span>, or <span
-      class="filename">/usr/local/share/recoll/filters</span>.</p>
+      class="filename">/usr/local/share/recoll/filters</span>. Please check
+      that the script is executable after copying it, and make it so if
+      needed (chmod a+x <i>scriptname</i>)</p>
 
       <p>For new filters, you'll need to copy the script file as
 	above, possibly install the supporting application, and usually
@@ -71,7 +73,7 @@
 
       <h2>Updated icalendar filter</h2>
       <p>The filter script for all releases up and including 1.13.04 used
-      the icalendar Python modules which is not robust enough against some
+      the icalendar Python module which is not robust enough against some
       syntax errors (found for example in Mozilla exports). The new version
       uses an internal trivial parser, which will hopefully be both
       sufficient for what we are doing and more robust.

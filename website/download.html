@@ -113,9 +113,8 @@
 
       <p>New and updated filters are sometimes 
 	<a href="filters/filters.html">available</a> before the next
-	Recoll release. The most notable current set is for the Open
-	XML office document formats, not included for Recoll releases older
-	than 1.10.5.</p>
+	Recoll release. There is currently an update icalendar (ics) filter
+	for 1.13.</p>
 
       <h2><a name="source">Source</a></h2>
 
@@ -196,9 +195,12 @@
        Recoll and kio-recoll</a>. These were built from the latest versions,
        for a set of Ubuntu series. You just need to add the
        PPAs to your system software sources (the instructions are on
-       the PPA page), and you can then install the normal package
-       manager to install or update Recoll and Xapian.  To avoid
-       messages about signature errors, you will have to import the
+       the PPA page or 
+<a href="https://help.launchpad.net/Packaging/PPA/InstallingSoftware">
+       here</a>), and you can then use the normal package
+       manager to install or update Recoll and Xapian. To avoid
+       messages about signature errors, if not done at the previous step,
+       you may have to explicitely import the 
        Recoll and Xapian public keys (as root): <pre><tt>
 gpg --keyserver keyserver.ubuntu.com --recv 9DA85604
 gpg --export --armor 9DA85604 | sudo apt-key add -
@@ -249,9 +251,14 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 	those who want to rebuild from the source rpms. Normally linked
 	(need Xapian and zlib libraries):</p>
       <blockquote>
-      <p><b>Fedora Core 12 with Qt 4</b>
-	This build is not statically linked, but depends on the
-	regular Xapian and zlib rpms from the Fedora repositories.
+      <p><b>Fedora Core 11 with Qt 4</b> i586
+	<a href="fc11/recoll-1.13.04-1.fc11.i586.rpm">
+	 recoll-1.13.04-1.fc11.i586.rpm</a>. 64 bits version
+	<a href="fc11/recoll-1.13.04-1.fc11.x86_64.rpm">
+	 recoll-1.13.04-1.fc11.x86_64.rpm</a>. 
+      </p>
+
+      <p><b>Fedora Core 12 with Qt 4</b> 64 bits version
 	<a href="fc12/recoll-1.13.04-1.fc12.x86_64.rpm">
 	  recoll-1.13.04-1.fc12.x86_64.rpm</a>. 
       </p>
