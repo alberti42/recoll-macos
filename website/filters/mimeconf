@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.41 2008/09/01 20:39:40 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.48 2008-11-27 13:35:24 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -23,15 +23,24 @@ application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 ## ###################################
 # Filters for indexing and internal preview. 
 # The "internal" filters are hardwired in the c++ code.
-# The external "exec" filters are typically scripts. They output the
+# The external "exec" filters are typically scripts. By default, they output the
 # document in simple html format, have a look at the scripts.
+# A different format (ie text/plain), and a character set can be defined for
+# each filter, see the exemples below (ie: msword)
 [index]
-application/msword = exec rcldoc
+# Note: rcldoc did some work to splice hyphenated words at eol. Seems
+# actually not needed because antiword apparently does it too
+# application/msword = exec rcldoc
+application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=utf-8
+# Alternatively you can use wvWare for msword. It's much slower than
+# antiword, but will handle documents which provoke the 'I'm afraid the
+# text stream of this file is too small to handle' antiword error
+# application/msword = exec wvWare --charset=utf-8 --nographics
 application/ogg = exec rclogg
 application/pdf = exec rclpdf
-application/postscript = exec rclps
-application/vnd.ms-excel = exec rclxls
-application/vnd.ms-powerpoint = exec rclppt
+application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
+application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;charset=utf-8;mimetype=text/plain
+application/vnd.ms-powerpoint = exec catppt -d utf-8;charset=utf-8;mimetype=text/plain
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  exec rclopxml
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
@@ -54,29 +63,40 @@ application/vnd.sun.xml.math = exec rclsoff
 application/vnd.sun.xml.writer = exec rclsoff
 application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
-application/vnd.wordperfect = exec rclwpd
+application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
+application/x-awk = internal
 application/x-dvi = exec rcldvi
 application/x-flac = exec rclflac
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
+application/x-perl = internal
 application/x-scribus = exec rclscribus
+application/x-shellscript = internal
 application/x-tex = exec rcltex
+application/x-chm = execm rclchm
+application/zip = execm rclzip
 audio/mpeg = exec rclid3
-image/gif = exec rclimg
-image/jpeg = exec rclimg
-image/png = exec rclimg
-image/tiff = exec rclimg
+image/gif = execm rclimg
+image/jpeg = execm rclimg
+image/png = execm rclimg
+image/tiff = execm rclimg
 image/vnd.djvu = exec rcldjvu
 image/svg+xml = exec rclsvg
 message/rfc822 = internal
+text/calendar = execm rclics;mimetype=text/plain;charset=utf-8
 text/html  = internal 
 text/plain = internal 
-text/rtf = exec rclrtf
+text/rtf = exec unrtf --nopict --html;charset=iso-8859-1;mimetype=text/html
+text/x-c = internal
+text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
 text/x-mail = internal
 text/x-man = exec rclman
+text/x-purple-log = exec rclpurple
+text/x-python = exec rclpython
+text/x-shellscript = internal
 
 ## #############################################
 # Icons to be used in the result list if required by gui config
@@ -117,6 +137,9 @@ application/x-kword = wordprocessing
 application/x-lyx = wordprocessing
 application/x-scribus = document
 application/x-tex = wordprocessing
+application/x-awk = source
+application/x-perl = source
+application/x-shellscript = source
 audio/mpeg = sownd
 image/gif = image
 image/jpeg = image
@@ -128,9 +151,14 @@ message/rfc822 = message
 text/html = html
 text/plain = txt
 text/x-c = source
+text/x-c++ = source
+text/x-fictionbook = document
 text/x-html-sidux-man = sidux-book
 text/x-mail = message
 text/x-man = document
+application/x-chm = document
+text/x-purple-log = pidgin
+text/x-python = text-x-python
 
 [categories]
 
@@ -145,17 +173,27 @@ text = \
       application/vnd.sun.xml.writer.template \
       application/vnd.wordperfect \
       application/x-abiword \
+      application/x-awk \
+      application/x-chm \
       application/x-dvi \
       application/x-kword \
       application/x-lyx \
+      application/x-perl \
       application/x-scribus \
+      application/x-shellscript \
       application/x-tex \
       image/vnd.djvu \
+      text/calendar \
       text/html \
       text/plain \
       text/rtf \
+      text/x-c \
+      text/x-c++ \
+      text/x-fictionbook \
       text/x-html-sidux-man \
-      text/x-man
+      text/x-man \
+      text/x-python \
+      text/x-shellscript
 
 spreadsheet = \
    application/vnd.ms-excel \
@@ -182,34 +220,11 @@ media = \
 message = message/rfc822 \
 	  text/x-gaim-log \
 	  text/x-mail \
+	  text/x-purple-log \
 
 other = application/vnd.sun.xml.draw \
         application/vnd.sun.xml.draw.template \
         application/vnd.sun.xml.math \
         application/x-fsdirectory \
+	application/zip \
         image/svg+xml \
-
-
-[prefixes]
-
-# This allows extending the set of fields that recoll understand/searches. 
-# See the manual for exact usage.
-# Important: 
-#   - the field names MUST be all lowercase here. They can be anycased
-#     in the documents:
-#   - The extension field prefixes MUST begin with X and be all UPPERCASE.
-title = S
-caption = S
-subject = S
-
-author = A
-creator = A
-from = A
-
-keyword = K
-tag = K
-keywords = K
-tags = K
-
-# testing /example :
-recollspecialfield = XRCLSF

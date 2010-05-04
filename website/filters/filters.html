@@ -56,7 +56,7 @@
 	(<span class="filename">$HOME/.recoll</span> or 
 	<span class="filename">$RECOLL_CONFDIR</span>).</p>
       
-      <p>Alternatively, you can replace your 1.[8,9,10] system files with
+      <p>Alternatively, you can replace your system files with
 	these updated and complete versions:
 	<a href="mimemap">mimemap</a>
 	<a href="mimeconf">mimeconf</a> 
@@ -64,230 +64,19 @@
 
       <p>Notes:</p>
       <blockquote>
-	<p>All filters are up to date in Recoll 1.10.5</p>
-	  
-	<p>Recoll 1.10.0: only <span class="filename">rclsvg</span> for
-	  Scalable Vector Graphic files is missing.</p>
-
-	<p>Recoll 1.9: all filters are up to date in the release,
-	  except the <span class="filename">rclimg</span> image
-	  filter and <span class="filename">rcltex</span>TeX filter.</p>
-
-	<p>Recoll 1.8: The image, <b>kword</b>,
-	  <b>abiword</b> and <b>wordperfect</b> can be installed in
-	  addition.</p>
+	<p>All filters are up to date in Recoll 1.13.04, except rclics.</p>
+	<p>If you are using an older version, you should update to 1.13.04.</p>
       </blockquote>
 
-      <h2>Open XML Office formats</h2> 
 
-      <p>Filter: <a href="rclopxml">rclopxml</a>. </p>
-      <p>This needs <span class="command">xsltproc</span> to be
-        installed (if you run a decently recent Linux, this is
-        probably on your system already). </p>
-
-      <p>The filters are certainly not perfect, but extract a good
-	part of the text, which is probably better than nothing.</p>
-	
-	<p>There are quite a few added lines in the configuration
-	  files, just fetch the new ones:
-	<a href="mimemap">mimemap</a>
-	<a href="mimeconf">mimeconf</a> 
-	<a href="mimeview">mimeview</a> </p>
-
-
-      <h2>Scalable Vector Graphics filter</h2> 
-
-        <p>A new filter for <b>SVG</b> files:
-	  <a href="rclsvg">rclsvg</a>.
-	You'll have to add the following lines in the configuration
-	files:</p>
-
-      <p>In <span class="filename">mimemap</span>: </p>
-      <pre>.svg = image/svg+xml
-</pre>
-      <p>In <span class="filename">mimeconf</span>, [index] section: </p>
-      <pre>image/svg+xml = exec rclsvg</pre>
-      <p><span class="filename">mimeconf</span>, [icons] section:</p>
-      <pre>image/svg+xml = drawing</pre>
-      <p><span class="filename">mimeconf</span>, [categories] section, also add
-	<tt>image/svg+xml</tt> to the <tt>other</tt> list.</p>
-
-      <p>The filter is based on <span class="command">sed</span>, so
-      you don't need to install any external application.</p>
-
-      <p>In 
-	<span class="filename">mimeview</span>, or the <em>[view]</em>
-	section of 
-	<span class="filename">mimeconf</span> for older recoll versions: </p>
-      <pre>    image/svg+xml = inkview %f</pre>
-      <p>(Or substitute your favorite editor).</p>
-
-
-
-      <h2>TeX filter</h2> 
-
-        <p>A new filter for <b>TeX</b> files:
-	  <a href="rcltex">rcltex</a>.
-	You'll have to add the following lines in the configuration
-	files:</p>
-
-      <p>In <span class="filename">mimemap</span>: </p>
-      <pre>.tex = application/x-tex
-</pre>
-      <p>In <span class="filename">mimeconf</span>, [index] section: </p>
-      <pre>    application/x-tex = exec rcltex</pre>
-      <p>mimeconf, [icons] section:</p>
-      <pre>application/x-tex = wordprocessing</pre>
-      <p>mimeconf, [categories] section, also add
-	application/x-tex to the <tt>texts</tt> list.</p>
-
-      <p>This filter uses either <span class="command">untex</span>
-	or <a
-	  "href=http://www.cs.purdue.edu/homes/trinkle/detex/">detex</a>
-	if the command is available. . A copy of the
-	source code for untex is stored <a "href=../untex/untex-1.3.jf.tar.gz">
-	  here</a></p>
-
-      <p>In 
-	<span class="filename">mimeview</span>, or the <em>[view]</em>
-	section of 
-	<span class="filename">mimeconf</span> for older recoll versions: </p>
-      <pre>    application/x-tex = gnuclient -q %f</pre>
-      <p>(Or substitute your favorite editor).</p>
-
-
-      <h2>A filter for image tags</h2> 
-
-        <p>A new filter for extracting tags from image and picture files:
-	  <a href="rclimg">rclimg</a>, by Cedric Scott. It is based on
-	  the <b>Exiftool</b> Perl application and library.
-	  You'll have to add the following lines in the configuration
-	  files:</p>
-
-      <p>In <span class="filename">mimemap</span>: </p>
-      <pre>.jpeg = image/jpeg
-.gif = image/gif
-.tiff = image/tiff
-.tif  = image/tiff
-</pre>
-      <p>In <span class="filename">mimeconf</span>, [index] section: </p>
-      <pre>image/gif = exec rclimg
-image/jpeg = exec rclimg
-image/png = exec rclimg
-image/tiff = exec rclimg
-      </pre>
-      <p>And remove the <tt>image/jpeg = exec rcljpeg</tt> line.</p>
-
-      <p>Exiftool supports many other image formats, just enter any
-	additional ones like above.</p>
-
-      <h2>Wordperfect filter</h2> 
-
-        <p>A new filter for <b>Wordperfect</b> files:
-	  <a href="rclwpd">rclwpd</a>.
-	You'll have to add the following lines in the configuration
-	files:</p>
-
-      <p>In <span class="filename">mimemap</span>: </p>
-      <pre>.wpd = application/vnd.wordperfect
-</pre>
-      <p>In <span class="filename">mimeconf</span>, [index] section: </p>
-      <pre>    application/vnd.wordperfect = exec rclwpd</pre>
-      <p>mimeconf, [icons] section:</p>
-      <pre>application/vnd.wordperfect = wordprocessing</pre>
-      <p>mimeconf, [categories] section, also add
-	application/vnd.wordperfect to the <tt>texts</tt> list.</p>
-
-      <p>In 
-	<span class="filename">mimeview</span>, or the <em>[view]</em>
-	section of 
-	<span class="filename">mimeconf</span> for older recoll versions: </p>
-      <pre>    application/vnd.wordperfect = openoffice %f</pre>
-
-      <h2>Abiword filter</h2> 
-
-      <p>A new filter for <a href="http://www.abisource.com/">
-	  abiword</a> files: <a href="rclabw">
-	  rclabw</a>.
-	You'll have to add the following lines in the configuration
-	files:</p>
-
-      <p>In <span class="filename">mimemap</span>: </p>
-      <pre>    .abw = application/x-abiword</pre>
-
-      <p>In <span class="filename">mimeconf</span>: </p>
-      <pre>    application/x-abiword = exec rclabw</pre>
-
-      <p>In 
-	<span class="filename">mimeview</span>, or the <em>[view]</em>
-	section of 
-	<span class="filename">mimeconf</span> for older recoll versions: </p>
-      <pre>    application/x-abiword = abiword %f</pre>
-
-      <h2>Kword filter</h2> 
-
-      <p>A new filter for <a href="http://www.kde.org/whatiskde/koffice.php/">
-	  kword</a> files: <a href="rclkwd">
-	  rclkwd</a>.
-	You'll have to add the following lines in the configuration
-	files:</p>
-
-      <p>In <span class="filename">mimemap</span>: </p>
-      <pre>    .kwd = application/x-kword</pre>
-      <p>In <span class="filename">mimeconf</span>: </p>
-      <pre>    application/x-kword = exec rclkwd</pre>
-      <p>In 
-	<span class="filename">mimeview</span>, or the <em>[view]</em>
-	section of 
-	<span class="filename">mimeconf</span> for older recoll versions: </p>
-      <pre>    application/x-kword = kword %f</pre>
-
-
-      <h2>Openoffice filter</h2>
-      <p>The filter script for all releases up and including 1.7.5 had
-      a bug on Debian and Ubuntu systems. You can download the <a
-      href="rclsoff">corrected script</a>.</p>
-
-      <h2>Scribus filter</h2> 
-
-      <p>A new filter for <a href="http://www.scribus.net/">
-	  Scribus</a> files: <a href="rclscribus">
-	  rclscribus</a>. This is only for the newer
-	<em>.sla</em> files. I am willing to add support for the older
-	<em>.scd</em> format if someone sends me a sample... You'll
-	have to add the following lines in the configuration files:</p>
-
-      <p>In <span class="filename">mimemap</span>: </p>
-      <pre>      .sla = application/x-scribus</pre>
-      <p>In <span class="filename">mimeconf</span>: </p>
-      <pre>      application/x-scribus = exec rclscribus</pre>
-      <p>In 
-	<span class="filename">mimeview</span>, or the <em>[view]</em>
-	section of 
-	<span class="filename">mimeconf</span> for older recoll versions: </p>
-      <pre>       application/x-scribus = scribus %f</pre>
-
-      <p>Do *not* add entries for <em>.sla.gz</em>, the normal recoll
-      decompression process will handle them (hopefully...).</p>
-
-
-      <h2>Lyx filter</h2> 
-
-      <p>A new filter for <a href="http://www.lyx.or/">
-	  Lyx</a> files: <a href="rcllyx">rcllyx</a>. 
-	This probably has quite a few issues with character encoding,
-	but it's also probably better than handling lyx documents as
-	text files.</p>
-
-      <p>In <span class="filename">mimemap</span>: </p>
-      <pre>      .lyx = application/x-lyx</pre>
-      <p>In <span class="filename">mimeconf</span>: </p>
-      <pre>      application/x-lyx = exec rcllyx</pre>
-      <p>In 
-	<span class="filename">mimeview</span>, or the <em>[view]</em>
-	section of 
-	<span class="filename">mimeconf</span> for older recoll versions: </p>
-      <pre>       application/x-lyx = lyx %f</pre>
+      <h2>Updated icalendar filter</h2>
+      <p>The filter script for all releases up and including 1.13.04 used
+      the icalendar Python modules which is not robust enough against some
+      syntax errors (found for example in Mozilla exports). The new version
+      uses an internal trivial parser, which will hopefully be both
+      sufficient for what we are doing and more robust.
+      You can download the <a href="rclics">new script</a>. This will not
+      work for versions prior to 1.13.</p>
 
     </div>
   </body>

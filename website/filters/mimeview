@@ -1,4 +1,4 @@
-# @(#$Id: mimeview,v 1.15 2008/09/01 20:39:40 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeview,v 1.16 2008-09-15 08:03:37 dockes Exp $  (C) 2004 J.F.Dockes
 
 ## ##########################################
 # External viewers, launched by the recoll GUI when you click on a result
@@ -40,8 +40,9 @@ application/vnd.sun.xml.writer = openoffice %f
 application/vnd.sun.xml.writer.global = openoffice %f
 application/vnd.sun.xml.writer.template = openoffice %f
 application/vnd.wordperfect = openoffice %f
-application/x-fsdirectory = rox %f
+application/x-chm = okular %f
 application/x-dvi = xdvi %f
+application/x-fsdirectory = rox %f
 application/x-flac = xmms %f
 application/x-lyx = lyx %f
 application/x-scribus = scribus %f
@@ -59,3 +60,4 @@ text/plain = gnuclient -q %f
 text/x-c = gnuclient -q %f
 text/x-html-sidux-man = konqueror %f
 #text/x-html-sidux-man = iceweasel %f
+text/x-python = idle %f
