@@ -2670,10 +2670,7 @@ while query.next >= 0 and query.next < nres:
           url="http://www.jedrea.com/chmlib/">chmlib</ulink>).</para>
 	</listitem>
 
-	<listitem><para>ics: iCalendar files need Python and the 
-        <ulink url=" http://codespeak.net/icalendar/">icalendar</ulink>
-        module.</para>
-	</listitem>
+	<listitem><para>ics: iCalendar files need Python.</para></listitem>
 
 	<listitem><para>zip: Zip archives need Python (and the standard
 	zipfile module).</para>
