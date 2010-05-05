@@ -1,15 +1,14 @@
 <!DOCTYPE BOOK PUBLIC "-//FreeBSD//DTD DocBook V4.1-Based Extension//EN" [
+
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLVERSION "1.12-1.13">
 <!ENTITY XAP "<application>Xapian</application>">
-
 ]>
  
 <book lang="en">
   
   <bookinfo>
     <title>Recoll user manual</title>
-
 
     <author>
       <firstname>Jean-Francois</firstname>
@@ -41,7 +40,7 @@
 
     <sect1 id="rcl.introduction.tryit">
       <title>Giving it a try</title>
-
+      
       <para>If you do not like reading manuals (who does?) and would
       like to give &RCL; a try, just perform <link
       linkend="rcl.install.binary">installation</link> and start the
@@ -2956,8 +2955,14 @@ while query.next >= 0 and query.next < nres:
          configuration, click <guimenu>Cancel</guimenu>, and edit
          the configuration file before restarting the command. This
          will start the initial indexing, which may take some time.</para>
-        
-        <para>Paramers affecting what we index:</para>
+
+        <para>Most of the following parameters can be changed from the
+        <guilabel>Index Configuration</guilabel> menu in the
+        <command>recoll</command> interface. Some can only be set by
+        editing the configuration file.</para>
+
+        <sect3 id="rcl.install.config.recollconf.files">
+          <title>Parameters affecting what documents we index:</title>
 
         <variablelist>
 
@@ -3116,9 +3121,95 @@ skippedPaths = ~/somedir/&lowast;.txt
            </varlistentry>
 
         </variablelist>
+       </sect3>
 
+       <sect3 id="rcl.install.config.recollconf.terms">
+	<title>Parameters affecting how we generate terms:</title>
 
-	<para>Parameters affecting where and how we store things:</para>
+        <para>Changing some of these parameters will imply a full
+        reindex. Also, when using multiple indexes, it may not make sense
+        to search indexes that don't share the values for these parameters,
+        because they usually affect both search and index operations.</para>
+
+        <variablelist>
+
+          <varlistentry><term><literal>nonumbers</literal></term>
+            <listitem><para>If this set to true, no terms will be generated
+            for numbers. For example "123", "1.5e6", 192.168.1.4, would not
+            be indexed ("value123" would still be). Numbers are often quite
+            interesting to search for, and this should probably not be set
+            except for special situations, ie, scientific documents with huge
+            amounts of numbers in them. </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>nocjk</literal></term>
+            <listitem><para>If this set to true, specific east asian
+            (Chinese Korean Japanese) characters/word splitting is
+            turned off. This will save a small amount of cpu if you
+            have no CJK documents. If your document base does include
+            such text but you are not interested in searching it,
+            setting <literal>nocjk</literal> may be a significant time
+            and space saver.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>cjkngramlen</literal></term>
+            <listitem><para>This lets you adjust the size of n-grams
+            used for indexing CJK text. The default value of 2 is
+            probably appropriate in most cases. A value of 3 would
+            allow more precision and efficiency on longer words, but
+            the index will be approximately twice as large.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry><term><literal>indexstemminglanguages</literal></term>
+            <listitem><para>A list of languages for which the stem
+            expansion databases will be built. See recollindex(1) or
+            use the <literal>recollindex -l</literal> command for
+            possible values. You can add a stem expansion database for
+            a different language by using <command>recollindex
+            -s</command>, but it will be deleted during the next
+            indexing. Only languages listed in the configuration
+            file are permanent.</para>
+            </listitem>
+          </varlistentry>
+         
+          <varlistentry><term><literal>defaultcharset</literal></term>
+            <listitem><para>The name of the character set used for
+            files that do not contain a character set definition (ie:
+            plain text files). This can be redefined for any
+            sub-directory. If it is not set at all, the character set
+            used is the one defined by the nls environment (LC_ALL,
+            LC_CTYPE, LANG), or iso8859-1 if nothing is set.</para> 
+	   </listitem>
+         </varlistentry>
+
+          <varlistentry><term><literal>maildefcharset</literal></term>
+            <listitem><para>This can be used to define the default
+		character set specifically for mail messages which don't
+		specify it. This is mainly useful for readpst (libpst) dumps,
+		which are utf-8 but do not say so.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><literal>localfields</literal></term>
+            <listitem><para>This allows setting fields for all documents
+            under a given directory. Typical usage would be to set an
+            "rclaptg" field, to be used in <filename>mimeview</filename> to
+            select a specific viewer. If several fields are to be set, they
+            should be separated with a colon (':') character (which there
+            is currently no way to escape). Ie:
+		<literal>localfields= rclaptg=gnus:other = val</literal>, then
+		select specifier viewer with
+		<literal>mimetype|tag=...</literal> in
+		<filename>mimeview</filename>.</para>  
+            </listitem>
+           </varlistentry>
+        </variablelist>
+       </sect3>
+
+       <sect3 id="rcl.install.config.recollconf.storage">
+	<title>Parameters affecting where and how we store things:</title>
 
 	<variablelist>
           <varlistentry><term><literal>dbdir</literal></term>
@@ -3181,8 +3272,11 @@ skippedPaths = ~/somedir/&lowast;.txt
           </varlistentry>
 
         </variablelist>
+       </sect3>
 
-	<para>Miscellani:</para>
+
+       <sect3 id="rcl.install.config.recollconf.misc">
+	<title>Miscellaneous parameters:</title>
 
 	 <variablelist>
 
@@ -3204,54 +3298,9 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>indexstemminglanguages</literal></term>
-            <listitem><para>A list of languages for which the stem
-            expansion databases will be built. See recollindex(1) or
-            use the <literal>recollindex -l</literal> command for
-            possible values. You can add a stem expansion database for
-            a different language by using <command>recollindex
-            -s</command>, but it will be deleted during the next
-            indexing. Only languages listed in the configuration
-            file are permanent.</para>
-            </listitem>
-          </varlistentry>
-         
-          <varlistentry><term><literal>defaultcharset</literal></term>
-            <listitem><para>The name of the character set used for
-            files that do not contain a character set definition (ie:
-            plain text files). This can be redefined for any
-            sub-directory. If it is not set at all, the character set
-            used is the one defined by the nls environment (LC_ALL,
-            LC_CTYPE, LANG), or iso8859-1 if nothing is set.</para> 
-	   </listitem>
-         </varlistentry>
-
           <varlistentry><term><literal>filtermaxseconds</literal></term>
             <listitem><para>Maximum filter execution time, after which it
             is aborted. Some postscript programs just loop...</para> 
-            </listitem>
-           </varlistentry>
-
-          <varlistentry><term><literal>maildefcharset</literal></term>
-            <listitem><para>This can be used to define the default
-		character set specifically for mail messages which don't
-		specify it. This is mainly useful for readpst (libpst) dumps,
-		which are utf-8 but do not say so.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry><term><literal>localfields</literal></term>
-            <listitem><para>This allows setting fields for all
-            documents under a given directory. Typical usage would be
-            to set an "rclaptg" field, to be used in
-            <filename>mimeview</filename> to select a specific
-            viewer. If several fields are to be set, they should be
-            separated with a ':' character (which there is currently no way to
-            escape). Ie:
-		<literal>localfields= rclaptg=gnus:other = val</literal>, then
-		select specifier viewer with
-		<literal>mimetype|tag=...</literal> in
-		<filename>mimeview</filename>.</para>  
             </listitem>
            </varlistentry>
 
@@ -3306,26 +3355,6 @@ skippedPaths = ~/somedir/&lowast;.txt
             generation is turned off. Useful for cases where you don't
             need the functionality or when it is unusable because
             aspell crashes during dictionary generation.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry><term><literal>nocjk</literal></term>
-            <listitem><para>If this set to true, specific east asian
-            (Chinese Korean Japanese) characters/word splitting is
-            turned off. This will save a small amount of cpu if you
-            have no CJK documents. If your document base does include
-            such text but you are not interested in searching it,
-            setting <literal>nocjk</literal> may be a significant time
-            and space saver.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry><term><literal>cjkngramlen</literal></term>
-            <listitem><para>This lets you adjust the size of n-grams
-            used for indexing CJK text. The default value of 2 is
-            probably appropriate in most cases. A value of 3 would
-            allow more precision and efficiency on longer words, but
-            the index will be approximately twice as large.</para>
             </listitem>
           </varlistentry>
 

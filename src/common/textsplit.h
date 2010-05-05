@@ -37,7 +37,8 @@ class Utf8Iter;
 class TextSplit {
 public:
     // Should we activate special processing of Chinese characters ? This
-    // needs a little more cpu, so it can be turned off globally.
+    // needs a little more cpu, so it can be turned off globally. This is set
+    // by rclconfig, changing it means reindexing
     static bool o_processCJK;
     static unsigned int  o_CJKNgramLen;
     static const unsigned int o_CJKMaxNgramLen =  5;
@@ -46,6 +47,13 @@ public:
 	o_processCJK = onoff;
 	o_CJKNgramLen = ngramlen <= o_CJKMaxNgramLen ? 
 	    ngramlen : o_CJKMaxNgramLen;
+    }
+
+    // Are we indexing numbers ? Set by rclconfig. Change needs reindex
+    static bool o_noNumbers;
+    static void noNumbers()
+    {
+	o_noNumbers = true;
     }
 
     enum Flags {TXTS_NONE = 0, 

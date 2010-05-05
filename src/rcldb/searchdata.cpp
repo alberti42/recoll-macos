@@ -82,7 +82,10 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	    m_reason = (*it)->getReason();
 	    return false;
 	}	    
-
+        if (nq.empty()) {
+            LOGDEB(("SearchData::toNativeQuery: skipping empty clause\n"));
+            continue;
+        }
 	// If this structure is an AND list, must use AND_NOT for excl clauses.
 	// Else this is an OR list, and there can't be excl clauses (checked by
 	// addClause())
@@ -191,10 +194,11 @@ void SearchData::getUTerms(vector<string>& terms) const
 class TextSplitQ : public TextSplit {
  public:
     TextSplitQ(Flags flags, const StopList &_stops) 
-	: TextSplit(flags), stops(_stops), alltermcount(0)
+	: TextSplit(flags), stops(_stops), alltermcount(0), lastpos(0)
     {}
-    bool takeword(const std::string &interm, int , int, int) {
+    bool takeword(const std::string &interm, int pos, int, int) {
 	alltermcount++;
+        lastpos = pos
 	LOGDEB1(("TextSplitQ::takeword: %s\n", interm.c_str()));
 
 	// Check if the first letter is a majuscule in which
@@ -233,6 +237,7 @@ class TextSplitQ : public TextSplit {
     // Count of terms including stopwords: this is for adjusting
     // phrase/near slack
     int alltermcount; 
+    int lastpos;
 };
 
 // A class used to translate a user compound string (*not* a query
@@ -456,8 +461,10 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
 
     // Generate an appropriate PHRASE/NEAR query with adjusted slack
     // For phrases, give a relevance boost like we do for original terms
+    LOGDEB2(("PHRASE/NEAR: alltermcount %d lastpos %d\n", 
+             splitData->alltermcount, splitData->lastpos));
     Xapian::Query xq(op, orqueries.begin(), orqueries.end(),
-		     splitData->alltermcount + slack);
+		     splitData->lastpos + 1 + slack);
     if (op == Xapian::Query::OP_PHRASE)
 	xq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, xq, 
 			   original_term_wqf_booster);
@@ -611,7 +618,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
-	return false;
+	return true;
     }
     tr.getTerms(m_terms, m_groups);
     tr.getUTerms(m_uterms);

@@ -203,6 +203,12 @@ bool RclConfig::updateMainConfig()
 	    TextSplit::cjkProcessing(true);
 	}
     }
+
+    bool nonum = false;
+    if (getConfParam("nonumbers", &nonum) && nonum == true) {
+	TextSplit::noNumbers();
+    }
+
     m_skpnstate.init(this, m_conf, "skippedNames");
     m_rmtstate.init(this, m_conf, "indexedmimetypes");
     return true;

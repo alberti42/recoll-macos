@@ -164,6 +164,7 @@ bool TextSplit::isCJK(int c)
 
 bool          TextSplit::o_processCJK = true;
 unsigned int  TextSplit::o_CJKNgramLen = 2;
+bool          TextSplit::o_noNumbers = false;
 
 // Do some checking (the kind which is simpler to do here than in the
 // main loop), then send term to our client.
@@ -212,12 +213,15 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
  */
 inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 {
-    LOGDEB3(("TextSplit::doemit:spn [%s] sp %d wrdS %d wrdL %d spe %d bp %d\n",
-	     span.c_str(), spanpos, wordStart, wordLen, spanerase, bp));
+    LOGDEB3(("TextSplit::doemit:spn [%s] sp %d wrdS %d wrdL %d spe %d bp %d "
+             "innum %d\n", m_span.c_str(), m_spanpos, m_wordStart, 
+             m_wordLen, spanerase, bp, m_inNumber));
 
     // Emit span. When splitting for query, we only emit final spans
     bool spanemitted = false;
     if (!(m_flags & TXTS_NOSPANS) && 
+        !((m_wordLen == m_span.length()) && 
+          (o_noNumbers) && m_inNumber) &&
 	((spanemit && !(m_flags & TXTS_ONLYSPANS)) || spanerase) ) {
 	// Maybe trim at end. These are chars that we would keep inside 
 	// a span, but not at the end
@@ -243,6 +247,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 
     // Emit word if different from span and not 'no words' mode
     if (!(m_flags & TXTS_ONLYSPANS) && m_wordLen && 
+        !(o_noNumbers && m_inNumber) &&
 	(!spanemitted || m_wordLen != m_span.length())) {
 	string s(m_span.substr(m_wordStart, m_wordLen));
 	if (!emitterm(false, s, m_wordpos, bp - m_wordLen, bp))
@@ -494,6 +499,9 @@ bool TextSplit::text_to_words(const string &in)
 
 	default:
 	NORMALCHAR:
+            if (m_inNumber && c != 'e' && c != 'E') {
+                m_inNumber = false;
+            }
 	    m_wordLen += it.appendchartostring(m_span);
 	    break;
 	}
@@ -746,10 +754,12 @@ class myTextSplit : public TextSplit {
     }
 };
 
+
 static string teststring = 
 	    "Un bout de texte \nnormal. 2eme phrase.3eme;quatrieme.\n"
 	    "\"Jean-Francois Dockes\" <jfd@okyz.com>\n"
 	    "n@d @net .net t@v@c c# c++ o'brien 'o'brien' l'ami\n"
+            "data123\n"
 	    "134 +134 -14 -1.5 +1.5 1.54e10 1,2 1,2e30\n"
 	    "@^#$(#$(*)\n"
 	    "192.168.4.1 one\n\rtwo\r"
@@ -762,6 +772,7 @@ static string teststring =
 	    " -wl,--export-dynamic "
 	    " ~/.xsession-errors "
 ;
+
 static string teststring1 = " nouvel-an ";
 
 static string thisprog;
@@ -771,6 +782,7 @@ static string usage =
     "   -S: no output\n"
     "   -s:  only spans\n"
     "   -w:  only words\n"
+    "   -n:  no numbers\n"
     "   -k:  preserve wildcards (?*)\n"
     "   -c: just count words\n"
     "   -C [charset] : input charset\n"
@@ -792,6 +804,7 @@ static int        op_flags;
 #define OPT_c     0x8
 #define OPT_k     0x10
 #define OPT_C     0x20
+#define OPT_n     0x40
 
 int main(int argc, char **argv)
 {
@@ -811,6 +824,7 @@ int main(int argc, char **argv)
                 charset = *(++argv); argc--; 
                 goto b1;
 	    case 'k':	op_flags |= OPT_k; break;
+	    case 'n':	op_flags |= OPT_n; break;
 	    case 's':	op_flags |= OPT_s; break;
 	    case 'S':	op_flags |= OPT_S; break;
 	    case 'w':	op_flags |= OPT_w; break;
@@ -829,6 +843,8 @@ int main(int argc, char **argv)
 	flags = TextSplit::TXTS_NOSPANS;
     if (op_flags & OPT_k) 
 	flags = (TextSplit::Flags)(flags | TextSplit::TXTS_KEEPWILD); 
+    if (op_flags & OPT_n)
+	TextSplit::noNumbers();
 
     string odata, reason;
     if (argc == 1) {
