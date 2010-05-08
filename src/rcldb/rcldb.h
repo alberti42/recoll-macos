@@ -64,12 +64,22 @@ class Query;
 class TermMatchEntry {
 public:
     TermMatchEntry() : wcf(0) {}
-    TermMatchEntry(const string&t, int f) : term(t), wcf(f) {}
+    TermMatchEntry(const string&t, int f, int d) : term(t), wcf(f), docs(d) {}
     TermMatchEntry(const string&t) : term(t), wcf(0) {}
     bool operator==(const TermMatchEntry &o) { return term == o.term;}
     bool operator<(const TermMatchEntry &o) { return term < o.term;}
     string term;
-    int    wcf; // Within collection frequency
+    int    wcf; // Total count of occurrences within collection.
+    int    docs; // Number of documents countaining term.
+};
+
+class TermMatchResult {
+public:
+    TermMatchResult() {clear();}
+    void clear() {entries.clear(); dbdoccount = 0; dbavgdoclen = 0;}
+    list<TermMatchEntry> entries;
+    unsigned int dbdoccount;
+    double       dbavgdoclen;
 };
 
 /**
@@ -157,7 +167,7 @@ class Db {
      * Stem expansion is performed if lang is not empty */
     enum MatchType {ET_WILD, ET_REGEXP, ET_STEM};
     bool termMatch(MatchType typ, const string &lang, const string &s, 
-		   list<TermMatchEntry>& result, int max = -1, 
+		   TermMatchResult& result, int max = -1, 
 		   const string& field = "",
                    string *prefix = 0
         );
@@ -239,7 +249,7 @@ private:
     // Reinitialize when adding/removing additional dbs
     bool adjustdbs(); 
     bool stemExpand(const string &lang, const string &s, 
-		    list<TermMatchEntry>& result, int max = -1);
+		    TermMatchResult& result, int max = -1);
 
     /* Copyconst and assignemt private and forbidden */
     Db(const Db &) {}

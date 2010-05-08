@@ -1340,11 +1340,11 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
     } // else let it be
     LOGDEB(("Rcl::Db::filenameWildExp: pattern: [%s]\n", pattern.c_str()));
 
-    list<TermMatchEntry> entries;
-    if (!termMatch(ET_WILD, string(), pattern, entries, 1000, Doc::keyfn))
+    TermMatchResult result;
+    if (!termMatch(ET_WILD, string(), pattern, result, 1000, Doc::keyfn))
 	return false;
-    for (list<TermMatchEntry>::const_iterator it = entries.begin();
-	 it != entries.end(); it++) 
+    for (list<TermMatchEntry>::const_iterator it = result.entries.begin();
+	 it != result.entries.end(); it++) 
 	names.push_back(it->term);
 
     if (names.empty()) {
@@ -1375,18 +1375,17 @@ public:
 };
 
 bool Db::stemExpand(const string &lang, const string &term, 
-		    list<TermMatchEntry>& result, int max)
+		    TermMatchResult& result, int max)
 {
     list<string> dirs = m_extraDbs;
     dirs.push_front(m_basedir);
-    for (list<string>::iterator it = dirs.begin();
-	 it != dirs.end(); it++) {
+    for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
 	list<string> more;
 	StemDb::stemExpand(*it, lang, term, more);
 	LOGDEB1(("Db::stemExpand: Got %d from %s\n", 
 		 more.size(), it->c_str()));
-	result.insert(result.end(), more.begin(), more.end());
-	if (result.size() >= (unsigned int)max)
+	result.entries.insert(result.entries.end(), more.begin(), more.end());
+	if (result.entries.size() >= (unsigned int)max)
 	    break;
     }
     LOGDEB1(("Db:::stemExpand: final count %d \n", result.size()));
@@ -1412,7 +1411,7 @@ const string regSpecChars = "(.[{";
 // Find all index terms that match a wildcard or regular expression
 bool Db::termMatch(MatchType typ, const string &lang,
 		   const string &root, 
-		   list<TermMatchEntry>& res,
+		   TermMatchResult& res,
 		   int max, 
 		   const string& field,
                    string *prefixp
@@ -1423,6 +1422,10 @@ bool Db::termMatch(MatchType typ, const string &lang,
     Xapian::Database xdb = m_ndb->xdb();
 
     res.clear();
+    XAPTRY(res.dbdoccount = xdb.get_doccount();
+           res.dbavgdoclen = xdb.get_avlength(), xdb, m_reason);
+    if (!m_reason.empty())
+        return false;
 
     // Get rid of capitals and accents
     string droot;
@@ -1446,18 +1449,19 @@ bool Db::termMatch(MatchType typ, const string &lang,
     if (typ == ET_STEM) {
 	if (!stemExpand(lang, root, res, max))
 	    return false;
-	res.sort();
-	res.unique();
-	for (list<TermMatchEntry>::iterator it = res.begin(); 
-	     it != res.end(); it++) {
-	    XAPTRY(it->wcf = xdb.get_collection_freq(it->term),
+	res.entries.sort();
+	res.entries.unique();
+	for (list<TermMatchEntry>::iterator it = res.entries.begin(); 
+	     it != res.entries.end(); it++) {
+	    XAPTRY(it->wcf = xdb.get_collection_freq(it->term);
+                   it->docs = xdb.get_termfreq(it->term),
                    xdb, m_reason);
             if (!m_reason.empty())
                 return false;
 	    LOGDEB1(("termMatch: %d [%s]\n", it->wcf, it->term.c_str()));
 	}
         if (!prefix.empty())
-            addPrefix(res, prefix);
+            addPrefix(res.entries, prefix);
     } else {
 	regex_t reg;
 	int errcode;
@@ -1468,7 +1472,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
 		char errbuf[200];
 		regerror(errcode, &reg, errbuf, 199);
 		LOGERR(("termMatch: regcomp failed: %s\n", errbuf));
-		res.push_back(string(errbuf));
+		res.entries.push_back(string(errbuf));
 		regfree(&reg);
 		return false;
 	    }
@@ -1508,7 +1512,9 @@ bool Db::termMatch(MatchType typ, const string &lang,
                             continue;
                     }
                     // Do we want stem expansion here? We don't do it for now
-                    res.push_back(TermMatchEntry(*it, it.get_termfreq()));
+                    res.entries.push_back(TermMatchEntry(*it, 
+                                                   xdb.get_collection_freq(*it),
+                                                   it.get_termfreq()));
                     ++n;
                 }
                 m_reason.erase();
@@ -1532,13 +1538,13 @@ bool Db::termMatch(MatchType typ, const string &lang,
     }
 
     TermMatchCmpByTerm tcmp;
-    res.sort(tcmp);
+    res.entries.sort(tcmp);
     TermMatchTermEqual teq;
-    res.unique(teq);
+    res.entries.unique(teq);
     TermMatchCmpByWcf wcmp;
-    res.sort(wcmp);
+    res.entries.sort(wcmp);
     if (max > 0) {
-	res.resize(MIN(res.size(), (unsigned int)max));
+	res.entries.resize(MIN(res.entries.size(), (unsigned int)max));
     }
     return true;
 }

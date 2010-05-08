@@ -347,18 +347,18 @@ void StringToXapianQ::expandTerm(bool nostemexp,
         if (prefix)
             *prefix = pfx;
     } else {
-	list<TermMatchEntry> l;
+	TermMatchResult res;
 	if (haswild) {
-	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, l, -1, m_field,
-                           prefix);
+	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, 
+                           m_field, prefix);
 	} else {
 	    sterm = term;
             m_uterms.push_back(sterm);
-	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, l, -1, m_field,
+	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, m_field,
                            prefix);
 	}
-	for (list<TermMatchEntry>::const_iterator it = l.begin(); 
-	     it != l.end(); it++) {
+	for (list<TermMatchEntry>::const_iterator it = res.entries.begin(); 
+	     it != res.entries.end(); it++) {
 	    exp.push_back(it->term);
 	}
     }

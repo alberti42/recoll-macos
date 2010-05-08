@@ -233,17 +233,17 @@ void SSearch::completion()
 
     // Query database
     const int max = 100;
-    list<Rcl::TermMatchEntry> strs;
+    Rcl::TermMatchResult tmres;
     string stemLang = (const char *)prefs.queryStemLang.ascii();
     if (stemLang == "ALL") {
 	rclconfig->getConfParam("indexstemminglanguages", stemLang);
     }
-    if (!rcldb->termMatch(Rcl::Db::ET_WILD, stemLang, s, strs, max) || 
-	strs.size() == 0) {
+    if (!rcldb->termMatch(Rcl::Db::ET_WILD, stemLang, s, tmres, max) || 
+	tmres.entries.size() == 0) {
 	QApplication::beep();
 	return;
     }
-    if (strs.size() == (unsigned int)max) {
+    if (tmres.entries.size() == (unsigned int)max) {
 	QMessageBox::warning(0, "Recoll", tr("Too many completions"));
 	return;
     }
@@ -251,13 +251,13 @@ void SSearch::completion()
     // If list from db is single word, insert it, else ask user to select
     QString res;
     bool ok = false;
-    if (strs.size() == 1) {
-	res = QString::fromUtf8(strs.begin()->term.c_str());
+    if (tmres.entries.size() == 1) {
+	res = QString::fromUtf8(tmres.entries.begin()->term.c_str());
 	ok = true;
     } else {
 	QStringList lst;
-	for (list<Rcl::TermMatchEntry>::iterator it=strs.begin(); 
-	     it != strs.end(); it++) {
+	for (list<Rcl::TermMatchEntry>::iterator it = tmres.entries.begin(); 
+	     it != tmres.entries.end(); it++) {
 	    lst.push_back(QString::fromUtf8(it->term.c_str()));
 	}
 	res = QInputDialog::getItem(tr("Completions"),

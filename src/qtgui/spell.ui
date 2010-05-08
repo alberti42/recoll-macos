@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>298</width>
-            <height>295</height>
+            <width>400</width>
+            <height>450</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -106,6 +106,19 @@
                         </widget>
                     </grid>
                 </widget>
+                <widget class="QLabel">
+                  <property name="name">
+                    <cstring>statsLBL</cstring>
+                  </property>
+                  <property name="font">
+                    <font>
+                      <pointsize>7</pointsize>
+                    </font>
+                  </property>
+                  <property name="text">
+                    <string>No db info.</string>
+                  </property>
+                </widget>
                 <widget class="QListView">
                     <column>
                         <property name="text">
@@ -120,7 +133,7 @@
                     </column>
                     <column>
                         <property name="text">
-                            <string>Count</string>
+                            <string>Doc. / Tot.</string>
                         </property>
                         <property name="clickable">
                             <bool>true</bool>

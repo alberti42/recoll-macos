@@ -99,7 +99,7 @@ void SpellW::init()
     suggsLV->setSorting(100, false);
 #else
     QStringList labels(tr("Term"));
-    labels.push_back(tr("Count"));
+    labels.push_back(tr("Doc. / Tot."));
     suggsLV->setHorizontalHeaderLabels(labels);
     suggsLV->setShowGrid(0);
     suggsLV->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
@@ -109,7 +109,7 @@ void SpellW::init()
 #endif
 
     suggsLV->setColumnWidth(0, 200);
-    suggsLV->setColumnWidth(1, 100);
+    suggsLV->setColumnWidth(1, 150);
 }
 
 #if (QT_VERSION < 0x040000)
@@ -165,18 +165,22 @@ void SpellW::doExpand()
     case 2:mt = Rcl::Db::ET_STEM; break;
     }
 
-    list<Rcl::TermMatchEntry> entries;
+    Rcl::TermMatchResult res;
     switch (expTypeCMB->currentItem()) {
     case 0: 
     case 1:
-    case 2: {
+    case 2: 
+    {
 	string l_stemlang = stemLangCMB->currentText().ascii();
 
-	if (!rcldb->termMatch(mt, l_stemlang, expr, entries, 200)) {
+	if (!rcldb->termMatch(mt, l_stemlang, expr, res, 200)) {
 	    LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));
 	    return;
 	}
+        statsLBL->setText(tr("Index: %1 documents, average length %2 terms")
+                          .arg(res.dbdoccount).arg(res.dbavgdoclen, 0, 'f', 1));
     }
+        
 	break;
 
 #ifdef RCL_USE_ASPELL
@@ -197,13 +201,13 @@ void SpellW::doExpand()
 	}
 	for (list<string>::const_iterator it = suggs.begin(); 
 	     it != suggs.end(); it++) 
-	    entries.push_back(Rcl::TermMatchEntry(*it));
+	    res.entries.push_back(Rcl::TermMatchEntry(*it));
     }
 #endif
     }
 
 
-    if (entries.empty()) {
+    if (res.entries.empty()) {
 #if (QT_VERSION < 0x040000)
 	new MyListViewItem(suggsLV, tr("No expansion found"), "");
 #else
@@ -211,17 +215,18 @@ void SpellW::doExpand()
 #endif
     } else {
 #if (QT_VERSION < 0x040000)
-	for (list<Rcl::TermMatchEntry>::reverse_iterator it = entries.rbegin(); 
-	     it != entries.rend(); it++) {
+	for (list<Rcl::TermMatchEntry>::reverse_iterator it = 
+                 res.entries.rbegin(); 
+	     it != res.entries.rend(); it++) {
 #else
         int row = 0;
-	for (list<Rcl::TermMatchEntry>::iterator it = entries.begin(); 
-	     it != entries.end(); it++) {
+	for (list<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
+	     it != res.entries.end(); it++) {
 #endif
 	    LOGDEB(("SpellW::expand: %6d [%s]\n", it->wcf, it->term.c_str()));
 	    char num[20];
 	    if (it->wcf)
-		sprintf(num, "%d", it->wcf);
+		sprintf(num, "%d / %d",  it->docs, it->wcf);
 	    else
 		num[0] = 0;
 #if (QT_VERSION < 0x040000)
