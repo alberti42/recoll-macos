@@ -556,6 +556,11 @@ bool Db::open(OpenMode mode)
 		int action = (mode == DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
 		    Xapian::DB_CREATE_OR_OVERWRITE;
 		m_ndb->xwdb = Xapian::WritableDatabase(dir, action);
+                // If db is empty, write the data format version at once
+                // to avoid stupid error messages:
+                if (m_ndb->xwdb.get_doccount() == 0)
+                    m_ndb->xwdb.set_metadata(RCL_IDX_VERSION_KEY, 
+                                             RCL_IDX_VERSION);
 		m_ndb->m_iswritable = true;
 		// We open a readonly object in all cases (possibly in
 		// addition to the r/w one) because some operations
