@@ -1,19 +1,14 @@
 Name:           recoll
 Version:        1.13.04
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
 Group:          Applications/Databases
-License:        GPL
+License:        GPLv2
 URL:            http://www.recoll.org/
 Source0:        http://www.recoll.org/recoll-1.13.04.tar.gz 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-# Not sure how easy it is to find a xapian-core rpm. Will be easier to
-# build by hand for many. Run time uses a static link to xapian, doesnt
-# depend on libxapian.so
 BuildRequires:  qt-devel xapian-core-devel zlib-devel desktop-file-utils
-Requires:       qt xapian-core-libs zlib
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -28,7 +23,8 @@ interface.
 QMAKE=qmake-qt4 
 export QMAKE
 %configure
-make %{?_smp_mflags}
+# No smpflags as the builds fails for some reason if -j is used.
+make
 
 %install
 rm -rf %{buildroot}
@@ -37,7 +33,6 @@ make install DESTDIR=%{buildroot}
 desktop-file-install --delete-original \
   --dir=%{buildroot}/%{_datadir}/applications \
   %{buildroot}/%{_datadir}/applications/%{name}-searchgui.desktop
-
 
 
 %clean
@@ -54,8 +49,11 @@ rm -rf %{buildroot}
 %{_mandir}/man5/recoll*
 %doc
 
-
 %changelog
+* Sun May 9 2010  J.F. Dockes <jfd@recoll.org> 1.13.04-2
+- Bumped the release number to issue new rpms for fc10
+* Sun May 9 2010  J.F. Dockes 1.13.04
+- spec file updated to recoll release 1.13.04. 
 * Fri Feb 12 2010 Terry Duell 1.13.02
 - updated to release 1.13.02
 * Mon Jan 12 2010 Terry Duell 1.13.01-3
