@@ -1,7 +1,7 @@
 TEMPLATE        = app
 LANGUAGE        = C++
 
-CONFIG  += qt warn_on thread release debug
+CONFIG  += qt warn_on thread release 
 
 HEADERS += \
         ../qtgui/advsearch_w.h \
