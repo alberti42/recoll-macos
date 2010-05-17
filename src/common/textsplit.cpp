@@ -345,7 +345,9 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 	case '-':
 	case '+':
-	    if (m_wordLen == 0) {
+	    if (m_wordLen == 0 || 
+                (m_inNumber && (m_span[m_span.length() - 1] == 'e' ||
+                                m_span[m_span.length() - 1] == 'E'))) {
 		if (whatcc(it[it.getCpos()+1]) == DIGIT) {
 		    m_inNumber = true;
 		    m_wordLen += it.appendchartostring(m_span);
@@ -365,7 +367,8 @@ bool TextSplit::text_to_words(const string &in)
 	case ',':
 	    if (m_inNumber) {
 		// 132.jpg ?
-		if (whatcc(it[it.getCpos()+1]) != DIGIT)
+                int wn = it[it.getCpos()+1];
+		if (whatcc(wn) != DIGIT && wn != 'e' && wn != 'E')
 		    goto SPACE;
 		m_wordLen += it.appendchartostring(m_span);
 		curspanglue = cc;
@@ -378,11 +381,21 @@ bool TextSplit::text_to_words(const string &in)
 		// will be split as .x-errs, x, errs but not x-errs
 		// A final comma in a word will be removed by doemit
 		if (cc == '.') {
+                    // Check for number like .1
+                    if (m_span.length() == 0 &&
+                        whatcc(it[it.getCpos()+1]) == DIGIT) {
+                        m_inNumber = true;
+                        m_wordLen += it.appendchartostring(m_span);
+                        curspanglue = cc;
+                        break;
+                    }
+                            
 		    if (m_wordLen) {
 			// Disputable special case: set spanemit to
-			// true when encountering a '.' while spanglue is '_'. Think of
-			// a_b.c Done because to avoid breaking stuff after changing
-			// '_' from wordchar to spanglue
+			// true when encountering a '.' while spanglue
+			// is '_'. Think of a_b.c Done because to
+			// avoid breaking stuff after changing '_'
+			// from wordchar to spanglue
 			if (!doemit(false, it.getBpos(), curspanglue == '_'))
 			    return false;
 			curspanglue = cc;
@@ -754,13 +767,12 @@ class myTextSplit : public TextSplit {
     }
 };
 
-
 static string teststring = 
 	    "Un bout de texte \nnormal. 2eme phrase.3eme;quatrieme.\n"
 	    "\"Jean-Francois Dockes\" <jfd@okyz.com>\n"
 	    "n@d @net .net t@v@c c# c++ o'brien 'o'brien' l'ami\n"
             "data123\n"
-	    "134 +134 -14 -1.5 +1.5 1.54e10 1,2 1,2e30\n"
+	    "134 +134 -14 0.1 .1 2. -1.5 +1.5 1,2 1.54e10 1,2e30 .1e10 1.e-8\n"
 	    "@^#$(#$(*)\n"
 	    "192.168.4.1 one\n\rtwo\r"
 	    "Debut-\ncontinue\n" 
