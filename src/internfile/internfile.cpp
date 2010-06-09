@@ -901,14 +901,6 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
 {
     LOGDEB(("FileInterner::idocToFile\n"));
     idoc.dump();
-    string fn = urltolocalpath(idoc.url);
-    string ipath = idoc.ipath;
-    string mtype = idoc.mimetype;
-    struct stat st;
-    if (stat(fn.c_str(), &st) < 0) {
-	LOGERR(("FileInterner::idocToFile: can't stat [%s]\n", fn.c_str()));
-	return false;
-    }
 
     string tmpdir, reason;
     if (!maketmpdir(tmpdir, reason))
@@ -918,20 +910,32 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     // We set FIF_forPreview for consistency with the previous version
     // which determined this by looking at mtype!=null. Probably
     // doesn't change anything in this case.
-    FileInterner interner(fn, &st, cnf, tmpdir, FIF_forPreview, &mtype);
-    interner.setTargetMType(mtype);
+    FileInterner interner(idoc, cnf, tmpdir, FIF_forPreview);
+    interner.setTargetMType(idoc.mimetype);
     Rcl::Doc doc;
-    string mipath = ipath;
+    string mipath = idoc.ipath;
     Status ret = interner.internfile(doc, mipath);
     if (ret == FileInterner::FIError) {
 	LOGERR(("FileInterner::idocToFile: internfile() failed\n"));
 	return false;
     }
 
+    // Specialcase text/html. This is to work around a bug that will
+    // get fixed some day: internfile initialisation does not check
+    // targetmtype, so that at least one conversion is always
+    // performed. A common case would be an "Open" on an html file
+    // (we'd end up with text/plain content). As the html version is
+    // saved in this case, use it.  
+    if (!stringlowercmp("text/html", idoc.mimetype) && 
+        !interner.get_html().empty()) {
+        doc.text = interner.get_html();
+        doc.mimetype = "text/html";
+    }
+
     string filename;
     TempFile temp;
     if (tofile.empty()) {
-	TempFile temp1(new TempFileInternal(cnf->getSuffixFromMimeType(mtype)));
+	TempFile temp1(new TempFileInternal(cnf->getSuffixFromMimeType(idoc.mimetype)));
 	temp = temp1;
 	if (!temp->ok()) {
 	    LOGERR(("FileInterner::idocToFile: cant create temporary file"));

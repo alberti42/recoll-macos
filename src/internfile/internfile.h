@@ -41,11 +41,26 @@ class Doc;
 struct stat;
 
 /** 
- * A class to convert a file into possibly multiple documents in internal 
- * representation.
+ * A class to convert data from a datastore (file-system, firefox
+ * history, etc.)  into possibly one or severaldocuments in internal
+ * representation, either for indexing or viewing at query time (gui preview).
+ * Things work a little differently when indexing or previewing:
+ *  - When indexing, all data has to come from the datastore, and it is 
+ *    normally desired that all found subdocuments be returned (ie:
+ *    all messages and attachments out of a single file mail folder)
+ *  - When previewing, some data is taken from the index (ie: the mime type 
+ *    is already known, and a single document usually needs to be processed,
+ *    so that the full doc identifier is passed in: high level url 
+ *    (ie: file path) and internal identifier: ipath, ie: message and 
+ *    attachment number.
  */
 class FileInterner {
  public:
+    /// Operation modifier flags
+    enum Flags {FIF_none, FIF_forPreview, FIF_doUseInputMimetype};
+    /// Return values for internfile()
+    enum Status {FIError, FIDone, FIAgain};
+
     /**
      * Get immediate parent for document. 
      *
@@ -55,14 +70,15 @@ class FileInterner {
      */
     static bool getEnclosing(const string &url, const string &ipath,
 			     string &eurl, string &eipath, string& udi);
-    /// Operation modifier flags
-    enum Flags {FIF_none, FIF_forPreview, FIF_doUseInputMimetype};
+
+    /** Constructors take the initial step to preprocess the data object and
+     *  create the top filter */
 
     /**
-     * Identify and possibly decompress file, and create the top filter
-     * The mtype parameter is not always set (it is when the object is
-     * created for previewing a file). Filter output may be
-     * different for previewing and indexing.
+     * Identify and possibly decompress file, and create the top filter.
+     * - The mtype parameter is not always set (it is when the object is
+     *   created for previewing a file). 
+     * - Filter output may be different for previewing and indexing.
      *
      * @param fn file name 
      * @param stp pointer to updated stat struct.
@@ -95,9 +111,6 @@ class FileInterner {
 
     ~FileInterner();
 
-    /// Return values for internfile()
-    enum Status {FIError, FIDone, FIAgain};
-
     /** 
      * Turn file or file part into Recoll document.
      * 
@@ -106,14 +119,16 @@ class FileInterner {
      * @param doc output document
      * @param ipath internal path. If set by caller, the specified subdoc will
      *  be returned. Else the next document according to current state will 
-     *  be returned, and the internal path will be set.
+     *  be returned, and ipath will be set on output.
      * @return FIError and FIDone are self-explanatory. If FIAgain is returned,
      *  this is a multi-document file, with more subdocs, and internfile() 
-     * should be called again to get the following one(s).
+     *  should be called again to get the following one(s).
      */
     Status internfile(Rcl::Doc& doc, string &ipath);
 
-    /** Return the file's mimetype (useful for container files) */
+    /** Return the file's (top level object) mimetype (useful for 
+     *  container files) 
+     */ 
     const string&  getMimetype() {return m_mimetype;}
 
     /** We normally always return text/plain data. A caller can request
@@ -122,7 +137,9 @@ class FileInterner {
      */
     void setTargetMType(const string& tp) {m_targetMType = tp;}
 
-    /* In case we see an html version, it's set aside and can be recovered */
+    /** In case we see an html version while converting, it is set aside 
+     *  and can be recovered 
+     */
     const string& get_html() {return m_html;}
 
     /** Extract internal document into temporary file. 
@@ -133,9 +150,8 @@ class FileInterner {
      *   away magically). Only used if tofile.empty()
      * @param tofile output file if not null
      * @param cnf The recoll config
-     * @param fn  The main document from which to extract
-     * @param ipath The internal path to the subdoc
-     * @param mtype The target mime type (we don't want to decode to text!)
+     * @param doc Doc data taken from the index. We use it to access the 
+     *            actual document (ie: use mtype, fn, ipath...).
      */
     static bool idocToFile(TempFile& temp, const string& tofile, 
 			   RclConfig *cnf, const Rcl::Doc& doc);
