@@ -40,10 +40,7 @@ namespace Rcl {
 
 class BeagleQueueIndexer : public FsTreeWalkerCB {
 public:
-    /**
-     * @para db can be null when using readonly for calling getFromCache()
-     */
-    BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db = 0,
+    BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
                        DbIxStatusUpdater *updfunc = 0);
     ~BeagleQueueIndexer();
 
