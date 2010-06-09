@@ -80,19 +80,14 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
     if (typestorun == IxTAll) {
         // Get rid of all database entries that don't exist in the
         // filesystem anymore. Only if all *configured* indexers ran.
-        if (m_updater) {
-            m_updater->status.fn.erase();
-            m_updater->status.phase = DbIxStatus::DBIXS_PURGE;
-            m_updater->update();
-        }
+        if (m_updater)
+            m_updater->update(DbIxStatus::DBIXS_PURGE, string());
         m_db.purge();
     }
 
-    if (m_updater) {
-	m_updater->status.phase = DbIxStatus::DBIXS_CLOSING;
-	m_updater->status.fn.erase();
-	m_updater->update();
-    }
+    if (m_updater)
+	m_updater->update(DbIxStatus::DBIXS_CLOSING, string());
+
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("ConfIndexer::index: error closing database in %s\n", 
@@ -211,11 +206,8 @@ bool ConfIndexer::createStemmingDatabases()
 		m_db.deleteStemDb(*it);
 	}
 	for (it = langs.begin(); it != langs.end(); it++) {
-	    if (m_updater) {
-		m_updater->status.phase = DbIxStatus::DBIXS_STEMDB;
-		m_updater->status.fn = *it;
-		m_updater->update();
-	    }
+	    if (m_updater)
+		m_updater->update(DbIxStatus::DBIXS_STEMDB, *it);
 	    m_db.createStemDb(*it);
 	}
     }

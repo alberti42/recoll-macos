@@ -52,12 +52,19 @@ class DbIxStatusUpdater {
     DbIxStatus status;
     virtual ~DbIxStatusUpdater(){}
     virtual bool update() = 0;
+    virtual bool update(DbIxStatus::Phase phase, const string& fn)
+    {
+        status.phase = phase;
+        status.fn = fn;
+        return update();
+    }
 };
 
 /**
- * The top level indexing object. Processes the configuration, then invokes
- * file system walking or other to populate/update the database(s).
-*/
+ * The top level batch indexing object. Processes the configuration,
+ * then invokes file system walking or other to populate/update the 
+ * database(s). 
+ */
 class ConfIndexer {
  public:
     enum runStatus {IndexerOk, IndexerError};
