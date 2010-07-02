@@ -2580,7 +2580,16 @@ while query.next >= 0 and query.next < nres:
       directory.</para>
 
       <para>A list of common file types which need external
-      commands:</para>
+        commands follows. Many of the filters need the
+        <command>iconv</command> command, which is not always listed as a
+        dependancy.</para> 
+
+      <para>As of &RCL; release 1.14, a number of XML-based formats that
+        were handled by ad hoc filter code now use
+        <command>xsltproc</command>, which usually comes with  
+        <ulink
+        url="http://xmlsoft.org/XSLT/index.html">libxslt</ulink>. These
+        are: abiword, fb2 (ebooks), kword, openoffice, svg.</para>
 
       <itemizedlist>
 
@@ -2605,6 +2614,10 @@ while query.next >= 0 and query.next < nres:
         <listitem><para>MS Excel and PowerPoint: 
            <ulink url="http://catdoc.klik.atekon.de/"> 
             catdoc</ulink>.</para>
+          </listitem>
+
+        <listitem><para>MS Open XML (docx): needs 
+                 <command>xsltproc</command>.</para>
           </listitem>
 
         <listitem><para>Wordperfect files: 
@@ -2645,12 +2658,18 @@ while query.next >= 0 and query.next < nres:
           <command>id3info</command> command from the <ulink
           url="http://id3lib.sourceforge.net/">id3lib</ulink> package to
           extract tag information. Without it, only the file names will
-          be indexed.</para>
+          be indexed. Some gcc versions after 4.4 may have trouble
+          compiling <application>id3lib</application>. <ulink
+          url="http://www.recoll.org/id3lib.html">You can find a
+          workaround here</ulink>.</para> 
 	</listitem>
-	<listitem><para>flac files need metaflac.</para>
+
+	<listitem><para>flac files need metaflac (standard flac tools).</para>
 	</listitem>
-	<listitem><para>ogg files need ogginfo.</para>
+
+	<listitem><para>ogg files need ogginfo (vorbis tools).</para>
 	</listitem>
+
         <listitem>
         <para>Pictures: &RCL; uses the 
         <ulink url="http://www.sno.phy.queensu.ca/~phil/exiftool/">
@@ -2669,17 +2688,21 @@ while query.next >= 0 and query.next < nres:
           url="http://www.jedrea.com/chmlib/">chmlib</ulink>).</para>
 	</listitem>
 
-	<listitem><para>ics: iCalendar files need Python.</para></listitem>
+	<listitem><para>ics: up to &RCL; 1.13, iCalendar files need Python
+	and the <application>icalendar</application> module. For newer
+	versions, <application>icalendar</application> is not needed
+	</para></listitem> 
 
 	<listitem><para>zip: Zip archives need Python (and the standard
-	zipfile module).</para>
+ 	  zipfile module).</para>
 	</listitem>
 	
         </itemizedlist>
 
         <para>Text, HTML, mail folders, Openoffice and Scribus files
         are processed internally. Lyx is used to index Lyx files. Many
-        filters need <command>sed</command> and <command>awk</command>.
+        filters need <command>iconv</command> and the standard
+        <command>sed</command> and <command>awk</command>. 
         </para>
 
     </sect1>
