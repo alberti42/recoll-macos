@@ -45,8 +45,12 @@
 	<dd>Qt versions from 3.1 to 4.5</dd>
 
         <dt><a name="doctypes">Document types</a></dt>
-	<dd>Supports the following document types (along with their
-          compressed versions): 
+	<dd>Recoll can index many document types (along with their
+          compressed versions). Some types are handled internally (no
+          external application needed). Other types need some application to
+          be installed to extract the text. Types that only need common
+          very common utilities (awk/sed/groff etc.) are listed in the
+          native section.</dd>
 
           <dl>
             <dt>Natively</dt>
@@ -66,21 +70,20 @@
                 <li><span class="literal">OpenOffice</span>
                 files (needs <span class="command">unzip</span> command).</li>
 
-                <li><span class="literal">Microsoft Office Open XML</span>
-                files (needs <span class="command">unzip</span> command).</li>
+                <li><span class="literal">Abiword</span> files.</li>
 
-                <li><span class="literal">Abiword</span>
-                files.</li>
+                <li><span class="literal">Kword</span> files.</li>
 
-                <li><span class="literal">Kword</span>
-                files.</li>
-
-                <li><span class="literal">gaim</span> log files.</li>
+                <li><span class="literal">gaim</span> and <span
+                    class="literal">purple</span> log files.</li> 
 
                 <li><span class="literal">Lyx</span> files (needs
 		  <span class="literal">Lyx</span> to be installed).</li>
 
                 <li><span class="literal">Scribus</span> files.</li>
+
+                <li><span class="literal">Man pages</span> (need <span
+                class="command">groff</span>).</li> 
 
               </ul>
             </dd>
@@ -88,7 +91,15 @@
             <dt>With external helpers</dt>
 
             <dd>
+            <para>In addition to the applications listed below, many
+            document types need the <span
+            class="command">iconv</span> command.</para>
+
               <ul>
+                <li><span class="literal">Microsoft Office Open XML</span>
+                files with the <span class="command">unzip</span>
+                and <span class="command">xsltproc</span> commands.</li>
+
                 <li><span class="literal">pdf</span> with the <span
                 class="command">pdftotext</span> command, which can be
                 installed as part of <a href=
@@ -105,7 +116,7 @@
 		    catdoc</a> utilities.</li>
 
                 <li><span class="literal">CHM (Microsoft help)</span>
-                  files (needs <span class="command">Python, pychm,
+                  files (needs <span class="command">Python, pychm or
                     chmlib</span>).</li> 
 
                 <li><span class="literal">Zip</span>
@@ -147,7 +158,9 @@
 		  <a href="http://djvu.sourceforge.net">DjVuLibre</a>. 
 		</li>
 		<li><span class="literal">mp3</span> tags support with 
-		  <a href="http://id3lib.sourceforge.net/">id3info (id3lib)</a>. 
+		  <a href="http://id3lib.sourceforge.net/">id3info
+		  (id3lib)</a> (compiling id3lib on recent systems may need
+		  a small patch, see <a href="id3lib.html">here</a>). 
 		</li>
 		<li>Image file tags support with 
 		  <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/">
