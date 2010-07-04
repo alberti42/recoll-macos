@@ -416,16 +416,22 @@ class myCB : public FsTreeWalkerCB {
 static const char *thisprog;
 
 // Note that breadth first sorting is relatively expensive: less inode
-// locality, more disk usage (and also more user memory usage, does not appear 
-// here):
-// y$ time trfstreewalk -d / 2>&1 > /tmp/alld
-// real    15m32.520s user    0m4.815s sys     0m33.014s
-// y$ time trfstreewalk -b / 2>&1 > /tmp/allb
-// real    17m3.380s  user    0m4.658s sys     0m34.473s
-// y$ wc /tmp/allb /tmp/alld
-// 2618155 3208127 221619857 /tmp/allb
-// 2618154 3208126 221619847 /tmp/alld
-// (diff due to changes in /proc)
+// locality, more disk usage (and also more user memory usage, does
+// not appear here). Some typical results on a real tree with 2.6
+// million entries (220MB of name data)
+// Recoll 1.13
+// time trfstreewalk / > /data/tmp/old
+// real    13m32.839s user    0m4.443s sys     0m31.128s
+// 
+// Recoll 1.14
+// time trfstreewalk / > /data/tmp/nat;
+// real    13m28.685s user    0m4.430s sys     0m31.083s
+// time trfstreewalk -d / > /data/tmp/depth;
+// real    13m30.051s user    0m4.140s sys     0m33.862s
+// time trfstreewalk -m / > /data/tmp/mixed;
+// real    14m53.245s user    0m4.244s sys     0m34.494s
+// time trfstreewalk -b / > /data/tmp/breadth;
+// real    17m10.585s user    0m4.532s sys     0m35.033s
 
 static char usage [] =
 "trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] topdir\n"
