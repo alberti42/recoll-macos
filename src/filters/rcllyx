@@ -6,7 +6,6 @@
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
-# rcllyx
 # Convert a lyx file to recoll HTML.
 #
 # We use lyx --export. It was suggested to use untex, but it doesn't give 

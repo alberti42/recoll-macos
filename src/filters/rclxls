@@ -16,7 +16,6 @@
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #================================================================
-# rclppt
 # Handle excel files for recoll. 
 # Uses xls2csv from the catdoc utilities
 # (http://ftp.45.free.net/~vitus/software/catdoc/)

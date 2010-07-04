@@ -6,9 +6,7 @@
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
-# rclkword
 # Extract text from a kword file
-#
 #================================================================
 
 # set variables
@@ -16,8 +14,6 @@ LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclkwd"
 filetype=kword
-
-
 
 
 #RECFILTCOMMONCODE

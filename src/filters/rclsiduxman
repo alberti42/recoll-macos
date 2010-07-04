@@ -6,7 +6,6 @@
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
-# rclsiduxman
 # Strip the menu part from sidux manual pages to improve search precision
 #================================================================
 

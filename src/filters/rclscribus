@@ -6,7 +6,6 @@
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
-# rclscribus
 # Convert a scribus file to recoll HTML. This only handles the newer .sla
 # files until I can have a look at an older .scd.
 #

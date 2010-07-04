@@ -1,7 +1,6 @@
 #!/bin/sh
 # @(#$Id: rcltex,v 1.2 2007-11-09 15:56:14 dockes Exp $  (C) 2004 J.F.Dockes
 #================================================================
-# rcltex
 # Translate TeX files for recoll. Uses either untex or detex to translate to html
 #================================================================
 # set variables

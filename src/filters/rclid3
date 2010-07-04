@@ -1,8 +1,7 @@
 #!/bin/sh
 # @(#$Id: rclid3,v 1.4 2008-10-09 09:21:38 dockes Exp $  (C) 2004 J.F.Dockes
 #================================================================
-# rclid3
-# Handle audio files for recoll. This uses id3info to extract tags
+# Extract mp3 tag information using id3info
 #================================================================
 # set variables
 LANG=C ; export LANG

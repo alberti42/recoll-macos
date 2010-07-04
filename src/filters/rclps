@@ -6,7 +6,6 @@
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
-# rclps
 # Extract text from a postscript file by executing pstotext or ps2ascii. 
 #
 # The default is to use pstotext which can deal with accents, but in a
@@ -17,7 +16,6 @@
 #
 #================================================================
 
-
 # set variables
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
@@ -25,10 +23,6 @@ progname="rclps"
 decoder=pstotext
 #decoder=ps2ascii
 filetype=postscript
-
-
-
-
 
 
 #RECFILTCOMMONCODE

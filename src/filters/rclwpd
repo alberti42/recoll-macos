@@ -2,7 +2,6 @@
 # @(#$Id: rclwpd,v 1.1 2007-08-26 13:34:59 dockes Exp $  (C) 2004 J.F.Dockes
 # Some inspiration from estraier
 #================================================================
-# rclwpd
 # convert wordperfect documents to html, by  executing the wpd2html program:
 #    http://libwpd.sourceforge.net/download.html
 #================================================================

@@ -1,7 +1,6 @@
 #!/bin/sh
 # @(#$Id: rclopxml,v 1.3 2008-10-08 08:27:34 dockes Exp $  (C) 2004 J.F.Dockes
 #================================================================
-# rcldocx
 # Extract text from an openxml msword file (will be extended for spreadsheets)
 # TODO: Also process docProps/core.xml for attributes, and word/endnotes.xml
 #================================================================

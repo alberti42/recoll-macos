@@ -6,7 +6,6 @@
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
-# rcldoc
 # Extract text from an msword file by executing either antiword 
 #  (or wvware maybe if we need it one day)
 #

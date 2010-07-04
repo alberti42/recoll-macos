@@ -2,7 +2,6 @@
 # @(#$Id: rclrtf,v 1.5 2007-06-08 13:51:09 dockes Exp $  (C) 2004 J.F.Dockes
 # Some inspiration from estraier
 #================================================================
-# rclrtf
 # convert rtf to html, by  executing the unrtf program:
 #    http://www.gnu.org/software/unrtf/unrtf.html
 #================================================================
@@ -12,10 +11,6 @@ LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclrtl"
 filetype=rtf
-
-
-
-
 
 #RECFILTCOMMONCODE
 ##############################################################################

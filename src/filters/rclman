@@ -6,23 +6,17 @@
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
-# rclman
 # Process a manual page with groff and output html
 # We'd like to use -Thtml, but this doesn't seem to be always available.
 # So we use -Tutf8 and postprocess this to remove the ^H overstriking
 #
 #================================================================
 
-
 # set variables
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclman"
 filetype=man
-
-
-
-
 
 #RECFILTCOMMONCODE
 ##############################################################################

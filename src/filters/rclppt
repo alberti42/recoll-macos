@@ -16,7 +16,6 @@
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #================================================================
-# rclppt
 # Handle powerpoint files for recoll. 
 # Uses catppt from the catdoc utilities
 # (http://ftp.45.free.net/~vitus/software/catdoc/)
@@ -24,14 +23,12 @@
 # Design" ou "format par defaut" instead and only.
 #
 #================================================================
+
 # set variables
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclppt"
 filetype=powerpoint
-
-
-
 
 
 #RECFILTCOMMONCODE

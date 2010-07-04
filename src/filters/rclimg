@@ -18,7 +18,7 @@
 ######################################################
 
 #
-# rclimg: extract image tags with exiftool and convert the data to html for
+# Extract image tags with exiftool and convert the data to html for
 # recoll indexing.
 #
 

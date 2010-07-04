@@ -6,7 +6,6 @@
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
-# rclpdf
 # Convert a pdf file to  HTML.
 #
 # We use pdftotxt from the xpdf package. This does not perfect results as
@@ -23,7 +22,6 @@
 # not, I did not check) should be replaced with f and i characters as this
 # is what will get searched for.
 
-
 # Comment the following if you get better results without
 optionraw=-raw
 
@@ -32,9 +30,6 @@ LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclpdf"
 filetype=pdf
-
-
-
 
 
 #RECFILTCOMMONCODE

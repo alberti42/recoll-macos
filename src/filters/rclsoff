@@ -6,7 +6,6 @@
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
-# rclsoff
 # Extract text from an openoffice/soffice file
 #
 #================================================================
@@ -84,7 +83,7 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds xsltproc
+checkcmds xsltproc unzip
 
 # We need a temporary directory
 if test z"$RECOLL_TMPDIR" != z; then
