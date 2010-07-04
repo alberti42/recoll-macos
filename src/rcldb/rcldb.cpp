@@ -582,19 +582,13 @@ bool Db::open(OpenMode mode)
 	    m_ndb->xrdb = Xapian::Database(dir);
 	    for (list<string>::iterator it = m_extraDbs.begin();
 		 it != m_extraDbs.end(); it++) {
-		string aerr;
 		LOGDEB(("Db::Open: adding query db [%s]\n", it->c_str()));
-		aerr.erase();
-		try {
-		    // Make this non-fatal
-		    m_ndb->xrdb.add_database(Xapian::Database(*it));
-		} XCATCHERROR(aerr);
-		if (!aerr.empty())
-		    LOGERR(("Db::Open: error while trying to add database "
-			    "from [%s]: %s\n", it->c_str(), aerr.c_str()));
+                // Used to be non-fatal (1.13 and older) but I can't see why
+                m_ndb->xrdb.add_database(Xapian::Database(*it));
 	    }
 	    break;
 	}
+
 	// Check index format version. Must not try to check a just created or
 	// truncated db
 	if (mode != DbTrunc && m_ndb->xdb().get_doccount() > 0) {
@@ -612,6 +606,8 @@ bool Db::open(OpenMode mode)
 	m_basedir = dir;
 	return true;
     } XCATCHERROR(ermsg);
+
+    m_reason = ermsg;
     LOGERR(("Db::open: exception while opening [%s]: %s\n", 
 	    dir.c_str(), ermsg.c_str()));
     return false;
