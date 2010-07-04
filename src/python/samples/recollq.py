@@ -1,18 +1,28 @@
 #!/usr/bin/env python
+"""A python version of the command line query tool recollq (a bit simplified)
+The input string is always interpreted as a query language string.
+This could actually be useful for something after some customization
+"""
 
 import sys
+from getopt import getopt
 import recoll
+
 allmeta = ("title", "keywords", "abstract", "url", "mimetype", "mtime",
            "ipath", "fbytes", "dbytes", "relevancyrating")
 
 def Usage():
-    print >> sys.stderr, "Usage: recollq.py <recoll query>"
+    print >> sys.stderr, "Usage: recollq.py [-c conf] [-i extra_index] <recoll query>"
     sys.exit(1);
-    
-def dotest(db, q):
-    query = db.query()
 
+def doquery(db, q):
+    """Parse and execute query on open db"""
+    # Get query object
+    query = db.query()
+    # Parse/run input query string
     nres = query.execute(q)
+
+    # Print results:
     print "Result count: ", nres
     while query.next >= 0 and query.next < nres: 
         doc = query.fetchone()
@@ -23,31 +33,39 @@ def dotest(db, q):
         print abs
         print
 
-# End dotest
+
 if len(sys.argv) < 2:
     Usage()
 
+confdir=""
+extra_dbs = []
+# Snippet params
+maxchars = 120
+contextwords = 4
+# Process options: [-c confdir] [-i extra_db [-i extra_db] ...]
+options, args = getopt(sys.argv[1:], "c:i:")
+for opt,val in options:
+    if opt == "-c":
+        confdir = val
+    elif opt == "-i":
+        extra_dbs.append(val)
+    else:
+        print >> sys.stderr, "Bad opt: ", opt
+        Usage()
+
+# The query should be in the remaining arg(s)
+if len(args) == 0:
+    print >> sys.stderr, "No query found in command line"
+    Usage()
 q = ""
-for word in sys.argv[1:]:
+for word in args:
     q += word + " "
 
-print "TESTING WITH .recoll, question: [" + q + "]"
-db = recoll.connect()
-db.setAbstractParams(maxchars=120, contextwords=4)
-dotest(db, q)
+print "QUERY: [", q, "]"
+db = recoll.connect(confdir=confdir, 
+                    extra_dbs=extra_dbs)
+db.setAbstractParams(maxchars=maxchars, contextwords=contextwords)
 
-sys.exit(0)
+doquery(db, q)
 
-print "TESTING WITH .recoll-test"
-db = recoll.connect(confdir="/Users/dockes/.recoll-test")
-dotest(db, q)
-
-print "TESTING WITH .recoll-doc"
-db = recoll.connect(confdir="/y/home/dockes/.recoll-doc")
-dotest(db, q)
-
-print "TESTING WITH .recoll and .recoll-doc"
-db = recoll.connect(confdir="/Users/dockes/.recoll", 
-                     extra_dbs=("/y/home/dockes/.recoll-doc",))
-dotest(db, q)
 

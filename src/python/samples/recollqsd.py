@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+"""Example for using the ''searchdata''' structured query interface.
+Not good for anything except showing/trying the code."""
 
 import sys
 import recoll

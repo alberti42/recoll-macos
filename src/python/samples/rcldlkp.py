@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 __doc__ = """
+An exemple indexer for an arbitrary multi-document file format.
+Not supposed to run ''as-is'' or be really useful.
+
 ''Lookup'' notes file indexing
 
 The file format has text notes separated by lines with a single '%' character

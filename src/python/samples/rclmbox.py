@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+"""An example that uses python tools to parse mbox/rfcxxx format and index
+messages. Not supposed to run as-is or be really useful"""
 
 import mailbox
 import email.header
