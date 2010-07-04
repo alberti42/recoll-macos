@@ -29,6 +29,8 @@ static char rcsid[] = "@(#$Id: recollq.cpp,v 1.22 2008-12-17 08:01:40 dockes Exp
 #include <limits.h>
 
 #include <iostream>
+#include <list>
+#include <string>
 using namespace std;
 
 #include "rcldb.h"
@@ -89,6 +91,7 @@ static char usage [] =
 "    -A : output the document abstracts\n"
 "    -S fld : sort by field name\n"
 "    -D : sort descending\n"
+"    -i <dbdir> : additional index, several can be given\n"
 ;
 static void
 Usage(void)
@@ -115,12 +118,14 @@ static int     op_flags;
 #define OPT_S     0x2000
 #define OPT_s     0x4000
 #define OPT_A     0x8000
+#define OPT_i     0x10000
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
     string a_config;
     string sortfield;
     string stemlang("english");
+    list<string> extra_dbs;
 
     int limit = 2000;
     thisprog = argv[0];
@@ -142,6 +147,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             case 'd':   op_flags |= OPT_d; break;
             case 'D':   op_flags |= OPT_D; break;
             case 'f':   op_flags |= OPT_f; break;
+	    case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
+		extra_dbs.push_back(*(++argv));
+		argc--; goto b1;
             case 'l':   op_flags |= OPT_l; break;
             case 'm':   op_flags |= OPT_m; break;
 	    case 'n':	op_flags |= OPT_n; if (argc < 2)  Usage();
@@ -193,6 +201,16 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 
 
     Rcl::Db rcldb(rclconfig);
+    if (!extra_dbs.empty()) {
+        for (list<string>::iterator it = extra_dbs.begin();
+             it != extra_dbs.end(); it++) {
+            if (!rcldb.addQueryDb(*it)) {
+                cerr << "Can't add index: " << *it << endl;
+                exit(1);
+            }
+        }
+    }
+
     if (!rcldb.open(Rcl::Db::DbRO)) {
 	cerr << "Cant open database in " << rclconfig->getDbDir() << 
 	    " reason: " << rcldb.getReason() << endl;
