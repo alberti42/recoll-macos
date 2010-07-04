@@ -46,12 +46,27 @@ class FsTreeWalker {
     enum Status {FtwOk=0, FtwError=1, FtwStop=2, 
 		 FtwStatAll = FtwError|FtwStop};
     enum Options {FtwOptNone = 0, FtwNoRecurse = 1, FtwFollow = 2,
-                  FtwNoCanon = 4};
-
-    FsTreeWalker(int opts = FtwOptNone);
+                  FtwNoCanon = 4,
+    // Tree walking options.  Natural is close to depth first: process
+    //   directory entries as we see them, recursing into subdirectories at 
+    //   once 
+    // Breadth means we process all files and dirs at a given directory level
+    // before going deeper.
+    //
+    // FilesThenDirs is close to Natural, except that we process all files in a 
+    //   given directory before going deeper: allows keeping only a single 
+    //   directory open
+    // We don't do pure depth first (process subdirs before files), this does 
+    // not appear to make any sense.
+                  FtwTravNatural = 0x10000, FtwTravBreadth = 0x20000, 
+                  FtwTravFilesThenDirs = 0x40000, 
+                  FtwTravBreadthThenDepth = 0x80000
+    };
+    static const int FtwTravMask;
+    FsTreeWalker(int opts = FtwTravNatural);
     ~FsTreeWalker();
 
-    void setOpts(Options opts);
+    void setOpts(Options opts, int depthswitch = 4);
 
     /** 
      * Begin file system walk.

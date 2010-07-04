@@ -38,11 +38,18 @@ static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.15 2007-12-13 06:58:22 dockes 
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+const int FsTreeWalker::FtwTravMask = FtwTravNatural|
+    FtwTravBreadth|FtwTravFilesThenDirs|FtwTravBreadthThenDepth;
+
 class FsTreeWalker::Internal {
     int options;
+    int depthswitch;
     stringstream reason;
     list<string> skippedNames;
     list<string> skippedPaths;
+    // When doing Breadth or FilesThenDirs traversal, we keep a list
+    // of directory paths to be processed, and we do not recurse.
+    list<string> dirs;
     int errors;
     void logsyserr(const char *call, const string &param) 
     {
@@ -58,6 +65,7 @@ FsTreeWalker::FsTreeWalker(int opts)
     data = new Internal;
     if (data) {
 	data->options = opts;
+        data->depthswitch = 4;
 	data->errors = 0;
     }
 }
@@ -67,10 +75,11 @@ FsTreeWalker::~FsTreeWalker()
     delete data;
 }
 
-void FsTreeWalker::setOpts(Options opts)
+void FsTreeWalker::setOpts(Options opts, int depthswitch)
 {
     if (data) {
 	data->options = opts;
+        data->depthswitch = depthswitch;
     }
 }
 
@@ -152,20 +161,109 @@ bool FsTreeWalker::inSkippedPaths(const string& path, bool ckparents)
     return false;
 }
 
+static inline int slashcount(const string& p)
+{
+    int n = 0;
+    for (unsigned int i = 0; i < p.size(); i++)
+        if (p[i] == '/')
+            n++;
+    return n;
+}
+
 FsTreeWalker::Status FsTreeWalker::walk(const string& _top, 
 					FsTreeWalkerCB& cb)
 {
     string top = (data->options & FtwNoCanon) ? _top : path_canon(_top);
 
+    if ((data->options & FtwTravMask) == 0) {
+        data->options |= FtwTravNatural;
+    }
+
+    int basedepth = slashcount(top); // Only used for breadthThenDepth
+
     struct stat st;
-    int statret;
     // We always follow symlinks at this point. Makes more sense.
-    statret = stat(top.c_str(), &st);
-    if (statret == -1) {
+    if (stat(top.c_str(), &st) == -1) {
 	data->logsyserr("stat", top);
 	return FtwError;
     }
-    return iwalk(top, &st, cb);
+
+    // Recursive version, using the call stack to store state. iwalk
+    // will process files and recursively descend into subdirs in
+    // physical order of the current directory.
+    if ((data->options & FtwTravMask) == FtwTravNatural) {
+        return iwalk(top, &st, cb);
+    }
+
+    // Breadth first of filesThenDirs semi-depth first order
+    // Managing lists of directories to be visited later, in breadth or
+    // depth order. Null marker are inserted in the list to indicate
+    // father directory changes (avoids computing parents all the time).
+    data->dirs.push_back(top);
+    Status status;
+    while (!data->dirs.empty()) {
+        string dir, nfather;
+        if (data->options & (FtwTravBreadth|FtwTravBreadthThenDepth)) {
+            // Breadth first, pop and process an older dir at the
+            // front of the list. This will add any child dirs at the
+            // back
+            dir = data->dirs.front();
+            data->dirs.pop_front();
+            if (dir == "") {
+                // Father change marker. 
+                if (data->dirs.empty())
+                    break;
+                dir = data->dirs.front();
+                data->dirs.pop_front();
+                nfather = path_getfather(dir);
+                if (data->options & FtwTravBreadthThenDepth) {
+                    // Check if new depth warrants switch to depth first
+                    // traversal (will happen on next loop iteration).
+                    int curdepth = slashcount(dir) - basedepth;
+                    if (curdepth >= data->depthswitch) {
+                        //fprintf(stderr, "SWITCHING TO DEPTH FIRST\n");
+                        data->options &= ~FtwTravMask;
+                        data->options |= FtwTravFilesThenDirs;
+                    }
+                }
+            }
+        } else {
+            // Depth first, pop and process latest dir
+            dir = data->dirs.back();
+            data->dirs.pop_back();
+            if (dir == "") {
+                // Father change marker. 
+                if (data->dirs.empty())
+                    break;
+                dir = data->dirs.back();
+                data->dirs.pop_back();
+                nfather = path_getfather(dir);
+            }
+        }
+
+        // If changing parent directory, advise our user.
+        if (!nfather.empty()) {
+            if (stat(nfather.c_str(), &st) == -1) {
+                data->logsyserr("stat", nfather);
+                return FtwError;
+            }
+            if ((status = cb.processone(nfather, &st, FtwDirReturn)) & 
+                (FtwStop|FtwError)) {
+                return status;
+            }
+        }
+
+        if (stat(dir.c_str(), &st) == -1) {
+            data->logsyserr("stat", dir);
+            return FtwError;
+        }
+        // iwalk will not recurse in this case, just process file entries
+        // and append subdir entries to the list.
+        status = iwalk(dir, &st, cb);
+        if (status != FtwOk)
+            return status;
+    }
+    return FtwOk;
 }
 
 // Note that the 'norecurse' flag is handled as part of the directory read. 
@@ -176,8 +274,9 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 					 FsTreeWalkerCB& cb)
 {
     Status status = FtwOk;
+    bool nullpush = false;
 
-    // Handle the parameter
+    // Tell user to process the top entry itself
     if (S_ISDIR(stp->st_mode)) {
 	if ((status = cb.processone(top, stp, FtwDirEnter)) & 
 	    (FtwStop|FtwError)) {
@@ -205,6 +304,8 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
     struct dirent *ent;
     while ((ent = readdir(d)) != 0) {
+        string fn;
+        struct stat st;
 	// Skip . and ..
 	if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) 
 	    continue;
@@ -212,55 +313,60 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 	// Skipped file names match ?
 	if (!data->skippedNames.empty()) {
 	    if (inSkippedNames(ent->d_name))
-		goto skip;
-	}
-
-	{
-	    string fn = path_cat(top, ent->d_name);
-
-	    struct stat st;
-	    int statret = (data->options & FtwFollow) ? stat(fn.c_str(), &st) :
-		lstat(fn.c_str(), &st);
-	    if (statret == -1) {
-		data->logsyserr("stat", fn);
 		continue;
-	    }
-	    if (!data->skippedPaths.empty()) {
-                // We do not check the ancestors. This means that you can have
-                // a topdirs member under a skippedPath, to index a portion of
-                // an ignored area. This is the way it had always worked, but
-                // this was broken by 1.13.00 and the systematic use of 
-                // FNM_LEADING_DIR
-		if (inSkippedPaths(fn, false))
-		    goto skip;
-	    }
-
-	    if (S_ISDIR(st.st_mode)) {
-		if (data->options & FtwNoRecurse) {
-		    status = cb.processone(fn, &st, FtwDirEnter);
-		} else {
-		    status = iwalk(fn, &st, cb);
-		}
-		if (status & (FtwStop|FtwError))
-		    goto out;
-
-                // No DirReturn call when not recursing
-                if (!(data->options & FtwNoRecurse)) 
-                    if ((status = cb.processone(top, &st, FtwDirReturn)) 
-                        & (FtwStop|FtwError))
-                        goto out;
-	    } else if (S_ISREG(st.st_mode)) {
-		if ((status = cb.processone(fn, &st, FtwRegular)) & 
-		    (FtwStop|FtwError)) {
-		    goto out;
-		}
-	    }
 	}
 
-    skip: ;
+        fn = path_cat(top, ent->d_name);
+        int statret = (data->options & FtwFollow) ? stat(fn.c_str(), &st) :
+            lstat(fn.c_str(), &st);
+        if (statret == -1) {
+            data->logsyserr("stat", fn);
+            continue;
+        }
+        if (!data->skippedPaths.empty()) {
+            // We do not check the ancestors. This means that you can have
+            // a topdirs member under a skippedPath, to index a portion of
+            // an ignored area. This is the way it had always worked, but
+            // this was broken by 1.13.00 and the systematic use of 
+            // FNM_LEADING_DIR
+            if (inSkippedPaths(fn, false))
+                continue;
+        }
 
-	// We skip other file types (devices etc...)
-    }
+        if (S_ISDIR(st.st_mode)) {
+            if (data->options & FtwNoRecurse) {
+                status = cb.processone(fn, &st, FtwDirEnter);
+            } else {
+                if (data->options & FtwTravNatural) {
+                    status = iwalk(fn, &st, cb);
+                } else {
+                    // If first subdir, push marker to separate
+                    // from entries for other dir. This is to help
+                    // with generating DirReturn callbacks
+                    if (!nullpush) {
+                        if (!data->dirs.empty() && data->dirs.back() != "")
+                            data->dirs.push_back("");
+                        nullpush = true;
+                    }
+                    data->dirs.push_back(fn);
+                    continue;
+                }
+            }
+            // Note: only recursive case gets here.
+            if (status & (FtwStop|FtwError))
+                goto out;
+            if (!(data->options & FtwNoRecurse)) 
+                if ((status = cb.processone(top, &st, FtwDirReturn)) 
+                    & (FtwStop|FtwError))
+                    goto out;
+        } else if (S_ISREG(st.st_mode)) {
+            if ((status = cb.processone(fn, &st, FtwRegular)) & 
+                (FtwStop|FtwError)) {
+                goto out;
+            }
+        }
+        // We ignore other file types (devices etc...)
+    } // readdir loop
 
  out:
     if (d)
@@ -283,6 +389,9 @@ static int     op_flags;
 #define OPT_P	  0x4 
 #define OPT_r     0x8
 #define OPT_c     0x10
+#define OPT_b     0x20
+#define OPT_d     0x40
+#define OPT_m     0x80
 
 class myCB : public FsTreeWalkerCB {
  public:
@@ -306,10 +415,25 @@ class myCB : public FsTreeWalkerCB {
 
 static const char *thisprog;
 
+// Note that breadth first sorting is relatively expensive: less inode
+// locality, more disk usage (and also more user memory usage, does not appear 
+// here):
+// y$ time trfstreewalk -d / 2>&1 > /tmp/alld
+// real    15m32.520s user    0m4.815s sys     0m33.014s
+// y$ time trfstreewalk -b / 2>&1 > /tmp/allb
+// real    17m3.380s  user    0m4.658s sys     0m34.473s
+// y$ wc /tmp/allb /tmp/alld
+// 2618155 3208127 221619857 /tmp/allb
+// 2618154 3208126 221619847 /tmp/alld
+// (diff due to changes in /proc)
+
 static char usage [] =
 "trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] topdir\n"
 " -r : norecurse\n"
 " -c : no path canonification\n"
+" -b : use breadth first walk\n"
+" -d : use almost depth first (dir files, then subdirs)\n"
+" -m : use breadth up to 4 deep then switch to -d\n"
 ;
 static void
 Usage(void)
@@ -332,8 +456,11 @@ int main(int argc, const char **argv)
       Usage();
     while (**argv)
       switch (*(*argv)++) {
-      case 'r':	op_flags |= OPT_r; break;
+      case 'b':	op_flags |= OPT_b; break;
       case 'c':	op_flags |= OPT_c; break;
+      case 'd':	op_flags |= OPT_d; break;
+      case 'm':	op_flags |= OPT_m; break;
+      case 'r':	op_flags |= OPT_r; break;
       case 'p':	op_flags |= OPT_p; if (argc < 2)  Usage();
 	  patterns.push_back(*(++argv));
 	  argc--; 
@@ -356,6 +483,14 @@ int main(int argc, const char **argv)
       opt |= FsTreeWalker::FtwNoRecurse;
   if (op_flags & OPT_c)
       opt |= FsTreeWalker::FtwNoCanon;
+
+  if (op_flags & OPT_b)
+      opt |= FsTreeWalker::FtwTravBreadth;
+  else if (op_flags & OPT_d)
+      opt |= FsTreeWalker::FtwTravFilesThenDirs;
+  else if (op_flags & OPT_m)
+      opt |= FsTreeWalker::FtwTravBreadthThenDepth;
+  
   FsTreeWalker walker(opt);
   walker.setSkippedNames(patterns);
   walker.setSkippedPaths(paths);
