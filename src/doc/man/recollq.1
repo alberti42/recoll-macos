@@ -31,6 +31,10 @@ recollq \- command line / standard output Recoll query command.
 .B -s
 <stemming language>
 ]
+[
+.B -i
+<additional index directory>
+]
 <query string>
 
 .SH DESCRIPTION
@@ -70,10 +74,16 @@ can be used to set the maximum number of results that should be printed.
 If 
 .B -d
 is set, the text for the result files contents will be dumped to stdout.
+.PP
 .B -s
 <language>
 selects the word stemming language. The value should match an existing
 stemming database (as set in the configuration or added with recollindex -s).
+.PP
+.B -i
+<extra dbdir>
+adds the specified Xapian index to the set used for the query. Can be
+specified multiple times.
 
 .SH SEE ALSO
 .PP 
