@@ -388,6 +388,11 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
              displayableBytes(stp->st_size).c_str(), fn.c_str()));
 
     FileInterner interner(fn, stp, m_config, m_tmpdir, FileInterner::FIF_none);
+    if (!interner.ok()) {
+        // no indexing whatsoever in this case. This typically means that
+        // indexallfilenames is not set
+        return FsTreeWalker::FtwOk;
+    }
 
     // File name transcoded to utf8 for indexation. 
     string charset = m_config->getDefCharset(true);

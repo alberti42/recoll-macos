@@ -159,6 +159,7 @@ class FileInterner {
     const string& getReason() const {return m_reason;}
     static void getMissingExternal(string& missing);
     static void getMissingDescription(string& desc);
+    bool ok() {return m_ok;}
 
  private:
     static const unsigned int MAXHANDLERS = 20;
@@ -172,6 +173,7 @@ class FileInterner {
     // m_tdir and m_tfile are used only for decompressing input file if needed
     const string&          m_tdir; 
     string                 m_tfile;
+    bool                   m_ok; // Set after construction if ok
 #ifdef RCL_USE_XATTR
     // Fields found in file extended attributes. This is kept here,
     // not in the file-level handler because we are only interested in

@@ -172,7 +172,7 @@ void FileInterner::tmpcleanup()
 FileInterner::FileInterner(const string &f, const struct stat *stp,
 			   RclConfig *cnf, 
 			   const string& td, int flags, const string *imime)
-    : m_tdir(td)
+    : m_tdir(td), m_ok(false)
 {
     initcommon(cnf, flags);
     init(f, stp, cnf, td, flags, imime);
@@ -282,12 +282,13 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     m_handlers.push_back(df);
     LOGDEB(("FileInterner::FileInterner: %s [%s]\n", l_mime.c_str(), 
 	     m_fn.c_str()));
+    m_ok = true;
 }
 
 // Setup from memory data (ie: out of the web cache). imime needs to be set.
 FileInterner::FileInterner(const string &data, RclConfig *cnf, 
                            const string& td, int flags, const string& imime)
-    : m_tdir(td)
+    : m_tdir(td), m_ok(false)
 {
     initcommon(cnf, flags);
     init(data, cnf, td, flags, imime);
@@ -338,6 +339,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
 	return;
     }
     m_handlers.push_back(df);
+    m_ok = true;
 }
 
 void FileInterner::initcommon(RclConfig *cnf, int flags)
@@ -353,7 +355,7 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
 
 FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, 
                            const string& td, int flags)
-    : m_tdir(td)
+    : m_tdir(td), m_ok(false)
 {
     LOGDEB(("FileInterner::FileInterner(idoc)\n"));
     initcommon(cnf, flags);
