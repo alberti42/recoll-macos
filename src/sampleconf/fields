@@ -3,8 +3,8 @@
 #   author:Hemingway
 #
 # Important: 
-#   - the field names MUST be all lowercase here. They can be anycased
-#     in the documents.
+#   - the field names MUST be all lowercase alphabetic ascii here. They can
+#     be anycased in the documents.
 
 #####################################################
 # This section defines what prefix the terms inside named fields will be
@@ -43,7 +43,9 @@ recipient = XTO
 # "author" used to be stored by default, now set here as optional
 # "rclaptg" is used for viewer specialization (depending on local config)
 [stored]
-stored = author rclaptg rclbes
+author=
+rclaptg=
+rclbes=
 
 ##########################
 # This section defines field names aliases or synonyms. Any right hand side
@@ -84,3 +86,18 @@ author = from
 # field names. xattr use must be enabled at compile time for this to be
 # used. Enter translations as "xattrname = fieldname". Case matters.
 [xattrtofields]
+
+
+########################
+# Sections reserved for specific filters follow
+#
+
+##########################
+# Mail filter section. You can specify mail headers to be indexed 
+# in addition to the standard ones: (To:, Cc:, From:, Subject:, Date, 
+# Message-Id), along with the field name to be used. For this to be useful, 
+# the field name should also be listed in the [prefixes] and possibly the
+# [stored] sections.
+#
+# [mail]
+# x-my-tag = mymailtag

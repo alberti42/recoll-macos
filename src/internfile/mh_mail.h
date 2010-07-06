@@ -20,7 +20,9 @@
 
 #include <sstream>
 #include <vector>
+#include <map>
 using std::vector;
+using std::map;
 
 #include "mimehandler.h"
 
@@ -38,9 +40,7 @@ class MHMailAttach;
  */
 class MimeHandlerMail : public RecollFilter {
 public:
-    MimeHandlerMail(const string &mt) 
-	: RecollFilter(mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
-    {}
+    MimeHandlerMail(const string &mt);
     virtual ~MimeHandlerMail();
     virtual bool set_document_file(const string& file_path);
     virtual bool set_document_string(const string& data);
@@ -69,6 +69,8 @@ private:
     string::size_type       m_startoftext; 
     string                  m_subject; 
     vector<MHMailAttach *>  m_attachments;
+    // Additional headers to be process as per config + field name translation
+    map<string,string>      m_addProcdHdrs; 
 };
 
 class MHMailAttach {

@@ -55,6 +55,22 @@ static const string cstr_title = "title";
 static const string cstr_msgid = "msgid";
 static const string cstr_abstract = "abstract";
 
+MimeHandlerMail::MimeHandlerMail(const string &mt) 
+    : RecollFilter(mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
+{
+
+    // Look for additional headers to be processed as per config:
+    list<string> hdrnames = 
+        RclConfig::getMainConfig()->getFieldSectNames("mail");
+    if (hdrnames.empty())
+        return;
+    for (list<string>::const_iterator it = hdrnames.begin();
+         it != hdrnames.end(); it++) {
+        (void)RclConfig::getMainConfig()->
+            getFieldConfParam(*it, "mail", m_addProcdHdrs[*it]);
+    }
+}
+
 MimeHandlerMail::~MimeHandlerMail() 
 {
     clear();
@@ -95,7 +111,6 @@ bool MimeHandlerMail::set_document_file(const string &fn)
 	LOGERR(("MimeHandlerMail: cant compute md5 for [%s]: %s\n", fn.c_str(),
 		reason.c_str()));
     }
-
 
     m_fd = open(fn.c_str(), 0);
     if (m_fd < 0) {
@@ -352,6 +367,21 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	}
 	text += string("Subject: ") + transcoded + string("\n");
     }
+
+    // Check for the presence of configured additional headers and possibly
+    // add them to the metadata (with appropriate field name).
+    if (!m_addProcdHdrs.empty()) {
+        for (map<string, string>::const_iterator it = m_addProcdHdrs.begin();
+             it != m_addProcdHdrs.end(); it++) {
+            if (!it->second.empty()) {
+                string hval;
+                if (doc->h.getFirstHeader(it->first, hi)) {
+                    m_metaData[it->second] = hi.getValue();
+                }
+            }
+        }
+    }
+
     text += '\n';
     m_startoftext = text.size();
     LOGDEB2(("MimeHandlerMail::processMsg:ismultipart %d mime subtype '%s'\n",

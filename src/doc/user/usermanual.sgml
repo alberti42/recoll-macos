@@ -772,9 +772,9 @@ fvwm
        &RCL; has no configured way to preview a given file type (which
        was indexed by name only), or no configured external editor for
        the file type. This can sometimes be adjusted simply by tweaking
-       the <link linkend="rclinstall.config.mimemap">
+       the <link linkend="rcl.install.config.mimemap">
              <filename>mimemap</filename></link> and  
-       <link linkend="rclinstall.config.mimeview">
+       <link linkend="rcl.install.config.mimeview">
        <filename>mimeview</filename></link> configuration files (the latter
        can be modified with the user preferences dialog).</para> 
 
@@ -2114,7 +2114,7 @@ application/x-chm = execm rclchm
     </sect1>
 
     <sect1 id="rcl.program.fields">
-        <title>Field data processing configuration</title>
+        <title>Field data processing</title>
 
       <para><literal>Fields</literal> are named pieces of information
       in or about documents, like <literal>title</literal>,
@@ -2148,19 +2148,16 @@ application/x-chm = execm rclchm
 
       </itemizedlist>
 
-      <para>A field can be either or both indexed and stored.</para>
+      <para>A field can be either or both indexed and stored. This and 
+      other aspects of fields handling is defined inside the
+      <filename>fields</filename> configuration file.</para>
 
-      <para>A field becomes indexed by having a prefix defined in
-      the <literal>[prefixes]</literal> section of the
-      <filename>fields</filename> file. See the comments in there for
-      details</para> 
+      <para>You can find more information in the 
+      <link linkend="rcl.install.config.fields">section about the
+      <filename>fields</filename> file</link>, or in comments inside the
+      file.</para> 
 
-      <para>A field becomes stored by appearing in
-      the <literal>[stored]</literal> section of the
-      <filename>fields</filename> file.</para>
-      
-      <para>See the comments inside the <filename>fields</filename>
-            for more details.</para>
+
     </sect1>
 
 
@@ -3393,7 +3390,89 @@ skippedPaths = ~/somedir/&lowast;.txt
 
       </sect2>
 
-      <sect2 id="rclinstall.config.mimemap">
+      <sect2 id="rcl.install.config.fields">
+	<title>The fields file</title>
+
+	<para>This file contains information about dynamic fields handling
+	in &RCL;. Some very basic fields have hard-wired behaviour,
+	and, mostly, you should not change the original data inside the
+	<filename>fields</filename> file. But you can create custom fields
+	fitting your data and handle them just like they were native
+	ones.</para>
+
+	<para>The <filename>fields</filename> file has several sections,
+	which each define an aspect of fields processing. Quite often,
+	you'll have to modify several sections to obtain the desired
+	behaviour.</para>
+
+	<para>We will only give a short description here, you should refer
+	to the comments inside the file for more detailed information.</para>
+
+	<para>Field names should be lowercase alphabetic ASCII.</para>
+
+        <variablelist>
+
+          <varlistentry>
+            <term>[prefixes]</term>
+            <listitem><para>A field becomes indexed (searchable) by having
+            a prefix defined in this section.
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>[stored]</term>
+            <listitem><para>A field becomes stored (displayable inside
+            results) by having its name listed in this section (typically
+            with an empty value).
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>[aliases]</term>
+            <listitem><para>This section defines lists of synonyms for the
+            canonical names used inside the <literal>[prefixes]</literal>
+            and <literal>[stored]</literal> sections</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>filter-specific sections</term>
+            <listitem><para>Some filters may need specific
+            configuration for handling fields. Only the mail message filter
+            currently has such a section (named
+            <literal>[mail]</literal>). It allows indexing arbitrary mail
+            headers in addition to the ones indexed by default. Other such
+            sections may appear in the future.</para>
+            </listitem>
+          </varlistentry>
+
+	</variablelist>
+
+      <para>Here follows a small example of a personal
+      <filename>fields</filename> 
+      file. This would extract a specific mail header and
+      use it as a searchable field, with data displayable inside result
+      lists. (Side note: as the mail filter does no decoding on the values,
+      only plain ascii headers can be indexed, and that only the
+      first occurrence will be used in the case of multiple occurrence
+      headers).
+
+<programlisting>[prefixes]
+# Index mail_mytag contents (with the given prefix)
+mailmytag = XMTAG
+
+[stored]
+# Store mail_mytag inside the document data record
+mailmytag = 
+
+[mail]
+# Extract the X-My-Tag mail header, and use it internally with the
+# mail_mytag field name
+x-my-tag = mailmytag
+</programlisting>
+</para>
+
+
+      </sect2>
+
+      <sect2 id="rcl.install.config.mimemap">
         <title>The mimemap file</title>
 
         <para><filename>mimemap</filename> specifies the
@@ -3429,7 +3508,7 @@ skippedPaths = ~/somedir/&lowast;.txt
 
       </sect2>
 
-      <sect2 id="rclinstall.config.mimeconf">
+      <sect2 id="rcl.install.config.mimeconf">
         <title>The mimeconf file</title>
 
         <para><filename>mimeconf</filename> specifies how the
@@ -3447,7 +3526,7 @@ skippedPaths = ~/somedir/&lowast;.txt
          <filename>recoll.conf</filename>).</para>
 
       </sect2>
-      <sect2 id="rclinstall.config.mimeview">
+      <sect2 id="rcl.install.config.mimeview">
         <title>The mimeview file</title>
 
         <para><filename>mimeview</filename> specifies which programs
@@ -3484,10 +3563,10 @@ skippedPaths = ~/somedir/&lowast;.txt
         (which is set to use <command>xdg-open</command> by default).</para>
       </sect2>
 
-      <sect2 id="rclinstall.config.examples">
+      <sect2 id="rcl.install.config.examples">
         <title>Examples of configuration adjustments</title>
 
-        <sect3 id="rclinstall.config.examples.addview">
+        <sect3 id="rcl.install.config.examples.addview">
           <title>Adding an external viewer for an non-indexed type</title>
 
           <para>Imagine that you have some kind of file which does not
@@ -3532,7 +3611,7 @@ application/x-blobapp = blobviewer %f
 
         </sect3>
 
-        <sect3 id="rclinstall.config.examples.addindex">
+        <sect3 id="rcl.install.config.examples.addindex">
           <title>Adding indexing support for a new file type</title>
 
           <para>Let us now imagine that the above

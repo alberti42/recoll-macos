@@ -590,10 +590,8 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
     }
 #endif
 
-    string ss;
-    if (m_fields->get("stored", ss, "stored")) {
-	list<string> sl;
-	stringToStrings(ss, sl);
+    list<string> sl = m_fields->getNames("stored");
+    if (!sl.empty()) {
 	for (list<string>::const_iterator it = sl.begin(); 
 	     it != sl.end(); it++) {
 	    string fld = fieldCanon(stringtolower(*it));
@@ -635,6 +633,8 @@ bool RclConfig::getFieldPrefix(const string& _fld, string &pfx)
 bool RclConfig::getFieldSpecialisations(const string& fld, 
 					list<string>& children, bool top)
 {
+    if (m_fields == 0)
+        return false;
     string sclds;
     children.push_back(fld);
     if (m_fields->get(fld, sclds, "specialisations")) {
@@ -681,6 +681,22 @@ string RclConfig::fieldCanon(const string& f)
     LOGDEB1(("RclConfig::fieldCanon: [%s] -> [%s]\n", f.c_str(), fld.c_str()));
     return fld;
 }
+
+list<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn)
+{
+    if (m_fields == 0)
+        return list<string>();
+    return m_fields->getNames(sk, patrn);
+}
+
+bool RclConfig::getFieldConfParam(const string &name, const string &sk, 
+                                  string &value)
+{
+    if (m_fields == 0)
+        return false;
+    return m_fields->get(name, value, sk);
+}
+
 
 string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag)
 {

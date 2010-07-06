@@ -195,7 +195,12 @@ class RclConfig {
     string fieldCanon(const string& fld);
     /** Get xattr name to field names translations */
     const map<string, string>& getXattrToField() {return m_xattrtofld;}
-    
+    /** Get value of a parameter inside the "fields" file. Only some filters 
+        use this (ie: mh_mail). The information specific to a given filter
+        is typically stored in a separate section(ie: [mail]) */
+    list<string> getFieldSectNames(const string &sk, const char* = 0);
+    bool getFieldConfParam(const string &name, const string &sk, string &value);
+
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype, const string& apptag);
     bool getMimeViewerDefs(vector<pair<string, string> >&);
