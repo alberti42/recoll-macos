@@ -954,6 +954,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     PreviewTextEdit *editor = currentEditor();
     editor->setText("");
     editor->setTextFormat(Qt::RichText);
+    editor->m_data.format = Qt::RichText;
     bool inputishtml = !fdoc.mimetype.compare("text/html");
 
 #if 0
@@ -1031,6 +1032,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	    qrichlst.push_back(qr);
 	} else {
             editor->setTextFormat(Qt::PlainText);
+            editor->m_data.format = Qt::PlainText;
 	    for (int pos = 0; pos < (int)qr.length(); pos += l) {
 		l = MIN(CHUNKL, qr.length() - pos);
 		qrichlst.push_back(qr.mid(pos, l));
@@ -1127,6 +1129,7 @@ void PreviewTextEdit::toggleFields()
 
     // If currently displaying fields, switch to body text
     if (m_dspflds) {
+        setTextFormat(m_data.format);
 	setText(m_data.richtxt);
         m_dspflds = false;
 	return;
@@ -1134,6 +1137,7 @@ void PreviewTextEdit::toggleFields()
 
     // Else display fields
     m_dspflds = true;
+    setTextFormat(Qt::RichText);
     QString txt = "<html><head></head><body>\n";
     txt += "<b>" + QString::fromLocal8Bit(m_data.url.c_str());
     if (!m_data.ipath.empty())
@@ -1143,7 +1147,8 @@ void PreviewTextEdit::toggleFields()
     for (map<string,string>::const_iterator it = m_data.fdoc.meta.begin();
 	 it != m_data.fdoc.meta.end(); it++) {
 	txt += "<dt>" + QString::fromUtf8(it->first.c_str()) + "</dt> " 
-	    + "<dd>" + QString::fromUtf8(it->second.c_str()) + "</dd>\n";
+	    + "<dd>" + QString::fromUtf8(escapeHtml(it->second).c_str()) 
+            + "</dd>\n";
     }
     txt += "</dl></body></html>";
     setText(txt);

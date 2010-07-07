@@ -57,10 +57,11 @@ public:
     // doc out of internfile (previous fields come from the index) with
     // main text erased (for space).
     Rcl::Doc fdoc; 
-    // Saved rich text: the textedit seems to sometimes (but not
-    // always) return its text stripped of tags, so this is needed
-    // (for printing for example)
-    QString  richtxt; 
+    // Saved rich (or plain actually) text: the textedit seems to
+    // sometimes (but not always) return its text stripped of tags, so
+    // this is needed (for printing for example)
+    QString  richtxt;
+    Qt::TextFormat format;
     TabData() 
 	: docnum(-1) 
     {}
