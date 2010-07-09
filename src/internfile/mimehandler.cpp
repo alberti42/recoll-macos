@@ -140,24 +140,31 @@ void returnMimeHandler(Dijon::Filter *handler)
 Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg, 
 			      bool filtertypes)
 {
-    if (mtype.empty())
-	return false;
+    LOGDEB2(("getMimeHandler: mtype [%s] filtertypes %d\n", 
+             mtype.c_str(), filtertypes));
 
-    // Do we already have one ?
-    map<string, Dijon::Filter *>::iterator it = o_handlers.find(mtype);
-    if (it != o_handlers.end()) {
-	Dijon::Filter *h = it->second;
-	o_handlers.erase(it);
-	LOGDEB2(("getMimeHandler: found in cache\n"));
-	return h;
-    }
-    
-    // Get handler definition for mime type
+    // Get handler definition for mime type. We do this even if an
+    // appropriate handler object may be in the cache (indexed by mime
+    // type). This is fast, and necessary to conform to the
+    // configuration, (ie: text/html might be filtered out by
+    // indexedmimetypes but an html handler could still be in the
+    // cache because it was needed by some other interning stack).
     string hs;
     hs = cfg->getMimeHandlerDef(mtype, filtertypes);
 
-    if (!hs.empty()) {
-	// Break definition into type and name/command string
+    if (!hs.empty()) { // Got a handler definition line
+
+        // Do we already have a handler object in the cache ?
+        map<string, Dijon::Filter *>::iterator it = o_handlers.find(mtype);
+        if (it != o_handlers.end()) {
+            Dijon::Filter *h = it->second;
+            o_handlers.erase(it);
+            LOGDEB2(("getMimeHandler: found in cache\n"));
+            return h;
+        }
+
+	// Not in cache. Break definition into type and name/command
+        // string and instanciate handler object
         string::size_type b1 = hs.find_first_of(" \t");
         string handlertype = hs.substr(0, b1);
 	if (!stringlowercmp("internal", handlertype)) {
@@ -194,8 +201,8 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     }
 #endif
 
-    // Finally, unhandled files are either ignored or their name is
-    // indexed, depending on configuration
+    // Finally, unhandled files are either ignored or their name and
+    // generic metadata is indexed, depending on configuration
     bool indexunknown = false;
     cfg->getConfParam("indexallfilenames", &indexunknown);
     if (indexunknown) {
