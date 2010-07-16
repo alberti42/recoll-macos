@@ -57,7 +57,7 @@
 
 	<br />If installing over 1.10 or older, you need a full
 	rebuild. The best way to do this is to just delete the old
-	<span class="filename">.recoll/xapiandb</class> directory,
+	<span class="filename">.recoll/xapiandb</span> directory,
 	especially if the index was created by an older version.
 	(ie: <tt>rm&nbsp;-rf&nbsp;~/.recoll/xapiandb/</tt>).  On very
 	old indexes, <tt>recollindex&nbsp;-z</tt> may sometimes end
@@ -137,6 +137,14 @@
 	preferable to use a Xapian version after 1.0.12 as they don't
 	need the <a href="BUGS.html#XapianNearPatch">NEAR patch</a>
 	any more.</p>
+
+      <p><a name="xapian12-src"><em>Compiling with Xapian
+	    1.2:</em></a> because of some small 
+	include file issues, Recoll 1.13 does not compile with Xapian
+	1.2. You can apply this <a href="files/xapian12.patch">small
+	  patch</a> to fix the problem. With the patch applied, Recoll
+	works just fine with the latest and greatest Xapian.</p>
+
       <p>You will also need the development files for libX11 and zlib.</p>
 
       <table>
@@ -222,7 +230,7 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 	  
       <h3>Fedora</h3>
       <blockquote>
-      <p><b>Fedora Core 6 with Qt 3.3.8</b>
+      <p><b>Fedora 6 with Qt 3.3.8</b>
 	<a href="fc6/recoll-1.13.04-1.i586.rpm">
 	  recoll-1.13.04-1.i586.rpm</a>. 
 	Source: 
@@ -230,7 +238,7 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 	  recoll-1.13.04-1.src.rpm</a>
 	This package usually also installs and runs on Fedora 9.
       </p>
-      <p><b>Fedora Core 10 and 12 with Qt 4</b>
+      <p><b>Fedora 10 and 12 with Qt 4</b>
 	These builds are not statically linked, but depend on the
 	regular Xapian and zlib rpms from the Fedora repositories.
         <br>FC10
@@ -251,18 +259,18 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 	those who want to rebuild from the source rpms. Normally linked
 	(need Xapian and zlib libraries):</p>
       <blockquote>
-      <p><b>Fedora Core 11 with Qt 4</b> i586
+      <p><b>Fedora 11 with Qt 4</b> i586
 	<a href="fc11/recoll-1.13.04-1.fc11.i586.rpm">
 	 recoll-1.13.04-1.fc11.i586.rpm</a>. 64 bits version
 	<a href="fc11/recoll-1.13.04-1.fc11.x86_64.rpm">
 	 recoll-1.13.04-1.fc11.x86_64.rpm</a>. 
       </p>
 
-      <p><b>Fedora Core 12 with Qt 4</b> 64 bits version
+      <p><b>Fedora 12 with Qt 4</b> 64 bits version
 	<a href="fc12/recoll-1.13.04-1.fc12.x86_64.rpm">
 	  recoll-1.13.04-1.fc12.x86_64.rpm</a>. 
       </p>
-      <p><b>Fedora Core 13 with Qt 4</b> i686
+      <p><b>Fedora 13 with Qt 4</b> i686
 	<a href="fc13/recoll-1.13.04-1.fc13.i686.rpm">
 	 recoll-1.13.04-1.fc13.i686.rpm</a>. 64 bits version
 	<a href="fc13/recoll-1.13.04-1.fc13.x86_64.rpm">
