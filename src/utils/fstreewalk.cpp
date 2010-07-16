@@ -17,6 +17,9 @@ static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.15 2007-12-13 06:58:22 dockes 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#ifdef HAVE_CONFIG_H
+#include "autoconfig.h"
+#endif
 
 #ifndef TEST_FSTREEWALK
 

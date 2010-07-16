@@ -19,6 +19,8 @@ static char rcsid[] = "@(#$Id: $ (C) 2009 J.F.Dockes";
 #endif
 
 #ifndef TEST_CIRCACHE
+#include "autoconfig.h"
+
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>

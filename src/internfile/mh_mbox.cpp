@@ -18,6 +18,8 @@ static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.5 2008-10-04 14:26:59 dockes Exp 
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_MH_MBOX
+#include "autoconfig.h"
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>

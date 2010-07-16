@@ -19,6 +19,8 @@ static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.22 2008-11-18 13:25:48 dockes Ex
  */
 
 #ifndef TEST_MIMETYPE
+#include "autoconfig.h"
+
 #include <sys/stat.h>
 
 #include <ctype.h>
@@ -29,7 +31,6 @@ static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.22 2008-11-18 13:25:48 dockes Ex
 using namespace std;
 #endif /* NO_NAMESPACES */
 
-#include "autoconfig.h"
 #include "mimetype.h"
 #include "debuglog.h"
 #include "execmd.h"

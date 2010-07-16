@@ -16,6 +16,8 @@ if test ! -f mk/$sys ; then
 fi
 (cd mk; rm -f sysconf; ln -s $sys sysconf)
 
+AC_SYS_LARGEFILE
+
 AC_CHECK_HEADERS(sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h)
 
 # Use specific 'file' command ? (Useful on solaris to specify

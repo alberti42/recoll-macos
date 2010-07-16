@@ -18,6 +18,7 @@ static char rcsid[] = "@(#$Id: readfile.cpp,v 1.9 2008-12-08 11:22:58 dockes Exp
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_READFILE
+#include "autoconfig.h"
 
 #include <unistd.h>
 #include <fcntl.h>

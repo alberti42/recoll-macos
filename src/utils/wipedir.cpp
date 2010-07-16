@@ -19,6 +19,8 @@ static char rcsid[] = "@(#$Id: wipedir.cpp,v 1.6 2007-12-13 06:58:22 dockes Exp 
  */
 
 #ifndef TEST_WIPEDIR
+#include "autoconfig.h"
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>

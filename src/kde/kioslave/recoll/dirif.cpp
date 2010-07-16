@@ -27,6 +27,8 @@ static char rcsid[] = "@(#$Id: dirif.cpp,v 1.12 2008-12-08 17:42:57 dockes Exp $
  * Stephan Binner <binner@kde.org>
  */
 
+#include "autoconfig.h"
+
 #include <kdeversion.h>
 
 #if KDE_IS_VERSION(4,1,0)

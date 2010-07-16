@@ -17,6 +17,8 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.26 2008-10-03 08:09:36 dockes E
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
+
 #include <sys/stat.h>
 
 #include <string>
