@@ -6,6 +6,7 @@ syntax: glob
 \#*
 
 src/Makefile
+src/autom4te.cache
 src/bincimapmime/alldeps
 src/common/autoconfig.h
 src/common/rclversion.h
@@ -63,6 +64,7 @@ src/qt4gui/images
 src/qt4gui/preview.ui
 src/qt4gui/qrc_recoll.cpp
 src/qt4gui/recoll
+src/qt4gui/recoll.app
 src/qt4gui/recoll.pro
 src/qt4gui/sort.ui
 src/qt4gui/ssearchb.ui
@@ -79,4 +81,5 @@ src/query/recollq
 src/query/xadump
 src/recollinstall
 src/sampleconf/recoll.conf
+src/sampleconf/rclmon.sh
 website/usermanual/*
