@@ -73,7 +73,7 @@ void IdxThread::run()
 	    m_interrupted = false;
 	    indexingstatus = IDXTS_NULL;
 	    // We have to make a copy of the config (setKeydir changes
-	    // it during indexation)
+	    // it during indexing)
 	    RclConfig *myconf = new RclConfig(*cnf);
 	    int loglevel;
 	    myconf->setKeyDir("");

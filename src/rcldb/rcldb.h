@@ -135,7 +135,7 @@ class Db {
 
     /** Remove documents that no longer exist in the file system. This
      * depends on the update map, which is built during
-     * indexation (needUpdate()). 
+     * indexing (needUpdate()). 
      *
      * This should only be called after a full walk of
      * the file system, else the update map will not be complete, and

@@ -339,7 +339,7 @@
 
 	<li> All directories and files with names beginning with a dot were ignored
 	  by the skippedNames directive in the default recoll.conf file from
-	  older versions (no indexation of mozilla or thunderbird email !). An
+	  older versions (no indexing of mozilla or thunderbird email !). An
 	  upgrade will not fix this (it will not modify an existing
 	  configuration). You need to edit recoll.conf by hand and remove the .*
 	  from skippedNames.</li>

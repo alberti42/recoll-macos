@@ -194,7 +194,7 @@
     </message>
     <message>
         <source>.
-Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
+Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
         <translation>Clicca &apos;Annulla&apos; se vuoi editare il file di configurazione prima di iniziare l&apos;indicizzazione, oppure &apos;OK&apos; se vuoi procedere.</translation>
     </message>
     <message>

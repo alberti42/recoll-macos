@@ -106,20 +106,18 @@
 
 
       <h2><a name="b_1_13_02">recoll 1.13.02</h2>
-        <li>Fix stemming which was completely broken in the 1.13
-        series. The stemming database was not 
-        created at all. Things would sort of work as long as an older stemming
-        database was around (which is why this was not discovered earlier.</li>
+        <li>Stemming does not work in the 1.13 series. The stemming
+        database was not created at all. Things would sort of work as
+        long as an older stemming database was around (which is why
+        this was not discovered earlier.</li>
        <li>Fix the lyx filter to properly handle embedded white space in
         file paths.</li>
 
-
       <h2><a name="b_1_13_01">recoll 1.13.01 + xapian 1.0.16</a></h2> 
-
-      <li>The GUI display is completely garbled under
-      Qt 4.6.1 and newer. This is a Qt bug, and a workaround was put
-      in place in Recoll 1.13.02 for Qt 4.6.1. If you are using a
-      newer version and the problem is still there, you can fix the
+      <li>The GUI display is garbled under Qt 4.6.1 and newer. This is
+      a Qt bug, and a workaround was put in place in Recoll 1.13.02
+      for Qt 4.6.1. If you are using a newer version and the problem
+      is still there, you can fix the
       4.6.1 fix to hopefully work with your Qt version: edit
       qtgui/rclmain_w.h, around line 37 (there is only one instance),
       change:
@@ -495,7 +493,7 @@
 
         <li> All directories and files with names beginning with a dot were ignored
           by the skippedNames directive in the default recoll.conf file from
-          older versions (no indexation of mozilla or thunderbird email !). An
+          older versions (no indexing of mozilla or thunderbird email !). An
           upgrade will not fix this (it will not modify an existing
           configuration). You need to edit recoll.conf by hand and remove the .*
           from skippedNames.</li>

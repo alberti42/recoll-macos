@@ -394,7 +394,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
         return FsTreeWalker::FtwOk;
     }
 
-    // File name transcoded to utf8 for indexation. 
+    // File name transcoded to utf8 for indexing. 
     string charset = m_config->getDefCharset(true);
     // If this fails, the file name won't be indexed, no big deal
     // Note that we used to do the full path here, but I ended up believing

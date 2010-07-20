@@ -359,7 +359,7 @@ void RclMain::initDbOpen()
 		 QString::fromLocal8Bit(rclconfig->getDbDir().c_str()) +
 		 qApp->translate("Main", 
 			       ".\n"
-			       "Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed."),
+			       "Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed."),
 		 "Ok", "Cancel", 0,   0)) {
 
 	case 0: // Ok: indexing is going to start.

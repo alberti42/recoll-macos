@@ -1013,7 +1013,6 @@ void RclConfig::initFrom(const RclConfig& r)
 
 #include <stdio.h>
 #include <signal.h>
-#include <sys/stat.h>
 
 #include <iostream>
 #include <list>

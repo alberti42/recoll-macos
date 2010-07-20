@@ -194,7 +194,7 @@
     </message>
     <message>
         <source>.
-Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
+Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
         <translation>.
 Натисніть Відміна, якщо бажаєте відредагувати конфіґурацію до початку індексування,
 чи OK для продовження.</translation>

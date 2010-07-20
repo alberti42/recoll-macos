@@ -92,7 +92,7 @@ RclConfig *recollinit(RclInitFlags flags,
     }
 
     // Make sure the locale is set. This is only for converting file names 
-    // to utf8 for indexation.
+    // to utf8 for indexing.
     setlocale(LC_CTYPE, "");
 
     return config;

@@ -24,9 +24,6 @@ static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.38 2008-10-14 06:07:42 dockes
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 
 #include <iostream>
 #include <list>
@@ -165,10 +162,10 @@ static const char usage [] =
 "    Print help\n"
 "recollindex [-z] \n"
 "    Index everything according to configuration file\n"
-"    -z : reset database before starting indexation\n"
+"    -z : reset database before starting indexing\n"
 #ifdef RCL_MONITOR
 "recollindex -m [-w <secs>] -x [-D]\n"
-"    Perform real time indexation. Don't become a daemon if -D is set.\n"
+"    Perform real time indexing. Don't become a daemon if -D is set.\n"
 "    -w sets number of seconds to wait before starting.\n"
 #ifndef DISABLE_X11MON
 "    -x disables exit on end of x11 session\n"

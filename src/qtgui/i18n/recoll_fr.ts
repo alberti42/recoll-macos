@@ -193,7 +193,7 @@
     </message>
     <message>
         <source>.
-Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
+Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
         <translation>Cliquer Annuler pour pouvoir éditer le fichier de configuration avant que l&apos;indexation ne démarre, ou Ok pour continuer.</translation>
     </message>
     <message>

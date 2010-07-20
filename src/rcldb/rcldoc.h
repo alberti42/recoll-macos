@@ -50,7 +50,7 @@ class Doc {
     string url;
 
     // Transcoded version of the simple file name for SFN-prefixed
-    // specific file name indexation
+    // specific file name indexing
     // Index: set by DbIndexer::processone    
     string utf8fn; 
 

@@ -150,7 +150,7 @@
     </message>
     <message>
         <source>.
-Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
+Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
         <translation>.
 İndekseleme başlamadan yapılandırmayı düzenlemek için İptal düğmesine basın ya da Tamam düğmesine basarak işleme izin verin.</translation>
     </message>
