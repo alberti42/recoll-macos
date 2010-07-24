@@ -193,27 +193,32 @@ fi
 
 AC_CHECK_FUNCS(mkdtemp)
 
-##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
-##    then in libc (Linux, solaris)
+##### Look for iconv. We look for libiconv in ${libdir}, /opt/local/lib,
+##### /usr/local/lib then in libc (Linux, solaris). Note that there is no
+##### way to find libiconv in /usr/local if one exists in ${libdir} (can't
+##### do because the link will always succeed in this case so that if we
+##### put /usr/local/lib in front in this case, we may end up with using it
+##### even if no libiconv in there. We'd need a --with-libiconv= option
 AC_LANG(C++)
 LIBICONV=""
 S_LDFLAGS=$LDFLAGS
-dir=/usr/local/lib
-LDFLAGS="$S_LDFLAGS -L$dir"
-unset ac_cv_lib_iconv_iconv_open
-AC_CHECK_LIB(iconv, iconv_open, LIBICONV="-L$dir -liconv";INCICONV=-I/usr/local/include)
-if test A"$LIBICONV" = A ; then
+
+for dir in ${libdir} /opt/local/lib /usr/local/lib ;do
+  LDFLAGS="$S_LDFLAGS -L$dir"
+  unset ac_cv_lib_iconv_iconv_open
+  AC_CHECK_LIB(iconv, iconv_open, LIBICONV="-L$dir -liconv";INCICONV=-I$dir/../include)
+  if test A"$LIBICONV" != A ; then
+     break
+  fi
+done
+
+if test A"$LIBICONV" = A; then
   dir=${libdir}
   LDFLAGS="$S_LDFLAGS -L$dir"
   unset ac_cv_lib_iconv_iconv_open
-  AC_CHECK_LIB(iconv, iconv_open, LIBICONV="-L$dir -liconv";INCICONV=-I/usr/include)
-  if test A"$LIBICONV" = A; then
-    dir=${libdir}
-    LDFLAGS="$S_LDFLAGS -L$dir"
-    unset ac_cv_lib_iconv_iconv_open
-    AC_CHECK_LIB(c, iconv_open, LIBICONV=NONE;INCICONV=-I/usr/include)
-  fi
+  AC_CHECK_LIB(c, iconv_open, LIBICONV=NONE;INCICONV=-I/usr/include)
 fi
+
 LDFLAGS=$S_LDFLAGS
 if test A"$LIBICONV" = A ; then
    AC_MSG_ERROR([Cannot find iconv_open anywhere. Please install iconv])

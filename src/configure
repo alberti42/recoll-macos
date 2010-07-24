@@ -4068,8 +4068,8 @@ fi
 done
 
 
-##### Look for iconv. We first look for libiconv in /usr/local/lib:/usr/lib
-##    then in libc (Linux, solaris)
+##### Look for iconv. We look for libiconv in ${libdir}, /opt/local/lib,
+##### /usr/local/lib then in libc (Linux, solaris)
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4078,10 +4078,11 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 LIBICONV=""
 S_LDFLAGS=$LDFLAGS
-dir=/usr/local/lib
-LDFLAGS="$S_LDFLAGS -L$dir"
-unset ac_cv_lib_iconv_iconv_open
-ac_ext=cpp
+
+for dir in ${libdir} /opt/local/lib /usr/local/lib ;do
+  LDFLAGS="$S_LDFLAGS -L$dir"
+  unset ac_cv_lib_iconv_iconv_open
+  ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -4376,58 +4377,19 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_iconv_iconv_open" >&5
 $as_echo "$ac_cv_lib_iconv_iconv_open" >&6; }
 if test "x$ac_cv_lib_iconv_iconv_open" = x""yes; then :
-  LIBICONV="-L$dir -liconv";INCICONV=-I/usr/local/include
+  LIBICONV="-L$dir -liconv";INCICONV=-I$dir/../include
 fi
 
-if test A"$LIBICONV" = A ; then
+  if test A"$LIBICONV" != A ; then
+     break
+  fi
+done
+
+if test A"$LIBICONV" = A; then
   dir=${libdir}
   LDFLAGS="$S_LDFLAGS -L$dir"
   unset ac_cv_lib_iconv_iconv_open
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv_open in -liconv" >&5
-$as_echo_n "checking for iconv_open in -liconv... " >&6; }
-if test "${ac_cv_lib_iconv_iconv_open+set}" = set; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-liconv  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char iconv_open ();
-int
-main ()
-{
-return iconv_open ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_iconv_iconv_open=yes
-else
-  ac_cv_lib_iconv_iconv_open=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_iconv_iconv_open" >&5
-$as_echo "$ac_cv_lib_iconv_iconv_open" >&6; }
-if test "x$ac_cv_lib_iconv_iconv_open" = x""yes; then :
-  LIBICONV="-L$dir -liconv";INCICONV=-I/usr/include
-fi
-
-  if test A"$LIBICONV" = A; then
-    dir=${libdir}
-    LDFLAGS="$S_LDFLAGS -L$dir"
-    unset ac_cv_lib_iconv_iconv_open
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv_open in -lc" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv_open in -lc" >&5
 $as_echo_n "checking for iconv_open in -lc... " >&6; }
 if test "${ac_cv_lib_c_iconv_open+set}" = set; then :
   $as_echo_n "(cached) " >&6
@@ -4467,8 +4429,8 @@ if test "x$ac_cv_lib_c_iconv_open" = x""yes; then :
   LIBICONV=NONE;INCICONV=-I/usr/include
 fi
 
-  fi
 fi
+
 LDFLAGS=$S_LDFLAGS
 if test A"$LIBICONV" = A ; then
    as_fn_error "Cannot find iconv_open anywhere. Please install iconv" "$LINENO" 5
