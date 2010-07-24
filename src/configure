@@ -4069,7 +4069,11 @@ done
 
 
 ##### Look for iconv. We look for libiconv in ${libdir}, /opt/local/lib,
-##### /usr/local/lib then in libc (Linux, solaris)
+##### /usr/local/lib then in libc (Linux, solaris). Note that there is no
+##### way to find libiconv in /usr/local if one exists in ${libdir} (can't
+##### do because the link will always succeed in this case so that if we
+##### put /usr/local/lib in front in this case, we may end up with using it
+##### even if no libiconv in there. We'd need a --with-libiconv= option
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
