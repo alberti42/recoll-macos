@@ -76,7 +76,7 @@ class FsIndexer : public FsTreeWalkerCB {
     FsTreeWalker m_walker;
     RclConfig   *m_config;
     Rcl::Db     *m_db;
-    string       m_tmpdir;
+    TempDir     m_tmpdir;
     string       m_reason;
     DbIxStatusUpdater *m_updater;
     list<string> m_tdl;

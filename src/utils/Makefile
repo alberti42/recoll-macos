@@ -90,7 +90,7 @@ trsmallut.o : smallut.cpp smallut.h
 
 WIPEDIR_OBJS= trwipedir.o  $(BIGLIB) 
 wipedir : $(WIPEDIR_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o wipedir $(WIPEDIR_OBJS) $(LIBICONV)
+	$(CXX) $(ALL_CXXFLAGS) -o wipedir $(WIPEDIR_OBJS) -L/opt/local/lib -liconv
 trwipedir.o : wipedir.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_WIPEDIR -c -o trwipedir.o \
 	       wipedir.cpp

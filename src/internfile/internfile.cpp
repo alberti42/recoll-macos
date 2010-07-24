@@ -41,7 +41,6 @@ using namespace std;
 #include "mimehandler.h"
 #include "execmd.h"
 #include "pathut.h"
-#include "wipedir.h"
 #include "rclconfig.h"
 #include "mh_html.h"
 #include "fileudi.h"
@@ -111,12 +110,12 @@ bool FileInterner::getEnclosing(const string &url, const string &ipath,
 // Uncompress input file into a temporary one, by executing the appropriate
 // script.
 static bool uncompressfile(RclConfig *conf, const string& ifn, 
-			   const list<string>& cmdv, const string& tdir, 
+			   const list<string>& cmdv, TempDir& tdir, 
 			   string& tfile)
 {
     // Make sure tmp dir is empty. we guarantee this to filters
-    if (wipedir(tdir) != 0) {
-	LOGERR(("uncompressfile: can't clear temp dir %s\n", tdir.c_str()));
+    if (!tdir.ok() || !tdir.wipe()) {
+	LOGERR(("uncompressfile: can't clear temp dir %s\n", tdir.dirname()));
 	return false;
     }
     string cmd = cmdv.front();
@@ -127,7 +126,7 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     list<string> args;
     map<char, string> subs;
     subs['f'] = ifn;
-    subs['t'] = tdir;
+    subs['t'] = tdir.dirname();
     for (; it != cmdv.end(); it++) {
 	string ns;
 	pcSubst(*it, ns, subs);
@@ -140,7 +139,7 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     if (status || tfile.empty()) {
 	LOGERR(("uncompressfile: doexec: failed for [%s] status 0x%x\n", 
 		ifn.c_str(), status));
-	if (wipedir(tdir.c_str())) {
+	if (!tdir.wipe()) {
 	    LOGERR(("uncompressfile: wipedir failed\n"));
 	}
 	return false;
@@ -153,7 +152,7 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
 // Delete temporary uncompressed file
 void FileInterner::tmpcleanup()
 {
-    if (m_tdir.empty() || m_tfile.empty())
+    if (m_tfile.empty())
 	return;
     if (unlink(m_tfile.c_str()) < 0) {
 	LOGERR(("FileInterner::tmpcleanup: unlink(%s) errno %d\n", 
@@ -171,15 +170,15 @@ void FileInterner::tmpcleanup()
 // Split into "constructor calls init()" to allow use from other constructor
 FileInterner::FileInterner(const string &f, const struct stat *stp,
 			   RclConfig *cnf, 
-			   const string& td, int flags, const string *imime)
+			   TempDir& td, int flags, const string *imime)
     : m_tdir(td), m_ok(false)
 {
     initcommon(cnf, flags);
-    init(f, stp, cnf, td, flags, imime);
+    init(f, stp, cnf, flags, imime);
 }
 
 void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
-                        const string& td, int flags, const string *imime)
+                        int flags, const string *imime)
 {
     m_fn = f;
 
@@ -230,7 +229,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		    return;
 		}
 		LOGDEB1(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
-			 m_tdir.c_str(), m_tfile.c_str()));
+			 m_tdir.dirname(), m_tfile.c_str()));
 		m_fn = m_tfile;
 		// Note: still using the original file's stat. right ?
 		l_mime = mimetype(m_fn, stp, m_cfg, usfci);
@@ -287,15 +286,15 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 
 // Setup from memory data (ie: out of the web cache). imime needs to be set.
 FileInterner::FileInterner(const string &data, RclConfig *cnf, 
-                           const string& td, int flags, const string& imime)
+                           TempDir& td, int flags, const string& imime)
     : m_tdir(td), m_ok(false)
 {
     initcommon(cnf, flags);
-    init(data, cnf, td, flags, imime);
+    init(data, cnf, flags, imime);
 }
 
 void FileInterner::init(const string &data, RclConfig *cnf, 
-                        const string& td, int flags, const string& imime)
+                        int flags, const string& imime)
 {
     if (imime.empty()) {
 	LOGERR(("FileInterner: inmemory constructor needs input mime type\n"));
@@ -354,7 +353,7 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
 }
 
 FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, 
-                           const string& td, int flags)
+                           TempDir& td, int flags)
     : m_tdir(td), m_ok(false)
 {
     LOGDEB(("FileInterner::FileInterner(idoc)\n"));
@@ -390,7 +389,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
                     fn.c_str()));
             return;
         }
-        init(fn, &st, cnf, td, flags, &idoc.mimetype);
+        init(fn, &st, cnf, flags, &idoc.mimetype);
     } else if (!backend.compare("BGL")) {
         // Retrieve from our webcache (beagle data). The beagler
         // object is created at the first call of this routine and
@@ -414,7 +413,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
             LOGINFO(("FileInterner:: udi [%s], mimetp mismatch: in: [%s], bgl "
                      "[%s]\n", idoc.mimetype.c_str(), dotdoc.mimetype.c_str()));
         }
-        init(data, cnf, td, flags, dotdoc.mimetype);
+        init(data, cnf, flags, dotdoc.mimetype);
     } else {
         LOGERR(("FileInterner:: unknown backend: [%s]\n", backend.c_str()));
         return;
@@ -868,20 +867,6 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	return FIAgain;
 }
 
-// Automatic cleanup of iDocToFile's temp dir
-class DirWiper {
- public:
-    string dir;
-    bool do_it;
-    DirWiper(string d) : dir(d), do_it(true) {}
-    ~DirWiper() {
-	if (do_it) {
-	    wipedir(dir);
-	    rmdir(dir.c_str());
-	}
-    }
-};
-
 // Temporary while we fix backend things
 static string urltolocalpath(string url)
 {
@@ -894,8 +879,7 @@ static string urltolocalpath(string url)
 // the input mtype, so that no data conversion is performed.
 // We then write the data out of the resulting document into the output file.
 // There are two temporary objects:
-// - The internfile temporary directory gets destroyed before we
-//   return by the DirWiper object
+// - The internfile temporary directory gets destroyed by its destructor
 // - The output temporary file which is held in a reference-counted
 //   object and will be deleted when done with.
 bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
@@ -904,10 +888,7 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     LOGDEB(("FileInterner::idocToFile\n"));
     idoc.dump();
 
-    string tmpdir, reason;
-    if (!maketmpdir(tmpdir, reason))
-	return false;
-    DirWiper wiper(tmpdir);
+    TempDir tmpdir;
 
     // We set FIF_forPreview for consistency with the previous version
     // which determined this by looking at mtype!=null. Probably

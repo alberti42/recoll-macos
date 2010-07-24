@@ -233,25 +233,20 @@ public:
 
 void RecollProtocol::showPreview(const Rcl::Doc& idoc)
 {
-    string tmpdir;
-    string reason;
-    if (!maketmpdir(tmpdir, reason)) {
-	error(KIO::ERR_SLAVE_DEFINED, "Cannot create temporary directory");
+    TempDir tmpdir;
+    if (!tmpdir.ok()) {
+	error(KIO::ERR_SLAVE_DEFINED, "Cannot create temp directory");
 	return;
     }
+
     FileInterner interner(idoc, o_rclconfig, tmpdir, 
                           FileInterner::FIF_forPreview);
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
     if (!interner.internfile(fdoc, ipath)) {
-	wipedir(tmpdir);
-	rmdir(tmpdir.c_str());
 	error(KIO::ERR_SLAVE_DEFINED, "Cannot convert file to internal format");
 	return;
     }
-    wipedir(tmpdir);
-    rmdir(tmpdir.c_str());
-
     if (!interner.get_html().empty()) {
 	fdoc.text = interner.get_html();
 	fdoc.mimetype = "text/html";

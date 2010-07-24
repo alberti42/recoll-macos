@@ -763,7 +763,7 @@ class LoadThread : public QThread {
     Rcl::Doc& out;
     const Rcl::Doc& idoc;
     string filename;
-    string tmpdir;
+    TempDir tmpdir;
     int loglevel;
  public: 
     string missing;
@@ -773,18 +773,14 @@ class LoadThread : public QThread {
 	    loglevel = DebugLog::getdbl()->getlevel();
 	}
     ~LoadThread() {
-	if (tmpdir.length()) {
-	    wipedir(tmpdir);
-	    rmdir(tmpdir.c_str());
-	}
     }
     virtual void run() {
 	DebugLog::getdbl()->setloglevel(loglevel);
 	string reason;
-	if (!maketmpdir(tmpdir, reason)) {
+	if (!tmpdir.ok()) {
 	    QMessageBox::critical(0, "Recoll",
 				  Preview::tr("Cannot create temporary directory"));
-	    LOGERR(("Preview: %s\n", reason.c_str()));
+	    LOGERR(("Preview: %s\n", tmpdir.getreason().c_str()));
 	    *statusp = -1;
 	    return;
 	}

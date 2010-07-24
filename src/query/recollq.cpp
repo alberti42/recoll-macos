@@ -46,18 +46,9 @@ using namespace std;
 #include "transcode.h"
 #include "textsplit.h"
 
-bool dump_contents(RclConfig *rclconfig, string& tmpdir, Rcl::Doc& idoc)
+bool dump_contents(RclConfig *rclconfig, TempDir& tmpdir, Rcl::Doc& idoc)
 {
-    if (tmpdir.empty() || access(tmpdir.c_str(), 0) < 0) {
-	string reason;
-	if (!maketmpdir(tmpdir, reason)) {
-	    cerr << "Cannot create temporary directory: "
-		 << reason << endl;
-	    return false;
-	}
-    }
-    wipedir(tmpdir);
-    FileInterner interner(idoc, rclconfig, tmpdir, 
+    FileInterner interner(idoc, rclconfig, tmpdir,
                           FileInterner::FIF_forPreview);
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
@@ -263,7 +254,12 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	    cout << cnt << " results (printing  " << limit << " max):" << endl;
     }
 
-    string tmpdir;
+    TempDir tmpdir;
+    if (!tmpdir.ok()) {
+	cerr << "Can't create temporary directory: " << 
+	    tmpdir.getreason() << endl;
+	exit(1);
+    }
     for (int i = 0; i < limit; i++) {
 	Rcl::Doc doc;
 	if (!query.getDoc(i, doc))
@@ -298,14 +294,6 @@ int recollq(RclConfig **cfp, int argc, char **argv)
         if (op_flags & OPT_d) {
             dump_contents(rclconfig, tmpdir, doc);
         }	
-    }
-
-    // Maybe clean up temporary directory
-    if (tmpdir.length()) {
-	wipedir(tmpdir);
-	if (rmdir(tmpdir.c_str()) < 0) {
-	    cerr << "Cannot clear temp dir " << tmpdir << endl;
-	}
     }
 
     return 0;

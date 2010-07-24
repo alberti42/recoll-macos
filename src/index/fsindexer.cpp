@@ -67,26 +67,10 @@ using namespace std;
 #endif
 
 FsIndexer::~FsIndexer() {
-    // Maybe clean up temporary directory
-    if (!m_tmpdir.empty()) {
-	wipedir(m_tmpdir);
-	if (rmdir(m_tmpdir.c_str()) < 0) {
-	    LOGERR(("FsIndexer::~FsIndexer: cannot clear temp dir %s\n",
-		    m_tmpdir.c_str()));
-	}
-    }
 }
 
 bool FsIndexer::init()
 {
-    if (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0) {
-	if (!maketmpdir(m_tmpdir, m_reason)) {
-	    LOGERR(("FsIndexer: cannot create temporary directory: %s\n",
-		    m_reason.c_str()));
-            m_tmpdir.erase();
-	    return false;
-	}
-    }
     if (m_tdl.empty()) {
         m_tdl = m_config->getTopdirs();
         if (m_tdl.empty()) {

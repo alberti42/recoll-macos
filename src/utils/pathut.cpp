@@ -26,22 +26,6 @@ static char rcsid[] = "@(#$Id: pathut.cpp,v 1.23 2008-11-24 15:47:40 dockes Exp 
 #include <sys/param.h>
 #include <pwd.h>
 #include <math.h>
-#include <cstdlib>
-#include <cstring>
-
-#include <iostream>
-#include <list>
-#include <stack>
-#ifndef NO_NAMESPACES
-using std::string;
-using std::list;
-using std::stack;
-#endif /* NO_NAMESPACES */
-
-#include "autoconfig.h"
-#include "pathut.h"
-#include "transcode.h"
-
 #include <sys/types.h>
 // Let's include all files where statfs can be defined and hope for no
 // conflict...
@@ -57,6 +41,21 @@ using std::stack;
 #ifdef HAVE_SYS_VFS_H 
 #include <sys/vfs.h>
 #endif
+
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <list>
+#include <stack>
+#ifndef NO_NAMESPACES
+using std::string;
+using std::list;
+using std::stack;
+#endif /* NO_NAMESPACES */
+
+#include "pathut.h"
+#include "transcode.h"
+#include "wipedir.h"
 
 bool fsocc(const string &path, int *pc, long *blocks)
 {
@@ -155,7 +154,7 @@ TempFileInternal::TempFileInternal(const string& suffix)
     int fd;
     if ((fd = mkstemp(cp)) < 0) {
 	free(cp);
-	m_reason = "maketmpdir: mkstemp failed\n";
+	m_reason = "TempFileInternal: mkstemp failed\n";
 	return;
     }
     close(fd);
@@ -177,6 +176,34 @@ TempFileInternal::~TempFileInternal()
 	unlink(m_filename.c_str());
 }
 
+TempDir::TempDir()
+{
+    if (!maketmpdir(m_dirname, m_reason)) {
+	m_dirname.erase();
+	return;
+    }
+}
+
+TempDir::~TempDir()
+{
+    if (!m_dirname.empty()) {
+	(void)wipedir(m_dirname, true, true);
+	m_dirname.erase();
+    }
+}
+
+bool TempDir::wipe()
+{
+    if (m_dirname.empty()) {
+	m_reason = "TempDir::wipe: no directory !\n";
+	return false;
+    }
+    if (wipedir(m_dirname, false, true)) {
+	m_reason = "TempDir::wipe: wipedir failed\n";
+	return false;
+    }
+    return true;
+}
 
 void path_catslash(string &s) {
     if (s.empty() || s[s.length() - 1] != '/')

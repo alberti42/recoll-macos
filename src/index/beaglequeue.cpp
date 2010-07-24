@@ -187,28 +187,12 @@ BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
     if (!m_config->getConfParam("beaglequeuedir", m_queuedir))
         m_queuedir = path_tildexpand("~/.beagle/ToIndex/");
     path_catslash(m_queuedir);
-
-    if (m_db && (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0)) {
-	string reason;
-        if (!maketmpdir(m_tmpdir, reason)) {
-	    LOGERR(("DbIndexer: cannot create temporary directory: %s\n",
-		    reason.c_str()));
-            m_tmpdir = badtmpdirname;
-	}
-    }
     m_cache = new BeagleQueueCache(cnf);
 }
 
 BeagleQueueIndexer::~BeagleQueueIndexer()
 {
     LOGDEB(("BeagleQueueIndexer::~\n"));
-    if (m_tmpdir.length() && m_tmpdir.compare(badtmpdirname)) {
-	wipedir(m_tmpdir);
-	if (rmdir(m_tmpdir.c_str()) < 0) {
-	    LOGERR(("BeagleQueueIndexer::~: cannot clear temp dir %s\n",
-		    m_tmpdir.c_str()));
-	}
-    }
     deleteZ(m_cache);
 }
 

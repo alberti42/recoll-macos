@@ -89,7 +89,7 @@ class FileInterner {
      *   mime type for the uncompressed version. 
      */
     FileInterner(const string &fn, const struct stat *stp, 
-		 RclConfig *cnf, const string& td, int flags,
+		 RclConfig *cnf, TempDir &td, int flags,
 		 const string *mtype = 0);
     
     /** 
@@ -97,7 +97,7 @@ class FileInterner {
      * This is mainly for data extracted from the web cache. The mime type
      * must be set, input must be uncompressed.
      */
-    FileInterner(const string &data, RclConfig *cnf, const string& td, 
+    FileInterner(const string &data, RclConfig *cnf, TempDir &td, 
                  int flags, const string& mtype);
 
     /**
@@ -106,7 +106,7 @@ class FileInterner {
      * best. This is only used at query time, the idoc was built from index 
      * data.
      */
-    FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, const string& td, 
+    FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, TempDir &td, 
                  int flags);
 
     ~FileInterner();
@@ -171,7 +171,7 @@ class FileInterner {
     string                 m_targetMType;
     string                 m_reachedMType; // target or text/plain
     // m_tdir and m_tfile are used only for decompressing input file if needed
-    const string&          m_tdir; 
+    TempDir                &m_tdir; 
     string                 m_tfile;
     bool                   m_ok; // Set after construction if ok
 #ifdef RCL_USE_XATTR
@@ -196,10 +196,9 @@ class FileInterner {
 
     // Pseudo-constructors
     void init(const string &fn, const struct stat *stp, 
-              RclConfig *cnf, const string& td, int flags,
-              const string *mtype = 0);
-    void init(const string &data, RclConfig *cnf, const string& td, 
-              int flags, const string& mtype);
+              RclConfig *cnf, int flags, const string *mtype = 0);
+    void init(const string &data, RclConfig *cnf, int flags, 
+	      const string& mtype);
     void initcommon(RclConfig *cnf, int flags);
 
     void tmpcleanup();

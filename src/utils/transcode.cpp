@@ -19,8 +19,7 @@ static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.12 2008-09-15 08:01:29 dockes E
  */
 
 #ifndef TEST_TRANSCODE
-
-#include <errno.h>
+#include "autoconfig.h"
 
 #include <string>
 #include <iostream>
@@ -28,11 +27,11 @@ static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.12 2008-09-15 08:01:29 dockes E
 using std::string;
 #endif /* NO_NAMESPACES */
 
+#include <errno.h>
 #include <iconv.h>
 
 #include "transcode.h"
 #include "debuglog.h"
-#include "autoconfig.h"
 
 #ifdef RCL_ICONV_INBUF_CONST
 #define ICV_P2_TYPE const char**

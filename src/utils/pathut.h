@@ -87,4 +87,18 @@ private:
 
 typedef RefCntr<TempFileInternal> TempFile;
 
+/// Temporary directory class
+class TempDir {
+public:
+    TempDir();
+    ~TempDir();
+    const char *dirname() {return m_dirname.c_str();}
+    const string &getreason() {return m_reason;}
+    bool ok() {return !m_dirname.empty();}
+    bool wipe();
+private:
+    string m_dirname;
+    string m_reason;
+};
+
 #endif /* _PATHUT_H_INCLUDED_ */

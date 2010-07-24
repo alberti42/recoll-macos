@@ -21,9 +21,9 @@
 #include <string>
 
 /**
- *  Remove all files inside directory (not recursive). 
+ *  Remove all files inside directory.
  * @return  0 if ok, count of remaining entries (ie: subdirs), or -1 for error
  */
-int wipedir(const std::string& dirname);
+int wipedir(const std::string& dirname, bool topalso = 0, bool recurse = 0);
 
 #endif /* _FILEUT_H_INCLUDED_ */

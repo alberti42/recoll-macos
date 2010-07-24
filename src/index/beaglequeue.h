@@ -69,7 +69,7 @@ private:
     Rcl::Db   *m_db;
     BeagleQueueCache  *m_cache;
     string     m_queuedir;
-    string     m_tmpdir;
+    TempDir    m_tmpdir;
     DbIxStatusUpdater *m_updater;
     bool       m_nocacheindex;
 
