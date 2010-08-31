@@ -24,6 +24,8 @@ static char rcsid[] = "@(#$Id: recollindex.cpp,v 1.38 2008-10-14 06:07:42 dockes
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include <iostream>
 #include <list>
