@@ -144,59 +144,55 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
     QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(this);
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
-    QGROUPBOX *gb1 = new QGROUPBOX(1, Qt::Horizontal, this);
-    gb1->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-					  QSizePolicy::Preferred,
-					  1,  // Horizontal stretch
-					  3,  // Vertical stretch
-			    gb1->sizePolicy().hasHeightForWidth()));
-    gb1->setFlat(1);
-    // gb1->setInsideMargin(0);
-    // gb1->setInsideSpacing(0);
 
     ConfLink lnk1(new ConfLinkRclRep(config, "processbeaglequeue"));
     ConfParamBoolW* cp1 = 
-        new ConfParamBoolW(gb1, lnk1, tr("Steal Beagle indexing queue"),
+        new ConfParamBoolW(this, lnk1, tr("Steal Beagle indexing queue"),
                            tr("Beagle MUST NOT be running. Enables processing "
                           "the beagle queue to index Firefox web history.<br>"
                           "(you should also install the Firefox Beagle plugin)"
 			  ));
+    vboxLayout->addWidget(cp1);
 
     ConfLink lnk2(new ConfLinkRclRep(config, "webcachedir"));
     ConfParamFNW* cp2 = 
-        new ConfParamFNW(gb1, lnk2, tr("Web cache directory name"),
+        new ConfParamFNW(this, lnk2, tr("Web cache directory name"),
 		     tr("The name for a directory where to store the cache "
 			"for visited web pages.<br>"
                         "A non-absolute path is taken relative to the "
 			"configuration directory."), true);
     cp2->setEnabled(cp1->m_cb->isOn());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp2, SLOT(setEnabled(bool)));
+    vboxLayout->addWidget(cp2);
 
     ConfLink lnk3(new ConfLinkRclRep(config, "webcachemaxmbs"));
     ConfParamIntW *cp3 =
-        new ConfParamIntW(gb1, lnk3, tr("Max. size for the web cache (MB)"),
+        new ConfParamIntW(this, lnk3, tr("Max. size for the web cache (MB)"),
 		      tr("Entries will be recycled once the size is reached"),
                           -1, 1000);
     cp3->setEnabled(cp1->m_cb->isOn());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp3, SLOT(setEnabled(bool)));
-
-    vboxLayout->addWidget(gb1);
-
+    vboxLayout->addWidget(cp3);
+    vboxLayout->insertStretch(-1);
 }
 
 ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     : QWidget(parent)
 {
-    QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(this);
-    vboxLayout->setSpacing(spacing);
-    vboxLayout->setMargin(margin);
+    QGridLayout *gl1 = new QGridLayout(this);
+    gl1->setSpacing(spacing);
+    gl1->setMargin(margin);
 
     ConfLink lnktopdirs(new ConfLinkRclRep(config, "topdirs"));
     ConfParamDNLW *etopdirs = new 
 	ConfParamDNLW(this, lnktopdirs, tr("Top directories"),
 		      tr("The list of directories where recursive "
 			 "indexing starts. Default: your home."));
-    vboxLayout->addWidget(etopdirs);
+#if QT_VERSION < 0x040000
+    gl1->addMultiCellWidget(etopdirs, 0, 0, 0, 1);
+#else
+    gl1->addWidget(etopdirs, 0, 0, 1, 2);
+#endif
 
     ConfLink lnkskp(new ConfLinkRclRep(config, "skippedPaths"));
     ConfParamSLW *eskp = new 
@@ -208,8 +204,12 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			"includes '/home/me' and '/home' is actually a link "
 			"to '/usr/home', a correct skippedPath entry "
 			"would be '/home/me/tmp*', not '/usr/home/me/tmp*')"));
-    vboxLayout->addWidget(eskp);
     eskp->setFsEncoding(true);
+#if QT_VERSION < 0x040000
+    gl1->addMultiCellWidget(eskp, 1, 1, 0, 1);
+#else
+    gl1->addWidget(eskp, 1, 0, 1, 2);
+#endif
 
     list<string> cstemlangs = Rcl::Db::getStemmerNames();
     QStringList stemlangs;
@@ -222,74 +222,66 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 	ConfParamCSLW(this, lnkidxsl, tr("Stemming languages"),
 		      tr("The languages for which stemming expansion<br>"
 			 "dictionaries will be built."), stemlangs);
-    vboxLayout->addWidget(eidxsl);
+#if QT_VERSION < 0x040000
+    gl1->addMultiCellWidget(eidxsl, 2, 2, 0, 1);
+#else
+    gl1->addWidget(eidxsl, 2, 0, 1, 2);
+#endif
 
     ConfLink lnk4(new ConfLinkRclRep(config, "logfilename"));
     ConfParamFNW *e4 = new 
 	ConfParamFNW(this, lnk4, tr("Log file name"),
 		     tr("The file where the messages will be written.<br>"
 			"Use 'stderr' for terminal output"), false);
-    vboxLayout->addWidget(e4);
+#if QT_VERSION < 0x040000
+    gl1->addMultiCellWidget(e4, 3, 3, 0, 1);
+#else
+    gl1->addWidget(e4, 3, 0, 1, 2);
+#endif
 
-    QGROUPBOX *groupbox1 = new QGROUPBOX(2, Qt::Horizontal, this);
-    groupbox1->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-					  QSizePolicy::Preferred,
-					  1,  // Horizontal stretch
-					  3,  // Vertical stretch
-			    groupbox1->sizePolicy().hasHeightForWidth()));
-    groupbox1->setFlat(1);
-    groupbox1->setInsideMargin(0);
-    groupbox1->setInsideSpacing(0);
+    QWidget *w = 0;
 
     ConfLink lnk1(new ConfLinkRclRep(config, "loglevel"));
-    new ConfParamIntW(groupbox1, lnk1, tr("Log verbosity level"),
+    w = new ConfParamIntW(this, lnk1, tr("Log verbosity level"),
 		      tr("This value adjusts the amount of "
 			 "messages,<br>from only errors to a "
 			 "lot of debugging data."), 0, 6);
+    gl1->addWidget(w, 4, 0);
 
     ConfLink lnkidxflsh(new ConfLinkRclRep(config, "idxflushmb"));
-
-    new ConfParamIntW(groupbox1, lnkidxflsh, 
-                      tr("Index flush megabytes interval"),
-		      tr("This value adjust the amount of "
+    w = new ConfParamIntW(this, lnkidxflsh, 
+                          tr("Index flush megabytes interval"),
+                          tr("This value adjust the amount of "
 			 "data which is indexed between flushes to disk.<br>"
 			 "This helps control the indexer memory usage. "
 			 "Default 10MB "), 0, 1000);
+    gl1->addWidget(w, 4, 1);
 
     ConfLink lnkfsocc(new ConfLinkRclRep(config, "maxfsoccuppc"));
-    new ConfParamIntW(groupbox1, lnkfsocc, tr("Max disk occupation (%)"),
+    w = new ConfParamIntW(this, lnkfsocc, tr("Max disk occupation (%)"),
 		      tr("This is the percentage of disk occupation where "
 			 "indexing will fail and stop (to avoid filling up "
 			 "your disk).<br>"
 			 "0 means no limit (this is the default)."), 0, 100);
+    gl1->addWidget(w, 5, 0);
 
     ConfLink lnkusfc(new ConfLinkRclRep(config, "usesystemfilecommand"));
-    new ConfParamBoolW(groupbox1, lnkusfc, tr("Use system's 'file' command"),
+    w = new ConfParamBoolW(this, lnkusfc, tr("Use system's 'file' command"),
 		       tr("Use the system's 'file' command if internal<br>"
 			  "mime type identification fails."));
-    vboxLayout->addWidget(groupbox1);
-
-
-    QGROUPBOX *groupbox2 = new QGROUPBOX(2, Qt::Horizontal, this);
-    groupbox2->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-					  QSizePolicy::Preferred,
-					  1,  // Horizontal stretch
-					  3,  // Vertical stretch
-			    groupbox1->sizePolicy().hasHeightForWidth()));
-    groupbox2->setFlat(1);
-    groupbox2->setInsideMargin(0);
-    groupbox2->setInsideSpacing(0);
-
+    gl1->addWidget(w, 5, 1);
+    
     ConfLink lnknaspl(new ConfLinkRclRep(config, "noaspell"));
     ConfParamBoolW* cpasp =
-    new ConfParamBoolW(groupbox2, lnknaspl, tr("No aspell usage"),
+    new ConfParamBoolW(this, lnknaspl, tr("No aspell usage"),
 		       tr("Disables use of aspell to generate spelling "
 			  "approximation in the term explorer tool.<br> "
 			  "Useful if aspell is absent or does not work. "));
+    gl1->addWidget(cpasp, 6, 0);
 
     ConfLink lnk2(new ConfLinkRclRep(config, "aspellLanguage"));
     ConfParamStrW* cpaspl =
-        new ConfParamStrW(groupbox2, lnk2, tr("Aspell language"),
+        new ConfParamStrW(this, lnk2, tr("Aspell language"),
 		      tr("The language for the aspell dictionary. "
 			 "This should look like 'en' or 'fr' ...<br>"
 			 "If this value is not set, the NLS environment "
@@ -299,8 +291,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			 "the 'data-dir' directory. "));
     cpaspl->setEnabled(!cpasp->m_cb->isOn());
     connect(cpasp->m_cb, SIGNAL(toggled(bool)), cpaspl,SLOT(setDisabled(bool)));
-
-    vboxLayout->addWidget(groupbox2);
+    gl1->addWidget(cpaspl, 6, 1);
 
     ConfLink lnkdbd(new ConfLinkRclRep(config, "dbdir"));
     ConfParamFNW *edbd = new 
@@ -309,8 +300,11 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			"A non-absolute path is taken relative to the "
 			" configuration directory. The default is 'xapiandb'."
 			), true);
-    vboxLayout->addWidget(edbd);
-
+#if QT_VERSION < 0x040000
+    gl1->addMultiCellWidget(edbd, 7, 7, 0, 1);
+#else
+    gl1->addWidget(edbd, 7, 0, 1, 2);
+#endif
 }
 
 ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
@@ -364,14 +358,25 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 					  1,  // Horizontal stretch
 					  3,  // Vertical stretch
 			    m_groupbox->sizePolicy().hasHeightForWidth()));
+
+    QWidget *w = new QWidget(m_groupbox);
+    QGridLayout *gl1 = new QGridLayout(w);
+    gl1->setSpacing(spacing);
+    gl1->setMargin(margin);
+
     ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames", &m_sk));
     ConfParamSLW *eskn = new 
-	ConfParamSLW(m_groupbox, lnkskn, 
+	ConfParamSLW(w, lnkskn, 
 		     QObject::tr("Skipped names"),
 		     QObject::tr("These are patterns for file or directory "
 				 " names which should not be indexed."));
-    m_widgets.push_back(eskn);
     eskn->setFsEncoding(true);
+    m_widgets.push_back(eskn);
+#if QT_VERSION < 0x040000
+    gl1->addMultiCellWidget(eskn, 0, 0, 0, 1);
+#else
+    gl1->addWidget(eskn, 0, 0, 1, 2);
+#endif
 
     list<string> args;
     args.push_back("-l");
@@ -394,7 +399,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnk21(new ConfLinkRclRep(config, "defaultcharset", &m_sk));
     ConfParamCStrW *e21 = new 
-	ConfParamCStrW(m_groupbox, lnk21, 
+	ConfParamCStrW(w, lnk21, 
 		       QObject::tr("Default character set"),
 		       QObject::tr("This is the character set used for reading files "
 			  "which do not identify the character set "
@@ -403,48 +408,46 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 			  "and the value from the NLS environnement is used."
 			  ), charsets);
     m_widgets.push_back(e21);
-
-    QGROUPBOX *groupbox1 = new QGROUPBOX(2, Qt::Horizontal, m_groupbox);
-    groupbox1->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-					  QSizePolicy::Preferred,
-					  1,  // Horizontal stretch
-					  3,  // Vertical stretch
-			    groupbox1->sizePolicy().hasHeightForWidth()));
-    groupbox1->setFlat(1);
-    groupbox1->setInsideMargin(0);
-    groupbox1->setInsideSpacing(0);
+#if QT_VERSION < 0x040000
+    gl1->addMultiCellWidget(e21, 1, 1, 0, 1);
+#else
+    gl1->addWidget(e21, 1, 0, 1, 2);
+#endif
 
     ConfLink lnk3(new ConfLinkRclRep(config, "followLinks", &m_sk));
     ConfParamBoolW *e3 = new 
-	ConfParamBoolW(groupbox1, lnk3, 
+	ConfParamBoolW(w, lnk3, 
 		        QObject::tr("Follow symbolic links"),
 		        QObject::tr("Follow symbolic links while "
 			  "indexing. The default is no, "
 			  "to avoid duplicate indexing"));
     m_widgets.push_back(e3);
+    gl1->addWidget(e3, 2, 0);
 
     ConfLink lnkafln(new ConfLinkRclRep(config, "indexallfilenames", &m_sk));
     ConfParamBoolW *eafln = new 
-	ConfParamBoolW(groupbox1, lnkafln, 
+	ConfParamBoolW(w, lnkafln, 
 		       QObject::tr("Index all file names"),
 		       QObject::tr("Index the names of files for which the contents "
 			  "cannot be identified or processed (no or "
 			  "unsupported mime type). Default true"));
     m_widgets.push_back(eafln);
+    gl1->addWidget(eafln, 2, 1);
 
     ConfLink lnkzfmaxkbs(new ConfLinkRclRep(config, "compressedfilemaxkbs"));
     ConfParamIntW *ezfmaxkbs = new 
-	ConfParamIntW(groupbox1, lnkzfmaxkbs, 
+	ConfParamIntW(w, lnkzfmaxkbs, 
 		      tr("Max. compressed file size (KB)"),
 		      tr("This value sets a threshold beyond which compressed"
 			 "files will not be processed. Set to -1 for no "
 			 "limit, to 0 for no decompression ever."),
 		      -1, 1000000, -1);
     m_widgets.push_back(ezfmaxkbs);
+    gl1->addWidget(ezfmaxkbs, 3, 0);
 
     ConfLink lnktxtmaxmbs(new ConfLinkRclRep(config, "textfilemaxmbs"));
     ConfParamIntW *etxtmaxmbs = new 
-	ConfParamIntW(groupbox1, lnktxtmaxmbs, 
+	ConfParamIntW(w, lnktxtmaxmbs, 
 		      tr("Max. text file size (MB)"),
 		      tr("This value sets a threshold beyond which text "
 			 "files will not be processed. Set to -1 for no "
@@ -452,10 +455,11 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
                          "log files from the index."),
 		      -1, 1000000);
     m_widgets.push_back(etxtmaxmbs);
+    gl1->addWidget(etxtmaxmbs, 3, 1);
 
     ConfLink lnktxtpagekbs(new ConfLinkRclRep(config, "textfilepagekbs"));
     ConfParamIntW *etxtpagekbs = new 
-	ConfParamIntW(groupbox1, lnktxtpagekbs, 
+	ConfParamIntW(w, lnktxtpagekbs, 
 		      tr("Text file page size (KB)"),
 		      tr("If this value is set (not equal to -1), text "
                          "files will be split in chunks of this size for "
@@ -463,10 +467,11 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
                          " files (ie: log files)."),
 		      -1, 1000000);
     m_widgets.push_back(etxtpagekbs);
+    gl1->addWidget(etxtpagekbs, 4, 0);
 
     ConfLink lnkfiltmaxsecs(new ConfLinkRclRep(config, "filtermaxseconds"));
     ConfParamIntW *efiltmaxsecs = new 
-	ConfParamIntW(groupbox1, lnkfiltmaxsecs, 
+	ConfParamIntW(w, lnkfiltmaxsecs, 
 		      tr("Max. filter exec. time (S)"),
 		      tr("External filters working longer than this will be "
                          "aborted. This is for the rare case (ie: postscript) "
@@ -474,7 +479,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 			 "Set to -1 for no limit.\n"),
 		      -1, 10000);
     m_widgets.push_back(efiltmaxsecs);
-
+    gl1->addWidget(efiltmaxsecs, 4, 1);
 
     vboxLayout->addWidget(m_groupbox);
     subDirChanged();
@@ -492,7 +497,7 @@ void ConfSubPanelW::subDirChanged()
 {
     LOGDEB(("ConfSubPanelW::subDirChanged\n"));
     QLISTBOXITEM *item = m_subdirs->getListBox()->selectedItem();
-    if (item == 0) {
+    if (item == 0 || item->text() == "") {
 	m_sk = "";
 	m_groupbox->setTitle(tr("Global"));
     } else {
