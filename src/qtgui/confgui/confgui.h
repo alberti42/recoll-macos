@@ -104,16 +104,20 @@ namespace confgui {
     class ConfParamIntW : public ConfParamW {
 	Q_OBJECT
     public:
+        // The default value is only used if none exists in the sample
+        // configuration file. Defaults are normally set in there.
 	ConfParamIntW(QWidget *parent, ConfLink cflink, 
 		      const QString& lbltxt,
 		      const QString& tltptxt,
 		      int minvalue = INT_MIN, 
-		      int maxvalue = INT_MAX);
+		      int maxvalue = INT_MAX,
+                      int defaultvalue = 0);
 	virtual void loadValue();
     public slots:
         virtual void setEnabled(bool i) {if(m_sb) ((QWidget*)m_sb)->setEnabled(i);}
     protected:
 	QSpinBox *m_sb;
+        int       m_defaultvalue;
     };
 
     // Arbitrary string

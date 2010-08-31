@@ -439,7 +439,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		      tr("This value sets a threshold beyond which compressed"
 			 "files will not be processed. Set to -1 for no "
 			 "limit, to 0 for no decompression ever."),
-		      -1, 1000000);
+		      -1, 1000000, -1);
     m_widgets.push_back(ezfmaxkbs);
 
     ConfLink lnktxtmaxmbs(new ConfLinkRclRep(config, "textfilemaxmbs"));

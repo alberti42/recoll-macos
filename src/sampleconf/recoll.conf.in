@@ -106,7 +106,7 @@ indexallfilenames = 1
 # temporary directory for identification, which can be wasteful in some
 # cases. Limit the waste. Negative means no limit. 0 results in no
 # processing of any compressed file
-# compressedfilemaxkbs = -1
+compressedfilemaxkbs = -1
 
 # Size limit for text files. This is for skipping monster logs
 textfilemaxmbs = 20

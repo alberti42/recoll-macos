@@ -112,8 +112,9 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink,
 			     const QString& lbltxt,
 			     const QString& tltptxt,
 			     int minvalue, 
-			     int maxvalue)
-    : ConfParamW(parent, cflink)
+			     int maxvalue,
+                             int defaultvalue)
+    : ConfParamW(parent, cflink), m_defaultvalue(defaultvalue)
 {
     if (!createCommon(lbltxt, tltptxt))
 	return;
@@ -144,8 +145,10 @@ ConfParamIntW::ConfParamIntW(QWidget *parent, ConfLink cflink,
 void ConfParamIntW::loadValue()
 {
     string s;
-    m_cflink->get(s);
-    m_sb->setValue(atoi(s.c_str()));
+    if (m_cflink->get(s)) 
+        m_sb->setValue(atoi(s.c_str()));
+    else
+        m_sb->setValue(m_defaultvalue);
 }
 
 ConfParamStrW::ConfParamStrW(QWidget *parent, ConfLink cflink, 
