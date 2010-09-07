@@ -3159,7 +3159,8 @@ skippedPaths = ~/somedir/&lowast;.txt
             be indexed ("value123" would still be). Numbers are often quite
             interesting to search for, and this should probably not be set
             except for special situations, ie, scientific documents with huge
-            amounts of numbers in them. </para>
+            amounts of numbers in them. This can only be set for a whole
+            index, not for a subtree.</para>
             </listitem>
           </varlistentry>
 
