@@ -2711,17 +2711,27 @@ while query.next >= 0 and query.next < nres:
       <sect2 id="rcl.install.building.prereqs">
         <title>Prerequisites</title>
 
-      <para>At the very least, you will need to download and install the
-        <ulink url="http://www.xapian.org">xapian core package</ulink>
-          and the <ulink
-          url="http://www.trolltech.com/products/qt/index.html">qt
-          run-time and development packages</ulink>.
-          Check the <ulink url="http://www.recoll.org/download.html">
+	<para>C++ compiler. Up to &RCL; version 1.13.04, its absence can
+	manifest itself by strange messages about a missing
+	iconv_open.</para>
+
+	<para>Development files for 
+        <ulink url="http://www.xapian.org">
+         <application>Xapian core</application></ulink></para>
+
+	<para>Development files for 
+         <ulink url="http://www.trolltech.com/products/qt/index.html">
+         <application>Qt</application> </ulink>.</para>
+
+	<para>Development files for <application>X11</application> and
+	<application>zlib</application>.</para>
+
+        <para>Check the <ulink url="http://www.recoll.org/download.html">
          &RCL; download page</ulink> for up to date version
          information.</para>
 
       <para>You will most probably be able to find a binary package for
-        <application>qt</application> for your system. You may have to
+        <application>Qt</application> for your system. You may have to
         compile &XAP; but this is not difficult (if you are using
         <application>FreeBSD</application>, there is a port).</para>
 
@@ -2736,7 +2746,7 @@ while query.next >= 0 and query.next < nres:
       <sect2 id="rcl.install.building.build">
         <title>Building</title>
 
-      <para>&RCL; has been built on Linux, FreeBSD, macosx, and Solaris,
+      <para>&RCL; has been built on Linux, FreeBSD, Mac OS X, and Solaris,
       most versions after 2005 should be ok, maybe some older ones too
       (Solaris 8 is ok). If you build on another system, and
         need to modify things,
@@ -3451,21 +3461,21 @@ skippedPaths = ~/somedir/&lowast;.txt
       file. This would extract a specific mail header and
       use it as a searchable field, with data displayable inside result
       lists. (Side note: as the mail filter does no decoding on the values,
-      only plain ascii headers can be indexed, and that only the
-      first occurrence will be used in the case of multiple occurrence
-      headers).
+      only plain ascii headers can be indexed, and only the
+      first occurrence will be used for headers that occur several times).
 
 <programlisting>[prefixes]
-# Index mail_mytag contents (with the given prefix)
+# Index mailmytag contents (with the given prefix)
 mailmytag = XMTAG
 
 [stored]
-# Store mail_mytag inside the document data record
+# Store mailmytag inside the document data record (so that it can be
+# displayed - as %(mailmytag) - in result lists).
 mailmytag = 
 
 [mail]
 # Extract the X-My-Tag mail header, and use it internally with the
-# mail_mytag field name
+# mailmytag field name
 x-my-tag = mailmytag
 </programlisting>
 </para>

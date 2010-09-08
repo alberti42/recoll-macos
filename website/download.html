@@ -118,52 +118,63 @@
 
       <h2><a name="source">Source</a></h2>
 
-      <p><b>Current version:</b> 1.13.04: 
+      <h3>Current version:1.13.04:</h3> 
       <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches( -->
-      
-	<a href="recoll-1.13.04.tar.gz">recoll-1.13.04.tar.gz</a>.
+       <p><a href="recoll-1.13.04.tar.gz">recoll-1.13.04.tar.gz</a>.
 	Recoll 1.13.04 fixes stemming, which was broken in 1.13.
 	<a href="CHANGES.html">Changes</a>. <a href="BUGS.html">Bugs</a>.
 	</p>
 
-      <p>If you want to build Recoll from source, you will need to install
-	the Xapian core development libraries. You will find source and
-	binary packages on the <a href="http://www.xapian.org/download.php">
-	  Xapian download page</a>. 
-	Recoll 1.13 needs at least xapian 1.0.5, I suggest using the
-	latest 1.0 Xapian (1.0.18 currently). It's at least quite
-	preferable to use a Xapian version after 1.0.12 as they don't
-	need the <a href="BUGS.html#XapianNearPatch">NEAR patch</a>
-	any more.</p>
+      <h3>Prerequisites for building from source:</h3>
+        <ul>
+	 <li>C++ compiler. Its absence sometimes manifests itself by
+	 strange messages about iconv_open (fixed after 1.13.04).</li>
 
-      <p><a name="xapian12-src"><em>Compiling with Xapian
-	    1.2:</em></a> because of some small 
-	include file issues, Recoll 1.13 does not compile with Xapian
-	1.2. You can apply this <a href="files/xapian12.patch">small
-	  patch</a> to fix the problem. With the patch applied, Recoll
-	works just fine with the latest and greatest Xapian.</p>
+         <li><p>Xapian core development libraries. Most Linux distributions
+           carry them in their package repository. Or you will find source and
+	   binary packages on the 
+           <a href="http://www.xapian.org/download.php">
+           Xapian download page</a>. <br>
 
-      <p>You will also need the development files for libX11 and zlib.</p>
+	   Recoll 1.13 needs at least xapian 1.0.5, I suggest using the
+	   latest 1.0 Xapian (1.0.18 currently). It's at least quite
+   	   preferable to use a Xapian version after 1.0.12 as they don't
+	   need the <a href="BUGS.html#XapianNearPatch">NEAR patch</a>
+	   any more.</p>
 
-      <table>
-	<tr><td valign="top">Qt:</td>
-	  <td>
+           <p><a name="xapian12-src"><em>Compiling with Xapian
+	     1.2:</em></a> because of some small 
+	     include file issues, Recoll 1.13 does not compile with Xapian
+	     1.2. You can apply this <a href="files/xapian12.patch">small
+	     patch</a> to fix the problem. With the patch applied, Recoll
+	   works just fine with the latest and greatest Xapian.</p>
+        </li>
+        <li>X11 development files.</li>
+        <li>zlib development files.</p>
+        <li><p>Qt development files
 	  You can build with Qt 3.3 or Qt 4. Recoll will
 	  automatically be configured to build with Qt 4 if the version
-	  of qmake found in $PATH:$QTDIR/bin is for Qt 4 (you can also
+	  of qmake found in $PATH:$QTDIR/bin is for Qt 4 (you can/should also
 	  set the QMAKE variable to explicitely choose the
-	  desired version, like <tt>QMAKE=qmake-qt4</tt>).</td></tr> 
-	<tr><td></td><td>
-	  There seems to be a few issues in Qt 4.4.0 (2008-08-23),
+	  desired version, like <tt>QMAKE=qmake-qt4</tt>).</p>
+          <p>There seems to be a few issues in Qt 4.4.0 (2008-08-23),
 	  resulting in problems when displaying the Recoll result
-	  list. <br> Qt 4.3, 4.4.x,4.5 and 4.6 seem to work fine.
-	</td></tr>
-      </table>
+	  list. <br> Qt 4.3, 4.4.x,4.5 and 4.6 seem to work fine.</p></li>
+      </ul>
 
-      <p>Older recoll releases:
-	<a href="recoll-1.13.02.tar.gz">1.13.02</a>.
+      <h3>KDE kicker applet:</h3>
+       <p>the applet can start a Recoll search
+        from the KDE toolbar. It is in a separate source file.
+	<a href="recoll_applet-1.10.0.tgz">recoll_applet-1.10.0.tgz</a>.
+	This is a very slightly modified version of the 
+	<a href="http://demandiseineseite.gmxhome.de/find/">
+	find_applet</a>. It will work with any recoll version after 1.10.</p>
+
+      <h3>Older recoll releases:</h3>
+       <p>
+        <a href="recoll-1.13.02.tar.gz">1.13.02</a>.
 	<a href="recoll-1.12.4.tar.gz">1.12.4</a>.
 	<a href="recoll-1.11.4.tar.gz">1.11.4</a>.
 	<a href="recoll-1.10.6.tar.gz">1.10.6</a>.
@@ -179,12 +190,6 @@
 	<a href="older/recoll-1.0.16.tar.gz">1.0.16</a>.
       </p>
 
-      <p>A separate source file contains a KDE kicker applet to start
-	a Recoll search from the KDE toolbar: 
-	<a href="recoll_applet-1.10.0.tgz">recoll_applet-1.10.0.tgz</a>.
-	This is a very slightly modified version of the 
-	<a href="http://demandiseineseite.gmxhome.de/find/">
-	  find_applet</a>. It will work with any recoll version after 1.10.</p>
 
       <h2><a name="rpms">Packages</a></h2>
 
