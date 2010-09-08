@@ -24,7 +24,8 @@ class RclExecM:
     def readparam(self):
         s = sys.stdin.readline()
         if s == '':
-            self.rclog(": EOF on input", 1, 0)
+            sys.exit(0)
+#           self.rclog(": EOF on input", 1, 0)
 
         s = s.rstrip("\n")
 
