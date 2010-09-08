@@ -3,6 +3,11 @@ AC_CONFIG_HEADERS([common/autoconfig.h])
 AC_PREREQ(2.53)
 AC_CONFIG_SRCDIR(index/recollindex.cpp)
 
+AC_PROG_CXX
+if test C$CXX = C ; then
+   AC_MSG_ERROR([C++ compiler needed. Please install one (ie: gnu g++)])
+fi
+
 sys=`uname | tr / _`
 
 if test ! -f mk/$sys ; then
