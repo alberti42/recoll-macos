@@ -79,10 +79,37 @@ void SSearch::searchTextChanged(const QString& text)
 void SSearch::searchTypeChanged(int typ)
 {
     LOGDEB(("Search type now %d\n", typ));
+    // Adjust context help
     if (typ == SST_LANG)
 	HelpClient::installMap(this->name(), "RCL.SEARCH.LANG");
     else 
 	HelpClient::installMap(this->name(), "RCL.SEARCH.SIMPLE");
+
+    // Also fix tooltips
+    switch (typ) {
+    case SST_LANG:
+        queryText->setToolTip(
+"Enter query language expression. Cheat sheet:<br>\n"
+"<i>term1 term2</i> : 'term1' and 'term2' in any field.<br>\n"
+"<i>field:term1</i> : 'term1' in field 'field'.<br>\n"
+" Standard field names/synonyms:<br>\n"
+"  title/subject/caption, author/from, recipient/to, filename, ext.<br>\n"
+" Pseudo-fields: dir, mime/format, type/rclcat.<br>\n"
+"<i>term1 term2 OR term3</i> : term1 AND (term2 OR term3).<br>\n"
+"  No actual parentheses allowed.<br>\n"
+"<i>\"term1 term2\"</i> : phrase (must occur exactly). Possible modifiers:<br>\n"
+"<i>\"term1 term2\"p</i> : unordered proximity search with default distance.<br>\n"
+"Use <b>Show Query</b> link when in doubt about result and see manual (&lt;F1>) for more detail.\n"
+            );
+        break;
+    case SST_FNM:
+        queryText->setToolTip("Enter file name wildcard expression.");
+        break;
+    case SST_ANY:
+    case SST_ALL:
+    default:
+        queryText->setToolTip("Enter search terms here. Type ESC SPC for completions of current term.");
+    }
 }
 
 void SSearch::startSimpleSearch()
