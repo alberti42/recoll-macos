@@ -958,6 +958,15 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	    fn = string("XSFN") + fn;
 	    newdocument.add_term(fn);
 	}
+        // Store utf8fn inside the metadata array as keyfn
+        // (="filename") so that it can be accessed by the "stored"
+        // processing below, without special-casing it. We only do it
+        // if keyfn is currently empty, because there could be a value
+        // already (ie for a mail attachment with a file name
+        // attribute)
+	if (doc.meta[Doc::keyfn].empty()) {
+            doc.meta[Doc::keyfn] = doc.utf8fn;
+	}
     }
 
     // Udi unique term: this is used for file existence/uptodate
