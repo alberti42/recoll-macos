@@ -38,7 +38,7 @@ recipient = XTO
 # code)
 #
 # Some fields are stored by default, don't add them here, else they will be
-# stored twice: caption, keywords, abstract, filename, mimetype, url
+# stored twice: caption, keywords, abstract, mimetype, url
 # Only canonical names should be used here, not aliases.
 # "author" used to be stored by default, now set here as optional
 # "rclaptg" is used for viewer specialization (depending on local config)
