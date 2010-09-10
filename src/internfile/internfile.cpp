@@ -196,12 +196,12 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 
     if (flags & FIF_doUseInputMimetype) {
         if (!imime) {
-            LOGERR(("FileInterner::FileInterner: told to use null imime\n"));
+            LOGERR(("FileInterner:: told to use null imime\n"));
             return;
         }
         l_mime = *imime;
     } else {
-        LOGDEB(("FileInterner::FileInterner: [%s] mime [%s] preview %d\n", 
+        LOGDEB(("FileInterner:: [%s] mime [%s] preview %d\n", 
                 f.c_str(), imime?imime->c_str() : "(null)", m_forPreview));
 
         // We need to run mime type identification in any case to check
@@ -228,7 +228,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		if (!uncompressfile(m_cfg, m_fn, ucmd, m_tdir, m_tfile)) {
 		    return;
 		}
-		LOGDEB1(("internfile: after ucomp: m_tdir %s, tfile %s\n", 
+		LOGDEB1(("FileInterner:: after ucomp: m_tdir %s, tfile %s\n", 
 			 m_tdir.dirname(), m_tfile.c_str()));
 		m_fn = m_tfile;
 		// Note: still using the original file's stat. right ?
@@ -236,7 +236,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		if (l_mime.empty() && imime)
 		    l_mime = *imime;
 	    } else {
-		LOGINFO(("internfile: %s over size limit %d kbs\n",
+		LOGINFO(("FileInterner:: %s over size limit %d kbs\n",
 			 m_fn.c_str(), maxkbs));
 	    }
 	}
@@ -245,7 +245,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     if (l_mime.empty()) {
 	// No mime type. We let it through as config may warrant that
 	// we index all file names
-	LOGDEB(("internfile: (no mime) [%s]\n", m_fn.c_str()));
+	LOGDEB0(("FileInterner:: no mime: [%s]\n", m_fn.c_str()));
     }
 
     // Look for appropriate handler (might still return empty)
@@ -256,7 +256,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 	// No handler for this type, for now :( if indexallfilenames
 	// is set in the config, this normally wont happen (we get mh_unknown)
 	LOGINFO(("FileInterner:: ignored: [%s] mime [%s]\n", 
-                 f.c_str(), l_mime.c_str()));
+                f.c_str(), l_mime.c_str()));
 	return;
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
@@ -274,13 +274,12 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 #endif //RCL_USE_XATTR
 
     if (!df->set_document_file(m_fn)) {
-	LOGERR(("FileInterner:: error parsing %s\n", m_fn.c_str()));
+	LOGERR(("FileInterner:: error converting %s\n", m_fn.c_str()));
 	return;
     }
 
     m_handlers.push_back(df);
-    LOGDEB(("FileInterner::FileInterner: %s [%s]\n", l_mime.c_str(), 
-	     m_fn.c_str()));
+    LOGDEB(("FileInterner:: init ok %s [%s]\n", l_mime.c_str(), m_fn.c_str()));
     m_ok = true;
 }
 
