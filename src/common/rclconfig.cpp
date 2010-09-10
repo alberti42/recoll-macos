@@ -269,19 +269,35 @@ bool RclConfig::getConfParam(const std::string &name, bool *bvp)
     return true;
 }
 
+bool RclConfig::getConfParam(const std::string &name, vector<string> *svvp)
+{
+    if (!svvp) 
+	return false;
+    svvp->clear();
+    string s;
+    if (!getConfParam(name, s))
+	return false;
+    return stringToStrings(s, *svvp);
+}
+bool RclConfig::getConfParam(const std::string &name, list<string> *svvp)
+{
+    if (!svvp) 
+	return false;
+    svvp->clear();
+    string s;
+    if (!getConfParam(name, s))
+	return false;
+    return stringToStrings(s, *svvp);
+}
+
 list<string> RclConfig::getTopdirs()
 {
     list<string> tdl;
-    // Retrieve the list of directories to be indexed.
-    string topdirs;
-    if (!getConfParam("topdirs", topdirs)) {
-	LOGERR(("RclConfig::getTopdirs: no top directories in config\n"));
+    if (!getConfParam("topdirs", &tdl)) {
+	LOGERR(("RclConfig::getTopdirs: no top directories in config or bad list format\n"));
 	return tdl;
     }
-    if (!stringToStrings(topdirs, tdl)) {
-	LOGERR(("RclConfig::getTopdirs: parse error for directory list\n"));
-	return tdl;
-    }
+
     for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	*it = path_tildexpand(*it);
 	*it = path_canon(*it);
@@ -807,10 +823,8 @@ list<string>& RclConfig::getSkippedNames()
 list<string> RclConfig::getSkippedPaths()
 {
     list<string> skpl;
-    string skipped;
-    if (getConfParam("skippedPaths", skipped)) {
-	stringToStrings(skipped, skpl);
-    }
+    getConfParam("skippedPaths", &skpl);
+
     // Always add the dbdir and confdir to the skipped paths. This is 
     // especially important for the rt monitor which will go into a loop if we
     // don't do this.
@@ -830,10 +844,7 @@ list<string> RclConfig::getDaemSkippedPaths()
     list<string> skpl = getSkippedPaths();
 
     list<string> dskpl;
-    string skipped;
-    if (getConfParam("daemSkippedPaths", skipped)) {
-	stringToStrings(skipped, dskpl);
-    }
+    getConfParam("daemSkippedPaths", &dskpl);
 
     for (list<string>::iterator it = dskpl.begin(); it != dskpl.end(); it++) {
 	*it = path_tildexpand(*it);

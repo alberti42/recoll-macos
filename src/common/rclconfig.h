@@ -97,9 +97,13 @@ class RclConfig {
 	return m_conf->get(name, value, m_keydir);
     }
     /** Variant with autoconversion to int */
-    bool getConfParam(const std::string &name, int *value);
+    bool getConfParam(const string &name, int *value);
     /** Variant with autoconversion to bool */
-    bool getConfParam(const std::string &name, bool *value);
+    bool getConfParam(const string &name, bool *value);
+    /** Variant with conversion to string list/vector
+     *  (stringToStrings). Can fail if the string is malformed. */
+    bool getConfParam(const string &name, vector<string> *value);
+    bool getConfParam(const string &name, list<string> *value);
 
     /** 
      * Get list of config names under current sk, with possible 
