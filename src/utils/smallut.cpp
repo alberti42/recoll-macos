@@ -174,7 +174,8 @@ bool samecharset(const string &cs1, const string &cs2)
     return mcs1 == mcs2;
 }
 
-template <class T> bool stringToStrings(const string &s, T &tokens)
+template <class T> bool stringToStrings(const string &s, T &tokens, 
+                                        const string& addseps)
 {
     string current;
     tokens.clear();
@@ -237,17 +238,34 @@ template <class T> bool stringToStrings(const string &s, T &tokens)
 	    break;
 
         default:
-	    switch(state) {
-            case ESCAPE:
-                state = INQUOTE;
-                break;
-            case SPACE: 
-                state = TOKEN;
-                break;
-            case TOKEN: 
-            case INQUOTE: 
-                break;
-	    }
+            if (!addseps.empty() && addseps.find(s[i]) != string::npos) {
+                switch(state) {
+                case ESCAPE:
+                    state = INQUOTE;
+                    break;
+                case INQUOTE: 
+                    break;
+                case SPACE: 
+                    tokens.insert(tokens.end(), string(1, s[i]));
+                    continue;
+                case TOKEN: 
+                    tokens.insert(tokens.end(), current);
+                    current.erase();
+                    tokens.insert(tokens.end(), string(1, s[i]));
+                    state = SPACE;
+                    continue;
+                }
+            } else switch(state) {
+                case ESCAPE:
+                    state = INQUOTE;
+                    break;
+                case SPACE: 
+                    state = TOKEN;
+                    break;
+                case TOKEN: 
+                case INQUOTE: 
+                    break;
+                }
 	    current += s[i];
 	}
     }
@@ -263,17 +281,20 @@ template <class T> bool stringToStrings(const string &s, T &tokens)
     }
     return true;
 }
-bool stringToStrings(const string &s, list<string> &tokens)
+bool stringToStrings(const string &s, list<string> &tokens, 
+                     const string& as)
 {
-    return stringToStrings<list<string> >(s, tokens);
+    return stringToStrings<list<string> >(s, tokens, as);
 }
-bool stringToStrings(const string &s, vector<string> &tokens)
+bool stringToStrings(const string &s, vector<string> &tokens, 
+                     const string& as)
 {
-    return stringToStrings<vector<string> >(s, tokens);
+    return stringToStrings<vector<string> >(s, tokens, as);
 }
-bool stringToStrings(const string &s, set<string> &tokens)
+bool stringToStrings(const string &s, set<string> &tokens, 
+                     const string& as)
 {
-    return stringToStrings<set<string> >(s, tokens);
+    return stringToStrings<set<string> >(s, tokens, as);
 }
 
 template <class T> void stringsToString(const T &tokens, string &s) 
@@ -729,10 +750,28 @@ struct spair suffpairs[] = {
 };
 int nsuffpairs = sizeof(suffpairs) / sizeof(struct spair);
 
+const char *thisprog;
 
 int main(int argc, char **argv)
 {
-#if 0
+    thisprog = *argv++;argc--;
+
+#if 1
+    if (argc <=0 ) {
+        cerr << "Usage: smallut <stringtosplit>" << endl;
+        exit(1);
+    }
+    string s = *argv++;argc--;
+    vector<string> vs;
+    if (!stringToStrings(s, vs, ":-()")) {
+        cerr << "Bad entry" << endl;
+        exit(1);
+    }
+    for (vector<string>::const_iterator it = vs.begin(); it != vs.end(); it++)
+        cerr << "[" << *it << "] ";
+    cerr << endl;
+    exit(0);
+#elif 0
     for (int i = 0; i < npairs; i++) {
 	{
 	    int c = stringicmp(pairs[i].s1, pairs[i].s2);
@@ -768,7 +807,7 @@ int main(int argc, char **argv)
     cout << "[" << neutchars(testit, "\r\n") << "]" << endl;
     string i, o;
     cout << "neutchars(null) is [" << neutchars(i, "\r\n") << "]" << endl;
-#elif 1
+#elif 0
     map<string, string> substs;
     substs["a"] = "A_SUBST";
     substs["title"] = "TITLE_SUBST";

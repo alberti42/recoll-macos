@@ -1412,6 +1412,14 @@ fvwm
           </para>
       </formalpara>
 
+      <formalpara><title>Automatic suffixes</title>
+          <para>Words like <literal>odt</literal> or <literal>ods</literal>
+            can be automatically turned into query language
+            <literal>ext:xxx</literal> clauses. This can be enabled in the
+            <guilabel>Search preferences</guilabel> panel in the GUI.
+          </para>
+      </formalpara>
+
       <formalpara><title>Disabling stem expansion</title>
       <para>Entering a capitalized word in any search field will prevent
         stem expansion (no search for
@@ -1545,7 +1553,8 @@ fvwm
       interface itself, the parameters used for searching and
       returning results, and what indexes are searched.</para> 
 
-      <formalpara><title>User interface parameters:</title>
+      <formalpara id="rcl.search.custom.ui">
+       <title>User interface parameters:</title>
         <para>
       <itemizedlist>
 
@@ -1639,7 +1648,8 @@ fvwm
       </formalpara>
 
 
-      <formalpara><title>Search parameters:</title>
+      <formalpara id="rcl.search.custom.search">
+	<title>Search parameters:</title>
         <para>
       <itemizedlist>
 
@@ -1678,12 +1688,6 @@ fvwm
             may want to turn it off.</para>
             </listitem>
 
-            <listitem><para><guilabel>Replace abstracts from
-            documents</guilabel>: this decides if we should synthesize and
-            display an abstract in place of an explicit abstract found
-            within the document itself.</para>
-            </listitem>
-
             <listitem><para><guilabel>Synthetic abstract size</guilabel>:
             adjust to taste...</para>
             </listitem>
@@ -1693,6 +1697,13 @@ fvwm
             each term occurrence.</para>
             </listitem>
 
+            <listitem><para><guilabel>Query language magic file name 
+              suffixes</guilabel>: a list of words which automatically get
+              turned into <literal>ext:xxx</literal> file name suffix clauses
+              when starting a query language query (ie: <literal>doc xls
+              xlsx...</literal>). This will save some typing for people who
+              use file types a lot when querying.</para>
+            </listitem>
       </itemizedlist>
        </para>
       </formalpara>

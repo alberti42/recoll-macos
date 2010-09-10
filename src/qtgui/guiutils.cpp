@@ -144,6 +144,9 @@ void rwSettings(bool writing)
 	       Num, 250);
     SETTING_RW(prefs.syntAbsCtx, "/Recoll/prefs/query/syntAbsCtx", 
 	       Num, 4);
+    SETTING_RW(prefs.autoSuffs, "/Recoll/prefs/query/autoSuffs", , "");
+    SETTING_RW(prefs.autoSuffsEnable, 
+	       "/Recoll/prefs/query/autoSuffsEnable", Bool, false);
 
     SETTING_RW(prefs.sortDepth, "/Recoll/prefs/query/sortDepth",
 	       Num, 100);
@@ -255,5 +258,4 @@ void rwSettings(bool writing)
 	for (list<string>::iterator it = tl.begin(); it != tl.end(); it++)
 	    prefs.asearchSubdirHist.push_front(QString::fromUtf8(it->c_str()));
     }
-
 }

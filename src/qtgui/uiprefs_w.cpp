@@ -158,6 +158,9 @@ void UIPrefsDialog::setFromPrefs()
     replAbsCB->setEnabled(prefs.queryBuildAbstract);
     replAbsCB->setChecked(prefs.queryReplaceAbstract);
 
+    autoSuffsCB->setChecked(prefs.autoSuffsEnable);
+    autoSuffsLE->setText(prefs.autoSuffs);
+
     // Initialize the extra indexes listboxes
     idxLV->clear();
     for (list<string>::iterator it = prefs.allExtraDbs.begin(); 
@@ -222,6 +225,10 @@ void UIPrefsDialog::accept()
 
     prefs.syntAbsLen = syntlenSB->value();
     prefs.syntAbsCtx = syntctxSB->value();
+
+    
+    prefs.autoSuffsEnable = autoSuffsCB->isChecked();
+    prefs.autoSuffs = autoSuffsLE->text();
 
     QListViewItemIterator it(idxLV);
     prefs.allExtraDbs.clear();

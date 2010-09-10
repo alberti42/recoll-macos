@@ -86,8 +86,7 @@ class PrefsPack {
     bool startWithSortToolOpen;
     bool previewHtml;
     bool collapseDuplicates;
-    // Extra query indexes. This are encoded to base64 before storing
-    // to the qt settings file to avoid any bin string/ charset conv issues
+    // Extra query indexes. This are stored in the history file, not qt prefs
     list<string> allExtraDbs;
     list<string> activeExtraDbs;
     // Advanced search subdir restriction: we don't activate the last value
@@ -100,6 +99,10 @@ class PrefsPack {
     // Ignored file types in adv search (startup default)
     QStringList asearchIgnFilTyps;
     bool        fileTypesByCats;
+    // Words that are automatically turned to ext:xx specs in the query
+    // language entry. 
+    QString autoSuffs;
+    bool    autoSuffsEnable;
 
     // Synthetized abstract length and word context size
     int syntAbsLen;

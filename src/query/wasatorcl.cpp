@@ -33,13 +33,14 @@ using std::list;
 #include "refcntr.h"
 #include "textsplit.h"
 
-Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason)
+Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason, 
+                                 const string& autosuffs)
 {
     StringToWasaQuery parser;
     WasaQuery *wq = parser.stringToQuery(qs, reason);
     if (wq == 0) 
 	return 0;
-    Rcl::SearchData *rq = wasaQueryToRcl(wq);
+    Rcl::SearchData *rq = wasaQueryToRcl(wq, autosuffs);
     if (rq == 0) {
 	reason = "Failed translating wasa query structure to recoll";
 	return 0;
@@ -47,7 +48,8 @@ Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason)
     return rq;
 }
 
-Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
+Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa, 
+                                const string& autosuffs)
 {
     if (wasa == 0)
 	return 0;
@@ -75,8 +77,9 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 	case WasaQuery::OP_LEAF: {
 	    LOGDEB2(("wasaQueryToRcl: leaf clause [%s]:[%s]\n", 
 		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
-	    unsigned int mods = (unsigned int)(*it)->m_modifiers;
+
 	    // Special cases (mime, category, dir filter ...). Not pretty.
+
 	    if (!stringicmp("mime", (*it)->m_fieldspec) ||
 		!stringicmp("format", (*it)->m_fieldspec)
 		) {
@@ -103,6 +106,23 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 		break;
 	    } 
 
+            // Change terms found in the "autosuffs" list into "ext"
+            // field queries
+            if ((*it)->m_fieldspec.empty() && !autosuffs.empty()) {
+                vector<string> asfv;
+                if (stringToStrings(autosuffs, asfv)) {
+                    if (find_if(asfv.begin(), asfv.end(), 
+                                StringIcmpPred((*it)->m_value)) != asfv.end()) {
+                        (*it)->m_fieldspec = "ext";
+                        (*it)->m_modifiers |= WasaQuery::WQM_NOSTEM;
+                    }
+                }
+            }
+
+
+            // "Regular" processing follows:
+	    unsigned int mods = (unsigned int)(*it)->m_modifiers;
+
 	    if (TextSplit::hasVisibleWhite((*it)->m_value)) {
 		int slack = (mods & WasaQuery::WQM_PHRASESLACK) ? 10 : 0;
 		Rcl::SClType tp = Rcl::SCLT_PHRASE;
@@ -122,8 +142,7 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 		LOGERR(("wasaQueryToRcl: out of memory\n"));
 		return 0;
 	    }
-	    if ((*it)->m_modifiers & WasaQuery::WQM_NOSTEM) {
-		fprintf(stderr, "Setting NOSTEM\n");
+	    if (mods & WasaQuery::WQM_NOSTEM) {
 		nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
 	    }
 	    sdata->addClause(nclause);

@@ -35,6 +35,17 @@ using std::set;
 
 // Note these are all ascii routines
 extern int stringicmp(const string& s1, const string& s2);
+// For find_if etc.
+struct StringIcmpPred {
+    StringIcmpPred(const string& s1) 
+        : m_s1(s1) 
+    {}
+    bool operator()(const string& s2) {
+        return stringicmp(m_s1, s2) == 0;
+    }
+    const string& m_s1;
+};
+
 extern int stringlowercmp(const string& alreadylower, const string& s2);
 extern int stringuppercmp(const string& alreadyupper, const string& s2); 
 extern void stringtolower(string& io);
@@ -52,11 +63,15 @@ extern bool samecharset(const string &cs1, const string &cs2);
  * dquotes can be escaped with \ etc...
  * Input is handled a byte at a time, things will work as long as space tab etc.
  * have the ascii values and can't appear as part of a multibyte char. utf-8 ok
- * but so are the iso-8859-x and surely others.
+ * but so are the iso-8859-x and surely others. addseps do have to be 
+ * single-bytes
  */
-extern bool stringToStrings(const string &s, list<string> &tokens);
-extern bool stringToStrings(const string &s, vector<string> &tokens);
-extern bool stringToStrings(const string &s, set<string> &tokens);
+extern bool stringToStrings(const string& s, list<string> &tokens, 
+                            const string& addseps = "");
+extern bool stringToStrings(const string& s, vector<string> &tokens, 
+                            const string& addseps = "");
+extern bool stringToStrings(const string& s, set<string> &tokens, 
+                            const string& addseps = "");
 
 /**
  * Inverse operation:
@@ -78,7 +93,7 @@ extern bool stringToBool(const string &s);
     tab}) at beginning and end of input string */
 extern void trimstring(string &s, const char *ws = " \t");
 
-/** Escape things like < or & by turining them to entities */
+/** Escape things like < or & by turning them into entities */
 extern string escapeHtml(const string &in);
 
 /** Replace some chars with spaces (ie: newline chars). This is not utf8-aware
@@ -86,8 +101,8 @@ extern string escapeHtml(const string &in);
 extern string neutchars(const string &str, const string &chars);
 extern void neutchars(const string &str, string& out, const string &chars);
 
-/** turn string into something that won't be expanded by a shell. In practise
- * quote with single-quotes and escape internal singlequotes */
+/** Turn string into something that won't be expanded by a shell. In practise
+ *  quote with double-quotes and escape $`\ */
 extern string escapeShell(const string &str);
 
 /** Truncate a string to a given maxlength, avoiding cutting off midword
@@ -108,6 +123,7 @@ bool pcSubst(const string& in, string& out, map<char, string>& subs);
 /** Substitute printf-like percents and also %(key) */
 bool pcSubst(const string& in, string& out, map<string, string>& subs);
 
+/** Compute times to help with perf issues */
 class Chrono {
  public:
   Chrono();
@@ -130,8 +146,8 @@ class Chrono {
   long 	m_nsecs; 
 };
 
-class TempBuf {
-public:
+/** Temp buffer with automatic deallocation */
+struct TempBuf {
     TempBuf() 
         : m_buf(0)
     {}
