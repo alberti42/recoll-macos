@@ -9,33 +9,46 @@ recollq \- command line / standard output Recoll query command.
 <configdir>
 ]
 [
-.B -b
-]
-[
-.B -d
-]
-[
-.B -n
-<cnt>
-]
-[
 .B -o
-|
-.B -l
 |
 .B -f
 |
 .B -a
 ]
 [
+.B -b
+]
+[
+.B -d
+]
+[
+.B -A
+]
+[
+.B -m
+]
+[
+.B -n
+<cnt>
+]
+[
 .B -s
 <stemming language>
+]
+[
+.B -S
+<fldname>
+]
+[
+.B -D
 ]
 [
 .B -i
 <additional index directory>
 ]
 <query string>
+
+.B recollq -P
 
 .SH DESCRIPTION
 The
@@ -67,13 +80,27 @@ simple search query.
 (basic) can be specified to only print the result urls in the output
 stream.
 .PP
-.B -n
-<cnt>
-can be used to set the maximum number of results that should be printed.
-.PP
 If 
 .B -d
 is set, the text for the result files contents will be dumped to stdout.
+.PP
+If 
+.B -m
+is set, the whole metadata array will be dumped for each document.
+.PP
+If 
+.B -A
+is set, the document abstracts will be printed.
+.PP
+.B -S
+<fieldname>
+sorts the results according to the specified field. Use 
+.B -D 
+for descending order.
+.PP
+.B -n
+<cnt>
+can be used to set the maximum number of results that should be printed.
 .PP
 .B -s
 <language>
@@ -84,6 +111,10 @@ stemming database (as set in the configuration or added with recollindex -s).
 <extra dbdir>
 adds the specified Xapian index to the set used for the query. Can be
 specified multiple times.
+.PP
+.B recollq -P
+(Period) will print the minimum and maximum modification years for
+documents in the index.
 
 .SH SEE ALSO
 .PP 
