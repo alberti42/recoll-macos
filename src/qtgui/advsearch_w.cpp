@@ -361,28 +361,19 @@ void AdvSearch::runSearch()
 {
     RefCntr<SearchData> sdata(new SearchData(conjunctCMB->currentItem() == 0 ?
 					     SCLT_AND : SCLT_OR));
-    bool hasnotnot = false;
-    bool hasnot = false;
+    bool hasclause = false;
 
     for (list<SearchClauseW*>::iterator it = m_clauseWins.begin();
 	 it != m_clauseWins.end(); it++) {
 	SearchDataClause *cl;
 	if ((cl = (*it)->getClause())) {
-	    switch (cl->getTp()) {
-	    case SCLT_EXCL: hasnot = true; break;
-	    default: hasnotnot = true; break;
-	    }
 	    sdata->addClause(cl);
+            hasclause = true;
 	}
     }
-    if (!hasnotnot) {
-	if (!hasnot)
-	    return;
-	QMessageBox::warning(0, "Recoll", tr("Cannot execute pure negative "
-					     "query. Please enter common terms"
-					     " in the 'any words' field")); 
-	return;
-    }
+    if (!hasclause)
+        return;
+
     if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
 	for (unsigned int i = 0; i < yesFiltypsLB->count(); i++) {
 	    if (restrictCtCB->isOn()) {
