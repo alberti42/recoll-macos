@@ -63,6 +63,7 @@ bool dump_contents(RclConfig *rclconfig, TempDir& tmpdir, Rcl::Doc& idoc)
 
 static char *thisprog;
 static char usage [] =
+" -P: Show date span for documents in index\n"
 " [-o|-a|-f] <query string>\n"
 " Runs a recoll query and displays result lines. \n"
 "  Default: will interpret the argument(s) as a xesam query string\n"
@@ -110,6 +111,7 @@ static int     op_flags;
 #define OPT_s     0x4000
 #define OPT_A     0x8000
 #define OPT_i     0x10000
+#define OPT_P     0x20000
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -148,6 +150,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		if (limit <= 0) limit = INT_MAX;
 		argc--; goto b1;
             case 'o':   op_flags |= OPT_o; break;
+            case 'P':   op_flags |= OPT_P; break;
             case 'q':   op_flags |= OPT_q; break;
 	    case 'S':	op_flags |= OPT_S; if (argc < 2)  Usage();
 		sortfield = *(++argv);
@@ -161,13 +164,6 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     b1: argc--; argv++;
     }
 
-    if (argc < 1) {
-	Usage();
-    }
-    string qs = *argv++;argc--;
-    while (argc > 0) {
-	qs += string(" ") + *argv++;argc--;
-    }
     string reason;
     *cfp = recollinit(0, 0, reason, &a_config);
     RclConfig *rclconfig = *cfp;
@@ -176,20 +172,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	exit(1);
     }
 
-    {
-	string uq;
-	string charset = rclconfig->getDefCharset(true);
-	int ercnt;
-	if (!transcode(qs, uq, charset, "UTF-8", &ercnt)) {
-	    fprintf(stderr, "Can't convert command line args to utf-8\n");
-	    exit(1);
-	} else if (ercnt) {
-	    fprintf(stderr, "%d errors while converting arguments from %s "
-		    "to utf-8\n", ercnt, charset.c_str());
-	}
-	qs = uq;
+    if (argc < 1 && !(op_flags & OPT_P)) {
+	Usage();
     }
-
 
     Rcl::Db rcldb(rclconfig);
     if (!extra_dbs.empty()) {
@@ -206,6 +191,39 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	cerr << "Cant open database in " << rclconfig->getDbDir() << 
 	    " reason: " << rcldb.getReason() << endl;
 	exit(1);
+    }
+
+    if (op_flags & OPT_P) {
+        int minyear, maxyear;
+        if (!rcldb.maxYearSpan(&minyear, &maxyear)) {
+            cerr << "maxYearSpan failed: " << rcldb.getReason() << endl;
+            exit(1);
+        } else {
+            cout << "Min year " << minyear << " Max year " << maxyear << endl;
+            exit(0);
+        }
+    }
+
+    if (argc < 1) {
+	Usage();
+    }
+    string qs = *argv++;argc--;
+    while (argc > 0) {
+	qs += string(" ") + *argv++;argc--;
+    }
+
+    {
+	string uq;
+	string charset = rclconfig->getDefCharset(true);
+	int ercnt;
+	if (!transcode(qs, uq, charset, "UTF-8", &ercnt)) {
+	    fprintf(stderr, "Can't convert command line args to utf-8\n");
+	    exit(1);
+	} else if (ercnt) {
+	    fprintf(stderr, "%d errors while converting arguments from %s "
+		    "to utf-8\n", ercnt, charset.c_str());
+	}
+	qs = uq;
     }
 
     Rcl::SearchData *sd = 0;

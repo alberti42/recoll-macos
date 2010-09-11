@@ -46,32 +46,106 @@ typedef  vector<SearchDataClause *>::const_iterator qlist_cit_t;
 
 static const int original_term_wqf_booster = 10;
 
+/* The dates-to-query routine is is lifted quasi-verbatim but
+ *  modified from xapian-omega:date.cc. Copyright info:
+ *
+ * Copyright 1999,2000,2001 BrightStation PLC
+ * Copyright 2001 James Aylett
+ * Copyright 2001,2002 Ananova Ltd
+ * Copyright 2002 Intercede 1749 Ltd
+ * Copyright 2002,2003,2006 Olly Betts
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+ * USA
+ */
+static Xapian::Query
+date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
+{
+    // Xapian uses a smallbuf and snprintf. Can't be bothered, we're
+    // only doing %d's !
+    char buf[200];
+    sprintf(buf, "D%04d%02d", y1, m1);
+    vector<Xapian::Query> v;
+
+    int d_last = monthdays(m1, y1);
+    int d_end = d_last;
+    if (y1 == y2 && m1 == m2 && d2 < d_last) {
+	d_end = d2;
+    }
+    // Deal with any initial partial month
+    if (d1 > 1 || d_end < d_last) {
+    	for ( ; d1 <= d_end ; d1++) {
+	    sprintf(buf + 7, "%02d", d1);
+	    v.push_back(Xapian::Query(buf));
+	}
+    } else {
+	buf[0] = 'M';
+	v.push_back(Xapian::Query(buf));
+    }
+    
+    if (y1 == y2 && m1 == m2) {
+	return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
+    }
+
+    int m_last = (y1 < y2) ? 12 : m2 - 1;
+    while (++m1 <= m_last) {
+	sprintf(buf + 5, "%02d", m1);
+	buf[0] = 'M';
+	v.push_back(Xapian::Query(buf));
+    }
+	
+    if (y1 < y2) {
+	while (++y1 < y2) {
+	    sprintf(buf + 1, "%04d", y1);
+	    buf[0] = 'Y';
+	    v.push_back(Xapian::Query(buf));
+	}
+	sprintf(buf + 1, "%04d", y2);
+	buf[0] = 'M';
+	for (m1 = 1; m1 < m2; m1++) {
+	    sprintf(buf + 5, "%02d", m1);
+	    v.push_back(Xapian::Query(buf));
+	}
+    }
+	
+    sprintf(buf + 5, "%02d", m2);
+
+    // Deal with any final partial month
+    if (d2 < monthdays(m2, y2)) {
+	buf[0] = 'D';
+    	for (d1 = 1 ; d1 <= d2; d1++) {
+	    sprintf(buf + 7, "%02d", d1);
+	    v.push_back(Xapian::Query(buf));
+	}
+    } else {
+	buf[0] = 'M';
+	v.push_back(Xapian::Query(buf));
+    }
+
+    return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
+}
+
 bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 {
     Xapian::Query xq;
     m_reason.erase();
 
-    if (m_query.size() < 1) {
+    if (!m_query.size() && !m_haveDates) {
 	m_reason = "empty query";
 	return false;
     }
-
-    // It's not allowed to have a pure negative query and also it
-    // seems that Xapian doesn't like the first element to be AND_NOT
-    qlist_it_t itnotneg = m_query.end();
-    for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
-	if ((*it)->m_tp != SCLT_EXCL) {
-	    itnotneg = it;
-	    break;
-	}
-    }
-    if (itnotneg == m_query.end()) {
-	LOGERR(("SearchData::toNativeQuery: can't have all negative clauses"));
-	m_reason = "Can't have only negative clauses";
-	return false;
-    }
-    if ((*m_query.begin())->m_tp == SCLT_EXCL) 
-	iter_swap(m_query.begin(), itnotneg);
 
     // Walk the clause list translating each in turn and building the 
     // Xapian query tree
@@ -91,12 +165,59 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	// addClause())
 	Xapian::Query::op op;
 	if (m_tp == SCLT_AND) {
-	    op = (*it)->m_tp == SCLT_EXCL ? 
-		Xapian::Query::OP_AND_NOT: Xapian::Query::OP_AND;
+            if ((*it)->m_tp == SCLT_EXCL) {
+                op =  Xapian::Query::OP_AND_NOT;
+            } else {
+                op =  Xapian::Query::OP_AND;
+            }
 	} else {
 	    op = Xapian::Query::OP_OR;
 	}
-	xq = xq.empty() ? nq : Xapian::Query(op, xq, nq);
+        if (xq.empty()) {
+            if (op == Xapian::Query::OP_AND_NOT)
+                xq = Xapian::Query(op, Xapian::Query::MatchAll, nq);
+            else 
+                xq = nq;
+        } else {
+            xq = Xapian::Query(op, xq, nq);
+        }
+    }
+        
+    if (m_haveDates) {
+        // If one of the extremities is unset, compute db extremas
+        if (m_dates.y1 == 0 || m_dates.y2 == 0) {
+            int minyear = 1970, maxyear = 2100;
+            if (!db.maxYearSpan(&minyear, &maxyear)) {
+                LOGERR(("Can't retrieve index min/max dates\n"));
+                //whatever, go on.
+            }
+            if (m_dates.y1 == 0) {
+                m_dates.y1 = minyear;
+                m_dates.m1 = 1;
+                m_dates.d1 = 1;
+            }
+            if (m_dates.y2 == 0) {
+                m_dates.y2 = maxyear;
+                m_dates.m2 = 12;
+                m_dates.d2 = 31;
+            }
+        }
+        LOGDEB(("Db::toNativeQuery: date interval: %d-%d-%d/%d-%d-%d\n",
+                m_dates.y1, m_dates.m1, m_dates.d1,
+                m_dates.y2, m_dates.m2, m_dates.d2));
+        Xapian::Query dq = date_range_filter(m_dates.y1, m_dates.m1, m_dates.d1,
+                m_dates.y2, m_dates.m2, m_dates.d2);
+        if (dq.empty()) {
+            LOGINFO(("Db::toNativeQuery: date filter is empty\n"));
+        }
+        // If no probabilistic query is provided then promote the daterange
+        // filter to be THE query instead of filtering an empty query.
+        if (xq.empty()) {
+            LOGINFO(("Db::toNativeQuery: proba query is empty\n"));
+            xq = dq;
+        } else {
+            xq = Xapian::Query(Xapian::Query::OP_FILTER, xq, dq);
+        }
     }
 
     // Add the file type filtering clause if any
@@ -116,7 +237,6 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	    }
 	}
 	    
-	list<Xapian::Query> pqueries;
 	Xapian::Query tq;
 	for (vector<string>::iterator it = exptps.begin(); 
 	     it != exptps.end(); it++) {
@@ -157,6 +277,7 @@ void SearchData::erase() {
     m_topdir.erase();
     m_description.erase();
     m_reason.erase();
+    m_haveDates = false;
 }
 
 // Am I a file name only search ? This is to turn off term highlighting

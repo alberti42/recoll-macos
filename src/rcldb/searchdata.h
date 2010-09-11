@@ -30,6 +30,7 @@
 
 #include "rcldb.h"
 #include "refcntr.h"
+#include "smallut.h"
 
 #ifndef NO_NAMESPACES
 using std::vector;
@@ -70,7 +71,9 @@ class SearchDataClause;
  */
 class SearchData {
 public:
-    SearchData(SClType tp) : m_tp(tp), m_haveWildCards(false) {}
+    SearchData(SClType tp) 
+        : m_tp(tp), m_haveDates(false), m_haveWildCards(false) 
+    {}
     ~SearchData() {erase();}
 
     /** Make pristine */
@@ -87,6 +90,18 @@ public:
 
     /** We become the owner of cl and will delete it */
     bool addClause(SearchDataClause *cl);
+
+    /** Set/get top subdirectory for filtering results */
+    void setTopdir(const string& t) {m_topdir = t;}
+    string getTopdir() {return m_topdir;}
+
+    /** Set date span for filtering results */
+    void setDateSpan(DateInterval *dip) {m_dates = *dip; m_haveDates = true;}
+
+    /** Add file type for filtering results */
+    void addFiletype(const string& ft) {m_filetypes.push_back(ft);}
+
+    void setStemlang(const string& lang = "english") {m_stemlang = lang;}
 
     /** Retrieve error description */
     string getReason() {return m_reason;}
@@ -107,17 +122,14 @@ public:
      */
     string getDescription() {return m_description;}
     void setDescription(const string& d) {m_description = d;}
-    /** Get/set top subdirectory for filtering results */
-    string getTopdir() {return m_topdir;}
-    void setTopdir(const string& t) {m_topdir = t;}
-    /** Add file type for filtering results */
-    void addFiletype(const string& ft) {m_filetypes.push_back(ft);}
-    void setStemlang(const string& lang = "english") {m_stemlang = lang;}
+
 private:
     SClType                   m_tp; // Only SCLT_AND or SCLT_OR here
     vector<SearchDataClause*> m_query;
     vector<string>            m_filetypes; // Restrict to filetypes if set.
     string                    m_topdir; // Restrict to subtree.
+    bool                      m_haveDates;
+    DateInterval              m_dates; // Restrict to date interval
     // Printable expanded version of the complete query, retrieved/set
     // from rcldb after the Xapian::setQuery() call
     string m_description; 

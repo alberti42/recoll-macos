@@ -767,6 +767,10 @@ bool Db::fieldToPrefix(const string& fld, string &pfx)
 	fldToPrefs["keyword"] = "K";
 	fldToPrefs["tag"] = "K";
 	fldToPrefs["tags"] = "K";
+
+        fldToPrefs["xapyear"] = "Y";
+        fldToPrefs["xapyearmon"] = "M";
+        fldToPrefs["xapdate"] = "D";
     }
 
     if (m_config && m_config->getFieldPrefix(fld, pfx))
@@ -1364,6 +1368,28 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
     }
     return true;
 }
+
+// Walk the Y terms and return min/max
+bool Db::maxYearSpan(int *minyear, int *maxyear)
+{
+    *minyear = 1000000; 
+    *maxyear = -1000000;
+    TermMatchResult result;
+    if (!termMatch(ET_WILD, string(), "*", result, 5000, "xapyear"))
+	return false;
+    for (list<TermMatchEntry>::const_iterator it = result.entries.begin();
+	 it != result.entries.end(); it++) {
+        if (!it->term.empty()) {
+            int year = atoi(it->term.c_str()+1);
+            if (year < *minyear)
+                *minyear = year;
+            if (year > *maxyear)
+                *maxyear = year;
+        }
+    }
+    return true;
+}
+
 
 class TermMatchCmpByWcf {
 public:

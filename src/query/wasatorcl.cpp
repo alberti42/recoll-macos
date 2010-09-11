@@ -42,14 +42,13 @@ Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason,
 	return 0;
     Rcl::SearchData *rq = wasaQueryToRcl(wq, autosuffs);
     if (rq == 0) {
-	reason = "Failed translating wasa query structure to recoll";
+	reason = "Failed translating xesam query structure to recoll";
 	return 0;
     }
     return rq;
 }
 
-Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa, 
-                                const string& autosuffs)
+Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa, const string& autosuffs)
 {
     if (wasa == 0)
 	return 0;
@@ -119,6 +118,19 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa,
                 }
             }
 
+            // Handle "date" spec
+	    if (!stringicmp("date", (*it)->m_fieldspec)) {
+                DateInterval di;
+                if (!parsedateinterval((*it)->m_value, &di)) {
+                    LOGERR(("wasaQueryToRcl: bad date interval format\n"));
+                    // Process rest of query anyway ?
+                    break;
+                }
+                LOGDEB(("wasaQueryToRcl:: date span:  %d-%d-%d/%d-%d-%d\n",
+                        di.y1,di.m1,di.d1, di.y2,di.m2,di.d2))
+		sdata->setDateSpan(&di);
+		break;
+	    } 
 
             // "Regular" processing follows:
 	    unsigned int mods = (unsigned int)(*it)->m_modifiers;
@@ -151,7 +163,7 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa,
 	    
 	case WasaQuery::OP_EXCL:
 	    LOGDEB2(("wasaQueryToRcl: excl clause [%s]:[%s]\n", 
-		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
+                    (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
 	    if (wasa->m_op != WasaQuery::OP_AND) {
 		LOGERR(("wasaQueryToRcl: negative clause inside OR list!\n"));
 		continue;

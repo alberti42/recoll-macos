@@ -171,6 +171,8 @@ class Db {
 		   const string& field = "",
                    string *prefix = 0
         );
+    /** Return min and max years for doc mod times in db */
+    bool maxYearSpan(int *minyear, int *maxyear);
 
     /** Special filename wildcard to XSFN terms expansion.
 	internal/searchdata use only */
