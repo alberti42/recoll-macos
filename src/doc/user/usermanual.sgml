@@ -1011,6 +1011,44 @@ fvwm
         cases to set up separate databases instead.</para>
         </listitem>
 
+        <listitem><para><literal>date</literal> for searching or filtering
+        on dates. The syntax for the argument is based on the ISO8601
+        standard for dates and time intervals. Only dates are supported, no
+        times. The general syntax is 2 elements separated by a
+        <literal>/</literal> character. Each element can be a date or a
+        period of time. Periods are specified as 
+<literal>P</literal><replaceable>n</replaceable><literal>Y</literal><replaceable>n</replaceable><literal>M</literal><replaceable>n</replaceable><literal>D</literal>. 
+       The <replaceable>n</replaceable> numbers are the respective numbers
+       of years, months or days, any of which may be missing. Dates are
+       specified as  
+<replaceable>YYYY</replaceable>-<replaceable>MM</replaceable>-<replaceable>DD</replaceable>. 
+       The days and months parts may be missing. If the
+       <literal>/</literal> is present but an element is missing, the
+       missing element is interpreted as the lowest or highest date in the
+       index. Exemples:</para>
+	  <itemizedlist>
+	    <listitem><para><literal>2001-03-01/2002-05-01</literal> the
+	    basic syntax for an interval of dates.</para>
+	    </listitem>
+	    <listitem><para><literal>2001-03-01/P1Y2M</literal> the
+	    same specified with a period.</para>
+	    </listitem>
+	    <listitem><para><literal>2001/</literal> from the beginning of
+	    2001 to the latest date in the index.</para>
+	    </listitem>
+	    <listitem><para><literal>2001</literal> the whole year of
+	      2001</para></listitem>
+	    <listitem><para><literal>P2D/</literal> means 2 days ago up to
+	      now if there are no documents with dates in the future.</para>
+	    </listitem>
+	    <listitem><para><literal>/2003</literal> all documents from
+	    2003 or older.</para>
+	    </listitem>
+	  </itemizedlist>
+	  <para>Periods can also be specified with small letters (ie:
+	  p2y).</para> 
+        </listitem>
+
         <listitem><para><literal>mime</literal> or
         <literal>format</literal> for specifying the
         mime type. This one is quite special because you can specify

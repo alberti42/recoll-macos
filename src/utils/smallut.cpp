@@ -1036,7 +1036,7 @@ int main(int argc, char **argv)
         cerr << "[" << *it << "] ";
     cerr << endl;
     exit(0);
-#elif 0
+#elif 1
     if (argc <=0 ) {
         cerr << "Usage: smallut <dateinterval>" << endl;
         exit(1);
@@ -1049,7 +1049,7 @@ int main(int argc, char **argv)
     }
     cerrdip("", &di);
     exit(0);
-#elif 1
+#elif 0
     DateInterval di;
     for (int i = 0; i < nperiods; i++) {
         if (!parsedateinterval(periods[i], &di)) {
