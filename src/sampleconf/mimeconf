@@ -36,8 +36,8 @@ application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=
 # antiword, but will handle documents which provoke the 'I'm afraid the
 # text stream of this file is too small to handle' antiword error
 # application/msword = exec wvWare --charset=utf-8 --nographics
-application/ogg = exec rclogg
-application/pdf = exec rclpdf
+application/ogg = execm rclaudio
+application/pdf = execm rclaudio
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
 application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;charset=utf-8;mimetype=text/plain
 application/vnd.ms-powerpoint = exec catppt -d utf-8;charset=utf-8;mimetype=text/plain
@@ -76,7 +76,7 @@ application/x-shellscript = internal
 application/x-tex = exec rcltex
 application/x-chm = execm rclchm
 application/zip = execm rclzip
-audio/mpeg = exec rclid3
+audio/mpeg = execm rclaudio
 image/gif = execm rclimg
 image/jpeg = execm rclimg
 image/png = execm rclimg

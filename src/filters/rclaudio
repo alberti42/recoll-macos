@@ -1,0 +1,105 @@
+#!/usr/bin/env python
+
+# Audio tag filter for Recoll, using mutagen
+
+import sys
+import os
+import rclexecm
+
+try:
+    from mutagen.mp3 import EasyMP3 as MP3
+    from mutagen.flac import FLAC
+    from mutagen.oggvorbis import OggVorbis
+except:
+    print "RECFILTERROR HELPERNOTFOUND python:mutagen"
+    sys.exit(1);
+
+# prototype for the html document we're returning
+htmltemplate = '''
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <meta name="album" content="%s">
+      <meta name="author" content="%s">
+      <meta name="title" content="%s">
+   </head>
+   <body>
+   %s
+   </body>
+</html>
+'''
+def htmlescape(txt):
+    txt = txt.replace("<", "&lt;")
+    txt = txt.replace("&", "&amp;")
+    txt = txt.replace('"', "&dquot;")
+    return txt
+
+# mp3:      album, title, artist, genre, date, tracknumber
+# flac:     album, title, artist, genre, xxx, tracknumber
+# oggvorbis:album, title, artist, genre, date, tracknumber
+class AudioTagExtractor:
+    def __init__(self, em):
+        self.em = em
+        self.currentindex = 0
+        
+    def extractone(self, params):
+        #self.em.rclog("extractone %s %s" % (params["filename:"], params["mimetype:"]))
+        docdata = ""
+        ok = False
+        if not params.has_key("mimetype:") or  not params.has_key("filename:"):
+            self.em.rclog("extractone: no mime or file name")
+            return (ok, docdata, "", rclexecm.RclExeM.eofnow)
+        filename = params["filename:"]
+        mimetype = params["mimetype:"]
+        try:
+            if mimetype == "audio/mpeg":
+                tags = MP3(filename)
+            elif mimetype == "application/ogg":
+                tags = OggVorbis(filename)
+            elif mimetype == "application/x-flac":
+                tags = FLAC(filename)
+            else:
+                raise Exception, "Bad mime type %s" % mimetype
+        except Exception, err:
+            self.em.rclog("extractone: extract failed: [%s]" % err)
+            return (ok, docdata, "", rclexecm.RclExecM.eofnow)
+
+        album = ""
+        artist = ""
+        title = ""
+        try:
+            album = htmlescape(tags["album"][0].encode("utf-8"))
+        except:
+            pass
+        try:
+            artist = htmlescape(tags["artist"][0].encode("utf-8"))
+        except:
+            pass
+        try:
+            title = htmlescape(tags["title"][0].encode("utf-8"))
+        except:
+            pass
+        alldata = htmlescape(tags.pprint().encode("utf-8"))
+        alldata = alldata.replace("\n", "<br>")
+        docdata = htmltemplate % (album, artist, title, alldata)
+        ok = True
+        return (ok, docdata, "", rclexecm.RclExecM.eofnext)
+
+    ###### File type handler api, used by rclexecm ---------->
+    def openfile(self, params):
+        self.currentindex = 0
+        return True
+
+    def getipath(self, params):
+        return self.extractone(params)
+        
+    def getnext(self, params):
+        if self.currentindex >= 1:
+            return (False, "", "", rclexecm.RclExecM.eofnow)
+        else:
+            ret= self.extractone(params)
+            self.currentindex += 1
+            return ret
+
+e = rclexecm.RclExecM()
+e.mainloop(AudioTagExtractor(e))
