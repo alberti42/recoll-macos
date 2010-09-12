@@ -2700,20 +2700,17 @@ while query.next >= 0 and query.next < nres:
             </ulink></para>
         </listitem>
           
-        <listitem><para>mp3: &RCL; will use the
-          <command>id3info</command> command from the <ulink
+        <listitem><para>mp3, flac, ogg vorbis: &RCL; releases before 1.13
+            use the <command>id3info</command> command from the <ulink
           url="http://id3lib.sourceforge.net/">id3lib</ulink> package to
-          extract tag information. Without it, only the file names will
-          be indexed. Some gcc versions after 4.4 may have trouble
-          compiling <application>id3lib</application>. <ulink
+          extract mp3 tag information. (Some gcc versions after 4.4 may have
+          trouble compiling <application>id3lib</application>. <ulink
           url="http://www.recoll.org/id3lib.html">You can find a
-          workaround here</ulink>.</para> 
-	</listitem>
-
-	<listitem><para>flac files need metaflac (standard flac tools).</para>
-	</listitem>
-
-	<listitem><para>ogg files need ogginfo (vorbis tools).</para>
+          workaround here</ulink>), metaflac (standard flac tools) for flac
+          files, and ogginfo (vorbis tools) for ogg files. Releases 1.14
+          and later use a single Python filter based on 
+          <ulink url="http://code.google.com/p/mutagen/">mutagen</ulink>
+	  for all audio file types.</para>
 	</listitem>
 
         <listitem>
