@@ -169,6 +169,7 @@ bool MimeHandlerExecMultiple::next_document()
     if (m_ipath.length()) {
         obuf << "Ipath: " << m_ipath.length() << "\n" << m_ipath;
     }
+    obuf << "Mimetype: " << m_mimeType.length() << "\n" << m_mimeType;
     obuf << "\n";
     if (m_cmd.send(obuf.str()) < 0) {
         LOGERR(("MHExecMultiple: send error\n"));
