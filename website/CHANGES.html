@@ -1,4 +1,4 @@
- <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
     <title>Recoll changes</title>
@@ -6,10 +6,10 @@
     <meta name="generator" content="HTML Tidy, see www.w3.org">
     <meta name="Author" content="Jean-Francois Dockes">
     <meta name="Description" content=
-    "recoll is a simple full-text search system for unix and linux
-    based on the powerful and mature xapian engine">
+	  "recoll is a simple full-text search system for unix and linux
+	   based on the powerful and mature xapian engine">
     <meta name="Keywords" content=
-    "full text search, desktop search, unix, linux">
+	  "full text search, desktop search, unix, linux">
     <meta http-equiv="Content-language" content="en">
     <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
     <meta name="robots" content="All,Index,Follow">
@@ -31,823 +31,872 @@
 
       <h1>Recoll journal of user-visible changes </h1>
 
-      <h2><a name="1.13.04">1.13.04</a></h2>
-       <p>Provide a set of configuration defaults so that compilation has a
-        chance to succeed on unknown systems.</p>
-       <p>Install icon to the pixmaps directory.</p>
-       <p>Fixes stemming, which was broken for all previous 1.13
-	 releases.</p>
-       <p><a href="BUGS.html#b_1_13_02">Bugs fixed between 1.13.02
-	   and 1.13.04.</a></p>
-
-      <h2><a name="1.13.02">1.13.02</a></h2>
-      <p>This version has a single fix to work around a problem in the
-         Qt 4.6.1 uic utility. If you are not using Qt 4.6.1 and are
-        currently running Recoll 1.13.01, you do not need to
-        upgrade.</p>
-
-      <h2><a name="1.13.01">1.13.01</a></h2>
-
+      <h2><a name="1.14.0">(future)1.14.0</a></h2>
       <ul>
-       <li>Recoll has a new class of persistent external filters
-         with the capability to process several documents, or
-         multi-document files, in the same instance. Benefits: much
-         faster image tag indexing, and new file formats. Except for
-         the Perl image tag filter (because of ExifTool), the new
-         filters are written in Python.<li>
-
-       <li>New file formats: chm (microsoft help), zip archives, .ics
-	 calendar files. Individual pages in chm files are indexed and
-	 can be previewed. Zip is quite convenient for maildir
-	 archives (for example).</li>
-
-       <li>Recoll can now use the output of the Beagle Firefox plugin
-	 to index visited web pages and bookmarks. This is only usable
-	 if Beagle itself is not running, else Recoll and Beagle will be
-	 fighting for the same queue.</li>
-
-       <li>Big text files (like application logs) can now be paged for
-         indexing, avoiding excess memory usage during indexing and
-         improving the usability at query time. They can also be
-         altogether skipped by setting a maximum size configuration
-         parameter. These parameters have default values (1 MB and 20
-         MB) which change Recoll behaviour compared to previous
-         versions. You can set <i>textfilepagekbs</i>
-         and <i>textfilemaxmbs</i> to -1 in the configuration to
-         restore the old behaviour.</li>
-
-       <li>A cache was implemented for mbox message header offsets. This
-	 speeds up message previews for big mbox files.</li>
-
-       <li>Miscellaneous usability improvements: 
-	 <ul>
-	   <li>Allow using page-up/down and shift-home to scroll the
-	     result list while the focus is in the search entry. </li>
-	   <li>Make 'Use desktop preferences' the default for new
-	     Recoll installations, and make this choice more
-	     prominent in the external viewer dialog.</li> 
-	   <li>^P starts the print dialog on a preview window.</li>
-	   <li>If a search has no result, alternate spellings are
-	     suggested. This feature is still a bit raw and will be
-	     improved.</li> 
-	   <li>If the text of a document is empty, preview will switch to
-	     displaying the document fields.</li>
-	   <li>New entry in the result list contextual menu for opening
-	     the parent document of a result list hit with its native
-	     application. Useful for exemple for pages inside chm files.</li>
-	 </ul>
-       </li>
-
-       <li>Indentation is now preserved when displaying text documents
-	 inside the preview window. This is particularly welcome for
-	 program source files.</li>
-
-       <li>Allow substituting arbitrary fields in the result
-         paragraph, using a %(fieldname) syntax</li>
-
-       <li>The real-time indexing monitor will now accumulate
-	 modifications during 30&nbsp;S before indexing.</li>
-
-       <li>The indexer can now split camelCase words, allowing search on
-	 component terms. This is not enabled by default as it can
-	 confuse phrase searches (ie: "MySQL&nbsp;manual" is matched by
-	 phrase queries for "my&nbsp;sql&nbsp;manual" and "MySQL&nbsp;manual"
-	 but not "mysql&nbsp;manual"). Use "configure&nbsp;--enable-camelcase"
-	 to activate it.
-       </li>
-
-       <li>The ipath is now printed by default after the url in the
-	 default result list format.</li>
-       
-       <li><i>recoll_noindex</i> and <i>skippedNames</i> can now be
-	 changed at any point in the tree (only for topdirs previously).</li>
-
-       <li>Allow using location/application sensitivity in external viewer
-         choice. This uses several new functions: 
-         <ul>
-           <li>Allow the substitution of arbitrary document fields inside
-             external viewer command line arguments.</li>
-           <li>Allow field values to be set on all documents
-             in a file system subtree. For example, you can 
-             set an application tag (ie: rclaptg = gnus) on all mailbox
-             files under a specific directory.</li>
-           <li>New syntax in mimeview for including the rclaptg field in
-             viewer choice
-             (<i>mimetype</i>|<i>tagvalue</i>&nbsp;=&nbsp;...).</li> 
-         </ul>
-       </li>
-
-       <li>Allow specifiying a specific default character set for mail
-	 messages. This is mainly useful for readpst dumps. All
-	 reasonable non-ascii messages specify their character set.</li>
-
-       <li>Added a --without-gui configure option. Removes all X11 and
-	 Qt dependancies and only compiles the command-line interface.</li>
-
-       <li>Improved the kio_recoll build. There is no need to run
-	 configure manually in the main directory any more. Ubuntu
-	 packages for kio_recoll are now built on the
-	 <a href="http://launchpad.net/~recoll-backports/+archive/ppa">
-	   recoll-backports PPA on launchpad.net</a>.</li>
-
+	<li><a href="usermanual/rcl.search.lang.html">
+	    date selection in queries</a>.</li>
+	<li>Pure negative queries (ie: <i>-someterm date:P10D/</i>.</li>
+	<li>Autosuffs: option to automatically turn words into <tt>ext:</tt>
+	  clauses (ie: <i>xls</i> -> <i>ext:xls</i>) (GUI preferences
+	  panel).</li> 
+	<li>Allow extracting arbitrary mail headers and use them as
+	  index/search fields (configured in the <tt>fields</tt>
+	  file).</li>
+	<li><tt>nonumbers</tt> configuration parameter: disable
+	  indexing of all numbers, useful for some data files with lots
+	  of numerical data.</li>
+	<li>Shortcuts for the results page: <tt>PageUp/Down</tt> can
+	  be used even when the focus is in the search
+	  entry. <tt>Shift+Home</tt>: back to first page of results.
+	  <tt>Ctrl+Shift+s</tt>: return focus to the search
+	  entry. </li>
+	<li>Add full screen mode for small devices.</li>
+	<li>Added -i option to recollq to specify extra indexes.</li>
+	<li>Filter for <b>fictionbook</b> (.fb2) documents.</li>
+	<li>Cleaned up the Python samples and made recollq.py a usable
+	  clone of recollq.</li>
+	<li>Errors when opening additional indexes for a query are now
+	  fatal. They could easily go unnoticed before.</li>
+	<li>Proper LARGEFILE support.</li>
+	<li>Use <b>xsltproc</b> instead of misc dirty tricks to
+	  extract test from most current XML-based documents (except
+	  those in which the XML is too broken).</li>
+	<li>Implement <tt>configure --enable-pic</tt> and use it for
+	  the KIO slave and Python and PHP modules.</li>
       </ul>
 
-
-      <h2><a name="1.12.4">1.12.4</a></h2>
-      <p>Bugs fixed:</p>
+      <p>Bugs also fixed in the 1.13 branch:</p>
       <ul>
-	<li>Qt4 version only: the search inside the preview window
-	could become unbearably slow for big documents (quadratically
-	so), and could not be interrupted (Qt bug). The Qt3 version of
-	the code was included in the preview tool to restore good
-	performance. This bug is the main reason for this release.</li>
-      </ul>
-      <p>Build system improvements:</p>
-      <ul>
-	<li>Perform minimal base package configuration inside the kio
-	  cmake code to permit building it from scratch (without a build
-	  of the main code). Mainly useful for builds on the Ubuntu
-	  PPA.</li>
-	<li>Implement a --without-gui option to build a pure
-	  command-line version with no Qt or X11 dependancies.</li>
-	<li>Ensure that the user's PATH settings determine where we
-	  look first for qmake in all cases.</li>
+	<li>The <tt>filename</tt> (transcoded file name) field
+	    could not be stored, so it could not be displayed in the
+	    result list.</li> 
+	<li>Html files would always be indexed even when filtered
+	    out by <tt>indexedmimetypes</tt></li>
+	<li>Preview: toggling between main text and metadata
+	    display would confuse the text format.</li>
+	<li>Restore <tt>indexallfilenames=0</tt> functionality.</li>
       </ul>
 
-      <h2><a name="1.12.3">1.12.3</a></h2>
-      <p>This is a bug fix release.</p>
-      <ul>
-      <li>Fix the sort tool which had been broken since 1.11  with
-         some (or all?) qt3 versions.<li>
-      <li>Catch two Xapian exceptions which could crash the GUI when a query
-        was run while the index was being updated.</li>
-      <li>Ensure that the result list right-click pop up menu will appear even
-          when the click is inside a table.</li>
-      <li>Fix the way we retrieve the Xapian library version to avoid
+	<h2><a name="1.13.04">1.13.04</a></h2>
+	<ul>
+	  <li>Provide a set of configuration defaults so that compilation has a
+            chance to succeed on unknown systems.</li>
+	  <li>Install icon to the pixmaps directory.</li>
+	  <li>Fixes stemming, which was broken for all previous 1.13
+	    releases.</li>
+	  <li><a href="BUGS.html#b_1_13_02">Bugs fixed between 1.13.02
+	      and 1.13.04.</a></li>
+	</ul>
+
+	<h2><a name="1.13.02">1.13.02</a></h2>
+	<ul><li>This version has a single fix to work around a problem in the
+            Qt 4.6.1 uic utility. If you are not using Qt 4.6.1 and are
+            currently running Recoll 1.13.01, you do not need to
+            upgrade.</li></ul>
+
+	<h2><a name="1.13.01">1.13.01</a></h2>
+
+	<ul>
+	  <li>Recoll has a new class of persistent external filters
+            with the capability to process several documents, or
+            multi-document files, in the same instance. Benefits: much
+            faster image tag indexing, and new file formats. Except for
+            the Perl image tag filter (because of ExifTool), the new
+            filters are written in Python.<li>
+
+	  <li>New file formats: chm (microsoft help), zip archives, .ics
+	    calendar files. Individual pages in chm files are indexed and
+	    can be previewed. Zip is quite convenient for maildir
+	    archives (for example).</li>
+
+	  <li>Recoll can now use the output of the Beagle Firefox plugin
+	    to index visited web pages and bookmarks. This is only usable
+	    if Beagle itself is not running, else Recoll and Beagle will be
+	    fighting for the same queue.</li>
+
+	  <li>Big text files (like application logs) can now be paged for
+            indexing, avoiding excess memory usage during indexing and
+            improving the usability at query time. They can also be
+            altogether skipped by setting a maximum size configuration
+            parameter. These parameters have default values (1 MB and 20
+            MB) which change Recoll behaviour compared to previous
+            versions. You can set <i>textfilepagekbs</i>
+            and <i>textfilemaxmbs</i> to -1 in the configuration to
+            restore the old behaviour.</li>
+
+	  <li>A cache was implemented for mbox message header offsets. This
+	    speeds up message previews for big mbox files.</li>
+
+	  <li>Miscellaneous usability improvements: 
+	    <ul>
+	      <li>Allow using page-up/down and shift-home to scroll the
+		result list while the focus is in the search entry. </li>
+	      <li>Make 'Use desktop preferences' the default for new
+		Recoll installations, and make this choice more
+		prominent in the external viewer dialog.</li> 
+	      <li>^P starts the print dialog on a preview window.</li>
+	      <li>If a search has no result, alternate spellings are
+		suggested. This feature is still a bit raw and will be
+		improved.</li> 
+	      <li>If the text of a document is empty, preview will switch to
+		displaying the document fields.</li>
+	      <li>New entry in the result list contextual menu for opening
+		the parent document of a result list hit with its native
+		application. Useful for exemple for pages inside chm files.</li>
+	    </ul>
+	  </li>
+
+	  <li>Indentation is now preserved when displaying text documents
+	    inside the preview window. This is particularly welcome for
+	    program source files.</li>
+
+	  <li>Allow substituting arbitrary fields in the result
+            paragraph, using a %(fieldname) syntax</li>
+
+	  <li>The real-time indexing monitor will now accumulate
+	    modifications during 30&nbsp;S before indexing.</li>
+
+	  <li>The indexer can now split camelCase words, allowing search on
+	    component terms. This is not enabled by default as it can
+	    confuse phrase searches (ie: "MySQL&nbsp;manual" is matched by
+	    phrase queries for "my&nbsp;sql&nbsp;manual" and "MySQL&nbsp;manual"
+	    but not "mysql&nbsp;manual"). Use "configure&nbsp;--enable-camelcase"
+	    to activate it.
+	  </li>
+
+	  <li>The ipath is now printed by default after the url in the
+	    default result list format.</li>
+	  
+	  <li><i>recoll_noindex</i> and <i>skippedNames</i> can now be
+	    changed at any point in the tree (only for topdirs previously).</li>
+
+	  <li>Allow using location/application sensitivity in external viewer
+            choice. This uses several new functions: 
+            <ul>
+              <li>Allow the substitution of arbitrary document fields inside
+		external viewer command line arguments.</li>
+              <li>Allow field values to be set on all documents
+		in a file system subtree. For example, you can 
+		set an application tag (ie: rclaptg = gnus) on all mailbox
+		files under a specific directory.</li>
+              <li>New syntax in mimeview for including the rclaptg field in
+		viewer choice
+		(<i>mimetype</i>|<i>tagvalue</i>&nbsp;=&nbsp;...).</li> 
+            </ul>
+	  </li>
+
+	  <li>Allow specifiying a specific default character set for mail
+	    messages. This is mainly useful for readpst dumps. All
+	    reasonable non-ascii messages specify their character set.</li>
+
+	  <li>Added a --without-gui configure option. Removes all X11 and
+	    Qt dependancies and only compiles the command-line interface.</li>
+
+	  <li>Improved the kio_recoll build. There is no need to run
+	    configure manually in the main directory any more. Ubuntu
+	    packages for kio_recoll are now built on the
+	    <a href="http://launchpad.net/~recoll-backports/+archive/ppa">
+	      recoll-backports PPA on launchpad.net</a>.</li>
+
+	</ul>
+
+
+	<h2><a name="1.12.4">1.12.4</a></h2>
+	<p>Bugs fixed:</p>
+	<ul>
+	  <li>Qt4 version only: the search inside the preview window
+	    could become unbearably slow for big documents (quadratically
+	    so), and could not be interrupted (Qt bug). The Qt3 version of
+	    the code was included in the preview tool to restore good
+	    performance. This bug is the main reason for this release.</li>
+	</ul>
+	<p>Build system improvements:</p>
+	<ul>
+	  <li>Perform minimal base package configuration inside the kio
+	    cmake code to permit building it from scratch (without a build
+	    of the main code). Mainly useful for builds on the Ubuntu
+	    PPA.</li>
+	  <li>Implement a --without-gui option to build a pure
+	    command-line version with no Qt or X11 dependancies.</li>
+	  <li>Ensure that the user's PATH settings determine where we
+	    look first for qmake in all cases.</li>
+	</ul>
+
+	<h2><a name="1.12.3">1.12.3</a></h2>
+	<p>This is a bug fix release.</p>
+	<ul>
+	  <li>Fix the sort tool which had been broken since 1.11  with
+            some (or all?) qt3 versions.<li>
+	  <li>Catch two Xapian exceptions which could crash the GUI when a query
+            was run while the index was being updated.</li>
+	  <li>Ensure that the result list right-click pop up menu will appear even
+            when the click is inside a table.</li>
+	  <li>Fix the way we retrieve the Xapian library version to avoid
             GUI compilation problems.</li>
-      <li>Inside the real-time indexer: only use the main thread to test that
-        the X11 server is still alive. Multithreaded calls to x11IsAlive()
-         would sometimes crash the process because of an X11 error.</li>
-      <li>Define filter timeout so that a looping filter (ie: rclps trying to
-        index loop.ps) will not completely stop the indexing. Default value:
-        20mn. Add loop.ps to skippedNames.</li>
-      <li>Improve filter subprocesses management. Some could previously be
-         left around after recollindex was killed. Improve cancellation
-         request acknowledgment by recollindex (two ^C were sometimes
-        necessary to make it terminate).</li>
-      <li>Signals SIGUSR1 and SIGUSR2 are now blocked in addition to
-       INTR/TERM/QUIT.</li>
-      <li>Extended attributes indexing now works for all file types.</li>
-      <li>Ensure that queries started from the command line are handled as
-         normal ones (they previously could not be sorted).</li>
-      <li>Improve man page indexing: do not index section header terms.</li>
-      </ul>
+	  <li>Inside the real-time indexer: only use the main thread to test that
+            the X11 server is still alive. Multithreaded calls to x11IsAlive()
+            would sometimes crash the process because of an X11 error.</li>
+	  <li>Define filter timeout so that a looping filter (ie: rclps trying to
+            index loop.ps) will not completely stop the indexing. Default value:
+            20mn. Add loop.ps to skippedNames.</li>
+	  <li>Improve filter subprocesses management. Some could previously be
+            left around after recollindex was killed. Improve cancellation
+            request acknowledgment by recollindex (two ^C were sometimes
+            necessary to make it terminate).</li>
+	  <li>Signals SIGUSR1 and SIGUSR2 are now blocked in addition to
+	    INTR/TERM/QUIT.</li>
+	  <li>Extended attributes indexing now works for all file types.</li>
+	  <li>Ensure that queries started from the command line are handled as
+            normal ones (they previously could not be sorted).</li>
+	  <li>Improve man page indexing: do not index section header terms.</li>
+	</ul>
 
 
-      <h2><a name="1.12.1">1.12.1</a></h2>
-      <p>This is a very minor release, mainly to fix compilation
-            issues and a few very minor bugs. No need to upgrade if
-            you don't experience these.</p>
-      <ul>
-        <li>Fixed compilation errors for new gcc and gnu libc.</li>
-        <li>Use groff html output in rclman to get rid of control
-           characters in output (improve manual pages indexing). Fix
-           8bit character issues in file names in rcllyx.</li>
-        <li>Fixed command line arguments processing problem with 
-        "recoll -q"</li>
-      </ul>
+	<h2><a name="1.12.1">1.12.1</a></h2>
+	<p>This is a very minor release, mainly to fix compilation
+          issues and a few very minor bugs. No need to upgrade if
+          you don't experience these.</p>
+	<ul>
+          <li>Fixed compilation errors for new gcc and gnu libc.</li>
+          <li>Use groff html output in rclman to get rid of control
+            characters in output (improve manual pages indexing). Fix
+            8bit character issues in file names in rcllyx.</li>
+          <li>Fixed command line arguments processing problem with 
+            "recoll -q"</li>
+	</ul>
 
-      <h2><a name="1.12.0">1.12.0</a></h2>
-      <ul>
-        <li>Recoll now implements a KIO slave to allow searching
-          directly from KDE applications. This does not affect the
-          main application and is not enabled by default (go to the
-          kde/kio/recoll source directory for build
-          instructions). </li>
-        <li>Recoll now computes md5 checksums for all indexed
-          documents and optionally collapses duplicate entries inside
-          the result list. This needs a full reindex to become
-          effective for older documents already in the index. The
-          option to activate collapsing is in the <i>Query
-          Configuration</i>.</li>
-        <li>Typing F1 anywhere in the GUI should bring up the
-          appropriate section of the manual in the application
-          configured for viewing HTML documents.</li>
-        <li>The result list right click menu now has an entry to
-          save the document to a file. This is only enabled for
-          documents contained inside another file (ie, messages inside
-          an mbox folder, or attachments), and is especially useful for
-          extracting an attachment with no associated external
-          editor.</li>
-        <li>The preview window now has a right-click menu, with an
-          entry to toggle between viewing the main text or all the
-          metadata for the document. This is most useful in the case
-          where the search match actually occurred in a field not
-          visible in the main text (ie: author or HTML title).</li>
-        <li>Words glued by an underscore character like
-          <i>compound_word</i> are now split during indexing, and
-          will be found when queried either as themselves or in a
-          search for the components.</li>
-        <li>There is now a size limit over which no attempt will be made to
-          uncompress/identify/index compressed files. Not active by
-          default, to be set in the <i>Indexing Configuration</i>.</li>
-        <li>Added support for fetching field values from extended file
-          attributes. This is not enabled by default, use 
-          <i>configure&nbsp;--enable-xattr</i>. You'll also need to
-          set up a map from the attributes names to the Recoll field
-          names (see comment at the end of the <i>fields</i>
-          configuration file.</li> 
-      </ul>
+	<h2><a name="1.12.0">1.12.0</a></h2>
+	<ul>
+          <li>Recoll now implements a KIO slave to allow searching
+            directly from KDE applications. This does not affect the
+            main application and is not enabled by default (go to the
+            kde/kio/recoll source directory for build
+            instructions). </li>
+          <li>Recoll now computes md5 checksums for all indexed
+            documents and optionally collapses duplicate entries inside
+            the result list. This needs a full reindex to become
+            effective for older documents already in the index. The
+            option to activate collapsing is in the <i>Query
+              Configuration</i>.</li>
+          <li>Typing F1 anywhere in the GUI should bring up the
+            appropriate section of the manual in the application
+            configured for viewing HTML documents.</li>
+          <li>The result list right click menu now has an entry to
+            save the document to a file. This is only enabled for
+            documents contained inside another file (ie, messages inside
+            an mbox folder, or attachments), and is especially useful for
+            extracting an attachment with no associated external
+            editor.</li>
+          <li>The preview window now has a right-click menu, with an
+            entry to toggle between viewing the main text or all the
+            metadata for the document. This is most useful in the case
+            where the search match actually occurred in a field not
+            visible in the main text (ie: author or HTML title).</li>
+          <li>Words glued by an underscore character like
+            <i>compound_word</i> are now split during indexing, and
+            will be found when queried either as themselves or in a
+            search for the components.</li>
+          <li>There is now a size limit over which no attempt will be made to
+            uncompress/identify/index compressed files. Not active by
+            default, to be set in the <i>Indexing Configuration</i>.</li>
+          <li>Added support for fetching field values from extended file
+            attributes. This is not enabled by default, use 
+            <i>configure&nbsp;--enable-xattr</i>. You'll also need to
+            set up a map from the attributes names to the Recoll field
+            names (see comment at the end of the <i>fields</i>
+            configuration file.</li> 
+	</ul>
 
-      <h2><a name="1.11.4">1.11.4</a></h2>
-      <ul>
+	<h2><a name="1.11.4">1.11.4</a></h2>
+	<ul>
 
-        <li>Bugs fixed:
-          check the <a href="BUGS.html#b_1_11_1">list</a>.</li>  
+          <li>Bugs fixed:
+            check the <a href="BUGS.html#b_1_11_1">list</a>.</li>  
 
-        <li>The right-click menu "Copy" commands inside the result list
-          now copy to the clipboard in addition to the main selection,
-          enabling subsequent ^v commands.</li>
+          <li>The right-click menu "Copy" commands inside the result list
+            now copy to the clipboard in addition to the main selection,
+            enabling subsequent ^v commands.</li>
 
-      </ul>
+	</ul>
 
-      <h2><a name="1.11.0">1.11.0</a></h2>
+	<h2><a name="1.11.0">1.11.0</a></h2>
 
-      <p><i>Recoll release 1.11 has relatively extensive changes that have
-          necessitated a modification of the index format. Hence installing this
-          release implies a full re-indexing, which is enforced by the
-          software.</i></p> 
+	<p><i>Recoll release 1.11 has relatively extensive changes that have
+            necessitated a modification of the index format. Hence installing this
+            release implies a full re-indexing, which is enforced by the
+            software.</i></p> 
 
-      <ul>
-        <li>Filtering on category (message/text/media etc.) as a function of
-          the main window for quick access.</li>
+	<ul>
+          <li>Filtering on category (message/text/media etc.) as a function of
+            the main window for quick access.</li>
 
-        <li>Use html for preview when available (ex: html files or "colorized"
-          python) instead of converting to text. This can be turned of in the
-          preferences. </li>
+          <li>Use html for preview when available (ex: html files or "colorized"
+            python) instead of converting to text. This can be turned of in the
+            preferences. </li>
 
-        <li>New Python query and index interfaces. The Python query
-          interface will be used for building a Xesam adapter for
-          Recoll when the specification is stabilized, and could be
-          useful for other things, such as indexing contents from an
-          RDBMS (see 
-          <a href="usermanual/usermanual.html#RCL.PROGRAM.API">
-          the manual</a> for details). Restructured and cleaned up
-          internal Recoll interfaces.</li>
+          <li>New Python query and index interfaces. The Python query
+            interface will be used for building a Xesam adapter for
+            Recoll when the specification is stabilized, and could be
+            useful for other things, such as indexing contents from an
+            RDBMS (see 
+            <a href="usermanual/usermanual.html#RCL.PROGRAM.API">
+              the manual</a> for details). Restructured and cleaned up
+            internal Recoll interfaces.</li>
 
-        <li>Improved filter framework. Can now process either html or text output
-          from the filters, and more easily execute "raw" commands instead of
-          Recoll scripts. Avoided wasteful repeated execution of filters for
-          which the helper application is missing.</li>
+          <li>Improved filter framework. Can now process either html or text output
+            from the filters, and more easily execute "raw" commands instead of
+            Recoll scripts. Avoided wasteful repeated execution of filters for
+            which the helper application is missing.</li>
 
-        <li>Query language now closer to Xesam specification, (but
-          still far from a 
-          complete implementation). See the Recoll manual and
-          <a href="http://www.xesam.org/main/XesamUserSearchLanguage">
-            http://www.xesam.org/main/XesamUserSearchLanguage</a> </li>
+          <li>Query language now closer to Xesam specification, (but
+            still far from a 
+            complete implementation). See the Recoll manual and
+            <a href="http://www.xesam.org/main/XesamUserSearchLanguage">
+              http://www.xesam.org/main/XesamUserSearchLanguage</a> </li>
           
-        <li>Much improved configuration for fields. Fields like
-          "author" can now be specified as storable (displayable in
-          results) and/or indexed (searchable). Added alias facility
-          for translating from user-level names to internal.</li>
+          <li>Much improved configuration for fields. Fields like
+            "author" can now be specified as storable (displayable in
+            results) and/or indexed (searchable). Added alias facility
+            for translating from user-level names to internal.</li>
 
-        <li>Added "recipient" as an indexed/searchable field for emails.</li>
+          <li>Added "recipient" as an indexed/searchable field for emails.</li>
 
-        <li>rcltext filter for processing text such as C code for which no specific
-          processing is needed when indexing but a specific viewer is
-          desired.</li>
-      </ul>
+          <li>rcltext filter for processing text such as C code for which no specific
+            processing is needed when indexing but a specific viewer is
+            desired.</li>
+	</ul>
 
-      <h2><a name="1.10.6">1.10.6</a></h2>
-      <ul>
-        <li>Fix a simple and mildly nasty bug that would cause the
-          indexer to stop 
-          indexing an mbox on encountering a specific but not exceptional error
-          condition (like a few dozen errors while indexing attachments for which
-          no filter was installed).</li>
-      </ul>
+	<h2><a name="1.10.6">1.10.6</a></h2>
+	<ul>
+          <li>Fix a simple and mildly nasty bug that would cause the
+            indexer to stop 
+            indexing an mbox on encountering a specific but not exceptional error
+            condition (like a few dozen errors while indexing attachments for which
+            no filter was installed).</li>
+	</ul>
 
 
-      <h2><a name="1.10.5">1.10.5</a></h2>
-      <ul>
-        <li>Ensure that file names indexed as terms don't overflow the maximum term
-          size.</li>
+	<h2><a name="1.10.5">1.10.5</a></h2>
+	<ul>
+          <li>Ensure that file names indexed as terms don't overflow the maximum term
+            size.</li>
 
-        <li> Handle non-standard date format in mbox separator lines sometimes
-          generated by thunderbird.
+          <li> Handle non-standard date format in mbox separator lines sometimes
+            generated by thunderbird.
 
-        <li> Use attachment file names to help identify a better mime type for
-          parts only described as application/octet-stream
+          <li> Use attachment file names to help identify a better mime type for
+            parts only described as application/octet-stream
 
-        <li> For Phrase/Near searches, highlight all term groups in preview, not just
-          the first
+          <li> For Phrase/Near searches, highlight all term groups in preview, not just
+            the first
 
-        <li> Added Open XML filters
+          <li> Added Open XML filters
 
-      </ul>
-      <h2><a name="1.10.2">1.10.2</a></h2>
-      <ul>
+	</ul>
+	<h2><a name="1.10.2">1.10.2</a></h2>
+	<ul>
 
-        <li>Fixed openSuse 11 compile issues.
+          <li>Fixed openSuse 11 compile issues.
 
-        <li>Fixed bug in interpreting email mime structure, which resulted in base-64
-          decoding errors.
+          <li>Fixed bug in interpreting email mime structure, which resulted in base-64
+            decoding errors.
 
-        <li>Fixed "Prev" button in preview window. Would actually go forward when
-          walking the search terms.
+          <li>Fixed "Prev" button in preview window. Would actually go forward when
+            walking the search terms.
 
-        <li> Allow setting the highlight color for search terms in result list and
-          preview (yes: feature change, should have waited for major release...)
+          <li> Allow setting the highlight color for search terms in result list and
+            preview (yes: feature change, should have waited for major release...)
 
-        <li> Added svg filter
+          <li> Added svg filter
 
-      </ul>
-      <h2><a name="1.10.1">1.10.1</a></h2>
-      <ul>
+	</ul>
+	<h2><a name="1.10.1">1.10.1</a></h2>
+	<ul>
 
-        <li> Ensure that in case the data of a file can't be indexed because of some
-          error, at least the file name is indexed.
+          <li> Ensure that in case the data of a file can't be indexed because of some
+            error, at least the file name is indexed.
 
-        <li> Improve query language to support OR queries of terms with field
-          specifications (ie: title:someterm OR author:someauthor).
+          <li> Improve query language to support OR queries of terms with field
+            specifications (ie: title:someterm OR author:someauthor).
 
-        <li> Fix filename search to split patterns on white space, so that 
-          a "*.jpg *.jpeg" search does what's expected. Means you now need to use
-          double-quotes if there is actual embedded white space.
+          <li> Fix filename search to split patterns on white space, so that 
+            a "*.jpg *.jpeg" search does what's expected. Means you now need to use
+            double-quotes if there is actual embedded white space.
 
-        <li> Jump directly to the external editor choice dialog instead of opening
-          preferences when an external viewer is not found.
+          <li> Jump directly to the external editor choice dialog instead of opening
+            preferences when an external viewer is not found.
 
-        <li> Allow stopping indexing through menu action (only works with qt4 for now).
+          <li> Allow stopping indexing through menu action (only works with qt4 for now).
 
-        <li> Create an "indexedmimetypes" configuration variable to allow explicitely
-          restricting the file types which do get indexed.
+          <li> Create an "indexedmimetypes" configuration variable to allow explicitely
+            restricting the file types which do get indexed.
 
 
-      </ul>
-      <h2><a name="1.10.0">1.10.0</a></h2>
-      <ul>
+	</ul>
+	<h2><a name="1.10.0">1.10.0</a></h2>
+	<ul>
 
-        <li> Added a GUI dialog to configure the indexing parameters.
+          <li> Added a GUI dialog to configure the indexing parameters.
 
-        <li> Added better support for indexing CJK text (Chinese, Japanese, Korean). 
-          Please note that:
-          - You will need a full reindex to take good advantage of this. (You
-          *don't* need to reindex if you don't need to search CJK, even if there
-          is some in your index).
-          - When entering CJK search terms, words (single or multiple characters)
-          should be separated with white space.
-          - The specific CJK processing can be turned off by setting the nocjk
-          variable to true in the configuration file (this may make sense if you
-          have a mixed cjk/other document base and don't want to index the cjk
-          part, as it will save some disk space and a minuscule amount of cpu).
+          <li> Added better support for indexing CJK text (Chinese, Japanese, Korean). 
+            Please note that:
+            - You will need a full reindex to take good advantage of this. (You
+            *don't* need to reindex if you don't need to search CJK, even if there
+            is some in your index).
+            - When entering CJK search terms, words (single or multiple characters)
+            should be separated with white space.
+            - The specific CJK processing can be turned off by setting the nocjk
+            variable to true in the configuration file (this may make sense if you
+            have a mixed cjk/other document base and don't want to index the cjk
+            part, as it will save some disk space and a minuscule amount of cpu).
 
-        <li> Changed the way Recoll handles searches including composite words (like
-          an email address). The new approach looks saner, but could have
-          side-effects, please report any problems in this area.
+          <li> Changed the way Recoll handles searches including composite words (like
+            an email address). The new approach looks saner, but could have
+            side-effects, please report any problems in this area.
 
-        <li> The query language got a new "dir:" specifier to filter results on location.
+          <li> The query language got a new "dir:" specifier to filter results on location.
 
-        <li> New rclimg perl filter for better indexing of picture tags, thanks to
-          Cedric Scott. This depends on Exiftool.
-        <li> New rcltex filter.
+          <li> New rclimg perl filter for better indexing of picture tags, thanks to
+            Cedric Scott. This depends on Exiftool.
+          <li> New rcltex filter.
 
-        <li> Changed and improved how the preview window local search finds the
-          query terms, this does not involve weird characters any more. The
-          display is cleaner and cut and paste works better.
+          <li> Changed and improved how the preview window local search finds the
+            query terms, this does not involve weird characters any more. The
+            display is cleaner and cut and paste works better.
 
-        <li> Fixed the fact that a newline-separated word list in simple search would
-          wrongly trigger a phrase search.
+          <li> Fixed the fact that a newline-separated word list in simple search would
+            wrongly trigger a phrase search.
 
-        <li> Fixed the way we input text to the preview textedit (the old way would
-          sometimes confuse the window into displaying tags instead of acting on
-          them).
+          <li> Fixed the way we input text to the preview textedit (the old way would
+            sometimes confuse the window into displaying tags instead of acting on
+            them).
 
-        <li> Fixed transcoding to utf-8 for text/plain email attachments
+          <li> Fixed transcoding to utf-8 for text/plain email attachments
 
-        <li> Improved mbox From_ line detection
+          <li> Improved mbox From_ line detection
 
-        <li> Added indexedmimetypes variables to allow restricting the list of indexed
-          mime types.
+          <li> Added indexedmimetypes variables to allow restricting the list of indexed
+            mime types.
 
-        <li> KDE kicker applet: start a recoll search from the panel and get a
-          Recoll window. This is a clone from the find_applet, originally meant to
-          start a Tracker search. Not so useful presently because it will start a
-          new Recoll instance for every search. Not part of the main source (the
-          configure script is a whopping 1MB...), linked from the download page.
-        <li> Added recoll command line options to define a query and execute it
-          immediately when the program starts. This is used in practice from the
-          applet and could be used from other programs. There is a also a new
-          option to not start the GUI and print the results to stdout.
-
-      </ul>
-      <h2><a name="1.9.0">1.9.0</a></h2>
-      <ul>
-        <li> Incompatible change: the icon image reference is now part of the result
-          list paragraph format string:
-          - If you had a standard config, you need do nothing.
-          - If you had a custom format string, you need to add
-          <img src="%I" align="left"> at its beginning to get the same result as
-          before.
-          - If you had unchecked the "show icons" option, you need to remove the
-          above string from the paragraph format to make the icons go away.
-          Changes to the format string are performed in the 
-          "Preferences->Query Configuration->User Interface" dialog tab.
-
-        <li> New filters: wordperfect, abiword and kword, rcljpeg, rclflac, rclogg
-          (contributed filters). The jpeg and audio filters should be extended to
-          make use of the new field indexing/search capability (hint :) )
-
-        <li> When searching for an empty string inside the preview window, position
-          the window to the next occurrence of a primary search term.
-
-        <li> Added ext: and mime: selectors to the query language.
-
-        <li> Added an adjustable flush threshold during indexing: should help control
-          memory usage. See the idxflushmb configuration variable.
-
-        <li> Added a check for file system free space. Indexing will stop if the
-          threshold is reached. See the maxfsoccuppc configuration parameter.
-
-        <li> Added 'followLinks' configuration option to have the indexer follow
-          symbolic links while walking the tree (the default is false).
-
-        <li> Allow symbolic links as 'topdirs' members. These are always followed.
-
-        <li> Add preference option to remember sort tool state between program
-          invocations (it is reset to inactive by default)
-
-        <li> Added File menu entry to erase document history.
-
-        <li> Bound the space and backspace keys to PgUp/PgDown in preview.
-
-        <li> (Hopefully) Improved abstract (keyword in context) generation
-
-        <li> Added support for arbitrary fields. Filters can now produce any number of
-          fields which will be selectively searchable through the query
-          language. This could be useful, for exemple, for the mp3 and jpeg filters
-          (but it is not currently used).
-
-        <li> Improved qt4 build: no more need for --enable-qt4. Note: the qt4 build
-          still needs the qt3 support library.
-
-        <li> Changed the icon to an ugly one. The previous one was nicer but looked
-          too much like Xapian's.
-
-        <li> Added some kind of support for a stopword list.
-
-        <li> Have email attachments inherit date and author from their parent message
-          (instead of mail folder).
-
-        <li> Fix bus error on rclmon exit
-
-        <li> Better handling of aspell errors inside rclmon
-
-        <li> Fixed a number of qt4 glitches: selection and keyboard shortcuts.
-
-        <li> New query configuration parameter to set the maximum text size beyond
-          which text won't be hilighted before preview (takes too much time). This
-          was a fixed value in 1.8.
-
-      </ul>
-      <h2><a name="1.8.2">1.8.2 2007-05-19</a></h2>
-      <ul>
-        <li> Fixed method name for compatibility with xapian 1.0.0
-        <li> Add .beagle to default list of skipped names (avoids indexing beagle
-          document cache...)
-        <li> Fix configure.ac to use $libdir instead of /usr/lib
-        <li> Fix recollinstall to properly copy translations and pictures for qt4
-
-      </ul>
-      <h2><a name="1.8.1">1.8.1 2007-02-20</a></h2>
-      <ul>
-        <li> Add a small query language with some field-based searches (author, title,
-          etc.)
-        <li> Add wildcard handling everywhere. *, ?, [] can be used in any
-          search. Warning: using a wild card at the left of a term can make
-          for a very slow search.
-        <li> Allow skipping specific paths during indexing (in addition to file name
-          patterns)
-        <li> Improved external index choice dialog, accessible from the top-level menu.
-        <li> Many small bugs fixed: stemming language choice ignored in term explorer,
-          qt4 preview window reentrancy crashes, issues with saving the default
-          advanced search file, type filter, display more clearly missing helper
-          errors, etc. 
-        <li> Option to use the desktop defaults (with xdg-open) to choose the native
-          viewer for files (instead of recoll's mimeview). 
-
-      </ul>
-      <h2><a name="1.7.6">1.7.6 2007-01-30</a></h2>
-      <ul>
-        <li> Fixes an issue with the openoffice filter on debian systems. 
-        <li> Adds Scribus and Lyx filters.
-
-      </ul>
-      <h2><a name="1.7.5">1.7.5 2007-01-15</a></h2>
-      <ul>
-        <li> Fixes two email indexing bugs in 1.7.3, which would bail out from an
-          mbox folder on the first attachment filtering error, and would decline
-          to handle multipart/signed bodies. You may need to run a full indexing
-          pass (recollindex -z), to force reindexing of old folders.
-
-      </ul>
-      <h2><a name="1.7.3">1.7.3 2007-01-09</a></h2>
-      <ul>
-        <li> Email attachments are now indexed.
-        <li> Right-click menu option to access the parent document of an embedded
-          result (ie from mail attachment to parent message), or the parent folder
-          of a given file (which is opened with the application configured for
-          directories) 
-        <li> The sort tool has been improved: no need to restart the query after sort
-          criteria change. 
-        <li> Support for real-time indexing with inotify is now enabled by default
-          when appropriate.
-        <li> Recoll now warns when the configured native viewer can not be found and
-          starts an interface for chosing another one.
-        <li> Categories (text, presentation, spreadsheets, etc.) can be used instead
-          of raw mime types when filtering on file types in advanced search.
-        <li> The port to qt4 is functional and can be enabled with configure --enable-qt4
-        <li> 'autophrase' option improved and may now actually be useful.
-        <li> Improved highlighting (again...)
-        <li> Display term frequencies in term explorer.
-        <li> Recollindex -e to remove data from index for listed files.
-        <li> Directory names now indexed. Directories can be 'edited' with the
-          configured application (rox by default)
-
-      </ul>
-      <h2><a name="1.6.3">1.6.3</a></h2>
-      <ul>
-        <li> Fixed problem with bad detection of mbox message boundaries.
-          Upgrading can change the message numbering in some cases, and you should
-          perform a full index update (recollindex -z) after installing
-          the new version.
-        <li> Fixed problem with execution of external viewer for files with
-          single-quotes in the name.
-      </ul>
-      <h2><a name="1.6.2">1.6.2</a></h2>
-      <ul>
-        <li> Minor solaris compilation glitches only.
-      </ul>
-      <h2><a name="1.6.1">1.6.1</a></h2>
-      <ul>
-        <li> Term explorer: a multimode wildcard-regexp-spell/phonetic tool to search
-          the index for terms. This uses aspell for the orthographic/phonetic part.
-        <li> A more dynamic advanced search window. You now have a choice of the top
-          level conjunction (OR/AND) and of any number of clauses, including NEAR
-          and PHRASE clauses with an adjustable proximity parameter.
-        <li> User-settable format for the result-list entries, which use an HTML
-          string with %xx printf-like replacements (accessible from the user
-          preferences).
-        <li> Real time monitoring/indexing support. This is not configured by
-          default, and must be specified at build time (configure --help).
-        <li> Improved phrase/group highlighting in abstracts and preview
-        <li> Better sample selection for synthetic abstracts.
-        <li> Improved performance of the text splitter, good for indexing and previewing.
-        <li> Shift+click link to open new preview window instead of tab in existing
-          window.
-        <li> The key sequence for term completion in the simple search entry was
-          changed from CTRL+TAB to "Escape Space" to avoid interaction with window
-          managers.
-        <li> Improved recall for phrases with composite words like email addresses.
-
-
-          Updating from 1.2 to 1.3 or 1.4 or 1.5: 
-        <li>--------------------------------------
-          From version 1.3 up, there is a new feature to search specifically for file
-          names (with wildcard processing). If you want to take full advantage of
-          this, you should perform a full reindex after installing the new version
-          (ie: use recollindex -z, or delete ~/.recoll/xapiandb).
-          Also, we now use the central copies of configuration files for default
-          values, and the user ones only for overrides. Your old configuration files
-          will still work, but, you may want to remove them if they are unmodified,
-          or keep only the modified parameters.
-
-      </ul>
-      <h2><a name="1.5.9 ">1.5.9 </a></h2>
-      <ul>
-        <li> Fix bad timezone conversion in email dates. Display timezone in result
-          list dates.
-
-      </ul>
-      <h2><a name="1.5.8">1.5.8</a></h2>
-      <ul>
-        <li> Fix stored and displayed dates which used to come from the file's ctime,
-          now use mtime (which was already used for deciding re-indexing).
-        <li> Fix problem with some weird MIME messages (with null boundaries) which
-          crashed the indexer.
-
-      </ul>
-      <h2><a name="1.5.6">1.5.6</a></h2>
-      <ul>
-        <li> Small fixes dealing with the build process or compiler issues. 
-          1.5.6 has updated ukrainian and russian messages.
-          Otherwise no functional changes, and no need to upgrade from 1.5.1
-
-      </ul>
-      <h2><a name="1.5.1">1.5.1</a></h2>
-      <ul>
-        <li> Fix serious bug with non ascii strings in simple search history
-        <li> Improve synthetic abstracts: remove size limitations, handle overlapping
-          extracts, avoid printing several terms from the same position.
-
-      </ul>
-      <h2><a name="1.5.0">1.5.0 2006-09-20</a></h2>
-      <ul>
-
-        <li> Added support for powerpoint and excel files, with the catdoc package.
-        <li> Allow viewing consecutive documents from the result list inside a single
-          preview window using the shift-arrow-up and shift-arrow-down keys.
-        <li> Colorize search terms in abstracts in the result list.
-        <li> A number of elements are now remembered between program invocations:
-          sort criteria, list of ignored file types (always starts inactive), 
-          subtree restriction, better handling of the recent searches listbox, the
-          buildAbstract and replaceAbstract settings are not forgotten any more.
-        <li> New option to automatically add a phrase to simple searches.
-        <li> Possibility to adjust the length and context width for synthetic abstracts.
-        <li> Handle weird html better.
-        <li> When indexing mail messages, walk the full mime tree instead of staying
-          at the top level, index all text parts and attachement file names.
-        <li> Add -c <confdir> option to recoll and recollindex to specify the
-            configuration directory on the command line
-            <li> Better synchronization between the active preview and the highlighted
-              paragraph inside the list
-            <li> Improved recall for some special cases of stemming.
-            <li> Much better handling of email dates, allowing better email sorting by
-              date (previously the message date was quite often the date when the file
-              was indexed).
-            <li> Store the external database lists in the configuration directory, not the
-              qt preferences.
-            <li> Ensure dialogs are sized according to font size
-
-
-      </ul>
-      <h2><a name="1.4.3">1.4.3 2006-05-07</a></h2>
-      <ul>
-        <li> Multiple search databases. 
-        <li> Optionally auto-search when a word is entered in the simple search
-          field.
-        <li> Show possible term completions in simple search by typing CTRL+TAB
-        <li> Add 'more like this' option to result list right-click menu, to look for
-          documents related to the current result.
-        <li> Double-click in preview or result list adds the selected word to the
-          simple search text field.
-        <li> The simple search text entry field is now a combobox and remembers
-          previous searches.
-        <li> Additional OR field in complex search.
-        <li> Improved indexing cancellability (interrupting recollindex or closing 
-          recoll with an indexing thread active), and status reporting.
-        <li> Fixed filters to handle file paths with embedded spaces.
-        <li> Misc small bug and memory leaks fixes.
-        <li> More compact result list.
-        <li> Set mode 0700 on .recoll directory by default
-
-      </ul>
-      <h2><a name="1.3.3">1.3.3 2006-04-04</a></h2>
-      <ul>
-        <li> Implement specific search on file names with wildcard
-          support. Indexing can optionally process all file names or only those
-          with mime types supported for normal indexing. UPDATING: you need a
-          full re-indexing to take advantage of this.
-        <li> Use links and a right-click popup menu to replace confusing use of
-          mouse clicks and double-clicks inside the result list.
-        <li> The 'example' configuration files are now used as default, and are not
-          copied any more to the user directory during installation. Overrides can
-          be set in the personal files for any value that the user wishes to
-          modify, with unchanged formats and file names (so that the files from
-          previous versions remain valid, but you may wish to trim them of values
-          that duplicate the central ones).
-        <li> Use NLS information (LC_CTYPE, LANG) do determine default charset when
-          possible.
-        <li> Mp3 file indexing, either filenames only or also id3 tags if id3info is
-          available. c/c++  ext edit. Use gnuclient instead of xemacs for text files.
-        <li> Russian and Ukrainian translations and many improvement ideas thanks to
-          Michael Shigorin.
-
-      </ul>
-      <h2><a name="1.2.3">1.2.3 2006-03-03</a></h2>
-      <ul>
-        <li> Added support for dvi (with dvips), and dvu (with DjVuLibre).
-        <li> Ensure that configure and make use the same qt version.
-        <li> Fix sorted sequence title display.
-        <li> Discriminate fatal errors and missing docs while loading a doc list.
-        <li> Improved and cleaned up way to position a preview on the first search term.
-
-      </ul>
-      <h2><a name="1.2.2">1.2.2 2006-02-02</a></h2>
-      <ul>
-        <li> Fix minor compilation glitches (FreeBSD 4, QT 3.1, xapian-config problem)
-
-      </ul>
-      <h2><a name="1.2.0">1.2.0 2006-02-01</a></h2>
-      <ul>
-        <li> Improved preview loading: don't highlight very big documents (over 1Mb),
-          allow cancellation while loading.
-        <li> Abstracts generated in the result list by looking at search term
-          contexts. This can slow down result list display for big documents, and
-          can be turned off in the preferences menu.
-        <li> Wrap query detail line displayed when clicking on result list header.
-        <li> Text splitting cleanup with less spurious terms should result in
-          slightly smaller databases.
-        <li> Sligthly improved presentation in preview, esp. line breaks.
-        <li> Color icons...
-        <li> Let the user select the html browser used for help display.
-        <li> autoconf/Makefile change: allow building UI from inside the qtgui
-          directory. 
-        <li> autoconf/Makefile: improved search and diagnostics for qt/qmake.
-        <li> Internal code cleanup for maintainability: text splitting, user
-          interface.
-        <li> Added prototype kio_slave to show result inside Konqueror, doesn't seem
-          particularly useful.</li>
-      </ul>
-
-      <h2><a name="1.1.0">1.1.0 2006-01-12</a></h2>
-      <ul>
-        <li> A much better user manual, which can be browsed from the help menu.
-        <li> man pages for recoll, recollindex, recoll.conf
-        <li> User/query interface configuration dialog.
-        <li> Click on result list header will display the exact boolean search which
-          was used.
-        <li> recollindex can be used to create stem expansion databases independantly
-          of a full indexing pass.
-        <li> Misc user interface improvements, like an 'all terms' checkbox for
-          simple search.
-        <li> Fixed case-insensitivity issues. Probably needs more testing.
-
-      </ul>
-
-      <h2><a name="1.0.16">1.0.16 2006-01-05</a></h2>
-      <ul>
-        <li> Minor installation tweaks for rpm compatibility
-      </ul>
-
-      <h2><a name="1.0.15 ">1.0.15 </a></h2>
-      <ul>
-        <li> Fix problems with prefix != /usr/local
-        <li> Remove '.*' from the default list of ignored file/dir names: this
-          prevented mozilla/thunderbird mail indexing. 
-        <li> Fix some 64 bits issues
-      </ul>
-
-      <h2><a name="1.0.14">1.0.14</a></h2>
-      <ul>
-        <li> Small changes for FreeBSD 4 compilation.
-      </ul>
-
-      <h2><a name="1.0.13">1.0.13</a></h2>
-      <ul>
-        <li> Install of recollinstall program not done or needed any more.
-      </ul>
-
-      <h2><a name="1.0.12">1.0.12</a></h2>
-      <ul>
-        <li> Fixed nasty html parsing bug introduced in 1.0.9 Html parsing failed
-          whenever the document charset name differed from the default only in 
-          character case or punctuation.
-      </ul>
-
-      <h2><a name="1.0.11">1.0.11</a></h2>
-      <ul>
-        <li> Create personal configuration on first start.
-        <li> Use qt toolbars.
-        <li> Also index terms in file paths.
-        <li> Tool for sorting on dates or mime types.
-        <li> Fixed pdf filter which was broken by more recent xpdf
-        <li> Filters now installed/executed from /usr/local
-
-      </ul>
-
-      <h2><a name="1.0.10">1.0.10</a></h2>
-      <ul>
-        <li> Added tool to manage the history of consulted documents.
-        <li> Try harder to convert email messages with wrongly declared charsets.
-        <li> Add option to reset the database before indexing (easier than rm -rf).
-        <li> Small gui improvements.
-        <li> Install partial french translation as a tease for future translaters...
-
-      </ul>
-
-      <h2><a name="1.0.9">1.0.9</a></h2>
-      <ul>
-        <li> Fixed 2 really ennoying bugs in 1.0.8: wouldn't preview 2nd document
-          from same file + spurious db close when filter could not be executed.
-
-      </ul>
-
-      <h2><a name="1.0.8">1.0.8</a></h2>
-      <ul>
-        <li> Add support for rtf and gaim logs
-        <li> Optionally show icons to indicate mime types in result list
-        <li> Better (but imperfect) feedback during the preview
-          loading for big files 
-        <li> Remember main window geometry when closing
-        <li> Fix stem expansion in advanced search
-        <li> Some autoconf
-        <li> Option to use the system's 'file' command as a final step of
-          identification for suffix-less or unknown files.
-        <li> Typo had removed support for .Z compression
-        <li> Use more appropriate conjonction operators when computing the advanced
-          search query (OP_AND_MAYBE, OP_FILTER instead of OP_AND)
-      </ul>
+          <li> KDE kicker applet: start a recoll search from the panel and get a
+            Recoll window. This is a clone from the find_applet, originally meant to
+            start a Tracker search. Not so useful presently because it will start a
+            new Recoll instance for every search. Not part of the main source (the
+            configure script is a whopping 1MB...), linked from the download page.
+          <li> Added recoll command line options to define a query and execute it
+            immediately when the program starts. This is used in practice from the
+            applet and could be used from other programs. There is a also a new
+            option to not start the GUI and print the results to stdout.
+
+	</ul>
+	<h2><a name="1.9.0">1.9.0</a></h2>
+	<ul>
+          <li> Incompatible change: the icon image reference is now part of the result
+            list paragraph format string:
+            - If you had a standard config, you need do nothing.
+            - If you had a custom format string, you need to add
+            <img src="%I" align="left"> at its beginning to get the same result as
+            before.
+            - If you had unchecked the "show icons" option, you need to remove the
+            above string from the paragraph format to make the icons go away.
+            Changes to the format string are performed in the 
+            "Preferences->Query Configuration->User Interface" dialog tab.
+
+          <li> New filters: wordperfect, abiword and kword, rcljpeg, rclflac, rclogg
+            (contributed filters). The jpeg and audio filters should be extended to
+            make use of the new field indexing/search capability (hint :) )
+
+          <li> When searching for an empty string inside the preview window, position
+            the window to the next occurrence of a primary search term.
+
+          <li> Added ext: and mime: selectors to the query language.
+
+          <li> Added an adjustable flush threshold during indexing: should help control
+            memory usage. See the idxflushmb configuration variable.
+
+          <li> Added a check for file system free space. Indexing will stop if the
+            threshold is reached. See the maxfsoccuppc configuration parameter.
+
+          <li> Added 'followLinks' configuration option to have the indexer follow
+            symbolic links while walking the tree (the default is false).
+
+          <li> Allow symbolic links as 'topdirs' members. These are always followed.
+
+          <li> Add preference option to remember sort tool state between program
+            invocations (it is reset to inactive by default)
+
+          <li> Added File menu entry to erase document history.
+
+          <li> Bound the space and backspace keys to PgUp/PgDown in preview.
+
+          <li> (Hopefully) Improved abstract (keyword in context) generation
+
+          <li> Added support for arbitrary fields. Filters can now produce any number of
+            fields which will be selectively searchable through the query
+            language. This could be useful, for exemple, for the mp3 and jpeg filters
+            (but it is not currently used).
+
+          <li> Improved qt4 build: no more need for --enable-qt4. Note: the qt4 build
+            still needs the qt3 support library.
+
+          <li> Changed the icon to an ugly one. The previous one was nicer but looked
+            too much like Xapian's.
+
+          <li> Added some kind of support for a stopword list.
+
+          <li> Have email attachments inherit date and author from their parent message
+            (instead of mail folder).
+
+          <li> Fix bus error on rclmon exit
+
+          <li> Better handling of aspell errors inside rclmon
+
+          <li> Fixed a number of qt4 glitches: selection and keyboard shortcuts.
+
+          <li> New query configuration parameter to set the maximum text size beyond
+            which text won't be hilighted before preview (takes too much time). This
+            was a fixed value in 1.8.
+
+	</ul>
+	<h2><a name="1.8.2">1.8.2 2007-05-19</a></h2>
+	<ul>
+          <li> Fixed method name for compatibility with xapian 1.0.0
+          <li> Add .beagle to default list of skipped names (avoids indexing beagle
+            document cache...)
+          <li> Fix configure.ac to use $libdir instead of /usr/lib
+          <li> Fix recollinstall to properly copy translations and pictures for qt4
+
+	</ul>
+	<h2><a name="1.8.1">1.8.1 2007-02-20</a></h2>
+	<ul>
+          <li> Add a small query language with some field-based searches (author, title,
+            etc.)
+          <li> Add wildcard handling everywhere. *, ?, [] can be used in any
+            search. Warning: using a wild card at the left of a term can make
+            for a very slow search.
+          <li> Allow skipping specific paths during indexing (in addition to file name
+            patterns)
+          <li> Improved external index choice dialog, accessible from the top-level menu.
+          <li> Many small bugs fixed: stemming language choice ignored in term explorer,
+            qt4 preview window reentrancy crashes, issues with saving the default
+            advanced search file, type filter, display more clearly missing helper
+            errors, etc. 
+          <li> Option to use the desktop defaults (with xdg-open) to choose the native
+            viewer for files (instead of recoll's mimeview). 
+
+	</ul>
+	<h2><a name="1.7.6">1.7.6 2007-01-30</a></h2>
+	<ul>
+          <li> Fixes an issue with the openoffice filter on debian systems. 
+          <li> Adds Scribus and Lyx filters.
+
+	</ul>
+	<h2><a name="1.7.5">1.7.5 2007-01-15</a></h2>
+	<ul>
+          <li> Fixes two email indexing bugs in 1.7.3, which would bail out from an
+            mbox folder on the first attachment filtering error, and would decline
+            to handle multipart/signed bodies. You may need to run a full indexing
+            pass (recollindex -z), to force reindexing of old folders.
+
+	</ul>
+	<h2><a name="1.7.3">1.7.3 2007-01-09</a></h2>
+	<ul>
+          <li> Email attachments are now indexed.
+          <li> Right-click menu option to access the parent document of an embedded
+            result (ie from mail attachment to parent message), or the parent folder
+            of a given file (which is opened with the application configured for
+            directories) 
+          <li> The sort tool has been improved: no need to restart the query after sort
+            criteria change. 
+          <li> Support for real-time indexing with inotify is now enabled by default
+            when appropriate.
+          <li> Recoll now warns when the configured native viewer can not be found and
+            starts an interface for chosing another one.
+          <li> Categories (text, presentation, spreadsheets, etc.) can be used instead
+            of raw mime types when filtering on file types in advanced search.
+          <li> The port to qt4 is functional and can be enabled with configure --enable-qt4
+          <li> 'autophrase' option improved and may now actually be useful.
+          <li> Improved highlighting (again...)
+          <li> Display term frequencies in term explorer.
+          <li> Recollindex -e to remove data from index for listed files.
+          <li> Directory names now indexed. Directories can be 'edited' with the
+            configured application (rox by default)
+
+	</ul>
+	<h2><a name="1.6.3">1.6.3</a></h2>
+	<ul>
+          <li> Fixed problem with bad detection of mbox message boundaries.
+            Upgrading can change the message numbering in some cases, and you should
+            perform a full index update (recollindex -z) after installing
+            the new version.
+          <li> Fixed problem with execution of external viewer for files with
+            single-quotes in the name.
+	</ul>
+	<h2><a name="1.6.2">1.6.2</a></h2>
+	<ul>
+          <li> Minor solaris compilation glitches only.
+	</ul>
+	<h2><a name="1.6.1">1.6.1</a></h2>
+	<ul>
+          <li> Term explorer: a multimode wildcard-regexp-spell/phonetic tool to search
+            the index for terms. This uses aspell for the orthographic/phonetic part.
+          <li> A more dynamic advanced search window. You now have a choice of the top
+            level conjunction (OR/AND) and of any number of clauses, including NEAR
+            and PHRASE clauses with an adjustable proximity parameter.
+          <li> User-settable format for the result-list entries, which use an HTML
+            string with %xx printf-like replacements (accessible from the user
+            preferences).
+          <li> Real time monitoring/indexing support. This is not configured by
+            default, and must be specified at build time (configure --help).
+          <li> Improved phrase/group highlighting in abstracts and preview
+          <li> Better sample selection for synthetic abstracts.
+          <li> Improved performance of the text splitter, good for indexing and previewing.
+          <li> Shift+click link to open new preview window instead of tab in existing
+            window.
+          <li> The key sequence for term completion in the simple search entry was
+            changed from CTRL+TAB to "Escape Space" to avoid interaction with window
+            managers.
+          <li> Improved recall for phrases with composite words like email addresses.
+
+
+            Updating from 1.2 to 1.3 or 1.4 or 1.5: 
+          <li>--------------------------------------
+            From version 1.3 up, there is a new feature to search specifically for file
+            names (with wildcard processing). If you want to take full advantage of
+            this, you should perform a full reindex after installing the new version
+            (ie: use recollindex -z, or delete ~/.recoll/xapiandb).
+            Also, we now use the central copies of configuration files for default
+            values, and the user ones only for overrides. Your old configuration files
+            will still work, but, you may want to remove them if they are unmodified,
+            or keep only the modified parameters.
+
+	</ul>
+	<h2><a name="1.5.9 ">1.5.9 </a></h2>
+	<ul>
+          <li> Fix bad timezone conversion in email dates. Display timezone in result
+            list dates.
+
+	</ul>
+	<h2><a name="1.5.8">1.5.8</a></h2>
+	<ul>
+          <li> Fix stored and displayed dates which used to come from the file's ctime,
+            now use mtime (which was already used for deciding re-indexing).
+          <li> Fix problem with some weird MIME messages (with null boundaries) which
+            crashed the indexer.
+
+	</ul>
+	<h2><a name="1.5.6">1.5.6</a></h2>
+	<ul>
+          <li> Small fixes dealing with the build process or compiler issues. 
+            1.5.6 has updated ukrainian and russian messages.
+            Otherwise no functional changes, and no need to upgrade from 1.5.1
+
+	</ul>
+	<h2><a name="1.5.1">1.5.1</a></h2>
+	<ul>
+          <li> Fix serious bug with non ascii strings in simple search history
+          <li> Improve synthetic abstracts: remove size limitations, handle overlapping
+            extracts, avoid printing several terms from the same position.
+
+	</ul>
+	<h2><a name="1.5.0">1.5.0 2006-09-20</a></h2>
+	<ul>
+
+          <li> Added support for powerpoint and excel files, with the catdoc package.
+          <li> Allow viewing consecutive documents from the result list inside a single
+            preview window using the shift-arrow-up and shift-arrow-down keys.
+          <li> Colorize search terms in abstracts in the result list.
+          <li> A number of elements are now remembered between program invocations:
+            sort criteria, list of ignored file types (always starts inactive), 
+            subtree restriction, better handling of the recent searches listbox, the
+            buildAbstract and replaceAbstract settings are not forgotten any more.
+          <li> New option to automatically add a phrase to simple searches.
+          <li> Possibility to adjust the length and context width for synthetic abstracts.
+          <li> Handle weird html better.
+          <li> When indexing mail messages, walk the full mime tree instead of staying
+            at the top level, index all text parts and attachement file names.
+          <li> Add -c <confdir> option to recoll and recollindex to specify the
+              configuration directory on the command line
+              <li> Better synchronization between the active preview and the highlighted
+		paragraph inside the list
+              <li> Improved recall for some special cases of stemming.
+              <li> Much better handling of email dates, allowing better email sorting by
+		date (previously the message date was quite often the date when the file
+		was indexed).
+              <li> Store the external database lists in the configuration directory, not the
+		qt preferences.
+              <li> Ensure dialogs are sized according to font size
+
+
+	</ul>
+	<h2><a name="1.4.3">1.4.3 2006-05-07</a></h2>
+	<ul>
+          <li> Multiple search databases. 
+          <li> Optionally auto-search when a word is entered in the simple search
+            field.
+          <li> Show possible term completions in simple search by typing CTRL+TAB
+          <li> Add 'more like this' option to result list right-click menu, to look for
+            documents related to the current result.
+          <li> Double-click in preview or result list adds the selected word to the
+            simple search text field.
+          <li> The simple search text entry field is now a combobox and remembers
+            previous searches.
+          <li> Additional OR field in complex search.
+          <li> Improved indexing cancellability (interrupting recollindex or closing 
+            recoll with an indexing thread active), and status reporting.
+          <li> Fixed filters to handle file paths with embedded spaces.
+          <li> Misc small bug and memory leaks fixes.
+          <li> More compact result list.
+          <li> Set mode 0700 on .recoll directory by default
+
+	</ul>
+	<h2><a name="1.3.3">1.3.3 2006-04-04</a></h2>
+	<ul>
+          <li> Implement specific search on file names with wildcard
+            support. Indexing can optionally process all file names or only those
+            with mime types supported for normal indexing. UPDATING: you need a
+            full re-indexing to take advantage of this.
+          <li> Use links and a right-click popup menu to replace confusing use of
+            mouse clicks and double-clicks inside the result list.
+          <li> The 'example' configuration files are now used as default, and are not
+            copied any more to the user directory during installation. Overrides can
+            be set in the personal files for any value that the user wishes to
+            modify, with unchanged formats and file names (so that the files from
+            previous versions remain valid, but you may wish to trim them of values
+            that duplicate the central ones).
+          <li> Use NLS information (LC_CTYPE, LANG) do determine default charset when
+            possible.
+          <li> Mp3 file indexing, either filenames only or also id3 tags if id3info is
+            available. c/c++  ext edit. Use gnuclient instead of xemacs for text files.
+          <li> Russian and Ukrainian translations and many improvement ideas thanks to
+            Michael Shigorin.
+
+	</ul>
+	<h2><a name="1.2.3">1.2.3 2006-03-03</a></h2>
+	<ul>
+          <li> Added support for dvi (with dvips), and dvu (with DjVuLibre).
+          <li> Ensure that configure and make use the same qt version.
+          <li> Fix sorted sequence title display.
+          <li> Discriminate fatal errors and missing docs while loading a doc list.
+          <li> Improved and cleaned up way to position a preview on the first search term.
+
+	</ul>
+	<h2><a name="1.2.2">1.2.2 2006-02-02</a></h2>
+	<ul>
+          <li> Fix minor compilation glitches (FreeBSD 4, QT 3.1, xapian-config problem)
+
+	</ul>
+	<h2><a name="1.2.0">1.2.0 2006-02-01</a></h2>
+	<ul>
+          <li> Improved preview loading: don't highlight very big documents (over 1Mb),
+            allow cancellation while loading.
+          <li> Abstracts generated in the result list by looking at search term
+            contexts. This can slow down result list display for big documents, and
+            can be turned off in the preferences menu.
+          <li> Wrap query detail line displayed when clicking on result list header.
+          <li> Text splitting cleanup with less spurious terms should result in
+            slightly smaller databases.
+          <li> Sligthly improved presentation in preview, esp. line breaks.
+          <li> Color icons...
+          <li> Let the user select the html browser used for help display.
+          <li> autoconf/Makefile change: allow building UI from inside the qtgui
+            directory. 
+          <li> autoconf/Makefile: improved search and diagnostics for qt/qmake.
+          <li> Internal code cleanup for maintainability: text splitting, user
+            interface.
+          <li> Added prototype kio_slave to show result inside Konqueror, doesn't seem
+            particularly useful.</li>
+	</ul>
+
+	<h2><a name="1.1.0">1.1.0 2006-01-12</a></h2>
+	<ul>
+          <li> A much better user manual, which can be browsed from the help menu.
+          <li> man pages for recoll, recollindex, recoll.conf
+          <li> User/query interface configuration dialog.
+          <li> Click on result list header will display the exact boolean search which
+            was used.
+          <li> recollindex can be used to create stem expansion databases independantly
+            of a full indexing pass.
+          <li> Misc user interface improvements, like an 'all terms' checkbox for
+            simple search.
+          <li> Fixed case-insensitivity issues. Probably needs more testing.
+
+	</ul>
+
+	<h2><a name="1.0.16">1.0.16 2006-01-05</a></h2>
+	<ul>
+          <li> Minor installation tweaks for rpm compatibility
+	</ul>
+
+	<h2><a name="1.0.15 ">1.0.15 </a></h2>
+	<ul>
+          <li> Fix problems with prefix != /usr/local
+          <li> Remove '.*' from the default list of ignored file/dir names: this
+            prevented mozilla/thunderbird mail indexing. 
+          <li> Fix some 64 bits issues
+	</ul>
+
+	<h2><a name="1.0.14">1.0.14</a></h2>
+	<ul>
+          <li> Small changes for FreeBSD 4 compilation.
+	</ul>
+
+	<h2><a name="1.0.13">1.0.13</a></h2>
+	<ul>
+          <li> Install of recollinstall program not done or needed any more.
+	</ul>
+
+	<h2><a name="1.0.12">1.0.12</a></h2>
+	<ul>
+          <li> Fixed nasty html parsing bug introduced in 1.0.9 Html parsing failed
+            whenever the document charset name differed from the default only in 
+            character case or punctuation.
+	</ul>
+
+	<h2><a name="1.0.11">1.0.11</a></h2>
+	<ul>
+          <li> Create personal configuration on first start.
+          <li> Use qt toolbars.
+          <li> Also index terms in file paths.
+          <li> Tool for sorting on dates or mime types.
+          <li> Fixed pdf filter which was broken by more recent xpdf
+          <li> Filters now installed/executed from /usr/local
+
+	</ul>
+
+	<h2><a name="1.0.10">1.0.10</a></h2>
+	<ul>
+          <li> Added tool to manage the history of consulted documents.
+          <li> Try harder to convert email messages with wrongly declared charsets.
+          <li> Add option to reset the database before indexing (easier than rm -rf).
+          <li> Small gui improvements.
+          <li> Install partial french translation as a tease for future translaters...
+
+	</ul>
+
+	<h2><a name="1.0.9">1.0.9</a></h2>
+	<ul>
+          <li> Fixed 2 really ennoying bugs in 1.0.8: wouldn't preview 2nd document
+            from same file + spurious db close when filter could not be executed.
+
+	</ul>
+
+	<h2><a name="1.0.8">1.0.8</a></h2>
+	<ul>
+          <li> Add support for rtf and gaim logs
+          <li> Optionally show icons to indicate mime types in result list
+          <li> Better (but imperfect) feedback during the preview
+            loading for big files 
+          <li> Remember main window geometry when closing
+          <li> Fix stem expansion in advanced search
+          <li> Some autoconf
+          <li> Option to use the system's 'file' command as a final step of
+            identification for suffix-less or unknown files.
+          <li> Typo had removed support for .Z compression
+          <li>Use more appropriate conjonction operators when
+            computing the advanced search query (OP_AND_MAYBE,
+            OP_FILTER instead of OP_AND) 
+	</ul>
 
     </div>
   </body>
