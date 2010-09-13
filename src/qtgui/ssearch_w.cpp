@@ -88,7 +88,7 @@ void SSearch::searchTypeChanged(int typ)
     // Also fix tooltips
     switch (typ) {
     case SST_LANG:
-        queryText->setToolTip(
+        QToolTip::add(queryText,
 "Enter query language expression. Cheat sheet:<br>\n"
 "<i>term1 term2</i> : 'term1' and 'term2' in any field.<br>\n"
 "<i>field:term1</i> : 'term1' in field 'field'.<br>\n"
@@ -104,12 +104,13 @@ void SSearch::searchTypeChanged(int typ)
             );
         break;
     case SST_FNM:
-        queryText->setToolTip("Enter file name wildcard expression.");
+        QToolTip::add(queryText, "Enter file name wildcard expression.");
         break;
     case SST_ANY:
     case SST_ALL:
     default:
-        queryText->setToolTip("Enter search terms here. Type ESC SPC for completions of current term.");
+        QToolTip::add(queryText, 
+    "Enter search terms here. Type ESC SPC for completions of current term.");
     }
 }
 
