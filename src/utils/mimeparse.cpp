@@ -600,8 +600,8 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 
 // Convert rfc822 date to unix time. A date string normally looks like:
 //  Mon, 3 Jul 2006 09:51:58 +0200
-// But there are many common variations
-//
+// But there are many close common variations
+// And also hopeless things like: Fri Nov  3 13:13:33 2006
 time_t rfc2822DateToUxTime(const string& dt)
 {
     // Strip everything up to first comma if any, we don't need weekday,
@@ -617,7 +617,24 @@ time_t rfc2822DateToUxTime(const string& dt)
 	string date = dt.substr(idx+1);
 	stringToTokens(date, toks, " \t:");
     } else {
+        // No comma. Enter strangeland
 	stringToTokens(dt, toks, " \t:");
+        // Test for date like: Sun Nov 19 06:18:41 2006
+        //                      0   1  2   3 4  5  6
+        // and change to:      19 Nov 2006 06:18:41
+        if (toks.size() == 7) {
+            list<string>::iterator it0 = toks.begin();
+            if (it0->length() == 3 &&
+                it0->find_first_of("0123456789") == string::npos) {
+                list<string>::iterator it2 = it0;
+                for (int i = 0; i < 2; i++) it2++;
+                list<string>::iterator it6 = it2;
+                for (int i = 0; i < 4; i++) it6++;
+                iter_swap(it0, it2);
+                iter_swap(it6, it2);
+                toks.erase(it6);
+            }
+        }
     }
 
 #if DEBUGDATE
@@ -627,17 +644,17 @@ time_t rfc2822DateToUxTime(const string& dt)
     DATEDEB((stderr, "\n"));
 #endif
 
+    if (toks.size() < 6) {
+	DATEDEB((stderr, "Bad rfc822 date format (toks cnt): [%s]\n", 
+		 dt.c_str()));
+	return (time_t)-1;
+    }
+
     if (toks.size() == 6) {
 	// Probably no timezone, sometimes happens
 	toks.push_back("+0000");
     }
 
-    if (toks.size() < 7) {
-	DATEDEB((stderr, "Bad rfc822 date format (toks cnt): [%s]\n", 
-		 dt.c_str()));
-	return (time_t)-1;
-    }
-	
     struct tm tm;
     memset(&tm, 0, sizeof(tm));
 
@@ -670,8 +687,15 @@ time_t rfc2822DateToUxTime(const string& dt)
     }
     it++;
 
-    // Year. Struct tm counts from 1900
+    // Year. Struct tm counts from 1900. 2 char years are quite rare
+    // but do happen. I've seen 00 happen so count small values from 2000
     tm.tm_year = atoi(it->c_str());
+    if (it->length() == 2) {
+        if (tm.tm_year < 10)
+            tm.tm_year += 2000;
+        else
+            tm.tm_year += 1900;
+    }
     if (tm.tm_year > 1900)
 	tm.tm_year -= 1900;
     it++;
