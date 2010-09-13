@@ -91,7 +91,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    displayed from the recoll File menu. The list is stored in the missing
    text file inside the configuration directory.
 
-   A list of common file types which need external commands:
+   A list of common file types which need external commands follows. Many of
+   the filters need the iconv command, which is not always listed as a
+   dependancy.
+
+   As of Recoll release 1.14, a number of XML-based formats that were handled
+   by ad hoc filter code now use xsltproc, which usually comes with libxslt.
+   These are: abiword, fb2 (ebooks), kword, openoffice, svg.
 
      * Openoffice: supported natively, but needs the unzip command to be
        installed.
@@ -103,6 +109,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * MS Word: antiword.
 
      * MS Excel and PowerPoint: catdoc.
+
+     * MS Open XML (docx): needs xsltproc.
 
      * Wordperfect files: libwpd.
 
@@ -117,13 +125,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * djvu: DjVuLibre
 
-     * mp3: Recoll will use the id3info command from the id3lib package to
-       extract tag information. Without it, only the file names will be
-       indexed.
-
-     * flac files need metaflac.
-
-     * ogg files need ogginfo.
+     * mp3, flac, ogg vorbis: Recoll releases before 1.13 use the id3info
+       command from the id3lib package to extract mp3 tag information. (Some
+       gcc versions after 4.4 may have trouble compiling id3lib. You can find
+       a workaround here), metaflac (standard flac tools) for flac files, and
+       ogginfo (vorbis tools) for ogg files. Releases 1.14 and later use a
+       single Python filter based on mutagen for all audio file types.
 
      * Pictures: Recoll uses the Exiftool Perl package to extract tag
        information. Most image file formats are supported. Note that there
@@ -134,12 +141,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * chm: files in microsoft help format need Python and the pychm module
        (which needs chmlib).
 
-     * ics: iCalendar files need Python and the icalendar module.
+     * ics: up to Recoll 1.13, iCalendar files need Python and the icalendar
+       module. For newer versions, icalendar is not needed
 
      * zip: Zip archives need Python (and the standard zipfile module).
 
    Text, HTML, mail folders, Openoffice and Scribus files are processed
-   internally. Lyx is used to index Lyx files. Many filters need sed and awk.
+   internally. Lyx is used to index Lyx files. Many filters need iconv and
+   the standard sed and awk.
 
    --------------------------------------------------------------------------
 
@@ -159,11 +168,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 7.3.1. Prerequisites
 
-   At the very least, you will need to download and install the xapian core
-   package and the qt run-time and development packages. Check the Recoll
-   download page for up to date version information.
+   C++ compiler. Up to Recoll version 1.13.04, its absence can manifest
+   itself by strange messages about a missing iconv_open.
 
-   You will most probably be able to find a binary package for qt for your
+   Development files for Xapian core
+
+   Development files for Qt .
+
+   Development files for X11 and zlib.
+
+   Check the Recoll download page for up to date version information.
+
+   You will most probably be able to find a binary package for Qt for your
    system. You may have to compile Xapian but this is not difficult (if you
    are using FreeBSD, there is a port).
 
@@ -173,7 +189,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 7.3.2. Building
 
-   Recoll has been built on Linux, FreeBSD, macosx, and Solaris, most
+   Recoll has been built on Linux, FreeBSD, Mac OS X, and Solaris, most
    versions after 2005 should be ok, maybe some older ones too (Solaris 8 is
    ok). If you build on another system, and need to modify things, I would
    very much welcome patches.
@@ -350,14 +366,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    and edit the configuration file before restarting the command. This will
    start the initial indexing, which may take some time.
 
-   Paramers affecting what we index:
+   Most of the following parameters can be changed from the Index
+   Configuration menu in the recoll interface. Some can only be set by
+   editing the configuration file.
+
+  7.4.1.1. Parameters affecting what documents we index:
 
    topdirs
 
            Specifies the list of directories or files to index (recursively
-           for directories). The indexer will not follow symbolic links
-           inside the indexed trees by default (see the followLinks options
-           though).
+           for directories). You can use symbolic links as elements of this
+           list. See the followLinks option about following symbolic links
+           found under the top elements (not followed by default).
 
    skippedNames
 
@@ -471,7 +491,72 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Beagle plugin as ~/.beagle/ToIndex so there should be no need to
            change it.
 
-   Parameters affecting where and how we store things:
+  7.4.1.2. Parameters affecting how we generate terms:
+
+   Changing some of these parameters will imply a full reindex. Also, when
+   using multiple indexes, it may not make sense to search indexes that don't
+   share the values for these parameters, because they usually affect both
+   search and index operations.
+
+   nonumbers
+
+           If this set to true, no terms will be generated for numbers. For
+           example "123", "1.5e6", 192.168.1.4, would not be indexed
+           ("value123" would still be). Numbers are often quite interesting
+           to search for, and this should probably not be set except for
+           special situations, ie, scientific documents with huge amounts of
+           numbers in them. This can only be set for a whole index, not for a
+           subtree.
+
+   nocjk
+
+           If this set to true, specific east asian (Chinese Korean Japanese)
+           characters/word splitting is turned off. This will save a small
+           amount of cpu if you have no CJK documents. If your document base
+           does include such text but you are not interested in searching it,
+           setting nocjk may be a significant time and space saver.
+
+   cjkngramlen
+
+           This lets you adjust the size of n-grams used for indexing CJK
+           text. The default value of 2 is probably appropriate in most
+           cases. A value of 3 would allow more precision and efficiency on
+           longer words, but the index will be approximately twice as large.
+
+   indexstemminglanguages
+
+           A list of languages for which the stem expansion databases will be
+           built. See recollindex(1) or use the recollindex -l command for
+           possible values. You can add a stem expansion database for a
+           different language by using recollindex -s, but it will be deleted
+           during the next indexing. Only languages listed in the
+           configuration file are permanent.
+
+   defaultcharset
+
+           The name of the character set used for files that do not contain a
+           character set definition (ie: plain text files). This can be
+           redefined for any sub-directory. If it is not set at all, the
+           character set used is the one defined by the nls environment
+           (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
+
+   maildefcharset
+
+           This can be used to define the default character set specifically
+           for mail messages which don't specify it. This is mainly useful
+           for readpst (libpst) dumps, which are utf-8 but do not say so.
+
+   localfields
+
+           This allows setting fields for all documents under a given
+           directory. Typical usage would be to set an "rclaptg" field, to be
+           used in mimeview to select a specific viewer. If several fields
+           are to be set, they should be separated with a colon (':')
+           character (which there is currently no way to escape). Ie:
+           localfields= rclaptg=gnus:other = val, then select specifier
+           viewer with mimetype|tag=... in mimeview.
+
+  7.4.1.3. Parameters affecting where and how we store things:
 
    dbdir
 
@@ -519,7 +604,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            default, which is flushing every 10000 documents (memory usage
            depends on average document size). The default value is 10.
 
-   Miscellani:
+  7.4.1.4. Miscellaneous parameters:
 
    loglevel,daemloglevel
 
@@ -533,43 +618,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            value, and is the default. The daemversion is specific to the
            indexing monitor daemon.
 
-   indexstemminglanguages
-
-           A list of languages for which the stem expansion databases will be
-           built. See recollindex(1) or use the recollindex -l command for
-           possible values. You can add a stem expansion database for a
-           different language by using recollindex -s, but it will be deleted
-           during the next indexing. Only languages listed in the
-           configuration file are permanent.
-
-   defaultcharset
-
-           The name of the character set used for files that do not contain a
-           character set definition (ie: plain text files). This can be
-           redefined for any sub-directory. If it is not set at all, the
-           character set used is the one defined by the nls environment
-           (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
-
    filtermaxseconds
 
            Maximum filter execution time, after which it is aborted. Some
            postscript programs just loop...
-
-   maildefcharset
-
-           This can be used to define the default character set specifically
-           for mail messages which don't specify it. This is mainly useful
-           for readpst (libpst) dumps, which are utf-8 but do not say so.
-
-   localfields
-
-           This allows setting fields for all documents under a given
-           directory. Typical usage would be to set an "rclaptg" field, to be
-           used in mimeview to select a specific viewer. If several fields
-           are to be set, they should be separated with a ':' character
-           (which there is currently no way to escape). Ie: localfields=
-           rclaptg=gnus:other = val, then select specifier viewer with
-           mimetype|tag=... in mimeview.
 
    filtersdir
 
@@ -610,28 +662,73 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Useful for cases where you don't need the functionality or when it
            is unusable because aspell crashes during dictionary generation.
 
-   nocjk
-
-           If this set to true, specific east asian (Chinese Korean Japanese)
-           characters/word splitting is turned off. This will save a small
-           amount of cpu if you have no CJK documents. If your document base
-           does include such text but you are not interested in searching it,
-           setting nocjk may be a significant time and space saver.
-
-   cjkngramlen
-
-           This lets you adjust the size of n-grams used for indexing CJK
-           text. The default value of 2 is probably appropriate in most
-           cases. A value of 3 would allow more precision and efficiency on
-           longer words, but the index will be approximately twice as large.
-
    guesscharset
 
            Decide if we try to guess the character set of files if no
            internal value is available (ie: for plain text files). This does
            not work well in general, and should probably not be used.
 
-7.4.2. The mimemap file
+7.4.2. The fields file
+
+   This file contains information about dynamic fields handling in Recoll.
+   Some very basic fields have hard-wired behaviour, and, mostly, you should
+   not change the original data inside the fields file. But you can create
+   custom fields fitting your data and handle them just like they were native
+   ones.
+
+   The fields file has several sections, which each define an aspect of
+   fields processing. Quite often, you'll have to modify several sections to
+   obtain the desired behaviour.
+
+   We will only give a short description here, you should refer to the
+   comments inside the file for more detailed information.
+
+   Field names should be lowercase alphabetic ASCII.
+
+   [prefixes]
+
+           A field becomes indexed (searchable) by having a prefix defined in
+           this section.
+
+   [stored]
+
+           A field becomes stored (displayable inside results) by having its
+           name listed in this section (typically with an empty value).
+
+   [aliases]
+
+           This section defines lists of synonyms for the canonical names
+           used inside the [prefixes] and [stored] sections
+
+   filter-specific sections
+
+           Some filters may need specific configuration for handling fields.
+           Only the mail message filter currently has such a section (named
+           [mail]). It allows indexing arbitrary mail headers in addition to
+           the ones indexed by default. Other such sections may appear in the
+           future.
+
+   Here follows a small example of a personal fields file. This would extract
+   a specific mail header and use it as a searchable field, with data
+   displayable inside result lists. (Side note: as the mail filter does no
+   decoding on the values, only plain ascii headers can be indexed, and only
+   the first occurrence will be used for headers that occur several times).
+
+ [prefixes]
+ # Index mailmytag contents (with the given prefix)
+ mailmytag = XMTAG
+
+ [stored]
+ # Store mailmytag inside the document data record (so that it can be
+ # displayed - as %(mailmytag) - in result lists).
+ mailmytag =
+
+ [mail]
+ # Extract the X-My-Tag mail header, and use it internally with the
+ # mailmytag field name
+ x-my-tag = mailmytag
+
+7.4.3. The mimemap file
 
    mimemap specifies the file name extension to mime type mappings.
 
@@ -655,7 +752,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    given Recoll version. Having it there avoids cluttering the more
    user-oriented and locally customized skippedNames.
 
-7.4.3. The mimeconf file
+7.4.4. The mimeconf file
 
    mimeconf specifies how the different mime types are handled for indexing,
    and which icons are displayed in the recoll result lists.
@@ -667,7 +764,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    recoll in the result lists (the values are the basenames of the png images
    inside the iconsdir directory (specified in recoll.conf).
 
-7.4.4. The mimeview file
+7.4.5. The mimeview file
 
    mimeview specifies which programs are started when you click on an Edit
    link in a result list. Ie: HTML is normally displayed using firefox, but
@@ -693,9 +790,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    user preferences, all mimeview entries will be ignored except the one
    labelled application/x-all (which is set to use xdg-open by default).
 
-7.4.5. Examples of configuration adjustments
+7.4.6. Examples of configuration adjustments
 
-  7.4.5.1. Adding an external viewer for an non-indexed type
+  7.4.6.1. Adding an external viewer for an non-indexed type
 
    Imagine that you have some kind of file which does not have indexable
    content, but for which you would like to have a functional Edit link in
@@ -725,7 +822,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    configuration, which you do not need to alter. mimeview can also be
    modified from the Gui.
 
-  7.4.5.2. Adding indexing support for a new file type
+  7.4.6.2. Adding indexing support for a new file type
 
    Let us now imagine that the above .blob files actually contain indexable
    text and that you know how to extract it with a command line program.
