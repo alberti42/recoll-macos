@@ -5,8 +5,12 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq Maldon 2> $mystderr | 
+recollq author:clash 2> $mystderr | 
 	egrep -v '^Recoll query: ' > $mystdout
+recollq title:lux title:aeterna 2> $mystderr |
+        egrep -v '^Recoll query: ' >> $mystdout
+recollq live at leeds the who 2> $mystderr |
+        egrep -v '^Recoll query: ' >> $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 
