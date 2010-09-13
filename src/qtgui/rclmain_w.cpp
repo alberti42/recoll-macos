@@ -211,6 +211,7 @@ void RclMain::init()
     bgrp->addButton(allRDB, bgrpid++);
     connect(bgrp, SIGNAL(buttonClicked(int)), this, SLOT(catgFilter(int)));
 #endif
+    allRDB->setChecked(true);
     list<string> cats;
     rclconfig->getMimeCategories(cats);
     // Text for button 0 is not used. Next statement just avoids unused
