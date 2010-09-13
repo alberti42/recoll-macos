@@ -74,7 +74,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Num, 0);
     SETTING_RW(prefs.pvwidth, "/Recoll/geometry/pvwidth", Num, 0);
     SETTING_RW(prefs.pvheight, "/Recoll/geometry/pvheight", Num, 0);
-    SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Num, 1);
+    SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Num, 3);
     SETTING_RW(prefs.startWithAdvSearchOpen, 
 	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
     SETTING_RW(prefs.startWithSortToolOpen, 
