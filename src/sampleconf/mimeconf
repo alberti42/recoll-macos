@@ -37,7 +37,7 @@ application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=
 # text stream of this file is too small to handle' antiword error
 # application/msword = exec wvWare --charset=utf-8 --nographics
 application/ogg = execm rclaudio
-application/pdf = execm rclaudio
+application/pdf = exec rclpdf
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
 application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;charset=utf-8;mimetype=text/plain
 application/vnd.ms-powerpoint = exec catppt -d utf-8;charset=utf-8;mimetype=text/plain
@@ -67,7 +67,7 @@ application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
 application/x-awk = internal
 application/x-dvi = exec rcldvi
-application/x-flac = exec rclflac
+application/x-flac = execm rclaudio
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-perl = internal
