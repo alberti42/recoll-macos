@@ -6,6 +6,10 @@ fatal() {
     echo $*
     exit 1
 }
+usage() {
+    echo 'Usage: [dotag=no] makescrdist.sh do_it'
+    exit 1
+}
 tagtopsvn() {
     (cd ..; svn copy -m "Release $version tagged" . $SVNREPOS/tags/$1) \
     	|| fatal tag failed
@@ -21,6 +25,7 @@ tagtop() {
 }
 
 #set -x
+test $# -eq 1 || usage
 
 TAR=/usr/bin/tar
 
