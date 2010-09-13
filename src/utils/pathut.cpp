@@ -331,10 +331,10 @@ extern string path_canon(const string &is)
 	}
 	s = path_cat(string(buf), s); 
     }
-    list<string>elems;
+    vector<string> elems;
     stringToTokens(s, elems, "/");
-    list<string> cleaned;
-    for (list<string>::const_iterator it = elems.begin(); 
+    vector<string> cleaned;
+    for (vector<string>::const_iterator it = elems.begin(); 
 	 it != elems.end(); it++){
 	if (*it == "..") {
 	    if (!cleaned.empty())
@@ -346,7 +346,7 @@ extern string path_canon(const string &is)
     }
     string ret;
     if (!cleaned.empty()) {
-	for (list<string>::const_iterator it = cleaned.begin(); 
+	for (vector<string>::const_iterator it = cleaned.begin(); 
 	     it != cleaned.end(); it++) {
 	    ret += "/";
 	    ret += *it;

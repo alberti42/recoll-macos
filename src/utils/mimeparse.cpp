@@ -606,7 +606,7 @@ time_t rfc2822DateToUxTime(const string& dt)
 {
     // Strip everything up to first comma if any, we don't need weekday,
     // then break into tokens
-    list<string> toks;
+    vector<string> toks;
     string::size_type idx;
     if ((idx = dt.find_first_of(",")) != string::npos) {
 	if (idx == dt.length() - 1) {
@@ -623,16 +623,11 @@ time_t rfc2822DateToUxTime(const string& dt)
         //                      0   1  2   3 4  5  6
         // and change to:      19 Nov 2006 06:18:41
         if (toks.size() == 7) {
-            list<string>::iterator it0 = toks.begin();
-            if (it0->length() == 3 &&
-                it0->find_first_of("0123456789") == string::npos) {
-                list<string>::iterator it2 = it0;
-                for (int i = 0; i < 2; i++) it2++;
-                list<string>::iterator it6 = it2;
-                for (int i = 0; i < 4; i++) it6++;
-                iter_swap(it0, it2);
-                iter_swap(it6, it2);
-                toks.erase(it6);
+            if (toks[0].length() == 3 &&
+                toks[0].find_first_of("0123456789") == string::npos) {
+                swap(toks[0], toks[2]);
+                swap(toks[6], toks[2]);
+                toks.pop_back();
             }
         }
     }
@@ -661,7 +656,7 @@ time_t rfc2822DateToUxTime(const string& dt)
     // Load struct tm with appropriate tokens, possibly converting
     // when needed
 
-    list<string>::iterator it = toks.begin();
+    vector<string>::iterator it = toks.begin();
 
     // Day of month: no conversion needed
     tm.tm_mday = atoi(it->c_str());

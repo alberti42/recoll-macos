@@ -98,9 +98,9 @@ bool ExecCmd::which(const string& cmd, string& exepath, const char* path)
     if (pp == 0)
 	return false;
 
-    list<string> pels;
+    vector<string> pels;
     stringToTokens(pp, pels, ":");
-    for (list<string>::iterator it = pels.begin(); it != pels.end(); it++) {
+    for (vector<string>::iterator it = pels.begin(); it != pels.end(); it++) {
 	if (it->empty())
 	    *it = ".";
 	string candidate = (it->empty() ? string(".") : *it) + "/" + cmd;

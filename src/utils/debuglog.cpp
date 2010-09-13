@@ -165,7 +165,7 @@ static void initfiles()
     const char *cp = getenv("DEBUGLOG_FILES");
     if (!cp)
 	return;
-    list<string> files;
+    vector<string> files;
     stringToTokens(cp, files, ",");
     yesfiles.insert(files.begin(), files.end());
 }

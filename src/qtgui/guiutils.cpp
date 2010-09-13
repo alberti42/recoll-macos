@@ -208,9 +208,9 @@ void rwSettings(bool writing)
 	prefs.allExtraDbs = g_dynconf->getStringList(allEdbsSk);
 	const char *cp;
 	if ((cp = getenv("RECOLL_EXTRA_DBS")) != 0) {
-	    list<string> dbl;
+	    vector<string> dbl;
 	    stringToTokens(cp, dbl, ":");
-	    for (list<string>::iterator dit = dbl.begin(); dit != dbl.end();
+	    for (vector<string>::iterator dit = dbl.begin(); dit != dbl.end();
 		 dit++) {
 		string dbdir = path_canon(*dit);
 		path_catslash(dbdir);

@@ -336,7 +336,7 @@ void stringsToString(const set<string> &tokens, string &s)
     stringsToString<set<string> >(tokens, s);
 }
 
-void stringToTokens(const string& str, list<string>& tokens,
+void stringToTokens(const string& str, vector<string>& tokens,
 		    const string& delims, bool skipinit)
 {
     string::size_type startPos = 0, pos;

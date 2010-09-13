@@ -100,7 +100,7 @@ extern void stringsToString(const set<string> &tokens, string &s);
 /**
  * Split input string. No handling of quoting
  */
-extern void stringToTokens(const string &s, list<string> &tokens, 
+extern void stringToTokens(const string &s, vector<string> &tokens, 
 			   const string &delims = " \t", bool skipinit=true);
 
 /** Convert string to boolean */

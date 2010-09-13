@@ -102,14 +102,14 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     }
 
     // We're expecting something like Name: len\n
-    list<string> tokens;
+    vector<string> tokens;
     stringToTokens(ibuf, tokens);
     if (tokens.size() != 2) {
         LOGERR(("MHExecMultiple: bad line in filter output: [%s]\n",
                 ibuf.c_str()));
         return false;
     }
-    list<string>::iterator it = tokens.begin();
+    vector<string>::iterator it = tokens.begin();
     name = *it++;
     string& slen = *it;
     int len;

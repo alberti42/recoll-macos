@@ -946,7 +946,7 @@ static bool lookForHtmlBrowser(string &exefile)
 {
     static const char *htmlbrowserlist = 
 	"opera konqueror firefox mozilla netscape epiphany";
-    list<string> blist;
+    vector<string> blist;
     stringToTokens(htmlbrowserlist, blist, " ");
 
     const char *path = getenv("PATH");
@@ -954,7 +954,7 @@ static bool lookForHtmlBrowser(string &exefile)
 	path = "/bin:/usr/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/bin";
 
     // Look for each browser 
-    for (list<string>::const_iterator bit = blist.begin(); 
+    for (vector<string>::const_iterator bit = blist.begin(); 
 	 bit != blist.end(); bit++) {
 	if (ExecCmd::which(*bit, exefile, path)) 
 	    return true;

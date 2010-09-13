@@ -752,7 +752,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     vector<string> vipath(MAXHANDLERS);
     int vipathidx = 0;
     if (!ipath.empty()) {
-	list<string> lipath;
+	vector<string> lipath;
 	stringToTokens(ipath, lipath, isep, true);
 	vipath.insert(vipath.begin(), lipath.begin(), lipath.end());
 	if (!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
