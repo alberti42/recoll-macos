@@ -1,5 +1,5 @@
 Name:           recoll
-Version:        1.13.04
+Version:        1.14.0
 Release:        1%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
@@ -49,6 +49,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Sep 13 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.0-1
+- Update to release 1.14.0
 * Thu Apr 14 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.04-1
 - Update to release 1.13.04
 * Thu Jan 07 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.01-1

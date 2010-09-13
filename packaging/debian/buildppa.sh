@@ -1,6 +1,6 @@
 #!/bin/sh
 
-RCLVERS=1.13.04
+RCLVERS=1.14.0
 PPAVERS=1
 
 ########## QT3

@@ -1,6 +1,6 @@
 Name:           recoll
-Version:        1.13.04
-Release:        2%{?dist}
+Version:        1.14.0
+Release:        1%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
 Group:          Applications/Databases
@@ -50,6 +50,8 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Sep 13 2010  J.F. Dockes <jfd@recoll.org> 1.14.0-1
+- updated to release 1.14.0
 * Sun May 9 2010  J.F. Dockes <jfd@recoll.org> 1.13.04-2
 - Bumped the release number to issue new rpms for fc10
 * Sun May 9 2010  J.F. Dockes 1.13.04
