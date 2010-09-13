@@ -133,9 +133,9 @@ filters/rclimg
 filters/rclkwd
 filters/rcllyx
 filters/rclman
+filters/rclnull
 filters/rclogg
 filters/rclopxml
-filters/rclnull
 filters/rclpdf
 filters/rclppt
 filters/rclps
