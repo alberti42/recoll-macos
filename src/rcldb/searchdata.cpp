@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.32 2008-12-19 09:55:36 dockes 
  */
 
 // Handle translation from rcl's SearchData structures to Xapian Queries
+#include <stdio.h>
 
 #include <string>
 #include <vector>

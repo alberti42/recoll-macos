@@ -20,6 +20,7 @@ static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.18 2008-12-05 11:09:31 dockes E
 #include <cstdio>
 #include <string>
 #include <list>
+#include <algorithm>
 using std::string;
 using std::list;
 

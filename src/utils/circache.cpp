@@ -1011,7 +1011,9 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     if (writev(m_d->m_fd, vecs, 3) !=  nsize) {
         m_d->m_reason << "put: write failed. errno " << errno;
         if (extending)
-            ftruncate(m_d->m_fd, m_d->m_oheadoffs);
+            if (ftruncate(m_d->m_fd, m_d->m_oheadoffs) == -1) {
+                m_d->m_reason << "put: ftruncate failed. errno " << errno;
+            }
         return false;
     }
 

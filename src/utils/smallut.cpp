@@ -27,6 +27,7 @@ static char rcsid[] = "@(#$Id: smallut.cpp,v 1.35 2008-11-19 10:06:49 dockes Exp
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 
 #include <string>
 #include <iostream>
@@ -807,9 +808,13 @@ static bool addperiod(DateInterval *dp, DateInterval *pp)
     tm.tm_year = dp->y1 - 1900 + pp->y1;
     tm.tm_mon = dp->m1 + pp->m1 -1;
     tm.tm_mday = dp->d1 + pp->d1;
+#ifdef sun
+    time_t tres = mktime(&tm);
+    localtime_r(&tres, &tm);
+#else
     time_t tres = timegm(&tm);
-    // Convert back to normalized tm, then output
     gmtime_r(&tres, &tm);
+#endif
     dp->y1 = tm.tm_year + 1900;
     dp->m1 = tm.tm_mon + 1;
     dp->d1 = tm.tm_mday;

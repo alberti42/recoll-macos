@@ -554,7 +554,9 @@ void RclConfig::storeMissingHelperDesc(const string &s)
     string fmiss = path_cat(getConfDir(), "missing");
     FILE *fp = fopen(fmiss.c_str(), "w");
     if (fp) {
-	fwrite(s.c_str(), s.size(), 1, fp);
+	if (fwrite(s.c_str(), s.size(), 1, fp) != 1) {
+            LOGERR(("storeMissingHelperDesc: fwrite failed\n"));
+        }
 	fclose(fp);
     }
 }
