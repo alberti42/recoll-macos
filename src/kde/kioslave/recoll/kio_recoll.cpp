@@ -47,6 +47,7 @@ using namespace std;
 #include "docseqdb.h"
 #include "readfile.h"
 #include "smallut.h"
+#include "textsplit.h"
 
 using namespace KIO;
 
