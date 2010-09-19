@@ -94,6 +94,15 @@
 
       <h2>Nouvelles: </h2>
       <ul>
+	<li>2010-09-18 : Recoll <a href="download.html#source">1.14.0</a>
+	  vient de sortir. L'innovation principale est la possibilité
+	  d'utiliser des critères de dates dans les recherches, mais
+	  il y en a <a href="CHANGES.html">quelques autres</a>. Comme
+	  d'habitude, avec une version .0, il se pourrait qu'il y ait
+	  quelques problèmes, les paquets binaires suivront quand
+	  quelques braves auront essayé cette version, et si je
+	  n'entends pas parler de problèmes majeurs.</li>
+
 	<li>2010-04-14 : la version <a
 	href="download.html#source">1.13.04</a> vient de sortir. Elle
 	corrige un gros bug de la 1.13.02 (le stemming ne marchait plus).</li>

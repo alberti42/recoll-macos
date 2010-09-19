@@ -31,7 +31,7 @@
 
       <h1>Recoll journal of user-visible changes </h1>
 
-      <h2><a name="1.14.0">(future)1.14.0</a></h2>
+      <h2><a name="1.14.0">1.14.0</a></h2>
       <ul>
 	<li><a href="usermanual/rcl.search.lang.html">
 	    date selection in queries</a>.</li>
@@ -52,6 +52,11 @@
 	  entry. </li>
 	<li>Add full screen mode for small devices.</li>
 	<li>Added -i option to recollq to specify extra indexes.</li>
+	<li>Removed use of id3lib for extracting mp3 tags. A Python filter
+ 	  based on mutagen now handles all audio formats
+ 	  (mp3/flac/ogg). <i>If you are currently indexing audio
+ 	  files, you need to install mutagen, Recoll will not use
+ 	    id3lib or the Flac/Ogg tools any more</i>. </li>
 	<li>Filter for <b>fictionbook</b> (.fb2) documents.</li>
 	<li>Cleaned up the Python samples and made recollq.py a usable
 	  clone of recollq.</li>
@@ -59,7 +64,7 @@
 	  fatal. They could easily go unnoticed before.</li>
 	<li>Proper LARGEFILE support.</li>
 	<li>Use <b>xsltproc</b> instead of misc dirty tricks to
-	  extract test from most current XML-based documents (except
+	  extract text from most current XML-based documents (except
 	  those in which the XML is too broken).</li>
 	<li>Implement <tt>configure --enable-pic</tt> and use it for
 	  the KIO slave and Python and PHP modules.</li>

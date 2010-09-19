@@ -80,7 +80,17 @@
 
       <h2>News: </h2>
       <ul>
-	<li>2010-04-14 : a <a href="download.html#source">1.13.04</a> is
+	<li>2010-09-18 : Recoll <a href="download.html#source">1.14.0</a> is
+	  out. The main new feature is the use of document dates in
+	  searches, buf there are <a href="CHANGES.html">a few
+	  others</a> too. As usual with a .0 release, there may be
+	  rough edges, the binary packages will follow when a few
+	  brave souls will have tried it and I hear of no major
+	  issues. If you are currently indexing audio file tags, you
+	  need to look at the changes file, the supporting
+	  application changed.</li>
+
+	<li>2010-04-14 : Recoll <a href="download.html#source">1.13.04</a> is
 	  out. It fixes a nasty bug (broken stemming) in 1.13.02.</li>
 
         <li>2010-01-29 : the full Recoll source repository is now
@@ -92,23 +102,6 @@
           new channel for reporting bugs and make suggestions will
           increase the feedback rate...</li>
 
-	<li>2010-01-05 : a <a href="download.html#source">1.13.02</a> is
-	  out. It brings some nice <a href="CHANGES.html">
-	  improvements and new functions</a>. 
-	   Please try it and report any problems.</li>
-
-	<li>2009-12-10 : <a href="download.html#source">1.12.4</a> is
-	  out. It fixes a <a href="CHANGES.html#1.12.4">problem in the preview
-	  window search function (qt4 only)</a>.</li>
-
-	<li>2008-05-22 : we now have a mailing list:
-	  <ul>
-	    <li><a href="http://www.freelists.org/list/recoll-user">
-		Subscription management</a></li>
-	    <li><a href="http://www.freelists.org/archives/recoll-user">
-		Archives </a></li>
-	  </ul>
-	</li>
       </ul>
 	
       <h2><a name="support">Support</a></h3>
