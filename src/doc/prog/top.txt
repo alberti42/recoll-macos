@@ -1,5 +1,5 @@
 /*!@mainpage  Recoll: A personal/desktop text-search program
-\author email address: jean-francois.dockes@wanadoo.fr
+\author email address: jfd@recoll.org
 
 \section intro Introduction
 

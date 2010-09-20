@@ -14,13 +14,13 @@
       <firstname>Jean-Francois</firstname>
       <surname>Dockes</surname>
       <affiliation>
-        <address><email>jean-francois.dockes@wanadoo.fr</email></address>
+        <address><email>jfd@recoll.org</email></address>
       </affiliation>
     </author>
 
     <copyright>
       <year>2005</year>
-      <holder role="mailto:jean-francois.dockes@wanadoo.fr">Jean-Francois
+      <holder role="mailto:jfd@recoll.org">Jean-Francois
       Dockes</holder>
     </copyright>
 
@@ -2796,7 +2796,7 @@ while query.next >= 0 and query.next < nres:
       most versions after 2005 should be ok, maybe some older ones too
       (Solaris 8 is ok). If you build on another system, and
         need to modify things,
-        <ulink url="mailto:jean-francois.dockes@wanadoo.fr">I would
+        <ulink url="mailto:jfd@recoll.org">I would
         very much welcome patches</ulink>.</para>
 
       <para>Depending on the <application>Qt&nbsp;3</application>

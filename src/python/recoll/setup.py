@@ -44,7 +44,7 @@ setup (name = 'Recoll',
        version = '1.0',
        description = 'Query/Augment a Recoll full text index',
        author = 'J.F. Dockes',
-       author_email = 'jean-francois.dockes@wanadoo.fr',
+       author_email = 'jfd@recoll.org',
        long_description = '''
 ''',
        ext_modules = [module1])

@@ -18,7 +18,7 @@
 #define _GUIUTILS_H_INCLUDED_
 /* 
  * @(#$Id: guiutils.h,v 1.29 2008-10-03 08:09:35 dockes Exp $  (C) 2005 Jean-Francois Dockes 
- *                         jean-francois.dockes@wanadoo.fr
+ *                         jfd@recoll.org
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by

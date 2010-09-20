@@ -3,7 +3,7 @@
 #
 #
 
-MAINTAINER=jean-francois.dockes@wanadoo.fr
+MAINTAINER=jfd@recoll.org
 
 DOC?= usermanual
 LANGCODE?= en_US.ISO_8859-1

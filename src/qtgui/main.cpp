@@ -193,9 +193,9 @@ int main(int argc, char **argv)
 #ifdef WITH_KDE
     KAboutData about("recoll", I18N_NOOP("Recoll"), Rcl::version_string(), 
                      description,
-                     KAboutData::License_GPL, "(C) 2006 Jean-Francois Dockes", 0, 0, "jean-francois.dockes@wanadoo.fr");
+                     KAboutData::License_GPL, "(C) 2006 Jean-Francois Dockes", 0, 0, "jfd@recoll.org");
     about.addAuthor( "Jean-Francois Dockes", 0, 
-		     "jean-francois.dockes@wanadoo.fr" );
+		     "jfd@recoll.org" );
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions( options );
     KApplication app;

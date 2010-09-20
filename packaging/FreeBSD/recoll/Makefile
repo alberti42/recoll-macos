@@ -1,6 +1,6 @@
 # New ports collection makefile for:   recoll
 # Date created:        5 December 2005
-# Whom:                J.F. Dockes <jean-francois.dockes@wanadoo.fr>
+# Whom:                J.F. Dockes <jfd@recoll.org>
 #
 # $FreeBSD: ports/deskutils/recoll/Makefile,v 1.21 2007/08/12 14:54:13 rafan Exp $
 #
@@ -10,7 +10,7 @@ PORTVERSION=	1.9.0
 CATEGORIES=	deskutils
 MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 
-MAINTAINER=	jean-francois.dockes@wanadoo.fr
+MAINTAINER=	jfd@recoll.org
 COMMENT=	A personal full text search package, based on QT and Xapian
 
 BUILD_DEPENDS=	qmake:${PORTSDIR}/devel/qmake
