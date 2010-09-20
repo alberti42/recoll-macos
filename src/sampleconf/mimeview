@@ -4,6 +4,11 @@
 # External viewers, launched by the recoll GUI when you click on a result
 # 'edit' link
 
+# Mime types which we should not uncompress if they are found gzipped or
+# bzipped because the native viewer knows how to handle. These would be
+# exceptions and the list is normally empty
+#nouncompforviewmts = 
+
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
 application/x-all = xdg-open %f

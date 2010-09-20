@@ -156,10 +156,24 @@ class FileInterner {
     static bool idocToFile(TempFile& temp, const string& tofile, 
 			   RclConfig *cnf, const Rcl::Doc& doc);
 
+    /** 
+     * Does file appear to be the compressed version of a document?
+     */
+    static bool isCompressed(const string& fn, RclConfig *cnf);
+
+    /** 
+     * Check input compressed, allocate temp file and uncompress if it is.  
+     * @return true if ok, false for error. Actual decompression is indicated
+     *  by the TempFile status (!isNull())
+     */
+    static bool maybeUncompressToTemp(TempFile& temp, const string& fn, 
+                                      RclConfig *cnf, const Rcl::Doc& doc);
+
     const string& getReason() const {return m_reason;}
     static void getMissingExternal(string& missing);
     static void getMissingDescription(string& desc);
     bool ok() {return m_ok;}
+
 
  private:
     static const unsigned int MAXHANDLERS = 20;

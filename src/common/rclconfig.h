@@ -209,6 +209,10 @@ class RclConfig {
     string getMimeViewerDef(const string &mimetype, const string& apptag);
     bool getMimeViewerDefs(vector<pair<string, string> >&);
     bool setMimeViewerDef(const string& mimetype, const string& cmd);
+    /** Check if mime type is designated as needing no uncompress before view
+     * (if a file of this type is found compressed). Default is true,
+     *  exceptions are found in the nouncompforviewmts mimeview list */
+    bool mimeViewerNeedsUncomp(const string &mimetype);
 
     /** Store/retrieve missing helpers description string */
     string getMissingHelperDesc();

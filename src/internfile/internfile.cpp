@@ -46,6 +46,7 @@ using namespace std;
 #include "fileudi.h"
 #include "beaglequeuecache.h"
 #include "cancelcheck.h"
+#include "copyfile.h"
 
 #ifdef RCL_USE_XATTR
 #include "pxattr.h"
@@ -946,6 +947,110 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     return true;
 }
 
+bool FileInterner::isCompressed(const string& fn, RclConfig *cnf)
+{
+    LOGDEB(("FileInterner::isCompressed: [%s]\n", fn.c_str()));
+    struct stat st;
+    if (stat(fn.c_str(), &st) < 0) {
+        LOGERR(("FileInterner::isCompressed: can't stat [%s]\n", fn.c_str()));
+        return false;
+    }
+    string l_mime = mimetype(fn, &st, cnf, true);
+    if (l_mime.empty()) {
+        LOGERR(("FileInterner::isUncompressed: can't get mime for [%s]\n", 
+                fn.c_str()));
+        return false;
+    }
+
+    list<string>ucmd;
+    if (cnf->getUncompressor(l_mime, ucmd)) {
+        return true;
+    }
+    return false;
+}
+
+bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn, 
+                                         RclConfig *cnf, const Rcl::Doc& doc)
+{
+    LOGDEB(("FileInterner::maybeUncompressToTemp: [%s]\n", fn.c_str()));
+    struct stat st;
+    if (stat(fn.c_str(), &st) < 0) {
+        LOGERR(("FileInterner::maybeUncompressToTemp: can't stat [%s]\n", 
+                fn.c_str()));
+        return false;
+    }
+    string l_mime = mimetype(fn, &st, cnf, true);
+    if (l_mime.empty()) {
+        LOGERR(("FileInterner::maybeUncompress.: can't id. mime for [%s]\n", 
+                fn.c_str()));
+        return false;
+    }
+
+    list<string>ucmd;
+    if (!cnf->getUncompressor(l_mime, ucmd)) {
+        return true;
+    }
+    // Check for compressed size limit
+    int maxkbs = -1;
+    if (cnf->getConfParam("compressedfilemaxkbs", &maxkbs) &&
+        maxkbs >= 0 && int(st.st_size / 1024) > maxkbs) {
+        LOGINFO(("FileInterner:: %s over size limit %d kbs\n",
+                 fn.c_str(), maxkbs));
+        return false;
+    }
+    TempDir tmpdir;
+    temp = 
+      TempFile(new TempFileInternal(cnf->getSuffixFromMimeType(doc.mimetype)));
+    if (!tmpdir.ok() || !temp->ok()) {
+        LOGERR(("FileInterner: cant create temporary file/dir"));
+        return false;
+    }
+
+    // uncompressfile choses the output file name, there is good
+    // reason for this, but it's not nice here. Have to copy or rename
+    // the uncompressed file
+    string uncomped;
+    if (!uncompressfile(cnf, fn, ucmd, tmpdir, uncomped)) {
+        return false;
+    }
+
+    // uncompressfile choses the output file name, there is good
+    // reason for this, but it's not nice here. Have to copy or rename
+    // the uncompressed file. 
+    // Hopefully the cross-dev case won't happen as we're 
+    // probably choosing the temp names in the same dir. However...
+    // Unix really should have a rename-else-copy call... 
+    if (stat(temp->filename(), &st) < 0) {
+        LOGERR(("FileInterner::maybeUncompressToTemp: can't stat [%s]\n", 
+                temp->filename()));
+        return false;
+    }
+    struct stat st1;
+    if (stat(uncomped.c_str(), &st1) < 0) {
+        LOGERR(("FileInterner::maybeUncompressToTemp: can't stat [%s]\n", 
+                uncomped.c_str()));
+        return false;
+    }
+    if (st.st_dev == st1.st_dev) {
+        if (rename(uncomped.c_str(), temp->filename()) < 0) {
+            LOGERR(("FileInterner::maybeUncompress: rename [%s] -> [%s]"
+                    "failed, errno %d\n", 
+                    uncomped.c_str(), temp->filename(), errno));
+            return false;
+        }
+    } else {
+        string reason;
+        bool ret = copyfile(uncomped.c_str(), temp->filename(), reason);
+        if (ret == false) {
+            LOGERR(("FileInterner::maybeUncompress: copy [%s] -> [%s]"
+                    "failed: %s\n", 
+                    uncomped.c_str(), temp->filename(), reason.c_str()));
+            return false;
+        }
+        // We let the tempdir cleanup get rid of uncomped
+    }
+    return true;
+}
 
 #else
 

@@ -721,6 +721,8 @@ string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag)
     LOGDEB(("RclConfig::getMimeViewerDef: mtype %s apptag %s\n",
             mtype.c_str(), apptag.c_str()));
     string hs;
+    if (mimeview == 0)
+	return hs;
     if (apptag.empty() || !mimeview->get(mtype + string("|") + apptag,
                                          hs, "view"))
         mimeview->get(mtype, hs, "view");
@@ -740,6 +742,8 @@ bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs)
 
 bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
 {
+    if (mimeview == 0)
+        return false;
     string pconfname = path_cat(m_confdir, "mimeview");
     // Make sure this exists 
     close(open(pconfname.c_str(), O_CREAT|O_WRONLY, 0600));
@@ -760,6 +764,17 @@ bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
 	m_reason = string("No/bad mimeview in: ") + m_confdir;
 	return false;
     }
+    return true;
+}
+
+bool RclConfig::mimeViewerNeedsUncomp(const string &mimetype)
+{
+    string s;
+    vector<string> v;
+    if (mimeview != 0 && mimeview->get("nouncompforviewmts", s, "") && 
+        stringToStrings(s, v) && 
+        find_if(v.begin(), v.end(), StringIcmpPred(mimetype)) != v.end()) 
+        return false;
     return true;
 }
 

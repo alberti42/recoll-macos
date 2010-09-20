@@ -3605,7 +3605,7 @@ x-my-tag = mailmytag
         which will override those from the central configuration
         file.</para>
         <para>Please note that these entries must be placed under a
-        <literal>[view]</literal> section.</para>
+          <literal>[view]</literal> section.</para>
 
 	<para>The keys in the file are normally mime types. You can add an
 	  application tag to specialize the choice for an area of the
@@ -3618,6 +3618,14 @@ x-my-tag = mailmytag
         all <filename>mimeview</filename> entries will be ignored
         except the one labelled <literal>application/x-all</literal>
         (which is set to use <command>xdg-open</command> by default).</para>
+
+
+        <para>The <literal>nouncompforviewmts</literal> entry, (placed at
+        the top level, outside of the <literal>[view]</literal> section),
+        holds a list of mime types that should not be uncompressed before
+        starting the viewer (if they are found compressed, ie:
+        <replaceable>mydoc.doc.gz</replaceable>).</para>
+
       </sect2>
 
       <sect2 id="rcl.install.config.examples">

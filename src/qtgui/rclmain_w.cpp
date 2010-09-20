@@ -1096,6 +1096,32 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	url = string("file://") + fn;
     }
 
+    // If using an actual file, check that it exists, and if it is
+    // compressed, we may need an uncompressed version
+    if (!fn.empty() && rclconfig->mimeViewerNeedsUncomp(doc.mimetype)) {
+        if (access(fn.c_str(), R_OK) != 0) {
+            QMessageBox::warning(0, "Recoll", 
+                                 tr("Can't access file: ") + 
+                                 QString::fromLocal8Bit(fn.c_str()));
+            return;
+        }
+        TempFile temp;
+        if (FileInterner::isCompressed(fn, rclconfig)) {
+            if (!FileInterner::maybeUncompressToTemp(temp, fn, rclconfig,  
+                                                     doc)) {
+                QMessageBox::warning(0, "Recoll", 
+                                     tr("Can't uncompress file: ") + 
+                                     QString::fromLocal8Bit(fn.c_str()));
+                return;
+            }
+        }
+        if (!temp.isNull()) {
+            m_tempfiles.push_back(temp);
+            fn = temp->filename();
+            url = string("file://") + fn;
+        }
+    }
+
     // Substitute %xx inside prototype command
     string efftime;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
@@ -1134,6 +1160,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
     if (!istempfile)
 	historyEnterDoc(g_dynconf, doc.meta[Rcl::Doc::keyudi]);
+    
     // We should actually monitor these processes so that we can
     // delete the temp files when they exit
     LOGDEB(("Executing: [%s]\n", ncmd.c_str()));
