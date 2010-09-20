@@ -73,7 +73,8 @@
 
         <li>Traite la plupart des <a href="fr/features.html#doctypes">
 	    types de document</a> courants, les messages et leurs fichiers
-	    attachés.</li>
+	    attachés. Peut aussi traiter leurs versions comprimées
+	    (gzip ou bzip2) de tous ces documents.</li>
 
         <li>Fonctions de recherche puissantes, avec expressions Booléennes,
         phrases et proximité, wildcards, filtrage sur les types de fichiers

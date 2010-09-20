@@ -61,7 +61,8 @@
 
         <li>Searches most common 
 	  <a href="features.html#doctypes">document types</a>, emails and
-	    their attachments.</li>
+	    their attachments. Transparently handles decompression
+	    (gzip, bzip2).</li> 
 
         <li>Powerful query facilities, with boolean searches,
 	  phrases, proximity, wildcards, filter on file types and directory
