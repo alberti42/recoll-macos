@@ -147,6 +147,11 @@ class ExecCmd {
      */
     void setKill() {m_killRequest = true;}
 
+    /**
+     * Get rid of current process (become ready for start). 
+     */
+    void zapChild() {setKill(); (void)wait();}
+
     ExecCmd() 
 	: m_advise(0), m_provide(0), m_timeoutMs(1000)
     {

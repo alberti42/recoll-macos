@@ -172,6 +172,7 @@ bool MimeHandlerExecMultiple::next_document()
     obuf << "Mimetype: " << m_mimeType.length() << "\n" << m_mimeType;
     obuf << "\n";
     if (m_cmd.send(obuf.str()) < 0) {
+        m_cmd.zapChild();
         LOGERR(("MHExecMultiple: send error\n"));
         return false;
     }
@@ -185,6 +186,7 @@ bool MimeHandlerExecMultiple::next_document()
     for (int loop=0;;loop++) {
         string name, data;
         if (!readDataElement(name, data)) {
+            m_cmd.zapChild();
             return false;
         }
         if (name.empty())

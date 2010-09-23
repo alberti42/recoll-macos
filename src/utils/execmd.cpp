@@ -462,9 +462,9 @@ int ExecCmd::wait(bool haderror)
     if (!m_killRequest && m_pid > 0) {
 	if (waitpid(m_pid, &status, 0) < 0) 
 	    status = -1;
+        LOGDEB(("ExecCmd::wait: got status 0x%x\n", status));
 	m_pid = -1;
     }
-    LOGDEB(("ExecCmd::wait: got status 0x%x\n", status));
     return haderror ? -1 : status;
 }
 
