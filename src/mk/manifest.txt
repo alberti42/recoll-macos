@@ -309,6 +309,8 @@ qtgui/main.cpp
 qtgui/mtpics/
 qtgui/mtpics/License_sidux.txt
 qtgui/mtpics/README
+qtgui/mtpics/aptosid-manual-copyright.txt
+qtgui/mtpics/aptosid-manual.png
 qtgui/mtpics/document.png
 qtgui/mtpics/drawing.png
 qtgui/mtpics/folder.png
