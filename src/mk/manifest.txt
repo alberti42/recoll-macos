@@ -118,6 +118,7 @@ doc/user/usermanual.txt
 filters/
 filters/injectcommon.sh
 filters/rclabw
+filters/rclaptosidman
 filters/rclaudio
 filters/rclchm
 filters/rcldjvu
