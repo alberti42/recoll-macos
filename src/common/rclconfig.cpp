@@ -25,6 +25,7 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.62 2008-10-08 16:15:22 dockes E
 #include <langinfo.h>
 
 #include <set>
+#include <algorithm>
 
 #include <sys/types.h>
 #include <sys/stat.h>

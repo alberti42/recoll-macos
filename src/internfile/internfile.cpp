@@ -21,6 +21,7 @@ static char rcsid[] = "@(#$Id: internfile.cpp,v 1.46 2008-10-10 08:04:54 dockes 
 #ifndef TEST_INTERNFILE
 #include "autoconfig.h"
 
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
