@@ -35,6 +35,7 @@ static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.11 2007-02-19 16:28:05 dockes Exp
 #include <qlistview.h>
 #else
 #include <QTableWidget>
+#include <QHeaderView>
 #endif
 
 #include "debuglog.h"
