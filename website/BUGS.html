@@ -35,12 +35,8 @@
           supposedly fixed in later versions. Bugs listed in the
           topmost section may also exist in older versions.</i></p>
 
-      <h2><a name="b_latest">recoll 1.13.04 + xapian 1.0.16</a></h2> 
+      <h2><a name="b_latest">recoll 1.14.1 + xapian 1.2+ + qt 4.4.1+</a></h2> 
       <ul>
-	<li>Does not compile with Xapian
-	  1.2. Apply <a href="files/xapian12.patch">patch</a>.</li> 
-	<li>Mac OS X + Qt 4.6.1 : the index configuration dialog
-	  crashes.</li>
         <li>Performing a full index with release 1.11 or later, over a
           version created with a much older recoll release may
           sometimes end with an error saying "backend doesn't
@@ -49,38 +45,9 @@
           and restart indexing. For big indexes, to avoid losing
           time, removing the directory preventively may be preferable .</li>
 
-        <li> When Recoll is built with qt 4.4.0, the icons in the
-          result list are all displayed at the top of the page and
-          garbled. This appears to be a qt bug, fixed in 4.4.1. Use
-          either qt 4.3.x or 4.4.1</li>
-
         <li> If the user-chosen result list entry format results in
           several paragraphs (in the qt textedit sense), right clicks
           will only work inside the first one for each entry.</li>
-
-        <li> When a mime type has an external viewer defined, but the
-          actual file is compressed (ie: xxx.txt.gz), recoll will try
-          to start the external viewer on the compressed file, which
-          will not work in most cases.</li>
-
-        <li>It seems that the recoll program sometimes segfaults when
-          exiting after the first execution ?</li>
-
-        <li> If you are seeing a delay of a few seconds before the
-          result list displays for the first query of a recoll
-          instance, try changing the result list font in the query
-          preferences. This is not a recoll problem, I don't know the
-          exact cause (I've seen it happen with "Sans Serif" and go
-          away with Helvetica or Arial).</li>
-
-        <li> Under some versions of KDE (ie: Fedora FC5 KDE
-          3.5.4-0.5.fc5), there is a problem with the window stacking
-          order. Opening the "browse" file selection dialog from the
-          advanced search dialog will stack the latter under the main
-          window, possibly making it invisible. This is quite probably
-          a Kwin bug, possibly related to
-          http://bugs.kde.org/show_bug.cgi?id=79183 or a correction
-          thereof.</li>
 
         <li>Under Solaris, it is necessary to perform initial
           indexing with the recollindex program (the recoll index
@@ -99,10 +66,58 @@
           </blockquote>
           Only small files produced by Microsoft Word on a Mac, or by
           OpenOffice will trigger this message. As a workaround, install
-          wvWare and modify mimeconf to use the rcldoc filter, which
+          wvWare and modify mimeconf to use the rcldoc filter (instead of
+          directly executing antiword). Rcldoc will try antiword, then 
           will use vwWare if it is available. This will result in
-          slower indexing for doc files.</li>
+          slightly slower indexing for doc files.</li>
       </ul>
+
+
+      <h2><a name="b_1_13_04">recoll 1.13.04</h2>
+        <li><b>Note:</b> some of the bugs listed here are not actually
+        "fixed", mostly they were problems caused by old versions of
+        external software (ie: kde, qt), and I stopped carrying them. Just
+        don't use these versions, or live with the problem.</li>
+
+        <li>In case a new style filter (persistent) crashed while indexing,
+        it was not restarted, and all further files of the same mime type
+        were not updated (ie: python zip crash on encrypted files).</li>
+
+	<li>Mac OS X + Qt 4.6.1 : the index configuration dialog
+	  crashes.</li>
+
+        <li>If you are seeing a delay of a few seconds before the
+          result list displays for the first query of a recoll
+          instance, try changing the result list font in the query
+          preferences. This is not a recoll problem, I don't know the
+          exact cause (I've seen it happen with "Sans Serif" and go
+          away with Helvetica or Arial).</li>
+
+        <li> When a mime type has an external viewer defined, but the
+          actual file is compressed (ie: xxx.txt.gz), recoll will try
+          to start the external viewer on the compressed file, which
+          will not work in most cases.</li>
+
+        <li>It seems that the recoll program sometimes segfaults when
+          exiting after the first execution ?</li>
+
+	<li>Does not compile with Xapian
+	  1.2. Apply <a href="files/xapian12.patch">patch</a>.</li> 
+
+        <li>When Recoll is built with qt 4.4.0, the icons in the
+          result list are all displayed at the top of the page and
+          garbled. This appears to be a qt bug, fixed in 4.4.1. Use
+          either qt 4.3.x or 4.4.1 (stopped carrying this bug. Just don't use
+          4.4.0)</li> 
+
+        <li> Under some versions of KDE (ie: Fedora FC5 KDE
+          3.5.4-0.5.fc5), there is a problem with the window stacking
+          order. Opening the "browse" file selection dialog from the
+          advanced search dialog will stack the latter under the main
+          window, possibly making it invisible. This is quite probably
+          a Kwin bug, possibly related to
+          http://bugs.kde.org/show_bug.cgi?id=79183 or a correction
+          thereof.</li>
 
 
       <h2><a name="b_1_13_02">recoll 1.13.02</h2>
