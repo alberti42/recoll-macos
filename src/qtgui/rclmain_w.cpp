@@ -979,8 +979,14 @@ void RclMain::startNativeViewer(int docnum)
 static string fileurltolocalpath(string url)
 {
     if (url.find("file://") == 0)
-        return url.substr(7, string::npos);
-    return string();
+        url = url.substr(7, string::npos);
+    else
+        return string();
+    string::size_type pos;
+    if ((pos = url.find_last_of("#")) != string::npos) {
+        url.erase(pos);
+    }
+    return url;
 }
 
 void RclMain::startNativeViewer(Rcl::Doc doc)
