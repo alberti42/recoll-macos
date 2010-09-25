@@ -95,7 +95,7 @@
 
       <h2>Nouvelles: </h2>
       <ul>
-	<li>2010-09-18 : Recoll <a href="download.html#source">1.14.0</a>
+	<li>2010-09-18 : Recoll <a href="download.html#source">1.14.2</a>
 	  vient de sortir. L'innovation principale est la possibilité
 	  d'utiliser des critères de dates dans les recherches, mais
 	  il y en a <a href="CHANGES.html">quelques autres</a>. Comme

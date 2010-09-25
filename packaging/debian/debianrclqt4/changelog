@@ -1,6 +1,6 @@
-recoll (1.14.0-0~ppa1~SERIES1) SERIES; urgency=low
-  * Update to release 1.14.0
- -- Jean-Francois Dockes <jf@dockes.org>  Mon Sep 13 21:26:27 CEST 2010
+recoll (1.14.2-0~ppa1~SERIES1) SERIES; urgency=low
+  * Update to release 1.14.2
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 25 Sep 2010 09:37:20 +0200
 
 recoll (1.13.04-0~ppa2~SERIES1) SERIES; urgency=low
   * Switch to qt4 on Jaunty. 

@@ -127,9 +127,7 @@
 	 <a href="CHANGES.html">Changes</a>. <a href="BUGS.html">Bugs</a>.
        </p>
        <p>You can also download the brand new 
-         <a href="recoll-1.14.0.tar.gz">recoll-1.14.0.tar.gz</a>. The
-	 KIO slave in 1.14 does not compile because of a missing
-	 include. <a href="files/recoll-1.14-kio.diff">Patch here</a>.
+         <a href="recoll-1.14.2.tar.gz">recoll-1.14.2.tar.gz</a>.
        </p>
        
       <h3>Prerequisites for building from source:</h3>
@@ -232,6 +230,13 @@ gpg --export --armor 9DA85604 | sudo apt-key add -
 gpg --keyserver keyserver.ubuntu.com --recv A0735AD0
 gpg --export --armor  A0735AD0 | sudo apt-key add -
        </tt></pre>
+       For Jaunty and newer releases, the procedure has been
+       simplified, and the 2 following commands perform the whole
+       procedure: 
+<pre><tt>
+sudo add-apt-repository ppa:xapian-backports/ppa
+sudo add-apt-repository ppa:recoll-backports/ppa
+</tt></pre>
        </p>
       </blockquote>
 
@@ -255,9 +260,11 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 	  recoll-1.13.04-1.src.rpm</a>
 	This package usually also installs and runs on Fedora 9.
       </p>
-      <p><b>Fedora 10 and 12 with Qt 4</b>
-	These builds are not statically linked, but depend on the
-	regular Xapian and zlib rpms from the Fedora repositories.
+      <p><b>Fedora 10 and 12 with Qt 4</b>Recoll is now included in the
+	regular Fedora package repositories. The following are just in
+	case they're not up to the version you want.  These builds are
+	not statically linked, but depend on the regular Xapian and
+	zlib rpms from the Fedora repositories.
         <br>FC10
 	<a href="fc10/recoll-1.13.04-2.fc10.i586.rpm">
 	  recoll-1.13.04-2.fc10.i586.rpm</a>. 
