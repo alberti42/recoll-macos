@@ -266,6 +266,10 @@ xapian-core installed ?])
    exit 1
 fi
 LIBXAPIAN=`$XAPIAN_CONFIG --libs`
+# The --static thing fails with older Xapians. Happily enough they don't
+# need it either (because there are no needed libraries (no uuid and we
+# deal explicitely with libz)
+LIBXAPIANSTATICEXTRA=`$XAPIAN_CONFIG --static --libs 2> /dev/null`
 # Workaround for problem in xapian-config in some versions: wrongly lists
 # libstdc++.la in the lib list
 for i in $LIBXAPIAN ; do
@@ -281,6 +285,7 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 
 #echo XAPIAN_CONFIG: $XAPIAN_CONFIG 
 #echo LIBXAPIAN: $LIBXAPIAN
+#echo LIBXAPIANSTATICEXTRA: $LIBXAPIANSTATICEXTRA
 #echo XAPIANCXXFLAGS: $XAPIANCXXFLAGS
 
 #### QT
@@ -324,8 +329,11 @@ else
   if test X$QMAKE = X ; then
      QMAKE=qmake
   fi
-  
-  AC_PATH_PROG([QMAKEPATH], $QMAKE, NOTFOUND)
+  case $QMAKE in
+    */*) QMAKEPATH=$QMAKE;;
+    *) AC_PATH_PROG([QMAKEPATH], $QMAKE, NOTFOUND);;
+  esac
+
   if test X$QMAKEPATH = XNOTFOUND ; then 
      AC_MSG_ERROR([Cannot find the qmake program. Maybe you need to install
   qt development files and tools and/or set the QTDIR environment variable?])
@@ -424,6 +432,7 @@ AC_SUBST(X_EXTRA_LIBS)
 AC_SUBST(INCICONV)
 AC_SUBST(LIBICONV)
 AC_SUBST(LIBXAPIAN)
+AC_SUBST(LIBXAPIANSTATICEXTRA)
 AC_SUBST(LIBFAM)
 AC_SUBST(QMAKE)
 AC_SUBST(QTGUI)

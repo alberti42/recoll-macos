@@ -58,7 +58,7 @@ unix {
   OBJECTS_DIR = .obj
 
   LIBS += ../lib/librcl.a \
-            $(BSTATIC) @LIBXAPIAN@ @LIBICONV@ $(BDYNAMIC) \
+       $(BSTATIC) @LIBXAPIAN@ $(LIBXAPIANSTATICEXTRA) @LIBICONV@ $(BDYNAMIC) \
            -lz
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \

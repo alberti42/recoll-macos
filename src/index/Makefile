@@ -1,7 +1,7 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = recollindex csguess mimetype
+PROGS = recollindex 
 SRCS = recollindex.cpp rclmonrcv.cpp rclmonprc.cpp
 
 all: depend $(PROGS) $(BIGLIB)
@@ -9,7 +9,8 @@ all: depend $(PROGS) $(BIGLIB)
 RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o $(BIGLIB) 
 recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
-	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
+	       $(BSTATIC) $(LIBXAPIAN) $(LIBXAPIANSTATICEXTRA) \
+	       $(LIBICONV) $(BDYNAMIC) \
 	       $(LIBFAM) \
 	       $(X_LIBS) $(X_PRE_LIBS) $(X_LIBX11) $(X_EXTRA_LIBS) \
 	       $(LIBSYS)
