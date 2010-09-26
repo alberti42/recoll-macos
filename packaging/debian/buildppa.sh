@@ -24,7 +24,7 @@ done
 
 ####### QT4
 series4=""
-series4="jaunty karmic lucid"
+series4="jaunty karmic lucid maverick"
 
 debdir=debianrclqt4
 rm -rf recoll-${RCLVERS}/debian
