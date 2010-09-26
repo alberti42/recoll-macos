@@ -75,15 +75,23 @@
       <h2><a name="b_1_14_1">recoll 1.14.1</h2>
       <li>Compressed file view fix broke help viewer.</li>
 
+      <h2><a name="b_1_14_0">recoll 1.14.0</h2>
+	<li>Does not compile with Xapian
+	  1.2. Apply <a href="files/xapian12.patch">patch</a>.</li> 
+        <li> When a mime type has an external viewer defined, but the
+          actual file is compressed (ie: xxx.txt.gz), recoll will try
+          to start the external viewer on the compressed file, which
+          will not work in most cases.</li>
+
       <h2><a name="b_1_13_04">recoll 1.13.04</h2>
-        <li><b>Note:</b> some of the bugs listed here are not actually
+        <p><b>Note:</b> some of the bugs listed here are not actually
         "fixed", mostly they were problems caused by old versions of
         external software (ie: kde, qt), and I stopped carrying them. Just
-        don't use these versions, or live with the problem.</li>
+        don't use these versions, or live with the problem.</p>
 
         <li>In case a new style filter (persistent) crashed while indexing,
-        it was not restarted, and all further files of the same mime type
-        were not updated (ie: python zip crash on encrypted files).</li>
+          it was not restarted, and all further files of the same mime type
+          were not updated (ie: python zip crash on encrypted files).</li>
 
 	<li>Mac OS X + Qt 4.6.1 : the index configuration dialog
 	  crashes.</li>
@@ -95,16 +103,8 @@
           exact cause (I've seen it happen with "Sans Serif" and go
           away with Helvetica or Arial).</li>
 
-        <li> When a mime type has an external viewer defined, but the
-          actual file is compressed (ie: xxx.txt.gz), recoll will try
-          to start the external viewer on the compressed file, which
-          will not work in most cases.</li>
-
         <li>It seems that the recoll program sometimes segfaults when
           exiting after the first execution ?</li>
-
-	<li>Does not compile with Xapian
-	  1.2. Apply <a href="files/xapian12.patch">patch</a>.</li> 
 
         <li>When Recoll is built with qt 4.4.0, the icons in the
           result list are all displayed at the top of the page and
