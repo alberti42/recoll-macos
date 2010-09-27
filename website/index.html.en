@@ -83,16 +83,23 @@
       <ul>
 	<li>2010-09-23 : Recoll <a href="download.html#source">1.14.2</a> is
 	  out. The main new feature is the use of document dates in
-	  searches, buf there are <a href="CHANGES.html">a few
-	  others</a> too. As usual with a .0 release, there may be
-	  rough edges, the binary packages will follow when a few
-	  brave souls will have tried it and I hear of no major
-	  issues. If you are currently indexing audio file tags, you
-	  need to look at the changes file, the supporting
-	  application changed.</li>
+	  searches, buf there are <a href="CHANGES.html">a few others</a>
+	  too.  If you are currently indexing audio file tags, there are
+	  two issues in the release:
+	  <ul>
+	    <li>The supporting application changed, you'll need to install the
+	      mutagen python module</li> 
+	    <li>The distributed filter only works with very recent
+	      mutagen releases. 
+	      See <a href="filters/filters.html">here</a>
+	      for a version which works with the older mutagen release
+	      found in some package repositories.</li>
+	  </ul>
+	</li>
 
-	<li>2010-04-14 : Recoll <a href="download.html#source">1.13.04</a> is
-	  out. It fixes a nasty bug (broken stemming) in 1.13.02.</li>
+	<li>2010-04-14 :
+	  Recoll <a href="download.html#source">1.13.04</a> is out. It
+	  fixes a nasty bug (broken stemming) in 1.13.02.</li>
 
         <li>2010-01-29 : the full Recoll source repository is now
           hosted on

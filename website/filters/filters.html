@@ -64,21 +64,21 @@
 	<a href="mimeconf">mimeconf</a> 
 	<a href="mimeview">mimeview</a> </p>
 
+<!--
       <p>Notes:</p>
       <blockquote>
-	<p>All filters are up to date in Recoll 1.13.04, except rclics.</p>
+	<p>All filters are up to date in Recoll 1.1.04, except rclics.</p>
 	<p>If you are using an older version, you should update to 1.13.04.</p>
       </blockquote>
+-->
 
-
-      <h2>Updated icalendar filter</h2>
-      <p>The filter script for all releases up and including 1.13.04 used
-      the icalendar Python module which is not robust enough against some
-      syntax errors (found for example in Mozilla exports). The new version
-      uses an internal trivial parser, which will hopefully be both
-      sufficient for what we are doing and more robust.
-      You can download the <a href="rclics">new script</a>. This will not
-      work for versions prior to 1.13.</p>
+      <h2>Updated audio tag filter</h2>
+      <p>The mutagen-based rclaudio filter delivered with recoll 1.14.2
+	used a very recent mutagen interface which will only work with
+	mutagen versions after 1.17 (probably. at least works with 1.19,
+	doesn't with 1.15).
+	You can download the <a href="rclaudio">corrected script here</a>. 
+      </p>
 
     </div>
   </body>

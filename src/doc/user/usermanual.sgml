@@ -2650,7 +2650,13 @@ while query.next >= 0 and query.next < nres:
 
         <listitem><para>Postscript: <ulink
           url="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
-            pstotext</ulink>.</para>
+            pstotext</ulink>. The original version has an issue with shell
+            character in file names. Most recent package repositories /
+            ports system use a patched version (ie FreeBSD, Debian). If
+            compiling from source, it would be better to apply the patch
+            found 
+           <ulink url="http://www.recoll.org/files/pstotext-1.9_4-debian.patch">
+            here</ulink>.</para>
           </listitem>
 
         <listitem><para>MS Word: <ulink url="http://www.winfield.demon.nl"> 

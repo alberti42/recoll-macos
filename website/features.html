@@ -133,11 +133,21 @@
                 <li><span class="literal">Wordperfect</span> with <a href=
                 "http://libwpd.sourceforge.net">libwpd</a>.</li>
 
-                <li><span class="literal">postscript</span> with <a
-                href=
-                "http://www.gnu.org/software/ghostscript/ghostscript.html">
-                ghostscript</a> and <a href=
-                "http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">pstotext</a>.</li>
+                <li><span class="literal">postscript</span> with 
+	          <a href="http://www.gnu.org/software/ghostscript/ghostscript.html">
+		    ghostscript</a> and 
+		  <a href="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
+		    pstotext</a>.
+		  Actually the pstotext 1.9 found at the latter link
+		  has a problem with file names using special shell
+		  characters, and you should either use the version
+		  packaged for your system which is probably patched,
+		  or apply the Debian patch which is
+		  stored <a href="files/pstotext-1.9_4-debian.patch">here</a>
+		  for convenience. See
+		  http://packages.debian.org/squeeze/pstotext and
+		  http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=356988
+		  for references/explanations.</li>
 
                 <li><span class="literal">rtf</span> with <a href=
                 "http://www.gnu.org/software/unrtf/unrtf.html">unrtf</a>.</li>

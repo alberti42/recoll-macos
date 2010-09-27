@@ -36,7 +36,7 @@ application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=
 # antiword, but will handle documents which provoke the 'I'm afraid the
 # text stream of this file is too small to handle' antiword error
 # application/msword = exec wvWare --charset=utf-8 --nographics
-application/ogg = exec rclogg
+application/ogg = execm rclaudio
 application/pdf = exec rclpdf
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
 application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;charset=utf-8;mimetype=text/plain
@@ -67,7 +67,7 @@ application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
 application/x-awk = internal
 application/x-dvi = exec rcldvi
-application/x-flac = exec rclflac
+application/x-flac = execm rclaudio
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-perl = internal
@@ -76,7 +76,7 @@ application/x-shellscript = internal
 application/x-tex = exec rcltex
 application/x-chm = execm rclchm
 application/zip = execm rclzip
-audio/mpeg = exec rclid3
+audio/mpeg = execm rclaudio
 image/gif = execm rclimg
 image/jpeg = execm rclimg
 image/png = execm rclimg
@@ -92,6 +92,7 @@ text/x-c = internal
 text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
+text/x-html-aptosid-man = exec rclaptosidman
 text/x-mail = internal
 text/x-man = exec rclman
 text/x-purple-log = exec rclpurple
@@ -154,6 +155,7 @@ text/x-c = source
 text/x-c++ = source
 text/x-fictionbook = document
 text/x-html-sidux-man = sidux-book
+text/x-html-aptosid-man = aptosid-manual
 text/x-mail = message
 text/x-man = document
 application/x-chm = document
@@ -191,6 +193,7 @@ text = \
       text/x-c++ \
       text/x-fictionbook \
       text/x-html-sidux-man \
+      text/x-html-aptosid-man \
       text/x-man \
       text/x-python \
       text/x-shellscript
