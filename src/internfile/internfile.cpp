@@ -1007,48 +1007,20 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
         return false;
     }
 
-    // uncompressfile choses the output file name, there is good
-    // reason for this, but it's not nice here. Have to copy or rename
-    // the uncompressed file
     string uncomped;
     if (!uncompressfile(cnf, fn, ucmd, tmpdir, uncomped)) {
         return false;
     }
 
     // uncompressfile choses the output file name, there is good
-    // reason for this, but it's not nice here. Have to copy or rename
-    // the uncompressed file. 
-    // Hopefully the cross-dev case won't happen as we're 
-    // probably choosing the temp names in the same dir. However...
-    // Unix really should have a rename-else-copy call... 
-    if (stat(temp->filename(), &st) < 0) {
-        LOGERR(("FileInterner::maybeUncompressToTemp: can't stat [%s]\n", 
-                temp->filename()));
+    // reason for this, but it's not nice here. Have to move, the
+    // uncompressed file, hopefully staying on the same dev.
+    string reason;
+    if (!renameormove(uncomped.c_str(), temp->filename(), reason)) {
+        LOGERR(("FileInterner::maybeUncompress: move [%s] -> [%s] "
+                "failed: %s\n", 
+                uncomped.c_str(), temp->filename(), reason.c_str()));
         return false;
-    }
-    struct stat st1;
-    if (stat(uncomped.c_str(), &st1) < 0) {
-        LOGERR(("FileInterner::maybeUncompressToTemp: can't stat [%s]\n", 
-                uncomped.c_str()));
-        return false;
-    }
-    if (st.st_dev == st1.st_dev) {
-        if (rename(uncomped.c_str(), temp->filename()) < 0) {
-            LOGERR(("FileInterner::maybeUncompress: rename [%s] -> [%s]"
-                    "failed, errno %d\n", 
-                    uncomped.c_str(), temp->filename(), errno));
-            return false;
-        }
-    } else {
-        string reason;
-        bool ret = copyfile(uncomped.c_str(), temp->filename(), reason);
-        if (ret == false) {
-            LOGERR(("FileInterner::maybeUncompress: copy [%s] -> [%s]"
-                    "failed: %s\n", 
-                    uncomped.c_str(), temp->filename(), reason.c_str()));
-            return false;
-        }
-        // We let the tempdir cleanup get rid of uncomped
     }
     return true;
 }

@@ -19,10 +19,14 @@
 /* @(#$Id: copyfile.h,v 1.2 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+using std::string;
 
 enum CopyfileFlags {COPYFILE_NONE = 0, COPYFILE_NOERRUNLINK = 1};
 
-extern bool copyfile(const char *src, const char *dst, std::string &reason,
+extern bool copyfile(const char *src, const char *dst, string &reason,
 		     int flags = 0);
+
+// Try to rename, copy/unlink source if this fails (different devs)
+extern bool renameormove(const char *src, const char *dst, string &reason);
 
 #endif /* _COPYFILE_H_INCLUDED_ */

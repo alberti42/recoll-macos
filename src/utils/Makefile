@@ -1,7 +1,8 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = trcircache trmd5 trreadfile trfileudi trconftree wipedir smallut \
+PROGS = trcopyfile trcircache trmd5 trreadfile trfileudi trconftree \
+      wipedir smallut \
       trfstreewalk trpathut \
       transcode trbase64 \
       trmimeparse trexecmd utf8iter idfile
@@ -32,6 +33,13 @@ trcircache : $(CIRCACHE_OBJS)
 trcircache.o : circache.cpp circache.h
 	$(CXX) -o trcircache.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_CIRCACHE circache.cpp
+
+COPYFILE_OBJS= trcopyfile.o copyfile.o $(BIGLIB)
+trcopyfile : $(COPYFILE_OBJS)
+	$(CXX) -o trcopyfile $(COPYFILE_OBJS) $(LIBICONV) $(LIBSYS)
+trcopyfile.o : copyfile.cpp copyfile.h
+	$(CXX) -o trcopyfile.o -c $(ALL_CXXFLAGS) \
+	       -DTEST_COPYFILE copyfile.cpp
 
 MD5_OBJS= trmd5.o md5.o $(BIGLIB)
 trmd5 : $(MD5_OBJS)
