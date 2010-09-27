@@ -199,6 +199,9 @@ class ExecCmd {
     // Child process code
     void dochild(const string &cmd, const list<string>& args, 
 		 bool has_input, bool has_output);
+    /* Copyconst and assignment private and forbidden */
+    ExecCmd(const ExecCmd &) {}
+    ExecCmd& operator=(const ExecCmd &) {return *this;};
 };
 
 

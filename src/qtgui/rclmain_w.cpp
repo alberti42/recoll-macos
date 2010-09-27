@@ -1037,12 +1037,6 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	// addition to the path. We store a copy of xdg-open there, to be 
 	// used as last resort
 	cmdpath = rclconfig->findFilter(lcmd.front());
-	// Substitute path for cmd
-	if (!cmdpath.empty()) {
-	    lcmd.front() = cmdpath;
-	    cmd.erase();
-	    stringsToString(lcmd, cmd);
-	}
     } else {
 	ExecCmd::which(lcmd.front(), cmdpath);
     }
@@ -1050,7 +1044,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     // Specialcase text/html because of the help browser need
     if (cmdpath.empty() && !doc.mimetype.compare("text/html")) {
 	if (lookForHtmlBrowser(cmdpath)) {
-	    cmd = cmdpath + " %u";
+	    lcmd.clear();
+            lcmd.push_back(cmdpath);
+            lcmd.push_back("%u");
 	}
     }
 
@@ -1128,7 +1124,10 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
         }
     }
 
-    // Substitute %xx inside prototype command
+    // Get rid of the command name. lcmd is now argv[1...n]
+    lcmd.pop_front();
+
+    // Substitute %xx inside arguments
     string efftime;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
         efftime = doc.dmtime.empty() ? doc.fmtime : doc.dmtime;
@@ -1137,22 +1136,28 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     }
     // Try to keep the letters used more or less consistent with the reslist
     // paragraph format.
-    string ncmd;
     map<string, string> subs;
-    subs["D"] = escapeShell(efftime);
-    subs["f"] = escapeShell(fn);
-    subs["i"] = escapeShell(doc.ipath);
-    subs["M"] = escapeShell(doc.mimetype);
-    subs["U"] = escapeShell(url);
-    subs["u"] = escapeShell(url);
+    subs["D"] = efftime;
+    subs["f"] = fn;
+    subs["i"] = doc.ipath;
+    subs["M"] = doc.mimetype;
+    subs["U"] = url;
+    subs["u"] = url;
     // Let %(xx) access all metadata.
     for (map<string,string>::const_iterator it = doc.meta.begin();
          it != doc.meta.end(); it++) {
-        subs[it->first] = escapeShell(it->second);
+        subs[it->first] = it->second;
+    }
+    string ncmd;
+    for (list<string>::iterator it = lcmd.begin(); 
+         it != lcmd.end(); it++) {
+        pcSubst(*it, ncmd, subs);
+        LOGDEB(("%s->%s\n", it->c_str(), ncmd.c_str()));
+        *it = ncmd;
     }
 
+    // Also substitute inside the unsplitted command line for displaying
     pcSubst(cmd, ncmd, subs);
-
     ncmd += " &";
     QStatusBar *stb = statusBar();
     if (stb) {
@@ -1166,11 +1171,11 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
     if (!istempfile)
 	historyEnterDoc(g_dynconf, doc.meta[Rcl::Doc::keyudi]);
-    
-    // We should actually monitor these processes so that we can
-    // delete the temp files when they exit
-    LOGDEB(("Executing: [%s]\n", ncmd.c_str()));
-    system(ncmd.c_str());
+
+    // We keep pushing back and never deleting. This can't be good...
+    ExecCmd *ecmd = new ExecCmd;
+    m_viewers.push_back(ecmd);
+    ecmd->startExec(cmdpath, lcmd, false, false);
 }
 
 void RclMain::startManual()

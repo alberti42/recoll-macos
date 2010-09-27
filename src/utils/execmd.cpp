@@ -127,7 +127,7 @@ public:
     ~ExecCmdRsrc() {
 	if (!m_active || !m_parent)
 	    return;
-	LOGDEB0(("~ExecCmdRsrc: working\n"));
+	LOGDEB1(("~ExecCmdRsrc: working. mypid: %d\n", (int)getpid()));
 	int status;
 	if (m_parent->m_pid > 0) {
 	    LOGDEB(("ExecCmd: killing cmd\n"));

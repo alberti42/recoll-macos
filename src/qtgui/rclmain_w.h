@@ -31,6 +31,8 @@
 #include "refcntr.h"
 #include "pathut.h"
 
+class ExecCmd;
+
 #if QT_VERSION < 0x040000
 #include "rclmain.h"
 #else
@@ -130,6 +132,7 @@ private:
     QTimer         *periodictimer;
 
     vector<TempFile>  m_tempfiles;
+    vector<ExecCmd*>  m_viewers;
     map<QString, int> m_stemLangToId;
     vector<string>    m_catgbutvec;
     int               m_idNoStem;
