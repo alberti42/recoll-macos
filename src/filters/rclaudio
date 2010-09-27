@@ -7,7 +7,8 @@ import os
 import rclexecm
 
 try:
-    from mutagen.mp3 import EasyMP3 as MP3
+    from mutagen.mp3 import MP3
+    from mutagen.easyid3 import EasyID3
     from mutagen.flac import FLAC
     from mutagen.oggvorbis import OggVorbis
 except:
@@ -53,7 +54,7 @@ class AudioTagExtractor:
         mimetype = params["mimetype:"]
         try:
             if mimetype == "audio/mpeg":
-                tags = MP3(filename)
+                tags = MP3(filename, ID3=EasyID3)
             elif mimetype == "application/ogg":
                 tags = OggVorbis(filename)
             elif mimetype == "application/x-flac":
