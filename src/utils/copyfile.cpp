@@ -22,9 +22,12 @@ static char rcsid[] = "@(#$Id: copyfile.cpp,v 1.4 2007-12-13 06:58:22 dockes Exp
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
-#include <cstring>
+#include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/times.h>
+#include <sys/time.h>
+#include <utime.h>
+
+#include <cstring>
 
 #include "copyfile.h"
 #include "debuglog.h"
