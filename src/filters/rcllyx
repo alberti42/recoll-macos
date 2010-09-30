@@ -128,7 +128,7 @@ trap cleanup EXIT HUP QUIT INT TERM
 workdir=$tmpdir/rcllyxtmp
 case "$infile" in
  */*) ;;
- *) infile=`pwd`/$infile;;
+ *) infile=`pwd`/"$infile";;
 esac
 
 binfile=`basename "$infile"`

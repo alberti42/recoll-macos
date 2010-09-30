@@ -114,7 +114,7 @@ else
 fi
 tmplink=$ttdir/rcldjvu_tmp$$.djvu
 rm -f $tmplink
-ln -s $infile $tmplink || exit 1
+ln -s "$infile" $tmplink || exit 1
 
 cleanup()
 {

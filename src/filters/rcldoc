@@ -145,6 +145,6 @@ END {
 # seem to be an issue with our brave html input handler...
 if test $? -eq 1 ; then
     if iscmd wvWare ; then
-	wvWare --nographics --charset=utf-8 $infile
+	wvWare --nographics --charset=utf-8 "$infile"
     fi
 fi

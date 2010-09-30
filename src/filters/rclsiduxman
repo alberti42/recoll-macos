@@ -86,7 +86,7 @@ checkcmds sed
 # Delete everything from <div id="menu"> to <div id="main-page">
 # This prints an additional blank line at top which does not matter
 sed -n -e '1,/<div id="menu">/{x;p' -e '}' \
-    -e '/<div id="main-page">/,$p' < $infile
+    -e '/<div id="main-page">/,$p' < "$infile"
 
 # exit normally
 exit 0

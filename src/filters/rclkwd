@@ -107,7 +107,7 @@ cleanup()
 trap cleanup EXIT HUP QUIT INT TERM
 
 # Old kwd files are gzip/tar archibes. Newer ones are zip archives.
-if file $infile | grep -qi gzip ; then
+if file "$infile" | grep -qi gzip ; then
    # Unzip the input file and change to the unzipped directory
    gunzip < "$infile" | (cd $tmpdir/rclkwdtmp;tar xf -)
 else

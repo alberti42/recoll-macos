@@ -137,7 +137,7 @@ NR == 1 {
 END {
     printf("</body></html>\n")
 }
-' < $infile
+' < "$infile"
 
 # exit normally
 exit 0

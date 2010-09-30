@@ -106,7 +106,7 @@ sedjoinprog=':a
 #P;D'
 
 # Extract description title author and keywords
-description=`sed -e "$sedjoinprog" < $infile | \
+description=`sed -e "$sedjoinprog" < "$infile" | \
 awk '
 /<DOCUMENT / {
     if (match($0, " COMMENTS=\"[^\"]+")) { 
@@ -117,7 +117,7 @@ awk '
 }
 '`
 
-title=`sed -e "$sedjoinprog" < $infile | \
+title=`sed -e "$sedjoinprog" < "$infile" | \
 awk '
 /<DOCUMENT / {
     if (match($0, " TITLE=\"[^\"]+")) { 
@@ -128,7 +128,7 @@ awk '
 }
 '`
 
-author=`sed -e "$sedjoinprog" < $infile | \
+author=`sed -e "$sedjoinprog" < "$infile" | \
 awk '
 /<DOCUMENT / {
     if (match($0, " AUTHOR=\"[^\"]+")) { 
@@ -139,7 +139,7 @@ awk '
 }
 '`
 
-keywords=`sed -e "$sedjoinprog" < $infile | \
+keywords=`sed -e "$sedjoinprog" < "$infile" | \
 awk '
 /<DOCUMENT / {
     if (match($0, " KEYWORDS=\"[^\"]+")) { 
@@ -165,7 +165,7 @@ cat <<EOF
 EOF
 
 
-sed -e ':a' -e '/[^>] *$/N; s/\n/ /; ta' < $infile | \
+sed -e ':a' -e '/[^>] *$/N; s/\n/ /; ta' < "$infile" | \
 awk '
 /<ITEXT / {
     if (match($0, " CH=\"[^\"]+")) { 
