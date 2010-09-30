@@ -63,7 +63,7 @@
 	  <a href="features.html#doctypes">document types</a>, emails and
 	    their attachments. Transparently handles decompression
 	    (gzip, bzip2).</li> 
-
+	
         <li>Powerful query facilities, with boolean searches,
 	  phrases, proximity, wildcards, filter on file types and directory
 	  tree. </li>
@@ -72,6 +72,13 @@
 	  internals.</li> 
 	<li><a class="weak" href="features.html">(more detail)</a></li>
       </ul>
+
+      <p><i>Recoll can index an <b>MS-Word</b> document stored as
+	  an <b>attachment</b> to an <b>e-mail message</b> inside
+	  a <b>Thunderbird folder</b> archived in a <b>Zip file</b>
+	  (and more...). It will also let you open a copy of the file
+	  without any fuss. There is little that will remain hidden on 
+	  your disk :)</i></p>
 
       <p><b><i>Recoll user ?</i></b> Maybe there are still a few useful
 	  tricks that you don't know about. A quick look at
