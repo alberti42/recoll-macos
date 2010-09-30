@@ -139,62 +139,78 @@ textfile=$workdir/`basename "$binfile" .lyx`.txt
 #echo binfile: $binfile;echo lyxfile: $lyxfile ; ls -l $lyxfile; echo textfile: $textfile
 
 # Run lyx --export
-lyx --export text "$lyxfile"
+lyx --export text "$lyxfile" || senderror "lyx --export not working"
 
-# Charset and language
-formatline=`egrep '^\\\lyxformat ' "$lyxfile"`
-if test -n "$formatline" ; then 
-   set $formatline
-   format=$2
+# Need the lyx version. After some point -export prints utf-8,
+# whatever the input version
+LYXOUTPUTUTF=No
+vline=`lyx --version 2>&1 | head -1 | tr '.' ' '`
+set $vline
+maj=`expr $2 '*' 10000` || senderror "Bad lyx version string $vline"
+med=`expr $3 '*' 100` || senderror "Bad lyx version string $vline"
+min=`expr $4 '*' 1` || senderror "Bad lyx version string $vline"
+version=`expr $maj + $med + $min` || senderror "Bad lyx version string $vline"
+if test $version -ge 10607 ; then
+  LYXOUTPUTUTF=Yes
 fi
-charsetline=`egrep '^\\\inputencoding ' "$lyxfile"`
-if test -n "$charsetline" ; then 
-   set $charsetline
-   charset=$2
-fi
-langline=`egrep '^\\\language ' "$lyxfile"`
-if test -n "$langline" ; then 
-   set $langline
-   lang=$2
-fi
-#echo format: [$format] charset: [$charset] lang [$lang]
-
-if test "$format" -ge 249 ; then
-  charset=utf-8
-else
-  # try to guess the charset from the language: this is in no way guaranteed
-  # to work, the logic has built-in inconsistencies even beyond the numerous
-  # external ones (what if the ukrainian writer prefers koi8-r ?). This is a
-  # joke. 
+if test X$LYXOUTPUTUTF = XNo ; then
+echo "OLD VERSION"
+  # Charset and language
+  formatline=`egrep '^\\\lyxformat ' "$lyxfile"`
+  if test -n "$formatline" ; then 
+     set $formatline
+     format=$2
+  fi
+  charsetline=`egrep '^\\\inputencoding ' "$lyxfile"`
+  if test -n "$charsetline" ; then 
+     set $charsetline
+     charset=$2
+  fi
+  langline=`egrep '^\\\language ' "$lyxfile"`
+  if test -n "$langline" ; then 
+     set $langline
+     lang=$2
+  fi
+  #echo format: [$format] charset: [$charset] lang [$lang]
+  
+  if test "$format" -ge 249 ; then
+    charset=utf-8
+  else
+    # try to guess the charset from the language: this is in no way guaranteed
+    # to work, the logic has built-in inconsistencies even beyond the numerous
+    # external ones (what if the ukrainian writer prefers koi8-r ?). This is a
+    # joke. 
   if test -z "$charset" -o "$charset" = default -o "$charset" = auto ; then
     case "$lang" in
-    american|afrikaans|basque|catalan|danish|dutch|english|faeroese|finnish|french|galician|german|icelandic|irish|italian|norwegian|portuguese|spanish|swedish)
-      charset=iso-8859-1;;
-    czech|german|hungarian|polish|romanian|croatian|slovak|slovene)
-      charset=iso-8859-2;;
-    esperanto|galician|maltese|Turkish) 
-      charset=iso-8859-3;;
-    estonian|latvian|lithuanian) 
-      charset=iso-8859-4;;
-    bulgarian|byelorussian|macedonian|russian|serbian|ukrainian) 
-      charset=iso-8859-5;;
-    arabic) 
-      charset=iso-8859-6;;
-    greek) 
-      charset=iso-8859-7;;
-    hebrew) 
-      charset=iso-8859-8;;
-    #ISO-8859-9 - Latin 5 Same as 8859-1 except for Turkish instead of
-    #Icelandic. ? What is one to do :)
-    #ISO-8859-10 - Latin 6
-    lappish|nordic|eskimo|inuit|sami)
-      charset=iso-8859-10;;
-  albanian|german|english|basque|breton|catalan|danish|spanish|estonian|esthonian|faeroese|faroese|finnish|french|frisian|friesian|scottish|goidelic|irish|gaelic|galician|welsh|greenlandic|inuit|icelandic|italian|latin|dutch|norvegian|portuguese|romansch|romansh|friulian|ladin|swedish)
-      charset=iso-8859-15;;
-    *)
-      charset=iso-8859-1;;
-    esac
+      american|afrikaans|basque|catalan|danish|dutch|english|faeroese|finnish|french|galician|german|icelandic|irish|italian|norwegian|portuguese|spanish|swedish)
+        charset=iso-8859-1;;
+      czech|german|hungarian|polish|romanian|croatian|slovak|slovene)
+        charset=iso-8859-2;;
+      esperanto|galician|maltese|Turkish) 
+        charset=iso-8859-3;;
+      estonian|latvian|lithuanian) 
+        charset=iso-8859-4;;
+      bulgarian|byelorussian|macedonian|russian|serbian|ukrainian) 
+        charset=iso-8859-5;;
+      arabic) 
+        charset=iso-8859-6;;
+      greek) 
+        charset=iso-8859-7;;
+      hebrew) 
+        charset=iso-8859-8;;
+      #ISO-8859-9 - Latin 5 Same as 8859-1 except for Turkish instead of
+      #Icelandic. ? What is one to do :)
+      #ISO-8859-10 - Latin 6
+      lappish|nordic|eskimo|inuit|sami)
+        charset=iso-8859-10;;
+    albanian|german|english|basque|breton|catalan|danish|spanish|estonian|esthonian|faeroese|faroese|finnish|french|frisian|friesian|scottish|goidelic|irish|gaelic|galician|welsh|greenlandic|inuit|icelandic|italian|latin|dutch|norvegian|portuguese|romansch|romansh|friulian|ladin|swedish)
+        charset=iso-8859-15;;
+      *)
+        charset=iso-8859-1;;
+      esac
+    fi
   fi
+# End Old lyx needing output tweaking
 fi
 
 if test -n "$charset" ; then
