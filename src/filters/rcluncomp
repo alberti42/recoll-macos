@@ -30,5 +30,6 @@ case "$sinfile" in
 	;;
 esac
 
-#echo "rcluncomp: $uncompressed" 1>&2
-echo $uncompressed
+cat <<EOF
+$uncompressed
+EOF
