@@ -4,7 +4,7 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
+        <translation type="obsolete">Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -654,6 +654,14 @@ Do you want to start the  preferences dialog ?</source>
 Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Can&apos;t access file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t uncompress file: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -812,6 +820,26 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>&amp;Show missing helpers</source>
         <translation>Відсутні програми</translation>
+    </message>
+    <message>
+        <source>PgDown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PgUp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Full Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F11</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1231,7 +1259,15 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Count</source>
-        <translation>Кількість</translation>
+        <translation type="obsolete">Кількість</translation>
+    </message>
+    <message>
+        <source>No db info.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1267,6 +1303,18 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>No expansion found</source>
         <translation>Розкриття не знайдене</translation>
+    </message>
+    <message>
+        <source>Term</source>
+        <translation type="unfinished">Слово</translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index: %1 documents, average length %2 terms</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1710,6 +1758,18 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language magic file name suffixes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

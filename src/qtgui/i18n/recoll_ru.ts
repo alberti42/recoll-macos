@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<!DOCTYPE TS><TS>
 <context>
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
+        <translation type="obsolete">Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -663,6 +661,14 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Программа просмотра, указанная в mimeview для %1: %2, не найдена.
 Открыть диалог настроек?</translation>
     </message>
+    <message>
+        <source>Can&apos;t access file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t uncompress file: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -821,6 +827,26 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>&amp;Show missing helpers</source>
         <translation>Недостающие внешние программы</translation>
+    </message>
+    <message>
+        <source>PgDown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PgUp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Full Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F11</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -996,9 +1022,9 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
-	</source>
+<byte value="x9"/></source>
         <translation type="obsolete">&lt;b&gt;Результаты с %1 из %2&lt;/b&gt;&lt;/p&gt;&lt;/b&gt;&lt;/p&gt;
-	</translation>
+<byte value="x9"/></translation>
     </message>
     <message>
         <source>Sort criteria</source>
@@ -1406,7 +1432,15 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Count</source>
-        <translation>Количество</translation>
+        <translation type="obsolete">Количество</translation>
+    </message>
+    <message>
+        <source>No db info.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1442,6 +1476,18 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>No expansion found</source>
         <translation>Раскрытие не найдено</translation>
+    </message>
+    <message>
+        <source>Term</source>
+        <translation type="unfinished">Слово</translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index: %1 documents, average length %2 terms</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1882,6 +1928,18 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
         <translation>Показывать фильтр категории документа в виде выпадающего списка, а не панели с кнопками (требуется перезапуск).</translation>
+    </message>
+    <message>
+        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language magic file name suffixes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

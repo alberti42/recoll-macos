@@ -4,7 +4,7 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Impossibile eseguire una ricerca puramente negativa. Inserire termini comuni nel campo &apos;qualsiasi termine&apos;</translation>
+        <translation type="obsolete">Impossibile eseguire una ricerca puramente negativa. Inserire termini comuni nel campo &apos;qualsiasi termine&apos;</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -652,6 +652,14 @@ Aprire la finestra delle preferenze ?</translation>
 Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Can&apos;t access file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t uncompress file: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -849,6 +857,26 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PgDown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PgUp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Full Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F11</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1302,7 +1330,15 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Count</source>
-        <translation>Numero</translation>
+        <translation type="obsolete">Numero</translation>
+    </message>
+    <message>
+        <source>No db info.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1342,6 +1378,18 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>No expansion found</source>
         <translation>Nessun epansione trovata</translation>
+    </message>
+    <message>
+        <source>Term</source>
+        <translation type="unfinished">Termine</translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index: %1 documents, average length %2 terms</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1786,6 +1834,18 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language magic file name suffixes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -3,7 +3,7 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Requête négative pure impossible. Entrer un terme dans un des autres champs</translation>
+        <translation type="obsolete">Requête négative pure impossible. Entrer un terme dans un des autres champs</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -662,6 +662,14 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Le visualiseur spécifié dans mimeview pour %1: %2 est introuvable.
 Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
+    <message>
+        <source>Can&apos;t access file: </source>
+        <translation>Impossible d&apos;accéder au fichier: </translation>
+    </message>
+    <message>
+        <source>Can&apos;t uncompress file: </source>
+        <translation>Impossible de décomprimer le fichier: </translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -860,6 +868,26 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>&amp;Show missing helpers</source>
         <translation>Afficher les application&amp;s manquantes</translation>
+    </message>
+    <message>
+        <source>PgDown</source>
+        <translation>PgDown</translation>
+    </message>
+    <message>
+        <source>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</source>
+        <translation>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</translation>
+    </message>
+    <message>
+        <source>PgUp</source>
+        <translation>PgUp</translation>
+    </message>
+    <message>
+        <source>&amp;Full Screen</source>
+        <translation>&amp;Plein écran</translation>
+    </message>
+    <message>
+        <source>F11</source>
+        <translation>F11</translation>
     </message>
 </context>
 <context>
@@ -1316,7 +1344,15 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Count</source>
-        <translation>Compte</translation>
+        <translation type="obsolete">Compte</translation>
+    </message>
+    <message>
+        <source>No db info.</source>
+        <translation>Pas d&apos;information sur la base.</translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation>Doc. / Tot.</translation>
     </message>
 </context>
 <context>
@@ -1356,6 +1392,18 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>No expansion found</source>
         <translation>Pas de résultats</translation>
+    </message>
+    <message>
+        <source>Term</source>
+        <translation>Terme</translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation>Doc. / Tot.</translation>
+    </message>
+    <message>
+        <source>Index: %1 documents, average length %2 terms</source>
+        <translation>Index: %1 documents, taille moyenne %2 termes</translation>
     </message>
 </context>
 <context>
@@ -1804,6 +1852,18 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
         <translation>Afficher le filtre de catégorie comme une barre d&apos;outils plutot que comme un panneau de boutons (après le redémarrage).</translation>
+    </message>
+    <message>
+        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
+        <translation>Les mots de la liste seront automatiquement changés en clauses ext:xxx dans les requêtes en langage d&apos;interrogation.</translation>
+    </message>
+    <message>
+        <source>Query language magic file name suffixes.</source>
+        <translation>Suffixes automatiques pour le langage d&apos;interrogation.</translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation>Activer</translation>
     </message>
 </context>
 <context>
