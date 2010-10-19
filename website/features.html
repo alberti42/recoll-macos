@@ -9,7 +9,7 @@
     <meta name="Description" content=
     "recoll is a simple full-text search system for unix and linux based on the powerful and mature xapian engine">
     <meta name="Keywords" content=
-      "full text search,fulltext,desktop search,unix,linux,solaris,open source,free">
+    "full text search,fulltext,desktop search,unix,linux,solaris,open source,free">
     <meta http-equiv="Content-language" content="en">
     <meta http-equiv="content-type" content=
     "text/html; charset=iso-8859-1">
@@ -18,260 +18,268 @@
   </head>
 
   <body>
-
     <div class="rightlinks">
       <ul>
-	<li><a href="index.html">Home</a></li>
-	<li><a href="pics/index.html">Screenshots</a></li>
-	<li><a href="download.html">Downloads</a></li>
-	<li><a href="usermanual/index.html">User manual</a></li>
-	<li><a href="index.html#support">Support</a></li>
-	<li><a href="devel.html">Development</a></li>
+        <li><a href="index.html">Home</a></li>
+
+        <li><a href="pics/index.html">Screenshots</a></li>
+
+        <li><a href="download.html">Downloads</a></li>
+
+        <li><a href="usermanual/index.html">User manual</a></li>
+
+        <li><a href="index.html#support">Support</a></li>
+
+        <li><a href="devel.html">Development</a></li>
       </ul>
     </div>
 
     <div class="content">
-
       <h1 class="intro">Recoll features</h1>
 
-      <dl>
-	<dt><a name="systems">Supported systems</a></dt>
-	<dd><span class="application">Recoll</span> has been compiled and
-	  tested on FreeBSD, Linux, Darwin and Solaris (versions
-	  FreeBSD 5-7, Redhat 7/8/9, Fedora Core 5-13, Suse 10/11,
-	  Gentoo, Debian 3.1, Solaris 8/9/10. Other not too distant
-	  releases should be ok too).</dd>
+      <h2><a name="systems">Supported systems</a></h2>
 
-	<dd>Qt versions from 3.1 to 4.5</dd>
+      <p><span class="application">Recoll</span> has been compiled
+      and tested on FreeBSD, Linux, Darwin and Solaris (initial
+      versions FreeBSD 5, Redhat 7, Fedora Core 5, Suse 10, Gentoo,
+      Debian 3.1, Solaris 8). It should compile and run on all
+      subsequent releases of these systems and probably a few
+      others too.</p>
 
-        <dt><a name="doctypes">Document types</a></dt>
-	<dd>Recoll can index many document types (along with their
-          compressed versions). Some types are handled internally (no
-          external application needed). Other types need some application to
-          be installed to extract the text. Types that only need common
-          very common utilities (awk/sed/groff etc.) are listed in the
-          native section.</dd>
+      <p>Qt versions from 3.1 to 4.7</p>
 
-          <dl>
-            <dt>Natively</dt>
+      <h2><a name="doctypes">Document types</a></h2>
 
-            <dd>
-              <ul>
-                <li><span class="literal">text</span>.</li>
+      <p>Recoll can index many document types (along with their
+      compressed versions). Some types are handled internally (no
+      external application needed). Other types need a separate
+      application to be installed to extract the text. Types that
+      only need very common utilities (awk/sed/groff etc.) are
+      listed in the native section.</p>
 
-                <li><span class="literal">html</span>.</li>
+      <h4>File types indexed natively</h4>
 
-                <li><span class="literal">maildir</span> and <span
-		    class="literal">mailbox</span> (<span class=
-		    "literal">Mozilla</span>, <span class=
-		    "literal">Thunderbird</span> and <span class=
-		    "literal">Evolution</span> mail ok).</li>
+      <ul>
+        <li><span class="literal">text</span>.</li>
 
-                <li><span class="literal">OpenOffice</span>
-                files (needs <span class="command">unzip</span> command).</li>
+        <li><span class="literal">html</span>.</li>
 
-                <li><span class="literal">Abiword</span> files.</li>
+        <li><span class="literal">maildir</span> and <span class=
+        "literal">mailbox</span> (<span class=
+        "literal">Mozilla</span>, <span class=
+        "literal">Thunderbird</span> and <span class=
+        "literal">Evolution</span> mail ok).</li>
 
-                <li><span class="literal">Kword</span> files.</li>
+        <li><span class="literal">gaim</span> and <span class=
+        "literal">purple</span> log files.</li>
 
-                <li><span class="literal">gaim</span> and <span
-                    class="literal">purple</span> log files.</li> 
+        <li><span class="literal">Lyx</span> files (needs <span
+        class="literal">Lyx</span> to be installed).</li>
 
-                <li><span class="literal">Lyx</span> files (needs
-		  <span class="literal">Lyx</span> to be installed).</li>
+        <li><span class="literal">Scribus</span> files.</li>
 
-                <li><span class="literal">Scribus</span> files.</li>
-
-                <li><span class="literal">Man pages</span> (need <span
-                class="command">groff</span>).</li> 
-
-              </ul>
-            </dd>
-
-            <dt>With external helpers</dt>
-
-            <dd>
-            <para>In addition to the applications listed below, many
-            document types need the <span
-            class="command">iconv</span> command.</para>
-
-              <ul>
-                <li><span class="literal">Microsoft Office Open XML</span>
-                files with the <span class="command">unzip</span>
-                and <span class="command">xsltproc</span> commands.</li>
-
-                <li><span class="literal">pdf</span> with the <span
-                class="command">pdftotext</span> command, which can be
-                installed as part of <a href=
-                "http://www.foolabs.com/xpdf/">xpdf</a> or <a
-                href="http://poppler.freedesktop.org/">poppler</a>,
-                depending on your distribution.</li>
-
-                <li><span class="literal">msword</span> with <a href=
-                "http://www.winfield.demon.nl/">antiword</a>.</li>
-
-                <li><span class="literal">Powerpoint</span> and 
-		  <span class="literal">Excel</span> with the
-		  <a href="http://catdoc.klik.atekon.de">
-		    catdoc</a> utilities.</li>
-
-                <li><span class="literal">CHM (Microsoft help)</span>
-                  files (needs <span class="command">Python, pychm or
-                    chmlib</span>).</li> 
-
-                <li><span class="literal">Zip</span>
-                  archives (needs <span class="command">Python</span>).</li>
-
-                <li><span class="literal">iCalendar</span>(.ics) files
-                  (needs <span class="command">Python, 
-<a href="http://pypi.python.org/pypi/icalendar/2.1">icalendar</a></span>).</li> 
-
-                <li><span class="literal">Mozilla calendar data</span>
-                    See <a href="http://bitbucket.org/medoc/recoll/wiki/IndexMozillaCalendari">
-                    the wiki</a> about this.</li>
-
-                <li><span class="literal">Wordperfect</span> with <a href=
-                "http://libwpd.sourceforge.net">libwpd</a>.</li>
-
-                <li><span class="literal">postscript</span> with 
-	          <a href="http://www.gnu.org/software/ghostscript/ghostscript.html">
-		    ghostscript</a> and 
-		  <a href="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
-		    pstotext</a>.
-		  Actually the pstotext 1.9 found at the latter link
-		  has a problem with file names using special shell
-		  characters, and you should either use the version
-		  packaged for your system which is probably patched,
-		  or apply the Debian patch which is
-		  stored <a href="files/pstotext-1.9_4-debian.patch">here</a>
-		  for convenience. See
-		  http://packages.debian.org/squeeze/pstotext and
-		  http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=356988
-		  for references/explanations.</li>
-
-                <li><span class="literal">rtf</span> with <a href=
-                "http://www.gnu.org/software/unrtf/unrtf.html">unrtf</a>.</li>
-
-		<li><span class="literal">TeX</span> with
-		  <span class="command">untex</span>. If there is no untex
-		  package for your distribution, 
-		  <a href="untex/untex-1.3.jf.tar.gz">a source package is
-		    stored on this site</a> (as untex has no obvious
-		    home).
-		  Will also work
-		  with <a
-		  href="http://www.cs.purdue.edu/homes/trinkle/detex/">detex</a>
-		  if this is installed.
-		</li>
-
-		<li><span class="literal">dvi</span> with 
-		  <a href="http://www.radicaleye.com/dvips.html">dvips</a>.
-		</li>
-
-		<li><span class="literal">djvu</span> with 
-		  <a href="http://djvu.sourceforge.net">DjVuLibre</a>. 
-		</li>
-		<li><span class="literal">mp3/flac/ogg vorbis</span>
-		  tags support with  
-		  <a href="http://id3lib.sourceforge.net/">id3info (id3lib)
-		  </a> (compiling id3lib on recent systems may need
-		  a small patch, see <a href="id3lib.html">here.</a>) or
-		  the ogg and flac tools. Release 1.14 and later use a
-		  python filter based on 
-		  <a href="http://code.google.com/p/mutagen/">mutagen</a>
-		  for all audio tags. 
-		</li>
-		<li>Image file tags support with 
-		  <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/">
-		    exiftool</a>. This is a perl program, so you also
-		    need perl on the system. This works with about any
-		  possible image file and tag format (jpg, png, tiff,
-		  gif etc.).
-		</li>
-
-              </ul>
-            </dd>
-          </dl>
-	</dd>
-
-	<dt>Other features</dt>
-	<dd>
-	  <ul>
-	    <li>Can use <b>Beagle</b> browser plug-ins to index web
-	       history. See the 
-               <a href="http://bitbucket.org/medoc/recoll/wiki/IndexBeagleWeb">
-               the Wiki</a> for more detail.</li>
-
-	    <li>Processes all email attachments.</li>
-
-	    <li>Multiple selectable databases.</li>
-
-	    <li>Powerful query facilities, with boolean searches,
-	      phrases, filter on file types and directory tree.</li>
-
-	    <li>Xesam-compatible query language.</li>
-
-	    <li>Wildcard searches (with a specific and faster function for
-	      file names).</li>
-
-	    <li>Support for multiple charsets. Internal processing and
-	      storage uses Unicode UTF-8.</li>
-
-	    <li><a href="#Stemming">Stemming</a> performed at query
-	      time (can switch stemming language after indexing).</li>
-
-	    <li>Easy installation. No database daemon, web server or
-	      exotic language necessary.</li>
-
-	    <li>An indexer which runs either as a thread inside the GUI,
-	      as an external, batch, cron'able program, or as a
-	      real-time indexing daemon.</li>
-	  </ul>
-	</dd>
+        <li><span class="literal">Man pages</span> (need <span
+        class="command">groff</span>).</li>
       </ul>
 
+      <h4>File types indexed with external helpers</h4>
+
+      <p>Many document types need the <span class="command">iconv</span>
+      command in addition to the applications specifically listed.</p>
+
+      <p>The following types need <span class=
+      "command">xsltproc</span> from the <b>libxslt</b> package.
+      Quite a few also need <span class="command">unzip</span>:</p>
+
+      <ul>
+        <li><span class="literal">Abiword</span> files.</li>
+
+        <li><span class="literal">Fb2</span> ebooks.</li>
+
+        <li><span class="literal">Kword</span> files.</li>
+
+        <li><span class="literal">Microsoft Office Open XML</span>
+        files.</li>
+
+        <li><span class="literal">OpenOffice</span> files.</li>
+
+        <li><span class="literal">SVG</span> files.</li>
+      </ul>
+
+      <p>Others:</p>
+
+      <ul>
+        <li><span class="literal">pdf</span> with the <span class=
+        "command">pdftotext</span> command, which can be installed
+        as part of <a href="http://www.foolabs.com/xpdf/">xpdf</a>
+        or <a href="http://poppler.freedesktop.org/">poppler</a>,
+        depending on your distribution.</li>
+
+        <li><span class="literal">msword</span> with <a href=
+        "http://www.winfield.demon.nl/">antiword</a>.</li>
+
+        <li><span class="literal">Powerpoint</span> and <span
+        class="literal">Excel</span> with the <a href=
+        "http://catdoc.klik.atekon.de">catdoc</a> utilities.</li>
+
+        <li><span class="literal">CHM (Microsoft help)</span> files
+        (needs <span class="command">Python, pychm or
+        chmlib</span>).</li>
+
+        <li><span class="literal">Zip</span> archives (needs <span
+        class="command">Python</span>).</li>
+
+        <li><span class="literal">iCalendar</span>(.ics) files
+        (needs <span class="command">Python, <a href=
+        "http://pypi.python.org/pypi/icalendar/2.1">icalendar</a></span>).</li>
+
+        <li><span class="literal">Mozilla calendar data</span> See
+        <a href=
+        "http://bitbucket.org/medoc/recoll/wiki/IndexMozillaCalendari">
+        the wiki</a> about this.</li>
+
+        <li><span class="literal">Wordperfect</span> with <a href=
+        "http://libwpd.sourceforge.net">libwpd</a>.</li>
+
+        <li><span class="literal">postscript</span> with <a href=
+        "http://www.gnu.org/software/ghostscript/ghostscript.html">ghostscript</a>
+        and <a href=
+        "http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">pstotext</a>.
+        Actually the pstotext 1.9 found at the latter link has a
+        problem with file names using special shell characters, and
+        you should either use the version packaged for your system
+        which is probably patched, or apply the Debian patch which
+        is stored <a href=
+        "files/pstotext-1.9_4-debian.patch">here</a> for
+        convenience. See
+        http://packages.debian.org/squeeze/pstotext and
+        http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=356988 for
+        references/explanations.</li>
+
+        <li><span class="literal">RTF</span> files with <a href=
+        "http://www.gnu.org/software/unrtf/unrtf.html">unrtf</a>. Please
+        note that up to version
+        0.21, <span class="command">unrtf</span> mostly does not work
+        with non western-european character sets. If you have a need
+        for indexing, ie, russian or chinese RTF files, I have
+        produced a modified version which works much better (as
+        indicated by my tests and a few external ones). You can
+        download the <a href="unrtf/unrtf-0.22.0beta.tar.gz">source
+        here</a>. The development is hosted
+        on <a href="http://www.bitbucket.org/medoc/unrtf-int">
+         bitbucket.org</a>.</li>  
+
+        <li><span class="literal">TeX</span> with <span class=
+        "command">untex</span>. If there is no untex package for
+        your distribution, <a href="untex/untex-1.3.jf.tar.gz">a
+        source package is stored on this site</a> (as untex has no
+        obvious home). Will also work with <a href=
+        "http://www.cs.purdue.edu/homes/trinkle/detex/">detex</a>
+        if this is installed.</li>
+
+        <li><span class="literal">dvi</span> with <a href=
+        "http://www.radicaleye.com/dvips.html">dvips</a>.</li>
+
+        <li><span class="literal">djvu</span> with <a href=
+        "http://djvu.sourceforge.net">DjVuLibre</a>.</li>
+
+        <li>Audio file tags: Recoll releases 1.13 and older use <a
+        href="http://id3lib.sourceforge.net/">id3info (id3lib)</a>
+        (compiling id3lib on recent systems may need a small patch,
+        see <a href="id3lib.html">here.</a>) or the ogg and flac
+        tools.<br>
+         Recoll releases 1.14 and later use a Python filter based
+        on <a href="http://code.google.com/p/mutagen/">mutagen</a>
+        for all audio types.</li>
+
+        <li>Image file tags support with <a href=
+        "http://www.sno.phy.queensu.ca/~phil/exiftool/">exiftool</a>.
+        This is a perl program, so you also need perl on the
+        system. This works with about any possible image file and
+        tag format (jpg, png, tiff, gif etc.).</li>
+      </ul>
+
+      <h2>Other features</h2>
+
+      <ul>
+        <li>Can use <b>Beagle</b> browser plug-ins to index web
+        history. See the <a href=
+        "http://bitbucket.org/medoc/recoll/wiki/IndexBeagleWeb">the
+        Wiki</a> for more detail.</li>
+
+        <li>Processes all email attachments.</li>
+
+        <li>Multiple selectable databases.</li>
+
+        <li>Powerful query facilities, with boolean searches,
+        phrases, filter on file types and directory tree.</li>
+
+        <li>Xesam-compatible query language.</li>
+
+        <li>Wildcard searches (with a specific and faster function
+        for file names).</li>
+
+        <li>Support for multiple charsets. Internal processing and
+        storage uses Unicode UTF-8.</li>
+
+        <li><a href="#Stemming">Stemming</a> performed at query
+        time (can switch stemming language after indexing).</li>
+
+        <li>Easy installation. No database daemon, web server or
+        exotic language necessary.</li>
+
+        <li>An indexer which runs either as a thread inside the
+        GUI, as an external, batch, cron'able program, or as a
+        real-time indexing daemon.</li>
+      </ul>
 
       <h2><a name="#stemming"></a>Stemming</h2>
 
-      <p>Stemming is a process which transforms inflected words into
-      their most basic form. For example, <i>flooring</i>,
-      <i>floors</i>, <i>floored</i> would probably all be transformed
-      to <i>floor</i> by a stemmer for the English language.</p>
+      <p>Stemming is a process which transforms inflected words
+      into their most basic form. For example, <i>flooring</i>,
+      <i>floors</i>, <i>floored</i> would probably all be
+      transformed to <i>floor</i> by a stemmer for the English
+      language.</p>
 
       <p>In many search engines, the stemming process occurs during
-      indexing. The index will only contain the stemmed form of words,
-      with exceptions for terms which are detected as being probably
-      proper nouns (ie: capitalized). At query time, the terms entered
-      by the user are stemmed, then matched against the index.</p>
+      indexing. The index will only contain the stemmed form of
+      words, with exceptions for terms which are detected as being
+      probably proper nouns (ie: capitalized). At query time, the
+      terms entered by the user are stemmed, then matched against
+      the index.</p>
 
       <p>This process results into a smaller index, but it has the
-	grave inconvenient of irrevocably losing information during
-	indexing.</p>
+      grave inconvenient of irrevocably losing information during
+      indexing.</p>
 
-      <p>Recoll works in a different way. No stemming is performed at
-	query time, so that all information gets into the index. The
-	resulting index is bigger, but most people probably don't care
-	much about this nowadays, because they have a 100Gb disk 95%
-	full of binary data <em>which does not get indexed</em>.</p>
-      <p>At the end of an indexing pass, Recoll builds one or several
-	stemming dictionaries, where all word stems are listed in
-	correspondence to the list of their derivatives.</p>
+      <p>Recoll works in a different way. No stemming is performed
+      at query time, so that all information gets into the index.
+      The resulting index is bigger, but most people probably don't
+      care much about this nowadays, because they have a 100Gb disk
+      95% full of binary data <em>which does not get
+      indexed</em>.</p>
+
+      <p>At the end of an indexing pass, Recoll builds one or
+      several stemming dictionaries, where all word stems are
+      listed in correspondence to the list of their
+      derivatives.</p>
 
       <p>At query time, by default, user-entered terms are stemmed,
-	then matched against the stem database, and the query is
-	expanded to include all derivatives. This will yield search
-	results analogous to those obtained by a classical engine.
-	The benefits of this approach is that stem expansion can be
-	controlled instantly at query time in several ways:
-	<ul>
-	<li>It can be selectively turned-off for any query term by
-	  capitalizing it (<i>Floor</i>).</li>
-	<li>The stemming language (ie: english, french...) can be
-	  selected (this supposes that several stemming databases have
-	  been built, which can be configured as part of the indexing,
-	  or done later, in a reasonably fast way).</li>
+      then matched against the stem database, and the query is
+      expanded to include all derivatives. This will yield search
+      results analogous to those obtained by a classical engine.
+      The benefits of this approach is that stem expansion can be
+      controlled instantly at query time in several ways:</p>
+
+      <ul>
+        <li>It can be selectively turned-off for any query term by
+        capitalizing it (<i>Floor</i>).</li>
+
+        <li>The stemming language (ie: english, french...) can be
+        selected (this supposes that several stemming databases
+        have been built, which can be configured as part of the
+        indexing, or done later, in a reasonably fast way).</li>
       </ul>
-	
     </div>
   </body>
 </html>

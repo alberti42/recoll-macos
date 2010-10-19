@@ -135,6 +135,10 @@
 	contributions en code ou en suggestions, voir la page des 
 	<a class="important" href="credits.html">Attributions</a>.</p>
 
+      <h2>Autres</h2>
+      <p>Je loue une 
+	<a href="http://www.metairie-enbor.com/index.html">
+	  grande maison sympa dans l'Aude</a> :)</p>
 
     </div>
   </body>

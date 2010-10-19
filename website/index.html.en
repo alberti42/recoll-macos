@@ -104,16 +104,14 @@
 	  </ul>
 	</li>
 
-	<li>2010-04-14 :
-	  Recoll <a href="download.html#source">1.13.04</a> is out. It
-	  fixes a nasty bug (broken stemming) in 1.13.02.</li>
-
         <li>2010-01-29 : the full Recoll source repository is now
-          hosted on
-          <a href="http://bitbucket.org/medoc/recoll">Bitbucket</a>, along
-          with a Wiki and an 
-          <a href="http://bitbucket.org/medoc/recoll/issues">issues tracking
-            system</a>. Hopefully, this
+          hosted on 
+	  <a href="http://bitbucket.org/medoc/recoll">Bitbucket</a>,
+          along with a Wiki
+          (<a href="http://bitbucket.org/medoc/recoll/wiki/FaqsAndHowTos">
+          Faqs and Howtos</a>) and an
+          <a href="http://bitbucket.org/medoc/recoll/issues">
+	    issues tracking system</a>. Hopefully, this
           new channel for reporting bugs and make suggestions will
           increase the feedback rate...</li>
 

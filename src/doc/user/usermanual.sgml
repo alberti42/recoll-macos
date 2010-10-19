@@ -1,7 +1,8 @@
 <!DOCTYPE BOOK PUBLIC "-//FreeBSD//DTD DocBook V4.1-Based Extension//EN" [
 
 <!ENTITY RCL "<application>Recoll</application>">
-<!ENTITY RCLVERSION "1.12-1.13">
+<!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>Recoll helper applications page</ulink>">
+<!ENTITY RCLVERSION "1.14">
 <!ENTITY XAP "<application>Xapian</application>">
 ]>
  
@@ -2620,138 +2621,119 @@ while query.next >= 0 and query.next < nres:
         specific file type).</para>
 
       <para>After an indexing pass, the commands that were found
-      missing can be displayed from the <command>recoll</command>
-      <guilabel>File</guilabel> menu. The list is stored in the
-      <filename>missing</filename> text file inside the configuration
-      directory.</para>
+	missing can be displayed from the <command>recoll</command>
+	<guilabel>File</guilabel> menu. The list is stored in the
+	<filename>missing</filename> text file inside the configuration
+	directory.</para>
 
       <para>A list of common file types which need external
         commands follows. Many of the filters need the
         <command>iconv</command> command, which is not always listed as a
         dependancy.</para> 
 
-      <para>As of &RCL; release 1.14, a number of XML-based formats that
-        were handled by ad hoc filter code now use
-        <command>xsltproc</command>, which usually comes with  
-        <ulink
-        url="http://xmlsoft.org/XSLT/index.html">libxslt</ulink>. These
-        are: abiword, fb2 (ebooks), kword, openoffice, svg.</para>
+      <para>Please note that, due to the relatively dynamic nature of this
+	information, the most up to date version is now kept on the &RCLAPPS;
+	along with links to the home pages or best source/patches download
+	links. The list below is not updated often and may be quite
+	stale.</para>
 
+      <para>For many Linux distributions, most of the commands listed can
+        be installed from the package repositories. However, the packages
+        are sometimes outdated, or not the best version for &RCL;, so you
+        should take a look at the &RCLAPPS; if a file
+        type is important to you.</para>
+
+      <para>As of &RCL; release 1.14, a number of XML-based formats that
+        were handled by ad hoc filter code now use the
+        <command>xsltproc</command>, which usually comes with  
+	  <application>libxslt</application>. These are: abiword, fb2
+	  (ebooks), kword, openoffice, svg.</para> 
+
+      <para>Now for the list:</para>
       <itemizedlist>
 
-        <listitem><para>Openoffice: supported natively, but needs the
-        <command>unzip</command> command to be installed.</para>
+        <listitem><para>Openoffice files need <command>unzip</command> and
+        <command>xsltproc</command>.</para></listitem>
+
+        <listitem><para>PDF files need <command>pdftotext</command> which
+        is part of the <application>Xpdf</application> or
+        <application>Poppler</application> packages.</para></listitem>
+
+        <listitem><para>Postscript files need <command>pstotext</command>. 
+            The original version has an issue with shell
+            character in file names, which is corrected in recent
+            packages. See the the &RCLAPPS; for more detail.
           </listitem>
 
-        <listitem><para>PDF: pdftotext is part of the <ulink
-            url="http://www.foolabs.com/xpdf/">Xpdf</ulink> or <ulink
-            url="http://poppler.freedesktop.org/">Poppler</ulink> packages.</para>
-          </listitem>
+        <listitem><para>MS Word needs
+        <command>antiword</command>. It is also useful to have
+        <command>wvWare</command> installed as it may be 
+        be used as a fallback for some files which
+        <command>antiword</command> does not handle.</para></listitem>
 
-        <listitem><para>Postscript: <ulink
-          url="http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">
-            pstotext</ulink>. The original version has an issue with shell
-            character in file names. Most recent package repositories /
-            ports system use a patched version (ie FreeBSD, Debian). If
-            compiling from source, it would be better to apply the patch
-            found 
-           <ulink url="http://www.recoll.org/files/pstotext-1.9_4-debian.patch">
-            here</ulink>.</para>
-          </listitem>
+        <listitem><para>MS Excel and PowerPoint need <command>
+            catdoc</command>.</para></listitem>
 
-        <listitem><para>MS Word: <ulink url="http://www.winfield.demon.nl"> 
-            antiword</ulink>.</para>
-          </listitem>
+        <listitem><para>MS Open XML (docx) needs <command>
+         xsltproc</command>.</para></listitem>
 
-        <listitem><para>MS Excel and PowerPoint: 
-           <ulink url="http://catdoc.klik.atekon.de/"> 
-            catdoc</ulink>.</para>
-          </listitem>
+        <listitem><para>Wordperfect files need <command>wpd2html</command>
+        from the <application>libwpd</application> package.</para></listitem>
 
-        <listitem><para>MS Open XML (docx): needs 
-                 <command>xsltproc</command>.</para>
-          </listitem>
+        <listitem><para>RTF files need <command>unrtf</command>, which, in
+        its standard version, has much trouble with non-western character
+        sets. Check the &RCLAPPS;.</para></listitem>
 
-        <listitem><para>Wordperfect files: 
-           <ulink url="http://libwpd.sourceforge.net/download.html"> 
-            libwpd</ulink>.</para>
-          </listitem>
+        <listitem><para>TeX files need <command>untex</command> or
+        <command>detex</command>. Check the &RCLAPPS; for sources if it's not
+        packaged for your distribution.</para></listitem>
 
-        <listitem>
-            <para>RTF: <ulink
-            url="http://www.gnu.org/software/unrtf/unrtf.html">unrtf</ulink>
-          </para>
+        <listitem><para>dvi files need <command>dvips</command>.</para>
         </listitem>
 
-        <listitem>
-          <para>TeX: &RCL; uses the <application>untex</application>
-          program. Your distribution may have a package for it. If it doesn't, 
-            <ulink url="http://www.recoll.org/untex/untex-1.3.jf.tar.gz">
-            there is a copy of the source on the &RCL; web site</ulink>,
-            because the program has no obvious home. The filter can
-            also work with 
-            <ulink url="http://www.cs.purdue.edu/homes/trinkle/detex/">
-             detex</ulink> and will use it if it is installed.</para>
-        </listitem>
-
-        <listitem>
-            <para>dvi: <ulink
-               url="http://www.radicaleye.com/dvips.html">dvips</ulink></para>
-        </listitem>
-
-        <listitem>
-            <para>djvu: 
-            <ulink
-               url="http://djvu.sourceforge.net">DjVuLibre
-            </ulink></para>
-        </listitem>
+        <listitem><para>djvu files need <command>djvutxt</command> and
+        <command>djvused</command> from the
+        <application>DjVuLibre</application> package.</para></listitem>
           
-        <listitem><para>mp3, flac, ogg vorbis: &RCL; releases before 1.13
-            use the <command>id3info</command> command from the <ulink
-          url="http://id3lib.sourceforge.net/">id3lib</ulink> package to
-          extract mp3 tag information. (Some gcc versions after 4.4 may have
-          trouble compiling <application>id3lib</application>. <ulink
-          url="http://www.recoll.org/id3lib.html">You can find a
-          workaround here</ulink>), metaflac (standard flac tools) for flac
-          files, and ogginfo (vorbis tools) for ogg files. Releases 1.14
-          and later use a single Python filter based on 
-          <ulink url="http://code.google.com/p/mutagen/">mutagen</ulink>
-	  for all audio file types.</para>
+        <listitem><para>Audio files: &RCL; releases before 1.13
+          used the <command>id3info</command> command from the <application>
+          id3lib</application> package to extract mp3 tag information,
+          <command>metaflac</command> (standard flac tools) for flac files,
+          and <command>ogginfo</command> (vorbis tools) for ogg
+          files. Releases 1.14 and later use a single
+          <application>Python</application> filter based 
+          on <application>mutagen</application> for all audio file
+          types.</para>
 	</listitem>
 
-        <listitem>
-        <para>Pictures: &RCL; uses the 
-        <ulink url="http://www.sno.phy.queensu.ca/~phil/exiftool/">
-         Exiftool</ulink> <application>Perl</application> package to
-         extract tag information. Most image file formats are
-         supported. Note that there may not be much interest in indexing
-         the technical tags (image size, aperture, etc.). This is only of
-         interest if you store personal tags or textual descriptions inside
-         the image files.</para> 
-          </listitem>
+        <listitem><para>Pictures: &RCL; uses the 
+         <application>Exiftool</application>
+         <application>Perl</application> package to extract tag
+         information. Most image file formats are supported. Note that
+         there may not be much interest in indexing the technical tags
+         (image size, aperture, etc.). This is only of interest if you
+         store personal tags or textual descriptions inside the image
+         files.</para></listitem>
 
 	<listitem><para>chm: files in microsoft help format need Python and
-          the <ulink
-          url="http://gnochm.sourceforge.net/pychm.html">pychm</ulink>
-          module (which needs <ulink
-          url="http://www.jedrea.com/chmlib/">chmlib</ulink>).</para>
-	</listitem>
+          the <application>pychm</application> module (which needs 
+          <application>chmlib</application>).</para></listitem>
 
-	<listitem><para>ics: up to &RCL; 1.13, iCalendar files need Python
-	and the <application>icalendar</application> module. For newer
-	versions, <application>icalendar</application> is not needed
-	</para></listitem> 
+	<listitem><para>ICS: up to &RCL; 1.13, iCalendar files need 
+        <application>Python</application>
+	and the <application>icalendar</application>
+	module. <application>icalendar</application> is not needed for newer
+	versions,  which use internal code.</para></listitem> 
 
-	<listitem><para>zip: Zip archives need Python (and the standard
- 	  zipfile module).</para>
-	</listitem>
+	<listitem><para>Zip archives need <application>Python</application>
+	(and the standard zipfile module).</para></listitem>
 	
         </itemizedlist>
 
-        <para>Text, HTML, mail folders, Openoffice and Scribus files
-        are processed internally. Lyx is used to index Lyx files. Many
-        filters need <command>iconv</command> and the standard
-        <command>sed</command> and <command>awk</command>. 
+        <para>Text, HTML, mail folders, and Scribus files are
+        processed internally. <application>Lyx</application> is used to
+        index Lyx files. Many filters need <command>iconv</command> and the
+        standard <command>sed</command> and <command>awk</command>.
         </para>
 
     </sect1>
