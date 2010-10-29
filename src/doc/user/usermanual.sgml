@@ -2645,7 +2645,7 @@ while query.next >= 0 and query.next < nres:
 
       <para>As of &RCL; release 1.14, a number of XML-based formats that
         were handled by ad hoc filter code now use the
-        <command>xsltproc</command>, which usually comes with  
+        <command>xsltproc</command> command, which usually comes with  
 	  <application>libxslt</application>. These are: abiword, fb2
 	  (ebooks), kword, openoffice, svg.</para> 
 
@@ -2751,7 +2751,12 @@ while query.next >= 0 and query.next < nres:
 
 	<para>Development files for 
         <ulink url="http://www.xapian.org">
-         <application>Xapian core</application></ulink></para>
+         <application>Xapian core</application></ulink>.</para> <important><para>If you
+         are building Xapian for an older CPU (before Pentium 4 or Athlon
+         64), you need to add the --disable-sse flag to the configure
+         command. Else all Xapian application will crash with an
+         <literal>illegal instruction</literal> error.</para>
+	</important>
 
 	<para>Development files for 
          <ulink url="http://www.trolltech.com/products/qt/index.html">
