@@ -708,11 +708,17 @@ void ResList::menuCopyFN()
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc)) {
 	LOGDEB(("menuCopyFN: Got doc, fn: [%s]\n", doc.url.c_str()));
-	// Our urls currently always begin with "file://"
-	QApplication::clipboard()->setText(doc.url.c_str()+7, 
-					   QClipboard::Selection);
-	QApplication::clipboard()->setText(doc.url.c_str()+7, 
-					   QClipboard::Clipboard);
+	// Our urls currently always begin with "file://" 
+        //
+        // Problem: setText expects a QString. Passing a (const char*)
+        // as we used to do causes an implicit conversion from
+        // latin1. File are binary and the right approach would be no
+        // conversion, but it's probably better (less worse...) to
+        // make a "best effort" tentative and try to convert from the
+        // locale's charset than accept the default conversion.
+        QString qfn = QString::fromLocal8Bit(doc.url.c_str()+7);
+	QApplication::clipboard()->setText(qfn, QClipboard::Selection);
+	QApplication::clipboard()->setText(qfn, QClipboard::Clipboard);
     }
 }
 void ResList::menuCopyURL()
