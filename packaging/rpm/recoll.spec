@@ -1,6 +1,6 @@
 %define name recoll
 %define version 1.14.2
-%define release 0
+%define release 1
 
 Name:           %{name}
 Version:        %{version}
@@ -15,7 +15,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
 
 # We build with a static link to xapian to avoid depending on xapian
-BuildRequires: libqt4-devel
+BuildRequires: libqt4-devel zlib-devel-static
 Requires:      libqt4
 
 %description
@@ -62,6 +62,8 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Thu Oct 28 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.2-1
+- Rebuilt with a Xapian built with --disable-sse
 * Sat Sep 24 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.2-0
 - Update to release 1.14.2
 * Thu Apr 14 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.04-1

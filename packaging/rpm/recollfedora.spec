@@ -1,6 +1,6 @@
 Name:           recoll
 Version:        1.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
 Group:          Applications/Databases
@@ -49,6 +49,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Sep 24 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.2-2
+- Rebuilt with xapian 1.0.21 configured with the -disable-sse flag to avoid the "illegal instruction" problem on older CPUs
 * Sat Sep 24 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.2-1
 - Update to release 1.14.2
 * Thu Apr 14 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.04-1
