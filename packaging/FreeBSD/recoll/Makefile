@@ -1,30 +1,26 @@
 # New ports collection makefile for:   recoll
 # Date created:        5 December 2005
-# Whom:                J.F. Dockes <jfd@recoll.org>
+# Whom:                J.F. Dockes <jean-francois.dockes@wanadoo.fr>
 #
-# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.21 2007/08/12 14:54:13 rafan Exp $
+# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.44 2010/10/09 17:52:42 makc Exp $
 #
 
 PORTNAME=	recoll
-PORTVERSION=	1.9.0
+PORTVERSION=	1.14.2
 CATEGORIES=	deskutils
 MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 
-MAINTAINER=	jfd@recoll.org
+MAINTAINER=	jf@dockes.org
 COMMENT=	A personal full text search package, based on QT and Xapian
 
-BUILD_DEPENDS=	qmake:${PORTSDIR}/devel/qmake
-LIB_DEPENDS=	xapian.1[3-6]:${PORTSDIR}/databases/xapian-core \
-		qt-mt.3:${PORTSDIR}/x11-toolkits/qt33
+LIB_DEPENDS=	xapian.[1-2][0-9]:${PORTSDIR}/databases/xapian-core
 
-USE_QT_VER=	3
-CONFIGURE_ENV=	QMAKESPEC="freebsd-g++"
-MAKE_ENV=	${CONFIGURE_ENV}
+USE_QT_VER=	4
+QT_COMPONENTS=	gui qmake_build uic_build moc_build rcc_build \
+		qt3support uic3_build porting
 GNU_CONFIGURE=	yes
-CONFIGURE_TARGET=	--build=${MACHINE_ARCH}-portbld-freebsd${OSREL}
 USE_GMAKE=	yes
 USE_ICONV=	yes
-USE_XLIB=	yes
 INSTALLS_ICONS=	yes
 
 MAN1=		recoll.1 recollindex.1
