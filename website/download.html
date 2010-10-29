@@ -133,10 +133,19 @@
            carry them in their package repository. Or you will find source and
 	   binary packages on the 
            <a href="http://www.xapian.org/download.php">
-           Xapian download page</a>. <br>
-
-	   Recoll 1.14 needs at least xapian 1.0.12. It is compatible
-	   with all later Xapian releases, including the 1.2.x series.</p>
+           Xapian download page</a>. <br /> Recoll 1.14 needs at least
+	   xapian 1.0.12. It is compatible with all later Xapian
+	   releases, including the 1.2.x series.</p> <p><em>Note on
+	   building Xapian for older CPUs:</em> The
+	   build configurations for Xapian releases 1.0.21 and
+	   1.2.1 or newer enable the use of SSE2 floating point
+	   instructions. These instructions are not available in CPUs
+	   older than Intel Pentium&nbsp;4 or AMD Athlon&nbsp;64. When
+	   building for such a CPU, you need to add the
+	   --disable-sse flag to the Xapian library configure
+	   command. If this is not done, the problem signals itself by
+	   "Illegal instruction" crashes (SIGILL) in recollindex and recoll.
+	   </p>
         </li>
         <li>X11 development files.</li>
         <li>zlib development files.</p>
@@ -239,9 +248,11 @@ sudo add-apt-repository ppa:recoll-backports/ppa
 	repositories. The following are just in case you want a newer
 	Recoll than the one which is available there.</p>
       <blockquote>
-      <p><b>Fedora 6 with Qt 3.3.8</b>
+      <p><b>Fedora 6 with Qt 3.3.8 and a static link to xapian 1.0.21 </b>
 	<a href="fc6/recoll-1.14.2-1.i586.rpm">
-	  recoll-1.14.2-1.i586.rpm</a>. 
+	  recoll-1.14.2-1.i586.rpm</a>. <b>Version built with
+	  --disable-sse </b> <a href="fc6/recoll-1.14.2-2.i586.rpm">
+	  recoll-1.14.2-2.i586.rpm</a>
 	Source: 
 	<a href="fc6/recoll-1.14.2-1.src.rpm">
 	  recoll-1.14.2-1.src.rpm</a>
@@ -274,16 +285,26 @@ sudo add-apt-repository ppa:recoll-backports/ppa
 
       <h3>OpenSUSE</h3>
       <blockquote>
-        <p><b>OpenSUSE 11.0 with qt3</b>:
+        <p><b>OpenSUSE 11.0 with qt3. Was built without
+        --disable-sse, so incompatible with older CPUs unfortunately.</b>:
  	  <a href="suse11.0/recoll-1.14.2-0.i586.rpm">
 	    recoll-1.14.2-0.i586.rpm</a>. 
 	  Source: <a href="suse11.0/recoll-1.14.2-0.src.rpm">
 	     recoll-1.14.2-0.src.rpm</a></p>
-        <p><b>OpenSUSE 11.2 with qt4</b>:
+        <p><b>OpenSUSE 11.2 with qt4. Without
+        --disable-sse</b>: 
 	  <a href="suse11.2/recoll-1.14.2-0.i586.rpm">
-	    recoll-1.14.2-0.i586.rpm</a>. 
+	    recoll-1.14.2-0.i586.rpm</a>. <b>With --disable-sse</b>: 
+	  <a href="suse11.2/recoll-1.14.2-1.i586.rpm">
+	    recoll-1.14.2-1.i586.rpm</a>.
 	  Source: <a href="suse11.2/recoll-1.14.2-0.src.rpm">
 	    recoll-1.14.2-0.src.rpm</a></p>
+        <p><b>OpenSUSE 11.3 with qt4 and a static link to xapian
+        1.0.21 with the --disable-sse configure option</b>:
+	  <a href="suse11.3/recoll-1.14.2-1.i586.rpm">
+	    recoll-1.14.2-1.i586.rpm</a>. 
+	  Source: <a href="suse11.3/recoll-1.14.2-1.src.rpm">
+	    recoll-1.14.2-1.src.rpm</a></p>
 
 	 <p>If you build from source on OpenSUSE 11, note that the default
 	   qt4 version on some systems is 4.4.0 which will badly
@@ -294,7 +315,7 @@ sudo add-apt-repository ppa:recoll-backports/ppa
       <h3>Mandriva</h3>
       <blockquote>
 
-        <p><b>Mandriva 2008 with Qt 4</b>: 
+        <p><b>Mandriva 2008 with Qt 4 and a static link to Xapian 1.0.16</b>: 
 	  <a href="mandriva2008spring/recoll-1.14.2-1mdv2008.1.i586.rpm">
 	  recoll-1.14.2-1mdv2008.1.i586.rpm</a>. 
 	Source: 
@@ -319,8 +340,9 @@ sudo add-apt-repository ppa:recoll-backports/ppa
       <blockquote>
         <p>The FreeBSD ports track the Recoll releases quite
         closely, so there is actually little point in using the
-        following. Only for the <i>really</i> impatient:</p>
-         <p><b>FreeBSD 7.3 i386 Qt 4.6.1</b>: 
+        following (except that the port is currently (10-2010) broken).</p>
+          <p><b>FreeBSD 7.3 i386 Qt 4.6.1. Statically linked to
+          Xapian 1.2.3 with --disable-sse</b>: 
 	   <a href="freebsd/recoll-1.14.2-FreeBSD-7.3-STABLE.tgz">
 	     recoll-1.14.2-FreeBSD-7.3-STABLE.tgz</a>
         </p>
