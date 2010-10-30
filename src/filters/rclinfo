@@ -101,33 +101,47 @@ class InfoSimpleSplitter:
         listout = []
         node_dict = {}
         node = ""
+        infofile = os.path.basename(filename)
+        nodename = "Unknown"
         
         for line in fin:
+
+            # Top of node ?
             # It sometimes happens that info --subnodes produces a Node line
             # beginning with spaces (it's a bug probably, only seen it once)
+            # Maybe we'd actually be better off directly interpreting the
+            # info files
             if gotblankline and line.lstrip(" ").startswith("File: "):
-                if index != 0:
-                    listout.append((nodename, node))
+                prevnodename = nodename
                 line = line.rstrip("\n\r")
                 pairs = line.split(",")
                 up = "Top"
                 nodename = str(index)
-                infofile = os.path.basename(filename)
-                for pair in pairs:
-                    name, value = pair.split(':')
-                    name = name.strip(" ")
-                    value = value.strip(" ")
-                    if name == "Node":
-                        nodename = value
-                    if name == "Up":
-                        up = value
-                    if name == "File":
-                        infofile = value
+                try:
+                    for pair in pairs:
+                        name, value = pair.split(':')
+                        name = name.strip(" ")
+                        value = value.strip(" ")
+                        if name == "Node":
+                            nodename = value
+                        if name == "Up":
+                            up = value
+                        if name == "File":
+                            infofile = value
+                except:
+                    print >> sys.stderr, "rclinfo: bad line in %s: [%s]\n" % \
+                          (infofile, line)
+                    nodename = prevnodename
+                    node += line
+                    continue
 
                 if node_dict.has_key(nodename):
                     print >> sys.stderr, "Info file", filename, \
                           "Dup node: ", nodename
                 node_dict[nodename] = up
+
+                if index != 0:
+                    listout.append((prevnodename, node))
                 node = ""
                 index += 1
 
