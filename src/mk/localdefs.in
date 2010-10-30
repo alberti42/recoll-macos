@@ -33,5 +33,5 @@ LOCALCXXFLAGS = -g -O2 -Wall -Wno-unused \
 	      $(PICFLAGS) \
 	      @DEFS@
 
-CXXFLAGS = @CXXFLAGS@
+CXXFLAGS ?= @CXXFLAGS@
 
