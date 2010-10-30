@@ -68,6 +68,7 @@ application/x-abiword = exec rclabw
 application/x-awk = internal
 application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
+application/x-gnuinfo = execm rclinfo
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-perl = internal
@@ -137,6 +138,7 @@ application/x-fsdirectory = folder
 application/x-kword = wordprocessing
 application/x-lyx = wordprocessing
 application/x-scribus = document
+application/x-gnuinfo = document
 application/x-tex = wordprocessing
 application/x-awk = source
 application/x-perl = source
@@ -182,6 +184,7 @@ text = \
       application/x-lyx \
       application/x-perl \
       application/x-scribus \
+      application/x-gnuinfo \
       application/x-shellscript \
       application/x-tex \
       image/vnd.djvu \

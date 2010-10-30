@@ -44,7 +44,7 @@ class InfoExtractor:
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.contents) -1:
             iseof = rclexecm.RclExecM.eofnext
-        return (True, docdata, nodename, iseof)
+        return (True, docdata, str(index), iseof)
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
@@ -77,16 +77,10 @@ class InfoExtractor:
     # Extract specific node
     def getipath(self, params):
         try:
-            nodename = params["ipath:"]
+            index = int(params["ipath:"])
         except:
-            return False
-
-        # We could build a dictionary in the split function to avoid this.
-        # But it's used for preview, and the perf issue is minimal
-        for i in range(len(self.contents)):
-            if self.contents[i][0] == nodename:
-                return self.extractone(i)
-        return (False, "", "", True)
+            return (False, "", "", True)
+        return self.extractone(index)
 
     # Extract next in list
     def getnext(self, params):
@@ -109,7 +103,9 @@ class InfoSimpleSplitter:
         node = ""
         
         for line in fin:
-            if gotblankline and line.startswith("File: "):
+            # It sometimes happens that info --subnodes produces a Node line
+            # beginning with spaces (it's a bug probably, only seen it once)
+            if gotblankline and line.lstrip(" ").startswith("File: "):
                 if index != 0:
                     listout.append((nodename, node))
                 line = line.rstrip("\n\r")
@@ -120,8 +116,7 @@ class InfoSimpleSplitter:
                 for pair in pairs:
                     name, value = pair.split(':')
                     name = name.strip(" ")
-                    value = value.replace(":", " ");
-                    value = value.replace("|", " ").strip(" ")
+                    value = value.strip(" ")
                     if name == "Node":
                         nodename = value
                     if name == "Up":
@@ -133,7 +128,6 @@ class InfoSimpleSplitter:
                     print >> sys.stderr, "Info file", filename, \
                           "Dup node: ", nodename
                 node_dict[nodename] = up
-                print "NODE ", nodename, "UP ", up
                 node = ""
                 index += 1
 
@@ -149,21 +143,21 @@ class InfoSimpleSplitter:
             listout.append((nodename, node))
 
         # Compute node paths (concatenate "Up" values), to be used
-        # as page titles and ipaths. It's unfortunate that this will crash if
+        # as page titles. It's unfortunate that this will crash if
         # the info file tree is bad
         listout1 = []
         for nodename, node in listout:
-            ipath = ""
+            title = ""
             loop = 0
             error = 0
             while nodename != "Top":
-                ipath = nodename + " / " + ipath
+                title = nodename + " / " + title
                 if node_dict.has_key(nodename):
                     nodename = node_dict[nodename]
                 else:
                     print >> sys.stderr, \
            "Infofile: node's Up does not exist: file %s, path %s, up [%s]" % \
-                    (infofile, ipath, nodename)
+                    (infofile, title, nodename)
                     error = 1
                     break
                 loop += 1
@@ -176,12 +170,12 @@ class InfoSimpleSplitter:
             if error:
                 continue
 
-            if ipath == "":
-                ipath = infofile
+            if title == "":
+                title = infofile
             else:
-                ipath = infofile + " / " + ipath
-            ipath = ipath.rstrip(" / ")
-            listout1.append((ipath, node))
+                title = infofile + " / " + title
+            title = title.rstrip(" / ")
+            listout1.append((title, node))
 
         return listout1
  

@@ -29,11 +29,6 @@ htmltemplate = '''
    </body>
 </html>
 '''
-def htmlescape(txt):
-    txt = txt.replace("<", "&lt;")
-    txt = txt.replace("&", "&amp;")
-    txt = txt.replace('"', "&dquot;")
-    return txt
 
 # mp3:      album, title, artist, genre, date, tracknumber
 # flac:     album, title, artist, genre, xxx, tracknumber
@@ -42,7 +37,8 @@ class AudioTagExtractor:
     def __init__(self, em):
         self.em = em
         self.currentindex = 0
-        
+        self.em.setmimetype("text/html")
+
     def extractone(self, params):
         #self.em.rclog("extractone %s %s" % (params["filename:"], params["mimetype:"]))
         docdata = ""
@@ -69,18 +65,18 @@ class AudioTagExtractor:
         artist = ""
         title = ""
         try:
-            album = htmlescape(tags["album"][0].encode("utf-8"))
+            album = self.em.htmlescape(tags["album"][0].encode("utf-8"))
         except:
             pass
         try:
-            artist = htmlescape(tags["artist"][0].encode("utf-8"))
+            artist = self.em.htmlescape(tags["artist"][0].encode("utf-8"))
         except:
             pass
         try:
-            title = htmlescape(tags["title"][0].encode("utf-8"))
+            title = self.em.htmlescape(tags["title"][0].encode("utf-8"))
         except:
             pass
-        alldata = htmlescape(tags.pprint().encode("utf-8"))
+        alldata = self.em.htmlescape(tags.pprint().encode("utf-8"))
         alldata = alldata.replace("\n", "<br>")
         docdata = htmltemplate % (album, artist, title, alldata)
         ok = True

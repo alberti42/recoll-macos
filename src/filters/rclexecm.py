@@ -18,6 +18,13 @@ class RclExecM:
         print >> sys.stderr, "RCLMFILT:", self.myname, ":", s
         if doexit:
             sys.exit(exitvalue)
+
+    def htmlescape(self, txt):
+        txt = txt.replace("<", "&lt;")
+        txt = txt.replace("&", "&amp;")
+        txt = txt.replace('"', "&dquot;")
+        return txt
+
     # Our worker sometimes knows the mime types of the data it sends
     def setmimetype(self, mt):
         self.mimetype = mt
@@ -46,7 +53,7 @@ class RclExecM:
             paramdata = ""
     
         #self.rclog("paramname [%s] paramsize %d value [%s]" %
-        #      (paramname, paramsize, paramdata))
+        #          (paramname, paramsize, paramdata))
         return (paramname, paramdata)
 
     # Send answer: document, ipath, possible eof.

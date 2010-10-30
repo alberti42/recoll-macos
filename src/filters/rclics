@@ -92,7 +92,7 @@ class IcalExtractor:
         try:
             index = int(params["ipath:"])
         except:
-            return False
+            return (False, "", "", True)
         return self.extractone(index)
         
     def getnext(self, params):

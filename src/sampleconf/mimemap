@@ -89,7 +89,7 @@
 .lyx = application/x-lyx
 .sla = application/x-scribus
 .scd = application/x-scribus
-
+.info = application/x-gnuinfo
 .kwd = application/x-kword
 
 .wpd = application/vnd.wordperfect
