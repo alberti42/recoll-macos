@@ -1,0 +1,227 @@
+#!/usr/bin/env python
+
+# Read a file in GNU info format and output its nodes as subdocs,
+# interfacing with recoll execm
+
+
+import rclexecm
+import sys
+import os.path
+import subprocess
+
+# Prototype for the html document we're returning. Info files are
+# normally ascii. Set no charset, and let it be provided by the
+# environment if necessary
+htmltemplate = '''
+<html>
+  <head>
+      <title>%s</title>
+   </head>
+   <body><pre>
+   %s
+   </pre></body>
+</html>
+'''
+
+# RclExecm interface
+class InfoExtractor:
+    def __init__(self, em):
+        self.file = ""
+	self.contents = []
+        self.em = em
+        self.em.setmimetype("text/html")
+
+    def extractone(self, index):
+        if index >= len(self.contents):
+            return(False, "", "", True)
+
+        nodename, docdata = self.contents[index]
+        nodename = self.em.htmlescape(nodename)
+        docdata = self.em.htmlescape(docdata)
+
+        docdata = htmltemplate % (nodename, docdata)
+
+        iseof = rclexecm.RclExecM.noteof
+        if self.currentindex >= len(self.contents) -1:
+            iseof = rclexecm.RclExecM.eofnext
+        return (True, docdata, nodename, iseof)
+
+    ###### File type handler api, used by rclexecm ---------->
+    def openfile(self, params):
+        self.file = params["filename:"]
+
+        if not os.path.isfile(self.file):
+            self.em.rclog("Openfile: %s is not a file" % self.file)
+            return False
+
+        cmd = "info --subnodes -o - -f " + self.file
+        nullstream = open("/dev/null", 'w')
+        try:
+            infostream = subprocess.Popen(cmd, shell=True, bufsize=1,
+                                          stderr=nullstream,
+                                          stdout=subprocess.PIPE).stdout
+        except Exception, e:
+            # Consider this as permanently fatal. 
+            self.em.rclog("Openfile: exec info: %s" % str(e))
+            print "RECFILTERROR HELPERNOTFOUND info"
+            sys.exit(1);
+
+
+        self.currentindex = 0
+
+        self.contents = InfoSimpleSplitter().splitinfo(self.file, infostream)
+
+        #self.em.rclog("openfile: Entry count: %d"%(len(self.contents)))
+        return True
+
+    # Extract specific node
+    def getipath(self, params):
+        try:
+            nodename = params["ipath:"]
+        except:
+            return False
+
+        # We could build a dictionary in the split function to avoid this.
+        # But it's used for preview, and the perf issue is minimal
+        for i in range(len(self.contents)):
+            if self.contents[i][0] == nodename:
+                return self.extractone(i)
+        return (False, "", "", True)
+
+    # Extract next in list
+    def getnext(self, params):
+        if self.currentindex >= len(self.contents):
+            self.em.rclog("getnext: EOF hit")
+            return (False, "", "", rclexecm.RclExecM.eofnow)
+        else:
+            ret= self.extractone(self.currentindex)
+            self.currentindex += 1
+            return ret
+
+# Info file splitter
+class InfoSimpleSplitter:
+
+    def splitinfo(self, filename, fin):
+        gotblankline = 1
+        index = 0
+        listout = []
+        node_dict = {}
+        node = ""
+        
+        for line in fin:
+            if gotblankline and line.startswith("File: "):
+                if index != 0:
+                    listout.append((nodename, node))
+                line = line.rstrip("\n\r")
+                pairs = line.split(",")
+                up = "Top"
+                nodename = str(index)
+                infofile = os.path.basename(filename)
+                for pair in pairs:
+                    name, value = pair.split(':')
+                    name = name.strip(" ")
+                    value = value.replace(":", " ");
+                    value = value.replace("|", " ").strip(" ")
+                    if name == "Node":
+                        nodename = value
+                    if name == "Up":
+                        up = value
+                    if name == "File":
+                        infofile = value
+
+                if node_dict.has_key(nodename):
+                    print >> sys.stderr, "Info file", filename, \
+                          "Dup node: ", nodename
+                node_dict[nodename] = up
+                print "NODE ", nodename, "UP ", up
+                node = ""
+                index += 1
+
+            if line.rstrip("\n\r") == '':
+                gotblankline = 1
+            else:
+                gotblankline = 0
+
+            node += line
+
+        # File done, add last dangling node
+        if node != "":
+            listout.append((nodename, node))
+
+        # Compute node paths (concatenate "Up" values), to be used
+        # as page titles and ipaths. It's unfortunate that this will crash if
+        # the info file tree is bad
+        listout1 = []
+        for nodename, node in listout:
+            ipath = ""
+            loop = 0
+            error = 0
+            while nodename != "Top":
+                ipath = nodename + " / " + ipath
+                if node_dict.has_key(nodename):
+                    nodename = node_dict[nodename]
+                else:
+                    print >> sys.stderr, \
+           "Infofile: node's Up does not exist: file %s, path %s, up [%s]" % \
+                    (infofile, ipath, nodename)
+                    error = 1
+                    break
+                loop += 1
+                if loop > 50:
+                    print >> sys.stderr, "Infofile: bad tree (looping)", \
+                          infofile
+                    error = 1
+                    break
+
+            if error:
+                continue
+
+            if ipath == "":
+                ipath = infofile
+            else:
+                ipath = infofile + " / " + ipath
+            ipath = ipath.rstrip(" / ")
+            listout1.append((ipath, node))
+
+        return listout1
+ 
+
+##### Main program: either talk to the parent or execute test loop
+
+e = rclexecm.RclExecM()
+info = InfoExtractor(e)
+
+if len(sys.argv) == 1:
+    e.mainloop(info)
+else:
+    # Got a file name parameter: TESTING without an execm parent
+    # Loop on all entries or get specific ipath
+    if not info.openfile({'filename:':sys.argv[1]}):
+        print "Open error"
+        sys.exit(1)
+    ipath = ""
+    if len(sys.argv) == 3:
+        ipath = sys.argv[2]
+
+    if ipath != "":
+        ok, data, ipath, eof = info.getipath({'ipath:':ipath})
+        if ok:
+            print "=========== ENTRY for IPATH %s =============" % (ipath)
+            print data
+            print
+        else:
+            print "Got error, eof %d"%eof
+        sys.exit(0)
+
+    ecnt = 0   
+    while 1:
+        ok, data, ipath, eof = info.getnext("")
+        if ok:
+            ecnt = ecnt + 1
+            print "=========== ENTRY %d IPATH %s =============" % (ecnt,ipath)
+#            print data
+            print
+        else:
+            print "Got error, eof %d"%eof
+            break
+    
