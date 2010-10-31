@@ -639,7 +639,7 @@ RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
 	return 0;
     RCLPOPUP *popup = new RCLPOPUP(this);
     popup->insertItem(tr("&Preview"), this, SLOT(menuPreview()));
-    popup->insertItem(tr("&Edit"), this, SLOT(menuEdit()));
+    popup->insertItem(tr("&Open"), this, SLOT(menuEdit()));
     popup->insertItem(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
     popup->insertItem(tr("Copy &URL"), this, SLOT(menuCopyURL()));
     Rcl::Doc doc;
