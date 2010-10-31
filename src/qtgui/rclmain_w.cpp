@@ -946,7 +946,7 @@ void RclMain::saveDocToFile(int docnum)
 static bool lookForHtmlBrowser(string &exefile)
 {
     static const char *htmlbrowserlist = 
-	"opera konqueror firefox mozilla netscape epiphany";
+	"opera google-chrome konqueror firefox mozilla netscape epiphany";
     vector<string> blist;
     stringToTokens(htmlbrowserlist, blist, " ");
 
@@ -1003,7 +1003,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	cmdplusattr = rclconfig->getMimeViewerDef(doc.mimetype, apptag);
     }
 
-    if (cmdplusattr.length() == 0) {
+    if (cmdplusattr.empty()) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("No external viewer configured for mime type [")
 			     + doc.mimetype.c_str() + "]");
@@ -1029,26 +1029,30 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	return;
     }
 
-    // Look for the command to execute in the exec path and a few
-    // other places
+    // Look for the command to execute in the exec path and the filters 
+    // directory
     string cmdpath;
-    if (prefs.useDesktopOpen) {
-	// Findfilter searches the recoll filters directory in
-	// addition to the path. We store a copy of xdg-open there, to be 
-	// used as last resort
+    if (!ExecCmd::which(lcmd.front(), cmdpath)) {
 	cmdpath = rclconfig->findFilter(lcmd.front());
-    } else {
-	ExecCmd::which(lcmd.front(), cmdpath);
-    }
+	// findFilter returns its input param if the filter is not in
+	// the normal places. As we already looked in the path, we
+	// have no use for a simple command name here (as opposed to
+	// mimehandler which will just let execvp do its thing). Erase
+	// cmdpath so that the user dialog will be started further
+	// down.
+	if (!cmdpath.compare(lcmd.front())) 
+	    cmdpath.erase();
 
-    // Specialcase text/html because of the help browser need
-    if (cmdpath.empty() && !doc.mimetype.compare("text/html")) {
-	if (lookForHtmlBrowser(cmdpath)) {
-	    lcmd.clear();
-            lcmd.push_back(cmdpath);
-            lcmd.push_back("%u");
+	// Specialcase text/html because of the help browser need
+	if (cmdpath.empty() && !doc.mimetype.compare("text/html")) {
+	    if (lookForHtmlBrowser(cmdpath)) {
+		lcmd.clear();
+		lcmd.push_back(cmdpath);
+		lcmd.push_back("%u");
+	    }
 	}
     }
+
 
     // Command not found: start the user dialog to help find another one:
     if (cmdpath.empty()) {
@@ -1073,12 +1077,13 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	return;
     }
 
-    // We may need a temp file, or not depending on the command arguments
-    // and the fact that this is a subdoc or not.
+    // We may need a temp file, or not, depending on the command
+    // arguments and the fact that this is a subdoc or not.
     bool wantsipath = (cmd.find("%i") != string::npos) || ignoreipath;
     bool wantsfile = cmd.find("%f") != string::npos;
     bool istempfile = false;
     string fn = fileurltolocalpath(doc.url);
+    string orgfn = fn;
     string url = doc.url;
 
     // If the command wants a file but this is not a file url, or
@@ -1139,6 +1144,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     map<string, string> subs;
     subs["D"] = efftime;
     subs["f"] = fn;
+    subs["F"] = orgfn;
     subs["i"] = doc.ipath;
     subs["M"] = doc.mimetype;
     subs["U"] = url;
@@ -1156,7 +1162,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
         *it = ncmd;
     }
 
-    // Also substitute inside the unsplitted command line for displaying
+    // Also substitute inside the unsplitted command line and display
+    // in status bar
     pcSubst(cmd, ncmd, subs);
     ncmd += " &";
     QStatusBar *stb = statusBar();

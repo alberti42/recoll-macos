@@ -62,6 +62,7 @@ image/svg+xml = inkview %f
 image/vnd.djvu = djview %f
 # Or firefox -remote "openFile(%u)"
 text/html = firefox %u
+text/html|gnuinfo = rclshowinfo %F %(title)
 text/plain = gnuclient -q %f
 text/x-c = gnuclient -q %f
 text/x-html-sidux-man = konqueror %f

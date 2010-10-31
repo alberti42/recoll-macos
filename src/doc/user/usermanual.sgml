@@ -806,7 +806,7 @@ fvwm
 
         <itemizedlist>
           <listitem><para><guilabel>Preview</guilabel></para></listitem>
-          <listitem><para><guilabel>Edit</guilabel></para></listitem>
+          <listitem><para><guilabel>Open</guilabel></para></listitem>
           <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
           <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
           <listitem><para><guilabel>Save to File</guilabel></para></listitem>
@@ -818,7 +818,7 @@ fvwm
         </itemizedlist>
 
         <para>The <guilabel>Preview</guilabel> and
-          <guilabel>Edit</guilabel> entries do the same thing as the 
+          <guilabel>Open</guilabel> entries do the same thing as the 
           corresponding links.</para>
 
         <para>The <guilabel>Copy File Name</guilabel> and
@@ -1638,7 +1638,7 @@ fvwm
             <listitem><para><guilabel>Use desktop preferences to choose
             document editor</guilabel>: if this is checked, the
             <command>xdg-open</command> utility will be used to open files
-            when you click the <guilabel>Edit</guilabel> link in the result
+            when you click the <guilabel>Open</guilabel> link in the result
             list, instead of the application defined in
             <filename>mimeview</filename>. <command>xdg-open</command> will
             in term use your desktop preferences to choose an appropriate
@@ -1647,7 +1647,7 @@ fvwm
 
             <listitem><para><guilabel>Choose editor applications</guilabel>
             this will let you choose the command started by the
-            <guilabel>Edit</guilabel> links inside the result list, for
+            <guilabel>Open</guilabel> links inside the result list, for
             specific document types.</para>
             </listitem>
 	    
@@ -3580,7 +3580,7 @@ x-my-tag = mailmytag
         <title>The mimeview file</title>
 
         <para><filename>mimeview</filename> specifies which programs
-        are started when you click on an <guilabel>Edit</guilabel>
+        are started when you click on an <guilabel>Open</guilabel>
         link in a result list. Ie: HTML is normally displayed using
          <application>firefox</application>, but you may prefer
          <application>Konqueror</application>, your
@@ -3612,12 +3612,43 @@ x-my-tag = mailmytag
         except the one labelled <literal>application/x-all</literal>
         (which is set to use <command>xdg-open</command> by default).</para>
 
-
         <para>The <literal>nouncompforviewmts</literal> entry, (placed at
         the top level, outside of the <literal>[view]</literal> section),
         holds a list of mime types that should not be uncompressed before
         starting the viewer (if they are found compressed, ie:
         <replaceable>mydoc.doc.gz</replaceable>).</para>
+
+        <para>The right side of each assignment holds a command to be
+        executed for opening the file. The following substitutions are
+        performed:</para> 
+
+        <itemizedlist>
+          <listitem>
+            <formalpara><title>%D</title><para>Document date</para></formalpara>
+          </listitem>
+          <listitem><formalpara><title>%f</title><para>File name. This the
+          name of a temporary file if it was necessary to create one (ie:
+          to extract a subdocument from a container).</para></formalpara>
+          </listitem>
+          <listitem><formalpara><title>%F</title><para>Original file name. 
+          Same as %f except if a temporary file is used.</para></formalpara>
+          </listitem>
+          <listitem><formalpara><title>%i</title><para>Internal path, for
+          subdocuments of containers. The format depends on the container
+          type.</para></formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%M</title><para>Mime
+                  type</para></formalpara> 
+          </listitem>
+          <listitem><formalpara><title>%U, %u</title><para>Url.
+           </para></formalpara> 
+          </listitem>
+        </itemizedlist>
+
+        <para>In addition to the predefined values above, all strings like
+        <literal>%(fieldname)</literal> will be replaced by the value of
+        the field named <literal>fieldname</literal> for the
+        document.</para> 
 
       </sect2>
 
@@ -3629,7 +3660,7 @@ x-my-tag = mailmytag
 
           <para>Imagine that you have some kind of file which does not
             have indexable content, but for which you would like to have a
-            functional <guilabel>Edit</guilabel> link in the result list
+            functional <guilabel>Open</guilabel> link in the result list
             (when found by file name). The file names end in
             <replaceable>.blob</replaceable> and can be displayed by
             application <replaceable>blobviewer</replaceable>.</para>
