@@ -516,13 +516,10 @@ string RclConfig::getMimeHandlerDef(const std::string &mtype, bool filtertypes)
     return hs;
 }
 
-/** 
- * @param whole is like "base value ; attr1 = somthing; attr2 = somethelse"
- * There is no way to escape a semi-colon inside whole
- */
 bool RclConfig::valueSplitAttributes(const string& whole, string& value, 
-                              ConfSimple& attrs)
+				     ConfSimple& attrs)
 {
+    /* There is currently no way to escape a semi-colon */
     string::size_type semicol0 = whole.find_first_of(";");
     value = whole.substr(0, semicol0);
     string attrstr;

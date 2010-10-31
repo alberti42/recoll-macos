@@ -171,8 +171,11 @@ class RclConfig {
 
     /** mimeconf: get input filter for mimetype */
     string getMimeHandlerDef(const string &mimetype, bool filtertypes=false);
-    /** For lines like: "name = some value; and additional; attributes"
-     * Split the value and store the attributes in a ConfSimple */
+
+    /** For lines like: "name = some value; attr1 = value1; attr2 = val2"
+     * Separate the value and store the attributes in a ConfSimple 
+     * @param whole the raw value. No way to escape a semi-colon in there.
+     */
     bool valueSplitAttributes(const string& whole, string& value, 
                               ConfSimple& attrs);
 
