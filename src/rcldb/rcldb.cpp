@@ -23,6 +23,7 @@ static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.154 2008-12-17 16:19:58 dockes Exp 
 #include <fnmatch.h>
 #include <regex.h>
 #include <math.h>
+#include <time.h>
 
 #include <iostream>
 #include <string>

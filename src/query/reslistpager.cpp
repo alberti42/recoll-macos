@@ -5,6 +5,7 @@ static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.7 2008-12-16 14:20:10 dockes
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #include "reslistpager.h"
 #include "debuglog.h"
