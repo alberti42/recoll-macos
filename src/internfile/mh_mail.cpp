@@ -288,7 +288,7 @@ bool MimeHandlerMail::processAttach()
     }
 
     // Ipath
-    char nbuf[10];
+    char nbuf[20];
     sprintf(nbuf, "%d", m_idx);
     m_metaData["ipath"] = nbuf;
 

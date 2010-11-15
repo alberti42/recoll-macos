@@ -23,6 +23,7 @@ static char rcsid[] = "@(#$Id: rclconfig.cpp,v 1.62 2008-10-08 16:15:22 dockes E
 #include <stdio.h>
 #include <errno.h>
 #include <langinfo.h>
+#include <limits.h>
 
 #include <set>
 #include <algorithm>
@@ -959,9 +960,10 @@ static int ncffiles = sizeof(configfiles) / sizeof(char *);
 bool RclConfig::initUserConfig()
 {
     // Explanatory text
-    char blurb[sizeof(blurb0)+1025];
+    const int bs = sizeof(blurb0)+PATH_MAX+1;
+    char blurb[bs];
     string exdir = path_cat(m_datadir, "examples");
-    sprintf(blurb, blurb0, exdir.c_str());
+    snprintf(blurb, bs, blurb0, exdir.c_str());
 
     // Use protective 700 mode to create the top configuration
     // directory: documents can be reconstructed from index data.

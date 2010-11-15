@@ -49,7 +49,7 @@ static void caterrno(string *reason, const char *what, int _errno)
     if (reason) {
 	reason->append(what);
 	reason->append(": errno: ");
-	char nbuf[10];
+	char nbuf[20];
 	sprintf(nbuf, "%d", _errno);
 	reason->append(nbuf);
 	reason->append(" : ");

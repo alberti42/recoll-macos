@@ -391,7 +391,8 @@ public:
     {
         char bf[CIRCACHE_HEADER_SIZE];
         memset(bf, 0, CIRCACHE_HEADER_SIZE);
-        sprintf(bf, headerformat, d.dicsize, d.datasize, d.padsize, d.flags);
+        snprintf(bf, CIRCACHE_HEADER_SIZE, 
+		 headerformat, d.dicsize, d.datasize, d.padsize, d.flags);
         if (lseek(m_fd, offset, 0) != offset) {
             m_reason << "CirCache::weh: lseek(" << offset << 
                 ") failed: errno " << errno;
@@ -1000,7 +1001,8 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
 
     char head[CIRCACHE_HEADER_SIZE];
     memset(head, 0, CIRCACHE_HEADER_SIZE);
-    sprintf(head, headerformat, dic.size(), datalen, npadsize, flags);
+    snprintf(head, CIRCACHE_HEADER_SIZE, 
+	    headerformat, dic.size(), datalen, npadsize, flags);
     struct iovec vecs[3];
     vecs[0].iov_base = head;
     vecs[0].iov_len = CIRCACHE_HEADER_SIZE;

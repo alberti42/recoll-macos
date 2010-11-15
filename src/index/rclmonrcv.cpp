@@ -242,7 +242,7 @@ const char *RclFAM::event_name(int code)
         "FAMExists",
         "FAMEndExist"
     };
-    static char unknown_event[20];
+    static char unknown_event[30];
  
     if (code < FAMChanged || code > FAMEndExist) {
         sprintf(unknown_event, "unknown (%d)", code);

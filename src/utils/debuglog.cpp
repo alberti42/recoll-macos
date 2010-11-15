@@ -182,12 +182,12 @@ static bool fileInFiles(const string& file)
 
 #ifdef _WINDOWS
 #include <windows.h>
-static void datestring(char *d) {
+static void datestring(char *d, int sz) {
     SYSTEMTIME buf;
     GetLocalTime(&buf);
     int year = buf.wYear % 100;
 
-    sprintf(d, "%02d%02d%02d%02d%02d%02d", year, int(buf.wMonth),
+    snprintf(d, sz, "%02d%02d%02d%02d%02d%02d", year, int(buf.wMonth),
 	    int(buf.wDay), int(buf.wHour), int(buf.wMinute), int(buf.wSecond));
 }
 #define vsnprintf _vsnprintf
@@ -195,13 +195,13 @@ static void datestring(char *d) {
 #else // !WINDOWS ->
 
 #include <time.h>
-static void datestring(char *d)
+static void datestring(char *d, int sz)
 {
     struct tm *tmp;
     time_t tim = time((time_t)0);
     tmp = localtime(&tim);
     int year = tmp->tm_year % 100;
-    sprintf(d, "%02d%02d%02d%02d%02d%02d", year, tmp->tm_mon+1,
+    snprintf(d, sz, "%02d%02d%02d%02d%02d%02d", year, tmp->tm_mon+1,
 	    tmp->tm_mday, tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
 }
 
@@ -220,7 +220,7 @@ DebugLog::prolog(int lev, const char *f, int line)
     }
     if (dodate) {
 	char dts[100];
-	datestring(dts);
+	datestring(dts, 100);
 	writer->put(dts);
     }
     char buf[100];

@@ -988,7 +988,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 			doc.dmtime.c_str());
     struct tm *tm = localtime(&mtime);
     char buf[9];
-    sprintf(buf, "%04d%02d%02d",tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
+    snprintf(buf, 9, "%04d%02d%02d",
+	    tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
     newdocument.add_term("D" + string(buf)); // Date (YYYYMMDD)
     buf[6] = '\0';
     newdocument.add_term("M" + string(buf)); // Month (YYYYMM)

@@ -75,6 +75,12 @@ public:
     {
 	return append(data);
     }
+    // Translation function. This is reimplemented in the qt reslist
+    // object For this to work, the strings must be duplicated inside
+    // reslist.cpp (see the QT_TR_NOOP in there). Very very unwieldy.
+    // To repeat: any change to a string used with trans() inside
+    // reslistpager.cpp must be reflected in the string table inside
+    // reslist.cpp for translation to work.
     virtual string trans(const string& in);
     virtual string detailsLink();
     virtual const string &parFormat();

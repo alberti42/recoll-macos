@@ -399,7 +399,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     make_udi(fn, "", parent_udi);
     Rcl::Doc doc;
     const string plus("+");
-    char ascdate[20];
+    char ascdate[30];
     sprintf(ascdate, "%ld", long(stp->st_mtime));
 
     FileInterner::Status fis = FileInterner::FIAgain;

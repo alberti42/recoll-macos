@@ -389,7 +389,7 @@ int NetconData::send(const char *buf, int cnt, int expedited)
 
     // Note: byte count may be different from cnt if fd is non-blocking
     if (ret < 0) {
-	char fdcbuf[10];sprintf(fdcbuf, "%d", m_fd);
+	char fdcbuf[20];sprintf(fdcbuf, "%d", m_fd);
 	LOGSYSERR("NetconData::send", "send", fdcbuf);
     }
     return ret;
@@ -453,7 +453,7 @@ int NetconData::receive(char *buf, int cnt, int timeo)
     }
     m_didtimo = 0;
     if ((cnt = read(m_fd, buf + fromibuf, cnt)) < 0) {
-	char fdcbuf[10];sprintf(fdcbuf, "%d", m_fd);
+	char fdcbuf[20];sprintf(fdcbuf, "%d", m_fd);
 	LOGSYSERR("NetconData::receive", "read", fdcbuf);
 	return -1;
     }

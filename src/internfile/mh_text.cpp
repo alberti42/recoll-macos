@@ -140,7 +140,7 @@ bool MimeHandlerText::next_document()
         // first chunk). This is a hack. The right thing to do would
         // be to use a different mtype for files over the page size,
         // and keep text/plain only for smaller files.
-        char buf[20];
+        char buf[30];
         sprintf(buf, "%lld", (long long)(m_offs - m_text.length()));
         if (m_offs - m_text.length() != 0)
             m_metaData["ipath"] = buf;

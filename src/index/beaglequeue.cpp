@@ -398,7 +398,7 @@ BeagleQueueIndexer::processone(const string &path,
     make_udi(udipath, "", udi);
 
     LOGDEB(("BeagleQueueIndexer: prc1: udi [%s]\n", udi.c_str()));
-    char ascdate[20];
+    char ascdate[30];
     sprintf(ascdate, "%ld", long(stp->st_mtime));
 
     // We only process bookmarks or text/html and text/plain files.

@@ -35,8 +35,8 @@ static char rcsid[] = "@(#$Id: docseqhist.cpp,v 1.4 2008-09-29 08:59:20 dockes E
 // The U distinguishes udi-based entries from older fn+ipath ones
 bool RclDHistoryEntry::encode(string& value)
 {
-    char chartime[20];
-    sprintf(chartime, "%ld", unixtime);
+    char chartime[30];
+    sprintf(chartime,"%ld", unixtime);
     string budi;
     base64_encode(udi, budi);
     value = string("U ") + string(chartime) + " " + budi;
