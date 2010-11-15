@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="lt_LT">
+<!DOCTYPE TS><TS>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -34,10 +32,6 @@
     <message>
         <source>other</source>
         <translation>kita</translation>
-    </message>
-    <message>
-        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation>Nepavyksta vykdyti neigiamos užklausos. Prašome įvesti bendrus raktinius žodžius &apos;bet kokie žodžiai&apos; laukelyje</translation>
     </message>
 </context>
 <context>
@@ -143,8 +137,8 @@
     </message>
     <message>
         <source>.
-Click Cancel if you want to edit the configuration file before indexation starts, or Ok to let it proceed.</source>
-        <translation>Paspauskite Nutraukti, jei norite redaguoti nustatymų bylą prieš prasidedant indeksavimui arba spauskite Gerai jai vykti. </translation>
+Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -450,6 +444,14 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Nurodyta peržiūros programa šiam mime tipui %1: %2 nerandama.
 Ar norėtumete iššaukti nustatymų langą?</translation>
     </message>
+    <message>
+        <source>Can&apos;t access file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t uncompress file: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -581,6 +583,26 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
         <source>&amp;Show missing helpers</source>
         <translation>&amp;Trūkstamos pagalbinės programos</translation>
     </message>
+    <message>
+        <source>PgDown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PgUp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Full Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>F11</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>
@@ -595,10 +617,6 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     <message>
         <source>&amp;Preview</source>
         <translation>&amp;Peržiūra</translation>
-    </message>
-    <message>
-        <source>&amp;Edit</source>
-        <translation>&amp;Redaguoti</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
@@ -631,14 +649,6 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;p&gt;&lt;b&gt;Nerasta rezultatų&lt;/b&gt;&lt;br&gt;</translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
-        <translation>Dokumentai &lt;b&gt;%d-%d&lt;/b&gt; iš bent &lt;b&gt;%d&lt;/b&gt; </translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; for </source>
-        <translation>Dokumentai &lt;b&gt;%d-%d&lt;/b&gt; </translation>
     </message>
     <message>
         <source>Previous</source>
@@ -675,6 +685,22 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     <message>
         <source>&amp;Open Parent document/folder</source>
         <translation>Atidaryti &amp;Aukštesnio lygio dokumentus/direktorijas</translation>
+    </message>
+    <message>
+        <source>Documents</source>
+        <translation>Dokumentai</translation>
+    </message>
+    <message>
+        <source>out of at least</source>
+        <translation>iš bent</translation>
+    </message>
+    <message>
+        <source>for</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -855,8 +881,12 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
         <translation>Raktinis žodis</translation>
     </message>
     <message>
-        <source>Count</source>
-        <translation>Suskaičiuoti</translation>
+        <source>No db info.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -892,6 +922,18 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     <message>
         <source>No expansion found</source>
         <translation>Nerasta praplėtimų</translation>
+    </message>
+    <message>
+        <source>Term</source>
+        <translation type="unfinished">Raktinis žodis</translation>
+    </message>
+    <message>
+        <source>Doc. / Tot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index: %1 documents, average length %2 terms</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1109,6 +1151,18 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
         <translation>Kategorijų filtrą rodyti kaip įrankų juostą (reikalauja perkrovimo).</translation>
+    </message>
+    <message>
+        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language magic file name suffixes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

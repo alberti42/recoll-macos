@@ -127,8 +127,9 @@ ResList::~ResList()
 #endif
     static const char* strings[] = {
 	QT_TR_NOOP("<p><b>No results found</b><br>"),
-	QT_TR_NOOP("Documents <b>%d-%d</b> out of at least <b>%d</b> for "),
-	QT_TR_NOOP("Documents <b>%d-%d</b> for "),
+	QT_TR_NOOP("Documents"),
+	QT_TR_NOOP("out of at least"),
+	QT_TR_NOOP("for"),
 	QT_TR_NOOP("Previous"),
 	QT_TR_NOOP("Next"),
 	QT_TR_NOOP("Unavailable document"),

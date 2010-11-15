@@ -7,6 +7,10 @@ static char rcsid[] = "@(#$Id: reslistpager.cpp,v 1.7 2008-12-16 14:20:10 dockes
 #include <math.h>
 #include <time.h>
 
+#include <sstream>
+using std::ostringstream;
+using std::endl;
+
 #include "reslistpager.h"
 #include "debuglog.h"
 #include "rclconfig.h"
@@ -79,7 +83,7 @@ void ResListPager::displayPage()
     if (m_hiliter == 0)
 	m_hiliter = &g_hiliter;
 
-    string chunk;
+    ostringstream chunk;
 
     // Display list header
     // We could use a <title> but the textedit doesnt display
@@ -89,65 +93,62 @@ void ResListPager::displayPage()
     // gets confused. Hence the use of the 'chunk' text
     // accumulator
     // Also note that there can be results beyond the estimated resCnt.
-    chunk = "<html><head><meta http-equiv=\"content-type\""
-	"content=\"text/html; charset=utf-8\"></head><body>";
-    chunk += pageTop();
-    chunk += "<p><font size=+1><b>";
-    chunk += m_docSource->title();
-    chunk += "</b></font>"
-	"&nbsp;&nbsp;&nbsp;";
+    chunk << "<html><head><meta http-equiv=\"content-type\""
+	"content=\"text/html; charset=utf-8\"></head><body>"
+	  << pageTop()
+	  << "<p><font size=+1><b>"
+	  << m_docSource->title()
+	  << "</b></font>&nbsp;&nbsp;&nbsp;";
 
     if (pageEmpty()) {
-	chunk += trans("<p><b>No results found</b><br>");
+	chunk << trans("<p><b>No results found</b><br>");
         vector<string>uterms;
         m_docSource->getUTerms(uterms);
         if (!uterms.empty()) {
             vector<string> spellings;
             suggest(uterms, spellings);
             if (!spellings.empty()) {
-                chunk += 
+                chunk << 
                  trans("<p><i>Alternate spellings (accents suppressed): </i>");
                 for (vector<string>::iterator it = spellings.begin();
                      it != spellings.end(); it++) {
-                    chunk += *it;
-                    chunk += " ";
+                    chunk << *it;
+                    chunk << " ";
                 }
-                chunk += "</p>";
+                chunk << "</p>";
             }
         }
     } else {
 	unsigned int resCnt = m_docSource->getResCnt();
 	if (m_winfirst + m_respage.size() < resCnt) {
-	    string f1 =	trans("Documents <b>%d-%d</b> out of at least <b>%d</b> for ");
-	    char buf[1024];
-	    snprintf(buf, 1023, f1.c_str(), m_winfirst+1, 
-		     m_winfirst + m_respage.size(), resCnt);
-	    chunk += buf;
+	    chunk << trans("Documents") << " <b>" << m_winfirst + 1
+		  << "-" << m_winfirst + m_respage.size() << "</b> " 
+		  << trans("out of at least") << " " 
+		  << resCnt << " " << trans("for") << " " ;
 	} else {
-	    string f1 = trans("Documents <b>%d-%d</b> for ");
-	    char buf[1024];
-	    snprintf(buf, 1023, f1.c_str(), m_winfirst + 1, 
-		     m_winfirst + m_respage.size());
-	    chunk += buf;
+	    chunk << trans("Documents") << " <b>" 
+		  << m_winfirst + 1 << "-" << m_winfirst + m_respage.size()
+		  << "</b> " << trans("for") << " ";
 	}
     }
-    chunk += detailsLink();
+    chunk << detailsLink();
     if (hasPrev() || hasNext()) {
-	chunk += "&nbsp;&nbsp;";
+	chunk << "&nbsp;&nbsp;";
 	if (hasPrev()) {
-	    chunk += "<a href=\"" + prevUrl() + "\"><b>";
-	    chunk += trans("Previous");
-	    chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
+	    chunk << "<a href=\"" + prevUrl() + "\"><b>"
+		  << trans("Previous")
+		  << "</b></a>&nbsp;&nbsp;&nbsp;";
 	}
 	if (hasNext()) {
-	    chunk += "<a href=\""+ nextUrl() + "\"><b>";
-	    chunk += trans("Next");
-	    chunk += "</b></a>";
+	    chunk << "<a href=\""+ nextUrl() + "\"><b>"
+		  << trans("Next")
+		  << "</b></a>";
 	}
     }
-    chunk += "</p>";
+    chunk << "</p>";
 
-    append(chunk);
+    append(chunk.rdbuf()->str());
+    chunk.rdbuf()->str("");
     if (pageEmpty())
 	return;
 
@@ -169,7 +170,7 @@ void ResListPager::displayPage()
 	    percent = doc.pc;
 	}
 	// Percentage of 'relevance'
-	char perbuf[10];
+	char perbuf[20];
 	sprintf(perbuf, "%3d%% ", percent);
 
 	// Determine icon to display if any
@@ -227,12 +228,10 @@ void ResListPager::displayPage()
 	string richabst = lr.front();
 
 	// Links;
-	string linksbuf;
-	char vlbuf[100];
+	ostringstream linksbuf;
 	if (canIntern(doc.mimetype, RclConfig::getMainConfig())) { 
-	    sprintf(vlbuf, "\"P%d\"", docnumforlinks);
-	    linksbuf += string("<a href=") + vlbuf + ">" + trans("Preview") 
-		+ "</a>&nbsp;&nbsp;";
+	    linksbuf << "<a href=\"P" << docnumforlinks << "\">" 
+		     << trans("Preview") << "</a>&nbsp;&nbsp;";
 	}
 
         string apptag;
@@ -241,19 +240,17 @@ void ResListPager::displayPage()
             apptag = it->second;
 
 	if (!RclConfig::getMainConfig()->getMimeViewerDef(doc.mimetype, apptag).empty()) {
-	    sprintf(vlbuf, "E%d", docnumforlinks);
-	    linksbuf += string("<a href=") + vlbuf + ">" + trans("Open")
-		+ "</a>";
+	    linksbuf << "<a href=\"E" << docnumforlinks << "\">"  
+		     << trans("Open") << "</a>";
 	}
 
 	// Build the result list paragraph:
-	chunk = "";
 
 	// Subheader: this is used by history
 	if (!sh.empty())
-	    chunk += "<p><b>" + sh + "</p>\n<p>";
+	    chunk << "<p><b>" << sh << "</p>\n<p>";
 	else
-	    chunk += "<p>";
+	    chunk << "<p>";
 
 	// Configurable stuff
 	map<string,string> subs;
@@ -263,7 +260,7 @@ void ResListPager::displayPage()
 	subs["i"] = doc.ipath;
 	subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
 	    escapeHtml(doc.meta[Rcl::Doc::keykw]) + "<br>" : "";
-	subs["L"] = linksbuf;
+	subs["L"] = linksbuf.rdbuf()->str();
 	subs["N"] = numbuf;
 	subs["M"] = doc.mimetype;
 	subs["R"] = perbuf;
@@ -276,31 +273,32 @@ void ResListPager::displayPage()
 
 	string formatted;
 	pcSubst(parFormat(), formatted, subs);
-	chunk += formatted;
+	chunk << formatted;
 
-	chunk += "</p>\n";
+	chunk << "</p>" << endl;
 
-	LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.c_str()));
-	append(chunk, i, doc);
+	LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.rdbuf()->str().c_str()));
+	append(chunk.rdbuf()->str(), i, doc);
+	chunk.rdbuf()->str("");
     }
 
     // Footer
-    chunk = "<p align=\"center\">";
+    chunk << "<p align=\"center\">";
     if (hasPrev() || hasNext()) {
 	if (hasPrev()) {
-	    chunk += "<a href=\"" + prevUrl() + "\"><b>";
-	    chunk += trans("Previous");
-	    chunk += "</b></a>&nbsp;&nbsp;&nbsp;";
+	    chunk << "<a href=\"" + prevUrl() + "\"><b>" 
+		  << trans("Previous")
+		  << "</b></a>&nbsp;&nbsp;&nbsp;";
 	}
 	if (hasNext()) {
-	    chunk += "<a href=\""+ nextUrl() + "\"><b>";
-	    chunk += trans("Next");
-	    chunk += "</b></a>";
+	    chunk << "<a href=\""+ nextUrl() + "\"><b>"
+		  << trans("Next")
+		  << "</b></a>";
 	}
     }
-    chunk += "</p>\n";
-    chunk += "</body></html>\n";
-    append(chunk);
+    chunk << "</p>" << endl;
+    chunk << "</body></html>" << endl;
+    append(chunk.rdbuf()->str());
 }
 
 // Default implementations for things that should be implemented by 

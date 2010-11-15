@@ -225,7 +225,7 @@ void SpellW::doExpand()
 	     it != res.entries.end(); it++) {
 #endif
 	    LOGDEB(("SpellW::expand: %6d [%s]\n", it->wcf, it->term.c_str()));
-	    char num[20];
+	    char num[30];
 	    if (it->wcf)
 		sprintf(num, "%d / %d",  it->docs, it->wcf);
 	    else

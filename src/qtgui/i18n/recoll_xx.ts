@@ -615,10 +615,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Copy &amp;File Name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -648,14 +644,6 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; for </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -692,6 +680,22 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>out of at least</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>for</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

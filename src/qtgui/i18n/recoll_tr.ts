@@ -34,10 +34,6 @@
         <source>other</source>
         <translation>diğer</translation>
     </message>
-    <message>
-        <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="obsolete">Tamamen negatif sorgu çalıştırılamaz. Lütfen &apos;herhangi bir sözcük&apos; alanına genel ifadeler girin</translation>
-    </message>
 </context>
 <context>
     <name>AdvSearchBase</name>
@@ -48,10 +44,6 @@
     <message>
         <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
         <translation>Uyan &lt;br&gt;belgeleri&lt;br&gt;ara:</translation>
-    </message>
-    <message>
-        <source>All non blank fields will be combined with OR or AND conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation type="obsolete">Tüm boş alanlar VEYA ya da VE bağlaçları ile birleştirilecek. &lt;br&gt; &quot;Herhangi biri&quot; &quot;Tümü&quot; ve &quot;Hiçbiri&quot; alan tipleri basit sözcüklerin karışımını ve çift tırnak içine alınmış ifadeleri kabul edebilir.&lt;br&gt;Veri içermeyen alanlar yoksayılır.</translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -133,10 +125,6 @@
 <context>
     <name>Main</name>
     <message>
-        <source>Configuration problem: </source>
-        <translation type="obsolete">Yapılandırma sorunu: </translation>
-    </message>
-    <message>
         <source>Configuration problem (dynconf</source>
         <translation>Yapılandırma sorunu</translation>
     </message>
@@ -164,10 +152,6 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Cannot create temporary directory</source>
         <translation>Geçici dizin oluşturulamadı</translation>
-    </message>
-    <message>
-        <source>File does not exist</source>
-        <translation type="obsolete">Dosya yok</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -208,49 +192,6 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Match &amp;Case</source>
         <translation type="unfinished">Eşleşme Şa&amp;rtı</translation>
-    </message>
-</context>
-<context>
-    <name>PreviewBase</name>
-    <message>
-        <source>Preview</source>
-        <translation type="obsolete">Önizle</translation>
-    </message>
-    <message>
-        <source>Preview 1</source>
-        <translation type="obsolete">Önizleme 1</translation>
-    </message>
-    <message>
-        <source>&amp;Search for:</source>
-        <translation type="obsolete">A&amp;ra:</translation>
-    </message>
-    <message>
-        <source>&amp;Next</source>
-        <translation type="obsolete">&amp;Sonraki</translation>
-    </message>
-    <message>
-        <source>Alt+N</source>
-        <translation type="obsolete">Alt+S</translation>
-    </message>
-    <message>
-        <source>&amp;Previous</source>
-        <translation type="obsolete">&amp;Önceki</translation>
-    </message>
-    <message>
-        <source>Alt+P</source>
-        <translation type="obsolete">Alt+Ö</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="obsolete">Temizle</translation>
-    </message>
-    <message>
-        <source>Match &amp;Case</source>
-        <translation type="obsolete">Eşleşme Şa&amp;rtı</translation>
-    </message>
-    <message>
-        <source>Alt+C</source>
-        <translation type="obsolete">Alt+R</translation>
     </message>
 </context>
 <context>
@@ -332,33 +273,6 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
 </context>
 <context>
-    <name>QtGuiResListPager</name>
-    <message>
-        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Sonuç bulunamadı&lt;/b&gt;&lt;br&gt;</translation>
-    </message>
-    <message>
-        <source>Previous</source>
-        <translation type="obsolete">Önceki</translation>
-    </message>
-    <message>
-        <source>Next</source>
-        <translation type="obsolete">Sonraki</translation>
-    </message>
-    <message>
-        <source>Unavailable document</source>
-        <translation type="obsolete">Erişilemez belge</translation>
-    </message>
-    <message>
-        <source>Preview</source>
-        <translation type="obsolete">Önizle</translation>
-    </message>
-    <message>
-        <source>(show query)</source>
-        <translation type="obsolete">(sorguyu göster)</translation>
-    </message>
-</context>
-<context>
     <name>RclMain</name>
     <message>
         <source>(no stemming)</source>
@@ -405,16 +319,8 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Arama Sonuçları</translation>
     </message>
     <message>
-        <source>Query results (sorted)</source>
-        <translation type="obsolete">Arama sonuçları (sıralanmış)</translation>
-    </message>
-    <message>
         <source>Cannot retrieve document info from database</source>
         <translation>Veritabanından belge bilgileri alınamadı</translation>
-    </message>
-    <message>
-        <source>Cannot access document file: </source>
-        <translation type="obsolete">Belge dosyasına erişilemedi: </translation>
     </message>
     <message>
         <source>Warning</source>
@@ -429,20 +335,10 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Bu arama atrık etkin değil</translation>
     </message>
     <message>
-        <source>No external viewer configured for mime type </source>
-        <translation type="obsolete">Mime tipi için bir dış gösterici ayarlanmamış</translation>
-    </message>
-    <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
         <translation>%1 için uygun olmayan komut: [%2]
 Lütfen mimeconf dosyasını kontrol edin</translation>
-    </message>
-    <message>
-        <source>The viewer specified in mimeconf for %1: %2 is not found.
-Do you want to start the  preferences dialog ?</source>
-        <translation type="obsolete">%1 için mimeconf dosyasında belirtilen gösterici: %2 bulunamadı.
-Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>Cannot extract document or create temporary file</source>
@@ -455,10 +351,6 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     <message>
         <source>About Recoll</source>
         <translation>Recoll Hakkında</translation>
-    </message>
-    <message>
-        <source>Starting help browser </source>
-        <translation type="obsolete">Yardım tarayıcıyı başlat </translation>
     </message>
     <message>
         <source>History data</source>
@@ -718,20 +610,8 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Sonuç listesi</translation>
     </message>
     <message>
-        <source>Show query details</source>
-        <translation type="obsolete">Sorgu detaylarını göster</translation>
-    </message>
-    <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished">&lt;p&gt;&lt;b&gt;Sonuç bulunamadı&lt;/b&gt;&lt;br&gt;</translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
-        <translation type="obsolete">Toplam &lt;b&gt;%3&lt;/b&gt; sonucun &lt;b&gt;%1-%2&lt;/b&gt; arası, sorgu </translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; for </source>
-        <translation type="obsolete">Sonuçlar &lt;b&gt;%1-%2&lt;/b&gt; arası, sorgu </translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -754,10 +634,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation>&amp;Önizle</translation>
     </message>
     <message>
-        <source>&amp;Edit</source>
-        <translation>&amp;Düzenle</translation>
-    </message>
-    <message>
         <source>Copy &amp;File Name</source>
         <translation>&amp;Dosya Adını Kopyala</translation>
     </message>
@@ -768,10 +644,6 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Find &amp;similar documents</source>
         <translation>Benzer belgeleri &amp;bul</translation>
-    </message>
-    <message>
-        <source>P&amp;arent document/folder</source>
-        <translation type="obsolete">Ü&amp;st belge/dizin</translation>
     </message>
     <message>
         <source>Query details</source>
@@ -788,14 +660,6 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Document history</source>
         <translation type="unfinished">Belge geçmişi</translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Preview</source>
@@ -819,6 +683,22 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>out of at least</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>for</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -886,10 +766,6 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Start query</source>
         <translation>Sorguyu başlat</translation>
-    </message>
-    <message>
-        <source>Choose type of search: any term, all terms, filename with possible wildcards.</source>
-        <translation type="obsolete">Arama tipini seçin: herhangi bir sözcük, tüm sözcükler, özel karakterler de kullanılabilen dosya adı.</translation>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
@@ -1002,10 +878,6 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Term</source>
         <translation>İfade</translation>
-    </message>
-    <message>
-        <source>Count</source>
-        <translation type="obsolete">Sayı</translation>
     </message>
     <message>
         <source>No db info.</source>
@@ -1135,22 +1007,6 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
         <translation>Önizlemede vurgulanacak en fazla metin boyutu (MB)</translation>
-    </message>
-    <message>
-        <source>HTML help browser</source>
-        <translation type="obsolete">HTML yardım tarayıcı</translation>
-    </message>
-    <message>
-        <source>Select file</source>
-        <translation type="obsolete">Dosya seç</translation>
-    </message>
-    <message>
-        <source>Choose external viewer applications</source>
-        <translation type="obsolete">Dış gösterici uygulamaları seç</translation>
-    </message>
-    <message>
-        <source>Manage</source>
-        <translation type="obsolete">Yönet</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -1502,10 +1358,6 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>No aspell usage</source>
         <translation>Aspell kullanımı yok</translation>
-    </message>
-    <message>
-        <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful is aspell is absent or does not work. </source>
-        <translation type="obsolete">İfade gösterme aracı için heceleme yakınlığı oluşturma özelliğini kapatır.&lt;br&gt; Aspell olmadığında ya da çalışmadığında kullanışlıdır. </translation>
     </message>
     <message>
         <source>Aspell language</source>
