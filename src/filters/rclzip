@@ -3,7 +3,7 @@
 # Zip file filter for Recoll
 
 import rclexecm
-from zipfile import ZipFile, error
+from zipfile import ZipFile
 
 class ZipExtractor:
     def __init__(self, em):
@@ -19,7 +19,7 @@ class ZipExtractor:
         try:
             docdata = self.zip.read(ipath)
             ok = True
-        except error, err:
+        except Exception, err:
             self.em.rclog("extractone: failed: [%s]" % err)
             ok = False
         iseof = rclexecm.RclExecM.noteof
