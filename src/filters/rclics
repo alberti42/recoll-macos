@@ -37,7 +37,6 @@ class IcalExtractor:
         self.file = ""
 	self.contents = []
         self.em = em
-        self.em.setmimetype("text/plain")
 
     def extractone(self, index):
         if index >= len(self.contents):
@@ -48,6 +47,7 @@ class IcalExtractor:
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.contents) -1:
             iseof = rclexecm.RclExecM.eofnext
+        self.em.setmimetype("text/plain")
         return (True, docdata, str(index), iseof)
 
     ###### File type handler api, used by rclexecm ---------->
@@ -152,29 +152,6 @@ class ICalSimpleSplitter:
         return lo
  
 
-##### Main program: either talk to the parent or execute test loop
-
-e = rclexecm.RclExecM()
-ical = IcalExtractor(e)
-
-if len(sys.argv) == 1:
-    e.mainloop(ical)
-else:
-    # Got a file name parameter: testing without an execm parent
-    # Loop on all entries
-    if not ical.openfile({'filename:':sys.argv[1]}):
-        print "Open error"
-        sys.exit(1)
-
-    ecnt = 0   
-    while 1:
-        ok, data, ipath, eof = ical.getnext("")
-        if ok:
-            ecnt = ecnt + 1
-            print "=========== ENTRY %d =================" % ecnt
-            print data
-            print
-        else:
-            print "Got error, eof %d"%eof
-            break
-    
+proto = rclexecm.RclExecM()
+extract = IcalExtractor(proto)
+rclexecm.main(proto, extract)

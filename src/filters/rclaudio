@@ -37,7 +37,6 @@ class AudioTagExtractor:
     def __init__(self, em):
         self.em = em
         self.currentindex = 0
-        self.em.setmimetype("text/html")
 
     def extractone(self, params):
         #self.em.rclog("extractone %s %s" % (params["filename:"], params["mimetype:"]))
@@ -76,6 +75,7 @@ class AudioTagExtractor:
             title = self.em.htmlescape(tags["title"][0].encode("utf-8"))
         except:
             pass
+        self.em.setmimetype("text/html")
         alldata = self.em.htmlescape(tags.pprint().encode("utf-8"))
         alldata = alldata.replace("\n", "<br>")
         docdata = htmltemplate % (album, artist, title, alldata)
@@ -98,5 +98,6 @@ class AudioTagExtractor:
             self.currentindex += 1
             return ret
 
-e = rclexecm.RclExecM()
-e.mainloop(AudioTagExtractor(e))
+proto = rclexecm.RclExecM()
+extract = AudioTagExtractor(proto)
+rclexecm.main(proto, extract)

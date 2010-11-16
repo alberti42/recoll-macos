@@ -48,5 +48,7 @@ class ZipExtractor:
             self.currentindex += 1
             return ret
 
-e = rclexecm.RclExecM()
-e.mainloop(ZipExtractor(e))
+# Main program: create protocol handler and extractor and run them
+proto = rclexecm.RclExecM()
+extract = ZipExtractor(proto)
+rclexecm.main(proto, extract)

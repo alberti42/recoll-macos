@@ -28,6 +28,9 @@ class RclExecM:
     # Our worker sometimes knows the mime types of the data it sends
     def setmimetype(self, mt):
         self.mimetype = mt
+
+    # Read single parameter from process input: line with param name and size
+    # followed by data.
     def readparam(self):
         s = sys.stdin.readline()
         if s == '':
@@ -95,6 +98,7 @@ class RclExecM:
             
         # If we have an ipath, that's what we look for, else ask for next entry
         ipath = ""
+        self.mimetype = ""
         if params.has_key("ipath:") and len(params["ipath:"]):
             ok, data, ipath, eof = processor.getipath(params)
         else:
@@ -123,3 +127,42 @@ class RclExecM:
             # Got message, act on it
             self.processmessage(processor, params)
 
+
+# Common main routine for all python execm filters: either run the
+# normal protocol engine or a local loop to test without recollindex
+def main(proto, extract):
+    if len(sys.argv) == 1:
+        proto.mainloop(extract)
+    else:
+        # Got a file name parameter: TESTING without an execm parent
+        # Loop on all entries or get specific ipath
+        if not extract.openfile({'filename:':sys.argv[1]}):
+            print "Open error"
+            sys.exit(1)
+        ipath = ""
+        if len(sys.argv) == 3:
+            ipath = sys.argv[2]
+
+        if ipath != "":
+            ok, data, ipath, eof = extract.getipath({'ipath:':ipath})
+            if ok:
+                print "== Found entry for ipath %s (mimetype [%s]):" % \
+                      (ipath, proto.mimetype)
+                print data
+                print
+            else:
+                print "Got error, eof %d"%eof
+            sys.exit(0)
+
+        ecnt = 0   
+        while 1:
+            ok, data, ipath, eof = extract.getnext("")
+            if ok:
+                ecnt = ecnt + 1
+                print "== Entry %d ipath %s (mimetype [%s]:" % \
+                      (ecnt, ipath, proto.mimetype)
+#                print data
+                print
+            else:
+                print "Not ok, eof %d" % eof
+                break

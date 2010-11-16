@@ -29,7 +29,6 @@ class InfoExtractor:
         self.file = ""
 	self.contents = []
         self.em = em
-        self.em.setmimetype("text/html")
 
     def extractone(self, index):
         if index >= len(self.contents):
@@ -44,6 +43,7 @@ class InfoExtractor:
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.contents) -1:
             iseof = rclexecm.RclExecM.eofnext
+        self.em.setmimetype("text/html")
         return (True, docdata, str(index), iseof)
 
     ###### File type handler api, used by rclexecm ---------->
@@ -195,41 +195,6 @@ class InfoSimpleSplitter:
  
 
 ##### Main program: either talk to the parent or execute test loop
-
-e = rclexecm.RclExecM()
-info = InfoExtractor(e)
-
-if len(sys.argv) == 1:
-    e.mainloop(info)
-else:
-    # Got a file name parameter: TESTING without an execm parent
-    # Loop on all entries or get specific ipath
-    if not info.openfile({'filename:':sys.argv[1]}):
-        print "Open error"
-        sys.exit(1)
-    ipath = ""
-    if len(sys.argv) == 3:
-        ipath = sys.argv[2]
-
-    if ipath != "":
-        ok, data, ipath, eof = info.getipath({'ipath:':ipath})
-        if ok:
-            print "=========== ENTRY for IPATH %s =============" % (ipath)
-            print data
-            print
-        else:
-            print "Got error, eof %d"%eof
-        sys.exit(0)
-
-    ecnt = 0   
-    while 1:
-        ok, data, ipath, eof = info.getnext("")
-        if ok:
-            ecnt = ecnt + 1
-            print "=========== ENTRY %d IPATH %s =============" % (ecnt,ipath)
-#            print data
-            print
-        else:
-            print "Got error, eof %d"%eof
-            break
-    
+proto = rclexecm.RclExecM()
+extract = InfoExtractor(proto)
+rclexecm.main(proto, extract)

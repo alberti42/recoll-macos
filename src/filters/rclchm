@@ -112,6 +112,7 @@ class rclCHM:
         res, doc = self.chm.RetrieveObject(ui)
         #self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
         if res > 0:
+            self.em.setmimetype("text/html")
             return (True, doc, path, iseof)
         return (False, "", path, iseof)
     
@@ -146,5 +147,6 @@ class rclCHM:
             self.currentindex += 1
             return ret
 
-e = rclexecm.RclExecM()
-e.mainloop(rclCHM(e))
+proto = rclexecm.RclExecM()
+extract = rclCHM(proto)
+rclexecm.main(proto, extract)
