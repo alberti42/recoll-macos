@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: $ (C) 2005 J.F.Dockes";
 #endif
 #include "autoconfig.h"
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
 
