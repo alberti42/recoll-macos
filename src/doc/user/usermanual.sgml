@@ -3592,6 +3592,12 @@ x-my-tag = mailmytag
         <para>Changes to this file can be done by direct editing, or
         through the <command>recoll</command> user preferences dialog.</para>
 
+        <para>If <guilabel>Use desktop preferences to choose document
+        editor</guilabel> is checked in the &RCL; GUI user preferences, all
+        <filename>mimeview</filename> entries will be ignored except the
+        one labelled <literal>application/x-all</literal> (which is set to
+        use <command>xdg-open</command> by default).</para>
+
         <para>As for the other configuration files, the normal usage
         is to have a <filename>mimeview</filename> inside your own
         configuration directory, with just the non-default entries,
@@ -3606,12 +3612,6 @@ x-my-tag = mailmytag
 	  in <filename>mimeconf</filename>). The syntax for the key is 
 <replaceable>mimetype</replaceable><literal>|</literal><replaceable>tag</replaceable></para>
 
-        <para>If <guilabel>Use desktop preferences to choose 
-        document editor</guilabel> is checked in the user preferences,
-        all <filename>mimeview</filename> entries will be ignored
-        except the one labelled <literal>application/x-all</literal>
-        (which is set to use <command>xdg-open</command> by default).</para>
-
         <para>The <literal>nouncompforviewmts</literal> entry, (placed at
         the top level, outside of the <literal>[view]</literal> section),
         holds a list of mime types that should not be uncompressed before
@@ -3625,17 +3625,20 @@ x-my-tag = mailmytag
         <itemizedlist>
           <listitem>
             <formalpara><title>%D</title><para>Document date</para></formalpara>
-          </listitem>
-          <listitem><formalpara><title>%f</title><para>File name. This the
-          name of a temporary file if it was necessary to create one (ie:
-          to extract a subdocument from a container).</para></formalpara>
+          </listitem> <listitem><formalpara><title>%f</title><para>File
+          name. This may be the name of a temporary file if it was
+          necessary to create one (ie: to extract a subdocument from a
+          container).</para></formalpara>
           </listitem>
           <listitem><formalpara><title>%F</title><para>Original file name. 
           Same as %f except if a temporary file is used.</para></formalpara>
           </listitem>
           <listitem><formalpara><title>%i</title><para>Internal path, for
           subdocuments of containers. The format depends on the container
-          type.</para></formalpara> 
+          type. If this appears in the command line, &RCL; will not create
+          a temporary file to extract the subdocument, expecting the called
+          application (possibly a script) to be able to handle
+          it.</para></formalpara>
           </listitem>
           <listitem><formalpara><title>%M</title><para>Mime
                   type</para></formalpara> 
@@ -3648,7 +3651,8 @@ x-my-tag = mailmytag
         <para>In addition to the predefined values above, all strings like
         <literal>%(fieldname)</literal> will be replaced by the value of
         the field named <literal>fieldname</literal> for the
-        document.</para> 
+        document. This could be used in combination with field
+        customisation to help with opening the document.</para> 
 
       </sect2>
 

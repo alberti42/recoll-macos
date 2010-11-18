@@ -91,7 +91,10 @@
 	y ait encore quelques astuces qui vous aient échappées. Un coup
 	d'oeil rapide sur la page des 
 	<a href="usermanual/rcl.search.tips.html">petites recettes
-	  de recherche</a> pourrait s'avérer fructueux !</p>
+	  de recherche</a> (en anglais) pourrait s'avérer fructueux !
+        Également, en anglais, 
+        la <a href="http://bitbucket.org/medoc/recoll/wiki/FaqsAndHowTos">page
+        des questions fréquentes et trucs divers</a> sur bitbucket.org</p>
 
       <h2>Nouvelles: </h2>
       <ul>
