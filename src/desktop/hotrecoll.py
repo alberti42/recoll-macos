@@ -10,12 +10,9 @@
 # full path as the action.
 
 import gtk
-#import gtk.gdk
 import wnck
 import os
 import sys
-import time
-
 
 def main():
     # We try to establish a timestamp for the calls to activate(), but
@@ -24,7 +21,9 @@ def main():
     # Try to find a nice default value. The x server timestamp is
     # millisecond from last reset, it wraps around in 49 days, half
     # the space is set aside for the past So a value just below 2**31
-    # should be considered recent in most situations ?
+    # should be most recent if the server is not too old?
+    # The right way to do this would probably be to create an unmapped
+    # window and arrange to receive some real event.
     timestamp = 2**31 - 1
     screen = wnck.screen_get_default()
     while gtk.events_pending():
