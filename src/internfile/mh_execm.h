@@ -41,20 +41,48 @@
 Filename: 24
 /my/home/mail/somefolderIpath: 2
 22
+
 <Message ends here: because of the empty line after '22'
+
  * 
  * Example answer:
  * 
 Mimetype: 10
 text/plainData: 10
 0123456789
+
 <Message ends here because of empty line
+
  *        
  * This format is both extensible and reasonably easy to parse. 
- * While it's more destined for python or perl on the script side, it
+ * While it's more fitted for python or perl on the script side, it
  * should even be sort of usable from the shell (ie: use dd to read
  * the counted data). Most alternatives would need data encoding in
  * some cases.
+ *
+ * Higher level dialog:
+ * The c++ program is the master and sends request messages to the script. The
+ * requests have the following fields:
+ *  - Filename: the file to process. This can be empty meaning that we 
+ *      are requesting the next document in the current file.
+ *  - Ipath: this will be present only if we are requesting a specific 
+ *      subdocument inside a container file (typically for preview, at query 
+ *      time). Absent during indexing (ipaths are generated and sent back from
+ *      the script
+ *  - Mimetype: this is the mime type for the (possibly container) file. 
+ *      Can be useful to filters which handle multiple types, like rclaudio.
+ *      
+ * The script answers with messages having the following fields:
+ *   - Document: translated document data (typically, but not always, html)
+ *   - Ipath: ipath for the returned document. Can be used at query time to
+ *       extract a specific subdocument for preview. Not present or empty for 
+ *       non-container files.
+ *   - Mimetype: mime type for the returned data (ie: text/html, text/plain)
+ *   - Eofnow: empty field: no document is returned and we're at eof.
+ *   - Eofnext: empty field: file ends after the doc returned by this message.
+ *   - SubdocError: no subdoc returned by this request, but file goes on.
+ *      (the indexer (1.14) treats this as a file-fatal error anyway).
+ *   - FileError: error, stop for this file.
  */
 class MimeHandlerExecMultiple : public MimeHandlerExec {
     /////////
