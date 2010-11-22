@@ -145,8 +145,11 @@ class RclConfig {
 	Doesn't depend on the keydir */
     list<string> getDaemSkippedPaths();
 
+    /** conf: Add local fields to target dic */
+    bool addLocalFields(map<string, string> *tgt);
+
     /** 
-     * Check if file name should be ignored because of suffix
+     * mimemap: Check if file name should be ignored because of suffix
      *
      * The list of ignored suffixes is initialized on first call, and
      * not changed for subsequent setKeydirs.

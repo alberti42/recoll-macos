@@ -268,22 +268,7 @@ void FsIndexer::localfieldsfromconf()
 {
     LOGDEB(("FsIndexer::localfieldsfromconf\n"));
     m_localfields.clear();
-    string sfields;
-    if (!m_config->getConfParam("localfields", sfields))
-        return;
-    // Substitute ':' with '\n' inside the string. There is no way to escape ':'
-    for (string::size_type i = 0; i < sfields.size(); i++)
-        if (sfields[i] == ':')
-            sfields[i] = '\n';
-    // Parse the result with a confsimple and add the results to the metadata
-    ConfSimple conf(sfields, 1, true);
-    list<string> nmlst = conf.getNames("");
-    for (list<string>::const_iterator it = nmlst.begin();
-         it != nmlst.end(); it++) {
-        conf.get(*it, m_localfields[*it]);
-        LOGDEB(("FsIndexer::localfieldsfromconf: [%s] => [%s]\n",
-                    (*it).c_str(), m_localfields[*it].c_str()));
-    }
+    m_config->addLocalFields(&m_localfields);
 }
 
 // 

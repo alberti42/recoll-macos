@@ -244,7 +244,7 @@ void RclConfig::setKeyDir(const string &dir)
     getConfParam("guesscharset", &guesscharset);
 }
 
-bool RclConfig::getConfParam(const std::string &name, int *ivp)
+bool RclConfig::getConfParam(const string &name, int *ivp)
 {
     string value;
     if (!getConfParam(name, value))
@@ -258,7 +258,7 @@ bool RclConfig::getConfParam(const std::string &name, int *ivp)
     return true;
 }
 
-bool RclConfig::getConfParam(const std::string &name, bool *bvp)
+bool RclConfig::getConfParam(const string &name, bool *bvp)
 {
     if (!bvp) 
 	return false;
@@ -271,7 +271,7 @@ bool RclConfig::getConfParam(const std::string &name, bool *bvp)
     return true;
 }
 
-bool RclConfig::getConfParam(const std::string &name, vector<string> *svvp)
+bool RclConfig::getConfParam(const string &name, vector<string> *svvp)
 {
     if (!svvp) 
 	return false;
@@ -281,7 +281,7 @@ bool RclConfig::getConfParam(const std::string &name, vector<string> *svvp)
 	return false;
     return stringToStrings(s, *svvp);
 }
-bool RclConfig::getConfParam(const std::string &name, list<string> *svvp)
+bool RclConfig::getConfParam(const string &name, list<string> *svvp)
 {
     if (!svvp) 
 	return false;
@@ -354,12 +354,35 @@ const string& RclConfig::getDefCharset(bool filename)
     }
 }
 
+bool RclConfig::addLocalFields(map<string, string> *tgt)
+{
+    LOGDEB(("RclConfig::addLocalFields: keydir [%s]\n", m_keydir.c_str()));
+    string sfields;
+    if (tgt == 0 || ! getConfParam("localfields", sfields))
+        return false;
+    // Substitute ':' with '\n' inside the string. There is no way to escape ':'
+    for (string::size_type i = 0; i < sfields.size(); i++)
+        if (sfields[i] == ':')
+            sfields[i] = '\n';
+    // Parse the result with a confsimple and add the results to the metadata
+    ConfSimple conf(sfields, 1, true);
+    list<string> nmlst = conf.getNames("");
+    for (list<string>::const_iterator it = nmlst.begin();
+         it != nmlst.end(); it++) {
+        conf.get(*it, (*tgt)[*it]);
+        LOGDEB(("RclConfig::addLocalFields: [%s] => [%s]\n",
+		(*it).c_str(), (*tgt)[*it].c_str()));
+    }
+    return true;
+}
+
+
 // Get all known document mime values (for indexing). We get them from
 // the mimeconf 'index' submap: values not in there (ie from mimemap
 // or idfile) can't possibly belong to documents in the database.
-std::list<string> RclConfig::getAllMimeTypes()
+list<string> RclConfig::getAllMimeTypes()
 {
-    std::list<string> lst;
+    list<string> lst;
     if (mimeconf == 0)
 	return lst;
     lst = mimeconf->getNames("index");
@@ -497,7 +520,7 @@ bool RclConfig::getMimeCatTypes(const string& cat, list<string>& tps)
     return true;
 }
 
-string RclConfig::getMimeHandlerDef(const std::string &mtype, bool filtertypes)
+string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes)
 {
     string hs;
     if (filtertypes && m_rmtstate.needrecompute()) {
