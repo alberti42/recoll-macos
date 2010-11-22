@@ -90,6 +90,11 @@
 
       <h2>News: </h2>
       <ul>
+        <li>2010-11-20 : wrote a small script so that recoll can be
+        activated or hidden with a single keystroke on the gnome
+        desktop. See the 
+          <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
+            installation recipee here</a>.</li>
 	<li>2010-09-23 : Recoll <a href="download.html#source">1.14.2</a> is
 	  out. The main new feature is the use of document dates in
 	  searches, buf there are <a href="CHANGES.html">a few others</a>

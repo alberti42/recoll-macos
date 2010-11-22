@@ -98,6 +98,10 @@
 
       <h2>Nouvelles: </h2>
       <ul>
+        <li>2010-11-20 : un petit script pour activer/cacher recoll sur un
+        bureau gnome d'un seul coup de clavier: 
+          <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
+            recette d'installation</a>.</li>
 	<li>2010-09-18 : Recoll <a href="download.html#source">1.14.2</a>
 	  vient de sortir. L'innovation principale est la possibilité
 	  d'utiliser des critères de dates dans les recherches, mais
