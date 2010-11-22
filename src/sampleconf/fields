@@ -42,6 +42,8 @@ recipient = XTO
 # Only canonical names should be used here, not aliases.
 # "author" used to be stored by default, now set here as optional
 # "rclaptg" is used for viewer specialization (depending on local config)
+# "rclbes" defines the backend type (ie normal fs, firefox cache). Should
+#   probably be hardcoded, don't remove it
 [stored]
 author=
 rclaptg=
