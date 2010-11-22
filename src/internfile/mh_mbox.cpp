@@ -225,6 +225,7 @@ private:
 
 const size_t MboxCache::o_b1size = 1024;
 static class MboxCache mcache;
+static const string keyquirks("mhmboxquirks");
 
 MimeHandlerMbox::~MimeHandlerMbox()
 {
@@ -265,6 +266,18 @@ bool MimeHandlerMbox::set_document_file(const string &fn)
     fseek((FILE*)m_vfp, 0, SEEK_SET);
     m_havedoc = true;
     m_offsets.clear();
+    m_quirks = 0;
+
+    // Check for location-based quirks:
+    RclConfig *config = RclConfig::getMainConfig();
+    string quirks;
+    if (config && config->getConfParam(keyquirks, quirks)) {
+	if (quirks == "tbird") {
+	    LOGDEB(("MimeHandlerMbox: setting quirks TBIRD\n"));
+	    m_quirks |= MBOXQUIRK_TBIRD;
+	}
+    }
+
     return true;
 }
 
@@ -325,10 +338,6 @@ static inline void stripendnl(line_type& line, int& ll)
 // emacs-vm, Recoll is not alone
 // Update: 2009-11-27: word after From may be quoted string: From "john bull"
 static const  char *frompat =  
-#if 0 //1.9.0
-    "^From .* [1-2][0-9][0-9][0-9]$";
-#endif
-#if 1
 "^From[ ]+([^ ]+|\"[^\"]+\")[ ]+"    // 'From (toto@tutu|"john bull") '
 "[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Fri Oct 26
 "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?[ ]+"             // Time, seconds optional
@@ -340,8 +349,7 @@ static const  char *frompat =
 "[12][0-9][0-9][0-9][ ]+"                              // Year
 "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?"                  // Time, secs optional
     ;
-#endif
-    //    "([ ]+[-+][0-9]{4})?$"
+
 static regex_t fromregex;
 static bool regcompiled;
 
@@ -425,15 +433,21 @@ bool MimeHandlerMbox::next_document()
 		hademptyline = true;
 		continue;
 	    }
-	    if (hademptyline && !regexec(&fromregex, line, 0, 0, 0)) {
-		LOGDEB0(("MimeHandlerMbox: msgnum %d, From_ at line %d: [%s]\n",
-                         m_msgnum, m_lineno, line));
-		start = ftello(fp);
-		m_offsets.push_back(off_From);
-		m_msgnum++;
-		break;
+	    // Non empty line. If the previous one was empty, check regex
+	    if (hademptyline) {
+		// Tbird sometimes omits the empty line, so avoid resetting
+		// state (initially true) and hope for the best
+		if (!(m_quirks & MBOXQUIRK_TBIRD))
+		    hademptyline = false;
+		if (!regexec(&fromregex, line, 0, 0, 0)) {
+		    LOGDEB0(("MimeHandlerMbox: msgnum %d, "
+			 "From_ at line %d: [%s]\n", m_msgnum, m_lineno, line));
+		    start = ftello(fp);
+		    m_offsets.push_back(off_From);
+		    m_msgnum++;
+		    break;
+		}
 	    }
-	    hademptyline = false;
 	}
 
 	// Look for next 'From ' line or eof, end of message.
@@ -449,21 +463,24 @@ bool MimeHandlerMbox::next_document()
 	    stripendnl(line, ll);
 	    LOGDEB2(("End: hadempty %d ll %d Line: [%s]\n", 
 		    hademptyline, ll, line));
-	    if (hademptyline && !regexec(&fromregex, line, 0, 0, 0)) {
-		// Rewind to start of "From " line
-		fseek(fp, end, SEEK_SET);
-		m_lineno--;
-		break;
+	    if (hademptyline) {
+		if (ll > 0) {
+		    if (!(m_quirks & MBOXQUIRK_TBIRD))
+			hademptyline = false;
+		    if (!regexec(&fromregex, line, 0, 0, 0)) {
+			// Rewind to start of "From " line
+			fseek(fp, end, SEEK_SET);
+			m_lineno--;
+			break;
+		    }
+		}
+	    } else if (ll <= 0) {
+		hademptyline = true;
 	    }
 	    if (mtarg <= 0 || m_msgnum == mtarg) {
 		line[ll] = '\n';
 		line[ll+1] = 0;
 		msgtxt += line;
-	    }
-	    if (ll <= 0) {
-		hademptyline = true;
-	    } else {
-		hademptyline = false;
 	    }
 	}
 

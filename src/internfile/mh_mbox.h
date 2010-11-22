@@ -52,6 +52,8 @@ class MimeHandlerMbox : public RecollFilter {
     int        m_lineno; // debug 
     mbhoff_type m_fsize;
     vector<mbhoff_type> m_offsets;
+    enum Quirks {MBOXQUIRK_TBIRD=1};
+    int        m_quirks;
 };
 
 #endif /* _MBOX_H_INCLUDED_ */
