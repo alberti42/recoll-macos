@@ -181,6 +181,8 @@ bool MimeHandlerExecMultiple::next_document()
     LOGDEB1(("MHExecMultiple: reading answer\n"));
     bool eofnext_received = false;
     bool eofnow_received = false;
+    bool fileerror_received = false;
+    bool subdocerror_received = false;
     string ipath;
     string mtype;
     for (int loop=0;;loop++) {
@@ -194,16 +196,22 @@ bool MimeHandlerExecMultiple::next_document()
         if (!stringlowercmp("eofnext:", name)) {
             LOGDEB(("MHExecMultiple: got EOFNEXT\n"));
             eofnext_received = true;
-        }
-        if (!stringlowercmp("eofnow:", name)) {
+        } else if (!stringlowercmp("eofnow:", name)) {
             LOGDEB(("MHExecMultiple: got EOFNOW\n"));
             eofnow_received = true;
-        }
-        if (!stringlowercmp("ipath:", name)) {
+        } else if (!stringlowercmp("subdocerror:", name)) {
+            LOGDEB(("MHExecMultiple: got SUBDOCERROR\n"));
+	    subdocerror_received = true;
+        } else if (!stringlowercmp("fileerror:", name)) {
+            LOGDEB(("MHExecMultiple: got FILEERROR\n"));
+	    fileerror_received = true;
+        } else if (!stringlowercmp("subdocerror:", name)) {
+            LOGDEB(("MHExecMultiple: got SUBDOCERROR\n"));
+	    return false;
+        } else if (!stringlowercmp("ipath:", name)) {
             ipath = data;
             LOGDEB(("MHExecMultiple: got ipath [%s]\n", data.c_str()));
-        }
-        if (!stringlowercmp("mimetype:", name)) {
+        } else if (!stringlowercmp("mimetype:", name)) {
             mtype = data;
             LOGDEB(("MHExecMultiple: got mimetype [%s]\n", data.c_str()));
         }
@@ -214,10 +222,13 @@ bool MimeHandlerExecMultiple::next_document()
         }
     }
 
-    if (eofnow_received) {
+    if (eofnow_received || fileerror_received) {
         // No more docs
         m_havedoc = false;
         return false;
+    }
+    if (subdocerror_received) {
+	return false;
     }
 
     // It used to be that eof could be signalled just by an empty document, but

@@ -9,6 +9,10 @@ class RclExecM:
     noteof  = 0
     eofnext = 1
     eofnow = 2
+
+    noerror = 0
+    subdocerror = 1
+    fileerror = 2
     
     def __init__(self):
         self.myname = os.path.basename(sys.argv[0])
@@ -60,25 +64,30 @@ class RclExecM:
         return (paramname, paramdata)
 
     # Send answer: document, ipath, possible eof.
-    def answer(self, docdata, ipath, iseof = noteof):
+    def answer(self, docdata, ipath, iseof = noteof, iserror = noerror):
 
-        print "Document:", len(docdata)
-        sys.stdout.write(docdata)
+        if iserror != RclExecM.fileerror and iseof != RclExecM.eofnow:
+            print "Document:", len(docdata)
+            sys.stdout.write(docdata)
 
-        if len(ipath):
-            print "Ipath:", len(ipath)
-            sys.stdout.write(ipath)
+            if len(ipath):
+                print "Ipath:", len(ipath)
+                sys.stdout.write(ipath)
 
-        if len(self.mimetype):
-            print "Mimetype:", len(self.mimetype)
-            sys.stdout.write(self.mimetype)
+            if len(self.mimetype):
+                print "Mimetype:", len(self.mimetype)
+                sys.stdout.write(self.mimetype)
 
         # If we're at the end of the contents, say so
-        if iseof == self.eofnow:
+        if iseof == RclExecM.eofnow:
             print "Eofnow: 0"
-        elif iseof == self.eofnext:
+        elif iseof == RclExecM.eofnext:
             print "Eofnext: 0"
-            
+        if iserror == RclExecM.subdocerror:
+            print "Subdocerror: 0"
+        elif iserror == RclExecM.fileerror:
+            print "Fileerror: 0"
+  
         # End of message
         print
         sys.stdout.flush()
@@ -93,7 +102,7 @@ class RclExecM:
         # If we're given a file name, open it. 
         if len(params["filename:"]) != 0:
             if not processor.openfile(params):
-                self.answer("", "", True)
+                self.answer("", "", iserror = RclExecM.fileerror)
                 return
             
         # If we have an ipath, that's what we look for, else ask for next entry
@@ -107,7 +116,7 @@ class RclExecM:
         if ok:
             self.answer(data, ipath, eof)
         else:
-            self.answer("", "", eof)
+            self.answer("", "", eof, RclExecM.subdocerror)
 
     # Loop on messages from our master
     def mainloop(self, processor):
