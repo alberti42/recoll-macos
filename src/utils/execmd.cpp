@@ -128,27 +128,8 @@ public:
 	if (!m_active || !m_parent)
 	    return;
 	LOGDEB1(("~ExecCmdRsrc: working. mypid: %d\n", (int)getpid()));
-	int status;
-	if (m_parent->m_pid > 0) {
-	    LOGDEB(("ExecCmd: killing cmd\n"));
-            pid_t grp = getpgid(m_parent->m_pid);
-            int ret = killpg(grp, SIGTERM);
-	    if (ret == 0) {
-		for (int i = 0; i < 3; i++) {
-		    (void)waitpid(m_parent->m_pid, &status, WNOHANG);
-		    if (kill(m_parent->m_pid, 0) != 0)
-			break;
-		    sleep(1);
-		    if (i == 2) {
-			LOGDEB(("ExecCmd: killing (KILL) cmd\n"));
-			killpg(grp, SIGKILL);
-		    }
-		}
-	    } else {
-                LOGERR(("ExecCmd: error killing process group %d: %d\n",
-                        grp, errno));
-            }
-	}
+
+	// Better to close the descs first in case the child is waiting in read
 	if (m_parent->m_pipein[0] >= 0)
 	    close(m_parent->m_pipein[0]);
 	if (m_parent->m_pipein[1] >= 0)
@@ -157,6 +138,28 @@ public:
 	    close(m_parent->m_pipeout[0]);
 	if (m_parent->m_pipeout[1] >= 0)
 	    close(m_parent->m_pipeout[1]);
+	int status;
+	if (m_parent->m_pid > 0) {
+            pid_t grp = getpgid(m_parent->m_pid);
+	    LOGDEB2(("ExecCmd: killpg(%d, SIGTERM)\n", grp));
+            int ret = killpg(grp, SIGTERM);
+	    if (ret == 0) {
+		for (int i = 0; i < 3; i++) {
+		    (void)waitpid(m_parent->m_pid, &status, WNOHANG);
+		    if (kill(m_parent->m_pid, 0) != 0)
+			break;
+		    sleep(1);
+		    if (i == 2) {
+			LOGDEB(("ExecCmd: killpg(%d, SIGKILL)\n", grp));
+			killpg(grp, SIGKILL);
+			(void)waitpid(m_parent->m_pid, &status, WNOHANG);
+		    }
+		}
+	    } else {
+                LOGERR(("ExecCmd: error killing process group %d: %d\n",
+                        grp, errno));
+            }
+	}
 	m_parent->m_tocmd.release();
 	m_parent->m_fromcmd.release();
 	pthread_sigmask(SIG_UNBLOCK, &m_parent->m_blkcld, 0);
@@ -474,8 +477,24 @@ void ExecCmd::dochild(const string &cmd, const list<string>& args,
 		      bool has_input, bool has_output)
 {
     // Start our own process group
-    setpgid(0, getpid());
-    
+    if (setpgid(0, getpid())) {
+	LOGINFO(("ExecCmd::dochild: setpgid(0, %d) failed: errno %d\n",
+		 getpid(), errno));
+    }
+
+    // Restore SIGTERM to default. Really, signal handling should be
+    // specified when creating the execmd. Help Recoll get rid of its
+    // filter children though. To be fixed one day... Not sure that
+    // all of this is needed. But an ignored sigterm and the masks are
+    // normally inherited.
+    if (signal(SIGTERM, SIG_DFL) == SIG_ERR) {
+	LOGERR(("ExecCmd::dochild: signal() failed, errno %d\n", errno));
+    }
+    sigset_t sset;
+    sigfillset(&sset);
+    pthread_sigmask(SIG_UNBLOCK, &sset, 0);
+    sigprocmask(SIG_UNBLOCK, &sset, 0);
+
     if (has_input) {
 	close(m_pipein[1]);
 	m_pipein[1] = -1;

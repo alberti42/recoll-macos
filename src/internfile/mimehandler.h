@@ -114,6 +114,11 @@ extern Dijon::Filter *getMimeHandler(const std::string &mtyp, RclConfig *cfg,
 /// Free up filter for reuse (you can also delete it)
 extern void returnMimeHandler(Dijon::Filter *);
 
+/// Clean up cache at the end of an indexing pass. For people who use
+/// the GUI to index: avoid all those filter processes forever hanging
+/// off recoll.
+extern void clearMimeHandlerCache();
+
 /// Can this mime type be interned ?
 extern bool canIntern(const std::string mimetype, RclConfig *cfg);
 

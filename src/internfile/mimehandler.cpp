@@ -141,6 +141,17 @@ void returnMimeHandler(Dijon::Filter *handler)
     }
 }
 
+void clearMimeHandlerCache()
+{
+    typedef multimap<string, Dijon::Filter*>::value_type value_type;
+    map<string, Dijon::Filter *>::iterator it;
+    for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
+	delete it->second;
+    }
+    o_handlers.clear();
+}
+
+
 /* Get handler/filter object for given mime type: */
 Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg, 
 			      bool filtertypes)

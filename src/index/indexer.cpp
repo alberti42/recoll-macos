@@ -32,6 +32,7 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.71 2008-12-17 08:01:40 dockes Exp
 #include "indexer.h"
 #include "fsindexer.h"
 #include "beaglequeue.h"
+#include "mimehandler.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -97,7 +98,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
 
     createStemmingDatabases();
     createAspellDict();
-
+    clearMimeHandlerCache();
     return true;
 }
 
