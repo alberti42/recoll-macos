@@ -172,6 +172,16 @@ webcachemaxmbs = 40
 #[/some/app/directory]
 #localfields = rclaptg = someapp; otherfield = somevalue
 
+# Use app tag to enable using gnu info to open info files (as the subnodes
+# are indexed as html, we'd use firefox on a temp file else. Set this on
+# some known info storage places
+[/usr/share/info]
+localfields = rclaptg=gnuinfo
+[/usr/local/share/info]
+localfields = rclaptg=gnuinfo
+[/usr/local/info]
+localfields = rclaptg=gnuinfo
+
 # Enable thunderbird mbox format quirks where appropriate
 [~/.thunderbird]
 mhmboxquirks = tbird
