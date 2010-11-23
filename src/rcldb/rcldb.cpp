@@ -906,6 +906,22 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
         LOGDEB(("Db::addOrUpdate: split failed for file name\n"));
     splitter.basepos += splitter.curpos + 100;
 
+    // If the ipath is like a path, index the last element. This is
+    // for compound documents like zip and chm for which the filter
+    // uses the file path as ipath. 
+    if (!doc.ipath.empty() && 
+	doc.ipath.find_first_not_of("0123456789") != string::npos) {
+	string utf8ipathlast;
+	// There is no way in hell we could have an idea of the
+	// charset here, so let's hope it's ascii or utf-8. We call
+	// transcode to strip the bad chars and pray
+	if (transcode(path_getsimple(doc.ipath), utf8ipathlast,
+		      "UTF-8", "UTF-8")) {
+	    splitter.text_to_words(utf8ipathlast);
+	    splitter.basepos += splitter.curpos + 100;
+	}
+    }
+	    
     // Index textual metadata.  These are all indexed as text with
     // positions, as we may want to do phrase searches with them (this
     // makes no sense for keywords by the way).
