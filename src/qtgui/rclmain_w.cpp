@@ -1340,6 +1340,10 @@ bool RclMain::eventFilter(QObject *, QEvent *event)
             resList->resultPageFirst();
             return true;
         } 
+    } else if (event->type() == QEvent::Show)  {
+	LOGDEB2(("RclMain::eventFilter: Show\n"));
+	// move the focus to the search entry on show
+	sSearch->queryText->setFocus();
     }
     return false;
 }
