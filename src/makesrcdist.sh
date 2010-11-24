@@ -38,22 +38,25 @@ if test ! -d qtgui;then
     echo "Should be executed in the master recoll directory"
     exit 1
 fi
-
+targetdir=${targetdir-/tmp}
+dotag=${dotag-yes}
 version=`cat VERSION`
 versionforcvs=`echo $version | sed -e 's/\./_/g'`
 TAG="RECOLL_$versionforcvs"
 
-echo Creating version $versionforcvs
+if test "$dotag" = "yes" ; then
+  echo Creating AND TAGGING version $versionforcvs
+else
+  echo Creating version $versionforcvs, no tagging
+fi
 sleep 2
 tagexists $TAG  && fatal "Tag $TAG already exists"
 
 editedfiles=`$VCCMD status . | egrep -v '^\?'`
-if test ! -z "$editedfiles"; then
-	fatal  "Edited files exist: " $editedfiles
+if test "$dotag" = "yes" -a ! -z "$editedfiles"; then
+  fatal  "Edited files exist: " $editedfiles
 fi
 
-targetdir=${targetdir-/tmp}
-dotag=${dotag-yes}
 
 case $version in
 *.*.*) releasename=recoll-$version;;
@@ -130,7 +133,7 @@ echo "$targetdir/$out created"
 
 # Check manifest against current reference
 tar tzf $targetdir/$out | sort | cut -d / -f 2- | \
-    diff mk/manifest.txt - || fatal "Please fix file list"
+    diff mk/manifest.txt - || fatal "Please fix file list mk/manifest.txt"
 
 # We tag .. as there is the 'packaging/' directory in there
 [ $dotag = "yes" ] && tagtop $TAG

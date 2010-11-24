@@ -48,36 +48,19 @@
       </table>
       </p>
 
-      <h2><a>General information and release notes</a></h2>
-
-      <p><em>Installing over an older version</em>: version 1.13/14 indexes are
-	mostly compatible with 1.11, but some new, relatively minor,
-	features (ie: duplicates collapsing) depend on a full index
-	rebuild. The 1.14 date search feature does <i>not</i> need an
-	index rebuild, the data was already in the index.
-
-	<br />If installing over 1.10 or older, you need a full
-	rebuild. The best way to do this is to just delete the old
-	<span class="filename">.recoll/xapiandb</span> directory,
-	especially if the index was created by an older version.
-	(ie: <tt>rm&nbsp;-rf&nbsp;~/.recoll/xapiandb/</tt>).  On very
-	old indexes, <tt>recollindex&nbsp;-z</tt> may sometimes end
-	with a <em>backend doesn't implement metadata</em> error,
-	which is wasteful because you then need to delete xapiandb and
-	run the indexing again.</p>
+      <h2><a>General information</a></h2>
 
       <p>The download page for Recoll 1.13 is
 	<a href="download-1.13.html">still available</a>.</p>
-      <p>Instructions: <a href="usermanual/rcl.install.html">
+
+      <p>Recoll <a href="usermanual/rcl.install.html">
 	  Installation / building manual</a>.</p> 
 
-      <p>Most binary packages on this page need a Qt 4 runtime
-	environment (Qt 3.x is specified for a few). To make things easier,
-	on systems where Xapian is not available from the standard package
-	repositories, the Recoll package will have a static link to Xapian
-	so that you do not need to build/install it separately.</p>
+      <p>Current <a href="release-1.14.3.html">release notes</a>.</p>
 
-      <p>Optional packages used by document filters:
+      <p>The indexing filters for some document types may need
+        external packages not installed on your system by default, and
+        not installed automatically with Recoll:
 	<a href="usermanual/usermanual.html#RCL.INSTALL.EXTERNAL"> 
 	  take a look at the list</a> and decide what you need to
 	  install.</p> 
@@ -91,7 +74,7 @@
 	<a href="mailto:jfd@recoll.org">
 	  report them</a>.</p>
 
-      <h3>What do the release numbers mean?</h3>
+      <h4>What do the release numbers mean?</h4>
 
       <p>The Recoll releases are numbered X.Y.Z. The X
 	would only change for really major modifications like a big
@@ -118,11 +101,11 @@
 
       <h2><a name="source">Source</a></h2>
 
-      <h3>Current release distribution: 1.14.2:</h3> 
+      <h3>Current release distribution: 1.14.3:</h3> 
       <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches( -->
-       <p><a href="recoll-1.14.2.tar.gz">recoll-1.14.2.tar.gz</a>.</p>
+       <p><a href="recoll-1.14.3.tar.gz">recoll-1.14.3.tar.gz</a>.</p>
        
       <h3>Prerequisites for building from source:</h3>
         <ul>
@@ -177,7 +160,7 @@
 
       <h3>Older recoll releases:</h3>
        <p>
-        <a href="recoll-1.14.0.tar.gz">1.14.0</a>.
+        <a href="recoll-1.14.2.tar.gz">1.14.2</a>.
         <a href="recoll-1.13.04.tar.gz">1.13.04</a>.
 	<a href="recoll-1.12.4.tar.gz">1.12.4</a>.
 	<a href="recoll-1.11.4.tar.gz">1.11.4</a>.
@@ -201,6 +184,11 @@
       <p>However they are often a bit older or built with older Xapian 
         releases. Here follow a number of updated packages and
         instructions for a number of distributions.</p>
+      <p>Most binary packages on this page need a Qt 4 runtime
+	environment (Qt 3.x is specified for a few). To make things easier,
+	on systems where Xapian is not available from the standard package
+	repositories, the Recoll package will have a static link to Xapian
+	so that you do not need to build/install it separately.</p>
 
       <h3>Ubuntu</h3>
       <blockquote>
@@ -327,9 +315,7 @@ sudo add-apt-repository ppa:recoll-backports/ppa
       <h2><a name="otherbinary">Binary bundles</a></h2>
 
       <p>These are just prebuilt trees (without the source files).
-	The executables were built with xapian 1.0.8 (patched for the
-	NEAR bug) and libiconv 1.9.2 (where relevant) as static
-	libraries. They depend on miscellaneous versions of Qt. For
+	Xapian is statically linked.  They still depend on Qt. For
 	Solaris, you should be able to find a Qt package on
       <a href="http://www.sunfreeware.com/">sunfreeware</a>.</p> 
 

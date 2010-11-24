@@ -31,6 +31,29 @@
 
       <h1>Recoll journal of user-visible changes </h1>
 
+      <h2><a name="1.14.3">1.14.3</a></h2>
+      <ul>
+        <li>Get rid of permanent filter subprocess at the end of a GUI
+          indexing pass.</li>
+        <li>Add new filter for indexing GNU info files.</li>
+        <li>Index the file name from a zip or chm internal path.</li>
+        <li>Add hotrecoll.py script to help with one-key recoll
+        activation/hiding. Move focus to search entry when unminimized.</li> 
+        <li>Handle bad mbox format from Thunderbird.</li>
+        <li>Catch exception which was causing stderr messages while
+          indexing encrypted zip files.</li>
+        <li>Change result list "Edit" links to "Open" for consistency
+          with menus.</li>
+        <li>Change the type of character set conversion occurring
+          when using  "Copy file path" from the result list. 
+          Should work in more cases than the previous approach (but
+          will still fail sometimes).</li>
+        <li>Update lyx filter.</li>
+        <li>Fix problems with white space in file name in several
+          input filters.</li>
+        <li>Support mutagen versions older than 1.17.</li>
+      </ul>
+
       <h2><a name="1.14.2">1.14.2</a></h2>
       <p>Note: most of the changes are in release 1.14.0. Release 1.14.1 fixed 2
 	bugs. Release 1.14.2 fixes the help browser which was broken
