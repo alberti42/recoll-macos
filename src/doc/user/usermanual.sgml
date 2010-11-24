@@ -620,6 +620,9 @@ fvwm
   </chapter>
 
   <chapter id="rcl.search">
+    <title>Searching</title>
+
+  <sect1 id="rcl.search.gui">
     <title>Searching with the Qt graphical user interface</title>
 
     <para>The <command>recoll</command> program provides the main user
@@ -653,7 +656,7 @@ fvwm
       case (they would typically be printed without white
       space).</para>
 
-    <sect1 id="rcl.search.simple">
+    <sect2 id="rcl.search.simple">
       <title>Simple search</title>
 
       <procedure>
@@ -733,9 +736,9 @@ fvwm
       <para>You can use the <link linkend="rcl.search.complex">
        <guilabel>Tools</guilabel> / <guilabel>Advanced search</guilabel>
         </link> dialog for more complex searches.</para>
-    </sect1>
+    </sect2>
 
-    <sect1 id="rcl.search.reslist">
+    <sect2 id="rcl.search.reslist">
       <title>The result list</title>
 
       <para>After starting a search, a list of results will instantly
@@ -797,7 +800,7 @@ fvwm
        results.</para>
 
 
-      <sect2 id="rcl.search.resultlist.menu">
+      <sect3 id="rcl.search.resultlist.menu">
         <title>The result list right-click menu</title>
 
         <para>Apart from the preview and edit links, you can display a
@@ -851,10 +854,10 @@ fvwm
           exemple to start a chm viewer on the parent document for a help
           page.</para> 
 
-      </sect2>
-    </sect1>
+      </sect3>
+    </sect2>
 
-    <sect1 id="rcl.search.preview">
+    <sect2 id="rcl.search.preview">
       <title>The preview window</title>
 
       <para>The preview window opens when you first click a
@@ -908,203 +911,15 @@ fvwm
          <keycap>^P</keycap> (<keycap>Ctrl</keycap> + <keycap>P</keycap>) in 
         the window text.</para> 
         
+    </sect2>
 
-    </sect1>
-
-    <sect1 id="rcl.search.lang">
-      <title>The query language</title>
-
-      <para>The query language processor is activated on the
-      simple search entry when the search mode selector is set to
-      <guilabel>Query Language</guilabel>.</para>
-
-      <para>The language is roughly based on the <ulink
-            url="http://www.xesam.org/main/XesamUserSearchLanguage95">
-      Xesam</ulink> user search language specification.</para>
-
-      <para>Here follows a sample request that we are going to
-      explain:</para>
-
-      <programlisting>
-          author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
-      </programlisting>
-
-      <para>This would search for all documents with 
-      <replaceable>John Doe</replaceable>
-      appearing as a phrase in the author field (exactly what this is
-      would depend on the document type, ie: the
-      <literal>From:</literal> header, for an email message),
-      and containing either <replaceable>beatles</replaceable> or
-      <replaceable>lennon</replaceable> and either
-      <replaceable>live</replaceable> or
-      <replaceable>unplugged</replaceable> but not
-      <replaceable>potatoes</replaceable> (in any part of the document).</para>
-
-      <para>An element is composed of an optional field specification,
-      and a value, separated by a colon. Exemple:
-      <replaceable>Beatles</replaceable>,
-      <replaceable>author:balzac</replaceable>,
-      <replaceable>dc:title:grandet</replaceable> </para>
-
-      <para>The colon, if present, means "contains". Xesam defines other
-      relations, which are not supported for now.</para>
-
-      <para>All elements in the search entry are normally combined
-      with an implicit AND. It is possible to specify that elements be
-      OR'ed instead, as in <replaceable>Beatles</replaceable>
-      <literal>OR</literal> <replaceable>Lennon</replaceable>. The
-      <literal>OR</literal> must be entered literally (capitals), and
-      it has priority over the AND associations:
-      <replaceable>word1</replaceable>
-      <replaceable>word2</replaceable> <literal>OR</literal>
-      <replaceable>word3</replaceable> 
-      means 
-      <replaceable>word1</replaceable> AND 
-      (<replaceable>word2</replaceable> <literal>OR</literal>
-      <replaceable>word3</replaceable>)
-      not 
-      (<replaceable>word1</replaceable> AND
-      <replaceable>word2</replaceable>) <literal>OR</literal>
-      <replaceable>word3</replaceable>. Do not enter explicit
-      parenthesis, they are not supported for now.</para>
-
-      <para>An element preceded by a <literal>-</literal> specifies a
-      term that should <emphasis>not</emphasis> appear. Pure negative
-      queries are forbidden.</para>
-
-      <para>As usual, words inside quotes define a phrase
-      (the order of words is significant), so that
-      <replaceable>title:"prejudice pride"</replaceable> is not the same as
-      <replaceable>title:prejudice title:pride</replaceable>, and is
-      unlikely to find a result.</para> 
-
-      <para>&RCL; currently manages the following default fields:</para>
-      <itemizedlist>
-        <listitem><para><literal>title</literal>,
-        <literal>subject</literal> or <literal>caption</literal> are
-        synonyms which specify data to be searched for in the
-        document title or subject.</para>
-        </listitem>
-        <listitem><para><literal>author</literal> or
-        <literal>from</literal> for searching the documents originators.</para>
-        </listitem>
-        <listitem><para><literal>recipient</literal> or
-        <literal>to</literal> for searching the documents recipients.</para>
-        </listitem>
-        <listitem><para><literal>keyword</literal> for searching the
-        document-specified keywords (few documents actually have any).</para>
-        </listitem>
-        <listitem><para><literal>filename</literal> for the document's
-        file name.</listitem>
-        <listitem><para><literal>ext</literal> specifies the file
-        name extension (Ex: <literal>ext:html</literal>)</para>
-        </listitem>
-      </itemizedlist>
-
-      <para>The field syntax also supports a few field-like, but
-      special, criteria:</para>
-      <itemizedlist>
-        <listitem><para><literal>dir</literal> for filtering the
-        results on file location (Ex:
-        <literal>dir:/home/me/somedir</literal>). Please note
-        that this is quite inefficient, that it may produce very
-        slow searches, and that it may be worth in some
-        cases to set up separate databases instead.</para>
-        </listitem>
-
-        <listitem><para><literal>date</literal> for searching or filtering
-        on dates. The syntax for the argument is based on the ISO8601
-        standard for dates and time intervals. Only dates are supported, no
-        times. The general syntax is 2 elements separated by a
-        <literal>/</literal> character. Each element can be a date or a
-        period of time. Periods are specified as 
-<literal>P</literal><replaceable>n</replaceable><literal>Y</literal><replaceable>n</replaceable><literal>M</literal><replaceable>n</replaceable><literal>D</literal>. 
-       The <replaceable>n</replaceable> numbers are the respective numbers
-       of years, months or days, any of which may be missing. Dates are
-       specified as  
-<replaceable>YYYY</replaceable>-<replaceable>MM</replaceable>-<replaceable>DD</replaceable>. 
-       The days and months parts may be missing. If the
-       <literal>/</literal> is present but an element is missing, the
-       missing element is interpreted as the lowest or highest date in the
-       index. Exemples:</para>
-	  <itemizedlist>
-	    <listitem><para><literal>2001-03-01/2002-05-01</literal> the
-	    basic syntax for an interval of dates.</para>
-	    </listitem>
-	    <listitem><para><literal>2001-03-01/P1Y2M</literal> the
-	    same specified with a period.</para>
-	    </listitem>
-	    <listitem><para><literal>2001/</literal> from the beginning of
-	    2001 to the latest date in the index.</para>
-	    </listitem>
-	    <listitem><para><literal>2001</literal> the whole year of
-	      2001</para></listitem>
-	    <listitem><para><literal>P2D/</literal> means 2 days ago up to
-	      now if there are no documents with dates in the future.</para>
-	    </listitem>
-	    <listitem><para><literal>/2003</literal> all documents from
-	    2003 or older.</para>
-	    </listitem>
-	  </itemizedlist>
-	  <para>Periods can also be specified with small letters (ie:
-	  p2y).</para> 
-        </listitem>
-
-        <listitem><para><literal>mime</literal> or
-        <literal>format</literal> for specifying the
-        mime type. This one is quite special because you can specify
-        several values which will be OR'ed (the normal default for the
-        language is AND). Ex: <literal>mime:text/plain
-        mime:text/html</literal>. Specifying an explicit boolean
-        operator or negation (<literal>-</literal>) before a
-        <literal>mime</literal> specification is not supported and
-        will produce strange results.</para>
-        </listitem>
-
-        <listitem><para><literal>type</literal> or
-        <literal>rclcat</literal> for specifying the category (as in
-        text/media/presentation/etc.). The classification of mime
-        types in categories is defined in the &RCL; configuration
-        (<filename>mimeconf</filename>), and can be modified or
-        extended. The default category names are those which permit
-        filtering results in the main GUI screen. Categories are OR'ed
-        like mime types above.</para>
-        </listitem>
-
-      </itemizedlist>
-
-      <para>The document filters used while indexing have the
-      possibility to create other fields with arbitrary names, and
-      aliases may be defined in the configuration, so that the exact
-      field search possibilities may be different for you if someone
-      took care of the customisation.</para>
-
-      <para>The query language is currently the only way to use the
-      &RCL; field search capability.</para>
-
-      <para>Words inside phrases and capitalized words are not
-      stem-expanded. Wildcards may be used anywhere inside a term.
-      Specifying a wild-card on the left of a term can produce a very
-      slow search (or even an incorrect one if the expansion is
-      truncated because of excessive size).</para>
-
-      <para>You can use the <literal>show query</literal> link at the
-      top of the result list to check the exact query which was
-      finally executed by Xapian.</para>
-
-      <para>Most Xesam phrase modifiers are unsupported, except for
-      <literal>l</literal> (small ell) to disable stemming, and
-      <literal>p</literal> to turn a phrase into a NEAR (unordered)
-      search. Exemple: <replaceable>"prejudice pride"p</replaceable></para>
-
-    </sect1>
-
-    <sect1 id="rcl.search.complex">
+    <sect2 id="rcl.search.complex">
       <title>Complex/advanced search</title>
 
-      <para>The advanced search dialog helps you build more complex
-      queries. It can be opened through the <guilabel>Tools</guilabel>
-      menu or through the main toolbar.</para>
+      <para>The advanced search dialog helps you build more complex queries
+      without memorizing the search language constructs. It can be opened
+      through the <guilabel>Tools</guilabel> menu or through the main
+      toolbar.</para>
 
       <para>The dialog has three parts:</para>
 
@@ -1186,9 +1001,9 @@ fvwm
       <para>Click on the <literal>Show query details</literal> link at
         the top of the result page to see the query expansion.</para>
 
-    </sect1>
+    </sect2>
 
-    <sect1 id="rcl.search.termexplorer">
+    <sect2 id="rcl.search.termexplorer">
       <title>The term explorer tool</title>
 
       <para>&RCL; automatically manages the expansion of search terms
@@ -1265,57 +1080,9 @@ fvwm
       between the result list and any entry field (the end of lines
       will be taken care of).</para>
 
-    </sect1>
+    </sect2>
 
-    <sect1 id="rcl.search.wildcards">
-      <title>More about wildcards</title>
-
-      <para>All words entered in &RCL; search fields will be processed
-      for wildcard expansion before the request is finally
-      executed.</para>
-
-      <para>The wildcard characters are:</para>
-
-      <itemizedlist>
-       <listitem><para><literal>*</literal> which matches 0 or more 
-        characters.</para>
-        </listitem>
-        <listitem><para><literal>?</literal> which matches
-           a single character.</para>
-        </listitem>
-        <listitem><para><literal>[]</literal> which allow
-         defining sets of characters to be matched (ex:
-         <literal>[</literal><userinput>abc</userinput><literal>]</literal> 
-          matches a single character which may be 'a' or 'b' or 'c',
-         <literal>[</literal><userinput>0-9</userinput><literal>]</literal>
-         matches any number.</para>
-        </listitem>
-      </itemizedlist>
-
-      <para>You should be aware of a few things before using
-        wildcards.</para>
-
-      <itemizedlist>
-        <listitem><para>Using a wildcard character at the beginning of
-        a word can make for a slow search because &RCL; will have to
-        scan the whole index term list to find the matches.</para>
-        </listitem>
-        <listitem><para>Using a <literal>*</literal> at the end of a
-        word can produce more matches than you would think, and
-        strange search results. You can use the <link
-        linkend="rcl.search.termexplorer">term explorer</link> tool to
-        check what completions exist for a given term. You can also
-        see exactly what search was performed by clicking on the link
-        at the top of the result list. In general, for natural
-        language terms, stem expansion will produce better results
-        than an ending <literal>*</literal> (stem expansion is turned
-        off when any wildcard character appears in the term).</para>
-        </listitem>
-      </itemizedlist>
-
-    </sect1>
-
-    <sect1 id="rcl.search.multidb">
+    <sect2 id="rcl.search.multidb">
       <title>Multiple databases</title>
 
       <para>Multiple &RCL; databases or indexes can be created by
@@ -1370,9 +1137,9 @@ fvwm
       multiple indexes will have much better performance and may be
       worth the trouble.</para>
 
-    </sect1>
+    </sect2>
 
-    <sect1 id="rcl.search.history">
+    <sect2 id="rcl.search.history">
       <title>Document history</title>
 
       <para>Documents that you actually view (with the internal preview
@@ -1385,9 +1152,9 @@ fvwm
       <guilabel>Erase document history</guilabel> entry in the
       <guimenu>File</guimenu> menu.
 
-    </sect1>
+    </sect2>
 
-    <sect1 id="rcl.search.sort">
+    <sect2 id="rcl.search.sort">
       <title>Sorting search results and collapsing duplicates</title>
 
       <para>The documents in a result list are normally sorted in
@@ -1421,13 +1188,12 @@ fvwm
         by an entry in the <guilabel>Query configuration</guilabel>
         dialog, and is off by default.</para>
 
-    </sect1>
+    </sect2>
 
-
-    <sect1 id="rcl.search.tips">
+    <sect2 id="rcl.search.tips">
       <title>Search tips, shortcuts</title>
 
-    <sect2 id="rcl.search.tips.terms">
+    <sect3 id="rcl.search.tips.terms">
       <title>Terms and search expansion</title>
 
       <formalpara><title>Term completion</title>
@@ -1489,10 +1255,10 @@ fvwm
         faster than the generic search especially when using wildcards.</para>
       </formalpara>
 
-      </sect2>
+      </sect3>
 
 
-    <sect2 id="rcl.search.tips.phrases">
+    <sect3 id="rcl.search.tips.phrases">
       <title>Working with phrases and proximity</title>
 
       <formalpara><title>Phrases and Proximity searches</title>
@@ -1518,12 +1284,11 @@ fvwm
       both appear, but those which contain <literal>virtual
       reality</literal> should appear sooner in the list.</para>
 
-      </sect2>
+      </sect3>
 
-    <sect2 id="rcl.search.tips.misc">
+    <sect3 id="rcl.search.tips.misc">
       <title>Others</title>
 
-        
       <formalpara><title>Using fields</title>
         <para>You can use the <link linkend="rcl.search.lang">query
         language </link> and field specifications
@@ -1578,10 +1343,10 @@ fvwm
       <para>Entering <keycap>^Q</keycap> almost anywhere will
         close the application.</para>
       </formalpara>
-      </sect2>
-    </sect1>
+      </sect3>
+    </sect2>
 
-    <sect1 id="rcl.search.custom">
+    <sect2 id="rcl.search.custom">
       <title>Customizing the search interface</title>
 
       <para>You can customize some aspects of the search interface by using
@@ -1767,7 +1532,7 @@ fvwm
       need to implement a way of purging the index from stale data,
       </para>
 
-    <sect2 id="rcl.search.custom.reslistpara">
+    <sect3 id="rcl.search.custom.reslistpara">
       <title>The result list paragraph format</title>
 
         <para>The presentation of each result inside the result list can be
@@ -1863,15 +1628,15 @@ fvwm
         one.</para>
 
 
-      </sect2>
-    </sect1>
+      </sect3>
+    </sect2>
 
-  </chapter>
+  </sect1> <!-- search GUI -->
 
-  <chapter id="rcl.searchkio">
+  <sect1 id="rcl.searchkio">
     <title>Searching with the KDE KIO slave</title>
 
-    <sect1 id="rcl.searchkio.intro">
+    <sect2 id="rcl.searchkio.intro">
       <title>What's this</title>
 
       <para>The &RCL; KIO slave allows performing a &RCL; search
@@ -1897,14 +1662,16 @@ fvwm
       recoll KIO slave has been previously installed).</para>
 
 
-      <para>The instructions for building this module are located in
-      the source tree. See:
-      <filename>kde/kio/recoll/00README.txt</filename></para> 
-    </sect1>
+      <para>The instructions for building this module are located in the
+      source tree. See:
+      <filename>kde/kio/recoll/00README.txt</filename>. Some Linux
+      distributions do package the kio-recoll module, so check before
+      diving into the build process, maybe it's already out there ready for
+      one-click installation.</para>
+    </sect2>
 
 
-
-    <sect1 id="rcl.searchkio.searchabledocs">
+    <sect2 id="rcl.searchkio.searchabledocs">
       <title>Searchable documents</title>
 
       <para>As a sample application, the &RCL; KIO slave could allow
@@ -1930,14 +1697,11 @@ fvwm
 &lt;body ondblclick="recollsearch()">
 
 </programlisting>
-
+    </sect2>
     </sect1>
 
-  </chapter>
 
-
-
-  <chapter id="rcl.searchkcl">
+  <sect1 id="rcl.search.commandline">
     <title>Searching on the command line</title>
 
     <para>There are several ways to obtain search results as a text
@@ -1962,8 +1726,8 @@ fvwm
     <para><command>recollq</command> is not built by default. You can
     use the <filename>Makefile</filename> in the
     <filename>query</filename> directory to build it. This is a very
-    simple program, and it will often be useful to taylor its output format
-    to your needs.</para>
+    simple program, and if you can program a little c++, you may find it
+    useful to taylor its output format to your needs.</para>
 
     <para><command>recollq</command> has a man page (not installed by
     default, look in the <filename>doc/man</filename> directory). The
@@ -1994,8 +1758,299 @@ text/html       [file:///Users/uncrypted-dockes/projets/nautique/webnautique/art
 text/html       [file:///Users/uncrypted-dockes/projets/pagepers/index.html]    [psxtcl/writemime/recoll]...
 text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
 </programlisting>
+      </sect1>
 
-  </chapter>
+    <sect1 id="rcl.search.lang">
+      <title>The query language</title>
+
+      <para>The query language processor is activated in the GUI
+      simple search entry when the search mode selector is set to
+      <guilabel>Query Language</guilabel>. It can also be used with the KIO
+      slave or the command line search. It broadly has the same
+      capabilities as the complex search interface in the
+      GUI. Additionally, the query language is for now the only way to
+      access the important &RCL; field search capabilities.</para>
+
+      <para>The language is roughly based on the <ulink
+            url="http://www.xesam.org/main/XesamUserSearchLanguage95">
+      Xesam</ulink> user search language specification.</para>
+
+      <para>If the results of a query language search puzzle you and you
+      doubt what has been actually searched for, you can use the GUI
+      <literal>show query</literal> link at the top of the result list to
+      check the exact query which was finally executed by Xapian.</para>
+
+      <para>Here follows a sample request that we are going to
+      explain:</para>
+
+      <programlisting>
+          author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
+      </programlisting>
+
+      <para>This would search for all documents with 
+      <replaceable>John Doe</replaceable>
+      appearing as a phrase in the author field (exactly what this is
+      would depend on the document type, ie: the
+      <literal>From:</literal> header, for an email message),
+      and containing either <replaceable>beatles</replaceable> or
+      <replaceable>lennon</replaceable> and either
+      <replaceable>live</replaceable> or
+      <replaceable>unplugged</replaceable> but not
+      <replaceable>potatoes</replaceable> (in any part of the document).</para>
+
+      <para>An element is composed of an optional field specification,
+      and a value, separated by a colon. Exemple:
+      <replaceable>Beatles</replaceable>,
+      <replaceable>author:balzac</replaceable>,
+      <replaceable>dc:title:grandet</replaceable> </para>
+
+      <para>The colon, if present, means "contains". Xesam defines other
+      relations, which are not supported for now.</para>
+
+      <para>All elements in the search entry are normally combined
+      with an implicit AND. It is possible to specify that elements be
+      OR'ed instead, as in <replaceable>Beatles</replaceable>
+      <literal>OR</literal> <replaceable>Lennon</replaceable>. The
+      <literal>OR</literal> must be entered literally (capitals), and
+      it has priority over the AND associations:
+      <replaceable>word1</replaceable>
+      <replaceable>word2</replaceable> <literal>OR</literal>
+      <replaceable>word3</replaceable> 
+      means 
+      <replaceable>word1</replaceable> AND 
+      (<replaceable>word2</replaceable> <literal>OR</literal>
+      <replaceable>word3</replaceable>)
+      not 
+      (<replaceable>word1</replaceable> AND
+      <replaceable>word2</replaceable>) <literal>OR</literal>
+      <replaceable>word3</replaceable>. Do not enter explicit
+      parenthesis, they are not supported for now.</para>
+
+      <para>An element preceded by a <literal>-</literal> specifies a
+      term that should <emphasis>not</emphasis> appear. Pure negative
+      queries are forbidden.</para>
+
+      <para>As usual, words inside quotes define a phrase
+      (the order of words is significant), so that
+      <replaceable>title:"prejudice pride"</replaceable> is not the same as
+      <replaceable>title:prejudice title:pride</replaceable>, and is
+      unlikely to find a result.</para> 
+      <para>Most Xesam phrase modifiers are unsupported, except for
+      <literal>l</literal> (small ell) to disable stemming, and
+      <literal>p</literal> to turn a phrase into a NEAR (unordered proximity)
+      search. Exemple: <replaceable>"prejudice pride"p</replaceable></para>
+
+      <para>&RCL; currently manages the following default fields:</para>
+      <itemizedlist>
+        <listitem><para><literal>title</literal>,
+        <literal>subject</literal> or <literal>caption</literal> are
+        synonyms which specify data to be searched for in the
+        document title or subject.</para>
+        </listitem>
+        <listitem><para><literal>author</literal> or
+        <literal>from</literal> for searching the documents originators.</para>
+        </listitem>
+        <listitem><para><literal>recipient</literal> or
+        <literal>to</literal> for searching the documents recipients.</para>
+        </listitem>
+        <listitem><para><literal>keyword</literal> for searching the
+        document-specified keywords (few documents actually have any).</para>
+        </listitem>
+        <listitem><para><literal>filename</literal> for the document's
+        file name.</listitem>
+        <listitem><para><literal>ext</literal> specifies the file
+        name extension (Ex: <literal>ext:html</literal>)</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The field syntax also supports a few field-like, but
+      special, criteria:</para>
+      <itemizedlist>
+        <listitem><para><literal>dir</literal> for filtering the
+        results on file location (Ex:
+        <literal>dir:/home/me/somedir</literal>). Please note
+        that this is quite inefficient, that it may produce very
+        slow searches, and that it may be worth in some
+        cases to set up separate databases instead.</para>
+        </listitem>
+
+        <listitem><para><literal>date</literal> for searching or filtering
+        on dates. The syntax for the argument is based on the ISO8601
+        standard for dates and time intervals. Only dates are supported, no
+        times. The general syntax is 2 elements separated by a
+        <literal>/</literal> character. Each element can be a date or a
+        period of time. Periods are specified as 
+<literal>P</literal><replaceable>n</replaceable><literal>Y</literal><replaceable>n</replaceable><literal>M</literal><replaceable>n</replaceable><literal>D</literal>. 
+       The <replaceable>n</replaceable> numbers are the respective numbers
+       of years, months or days, any of which may be missing. Dates are
+       specified as  
+<replaceable>YYYY</replaceable>-<replaceable>MM</replaceable>-<replaceable>DD</replaceable>. 
+       The days and months parts may be missing. If the
+       <literal>/</literal> is present but an element is missing, the
+       missing element is interpreted as the lowest or highest date in the
+       index. Exemples:</para>
+	  <itemizedlist>
+	    <listitem><para><literal>2001-03-01/2002-05-01</literal> the
+	    basic syntax for an interval of dates.</para>
+	    </listitem>
+	    <listitem><para><literal>2001-03-01/P1Y2M</literal> the
+	    same specified with a period.</para>
+	    </listitem>
+	    <listitem><para><literal>2001/</literal> from the beginning of
+	    2001 to the latest date in the index.</para>
+	    </listitem>
+	    <listitem><para><literal>2001</literal> the whole year of
+	      2001</para></listitem>
+	    <listitem><para><literal>P2D/</literal> means 2 days ago up to
+	      now if there are no documents with dates in the future.</para>
+	    </listitem>
+	    <listitem><para><literal>/2003</literal> all documents from
+	    2003 or older.</para>
+	    </listitem>
+	  </itemizedlist>
+	  <para>Periods can also be specified with small letters (ie:
+	  p2y).</para> 
+        </listitem>
+
+        <listitem><para><literal>mime</literal> or
+        <literal>format</literal> for specifying the
+        mime type. This one is quite special because you can specify
+        several values which will be OR'ed (the normal default for the
+        language is AND). Ex: <literal>mime:text/plain
+        mime:text/html</literal>. Specifying an explicit boolean
+        operator or negation (<literal>-</literal>) before a
+        <literal>mime</literal> specification is not supported and
+        will produce strange results. Note that <literal>mime</literal> is
+        the ONLY field with an OR default. You do need to use
+        <literal>OR</literal> with <literal>ext</literal> terms for
+        example.</para> 
+        </listitem>
+
+        <listitem><para><literal>type</literal> or
+        <literal>rclcat</literal> for specifying the category (as in
+        text/media/presentation/etc.). The classification of mime
+        types in categories is defined in the &RCL; configuration
+        (<filename>mimeconf</filename>), and can be modified or
+        extended. The default category names are those which permit
+        filtering results in the main GUI screen. Categories are OR'ed
+        like mime types above.</para>
+        </listitem>
+
+      </itemizedlist>
+
+      <para>Words inside phrases and capitalized words are not
+      stem-expanded. Wildcards may be used anywhere inside a term.
+      Specifying a wild-card on the left of a term can produce a very
+      slow search (or even an incorrect one if the expansion is
+      truncated because of excessive size). Also see <link
+      linkend="rcl.search.wildcards">More about wildcards</link>.</para>
+
+      <para>The document filters used while indexing have the
+      possibility to create other fields with arbitrary names, and
+      aliases may be defined in the configuration, so that the exact
+      field search possibilities may be different for you if someone
+      took care of the customisation.</para>
+
+    <sect2 id="rcl.search.wildcards">
+      <title>More about wildcards</title>
+
+      <para>All words entered in &RCL; search fields will be processed
+      for wildcard expansion before the request is finally
+      executed.</para>
+
+      <para>The wildcard characters are:</para>
+
+      <itemizedlist>
+       <listitem><para><literal>*</literal> which matches 0 or more 
+        characters.</para>
+        </listitem>
+        <listitem><para><literal>?</literal> which matches
+           a single character.</para>
+        </listitem>
+        <listitem><para><literal>[]</literal> which allow
+         defining sets of characters to be matched (ex:
+         <literal>[</literal><userinput>abc</userinput><literal>]</literal> 
+          matches a single character which may be 'a' or 'b' or 'c',
+         <literal>[</literal><userinput>0-9</userinput><literal>]</literal>
+         matches any number.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>You should be aware of a few things before using
+        wildcards.</para>
+
+      <itemizedlist>
+        <listitem><para>Using a wildcard character at the beginning of
+        a word can make for a slow search because &RCL; will have to
+        scan the whole index term list to find the matches.</para>
+        </listitem>
+        <listitem><para>Using a <literal>*</literal> at the end of a
+        word can produce more matches than you would think, and
+        strange search results. You can use the <link
+        linkend="rcl.search.termexplorer">term explorer</link> tool to
+        check what completions exist for a given term. You can also
+        see exactly what search was performed by clicking on the link
+        at the top of the result list. In general, for natural
+        language terms, stem expansion will produce better results
+        than an ending <literal>*</literal> (stem expansion is turned
+        off when any wildcard character appears in the term).</para>
+        </listitem>
+      </itemizedlist>
+
+    </sect2>
+
+    </sect1> <!-- rcl.search.lang -->
+
+    <sect1 id="rcl.search.desktop">
+      <title>Desktop integration</title>
+
+      <para>Being independant of the desktop type has its drawbacks: &RCL;
+      desktop integration is minimal. Here follow a few things that may
+      help.</para> 
+
+      <sect2 id="rcl.search.shortcut">
+        <title>Hotkeying recoll</title>
+
+        <para>It is surprisingly convenient to be able to show or hide the
+         &RCL; GUI with a single keystroke. Recoll comes with a small
+         python script, based on the <literal>libwnck</literal> window manager
+         interface library, which will allow you to do just this. The detailed
+         instructions are on 
+         <ulink url="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
+         this wiki page</ulink>.</para>
+
+      </sect2>
+
+      <sect2 id="rcl.kicker-applet">
+        <title>The KDE Kicker Recoll applet</title>
+
+        <para>The &RCL; source tree contains the source code to the
+        <literal>recoll_applet</literal>, a small application derived
+        from the <literal>find_applet</literal>. This can be used to
+        add a small &RCL; launcher to the KDE panel.</para>
+
+        <para>The applet is not automatically built with the main &RCL;
+         programs, nor is it included with the main source distribution
+        (because the KDE build boilerplate makes it relatively big). You can
+        download its source from the recoll.org download page. Use the
+        omnipotent <userinput>configure;make;make install</userinput>
+        incantation to build and install.</para>
+      
+        <para>You can then add the applet to the panel by right-clicking the
+        panel and choosing the <guilabel>Add applet</guilabel> entry.</para>
+
+        <para>The <literal>recoll_applet</literal> has a small text window
+         where you can type a &RCL; query (in query language form), and an
+         icon which can be used to restrict the search to certain types of
+         files. It is quite primitive, and launches a new recoll GUI instance
+         every time (even if it is already running). You may find it useful
+         anyway.</para>
+
+      </sect2>
+
+    </sect1> <!-- rcl.search.desktop -->
+
+  </chapter> <!-- Search -->
 
   <chapter id="rcl.program">
     <title>Programming interface</title>
@@ -2544,7 +2599,7 @@ while query.next >= 0 and query.next < nres:
 
 
   <chapter id="rcl.install">
-    <title>Installation</title>
+    <title>Installation and configuration</title>
 
     <sect1 id="rcl.install.binary">
       <title>Installing a binary copy</title>
@@ -3749,33 +3804,6 @@ application/x-blobapp = exec rclblob
 
       </sect2>
 
-    </sect1>
-
-    <sect1 id="rcl.kicker-applet">
-      <title>The KDE Kicker Recoll applet</title>
-
-      <para>The &RCL; source tree contains the source code to the
-        <literal>recoll_applet</literal>, a small application derived
-        from the <literal>find_applet</literal>. This can be used to
-        add a small &RCL; launcher to the KDE panel.</para>
-
-      <para>The applet is not automatically built with the main &RCL;
-      programs, nor is it included with the main source distribution
-      (because the KDE build boilerplate makes it relatively big). You
-      can download its source from the recoll.org download page. Use
-      the omnipotent <userinput>configure;make;make
-      install</userinput> incantation to build and install.</para>
-      
-      <para>You can then add the applet to the panel by right-clicking
-      the panel and choosing the <guilabel>Add applet</guilabel>
-      entry.</para>
-
-      <para>The <literal>recoll_applet</literal> has a small text
-      window where you can type a &RCL; query (in query language
-      form), and an icon which can be used to restrict the search to
-      certain types of files. It is quite primitive, and launches a
-      new recoll GUI instance every time (even if it is already
-      running). You may find it useful anyway.</para>
     </sect1>
 
   </chapter>
