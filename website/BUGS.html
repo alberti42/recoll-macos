@@ -67,14 +67,18 @@
           <blockquote>
              I'm afraid the text stream of this file is too small to
              handle.
-          </blockquote>
+          </blockquote> 
+
           Only small files produced by Microsoft Word on a Mac, or by
-          OpenOffice will trigger this message. As a workaround, install
-          wvWare and modify mimeconf to use the rcldoc filter (instead of
-          directly executing antiword). Rcldoc will try antiword, then 
-          will use vwWare if it is available. This will result in
-          slightly slower indexing for doc files.</li>
+          OpenOffice will trigger this message.<br>
+
+          <b>Workaround</b>: install wvWare and modify
+          mimeconf to use the rcldoc filter (instead of directly
+          executing antiword). Rcldoc will try antiword, then will use
+          vwWare if it is available. This will result in slightly
+          slower indexing for all normal .doc files.</li>
       </ul>
+
 
       <h2><a name="b_1_14_1">recoll 1.14.1</h2>
       <li>Compressed file view fix broke help viewer.</li>
