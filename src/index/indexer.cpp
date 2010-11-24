@@ -142,6 +142,7 @@ bool ConfIndexer::indexFiles(std::list<string>& ifiles)
 	return false;
     }
     ifiles = myfiles;
+    clearMimeHandlerCache();
     return ret;
 }
 
