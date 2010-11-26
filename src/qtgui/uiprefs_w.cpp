@@ -62,6 +62,7 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.26 2008-10-03 08:09:36 dockes E
 #include "pathut.h"
 #include "uiprefs_w.h"
 #include "viewaction_w.h"
+#include "debuglog.h"
 
 void UIPrefsDialog::init()
 {
@@ -70,8 +71,6 @@ void UIPrefsDialog::init()
     connect(viewActionPB, SIGNAL(clicked()), this, SLOT(showViewAction()));
     connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
-    connect(extraDbLE,SIGNAL(textChanged(const QString&)), this, 
-	    SLOT(extraDbTextChanged(const QString&)));
 
     connect(addExtraDbPB, SIGNAL(clicked()), 
 	    this, SLOT(addExtraDbPB_clicked()));
@@ -84,7 +83,6 @@ void UIPrefsDialog::init()
     connect(unacAllExtraDbPB, SIGNAL(clicked()), 
 	    this, SLOT(unacAllExtraDbPB_clicked()));
 
-    connect(browseDbPB, SIGNAL(clicked()), this, SLOT(browseDbPB_clicked()));
     connect(buttonOk, SIGNAL(clicked()), this, SLOT(accept()));
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(buildAbsCB, SIGNAL(toggled(bool)), 
@@ -359,46 +357,6 @@ void UIPrefsDialog::unacAllExtraDbPB_clicked()
     }
 }
 
-/** 
- * Add the current content of the extra db line editor to the list of all
- * extra dbs. We do a textual comparison to check for duplicates, except for
- * the main db for which we check inode numbers. 
- */
-void UIPrefsDialog::addExtraDbPB_clicked()
-{
-    string dbdir = (const char *)extraDbLE->text().local8Bit();
-    path_catslash(dbdir);
-    if (!Rcl::Db::testDbDir(dbdir)) {
-	QMessageBox::warning(0, "Recoll", 
-        tr("The selected directory does not appear to be a Xapian index"));
-	return;
-    }
-    struct stat st1, st2;
-    stat(dbdir.c_str(), &st1);
-    string rcldbdir = RclConfig::getMainConfig()->getDbDir();
-    stat(rcldbdir.c_str(), &st2);
-    path_catslash(rcldbdir);
-    fprintf(stderr, "rcldbdir: [%s]\n", rcldbdir.c_str());
-    if (st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("This is the main/local index!"));
-	return;
-    }
-    if (idxLV->findItem(extraDbLE->text(), 
-#if QT_VERSION < 0x040000
-			    Qt::CaseSensitive|Qt::ExactMatch
-#else
-			    Q3ListView::CaseSensitive|Q3ListView::ExactMatch
-#endif
-				    )) {
-	QMessageBox::warning(0, "Recoll", 
-		 tr("The selected directory is already in the index list"));
-	return;
-    }
-    new QCheckListItem(idxLV, extraDbLE->text(), QCheckListItem::CheckBox);
-    idxLV->sort();
-}
-
 void UIPrefsDialog::delExtraDbPB_clicked()
 {
     list<QCheckListItem*> dlt;
@@ -415,24 +373,73 @@ void UIPrefsDialog::delExtraDbPB_clicked()
 	delete *it;
 }
 
-void UIPrefsDialog::extraDbTextChanged(const QString &text)
-{
-    if (text.isEmpty()) {
-	addExtraDbPB->setEnabled(false);
-    } else {
-	addExtraDbPB->setEnabled(true);
-    }
-}
-
-void UIPrefsDialog::browseDbPB_clicked()
+/** 
+ * Browse to add another index.
+ * We do a textual comparison to check for duplicates, except for
+ * the main db for which we check inode numbers. 
+ */
+void UIPrefsDialog::addExtraDbPB_clicked()
 {
     QFileDialog fdia;
     bool savedh = fdia.showHiddenFiles();
     fdia.setShowHiddenFiles(true);
-    QString s = QFileDialog::getExistingDirectory("", this, 0, 
+    QString input = QFileDialog::getExistingDirectory("", this, 0, 
        tr("Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)"));
-
     fdia.setShowHiddenFiles(savedh);
-    if (!s.isEmpty()) 
-	extraDbLE->setText(s);
+    if (input.isEmpty())
+	return;
+
+    string dbdir = (const char *)input.local8Bit();
+    LOGDEB(("ExtraDbDial: got: [%s]\n", dbdir.c_str()));
+    path_catslash(dbdir);
+    if (!Rcl::Db::testDbDir(dbdir)) {
+	QMessageBox::warning(0, "Recoll", 
+        tr("The selected directory does not appear to be a Xapian index"));
+	return;
+    }
+    struct stat st1, st2;
+    stat(dbdir.c_str(), &st1);
+    string rcldbdir = RclConfig::getMainConfig()->getDbDir();
+    stat(rcldbdir.c_str(), &st2);
+    path_catslash(rcldbdir);
+
+    if (st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("This is the main/local index!"));
+	return;
+    }
+
+    // For some reason, finditem (which we used to use to detect duplicates 
+    // here) does not work anymore here: qt 4.6.3
+#if 1
+    string nv = (const char *)input.local8Bit();
+    LOGDEB(("New value [%s]\n", nv.c_str()));
+    QListViewItemIterator it(idxLV);
+    while (it.current()) {
+	QCheckListItem *item = (QCheckListItem *)it.current();
+	string ov = (const char *)item->text().local8Bit();
+	LOGDEB(("From list [%s]\n", ov.c_str()));
+	if (!ov.compare(nv)) {
+	    QMessageBox::warning(0, "Recoll", 
+		 tr("The selected directory is already in the index list"));
+	    return;
+	}
+	++it;
+    }
+#else // if findItem worked...
+    if (idxLV->findItem(input, 
+#if QT_VERSION < 0x040000
+                 	    Qt::CaseSensitive|Qt::ExactMatch
+#else
+			    Q3ListView::CaseSensitive|Q3ListView::ExactMatch
+#endif
+				    )) {
+	    QMessageBox::warning(0, "Recoll", 
+		 tr("The selected directory is already in the index list"));
+	    return;
+    }
+#endif
+
+    new QCheckListItem(idxLV, input, QCheckListItem::CheckBox);
+    idxLV->sort();
 }

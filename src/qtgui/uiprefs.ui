@@ -762,38 +762,13 @@ May be slow for big documents.</string>
                                                     <cstring>addExtraDbPB</cstring>
                                                 </property>
                                                 <property name="enabled">
-                                                    <bool>false</bool>
+                                                    <bool>true</bool>
                                                 </property>
                                                 <property name="text">
                                                     <string>Add index</string>
                                                 </property>
                                                 <property name="toolTip" stdset="0">
-                                                    <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
-                                                </property>
-                                            </widget>
-                                            <widget class="QLineEdit">
-                                                <property name="name">
-                                                    <cstring>extraDbLE</cstring>
-                                                </property>
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>150</width>
-                                                        <height>0</height>
-                                                    </size>
-                                                </property>
-                                                <property name="toolTip" stdset="0">
-                                                    <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
-                                                </property>
-                                            </widget>
-                                            <widget class="QPushButton">
-                                                <property name="name">
-                                                    <cstring>browseDbPB</cstring>
-                                                </property>
-                                                <property name="text">
-                                                    <string>Browse</string>
-                                                </property>
-                                                <property name="toolTip" stdset="0">
-                                                    <string>Select the xapiandb directory for the index you want to add, then click Add Index</string>
+                                                    <string>Click to add another index directory to the list</string>
                                                 </property>
                                             </widget>
                                         </hbox>
