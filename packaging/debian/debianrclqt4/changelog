@@ -1,3 +1,7 @@
+recoll (1.14.3-0~ppa1~SERIES1) SERIES; urgency=low
+  * Update to release 1.14.3
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 25 Nov 2010 10:25:00 +0200
+
 recoll (1.14.2-0~ppa1~SERIES1) SERIES; urgency=low
   * Update to release 1.14.2
  -- Jean-Francois Dockes <jf@dockes.org>  Sat, 25 Sep 2010 09:37:20 +0200

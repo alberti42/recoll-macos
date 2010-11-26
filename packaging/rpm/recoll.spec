@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.14.2
+%define version 1.14.3
 %define release 1
 
 Name:           %{name}
@@ -62,6 +62,8 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Thu Oct 28 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.3-1
+- Update to release 1.14.3
 * Thu Oct 28 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.2-1
 - Rebuilt with a Xapian built with --disable-sse
 * Sat Sep 24 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.2-0

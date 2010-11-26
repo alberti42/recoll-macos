@@ -48,7 +48,7 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL. 
 	La dernière version est 
-	<a class="important" href="download.html">1.14.2</a></p>
+	<a class="important" href="download.html">1.14.3</a></p>
 
       <p>L'interface utilisateur de 
 	<span class="application">Recoll</span> est traduite en
@@ -98,21 +98,14 @@
 
       <h2>Nouvelles: </h2>
       <ul>
+	<li>2010-11-24 : Recoll <a href="download.html#source">1.14.3</a>
+	  vient de sortir. Cette version corrige quelques problèmes
+	  mineurs. <a href="CHANGES.html">Liste des modifications</a>.
+	  </li>
         <li>2010-11-20 : un petit script pour activer/cacher recoll sur un
         bureau gnome d'un seul coup de clavier: 
           <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
             recette d'installation</a>.</li>
-	<li>2010-09-18 : Recoll <a href="download.html#source">1.14.2</a>
-	  vient de sortir. L'innovation principale est la possibilité
-	  d'utiliser des critères de dates dans les recherches, mais
-	  il y en a <a href="CHANGES.html">quelques autres</a>. Si vous
-	  indexez des tags audio, l'application support a changé, le filtre
-	  utilise maintenant le module Python mutagen, que vous devrez
-	  installer. Par ailleurs, vous pouvez trouver 
-	  <a href="filters/filters.html">ici</a> une version du filtre
-	  qui fonctionne avec des versions de mutagen un peu plus anciennes.
-	  </li>
-
 	<li>2010-04-14 : la version <a
 	href="download.html#source">1.13.04</a> vient de sortir. Elle
 	corrige un gros bug de la 1.13.02 (le stemming ne marchait plus).</li>

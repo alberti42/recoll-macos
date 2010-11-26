@@ -47,7 +47,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.14.2</a> 
+	<a class="important" href="download.html">1.14.3</a> 
 	(<a href="CHANGES.html">Changes</a>).</p>
 
       <h2>Features: </h2>
@@ -90,26 +90,16 @@
 
       <h2>News: </h2>
       <ul>
+	<li>2010-11-24 : Recoll <a href="download.html#source">1.14.3</a> is
+	  out. This is a small bugs fix release, the important <a
+	  href="CHANGES.html">changes</a> were in 1.14.2.
+	</li>
+
         <li>2010-11-20 : wrote a small script so that recoll can be
         activated or hidden with a single keystroke on the gnome
         desktop. See the 
           <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
             installation recipee here</a>.</li>
-	<li>2010-09-23 : Recoll <a href="download.html#source">1.14.2</a> is
-	  out. The main new feature is the use of document dates in
-	  searches, buf there are <a href="CHANGES.html">a few others</a>
-	  too.  If you are currently indexing audio file tags, there are
-	  two issues in the release:
-	  <ul>
-	    <li>The supporting application changed, you'll need to install the
-	      mutagen python module</li> 
-	    <li>The distributed filter only works with very recent
-	      mutagen releases. 
-	      See <a href="filters/filters.html">here</a>
-	      for a version which works with the older mutagen release
-	      found in some package repositories.</li>
-	  </ul>
-	</li>
 
         <li>2010-01-29 : the full Recoll source repository is now
           hosted on 

@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.14.2
+RCLVERS=1.14.3
 PPAVERS=1
 
 ########## QT3
@@ -38,7 +38,7 @@ done
 
 ### KIO
 seriesk=""
-seriesk="jaunty karmic lucid"
+seriesk="jaunty karmic lucid maverick"
 
 debdir=debiankio
 rm -rf recoll-${RCLVERS}/debian
