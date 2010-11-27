@@ -413,12 +413,10 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     // here) does not work anymore here: qt 4.6.3
 #if 1
     string nv = (const char *)input.local8Bit();
-    LOGDEB(("New value [%s]\n", nv.c_str()));
     QListViewItemIterator it(idxLV);
     while (it.current()) {
 	QCheckListItem *item = (QCheckListItem *)it.current();
 	string ov = (const char *)item->text().local8Bit();
-	LOGDEB(("From list [%s]\n", ov.c_str()));
 	if (!ov.compare(nv)) {
 	    QMessageBox::warning(0, "Recoll", 
 		 tr("The selected directory is already in the index list"));
