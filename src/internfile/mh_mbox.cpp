@@ -427,8 +427,8 @@ bool MimeHandlerMbox::next_document()
 	    m_lineno++;
 	    int ll;
 	    stripendnl(line, ll);
-	    LOGDEB2(("Start: hadempty %d ll %d Line: [%s]\n", 
-		    hademptyline, ll, line));
+	    LOGDEB2(("Start: hadempty %d lineno %d ll %d Line: [%s]\n", 
+		     hademptyline, m_lineno, ll, line));
 	    if (ll <= 0) {
 		hademptyline = true;
 		continue;
@@ -471,6 +471,7 @@ bool MimeHandlerMbox::next_document()
 			// Rewind to start of "From " line
 			fseek(fp, end, SEEK_SET);
 			m_lineno--;
+			hademptyline = true;
 			break;
 		    }
 		}
