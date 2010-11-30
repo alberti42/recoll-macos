@@ -32,6 +32,7 @@ static char rcsid[] = "@(#$Id: fstreewalk.cpp,v 1.15 2007-12-13 06:58:22 dockes 
 
 #include <sstream>
 #include <list>
+#include <set>
 
 #include "debuglog.h"
 #include "pathut.h"
@@ -44,6 +45,17 @@ using namespace std;
 const int FsTreeWalker::FtwTravMask = FtwTravNatural|
     FtwTravBreadth|FtwTravFilesThenDirs|FtwTravBreadthThenDepth;
 
+class DirId {
+public:
+    dev_t dev;
+    ino_t ino;
+    DirId(dev_t d, ino_t i) : dev(d), ino(i) {}
+    bool operator<(const DirId& r) const 
+    {
+	return dev < r.dev || (dev == r.dev && ino < r.ino);
+    }
+};
+
 class FsTreeWalker::Internal {
     int options;
     int depthswitch;
@@ -54,6 +66,7 @@ class FsTreeWalker::Internal {
     // of directory paths to be processed, and we do not recurse.
     list<string> dirs;
     int errors;
+    set<DirId> donedirs;
     void logsyserr(const char *call, const string &param) 
     {
 	errors++;
@@ -292,6 +305,23 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     }
 
     // This is a directory, read it and process entries:
+
+    // Detect if directory already seen. This could just be several
+    // symlinks pointing to the same place (if FtwFollow is set), it
+    // could also be some other kind of cycle. In any case, there is
+    // no point in entering again.
+    // For now, we'll ignore the "other kind of cycle" part and only monitor
+    // this is FtwFollow is set
+    if (data->options & FtwFollow) {
+	DirId dirid(stp->st_dev, stp->st_ino);
+	if (data->donedirs.find(dirid) != data->donedirs.end()) {
+	    LOGINFO(("Not processing [%s] (already seen as other path)\n", 
+		     top.c_str()));
+	    return status;
+	}
+	data->donedirs.insert(dirid);
+    }
+
     DIR *d = opendir(top.c_str());
     if (d == 0) {
 	data->logsyserr("opendir", top);
@@ -395,6 +425,7 @@ static int     op_flags;
 #define OPT_b     0x20
 #define OPT_d     0x40
 #define OPT_m     0x80
+#define OPT_L     0x100
 
 class myCB : public FsTreeWalkerCB {
  public:
@@ -437,9 +468,10 @@ static const char *thisprog;
 // real    17m10.585s user    0m4.532s sys     0m35.033s
 
 static char usage [] =
-"trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] topdir\n"
+"trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] [-L] topdir\n"
 " -r : norecurse\n"
 " -c : no path canonification\n"
+" -L : follow symbolic links\n"
 " -b : use breadth first walk\n"
 " -d : use almost depth first (dir files, then subdirs)\n"
 " -m : use breadth up to 4 deep then switch to -d\n"
@@ -468,6 +500,7 @@ int main(int argc, const char **argv)
       case 'b':	op_flags |= OPT_b; break;
       case 'c':	op_flags |= OPT_c; break;
       case 'd':	op_flags |= OPT_d; break;
+      case 'L':	op_flags |= OPT_L; break;
       case 'm':	op_flags |= OPT_m; break;
       case 'r':	op_flags |= OPT_r; break;
       case 'p':	op_flags |= OPT_p; if (argc < 2)  Usage();
@@ -492,6 +525,8 @@ int main(int argc, const char **argv)
       opt |= FsTreeWalker::FtwNoRecurse;
   if (op_flags & OPT_c)
       opt |= FsTreeWalker::FtwNoCanon;
+  if (op_flags & OPT_L)
+      opt |= FsTreeWalker::FtwFollow;
 
   if (op_flags & OPT_b)
       opt |= FsTreeWalker::FtwTravBreadth;
