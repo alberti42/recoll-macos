@@ -1,7 +1,7 @@
 TEMPLATE        = app
 LANGUAGE        = C++
 
-CONFIG  += qt warn_on thread release debug
+CONFIG  += qt warn_on thread release 
 
 HEADERS += \
         ../qtgui/advsearch_w.h \
@@ -40,28 +40,16 @@ SOURCES += \
 
 
 FORMS   = \
-        ../qtgui/advsearch.ui \
-        ../qtgui/rclmain.ui \
-        ../qtgui/sort.ui \
-        ../qtgui/spell.ui \
-        ../qtgui/ssearchb.ui \
-        ../qtgui/uiprefs.ui \
-        ../qtgui/viewaction.ui \
+        advsearch.ui \
+        rclmain.ui \
+	sort.ui \
+	spell.ui \
+        ssearchb.ui \
+        uiprefs.ui \
+        viewaction.ui \
 
 
-IMAGES  = \
-        ../qtgui/images/asearch.png \
-        ../qtgui/images/d_firstpage.png \
-        ../qtgui/images/d_nextpage.png \
-        ../qtgui/images/d_prevpage.png \
-        ../qtgui/images/d_spell.png \
-        ../qtgui/images/firstpage.png \
-        ../qtgui/images/history.png \
-        ../qtgui/images/nextpage.png \
-        ../qtgui/images/prevpage.png \
-        ../qtgui/images/sortparms.png \
-        ../qtgui/images/spell.png \
-
+RESOURCES = recoll.qrc
 
 unix {
   UI_DIR = .ui
@@ -69,17 +57,20 @@ unix {
   OBJECTS_DIR = .obj
 
   LIBS += ../lib/librcl.a \
-            $(BSTATIC) @LIBXAPIAN@ @LIBICONV@ $(BDYNAMIC) \
+       $(BSTATIC) @LIBXAPIAN@ $(LIBXAPIANSTATICEXTRA) @LIBICONV@ $(BDYNAMIC) \
            -lz
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
-              ../utils ../aspell ../rcldb confgui
+              ../utils ../aspell ../rcldb \
+              ../qtgui ../../qtgui \
+              ../qtgui/confgui ../../qtgui/confgui
+
   POST_TARGETDEPS = ../lib/librcl.a
 }
 
 UNAME = $$system(uname -s)
 contains( UNAME, [lL]inux ) {
-          LIBS -= -liconv
+          LIBS -= -liconv 
 	  LIBS += -ldl -lX11
 }
 contains( UNAME, SunOS ) {
@@ -90,8 +81,10 @@ TRANSLATIONS = \
 	     ../qtgui/i18n/recoll_de.ts \
              ../qtgui/i18n/recoll_fr.ts \
              ../qtgui/i18n/recoll_it.ts \
-             ../qtgui/i18n/recoll_lt.ts \
              ../qtgui/i18n/recoll_ru.ts \
-             ../qtgui/i18n/recoll_tr.ts  \
-             ../qtgui/i18n/recoll_uk.ts  \
+             ../qtgui/i18n/recoll_tr.ts \
+             ../qtgui/i18n/recoll_uk.ts \
              ../qtgui/i18n/recoll_xx.ts \
+
+
+QT += qt3support 

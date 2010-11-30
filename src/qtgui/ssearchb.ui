@@ -1,120 +1,109 @@
-<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>SSearchBase</class>
-<widget class="QWidget">
-    <property name="name">
-        <cstring>SSearchBase</cstring>
-    </property>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0" stdsetdef="1">
+  <author></author>
+  <comment></comment>
+  <exportmacro></exportmacro>
+  <class>SSearchBase</class>
+  <widget class="QWidget" name="SSearchBase">
     <property name="geometry">
-        <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>593</width>
-            <height>48</height>
-        </rect>
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>593</width>
+        <height>48</height>
+      </rect>
     </property>
-    <property name="caption">
-        <string>SSearchBase</string>
+    <property name="windowTitle">
+      <string>SSearchBase</string>
     </property>
-    <hbox>
-        <property name="name">
-            <cstring>unnamed</cstring>
-        </property>
-         <property name="margin">
-             <number>4</number>
-         </property>
-         <property name="spacing">
-             <number>2</number>
-         </property>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>layout2</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>clearqPB</cstring>
-                    </property>
-                    <property name="enabled">
-                        <bool>false</bool>
-                    </property>
-                    <property name="text">
-                        <string>Clear</string>
-                    </property>
-                    <property name="accel">
-                        <string>Ctrl+S</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Erase search entry</string>
-                    </property>
-                </widget>
-                <widget class="QPushButton">
-                    <property name="name">
-                        <cstring>searchPB</cstring>
-                    </property>
-                    <property name="enabled">
-                        <bool>false</bool>
-                    </property>
-                    <property name="text">
-                        <string>Search</string>
-                    </property>
-                    <property name="accel">
-                        <string></string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Start query</string>
-                    </property>
-                </widget>
-                <widget class="QComboBox">
-                    <property name="name">
-                        <cstring>searchTypCMB</cstring>
-                    </property>
-                    <property name="focusPolicy">
-                        <enum>TabFocus</enum>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Choose search type.</string>
-                    </property>
-                </widget>
-                <widget class="QComboBox">
-                    <property name="name">
-                        <cstring>queryText</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>7</hsizetype>
-                            <vsizetype>0</vsizetype>
-                            <horstretch>8</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                        <size>
-                            <width>155</width>
-                            <height>0</height>
-                        </size>
-                    </property>
-                    <property name="editable">
-                        <bool>true</bool>
-                    </property>
-                    <property name="maxCount">
-                        <number>30</number>
-                    </property>
-                    <property name="insertionPolicy">
-                        <enum>NoInsertion</enum>
-                    </property>
-                    <property name="duplicatesEnabled">
-                        <bool>false</bool>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Enter search terms here. Type ESC SPC for completions of current term.</string>
-                    </property>
-                </widget>
-            </hbox>
-        </widget>
-    </hbox>
-</widget>
-<layoutdefaults spacing="6" margin="0"/>
-</UI>
+    <layout class="QHBoxLayout">
+      <property name="margin">
+        <number>4</number>
+      </property>
+      <property name="spacing">
+        <number>2</number>
+      </property>
+      <item>
+        <layout class="QHBoxLayout">
+          <item>
+            <widget class="QPushButton" name="clearqPB">
+              <property name="enabled">
+                <bool>false</bool>
+              </property>
+              <property name="text">
+                <string>Clear</string>
+              </property>
+              <property name="shortcut">
+                <string>Ctrl+S</string>
+              </property>
+              <property name="toolTip" stdset="0">
+                <string>Erase search entry</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QPushButton" name="searchPB">
+              <property name="enabled">
+                <bool>false</bool>
+              </property>
+              <property name="text">
+                <string>Search</string>
+              </property>
+              <property name="shortcut">
+                <string/>
+              </property>
+              <property name="toolTip" stdset="0">
+                <string>Start query</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QComboBox" name="searchTypCMB">
+              <property name="focusPolicy">
+                <enum>Qt::TabFocus</enum>
+              </property>
+              <property name="toolTip" stdset="0">
+                <string>Choose search type.</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QComboBox" name="queryText">
+              <property name="sizePolicy">
+                <sizepolicy>
+                  <hsizetype>7</hsizetype>
+                  <vsizetype>0</vsizetype>
+                  <horstretch>8</horstretch>
+                  <verstretch>0</verstretch>
+                </sizepolicy>
+              </property>
+              <property name="minimumSize">
+                <size>
+                  <width>155</width>
+                  <height>0</height>
+                </size>
+              </property>
+              <property name="editable">
+                <bool>true</bool>
+              </property>
+              <property name="maxCount">
+                <number>30</number>
+              </property>
+              <property name="insertPolicy">
+                <enum>QComboBox::NoInsert</enum>
+              </property>
+              <property name="duplicatesEnabled">
+                <bool>false</bool>
+              </property>
+              <property name="toolTip" stdset="0">
+                <string>Enter search terms here. Type ESC SPC for completions of current term.</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </item>
+    </layout>
+  </widget>
+  <layoutdefault spacing="6" margin="0"/>
+  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
+</ui>
