@@ -355,22 +355,16 @@ else
   #echo "qmake version: $qmakevers"
   v4=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*4.*'`
   if test X$v4 = X0 ; then 
-     AC_MSG_NOTICE([using qt version 3 user interface])
+     AC_MSG_ERROR([qmake seems to indincate using Qt version 3 which is not supported any more])
      QTGUI=qtgui
   else
     AC_MSG_NOTICE([using qt version 4 user interface])
-    QTGUI=qt4gui
-    AC_PATH_PROG([UIC3], [uic3], NOTFOUND)
-    if test X$UIC3 = XNOTFOUND ; then 
-      AC_MSG_ERROR([Cannot find the uic3 program. Maybe you need to add
-      the qt3 compatibility libraries and tools to your qt4 installation ?])
-    fi
+    QTGUI=qtgui
   fi
   
   cd $QTGUI
   # We just want a .pro file: no problem with unsubstituted variables at 
   # this point.
-  test -f uifrom3 && make -f uifrom3
   test -f recoll.pro && chmod +w recoll.pro
   cp recoll.pro.in recoll.pro
   #echo QMAKE ${QMAKE}

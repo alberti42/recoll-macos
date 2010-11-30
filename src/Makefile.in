@@ -45,26 +45,23 @@ clean:
 	-cd utils; ${MAKE} clean
         #cd doc/user; ${MAKE} clean
 	@NOQTMAKE@@-cd qtgui; ${MAKE} clean
-	@NOQTMAKE@@-cd qt4gui; ${MAKE} clean
 	@NOCMDLINE@ cd query; ${MAKE} clean
 	rm -f qtgui/Makefile qtgui/confgui/Makefile qtgui/recoll
-	rm -f qt4gui/Makefile qt4gui/preview/Makefile qt4gui/recoll
 	rm -f common/rclversion.h
 	rm -rf qtgui/.moc qtgui/.ui qtgui/confgui/.moc qtgui/confgui/.ui
-	rm -rf qtgui/.obj qt4gui/.moc qt4gui/.ui qt4gui/.obj
+	rm -rf qtgui/.obj qtgui/.moc qtgui/.ui 
 
 # Note: we don't remove the top Makefile, to keep the "clean" targets
 # available but a "Make" won't work without a configure anyway
 distclean: clean
 	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf \
-	   qtgui/recoll.pro qt4gui/recoll.pro \
+	   qtgui/recoll.pro \
 	   config.log config.status \
 	   recollinstall \
 	   lib/*.dep common/autoconfig.h
 	rm -f index/alldeps lib/alldeps query/alldeps bincimapmime/alldeps
 	rm -rf autom4te.cache
 	rm -f filters/rclexecm.pyc
-	@NOQTMAKE@(cd qt4gui; make -f uifrom3 distclean)
 
 maintainer-clean: distclean
 	rm -f doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest
