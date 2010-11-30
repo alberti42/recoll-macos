@@ -373,6 +373,8 @@ bool MimeHandlerMbox::next_document()
     }
     LOGDEB0(("MimeHandlerMbox::next_document: fn %s, msgnum %d mtarg %d \n", 
 	    m_fn.c_str(), m_msgnum, mtarg));
+    if (mtarg == 0)
+	mtarg = -1;
 
     if (!regcompiled) {
 	regcomp(&fromregex, frompat, REG_NOSUB|REG_EXTENDED);
@@ -406,90 +408,66 @@ bool MimeHandlerMbox::next_document()
         }
     }
 
-    off_t start, end;
+    off_t message_end = 0;
     bool iseof = false;
     bool hademptyline = true;
     string& msgtxt = m_metaData["content"];
     msgtxt.erase();
-    do  {
-	// Look for next 'From ' Line, start of message. Set start to
-	// line after this
-	line_type line;
-	for (;;) {
-            mbhoff_type off_From = ftello(fp);
-	    if (!fgets(line, LL, fp)) {
-		// Eof hit while looking for 'From ' -> file done. We'd need
-		// another return code here
-		LOGDEB2(("MimeHandlerMbox:next: hit eof while looking for "
-			 "start From_ line\n"));
-		return false;
-	    }
-	    m_lineno++;
-	    int ll;
-	    stripendnl(line, ll);
-	    LOGDEB2(("Start: hadempty %d lineno %d ll %d Line: [%s]\n", 
-		     hademptyline, m_lineno, ll, line));
-	    if (ll <= 0) {
-		hademptyline = true;
-		continue;
-	    }
-	    // Non empty line. If the previous one was empty, check regex
-	    if (hademptyline) {
-		// Tbird sometimes omits the empty line, so avoid resetting
-		// state (initially true) and hope for the best
-		if (!(m_quirks & MBOXQUIRK_TBIRD))
-		    hademptyline = false;
-		if (!regexec(&fromregex, line, 0, 0, 0)) {
-		    LOGDEB0(("MimeHandlerMbox: msgnum %d, "
-			 "From_ at line %d: [%s]\n", m_msgnum, m_lineno, line));
-		    start = ftello(fp);
-		    m_offsets.push_back(off_From);
-		    m_msgnum++;
-		    break;
-		}
-	    }
+    line_type line;
+    for (;;) {
+	message_end = ftello(fp);
+	if (!fgets(line, LL, fp)) {
+	    LOGDEB2(("MimeHandlerMbox:next: eof\n"));
+	    iseof = true;
+	    m_msgnum++;
+	    break;
 	}
-
-	// Look for next 'From ' line or eof, end of message.
-	for (;;) {
-	    end = ftello(fp);
-	    if (!fgets(line, LL, fp)) {
-		if (ferror(fp) || feof(fp))
-		    iseof = true;
-		break;
-	    }
-	    m_lineno++;
-	    int ll;
-	    stripendnl(line, ll);
-	    LOGDEB2(("End: hadempty %d ll %d Line: [%s]\n", 
-		    hademptyline, ll, line));
-	    if (hademptyline) {
-		if (ll > 0) {
-		    if (!(m_quirks & MBOXQUIRK_TBIRD))
-			hademptyline = false;
-		    if (!regexec(&fromregex, line, 0, 0, 0)) {
-			// Rewind to start of "From " line
-			fseek(fp, end, SEEK_SET);
-			m_lineno--;
-			hademptyline = true;
+	m_lineno++;
+	int ll;
+	stripendnl(line, ll);
+	LOGDEB2(("mhmbox:next: hadempty %d lineno %d ll %d Line: [%s]\n", 
+		 hademptyline, m_lineno, ll, line));
+	if (hademptyline) {
+	    if (ll > 0) {
+		// Non-empty line with empty line flag set, reset flag
+		// and check regex.
+		if (!(m_quirks & MBOXQUIRK_TBIRD)) {
+		    // Tbird sometimes omits the empty line, so avoid
+		    // resetting state (initially true) and hope for
+		    // the best
+		    hademptyline = false;
+		}
+		if (!regexec(&fromregex, line, 0, 0, 0)) {
+		    LOGDEB1(("MimeHandlerMbox: msgnum %d, "
+		     "From_ at line %d: [%s]\n", m_msgnum, m_lineno, line));
+		    m_offsets.push_back(message_end);
+		    m_msgnum++;
+		    if ((mtarg <= 0 && m_msgnum > 1) || 
+			(mtarg > 0 && m_msgnum > mtarg)) {
+			// Got message, go do something with it
 			break;
 		    }
-		}
-	    } else if (ll <= 0) {
-		hademptyline = true;
+		    // From_ lines are not part of messages
+		    continue;
+		} 
 	    }
-	    if (mtarg <= 0 || m_msgnum == mtarg) {
-		line[ll] = '\n';
-		line[ll+1] = 0;
-		msgtxt += line;
-	    }
+	} else if (ll <= 0) {
+	    hademptyline = true;
 	}
 
-    } while (mtarg > 0 && m_msgnum < mtarg);
-
-    LOGDEB1(("Message text: [%s]\n", msgtxt.c_str()));
+	if (mtarg <= 0 || m_msgnum == mtarg) {
+	    // Accumulate message lines
+	    line[ll] = '\n';
+	    line[ll+1] = 0;
+	    msgtxt += line;
+	}
+    }
+    LOGDEB2(("Message text length %d\n", msgtxt.size()));
+    LOGDEB2(("Message text: [%s]\n", msgtxt.c_str()));
     char buf[20];
-    sprintf(buf, "%d", m_msgnum);
+    // m_msgnum was incremented when hitting the next From_ or eof, so the data
+    // is for m_msgnum - 1
+    sprintf(buf, "%d", m_msgnum - 1); 
     m_metaData["ipath"] = buf;
     m_metaData["mimetype"] = "message/rfc822";
     if (iseof) {
