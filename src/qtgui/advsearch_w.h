@@ -28,34 +28,17 @@
 
 class QDialog;
 
-//MOC_SKIP_BEGIN
-#if QT_VERSION < 0x040000
-
-#include "advsearch.h"
-class DummyAdvSearchBase : public AdvSearchBase
-{
- public: DummyAdvSearchBase(QWidget* parent = 0) : AdvSearchBase(parent) {}
-};
-
-#else
-
 #include "ui_advsearch.h"
-class DummyAdvSearchBase : public QDialog, public Ui::AdvSearchBase
-{
-public: DummyAdvSearchBase(QWidget *parent):QDialog(parent) {setupUi(this);}
-};
 
-#endif
-//MOC_SKIP_END
-
-class AdvSearch : public DummyAdvSearchBase
+class AdvSearch : public QDialog, public Ui::AdvSearchBase
 {
     Q_OBJECT
 
 public:
     AdvSearch(QDialog* parent = 0) 
-	: DummyAdvSearchBase(parent)
+	: QDialog(parent)
     {
+	setupUi(this);
 	init();
     }
     ~AdvSearch(){}
@@ -66,6 +49,7 @@ public slots:
     virtual void delAFiltypPB_clicked();
     virtual void addFiltypPB_clicked();
     virtual void addAFiltypPB_clicked();
+    virtual void guiListsToIgnTypes();
     virtual void restrictFtCB_toggled(bool);
     virtual void restrictCtCB_toggled(bool);
     virtual void runSearch();

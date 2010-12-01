@@ -26,17 +26,6 @@ static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.21 2008-09-25 06:00:24 dockes
 #include <qframe.h>
 #include <qcheckbox.h>
 #include <qevent.h>
-
-#if (QT_VERSION < 0x040000)
-#include <qcombobox.h>
-#include <qlistbox.h>
-#define Q34EVOVERRIDE QEvent::AccelOverride
-#else
-#include <q3combobox.h>
-#include <q3listbox.h>
-#define Q34EVOVERRIDE QEvent::ShortcutOverride
-#endif
-
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
@@ -159,7 +148,8 @@ void AdvSearch::init()
 bool AdvSearch::eventFilter(QObject *, QEvent *event)
 {
     //    LOGDEB(("AdvSearch::eventFilter. Type %d\n", (int)event->type()));
-    if (event->type() == QEvent::KeyPress || event->type() == Q34EVOVERRIDE) {
+    if (event->type() == QEvent::KeyPress || 
+	event->type() == QEvent::ShortcutOverride) {
 	QKeyEvent *ke = static_cast<QKeyEvent *>(event);
 	if (ke->key() == Qt::Key_Q && (ke->state() & Qt::ControlButton)) {
 	    recollNeedsExit = 1;
@@ -185,17 +175,9 @@ bool AdvSearch::close()
     return QWidget::close();
 }
 
-#if (QT_VERSION >= 0x040000)
-#define QListBoxItem Q3ListBoxItem
-#define clauseVBox Ui::AdvSearchBase::clauseVBox
-#define AdvSearchBaseLayout Ui::AdvSearchBase::AdvSearchBaseLayout
-#endif
-
 void AdvSearch::delAFiltypPB_clicked()
 {
-    for (unsigned int i = 0; i < yesFiltypsLB->count();i++) {
-	yesFiltypsLB->setSelected(i, true);
-    }
+    yesFiltypsLB->selectAll();
     delFiltypPB_clicked();
 }
 
@@ -234,60 +216,43 @@ void AdvSearch::delClause()
 // Move selected file types from the searched to the ignored box
 void AdvSearch::delFiltypPB_clicked()
 {
-    list<int> trl;
-    QStringList moved;
-    for (unsigned int i = 0; i < yesFiltypsLB->count();i++) {
-	QListBoxItem *item = yesFiltypsLB->item(i);
-	if (item && item->isSelected()) {
-	    moved.push_back(item->text());
-	    trl.push_front(i);
-	}
+    QList<QListWidgetItem *> items = yesFiltypsLB->selectedItems();
+    for (QList<QListWidgetItem *>::iterator it = items.begin(); 
+	 it != items.end(); it++) {
+	int row = yesFiltypsLB->row(*it);
+	QListWidgetItem *item = yesFiltypsLB->takeItem(row);
+	noFiltypsLB->insertItem(0, item);
     }
-    if (!moved.empty()) {
-	noFiltypsLB->insertStringList(moved);
-	for (list<int>::iterator it = trl.begin();it != trl.end(); it++)
-	    yesFiltypsLB->removeItem(*it);
-    }
-    yesFiltypsLB->sort();
-    noFiltypsLB->sort();
-    m_ignTypes.clear();
-    for (unsigned int i = 0; i < noFiltypsLB->count();i++) {
-	QListBoxItem *item = noFiltypsLB->item(i);
-	m_ignTypes.append(item->text());
-    }
+    guiListsToIgnTypes();
 }
 
 // Move selected file types from the ignored to the searched box
 void AdvSearch::addFiltypPB_clicked()
 {
-    list<int> trl;
-    QStringList moved;
-    for (unsigned int i = 0; i < noFiltypsLB->count(); i++) {
-	QListBoxItem *item = noFiltypsLB->item(i);
-	if (item && item->isSelected()) {
-	    moved.push_back(item->text());
-	    trl.push_front(i);
-	}
+    QList<QListWidgetItem *> items = noFiltypsLB->selectedItems();
+    for (QList<QListWidgetItem *>::iterator it = items.begin(); 
+	 it != items.end(); it++) {
+	int row = noFiltypsLB->row(*it);
+	QListWidgetItem *item = noFiltypsLB->takeItem(row);
+	yesFiltypsLB->insertItem(0, item);
     }
-    if (!moved.empty()) {
-	yesFiltypsLB->insertStringList(moved);
-	for (list<int>::iterator it = trl.begin();it != trl.end(); it++)
-	    noFiltypsLB->removeItem(*it);
-    }
-    yesFiltypsLB->sort();
-    noFiltypsLB->sort();
+    guiListsToIgnTypes();
+ }
+
+// Compute list of ignored mime type from widget lists
+void AdvSearch::guiListsToIgnTypes()
+{
+    yesFiltypsLB->sortItems();
+    noFiltypsLB->sortItems();
     m_ignTypes.clear();
-    for (unsigned int i = 0; i < noFiltypsLB->count();i++) {
-	QListBoxItem *item = noFiltypsLB->item(i);
+    for (int i = 0; i < noFiltypsLB->count();i++) {
+	QListWidgetItem *item = noFiltypsLB->item(i);
 	m_ignTypes.append(item->text());
     }
 }
-
 void AdvSearch::addAFiltypPB_clicked()
 {
-    for (unsigned int i = 0; i < noFiltypsLB->count();i++) {
-	noFiltypsLB->setSelected(i, true);
-    }
+    noFiltypsLB->selectAll();
     addFiltypPB_clicked();
 }
 
@@ -317,7 +282,7 @@ void AdvSearch::fillFileTypes()
 {
     noFiltypsLB->clear();
     yesFiltypsLB->clear();
-    noFiltypsLB->insertStringList(m_ignTypes); 
+    noFiltypsLB->insertItems(0, m_ignTypes); 
 
     QStringList ql;
     if (m_ignByCats == false) {
@@ -345,7 +310,7 @@ void AdvSearch::fillFileTypes()
 		ql.append(cat);
 	}
     }
-    yesFiltypsLB->insertStringList(ql);
+    yesFiltypsLB->insertItems(0, ql);
 }
 
 // Save current list of ignored file types to prefs
@@ -375,7 +340,7 @@ void AdvSearch::runSearch()
         return;
 
     if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
-	for (unsigned int i = 0; i < yesFiltypsLB->count(); i++) {
+	for (int i = 0; i < yesFiltypsLB->count(); i++) {
 	    if (restrictCtCB->isOn()) {
 		QString qcat = yesFiltypsLB->item(i)->text();
 		map<QString,QString>::const_iterator qit;
