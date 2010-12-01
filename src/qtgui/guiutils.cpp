@@ -64,12 +64,7 @@ PrefsPack prefs;
 void rwSettings(bool writing)
 {
     LOGDEB1(("rwSettings: write %d\n", int(writing)));
-#if QT_VERSION >= 0x040000
     QSettings settings("Recoll.org", "recoll");
-#else
-    QSettings settings;
-    settings.setPath("Recoll.org", "Recoll", QSettings::User);
-#endif
     SETTING_RW(prefs.mainwidth, "/Recoll/geometry/width", Num, 0);
     SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Num, 0);
     SETTING_RW(prefs.pvwidth, "/Recoll/geometry/pvwidth", Num, 0);

@@ -31,29 +31,19 @@ static char rcsid[] = "@(#$Id: uiprefs_w.cpp,v 1.26 2008-10-03 08:09:36 dockes E
 #include <qvariant.h>
 #include <qpushbutton.h>
 #include <qtabwidget.h>
+#include <qlistwidget.h>
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qspinbox.h>
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#if QT_VERSION < 0x040000
-#include <qlistbox.h>
-#include <qlistview.h>
 #include <qfiledialog.h>
-#else
-#include <q3listbox.h>
-#include <q3listview.h>
-#include <q3filedialog.h>
-#define QListView Q3ListView
-#define QCheckListItem Q3CheckListItem
-#define QFileDialog  Q3FileDialog
-#define QListViewItemIterator Q3ListViewItemIterator
-#endif
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
 #include <qtextedit.h>
+#include <qlist.h>
 
 #include "recoll.h"
 #include "guiutils.h"
@@ -128,7 +118,7 @@ void UIPrefsDialog::setFromPrefs()
 	reslistFontPB->setText(reslistFontFamily + "-" +
 			       s.setNum(reslistFontSize));
     }
-    rlfTE->setText(prefs.reslistformat);
+    rlfTE->setPlainText(prefs.reslistformat);
 
     // Stemming language combobox
     stemLangCMB->clear();
@@ -163,19 +153,23 @@ void UIPrefsDialog::setFromPrefs()
     idxLV->clear();
     for (list<string>::iterator it = prefs.allExtraDbs.begin(); 
 	 it != prefs.allExtraDbs.end(); it++) {
-	QCheckListItem *item = 
-	    new QCheckListItem(idxLV, QString::fromLocal8Bit(it->c_str()), 
-			       QCheckListItem::CheckBox);
-	if (item) item->setOn(false);
+	QListWidgetItem *item = 
+	    new QListWidgetItem(QString::fromLocal8Bit(it->c_str()), 
+				idxLV);
+	if (item) 
+	    item->setCheckState(Qt::Unchecked);
     }
     for (list<string>::iterator it = prefs.activeExtraDbs.begin(); 
 	 it != prefs.activeExtraDbs.end(); it++) {
-	QCheckListItem *item;
-	if ((item = (QCheckListItem *)
-	     idxLV->findItem (QString::fromLocal8Bit(it->c_str()), 0))) {
-	    item->setOn(true);
+	QList<QListWidgetItem *>items =
+	     idxLV->findItems (QString::fromLocal8Bit(it->c_str()), 
+			       Qt::MatchFixedString|Qt::MatchCaseSensitive);
+	for (QList<QListWidgetItem *>::iterator it = items.begin(); 
+	     it != items.end(); it++) {
+	    (*it)->setCheckState(Qt::Checked);
 	}
     }
+    idxLV->sortItems();
 }
 
 void UIPrefsDialog::accept()
@@ -195,11 +189,11 @@ void UIPrefsDialog::accept()
     if (prefs.reslistformat == 
 	QString::fromAscii(prefs.getV18DfltResListFormat())) {
 	prefs.reslistformat += " ";
-	rlfTE->setText(prefs.reslistformat);
+	rlfTE->setPlainText(prefs.reslistformat);
     }
     if (prefs.reslistformat.stripWhiteSpace().isEmpty()) {
 	prefs.reslistformat = prefs.getDfltResListFormat();
-	rlfTE->setText(prefs.reslistformat);
+	rlfTE->setPlainText(prefs.reslistformat);
     }
     prefs.creslistformat = (const char*)prefs.reslistformat.utf8();
 
@@ -228,17 +222,17 @@ void UIPrefsDialog::accept()
     prefs.autoSuffsEnable = autoSuffsCB->isChecked();
     prefs.autoSuffs = autoSuffsLE->text();
 
-    QListViewItemIterator it(idxLV);
     prefs.allExtraDbs.clear();
     prefs.activeExtraDbs.clear();
-    while (it.current()) {
-	QCheckListItem *item = (QCheckListItem *)it.current();
-	prefs.allExtraDbs.push_back((const char *)item->text().local8Bit());
-	if (item->isOn()) {
-	    prefs.activeExtraDbs.push_back((const char *)
-					   item->text().local8Bit());
+    for (int i = 0; i < idxLV->count(); i++) {
+	QListWidgetItem *item = idxLV->item(i);
+	if (item) {
+	    prefs.allExtraDbs.push_back((const char *)item->text().local8Bit());
+	    if (item->checkState() == Qt::Checked) {
+		prefs.activeExtraDbs.push_back((const char *)
+					       item->text().local8Bit());
+	    }
 	}
-	++it;
     }
 
     rwSettings(true);
@@ -325,52 +319,42 @@ void UIPrefsDialog::showViewAction(const QString& mt)
 
 ////////////////////////////////////////////
 // External / extra search indexes setup
-// TBD: a way to remove entry from 'all' list (del button?)
 
 void UIPrefsDialog::togExtraDbPB_clicked()
 {
-    QListViewItemIterator it(idxLV);
-    while (it.current()) {
-	QCheckListItem *item = (QCheckListItem *)it.current();
+    for (int i = 0; i < idxLV->count(); i++) {
+	QListWidgetItem *item = idxLV->item(i);
 	if (item->isSelected()) {
-	    item->setOn(!item->isOn());
+	    if (item->checkState() == Qt::Checked) {
+		item->setCheckState(Qt::Unchecked);
+	    } else {
+		item->setCheckState(Qt::Checked);
+	    }
 	}
-	++it;
     }
 }
 void UIPrefsDialog::actAllExtraDbPB_clicked()
 {
-    QListViewItemIterator it(idxLV);
-    while (it.current()) {
-	QCheckListItem *item = (QCheckListItem *)it.current();
-	item->setOn(true);
-	++it;
+    for (int i = 0; i < idxLV->count(); i++) {
+	QListWidgetItem *item = idxLV->item(i);
+	    item->setCheckState(Qt::Checked);
     }
 }
 void UIPrefsDialog::unacAllExtraDbPB_clicked()
 {
-    QListViewItemIterator it(idxLV);
-    while (it.current()) {
-	QCheckListItem *item = (QCheckListItem *)it.current();
-	item->setOn(false);
-	++it;
+    for (int i = 0; i < idxLV->count(); i++) {
+	QListWidgetItem *item = idxLV->item(i);
+	    item->setCheckState(Qt::Unchecked);
     }
 }
 
 void UIPrefsDialog::delExtraDbPB_clicked()
 {
-    list<QCheckListItem*> dlt;
-    QListViewItemIterator it(idxLV);
-    while (it.current()) {
-	QCheckListItem *item = (QCheckListItem *)it.current();
-	if (item->isSelected()) {
-	    dlt.push_back(item);
-	}
-	++it;
-    }
-    for (list<QCheckListItem*>::iterator it = dlt.begin(); 
-	 it != dlt.end(); it++) 
+    QList<QListWidgetItem *> items = idxLV->selectedItems();
+    for (QList<QListWidgetItem *>::iterator it = items.begin(); 
+	 it != items.end(); it++) {
 	delete *it;
+    }
 }
 
 /** 
@@ -380,14 +364,14 @@ void UIPrefsDialog::delExtraDbPB_clicked()
  */
 void UIPrefsDialog::addExtraDbPB_clicked()
 {
-    QFileDialog fdia;
-    bool savedh = fdia.showHiddenFiles();
-    fdia.setShowHiddenFiles(true);
-    QString input = QFileDialog::getExistingDirectory("", this, 0, 
-       tr("Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)"));
-    fdia.setShowHiddenFiles(savedh);
+    static QString lastdir;
+
+    QString input = QFileDialog::getExistingDirectory(this,
+      tr("Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)"),
+						      lastdir);
     if (input.isEmpty())
 	return;
+    lastdir = input;
 
     string dbdir = (const char *)input.local8Bit();
     LOGDEB(("ExtraDbDial: got: [%s]\n", dbdir.c_str()));
@@ -411,7 +395,14 @@ void UIPrefsDialog::addExtraDbPB_clicked()
 
     // For some reason, finditem (which we used to use to detect duplicates 
     // here) does not work anymore here: qt 4.6.3
-#if 1
+    QList<QListWidgetItem *>items =
+	idxLV->findItems (input, Qt::MatchFixedString|Qt::MatchCaseSensitive);
+    if (!items.empty()) {
+	    QMessageBox::warning(0, "Recoll", 
+		 tr("The selected directory is already in the index list"));
+	    return;
+    }
+#if 0
     string nv = (const char *)input.local8Bit();
     QListViewItemIterator it(idxLV);
     while (it.current()) {
@@ -424,20 +415,8 @@ void UIPrefsDialog::addExtraDbPB_clicked()
 	}
 	++it;
     }
-#else // if findItem worked...
-    if (idxLV->findItem(input, 
-#if QT_VERSION < 0x040000
-                 	    Qt::CaseSensitive|Qt::ExactMatch
-#else
-			    Q3ListView::CaseSensitive|Q3ListView::ExactMatch
 #endif
-				    )) {
-	    QMessageBox::warning(0, "Recoll", 
-		 tr("The selected directory is already in the index list"));
-	    return;
-    }
-#endif
-
-    new QCheckListItem(idxLV, input, QCheckListItem::CheckBox);
-    idxLV->sort();
+    QListWidgetItem *item = new QListWidgetItem(input, idxLV);
+    item->setCheckState(Qt::Unchecked);
+    idxLV->sortItems();
 }

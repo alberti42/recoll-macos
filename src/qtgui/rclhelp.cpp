@@ -22,11 +22,6 @@ static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.57 2008-10-13 07:57:12 dockes E
 
 #include <qevent.h>
 #include <qwidget.h>
-#if (QT_VERSION < 0x040000)
-#define Q34EVOVERRIDE QEvent::AccelOverride
-#else
-#define Q34EVOVERRIDE QEvent::ShortcutOverride
-#endif
 
 #include "recoll.h"
 #include "rclhelp.h"
@@ -48,7 +43,8 @@ HelpClient::HelpClient(QObject *parent, const char *name)
 bool HelpClient::eventFilter(QObject *obj, QEvent *event)
 {
     static time_t last_start;
-    if (event->type() == QEvent::KeyPress || event->type() == Q34EVOVERRIDE) {
+    if (event->type() == QEvent::KeyPress || 
+	event->type() == QEvent::ShortcutOverride) {
 	//	LOGDEB(("HelpClient::eventFilter: %d\n", (int)event->type()));
 	QKeyEvent *ke = static_cast<QKeyEvent *>(event);
 	if (ke->key() == Qt::Key_F1 || ke->key() == Qt::Key_Help) {
@@ -78,4 +74,3 @@ bool HelpClient::eventFilter(QObject *obj, QEvent *event)
     }
     return false;
 }
-    

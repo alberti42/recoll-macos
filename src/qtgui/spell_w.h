@@ -21,30 +21,16 @@
 #include <qvariant.h>
 #include <qwidget.h>
 
-//MOC_SKIP_BEGIN
-#if QT_VERSION < 0x040000
-#include "spell.h"
-class DummySpellBase : public SpellBase
-{
- public: DummySpellBase(QWidget* parent = 0) : SpellBase(parent) {}
-};
-#else
 #include "ui_spell.h"
-class DummySpellBase : public QWidget, public Ui::SpellBase
-{
-public: DummySpellBase(QWidget* parent):QWidget(parent){setupUi(this);}
-};
-#endif
-//MOC_SKIP_END
 
-class SpellW : public DummySpellBase
+class SpellW : public QWidget, public Ui::SpellBase
 {
     Q_OBJECT
-
 public:
     SpellW(QWidget* parent = 0) 
-	: DummySpellBase(parent) 
+	: QWidget(parent) 
     {
+	setupUi(this);
 	init();
     }
 	

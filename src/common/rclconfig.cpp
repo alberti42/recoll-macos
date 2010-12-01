@@ -740,8 +740,8 @@ bool RclConfig::getFieldConfParam(const string &name, const string &sk,
 
 string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag)
 {
-    LOGDEB(("RclConfig::getMimeViewerDef: mtype %s apptag %s\n",
-            mtype.c_str(), apptag.c_str()));
+    LOGDEB2(("RclConfig::getMimeViewerDef: mtype [%s] apptag [%s]\n",
+	     mtype.c_str(), apptag.c_str()));
     string hs;
     if (mimeview == 0)
 	return hs;

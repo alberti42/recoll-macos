@@ -34,20 +34,7 @@ using std::pair;
 #include <qapplication.h>
 #include <qmessagebox.h>
 #include <qfiledialog.h>
-
-#if (QT_VERSION < 0x040000)
-#include <qcstring.h>
-#include <qpopupmenu.h>
-#include <qradiobutton.h>
-#include <qbuttongroup.h>
-#include <qaccel.h>
-#undef RCLQT4
-#define RCLQT3 1
-#else
-#undef RCLQT3
-#define RCLQT4 1
 #include <qshortcut.h>
-#endif
 
 #include <qtabwidget.h>
 #include <qtimer.h>
@@ -91,18 +78,6 @@ using namespace confgui;
 
 extern "C" int XFlush(void *);
 QString g_stringAllStem, g_stringNoStem;
-
-// Taken from qt designer. Don't know why it's needed.
-#if RCLQT3
-static QIconSet createIconSet(const QString &name)
-{
-    QIconSet ic(QPixmap::fromMimeSource(name));
-        QString iname = "d_" + name;
-        ic.setPixmap(QPixmap::fromMimeSource(iname),
-    		 QIconSet::Small, QIconSet::Disabled );
-    return ic;
-}
-#endif
 
 void RclMain::init()
 {
@@ -175,14 +150,8 @@ void RclMain::init()
 
     // A shortcut to get the focus back to the search entry. 
     QKeySequence seq("Ctrl+Shift+s");
-#if RCLQT4
     QShortcut *sc = new QShortcut(seq, this);
     connect(sc, SIGNAL (activated()), this, SLOT (focusToSearch()));
-#else
-    QAccel *sc = new QAccel(this);
-    sc->insertItem(seq);
-    connect(sc, SIGNAL (activated(int)), this, SLOT (focusToSearch()));
-#endif
 
 
     // Toolbar+combobox version of the category selector
@@ -191,26 +160,20 @@ void RclMain::init()
         QToolBar *catgToolBar = new QToolBar(this);
 	catgCMB = new QComboBox(FALSE, catgToolBar, "catCMB");
 	catgCMB->insertItem(tr("All"));
-#if RCLQT4
         catgToolBar->setObjectName(QString::fromUtf8("catgToolBar"));
 	catgCMB->setToolTip(tr("Document category filter"));
         catgToolBar->addWidget(catgCMB);
         this->addToolBar(Qt::TopToolBarArea, catgToolBar);
-#endif
     }
 
     // Document categories buttons
-#if RCLQT3
-    catgBGRP->setColumnLayout(1, Qt::Vertical);
-    connect(catgBGRP, SIGNAL(clicked(int)), this, SLOT(catgFilter(int)));
-#else
     QHBoxLayout *bgrphbox = new QHBoxLayout(catgBGRP);
     QButtonGroup *bgrp  = new QButtonGroup(catgBGRP);
     bgrphbox->addWidget(allRDB);
     int bgrpid = 0;
     bgrp->addButton(allRDB, bgrpid++);
     connect(bgrp, SIGNAL(buttonClicked(int)), this, SLOT(catgFilter(int)));
-#endif
+
     allRDB->setChecked(true);
     list<string> cats;
     rclconfig->getMimeCategories(cats);
@@ -225,27 +188,17 @@ void RclMain::init()
 	but->setText(tr(catgnm));
 	if (prefs.catgToolBar && catgCMB)
 	    catgCMB->insertItem(tr(catgnm));
-#if RCLQT4
         bgrphbox->addWidget(but);
         bgrp->addButton(but, bgrpid++);
-#endif
     }
-#if RCLQT3
-    catgBGRP->setButton(0);
-#else
     catgBGRP->setLayout(bgrphbox);
-#endif
 
     if (prefs.catgToolBar)
 	catgBGRP->hide();
     // Connections
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
-#if RCLQT4
     sSearch->queryText->installEventFilter(this);
-#else
-    sSearch->queryText->lineEdit()->installEventFilter(this);
-#endif
 
     connect(preferencesMenu, SIGNAL(activated(int)),
 	    this, SLOT(setStemLang(int)));
@@ -310,15 +263,6 @@ void RclMain::init()
     // speeded up during indexing
     periodictimer->start(1000);
 
-#if RCLQT3
-    nextPageAction->setIconSet(createIconSet("nextpage.png"));
-    prevPageAction->setIconSet(createIconSet("prevpage.png"));
-    firstPageAction->setIconSet(createIconSet("firstpage.png"));
-    toolsSpellAction->setIconSet(QPixmap::fromMimeSource("spell.png"));
-    toolsDoc_HistoryAction->setIconSet(QPixmap::fromMimeSource("history.png"));
-    toolsAdvanced_SearchAction->setIconSet(QPixmap::fromMimeSource("asearch.png"));
-    toolsSort_parametersAction->setIconSet(QPixmap::fromMimeSource("sortparms.png"));
-#else
     toolsSpellAction->setIcon(QIcon(":/images/spell.png"));
     nextPageAction->setIcon(QIcon(":/images/nextpage.png"));
     prevPageAction->setIcon(QIcon(":/images/prevpage.png"));
@@ -326,8 +270,6 @@ void RclMain::init()
     toolsDoc_HistoryAction->setIcon(QIcon(":/images/history.png"));
     toolsAdvanced_SearchAction->setIcon(QIcon(":/images/asearch.png"));
     toolsSort_parametersAction->setIcon(QIcon(":/images/sortparms.png"));
-#endif
-
 
     // If requested by prefs, restore sort state. The easiest way is to let
     // a SortForm do it for us.
@@ -350,11 +292,7 @@ void RclMain::initDbOpen()
     if (!maybeOpenDb(reason)) {
         nodb = true;
 	switch (QMessageBox::
-#if (QT_VERSION >= 0x030200)
 		question
-#else
-		information
-#endif
 		(this, "Recoll",
 		 qApp->translate("Main", "Could not open database in ") +
 		 QString::fromLocal8Bit(rclconfig->getDbDir().c_str()) +
@@ -391,11 +329,7 @@ void RclMain::initDbOpen()
 void RclMain::focusToSearch()
 {
     LOGDEB(("Giving focus to sSearch\n"));
-    sSearch->queryText->setFocus(
-#if RCLQT4
-        Qt::ShortcutFocusReason
-#endif
-        );
+    sSearch->queryText->setFocus(Qt::ShortcutFocusReason);
 }
 
 void RclMain::setStemLang(int id)

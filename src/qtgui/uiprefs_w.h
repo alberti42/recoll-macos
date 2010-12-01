@@ -21,39 +21,20 @@
 #include <qvariant.h>
 #include <qdialog.h>
 
-#if (QT_VERSION < 0x040000)
-#include "uiprefs.h"
-#else
 #include "ui_uiprefs.h"
-#endif
 
 class QDialog;
-
-//MOC_SKIP_BEGIN
-#if QT_VERSION < 0x040000
-class DummyUIPrefsDialogBase : public UIPrefsDialogBase
-{
-public: DummyUIPrefsDialogBase(QWidget* parent = 0) 
-    : UIPrefsDialogBase(parent) {}
-};
-#else
-class DummyUIPrefsDialogBase : public QDialog, public Ui::UIPrefsDialogBase
-{
- public: DummyUIPrefsDialogBase(QDialog *parent):QDialog(parent) {setupUi(this);}
-};
-#endif
-//MOC_SKIP_END
-
 class ViewAction;
 
-class UIPrefsDialog : public DummyUIPrefsDialogBase
+class UIPrefsDialog : public QDialog, public Ui::uiPrefsDialogBase
 {
     Q_OBJECT
 
 public:
     UIPrefsDialog(QDialog* parent = 0)
-	: DummyUIPrefsDialogBase(parent) 
+	: QDialog(parent) 
 	{
+	    setupUi(this);
 	    init();
 	}
 	~UIPrefsDialog(){};

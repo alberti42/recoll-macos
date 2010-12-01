@@ -31,12 +31,8 @@ static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.11 2007-02-19 16:28:05 dockes Exp
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qcombobox.h>
-#if (QT_VERSION < 0x040000)
-#include <qlistview.h>
-#else
 #include <QTableWidget>
 #include <QHeaderView>
-#endif
 
 #include "debuglog.h"
 #include "recoll.h"
@@ -92,59 +88,25 @@ void SpellW::init()
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
     connect(expTypeCMB, SIGNAL(activated(int)), this, SLOT(modeSet(int)));
 
-#if (QT_VERSION < 0x040000)
-    connect(suggsLV,
-            SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),
-            this, SLOT(textDoubleClicked()));
-    // No initial sorting: user can choose to establish one
-    suggsLV->setSorting(100, false);
-#else
     QStringList labels(tr("Term"));
     labels.push_back(tr("Doc. / Tot."));
     suggsLV->setHorizontalHeaderLabels(labels);
     suggsLV->setShowGrid(0);
     suggsLV->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
+    suggsLV->verticalHeader()->setDefaultSectionSize(20); 
     connect(suggsLV,
 	   SIGNAL(cellDoubleClicked(int, int)),
             this, SLOT(textDoubleClicked(int, int)));
-#endif
 
     suggsLV->setColumnWidth(0, 200);
     suggsLV->setColumnWidth(1, 150);
 }
 
-#if (QT_VERSION < 0x040000)
-// Subclass qlistviewitem for numeric sorting on column 1
-class MyListViewItem : public QListViewItem
-{
-public:
-    MyListViewItem(QListView *listView, const QString& s1, const QString& s2)
-        : QListViewItem(listView, s1, s2)
-    { }
-
-    int compare(QListViewItem * i, int col, bool) const {
-	if (col == 0)
-	    return i->text(0).compare(text(0));
-	if (col == 1)
-	    return i->text(1).toInt() - text(1).toInt();
-	// ??
-	return 0;
-    }
-};
-#else
-
-
-#endif
-
 /* Expand term according to current mode */
 void SpellW::doExpand()
 {
     // Can't clear qt4 table widget: resets column headers too
-#if (QT_VERSION < 0x040000)
-    suggsLV->clear();
-#else
     suggsLV->setRowCount(0);
-#endif
     if (baseWordLE->text().isEmpty()) 
 	return;
 
@@ -209,43 +171,25 @@ void SpellW::doExpand()
 
 
     if (res.entries.empty()) {
-#if (QT_VERSION < 0x040000)
-	new MyListViewItem(suggsLV, tr("No expansion found"), "");
-#else
         suggsLV->setItem(0, 0, new QTableWidgetItem(tr("No expansion found")));
-#endif
     } else {
-#if (QT_VERSION < 0x040000)
-	for (list<Rcl::TermMatchEntry>::reverse_iterator it = 
-                 res.entries.rbegin(); 
-	     it != res.entries.rend(); it++) {
-#else
         int row = 0;
 	for (list<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
-#endif
 	    LOGDEB(("SpellW::expand: %6d [%s]\n", it->wcf, it->term.c_str()));
 	    char num[30];
 	    if (it->wcf)
 		sprintf(num, "%d / %d",  it->docs, it->wcf);
 	    else
 		num[0] = 0;
-#if (QT_VERSION < 0x040000)
-	    new MyListViewItem(suggsLV, 
-			      QString::fromUtf8(it->term.c_str()),
-			      QString::fromAscii(num));
-#else
             if (suggsLV->rowCount() <= row)
                 suggsLV->setRowCount(row+1);
             suggsLV->setItem(row, 0, 
                     new QTableWidgetItem(QString::fromUtf8(it->term.c_str()))); 
             suggsLV->setItem(row++, 1, 
                              new QTableWidgetItem(QString::fromAscii(num)));
-#endif
 	}
-#if (QT_VERSION >= 0x040000)
         suggsLV->setRowCount(row+1);
-#endif
     }
 }
 
@@ -253,40 +197,18 @@ void SpellW::wordChanged(const QString &text)
 {
     if (text.isEmpty()) {
 	expandPB->setEnabled(false);
-#if (QT_VERSION < 0x040000)
-        suggsLV->clear();
-#else
         suggsLV->setRowCount(0);
-#endif
     } else {
 	expandPB->setEnabled(true);
     }
 }
 
-#if (QT_VERSION < 0x040000)
-void SpellW::textDoubleClicked(int, int){}
-void SpellW::textDoubleClicked()
-#else
 void SpellW::textDoubleClicked() {}
 void SpellW::textDoubleClicked(int row, int)
-#endif
 {
-#if (QT_VERSION < 0x040000)
-    QListViewItemIterator it(suggsLV);
-    while (it.current()) {
-	QListViewItem *item = it.current();
-	if (!item->isSelected()) {
-	    ++it;
-	    continue;
-	}
-	emit(wordSelect((const char *)item->text(0)));
-	++it;
-    }
-#else
     QTableWidgetItem *item = suggsLV->item(row, 0);
     if (item)
         emit(wordSelect(item->text()));
-#endif
 }
 
 void SpellW::modeSet(int mode)

@@ -32,43 +32,25 @@
 #include "pathut.h"
 
 class ExecCmd;
-
-#if QT_VERSION < 0x040000
-#include "rclmain.h"
-#else
-#include "ui_rclmain.h"
-#endif
-
-//MOC_SKIP_BEGIN
-#if QT_VERSION < 0x040000
-class DummyRclMainBase : public RclMainBase
-{
- public: DummyRclMainBase(QWidget* parent = 0) : RclMainBase(parent) {}
-};
-#define RCLMAINPARENT QWidget
-#else
-class DummyRclMainBase : public QMainWindow, public Ui::RclMainBase
-{
-public: DummyRclMainBase(QWidget *parent) :QMainWindow(parent){setupUi(this);}
-#define RCLMAINPARENT QMainWindow
-};
-#endif
-//MOC_SKIP_END
-
 class Preview;
+
+#include "ui_rclmain.h"
+
 namespace confgui {
-class ConfIndexW;
+    class ConfIndexW;
 }
+
 using confgui::ConfIndexW;
 
-class RclMain : public DummyRclMainBase
+class RclMain : public QMainWindow, public Ui::RclMainBase
 {
     Q_OBJECT
 
 public:
-    RclMain(RCLMAINPARENT * parent = 0) 
-	: DummyRclMainBase(parent) 
+    RclMain(QWidget * parent = 0) 
+	: QMainWindow(parent) 
     {
+	setupUi(this);
 	init();
     }
     ~RclMain() {}

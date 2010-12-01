@@ -21,52 +21,29 @@
 #include <qvariant.h>
 #include <qdialog.h>
 
-#if (QT_VERSION < 0x040000)
-#include "viewaction.h"
-#else
 #include "ui_viewaction.h"
-#endif
 
 class QDialog;
 class QMouseEvent;
+class QTableWidget;
 
-//MOC_SKIP_BEGIN
-#if QT_VERSION < 0x040000
-class DummyViewActionBase : public ViewActionBase
-{
- public: DummyViewActionBase(QWidget* parent = 0) : ViewActionBase(parent) {}
-};
-#else
-class DummyViewActionBase : public QDialog, public Ui::ViewActionBase
-{
-public:
-    DummyViewActionBase(QWidget* parent)
-	: QDialog(parent)
-    {
-	setupUi(this);
-    }
-};
-#endif
-//MOC_SKIP_END
-
-class ViewAction : public DummyViewActionBase
+class ViewAction : public QDialog, public Ui::ViewActionBase
 {
     Q_OBJECT
 
 public:
-    ViewAction(QDialog* parent = 0) 
-	: DummyViewActionBase(parent) 
+    ViewAction(QWidget* parent = 0) 
+	: QDialog(parent) 
     {
+	setupUi(this);
 	init();
     }
     ~ViewAction() {}
-
     void selectMT(const QString& mt);
 
 public slots:
-    virtual void editAction();
-    virtual void listDblClicked();
-
+    virtual void editActions();
+    virtual void onItemDoubleClicked(QTableWidgetItem *);
 private:
     virtual void init();
     virtual void fillLists();

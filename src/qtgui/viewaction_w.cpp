@@ -26,16 +26,7 @@ using namespace std;
 #include <qpushbutton.h>
 #include <qtimer.h>
 
-#if (QT_VERSION < 0x040000)
-#include <qlistview.h>
-#define QLVEXACTMATCH Qt::ExactMatch
-#else
-#include <q3listview.h>
-#define QListView Q3ListView
-#define QListViewItem Q3ListViewItem
-#define QListViewItemIterator Q3ListViewItemIterator
-#define QLVEXACTMATCH Q3ListView::ExactMatch
-#endif
+#include <qlistwidget.h>
 
 #include <qmessagebox.h>
 #include <qinputdialog.h>
@@ -50,71 +41,74 @@ using namespace std;
 void ViewAction::init()
 {
     connect(closePB, SIGNAL(clicked()), this, SLOT(close()));
-    connect(chgActPB, SIGNAL(clicked()), this, SLOT(editAction()));
-    connect(actionsLV,
-#if (QT_VERSION < 0x040000)
-	   SIGNAL(doubleClicked(QListViewItem *, const QPoint &, int)),
-#else
-	   SIGNAL(doubleClicked(Q3ListViewItem *, const QPoint &, int)),
-#endif
-	   this, SLOT(editAction()));
+    connect(chgActPB, SIGNAL(clicked()), 
+	    this, SLOT(editActions()));
+    connect(actionsLV,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
+	    this, SLOT(onItemDoubleClicked(QTableWidgetItem *)));
     fillLists();
-    resize(QSize(640, 250).expandedTo(minimumSizeHint()) );
+    resize(QSize(640, 250).expandedTo(minimumSizeHint()));
 }
 
 void ViewAction::fillLists()
 {
     actionsLV->clear();
+    actionsLV->verticalHeader()->setDefaultSectionSize(20); 
     vector<pair<string, string> > defs;
     rclconfig->getMimeViewerDefs(defs);
+    actionsLV->setRowCount(defs.size());
+    int row = 0;
     for (vector<pair<string, string> >::const_iterator it = defs.begin();
 	 it != defs.end(); it++) {
-	new QListViewItem(actionsLV, 
-			  QString::fromAscii(it->first.c_str()),
-			  QString::fromAscii(it->second.c_str()));
+	actionsLV->setItem(row, 0, 
+	   new QTableWidgetItem(QString::fromAscii(it->first.c_str())));
+	actionsLV->setItem(row, 1, 
+	   new QTableWidgetItem(QString::fromAscii(it->second.c_str())));
+	row++;
     }
-
+    QStringList labels(tr("Mime type"));
+    labels.push_back(tr("Command"));
+    actionsLV->setHorizontalHeaderLabels(labels);
 }
 
 void ViewAction::selectMT(const QString& mt)
 {
-    QListViewItem *item =  actionsLV->findItem(mt, 0, QLVEXACTMATCH);
-    if (item) {
-	actionsLV->ensureItemVisible(item);
-	actionsLV->setSelected(item, true);
-	actionsLV->setSelectionAnchor(item);
+    actionsLV->clearSelection();
+    QList<QTableWidgetItem *>items = 
+	actionsLV->findItems(mt, Qt::MatchFixedString|Qt::MatchCaseSensitive);
+    for (QList<QTableWidgetItem *>::iterator it = items.begin();
+	 it != items.end(); it++) {
+	(*it)->setSelected(true);
+	actionsLV->setCurrentItem(*it, QItemSelectionModel::Columns);
     }
 }
-
-// To avoid modifying the listview state from the dbl click signal, as
-// advised by the manual
-void ViewAction::listDblClicked()
+void ViewAction::onItemDoubleClicked(QTableWidgetItem * item)
 {
-    QTimer::singleShot(0, this, SLOT(editAction()));
+    actionsLV->clearSelection();
+    item->setSelected(true);
+    QTableWidgetItem *item0 = actionsLV->item(item->row(), 0);
+    item0->setSelected(true);
+    editActions();
 }
 
-void ViewAction::editAction()
+void ViewAction::editActions()
 {
     QString action0;
     list<string> mtypes;
     bool dowarnmultiple = true;
-
-    QListViewItemIterator it(actionsLV);
-    while (it.current()) {
-	QListViewItem *item = it.current();
-	if (!item->isSelected()) {
-	    ++it;
+    for (int row = 0; row < actionsLV->rowCount(); row++) {
+	QTableWidgetItem *item0 = actionsLV->item(row, 0);
+	if (!item0->isSelected())
 	    continue;
-	}
-	mtypes.push_back((const char *)item->text(0).utf8());
-	QString action = (const char *)item->text(1).utf8();
+	mtypes.push_back((const char *)item0->text().local8Bit());
+	QTableWidgetItem *item1 = actionsLV->item(row, 1);
+	QString action = item1->text();
 	if (action0.isEmpty()) {
 	    action0 = action;
 	} else {
 	    if (action != action0 && dowarnmultiple) {
 		switch (QMessageBox::warning(0, "Recoll",
-					     tr("Changing actions with different "
-						"current values"),
+					     tr("Changing actions with "
+						"different current values"),
 					     "Continue",
 					     "Cancel",
 					     0, 0, 1)) {
@@ -123,20 +117,18 @@ void ViewAction::editAction()
 		}
 	    }
 	}
-	++it;
     }
     if (action0.isEmpty())
 	return;
 
     bool ok;
-    QString text = QInputDialog::getText(
-					 "Recoll", "Edit action:", 
+    QString newaction = QInputDialog::getText("Recoll", "Edit action:", 
 					 QLineEdit::Normal,
 					 action0, &ok, this);
-    if (!ok || text.isEmpty() ) 
+    if (!ok || newaction.isEmpty() ) 
 	return;
 
-    string sact = (const char *)text.utf8();
+    string sact = (const char *)newaction.local8Bit();
     for (list<string>::const_iterator it = mtypes.begin(); 
 	 it != mtypes.end(); it++) {
 	rclconfig->setMimeViewerDef(*it, sact);

@@ -36,13 +36,8 @@ void SortForm::init()
     slabs += tr("Date");
     slabs += tr("Mime type");
 
-#if QT_VERSION < 0x040000
-    fldCMB1->insertStringList(slabs);
-    fldCMB2->insertStringList(slabs); 
-#else
     fldCMB1->addItems(slabs);
     fldCMB2->addItems(slabs); 
-#endif
 
     // Initialize values from prefs:
     mcntSB->setValue(prefs.sortDepth);

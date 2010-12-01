@@ -23,27 +23,10 @@
 #include "recoll.h"
 #include "searchdata.h"
 #include "refcntr.h"
-#if (QT_VERSION < 0x040000)
-#include "ssearchb.h"
-#else
+
 #include "ui_ssearchb.h"
-#endif
 
-//MOC_SKIP_BEGIN
-#if QT_VERSION < 0x040000
-class DummySSearchBase : public SSearchBase
-{
- public: DummySSearchBase(QWidget* parent = 0) : SSearchBase(parent) {}
-};
-#else
-class DummySSearchBase : public QWidget, public Ui::SSearchBase
-{
-public: DummySSearchBase(QWidget* parent) : QWidget(parent) {setupUi(this);}
-};
-#endif
-//MOC_SKIP_END
-
-class SSearch : public DummySSearchBase
+class SSearch : public QWidget, public Ui::SSearchBase
 {
     Q_OBJECT
 
@@ -51,8 +34,9 @@ public:
     enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2, SST_LANG = 3};
 
     SSearch(QWidget* parent = 0, const char * = 0)
-	: DummySSearchBase(parent) 
+	: QWidget(parent) 
     {
+	setupUi(this);
 	init();
     }
     ~SSearch(){}

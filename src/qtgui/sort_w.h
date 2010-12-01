@@ -21,40 +21,22 @@
 #include <qvariant.h>
 #include <qdialog.h>
 #include "sortseq.h"
-#if (QT_VERSION < 0x040000)
-#include "sort.h"
-#else
 #include "ui_sort.h"
-#endif
 
 class QDialog;
 
-//MOC_SKIP_BEGIN
-#if QT_VERSION < 0x040000
-class DummySortFormBase : public SortFormBase
-{
- public: DummySortFormBase(QWidget* parent = 0) : SortFormBase(parent) {}
-};
-#else
-class DummySortFormBase : public QDialog, public Ui::SortFormBase
-{
-public: DummySortFormBase(QWidget* parent):QDialog(parent){setupUi(this);}
-};
-#endif
-//MOC_SKIP_END
-
-class SortForm : public DummySortFormBase
+class SortForm : public QDialog, public Ui::SortFormBase
 {
     Q_OBJECT
 
 public:
-    SortForm(QDialog* parent = 0) 
-	: DummySortFormBase(parent) 
+    SortForm(QWidget* parent = 0) 
+	: QDialog(parent) 
     {
+	setupUi(this);
 	init();
     }
     ~SortForm() {}
-
 
 public slots:
     virtual void apply();
