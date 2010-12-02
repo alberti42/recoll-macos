@@ -35,26 +35,11 @@ using std::pair;
 #include <qtabwidget.h>
 #include <qprinter.h>
 #include <qprintdialog.h>
+#include <qscrollbar.h>
 
-#if (QT_VERSION < 0x040000)
+#include <qmenu.h>
 #include <qtextedit.h>
-#include <qpopupmenu.h>
 #include <qprogressdialog.h>
-#define THRFINISHED finished
-#include <qpaintdevicemetrics.h>
-#include <qsimplerichtext.h>
-#else
-#include <q3popupmenu.h>
-#include <q3textedit.h>
-#include <q3progressdialog.h>
-#include <q3stylesheet.h>
-#include <q3paintdevicemetrics.h>
-#define QPaintDeviceMetrics Q3PaintDeviceMetrics
-#include <q3simplerichtext.h>
-#define QSimpleRichText Q3SimpleRichText
-#define THRFINISHED isFinished
-#endif
-
 #include <qevent.h>
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -76,174 +61,67 @@ using std::pair;
 #include "preview_w.h"
 #include "guiutils.h"
 #include "docseqhist.h"
-
-#if (QT_VERSION < 0x030300)
-#define wasCanceled wasCancelled
-#endif
-
-#if (QT_VERSION < 0x040000)
-#include <qtextedit.h>
-#include <private/qrichtext_p.h>
-#define QTEXTEDIT QTextEdit
-#define QTEXTCURSOR QTextCursor
-#define QTEXTPARAGRAPH QTextParagraph
-#define QTEXTSTRINGCHAR QTextStringChar
-#else
-#include <q3textedit.h>
-#include "q3richtext_p.h"
-#define QTEXTEDIT Q3TextEdit
-#define QTEXTCURSOR Q3TextCursor
-#define QTEXTPARAGRAPH Q3TextParagraph
-#define QTEXTSTRINGCHAR Q3TextStringChar
-#endif
-
 #include "rclhelp.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)?(A):(B))
 #endif
 
-// QTextEdit's scrollToAnchor() is supposed to make the anchor visible, but
-// actually, it only moves to the top of the paragraph containing the anchor.
-// As we only have one paragraph, this doesnt' help a lot (qt3 and qt4)
-//
-// So, had to write a different function, inspired from what 
-// qtextedit::find() does, instead. This ones actually moves the
-// cursor, which is probably not necessary, but does what we need.
-//
-// Problem is, it uses the sem-private qrichtext_p.h, which is not
-// even installed under qt4. We use a local copy, which is not nice.
-void PreviewTextEdit::moveToAnchor(const QString& name)
-{
-    LOGDEB0(("PreviewTextEdit::moveToAnchor\n"));
-    if (name.isEmpty())
-	return;
-    sync();
-    QTEXTCURSOR l_cursor(document());
-    QTEXTPARAGRAPH* last = document()->lastParagraph();
-    for (;;) {
-	QTEXTSTRINGCHAR* c = l_cursor.paragraph()->at(l_cursor.index());
-	if(c->isAnchor()) {
-	    QString a = c->anchorName();
-	    if ( a == name ||
-		 (a.contains( '#' ) && 
-		  QStringList::split('#', a).contains(name))) {
-		
-		*(textCursor())  = l_cursor;
-		ensureCursorVisible();
-		break;
-	    }
-	}
-	if (l_cursor.paragraph() == last && l_cursor.atParagEnd())
-	    break;
-	l_cursor.gotoNextLetter();
-    }
-}
-
-
-#if (QT_VERSION >= 0x040000)
-
-// Had to reimplement Qtextdocument::find() by duplicating the qt3
-// version.  The version in qt4 qt3support was modified for some
-// unknown reason and exhibits quadratic behaviour, and is totally
-// unusable on big documents
-static bool QTextDocument_find(Q3TextDocument *doc, Q3TextCursor& cursor, 
-                               const QString &expr, bool cs, bool wo, 
-                               bool forward)
-{
-    Qt::CaseSensitivity caseSensitive = cs ? Qt::CaseSensitive : 
-        Qt::CaseInsensitive;
-
-    doc->removeSelection(Q3TextDocument::Standard);
-    Q3TextParagraph *p = 0;
-    if ( expr.isEmpty() )
-	return FALSE;
-    for (;;) {
-	if ( p != cursor.paragraph() ) {
-	    p = cursor.paragraph();
-	    QString s = cursor.paragraph()->string()->toString();
-	    int start = cursor.index();
-	    for ( ;; ) {
-		int res = forward ? s.indexOf(expr, start, caseSensitive ) : 
-                    s.lastIndexOf(expr, start, caseSensitive);
-		int end = res + expr.length();
-		if ( res == -1 || ( !forward && start <= res ) )
-		    break;
-		if (!wo || ((res == 0||s[res - 1].isSpace() || 
-                             s[res - 1].isPunct()) &&
-                            (end == (int)s.length() || s[end].isSpace() || 
-                             s[end].isPunct()))) {
-		    doc->removeSelection(Q3TextDocument::Standard);
-		    cursor.setIndex( forward ? end : res );
-		    doc->setSelectionStart(Q3TextDocument::Standard, cursor);
-		    cursor.setIndex( forward ? res : end );
-		    doc->setSelectionEnd(Q3TextDocument::Standard, cursor);
-		    if ( !forward )
-			cursor.setIndex( res );
-		    return TRUE;
-		}
-		start = res + (forward ? 1 : -1);
-	    }
-	}
-	if ( forward ) {
-	    if ( cursor.paragraph() == doc->lastParagraph() && 
-                 cursor.atParagEnd() )
-		 break;
-	    cursor.gotoNextLetter();
+// Subclass plainToRich to add <termtag>s and anchors to the preview text
+class PlainToRichQtPreview : public PlainToRich {
+public:
+    int lastanchor;
+    PlainToRichQtPreview() 
+    {
+	lastanchor = 0;
+    }    
+    virtual ~PlainToRichQtPreview() {}
+    virtual string header() {
+	if (m_inputhtml) {
+	    return snull;
 	} else {
-	    if ( cursor.paragraph() == doc->firstParagraph() && 
-                 cursor.atParagStart() )
-		 break;
-	    cursor.gotoPreviousLetter();
+	    return string("<qt><head><title></title></head><body><pre>");
 	}
     }
-    return FALSE;
+    virtual string startMatch() 
+    {
+	return string("<span style='color: ")
+	    + string((const char *)(prefs.qtermcolor.utf8()))
+	    + string(";font-weight: bold;")
+	    + string("'>");
+    }
+    virtual string endMatch() {return string("</span>");}
+    virtual string termAnchorName(int i) {
+	static const char *termAnchorNameBase = "TRM";
+	char acname[sizeof(termAnchorNameBase) + 20];
+	sprintf(acname, "%s%d", termAnchorNameBase, i);
+	if (i > lastanchor)
+	    lastanchor = i;
+	return string(acname);
+    }
 
-}
+    virtual string startAnchor(int i) {
+	return string("<a name=\"") + termAnchorName(i) + "\">";
+    }
+    virtual string endAnchor() {
+	return string("</a>");
+    }
+    virtual string startChunk() { return "<pre>";}
+};
 
-bool PreviewTextEdit::find(const QString &expr, bool cs, bool wo,
-                           bool forward, int *para, int *index)
+PreviewTextEdit::PreviewTextEdit(QWidget* parent,const char* name, Preview *pv) 
+    : QTextEdit(parent, name), m_preview(pv), m_dspflds(false)
 {
-    drawCursor(false);
-#ifndef QT_NO_CURSOR
-    viewport()->setCursor(isReadOnly() ? Qt::ArrowCursor : Qt::IBeamCursor);
-#endif
-    Q3TextCursor findcur = *textCursor();
-    if (para && index) {
-        if (document()->paragAt(*para))
-            findcur.gotoPosition(document()->paragAt(*para), *index);
-        else
-            findcur.gotoEnd();
-    } else if (document()->hasSelection(Q3TextDocument::Standard)){
-        // maks sure we do not find the same selection again
-        if (forward)
-            findcur.gotoNextLetter();
-        else
-            findcur.gotoPreviousLetter();
-    } else if (!forward && findcur.index() == 0 && findcur.paragraph() == findcur.topParagraph()) {
-        findcur.gotoEnd();
-    }
-    removeSelection(Q3TextDocument::Standard);
-    bool found = QTextDocument_find(document(), findcur, expr, cs, wo, forward);
-    if (found) {
-        if (para)
-            *para = findcur.paragraph()->paragId();
-        if (index)
-            *index = findcur.index();
-        *textCursor() = findcur;
-        repaintChanged();
-        ensureCursorVisible();
-    }
-    drawCursor(true);
-    if (found) {
-        emit cursorPositionChanged(textCursor());
-        emit cursorPositionChanged(textCursor()->paragraph()->paragId(), 
-                                   textCursor()->index());
-    }
-    return found;
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+	    this, SLOT(createPopupMenu(const QPoint&)));
+    m_plaintorich = new PlainToRichQtPreview();
 }
 
-#endif
+PreviewTextEdit::~PreviewTextEdit()
+{
+    delete m_plaintorich;
+}
 
 void Preview::init()
 {
@@ -300,16 +178,7 @@ void Preview::init()
     clearPB->setText(tr("Clear"));
     matchCheck->setText(tr("Match &Case"));
 
-#if 0
-    // Couldn't get a small button really in the corner. stays on the left of
-    // the button area and looks ugly
-    QPixmap px = QPixmap::fromMimeSource("cancel.png");
-    QPushButton * bt = new QPushButton(px, "", this);
-    bt->setFixedSize(px.size());
-#else
     QPushButton * bt = new QPushButton(tr("Close Tab"), this);
-#endif
-
     pvTab->setCornerWidget(bt);
 
     (void)new HelpClient(this);
@@ -353,11 +222,21 @@ void Preview::closeEvent(QCloseEvent *e)
     QWidget::closeEvent(e);
 }
 
+extern const char *eventTypeToStr(int tp);
+
 bool Preview::eventFilter(QObject *target, QEvent *event)
 {
-    LOGDEB2(("Preview::eventFilter()\n"));
-    if (event->type() != QEvent::KeyPress) 
+    if (event->type() != QEvent::KeyPress) {
+#if 0
+    LOGDEB(("Preview::eventFilter(): %s\n", eventTypeToStr(event->type())));
+	if (event->type() == QEvent::MouseButtonRelease) {
+	    QMouseEvent *mev = (QMouseEvent *)event;
+	    LOGDEB(("Mouse: GlobalY %d y %d\n", mev->globalY(),
+		    mev->y()));
+	}
+#endif
 	return false;
+    }
     
     LOGDEB2(("Preview::eventFilter: keyEvent\n"));
 
@@ -372,44 +251,53 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	return true;
     } else if (keyEvent->key() == Qt::Key_Down &&
 	       (keyEvent->state() & Qt::ShiftButton)) {
-	// LOGDEB(("Preview::eventFilter: got Shift-Up\n"));
+	LOGDEB2(("Preview::eventFilter: got Shift-Up\n"));
 	if (edit) 
 	    emit(showNext(this, m_searchId, edit->m_data.docnum));
 	return true;
     } else if (keyEvent->key() == Qt::Key_Up &&
 	       (keyEvent->state() & Qt::ShiftButton)) {
-	// LOGDEB(("Preview::eventFilter: got Shift-Down\n"));
+	LOGDEB2(("Preview::eventFilter: got Shift-Down\n"));
 	if (edit) 
 	    emit(showPrev(this, m_searchId, edit->m_data.docnum));
 	return true;
     } else if (keyEvent->key() == Qt::Key_W &&
 	       (keyEvent->state() & Qt::ControlButton)) {
-	// LOGDEB(("Preview::eventFilter: got ^W\n"));
+	LOGDEB2(("Preview::eventFilter: got ^W\n"));
 	closeCurrentTab();
 	return true;
     } else if (keyEvent->key() == Qt::Key_P &&
 	       (keyEvent->state() & Qt::ControlButton)) {
-	// LOGDEB(("Preview::eventFilter: got ^P\n"));
+	LOGDEB2(("Preview::eventFilter: got ^P\n"));
 	emit(printCurrentPreviewRequest());
 	return true;
     } else if (m_dynSearchActive) {
 	if (keyEvent->key() == Qt::Key_F3) {
+	    LOGDEB2(("Preview::eventFilter: got F3\n"));
 	    doSearch(searchTextLine->text(), true, false);
 	    return true;
 	}
 	if (target != searchTextLine)
 	    return QApplication::sendEvent(searchTextLine, event);
     } else {
-	if (edit && target == edit) {
+	if (edit && 
+	    (target == edit || target == edit->viewport())) {
 	    if (keyEvent->key() == Qt::Key_Slash) {
+		LOGDEB2(("Preview::eventFilter: got /\n"));
 		searchTextLine->setFocus();
 		m_dynSearchActive = true;
 		return true;
 	    } else if (keyEvent->key() == Qt::Key_Space) {
-		edit->scrollBy(0, edit->visibleHeight());
+		LOGDEB2(("Preview::eventFilter: got Space\n"));
+		int value = edit->verticalScrollBar()->value();
+		value += edit->verticalScrollBar()->pageStep();
+		edit->verticalScrollBar()->setValue(value);
 		return true;
 	    } else if (keyEvent->key() == Qt::Key_BackSpace) {
-		edit->scrollBy(0, -edit->visibleHeight());
+		LOGDEB2(("Preview::eventFilter: got Backspace\n"));
+		int value = edit->verticalScrollBar()->value();
+		value -= edit->verticalScrollBar()->pageStep();
+		edit->verticalScrollBar()->setValue(value);
 		return true;
 	    }
 	}
@@ -434,11 +322,6 @@ void Preview::searchTextLine_textChanged(const QString & text)
 	doSearch(text, false, false);
     }
 }
-
-#if (QT_VERSION >= 0x040000)
-#define QProgressDialog Q3ProgressDialog
-#define QStyleSheetItem Q3StyleSheetItem
-#endif
 
 PreviewTextEdit *Preview::currentEditor()
 {
@@ -471,22 +354,30 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     }
 
     if (text.isEmpty()) {
-	if (m_haveAnchors == false)
+	if (m_haveAnchors == false) {
+	    LOGDEB(("NO ANCHORS\n"));
 	    return;
+	}
 	if (reverse) {
 	    if (m_curAnchor == 1)
-		m_curAnchor = m_plaintorich.lastanchor;
+		m_curAnchor = edit->m_plaintorich->lastanchor;
 	    else
 		m_curAnchor--;
 	} else {
-	    if (m_curAnchor == m_plaintorich.lastanchor)
+	    if (m_curAnchor == edit->m_plaintorich->lastanchor)
 		m_curAnchor = 1;
 	    else
 		m_curAnchor++;
 	}
+	LOGDEB(("m_curAnchor: %d\n", m_curAnchor));
 	QString aname = 
-	   QString::fromUtf8(m_plaintorich.termAnchorName(m_curAnchor).c_str());
-	edit->moveToAnchor(aname);
+	   QString::fromUtf8(edit->m_plaintorich->termAnchorName(m_curAnchor).c_str());
+	LOGDEB(("Calling scrollToAnchor(%s)\n", (const char *)aname.utf8()));
+	edit->scrollToAnchor(aname);
+	// Position the cursor approximately at the anchor (top of
+	// viewport) so that searches start from here
+	QTextCursor cursor = edit->cursorForPosition(QPoint(0, 0));
+	edit->setTextCursor(cursor);
 	return;
     }
 
@@ -496,35 +387,35 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     // to look for the next occurrence instead of trying to lenghten
     // the current match
     if (!next) {
-	int ps, is, pe, ie;
-	edit->getSelection(&ps, &is, &pe, &ie);
-	if (is > 0)
-	    is--;
-	else if (ps > 0)
-	    ps--;
-	LOGDEB(("Preview::doSearch: setting cursor to %d %d\n", ps, is));
-	edit->setCursorPosition(ps, is);
+	QTextCursor cursor = edit->textCursor();
+	cursor.setPosition(cursor.anchor(), QTextCursor::KeepAnchor);
+	edit->setTextCursor(cursor);
     }
     Chrono chron;
     LOGDEB(("Preview::doSearch: first find call\n"));
-    bool found = edit->find(text, matchCase, wordOnly, !reverse, 0, 0);
-    LOGDEB(("Preview::doSearch: first find call return: %.2f S\n", 
-            chron.secs()));
+    QTextDocument::FindFlags flags = 0;
+    if (reverse)
+	flags |= QTextDocument::FindBackward;
+    if (wordOnly)
+	flags |= QTextDocument::FindWholeWords;
+    if (matchCase)
+	flags |= QTextDocument::FindCaseSensitively;
+    bool found = edit->find(text, flags);
+    LOGDEB(("Preview::doSearch: first find call return: found %d %.2f S\n", 
+            found, chron.secs()));
     // If not found, try to wrap around. 
-    if (!found && next) { 
+    if (!found) { 
 	LOGDEB(("Preview::doSearch: wrapping around\n"));
-	int mspara, msindex;
 	if (reverse) {
-	    mspara = edit->paragraphs();
-	    msindex = edit->paragraphLength(mspara);
+	    edit->moveCursor (QTextCursor::End);
 	} else {
-	    mspara = msindex = 0;
+	    edit->moveCursor (QTextCursor::Start);
 	}
 	LOGDEB(("Preview::doSearch: 2nd find call\n"));
         chron.restart();
-	found = edit->find(text,matchCase, false, !reverse, &mspara, &msindex);
-	LOGDEB(("Preview::doSearch: 2nd find call return %.2f S\n",
-                chron.secs()));
+	found = edit->find(text, flags);
+	LOGDEB(("Preview::doSearch: 2nd find call return found %d %.2f S\n",
+                found, chron.secs()));
     }
 
     if (found) {
@@ -566,65 +457,14 @@ void Preview::currentChanged(QWidget * tw)
     // Connect doubleclick but cleanup first just in case this was
     // already connected.
     disconnect(edit, SIGNAL(doubleClicked(int, int)), this, 0);
-    connect(edit, SIGNAL(doubleClicked(int, int)), 
-	    this, SLOT(textDoubleClicked(int, int)));
     // Disconnect the print signal and reconnect it to the current editor
     LOGDEB(("Disconnecting reconnecting print signal\n"));
     disconnect(this, SIGNAL(printCurrentPreviewRequest()), 0, 0);
     connect(this, SIGNAL(printCurrentPreviewRequest()), edit, SLOT(print()));
-#if (QT_VERSION >= 0x040000)
-    connect(edit, SIGNAL(selectionChanged()), this, SLOT(selecChanged()));
-#endif
-    tw->installEventFilter(this);
     edit->installEventFilter(this);
+    edit->viewport()->installEventFilter(this);
+    searchTextLine->installEventFilter(this);
     emit(previewExposed(this, m_searchId, edit->m_data.docnum));
-}
-
-#if (QT_VERSION >= 0x040000)
-// I have absolutely no idea why this nonsense is needed to get
-// q3textedit to copy to x11 primary selection when text is
-// selected. This used to be automatic, and, looking at the code, it
-// should happen inside q3textedit (the code here is copied from the
-// private copyToClipboard method). To be checked again with a later
-// qt version.
-void Preview::selecChanged()
-{
-    LOGDEB1(("Preview::selecChanged\n"));
-    if (!m_currentW)
-	return;
-    PreviewTextEdit *edit = (PreviewTextEdit*)m_currentW->child("pvEdit");
-    if (edit == 0) {
-	LOGERR(("Editor child not found\n"));
-	return;
-    }
-    QClipboard *clipboard = QApplication::clipboard();
-    if (edit->hasSelectedText()) {
-	LOGDEB1(("Copying [%s] to primary selection.Clipboard sel supp: %d\n", 
-		(const char *)edit->selectedText().ascii(),
-		clipboard->supportsSelection()));
-        disconnect(QApplication::clipboard(), SIGNAL(selectionChanged()), 
-		   edit, 0);
-	clipboard->setText(edit->selectedText(), QClipboard::Selection);
-        connect(QApplication::clipboard(), SIGNAL(selectionChanged()),
-		edit, SLOT(clipboardChanged()));
-    }
-}
-#else 
-void Preview::selecChanged(){}
-#endif
-
-void Preview::textDoubleClicked(int, int)
-{
-    LOGDEB2(("Preview::textDoubleClicked\n"));
-    if (!m_currentW)
-	return;
-    PreviewTextEdit *edit = (PreviewTextEdit *)m_currentW->child("pvEdit");
-    if (edit == 0) {
-	LOGERR(("Editor child not found\n"));
-	return;
-    }
-    if (edit->hasSelectedText())
-	emit(wordSelect(edit->selectedText()));
 }
 
 void Preview::closeCurrentTab()
@@ -707,11 +547,7 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
 
     /* Check if we already have this page */
     for (int i = 0; i < pvTab->count(); i++) {
-#if (QT_VERSION < 0x040000)
-        QWidget *tw = pvTab->page(i);
-#else
         QWidget *tw = pvTab->widget(i);
-#endif
         if (tw) {
             PreviewTextEdit *edit = 
                 dynamic_cast<PreviewTextEdit*>(tw->child("pvEdit"));
@@ -734,6 +570,11 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
     }
     raise();
     return true;
+}
+
+void Preview::emitWordSelect(QString word)
+{
+    emit(wordSelect(word));
 }
 
 /*
@@ -822,6 +663,7 @@ class LoadThread : public QThread {
     }
 };
 
+
 // Insert into editor by chunks so that the top becomes visible
 // earlier for big texts. This provokes some artifacts (adds empty line),
 // so we can't set it too low.
@@ -833,10 +675,10 @@ class ToRichThread : public QThread {
     const HiliteData &hdata;
     list<string> &out;
     int loglevel;
-    PlainToRichQtPreview& ptr;
+    PlainToRichQtPreview *ptr;
  public:
     ToRichThread(string &i, const HiliteData& hd, list<string> &o, 
-		 PlainToRichQtPreview& _ptr)
+		 PlainToRichQtPreview *_ptr)
 	: in(i), hdata(hd), out(o), ptr(_ptr)
     {
 	    loglevel = DebugLog::getdbl()->getlevel();
@@ -845,7 +687,7 @@ class ToRichThread : public QThread {
     {
 	DebugLog::getdbl()->setloglevel(loglevel);
 	try {
-	    ptr.plaintorich(in, out, hdata, CHUNKL);
+	    ptr->plaintorich(in, out, hdata, CHUNKL);
 	} catch (CancelExcept) {
 	}
     }
@@ -889,7 +731,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     // Create progress dialog and aux objects
     const int nsteps = 20;
-    QProgressDialog progress(msg, tr("Cancel"), nsteps, this, "Loading", FALSE);
+    QProgressDialog progress(msg, tr("Cancel"), 0, nsteps, this);
     progress.setMinimumDuration(2000);
     WaiterThread waiter(100);
 
@@ -904,9 +746,9 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     for (prog = 1;;prog++) {
 	waiter.start();
 	waiter.wait();
-	if (lthr.THRFINISHED ())
+	if (lthr.isFinished())
 	    break;
-	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
+	progress.setValue(prog);
 	qApp->processEvents();
 	if (progress.wasCanceled()) {
 	    CancelCheck::instance().setCancel();
@@ -966,29 +808,25 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         qrichlst.push_back(QString::fromUtf8(textlist[i]));
 #else
     if (highlightTerms) {
-	QStyleSheetItem *item = 
-	    new QStyleSheetItem(editor->styleSheet(), "termtag" );
-	item->setColor(prefs.qtermcolor);
-	item->setFontWeight(QFont::Bold);
 	progress.setLabelText(tr("Creating preview text"));
 	qApp->processEvents();
 
 	if (inputishtml) {
 	    LOGDEB1(("Preview: got html %s\n", fdoc.text.c_str()));
-	    m_plaintorich.set_inputhtml(true);
+	    editor->m_plaintorich->set_inputhtml(true);
 	} else {
 	    LOGDEB1(("Preview: got plain %s\n", fdoc.text.c_str()));
-	    m_plaintorich.set_inputhtml(false);
+	    editor->m_plaintorich->set_inputhtml(false);
 	}
 	list<string> richlst;
-	ToRichThread rthr(fdoc.text, m_hData, richlst, m_plaintorich);
+	ToRichThread rthr(fdoc.text, m_hData, richlst, editor->m_plaintorich);
 	rthr.start();
 
 	for (;;prog++) {
 	    waiter.start();	waiter.wait();
-	    if (rthr.THRFINISHED ())
+	    if (rthr.isFinished())
 		break;
-	    progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
+	    progress.setValue(nsteps);
 	    qApp->processEvents();
 	    if (progress.wasCanceled()) {
 		CancelCheck::instance().setCancel();
@@ -1043,19 +881,13 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     int instep = 0;
     for (list<QString>::iterator it = qrichlst.begin(); 
 	 it != qrichlst.end(); it++, prog++, instep++) {
-	progress.setProgress(prog , prog <= nsteps-1 ? nsteps : prog+1);
+	progress.setValue(prog);
 	qApp->processEvents();
 
 	editor->append(*it);
         // We need to save the rich text for printing, the editor does
         // not do it consistently for us.
         editor->m_data.richtxt.append(*it);
-
-	// Stay at top
-	if (instep < 5) {
-	    editor->setCursorPosition(0,0);
-	    editor->ensureCursorVisible();
-	}
 
 	if (progress.wasCanceled()) {
             editor->append("<b>Cancelled !</b>");
@@ -1075,7 +907,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     if (textempty)
         editor->toggleFields();
 
-    m_haveAnchors = m_plaintorich.lastanchor != 0;
+    m_haveAnchors = editor->m_plaintorich->lastanchor != 0;
     if (searchTextLine->text().length() != 0) {
 	// If there is a current search string, perform the search
 	m_canBeep = true;
@@ -1084,9 +916,13 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	// Position to the first query term
 	if (m_haveAnchors) {
 	    QString aname = 
-		QString::fromUtf8(m_plaintorich.termAnchorName(1).c_str());
+		QString::fromUtf8(editor->m_plaintorich->termAnchorName(1).c_str());
 	    LOGDEB2(("Call movetoanchor(%s)\n", (const char *)aname.utf8()));
-	    editor->moveToAnchor(aname);
+	    editor->scrollToAnchor(aname);
+	    // Position the cursor approximately at the anchor (top of
+	    // viewport) so that searches start from here
+	    QTextCursor cursor = editor->cursorForPosition(QPoint(0, 0));
+	    editor->setTextCursor(cursor);
 	    m_curAnchor = 1;
 	}
     }
@@ -1105,17 +941,17 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     return true;
 }
 
-RCLPOPUP *PreviewTextEdit::createPopupMenu(const QPoint&)
+void PreviewTextEdit::createPopupMenu(const QPoint& pos)
 {
     LOGDEB1(("PreviewTextEdit::createPopupMenu()\n"));
-    RCLPOPUP *popup = new RCLPOPUP(this);
+    QMenu *popup = new QMenu(this);
     if (!m_dspflds) {
-	popup->insertItem(tr("Show fields"), this, SLOT(toggleFields()));
+	popup->addAction(tr("Show fields"), this, SLOT(toggleFields()));
     } else {
-	popup->insertItem(tr("Show main text"), this, SLOT(toggleFields()));
+	popup->addAction(tr("Show main text"), this, SLOT(toggleFields()));
     }
-    popup->insertItem(tr("Print"), this, SLOT(print()));
-    return popup;
+    popup->addAction(tr("Print"), this, SLOT(print()));
+    popup->popup(mapToGlobal(pos));
 }
 
 // Either display document fields or main text
@@ -1150,59 +986,26 @@ void PreviewTextEdit::toggleFields()
     setText(txt);
 }
 
+void PreviewTextEdit::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    LOGDEB2(("PreviewTextEdit::mouseDoubleClickEvent\n"));
+    QTextEdit::mouseDoubleClickEvent(event);
+    if (hasSelectedText() && m_preview)
+	m_preview->emitWordSelect(selectedText());
+}
+
 void PreviewTextEdit::print()
 {
-    LOGDEB1(("PreviewTextEdit::print\n"));
+    LOGDEB(("PreviewTextEdit::print\n"));
     if (!m_preview)
         return;
 	
 #ifndef QT_NO_PRINTER
     QPrinter printer;
     QPrintDialog *dialog = new QPrintDialog(&printer, this);
-#if (QT_VERSION >= 0x040000)
     dialog->setWindowTitle(tr("Print Current Preview"));
-#endif
     if (dialog->exec() != QDialog::Accepted)
         return;
-
-    // A qt4 version of this would just be :
-    // document()->print(&printer); But as we are using a
-    // q3textedit, we have to do the q3 printing dance, even under
-    // qt4. The following code is taken from
-    // qt3/examples/textdrawing/qtextedit.cpp
-    printer.setFullPage(TRUE);
-    QPaintDeviceMetrics screen( this );
-    printer.setResolution( screen.logicalDpiY() );
-    QPainter p( &printer );
-    QPaintDeviceMetrics metrics( p.device() );
-    int dpix = metrics.logicalDpiX();
-    int dpiy = metrics.logicalDpiY();
-    const int margin = 72; // pt
-    QRect body( margin * dpix / 72, margin * dpiy / 72,
-                metrics.width() - margin * dpix / 72 * 2,
-                metrics.height() - margin * dpiy / 72 * 2 );
-    QFont font( "times", 10 );
-    // Dont want to use text() here, this is the plain text. We 
-    // want the rich text. For some reason we don't need this for fields??
-    const QString &richtxt  = m_dspflds ? text() : m_data.richtxt;
-    QSimpleRichText richText(richtxt, font, this->context(), 
-                             this->styleSheet(),
-                             this->mimeSourceFactory(), body.height() );
-    richText.setWidth( &p, body.width() );
-    QRect view( body );
-    int page = 1;
-    do {
-        richText.draw( &p, body.left(), body.top(), view, colorGroup() );
-        view.moveBy( 0, body.height() );
-        p.translate( 0 , -body.height() );
-        p.setFont( font );
-        p.drawText( view.right() - p.fontMetrics().width( QString::number( page ) ),
-                    view.bottom() + p.fontMetrics().ascent() + 5, QString::number( page ) );
-        if ( view.top()  >= richText.height() )
-            break;
-        printer.newPage();
-        page++;
-    } while (TRUE);
+    QTextEdit::print(&printer);
 #endif
 }
-

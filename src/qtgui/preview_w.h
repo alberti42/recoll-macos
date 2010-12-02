@@ -18,9 +18,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#include <stdio.h>
+
 #include <qvariant.h>
 #include <qwidget.h>
-#include <stdio.h>
+#include <qtextedit.h>
 
 #include "rcldb.h"
 #include "refcntr.h"
@@ -33,20 +35,6 @@ class QPushButton;
 class QCheckBox;
 class PreviewTextEdit;
 class Preview;
-
-#if (QT_VERSION < 0x040000)
-#include <qtextedit.h>
-#include <private/qrichtext_p.h>
-#define QTEXTEDIT QTextEdit
-class QPopupMenu;
-#define RCLPOPUP QPopupMenu
-#else
-#include <q3textedit.h>
-#include <q3richtext_p.h>
-class Q3PopupMenu;
-#define RCLPOPUP Q3PopupMenu
-#define QTEXTEDIT Q3TextEdit
-#endif
 
 // We keep a list of data associated to each tab
 class TabData {
@@ -67,70 +55,36 @@ public:
     {}
 };
 
-class PreviewTextEdit : public QTEXTEDIT {
+class Preview;
+class PlainToRichQtPreview;
+
+class PreviewTextEdit : public QTextEdit {
     Q_OBJECT
 public:
-    PreviewTextEdit(QWidget* parent, const char* name, Preview *pv) 
-	: QTEXTEDIT(parent, name), m_preview(pv), m_dspflds(false)
-    {}
+    PreviewTextEdit(QWidget* parent, const char* name, Preview *pv);
+    virtual ~PreviewTextEdit();
     void moveToAnchor(const QString& name);
-#if (QT_VERSION >= 0x040000)
-    virtual bool find(const QString &expr, bool cs, bool wo,bool forward = true,
-                      int *para = 0, int *index = 0);
-#endif
 public slots:
     virtual void toggleFields();
     virtual void print();
+    virtual void createPopupMenu(const QPoint& pos);
     friend class Preview;
+protected:
+    void mouseDoubleClickEvent(QMouseEvent *);
+
 private:
-    virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
+    PlainToRichQtPreview *m_plaintorich;
     Preview *m_preview;
     TabData  m_data;
     bool     m_dspflds;
 };
 
 
-// Subclass plainToRich to add <termtag>s and anchors to the preview text
-class PlainToRichQtPreview : public PlainToRich {
-public:
-    int lastanchor;
-    PlainToRichQtPreview() 
-    {
-	lastanchor = 0;
-    }    
-    virtual ~PlainToRichQtPreview() {}
-    virtual string header() {
-	if (m_inputhtml) {
-	    return snull;
-	} else {
-	    return string("<qt><head><title></title></head><body><pre>");
-	}
-    }
-    virtual string startMatch() {return string("<termtag>");}
-    virtual string endMatch() {return string("</termtag>");}
-    virtual string termAnchorName(int i) {
-	static const char *termAnchorNameBase = "TRM";
-	char acname[sizeof(termAnchorNameBase) + 20];
-	sprintf(acname, "%s%d", termAnchorNameBase, i);
-	if (i > lastanchor)
-	    lastanchor = i;
-	return string(acname);
-    }
-
-    virtual string startAnchor(int i) {
-	return string("<a name=\"") + termAnchorName(i) + "\">";
-    }
-    virtual string endAnchor() {
-	return string("</a>");
-    }
-    virtual string startChunk() { return "<pre>";}
-};
-
 class Preview : public QWidget {
 
     Q_OBJECT
 
-public:
+    public:
 
     Preview(int sid, // Search Id
 	    const HiliteData& hdata) // Search terms etc. for highlighting
@@ -150,7 +104,9 @@ public:
      */
     virtual bool makeDocCurrent(const Rcl::Doc& idoc, int docnum, 
 				bool sametab = false);
+    void emitWordSelect(QString);
     friend class PreviewTextEdit;
+
 public slots:
     virtual void searchTextLine_textChanged(const QString& text);
     virtual void doSearch(const QString& str, bool next, bool reverse,
@@ -159,8 +115,6 @@ public slots:
     virtual void prevPressed();
     virtual void currentChanged(QWidget *tw);
     virtual void closeCurrentTab();
-    virtual void textDoubleClicked(int, int);
-    virtual void selecChanged();
 
 signals:
     void previewClosed(Preview *);
@@ -182,7 +136,6 @@ private:
     QWidget      *m_currentW;
     HiliteData    m_hData;
     bool          m_justCreated; // First tab create is different
-    PlainToRichQtPreview m_plaintorich;
     bool          m_haveAnchors; // Search terms are marked in text
     int           m_lastAnchor; // Number of last anchor. Then rewind to 1
     int           m_curAnchor;

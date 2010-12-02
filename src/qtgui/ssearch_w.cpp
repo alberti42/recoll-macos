@@ -305,7 +305,7 @@ void SSearch::completion()
 
 #undef SHOWEVENTS
 #if defined(SHOWEVENTS)
-static const char *eventTypeToStr(int tp)
+const char *eventTypeToStr(int tp)
 {
     switch (tp) {
     case  0: return "None";
