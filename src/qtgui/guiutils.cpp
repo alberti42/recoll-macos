@@ -33,6 +33,29 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.40 2008-11-24 15:23:12 dockes Ex
 #include <qsettings.h>
 #include <qstringlist.h>
 
+// The table should not be necessary, but I found no css way to get
+// qt 4.6 qtextedit to clear the margins after the float img without 
+// introducing blank space.
+const char *PrefsPack::dfltResListFormat = 
+#if 1
+	"<table><tr><td><img src='%I'></td>"
+	"<td>%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+	"%A %K</td></tr></table>"
+#elif 0
+	"<img src='%I' align='left'>"
+	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+	"%A %K"
+#endif
+    ;
+
+const char *v114reslistformat = "<img src=\"%I\" align=\"left\">"
+	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>"
+	"%A %K";
+
+
 bool getStemLangs(list<string>& langs)
 {
     string reason;
@@ -114,15 +137,19 @@ void rwSettings(bool writing)
 	       "");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Num, 
 	       10);
-    QString rlfDflt = 
-	QString::fromAscii(prefs.getDfltResListFormat());
+    QString rlfDflt = QString::fromAscii(prefs.dfltResListFormat);
     SETTING_RW(prefs.reslistformat, "/Recoll/prefs/reslist/format", , rlfDflt);
-    if (prefs.reslistformat == 
-	QString::fromAscii(prefs.getV18DfltResListFormat()) || 
-	prefs.reslistformat.stripWhiteSpace().isEmpty())
-	prefs.reslistformat = rlfDflt;
     prefs.creslistformat = (const char*)prefs.reslistformat.utf8();
-
+    if (!writing) {
+	// If the current value of the format is the default for the
+	// previous version, replace it with the new default. We
+	// should have a flag to say if it was changed instead
+	if (!prefs.creslistformat.compare(v114reslistformat)) {
+	    LOGDEB(("Replacing old default format\n"));
+	    prefs.reslistformat = rlfDflt;
+	    prefs.creslistformat = (const char*)prefs.reslistformat.utf8();
+	}
+    }
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", ,
 	       "english");
     SETTING_RW(prefs.useDesktopOpen, 

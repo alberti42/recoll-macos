@@ -184,15 +184,8 @@ void UIPrefsDialog::accept()
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
     prefs.reslistformat =  rlfTE->text();
-    // Don't let us set the old default format from here, this would
-    // get reset to the new default. Ugly hack
-    if (prefs.reslistformat == 
-	QString::fromAscii(prefs.getV18DfltResListFormat())) {
-	prefs.reslistformat += " ";
-	rlfTE->setPlainText(prefs.reslistformat);
-    }
     if (prefs.reslistformat.stripWhiteSpace().isEmpty()) {
-	prefs.reslistformat = prefs.getDfltResListFormat();
+	prefs.reslistformat = prefs.dfltResListFormat;
 	rlfTE->setPlainText(prefs.reslistformat);
     }
     prefs.creslistformat = (const char*)prefs.reslistformat.utf8();

@@ -93,8 +93,10 @@ void ResListPager::displayPage()
     // gets confused. Hence the use of the 'chunk' text
     // accumulator
     // Also note that there can be results beyond the estimated resCnt.
-    chunk << "<html><head><meta http-equiv=\"content-type\""
-	"content=\"text/html; charset=utf-8\"></head><body>"
+    chunk << "<html><head>" << endl
+	  << "<meta http-equiv=\"content-type\""
+	  << " content=\"text/html; charset=utf-8\">" << endl
+	  << "</head><body>" << endl
 	  << pageTop()
 	  << "<p><font size=+1><b>"
 	  << m_docSource->title()
@@ -145,7 +147,7 @@ void ResListPager::displayPage()
 		  << "</b></a>";
 	}
     }
-    chunk << "</p>";
+    chunk << "</p>" << endl;
 
     append(chunk.rdbuf()->str());
     chunk.rdbuf()->str("");
@@ -248,18 +250,18 @@ void ResListPager::displayPage()
 
 	// Subheader: this is used by history
 	if (!sh.empty())
-	    chunk << "<p><b>" << sh << "</p>\n<p>";
+	    chunk << "<p style='clear: both;'><b>" << sh << "</p>\n<p>";
 	else
-	    chunk << "<p>";
+	    chunk << "<p style='margin: 0px;padding: 0px;clear: both;'>";
 
 	// Configurable stuff
 	map<string,string> subs;
-	subs["A"] = !richabst.empty() ? richabst + "<br>" : "";
+	subs["A"] = !richabst.empty() ? richabst : "";
 	subs["D"] = datebuf;
 	subs["I"] = iconpath;
 	subs["i"] = doc.ipath;
 	subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
-	    escapeHtml(doc.meta[Rcl::Doc::keykw]) + "<br>" : "";
+	    string("[") + escapeHtml(doc.meta[Rcl::Doc::keykw]) + "]" : "";
 	subs["L"] = linksbuf.rdbuf()->str();
 	subs["N"] = numbuf;
 	subs["M"] = doc.mimetype;
@@ -276,6 +278,10 @@ void ResListPager::displayPage()
 	chunk << formatted;
 
 	chunk << "</p>" << endl;
+	// This was to force qt 4.x to clear the margins (which it should do
+	// anyway because of the paragraph's style), but we finally took
+	// the table approach for 1.15 for now (in guiutils.cpp)
+//	chunk << "<br style='clear:both;height:0;line-height:0;'>" << endl;
 
 	LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.rdbuf()->str().c_str()));
 	append(chunk.rdbuf()->str(), i, doc);

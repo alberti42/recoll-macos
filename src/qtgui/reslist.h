@@ -8,17 +8,7 @@
 using std::list;
 #endif
 
-#if (QT_VERSION < 0x040000)
 #include <qtextbrowser.h>
-class QPopupMenu;
-#define RCLPOPUP QPopupMenu
-#define QTEXTBROWSER QTextBrowser
-#else
-#include <q3textbrowser.h>
-class Q3PopupMenu;
-#define RCLPOPUP Q3PopupMenu
-#define QTEXTBROWSER Q3TextBrowser
-#endif
 
 #include "docseq.h"
 #include "sortseq.h"
@@ -29,6 +19,7 @@ class Q3PopupMenu;
 
 class ResList;
 class QtGuiResListPager;
+class QMenu;
 
 /**
  * Display a list of document records. The data can be out of the history 
@@ -39,7 +30,7 @@ class QtGuiResListPager;
  * engine, and do it instead on the index output, which duplicates code and 
  * may be sometimes slower.
  */
-class ResList : public QTEXTBROWSER
+class ResList : public QTextBrowser
 {
     Q_OBJECT;
 
@@ -65,7 +56,6 @@ class ResList : public QTEXTBROWSER
 
  public slots:
     virtual void resetList();     // Erase current list
-    virtual void doubleClicked(int, int);
     virtual void resPageUpOrBack(); // Page up pressed
     virtual void resPageDownOrNext(); // Page down pressed
     virtual void resultPageBack(); // Previous page of results
@@ -82,12 +72,11 @@ class ResList : public QTEXTBROWSER
     virtual void menuOpenParent();
     virtual void previewExposed(int);
     virtual void append(const QString &text);
-    // Only used for qt ver >=4 but seems we cant undef it
-    virtual void selecChanged();
     virtual void setDocSource();
     virtual void setSortParams(DocSeqSortSpec spec);
     virtual void setFilterParams(const DocSeqFiltSpec &spec);
     virtual void highlighted(const QString& link);
+    virtual void createPopupMenu(const QPoint& pos);
 
  signals:
     void nextPageAvailable(bool);
@@ -104,11 +93,12 @@ class ResList : public QTEXTBROWSER
 
  protected:
     void keyPressEvent(QKeyEvent *e);
-    void contentsMouseReleaseEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
+    void mouseDoubleClickEvent(QMouseEvent*);
 
  protected slots:
     virtual void languageChange();
-    virtual void linkWasClicked(const QString &, int);
+    virtual void linkWasClicked(const QUrl &);
     virtual void showQueryDetails();
 
  private:
@@ -134,13 +124,12 @@ class ResList : public QTEXTBROWSER
 
     
     virtual int docnumfromparnum(int);
-    virtual int parnumfromdocnum(int);
+    virtual pair<int,int> parnumfromdocnum(int);
 
     // Don't know why this is necessary but it is
     void emitLinkClicked(const QString &s) {
 	emit linkClicked(s, m_lstClckMod);
     };
-    virtual RCLPOPUP *createPopupMenu(const QPoint& pos);
     static int newListId();
 };
 

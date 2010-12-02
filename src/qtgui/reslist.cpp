@@ -10,6 +10,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include <qapplication.h>
 #include <qvariant.h>
 #include <qevent.h>
+#include <qmenu.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qtooltip.h>
@@ -19,18 +20,8 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include <qimage.h>
 #include <qclipboard.h>
 #include <qscrollbar.h>
-
-#if (QT_VERSION < 0x040000)
-#include <qpopupmenu.h>
-#else
 #ifndef __APPLE__
 #include <qx11info_x11.h>
-#endif
-#include <q3popupmenu.h>
-#include <q3stylesheet.h>
-#include <q3mimefactory.h>
-#define QStyleSheetItem Q3StyleSheetItem
-#define QMimeSourceFactory Q3MimeSourceFactory
 #endif
 
 #include "debuglog.h"
@@ -75,22 +66,144 @@ private:
     ResList *m_parent;
 };
 
+#if 0
+FILE *fp;
+void logdata(const char *data)
+{
+    if (fp == 0)
+	fp = fopen("/tmp/recolltoto.html", "a");
+    if (fp)
+	fprintf(fp, "%s", data);
+}
+#else
+#define logdata(X)
+#endif
+
+//////////////////////////////
+// /// QtGuiResListPager methods:
+bool QtGuiResListPager::append(const string& data)
+{
+    LOGDEB2(("QtGuiReslistPager::appendString   : %s\n", data.c_str()));
+    logdata(data.c_str());
+    m_parent->append(QString::fromUtf8(data.c_str()));
+    return true;
+}
+
+bool QtGuiResListPager::append(const string& data, int docnum, 
+			       const Rcl::Doc& doc)
+{
+    LOGDEB2(("QtGuiReslistPager::appendDoc: blockCount %d, %s\n",
+	    m_parent->document()->blockCount(), data.c_str()));
+    logdata(data.c_str());
+    int blkcnt0 = m_parent->document()->blockCount();
+    m_parent->m_curDocs.push_back(doc);
+    m_parent->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+    m_parent->textCursor().insertBlock();
+    m_parent->insertHtml(QString::fromUtf8(data.c_str()));
+    m_parent->moveCursor(QTextCursor::Start, QTextCursor::MoveAnchor);
+    m_parent->ensureCursorVisible();
+    int blkcnt1 = m_parent->document()->blockCount();
+    for (int block = blkcnt0; block < blkcnt1; block++) {
+	m_parent->m_pageParaToReldocnums[block] = docnum;
+    }
+    return true;
+}
+
+string QtGuiResListPager::trans(const string& in)
+{
+    return string((const char*)ResList::tr(in.c_str()).utf8());
+}
+
+string QtGuiResListPager::detailsLink()
+{
+    string chunk = "<a href=\"H-1\">";
+    chunk += trans("(show query)");
+    chunk += "</a>";
+    return chunk;
+}
+
+const string& QtGuiResListPager::parFormat()
+{
+    return prefs.creslistformat;
+}
+
+string QtGuiResListPager::nextUrl()
+{
+    return "n-1";
+}
+
+string QtGuiResListPager::prevUrl()
+{
+    return "p-1";
+}
+
+string QtGuiResListPager::pageTop() 
+{
+    return string();
+}
+
+string QtGuiResListPager::iconPath(const string& mtype)
+{
+    string iconpath;
+    RclConfig::getMainConfig()->getMimeIconName(mtype, &iconpath);
+    return iconpath;
+}
+
+void QtGuiResListPager::suggest(const vector<string>uterms, vector<string>&sugg)
+{
+    sugg.clear();
+#ifdef RCL_USE_ASPELL
+    bool noaspell = false;
+    rclconfig->getConfParam("noaspell", &noaspell);
+    if (noaspell)
+        return;
+    if (!aspell) {
+        LOGERR(("QtGuiResListPager:: aspell not initialized\n"));
+        return;
+    }
+    for (vector<string>::const_iterator uit = uterms.begin();
+         uit != uterms.end(); uit++) {
+        list<string> asuggs;
+        string reason;
+        if (aspell->check(*rcldb, *uit, reason))
+            continue;
+        else if (!reason.empty())
+            return;
+        if (!aspell->suggest(*rcldb, *uit, asuggs, reason)) {
+            LOGERR(("QtGuiResListPager::suggest: aspell failed: %s\n", 
+                    reason.c_str()));
+            continue;
+        }
+        if (!asuggs.empty()) {
+            sugg.push_back(*asuggs.begin());
+        }
+    }
+#endif
+
+}
+/////// /////// End reslistpager methods
 
 class PlainToRichQtReslist : public PlainToRich {
 public:
     virtual ~PlainToRichQtReslist() {}
-    virtual string startMatch() {return string("<termtag>");}
-    virtual string endMatch() {return string("</termtag>");}
+    virtual string startMatch() {
+	return string("<span style='color: ")
+	    + string((const char *)prefs.qtermcolor.ascii()) + string("'>");
+    }
+    virtual string endMatch() {return string("</span>");}
 };
 static PlainToRichQtReslist g_hiliter;
 
+/////////////////////////////////////
+
 ResList::ResList(QWidget* parent, const char* name)
-    : QTEXTBROWSER(parent, name)
+    : QTextBrowser(parent, name)
 {
     if (!name)
 	setName("resList");
     setReadOnly(TRUE);
     setUndoRedoEnabled(FALSE);
+    setOpenLinks(FALSE);
     languageChange();
 
     setTabChangesFocus(true);
@@ -99,19 +212,18 @@ ResList::ResList(QWidget* parent, const char* name)
     HelpClient::installMap(this->name(), "RCL.SEARCH.RESLIST");
 
     // signals and slots connections
-    connect(this, SIGNAL(linkClicked(const QString &, int)), 
-	    this, SLOT(linkWasClicked(const QString &, int)));
+    connect(this, SIGNAL(anchorClicked(const QUrl &)), 
+	    this, SLOT(linkWasClicked(const QUrl &)));
 #if 0
     // See comments in "highlighted
     connect(this, SIGNAL(highlighted(const QString &)), 
 	    this, SLOT(highlighted(const QString &)));
 #endif
     connect(this, SIGNAL(headerClicked()), this, SLOT(showQueryDetails()));
-    connect(this, SIGNAL(doubleClicked(int,int)), 
-	    this, SLOT(doubleClicked(int, int)));
-#if (QT_VERSION >= 0x040000)
-    connect(this, SIGNAL(selectionChanged()), this, SLOT(selecChanged()));
-#endif
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+	    this, SLOT(createPopupMenu(const QPoint&)));
+
     m_curPvDoc = -1;
     m_lstClckMod = 0;
     m_listId = 0;
@@ -138,7 +250,6 @@ ResList::~ResList()
 	QT_TR_NOOP("(show query)"),
         QT_TR_NOOP("<p><i>Alternate spellings (accents suppressed): </i>"),
     };
-
 }
 
 int ResList::newListId()
@@ -212,14 +323,10 @@ void ResList::resetList()
     // following helps making sure that the textedit is really
     // blank. Else, there are often icons or text left around
     clear();
-    QTEXTBROWSER::append(".");
+    QTextBrowser::append(".");
     clear();
-#if (QT_VERSION < 0x040000)
-    XFlush(qt_xdisplay());
-#else
 #ifndef __APPLE__
     XFlush(QX11Info::display());
-#endif
 #endif
 }
 
@@ -256,7 +363,16 @@ int ResList::docnumfromparnum(int par)
 {
     if (m_pager->pageNumber() < 0)
 	return -1;
-    std::map<int,int>::iterator it = m_pageParaToReldocnums.find(par);
+    std::map<int,int>::iterator it;
+
+    // Try to find the first number < input and actually in the map
+    // (result blocks can be made of several text blocks)
+    while (par > 0) {
+	it = m_pageParaToReldocnums.find(par);
+	if (it != m_pageParaToReldocnums.end())
+	    break;
+	par--;
+    }
     int dn;
     if (it != m_pageParaToReldocnums.end()) {
         dn = m_pager->pageNumber() * prefs.respagesize + it->second;
@@ -267,20 +383,35 @@ int ResList::docnumfromparnum(int par)
 }
 
 // Get paragraph number from document number
-int ResList::parnumfromdocnum(int docnum)
+pair<int,int> ResList::parnumfromdocnum(int docnum)
 {
-    if (m_pager->pageNumber() < 0)
-	return -1;
+    LOGDEB(("parnumfromdocnum: docnum %d\n", docnum));
+    if (m_pager->pageNumber() < 0) {
+	LOGDEB(("parnumfromdocnum: no page return -1,-1\n"));
+	return pair<int,int>(-1,-1);
+    }
     int winfirst = m_pager->pageNumber() * prefs.respagesize;
-    if (docnum - winfirst < 0)
-	return -1;
+    if (docnum - winfirst < 0) {
+	LOGDEB(("parnumfromdocnum: not in win return -1,-1\n"));
+	return pair<int,int>(-1,-1);
+    }
     docnum -= winfirst;
     for (std::map<int,int>::iterator it = m_pageParaToReldocnums.begin();
 	 it != m_pageParaToReldocnums.end(); it++) {
-	if (docnum == it->second)
-	    return it->first;
+	if (docnum == it->second) {
+	    int first = it->first;
+	    int last = first+1;
+	    std::map<int,int>::iterator it1;
+	    while ((it1 = m_pageParaToReldocnums.find(last)) != 
+		   m_pageParaToReldocnums.end() && it1->second == docnum) {
+		last++;
+	    }
+	    LOGDEB(("parnumfromdocnum: return %d,%d\n", first, last));
+	    return pair<int,int>(first, last);
+	}
     }
-    return -1;
+    LOGDEB(("parnumfromdocnum: not found return -1,-1\n"));
+    return pair<int,int>(-1,-1);
 }
 
 // Return doc from current or adjacent result pages. We can get called
@@ -328,10 +459,10 @@ void ResList::keyPressEvent(QKeyEvent * e)
 	resPageDownOrNext();
 	return;
     }
-    QTEXTBROWSER::keyPressEvent(e);
+    QTextBrowser::keyPressEvent(e);
 }
 
-void ResList::contentsMouseReleaseEvent(QMouseEvent *e)
+void ResList::mouseReleaseEvent(QMouseEvent *e)
 {
     m_lstClckMod = 0;
     if (e->state() & Qt::ControlButton) {
@@ -340,7 +471,7 @@ void ResList::contentsMouseReleaseEvent(QMouseEvent *e)
     if (e->state() & Qt::ShiftButton) {
 	m_lstClckMod |= Qt::ShiftButton;
     }
-    QTEXTBROWSER::contentsMouseReleaseEvent(e);
+    QTextBrowser::mouseReleaseEvent(e);
 }
 
 // Return total result list count
@@ -358,31 +489,24 @@ void ResList::highlighted(const QString& )
     // give some kind of visual feedback for tab traversal
 }
 
-
-#if 1 || (QT_VERSION < 0x040000)
-#define SCROLLYPOS contentsY()
-#else
-#define SCROLLYPOS verticalScrollBar()->value()
-#endif
-
 // Page Up/Down: we don't try to check if current paragraph is last or
 // first. We just page up/down and check if viewport moved. If it did,
 // fair enough, else we go to next/previous result page.
 void ResList::resPageUpOrBack()
 {
-    int vpos = SCROLLYPOS;
-    moveCursor(QTEXTBROWSER::MovePgUp, false);
-    if (vpos == SCROLLYPOS)
+    int vpos = verticalScrollBar()->value();
+    moveCursor(QTextBrowser::MovePgUp, false);
+    if (vpos == verticalScrollBar()->value())
 	resultPageBack();
 }
 
 void ResList::resPageDownOrNext()
 {
-    int vpos = SCROLLYPOS;
-    moveCursor(QTEXTBROWSER::MovePgDown, false);
+    int vpos = verticalScrollBar()->value();
+    moveCursor(QTextBrowser::MovePgDown, false);
     LOGDEB(("ResList::resPageDownOrNext: vpos before %d, after %d\n",
-	    vpos, SCROLLYPOS));
-    if (vpos == SCROLLYPOS) 
+	    vpos, verticalScrollBar()->value()));
+    if (vpos == verticalScrollBar()->value()) 
 	resultPageNext();
 }
 
@@ -405,100 +529,9 @@ void ResList::resultPageFirst()
 
 void ResList::append(const QString &text)
 {
-    QTEXTBROWSER::append(text);
-#if 0
-    {
-	FILE *fp = fopen("/tmp/debugreslist", "a");
-	fprintf(fp, "%s\n", (const char *)text.utf8());
-	fclose(fp);
-    }
-#endif
-}
-
-bool QtGuiResListPager::append(const string& data)
-{
-    LOGDEB1(("QtGuiReslistPager::append: %s\n", data.c_str()));
-    m_parent->append(QString::fromUtf8(data.c_str()));
-    return true;
-}
-bool QtGuiResListPager::append(const string& data, int i, const Rcl::Doc& doc)
-{
-    LOGDEB1(("QtGuiReslistPager::append: %d %s %s\n",
-	     i, doc.url.c_str(), doc.ipath.c_str()));
-    m_parent->setCursorPosition(0,0);
-    m_parent->ensureCursorVisible();
-    m_parent->m_pageParaToReldocnums[m_parent->paragraphs()] = i;
-    m_parent->m_curDocs.push_back(doc);
-    return append(data);
-}
-
-string QtGuiResListPager::trans(const string& in)
-{
-    return string((const char*)ResList::tr(in.c_str()).utf8());
-}
-string QtGuiResListPager::detailsLink()
-{
-    string chunk = "<a href=\"H-1\">";
-    chunk += trans("(show query)");
-    chunk += "</a>";
-    return chunk;
-}
-const string& QtGuiResListPager::parFormat()
-{
-    return prefs.creslistformat;
-}
-string QtGuiResListPager::nextUrl()
-{
-    return "n-1";
-}
-string QtGuiResListPager::prevUrl()
-{
-    return "p-1";
-}
-string QtGuiResListPager::pageTop() 
-{
-    m_parent->clear();
-    return string();
-}
-
-string QtGuiResListPager::iconPath(const string& mtype)
-{
-    string iconpath;
-    RclConfig::getMainConfig()->getMimeIconName(mtype, &iconpath);
-    return iconpath;
-}
-
-void QtGuiResListPager::suggest(const vector<string>uterms, vector<string>&sugg)
-{
-    sugg.clear();
-#ifdef RCL_USE_ASPELL
-    bool noaspell = false;
-    rclconfig->getConfParam("noaspell", &noaspell);
-    if (noaspell)
-        return;
-    if (!aspell) {
-        LOGERR(("QtGuiResListPager:: aspell not initialized\n"));
-        return;
-    }
-    for (vector<string>::const_iterator uit = uterms.begin();
-         uit != uterms.end(); uit++) {
-        list<string> asuggs;
-        string reason;
-        if (aspell->check(*rcldb, *uit, reason))
-            continue;
-        else if (!reason.empty())
-            return;
-        if (!aspell->suggest(*rcldb, *uit, asuggs, reason)) {
-            LOGERR(("QtGuiResListPager::suggest: aspell failed: %s\n", 
-                    reason.c_str()));
-            continue;
-        }
-        if (!asuggs.empty()) {
-            sugg.push_back(*asuggs.begin());
-        }
-    }
-#endif
-
+    LOGDEB2(("QtGuiReslistPager::appendQString  : %s\n", 
+	    (const char*)text.utf8()));
+    QTextBrowser::append(text);
 }
 
 // Fill up result list window with next screen of hits
@@ -510,19 +543,10 @@ void ResList::resultPageNext()
 
 void ResList::displayPage()
 {
-    // Query term colorization
-    static QStyleSheetItem *item;
-    if (!item) {
-	item = new QStyleSheetItem(styleSheet(), "termtag" );
-    }
-    if (item)
-	item->setColor(prefs.qtermcolor);
-
     m_curDocs.clear();
     m_pageParaToReldocnums.clear();
-
+    clear();
     m_pager->displayPage();
-
     LOGDEB0(("ResList::resultPageNext: hasNext %d hasPrev %d\n",
 	    m_pager->hasPrev(), m_pager->hasNext()));
     emit prevPageAvailable(m_pager->hasPrev());
@@ -538,61 +562,56 @@ void ResList::previewExposed(int docnum)
     LOGDEB(("ResList::previewExposed: doc %d\n", docnum));
 
     // Possibly erase old one to white
-    int par;
-    if (m_curPvDoc != -1 && (par = parnumfromdocnum(m_curPvDoc)) != -1) {
-	QColor color("white");
-	setParagraphBackgroundColor(par, color);
+    pair<int,int> blockrange;
+    if (m_curPvDoc != -1) {
+	blockrange = parnumfromdocnum(m_curPvDoc);
+	if (blockrange.first != -1) {
+	    for (int blockn = blockrange.first;
+		 blockn < blockrange.second; blockn++) {
+		QTextBlock block = document()->findBlockByNumber(blockn);
+		QTextCursor cursor(block);
+		QTextBlockFormat format = cursor.blockFormat();
+		format.clearBackground();
+		cursor.setBlockFormat(format);
+	    }
+	}
 	m_curPvDoc = -1;
     }
-    m_curPvDoc = docnum;
-    par = parnumfromdocnum(docnum);
-    // Maybe docnum is -1 or not in this window, 
-    if (par < 0)
-	return;
 
-    setCursorPosition(par, 1);
-    ensureCursorVisible();
+    // Set background for active preview's doc entry
+    m_curPvDoc = docnum;
+    blockrange = parnumfromdocnum(docnum);
+
+    // Maybe docnum is -1 or not in this window, 
+    if (blockrange.first < 0)
+	return;
 
     // Color the new active paragraph
     QColor color("LightBlue");
-    setParagraphBackgroundColor(par, color);
-}
-
-// SELECTION BEWARE: these emit simple text if the list format is
-// Auto. If we get back to using Rich for some reason, there will be
-// need to extract the simple text here.
-
-#if (QT_VERSION >= 0x040000)
-// I have absolutely no idea why this nonsense is needed to get
-// q3textedit to copy to x11 primary selection when text is
-// selected. This used to be automatic, and, looking at the code, it
-// should happen inside q3textedit (the code here is copied from the
-// private copyToClipboard method). To be checked again with a later
-// qt version. Seems to be needed at least up to 4.2.3
-void ResList::selecChanged()
-{
-    QClipboard *clipboard = QApplication::clipboard();
-    if (hasSelectedText()) {
-        disconnect(QApplication::clipboard(), SIGNAL(selectionChanged()), 
-		   this, 0);
-	clipboard->setText(selectedText(), QClipboard::Selection);
-        connect(QApplication::clipboard(), SIGNAL(selectionChanged()),
-		this, SLOT(clipboardChanged()));
+    for (int blockn = blockrange.first+1;
+	 blockn < blockrange.second; blockn++) {
+	QTextBlock block = document()->findBlockByNumber(blockn);
+	QTextCursor cursor(block);
+	QTextBlockFormat format;
+	format.setBackground(QBrush(color));
+	cursor.mergeBlockFormat(format);
+	setTextCursor(cursor);
+	ensureCursorVisible();
     }
 }
-#else
-void ResList::selecChanged(){}
-#endif
+
 
 // Double click in res list: add selection to simple search
-void ResList::doubleClicked(int, int)
+void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    QTextBrowser::mouseDoubleClickEvent(event);
     if (hasSelectedText())
 	emit(wordSelect(selectedText()));
 }
 
-void ResList::linkWasClicked(const QString &s, int clkmod)
+void ResList::linkWasClicked(const QUrl &url)
 {
+    QString s = url.toString();
     LOGDEB(("ResList::linkWasClicked: [%s]\n", s.ascii()));
     int i = atoi(s.ascii()+1) -1;
     int what = s.ascii()[0];
@@ -601,7 +620,7 @@ void ResList::linkWasClicked(const QString &s, int clkmod)
 	emit headerClicked(); 
 	break;
     case 'P': 
-	emit docPreviewClicked(i, clkmod); 
+	emit docPreviewClicked(i, m_lstClckMod);
 	break;
     case 'E': 
 	emit docEditClicked(i);
@@ -616,44 +635,32 @@ void ResList::linkWasClicked(const QString &s, int clkmod)
     }
 }
 
-RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
+void ResList::createPopupMenu(const QPoint& pos)
 {
-    LOGDEB2(("ResList::createPopupMenu(%d, %d)\n", pos.x(), pos.y()));
-    int para = paragraphAt(pos);
-    LOGDEB2(("ResList::createPopupMenu(): para %d\n", para));
-    if (para == 0) {
-        // There is a bug in qt3 paragraphAt() when the click is inside
-        // a table.  paragraphAt() calls textcursor::place() which
-        // fails because of a positioning problem inside the paragraph
-        // (the paragraph is found but place() returns an error
-        // anyway). Try to find the paragraph myself:
-        for (;para < paragraphs(); para++) {
-            QRect rect = paragraphRect(para);
-            if (pos.y() >= rect.y() && pos.y() < rect.y() + rect.height())
-                break;
-        }
-        if (para == paragraphs())
-            para = 0;
-    }
-    m_popDoc = docnumfromparnum(para);
+    LOGDEB(("ResList::createPopupMenu(%d, %d)\n", pos.x(), pos.y()));
+    QTextCursor cursor = cursorForPosition(pos);
+    int blocknum = cursor.blockNumber();
+    LOGDEB(("ResList::createPopupMenu(): block %d\n", blocknum));
+    m_popDoc = docnumfromparnum(blocknum);
+
     if (m_popDoc < 0) 
-	return 0;
-    RCLPOPUP *popup = new RCLPOPUP(this);
-    popup->insertItem(tr("&Preview"), this, SLOT(menuPreview()));
-    popup->insertItem(tr("&Open"), this, SLOT(menuEdit()));
-    popup->insertItem(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
-    popup->insertItem(tr("Copy &URL"), this, SLOT(menuCopyURL()));
+	return;
+    QMenu *popup = new QMenu(this);
+    popup->addAction(tr("&Preview"), this, SLOT(menuPreview()));
+    popup->addAction(tr("&Open"), this, SLOT(menuEdit()));
+    popup->addAction(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
+    popup->addAction(tr("Copy &URL"), this, SLOT(menuCopyURL()));
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc) && !doc.ipath.empty()) {
-	popup->insertItem(tr("&Write to File"), this, SLOT(menuSaveToFile()));
+	popup->addAction(tr("&Write to File"), this, SLOT(menuSaveToFile()));
     }
 
-    popup->insertItem(tr("Find &similar documents"), this, SLOT(menuExpand()));
-    popup->insertItem(tr("Preview P&arent document/folder"), 
+    popup->addAction(tr("Find &similar documents"), this, SLOT(menuExpand()));
+    popup->addAction(tr("Preview P&arent document/folder"), 
 		      this, SLOT(menuPreviewParent()));
-    popup->insertItem(tr("&Open Parent document/folder"), 
+    popup->addAction(tr("&Open Parent document/folder"), 
 		      this, SLOT(menuOpenParent()));
-    return popup;
+    popup->popup(mapToGlobal(pos));
 }
 
 void ResList::menuPreview()

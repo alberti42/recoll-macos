@@ -121,6 +121,9 @@ class PrefsPack {
     // Advanced search window clause list state
     vector<int> advSearchClauses;
 
+    // Default paragraph format for result list
+    static const char *dfltResListFormat;
+
     PrefsPack() :
 	respagesize(8), 
 	reslistfontsize(10),
@@ -133,17 +136,6 @@ class PrefsPack {
 	rclVersion(1009)
 	    {
 	    }
-    static const char *getDfltResListFormat() {
-	return 	"<img src=\"%I\" align=\"left\">"
-	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>"
-	"%A %K";
-    }
-    static const char *getV18DfltResListFormat() {
-	return 	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
-	"%A %K";
-    }
 };
 
 /** Global preferences record */
