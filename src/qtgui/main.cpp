@@ -18,30 +18,21 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.73 2008-12-17 08:01:40 dockes Exp $ 
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include <cstdlib>
 
 #include "autoconfig.h"
 
 #include <unistd.h>
+#include <cstdlib>
 
-//#define WITH_KDE
-#ifdef WITH_KDE
-#include <kapplication.h>
-#include <kmainwindow.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <klocale.h>
-#else
 #include <qapplication.h>
 #include <qtranslator.h>
-#endif
-
 #include <qtextcodec.h> 
 #include <qtimer.h>
 #include <qthread.h>
 #include <qmessagebox.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
+#include <QLocale>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -50,8 +41,6 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.73 2008-12-17 08:01:40 dockes Exp $ 
 #include "smallut.h"
 #include "rclinit.h"
 #include "debuglog.h"
-#ifdef WITH_KDE
-#endif
 #include "rclmain_w.h"
 #include "ssearch_w.h"
 #include "guiutils.h"
@@ -60,17 +49,6 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.73 2008-12-17 08:01:40 dockes Exp $ 
 #endif
 #include "smallut.h"
 #include "recollq.h"
-
-#ifdef WITH_KDE
-static const char description[] =
-    I18N_NOOP("A KDE fulltext search application");
-
-static KCmdLineOptions options[] =
-{
-//    { "+[URL]", I18N_NOOP( "Document to open" ), 0 },
-    KCmdLineLastOption
-};
-#endif
 
 RclConfig *rclconfig;
 Rcl::Db *rcldb;
@@ -190,18 +168,7 @@ int main(int argc, char **argv)
 	}
     }
 
-#ifdef WITH_KDE
-    KAboutData about("recoll", I18N_NOOP("Recoll"), Rcl::version_string(), 
-                     description,
-                     KAboutData::License_GPL, "(C) 2006 Jean-Francois Dockes", 0, 0, "jfd@recoll.org");
-    about.addAuthor( "Jean-Francois Dockes", 0, 
-		     "jfd@recoll.org" );
-    KCmdLineArgs::init(argc, argv, &about);
-    KCmdLineArgs::addCmdLineOptions( options );
-    KApplication app;
-#else
     QApplication app(argc, argv);
-#endif
 
     //    fprintf(stderr, "Application created\n");
     string a_config;
@@ -241,9 +208,10 @@ int main(int argc, char **argv)
 	    question += *argv++;
 	}
 
-    // Translation file for Qt
-    QTranslator qt( 0 );
-    qt.load( QString( "qt_" ) + QTextCodec::locale(), "." );
+    // Translation file for Qt TOBEDONE ?
+    QString slang = QLocale::system().name().left(2);
+    QTranslator qt(0);
+    qt.load(QString("qt_") + slang, "." );
     app.installTranslator( &qt );
 
     string reason;
@@ -258,10 +226,8 @@ int main(int argc, char **argv)
 
     // Translations for Recoll
     string translatdir = path_cat(rclconfig->getDatadir(), "translations");
-    QTranslator translator( 0 );
-    // QTextCodec::locale() returns $LANG
-    translator.load( QString("recoll_") + QTextCodec::locale(), 
-		     translatdir.c_str() );
+    QTranslator translator(0);
+    translator.load( QString("recoll_") + slang, translatdir.c_str() );
     app.installTranslator( &translator );
 
     //    fprintf(stderr, "Translations installed\n");
@@ -289,27 +255,8 @@ int main(int argc, char **argv)
 
 
     // Create main window and set its size to previous session's
-#ifdef WITH_KDE
-#if 0
-    if (app.isRestored()) {
-	RESTORE(RclMain);
-    } else {
-#endif
-        // no session.. just start up normally
-        KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-        /// @todo do something with the command line args here
-	qInitImages_recoll();
-        mainWindow = new RclMain;
-        app.setMainWidget( mainWindow );
-        mainWindow->show();
-
-        args->clear();
-
-	//    }
-#else
-	RclMain w;
-	mainWindow = &w;
-#endif
+    RclMain w;
+    mainWindow = &w;
 
     if (prefs.mainwidth > 100) {
 	QSize s(prefs.mainwidth, prefs.mainheight);
@@ -338,7 +285,7 @@ int main(int argc, char **argv)
     // something to do.
     start_idxthread(*rclconfig);
 
-    mainWindow->sSearch->searchTypCMB->setCurrentItem(prefs.ssearchTyp);
+    mainWindow->sSearch->searchTypCMB->setCurrentIndex(prefs.ssearchTyp);
     mainWindow->sSearch->searchTypeChanged(prefs.ssearchTyp);
     if (op_flags & OPT_q) {
 	SSearch::SSearchType stype;
@@ -351,7 +298,7 @@ int main(int argc, char **argv)
 	} else {
 	    stype = SSearch::SST_LANG;
 	}
-	mainWindow->sSearch->searchTypCMB->setCurrentItem(int(stype));
+	mainWindow->sSearch->searchTypCMB->setCurrentIndex(int(stype));
 	mainWindow->
 	    sSearch->setSearchString(QString::fromLocal8Bit(question.c_str()));
     }
