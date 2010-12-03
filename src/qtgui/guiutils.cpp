@@ -72,11 +72,13 @@ PrefsPack prefs;
 
 // Using the same macro to read/write a setting. insurance against typing 
 // mistakes
+#define PARS(X) (X)
 #define SETTING_RW(var, nm, tp, def)			\
     if (writing) {					\
-	settings.writeEntry(nm , var);			\
+	settings.setValue(nm , var);			\
     } else {						\
-	var = settings.read##tp##Entry(nm, def);	\
+	var = settings.value(nm, def).to##tp \
+	    ();				       \
     }						
 
 /** 
@@ -88,11 +90,11 @@ void rwSettings(bool writing)
 {
     LOGDEB1(("rwSettings: write %d\n", int(writing)));
     QSettings settings("Recoll.org", "recoll");
-    SETTING_RW(prefs.mainwidth, "/Recoll/geometry/width", Num, 0);
-    SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Num, 0);
-    SETTING_RW(prefs.pvwidth, "/Recoll/geometry/pvwidth", Num, 0);
-    SETTING_RW(prefs.pvheight, "/Recoll/geometry/pvheight", Num, 0);
-    SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Num, 3);
+    SETTING_RW(prefs.mainwidth, "/Recoll/geometry/width", Int, 0);
+    SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Int, 0);
+    SETTING_RW(prefs.pvwidth, "/Recoll/geometry/pvwidth", Int, 0);
+    SETTING_RW(prefs.pvheight, "/Recoll/geometry/pvheight", Int, 0);
+    SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Int, 3);
     SETTING_RW(prefs.startWithAdvSearchOpen, 
 	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
     SETTING_RW(prefs.startWithSortToolOpen, 
@@ -110,10 +112,10 @@ void rwSettings(bool writing)
 	    advSearchClauses += QString::fromAscii(buf);
 	}
     }
-    SETTING_RW(advSearchClauses, "/Recoll/prefs/adv/clauseList", , ascdflt);
+    SETTING_RW(advSearchClauses, "/Recoll/prefs/adv/clauseList", String, ascdflt);
     if (!writing) {
 	list<string> clauses;
-	stringToStrings((const char *)advSearchClauses.utf8(), clauses);
+	stringToStrings((const char *)advSearchClauses.toUtf8(), clauses);
 	for (list<string>::iterator it = clauses.begin(); 
 	     it != clauses.end(); it++) {
 	    prefs.advSearchClauses.push_back(atoi(it->c_str()));
@@ -125,21 +127,21 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.catgToolBar, "/Recoll/prefs/catgToolBar", Bool, false);
     SETTING_RW(prefs.ssearchAutoPhrase, 
 	       "/Recoll/prefs/ssearchAutoPhrase", Bool, false);
-    SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Num, 8);
+    SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Int, 8);
     SETTING_RW(prefs.collapseDuplicates, 
 	       "/Recoll/prefs/reslist/collapseDuplicates", Bool, false);
-    SETTING_RW(prefs.maxhltextmbs, "/Recoll/prefs/preview/maxhltextmbs", Num, 3);
-    SETTING_RW(prefs.qtermcolor, "/Recoll/prefs/qtermcolor", , "blue");
+    SETTING_RW(prefs.maxhltextmbs, "/Recoll/prefs/preview/maxhltextmbs", Int, 3);
+    SETTING_RW(prefs.qtermcolor, "/Recoll/prefs/qtermcolor", String, "blue");
     if (!writing && prefs.qtermcolor == "")
 	prefs.qtermcolor = "blue";
 
-    SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", ,
+    SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", String,
 	       "");
-    SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Num, 
+    SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 
 	       10);
     QString rlfDflt = QString::fromAscii(prefs.dfltResListFormat);
-    SETTING_RW(prefs.reslistformat, "/Recoll/prefs/reslist/format", , rlfDflt);
-    prefs.creslistformat = (const char*)prefs.reslistformat.utf8();
+    SETTING_RW(prefs.reslistformat, "/Recoll/prefs/reslist/format", String, rlfDflt);
+    prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
     if (!writing) {
 	// If the current value of the format is the default for the
 	// previous version, replace it with the new default. We
@@ -147,10 +149,10 @@ void rwSettings(bool writing)
 	if (!prefs.creslistformat.compare(v114reslistformat)) {
 	    LOGDEB(("Replacing old default format\n"));
 	    prefs.reslistformat = rlfDflt;
-	    prefs.creslistformat = (const char*)prefs.reslistformat.utf8();
+	    prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
 	}
     }
-    SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", ,
+    SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", String,
 	       "english");
     SETTING_RW(prefs.useDesktopOpen, 
 	       "/Recoll/prefs/useDesktopOpen", Bool, true);
@@ -163,40 +165,40 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.queryReplaceAbstract, 
 	       "/Recoll/prefs/query/replaceAbstract", Bool, false);
     SETTING_RW(prefs.syntAbsLen, "/Recoll/prefs/query/syntAbsLen", 
-	       Num, 250);
+	       Int, 250);
     SETTING_RW(prefs.syntAbsCtx, "/Recoll/prefs/query/syntAbsCtx", 
-	       Num, 4);
-    SETTING_RW(prefs.autoSuffs, "/Recoll/prefs/query/autoSuffs", , "");
+	       Int, 4);
+    SETTING_RW(prefs.autoSuffs, "/Recoll/prefs/query/autoSuffs", String, "");
     SETTING_RW(prefs.autoSuffsEnable, 
 	       "/Recoll/prefs/query/autoSuffsEnable", Bool, false);
 
     SETTING_RW(prefs.sortDepth, "/Recoll/prefs/query/sortDepth",
-	       Num, 100);
+	       Int, 100);
     SETTING_RW(prefs.sortSpec, "/Recoll/prefs/query/sortSpec", 
-	       Num, 0);
+	       Int, 0);
     SETTING_RW(prefs.termMatchType, "/Recoll/prefs/query/termMatchType", 
-	       Num, 0);
+	       Int, 0);
     SETTING_RW(prefs.rclVersion, "/Recoll/prefs/rclVersion", 
-	       Num, 1009);
+	       Int, 1009);
 
     // Ssearch combobox history list
     if (writing) {
-	settings.writeEntry("/Recoll/prefs/query/ssearchHistory",
+	settings.setValue("/Recoll/prefs/query/ssearchHistory",
 			    prefs.ssearchHistory);
     } else {
 	prefs.ssearchHistory = 
-	    settings.readListEntry("/Recoll/prefs/query/ssearchHistory");
+	    settings.value("/Recoll/prefs/query/ssearchHistory").toStringList();
     }
     SETTING_RW(prefs.ssearchAutoPhrase, 
 	       "/Recoll/prefs/query/ssearchAutoPhrase", Bool, false);
 
     // Ignored file types (advanced search)
     if (writing) {
-	settings.writeEntry("/Recoll/prefs/query/asearchIgnFilTyps",
+	settings.setValue("/Recoll/prefs/query/asearchIgnFilTyps",
 			    prefs.asearchIgnFilTyps);
     } else {
 	prefs.asearchIgnFilTyps = 
-	    settings.readListEntry("/Recoll/prefs/query/asearchIgnFilTyps");
+	    settings.value("/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
     }
     SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat",
 	       Bool, false);
@@ -273,7 +275,7 @@ void rwSettings(bool writing)
 	g_dynconf->eraseAll(asbdSk);
 	for (QStringList::iterator it = prefs.asearchSubdirHist.begin();
 	     it != prefs.asearchSubdirHist.end(); it++) {
-	    g_dynconf->enterString(asbdSk, (const char *)((*it).utf8()));
+	    g_dynconf->enterString(asbdSk, (const char *)((*it).toUtf8()));
 	}
     } else {
 	list<string> tl = g_dynconf->getStringList(asbdSk);
