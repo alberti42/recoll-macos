@@ -27,21 +27,14 @@
 #include <qglobal.h>
 #include <qstring.h>
 #include <qwidget.h>
-#if QT_VERSION < 0x040000
-#define QHBOXLAYOUT QHBoxLayout
-#define QLISTBOX QListBox
-#else
-#define QHBOXLAYOUT Q3HBoxLayout
-#define QLISTBOX Q3ListBox
-#endif
 
 #include "refcntr.h"
 
 using std::string;
 
-class QHBOXLAYOUT;
+class QHBoxLayout;
 class QLineEdit;
-class QLISTBOX;
+class QListWidget;
 class QSpinBox;
 class QComboBox;
 class QCheckBox;
@@ -84,7 +77,7 @@ namespace confgui {
         virtual void setFsEncoding(bool onoff) {m_fsencoding = onoff;}
     protected:
 	ConfLink     m_cflink;
-	QHBOXLAYOUT *m_hl;
+	QHBoxLayout *m_hl;
         // File names are encoded as local8bit in the config files. Other
         // are encoded as utf-8
         bool         m_fsencoding;
@@ -192,7 +185,7 @@ namespace confgui {
 		      const QString& lbltxt,
 		      const QString& tltptxt);
 	virtual void loadValue();
-	QLISTBOX *getListBox() {return m_lb;}
+	QListWidget *getListBox() {return m_lb;}
 	
     public slots:
         virtual void setEnabled(bool i) {if(m_lb) ((QWidget*)m_lb)->setEnabled(i);}
@@ -202,7 +195,7 @@ namespace confgui {
     signals:
         void entryDeleted(QString);
     protected:
-	QLISTBOX *m_lb;
+	QListWidget *m_lb;
 	void listToConf();
     };
 
@@ -237,6 +230,10 @@ namespace confgui {
     protected:
 	const QStringList m_sl;
     };
+
+    extern void setSzPol(QWidget *w, QSizePolicy::Policy hpol, 
+			 QSizePolicy::Policy vpol,
+			 int hstretch, int vstretch);
 }
 
 #endif /* _confgui_h_included_ */

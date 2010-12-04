@@ -34,8 +34,8 @@ void HelpClient::installMap(string wname, string section)
     helpmap[wname] = section;
 }
 
-HelpClient::HelpClient(QObject *parent, const char *name)
-    : QObject(parent, name)
+HelpClient::HelpClient(QObject *parent, const char *)
+    : QObject(parent)
 {
     parent->installEventFilter(this);
 }
@@ -52,7 +52,7 @@ bool HelpClient::eventFilter(QObject *obj, QEvent *event)
 		QWidget *widget = static_cast<QWidget *>(obj)->focusWidget();
 		map<string, string>::iterator it = helpmap.end();
 		while (widget) {
-		    it = helpmap.find(widget->name());
+		    it = helpmap.find((const char *)widget->objectName().toUtf8());
 		    if (it != helpmap.end())
 			break;
 		    widget = widget->parentWidget();

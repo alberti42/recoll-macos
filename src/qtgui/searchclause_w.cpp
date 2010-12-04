@@ -36,14 +36,15 @@ static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.4 2006-12-04 06:19:11 dock
 SearchClauseW::SearchClauseW(QWidget* parent)
     : QWidget(parent)
 {
-    QHBoxLayout* hLayout = new QHBoxLayout(this, 0, 3); 
-    sTpCMB = new QComboBox(FALSE, this, "sTpCMB");
+    QHBoxLayout* hLayout = new QHBoxLayout(this); 
+    sTpCMB = new QComboBox(this);
+    sTpCMB->setEditable(false);
     hLayout->addWidget(sTpCMB);
 
-    proxSlackSB = new QSpinBox(this, "proxSlackSB");
+    proxSlackSB = new QSpinBox(this);
     hLayout->addWidget(proxSlackSB);
 
-    wordsLE = new QLineEdit(this, "wordsLE");
+    wordsLE = new QLineEdit(this);
     wordsLE->setMinimumSize(QSize(250, 0));
     hLayout->addWidget(wordsLE);
 
@@ -67,22 +68,21 @@ SearchClauseW::~SearchClauseW()
  */
 void SearchClauseW::languageChange()
 {
-    setCaption(tr("SearchClauseW"));
     sTpCMB->clear();
-    sTpCMB->insertItem(tr("Any of these")); // 0
-    sTpCMB->insertItem(tr("All of these")); //1
-    sTpCMB->insertItem(tr("None of these"));//2
-    sTpCMB->insertItem(tr("This phrase"));//3
-    sTpCMB->insertItem(tr("Terms in proximity"));//4
-    sTpCMB->insertItem(tr("File name matching"));//5
+    sTpCMB->addItem(tr("Any of these")); // 0
+    sTpCMB->addItem(tr("All of these")); //1
+    sTpCMB->addItem(tr("None of these"));//2
+    sTpCMB->addItem(tr("This phrase"));//3
+    sTpCMB->addItem(tr("Terms in proximity"));//4
+    sTpCMB->addItem(tr("File name matching"));//5
     //    sTpCMB->insertItem(tr("Complex clause"));//6
 
     // Ensure that the spinbox will be enabled/disabled depending on
     // combobox state
     tpChange(0);
 
-    QToolTip::add(sTpCMB, tr("Select the type of query that will be performed with the words"));
-    QToolTip::add(proxSlackSB, tr("Number of additional words that may be interspersed with the chosen ones"));
+    sTpCMB->setToolTip(tr("Select the type of query that will be performed with the words"));
+    proxSlackSB->setToolTip(tr("Number of additional words that may be interspersed with the chosen ones"));
 }
 
 using namespace Rcl;
@@ -93,26 +93,26 @@ SearchClauseW::getClause()
 {
     if (wordsLE->text().isEmpty())
 	return 0;
-    switch (sTpCMB->currentItem()) {
+    switch (sTpCMB->currentIndex()) {
     case 0:
 	return new SearchDataClauseSimple(SCLT_OR,
-				  (const char *)wordsLE->text().utf8());
+				  (const char *)wordsLE->text().toUtf8());
     case 1:
 	return new SearchDataClauseSimple(SCLT_AND,
-				  (const char *)wordsLE->text().utf8());
+				  (const char *)wordsLE->text().toUtf8());
     case 2:
 	return new SearchDataClauseSimple(SCLT_EXCL,
-				  (const char *)wordsLE->text().utf8());
+				  (const char *)wordsLE->text().toUtf8());
     case 3:
 	return new SearchDataClauseDist(SCLT_PHRASE,
-				(const char *)wordsLE->text().utf8(),
+				(const char *)wordsLE->text().toUtf8(),
 					proxSlackSB->value());
     case 4:
 	return new SearchDataClauseDist(SCLT_NEAR,
-				(const char *)wordsLE->text().utf8(),
+				(const char *)wordsLE->text().toUtf8(),
 					proxSlackSB->value());
     case 5:
-	return new SearchDataClauseFilename((const char *)wordsLE->text().utf8());
+	return new SearchDataClauseFilename((const char *)wordsLE->text().toUtf8());
     case 6:
     default:
 	return 0;
@@ -124,8 +124,8 @@ void SearchClauseW::tpChange(int index)
 {
     if (index < 0 || index > 5)
 	return;
-    if (sTpCMB->currentItem() != index)
-	sTpCMB->setCurrentItem(index);
+    if (sTpCMB->currentIndex() != index)
+	sTpCMB->setCurrentIndex(index);
     switch (index) {
     case 3:
     case 4:

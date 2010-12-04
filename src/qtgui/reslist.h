@@ -9,6 +9,7 @@ using std::list;
 #endif
 
 #include <qtextbrowser.h>
+#include <QTextCursor>
 
 #include "docseq.h"
 #include "sortseq.h"
@@ -77,7 +78,7 @@ class ResList : public QTextBrowser
     virtual void setFilterParams(const DocSeqFiltSpec &spec);
     virtual void highlighted(const QString& link);
     virtual void createPopupMenu(const QPoint& pos);
-
+	
  signals:
     void nextPageAvailable(bool);
     void prevPageAvailable(bool);

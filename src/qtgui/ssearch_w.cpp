@@ -40,12 +40,12 @@ static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.26 2008-12-05 11:09:31 dockes E
 void SSearch::init()
 {
     // See enum above and keep in order !
-    searchTypCMB->insertItem(tr("Any term"));
-    searchTypCMB->insertItem(tr("All terms"));
-    searchTypCMB->insertItem(tr("File name"));
-    searchTypCMB->insertItem(tr("Query language"));
+    searchTypCMB->addItem(tr("Any term"));
+    searchTypCMB->addItem(tr("All terms"));
+    searchTypCMB->addItem(tr("File name"));
+    searchTypCMB->addItem(tr("Query language"));
     
-    queryText->insertStringList(prefs.ssearchHistory);
+    queryText->addItems(prefs.ssearchHistory);
     queryText->setEditText("");
     connect(queryText->lineEdit(), SIGNAL(returnPressed()),
 	    this, SLOT(startSimpleSearch()));
@@ -77,14 +77,16 @@ void SSearch::searchTypeChanged(int typ)
     LOGDEB(("Search type now %d\n", typ));
     // Adjust context help
     if (typ == SST_LANG)
-	HelpClient::installMap(this->name(), "RCL.SEARCH.LANG");
+	HelpClient::installMap((const char *)this->objectName().toUtf8(), 
+			       "RCL.SEARCH.LANG");
     else 
-	HelpClient::installMap(this->name(), "RCL.SEARCH.SIMPLE");
+	HelpClient::installMap((const char *)this->objectName().toUtf8(), 
+			       "RCL.SEARCH.SIMPLE");
 
     // Also fix tooltips
     switch (typ) {
     case SST_LANG:
-        QToolTip::add(queryText,
+        queryText->setToolTip(tr(
 "Enter query language expression. Cheat sheet:<br>\n"
 "<i>term1 term2</i> : 'term1' and 'term2' in any field.<br>\n"
 "<i>field:term1</i> : 'term1' in field 'field'.<br>\n"
@@ -97,16 +99,17 @@ void SSearch::searchTypeChanged(int typ)
 "<i>\"term1 term2\"</i> : phrase (must occur exactly). Possible modifiers:<br>\n"
 "<i>\"term1 term2\"p</i> : unordered proximity search with default distance.<br>\n"
 "Use <b>Show Query</b> link when in doubt about result and see manual (&lt;F1>) for more detail.\n"
-            );
+				  ));
         break;
     case SST_FNM:
-        QToolTip::add(queryText, "Enter file name wildcard expression.");
+        queryText->setToolTip(tr("Enter file name wildcard expression."));
         break;
     case SST_ANY:
     case SST_ALL:
     default:
-        QToolTip::add(queryText, 
-    "Enter search terms here. Type ESC SPC for completions of current term.");
+        queryText->setToolTip(tr(
+      "Enter search terms here. Type ESC SPC for completions of current term."
+				  ));
     }
 }
 
@@ -115,20 +118,20 @@ void SSearch::startSimpleSearch()
     if (queryText->currentText().length() == 0)
 	return;
 
-    string u8 = (const char *)queryText->currentText().utf8();
+    string u8 = (const char *)queryText->currentText().toUtf8();
     LOGDEB(("SSearch::startSimpleSearch: [%s]\n", u8.c_str()));
 
     trimstring(u8);
     if (u8.length() == 0)
 	return;
 
-    SSearchType tp = (SSearchType)searchTypCMB->currentItem();
+    SSearchType tp = (SSearchType)searchTypCMB->currentIndex();
     Rcl::SearchData *sdata = 0;
 
     if (tp == SST_LANG) {
 	string reason;
         if (prefs.autoSuffsEnable)
-            sdata = wasaStringToRcl(u8, reason, (const char *)prefs.autoSuffs.utf8());
+            sdata = wasaStringToRcl(u8, reason, (const char *)prefs.autoSuffs.toUtf8());
         else
             sdata = wasaStringToRcl(u8, reason);
 	if (sdata == 0) {
@@ -180,41 +183,24 @@ void SSearch::startSimpleSearch()
 
     // Search terms history
 
-    // Need to remove any previous occurence of the search entry from
-    // the listbox list, The qt listbox doesn't do lru correctly (if
-    // already in the list the new entry would remain at it's place,
-    // not jump at the top as it should
-    LOGDEB3(("Querytext list count %d\n", queryText->count()));
-    // Have to save current text, this will change while we clean up the list
+    // We want to have the new text at the top and any older identical
+    // entry to be erased. There is no standard qt policy to do this ? 
+    // So do it by hand.
     QString txt = queryText->currentText();
-    bool changed;
-    do {
-	changed = false;
-	for (int index = 0; index < queryText->count(); index++) {
-	    LOGDEB3(("Querytext[%d] = [%s]\n", index,
-		    (const char *)(queryText->text(index).utf8())));
-	    if (queryText->text(index).length() == 0 || 
-		QString::compare(queryText->text(index), txt) == 0) {
-		LOGDEB3(("Querytext removing at %d [%s] [%s]\n", index,
-			(const char *)(queryText->text(index).utf8()),
-			(const char *)(txt.utf8())));
-		queryText->removeItem(index);
-		changed = true;
-		break;
-	    }
-	}
-    } while (changed);
+    int index = queryText->findText(txt);
+    if (index > 0) 
+	queryText->removeItem(index);
     // The combobox is set for no insertion, insert here:
-    queryText->insertItem(txt, 0);
-    queryText->setCurrentItem(0);
+    queryText->insertItem(0, txt);
+    queryText->setCurrentIndex(0);
+
 
     // Save the current state of the listbox list to the prefs (will
     // go to disk)
     prefs.ssearchHistory.clear();
     for (int index = 0; index < queryText->count(); index++) {
-	prefs.ssearchHistory.push_back(queryText->text(index));
+	prefs.ssearchHistory.push_back(queryText->itemText(index));
     }
-
 
     RefCntr<Rcl::SearchData> rsdata(sdata);
     emit startSearch(rsdata);
@@ -232,7 +218,7 @@ bool SSearch::hasSearchString()
 
 void SSearch::setAnyTermMode()
 {
-    searchTypCMB->setCurrentItem(SST_ANY);
+    searchTypCMB->setCurrentIndex(SST_ANY);
 }
 
 // Complete last word in input by querying db for all possible terms.
@@ -240,13 +226,13 @@ void SSearch::completion()
 {
     if (!rcldb)
 	return;
-    if (searchTypCMB->currentItem() == SST_FNM) {
+    if (searchTypCMB->currentIndex() == SST_FNM) {
 	// Filename: no completion
 	QApplication::beep();
 	return;
     }
     // Extract last word in text
-    string txt = (const char *)queryText->currentText().utf8();
+    string txt = (const char *)queryText->currentText().toUtf8();
     string::size_type cs = txt.find_last_of(" ");
     if (cs == string::npos)
 	cs = 0;
@@ -262,7 +248,7 @@ void SSearch::completion()
     // Query database
     const int max = 100;
     Rcl::TermMatchResult tmres;
-    string stemLang = (const char *)prefs.queryStemLang.ascii();
+    string stemLang = (const char *)prefs.queryStemLang.toAscii();
     if (stemLang == "ALL") {
 	rclconfig->getConfParam("indexstemminglanguages", stemLang);
     }
@@ -288,15 +274,15 @@ void SSearch::completion()
 	     it != tmres.entries.end(); it++) {
 	    lst.push_back(QString::fromUtf8(it->term.c_str()));
 	}
-	res = QInputDialog::getItem(tr("Completions"),
-				    tr("Select an item:"), lst, 0, 
-				    FALSE, &ok, this);
+	res = QInputDialog::getItem (this, tr("Completions"), 
+				     tr("Select an item:"),
+				     lst, 0, false, &ok);
     }
 
     // Insert result
     if (ok) {
 	txt.erase(cs);
-	txt.append(res.utf8());
+	txt.append((const char *)res.toUtf8());
 	queryText->setEditText(QString::fromUtf8(txt.c_str()));
     } else {
 	return;

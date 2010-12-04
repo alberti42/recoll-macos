@@ -90,7 +90,7 @@ public slots:
     virtual void resetSearch();
     virtual void eraseDocHistory();
     // Callback for setting the stemming language through the prefs menu
-    virtual void setStemLang(int id);
+    virtual void setStemLang(QAction *id);
     // Prefs menu about to show, set the checked lang entry
     virtual void adjustPrefsMenu();
     virtual void catgFilter(int);
@@ -115,10 +115,10 @@ private:
 
     vector<TempFile>  m_tempfiles;
     vector<ExecCmd*>  m_viewers;
-    map<QString, int> m_stemLangToId;
+    map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
-    int               m_idNoStem;
-    int               m_idAllStem;
+    QAction *         m_idNoStem;
+    QAction *         m_idAllStem;
     bool              m_idxStatusAck; // Did we act on last status?
 
     virtual void init();

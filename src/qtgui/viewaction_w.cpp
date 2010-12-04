@@ -99,7 +99,7 @@ void ViewAction::editActions()
 	QTableWidgetItem *item0 = actionsLV->item(row, 0);
 	if (!item0->isSelected())
 	    continue;
-	mtypes.push_back((const char *)item0->text().local8Bit());
+	mtypes.push_back((const char *)item0->text().toLocal8Bit());
 	QTableWidgetItem *item1 = actionsLV->item(row, 1);
 	QString action = item1->text();
 	if (action0.isEmpty()) {
@@ -122,13 +122,13 @@ void ViewAction::editActions()
 	return;
 
     bool ok;
-    QString newaction = QInputDialog::getText("Recoll", "Edit action:", 
+    QString newaction = QInputDialog::getText(this, "Recoll", "Edit action:", 
 					 QLineEdit::Normal,
-					 action0, &ok, this);
+					 action0, &ok);
     if (!ok || newaction.isEmpty() ) 
 	return;
 
-    string sact = (const char *)newaction.local8Bit();
+    string sact = (const char *)newaction.toLocal8Bit();
     for (list<string>::const_iterator it = mtypes.begin(); 
 	 it != mtypes.end(); it++) {
 	rclconfig->setMimeViewerDef(*it, sact);

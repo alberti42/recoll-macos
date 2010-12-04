@@ -7,17 +7,13 @@
  * confgui elements, linked to configuration parameters, into panels.
  */
 
-#include <qwidget.h>
-#include <qstring.h>
-#if QT_VERSION < 0x040000
-#include <qgroupbox.h>
-#include <qtabdialog.h>
-#define QTABDIALOG QTabDialog
-#else // Qt4 -> 
-#include <Q3GroupBox>
-#include <Q3TabDialog>
-#define QTABDIALOG Q3TabDialog
-#endif // QT 3/4
+#include <QWidget>
+#include <QString>
+#include <QGroupBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QTabWidget>
+#include <QListWidgetItem>
 
 #include <string>
 #include <list>
@@ -31,7 +27,7 @@ class ConfParamDNLW;
 
 namespace confgui {
 
-class ConfIndexW : public QTABDIALOG {
+class ConfIndexW : public QDialog {
     Q_OBJECT
 public:
     ConfIndexW(QWidget *parent, RclConfig *config);
@@ -43,6 +39,8 @@ private:
     RclConfig *m_rclconf;
     ConfNull  *m_conf;
     list<QWidget *> m_widgets;
+    QTabWidget       *tabWidget;
+    QDialogButtonBox *buttonBox;
 };
 
 /** 
@@ -64,7 +62,7 @@ public:
     ConfSubPanelW(QWidget *parent, ConfNull *config);
 
 private slots:
-    void subDirChanged();
+    void subDirChanged(QListWidgetItem *, QListWidgetItem *);
     void subDirDeleted(QString);
     void restoreEmpty();
 private:
@@ -72,11 +70,7 @@ private:
     ConfParamDNLW    *m_subdirs;
     list<ConfParamW*> m_widgets;
     ConfNull         *m_config;
-#if QT_VERSION < 0x040000
     QGroupBox        *m_groupbox;
-#else
-    Q3GroupBox        *m_groupbox;
-#endif
     void reloadAll();
 };
 

@@ -208,7 +208,7 @@ int main(int argc, char **argv)
 	    question += *argv++;
 	}
 
-    // Translation file for Qt TOBEDONE ?
+    // Translation file for Qt
     QString slang = QLocale::system().name().left(2);
     QTranslator qt(0);
     qt.load(QString("qt_") + slang, "." );

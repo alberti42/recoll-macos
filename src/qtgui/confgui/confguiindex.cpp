@@ -3,49 +3,18 @@ static char rcsid[] = "@(#$Id: confguiindex.cpp,v 1.13 2008-09-30 12:38:29 docke
 #endif
 
 #include <qglobal.h>
-#if QT_VERSION < 0x040000
-#define QFRAME_INCLUDE <qframe.h>
-#define QFILEDIALOG_INCLUDE <qfiledialog.h>
-#define QLISTBOX_INCLUDE <qlistbox.h>
-#define QFILEDIALOG QFileDialog 
-#define QFRAME QFrame
-#define QHBOXLAYOUT QHBoxLayout
-#define QLISTBOX QListBox
-#define QLISTBOXITEM QListBoxItem
-#define QLBEXACTMATCH Qt::ExactMatch
-#define QVBOXLAYOUT QVBoxLayout
-#define QGROUPBOX QGroupBox
-#include <qgroupbox.h>
-#else
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
-#include <Q3GroupBox>
-
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QGroupBox>
 #include <QFrame>
-#define QFRAME_INCLUDE <q3frame.h>
-
 #include <QFileDialog>
-#define QFILEDIALOG_INCLUDE <q3filedialog.h>
-
-#define QLISTBOX_INCLUDE <q3listbox.h>
-
-#define QFILEDIALOG Q3FileDialog 
-#define QFRAME Q3Frame
-#define QHBOXLAYOUT Q3HBoxLayout
-#define QLISTBOX Q3ListBox
-#define QLISTBOXITEM Q3ListBoxItem
-#define QLBEXACTMATCH Q3ListBox::ExactMatch
-#define QVBOXLAYOUT Q3VBoxLayout
-#define QGROUPBOX Q3GroupBox
-#endif
 #include <qlayout.h>
-#include QFRAME_INCLUDE
 #include <qwidget.h>
 #include <qlabel.h>
-#include QLISTBOX_INCLUDE
 #include <qtimer.h>
 #include <qmessagebox.h>
 #include <qcheckbox.h>
+#include <QListWidget>
 
 #include <list>
 using std::list;
@@ -62,20 +31,28 @@ using std::list;
 #include "rclconfig.h"
 
 namespace confgui {
-const static int spacing = 6;
-const static int margin = 6;
+const static int spacing = 3;
+const static int margin = 3;
 
 ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
-    : QTABDIALOG(parent), m_rclconf(config)
+    : QDialog(parent), m_rclconf(config)
 {
-    setCaption(QString::fromLocal8Bit(config->getConfDir().c_str()));
-    setOkButton();
-    setCancelButton();
-
+    setWindowTitle(QString::fromLocal8Bit(config->getConfDir().c_str()));
+    tabWidget = new QTabWidget;
     reloadPanels();
-    resize(QSize(600, 500).expandedTo(minimumSizeHint()));
-    connect(this, SIGNAL(applyButtonPressed()), this, SLOT(acceptChanges()));
-    connect(this, SIGNAL(cancelButtonPressed()), this, SLOT(rejectChanges()));
+
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+				     | QDialogButtonBox::Cancel);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(tabWidget);
+    mainLayout->addWidget(buttonBox);
+    setLayout(mainLayout);
+
+    resize(QSize(600, 450).expandedTo(minimumSizeHint()));
+
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(acceptChanges()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(rejectChanges()));
 }
 
 void ConfIndexW::acceptChanges()
@@ -101,6 +78,7 @@ void ConfIndexW::acceptChanges()
 	startIndexingAfterConfig = 0;
 	start_indexing(true);
     }
+    hide();
 }
 
 void ConfIndexW::rejectChanges()
@@ -110,6 +88,7 @@ void ConfIndexW::rejectChanges()
     delete m_conf;
     m_conf = 0;
     QTimer::singleShot(0, this, SLOT(reloadPanels()));
+    hide();
 }
 
 void ConfIndexW::reloadPanels()
@@ -117,31 +96,26 @@ void ConfIndexW::reloadPanels()
     if ((m_conf = m_rclconf->cloneMainConfig()) == 0) 
 	return;
     m_conf->holdWrites(true);
-    for (list<QWidget *>::iterator it = m_widgets.begin();
-	 it != m_widgets.end(); it++) {
-	removePage(*it);
-	delete *it;
-    }
+    tabWidget->clear();
     m_widgets.clear();
 
     QWidget *w = new ConfTopPanelW(this, m_conf);
     m_widgets.push_back(w);
-    addTab(w, QObject::tr("Global parameters"));
+    tabWidget->addTab(w, QObject::tr("Global parameters"));
 	
     w = new ConfSubPanelW(this, m_conf);
     m_widgets.push_back(w);
-    addTab(w, QObject::tr("Local parameters"));
+    tabWidget->addTab(w, QObject::tr("Local parameters"));
 
     w = new ConfBeaglePanelW(this, m_conf);
     m_widgets.push_back(w);
-    addTab(w, QObject::tr("Beagle web history"));
-
+    tabWidget->addTab(w, QObject::tr("Beagle web history"));
 }
 
 ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
     : QWidget(parent)
 {
-    QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(this);
+    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
 
@@ -161,7 +135,7 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
 			"for visited web pages.<br>"
                         "A non-absolute path is taken relative to the "
 			"configuration directory."), true);
-    cp2->setEnabled(cp1->m_cb->isOn());
+    cp2->setEnabled(cp1->m_cb->isChecked());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp2, SLOT(setEnabled(bool)));
     vboxLayout->addWidget(cp2);
 
@@ -170,7 +144,7 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
         new ConfParamIntW(this, lnk3, tr("Max. size for the web cache (MB)"),
 		      tr("Entries will be recycled once the size is reached"),
                           -1, 1000);
-    cp3->setEnabled(cp1->m_cb->isOn());
+    cp3->setEnabled(cp1->m_cb->isChecked());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp3, SLOT(setEnabled(bool)));
     vboxLayout->addWidget(cp3);
     vboxLayout->insertStretch(-1);
@@ -188,11 +162,8 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 	ConfParamDNLW(this, lnktopdirs, tr("Top directories"),
 		      tr("The list of directories where recursive "
 			 "indexing starts. Default: your home."));
-#if QT_VERSION < 0x040000
-    gl1->addMultiCellWidget(etopdirs, 0, 0, 0, 1);
-#else
+    setSzPol(etopdirs, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 3);
     gl1->addWidget(etopdirs, 0, 0, 1, 2);
-#endif
 
     ConfLink lnkskp(new ConfLinkRclRep(config, "skippedPaths"));
     ConfParamSLW *eskp = new 
@@ -205,11 +176,8 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			"to '/usr/home', a correct skippedPath entry "
 			"would be '/home/me/tmp*', not '/usr/home/me/tmp*')"));
     eskp->setFsEncoding(true);
-#if QT_VERSION < 0x040000
-    gl1->addMultiCellWidget(eskp, 1, 1, 0, 1);
-#else
+    setSzPol(eskp, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 3);
     gl1->addWidget(eskp, 1, 0, 1, 2);
-#endif
 
     list<string> cstemlangs = Rcl::Db::getStemmerNames();
     QStringList stemlangs;
@@ -222,22 +190,15 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 	ConfParamCSLW(this, lnkidxsl, tr("Stemming languages"),
 		      tr("The languages for which stemming expansion<br>"
 			 "dictionaries will be built."), stemlangs);
-#if QT_VERSION < 0x040000
-    gl1->addMultiCellWidget(eidxsl, 2, 2, 0, 1);
-#else
+    setSzPol(eidxsl, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 1);
     gl1->addWidget(eidxsl, 2, 0, 1, 2);
-#endif
 
     ConfLink lnk4(new ConfLinkRclRep(config, "logfilename"));
     ConfParamFNW *e4 = new 
 	ConfParamFNW(this, lnk4, tr("Log file name"),
 		     tr("The file where the messages will be written.<br>"
 			"Use 'stderr' for terminal output"), false);
-#if QT_VERSION < 0x040000
-    gl1->addMultiCellWidget(e4, 3, 3, 0, 1);
-#else
     gl1->addWidget(e4, 3, 0, 1, 2);
-#endif
 
     QWidget *w = 0;
 
@@ -289,7 +250,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			 "To get an idea of what is installed on your system, "
 			 "type 'aspell config' and look for .dat files inside "
 			 "the 'data-dir' directory. "));
-    cpaspl->setEnabled(!cpasp->m_cb->isOn());
+    cpaspl->setEnabled(!cpasp->m_cb->isChecked());
     connect(cpasp->m_cb, SIGNAL(toggled(bool)), cpaspl,SLOT(setDisabled(bool)));
     gl1->addWidget(cpaspl, 6, 1);
 
@@ -300,17 +261,13 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			"A non-absolute path is taken relative to the "
 			" configuration directory. The default is 'xapiandb'."
 			), true);
-#if QT_VERSION < 0x040000
-    gl1->addMultiCellWidget(edbd, 7, 7, 0, 1);
-#else
     gl1->addWidget(edbd, 7, 0, 1, 2);
-#endif
 }
 
 ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     : QWidget(parent), m_config(config)
 {
-    QVBOXLAYOUT *vboxLayout = new QVBOXLAYOUT(this);
+    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
 
@@ -321,9 +278,11 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		      QObject::tr("The list of subdirectories in the indexed "
 				  "hierarchy <br>where some parameters need "
 				  "to be redefined. Default: empty."));
-    m_subdirs->getListBox()->setSelectionMode(QLISTBOX::Single);
-    connect(m_subdirs->getListBox(), SIGNAL(selectionChanged()),
-	    this, SLOT(subDirChanged()));
+    m_subdirs->getListBox()->setSelectionMode(QAbstractItemView::SingleSelection);
+    connect(m_subdirs->getListBox(), 
+	    SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
+	    this, 
+	    SLOT(subDirChanged(QListWidgetItem *, QListWidgetItem *)));
     connect(m_subdirs, SIGNAL(entryDeleted(QString)),
 	    this, SLOT(subDirDeleted(QString)));
     list<string> allkeydirs = config->getSubKeys(); 
@@ -332,12 +291,12 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 	 it != allkeydirs.end(); it++) {
 	qls.push_back(QString::fromUtf8(it->c_str()));
     }
-    m_subdirs->getListBox()->insertStringList(qls);
+    m_subdirs->getListBox()->insertItems(0, qls);
     vboxLayout->addWidget(m_subdirs);
 
-    QFRAME *line2 = new QFRAME(this);
-    line2->setFrameShape(QFRAME::HLine);
-    line2->setFrameShadow(QFRAME::Sunken);
+    QFrame *line2 = new QFrame(this);
+    line2->setFrameShape(QFrame::HLine);
+    line2->setFrameShadow(QFrame::Sunken);
     vboxLayout->addWidget(line2);
 
     QLabel *explain = new QLabel(this);
@@ -352,31 +311,22 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     vboxLayout->addWidget(explain);
 
 
-    m_groupbox = new QGROUPBOX(1, Qt::Horizontal, this);
-    m_groupbox->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, 
-					  QSizePolicy::Preferred,
-					  1,  // Horizontal stretch
-					  3,  // Vertical stretch
-			    m_groupbox->sizePolicy().hasHeightForWidth()));
+    m_groupbox = new QGroupBox(this);
+    setSzPol(m_groupbox, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 3);
 
-    QWidget *w = new QWidget(m_groupbox);
-    QGridLayout *gl1 = new QGridLayout(w);
+    QGridLayout *gl1 = new QGridLayout(m_groupbox);
     gl1->setSpacing(spacing);
     gl1->setMargin(margin);
 
     ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames", &m_sk));
     ConfParamSLW *eskn = new 
-	ConfParamSLW(w, lnkskn, 
+	ConfParamSLW(m_groupbox, lnkskn, 
 		     QObject::tr("Skipped names"),
 		     QObject::tr("These are patterns for file or directory "
 				 " names which should not be indexed."));
     eskn->setFsEncoding(true);
     m_widgets.push_back(eskn);
-#if QT_VERSION < 0x040000
-    gl1->addMultiCellWidget(eskn, 0, 0, 0, 1);
-#else
     gl1->addWidget(eskn, 0, 0, 1, 2);
-#endif
 
     list<string> args;
     args.push_back("-l");
@@ -399,7 +349,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnk21(new ConfLinkRclRep(config, "defaultcharset", &m_sk));
     ConfParamCStrW *e21 = new 
-	ConfParamCStrW(w, lnk21, 
+	ConfParamCStrW(m_groupbox, lnk21, 
 		       QObject::tr("Default character set"),
 		       QObject::tr("This is the character set used for reading files "
 			  "which do not identify the character set "
@@ -408,15 +358,11 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 			  "and the value from the NLS environnement is used."
 			  ), charsets);
     m_widgets.push_back(e21);
-#if QT_VERSION < 0x040000
-    gl1->addMultiCellWidget(e21, 1, 1, 0, 1);
-#else
     gl1->addWidget(e21, 1, 0, 1, 2);
-#endif
 
     ConfLink lnk3(new ConfLinkRclRep(config, "followLinks", &m_sk));
     ConfParamBoolW *e3 = new 
-	ConfParamBoolW(w, lnk3, 
+	ConfParamBoolW(m_groupbox, lnk3, 
 		        QObject::tr("Follow symbolic links"),
 		        QObject::tr("Follow symbolic links while "
 			  "indexing. The default is no, "
@@ -426,7 +372,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnkafln(new ConfLinkRclRep(config, "indexallfilenames", &m_sk));
     ConfParamBoolW *eafln = new 
-	ConfParamBoolW(w, lnkafln, 
+	ConfParamBoolW(m_groupbox, lnkafln, 
 		       QObject::tr("Index all file names"),
 		       QObject::tr("Index the names of files for which the contents "
 			  "cannot be identified or processed (no or "
@@ -436,7 +382,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnkzfmaxkbs(new ConfLinkRclRep(config, "compressedfilemaxkbs"));
     ConfParamIntW *ezfmaxkbs = new 
-	ConfParamIntW(w, lnkzfmaxkbs, 
+	ConfParamIntW(m_groupbox, lnkzfmaxkbs, 
 		      tr("Max. compressed file size (KB)"),
 		      tr("This value sets a threshold beyond which compressed"
 			 "files will not be processed. Set to -1 for no "
@@ -447,7 +393,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnktxtmaxmbs(new ConfLinkRclRep(config, "textfilemaxmbs"));
     ConfParamIntW *etxtmaxmbs = new 
-	ConfParamIntW(w, lnktxtmaxmbs, 
+	ConfParamIntW(m_groupbox, lnktxtmaxmbs, 
 		      tr("Max. text file size (MB)"),
 		      tr("This value sets a threshold beyond which text "
 			 "files will not be processed. Set to -1 for no "
@@ -459,7 +405,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnktxtpagekbs(new ConfLinkRclRep(config, "textfilepagekbs"));
     ConfParamIntW *etxtpagekbs = new 
-	ConfParamIntW(w, lnktxtpagekbs, 
+	ConfParamIntW(m_groupbox, lnktxtpagekbs, 
 		      tr("Text file page size (KB)"),
 		      tr("If this value is set (not equal to -1), text "
                          "files will be split in chunks of this size for "
@@ -471,7 +417,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnkfiltmaxsecs(new ConfLinkRclRep(config, "filtermaxseconds"));
     ConfParamIntW *efiltmaxsecs = new 
-	ConfParamIntW(w, lnkfiltmaxsecs, 
+	ConfParamIntW(m_groupbox, lnkfiltmaxsecs, 
 		      tr("Max. filter exec. time (S)"),
 		      tr("External filters working longer than this will be "
                          "aborted. This is for the rare case (ie: postscript) "
@@ -482,7 +428,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     gl1->addWidget(efiltmaxsecs, 4, 1);
 
     vboxLayout->addWidget(m_groupbox);
-    subDirChanged();
+    subDirChanged(0, 0);
 }
 
 void ConfSubPanelW::reloadAll()
@@ -493,16 +439,16 @@ void ConfSubPanelW::reloadAll()
     }
 }
 
-void ConfSubPanelW::subDirChanged()
+void ConfSubPanelW::subDirChanged(QListWidgetItem *current, QListWidgetItem *)
 {
     LOGDEB(("ConfSubPanelW::subDirChanged\n"));
-    QLISTBOXITEM *item = m_subdirs->getListBox()->selectedItem();
-    if (item == 0 || item->text() == "") {
+	
+    if (current == 0 || current->text() == "") {
 	m_sk = "";
 	m_groupbox->setTitle(tr("Global"));
     } else {
-	m_sk = (const char *)item->text().utf8();
-	m_groupbox->setTitle(item->text());
+	m_sk = (const char *) current->text().toUtf8();
+	m_groupbox->setTitle(current->text());
     }
     LOGDEB(("ConfSubPanelW::subDirChanged: now [%s]\n", m_sk.c_str()));
     reloadAll();
@@ -510,20 +456,20 @@ void ConfSubPanelW::subDirChanged()
 
 void ConfSubPanelW::subDirDeleted(QString sbd)
 {
-    LOGDEB(("ConfSubPanelW::subDirDeleted(%s)\n", (const char *)sbd.utf8()));
+    LOGDEB(("ConfSubPanelW::subDirDeleted(%s)\n", (const char *)sbd.toUtf8()));
     if (sbd == "") {
 	// Can't do this, have to reinsert it
 	QTimer::singleShot(0, this, SLOT(restoreEmpty()));
 	return;
     }
     // Have to delete all entries for submap
-    m_config->eraseKey((const char *)sbd.utf8());
+    m_config->eraseKey((const char *)sbd.toUtf8());
 }
 
 void ConfSubPanelW::restoreEmpty()
 {
     LOGDEB(("ConfSubPanelW::restoreEmpty()\n"));
-    m_subdirs->getListBox()->insertItem("", 0);
+    m_subdirs->getListBox()->insertItem(0, "");
 }
 
 } // Namespace confgui

@@ -35,7 +35,6 @@ using std::pair;
 #include <qmessagebox.h>
 #include <qfiledialog.h>
 #include <qshortcut.h>
-
 #include <qtabwidget.h>
 #include <qtimer.h>
 #include <qstatusbar.h>
@@ -49,9 +48,10 @@ using std::pair;
 #include <qaction.h>
 #include <qpushbutton.h>
 #include <qimage.h>
-#include <qiconset.h>
 #include <qapplication.h>
 #include <qcursor.h>
+#include <qevent.h>
+
 #include "recoll.h"
 #include "debuglog.h"
 #include "mimehandler.h"
@@ -104,7 +104,7 @@ void RclMain::init()
     (void)statusBar();
 
     (void)new HelpClient(this);
-    HelpClient::installMap(this->name(), "RCL.SEARCH.SIMPLE");
+    HelpClient::installMap((const char *)this->objectName().toUtf8(), "RCL.SEARCH.SIMPLE");
 
     // Set the focus to the search terms entry:
     sSearch->queryText->setFocus();
@@ -118,9 +118,9 @@ void RclMain::init()
     // Stemming language menu
     g_stringNoStem = tr("(no stemming)");
     g_stringAllStem = tr("(all languages)");
-    m_idNoStem = preferencesMenu->insertItem(g_stringNoStem);
+    m_idNoStem = preferencesMenu->addAction(g_stringNoStem);
     m_stemLangToId[g_stringNoStem] = m_idNoStem;
-    m_idAllStem = preferencesMenu->insertItem(g_stringAllStem);
+    m_idAllStem = preferencesMenu->addAction(g_stringAllStem);
     m_stemLangToId[g_stringAllStem] = m_idAllStem;
 
     // Can't get the stemming languages from the db at this stage as
@@ -135,18 +135,18 @@ void RclMain::init()
 	QMessageBox::warning(0, "Recoll", 
 			     tr("error retrieving stemming languages"));
     }
-    int curid = prefs.queryStemLang == "ALL" ? m_idAllStem : m_idNoStem;
-    int id; 
+    QAction *curid = prefs.queryStemLang == "ALL" ? m_idAllStem : m_idNoStem;
+    QAction *id; 
     for (list<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	QString qlang = QString::fromAscii(it->c_str(), it->length());
-	id = preferencesMenu->insertItem(qlang);
+	id = preferencesMenu->addAction(qlang);
 	m_stemLangToId[qlang] = id;
 	if (prefs.queryStemLang == qlang) {
 	    curid = id;
 	}
     }
-    preferencesMenu->setItemChecked(curid, true);
+    curid->setChecked(true);
 
     // A shortcut to get the focus back to the search entry. 
     QKeySequence seq("Ctrl+Shift+s");
@@ -158,8 +158,9 @@ void RclMain::init()
     QComboBox *catgCMB = 0;
     if (prefs.catgToolBar) {
         QToolBar *catgToolBar = new QToolBar(this);
-	catgCMB = new QComboBox(FALSE, catgToolBar, "catCMB");
-	catgCMB->insertItem(tr("All"));
+	catgCMB = new QComboBox(catgToolBar);
+	catgCMB->setEditable(FALSE);
+	catgCMB->addItem(tr("All"));
         catgToolBar->setObjectName(QString::fromUtf8("catgToolBar"));
 	catgCMB->setToolTip(tr("Document category filter"));
         catgToolBar->addWidget(catgCMB);
@@ -185,9 +186,9 @@ void RclMain::init()
 	QRadioButton *but = new QRadioButton(catgBGRP);
 	QString catgnm = QString::fromUtf8(it->c_str(), it->length());
 	m_catgbutvec.push_back(*it);
-	but->setText(tr(catgnm));
+	but->setText(tr(catgnm.toUtf8()));
 	if (prefs.catgToolBar && catgCMB)
-	    catgCMB->insertItem(tr(catgnm));
+	    catgCMB->addItem(tr(catgnm.toUtf8()));
         bgrphbox->addWidget(but);
         bgrp->addButton(but, bgrpid++);
     }
@@ -200,8 +201,8 @@ void RclMain::init()
 		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
     sSearch->queryText->installEventFilter(this);
 
-    connect(preferencesMenu, SIGNAL(activated(int)),
-	    this, SLOT(setStemLang(int)));
+    connect(preferencesMenu, SIGNAL(triggered(QAction*)),
+	    this, SLOT(setStemLang(QAction*)));
     connect(preferencesMenu, SIGNAL(aboutToShow()),
 	    this, SLOT(adjustPrefsMenu()));
     // signals and slots connections
@@ -332,13 +333,13 @@ void RclMain::focusToSearch()
     sSearch->queryText->setFocus(Qt::ShortcutFocusReason);
 }
 
-void RclMain::setStemLang(int id)
+void RclMain::setStemLang(QAction *id)
 {
     LOGDEB(("RclMain::setStemLang(%d)\n", id));
     // Check that the menu entry is for a stemming language change
     // (might also be "show prefs" etc.
     bool isLangId = false;
-    for (map<QString, int>::const_iterator it = m_stemLangToId.begin();
+    for (map<QString, QAction*>::const_iterator it = m_stemLangToId.begin();
 	 it != m_stemLangToId.end(); it++) {
 	if (id == it->second)
 	    isLangId = true;
@@ -347,11 +348,11 @@ void RclMain::setStemLang(int id)
 	return;
 
     // Set the "checked" item state for lang entries
-    for (map<QString, int>::const_iterator it = m_stemLangToId.begin();
+    for (map<QString, QAction*>::const_iterator it = m_stemLangToId.begin();
 	 it != m_stemLangToId.end(); it++) {
-	preferencesMenu->setItemChecked(it->second, false);
+	(it->second)->setChecked(false);
     }
-    preferencesMenu->setItemChecked(id, true);
+    id->setChecked(true);
 
     // Retrieve language value (also handle special cases), set prefs,
     // notify that we changed
@@ -361,11 +362,11 @@ void RclMain::setStemLang(int id)
     } else if (id == m_idAllStem) {
 	lang = "ALL";
     } else {
-	lang = preferencesMenu->text(id);
+	lang = id->text();
     }
     prefs.queryStemLang = lang;
     LOGDEB(("RclMain::setStemLang(%d): lang [%s]\n", 
-	    id, (const char *)prefs.queryStemLang.ascii()));
+	    id, (const char *)prefs.queryStemLang.toAscii()));
     rwSettings(true);
     emit stemLangChanged(lang);
 }
@@ -373,23 +374,23 @@ void RclMain::setStemLang(int id)
 // Set the checked stemming language item before showing the prefs menu
 void RclMain::setStemLang(const QString& lang)
 {
-    LOGDEB(("RclMain::setStemLang(%s)\n", (const char *)lang.ascii()));
-    int id;
+    LOGDEB(("RclMain::setStemLang(%s)\n", (const char *)lang.toAscii()));
+    QAction *id;
     if (lang == "") {
 	id = m_idNoStem;
     } else if (lang == "ALL") {
 	id = m_idAllStem;
     } else {
-	map<QString, int>::iterator it = m_stemLangToId.find(lang);
+	map<QString, QAction*>::iterator it = m_stemLangToId.find(lang);
 	if (it == m_stemLangToId.end()) 
 	    return;
 	id = it->second;
     }
-    for (map<QString, int>::const_iterator it = m_stemLangToId.begin();
+    for (map<QString, QAction*>::const_iterator it = m_stemLangToId.begin();
 	 it != m_stemLangToId.end(); it++) {
-	preferencesMenu->setItemChecked(it->second, false);
+	(it->second)->setChecked(false);
     }
-    preferencesMenu->setItemChecked(id, true);
+    id->setChecked(true);
 }
 
 // Prefs menu about to show
@@ -422,7 +423,7 @@ void RclMain::fileExit()
         prefs.mainwidth = width();
         prefs.mainheight = height();
     }
-    prefs.ssearchTyp = sSearch->searchTypCMB->currentItem();
+    prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
     if (asearchform)
 	delete asearchform;
     // We'd prefer to do this in the exit handler, but it's apparently to late
@@ -463,14 +464,14 @@ void RclMain::periodic100()
 	    // and check this / restart query in DocSeqDb() ?)
 	    string reason;
 	    maybeOpenDb(reason, 1);
-            periodictimer->changeInterval(1000);
+            periodictimer->setInterval(1000);
 	}
     } else {
 	// Indexing is running
 	m_idxStatusAck = false;
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
 	fileToggleIndexingAction->setEnabled(TRUE);
-        periodictimer->changeInterval(100);
+        periodictimer->setInterval(100);
 	// The toggle thing is for the status to flash
 	if (toggle < 9) {
 	    QString msg = tr("Indexing in progress: ");
@@ -498,9 +499,9 @@ void RclMain::periodic100()
 		mf = url_encode(status.fn, 0);
 	    }
 	    msg += QString::fromUtf8(mf.c_str());
-	    statusBar()->message(msg, 4000);
+	    statusBar()->showMessage(msg, 4000);
 	} else if (toggle == 9) {
-	    statusBar()->message("");
+	    statusBar()->showMessage("");
 	}
 	if (++toggle >= 10)
 	    toggle = 0;
@@ -517,11 +518,11 @@ void RclMain::toggleIndexing()
     if (idxthread_getStatus() == IDXTS_NULL) {
 	// Indexing was in progress, stop it
 	stop_indexing();
-        periodictimer->changeInterval(1000);
+        periodictimer->setInterval(1000);
 	fileToggleIndexingAction->setText(tr("Update &Index"));
     } else {
 	start_indexing(false);
-        periodictimer->changeInterval(100);
+        periodictimer->setInterval(100);
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
     }
     fileToggleIndexingAction->setEnabled(FALSE);
@@ -543,7 +544,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     resList->resetList();
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-    string stemLang = (const char *)prefs.queryStemLang.ascii();
+    string stemLang = (const char *)prefs.queryStemLang.toAscii();
     if (stemLang == "ALL") {
 	rclconfig->getConfParam("indexstemminglanguages", stemLang);
     }
@@ -561,7 +562,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     curPreview = 0;
     DocSequenceDb *src = 
 	new DocSequenceDb(RefCntr<Rcl::Query>(query), 
-			  string(tr("Query results").utf8()), sdata);
+			  string(tr("Query results").toUtf8()), sdata);
     src->setAbstractParams(prefs.queryBuildAbstract, 
                            prefs.queryReplaceAbstract);
 
@@ -656,7 +657,7 @@ void RclMain::showExtIdxDialog()
 	// Close and reopen, in hope that makes us visible...
 	uiprefs->close();
     }
-    uiprefs->tabWidget->setCurrentPage(2);
+    uiprefs->tabWidget->setCurrentIndex(2);
     uiprefs->show();
 }
 
@@ -711,7 +712,7 @@ void RclMain::startPreview(int docnum, int mod)
 	return;
     }
 	
-    if (mod & Qt::ShiftButton) {
+    if (mod & Qt::ShiftModifier) {
 	// User wants new preview window
 	curPreview = 0;
     }
@@ -736,7 +737,7 @@ void RclMain::startPreview(int docnum, int mod)
 		this, SLOT(previewPrevInTab(Preview *, int, int)));
 	connect(curPreview, SIGNAL(previewExposed(Preview *, int, int)),
 		this, SLOT(previewExposed(Preview *, int, int)));
-	curPreview->setCaption(resList->getDescription());
+	curPreview->setWindowTitle(resList->getDescription());
 	curPreview->show();
     } 
     curPreview->makeDocCurrent(doc, docnum);
@@ -833,8 +834,8 @@ void RclMain::previewExposed(Preview *, int sid, int docnum)
 static const char* punct = " \t()<>\"'[]{}!^*.,:;\n\r";
 void RclMain::ssearchAddTerm(QString term)
 {
-    LOGDEB(("RclMain::ssearchAddTerm: [%s]\n", (const char *)term.utf8()));
-    string t = (const char *)term.utf8();
+    LOGDEB(("RclMain::ssearchAddTerm: [%s]\n", (const char *)term.toUtf8()));
+    string t = (const char *)term.toUtf8();
     string::size_type pos = t.find_last_not_of(punct);
     if (pos == string::npos)
 	return;
@@ -861,11 +862,11 @@ void RclMain::saveDocToFile(int docnum)
 	return;
     }
     QString s = 
-	QFileDialog::getSaveFileName(path_home().c_str(),
-				     "",  this,
-				     tr("Save file dialog"),
-				     tr("Choose a file name to save under"));
-    string tofile((const char *)s.local8Bit());
+	QFileDialog::getSaveFileName(this, //parent
+				     tr("Save file"), // caption 
+			       QString::fromLocal8Bit(path_home().c_str()) //dir
+	    );
+    string tofile((const char *)s.toLocal8Bit());
     TempFile temp; // not used
     if (!FileInterner::idocToFile(temp, tofile, rclconfig, doc)) {
 	QMessageBox::warning(0, "Recoll",
@@ -1107,7 +1108,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	transcode(ncmd, prcmd, fcharset, "UTF-8");
 	QString msg = tr("Executing: [") + 
 	    QString::fromUtf8(prcmd.c_str()) + "]";
-	stb->message(msg, 5000);
+	stb->showMessage(msg, 5000);
     }
 
     if (!istempfile)
@@ -1182,14 +1183,14 @@ void RclMain::showDocHistory()
     // Construct a bogus SearchData structure
     RefCntr<Rcl::SearchData>searchdata = 
 	RefCntr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND));
-    searchdata->setDescription((const char *)tr("History data").utf8());
+    searchdata->setDescription((const char *)tr("History data").toUtf8());
 
 
     // If you change the title, also change it in eraseDocHistory()
     DocSequenceHistory *src = 
 	new DocSequenceHistory(rcldb, g_dynconf, 
-			       string(tr("Document history").utf8()));
-    src->setDescription((const char *)tr("History data").utf8());
+			       string(tr("Document history").toUtf8()));
+    src->setDescription((const char *)tr("History data").toUtf8());
     resList->setDocSource(RefCntr<DocSequence>(src));
 }
 
@@ -1269,7 +1270,8 @@ bool RclMain::eventFilter(QObject *, QEvent *event)
         // filtered by the search entry to mean "select all line". We prefer to
         // keep it for the action as it's easy to find another combination to
         // select all (ie: home, then shift-end)
-        if (ke->key() == Qt::Key_Home && (ke->state() & Qt::ShiftButton)) {
+        if (ke->key() == Qt::Key_Home && 
+	    (ke->modifiers() & Qt::ShiftModifier)) {
             // Shift-Home -> first page of results
             resList->resultPageFirst();
             return true;

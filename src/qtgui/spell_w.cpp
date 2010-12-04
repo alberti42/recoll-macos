@@ -48,20 +48,20 @@ static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.11 2007-02-19 16:28:05 dockes Exp
 void SpellW::init()
 {
     // Don't change the order, or fix the rest of the code...
-    /*0*/expTypeCMB->insertItem(tr("Wildcards"));
-    /*1*/expTypeCMB->insertItem(tr("Regexp"));
-    /*2*/expTypeCMB->insertItem(tr("Stem expansion"));
+    /*0*/expTypeCMB->addItem(tr("Wildcards"));
+    /*1*/expTypeCMB->addItem(tr("Regexp"));
+    /*2*/expTypeCMB->addItem(tr("Stem expansion"));
 #ifdef RCL_USE_ASPELL
     bool noaspell = false;
     rclconfig->getConfParam("noaspell", &noaspell);
     if (!noaspell)
-	/*3*/expTypeCMB->insertItem(tr("Spelling/Phonetic"));
+	/*3*/expTypeCMB->addItem(tr("Spelling/Phonetic"));
 #endif
 
     int typ = prefs.termMatchType;
     if (typ < 0 || typ > expTypeCMB->count())
 	typ = 0;
-    expTypeCMB->setCurrentItem(typ);
+    expTypeCMB->setCurrentIndex(typ);
 
     // Stemming language combobox
     stemLangCMB->clear();
@@ -73,12 +73,13 @@ void SpellW::init()
     for (list<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	stemLangCMB->
-	    insertItem(QString::fromAscii(it->c_str(), it->length()));
+	    addItem(QString::fromAscii(it->c_str(), it->length()));
     }
-    stemLangCMB->setEnabled(expTypeCMB->currentItem()==2);
+    stemLangCMB->setEnabled(expTypeCMB->currentIndex()==2);
 
     (void)new HelpClient(this);
-    HelpClient::installMap(this->name(), "RCL.SEARCH.TERMEXPLORER");
+    HelpClient::installMap((const char *)this->objectName().toUtf8(), 
+			   "RCL.SEARCH.TERMEXPLORER");
 
     // signals and slots connections
     connect(baseWordLE, SIGNAL(textChanged(const QString&)), 
@@ -116,25 +117,25 @@ void SpellW::doExpand()
 	return;
     }
 
-    string expr = string((const char *)baseWordLE->text().utf8());
+    string expr = string((const char *)baseWordLE->text().toUtf8());
     list<string> suggs;
 
-    prefs.termMatchType = expTypeCMB->currentItem();
+    prefs.termMatchType = expTypeCMB->currentIndex();
 
     Rcl::Db::MatchType mt = Rcl::Db::ET_WILD;
-    switch(expTypeCMB->currentItem()) {
+    switch(expTypeCMB->currentIndex()) {
     case 0: mt = Rcl::Db::ET_WILD; break;
     case 1:mt = Rcl::Db::ET_REGEXP; break;
     case 2:mt = Rcl::Db::ET_STEM; break;
     }
 
     Rcl::TermMatchResult res;
-    switch (expTypeCMB->currentItem()) {
+    switch (expTypeCMB->currentIndex()) {
     case 0: 
     case 1:
     case 2: 
     {
-	string l_stemlang = stemLangCMB->currentText().ascii();
+	string l_stemlang = (const char*)stemLangCMB->currentText().toAscii();
 
 	if (!rcldb->termMatch(mt, l_stemlang, expr, res, 200)) {
 	    LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));

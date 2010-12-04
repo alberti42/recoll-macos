@@ -122,8 +122,8 @@ void UIPrefsDialog::setFromPrefs()
 
     // Stemming language combobox
     stemLangCMB->clear();
-    stemLangCMB->insertItem(g_stringNoStem);
-    stemLangCMB->insertItem(g_stringAllStem);
+    stemLangCMB->addItem(g_stringNoStem);
+    stemLangCMB->addItem(g_stringAllStem);
     list<string> langs;
     if (!getStemLangs(langs)) {
 	QMessageBox::warning(0, "Recoll", 
@@ -133,12 +133,13 @@ void UIPrefsDialog::setFromPrefs()
     for (list<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	stemLangCMB->
-	    insertItem(QString::fromAscii(it->c_str(), it->length()));
-	if (cur == 0 && !strcmp(prefs.queryStemLang.ascii(), it->c_str())) {
+	    addItem(QString::fromAscii(it->c_str(), it->length()));
+	if (cur == 0 && !strcmp((const char*)prefs.queryStemLang.toAscii(), 
+				it->c_str())) {
 	    cur = stemLangCMB->count();
 	}
     }
-    stemLangCMB->setCurrentItem(cur);
+    stemLangCMB->setCurrentIndex(cur);
 
     autoPhraseCB->setChecked(prefs.ssearchAutoPhrase);
 
@@ -183,16 +184,16 @@ void UIPrefsDialog::accept()
     prefs.qtermcolor = qtermColorLE->text();
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
-    prefs.reslistformat =  rlfTE->text();
-    if (prefs.reslistformat.stripWhiteSpace().isEmpty()) {
+    prefs.reslistformat =  rlfTE->toPlainText();
+    if (prefs.reslistformat.trimmed().isEmpty()) {
 	prefs.reslistformat = prefs.dfltResListFormat;
 	rlfTE->setPlainText(prefs.reslistformat);
     }
-    prefs.creslistformat = (const char*)prefs.reslistformat.utf8();
+    prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
 
-    if (stemLangCMB->currentItem() == 0) {
+    if (stemLangCMB->currentIndex() == 0) {
 	prefs.queryStemLang = "";
-    } else if (stemLangCMB->currentItem() == 1) {
+    } else if (stemLangCMB->currentIndex() == 1) {
 	prefs.queryStemLang = "ALL";
     } else {
 	prefs.queryStemLang = stemLangCMB->currentText();
@@ -220,10 +221,10 @@ void UIPrefsDialog::accept()
     for (int i = 0; i < idxLV->count(); i++) {
 	QListWidgetItem *item = idxLV->item(i);
 	if (item) {
-	    prefs.allExtraDbs.push_back((const char *)item->text().local8Bit());
+	    prefs.allExtraDbs.push_back((const char *)item->text().toLocal8Bit());
 	    if (item->checkState() == Qt::Checked) {
 		prefs.activeExtraDbs.push_back((const char *)
-					       item->text().local8Bit());
+					       item->text().toLocal8Bit());
 	    }
 	}
     }
@@ -250,13 +251,13 @@ void UIPrefsDialog::setStemLang(const QString& lang)
 	cur = 1;
     } else {
 	for (int i = 1; i < stemLangCMB->count(); i++) {
-	    if (lang == stemLangCMB->text(i)) {
+	    if (lang == stemLangCMB->itemText(i)) {
 		cur = i;
 		break;
 	    }
 	}
     }
-    stemLangCMB->setCurrentItem(cur);
+    stemLangCMB->setCurrentIndex(cur);
 }
 
 void UIPrefsDialog::showFontDialog()
@@ -366,7 +367,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
 	return;
     lastdir = input;
 
-    string dbdir = (const char *)input.local8Bit();
+    string dbdir = (const char *)input.toLocal8Bit();
     LOGDEB(("ExtraDbDial: got: [%s]\n", dbdir.c_str()));
     path_catslash(dbdir);
     if (!Rcl::Db::testDbDir(dbdir)) {
@@ -396,11 +397,11 @@ void UIPrefsDialog::addExtraDbPB_clicked()
 	    return;
     }
 #if 0
-    string nv = (const char *)input.local8Bit();
+    string nv = (const char *)input.toLocal8Bit();
     QListViewItemIterator it(idxLV);
     while (it.current()) {
 	QCheckListItem *item = (QCheckListItem *)it.current();
-	string ov = (const char *)item->text().local8Bit();
+	string ov = (const char *)item->text().toLocal8Bit();
 	if (!ov.compare(nv)) {
 	    QMessageBox::warning(0, "Recoll", 
 		 tr("The selected directory is already in the index list"));

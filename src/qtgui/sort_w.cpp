@@ -56,17 +56,18 @@ void SortForm::init()
     v = spec & (0xf & ~(1<<3));
     d = spec & (1 << 3);
     spec >>= 4;
-    fldCMB1->setCurrentItem(v < 3 ? v : 0);
+    fldCMB1->setCurrentIndex(v < 3 ? v : 0);
     descCB1->setChecked(d != 0 ? true : false);
 
     v = spec & (0xf & ~(1<<3));
     d = spec & (1 << 3);
     spec >>= 4;
-    fldCMB2->setCurrentItem(v < 3 ? v : 0);
+    fldCMB2->setCurrentIndex(v < 3 ? v : 0);
     descCB2->setChecked(d !=0 ? true : false);
 
     (void)new HelpClient(this);
-    HelpClient::installMap(this->name(), "RCL.SEARCH.SORT");
+    HelpClient::installMap((const char *)this->objectName().toUtf8(), 
+			   "RCL.SEARCH.SORT");
 
     // signals and slots connections
     connect(applyPB, SIGNAL(clicked()), this, SLOT(apply()));
@@ -106,7 +107,7 @@ void SortForm::setData()
 	spec.sortdepth = 0;
     } else {
 	bool desc = descCB1->isChecked();
-	switch (fldCMB1->currentItem()) {
+	switch (fldCMB1->currentIndex()) {
 	case 1: 
 	    spec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, desc?true:false);
 	    break;
@@ -116,7 +117,7 @@ void SortForm::setData()
 	}
 
 	desc = descCB2->isChecked();
-	switch (fldCMB2->currentItem()) {
+	switch (fldCMB2->currentIndex()) {
 	case 1: 
 	    spec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, desc?true:false);
 	    break;
@@ -129,10 +130,10 @@ void SortForm::setData()
 	// Save data to prefs;
 	prefs.sortDepth = spec.sortdepth;
 	unsigned int spec = 0, v, d;
-	v = fldCMB1->currentItem() & 0x7;
+	v = fldCMB1->currentIndex() & 0x7;
 	d = descCB1->isChecked() ? 8 : 0;
 	spec |=  (d|v);
-	v = fldCMB2->currentItem() & 0x7;
+	v = fldCMB2->currentIndex() & 0x7;
 	d = descCB2->isChecked() ? 8 : 0;
 	spec |= (d|v) << 4;
 	prefs.sortSpec = (int) spec;

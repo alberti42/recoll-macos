@@ -20,6 +20,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include <qimage.h>
 #include <qclipboard.h>
 #include <qscrollbar.h>
+#include <QTextBlock>
 #ifndef __APPLE__
 #include <qx11info_x11.h>
 #endif
@@ -111,7 +112,7 @@ bool QtGuiResListPager::append(const string& data, int docnum,
 
 string QtGuiResListPager::trans(const string& in)
 {
-    return string((const char*)ResList::tr(in.c_str()).utf8());
+    return string((const char*)ResList::tr(in.c_str()).toUtf8());
 }
 
 string QtGuiResListPager::detailsLink()
@@ -188,7 +189,7 @@ public:
     virtual ~PlainToRichQtReslist() {}
     virtual string startMatch() {
 	return string("<span style='color: ")
-	    + string((const char *)prefs.qtermcolor.ascii()) + string("'>");
+	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
     }
     virtual string endMatch() {return string("</span>");}
 };
@@ -197,10 +198,12 @@ static PlainToRichQtReslist g_hiliter;
 /////////////////////////////////////
 
 ResList::ResList(QWidget* parent, const char* name)
-    : QTextBrowser(parent, name)
+    : QTextBrowser(parent)
 {
     if (!name)
-	setName("resList");
+	setObjectName("resList");
+    else 
+	setObjectName(name);
     setReadOnly(TRUE);
     setUndoRedoEnabled(FALSE);
     setOpenLinks(FALSE);
@@ -209,7 +212,8 @@ ResList::ResList(QWidget* parent, const char* name)
     setTabChangesFocus(true);
 
     (void)new HelpClient(this);
-    HelpClient::installMap(this->name(), "RCL.SEARCH.RESLIST");
+    HelpClient::installMap((const char *)this->objectName().toAscii(), 
+			   "RCL.SEARCH.RESLIST");
 
     // signals and slots connections
     connect(this, SIGNAL(anchorClicked(const QUrl &)), 
@@ -282,7 +286,7 @@ void ResList::setDocSource()
     } else {
 	if (m_filtspecs.isNotNull()) {
 	    string title = m_baseDocSource->title() + " (" + 
-		string((const char*)tr("filtered").utf8()) + ")";
+		string((const char*)tr("filtered").toUtf8()) + ")";
 	    m_docSource = 
 		RefCntr<DocSequence>(new DocSeqFiltered(m_docSource,m_filtspecs,
 							title));
@@ -291,7 +295,7 @@ void ResList::setDocSource()
 
     if (m_sortspecs.isNotNull()) {
 	string title = m_baseDocSource->title() + " (" + 
-	    string((const char *)tr("sorted").utf8()) + ")";
+	    string((const char *)tr("sorted").toUtf8()) + ")";
 	m_docSource = RefCntr<DocSequence>(new DocSeqSorted(m_docSource, 
 							    m_sortspecs,
 							    title));
@@ -334,7 +338,7 @@ bool ResList::displayingHistory()
 {
     // We want to reset the displayed history if it is currently
     // shown. Using the title value is an ugly hack
-    string htstring = string((const char *)tr("Document history").utf8());
+    string htstring = string((const char *)tr("Document history").toUtf8());
     if (m_docSource.isNull() || m_docSource->title().empty())
 	return false;
     return m_docSource->title().find(htstring) == 0;
@@ -342,7 +346,7 @@ bool ResList::displayingHistory()
 
 void ResList::languageChange()
 {
-    setCaption(tr("Result list"));
+    setWindowTitle(tr("Result list"));
 }
 
 bool ResList::getTerms(vector<string>& terms, 
@@ -449,13 +453,13 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 
 void ResList::keyPressEvent(QKeyEvent * e)
 {
-    if (e->key() == Qt::Key_Q && (e->state() & Qt::ControlButton)) {
+    if (e->key() == Qt::Key_Q && (e->modifiers() & Qt::ControlModifier)) {
 	recollNeedsExit = 1;
 	return;
-    } else if (e->key() == Qt::Key_Prior || e->key() == Qt::Key_Backspace) {
+    } else if (e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Backspace) {
 	resPageUpOrBack();
 	return;
-    } else if (e->key() == Qt::Key_Next || e->key() == Qt::Key_Space) {
+    } else if (e->key() == Qt::Key_PageDown || e->key() == Qt::Key_Space) {
 	resPageDownOrNext();
 	return;
     }
@@ -465,11 +469,11 @@ void ResList::keyPressEvent(QKeyEvent * e)
 void ResList::mouseReleaseEvent(QMouseEvent *e)
 {
     m_lstClckMod = 0;
-    if (e->state() & Qt::ControlButton) {
-	m_lstClckMod |= Qt::ControlButton;
+    if (e->modifiers() & Qt::ControlModifier) {
+	m_lstClckMod |= Qt::ControlModifier;
     } 
-    if (e->state() & Qt::ShiftButton) {
-	m_lstClckMod |= Qt::ShiftButton;
+    if (e->modifiers() & Qt::ShiftModifier) {
+	m_lstClckMod |= Qt::ShiftModifier;
     }
     QTextBrowser::mouseReleaseEvent(e);
 }
@@ -495,7 +499,7 @@ void ResList::highlighted(const QString& )
 void ResList::resPageUpOrBack()
 {
     int vpos = verticalScrollBar()->value();
-    moveCursor(QTextBrowser::MovePgUp, false);
+    verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
     if (vpos == verticalScrollBar()->value())
 	resultPageBack();
 }
@@ -503,7 +507,7 @@ void ResList::resPageUpOrBack()
 void ResList::resPageDownOrNext()
 {
     int vpos = verticalScrollBar()->value();
-    moveCursor(QTextBrowser::MovePgDown, false);
+    verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepAdd);
     LOGDEB(("ResList::resPageDownOrNext: vpos before %d, after %d\n",
 	    vpos, verticalScrollBar()->value()));
     if (vpos == verticalScrollBar()->value()) 
@@ -530,7 +534,7 @@ void ResList::resultPageFirst()
 void ResList::append(const QString &text)
 {
     LOGDEB2(("QtGuiReslistPager::appendQString  : %s\n", 
-	    (const char*)text.utf8()));
+	    (const char*)text.toUtf8()));
     QTextBrowser::append(text);
 }
 
@@ -605,16 +609,17 @@ void ResList::previewExposed(int docnum)
 void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 {
     QTextBrowser::mouseDoubleClickEvent(event);
-    if (hasSelectedText())
-	emit(wordSelect(selectedText()));
+    if (textCursor().hasSelection())
+	emit(wordSelect(textCursor().selectedText()));
 }
 
 void ResList::linkWasClicked(const QUrl &url)
 {
     QString s = url.toString();
-    LOGDEB(("ResList::linkWasClicked: [%s]\n", s.ascii()));
-    int i = atoi(s.ascii()+1) -1;
-    int what = s.ascii()[0];
+    const char *ascurl = s.toAscii();
+    LOGDEB(("ResList::linkWasClicked: [%s]\n", ascurl));
+    int i = atoi(ascurl+1) - 1;
+    int what = ascurl[0];
     switch (what) {
     case 'H': 
 	emit headerClicked(); 

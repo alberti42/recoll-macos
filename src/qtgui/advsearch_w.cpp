@@ -62,7 +62,8 @@ static map<QString,QString> cat_rtranslations;
 void AdvSearch::init()
 {
     (void)new HelpClient(this);
-    HelpClient::installMap(this->name(), "RCL.SEARCH.COMPLEX");
+    HelpClient::installMap((const char *)objectName().toUtf8(), 
+			   "RCL.SEARCH.COMPLEX");
 
     this->installEventFilter(this);
 
@@ -86,8 +87,8 @@ void AdvSearch::init()
     connect(addClausePB, SIGNAL(clicked()), this, SLOT(addClause()));
     connect(delClausePB, SIGNAL(clicked()), this, SLOT(delClause()));
 
-    conjunctCMB->insertItem(tr("All clauses"));
-    conjunctCMB->insertItem(tr("Any clause"));
+    conjunctCMB->insertItem(1, tr("All clauses"));
+    conjunctCMB->insertItem(2, tr("Any clause"));
 
     // Create preconfigured clauses
     for (unsigned int i = 0; i < iclausescnt; i++) {
@@ -116,7 +117,7 @@ void AdvSearch::init()
     restrictCtCB->setChecked(m_ignByCats);
     fillFileTypes();
 
-    subtreeCMB->insertStringList(prefs.asearchSubdirHist);
+    subtreeCMB->insertItems(0, prefs.asearchSubdirHist);
     subtreeCMB->setEditText("");
 
     // The clauseline frame is needed to force designer to accept a
@@ -151,7 +152,7 @@ bool AdvSearch::eventFilter(QObject *, QEvent *event)
     if (event->type() == QEvent::KeyPress || 
 	event->type() == QEvent::ShortcutOverride) {
 	QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-	if (ke->key() == Qt::Key_Q && (ke->state() & Qt::ControlButton)) {
+	if (ke->key() == Qt::Key_Q && (ke->modifiers() & Qt::ControlModifier)) {
 	    recollNeedsExit = 1;
 	    return true;
 	}
@@ -165,7 +166,7 @@ void AdvSearch::saveCnf()
     prefs.advSearchClauses.clear(); 
     for (std::list<SearchClauseW *>::iterator cit = m_clauseWins.begin();
 	 cit != m_clauseWins.end(); cit++) {
-	prefs.advSearchClauses.push_back((*cit)->sTpCMB->currentItem());
+	prefs.advSearchClauses.push_back((*cit)->sTpCMB->currentIndex());
     }
 }
 
@@ -290,7 +291,7 @@ void AdvSearch::fillFileTypes()
 	for (list<string>::iterator it = types.begin(); 
 	     it != types.end(); it++) {
 	    QString qs = QString::fromUtf8(it->c_str());
-	    if (m_ignTypes.findIndex(qs) < 0)
+	    if (m_ignTypes.indexOf(qs) < 0)
 		ql.append(qs);
 	}
     } else {
@@ -306,7 +307,7 @@ void AdvSearch::fillFileTypes()
 	    } else {
 		cat = QString::fromUtf8(it->c_str());
 	    } 
-	    if (m_ignTypes.findIndex(cat) < 0)
+	    if (m_ignTypes.indexOf(cat) < 0)
 		ql.append(cat);
 	}
     }
@@ -324,7 +325,7 @@ void AdvSearch::saveFileTypes()
 using namespace Rcl;
 void AdvSearch::runSearch()
 {
-    RefCntr<SearchData> sdata(new SearchData(conjunctCMB->currentItem() == 0 ?
+    RefCntr<SearchData> sdata(new SearchData(conjunctCMB->currentIndex() == 0 ?
 					     SCLT_AND : SCLT_OR));
     bool hasclause = false;
 
@@ -339,17 +340,17 @@ void AdvSearch::runSearch()
     if (!hasclause)
         return;
 
-    if (restrictFtCB->isOn() && noFiltypsLB->count() > 0) {
+    if (restrictFtCB->isChecked() && noFiltypsLB->count() > 0) {
 	for (int i = 0; i < yesFiltypsLB->count(); i++) {
-	    if (restrictCtCB->isOn()) {
+	    if (restrictCtCB->isChecked()) {
 		QString qcat = yesFiltypsLB->item(i)->text();
 		map<QString,QString>::const_iterator qit;
 		string cat;
 		if ((qit = cat_rtranslations.find(qcat)) != 
 		    cat_rtranslations.end()) {
-		    cat = (const char *)qit->second.utf8();
+		    cat = (const char *)qit->second.toUtf8();
 		} else {
-		    cat = (const char *)qcat.utf8();
+		    cat = (const char *)qcat.toUtf8();
 		}
 		list<string> types;
 		rclconfig->getMimeCatTypes(cat, types);
@@ -359,19 +360,19 @@ void AdvSearch::runSearch()
 		}
 	    } else {
 		sdata->addFiletype((const char *)
-				   yesFiltypsLB->item(i)->text().utf8());
+				   yesFiltypsLB->item(i)->text().toUtf8());
 	    }
 	}
     }
 
     if (!subtreeCMB->currentText().isEmpty()) {
 	QString current = subtreeCMB->currentText();
-	sdata->setTopdir((const char*)subtreeCMB->currentText().utf8());
+	sdata->setTopdir((const char*)subtreeCMB->currentText().toUtf8());
 	// Keep history list clean and sorted. Maybe there would be a
 	// simpler way to do this
 	list<QString> entries;
 	for (int i = 0; i < subtreeCMB->count(); i++) {
-	    entries.push_back(subtreeCMB->text(i));
+	    entries.push_back(subtreeCMB->itemText(i));
 	}
 	entries.push_back(subtreeCMB->currentText());
 	entries.sort();
@@ -379,12 +380,12 @@ void AdvSearch::runSearch()
 	subtreeCMB->clear();
 	for (list<QString>::iterator it = entries.begin(); 
 	     it != entries.end(); it++) {
-	    subtreeCMB->insertItem(*it);
+	    subtreeCMB->addItem(*it);
 	}
-	subtreeCMB->setCurrentText(current);
+	subtreeCMB->setCurrentIndex(subtreeCMB->findText(current));
 	prefs.asearchSubdirHist.clear();
 	for (int index = 0; index < subtreeCMB->count(); index++)
-	    prefs.asearchSubdirHist.push_back(subtreeCMB->text(index));
+	    prefs.asearchSubdirHist.push_back(subtreeCMB->itemText(index));
     }
     saveCnf();
     

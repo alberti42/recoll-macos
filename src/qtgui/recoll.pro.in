@@ -86,5 +86,3 @@ TRANSLATIONS = \
              ../qtgui/i18n/recoll_uk.ts \
              ../qtgui/i18n/recoll_xx.ts \
 
-
-QT += qt3support 
