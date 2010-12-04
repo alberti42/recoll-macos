@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="fr">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -424,11 +426,11 @@ Vérifier le fichier mimeconf</translation>
     </message>
     <message>
         <source>Save file dialog</source>
-        <translation>Dialogue de sauvegarde de fichier</translation>
+        <translation type="obsolete">Dialogue de sauvegarde de fichier</translation>
     </message>
     <message>
         <source>Choose a file name to save under</source>
-        <translation>Choisir un nom pour le nouveau fichier</translation>
+        <translation type="obsolete">Choisir un nom pour le nouveau fichier</translation>
     </message>
     <message>
         <source>Document category filter</source>
@@ -451,6 +453,10 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>Can&apos;t uncompress file: </source>
         <translation>Impossible de décomprimer le fichier: </translation>
+    </message>
+    <message>
+        <source>Save file</source>
+        <translation>Sauvegarder le fichier</translation>
     </message>
 </context>
 <context>
@@ -589,7 +595,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</source>
-        <translation>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</translation>
+        <translation type="obsolete">Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</translation>
     </message>
     <message>
         <source>PgUp</source>
@@ -602,6 +608,14 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>F11</source>
         <translation>F11</translation>
+    </message>
+    <message>
+        <source>Shift+Home</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Full Screen</source>
+        <translation>Plein écran</translation>
     </message>
 </context>
 <context>
@@ -688,7 +702,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ouvrir</translation>
     </message>
     <message>
         <source>Documents</source>
@@ -741,6 +755,30 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
         <source>Out of memory</source>
         <translation>Plus de mémoire disponible</translation>
     </message>
+    <message>
+        <source>Enter query language expression. Cheat sheet:&lt;br&gt;
+&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; and &apos;term2&apos; in any field.&lt;br&gt;
+&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; in field &apos;field&apos;.&lt;br&gt;
+ Standard field names/synonyms:&lt;br&gt;
+  title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
+ Pseudo-fields: dir, mime/format, type/rclcat, date.&lt;br&gt;
+ Two date interval exemples: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+&lt;i&gt;term1 term2 OR term3&lt;/i&gt; : term1 AND (term2 OR term3).&lt;br&gt;
+  No actual parentheses allowed.&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase (must occur exactly). Possible modifiers:&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
+Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter file name wildcard expression.</source>
+        <translation>Entrer un nom de fichier (caractères jokers possibles)</translation>
+    </message>
+    <message>
+        <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
+        <translation>Entrer les termes recherchés ici. Taper ESC SPC pour afficher les mots commençant par l&apos;entrée en cours.</translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -781,7 +819,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <name>SearchClauseW</name>
     <message>
         <source>SearchClauseW</source>
-        <translation>SearchClauseW</translation>
+        <translation type="obsolete">SearchClauseW</translation>
     </message>
     <message>
         <source>Any of these</source>
@@ -878,7 +916,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Term</source>
-        <translation>Terme</translation>
+        <translation type="obsolete">Terme</translation>
     </message>
     <message>
         <source>No db info.</source>
@@ -886,7 +924,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Doc. / Tot.</source>
-        <translation>Doc. / Tot.</translation>
+        <translation type="obsolete">Doc. / Tot.</translation>
     </message>
 </context>
 <context>
@@ -963,207 +1001,207 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <name>UIPrefsDialogBase</name>
     <message>
         <source>User interface</source>
-        <translation>Interface utilisateur</translation>
+        <translation type="obsolete">Interface utilisateur</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation>Nombre de résultats par page</translation>
+        <translation type="obsolete">Nombre de résultats par page</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation>Fonte pour la liste de résultats</translation>
+        <translation type="obsolete">Fonte pour la liste de résultats</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation>Helvetica-10</translation>
+        <translation type="obsolete">Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation>Ouvre une fenetre permettant de changer la fonte</translation>
+        <translation type="obsolete">Ouvre une fenetre permettant de changer la fonte</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Réinitialiser</translation>
+        <translation type="obsolete">Réinitialiser</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation>Réinitialiser la fonte à la valeur par défaut</translation>
+        <translation type="obsolete">Réinitialiser la fonte à la valeur par défaut</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Démarrer automatiquement une recherche simple sur entrée d&apos;un espace.</translation>
+        <translation type="obsolete">Démarrer automatiquement une recherche simple sur entrée d&apos;un espace.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation>Panneau de recherche avancée ouvert au démarrage.</translation>
+        <translation type="obsolete">Panneau de recherche avancée ouvert au démarrage.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Panneau de tri ouvert au démarrage.</translation>
+        <translation type="obsolete">Panneau de tri ouvert au démarrage.</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>Paramètres pour la recherche</translation>
+        <translation type="obsolete">Paramètres pour la recherche</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>Langue pour l&apos;expansion des termes</translation>
+        <translation type="obsolete">Langue pour l&apos;expansion des termes</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation>Construire dynamiquement les résumés</translation>
+        <translation type="obsolete">Construire dynamiquement les résumés</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation>Décide si des résumés seront construits à partir du contexte des termes de recherche. 
+        <translation type="obsolete">Décide si des résumés seront construits à partir du contexte des termes de recherche. 
 Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation>Remplacer les résumés existant dans les documents</translation>
+        <translation type="obsolete">Remplacer les résumés existant dans les documents</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation>Est-ce qu&apos;un résumé doit etre synthétisé meme dans le cas ou le document original en avait un?</translation>
+        <translation type="obsolete">Est-ce qu&apos;un résumé doit etre synthétisé meme dans le cas ou le document original en avait un?</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation>Taille du résumé synthétique (caractères)</translation>
+        <translation type="obsolete">Taille du résumé synthétique (caractères)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation>Nombre de mots de contexte par occurrence de terme dans le résumé</translation>
+        <translation type="obsolete">Nombre de mots de contexte par occurrence de terme dans le résumé</translation>
     </message>
     <message>
         <source>External Indexes</source>
-        <translation>Index externes</translation>
+        <translation type="obsolete">Index externes</translation>
     </message>
     <message>
         <source>Add index</source>
-        <translation>Ajouter un index</translation>
+        <translation type="obsolete">Ajouter un index</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation>Sélectionner le répertoire xapian de l&apos;index à ajouter, puis cliquer Ajouter Index</translation>
+        <translation type="obsolete">Sélectionner le répertoire xapian de l&apos;index à ajouter, puis cliquer Ajouter Index</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>Parcourir</translation>
+        <translation type="obsolete">Parcourir</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation type="obsolete">&amp;OK</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation>Appliquer les modifications</translation>
+        <translation type="obsolete">Appliquer les modifications</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>&amp;Annuler</translation>
+        <translation type="obsolete">&amp;Annuler</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation>Suivant</translation>
+        <translation type="obsolete">Suivant</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation>Chaîne de formatage&lt;br&gt;des paragraphes résultats</translation>
+        <translation type="obsolete">Chaîne de formatage&lt;br&gt;des paragraphes résultats</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation>Ajouter automatiquement une phrase aux recherches simples</translation>
+        <translation type="obsolete">Ajouter automatiquement une phrase aux recherches simples</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation>Une recherche pour [vin rouge] (2 mots) sera complétée comme [vin OU rouge OU (vin PHRASE 2 rouge)].&lt;br&gt;
+        <translation type="obsolete">Une recherche pour [vin rouge] (2 mots) sera complétée comme [vin OU rouge OU (vin PHRASE 2 rouge)].&lt;br&gt;
 Ceci devrait donner une meilleure pertinence aux résultats où les termes recherchés apparaissent exactement et dans l&apos;ordre.</translation>
     </message>
     <message>
         <source>User preferences</source>
-        <translation>Préférences utilisateur</translation>
+        <translation type="obsolete">Préférences utilisateur</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation>Utiliser les réglages du bureau pour choisir l&apos;application de visualisation.</translation>
+        <translation type="obsolete">Utiliser les réglages du bureau pour choisir l&apos;application de visualisation.</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation>Index externes</translation>
+        <translation type="obsolete">Index externes</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation>Changer l&apos;état pour les entrées sélectionnées</translation>
+        <translation type="obsolete">Changer l&apos;état pour les entrées sélectionnées</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation>Tout activer</translation>
+        <translation type="obsolete">Tout activer</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation>Tout désactiver</translation>
+        <translation type="obsolete">Tout désactiver</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation>Effacer la sélection</translation>
+        <translation type="obsolete">Effacer la sélection</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation>Oter de la liste. Sans effet sur les données stockées.</translation>
+        <translation type="obsolete">Oter de la liste. Sans effet sur les données stockées.</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Definit le format des paragraphes de la liste de resultats. Utilise le format html qt et des directives de substitution de type printf:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="obsolete">Definit le format des paragraphes de la liste de resultats. Utilise le format html qt et des directives de substitution de type printf:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation>Memoriser l&apos;etat d&apos;activation du tri.</translation>
+        <translation type="obsolete">Memoriser l&apos;etat d&apos;activation du tri.</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Taille maximum des textes surlignes avant previsualisation (MO)</translation>
+        <translation type="obsolete">Taille maximum des textes surlignes avant previsualisation (MO)</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation>Les texte plus gros ne seront pas surlignes dans la previsualisation (trop lent).</translation>
+        <translation type="obsolete">Les texte plus gros ne seront pas surlignes dans la previsualisation (trop lent).</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Couleur de mise en relief des termes recherchés</translation>
+        <translation type="obsolete">Couleur de mise en relief des termes recherchés</translation>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Utiliser le format Html pour la previsualisation.</translation>
+        <translation type="obsolete">Utiliser le format Html pour la previsualisation.</translation>
     </message>
     <message>
         <source>If checked, results with the same content under different names will only be shown once.</source>
-        <translation>N&apos;afficher qu&apos;une entrée pour les résultats de contenu identique.</translation>
+        <translation type="obsolete">N&apos;afficher qu&apos;une entrée pour les résultats de contenu identique.</translation>
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation>Cacher les doublons.</translation>
+        <translation type="obsolete">Cacher les doublons.</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
-        <translation>Choisir les éditeurs pour les différents types de fichiers</translation>
+        <translation type="obsolete">Choisir les éditeurs pour les différents types de fichiers</translation>
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation>Afficher le filtre de catégorie comme une barre d&apos;outils plutot que comme un panneau de boutons (après le redémarrage).</translation>
+        <translation type="obsolete">Afficher le filtre de catégorie comme une barre d&apos;outils plutot que comme un panneau de boutons (après le redémarrage).</translation>
     </message>
     <message>
         <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
-        <translation>Les mots de la liste seront automatiquement changés en clauses ext:xxx dans les requêtes en langage d&apos;interrogation.</translation>
+        <translation type="obsolete">Les mots de la liste seront automatiquement changés en clauses ext:xxx dans les requêtes en langage d&apos;interrogation.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation>Suffixes automatiques pour le langage d&apos;interrogation.</translation>
+        <translation type="obsolete">Suffixes automatiques pour le langage d&apos;interrogation.</translation>
     </message>
     <message>
         <source>Enable</source>
-        <translation>Activer</translation>
+        <translation type="obsolete">Activer</translation>
     </message>
 </context>
 <context>
@@ -1172,16 +1210,24 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Changing actions with different current values</source>
         <translation>Changement d&apos;actions avec des valeurs actuelles differentes</translation>
     </message>
+    <message>
+        <source>Mime type</source>
+        <translation>Type Mime</translation>
+    </message>
+    <message>
+        <source>Command</source>
+        <translation>Commande</translation>
+    </message>
 </context>
 <context>
     <name>ViewActionBase</name>
     <message>
         <source>File type</source>
-        <translation>Type de fichier</translation>
+        <translation type="obsolete">Type de fichier</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation>Action</translation>
+        <translation type="obsolete">Action</translation>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
@@ -1242,7 +1288,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <name>confgui::ConfParamFNW</name>
     <message>
         <source>Browse</source>
-        <translation>Parcourir</translation>
+        <translation type="obsolete">Parcourir</translation>
     </message>
 </context>
 <context>
@@ -1389,6 +1435,205 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
         <translation>Désactiver l&apos;utilisation d&apos;aspell pour générer les approximations orthographiques.&lt;br&gt; Utile si aspell n&apos;est pas installé ou ne fonctionne pas. </translation>
+    </message>
+</context>
+<context>
+    <name>uiPrefsDialogBase</name>
+    <message>
+        <source>User preferences</source>
+        <translation>Préférences utilisateur</translation>
+    </message>
+    <message>
+        <source>User interface</source>
+        <translation>Interface utilisateur</translation>
+    </message>
+    <message>
+        <source>Number of entries in a result page</source>
+        <translation>Nombre de résultats par page</translation>
+    </message>
+    <message>
+        <source>If checked, results with the same content under different names will only be shown once.</source>
+        <translation>N&apos;afficher qu&apos;une entrée pour les résultats de contenu identique.</translation>
+    </message>
+    <message>
+        <source>Hide duplicate results.</source>
+        <translation>Cacher les doublons.</translation>
+    </message>
+    <message>
+        <source>Highlight color for query terms</source>
+        <translation>Couleur de mise en relief des termes recherchés</translation>
+    </message>
+    <message>
+        <source>Result list font</source>
+        <translation>Fonte pour la liste de résultats</translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the result list font</source>
+        <translation>Ouvre une fenêtre permettant de changer la fonte</translation>
+    </message>
+    <message>
+        <source>Helvetica-10</source>
+        <translation>Helvetica-10</translation>
+    </message>
+    <message>
+        <source>Resets the result list font to the system default</source>
+        <translation>Réinitialiser la fonte à la valeur par défaut</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation>Réinitialiser</translation>
+    </message>
+    <message>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation>Definit le format des paragraphes de la liste de resultats. Utilise le format html qt et des directives de substitution de type printf:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>Result paragraph&lt;br&gt;format string</source>
+        <translation>Chaîne de formatage&lt;br&gt;des paragraphes résultats</translation>
+    </message>
+    <message>
+        <source>Texts over this size will not be highlighted in preview (too slow).</source>
+        <translation>Les texte plus gros ne seront pas surlignés dans la prévisualisation (trop lent).</translation>
+    </message>
+    <message>
+        <source>Maximum text size highlighted for preview (megabytes)</source>
+        <translation>Taille maximum des textes surlignés avant prévisualisation (MO)</translation>
+    </message>
+    <message>
+        <source>Use desktop preferences to choose document editor.</source>
+        <translation>Utiliser les réglages du bureau pour choisir l&apos;application de visualisation.</translation>
+    </message>
+    <message>
+        <source>Choose editor applications</source>
+        <translation>Choisir les éditeurs pour les différents types de fichiers</translation>
+    </message>
+    <message>
+        <source>Display category filter as toolbar instead of button panel (needs restart).</source>
+        <translation>Afficher le filtre de catégorie comme une barre d&apos;outils plutot que comme un panneau de boutons (après le redémarrage).</translation>
+    </message>
+    <message>
+        <source>Auto-start simple search on whitespace entry.</source>
+        <translation>Démarrer automatiquement une recherche simple sur entrée d&apos;un espace.</translation>
+    </message>
+    <message>
+        <source>Start with advanced search dialog open.</source>
+        <translation>Panneau de recherche avancée ouvert au démarrage.</translation>
+    </message>
+    <message>
+        <source>Start with sort dialog open.</source>
+        <translation>Panneau de tri ouvert au démarrage.</translation>
+    </message>
+    <message>
+        <source>Remember sort activation state.</source>
+        <translation>Memoriser l&apos;etat d&apos;activation du tri.</translation>
+    </message>
+    <message>
+        <source>Prefer Html to plain text for preview.</source>
+        <translation>Utiliser le format Html pour la previsualisation.</translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation>Paramètres pour la recherche</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation>Langue pour l&apos;expansion des termes</translation>
+    </message>
+    <message>
+        <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
+This should give higher precedence to the results where the search terms appear exactly as entered.</source>
+        <translation>Une recherche pour [vin rouge] (2 mots) sera complétée comme [vin OU rouge OU (vin PHRASE 2 rouge)].&lt;br&gt;
+Ceci devrait donner une meilleure pertinence aux résultats où les termes recherchés apparaissent exactement et dans l&apos;ordre.</translation>
+    </message>
+    <message>
+        <source>Automatically add phrase to simple searches</source>
+        <translation>Ajouter automatiquement une phrase aux recherches simples</translation>
+    </message>
+    <message>
+        <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
+May be slow for big documents.</source>
+        <translation>Décide si des résumés seront construits à partir du contexte des termes de recherche. 
+Peut ralentir l&apos;affichage si les documents sont gros.</translation>
+    </message>
+    <message>
+        <source>Dynamically build abstracts</source>
+        <translation>Construire dynamiquement les résumés</translation>
+    </message>
+    <message>
+        <source>Do we synthetize an abstract even if the document seemed to have one?</source>
+        <translation>Est-ce qu&apos;un résumé doit etre synthétisé meme dans le cas ou le document original en avait un?</translation>
+    </message>
+    <message>
+        <source>Replace abstracts from documents</source>
+        <translation>Remplacer les résumés existant dans les documents</translation>
+    </message>
+    <message>
+        <source>Synthetic abstract size (characters)</source>
+        <translation>Taille du résumé synthétique (caractères)</translation>
+    </message>
+    <message>
+        <source>Synthetic abstract context words</source>
+        <translation>Nombre de mots de contexte par occurrence de terme dans le résumé</translation>
+    </message>
+    <message>
+        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
+        <translation>Les mots de la liste seront automatiquement changés en clauses ext:xxx dans les requêtes en langage d&apos;interrogation.</translation>
+    </message>
+    <message>
+        <source>Query language magic file name suffixes.</source>
+        <translation>Suffixes automatiques pour le langage d&apos;interrogation.</translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation>Activer</translation>
+    </message>
+    <message>
+        <source>External Indexes</source>
+        <translation>Index externes</translation>
+    </message>
+    <message>
+        <source>Toggle selected</source>
+        <translation>Changer l&apos;état pour les entrées sélectionnées</translation>
+    </message>
+    <message>
+        <source>Activate All</source>
+        <translation>Tout activer</translation>
+    </message>
+    <message>
+        <source>Deactivate All</source>
+        <translation>Tout désactiver</translation>
+    </message>
+    <message>
+        <source>Remove from list. This has no effect on the disk index.</source>
+        <translation>Oter de la liste. Sans effet sur les données stockées.</translation>
+    </message>
+    <message>
+        <source>Remove selected</source>
+        <translation>Effacer la sélection</translation>
+    </message>
+    <message>
+        <source>Click to add another index directory to the list</source>
+        <translation>Cliquer pour ajouter un autre index à la liste</translation>
+    </message>
+    <message>
+        <source>Add index</source>
+        <translation>Ajouter un index</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Appliquer les modifications</translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation>&amp;OK</translation>
+    </message>
+    <message>
+        <source>Discard changes</source>
+        <translation>Abandonner les modifications</translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation>&amp;Annuler</translation>
     </message>
 </context>
 </TS>

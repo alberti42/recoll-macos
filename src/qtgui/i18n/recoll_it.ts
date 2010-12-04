@@ -1,5 +1,6 @@
-<!DOCTYPE TS><TS>
-<defaultcodec></defaultcodec>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="it">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -158,7 +159,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation type="unfinished">Rispetta &amp;Maiuscole/minuscole</translation>
+        <translation>Rispetta &amp;Maiuscole/minuscole</translation>
     </message>
     <message>
         <source>Clear</source>
@@ -377,7 +378,7 @@ Verifica il file mimeconf</translation>
     </message>
     <message>
         <source>media</source>
-        <translation type="unfinished">multimediali</translation>
+        <translation>multimediali</translation>
     </message>
     <message>
         <source>message</source>
@@ -385,7 +386,7 @@ Verifica il file mimeconf</translation>
     </message>
     <message>
         <source>other</source>
-        <translation type="unfinished">altri</translation>
+        <translation>altri</translation>
     </message>
     <message>
         <source>presentation</source>
@@ -422,14 +423,6 @@ Verifica il file mimeconf</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Save file dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose a file name to save under</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Document category filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -448,6 +441,10 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Can&apos;t uncompress file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save file</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -586,10 +583,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>PgUp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -601,6 +594,14 @@ Do you want to start the  preferences dialog ?</source>
         <source>F11</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Shift+Home</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Full Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>
@@ -610,19 +611,19 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation type="unfinished">Documento inaccessible</translation>
+        <translation>Documento inaccessible</translation>
     </message>
     <message>
         <source>Previous</source>
-        <translation type="unfinished">Precedente</translation>
+        <translation>Precedente</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="unfinished">Successivo</translation>
+        <translation>Successivo</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished">&lt;p&gt;&lt;b&gt;Nessun risultato&lt;/b&gt;&lt;br&gt;</translation>
+        <translation>&lt;p&gt;&lt;b&gt;Nessun risultato&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -658,7 +659,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Document history</source>
-        <translation type="unfinished">Cronologia dei documenti</translation>
+        <translation>Cronologia dei documenti</translation>
     </message>
     <message>
         <source>Preview</source>
@@ -739,6 +740,30 @@ Do you want to start the  preferences dialog ?</source>
         <source>Out of memory</source>
         <translation>Memoria esaurita</translation>
     </message>
+    <message>
+        <source>Enter query language expression. Cheat sheet:&lt;br&gt;
+&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; and &apos;term2&apos; in any field.&lt;br&gt;
+&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; in field &apos;field&apos;.&lt;br&gt;
+ Standard field names/synonyms:&lt;br&gt;
+  title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
+ Pseudo-fields: dir, mime/format, type/rclcat, date.&lt;br&gt;
+ Two date interval exemples: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+&lt;i&gt;term1 term2 OR term3&lt;/i&gt; : term1 AND (term2 OR term3).&lt;br&gt;
+  No actual parentheses allowed.&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase (must occur exactly). Possible modifiers:&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
+Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter file name wildcard expression.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
+        <translation>Inserisci qui i termini di ricerca. Premi ESC Spazio per il completamento automatico dei termini.</translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -779,7 +804,7 @@ Do you want to start the  preferences dialog ?</source>
     <name>SearchClauseW</name>
     <message>
         <source>SearchClauseW</source>
-        <translation>SearchClauseW</translation>
+        <translation type="obsolete">SearchClauseW</translation>
     </message>
     <message>
         <source>Any of these</source>
@@ -876,14 +901,10 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Term</source>
-        <translation>Termine</translation>
+        <translation type="obsolete">Termine</translation>
     </message>
     <message>
         <source>No db info.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Doc. / Tot.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -923,7 +944,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Term</source>
-        <translation type="unfinished">Termine</translation>
+        <translation>Termine</translation>
     </message>
     <message>
         <source>Doc. / Tot.</source>
@@ -962,207 +983,171 @@ Do you want to start the  preferences dialog ?</source>
     <name>UIPrefsDialogBase</name>
     <message>
         <source>User interface</source>
-        <translation>Interfaccia utente</translation>
+        <translation type="obsolete">Interfaccia utente</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation>Numero di risultati per pagina</translation>
+        <translation type="obsolete">Numero di risultati per pagina</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation>Fonts per la lista dei risultati</translation>
+        <translation type="obsolete">Fonts per la lista dei risultati</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation>Helvetica-10</translation>
+        <translation type="obsolete">Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation>Apre una finestra di dialogo per selezionare i fonts della lista dei risultati</translation>
+        <translation type="obsolete">Apre una finestra di dialogo per selezionare i fonts della lista dei risultati</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Ripristina</translation>
+        <translation type="obsolete">Ripristina</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation>Ripristina i font della lista dei risultati</translation>
+        <translation type="obsolete">Ripristina i font della lista dei risultati</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Inizia automaticamente una ricerca semplice digitando uno spazio.</translation>
+        <translation type="obsolete">Inizia automaticamente una ricerca semplice digitando uno spazio.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation>Inizia aprendo la finestra di ricerca avanzata.</translation>
+        <translation type="obsolete">Inizia aprendo la finestra di ricerca avanzata.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Inizia con la finestra di ordinamento aperta.</translation>
+        <translation type="obsolete">Inizia con la finestra di ordinamento aperta.</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>Parametri per la ricerca</translation>
+        <translation type="obsolete">Parametri per la ricerca</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>Linguaggio per l&apos;espansione</translation>
+        <translation type="obsolete">Linguaggio per l&apos;espansione</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation>Costruisci dinamicamente i riassunti</translation>
+        <translation type="obsolete">Costruisci dinamicamente i riassunti</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation>Devo cercare di costruire i riassunti per le voci nell&apos;elenco dei risultati usando il contesto dei termini di ricerca?
+        <translation type="obsolete">Devo cercare di costruire i riassunti per le voci nell&apos;elenco dei risultati usando il contesto dei termini di ricerca?
 Puo&apos; essere lento per grossi documenti..</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation>Sostituisci i riassunti dei documenti</translation>
+        <translation type="obsolete">Sostituisci i riassunti dei documenti</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation>Devo sintetizzare un riassunto anche se il documento sembra ne abbia uno?</translation>
+        <translation type="obsolete">Devo sintetizzare un riassunto anche se il documento sembra ne abbia uno?</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation>Numero caratteri per il riassunto</translation>
+        <translation type="obsolete">Numero caratteri per il riassunto</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation>Numero di parole di contesto per il riassunto</translation>
+        <translation type="obsolete">Numero di parole di contesto per il riassunto</translation>
     </message>
     <message>
         <source>External Indexes</source>
-        <translation>Indici esterni</translation>
+        <translation type="obsolete">Indici esterni</translation>
     </message>
     <message>
         <source>Add index</source>
-        <translation>Aggiungi indice</translation>
+        <translation type="obsolete">Aggiungi indice</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation>Seleziona nella directory Xapiandb l&apos;indice che vuoi aggiungere e clicca su &apos;Aggiungi indice&apos;</translation>
+        <translation type="obsolete">Seleziona nella directory Xapiandb l&apos;indice che vuoi aggiungere e clicca su &apos;Aggiungi indice&apos;</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>Esplora</translation>
+        <translation type="obsolete">Esplora</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation type="obsolete">&amp;OK</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation>Applica modifiche</translation>
+        <translation type="obsolete">Applica modifiche</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>&amp;Annulla</translation>
+        <translation type="obsolete">&amp;Annulla</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation>Annulla modifiche</translation>
+        <translation type="obsolete">Annulla modifiche</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation>Stringa di formattazione&lt;br&gt;dei risultati</translation>
+        <translation type="obsolete">Stringa di formattazione&lt;br&gt;dei risultati</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation>Aggiungi automaticamente frase alle ricerche semplici</translation>
+        <translation type="obsolete">Aggiungi automaticamente frase alle ricerche semplici</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation>Una ricerca per [vino rosso] (2 parole) sara&apos; completata come [vino O rosso O (vino FRASE 2 rosso)]. 
+        <translation type="obsolete">Una ricerca per [vino rosso] (2 parole) sara&apos; completata come [vino O rosso O (vino FRASE 2 rosso)]. 
 Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattamente come sono stati scritti.</translation>
     </message>
     <message>
         <source>User preferences</source>
-        <translation>Preferenze utente</translation>
+        <translation type="obsolete">Preferenze utente</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation>Usa le preferenze del desktop per scegliere l&apos;editor dei documenti.</translation>
+        <translation type="obsolete">Usa le preferenze del desktop per scegliere l&apos;editor dei documenti.</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation>Indici esterni</translation>
+        <translation type="obsolete">Indici esterni</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation>Commuta selezionati</translation>
+        <translation type="obsolete">Commuta selezionati</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation>Seleziona tutti</translation>
+        <translation type="obsolete">Seleziona tutti</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation>Deseleziona tutti</translation>
+        <translation type="obsolete">Deseleziona tutti</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation>Rimuovi selezionati</translation>
+        <translation type="obsolete">Rimuovi selezionati</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation>Rimuovi dalla lista. Non ha effetto sull&apos;indice del disco.</translation>
+        <translation type="obsolete">Rimuovi dalla lista. Non ha effetto sull&apos;indice del disco.</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Definisce il formato per ogni paragrafo dell&apos;elenco dei risultati. Usare il formato qt html e le sostituzioni tipo printf:&lt;br&gt;%A Riassunto&lt;br&gt; %D Data&lt;br&gt; %I Icona&lt;br&gt; %K Parole chiave (se esistono)&lt;br&gt; %L Link per anteprima e modifica&lt;br&gt; %M Tipo MIME&lt;br&gt; %N Numero del risultato&lt;br&gt; %R Percentuale di rilevanza&lt;br&gt; %S Informazioni sulla dimensione&lt;br&gt; %T Titolo&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="obsolete">Definisce il formato per ogni paragrafo dell&apos;elenco dei risultati. Usare il formato qt html e le sostituzioni tipo printf:&lt;br&gt;%A Riassunto&lt;br&gt; %D Data&lt;br&gt; %I Icona&lt;br&gt; %K Parole chiave (se esistono)&lt;br&gt; %L Link per anteprima e modifica&lt;br&gt; %M Tipo MIME&lt;br&gt; %N Numero del risultato&lt;br&gt; %R Percentuale di rilevanza&lt;br&gt; %S Informazioni sulla dimensione&lt;br&gt; %T Titolo&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation>Ricorda lo stato dell&apos;impostazione di ordinamento.</translation>
+        <translation type="obsolete">Ricorda lo stato dell&apos;impostazione di ordinamento.</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Dimensione massima del testo da evidenziare nell&apos;anteprima (megabytes)</translation>
+        <translation type="obsolete">Dimensione massima del testo da evidenziare nell&apos;anteprima (megabytes)</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation>Testi di lunghezza superiore a questa non vengono evidenziati nella preview (troppo lento).</translation>
-    </message>
-    <message>
-        <source>Highlight color for query terms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Prefer Html to plain text for preview.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>If checked, results with the same content under different names will only be shown once.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide duplicate results.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose editor applications</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Query language magic file name suffixes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Testi di lunghezza superiore a questa non vengono evidenziati nella preview (troppo lento).</translation>
     </message>
 </context>
 <context>
@@ -1171,16 +1156,24 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
         <source>Changing actions with different current values</source>
         <translation>Modifica di azioni con valori differenti da quelli attuali</translation>
     </message>
+    <message>
+        <source>Mime type</source>
+        <translation>Tipo MIME</translation>
+    </message>
+    <message>
+        <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewActionBase</name>
     <message>
         <source>File type</source>
-        <translation>Tipo di file</translation>
+        <translation type="obsolete">Tipo di file</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation>Azione</translation>
+        <translation type="obsolete">Azione</translation>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
@@ -1241,7 +1234,7 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     <name>confgui::ConfParamFNW</name>
     <message>
         <source>Browse</source>
-        <translation>Esplora</translation>
+        <translation type="obsolete">Esplora</translation>
     </message>
 </context>
 <context>
@@ -1386,6 +1379,205 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>uiPrefsDialogBase</name>
+    <message>
+        <source>User preferences</source>
+        <translation>Preferenze utente</translation>
+    </message>
+    <message>
+        <source>User interface</source>
+        <translation>Interfaccia utente</translation>
+    </message>
+    <message>
+        <source>Number of entries in a result page</source>
+        <translation>Numero di risultati per pagina</translation>
+    </message>
+    <message>
+        <source>If checked, results with the same content under different names will only be shown once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide duplicate results.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result list font</source>
+        <translation>Fonts per la lista dei risultati</translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the result list font</source>
+        <translation>Apre una finestra di dialogo per selezionare i fonts della lista dei risultati</translation>
+    </message>
+    <message>
+        <source>Helvetica-10</source>
+        <translation>Helvetica-10</translation>
+    </message>
+    <message>
+        <source>Resets the result list font to the system default</source>
+        <translation>Ripristina i font della lista dei risultati</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation>Ripristina</translation>
+    </message>
+    <message>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation>Definisce il formato per ogni paragrafo dell&apos;elenco dei risultati. Usare il formato qt html e le sostituzioni tipo printf:&lt;br&gt;%A Riassunto&lt;br&gt; %D Data&lt;br&gt; %I Icona&lt;br&gt; %K Parole chiave (se esistono)&lt;br&gt; %L Link per anteprima e modifica&lt;br&gt; %M Tipo MIME&lt;br&gt; %N Numero del risultato&lt;br&gt; %R Percentuale di rilevanza&lt;br&gt; %S Informazioni sulla dimensione&lt;br&gt; %T Titolo&lt;br&gt; %U Url&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>Result paragraph&lt;br&gt;format string</source>
+        <translation>Stringa di formattazione&lt;br&gt;dei risultati</translation>
+    </message>
+    <message>
+        <source>Texts over this size will not be highlighted in preview (too slow).</source>
+        <translation>Testi di lunghezza superiore a questa non vengono evidenziati nella preview (troppo lento).</translation>
+    </message>
+    <message>
+        <source>Maximum text size highlighted for preview (megabytes)</source>
+        <translation>Dimensione massima del testo da evidenziare nell&apos;anteprima (megabytes)</translation>
+    </message>
+    <message>
+        <source>Use desktop preferences to choose document editor.</source>
+        <translation>Usa le preferenze del desktop per scegliere l&apos;editor dei documenti.</translation>
+    </message>
+    <message>
+        <source>Choose editor applications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display category filter as toolbar instead of button panel (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto-start simple search on whitespace entry.</source>
+        <translation>Inizia automaticamente una ricerca semplice digitando uno spazio.</translation>
+    </message>
+    <message>
+        <source>Start with advanced search dialog open.</source>
+        <translation>Inizia aprendo la finestra di ricerca avanzata.</translation>
+    </message>
+    <message>
+        <source>Start with sort dialog open.</source>
+        <translation>Inizia con la finestra di ordinamento aperta.</translation>
+    </message>
+    <message>
+        <source>Remember sort activation state.</source>
+        <translation>Ricorda lo stato dell&apos;impostazione di ordinamento.</translation>
+    </message>
+    <message>
+        <source>Prefer Html to plain text for preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation>Parametri per la ricerca</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation>Linguaggio per l&apos;espansione</translation>
+    </message>
+    <message>
+        <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
+This should give higher precedence to the results where the search terms appear exactly as entered.</source>
+        <translation>Una ricerca per [vino rosso] (2 parole) sara&apos; completata come [vino O rosso O (vino FRASE 2 rosso)]. 
+Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattamente come sono stati scritti.</translation>
+    </message>
+    <message>
+        <source>Automatically add phrase to simple searches</source>
+        <translation>Aggiungi automaticamente frase alle ricerche semplici</translation>
+    </message>
+    <message>
+        <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
+May be slow for big documents.</source>
+        <translation>Devo cercare di costruire i riassunti per le voci nell&apos;elenco dei risultati usando il contesto dei termini di ricerca?
+Puo&apos; essere lento per grossi documenti..</translation>
+    </message>
+    <message>
+        <source>Dynamically build abstracts</source>
+        <translation>Costruisci dinamicamente i riassunti</translation>
+    </message>
+    <message>
+        <source>Do we synthetize an abstract even if the document seemed to have one?</source>
+        <translation>Devo sintetizzare un riassunto anche se il documento sembra ne abbia uno?</translation>
+    </message>
+    <message>
+        <source>Replace abstracts from documents</source>
+        <translation>Sostituisci i riassunti dei documenti</translation>
+    </message>
+    <message>
+        <source>Synthetic abstract size (characters)</source>
+        <translation>Numero caratteri per il riassunto</translation>
+    </message>
+    <message>
+        <source>Synthetic abstract context words</source>
+        <translation>Numero di parole di contesto per il riassunto</translation>
+    </message>
+    <message>
+        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language magic file name suffixes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External Indexes</source>
+        <translation>Indici esterni</translation>
+    </message>
+    <message>
+        <source>Toggle selected</source>
+        <translation>Commuta selezionati</translation>
+    </message>
+    <message>
+        <source>Activate All</source>
+        <translation>Seleziona tutti</translation>
+    </message>
+    <message>
+        <source>Deactivate All</source>
+        <translation>Deseleziona tutti</translation>
+    </message>
+    <message>
+        <source>Remove from list. This has no effect on the disk index.</source>
+        <translation>Rimuovi dalla lista. Non ha effetto sull&apos;indice del disco.</translation>
+    </message>
+    <message>
+        <source>Remove selected</source>
+        <translation>Rimuovi selezionati</translation>
+    </message>
+    <message>
+        <source>Click to add another index directory to the list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add index</source>
+        <translation>Aggiungi indice</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Applica modifiche</translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation>&amp;OK</translation>
+    </message>
+    <message>
+        <source>Discard changes</source>
+        <translation>Annulla modifiche</translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation>&amp;Annulla</translation>
     </message>
 </context>
 </TS>

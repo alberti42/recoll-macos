@@ -420,14 +420,6 @@ Please check the mimeconf file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Save file dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose a file name to save under</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Document category filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -446,6 +438,10 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Can&apos;t uncompress file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save file</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -584,10 +580,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>PgUp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -597,6 +589,14 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>F11</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+Home</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -737,6 +737,30 @@ Do you want to start the  preferences dialog ?</source>
         <source>Select an item:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Enter query language expression. Cheat sheet:&lt;br&gt;
+&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; and &apos;term2&apos; in any field.&lt;br&gt;
+&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; in field &apos;field&apos;.&lt;br&gt;
+ Standard field names/synonyms:&lt;br&gt;
+  title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
+ Pseudo-fields: dir, mime/format, type/rclcat, date.&lt;br&gt;
+ Two date interval exemples: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+&lt;i&gt;term1 term2 OR term3&lt;/i&gt; : term1 AND (term2 OR term3).&lt;br&gt;
+  No actual parentheses allowed.&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase (must occur exactly). Possible modifiers:&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
+Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter file name wildcard expression.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -775,10 +799,6 @@ Do you want to start the  preferences dialog ?</source>
 </context>
 <context>
     <name>SearchClauseW</name>
-    <message>
-        <source>SearchClauseW</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Any of these</source>
         <translation type="unfinished"></translation>
@@ -873,15 +893,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Term</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No db info.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Doc. / Tot.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -957,213 +969,19 @@ Do you want to start the  preferences dialog ?</source>
 </context>
 <context>
     <name>UIPrefsDialogBase</name>
-    <message>
-        <source>User preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>User interface</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Number of entries in a result page</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Result list font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Helvetica-10</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Opens a dialog to select the result list font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Resets the result list font to the system default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto-start simple search on whitespace entry.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start with advanced search dialog open.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start with sort dialog open.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use desktop preferences to choose document editor.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remember sort activation state.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stemming language</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Automatically add phrase to simple searches</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
-This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Dynamically build abstracts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
-May be slow for big documents.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Replace abstracts from documents</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Synthetic abstract size (characters)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Synthetic abstract context words</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>External Indexes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>External indexes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle selected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Activate All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deactivate All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove selected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove from list. This has no effect on the disk index.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Browse</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Apply changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Discard changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Highlight color for query terms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Prefer Html to plain text for preview.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>If checked, results with the same content under different names will only be shown once.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Hide duplicate results.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose editor applications</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Query language magic file name suffixes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ViewAction</name>
     <message>
         <source>Changing actions with different current values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1175,14 +993,6 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Action</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1234,10 +1044,6 @@ May be slow for big documents.</source>
 </context>
 <context>
     <name>confgui::ConfParamFNW</name>
-    <message>
-        <source>Browse</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>confgui::ConfParamSLW</name>
@@ -1380,6 +1186,203 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>uiPrefsDialogBase</name>
+    <message>
+        <source>User preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User interface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of entries in a result page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If checked, results with the same content under different names will only be shown once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide duplicate results.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight color for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result list font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the result list font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Helvetica-10</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resets the result list font to the system default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result paragraph&lt;br&gt;format string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Texts over this size will not be highlighted in preview (too slow).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum text size highlighted for preview (megabytes)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use desktop preferences to choose document editor.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose editor applications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display category filter as toolbar instead of button panel (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto-start simple search on whitespace entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start with advanced search dialog open.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start with sort dialog open.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remember sort activation state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Prefer Html to plain text for preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
+This should give higher precedence to the results where the search terms appear exactly as entered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatically add phrase to simple searches</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
+May be slow for big documents.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dynamically build abstracts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do we synthetize an abstract even if the document seemed to have one?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Replace abstracts from documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Synthetic abstract size (characters)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Synthetic abstract context words</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language magic file name suffixes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External Indexes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deactivate All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove from list. This has no effect on the disk index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click to add another index directory to the list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Discard changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
