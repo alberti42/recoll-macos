@@ -156,8 +156,8 @@ text/plain = txt
 text/x-c = source
 text/x-c++ = source
 text/x-fictionbook = document
+text/x-html-aptosid-man = aptosid-book
 text/x-html-sidux-man = sidux-book
-text/x-html-aptosid-man = aptosid-manual
 text/x-mail = message
 text/x-man = document
 application/x-chm = document
@@ -195,8 +195,8 @@ text = \
       text/x-c \
       text/x-c++ \
       text/x-fictionbook \
-      text/x-html-sidux-man \
       text/x-html-aptosid-man \
+      text/x-html-sidux-man \
       text/x-man \
       text/x-python \
       text/x-shellscript

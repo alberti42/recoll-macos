@@ -1,11 +1,12 @@
 #!/bin/sh
-# @(#$Id: rclaptosidman,v 1.1 2008-06-09 09:12:05 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclaptosidman,v 1.1 2010-12-11 12:40:05 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
 # Copyright (C) 2003-2004 Mikio Hirabayashi
 #================================================================
 #================================================================
+# rclaptosidman
 # Strip the menu part from aptosid manual pages to improve search precision
 #================================================================
 
@@ -50,17 +51,17 @@ iscmd()
 checkcmds()
 {
     for cmd in $*;do
-      if iscmd $cmd 
-      then 
+      if iscmd $cmd
+      then
         a=1
-      else 
+      else
         senderror HELPERNOTFOUND $cmd
       fi
     done
 }
 
 # show help message
-if test $# -ne 1 -o "$1" = "--help" 
+if test $# -ne 1 -o "$1" = "--help"
 then
   echo "Convert a $filetype file to HTML text for Recoll indexing."
   echo "Usage: $progname [infile]"

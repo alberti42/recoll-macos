@@ -128,13 +128,15 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
 [~/.purple]
 .txt = text/x-purple-log
 
-# Special handling of sidux/aptosid manual menu system
-[/usr/share/sidux-manual]
-.htm = text/x-html-sidux-man
-.html = text/x-html-sidux-man
+# Special handling of aptosid manual menu system
 [/usr/share/aptosid-manual]
 .htm = text/x-html-aptosid-man
 .html = text/x-html-aptosid-man
+
+# Special handling of sidux manual menu system
+[/usr/share/sidux-manual]
+.htm = text/x-html-sidux-man
+.html = text/x-html-sidux-man
 
 # Manual files. You may want to adjust the location for your system
 # We can't use the default text/troff type because this doesn't say
