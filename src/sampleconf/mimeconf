@@ -75,6 +75,7 @@ application/x-perl = exec rcltext
 application/x-scribus = exec rclscribus
 application/x-shellscript = exec rcltext
 application/x-tex = exec rcltex
+text/x-tex = exec rcltex
 application/x-chm = execm rclchm
 application/zip = execm rclzip
 audio/mpeg = execm rclaudio
@@ -90,6 +91,8 @@ text/html  = internal
 text/plain = internal 
 text/rtf = exec unrtf --nopict --html;charset=iso-8859-1;mimetype=text/html
 text/x-c = internal
+text/x-c++ = internal
+text/x-c+ = internal
 text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
@@ -140,6 +143,7 @@ application/x-lyx = wordprocessing
 application/x-scribus = document
 application/x-gnuinfo = document
 application/x-tex = wordprocessing
+text/x-tex = wordprocessing
 application/x-awk = source
 application/x-perl = source
 application/x-shellscript = source
@@ -155,6 +159,7 @@ text/html = html
 text/plain = txt
 text/x-c = source
 text/x-c++ = source
+text/x-c+ = source
 text/x-fictionbook = document
 text/x-html-aptosid-man = aptosid-book
 text/x-html-sidux-man = sidux-book
@@ -187,6 +192,7 @@ text = \
       application/x-gnuinfo \
       application/x-shellscript \
       application/x-tex \
+      text/x-tex \
       image/vnd.djvu \
       text/calendar \
       text/html \
@@ -194,6 +200,7 @@ text = \
       text/rtf \
       text/x-c \
       text/x-c++ \
+      text/x-c+ \
       text/x-fictionbook \
       text/x-html-aptosid-man \
       text/x-html-sidux-man \
