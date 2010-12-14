@@ -86,7 +86,8 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	    return string();
 	list<string>::iterator it = res.begin();
 	mime = *++it;
-	// Remove possible punctuation at the end
+	// Remove possible punctuation at the end. Note that this mangles 
+	// text/x-c++ if there is no semi-colon... handled in mimeconf :(
 	if (mime.length() > 0 && !isalpha(mime[mime.length() - 1]))
 	    mime.erase(mime.length() -1);
 	// File -i will sometimes return strange stuff (ie: "very small file")
