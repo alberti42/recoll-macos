@@ -45,9 +45,7 @@ class MimeHandlerUnknown : public RecollFilter {
 	m_metaData["mimetype"] = "text/plain";
 	return true;
     }
-    virtual void clear() {
-	RecollFilter::clear(); 
-    }
+    virtual bool is_unknown() {return true;}
 };
 
 #endif /* _MH_UNKNOWN_H_INCLUDED_ */

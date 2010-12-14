@@ -71,6 +71,11 @@ static Dijon::Filter *mhFactory(const string &mime)
         // exec) but still opening with a specific editor.
         return new MimeHandlerText(lmime); 
     } else {
+	// We should not get there. It means that "internal" was set
+	// as a handler in mimeconf for a mime type we actually can't
+	// handle.
+	LOGERR(("mhFactory: mime type [%s] set as internal but unknown\n", 
+		lmime.c_str()));
 	return new MimeHandlerUnknown(lmime);
     }
 }
@@ -222,7 +227,6 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     bool indexunknown = false;
     cfg->getConfParam("indexallfilenames", &indexunknown);
     if (indexunknown) {
-	LOGDEB(("getMimeHandler: returning MimeHandlerUnknown\n"));
 	return new MimeHandlerUnknown("application/octet-stream");
     } else {
 	return 0;

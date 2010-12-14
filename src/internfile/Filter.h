@@ -165,7 +165,7 @@ namespace Dijon
 	}
 
 	virtual void clear() {m_metaData.clear();}
-
+	virtual bool is_unknown() {return false;}
     protected:
 	/// The MIME type handled by the filter.
 	std::string m_mimeType;

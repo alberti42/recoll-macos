@@ -254,9 +254,8 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     m_mimetype = l_mime;
     Dijon::Filter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview);
 
-    if (!df) {
-	// No handler for this type, for now :( if indexallfilenames
-	// is set in the config, this normally wont happen (we get mh_unknown)
+    if (!df or df->is_unknown()) {
+	// No real handler for this type, for now :( 
 	LOGINFO(("FileInterner:: ignored: [%s] mime [%s]\n", 
                 f.c_str(), l_mime.c_str()));
 	return;
