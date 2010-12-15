@@ -25,7 +25,7 @@ else
     mkdir $toptmp || fatal cant create temp dir $toptmp
 fi
 
-dirs=`ls -F | grep / | grep -v CVS`
+dirs=`ls -F | grep / | grep -v CVS | grep -v non-auto`
 
 echo
 echo "Running query tests:"
