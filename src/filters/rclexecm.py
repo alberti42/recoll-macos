@@ -101,17 +101,27 @@ class RclExecM:
 
         # If we're given a file name, open it. 
         if len(params["filename:"]) != 0:
-            if not processor.openfile(params):
+            try:
+                if not processor.openfile(params):
+                    self.answer("", "", iserror = RclExecM.fileerror)
+                    return
+            except Exception, err:
+                self.em.rclog("processmessage: openfile raised: [%s]" % err)
                 self.answer("", "", iserror = RclExecM.fileerror)
                 return
-            
+
         # If we have an ipath, that's what we look for, else ask for next entry
         ipath = ""
         self.mimetype = ""
-        if params.has_key("ipath:") and len(params["ipath:"]):
-            ok, data, ipath, eof = processor.getipath(params)
-        else:
-            ok, data, ipath, eof = processor.getnext(params)
+        try:
+            if params.has_key("ipath:") and len(params["ipath:"]):
+                ok, data, ipath, eof = processor.getipath(params)
+            else:
+                ok, data, ipath, eof = processor.getnext(params)
+        except Exception, err:
+            self.answer("", "", eof, RclExecM.fileerror)
+            return
+
         #self.rclog("processmessage: ok %s eof %s ipath %s"%(ok, eof, ipath))
         if ok:
             self.answer(data, ipath, eof)
