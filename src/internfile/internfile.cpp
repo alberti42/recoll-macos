@@ -258,7 +258,8 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 	// No real handler for this type, for now :( 
 	LOGINFO(("FileInterner:: ignored: [%s] mime [%s]\n", 
                 f.c_str(), l_mime.c_str()));
-	return;
+	if (!df)
+	    return;
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
 			    m_forPreview ? "view" : "index");
