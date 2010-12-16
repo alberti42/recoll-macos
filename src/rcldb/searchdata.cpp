@@ -249,6 +249,21 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_FILTER, xq, tq);
     }
 
+    // Add the directory filtering clause
+    if (!m_topdir.empty()) {
+	vector<string> vpath;
+	stringToTokens(m_topdir, vpath, "/");
+	vector<string> pvpath;
+	pvpath.push_back(pathelt_prefix);
+	for (vector<string>::const_iterator it = vpath.begin(); 
+	     it != vpath.end(); it++){
+	    pvpath.push_back(pathelt_prefix + *it);
+	}
+	xq = Xapian::Query(Xapian::Query::OP_FILTER, xq, 
+			   Xapian::Query(Xapian::Query::OP_PHRASE, 
+					 pvpath.begin(), pvpath.end()));
+    }
+
     *((Xapian::Query *)d) = xq;
     return true;
 }

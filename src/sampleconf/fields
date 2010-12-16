@@ -18,14 +18,15 @@
 
 # Native fields matching omega uses, which we index without an X first
 # letter. Don't change these. Caption is used for 'title' to keep a last
-# remnant of omega compatibility inside the data record
+# remnant of omega compatibility inside the data record. Also D,F,M,Q,T,Y
 caption = S
 author = A
 keywords = K
 
 # Extension examples. These are actually used by default by Recoll, you can
 # add your own to search for fields produced by the filters and not handled
-# by default.
+# by default. 
+# Some values are reserved by recoll: XP (for path elements).
 ext = XE
 filename = XSFN
 recipient = XTO

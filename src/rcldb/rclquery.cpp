@@ -24,42 +24,6 @@ static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.11 2008-12-19 09:55:36 dockes Ex
 namespace Rcl {
 #endif
 
-
-class FilterMatcher : public Xapian::MatchDecider {
-public:
-    FilterMatcher(const string &topdir)
-	: m_topdir(topdir)
-    {}
-    virtual ~FilterMatcher() {}
-
-    virtual 
-#if XAPIAN_MAJOR_VERSION < 1
-    int 
-#else
-    bool
-#endif
-    operator()(const Xapian::Document &xdoc) const 
-    {
-	// Parse xapian document's data and populate doc fields
-	string data = xdoc.get_data();
-	ConfSimple parms(data);
-
-	// The only filtering for now is on file path (subtree)
-	string url;
-	parms.get(Doc::keyurl, url);
-	LOGDEB2(("FilterMatcher topdir [%s] url [%s]\n",
-		 m_topdir.c_str(), url.c_str()));
-	if (url.find(m_topdir, 7) == 7) {
-	    return true; 
-	} else {
-	    return false;
-	}
-    }
-    
-private:
-    string m_topdir;
-};
-
 // Sort helper class
 class QSorter : public Xapian::Sorter {
 public:
@@ -134,23 +98,14 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
     }
     m_reason.erase();
 
-    m_filterTopDir = sdata->getTopdir();
     m_nq->clear();
-
-    if (!m_filterTopDir.empty()) {
-#if XAPIAN_FILTERING
-	m_nq->decider = 
-#else
-        m_nq->postfilter =
-#endif
-	    new FilterMatcher(m_filterTopDir);
-    }
 
     Xapian::Query xq;
     if (!sdata->toNativeQuery(*m_db, &xq)) {
 	m_reason += sdata->getReason();
 	return false;
     }
+
     m_nq->xquery = xq;
 
     string d;
@@ -162,6 +117,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
             } else {
                 m_nq->xenquire->set_collapse_key(Xapian::BAD_VALUENO);
             }
+	    m_nq->xenquire->set_docid_order(Xapian::Enquire::DONT_CARE);
             if (!m_sortField.empty()) {
                 if (m_sorter) {
                     delete (QSorter*)m_sorter;
@@ -194,9 +150,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
 	
     if (d.find("Xapian::Query") == 0)
 	d.erase(0, strlen("Xapian::Query"));
-    if (!m_filterTopDir.empty()) {
-	d += string(" [dir: ") + m_filterTopDir + "]";
-    }
+
     sdata->setDescription(d);
     LOGDEB(("Query::SetQuery: Q: %s\n", sdata->getDescription().c_str()));
     return true;
@@ -252,8 +206,9 @@ bool Query::getMatchTerms(unsigned long xdocid, list<string>& terms)
     return true;
 }
 
+
 // Mset size
-static const int qquantum = 30;
+static const int qquantum = 50;
 
 // Get estimated result count for query. Xapian actually does most of
 // the search job in there, this can be long
@@ -269,7 +224,7 @@ int Query::getResCnt()
         Chrono chron;
 
         XAPTRY(m_nq->xmset = 
-               m_nq->xenquire->get_mset(0, qquantum,0, m_nq->decider);
+               m_nq->xenquire->get_mset(0, qquantum, (const Xapian::RSet *)0);
                ret = m_nq->xmset.get_matches_lower_bound(),
                m_db->m_ndb->xrdb, m_reason);
 
@@ -283,76 +238,29 @@ int Query::getResCnt()
 }
 
 
-// Get document at rank i in query (i is the index in the whole result
-// set, as in the enquire class. We check if the current mset has the
-// doc, else ask for an other one. We use msets of 10 documents. Don't
-// know if the whole thing makes sense at all but it seems to work.
+// Get document at rank xapi in query results.  We check if the
+// current mset has the doc, else ask for an other one. We use msets
+// of qquantum documents.
 //
-// If there is a postquery filter (ie: file names), we have to
-// maintain a correspondance from the sequential external index
-// sequence to the internal Xapian hole-y one (the holes being the documents 
-// that dont match the filter).
-bool Query::getDoc(int exti, Doc &doc)
+// Note that as stated by a Xapian developer, Enquire searches from
+// scratch each time get_mset() is called. So the better performance
+// on subsequent calls is probably only due to disk caching.
+bool Query::getDoc(int xapi, Doc &doc)
 {
-    LOGDEB1(("Query::getDoc: exti %d\n", exti));
+    LOGDEB1(("Query::getDoc: xapian enquire index %d\n", xapi));
     if (ISNULL(m_nq) || !m_nq->xenquire) {
 	LOGERR(("Query::getDoc: no query opened\n"));
 	return false;
     }
 
-    int xapi;
-    if (m_nq->postfilter) {
-	// There is a postquery filter, does this fall in already known area ?
-	if (exti >= (int)m_nq->m_dbindices.size()) {
-	    // Have to fetch xapian docs and filter until we get
-	    // enough or fail
-	    m_nq->m_dbindices.reserve(exti+1);
-	    // First xapian doc we fetch is the one after last stored 
-	    int first = m_nq->m_dbindices.size() > 0 ? 
-		m_nq->m_dbindices.back() + 1 : 0;
-	    // Loop until we get enough docs
-	    while (exti >= (int)m_nq->m_dbindices.size()) {
-		LOGDEB(("Query::getDoc: fetching %d starting at %d\n",
-			qquantum, first));
-
-		XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(first, qquantum),
-                       m_db->m_ndb->xrdb, m_reason);
-
-                if (!m_reason.empty()) {
-                    LOGERR(("enquire->get_mset: exception: %s\n", 
-                            m_reason.c_str()));
-                    return false;
-		}
-
-		if (m_nq->xmset.empty()) {
-		    LOGDEB(("Query::getDoc: got empty mset\n"));
-		    return false;
-		}
-		first = m_nq->xmset.get_firstitem();
-		for (unsigned int i = 0; i < m_nq->xmset.size() ; i++) {
-		    LOGDEB(("Query::getDoc: [%d]\n", i));
-		    Xapian::Document xdoc = m_nq->xmset[i].get_document();
-		    if ((*m_nq->postfilter)(xdoc)) {
-			m_nq->m_dbindices.push_back(first + i);
-		    }
-		}
-		first = first + m_nq->xmset.size();
-	    }
-	}
-	xapi = m_nq->m_dbindices[exti];
-    } else {
-	xapi = exti;
-    }
-
-    // From there on, we work with a xapian enquire item number. Fetch it
     int first = m_nq->xmset.get_firstitem();
     int last = first + m_nq->xmset.size() -1;
 
     if (!(xapi >= first && xapi <= last)) {
 	LOGDEB(("Fetching for first %d, count %d\n", xapi, qquantum));
 
-	XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(xapi, qquantum,
-                                                      0, m_nq->decider),
+	XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(xapi, qquantum,  
+						      (const Xapian::RSet *)0),
                m_db->m_ndb->xrdb, m_reason);
 
         if (!m_reason.empty()) {
@@ -408,6 +316,7 @@ bool Query::getDoc(int exti, Doc &doc)
         return false;
     }
     doc.meta[Rcl::Doc::keyudi] = udi;
+
     // Parse xapian document's data and populate doc fields
     return m_db->m_ndb->dbDataToRclDoc(docid, data, doc, pc);
 }

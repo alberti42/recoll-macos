@@ -74,6 +74,8 @@ static const unsigned int baseTextPosition = 100000;
 namespace Rcl {
 #endif
 
+const string pathelt_prefix = "XP";
+
 string version_string(){
     return string("Recoll ") + string(rclversionstr) + string(" + Xapian ") +
         string(Xapian::version_string());
@@ -921,7 +923,24 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	    splitter.basepos += splitter.curpos + 100;
 	}
     }
-	    
+
+    // Split and index the path from the url for path-based filtering
+    {
+	string path = url_gpath(doc.url);
+	vector<string> vpath;
+	stringToTokens(path, vpath, "/");
+	splitter.curpos = 0;
+	newdocument.add_posting(pathelt_prefix, 
+				splitter.basepos + splitter.curpos++);
+	for (vector<string>::const_iterator it = vpath.begin(); 
+	     it != vpath.end(); it++){
+	    newdocument.add_posting(pathelt_prefix + *it, 
+				    splitter.basepos + splitter.curpos++);
+	}
+    }
+    splitter.basepos += splitter.curpos + 100;
+
+
     // Index textual metadata.  These are all indexed as text with
     // positions, as we may want to do phrase searches with them (this
     // makes no sense for keywords by the way).
@@ -938,8 +957,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 		continue;
 	    }
 	    LOGDEB0(("Db::add: field [%s] pfx [%s]: [%s]\n", 
-		    meta_it->first.c_str(), pfx.c_str(), 
-		    meta_it->second.c_str()));
+		     meta_it->first.c_str(), pfx.c_str(), 
+		     meta_it->second.c_str()));
 	    splitter.setprefix(pfx); // Subject
 	    if (!splitter.text_to_words(meta_it->second))
                 LOGDEB(("Db::addOrUpdate: split failed for %s\n", 

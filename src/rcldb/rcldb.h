@@ -262,6 +262,7 @@ private:
 // the most reasonable place.
 string version_string();
 
+extern const string pathelt_prefix;
 #ifndef NO_NAMESPACES
 }
 #endif // NO_NAMESPACES

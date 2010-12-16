@@ -90,7 +90,6 @@ class Query {
     Native *m_nq;
 
 private:
-    string m_filterTopDir; // Current query filter on subtree top directory 
     string m_reason; // Error explanation
     Db    *m_db;
     void  *m_sorter;

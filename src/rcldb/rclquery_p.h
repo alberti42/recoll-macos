@@ -17,35 +17,12 @@ class Query::Native {
 public:
     /** The query I belong to */
     Query                *m_q;
+
+
     /** query descriptor: terms and subqueries joined by operators
      * (or/and etc...)
      */
     Xapian::Query    xquery; 
-
-    /** In case there is a postq filter: sequence of db indices that match */
-    vector<int> m_dbindices; 
-
-    // Filtering results on location. There are 2 possible approaches
-    // for this:
-    //   - Set a "MatchDecider" to be used by Xapian during the query
-    //   - Filter the results out of Xapian (this also uses a
-    //     Xapian::MatchDecider object, but applied to the results by Recoll.
-    // 
-    // The result filtering approach was the first implemented. 
-    //
-    // The efficiency of both methods depend on the searches, so the code
-    // for both has been kept.  A nice point for the Xapian approach is that
-    // the result count estimate are correct (they are wrong with
-    // the postfilter approach). It is also faster in some worst case scenarios
-    // so this now the default (but the post-filtering is faster in many common
-    // cases).
-    // 
-    // Which is used is decided in SetQuery(), by setting either of
-    // the two following members. This in turn is controlled by a
-    // preprocessor directive.
-#define XAPIAN_FILTERING 1
-    Xapian::MatchDecider *decider;   // Xapian does the filtering
-    Xapian::MatchDecider *postfilter; // Result filtering done by Recoll
 
     Xapian::Enquire      *xenquire; // Open query descriptor.
     Xapian::MSet          xmset;    // Partial result set
@@ -53,15 +30,12 @@ public:
     map<string, double>  termfreqs; 
 
     Native(Query *q)
-	: m_q(q), decider(0), postfilter(0), xenquire(0)
+	: m_q(q), xenquire(0)
     { }
     ~Native() {
 	clear();
     }
     void clear() {
-	m_dbindices.clear();
-	delete decider; decider = 0;
-	delete postfilter; postfilter = 0;
 	delete xenquire; xenquire = 0;
 	termfreqs.clear();
     }
