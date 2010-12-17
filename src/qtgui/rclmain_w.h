@@ -23,7 +23,6 @@
 #include "preview_w.h"
 #include "recoll.h"
 #include "advsearch_w.h"
-#include "sort_w.h"
 #include "uiprefs_w.h"
 #include "rcldb.h"
 #include "searchdata.h"
@@ -64,7 +63,6 @@ public slots:
     virtual void startSearch(RefCntr<Rcl::SearchData> sdata);
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
-    virtual void showSortDialog();
     virtual void showSpellDialog();
     virtual void showAboutDialog();
     virtual void showMissingHelpers();
@@ -97,9 +95,14 @@ public slots:
     virtual void initDbOpen();
     virtual void toggleFullScreen();
     virtual void focusToSearch();
+    virtual void on_actionSortByDateAsc_toggled(bool on);
+    virtual void on_actionSortByDateDesc_toggled(bool on);
+    virtual void resultCount(int);
 
 signals:
     void stemLangChanged(const QString& lang);
+    void sortDataChanged(DocSeqSortSpec);
+    void applySortData();
 
 protected:
     virtual void closeEvent( QCloseEvent * );
@@ -107,7 +110,6 @@ protected:
 private:
     Preview        *curPreview;
     AdvSearch      *asearchform;
-    SortForm       *sortform;
     UIPrefsDialog  *uiprefs;
     ConfIndexW     *indexConfig;
     SpellW         *spellform;
@@ -125,6 +127,7 @@ private:
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
 					bool next);
     virtual void setStemLang(const QString& lang);
+    virtual void onSortDataChanged();
 };
 
 #endif // RCLMAIN_W_H

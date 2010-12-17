@@ -78,12 +78,12 @@ class PrefsPack {
     int pvheight;
     int ssearchTyp;
     bool    useDesktopOpen; // typically xdg-open, instead of mimeview settings
-    bool    keepSort; // remember sort status between invocations
+    bool    keepSort;   // Remember sort status between invocations
     bool    sortActive; // Remembered sort state.
+    bool    sortDesc;  // ..
     bool queryBuildAbstract;
     bool queryReplaceAbstract;
     bool startWithAdvSearchOpen;
-    bool startWithSortToolOpen;
     bool previewHtml;
     bool collapseDuplicates;
     // Extra query indexes. This are stored in the history file, not qt prefs
@@ -108,14 +108,11 @@ class PrefsPack {
     int syntAbsLen;
     int syntAbsCtx;
 
-    // Sort specs (sort_w.cpp knows how to deal with the values
-    int sortDepth;
-    int sortSpec;
-
     // Remembered term match mode
     int termMatchType;
 
-    // Program version that wrote this
+    // Program version that wrote this. Not used for now, in prevision
+    // of the case where we might need an incompatible change
     int rclVersion;
 
     // Advanced search window clause list state
@@ -131,7 +128,6 @@ class PrefsPack {
 	queryBuildAbstract(true),
 	queryReplaceAbstract(false),
 	startWithAdvSearchOpen(false),
-	startWithSortToolOpen(false),
 	termMatchType(0),
 	rclVersion(1009)
 	    {

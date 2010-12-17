@@ -129,8 +129,23 @@ string DocSequenceDb::title()
     return m_filt ? DocSequence::title() + " (filtered)" : DocSequence::title();
 }
 
-// TBDone
 bool DocSequenceDb::setSortSpec(DocSeqSortSpec &sortspec) 
 {
-    return true;
+    if (sortspec.isNotNull()) {
+	bool ascending = false;
+	for (unsigned int i = 0; i < sortspec.crits.size(); i++) {
+	    switch (sortspec.crits[i]) {
+	    case DocSeqSortSpec::RCLFLD_MTIME:
+		ascending = !sortspec.dirs[i];
+		break;
+	    default:
+		break;
+	    }
+	}
+	m_q->setSortBy("mtime", ascending);
+    } else {
+	m_q->setSortBy(string(), true);
+    }
+    return m_q->setQuery(m_fsdata);
 }
+

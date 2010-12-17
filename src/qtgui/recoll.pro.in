@@ -12,7 +12,6 @@ HEADERS += \
         ../qtgui/rclmain_w.h \
         ../qtgui/reslist.h \
         ../qtgui/searchclause_w.h \
-        ../qtgui/sort_w.h \
         ../qtgui/spell_w.h \
         ../qtgui/ssearch_w.h \
         ../qtgui/uiprefs_w.h \
@@ -31,7 +30,6 @@ SOURCES += \
         ../qtgui/rclmain_w.cpp \
         ../qtgui/reslist.cpp \
         ../qtgui/searchclause_w.cpp \
-        ../qtgui/sort_w.cpp \
         ../qtgui/spell_w.cpp \
         ../qtgui/ssearch_w.cpp \
         ../qtgui/uiprefs_w.cpp \
@@ -42,12 +40,10 @@ SOURCES += \
 FORMS   = \
         advsearch.ui \
         rclmain.ui \
-	sort.ui \
 	spell.ui \
         ssearchb.ui \
         uiprefs.ui \
         viewaction.ui \
-
 
 RESOURCES = recoll.qrc
 

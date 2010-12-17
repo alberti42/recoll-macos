@@ -97,8 +97,6 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Int, 3);
     SETTING_RW(prefs.startWithAdvSearchOpen, 
 	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
-    SETTING_RW(prefs.startWithSortToolOpen, 
-	       "/Recoll/prefs/startWithSortToolOpen", Bool, false);
     SETTING_RW(prefs.previewHtml, 
 	       "/Recoll/prefs/previewHtml", Bool, true);
 
@@ -160,6 +158,8 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/keepSort", Bool, false);
     SETTING_RW(prefs.sortActive, 
 	       "/Recoll/prefs/sortActive", Bool, false);
+    SETTING_RW(prefs.sortDesc, 
+	       "/Recoll/prefs/query/sortDesc", Bool, 0);
     SETTING_RW(prefs.queryBuildAbstract, 
 	       "/Recoll/prefs/query/buildAbstract", Bool, true);
     SETTING_RW(prefs.queryReplaceAbstract, 
@@ -172,10 +172,6 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.autoSuffsEnable, 
 	       "/Recoll/prefs/query/autoSuffsEnable", Bool, false);
 
-    SETTING_RW(prefs.sortDepth, "/Recoll/prefs/query/sortDepth",
-	       Int, 100);
-    SETTING_RW(prefs.sortSpec, "/Recoll/prefs/query/sortSpec", 
-	       Int, 0);
     SETTING_RW(prefs.termMatchType, "/Recoll/prefs/query/termMatchType", 
 	       Int, 0);
     SETTING_RW(prefs.rclVersion, "/Recoll/prefs/rclVersion", 

@@ -255,16 +255,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="initStartSortCB">
-             <property name="text">
-              <string>Start with sort dialog open.</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QCheckBox" name="keepSortCB">
              <property name="text">
               <string>Remember sort activation state.</string>

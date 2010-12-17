@@ -65,7 +65,6 @@ RclDynConf *g_dynconf;
 int recollNeedsExit;
 int startIndexingAfterConfig;
 RclMain *mainWindow;
-static string recollsharedir;
 
 void startManual(const string& helpindex)
 {

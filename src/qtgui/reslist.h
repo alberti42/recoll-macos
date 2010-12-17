@@ -91,6 +91,7 @@ class ResList : public QTextBrowser
     void docExpand(int);
     void wordSelect(QString);
     void linkClicked(const QString&, int); // See emitLinkClicked()
+    void hasResults(int);
 
  protected:
     void keyPressEvent(QKeyEvent *e);

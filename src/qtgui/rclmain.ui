@@ -84,7 +84,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="toolsAdvanced_SearchAction"/>
-   <addaction name="toolsSort_parametersAction"/>
    <addaction name="toolsDoc_HistoryAction"/>
    <addaction name="toolsSpellAction"/>
   </widget>
@@ -101,6 +100,9 @@
    <addaction name="firstPageAction"/>
    <addaction name="prevPageAction"/>
    <addaction name="nextPageAction"/>
+   <addaction name="separator"/>
+   <addaction name="actionSortByDateAsc"/>
+   <addaction name="actionSortByDateDesc"/>
   </widget>
   <widget class="QMenuBar" name="MenuBar">
    <property name="geometry">
@@ -130,7 +132,6 @@
     </property>
     <addaction name="toolsDoc_HistoryAction"/>
     <addaction name="toolsAdvanced_SearchAction"/>
-    <addaction name="toolsSort_parametersAction"/>
     <addaction name="toolsSpellAction"/>
    </widget>
    <widget class="QMenu" name="preferencesMenu">
@@ -210,6 +211,10 @@
    </property>
   </action>
   <action name="toolsDoc_HistoryAction">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/history.png</normaloff>:/images/history.png</iconset>
+   </property>
    <property name="text">
     <string>Document &amp;History</string>
    </property>
@@ -221,6 +226,10 @@
    </property>
   </action>
   <action name="toolsAdvanced_SearchAction">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/asearch.png</normaloff>:/images/asearch.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Advanced Search</string>
    </property>
@@ -243,6 +252,10 @@
    </property>
   </action>
   <action name="toolsSpellAction">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/spell.png</normaloff>:/images/spell.png</iconset>
+   </property>
    <property name="text">
     <string>Term &amp;explorer</string>
    </property>
@@ -256,6 +269,10 @@
   <action name="nextPageAction">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/nextpage.png</normaloff>:/images/nextpage.png</iconset>
    </property>
    <property name="iconText">
     <string>Next page</string>
@@ -274,6 +291,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/firstpage.png</normaloff>:/images/firstpage.png</iconset>
+   </property>
    <property name="iconText">
     <string>First page</string>
    </property>
@@ -290,6 +311,10 @@
   <action name="prevPageAction">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/prevpage.png</normaloff>:/images/prevpage.png</iconset>
    </property>
    <property name="iconText">
     <string>Previous page</string>
@@ -345,6 +370,42 @@
     <cstring>toggleFullScreenAction</cstring>
    </property>
   </action>
+  <action name="actionSortByDateAsc">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/up.png</normaloff>:/images/up.png</iconset>
+   </property>
+   <property name="text">
+    <string>sortByDateAsc</string>
+   </property>
+   <property name="toolTip">
+    <string>Sort by dates from oldest to newest</string>
+   </property>
+  </action>
+  <action name="actionSortByDateDesc">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="recoll.qrc">
+     <normaloff>:/images/down.png</normaloff>:/images/down.png</iconset>
+   </property>
+   <property name="text">
+    <string>sortByDateDesc</string>
+   </property>
+   <property name="toolTip">
+    <string>Sort by dates from newest to oldest</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="2" margin="2"/>
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
@@ -364,6 +425,8 @@
   <include location="local">ssearch_w.h</include>
   <include location="local">reslist.h</include>
  </includes>
- <resources/>
+ <resources>
+  <include location="recoll.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -42,7 +42,7 @@ class DocSequenceDb : public DocSequence {
     virtual list<string> expand(Rcl::Doc &doc);
     virtual bool canFilter() {return true;}
     virtual bool setFiltSpec(DocSeqFiltSpec &filtspec);
-    virtual bool canSort() {return false;} 
+    virtual bool canSort() {return true;} 
     virtual bool setSortSpec(DocSeqSortSpec &sortspec);
     virtual string title();
     virtual void setAbstractParams(bool qba, bool qra)

@@ -96,7 +96,6 @@ void UIPrefsDialog::setFromPrefs()
     syntctxSB->setValue(prefs.syntAbsCtx);
 
     initStartAdvCB->setChecked(prefs.startWithAdvSearchOpen);
-    initStartSortCB->setChecked(prefs.startWithSortToolOpen);
 
     // External editor. Can use desktop prefs or internal
     useDesktopOpenCB->setChecked(prefs.useDesktopOpen);
@@ -204,7 +203,6 @@ void UIPrefsDialog::accept()
 	replAbsCB->isChecked();
 
     prefs.startWithAdvSearchOpen = initStartAdvCB->isChecked();
-    prefs.startWithSortToolOpen = initStartSortCB->isChecked();
     prefs.useDesktopOpen = useDesktopOpenCB->isChecked();
     prefs.keepSort = keepSortCB->isChecked();
     prefs.previewHtml = previewHtmlCB->isChecked();

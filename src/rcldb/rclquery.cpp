@@ -27,18 +27,34 @@ namespace Rcl {
 // Sort helper class
 class QSorter : public Xapian::Sorter {
 public:
-    QSorter(const string& f) : m_fld(docfToDatf(f) + "=") {}
+    QSorter(const string& f) 
+	: m_fld(docfToDatf(f) + "=") 
+    {
+	m_ismtime = !m_fld.compare("mtime=");
+	if (m_ismtime) {
+	    m_fld = "dmtime=";
+	}
+    }
 
-    virtual std::string operator()(const Xapian::Document& xdoc) const {
+    virtual std::string operator()(const Xapian::Document& xdoc) const 
+    {
 	string data = xdoc.get_data();
-
 	// It would be simpler to do the record->Rcl::Doc thing, but
 	// hand-doing this will be faster. It makes more assumptions
 	// about the format than a ConfTree though:
 	string::size_type i1, i2;
 	i1 = data.find(m_fld);
-	if (i1 == string::npos) 
-	    return string();
+	if (i1 == string::npos) {
+	    if (m_ismtime) {
+		// Ugly: specialcase mtime as it's either dmtime or fmtime
+		i1 = data.find("fmtime=");
+		if (i1 == string::npos) {
+		    return string();
+		}
+	    } else {
+		return string();
+	    }
+	}
 	i1 += m_fld.length();
 	if (i1 >= data.length())
 	    return string();
@@ -50,6 +66,7 @@ public:
 
 private:
     string m_fld;
+    bool   m_ismtime;
 };
 
 Query::Query(Db *db)
@@ -78,8 +95,12 @@ Db *Query::whatDb()
 }
 
 void Query::setSortBy(const string& fld, bool ascending) {
-    m_sortField = m_db->getConf()->fieldCanon(fld);
-    m_sortAscending = ascending;
+    if (fld.empty()) {
+	m_sortField.erase();
+    } else {
+	m_sortField = m_db->getConf()->fieldCanon(fld);
+	m_sortAscending = ascending;
+    }
     LOGDEB0(("RclQuery::setSortBy: [%s] %s\n", m_sortField.c_str(),
 	     m_sortAscending ? "ascending" : "descending"));
 }

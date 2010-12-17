@@ -273,6 +273,7 @@ void ResList::setDocSource(RefCntr<DocSequence> ndocsource)
 // Reapply parameters. Sort params probably changed
 void ResList::setDocSource()
 {
+    LOGDEB(("ResList::setDocSource\n"));
     if (m_baseDocSource.isNull())
 	return;
     resetList();
@@ -292,23 +293,29 @@ void ResList::setDocSource()
 							title));
 	} 
     }
-
-    if (m_sortspecs.isNotNull()) {
-	string title = m_baseDocSource->title() + " (" + 
-	    string((const char *)tr("sorted").toUtf8()) + ")";
-	m_docSource = RefCntr<DocSequence>(new DocSeqSorted(m_docSource, 
-							    m_sortspecs,
-							    title));
+    
+    if (m_docSource->canSort()) {
+	m_docSource->setSortSpec(m_sortspecs);
+    } else {
+	if (m_sortspecs.isNotNull()) {
+	    LOGDEB(("Reslist: sortspecs not Null\n"));
+	    string title = m_baseDocSource->title() + " (" + 
+		string((const char *)tr("sorted").toUtf8()) + ")";
+	    m_docSource = RefCntr<DocSequence>(new DocSeqSorted(m_docSource, 
+								m_sortspecs,
+								title));
+	}
     }
     // Reset the page size in case the preference was changed
     m_pager->setPageSize(prefs.respagesize);
     m_pager->setDocSource(m_docSource);
     resultPageNext();
+    emit hasResults(getResCnt());
 }
 
 void ResList::setSortParams(DocSeqSortSpec spec)
 {
-    LOGDEB(("ResList::setSortParams\n"));
+    LOGDEB(("ResList::setSortParams: %s\n", spec.isNotNull() ? "notnull":"null"));
     m_sortspecs = spec;
 }
 

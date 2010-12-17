@@ -91,7 +91,6 @@ void RclMain::init()
 
     curPreview = 0;
     asearchform = 0;
-    sortform = 0;
     uiprefs = 0;
     indexConfig = 0;
     spellform = 0;
@@ -247,8 +246,6 @@ void RclMain::init()
 	    this, SLOT(showDocHistory()));
     connect(toolsAdvanced_SearchAction, SIGNAL(activated()), 
 	    this, SLOT(showAdvSearchDialog()));
-    connect(toolsSort_parametersAction, SIGNAL(activated()), 
-	    this, SLOT(showSortDialog()));
     connect(toolsSpellAction, SIGNAL(activated()), 
 	    this, SLOT(showSpellDialog()));
 
@@ -264,23 +261,24 @@ void RclMain::init()
     // speeded up during indexing
     periodictimer->start(1000);
 
-    toolsSpellAction->setIcon(QIcon(":/images/spell.png"));
-    nextPageAction->setIcon(QIcon(":/images/nextpage.png"));
-    prevPageAction->setIcon(QIcon(":/images/prevpage.png"));
-    firstPageAction->setIcon(QIcon(":/images/firstpage.png"));
-    toolsDoc_HistoryAction->setIcon(QIcon(":/images/history.png"));
-    toolsAdvanced_SearchAction->setIcon(QIcon(":/images/asearch.png"));
-    toolsSort_parametersAction->setIcon(QIcon(":/images/sortparms.png"));
-
-    // If requested by prefs, restore sort state. The easiest way is to let
-    // a SortForm do it for us.
+    connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
+	    resList, SLOT(setSortParams(DocSeqSortSpec)));
+    connect(resList, SIGNAL(hasResults(int)), this, SLOT(resultCount(int)));
+    connect(this, SIGNAL(applySortData()), resList, SLOT(setDocSource()));
     if (prefs.keepSort && prefs.sortActive) {
-	SortForm sf(0);
-	connect(&sf, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
-		resList, SLOT(setSortParams(DocSeqSortSpec)));
-	// Have to call setdata again after sig connected...
-	sf.setData();
+	if (prefs.sortDesc) 
+	    actionSortByDateDesc->setChecked(true);
+	else
+	    actionSortByDateAsc->setChecked(true);
+	onSortDataChanged();
     }
+
+}
+
+void RclMain::resultCount(int n)
+{
+    actionSortByDateAsc->setEnabled(n>0);
+    actionSortByDateDesc->setEnabled(n>0);
 }
 
 // This is called by a timer right after we come up. Try to open
@@ -318,8 +316,6 @@ void RclMain::initDbOpen()
     } else {
 	if (prefs.startWithAdvSearchOpen)
 	    showAdvSearchDialog();
-	if (prefs.startWithSortToolOpen)
-	    showSortDialog();
         // If we have something in the search entry, it comes from a
         // command line argument
         if (!nodb && sSearch->hasSearchString())
@@ -590,22 +586,6 @@ void RclMain::showAdvSearchDialog()
     }
 }
 
-void RclMain::showSortDialog()
-{
-    if (sortform == 0) {
-	sortform = new SortForm(0);
-	connect(sortform, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
-		resList, SLOT(setSortParams(DocSeqSortSpec)));
-	connect(sortform, SIGNAL(applySortData()), 
-		resList, SLOT(setDocSource()));
-	sortform->show();
-    } else {
-	// Close and reopen, in hope that makes us visible...
-	sortform->close();
-        sortform->show();
-    }
-}
-
 void RclMain::showSpellDialog()
 {
     if (spellform == 0) {
@@ -822,6 +802,53 @@ void RclMain::previewExposed(Preview *, int sid, int docnum)
 	return;
     }
     resList->previewExposed(docnum);
+}
+
+void RclMain::onSortDataChanged()
+{
+    LOGDEB(("RclMain::onSortDataChanged()\n"));
+    DocSeqSortSpec spec;
+    if (actionSortByDateAsc->isChecked()) {
+	spec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, false);
+	spec.sortdepth = 1000000;
+	prefs.sortActive = true;
+	prefs.sortDesc = false;
+    } else if (actionSortByDateDesc->isChecked()) {
+	spec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, true);
+	spec.sortdepth = 1000000;
+	prefs.sortActive = true;
+	prefs.sortDesc = true;
+    } else {
+	prefs.sortActive = prefs.sortDesc = false;
+    }
+    emit sortDataChanged(spec);
+    emit applySortData();
+}
+
+void RclMain::on_actionSortByDateAsc_toggled(bool on)
+{
+    LOGDEB(("RclMain::on_actionSortByDateAsc_toggled(%d)\n", int(on)));
+    if (on) {
+	if (actionSortByDateDesc->isChecked()) {
+	    actionSortByDateDesc->setChecked(false);
+	    // Let our buddy work.
+	    return;
+	}
+    }
+    onSortDataChanged();
+}
+
+void RclMain::on_actionSortByDateDesc_toggled(bool on)
+{
+    LOGDEB(("RclMain::on_actionSortByDateDesc_toggled(%d)\n", int(on)));
+    if (on) {
+	if (actionSortByDateAsc->isChecked()) {
+	    actionSortByDateAsc->setChecked(false);
+	    // Let our buddy work.
+	    return;
+	}
+    }
+    onSortDataChanged();
 }
 
 // Add term to simple search. Term comes out of double-click in

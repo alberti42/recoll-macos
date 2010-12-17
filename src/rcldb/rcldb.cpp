@@ -105,6 +105,12 @@ static inline string make_parentterm(const string& udi)
     return pterm;
 }
 
+static inline void leftzeropad(string& s, unsigned len)
+{
+    if (s.length() && s.length() < len)
+	s = s.insert(0, len - s.length(), '0');
+}
+
 /* See comment in class declaration: return all subdocuments of a
  * document given by its unique id. 
 */
@@ -172,6 +178,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
 	if (doc.meta.find(*it) == doc.meta.end()) 
 	    parms.get(*it, doc.meta[*it]);
     }
+    doc.meta[Doc::keymt] = doc.dmtime.empty() ? doc.fmtime : doc.dmtime;
     return true;
 }
 
@@ -859,12 +866,6 @@ void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 	m_synthAbsLen = syntlen;
     if (syntctxlen > 0)
 	m_synthAbsWordCtxLen = syntctxlen;
-}
-
-static inline void leftzeropad(string& s, unsigned len)
-{
-    if (s.length() && s.length() < len)
-	s = s.insert(0, len-s.length(), '0');
 }
 
 static const int MB = 1024 * 1024;
