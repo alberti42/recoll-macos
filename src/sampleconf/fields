@@ -49,6 +49,7 @@ recipient = XTO
 author=
 rclaptg=
 rclbes=
+filename=
 
 ##########################
 # This section defines field names aliases or synonyms. Any right hand side
