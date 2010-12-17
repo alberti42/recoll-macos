@@ -311,8 +311,6 @@ Doc_getattr(recoll_DocObject *self, char *name)
     case 'f':
 	if (!key.compare(Rcl::Doc::keyfs)) {
 	    value = self->doc->fbytes;
-	} else if (!key.compare(Rcl::Doc::keyfn)) {
-	    value = self->doc->utf8fn;
 	} else if (!key.compare(Rcl::Doc::keyfs)) {
 	    value = self->doc->fbytes;
 	} else if (!key.compare(Rcl::Doc::keyfmt)) {
@@ -351,11 +349,11 @@ Doc_getattr(recoll_DocObject *self, char *name)
 	    value = self->doc->dbytes.empty() ? self->doc->fbytes : 
 		self->doc->dbytes;
 	}
-
 	break;
-    default:
-	value = self->doc->meta[key];
     }
+
+    if (value.empty())
+	value = self->doc->meta[key];
 
     LOGDEB(("Doc_getattr: [%s] (%s) -> [%s]\n",
 	    name, key.c_str(), value.c_str()));
