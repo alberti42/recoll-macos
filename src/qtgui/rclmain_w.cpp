@@ -108,12 +108,6 @@ void RclMain::init()
     // Set the focus to the search terms entry:
     sSearch->queryText->setFocus();
 
-    // Set result list font according to user preferences.
-    if (prefs.reslistfontfamily.length()) {
-	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
-	resList->setFont(nfont);
-    }
-
     // Stemming language menu
     g_stringNoStem = tr("(no stemming)");
     g_stringAllStem = tr("(all languages)");
@@ -152,7 +146,6 @@ void RclMain::init()
     QShortcut *sc = new QShortcut(seq, this);
     connect(sc, SIGNAL (activated()), this, SLOT (focusToSearch()));
 
-
     // Toolbar+combobox version of the category selector
     QComboBox *catgCMB = 0;
     if (prefs.catgToolBar) {
@@ -173,7 +166,6 @@ void RclMain::init()
     int bgrpid = 0;
     bgrp->addButton(allRDB, bgrpid++);
     connect(bgrp, SIGNAL(buttonClicked(int)), this, SLOT(catgFilter(int)));
-
     allRDB->setChecked(true);
     list<string> cats;
     rclconfig->getMimeCategories(cats);
@@ -195,9 +187,10 @@ void RclMain::init()
 
     if (prefs.catgToolBar)
 	catgBGRP->hide();
+
     // Connections
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
-		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
+	    this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
     sSearch->queryText->installEventFilter(this);
 
     connect(preferencesMenu, SIGNAL(triggered(QAction*)),
@@ -213,22 +206,23 @@ void RclMain::init()
     connect(nextPageAction, SIGNAL(activated()),
 	    resList, SLOT(resPageDownOrNext()));
 
-    connect(resList, SIGNAL(docExpand(int)), this, SLOT(docExpand(int)));
+    connect(resList, SIGNAL(docExpand(Rcl::Doc)), 
+	    this, SLOT(docExpand(Rcl::Doc)));
     connect(resList, SIGNAL(wordSelect(QString)),
-	    this, SLOT(ssearchAddTerm(QString)));
+	    sSearch, SLOT(addTerm(QString)));
     connect(resList, SIGNAL(nextPageAvailable(bool)), 
 	    this, SLOT(enableNextPage(bool)));
     connect(resList, SIGNAL(prevPageAvailable(bool)), 
 	    this, SLOT(enablePrevPage(bool)));
-    connect(resList, SIGNAL(docEditClicked(int)), 
-	    this, SLOT(startNativeViewer(int)));
-    connect(resList, SIGNAL(docSaveToFileClicked(int)), 
-	    this, SLOT(saveDocToFile(int)));
+    connect(resList, SIGNAL(docEditClicked(Rcl::Doc)), 
+	    this, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(resList, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
+	    this, SLOT(saveDocToFile(Rcl::Doc)));
     connect(resList, SIGNAL(editRequested(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
 
-    connect(resList, SIGNAL(docPreviewClicked(int, int)), 
-	    this, SLOT(startPreview(int, int)));
+    connect(resList, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
+	    this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(resList, SIGNAL(previewRequested(Rcl::Doc)), 
 	    this, SLOT(startPreview(Rcl::Doc)));
 
@@ -248,8 +242,8 @@ void RclMain::init()
 	    this, SLOT(showAdvSearchDialog()));
     connect(toolsSpellAction, SIGNAL(activated()), 
 	    this, SLOT(showSpellDialog()));
-
-    connect(indexConfigAction, SIGNAL(activated()), this, SLOT(showIndexConfig()));
+    connect(indexConfigAction, SIGNAL(activated()), 
+	    this, SLOT(showIndexConfig()));
     connect(queryPrefsAction, SIGNAL(activated()), this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), this, SLOT(showExtIdxDialog()));
     if (prefs.catgToolBar && catgCMB)
@@ -591,7 +585,7 @@ void RclMain::showSpellDialog()
     if (spellform == 0) {
 	spellform = new SpellW(0);
 	connect(spellform, SIGNAL(wordSelect(QString)),
-		this, SLOT(ssearchAddTerm(QString)));
+		sSearch, SLOT(addTerm(QString)));
 	spellform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
@@ -683,15 +677,9 @@ void RclMain::previewClosed(Preview *w)
  * @param docnum db query index
  * @param mod keyboards modifiers like ControlButton, ShiftButton
  */
-void RclMain::startPreview(int docnum, int mod)
+void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 {
-    Rcl::Doc doc;
-    if (!resList->getDoc(docnum, doc)) {
-	QMessageBox::warning(0, "Recoll", tr("Cannot retrieve document info" 
-					     " from database"));
-	return;
-    }
-	
+    LOGDEB(("startPreview(%d, doc, %d)\n", docnum, mod));
     if (mod & Qt::ShiftModifier) {
 	// User wants new preview window
 	curPreview = 0;
@@ -710,7 +698,7 @@ void RclMain::startPreview(int docnum, int mod)
 	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
 		this, SLOT(previewClosed(Preview *)));
 	connect(curPreview, SIGNAL(wordSelect(QString)),
-		this, SLOT(ssearchAddTerm(QString)));
+		sSearch, SLOT(addTerm(QString)));
 	connect(curPreview, SIGNAL(showNext(Preview *, int, int)),
 		this, SLOT(previewNextInTab(Preview *, int, int)));
 	connect(curPreview, SIGNAL(showPrev(Preview *, int, int)),
@@ -741,7 +729,7 @@ void RclMain::startPreview(Rcl::Doc doc)
 	return;
     }
     connect(preview, SIGNAL(wordSelect(QString)),
-	    this, SLOT(ssearchAddTerm(QString)));
+	    sSearch, SLOT(addTerm(QString)));
     preview->show();
     preview->makeDocCurrent(doc, 0);
 }
@@ -851,43 +839,8 @@ void RclMain::on_actionSortByDateDesc_toggled(bool on)
     onSortDataChanged();
 }
 
-// Add term to simple search. Term comes out of double-click in
-// reslist or preview. 
-// It would probably be better to cleanup in preview.ui.h and
-// reslist.cpp and do the proper html stuff in the latter case
-// (which is different because it format is explicit richtext
-// instead of auto as for preview, needed because it's built by
-// fragments?).
-static const char* punct = " \t()<>\"'[]{}!^*.,:;\n\r";
-void RclMain::ssearchAddTerm(QString term)
+void RclMain::saveDocToFile(Rcl::Doc doc)
 {
-    LOGDEB(("RclMain::ssearchAddTerm: [%s]\n", (const char *)term.toUtf8()));
-    string t = (const char *)term.toUtf8();
-    string::size_type pos = t.find_last_not_of(punct);
-    if (pos == string::npos)
-	return;
-    t = t.substr(0, pos+1);
-    pos = t.find_first_not_of(punct);
-    if (pos != string::npos)
-	t = t.substr(pos);
-    if (t.empty())
-	return;
-    term = QString::fromUtf8(t.c_str());
-
-    QString text = sSearch->queryText->currentText();
-    text += QString::fromLatin1(" ") + term;
-    sSearch->queryText->setEditText(text);
-}
-
-void RclMain::saveDocToFile(int docnum)
-{
-    Rcl::Doc doc;
-    if (!resList->getDoc(docnum, doc)) {
-	QMessageBox::warning(0, "Recoll",
-			     tr("Cannot retrieve document info" 
-				" from database"));
-	return;
-    }
     QString s = 
 	QFileDialog::getSaveFileName(this, //parent
 				     tr("Save file"), // caption 
@@ -924,17 +877,6 @@ static bool lookForHtmlBrowser(string &exefile)
     }
     exefile.clear();
     return false;
-}
-
-void RclMain::startNativeViewer(int docnum)
-{
-    Rcl::Doc doc;
-    if (!resList->getDoc(docnum, doc)) {
-	QMessageBox::warning(0, "Recoll", tr("Cannot retrieve document info" 
-					     " from database"));
-	return;
-    }
-    startNativeViewer(doc);
 }
 
 // Convert to file path if url is like file://
@@ -1171,12 +1113,9 @@ void RclMain::startManual(const string& index)
 
 // Search for document 'like' the selected one. We ask rcldb/xapian to find
 // significant terms, and add them to the simple search entry.
-void RclMain::docExpand(int docnum)
+void RclMain::docExpand(Rcl::Doc doc)
 {
     if (!rcldb)
-	return;
-    Rcl::Doc doc;
-    if (!resList->getDoc(docnum, doc))
 	return;
     list<string> terms;
     terms = resList->expand(doc);

@@ -75,13 +75,11 @@ public slots:
     virtual void setUIPrefs();
     virtual void enableNextPage(bool);
     virtual void enablePrevPage(bool);
-    virtual void docExpand(int);
-    virtual void ssearchAddTerm(QString);
-    virtual void startPreview(int docnum, int);
-    virtual void startPreview(Rcl::Doc doc);
-    virtual void startNativeViewer(int docnum);
-    virtual void startNativeViewer(Rcl::Doc doc);
-    virtual void saveDocToFile(int docnum);
+    virtual void docExpand(Rcl::Doc);
+    virtual void startPreview(int doc, Rcl::Doc doc, int keymods);
+    virtual void startPreview(Rcl::Doc);
+    virtual void startNativeViewer(Rcl::Doc);
+    virtual void saveDocToFile(Rcl::Doc);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
     virtual void previewPrevInTab(Preview *, int sid, int docnum);
     virtual void previewExposed(Preview *, int sid, int docnum);

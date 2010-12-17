@@ -82,13 +82,13 @@ class ResList : public QTextBrowser
  signals:
     void nextPageAvailable(bool);
     void prevPageAvailable(bool);
-    void docEditClicked(int);
-    void docPreviewClicked(int, int);
-    void docSaveToFileClicked(int);
+    void docEditClicked(Rcl::Doc);
+    void docPreviewClicked(int, Rcl::Doc, int);
+    void docSaveToFileClicked(Rcl::Doc);
     void previewRequested(Rcl::Doc);
     void editRequested(Rcl::Doc);
     void headerClicked();
-    void docExpand(int);
+    void docExpand(Rcl::Doc);
     void wordSelect(QString);
     void linkClicked(const QString&, int); // See emitLinkClicked()
     void hasResults(int);

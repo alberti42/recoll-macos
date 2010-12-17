@@ -233,6 +233,10 @@ ResList::ResList(QWidget* parent, const char* name)
     m_listId = 0;
     m_pager = new QtGuiResListPager(this, prefs.respagesize);
     m_pager->setHighLighter(&g_hiliter);
+    if (prefs.reslistfontfamily.length()) {
+	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
+	setFont(nfont);
+    }
 }
 
 ResList::~ResList()
@@ -625,6 +629,7 @@ void ResList::linkWasClicked(const QUrl &url)
     QString s = url.toString();
     const char *ascurl = s.toAscii();
     LOGDEB(("ResList::linkWasClicked: [%s]\n", ascurl));
+
     int i = atoi(ascurl+1) - 1;
     int what = ascurl[0];
     switch (what) {
@@ -632,18 +637,28 @@ void ResList::linkWasClicked(const QUrl &url)
 	emit headerClicked(); 
 	break;
     case 'P': 
-	emit docPreviewClicked(i, m_lstClckMod);
-	break;
     case 'E': 
-	emit docEditClicked(i);
-	break;
+    {
+	Rcl::Doc doc;
+	if (!getDoc(i, doc)) {
+	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
+	    return;
+	}
+	if (what == 'P')
+	    emit docPreviewClicked(i, doc, m_lstClckMod);
+	else
+	    emit docEditClicked(doc);
+    }
+    break;
     case 'n':
 	resultPageNext();
 	break;
     case 'p':
 	resultPageBack();
 	break;
-    default: break;// ?? 
+    default: 
+	LOGERR(("ResList::linkWasClicked: bad link [%s]\n", ascurl));
+	break;// ?? 
     }
 }
 
@@ -677,11 +692,15 @@ void ResList::createPopupMenu(const QPoint& pos)
 
 void ResList::menuPreview()
 {
-    emit docPreviewClicked(m_popDoc, 0);
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc))
+	emit docPreviewClicked(m_popDoc, doc, 0);
 }
 void ResList::menuSaveToFile()
 {
-    emit docSaveToFileClicked(m_popDoc);
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc))
+	emit docSaveToFileClicked(doc);
 }
 
 void ResList::menuPreviewParent()
@@ -720,7 +739,9 @@ void ResList::menuOpenParent()
 
 void ResList::menuEdit()
 {
-    emit docEditClicked(m_popDoc);
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc))
+	emit docEditClicked(doc);
 }
 void ResList::menuCopyFN()
 {
@@ -755,7 +776,9 @@ void ResList::menuCopyURL()
 
 void ResList::menuExpand()
 {
-    emit docExpand(m_popDoc);
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc))
+	emit docExpand(doc);
 }
 
 QString ResList::getDescription()

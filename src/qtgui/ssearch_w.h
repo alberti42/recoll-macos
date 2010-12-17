@@ -46,12 +46,12 @@ public:
     virtual void completion();
     virtual bool eventFilter(QObject *target, QEvent *event);
     virtual bool hasSearchString();
-
 public slots:
     virtual void searchTextChanged(const QString & text);
     virtual void searchTypeChanged(int);
     virtual void setSearchString(const QString& text);
     virtual void startSimpleSearch();
+    virtual void addTerm(QString);
 
 signals:
     void startSearch(RefCntr<Rcl::SearchData>);

@@ -216,6 +216,34 @@ bool SSearch::hasSearchString()
     return !queryText->lineEdit()->text().isEmpty();
 }
 
+// Add term to simple search. Term comes out of double-click in
+// reslist or preview. 
+// It would probably be better to cleanup in preview.ui.h and
+// reslist.cpp and do the proper html stuff in the latter case
+// (which is different because it format is explicit richtext
+// instead of auto as for preview, needed because it's built by
+// fragments?).
+static const char* punct = " \t()<>\"'[]{}!^*.,:;\n\r";
+void SSearch::addTerm(QString term)
+{
+    LOGDEB(("SSearch::AddTerm: [%s]\n", (const char *)term.toUtf8()));
+    string t = (const char *)term.toUtf8();
+    string::size_type pos = t.find_last_not_of(punct);
+    if (pos == string::npos)
+	return;
+    t = t.substr(0, pos+1);
+    pos = t.find_first_not_of(punct);
+    if (pos != string::npos)
+	t = t.substr(pos);
+    if (t.empty())
+	return;
+    term = QString::fromUtf8(t.c_str());
+
+    QString text = queryText->currentText();
+    text += QString::fromLatin1(" ") + term;
+    queryText->setEditText(text);
+}
+
 void SSearch::setAnyTermMode()
 {
     searchTypCMB->setCurrentIndex(SST_ANY);
