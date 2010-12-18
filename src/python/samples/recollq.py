@@ -27,7 +27,7 @@ def doquery(db, q):
     while query.next >= 0 and query.next < nres: 
         doc = query.fetchone()
         print query.next, ":",
-        for k in ("title", "url"):
+        for k in ("title", "url", "mtime"):
             print k, ":", getattr(doc, k).encode('utf-8')
         abs = db.makeDocAbstract(doc, query).encode('utf-8')
         print abs

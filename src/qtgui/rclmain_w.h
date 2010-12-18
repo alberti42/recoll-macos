@@ -120,6 +120,8 @@ private:
     QAction *         m_idNoStem;
     QAction *         m_idAllStem;
     bool              m_idxStatusAck; // Did we act on last status?
+    DocSeqFiltSpec    m_filtspec;
+    DocSeqSortSpec    m_sortspec;
 
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 

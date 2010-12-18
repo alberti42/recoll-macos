@@ -30,8 +30,11 @@
  */
 class DocSeqSorted : public DocSeqModifier {
  public:
-    DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec, 
-		 const std::string &t);
+    DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec)
+	:  DocSeqModifier(iseq)
+    {
+	setSortSpec(sortspec);
+    }
     virtual ~DocSeqSorted() {}
     virtual bool canSort() {return true;}
     virtual bool setSortSpec(DocSeqSortSpec &sortspec);

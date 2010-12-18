@@ -253,7 +253,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	for (list<string>::const_iterator qit = qterms.begin(); 
 	     qit != qterms.end(); qit++) {
 	    query->m_nq->termfreqs[*qit] = xrdb.get_termfreq(*qit) / doccnt;
-	    LOGDEB(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
+	    LOGABS(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
 		    query->m_nq->termfreqs[*qit]));
 	}
 	LOGABS(("makeAbstract:%d: got termfreqs\n", chron.ms()));

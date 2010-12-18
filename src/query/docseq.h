@@ -44,8 +44,8 @@ class DocSeqSortSpec {
 	crits.push_back(fld);
 	dirs.push_back(desc);
     }
-    bool isNotNull() {return sortdepth > 0;}
-
+    bool isNotNull() const {return sortdepth > 0;}
+    void reset() {crits.clear(); dirs.clear();sortdepth = 0;}
     int sortdepth; // We only re-sort the first sortdepth most relevant docs
     std::vector<Field> crits;
     std::vector<bool> dirs;
@@ -64,7 +64,7 @@ class DocSeqFiltSpec {
     std::vector<Crit> crits;
     std::vector<string> values;
     void reset() {crits.clear(); values.clear();}
-    bool isNotNull() {return crits.size() != 0;}
+    bool isNotNull() const {return crits.size() != 0;}
 };
 
 /** Interface for a list of documents coming from some source.
@@ -94,7 +94,7 @@ class DocSequence {
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0) = 0;
 
     /** Get next page of documents. This accumulates entries into the result
-     *  list (doesn't reset it). */
+     *  list parameter (doesn't reset it). */
     virtual int getSeqSlice(int offs, int cnt, vector<ResListEntry>& result);
 
     /** Get abstract for document. This is special because it may take time.
@@ -130,14 +130,15 @@ class DocSequence {
     }
     virtual list<string> expand(Rcl::Doc &) {return list<string>();}
 
-    /** Optional functionality. Yeah, not nice */
+    /** Optional functionality. */
     virtual bool canFilter() {return false;}
-    virtual bool setFiltSpec(DocSeqFiltSpec &) {return false;}
     virtual bool canSort() {return false;}
-    virtual bool setSortSpec(DocSeqSortSpec &) {return false;}
+    virtual bool setFiltSpec(const DocSeqFiltSpec &) {return false;}
+    virtual bool setSortSpec(const DocSeqSortSpec &) {return false;}
+    virtual RefCntr<DocSequence> getSourceSeq() {return RefCntr<DocSequence>();}
 
  private:
-    string m_title;
+    string          m_title;
 };
 
 /** A modifier has a child sequence which does the real work and does
@@ -145,8 +146,8 @@ class DocSequence {
  */
 class DocSeqModifier : public DocSequence {
 public:
-    DocSeqModifier(const string &t, RefCntr<DocSequence> iseq) 
-	: DocSequence(t), m_seq(iseq) 
+    DocSeqModifier(RefCntr<DocSequence> iseq) 
+	: DocSequence(""), m_seq(iseq) 
     {}
     virtual ~DocSeqModifier() {}
 
@@ -168,10 +169,45 @@ public:
     {
 	m_seq->getUTerms(terms);
     }
+    virtual string title() {return m_seq->title();}
+    virtual RefCntr<DocSequence> getSourceSeq() {return m_seq;}
 
 protected:
     RefCntr<DocSequence>    m_seq;
 };
 
+// A DocSource can juggle docseqs of different kinds to implement
+// sorting and filtering in ways depending on the base seqs capabilities
+class DocSource : public DocSeqModifier {
+public:
+    DocSource(RefCntr<DocSequence> iseq) 
+	: DocSeqModifier(iseq)
+    {}
+    virtual bool canFilter() {return true;}
+    virtual bool canSort() {return true;}
+    virtual bool setFiltSpec(const DocSeqFiltSpec &);
+    virtual bool setSortSpec(const DocSeqSortSpec &);
+    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0)
+    {
+	return m_seq->getDoc(num, doc, sh);
+    }
+    virtual int getResCnt()
+    {
+	return m_seq->getResCnt();
+    }
+    static void set_translations(const string& sort, const string& filt)
+    {
+	o_sort_trans = sort;
+	o_filt_trans = filt;
+    }
+    virtual string title();
+private:
+    bool buildStack();
+    void unwind();
+    DocSeqFiltSpec  m_fspec;
+    DocSeqSortSpec  m_sspec;
+    static string o_sort_trans;
+    static string o_filt_trans;
+};
 
 #endif /* _DOCSEQ_H_INCLUDED_ */

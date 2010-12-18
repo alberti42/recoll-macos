@@ -268,65 +268,34 @@ int ResList::newListId()
 
 extern "C" int XFlush(void *);
 
-void ResList::setDocSource(RefCntr<DocSequence> ndocsource)
+void ResList::setDocSource(RefCntr<DocSequence> nsource)
 {
-    m_baseDocSource = ndocsource;
-    setDocSource();
+    m_source = RefCntr<DocSequence>(new DocSource(nsource));
 }
 
 // Reapply parameters. Sort params probably changed
-void ResList::setDocSource()
+void ResList::readDocSource()
 {
-    LOGDEB(("ResList::setDocSource\n"));
-    if (m_baseDocSource.isNull())
+    if (m_source.isNull())
 	return;
     resetList();
     m_listId = newListId();
-    m_docSource = m_baseDocSource;
 
-    // Filtering must be done before sorting, (which usually
-    // truncates the original list)
-    if (m_baseDocSource->canFilter()) {
-	m_baseDocSource->setFiltSpec(m_filtspecs);
-    } else {
-	if (m_filtspecs.isNotNull()) {
-	    string title = m_baseDocSource->title() + " (" + 
-		string((const char*)tr("filtered").toUtf8()) + ")";
-	    m_docSource = 
-		RefCntr<DocSequence>(new DocSeqFiltered(m_docSource,m_filtspecs,
-							title));
-	} 
-    }
-    
-    if (m_docSource->canSort()) {
-	m_docSource->setSortSpec(m_sortspecs);
-    } else {
-	if (m_sortspecs.isNotNull()) {
-	    LOGDEB(("Reslist: sortspecs not Null\n"));
-	    string title = m_baseDocSource->title() + " (" + 
-		string((const char *)tr("sorted").toUtf8()) + ")";
-	    m_docSource = RefCntr<DocSequence>(new DocSeqSorted(m_docSource, 
-								m_sortspecs,
-								title));
-	}
-    }
     // Reset the page size in case the preference was changed
     m_pager->setPageSize(prefs.respagesize);
-    m_pager->setDocSource(m_docSource);
+    m_pager->setDocSource(m_source);
     resultPageNext();
     emit hasResults(getResCnt());
 }
 
 void ResList::setSortParams(DocSeqSortSpec spec)
 {
-    LOGDEB(("ResList::setSortParams: %s\n", spec.isNotNull() ? "notnull":"null"));
-    m_sortspecs = spec;
+    m_source->setSortSpec(spec);
 }
 
 void ResList::setFilterParams(const DocSeqFiltSpec& spec)
 {
-    LOGDEB(("ResList::setFilterParams\n"));
-    m_filtspecs = spec;
+    m_source->setFiltSpec(spec);
 }
 
 void ResList::resetList() 
@@ -350,9 +319,9 @@ bool ResList::displayingHistory()
     // We want to reset the displayed history if it is currently
     // shown. Using the title value is an ugly hack
     string htstring = string((const char *)tr("Document history").toUtf8());
-    if (m_docSource.isNull() || m_docSource->title().empty())
+    if (m_source.isNull() || m_source->title().empty())
 	return false;
-    return m_docSource->title().find(htstring) == 0;
+    return m_source->title().find(htstring) == 0;
 }
 
 void ResList::languageChange()
@@ -363,14 +332,14 @@ void ResList::languageChange()
 bool ResList::getTerms(vector<string>& terms, 
 		       vector<vector<string> >& groups, vector<int>& gslks)
 {
-    return m_baseDocSource->getTerms(terms, groups, gslks);
+    return m_source->getTerms(terms, groups, gslks);
 }
 
 list<string> ResList::expand(Rcl::Doc& doc)
 {
-    if (m_baseDocSource.isNull())
+    if (m_source.isNull())
 	return list<string>();
-    return m_baseDocSource->expand(doc);
+    return m_source->expand(doc);
 }
 
 // Get document number from paragraph number
@@ -492,9 +461,9 @@ void ResList::mouseReleaseEvent(QMouseEvent *e)
 // Return total result list count
 int ResList::getResCnt()
 {
-    if (m_docSource.isNull())
+    if (m_source.isNull())
 	return -1;
-    return m_docSource->getResCnt();
+    return m_source->getResCnt();
 }
 
 void ResList::highlighted(const QString& )
@@ -706,10 +675,10 @@ void ResList::menuSaveToFile()
 void ResList::menuPreviewParent()
 {
     Rcl::Doc doc;
-    if (!getDoc(m_popDoc, doc) || m_baseDocSource.isNull()) 
+    if (!getDoc(m_popDoc, doc) || m_source.isNull()) 
 	return;
     Rcl::Doc pdoc;
-    if (m_baseDocSource->getEnclosing(doc, pdoc)) {
+    if (m_source->getEnclosing(doc, pdoc)) {
 	emit previewRequested(pdoc);
     } else {
 	// No parent doc: show enclosing folder with app configured for
@@ -723,10 +692,10 @@ void ResList::menuPreviewParent()
 void ResList::menuOpenParent()
 {
     Rcl::Doc doc;
-    if (!getDoc(m_popDoc, doc) || m_baseDocSource.isNull()) 
+    if (!getDoc(m_popDoc, doc) || m_source.isNull()) 
 	return;
     Rcl::Doc pdoc;
-    if (m_baseDocSource->getEnclosing(doc, pdoc)) {
+    if (m_source->getEnclosing(doc, pdoc)) {
 	emit editRequested(pdoc);
     } else {
 	// No parent doc: show enclosing folder with app configured for
@@ -783,13 +752,13 @@ void ResList::menuExpand()
 
 QString ResList::getDescription()
 {
-    return QString::fromUtf8(m_docSource->getDescription().c_str());
+    return QString::fromUtf8(m_source->getDescription().c_str());
 }
 
 /** Show detailed expansion of a query */
 void ResList::showQueryDetails()
 {
-    string oq = breakIntoLines(m_docSource->getDescription(), 100, 50);
+    string oq = breakIntoLines(m_source->getDescription(), 100, 50);
     QString desc = tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
     QMessageBox::information(this, tr("Query details"), desc);
 }

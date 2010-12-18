@@ -30,9 +30,10 @@
  * according to the given criteria.
  */
 class DocSeqFiltered : public DocSeqModifier {
- public:
-    DocSeqFiltered(RefCntr<DocSequence> iseq, DocSeqFiltSpec &filtspec, 
-		 const std::string &t);
+public:
+    DocSeqFiltered(RefCntr<DocSequence> iseq, DocSeqFiltSpec &filtspec)
+	:  DocSeqModifier(iseq), m_spec(filtspec)
+    {}
     virtual ~DocSeqFiltered() {}
     virtual bool canFilter() {return true;}
     virtual bool setFiltSpec(DocSeqFiltSpec &filtspec);

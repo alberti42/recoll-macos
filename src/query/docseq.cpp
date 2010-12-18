@@ -17,10 +17,10 @@ static char rcsid[] = "@(#$Id: docseq.cpp,v 1.11 2008-09-29 08:59:20 dockes Exp 
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#include <math.h>
-#include <time.h>
-
 #include "docseq.h"
+#include "filtseq.h"
+#include "sortseq.h"
+#include "debuglog.h"
 
 int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
 {
@@ -35,3 +35,75 @@ int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
     return ret;
 }
 
+void DocSource::unwind()
+{
+    RefCntr<DocSequence> base = m_seq;
+    while (!m_seq.isNull() && !(m_seq->getSourceSeq()).isNull()) {
+	base = m_seq->getSourceSeq();
+    }
+    m_seq = base;
+}
+
+bool DocSource::buildStack()
+{
+    LOGDEB2(("DocSource::buildStack()\n"));
+    unwind();
+
+    if (m_seq.isNull())
+	return false;
+
+    // Filtering must be done before sorting, (which may
+    // truncates the original list)
+    if (m_seq->canFilter()) {
+	if (!m_seq->setFiltSpec(m_fspec)) {
+	    LOGERR(("DocSource::buildStack: setfiltspec failed\n"));
+	}
+    } else {
+	if (m_fspec.isNotNull()) {
+	    m_seq = 
+		RefCntr<DocSequence>(new DocSeqFiltered(m_seq, m_fspec));
+	} 
+    }
+    
+    if (m_seq->canSort()) {
+	if (!m_seq->setSortSpec(m_sspec)) {
+	    LOGERR(("DocSource::buildStack: setsortspec failed\n"));
+	}
+    } else {
+	if (m_sspec.isNotNull()) {
+	    m_seq = RefCntr<DocSequence>(new DocSeqSorted(m_seq, m_sspec));
+	}
+    }
+    return true;
+}
+
+string DocSource::o_sort_trans;
+string DocSource::o_filt_trans;
+
+string DocSource::title()
+{
+    string qual;
+    if (m_fspec.isNotNull() && !m_sspec.isNotNull())
+	qual = string(" (") + o_filt_trans + string(")");
+    else if (!m_fspec.isNotNull() && m_sspec.isNotNull())
+	qual = string(" (") + o_sort_trans + string(")");
+    else if (m_fspec.isNotNull() && m_sspec.isNotNull())
+	qual = string(" (") + o_sort_trans + string(",") + o_filt_trans + string(")");
+    return m_seq->title() + qual;
+}
+
+bool DocSource::setFiltSpec(const DocSeqFiltSpec &f) 
+{
+    LOGDEB2(("DocSource::setFiltSpec\n"));
+    m_fspec = f;
+    buildStack();
+    return true;
+}
+
+bool DocSource::setSortSpec(const DocSeqSortSpec &s) 
+{
+    LOGDEB2(("DocSource::setSortSpec\n"));
+    m_sspec = s;
+    buildStack();
+    return true;
+}

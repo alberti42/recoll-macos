@@ -732,8 +732,6 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
     printableUrl(rclconfig->getDefCharset(), doc->url, 
 		 doc->meta[Rcl::Doc::keyurl]);
     doc->meta[Rcl::Doc::keytp] = doc->mimetype;
-    doc->meta[Rcl::Doc::keymt] = doc->dmtime.empty() ? 
-	doc->fmtime : doc->dmtime;
     doc->meta[Rcl::Doc::keyipt] = doc->ipath;
     doc->meta[Rcl::Doc::keyfs] = doc->fbytes;
     doc->meta[Rcl::Doc::keyds] = doc->dbytes;

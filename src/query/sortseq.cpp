@@ -68,13 +68,6 @@ public:
     } 
 };
 
-DocSeqSorted::DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec,
-			   const std::string &t)
-    :  DocSeqModifier(t, iseq)
-{
-    setSortSpec(sortspec);
-}
-
 bool DocSeqSorted::setSortSpec(DocSeqSortSpec &sortspec)
 {
     m_spec = sortspec;

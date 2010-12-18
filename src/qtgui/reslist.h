@@ -48,7 +48,7 @@ class ResList : public QTextBrowser
 
     QString getDescription(); // Printable actual query performed on db
     int getResCnt(); // Return total result list size
-    void setDocSource(RefCntr<DocSequence> ndocsource);
+    void setDocSource(RefCntr<DocSequence> nsource);
     bool displayingHistory();
     bool getTerms(vector<string>& terms, 
 		  vector<vector<string> >& groups, vector<int>& gslks);
@@ -73,7 +73,7 @@ class ResList : public QTextBrowser
     virtual void menuOpenParent();
     virtual void previewExposed(int);
     virtual void append(const QString &text);
-    virtual void setDocSource();
+    virtual void readDocSource();
     virtual void setSortParams(DocSeqSortSpec spec);
     virtual void setFilterParams(const DocSeqFiltSpec &spec);
     virtual void highlighted(const QString& link);
@@ -104,16 +104,9 @@ class ResList : public QTextBrowser
     virtual void showQueryDetails();
 
  private:
-    QtGuiResListPager           *m_pager;
-    // Raw doc source
-    RefCntr<DocSequence>  m_baseDocSource;
-    // Possibly filtered/sorted docsource (the one displayed)
-    RefCntr<DocSequence>  m_docSource;
-    // Current sort and filtering parameters
-    DocSeqSortSpec        m_sortspecs;
-    DocSeqFiltSpec        m_filtspecs;
-    // Docs for current page
-    std::vector<Rcl::Doc> m_curDocs;
+    QtGuiResListPager  *m_pager;
+    RefCntr<DocSequence> m_source;
+    std::vector<Rcl::Doc> m_curDocs;  // Docs for current page
 
     // Translate from textedit paragraph number to relative
     // docnum. Built while we insert text into the qtextedit
@@ -122,8 +115,7 @@ class ResList : public QTextBrowser
     int                m_curPvDoc;// Docnum for current preview
     int                m_lstClckMod; // Last click modifier. 
     list<int>          m_selDocs;
-    int                m_listId;
-
+    int                m_listId; // query Id for matching with preview windows
     
     virtual int docnumfromparnum(int);
     virtual pair<int,int> parnumfromdocnum(int);

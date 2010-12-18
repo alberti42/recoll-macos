@@ -28,7 +28,7 @@ static char rcsid[] = "@(#$Id: docseqdb.cpp,v 1.9 2008-11-13 10:57:46 dockes Exp
 DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
 			     RefCntr<Rcl::SearchData> sdata) 
     : DocSequence(t), m_q(q), m_sdata(sdata), m_fsdata(sdata),
-      m_rescnt(-1), m_filt(false),
+      m_rescnt(-1), 
       m_queryBuildAbstract(true),
       m_queryReplaceAbstract(false)
 {
@@ -98,39 +98,31 @@ list<string> DocSequenceDb::expand(Rcl::Doc &doc)
     return m_q->expand(doc);
 }
 
-bool DocSequenceDb::setFiltSpec(DocSeqFiltSpec &fs) 
+bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs) 
 {
-    if (!fs.isNotNull()) {
-	m_fsdata = m_sdata;
-	m_filt = false;
-	return m_q->setQuery(m_sdata);
-    }
-
-    // We build a search spec by adding a filtering layer to the base one.
-    m_fsdata = RefCntr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND));
-    Rcl::SearchDataClauseSub *cl = 
-	new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, m_sdata);
-    m_fsdata->addClause(cl);
+    LOGDEB(("DocSequenceDb::setFiltSpec\n"));
+    if (fs.isNotNull()) {
+	// We build a search spec by adding a filtering layer to the base one.
+	m_fsdata = RefCntr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND));
+	Rcl::SearchDataClauseSub *cl = 
+	    new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, m_sdata);
+	m_fsdata->addClause(cl);
     
-    for (unsigned int i = 0; i < fs.crits.size(); i++) {
-	switch (fs.crits[i]) {
-	case DocSeqFiltSpec::DSFS_MIMETYPE:
-	    m_fsdata->addFiletype(fs.values[i]);
+	for (unsigned int i = 0; i < fs.crits.size(); i++) {
+	    switch (fs.crits[i]) {
+	    case DocSeqFiltSpec::DSFS_MIMETYPE:
+		m_fsdata->addFiletype(fs.values[i]);
+	    }
 	}
+    } else {
+	m_fsdata = m_sdata;
     }
-    m_filt = true;
     return m_q->setQuery(m_fsdata);
 }
 
-// Need a way to access the translations for filtered ...
-string DocSequenceDb::title()
+bool DocSequenceDb::setSortSpec(const DocSeqSortSpec &sortspec) 
 {
-    LOGDEB(("DOcSequenceDb::title()\n"));
-    return m_filt ? DocSequence::title() + " (filtered)" : DocSequence::title();
-}
-
-bool DocSequenceDb::setSortSpec(DocSeqSortSpec &sortspec) 
-{
+    LOGDEB(("DocSequenceDb::setSortSpec\n"));
     if (sortspec.isNotNull()) {
 	bool ascending = false;
 	for (unsigned int i = 0; i < sortspec.crits.size(); i++) {
@@ -149,3 +141,7 @@ bool DocSequenceDb::setSortSpec(DocSeqSortSpec &sortspec)
     return m_q->setQuery(m_fsdata);
 }
 
+bool DocSequenceDb::setQuery()
+{
+    return m_q->setQuery(m_fsdata);
+}

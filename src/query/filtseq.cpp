@@ -40,13 +40,6 @@ static bool filter(const DocSeqFiltSpec& fs, const Rcl::Doc *x)
     return 0;
 } 
 
-DocSeqFiltered::DocSeqFiltered(RefCntr<DocSequence> iseq, 
-			       DocSeqFiltSpec &filtspec,
-			       const std::string &t)
-    :  DocSeqModifier(t, iseq), m_spec(filtspec)
-{
-}
-
 bool DocSeqFiltered::setFiltSpec(DocSeqFiltSpec &filtspec)
 {
     m_spec = filtspec;
@@ -59,7 +52,7 @@ bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, string *)
     LOGDEB1(("DocSeqFiltered: fetching %d\n", idx));
 
     if (idx >= (int)m_dbindices.size()) {
-	// Have to fetch xapian docs and filter until we get enough or
+	// Have to fetch docs and filter until we get enough or
 	// fail
 	m_dbindices.reserve(idx+1);
 

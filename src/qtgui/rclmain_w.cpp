@@ -88,7 +88,8 @@ void RclMain::init()
             QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text"), 
 	    QT_TR_NOOP("sorted"), QT_TR_NOOP("filtered")
     };
-
+    DocSource::set_translations((const char *)tr("sorted").toUtf8(), 
+				(const char *)tr("filtered").toUtf8());
     curPreview = 0;
     asearchform = 0;
     uiprefs = 0;
@@ -258,7 +259,7 @@ void RclMain::init()
     connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
 	    resList, SLOT(setSortParams(DocSeqSortSpec)));
     connect(resList, SIGNAL(hasResults(int)), this, SLOT(resultCount(int)));
-    connect(this, SIGNAL(applySortData()), resList, SLOT(setDocSource()));
+    connect(this, SIGNAL(applySortData()), resList, SLOT(readDocSource()));
     if (prefs.keepSort && prefs.sortActive) {
 	if (prefs.sortDesc) 
 	    actionSortByDateDesc->setChecked(true);
@@ -542,13 +543,13 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 
     Rcl::Query *query = new Rcl::Query(rcldb);
     query->setCollapseDuplicates(prefs.collapseDuplicates);
-
     if (!query || !query->setQuery(sdata)) {
 	QMessageBox::warning(0, "Recoll", tr("Can't start query: ") +
 			     QString::fromAscii(query->getReason().c_str()));
 	QApplication::restoreOverrideCursor();
 	return;
     }
+
     curPreview = 0;
     DocSequenceDb *src = 
 	new DocSequenceDb(RefCntr<Rcl::Query>(query), 
@@ -557,6 +558,9 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
                            prefs.queryReplaceAbstract);
 
     resList->setDocSource(RefCntr<DocSequence>(src));
+    resList->setSortParams(m_sortspec);
+    resList->setFilterParams(m_filtspec);
+    resList->readDocSource();
     QApplication::restoreOverrideCursor();
 }
 
@@ -795,21 +799,21 @@ void RclMain::previewExposed(Preview *, int sid, int docnum)
 void RclMain::onSortDataChanged()
 {
     LOGDEB(("RclMain::onSortDataChanged()\n"));
-    DocSeqSortSpec spec;
+    m_sortspec.reset();
     if (actionSortByDateAsc->isChecked()) {
-	spec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, false);
-	spec.sortdepth = 1000000;
+	m_sortspec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, false);
+	m_sortspec.sortdepth = 1000000;
 	prefs.sortActive = true;
 	prefs.sortDesc = false;
     } else if (actionSortByDateDesc->isChecked()) {
-	spec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, true);
-	spec.sortdepth = 1000000;
+	m_sortspec.addCrit(DocSeqSortSpec::RCLFLD_MTIME, true);
+	m_sortspec.sortdepth = 1000000;
 	prefs.sortActive = true;
 	prefs.sortDesc = true;
     } else {
 	prefs.sortActive = prefs.sortDesc = false;
     }
-    emit sortDataChanged(spec);
+    emit sortDataChanged(m_sortspec);
     emit applySortData();
 }
 
@@ -1158,6 +1162,9 @@ void RclMain::showDocHistory()
 			       string(tr("Document history").toUtf8()));
     src->setDescription((const char *)tr("History data").toUtf8());
     resList->setDocSource(RefCntr<DocSequence>(src));
+    resList->setSortParams(m_sortspec);
+    resList->setFilterParams(m_filtspec);
+    resList->readDocSource();
 }
 
 // Erase all memory of documents viewed
@@ -1204,7 +1211,7 @@ void RclMain::catgFilter(int id)
     if (id < 0 || id >= int(m_catgbutvec.size()))
 	return; 
 
-    DocSeqFiltSpec spec;
+    m_filtspec.reset();
 
     if (id != 0)  {
 	string catg = m_catgbutvec[id];
@@ -1212,11 +1219,11 @@ void RclMain::catgFilter(int id)
 	rclconfig->getMimeCatTypes(catg, tps);
 	for (list<string>::const_iterator it = tps.begin();
 	     it != tps.end(); it++) 
-	    spec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);
+	    m_filtspec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);
     }
 
-    resList->setFilterParams(spec);
-    resList->setDocSource();
+    resList->setFilterParams(m_filtspec);
+    resList->readDocSource();
 }
 
 void RclMain::toggleFullScreen()

@@ -41,10 +41,10 @@ class DocSequenceDb : public DocSequence {
     virtual string getDescription();
     virtual list<string> expand(Rcl::Doc &doc);
     virtual bool canFilter() {return true;}
-    virtual bool setFiltSpec(DocSeqFiltSpec &filtspec);
+    virtual bool setFiltSpec(const DocSeqFiltSpec &filtspec);
     virtual bool canSort() {return true;} 
-    virtual bool setSortSpec(DocSeqSortSpec &sortspec);
-    virtual string title();
+    virtual bool setSortSpec(const DocSeqSortSpec &sortspec);
+    virtual bool setQuery();
     virtual void setAbstractParams(bool qba, bool qra)
     {
         m_queryBuildAbstract = qba;
@@ -56,7 +56,6 @@ class DocSequenceDb : public DocSequence {
     RefCntr<Rcl::SearchData> m_sdata;
     RefCntr<Rcl::SearchData> m_fsdata; // Filtered 
     int                      m_rescnt;
-    bool                     m_filt;
     bool                     m_queryBuildAbstract;
     bool                     m_queryReplaceAbstract;
 };
