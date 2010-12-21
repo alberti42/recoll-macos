@@ -9,20 +9,14 @@ using std::vector;
 #include "docseq.h"
 
 class PlainToRich;
+class HiliteData;
 
 /**
  * Manage a paged HTML result list. 
  */
 class ResListPager {
 public:
-    ResListPager(int pagesize=10) :
-        m_pagesize(pagesize),
-        m_newpagesize(pagesize),
-        m_winfirst(-1),
-        m_hasNext(false),
-        m_hiliter(0)
-    {
-    }
+    ResListPager(int pagesize=10);
     virtual ~ResListPager() {}
 
     void setHighLighter(PlainToRich *ptr) 
@@ -64,6 +58,8 @@ public:
     }
     void resultPageNext();
     void displayPage();
+    void displayDoc(int idx, Rcl::Doc& doc, const HiliteData& hdata, 
+		    const string& sh = "");
     bool pageEmpty() {return m_respage.size() == 0;}
 
     string queryDescription() {return m_docSource.isNull() ? "" :

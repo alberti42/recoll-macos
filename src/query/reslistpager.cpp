@@ -27,6 +27,15 @@ public:
 };
 static PlainToRichHtReslist g_hiliter;
 
+ResListPager::ResListPager(int pagesize) 
+    : m_pagesize(pagesize),
+      m_newpagesize(pagesize),
+      m_winfirst(-1),
+      m_hasNext(false),
+      m_hiliter(&g_hiliter)
+{
+}
+
 void ResListPager::resultPageNext()
 {
     if (m_docSource.isNull()) {
@@ -69,6 +78,136 @@ void ResListPager::resultPageNext()
     m_respage = npage;
 }
 
+void ResListPager::displayDoc(int i, Rcl::Doc& doc, const HiliteData& hdata,
+			      const string& sh)
+{
+    ostringstream chunk;
+    int percent;
+    if (doc.pc == -1) {
+	percent = 0;
+	// Document not available, maybe other further, will go on.
+	doc.meta[Rcl::Doc::keyabs] = string(trans("Unavailable document"));
+    } else {
+	percent = doc.pc;
+    }
+    // Percentage of 'relevance'
+    char perbuf[20];
+    sprintf(perbuf, "%3d%% ", percent);
+
+    // Determine icon to display if any
+    string iconpath = iconPath(doc.mimetype);
+
+    // Printable url: either utf-8 if transcoding succeeds, or url-encoded
+    string url;
+    printableUrl(RclConfig::getMainConfig()->getDefCharset(), doc.url, url);
+
+    // Make title out of file name if none yet
+    if (doc.meta[Rcl::Doc::keytt].empty()) {
+	doc.meta[Rcl::Doc::keytt] = path_getsimple(url);
+    }
+
+    // Result number
+    char numbuf[20];
+    int docnumforlinks = m_winfirst + 1 + i;
+    sprintf(numbuf, "%d", docnumforlinks);
+
+    // Document date: either doc or file modification time
+    char datebuf[100];
+    datebuf[0] = 0;
+    if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
+	time_t mtime = doc.dmtime.empty() ?
+	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
+	struct tm *tm = localtime(&mtime);
+#ifndef sun
+	strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z", tm);
+#else
+	strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%Z", tm);
+#endif
+    }
+
+    // Size information. We print both doc and file if they differ a lot
+    long fsize = -1, dsize = -1;
+    if (!doc.dbytes.empty())
+	dsize = atol(doc.dbytes.c_str());
+    if (!doc.fbytes.empty())
+	fsize = atol(doc.fbytes.c_str());
+    string sizebuf;
+    if (dsize > 0) {
+	sizebuf = displayableBytes(dsize);
+	if (fsize > 10 * dsize && fsize - dsize > 1000)
+	    sizebuf += string(" / ") + displayableBytes(fsize);
+    } else if (fsize >= 0) {
+	sizebuf = displayableBytes(fsize);
+    }
+
+    string abstract;
+    if (m_docSource.isNotNull())
+	abstract = m_docSource->getAbstract(doc);
+
+    // No need to call escapeHtml(), plaintorich handles it
+    list<string> lr;
+    m_hiliter->set_inputhtml(false);
+    m_hiliter->plaintorich(abstract, lr, hdata);
+    string richabst = lr.front();
+
+    // Links;
+    ostringstream linksbuf;
+    if (canIntern(doc.mimetype, RclConfig::getMainConfig())) { 
+	linksbuf << "<a href=\"P" << docnumforlinks << "\">" 
+		 << trans("Preview") << "</a>&nbsp;&nbsp;";
+    }
+
+    string apptag;
+    map<string,string>::const_iterator it;
+    if ((it = doc.meta.find(Rcl::Doc::keyapptg)) != doc.meta.end())
+	apptag = it->second;
+
+    if (!RclConfig::getMainConfig()->getMimeViewerDef(doc.mimetype, apptag).empty()) {
+	linksbuf << "<a href=\"E" << docnumforlinks << "\">"  
+		 << trans("Open") << "</a>";
+    }
+
+    // Build the result list paragraph:
+
+    // Subheader: this is used by history
+    if (!sh.empty())
+	chunk << "<p style='clear: both;'><b>" << sh << "</p>\n<p>";
+    else
+	chunk << "<p style='margin: 0px;padding: 0px;clear: both;'>";
+
+    // Configurable stuff
+    map<string,string> subs;
+    subs["A"] = !richabst.empty() ? richabst : "";
+    subs["D"] = datebuf;
+    subs["I"] = iconpath;
+    subs["i"] = doc.ipath;
+    subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
+	string("[") + escapeHtml(doc.meta[Rcl::Doc::keykw]) + "]" : "";
+    subs["L"] = linksbuf.rdbuf()->str();
+    subs["N"] = numbuf;
+    subs["M"] = doc.mimetype;
+    subs["R"] = perbuf;
+    subs["S"] = sizebuf;
+    subs["T"] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
+    subs["U"] = url;
+
+    // Let %(xx) access all metadata.
+    subs.insert(doc.meta.begin(), doc.meta.end());
+
+    string formatted;
+    pcSubst(parFormat(), formatted, subs);
+    chunk << formatted;
+
+    chunk << "</p>" << endl;
+    // This was to force qt 4.x to clear the margins (which it should do
+    // anyway because of the paragraph's style), but we finally took
+    // the table approach for 1.15 for now (in guiutils.cpp)
+//	chunk << "<br style='clear:both;height:0;line-height:0;'>" << endl;
+
+    LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.rdbuf()->str().c_str()));
+    append(chunk.rdbuf()->str(), i, doc);
+}
+
 void ResListPager::displayPage()
 {
     LOGDEB(("ResListPager::displayPage\n"));
@@ -80,8 +219,6 @@ void ResListPager::displayPage()
 	LOGDEB(("ResListPager::displayPage: sequence error: winfirst < 0\n"));
 	return;
     }
-    if (m_hiliter == 0)
-	m_hiliter = &g_hiliter;
 
     ostringstream chunk;
 
@@ -160,132 +297,9 @@ void ResListPager::displayPage()
     // Emit data for result entry paragraph. Do it in chunks that make sense
     // html-wise, else our client may get confused
     for (int i = 0; i < (int)m_respage.size(); i++) {
-
 	Rcl::Doc &doc(m_respage[i].doc);
 	string& sh(m_respage[i].subHeader);
-	int percent;
-	if (doc.pc == -1) {
-	    percent = 0;
-	    // Document not available, maybe other further, will go on.
-	    doc.meta[Rcl::Doc::keyabs] = string(trans("Unavailable document"));
-	} else {
-	    percent = doc.pc;
-	}
-	// Percentage of 'relevance'
-	char perbuf[20];
-	sprintf(perbuf, "%3d%% ", percent);
-
-	// Determine icon to display if any
-	string iconpath = iconPath(doc.mimetype);
-
-	// Printable url: either utf-8 if transcoding succeeds, or url-encoded
-	string url;
-	printableUrl(RclConfig::getMainConfig()->getDefCharset(), doc.url, url);
-
-	// Make title out of file name if none yet
-	if (doc.meta[Rcl::Doc::keytt].empty()) {
-	    doc.meta[Rcl::Doc::keytt] = path_getsimple(url);
-	}
-
-	// Result number
-	char numbuf[20];
-	int docnumforlinks = m_winfirst + 1 + i;
-	sprintf(numbuf, "%d", docnumforlinks);
-
-	// Document date: either doc or file modification time
-	char datebuf[100];
-	datebuf[0] = 0;
-	if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
-	    time_t mtime = doc.dmtime.empty() ?
-		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
-	    struct tm *tm = localtime(&mtime);
-#ifndef sun
-	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z", tm);
-#else
-	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%Z", tm);
-#endif
-	}
-
-	// Size information. We print both doc and file if they differ a lot
-	long fsize = -1, dsize = -1;
-	if (!doc.dbytes.empty())
-	    dsize = atol(doc.dbytes.c_str());
-	if (!doc.fbytes.empty())
-	    fsize = atol(doc.fbytes.c_str());
-	string sizebuf;
-	if (dsize > 0) {
-	    sizebuf = displayableBytes(dsize);
-	    if (fsize > 10 * dsize && fsize - dsize > 1000)
-		sizebuf += string(" / ") + displayableBytes(fsize);
-	} else if (fsize >= 0) {
-	    sizebuf = displayableBytes(fsize);
-	}
-
-	string abstract = m_docSource->getAbstract(doc);
-
-	// No need to call escapeHtml(), plaintorich handles it
-	list<string> lr;
-	m_hiliter->set_inputhtml(false);
-	m_hiliter->plaintorich(abstract, lr, hdata);
-	string richabst = lr.front();
-
-	// Links;
-	ostringstream linksbuf;
-	if (canIntern(doc.mimetype, RclConfig::getMainConfig())) { 
-	    linksbuf << "<a href=\"P" << docnumforlinks << "\">" 
-		     << trans("Preview") << "</a>&nbsp;&nbsp;";
-	}
-
-        string apptag;
-        map<string,string>::const_iterator it;
-        if ((it = doc.meta.find(Rcl::Doc::keyapptg)) != doc.meta.end())
-            apptag = it->second;
-
-	if (!RclConfig::getMainConfig()->getMimeViewerDef(doc.mimetype, apptag).empty()) {
-	    linksbuf << "<a href=\"E" << docnumforlinks << "\">"  
-		     << trans("Open") << "</a>";
-	}
-
-	// Build the result list paragraph:
-
-	// Subheader: this is used by history
-	if (!sh.empty())
-	    chunk << "<p style='clear: both;'><b>" << sh << "</p>\n<p>";
-	else
-	    chunk << "<p style='margin: 0px;padding: 0px;clear: both;'>";
-
-	// Configurable stuff
-	map<string,string> subs;
-	subs["A"] = !richabst.empty() ? richabst : "";
-	subs["D"] = datebuf;
-	subs["I"] = iconpath;
-	subs["i"] = doc.ipath;
-	subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
-	    string("[") + escapeHtml(doc.meta[Rcl::Doc::keykw]) + "]" : "";
-	subs["L"] = linksbuf.rdbuf()->str();
-	subs["N"] = numbuf;
-	subs["M"] = doc.mimetype;
-	subs["R"] = perbuf;
-	subs["S"] = sizebuf;
-	subs["T"] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
-	subs["U"] = url;
-
-        // Let %(xx) access all metadata.
-        subs.insert(doc.meta.begin(), doc.meta.end());
-
-	string formatted;
-	pcSubst(parFormat(), formatted, subs);
-	chunk << formatted;
-
-	chunk << "</p>" << endl;
-	// This was to force qt 4.x to clear the margins (which it should do
-	// anyway because of the paragraph's style), but we finally took
-	// the table approach for 1.15 for now (in guiutils.cpp)
-//	chunk << "<br style='clear:both;height:0;line-height:0;'>" << endl;
-
-	LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.rdbuf()->str().c_str()));
-	append(chunk.rdbuf()->str(), i, doc);
-	chunk.rdbuf()->str("");
+	displayDoc(i, doc, hdata, sh);
     }
 
     // Footer
