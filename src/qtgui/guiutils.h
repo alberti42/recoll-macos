@@ -104,6 +104,9 @@ class PrefsPack {
     QString autoSuffs;
     bool    autoSuffsEnable;
 
+    QStringList restableFields;
+    vector<int> restableColWidths;
+
     // Synthetized abstract length and word context size
     int syntAbsLen;
     int syntAbsCtx;

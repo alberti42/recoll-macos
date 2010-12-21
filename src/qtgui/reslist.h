@@ -3,9 +3,11 @@
 /* @(#$Id: reslist.h,v 1.17 2008-12-16 14:20:10 dockes Exp $  (C) 2005 J.F.Dockes */
 
 #include <list>
+#include <utility>
 
 #ifndef NO_NAMESPACES
 using std::list;
+using std::pair;
 #endif
 
 #include <qtextbrowser.h>
@@ -48,7 +50,6 @@ class ResList : public QTextBrowser
 
     QString getDescription(); // Printable actual query performed on db
     int getResCnt(); // Return total result list size
-    void setDocSource(RefCntr<DocSequence> nsource);
     bool displayingHistory();
     bool getTerms(vector<string>& terms, 
 		  vector<vector<string> >& groups, vector<int>& gslks);
@@ -56,6 +57,7 @@ class ResList : public QTextBrowser
     int listId() const {return m_listId;}
 
  public slots:
+    virtual void setDocSource(RefCntr<DocSequence> nsource);
     virtual void resetList();     // Erase current list
     virtual void resPageUpOrBack(); // Page up pressed
     virtual void resPageDownOrNext(); // Page down pressed

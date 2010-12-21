@@ -196,6 +196,43 @@ void rwSettings(bool writing)
 	prefs.asearchIgnFilTyps = 
 	    settings.value("/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
     }
+
+
+    // Field list for the restable
+    if (writing) {
+	settings.setValue("/Recoll/prefs/query/restableFields",
+			    prefs.restableFields);
+    } else {
+	prefs.restableFields = 
+	    settings.value("/Recoll/prefs/query/restableFields").toStringList();
+	if (prefs.restableFields.empty()) {
+	    prefs.restableFields.push_back("filename");
+	    prefs.restableFields.push_back("title");
+	    prefs.restableFields.push_back("url");
+	}
+    }
+
+    // restable col widths
+    QString rtcw;
+    if (writing) {
+	for (vector<int>::iterator it = prefs.restableColWidths.begin();
+	     it != prefs.restableColWidths.end(); it++) {
+	    char buf[20];
+	    sprintf(buf, "%d ", *it);
+	    rtcw += QString::fromAscii(buf);
+	}
+    }
+    SETTING_RW(rtcw, "/Recoll/prefs/query/restableWidths", String, 
+	       "");
+    if (!writing) {
+	vector<string> widths;
+	stringToStrings((const char *)rtcw.toUtf8(), widths);
+	for (vector<string>::iterator it = widths.begin(); 
+	     it != widths.end(); it++) {
+	    prefs.restableColWidths.push_back(atoi(it->c_str()));
+	}
+    }
+
     SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat",
 	       Bool, false);
 

@@ -32,6 +32,7 @@
 
 class ExecCmd;
 class Preview;
+class ResTable;
 
 #include "ui_rclmain.h"
 
@@ -96,11 +97,15 @@ public slots:
     virtual void on_actionSortByDateAsc_toggled(bool on);
     virtual void on_actionSortByDateDesc_toggled(bool on);
     virtual void resultCount(int);
+    virtual void onResTableSortBy(DocSeqSortSpec);
 
 signals:
+    void docSourceChanged(RefCntr<DocSequence>);
     void stemLangChanged(const QString& lang);
     void sortDataChanged(DocSeqSortSpec);
-    void applySortData();
+    void filtDataChanged(DocSeqFiltSpec);
+    void applyFiltSortData();
+    void searchReset();
 
 protected:
     virtual void closeEvent( QCloseEvent * );
@@ -112,6 +117,7 @@ private:
     ConfIndexW     *indexConfig;
     SpellW         *spellform;
     QTimer         *periodictimer;
+    ResTable       *restable;
 
     vector<TempFile>  m_tempfiles;
     vector<ExecCmd*>  m_viewers;
@@ -127,7 +133,7 @@ private:
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
 					bool next);
     virtual void setStemLang(const QString& lang);
-    virtual void onSortDataChanged();
+    virtual void onSortCtlChanged();
 };
 
 #endif // RCLMAIN_W_H

@@ -276,6 +276,7 @@ void ResList::setDocSource(RefCntr<DocSequence> nsource)
 // Reapply parameters. Sort params probably changed
 void ResList::readDocSource()
 {
+    LOGDEB(("ResList::readDocSource\n"));
     if (m_source.isNull())
 	return;
     resetList();
@@ -290,11 +291,13 @@ void ResList::readDocSource()
 
 void ResList::setSortParams(DocSeqSortSpec spec)
 {
+    LOGDEB(("ResList::setSortParams\n"));
     m_source->setSortSpec(spec);
 }
 
 void ResList::setFilterParams(const DocSeqFiltSpec& spec)
 {
+    LOGDEB(("ResList::setFilterParams\n"));
     m_source->setFiltSpec(spec);
 }
 
