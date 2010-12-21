@@ -35,19 +35,20 @@ int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
     return ret;
 }
 
-void DocSource::unwind()
+// Remove stacked modifying sources (sort, filter) until we get to a real one
+void DocSource::stripStack()
 {
-    RefCntr<DocSequence> base = m_seq;
-    while (!m_seq.isNull() && !(m_seq->getSourceSeq()).isNull()) {
-	base = m_seq->getSourceSeq();
+    if (m_seq.isNull())
+	return;
+    while (m_seq->getSourceSeq().isNotNull()) {
+	m_seq = m_seq->getSourceSeq();
     }
-    m_seq = base;
 }
 
 bool DocSource::buildStack()
 {
     LOGDEB2(("DocSource::buildStack()\n"));
-    unwind();
+    stripStack();
 
     if (m_seq.isNull())
 	return false;

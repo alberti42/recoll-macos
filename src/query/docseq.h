@@ -35,20 +35,14 @@ struct ResListEntry {
     string subHeader;
 };
 
-/** Sort specification. Will be made closer to the db interface one day */
+/** Sort specification. */
 class DocSeqSortSpec {
  public:
-    DocSeqSortSpec() : sortdepth(0) {}
-    enum Field {RCLFLD_MIMETYPE, RCLFLD_MTIME};
-    void addCrit(Field fld, bool desc = false) {
-	crits.push_back(fld);
-	dirs.push_back(desc);
-    }
-    bool isNotNull() const {return sortdepth > 0;}
-    void reset() {crits.clear(); dirs.clear();sortdepth = 0;}
-    int sortdepth; // We only re-sort the first sortdepth most relevant docs
-    std::vector<Field> crits;
-    std::vector<bool> dirs;
+    DocSeqSortSpec() : desc(false) {}
+    bool isNotNull() const {return !field.empty();}
+    void reset() {field.erase();}
+    string field;
+    bool   desc;
 };
 
 /** Filtering spec. This is only used to filter by doc category for now, hence
@@ -203,7 +197,7 @@ public:
     virtual string title();
 private:
     bool buildStack();
-    void unwind();
+    void stripStack();
     DocSeqFiltSpec  m_fspec;
     DocSeqSortSpec  m_sspec;
     static string o_sort_trans;
