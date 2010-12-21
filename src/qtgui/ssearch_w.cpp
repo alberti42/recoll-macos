@@ -139,6 +139,9 @@ void SSearch::startSimpleSearch()
 				 QString::fromAscii(reason.c_str()));
 	    return;
 	}
+	if (prefs.ssearchAutoPhrase) {
+	    sdata->maybeAddAutoPhrase();
+	}
     } else {
 	sdata = new Rcl::SearchData(Rcl::SCLT_OR);
 	if (sdata == 0) {

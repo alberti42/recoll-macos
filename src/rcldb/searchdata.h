@@ -73,7 +73,10 @@ class SearchData {
 public:
     SearchData(SClType tp) 
         : m_tp(tp), m_haveDates(false), m_haveWildCards(false) 
-    {}
+    {
+	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
+	    m_tp = SCLT_OR;
+    }
     ~SearchData() {erase();}
 
     /** Make pristine */
@@ -90,6 +93,13 @@ public:
 
     /** We become the owner of cl and will delete it */
     bool addClause(SearchDataClause *cl);
+
+    /** If this is a simple query (one field only, no distance clauses),
+	add phrase made of query terms to query, so that docs containing the
+	user terms in order will have higher relevance. This must be called 
+	before toNativeQuery().
+    */
+    bool maybeAddAutoPhrase();
 
     /** Set/get top subdirectory for filtering results */
     void setTopdir(const string& t) {m_topdir = t;}
@@ -207,6 +217,8 @@ public:
     {
 	terms.insert(terms.end(), m_uterms.begin(), m_uterms.end());
     }
+    virtual const string& gettext() {return m_text;}
+    virtual const string& getfield() {return m_field;}
 protected:
     string  m_text;  // Raw user entry text.
     string  m_field; // Field specification if any

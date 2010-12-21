@@ -242,7 +242,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	for (vector<string>::iterator it = exptps.begin(); 
 	     it != exptps.end(); it++) {
 	    string term = "T" + *it;
-	    LOGDEB(("Adding file type term: [%s]\n", term.c_str()));
+	    LOGDEB0(("Adding file type term: [%s]\n", term.c_str()));
 	    tq = tq.empty() ? Xapian::Query(term) : 
 		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
 	}
@@ -268,6 +268,70 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     return true;
 }
 
+
+bool SearchData::maybeAddAutoPhrase()
+{
+    LOGDEB0(("SearchData::maybeAddAutoPhrase()\n"));
+    if (!m_query.size()) {
+	LOGDEB2(("SearchData::maybeAddAutoPhrase: empty query\n"));
+	return false;
+    }
+
+    string field;
+    string words;
+    // Walk the clause list. If we find any non simple clause or different
+    // field names, bail out.
+    for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
+	SClType tp = (*it)->m_tp;
+	if (tp != SCLT_AND && tp != SCLT_OR) {
+	    LOGDEB2(("SearchData::maybeAddAutoPhrase: complex clause\n"));
+	    return false;
+	}
+	SearchDataClauseSimple *clp = 
+	    dynamic_cast<SearchDataClauseSimple*>(*it);
+	if (clp == 0) {
+	    LOGDEB2(("SearchData::maybeAddAutoPhrase: dyncast failed\n"));
+	    return false;
+	}
+	if (it == m_query.begin()) {
+	    field = clp->getfield();
+	} else {
+	    if (clp->getfield().compare(field)) {
+		LOGDEB2(("SearchData::maybeAddAutoPhrase: different fields\n"));
+		return false;
+	    }
+	}
+	if (!words.empty())
+	    words += " ";
+	words +=  clp->gettext();
+    }
+
+    if (words.find_first_of("\"*[]?") != string::npos && // has wildcards
+	TextSplit::countWords(words) <= 1) { // Just one word.
+	LOGDEB2(("SearchData::maybeAddAutoPhrase: wildcards or single word\n"));
+	return false;
+    }
+
+    SearchDataClauseDist *nclp = 
+	new SearchDataClauseDist(SCLT_PHRASE, words, 0, field);
+    if (m_tp == SCLT_OR) {
+	addClause(nclp);
+    } else {
+	// My type is AND. Change it to OR and insert two queries, one
+	// being the original query as a subquery, the other the
+	// phrase.
+	SearchData *sd = new SearchData(m_tp);
+	sd->m_query = m_query;
+	m_tp = SCLT_OR;
+	m_query.clear();
+	SearchDataClauseSub *oq = 
+	    new SearchDataClauseSub(SCLT_OR, RefCntr<SearchData>(sd));
+	addClause(oq);
+	addClause(nclp);
+    }
+    return true;
+}
+
 // Add clause to current list. OR lists cant have EXCL clauses.
 bool SearchData::addClause(SearchDataClause* cl)
 {
@@ -284,7 +348,7 @@ bool SearchData::addClause(SearchDataClause* cl)
 
 // Make me all new
 void SearchData::erase() {
-    LOGDEB(("SearchData::erase\n"));
+    LOGDEB0(("SearchData::erase\n"));
     m_tp = SCLT_AND;
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
 	delete *it;
