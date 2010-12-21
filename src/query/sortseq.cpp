@@ -35,56 +35,33 @@ public:
     { 
 	LOGDEB1(("Comparing .. \n"));
 
-	// Compare using each criterion in term. Further comparisons must only 
-	// be made if previous order ones are equal.
-	for (unsigned int i = 0; i < ss.crits.size(); i++) {
-	    switch (ss.crits[i]) {
-	    case DocSeqSortSpec::RCLFLD_MTIME:
-		{
-		    long xmtime = x->dmtime.empty() ? atol(x->fmtime.c_str()) :
-			atol(x->dmtime.c_str());
-		    long ymtime = y->dmtime.empty() ? atol(y->fmtime.c_str()) :
-			atol(y->dmtime.c_str());
-		    
-		    LOGDEB1((" MTIME %ld %ld\n", xmtime, ymtime));
-		    if (ss.dirs[i] ? xmtime > ymtime : xmtime < ymtime)
-			return 1;
-		    else if (xmtime != ymtime)
-			return 0;
-		}
-		break;
-	    case DocSeqSortSpec::RCLFLD_MIMETYPE:
-		LOGDEB1((" MIMETYPE\n"));
-		if (ss.dirs[i] ? x->mimetype > y->mimetype : 
-		    x->mimetype < y->mimetype)
-		    return 1;
-		else if (x->mimetype != y->mimetype)
-		    return 0;
-		break;
-	    }
-	}
-	// Did all comparisons
-	return 0;
+	map<string,string>::const_iterator xit, yit;
+	xit = x->meta.find(ss.field);
+	yit = y->meta.find(ss.field);
+	if (xit == x->meta.end() || yit == y->meta.end())
+	    return 0;
+	return ss.desc ? yit->second < xit->second : xit->second < yit->second;
     } 
 };
 
 bool DocSeqSorted::setSortSpec(DocSeqSortSpec &sortspec)
 {
+    LOGDEB(("DocSeqSorted::setSortSpec\n"));
     m_spec = sortspec;
-    LOGDEB(("DocSeqSorted:: count %d\n", m_spec.sortdepth));
-    m_docs.resize(m_spec.sortdepth);
+    int count = m_seq->getResCnt();
+    LOGDEB(("DocSeqSorted:: count %d\n", count));
+    m_docs.resize(count);
     int i;
-    for (i = 0; i < m_spec.sortdepth; i++) {
+    for (i = 0; i < count; i++) {
 	if (!m_seq->getDoc(i, m_docs[i])) {
 	    LOGERR(("DocSeqSorted: getDoc failed for doc %d\n", i));
+	    count = i;
 	    break;
 	}
     }
-    m_spec.sortdepth = i;
-    LOGDEB(("DocSeqSorted:: m_count %d\n", m_spec.sortdepth));
-    m_docs.resize(m_spec.sortdepth);
-    m_docsp.resize(m_spec.sortdepth);
-    for (i = 0; i < m_spec.sortdepth; i++)
+    m_docs.resize(count);
+    m_docsp.resize(count);
+    for (i = 0; i < count; i++)
 	m_docsp[i] = &m_docs[i];
 
     CompareDocs cmp(sortspec);
@@ -94,9 +71,8 @@ bool DocSeqSorted::setSortSpec(DocSeqSortSpec &sortspec)
 
 bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, string *)
 {
-    LOGDEB1(("DocSeqSorted: fetching %d\n", num));
-    
-    if (num >= m_spec.sortdepth)
+    LOGDEB(("DocSeqSorted::getDoc(%d)\n", num));
+    if (num < 0 || num >= int(m_docsp.size()))
 	return false;
     doc = *m_docsp[num];
     return true;

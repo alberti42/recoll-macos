@@ -124,17 +124,7 @@ bool DocSequenceDb::setSortSpec(const DocSeqSortSpec &sortspec)
 {
     LOGDEB(("DocSequenceDb::setSortSpec\n"));
     if (sortspec.isNotNull()) {
-	bool ascending = false;
-	for (unsigned int i = 0; i < sortspec.crits.size(); i++) {
-	    switch (sortspec.crits[i]) {
-	    case DocSeqSortSpec::RCLFLD_MTIME:
-		ascending = !sortspec.dirs[i];
-		break;
-	    default:
-		break;
-	    }
-	}
-	m_q->setSortBy("mtime", ascending);
+	m_q->setSortBy(sortspec.field, !sortspec.desc);
     } else {
 	m_q->setSortBy(string(), true);
     }
