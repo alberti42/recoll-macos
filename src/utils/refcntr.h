@@ -50,6 +50,7 @@ public:
     const X *getconstptr() const {return rep;}
     int getcnt() const {return pcount ? *pcount : 0;}
     bool isNull() const {return rep == 0;}
+    bool isNotNull() const {return rep != 0;}
 };
 
 
