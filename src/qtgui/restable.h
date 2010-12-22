@@ -58,6 +58,7 @@ private:
 };
 
 class ResTablePager;
+class QUrl;
 
 class ResTable : public QWidget, public Ui::ResTable 
 {
@@ -84,6 +85,11 @@ public slots:
     virtual void resetSource();
     virtual void readDocSource();
     virtual void onSortDataChanged(DocSeqSortSpec);
+    virtual void linkWasClicked(const QUrl&);
+
+signals:
+    void docPreviewClicked(int, Rcl::Doc, int);
+    void docEditClicked(Rcl::Doc);
 
     friend class ResTablePager;
 private:

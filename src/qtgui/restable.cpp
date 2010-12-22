@@ -248,6 +248,13 @@ void ResTable::init()
     m_pager = new ResTablePager(this);
     QSettings settings;
     splitter->restoreState(settings.value("resTableSplitterSizes").toByteArray());
+    textBrowser->setReadOnly(TRUE);
+    textBrowser->setUndoRedoEnabled(FALSE);
+    textBrowser->setOpenLinks(FALSE);
+    // signals and slots connections
+    connect(textBrowser, SIGNAL(anchorClicked(const QUrl &)), 
+	    this, SLOT(linkWasClicked(const QUrl &)));
+
 }
 
 void ResTable::saveSizeState()
@@ -287,7 +294,7 @@ void ResTable::setDocSource(RefCntr<DocSequence> nsource)
     if (m_model)
 	m_model->setDocSource(nsource);
     if (m_pager)
-	m_pager->setDocSource(nsource);
+	m_pager->setDocSource(nsource, 0);
     if (textBrowser)
 	textBrowser->clear();
 }
@@ -322,4 +329,33 @@ void ResTable::onSortDataChanged(DocSeqSortSpec)
 void ResTable::readDocSource()
 {
     m_model->setDocSource(m_model->m_source);
+}
+
+void ResTable::linkWasClicked(const QUrl &url)
+{
+    QString s = url.toString();
+    const char *ascurl = s.toAscii();
+    LOGDEB(("ResTable::linkWasClicked: [%s]\n", ascurl));
+
+    int i = atoi(ascurl+1) -1;
+    int what = ascurl[0];
+    switch (what) {
+    case 'P': 
+    case 'E': 
+    {
+	Rcl::Doc doc;
+	if (!m_model->getdoc(i, doc)) {
+	    LOGERR(("ResTable::linkWasClicked: can't get doc for %d\n", i));
+	    return;
+	}
+	if (what == 'P')
+	    emit docPreviewClicked(i, doc, 0);
+	else
+	    emit docEditClicked(doc);
+    }
+    break;
+    default: 
+	LOGERR(("ResList::linkWasClicked: bad link [%s]\n", ascurl));
+	break;// ?? 
+    }
 }

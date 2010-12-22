@@ -23,10 +23,10 @@ public:
     {
         m_hiliter = ptr;
     }
-    void setDocSource(RefCntr<DocSequence> src)
+    void setDocSource(RefCntr<DocSequence> src, int winfirst = -1)
     {
         m_pagesize = m_newpagesize;
-	m_winfirst = -1;
+	m_winfirst = winfirst;
 	m_hasNext = false;
 	m_docSource = src;
 	m_respage.clear();

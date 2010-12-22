@@ -133,6 +133,7 @@
     <addaction name="toolsDoc_HistoryAction"/>
     <addaction name="toolsAdvanced_SearchAction"/>
     <addaction name="toolsSpellAction"/>
+    <addaction name="actionShowQueryDetails"/>
    </widget>
    <widget class="QMenu" name="preferencesMenu">
     <property name="title">
@@ -212,7 +213,7 @@
   </action>
   <action name="toolsDoc_HistoryAction">
    <property name="icon">
-    <iconset>
+    <iconset resource="recoll.qrc">
      <normaloff>:/images/history.png</normaloff>:/images/history.png</iconset>
    </property>
    <property name="text">
@@ -227,7 +228,7 @@
   </action>
   <action name="toolsAdvanced_SearchAction">
    <property name="icon">
-    <iconset>
+    <iconset resource="recoll.qrc">
      <normaloff>:/images/asearch.png</normaloff>:/images/asearch.png</iconset>
    </property>
    <property name="text">
@@ -253,7 +254,7 @@
   </action>
   <action name="toolsSpellAction">
    <property name="icon">
-    <iconset>
+    <iconset resource="recoll.qrc">
      <normaloff>:/images/spell.png</normaloff>:/images/spell.png</iconset>
    </property>
    <property name="text">
@@ -271,7 +272,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="recoll.qrc">
      <normaloff>:/images/nextpage.png</normaloff>:/images/nextpage.png</iconset>
    </property>
    <property name="iconText">
@@ -292,7 +293,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="recoll.qrc">
      <normaloff>:/images/firstpage.png</normaloff>:/images/firstpage.png</iconset>
    </property>
    <property name="iconText">
@@ -313,7 +314,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="recoll.qrc">
      <normaloff>:/images/prevpage.png</normaloff>:/images/prevpage.png</iconset>
    </property>
    <property name="iconText">
@@ -378,7 +379,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="recoll.qrc">
      <normaloff>:/images/up.png</normaloff>:/images/up.png</iconset>
    </property>
    <property name="text">
@@ -404,6 +405,11 @@
    </property>
    <property name="toolTip">
     <string>Sort by dates from newest to oldest</string>
+   </property>
+  </action>
+  <action name="actionShowQueryDetails">
+   <property name="text">
+    <string>Show Query Details</string>
    </property>
   </action>
  </widget>

@@ -242,6 +242,8 @@ void RclMain::init()
 		this, SLOT(catgFilter(int)));
     connect(toggleFullScreenAction, SIGNAL(activated()), 
             this, SLOT(toggleFullScreen()));
+    connect(actionShowQueryDetails, SIGNAL(activated()),
+	    this, SLOT(showQueryDetails()));
     connect(periodictimer, SIGNAL(timeout()), 
 	    this, SLOT(periodic100()));
 
@@ -259,6 +261,10 @@ void RclMain::init()
 
     connect(restable->getModel(), SIGNAL(sortDataChanged(DocSeqSortSpec)),
 	    this, SLOT(onResTableSortBy(DocSeqSortSpec)));
+    connect(restable, SIGNAL(docEditClicked(Rcl::Doc)), 
+	    this, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(restable, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
+	    this, SLOT(startPreview(int, Rcl::Doc, int)));
 
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
 	    reslist, SLOT(setDocSource(RefCntr<DocSequence>)));
