@@ -80,6 +80,7 @@ using namespace confgui;
 
 extern "C" int XFlush(void *);
 QString g_stringAllStem, g_stringNoStem;
+static const QKeySequence quitKeySeq("Ctrl+q");
 
 void RclMain::init()
 {
@@ -200,17 +201,18 @@ void RclMain::init()
     // A shortcut to get the focus back to the search entry. 
     QKeySequence seq("Ctrl+Shift+s");
     QShortcut *sc = new QShortcut(seq, this);
-
     connect(sc, SIGNAL (activated()), 
 	    this, SLOT (focusToSearch()));
+
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 	    this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
+    connect(sSearch, SIGNAL(clearSearch()), 
+	    this, SLOT(resetSearch()));
+
     connect(preferencesMenu, SIGNAL(triggered(QAction*)),
 	    this, SLOT(setStemLang(QAction*)));
     connect(preferencesMenu, SIGNAL(aboutToShow()),
 	    this, SLOT(adjustPrefsMenu()));
-    connect(sSearch, SIGNAL(clearSearch()), 
-	    this, SLOT(resetSearch()));
     connect(fileExitAction, SIGNAL(activated() ), 
 	    this, SLOT(fileExit() ) );
     connect(fileToggleIndexingAction, SIGNAL(activated()), 
@@ -243,14 +245,20 @@ void RclMain::init()
     connect(periodictimer, SIGNAL(timeout()), 
 	    this, SLOT(periodic100()));
 
+    sc = new QShortcut(quitKeySeq, restable);
+    connect(sc, SIGNAL (activated()), 
+	    this, SLOT (fileExit()));
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
 	    restable, SLOT(setDocSource(RefCntr<DocSequence>)));
     connect(this, SIGNAL(searchReset()), 
 	    restable, SLOT(resetSource()));
-    connect(restable, SIGNAL(sortDataChanged(DocSeqSortSpec)),
-	    this, SLOT(onResTableSortBy(DocSeqSortSpec)));
     connect(this, SIGNAL(applyFiltSortData()), 
 	    restable, SLOT(readDocSource()));
+    connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
+	    restable, SLOT(onSortDataChanged(DocSeqSortSpec)));
+
+    connect(restable->getModel(), SIGNAL(sortDataChanged(DocSeqSortSpec)),
+	    this, SLOT(onResTableSortBy(DocSeqSortSpec)));
 
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
 	    reslist, SLOT(setDocSource(RefCntr<DocSequence>)));
@@ -289,6 +297,8 @@ void RclMain::init()
 	    this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(reslist, SIGNAL(previewRequested(Rcl::Doc)), 
 	    this, SLOT(startPreview(Rcl::Doc)));
+    connect(reslist, SIGNAL(headerClicked()), 
+	    this, SLOT(showQueryDetails()));
 
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
@@ -440,6 +450,8 @@ void RclMain::fileExit()
         prefs.mainwidth = width();
         prefs.mainheight = height();
     }
+    restable->saveSizeState();
+
     prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
     if (asearchform)
 	delete asearchform;
@@ -551,6 +563,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     LOGDEB(("RclMain::startSearch. Indexing %s\n", 
 	    idxthread_getStatus() == IDXTS_NULL?"on":"off"));
     emit searchReset();
+    m_source = RefCntr<DocSequence>();
 
     // The db may have been closed at the end of indexing
     string reason;
@@ -583,8 +596,8 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 			  string(tr("Query results").toUtf8()), sdata);
     src->setAbstractParams(prefs.queryBuildAbstract, 
                            prefs.queryReplaceAbstract);
-
-    emit docSourceChanged(RefCntr<DocSequence>(src));
+    m_source = RefCntr<DocSequence>(src);
+    emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
     emit filtDataChanged(m_filtspec);
     emit applyFiltSortData();
@@ -601,6 +614,9 @@ void RclMain::showAdvSearchDialog()
 {
     if (asearchform == 0) {
 	asearchform = new AdvSearch(0);
+	connect(new QShortcut(quitKeySeq, asearchform), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
+
 	connect(asearchform, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
 	asearchform->show();
@@ -615,6 +631,8 @@ void RclMain::showSpellDialog()
 {
     if (spellform == 0) {
 	spellform = new SpellW(0);
+	connect(new QShortcut(quitKeySeq, spellform), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
 	connect(spellform, SIGNAL(wordSelect(QString)),
 		sSearch, SLOT(addTerm(QString)));
 	spellform->show();
@@ -631,7 +649,8 @@ void RclMain::showIndexConfig()
     LOGDEB(("showIndexConfig()\n"));
     if (indexConfig == 0) {
 	indexConfig = new ConfIndexW(0, rclconfig);
-	LOGDEB(("showIndexConfig(): confindexW created\n"));
+	connect(new QShortcut(quitKeySeq, indexConfig), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
     } else {
 	// Close and reopen, in hope that makes us visible...
 	indexConfig->close();
@@ -643,6 +662,8 @@ void RclMain::showUIPrefs()
 {
     if (uiprefs == 0) {
 	uiprefs = new UIPrefsDialog(0);
+	connect(new QShortcut(quitKeySeq, uiprefs), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
 	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
 	connect(this, SIGNAL(stemLangChanged(const QString&)), 
 		uiprefs, SLOT(setStemLang(const QString&)));
@@ -657,6 +678,8 @@ void RclMain::showExtIdxDialog()
 {
     if (uiprefs == 0) {
 	uiprefs = new UIPrefsDialog(0);
+	connect(new QShortcut(quitKeySeq, uiprefs), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
 	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
     } else {
 	// Close and reopen, in hope that makes us visible...
@@ -673,6 +696,7 @@ void RclMain::showAboutDialog()
 	string("<br> http://www.xapian.org");
     QMessageBox::information(this, tr("About Recoll"), vstring.c_str());
 }
+
 void RclMain::showMissingHelpers()
 {
     string miss = rclconfig->getMissingHelperDesc();
@@ -719,6 +743,7 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 	HiliteData hdata;
 	reslist->getTerms(hdata.terms, hdata.groups, hdata.gslks);
 	curPreview = new Preview(reslist->listId(), hdata);
+
 	if (curPreview == 0) {
 	    QMessageBox::warning(0, tr("Warning"), 
 				 tr("Can't create preview window"),
@@ -726,6 +751,8 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 				 QMessageBox::NoButton);
 	    return;
 	}
+	connect(new QShortcut(quitKeySeq, curPreview), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
 	connect(curPreview, SIGNAL(previewClosed(Preview *)), 
 		this, SLOT(previewClosed(Preview *)));
 	connect(curPreview, SIGNAL(wordSelect(QString)),
@@ -736,7 +763,7 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 		this, SLOT(previewPrevInTab(Preview *, int, int)));
 	connect(curPreview, SIGNAL(previewExposed(Preview *, int, int)),
 		this, SLOT(previewExposed(Preview *, int, int)));
-	curPreview->setWindowTitle(reslist->getDescription());
+	curPreview->setWindowTitle(getQueryDescription());
 	curPreview->show();
     } 
     curPreview->makeDocCurrent(doc, docnum);
@@ -759,6 +786,8 @@ void RclMain::startPreview(Rcl::Doc doc)
 			     QMessageBox::NoButton);
 	return;
     }
+    connect(new QShortcut(quitKeySeq, preview), SIGNAL (activated()), 
+	    this, SLOT (fileExit()));
     connect(preview, SIGNAL(wordSelect(QString)),
 	    sSearch, SLOT(addTerm(QString)));
     preview->show();
@@ -796,7 +825,7 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 	docnum++;
     else 
 	docnum--;
-    if (docnum < 0 || docnum >= reslist->getResCnt()) {
+    if (docnum < 0 || m_source.isNull() || docnum >= m_source->getResCnt()) {
 	QApplication::beep();
 	return;
     }
@@ -825,6 +854,9 @@ void RclMain::previewExposed(Preview *, int sid, int docnum)
 
 void RclMain::onSortCtlChanged()
 {
+    if (m_sortspecnochange)
+	return;
+
     LOGDEB(("RclMain::onCtlDataChanged()\n"));
     m_sortspec.reset();
     if (actionSortByDateAsc->isChecked()) {
@@ -845,9 +877,13 @@ void RclMain::onSortCtlChanged()
     emit applyFiltSortData();
 }
 
-void RclMain::onResTableSortBy(DocSeqSortSpec)
+void RclMain::onResTableSortBy(DocSeqSortSpec spec)
 {
-// TOBEDONE: do something about the up down arrows !
+    m_sortspecnochange = true;
+    actionSortByDateDesc->setChecked(false);
+    actionSortByDateAsc->setChecked(false);
+    m_sortspecnochange = false;
+    m_sortspec = spec;
     emit applyFiltSortData();
 }
 
@@ -1177,7 +1213,7 @@ void RclMain::showDocHistory()
 {
     LOGDEB(("RclMain::showDocHistory\n"));
     emit searchReset();
-
+    m_source = RefCntr<DocSequence>();
     curPreview = 0;
 
     string reason;
@@ -1196,7 +1232,8 @@ void RclMain::showDocHistory()
 	new DocSequenceHistory(rcldb, g_dynconf, 
 			       string(tr("Document history").toUtf8()));
     src->setDescription((const char *)tr("History data").toUtf8());
-    reslist->setDocSource(RefCntr<DocSequence>(src));
+    m_source = RefCntr<DocSequence>(src);
+    emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
     emit filtDataChanged(m_filtspec);
     emit applyFiltSortData();
@@ -1237,6 +1274,23 @@ void RclMain::enablePrevPage(bool yesno)
 {
     prevPageAction->setEnabled(yesno);
     firstPageAction->setEnabled(yesno);
+}
+
+QString RclMain::getQueryDescription()
+{
+    if (m_source.isNull())
+	return "";
+    return QString::fromUtf8(m_source->getDescription().c_str());
+}
+
+/** Show detailed expansion of a query */
+void RclMain::showQueryDetails()
+{
+    if (m_source.isNull())
+	return;
+    string oq = breakIntoLines(m_source->getDescription(), 100, 50);
+    QString desc = tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
+    QMessageBox::information(this, tr("Query details"), desc);
 }
 
 // User pressed a category button: set filter params in reslist

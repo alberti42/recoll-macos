@@ -91,13 +91,12 @@ bool QtGuiResListPager::append(const string& data)
 }
 
 bool QtGuiResListPager::append(const string& data, int docnum, 
-			       const Rcl::Doc& doc)
+			       const Rcl::Doc&)
 {
     LOGDEB2(("QtGuiReslistPager::appendDoc: blockCount %d, %s\n",
 	    m_parent->document()->blockCount(), data.c_str()));
     logdata(data.c_str());
     int blkcnt0 = m_parent->document()->blockCount();
-    m_parent->m_curDocs.push_back(doc);
     m_parent->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
     m_parent->textCursor().insertBlock();
     m_parent->insertHtml(QString::fromUtf8(data.c_str()));
@@ -223,7 +222,6 @@ ResList::ResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(highlighted(const QString &)), 
 	    this, SLOT(highlighted(const QString &)));
 #endif
-    connect(this, SIGNAL(headerClicked()), this, SLOT(showQueryDetails()));
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
 	    this, SLOT(createPopupMenu(const QPoint&)));
@@ -286,7 +284,7 @@ void ResList::readDocSource()
     m_pager->setPageSize(prefs.respagesize);
     m_pager->setDocSource(m_source);
     resultPageNext();
-    emit hasResults(getResCnt());
+    emit hasResults(m_source->getResCnt());
 }
 
 void ResList::setSortParams(DocSeqSortSpec spec)
@@ -409,37 +407,33 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 {
     LOGDEB(("ResList::getDoc: docnum %d winfirst %d\n", docnum, 
 	    m_pager->pageNumber() * prefs.respagesize));
-    if (docnum < 0)
+    int winfirst = m_pager->pageFirstDocNum();
+    int winlast = m_pager->pageLastDocNum();
+    if (docnum < 0 ||  winfirst < 0 || winlast < 0)
 	return false;
-    if (m_pager->pageNumber() < 0)
-	return false;
-    int winfirst = m_pager->pageNumber() * prefs.respagesize;
+
     // Is docnum in current page ? Then all Ok
-    if (docnum >= winfirst && docnum < winfirst + int(m_curDocs.size())) {
-	doc = m_curDocs[docnum - winfirst];
-	return true;
+    if (docnum >= winfirst && docnum <= winlast) {
+	return m_source->getDoc(docnum, doc);
     }
 
     // Else we accept to page down or up but not further
     if (docnum < winfirst && docnum >= winfirst - prefs.respagesize) {
 	resultPageBack();
-    } else if (docnum < winfirst + int(m_curDocs.size()) + prefs.respagesize) {
+    } else if (docnum < winlast + 1 + prefs.respagesize) {
 	resultPageNext();
     }
-    winfirst = m_pager->pageNumber() * prefs.respagesize;
-    if (docnum >= winfirst && docnum < winfirst + int(m_curDocs.size())) {
-	doc = m_curDocs[docnum - winfirst];
-	return true;
+    winfirst = m_pager->pageFirstDocNum();
+    winlast = m_pager->pageLastDocNum();
+    if (docnum >= winfirst && docnum <= winlast) {
+	return m_source->getDoc(docnum, doc);
     }
     return false;
 }
 
 void ResList::keyPressEvent(QKeyEvent * e)
 {
-    if (e->key() == Qt::Key_Q && (e->modifiers() & Qt::ControlModifier)) {
-	recollNeedsExit = 1;
-	return;
-    } else if (e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Backspace) {
+    if (e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Backspace) {
 	resPageUpOrBack();
 	return;
     } else if (e->key() == Qt::Key_PageDown || e->key() == Qt::Key_Space) {
@@ -459,14 +453,6 @@ void ResList::mouseReleaseEvent(QMouseEvent *e)
 	m_lstClckMod |= Qt::ShiftModifier;
     }
     QTextBrowser::mouseReleaseEvent(e);
-}
-
-// Return total result list count
-int ResList::getResCnt()
-{
-    if (m_source.isNull())
-	return -1;
-    return m_source->getResCnt();
 }
 
 void ResList::highlighted(const QString& )
@@ -530,7 +516,6 @@ void ResList::resultPageNext()
 
 void ResList::displayPage()
 {
-    m_curDocs.clear();
     m_pageParaToReldocnums.clear();
     clear();
     m_pager->displayPage();
@@ -586,7 +571,6 @@ void ResList::previewExposed(int docnum)
 	ensureCursorVisible();
     }
 }
-
 
 // Double click in res list: add selection to simple search
 void ResList::mouseDoubleClickEvent(QMouseEvent *event)
@@ -668,6 +652,7 @@ void ResList::menuPreview()
     if (getDoc(m_popDoc, doc))
 	emit docPreviewClicked(m_popDoc, doc, 0);
 }
+
 void ResList::menuSaveToFile()
 {
     Rcl::Doc doc;
@@ -715,6 +700,7 @@ void ResList::menuEdit()
     if (getDoc(m_popDoc, doc))
 	emit docEditClicked(doc);
 }
+
 void ResList::menuCopyFN()
 {
     LOGDEB(("menuCopyFN\n"));
@@ -734,6 +720,7 @@ void ResList::menuCopyFN()
 	QApplication::clipboard()->setText(qfn, QClipboard::Clipboard);
     }
 }
+
 void ResList::menuCopyURL()
 {
     Rcl::Doc doc;
@@ -751,17 +738,4 @@ void ResList::menuExpand()
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
 	emit docExpand(doc);
-}
-
-QString ResList::getDescription()
-{
-    return QString::fromUtf8(m_source->getDescription().c_str());
-}
-
-/** Show detailed expansion of a query */
-void ResList::showQueryDetails()
-{
-    string oq = breakIntoLines(m_source->getDescription(), 100, 50);
-    QString desc = tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
-    QMessageBox::information(this, tr("Query details"), desc);
 }

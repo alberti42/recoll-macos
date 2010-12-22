@@ -5,9 +5,12 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include "autoconfig.h"
 
 #include <stdlib.h>
+#include <time.h>
 
 #include <Qt>
+#include <QShortcut>
 #include <QAbstractTableModel>
+#include <QSettings>
 
 #include "refcntr.h"
 #include "docseq.h"
@@ -65,17 +68,63 @@ string ResTablePager::iconPath(const string& mtype)
 //////////////////////////////////////////////
 //// Data model methods
 ////
+static string gengetter(const string& fld, const Rcl::Doc& doc)
+{
+    map<string, string>::const_iterator it = doc.meta.find(fld);
+    if (it == doc.meta.end()) {
+	return string();
+    }
+    return it->second;
+}
+
+static string dategetter(const string&, const Rcl::Doc& doc)
+{
+    char datebuf[100];
+    datebuf[0] = 0;
+    if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
+	time_t mtime = doc.dmtime.empty() ?
+	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
+	struct tm *tm = localtime(&mtime);
+	strftime(datebuf, 99, "%x", tm);
+    }
+    return datebuf;
+}
+
+static string datetimegetter(const string&, const Rcl::Doc& doc)
+{
+    char datebuf[100];
+    datebuf[0] = 0;
+    if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
+	time_t mtime = doc.dmtime.empty() ?
+	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
+	struct tm *tm = localtime(&mtime);
+#ifndef sun
+	strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S %z", tm);
+#else
+	strftime(datebuf, 99, "%c", tm);
+#endif
+    }
+    return datebuf;
+}
+
 RecollModel::RecollModel(const QStringList fields, QObject *parent)
     : QAbstractTableModel(parent)
 {
     for (QStringList::const_iterator it = fields.begin(); 
-	 it != fields.end(); it++)
+	 it != fields.end(); it++) {
 	m_fields.push_back((const char *)(it->toUtf8()));
+	if (!stringlowercmp("date", m_fields[m_fields.size()-1]))
+	    m_getters.push_back(dategetter);
+	else if (!stringlowercmp("datetime", m_fields[m_fields.size()-1]))
+	    m_getters.push_back(datetimegetter);
+	else
+	    m_getters.push_back(gengetter);
+    }
 }
 
 int RecollModel::rowCount(const QModelIndex&) const
 {
-    LOGDEB(("RecollModel::rowCount\n"));
+    LOGDEB2(("RecollModel::rowCount\n"));
     if (m_source.isNull())
 	return 0;
     return m_source->getResCnt();
@@ -83,7 +132,7 @@ int RecollModel::rowCount(const QModelIndex&) const
 
 int RecollModel::columnCount(const QModelIndex&) const
 {
-    LOGDEB(("RecollModel::columnCount\n"));
+    LOGDEB2(("RecollModel::columnCount\n"));
     return m_fields.size();
 }
 
@@ -106,41 +155,57 @@ bool RecollModel::getdoc(int index, Rcl::Doc &doc)
     return m_source->getDoc(index, doc);
 }
 
-QVariant RecollModel::headerData(int col, Qt::Orientation orientation, 
-				  int role) const
+QVariant RecollModel::headerData(int idx, Qt::Orientation orientation, 
+				 int role) const
 {
-    LOGDEB(("RecollModel::headerData: col %d\n", col));
-    if (orientation != Qt::Horizontal || role != Qt::DisplayRole ||
-	col >= int(m_fields.size())) {
-	return QVariant();
+    LOGDEB2(("RecollModel::headerData: idx %d\n", idx));
+    if (orientation == Qt::Vertical && role == Qt::DisplayRole) {
+	return idx;
     }
-    return QString::fromUtf8(m_fields[col].c_str());
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole &&
+	idx < int(m_fields.size())) {
+	return QString::fromUtf8(m_fields[idx].c_str());
+    }
+    return QVariant();
 }
 
 QVariant RecollModel::data(const QModelIndex& index, int role) const
 {
-    LOGDEB(("RecollModel::data: row %d col %d\n", index.row(),
+    LOGDEB2(("RecollModel::data: row %d col %d\n", index.row(),
 	    index.column()));
     if (m_source.isNull() || role != Qt::DisplayRole || !index.isValid() ||
 	index.column() >= int(m_fields.size())) {
 	return QVariant();
     }
+
     Rcl::Doc doc;
     if (!m_source->getDoc(index.row(), doc)) {
 	return QVariant();
     }
-    map<string, string>::const_iterator it = 
-	doc.meta.find(m_fields[index.column()]);
-    if (it == doc.meta.end()) {
-	return QVariant();
-    }
-    return QString::fromUtf8(it->second.c_str());
+
+    // Have to handle the special cases here. Some fields are
+    // synthetic and their name is hard-coded. Only date and datetime
+    // for now.
+    string colname = m_fields[index.column()];
+    return QString::fromUtf8(m_getters[index.column()](colname, doc).c_str());
 }
 
+// This is called when the column headers are clicked
 void RecollModel::sort(int column, Qt::SortOrder order)
 {
     LOGDEB(("RecollModel::sort(%d, %d)\n", column, int(order)));
     
+    if (column >= 0 && column < int(m_fields.size())) {
+	DocSeqSortSpec spec;
+	spec.field = m_fields[column];
+	if (!stringlowercmp("date", spec.field) || 
+	    !stringlowercmp("datetime", spec.field))
+	    spec.field = "mtime";
+	spec.desc = order == Qt::AscendingOrder ? false : true;
+	m_source->setSortSpec(spec);
+	setDocSource(m_source);
+	emit sortDataChanged(spec);
+    }
 }
 
 
@@ -151,7 +216,9 @@ void ResTable::init()
     if (!(m_model = new RecollModel(prefs.restableFields)))
 	return;
     tableView->setModel(m_model);
-    m_pager = new ResTablePager(this);
+    tableView->setMouseTracking(true);
+    tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
     QHeaderView *header = tableView->horizontalHeader();
     if (header) {
@@ -164,14 +231,34 @@ void ResTable::init()
 	header->setSortIndicator(-1, Qt::AscendingOrder);
 	connect(header, SIGNAL(sectionResized(int,int,int)),
 		this, SLOT(saveColWidths()));
-	connect(header, SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-		this, SLOT(sortByColumn(int, Qt::SortOrder)));
     }
+
+    header = tableView->verticalHeader();
+    if (header) {
+	header->setDefaultSectionSize(22);
+    }
+
+    QKeySequence seq("Esc");
+    QShortcut *sc = new QShortcut(seq, this);
+    connect(sc, SIGNAL (activated()), 
+	    tableView->selectionModel(), SLOT (clear()));
+    connect(tableView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)),
+	    this, SLOT(onTableView_currentChanged(const QModelIndex&)));
+
+    m_pager = new ResTablePager(this);
+    QSettings settings;
+    splitter->restoreState(settings.value("resTableSplitterSizes").toByteArray());
 }
 
-void ResTable::on_tableView_clicked(const QModelIndex& index)
+void ResTable::saveSizeState()
 {
-    LOGDEB(("ResTable::on_tableView_clicked(%d, %d)\n", 
+    QSettings settings;
+    settings.setValue("resTableSplitterSizes", splitter->saveState());
+}
+
+void ResTable::onTableView_currentChanged(const QModelIndex& index)
+{
+    LOGDEB(("ResTable::onTableView_currentChanged(%d, %d)\n", 
 	    index.row(), index.column()));
 
     if (!m_model || m_model->m_source.isNull())
@@ -184,6 +271,14 @@ void ResTable::on_tableView_clicked(const QModelIndex& index)
 	m_detaildocnum = index.row();
 	m_pager->displayDoc(index.row(), doc, hdata);
     }
+}
+
+void ResTable::on_tableView_entered(const QModelIndex& index)
+{
+    LOGDEB(("ResTable::on_tableView_entered(%d, %d)\n", 
+	    index.row(), index.column()));
+    if (!tableView->selectionModel()->hasSelection())
+	onTableView_currentChanged(index);
 }
 
 void ResTable::setDocSource(RefCntr<DocSequence> nsource)
@@ -215,18 +310,13 @@ void ResTable::saveColWidths()
     }
 }
 
-void ResTable::sortByColumn(int column, Qt::SortOrder order)
+// This is called when the sort order is changed from another widget
+void ResTable::onSortDataChanged(DocSeqSortSpec)
 {
-    LOGDEB(("ResTable::sortByColumn(%d,%d)\n", column, int(order)));
-
-    if (column >= 0 && m_model && column < int(m_model->m_fields.size())) {
-	DocSeqSortSpec spec;
-	spec.field = m_model->m_fields[column];
-	spec.desc = order == Qt::AscendingOrder ? false : true;
-	m_model->m_source->setSortSpec(spec);
-	readDocSource();
-	emit sortDataChanged(spec);
-    }
+    QHeaderView *header = tableView->horizontalHeader();
+    if (!header)
+	return;
+    header->setSortIndicator(-1, Qt::AscendingOrder);
 }
 
 void ResTable::readDocSource()

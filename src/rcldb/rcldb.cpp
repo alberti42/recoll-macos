@@ -142,7 +142,7 @@ static const string keycap("caption");
 bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
 				Doc &doc, int percent)
 {
-    LOGDEB0(("Db::dbDataToRclDoc: data:\n %s\n", data.c_str()));
+    LOGDEB2(("Db::dbDataToRclDoc: data:\n%s\n", data.c_str()));
     ConfSimple parms(data);
     if (!parms.ok())
 	return false;
@@ -225,7 +225,7 @@ static void listList(const string& what, const list<string>&l)
 string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 {
     Chrono chron;
-    LOGDEB(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
+    LOGDEB0(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
 	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen));
 
     list<string> terms;
@@ -433,7 +433,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	    if ('A' <= (*term).at(0) && (*term).at(0) <= 'Z')
 		continue;
 	    if (cutoff-- < 0) {
-		LOGDEB(("makeAbstract: max term count cutoff\n"));
+		LOGDEB0(("makeAbstract: max term count cutoff\n"));
 		break;
 	    }
 
@@ -441,7 +441,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	    for (pos = xrdb.positionlist_begin(docid, *term); 
 		 pos != xrdb.positionlist_end(docid, *term); pos++) {
 		if (cutoff-- < 0) {
-		    LOGDEB(("makeAbstract: max term count cutoff\n"));
+		    LOGDEB0(("makeAbstract: max term count cutoff\n"));
 		    break;
 		}
 		map<unsigned int, string>::iterator vit;
@@ -504,7 +504,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     if (!abstract.compare("... "))
 	abstract.clear();
 
-    LOGDEB(("makeAbtract: done in %d mS\n", chron.millis()));
+    LOGDEB0(("makeAbtract: done in %d mS\n", chron.millis()));
     return abstract;
 }
 

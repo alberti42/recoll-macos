@@ -169,7 +169,9 @@ int main(int argc, char **argv)
 
     QApplication app(argc, argv);
 
-    //    fprintf(stderr, "Application created\n");
+    QCoreApplication::setOrganizationName("Recoll.org");
+    QCoreApplication::setApplicationName("recoll");
+
     string a_config;
     string question;
 

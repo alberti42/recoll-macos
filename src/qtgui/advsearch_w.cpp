@@ -65,8 +65,6 @@ void AdvSearch::init()
     HelpClient::installMap((const char *)objectName().toUtf8(), 
 			   "RCL.SEARCH.COMPLEX");
 
-    this->installEventFilter(this);
-
     // signals and slots connections
     connect(delFiltypPB, SIGNAL(clicked()), this, SLOT(delFiltypPB_clicked()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(runSearch()));
@@ -144,20 +142,6 @@ void AdvSearch::init()
 
     cat_translations[QString::fromUtf8("other")] = tr("other");
     cat_rtranslations[tr("other")] = QString::fromUtf8("other"); 
-}
-
-bool AdvSearch::eventFilter(QObject *, QEvent *event)
-{
-    //    LOGDEB(("AdvSearch::eventFilter. Type %d\n", (int)event->type()));
-    if (event->type() == QEvent::KeyPress || 
-	event->type() == QEvent::ShortcutOverride) {
-	QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-	if (ke->key() == Qt::Key_Q && (ke->modifiers() & Qt::ControlModifier)) {
-	    recollNeedsExit = 1;
-	    return true;
-	}
-    }
-    return false;
 }
 
 void AdvSearch::saveCnf()

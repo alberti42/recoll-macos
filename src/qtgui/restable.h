@@ -26,6 +26,8 @@
 
 class ResTable;
 
+typedef string (FieldGetter)(const string& fldname, const Rcl::Doc& doc);
+
 class RecollModel : public QAbstractTableModel {
 
     Q_OBJECT
@@ -45,9 +47,14 @@ public:
     virtual bool getdoc(int index, Rcl::Doc &doc);
 
     friend class ResTable;
+
+signals:
+    void sortDataChanged(DocSeqSortSpec);
+
 private:
     mutable RefCntr<DocSequence> m_source;
     vector<string> m_fields;
+    vector<FieldGetter*> m_getters;
 };
 
 class ResTablePager;
@@ -66,18 +73,17 @@ public:
     }
 	
     virtual ~ResTable() {}
+    virtual RecollModel *getModel() {return m_model;}
+    virtual void saveSizeState();
 
 public slots:
-    virtual void on_tableView_clicked(const QModelIndex&);
+    virtual void onTableView_currentChanged(const QModelIndex&);
+    virtual void on_tableView_entered(const QModelIndex& index);
     virtual void saveColWidths();
-    virtual void sortByColumn(int column, Qt::SortOrder order);
-
     virtual void setDocSource(RefCntr<DocSequence> nsource);
     virtual void resetSource();
     virtual void readDocSource();
-
-signals:
-    void sortDataChanged(DocSeqSortSpec);
+    virtual void onSortDataChanged(DocSeqSortSpec);
 
     friend class ResTablePager;
 private:

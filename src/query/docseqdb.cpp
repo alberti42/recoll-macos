@@ -120,11 +120,12 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
     return m_q->setQuery(m_fsdata);
 }
 
-bool DocSequenceDb::setSortSpec(const DocSeqSortSpec &sortspec) 
+bool DocSequenceDb::setSortSpec(const DocSeqSortSpec &spec) 
 {
-    LOGDEB(("DocSequenceDb::setSortSpec\n"));
-    if (sortspec.isNotNull()) {
-	m_q->setSortBy(sortspec.field, !sortspec.desc);
+    LOGDEB(("DocSequenceDb::setSortSpec: fld [%s] %s\n", 
+	    spec.field.c_str(), spec.desc ? "desc" : "asc"));
+    if (spec.isNotNull()) {
+	m_q->setSortBy(spec.field, !spec.desc);
     } else {
 	m_q->setSortBy(string(), true);
     }

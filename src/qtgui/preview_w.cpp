@@ -239,11 +239,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 
     PreviewTextEdit *edit = currentEditor();
     QKeyEvent *keyEvent = (QKeyEvent *)event;
-    if (keyEvent->key() == Qt::Key_Q && 
-	(keyEvent->modifiers() & Qt::ControlModifier)) {
-	recollNeedsExit = 1;
-	return true;
-    } else if (keyEvent->key() == Qt::Key_Escape) {
+    if (keyEvent->key() == Qt::Key_Escape) {
 	close();
 	return true;
     } else if (keyEvent->key() == Qt::Key_Down &&

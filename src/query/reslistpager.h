@@ -41,6 +41,14 @@ public:
 	    return -1;
 	return m_winfirst / m_pagesize;
     }
+    int pageFirstDocNum() {
+	return m_winfirst;
+    }
+    int pageLastDocNum() {
+	if (m_winfirst < 0 || m_respage.size() == 0)
+	    return -1;
+	return m_winfirst + m_respage.size() - 1;
+    }
     virtual int pageSize() const {return m_pagesize;}
     void pageNext();
     bool hasNext() {return m_hasNext;}

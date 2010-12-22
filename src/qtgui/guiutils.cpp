@@ -208,6 +208,7 @@ void rwSettings(bool writing)
 	if (prefs.restableFields.empty()) {
 	    prefs.restableFields.push_back("filename");
 	    prefs.restableFields.push_back("title");
+	    prefs.restableFields.push_back("date");
 	    prefs.restableFields.push_back("url");
 	}
     }

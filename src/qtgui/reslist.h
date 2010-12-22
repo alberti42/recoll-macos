@@ -44,12 +44,9 @@ class ResList : public QTextBrowser
     
     // Return document for given docnum. We act as an intermediary to
     // the docseq here. This has also the side-effect of making the
-    // entry current (visible and highlighted), and only work if the
+    // entry current (visible and highlighted), and only works if the
     // num is inside the current page or its immediate neighbours.
     bool getDoc(int docnum, Rcl::Doc &);
-
-    QString getDescription(); // Printable actual query performed on db
-    int getResCnt(); // Return total result list size
     bool displayingHistory();
     bool getTerms(vector<string>& terms, 
 		  vector<vector<string> >& groups, vector<int>& gslks);
@@ -103,16 +100,15 @@ class ResList : public QTextBrowser
  protected slots:
     virtual void languageChange();
     virtual void linkWasClicked(const QUrl &);
-    virtual void showQueryDetails();
 
  private:
     QtGuiResListPager  *m_pager;
     RefCntr<DocSequence> m_source;
-    std::vector<Rcl::Doc> m_curDocs;  // Docs for current page
 
     // Translate from textedit paragraph number to relative
     // docnum. Built while we insert text into the qtextedit
     std::map<int,int>  m_pageParaToReldocnums;
+
     int                m_popDoc; // Docnum for the popup menu.
     int                m_curPvDoc;// Docnum for current preview
     int                m_lstClckMod; // Last click modifier. 

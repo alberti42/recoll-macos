@@ -48,13 +48,14 @@ class RclMain : public QMainWindow, public Ui::RclMainBase
 
 public:
     RclMain(QWidget * parent = 0) 
-	: QMainWindow(parent) 
+	: QMainWindow(parent), m_sortspecnochange(false)
     {
 	setupUi(this);
 	init();
     }
     ~RclMain() {}
     virtual bool eventFilter(QObject *target, QEvent *event);
+    QString getQueryDescription();
 
 public slots:
     virtual bool close();
@@ -96,8 +97,9 @@ public slots:
     virtual void focusToSearch();
     virtual void on_actionSortByDateAsc_toggled(bool on);
     virtual void on_actionSortByDateDesc_toggled(bool on);
-    virtual void resultCount(int);
     virtual void onResTableSortBy(DocSeqSortSpec);
+    virtual void resultCount(int);
+    virtual void showQueryDetails();
 
 signals:
     void docSourceChanged(RefCntr<DocSequence>);
@@ -127,8 +129,10 @@ private:
     QAction *         m_idAllStem;
     bool              m_idxStatusAck; // Did we act on last status?
     DocSeqFiltSpec    m_filtspec;
+    bool              m_sortspecnochange;
     DocSeqSortSpec    m_sortspec;
-
+    RefCntr<DocSequence> m_source;
+    
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
 					bool next);

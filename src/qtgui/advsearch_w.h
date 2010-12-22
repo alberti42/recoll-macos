@@ -42,7 +42,6 @@ public:
 	init();
     }
     ~AdvSearch(){}
-    virtual bool eventFilter(QObject *target, QEvent *event);
 
 public slots:
     virtual void delFiltypPB_clicked();
