@@ -79,6 +79,8 @@ class PrefsPack {
     bool startWithAdvSearchOpen;
     bool previewHtml;
     bool collapseDuplicates;
+    bool showResultsAsTable;
+
     // Extra query indexes. This are stored in the history file, not qt prefs
     list<string> allExtraDbs;
     list<string> activeExtraDbs;

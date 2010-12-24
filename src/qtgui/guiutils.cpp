@@ -117,6 +117,8 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Int, 8);
     SETTING_RW(prefs.collapseDuplicates, 
 	       "/Recoll/prefs/reslist/collapseDuplicates", Bool, false);
+    SETTING_RW(prefs.showResultsAsTable, 
+	       "/Recoll/prefs/showResultsAsTable", Bool, false);
     SETTING_RW(prefs.maxhltextmbs, "/Recoll/prefs/preview/maxhltextmbs", Int, 3);
     SETTING_RW(prefs.qtermcolor, "/Recoll/prefs/qtermcolor", String, "blue");
     if (!writing && prefs.qtermcolor == "")

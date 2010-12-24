@@ -95,6 +95,7 @@ public slots:
     virtual void focusToSearch();
     virtual void on_actionSortByDateAsc_toggled(bool on);
     virtual void on_actionSortByDateDesc_toggled(bool on);
+    virtual void on_actionShowResultsAsTable_toggled(bool on);
     virtual void onResTableSortBy(DocSeqSortSpec);
     virtual void resultCount(int);
     virtual void showQueryDetails();

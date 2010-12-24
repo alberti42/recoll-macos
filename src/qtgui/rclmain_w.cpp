@@ -195,8 +195,14 @@ void RclMain::init()
 	    actionSortByDateAsc->setChecked(true);
 	onSortCtlChanged();
     }
+    restable = new ResTable(this);
+    verticalLayout->insertWidget(2, restable);
+    actionShowResultsAsTable->setChecked(prefs.showResultsAsTable);
+    on_actionShowResultsAsTable_toggled(prefs.showResultsAsTable);
 
-    restable = new ResTable();
+    // Must not do this when restable is a child of rclmain
+    // sc = new QShortcut(quitKeySeq, restable);
+    // connect(sc, SIGNAL (activated()), this, SLOT (fileExit()));
 
     // A shortcut to get the focus back to the search entry. 
     QKeySequence seq("Ctrl+Shift+s");
@@ -237,6 +243,7 @@ void RclMain::init()
 	    this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), 
 	    this, SLOT(showExtIdxDialog()));
+	    
     if (prefs.catgToolBar && catgCMB)
 	connect(catgCMB, SIGNAL(activated(int)), 
 		this, SLOT(catgFilter(int)));
@@ -246,10 +253,6 @@ void RclMain::init()
 	    this, SLOT(showQueryDetails()));
     connect(periodictimer, SIGNAL(timeout()), 
 	    this, SLOT(periodic100()));
-
-    sc = new QShortcut(quitKeySeq, restable);
-    connect(sc, SIGNAL (activated()), 
-	    this, SLOT (fileExit()));
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
 	    restable, SLOT(setDocSource(RefCntr<DocSequence>)));
     connect(this, SIGNAL(searchReset()), 
@@ -309,7 +312,6 @@ void RclMain::init()
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
-    restable->show();
 }
 
 void RclMain::resultCount(int n)
@@ -886,11 +888,29 @@ void RclMain::onSortCtlChanged()
 void RclMain::onResTableSortBy(DocSeqSortSpec spec)
 {
     m_sortspecnochange = true;
-    actionSortByDateDesc->setChecked(false);
-    actionSortByDateAsc->setChecked(false);
+    if (spec.field.compare("mtime")) {
+	actionSortByDateDesc->setChecked(false);
+	actionSortByDateAsc->setChecked(false);
+    } else {
+	actionSortByDateDesc->setChecked(spec.desc);
+	actionSortByDateAsc->setChecked(!spec.desc);
+    }
     m_sortspecnochange = false;
     m_sortspec = spec;
     emit applyFiltSortData();
+}
+
+void RclMain::on_actionShowResultsAsTable_toggled(bool on)
+{
+    LOGDEB(("RclMain::on_actionShowResultsAsTable_toggled(%d)\n", int(on)));
+    prefs.showResultsAsTable = on;
+    if (on) {
+	restable->show();
+	reslist->hide();
+    } else {
+	restable->hide();
+	reslist->show();
+    }
 }
 
 void RclMain::on_actionSortByDateAsc_toggled(bool on)

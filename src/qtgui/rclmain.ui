@@ -10,16 +10,31 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Recoll</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>4</number>
+    </property>
+    <property name="topMargin">
      <number>2</number>
     </property>
-    <property name="margin">
+    <property name="rightMargin">
      <number>4</number>
+    </property>
+    <property name="bottomMargin">
+     <number>2</number>
     </property>
     <item>
      <widget class="SSearch" name="sSearch" native="true">
@@ -34,7 +49,7 @@
     <item>
      <widget class="QGroupBox" name="catgBGRP">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -51,7 +66,7 @@
          <x>0</x>
          <y>0</y>
          <width>45</width>
-         <height>29</height>
+         <height>20</height>
         </rect>
        </property>
        <property name="text">
@@ -103,6 +118,8 @@
    <addaction name="separator"/>
    <addaction name="actionSortByDateAsc"/>
    <addaction name="actionSortByDateDesc"/>
+   <addaction name="separator"/>
+   <addaction name="actionShowResultsAsTable"/>
   </widget>
   <widget class="QMenuBar" name="MenuBar">
    <property name="geometry">
@@ -410,6 +427,21 @@
   <action name="actionShowQueryDetails">
    <property name="text">
     <string>Show Query Details</string>
+   </property>
+  </action>
+  <action name="actionShowResultsAsTable">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="recoll.qrc">
+     <normaloff>:/images/table.png</normaloff>:/images/table.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show results as table</string>
+   </property>
+   <property name="toolTip">
+    <string>Show results as table</string>
    </property>
   </action>
  </widget>
