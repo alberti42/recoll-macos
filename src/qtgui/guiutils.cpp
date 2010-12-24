@@ -56,17 +56,6 @@ const char *v114reslistformat = "<img src=\"%I\" align=\"left\">"
 	"%A %K";
 
 
-bool getStemLangs(list<string>& langs)
-{
-    string reason;
-    if (!maybeOpenDb(reason)) {
-	LOGERR(("getStemLangs: %s\n", reason.c_str()));
-	return false;
-    }
-    langs = rcldb->getStemLangs();
-    return true;
-}
-
 // The global preferences structure
 PrefsPack prefs;
 
@@ -77,8 +66,8 @@ PrefsPack prefs;
     if (writing) {					\
 	settings.setValue(nm , var);			\
     } else {						\
-	var = settings.value(nm, def).to##tp \
-	    ();				       \
+	var = settings.value(nm, def).to##tp		\
+	    ();						\
     }						
 
 /** 

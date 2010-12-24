@@ -104,7 +104,14 @@ class Db::Native {
 inline const string& docfToDatf(const string& df)
 {
     static const string keycap("caption");
-    return df.compare(Doc::keytt) ? df : keycap;
+    static const string keydmtime("dmtime");
+    if (!df.compare(Doc::keytt)) {
+	return keycap;
+    } else if (!df.compare(Doc::keymt)) {
+	return keydmtime;
+    } else {
+	return df;
+    }
 }
 
 }

@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.11 2008-12-19 09:55:36 dockes Ex
 #include "smallut.h"
 #include "searchdata.h"
 #include "rclconfig.h"
+#include "unacpp.h"
 
 #ifndef NO_NAMESPACES
 namespace Rcl {
@@ -30,10 +31,7 @@ public:
     QSorter(const string& f) 
 	: m_fld(docfToDatf(f) + "=") 
     {
-	m_ismtime = !m_fld.compare("mtime=");
-	if (m_ismtime) {
-	    m_fld = "dmtime=";
-	}
+	m_ismtime = !m_fld.compare("dmtime=");
     }
 
     virtual std::string operator()(const Xapian::Document& xdoc) const 
@@ -61,7 +59,27 @@ public:
 	i2 = data.find_first_of("\n\r", i1);
 	if (i2 == string::npos)
 	    return string();
-	return data.substr(i1, i2-i1);
+	
+	// Process data for better sorting. We should actually do the
+	// unicode thing
+	// (http://unicode.org/reports/tr10/#Introduction), but just
+	// removing accents and majuscules will remove the most
+	// glaring weirdnesses (or not, depending on your national
+	// approach to collating...)
+	string term = data.substr(i1, i2-i1);
+	string sortterm;
+	// We're not even sure the term is utf8 here (ie: url)
+	if (!unacmaybefold(term, sortterm, "UTF-8", true)) {
+	    sortterm = term;
+	}
+	// Also remove some common uninteresting starting characters
+	i1 = sortterm.find_first_not_of(" \t\\\"([*+,");
+	if (i1 != 0 && i1 != string::npos) {
+	    sortterm = sortterm.substr(i1, sortterm.size()-i1);
+	}
+
+	LOGDEB2(("QSorter: [%s] -> [%s]\n", term.c_str(), sortterm.c_str()));
+	return sortterm;
     }
 
 private:

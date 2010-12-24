@@ -96,6 +96,17 @@ bool maybeOpenDb(string &reason, bool force)
     return true;
 }
 
+bool getStemLangs(list<string>& langs)
+{
+    string reason;
+    if (!maybeOpenDb(reason)) {
+	LOGERR(("getStemLangs: %s\n", reason.c_str()));
+	return false;
+    }
+    langs = rcldb->getStemLangs();
+    return true;
+}
+
 static void recollCleanup()
 {
     LOGDEB(("recollCleanup: writing settings\n"));

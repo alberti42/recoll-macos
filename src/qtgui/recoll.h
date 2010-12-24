@@ -29,6 +29,9 @@
 // Open the database if needed. We now force a close/open by default
 extern bool maybeOpenDb(std::string &reason, bool force = true);
 
+/** Retrieve configured stemming languages */
+bool getStemLangs(list<string>& langs);
+
 extern RclConfig *rclconfig;
 extern Rcl::Db *rcldb;
 extern int recollNeedsExit;

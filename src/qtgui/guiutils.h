@@ -49,13 +49,6 @@ using std::list;
 using std::vector;
 #endif
 
-/** Retrieve configured stemming languages */
-bool getStemLangs(list<string>& langs);
-
-/** Start a browser on the help document */
-extern bool startHelpBrowser(const string& url = "");
-
-
 /** Holder for preferences (gets saved to user Qt prefs) */
 class PrefsPack {
  public:

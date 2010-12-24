@@ -456,7 +456,7 @@ void RclMain::fileExit()
         prefs.mainwidth = width();
         prefs.mainheight = height();
     }
-    restable->saveSizeState();
+    restable->saveColState();
 
     prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
     if (asearchform)
@@ -923,8 +923,8 @@ void RclMain::saveDocToFile(Rcl::Doc doc)
 {
     QString s = 
 	QFileDialog::getSaveFileName(this, //parent
-				     tr("Save file"), // caption 
-			       QString::fromLocal8Bit(path_home().c_str()) //dir
+				     tr("Save file"), 
+				     QString::fromLocal8Bit(path_home().c_str())
 	    );
     string tofile((const char *)s.toLocal8Bit());
     TempFile temp; // not used
@@ -1295,7 +1295,9 @@ void RclMain::showQueryDetails()
     if (m_source.isNull())
 	return;
     string oq = breakIntoLines(m_source->getDescription(), 100, 50);
-    QString desc = tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
+    QString str;
+    QString desc = tr("Result count (est.)") + ": " + str.setNum(m_source->getResCnt()) + "<br>";
+    desc += tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
     QMessageBox::information(this, tr("Query details"), desc);
 }
 

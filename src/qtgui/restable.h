@@ -34,19 +34,27 @@ class RecollModel : public QAbstractTableModel {
 
 public:
     RecollModel(const QStringList fields, QObject *parent = 0);
+
+    // Reimplemented methods
     virtual int rowCount (const QModelIndex& = QModelIndex()) const;
     virtual int columnCount(const QModelIndex& = QModelIndex()) const;
-    virtual QVariant headerData (int col, 
-				 Qt::Orientation orientation, 
+    virtual QVariant headerData (int col, Qt::Orientation orientation, 
 				 int role = Qt::DisplayRole ) const;
     virtual QVariant data(const QModelIndex& index, 
 			   int role = Qt::DisplayRole ) const;
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
 
+    // Specific methods
+    virtual void readDocSource();
     virtual void setDocSource(RefCntr<DocSequence> nsource);
-    virtual bool getdoc(int index, Rcl::Doc &doc);
-
-    friend class ResTable;
+    virtual RefCntr<DocSequence> getDocSource() {return m_source;}
+    virtual void deleteColumn(int);
+    virtual const vector<string>& getFields() {return m_fields;}
+    virtual const map<string, string>& getAllFields() 
+    { 
+	return o_displayableFields;
+    }
+    virtual void addColumn(int, const string&);
 
 signals:
     void sortDataChanged(DocSeqSortSpec);
@@ -55,6 +63,8 @@ private:
     mutable RefCntr<DocSequence> m_source;
     vector<string> m_fields;
     vector<FieldGetter*> m_getters;
+    static map<string, string> o_displayableFields;
+    FieldGetter* chooseGetter(const string&);
 };
 
 class ResTablePager;
@@ -75,7 +85,7 @@ public:
 	
     virtual ~ResTable() {}
     virtual RecollModel *getModel() {return m_model;}
-    virtual void saveSizeState();
+    virtual void saveColState();
 
 public slots:
     virtual void onTableView_currentChanged(const QModelIndex&);
@@ -86,6 +96,9 @@ public slots:
     virtual void readDocSource();
     virtual void onSortDataChanged(DocSeqSortSpec);
     virtual void linkWasClicked(const QUrl&);
+    virtual void createHeaderPopupMenu(const QPoint&);
+    virtual void deleteColumn();
+    virtual void addColumn();
 
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);
@@ -97,6 +110,7 @@ private:
     RecollModel *m_model;
     ResTablePager  *m_pager;
     int            m_detaildocnum;
+    int          m_popcolumn;
 };
 
 

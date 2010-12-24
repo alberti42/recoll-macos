@@ -7,10 +7,13 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include <stdlib.h>
 #include <time.h>
 
+#include <algorithm>
+
 #include <Qt>
 #include <QShortcut>
 #include <QAbstractTableModel>
 #include <QSettings>
+#include <QMenu>
 
 #include "refcntr.h"
 #include "docseq.h"
@@ -23,7 +26,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include "plaintorich.h"
 
 //////////////////////////////////
-// Restable "pager". We use it to display doc details in the detail area
+// Restable "pager". We use it to display a single doc details in the detail area
 ///
 class ResTablePager : public ResListPager {
 public:
@@ -68,6 +71,9 @@ string ResTablePager::iconPath(const string& mtype)
 //////////////////////////////////////////////
 //// Data model methods
 ////
+
+// Routines used to extract named data from an Rcl::Doc. The basic one just uses the meta map. Others
+// (ie: the date ones) need to do a little processing
 static string gengetter(const string& fld, const Rcl::Doc& doc)
 {
     map<string, string>::const_iterator it = doc.meta.find(fld);
@@ -107,18 +113,60 @@ static string datetimegetter(const string&, const Rcl::Doc& doc)
     return datebuf;
 }
 
+// Static map to translate from internal column names to displayable ones
+map<string, string> RecollModel::o_displayableFields = 
+    create_map<string, string>
+    ("abstract", QT_TR_NOOP("Abstract"))
+    ("author", QT_TR_NOOP("Author"))
+    ("dbytes", QT_TR_NOOP("Document size"))
+    ("dmtime", QT_TR_NOOP("Document date"))
+    ("fbytes", QT_TR_NOOP("File size"))
+    ("filename", QT_TR_NOOP("File name"))
+    ("fmtime", QT_TR_NOOP("File date"))
+    ("ipath", QT_TR_NOOP(" Ipath"))
+    ("keywords", QT_TR_NOOP("Keywords"))
+    ("mtype", QT_TR_NOOP("Mime type"))
+    ("origcharset", QT_TR_NOOP("Original character set"))
+    ("relevancyrating", QT_TR_NOOP("Relevancy rating"))
+    ("title", QT_TR_NOOP("Title"))
+    ("url", QT_TR_NOOP("URL"))
+    ("mtime", QT_TR_NOOP("Mtime"))
+    ("date", QT_TR_NOOP("Date"))
+    ("datetime", QT_TR_NOOP("Date and time"))
+    ;
+
+FieldGetter *RecollModel::chooseGetter(const string& field)
+{
+    if (!stringlowercmp("date", field))
+	return dategetter;
+    else if (!stringlowercmp("datetime", field))
+	return datetimegetter;
+    else
+	return gengetter;
+}
+
 RecollModel::RecollModel(const QStringList fields, QObject *parent)
     : QAbstractTableModel(parent)
 {
+    // Add dynamic "stored" fields to the full column list. This
+    // could be protected to be done only once, but it's no real
+    // problem
+    RclConfig *config = RclConfig::getMainConfig();
+    if (config) {
+	const set<string>& stored = config->getStoredFields();
+	for (set<string>::const_iterator it = stored.begin(); 
+	     it != stored.end(); it++) {
+	    if (o_displayableFields.find(*it) == o_displayableFields.end()) {
+		o_displayableFields[*it] = *it;
+	    }
+	}
+    }
+
+    // Construct the actual list of column names
     for (QStringList::const_iterator it = fields.begin(); 
 	 it != fields.end(); it++) {
 	m_fields.push_back((const char *)(it->toUtf8()));
-	if (!stringlowercmp("date", m_fields[m_fields.size()-1]))
-	    m_getters.push_back(dategetter);
-	else if (!stringlowercmp("datetime", m_fields[m_fields.size()-1]))
-	    m_getters.push_back(datetimegetter);
-	else
-	    m_getters.push_back(gengetter);
+	m_getters.push_back(chooseGetter(m_fields[m_fields.size()-1]));
     }
 }
 
@@ -136,6 +184,12 @@ int RecollModel::columnCount(const QModelIndex&) const
     return m_fields.size();
 }
 
+void RecollModel::readDocSource()
+{
+    beginResetModel();
+    endResetModel();
+}
+
 void RecollModel::setDocSource(RefCntr<DocSequence> nsource)
 {
     LOGDEB(("RecollModel::setDocSource\n"));
@@ -143,16 +197,37 @@ void RecollModel::setDocSource(RefCntr<DocSequence> nsource)
 	m_source = RefCntr<DocSequence>();
     else
 	m_source = RefCntr<DocSequence>(new DocSource(nsource));
-    beginResetModel();
-    endResetModel();
+    readDocSource();
 }
 
-bool RecollModel::getdoc(int index, Rcl::Doc &doc)
+void RecollModel::deleteColumn(int col)
 {
-    LOGDEB(("RecollModel::getDoc\n"));
-    if (m_source.isNull())
-	return false;
-    return m_source->getDoc(index, doc);
+    if (col > 0 && col < int(m_fields.size())) {
+	vector<string>::iterator it = m_fields.begin();
+	it += col;
+	m_fields.erase(it);
+	vector<FieldGetter*>::iterator it1 = m_getters.begin();
+	it1 += col;
+	m_getters.erase(it1);
+	readDocSource();
+    }
+}
+
+void RecollModel::addColumn(int col, const string& field)
+{
+    LOGDEB(("AddColumn: col %d fld [%s]\n", col, field.c_str()));
+    if (col >= 0 && col < int(m_fields.size())) {
+	col++;
+	vector<string>::iterator it = m_fields.begin();
+	vector<FieldGetter*>::iterator it1 = m_getters.begin();
+	if (col) {
+	    it += col;
+	    it1 += col;
+	}
+	m_fields.insert(it, field);
+	m_getters.insert(it1, chooseGetter(field));
+	readDocSource();
+    }
 }
 
 QVariant RecollModel::headerData(int idx, Qt::Orientation orientation, 
@@ -164,7 +239,12 @@ QVariant RecollModel::headerData(int idx, Qt::Orientation orientation,
     }
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole &&
 	idx < int(m_fields.size())) {
-	return QString::fromUtf8(m_fields[idx].c_str());
+	map<string, string>::const_iterator it = 
+	    o_displayableFields.find(m_fields[idx]);
+	if (it == o_displayableFields.end())
+	    return QString::fromUtf8(m_fields[idx].c_str());
+	else 
+	    return QString::fromUtf8(it->second.c_str());
     }
     return QVariant();
 }
@@ -195,7 +275,7 @@ void RecollModel::sort(int column, Qt::SortOrder order)
 {
     LOGDEB(("RecollModel::sort(%d, %d)\n", column, int(order)));
     
-    if (column >= 0 && column < int(m_fields.size())) {
+    if (m_source.isNotNull() && column >= 0 && column < int(m_fields.size())) {
 	DocSeqSortSpec spec;
 	spec.field = m_fields[column];
 	if (!stringlowercmp("date", spec.field) || 
@@ -203,11 +283,10 @@ void RecollModel::sort(int column, Qt::SortOrder order)
 	    spec.field = "mtime";
 	spec.desc = order == Qt::AscendingOrder ? false : true;
 	m_source->setSortSpec(spec);
-	setDocSource(m_source);
+	readDocSource();
 	emit sortDataChanged(spec);
     }
 }
-
 
 /////////////////////////// 
 // ResTable panel methods
@@ -229,9 +308,13 @@ void ResTable::init()
 	}
 	header->setSortIndicatorShown(true);
 	header->setSortIndicator(-1, Qt::AscendingOrder);
+	header->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(header, SIGNAL(sectionResized(int,int,int)),
 		this, SLOT(saveColWidths()));
+	connect(header, SIGNAL(customContextMenuRequested(const QPoint&)),
+		this, SLOT(createHeaderPopupMenu(const QPoint&)));
     }
+    header->setMovable(true);
 
     header = tableView->verticalHeader();
     if (header) {
@@ -257,10 +340,45 @@ void ResTable::init()
 
 }
 
-void ResTable::saveSizeState()
+// This is called by rclmain_w prior to exiting
+void ResTable::saveColState()
 {
     QSettings settings;
     settings.setValue("resTableSplitterSizes", splitter->saveState());
+
+    QHeaderView *header = tableView->horizontalHeader();
+    if (header && header->sectionsMoved()) {
+	// Remember the current column order. Walk in visual order and
+	// create new list
+	QStringList newfields;
+	vector<int> newwidths;
+	for (int vi = 0; vi < header->count(); vi++) {
+	    int li = header->logicalIndex(vi);
+	    newfields.push_back(prefs.restableFields.at(li));
+	    newwidths.push_back(header->sectionSize(li));
+	}
+	prefs.restableFields = newfields;
+	prefs.restableColWidths = newwidths;
+    } else {
+	const vector<string>& vf = m_model->getFields();
+	prefs.restableFields.clear();
+	for (int i = 0; i < int(vf.size()); i++) {
+	    prefs.restableFields.push_back(QString::fromUtf8(vf[i].c_str()));
+	}
+	saveColWidths();
+    }
+}
+
+void ResTable::saveColWidths()
+{
+    LOGDEB(("ResTable::saveColWidths()\n"));
+    QHeaderView *header = tableView->horizontalHeader();
+    if (!header)
+	return;
+    prefs.restableColWidths.clear();
+    for (int i = 0; i < header->count(); i++) {
+	prefs.restableColWidths.push_back(header->sectionSize(i));
+    }
 }
 
 void ResTable::onTableView_currentChanged(const QModelIndex& index)
@@ -268,12 +386,12 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
     LOGDEB(("ResTable::onTableView_currentChanged(%d, %d)\n", 
 	    index.row(), index.column()));
 
-    if (!m_model || m_model->m_source.isNull())
+    if (!m_model || m_model->getDocSource().isNull())
 	return;
     HiliteData hdata;
-    m_model->m_source->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+    m_model->getDocSource()->getTerms(hdata.terms, hdata.groups, hdata.gslks);
     Rcl::Doc doc;
-    if (m_model->getdoc(index.row(), doc)) {
+    if (m_model->getDocSource()->getDoc(index.row(), doc)) {
 	textBrowser->clear();
 	m_detaildocnum = index.row();
 	m_pager->displayDoc(index.row(), doc, hdata);
@@ -305,18 +423,6 @@ void ResTable::resetSource()
     setDocSource(RefCntr<DocSequence>());
 }
 
-void ResTable::saveColWidths()
-{
-    LOGDEB(("ResTable::saveColWidths()\n"));
-    QHeaderView *header = tableView->horizontalHeader();
-    if (!header)
-	return;
-    prefs.restableColWidths.clear();
-    for (int i = 0; i < header->count(); i++) {
-	prefs.restableColWidths.push_back(header->sectionSize(i));
-    }
-}
-
 // This is called when the sort order is changed from another widget
 void ResTable::onSortDataChanged(DocSeqSortSpec)
 {
@@ -328,11 +434,14 @@ void ResTable::onSortDataChanged(DocSeqSortSpec)
 
 void ResTable::readDocSource()
 {
-    m_model->setDocSource(m_model->m_source);
+    m_model->readDocSource();
+    textBrowser->clear();
 }
 
 void ResTable::linkWasClicked(const QUrl &url)
 {
+    if (!m_model || m_model->getDocSource().isNull())
+	return;
     QString s = url.toString();
     const char *ascurl = s.toAscii();
     LOGDEB(("ResTable::linkWasClicked: [%s]\n", ascurl));
@@ -344,7 +453,7 @@ void ResTable::linkWasClicked(const QUrl &url)
     case 'E': 
     {
 	Rcl::Doc doc;
-	if (!m_model->getdoc(i, doc)) {
+	if (!m_model->getDocSource()->getDoc(i, doc)) {
 	    LOGERR(("ResTable::linkWasClicked: can't get doc for %d\n", i));
 	    return;
 	}
@@ -358,4 +467,51 @@ void ResTable::linkWasClicked(const QUrl &url)
 	LOGERR(("ResList::linkWasClicked: bad link [%s]\n", ascurl));
 	break;// ?? 
     }
+}
+
+void ResTable::createHeaderPopupMenu(const QPoint& pos)
+{
+    LOGDEB(("ResTable::createHeaderPopupMenu(%d, %d)\n", pos.x(), pos.y()));
+    QHeaderView *header = tableView->horizontalHeader();
+    if (!header || !m_model)
+	return;
+
+    m_popcolumn = header->logicalIndexAt(pos);
+    if (m_popcolumn < 0)
+	return;
+
+    const map<string, string>& allfields = m_model->getAllFields();
+    const vector<string>& fields = m_model->getFields();
+    QMenu *popup = new QMenu(this);
+    popup->addAction(tr("&Delete column"), this, SLOT(deleteColumn()));
+    QAction *act;
+    for (map<string, string>::const_iterator it = allfields.begin();
+	 it != allfields.end(); it++) {
+	if (std::find(fields.begin(), fields.end(), it->first) != fields.end())
+	    continue;
+	act = new QAction(tr("Add ") + tr(it->second.c_str()), popup);
+	act->setData(QString::fromUtf8(it->first.c_str()));
+	connect(act, SIGNAL(triggered(bool)), this , SLOT(addColumn()));
+	popup->addAction(act);
+    }
+    popup->popup(mapToGlobal(pos));
+}
+
+void ResTable::deleteColumn()
+{
+    if (m_model)
+	m_model->deleteColumn(m_popcolumn);
+}
+
+void ResTable::addColumn()
+{
+    if (!m_model)
+	return;
+    QAction *action = (QAction *)sender();
+    LOGDEB(("addColumn: text %s, data %s\n", 
+	    (const char *)action->text().toUtf8(),
+	    (const char *)action->data().toString().toUtf8()
+	       ));
+    string field((const char *)action->data().toString().toUtf8());
+    m_model->addColumn(m_popcolumn, field);
 }

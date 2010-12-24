@@ -78,7 +78,7 @@ public slots:
     virtual void enableNextPage(bool);
     virtual void enablePrevPage(bool);
     virtual void docExpand(Rcl::Doc);
-    virtual void startPreview(int doc, Rcl::Doc doc, int keymods);
+    virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
     virtual void startNativeViewer(Rcl::Doc);
     virtual void saveDocToFile(Rcl::Doc);
@@ -87,9 +87,7 @@ public slots:
     virtual void previewExposed(Preview *, int sid, int docnum);
     virtual void resetSearch();
     virtual void eraseDocHistory();
-    // Callback for setting the stemming language through the prefs menu
     virtual void setStemLang(QAction *id);
-    // Prefs menu about to show, set the checked lang entry
     virtual void adjustPrefsMenu();
     virtual void catgFilter(int);
     virtual void initDbOpen();
