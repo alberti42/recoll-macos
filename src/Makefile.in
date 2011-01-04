@@ -12,10 +12,11 @@ QMAKE = @QMAKE@
 QTGUI = @QTGUI@
 
 all: mk/sysconf common/rclversion.h
-	cd lib; ${MAKE}
-	cd index; ${MAKE} recollindex
-	@NOQTMAKE@cd $(QTGUI); ${QMAKE} recoll.pro; ${MAKE} depth=.. 
-	@NOCMDLINE@ cd query; ${MAKE} recollq
+	${MAKE} -C lib
+	${MAKE} -C index recollindex
+	@NOQTMAKE@(cd $(QTGUI); ${QMAKE} recoll.pro)
+	@NOQTMAKE@${MAKE} -C $(QTGUI) depth=..
+	@NOCMDLINE@ ${MAKE} -C query recollq
 
 mk/sysconf:
 	@echo "You need to run configure first" ; exit 1
@@ -25,31 +26,32 @@ ${versfile} : VERSION
 	echo 'static const char *rclversionstr = "'`cat VERSION`'";'>> ${versfile}
 
 static: mk/sysconf common/rclversion.h
-	cd lib; ${MAKE}
-	cd index; rm -f recollindex; \
-	  ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic \
+	${MAKE} -C lib
+	rm -f index/recollindex
+	${MAKE} -C index BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic \
             LIBXAPIANSTATICEXTRA="@LIBXAPIANSTATICEXTRA@" \
 	       recollindex 
-	@NOQTMAKE@cd $(QTGUI); $(QMAKE) recoll.pro; \
-	@NOQTMAKE@ rm -f recoll; \
-	@NOQTMAKE@ ${MAKE} BSTATIC=-Wl,-Bstatic \
+	@NOQTMAKE@(cd $(QTGUI); $(QMAKE) recoll.pro)
+	@NOQTMAKE@rm -f $(QTGUI)/recoll
+	@NOQTMAKE@${MAKE} -C $(QTGUI) BSTATIC=-Wl,-Bstatic \
 	@NOQTMAKE@   BDYNAMIC=-Wl,-Bdynamic depth=.. \
 	@NOQTMAKE@   LIBXAPIANSTATICEXTRA="@LIBXAPIANSTATICEXTRA@"
 
 clean:
-	-cd common; ${MAKE} clean
-	-cd index; ${MAKE} clean
-	-cd internfile; ${MAKE} clean
-	-cd lib; ${MAKE} clean
-	-cd query; ${MAKE} clean
-	-cd utils; ${MAKE} clean
-        #cd doc/user; ${MAKE} clean
-	@NOQTMAKE@@-cd qtgui; ${MAKE} clean
-	@NOCMDLINE@ cd query; ${MAKE} clean
+	${MAKE} -C common clean
+	${MAKE} -C index clean
+	${MAKE} -C internfile clean
+	${MAKE} -C lib clean
+	${MAKE} -C query clean
+	${MAKE} -C utils clean
+	@NOQTMAKE@@-${MAKE} -C $(QTGUI) clean
 	rm -f qtgui/Makefile qtgui/confgui/Makefile qtgui/recoll
 	rm -f common/rclversion.h
+	rm -f filters/rclexecm.pyc
 	rm -rf qtgui/.moc qtgui/.ui qtgui/confgui/.moc qtgui/confgui/.ui
 	rm -rf qtgui/.obj qtgui/.moc qtgui/.ui 
+	rm -rf python/recoll/build
+	rm -rf $(QTGUI)/recoll.app
 
 # Note: we don't remove the top Makefile, to keep the "clean" targets
 # available but a "Make" won't work without a configure anyway
@@ -61,7 +63,6 @@ distclean: clean
 	   lib/*.dep common/autoconfig.h
 	rm -f index/alldeps lib/alldeps query/alldeps bincimapmime/alldeps
 	rm -rf autom4te.cache
-	rm -f filters/rclexecm.pyc
 
 maintainer-clean: distclean
 	rm -f doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest
