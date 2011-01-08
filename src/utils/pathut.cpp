@@ -548,7 +548,7 @@ int Pidfile::remove()
 }
 
 #else // TEST_PATHUT
-
+#include <stdlib.h>
 #include <iostream>
 using namespace std;
 

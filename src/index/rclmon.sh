@@ -19,7 +19,7 @@
 
 ###################
 # Start/stop a recollindex program running as permanent real time indexer.
-# The running program writes its pid in $RECOLL_CONFDIR/rclmonpid
+# The running program writes its pid in $RECOLL_CONFDIR/index.pid
 # The portability of this script has not been fully tested.
 #
 
@@ -40,7 +40,7 @@ export LANG=C
 RECOLL_CONFDIR=${RECOLL_CONFDIR:-$HOME/.recoll}
 #echo RECOLL_CONFDIR = ${RECOLL_CONFDIR}
 
-pidfile="${RECOLL_CONFDIR}/rclmonpid"
+pidfile="${RECOLL_CONFDIR}/index.pid"
 opid=0
 
 

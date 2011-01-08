@@ -50,7 +50,7 @@ trmd5.o : md5.cpp md5.h
 
 PATHUT_OBJS= trpathut.o  $(BIGLIB)
 trpathut : $(PATHUT_OBJS) 
-	$(CXX) $(ALL_CXXFLAGS) -o trpathut $(PATHUT_OBJS)  $(LIBICONV)
+	$(CXX) $(ALL_CXXFLAGS) -o trpathut $(PATHUT_OBJS)  $(LIBICONV) $(LIBSYS)
 trpathut.o : pathut.cpp pathut.h
 	$(CXX) -o trpathut.o -c $(ALL_CXXFLAGS) -DTEST_PATHUT pathut.cpp
 
