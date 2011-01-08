@@ -61,9 +61,8 @@ unix {
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
               ../utils ../aspell ../rcldb \
-              ../qtgui ../../qtgui \
-              confgui ../confgui
-
+              confgui
+  DEPENDPATH += $$INCLUDEPATH
   POST_TARGETDEPS = ../lib/librcl.a
 }
 
