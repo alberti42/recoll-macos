@@ -101,4 +101,30 @@ private:
     string m_reason;
 };
 
+/// Lock/pid file class. This is quite close to the pidfile_xxx
+/// utilities in FreeBSD with a bit more encapsulation. I'd have used
+/// the freebsd code if it was available elsewhere
+class Pidfile {
+public:
+    Pidfile(const string& path)	: m_path(path), m_fd(-1) {}
+    ~Pidfile();
+    /// Open/create the pid file.
+    /// @return 0 if ok, > 0 for pid of existing process, -1 for other error.
+    pid_t open();
+    /// Write pid into the pid file
+    /// @return 0 ok, -1 error
+    int write_pid();
+    /// Close the pid file (unlocks)
+    int close();
+    /// Delete the pid file
+    int remove();
+    const string& getreason() {return m_reason;}
+private:
+    string m_path;
+    int    m_fd;
+    string m_reason;
+    pid_t read_pid();
+    int flopen();
+};
+
 #endif /* _PATHUT_H_INCLUDED_ */

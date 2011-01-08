@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <unistd.h>
 /*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,6 +15,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 #include <qthread.h>
 #include <qmutex.h>
@@ -27,6 +28,7 @@
 #include "idxthread.h"
 #include "smallut.h"
 #include "rclinit.h"
+#include "pathut.h"
 
 static int stopindexing;
 static int startindexing;
@@ -79,16 +81,26 @@ void IdxThread::run()
 	    myconf->setKeyDir("");
 	    myconf->getConfParam("loglevel", &loglevel);
 	    DebugLog::getdbl()->setloglevel(loglevel);
-	    ConfIndexer *indexer = new ConfIndexer(myconf, this);
-	    if (indexer->index(rezero, ConfIndexer::IxTAll)) {
-		indexingstatus = IDXTS_OK;
-		indexingReason = "";
-	    } else {
+
+	    Pidfile pidfile(myconf->getPidfile());
+	    if (pidfile.open() != 0) {
 		indexingstatus = IDXTS_ERROR;
-		indexingReason = "Indexing failed: " + indexer->getReason();
+		indexingReason = "Indexing failed: other process active? " + 
+		    pidfile.getreason();
+	    } else {
+		pidfile.write_pid();
+		ConfIndexer *indexer = new ConfIndexer(myconf, this);
+		if (indexer->index(rezero, ConfIndexer::IxTAll)) {
+		    indexingstatus = IDXTS_OK;
+		    indexingReason = "";
+		} else {
+		    indexingstatus = IDXTS_ERROR;
+		    indexingReason = "Indexing failed: " + indexer->getReason();
+		}
+		pidfile.close();
+		delete indexer;
 	    }
 	    rezero = false;
-	    delete indexer;
             action_mutex.lock();
 	}
 

@@ -850,6 +850,10 @@ string RclConfig::getStopfile()
 {
     return path_cat(getConfDir(), "stoplist.txt");
 }
+string RclConfig::getPidfile()
+{
+    return path_cat(getConfDir(), "index.pid");
+}
 
 list<string>& RclConfig::getSkippedNames()
 {

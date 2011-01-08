@@ -26,7 +26,11 @@ static char rcsid[] = "@(#$Id: pathut.cpp,v 1.23 2008-11-24 15:47:40 dockes Exp 
 #include <sys/param.h>
 #include <pwd.h>
 #include <math.h>
+#include <errno.h>
 #include <sys/types.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+
 // Let's include all files where statfs can be defined and hope for no
 // conflict...
 #ifdef HAVE_SYS_MOUNT_H 
@@ -452,6 +456,96 @@ bool printableUrl(const string &fcharset, const string &in, string &out)
     return true;
 }
 
+
+Pidfile::~Pidfile()
+{
+    if (m_fd >= 0)
+	::close(m_fd);
+    m_fd = -1;
+}
+
+pid_t Pidfile::read_pid()
+{
+    int fd = ::open(m_path.c_str(), O_RDONLY);
+    if (fd == -1)
+	return (pid_t)-1;
+
+    char buf[16];
+    int error;
+    int i = read(fd, buf, sizeof(buf) - 1);
+    error = errno;
+    ::close(fd);
+    if (i <= 0)
+	return (pid_t)-1;
+    buf[i] = '\0';
+    char *endptr;
+    pid_t pid = strtol(buf, &endptr, 10);
+    if (endptr != &buf[i])
+	return (pid_t)-1;
+    return pid;
+}
+
+int Pidfile::flopen()
+{
+    const char *path = m_path.c_str();
+    int operation = LOCK_EX | LOCK_NB;
+    if ((m_fd = ::open(path, O_RDWR|O_CREAT, 0644)) == -1) {
+	m_reason = "Open failed";
+	return -1;
+    }
+    if (flock(m_fd, operation) == -1) {
+	int serrno = errno;
+	(void)::close(m_fd);
+	errno = serrno;
+	m_reason = "flock failed";
+	return -1;
+    }
+    if (ftruncate(m_fd, 0) != 0) {
+	/* can't happen [tm] */
+	int serrno = errno;
+	(void)::close(m_fd);
+	errno = serrno;
+	m_reason = "ftruncate failed";
+	return -1;
+    }
+    return 0;
+}
+
+pid_t Pidfile::open()
+{
+    if (flopen() < 0) {
+	return read_pid();
+    }
+    return (pid_t)0;
+}
+
+int Pidfile::write_pid()
+{
+    /* truncate to allow multiple calls */
+    if (ftruncate(m_fd, 0) == -1) {
+	m_reason = "ftruncate failed";
+	return -1;
+    }
+    char pidstr[20];
+    sprintf(pidstr, "%u", int(getpid()));
+    lseek(m_fd, 0, 0);
+    if (::write(m_fd, pidstr, strlen(pidstr)) != (ssize_t)strlen(pidstr)) {
+	m_reason = "write failed";
+	return -1;
+    }
+    return 0;
+}
+
+int Pidfile::close()
+{
+    return ::close(m_fd);
+}
+
+int Pidfile::remove()
+{
+    return unlink(m_path.c_str());
+}
+
 #else // TEST_PATHUT
 
 #include <iostream>
@@ -522,7 +616,7 @@ int main(int argc, const char **argv)
     }
 #endif
 
-#if 1
+#if 0
     if (argc != 1) {
 	fprintf(stderr, "Usage: fsocc: trpathut <path>\n");
 	exit(1);
@@ -537,6 +631,21 @@ int main(int argc, const char **argv)
   }
   printf("pc %d, megabytes %ld\n", pc, blocks);
 #endif
+
+#if 1
+  Pidfile pidfile("/tmp/pathutpidfile");
+  pid_t pid;
+  if ((pid = pidfile.open()) != 0) {
+      cerr << "open failed. reason: " << pidfile.getreason() << 
+	  " return " << pid << endl;
+      exit(1);
+  }
+  pidfile.write_pid();
+  sleep(10);
+  pidfile.close();
+  pidfile.remove();
+#endif
+
     return 0;
 }
 

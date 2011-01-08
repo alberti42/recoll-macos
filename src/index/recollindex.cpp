@@ -206,6 +206,16 @@ RclConfig *RclConfig::getMainConfig()
     return config;
 }
 
+void lockorexit(Pidfile *pidfile)
+{
+    pid_t pid;
+    if ((pid = pidfile->open()) != 0) {
+	cerr << "Can't become exclusive indexer: " << pidfile->getreason() << 
+	    ". Return (other pid?): " << pid << endl;
+	exit(1);
+    }
+}
+
 int main(int argc, const char **argv)
 {
     string a_config;
@@ -268,12 +278,16 @@ int main(int argc, const char **argv)
 	exit(1);
     }
     bool rezero(op_flags & OPT_z);
+    Pidfile pidfile(config->getPidfile());
 
     if (setpriority(PRIO_PGRP, 0, 20) != 0) {
         LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
     }
-    
+
     if (op_flags & (OPT_i|OPT_e)) {
+	lockorexit(&pidfile);
+	pidfile.write_pid();
+
 	list<string> filenames;
 
 	if (argc == 0) {
@@ -316,6 +330,7 @@ int main(int argc, const char **argv)
     } else if (op_flags & OPT_m) {
 	if (argc != 0) 
 	    Usage();
+	lockorexit(&pidfile);
 	if (!(op_flags&OPT_D)) {
 	    LOGDEB(("recollindex: daemonizing\n"));
 	    daemon(0,0);
@@ -325,6 +340,7 @@ int main(int argc, const char **argv)
         if (setpriority(PRIO_PGRP, 0, 20) != 0) {
             LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
         }
+	pidfile.write_pid();
 	if (sleepsecs > 0) {
 	    LOGDEB(("recollindex: sleeping %d\n", sleepsecs));
 	    sleep(sleepsecs);
@@ -356,6 +372,8 @@ int main(int argc, const char **argv)
         cerr << "Not yet" << endl;
         return 1;
     } else {
+	lockorexit(&pidfile);
+	pidfile.write_pid();
 	confindexer = new ConfIndexer(config, &updater);
 	bool status = confindexer->index(rezero, ConfIndexer::IxTAll);
 	if (!status) 

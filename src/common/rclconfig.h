@@ -135,6 +135,8 @@ class RclConfig {
     string getDbDir();
     /** Get stoplist file name */
     string getStopfile();
+    /** Get indexing pid file */
+    string getPidfile();
 
     /** Get list of skipped file names for current keydir */
     list<string>& getSkippedNames();
