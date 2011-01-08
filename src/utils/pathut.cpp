@@ -21,6 +21,7 @@ static char rcsid[] = "@(#$Id: pathut.cpp,v 1.23 2008-11-24 15:47:40 dockes Exp 
 #ifndef TEST_PATHUT
 #include "autoconfig.h"
 
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/param.h>
