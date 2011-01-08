@@ -127,6 +127,7 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
 .txt = text/x-gaim-log
 [~/.purple]
 .txt = text/x-purple-log
+.html = text/x-purple-html-log
 
 # Special handling of aptosid manual menu system
 [/usr/share/aptosid-manual]

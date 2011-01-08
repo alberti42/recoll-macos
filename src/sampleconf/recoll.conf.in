@@ -185,3 +185,7 @@ localfields = rclaptg=gnuinfo
 # Enable thunderbird mbox format quirks where appropriate
 [~/.thunderbird]
 mhmboxquirks = tbird
+
+# pidgin / purple directories for irc chats have names beginning with #
+[~/.purple]
+skippedNames = 
