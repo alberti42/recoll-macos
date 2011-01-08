@@ -188,12 +188,24 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
         // string and instanciate handler object
         string::size_type b1 = hs.find_first_of(" \t");
         string handlertype = hs.substr(0, b1);
+	string cmdstr;
+	if (b1 != string::npos) {
+	    cmdstr = hs.substr(b1);
+            trimstring(cmdstr);
+	}
 	if (!stringlowercmp("internal", handlertype)) {
+	    // If there is a parameter after "internal" it's the mime
+	    // type to use. This is so that we can have bogus mime
+	    // types like text/x-purple-html-log (for ie: specific
+	    // icon) and still use the html filter on them. This is
+	    // partly redundant with the localfields/rclaptg, but
+	    // better and the latter will probably go away at some
+	    // point in the future
+	    if (!cmdstr.empty())
+		return mhFactory(cmdstr);
 	    return mhFactory(mtype);
 	} else if (!stringlowercmp("dll", handlertype)) {
 	} else {
-            string cmdstr = hs.substr(b1);
-            trimstring(cmdstr);
             if (cmdstr.empty()) {
 		LOGERR(("getMimeHandler: bad line for %s: %s\n", 
 			mtype.c_str(), hs.c_str()));
