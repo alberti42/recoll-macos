@@ -350,7 +350,13 @@ static const  char *frompat =
 "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?"                  // Time, secs optional
     ;
 
+// Extreme thunderbird brokiness. Will sometimes use From lines
+// exactly like: From ^M (From followed by space and eol). We only
+// test for this if QUIRKS_TBIRD is set
+static const char *miniTbirdFrom = "^From $";
+
 static regex_t fromregex;
+static regex_t minifromregex;
 static bool regcompiled;
 
 bool MimeHandlerMbox::next_document()
@@ -378,6 +384,7 @@ bool MimeHandlerMbox::next_document()
 
     if (!regcompiled) {
 	regcomp(&fromregex, frompat, REG_NOSUB|REG_EXTENDED);
+	regcomp(&minifromregex, miniTbirdFrom, REG_NOSUB|REG_EXTENDED);
 	regcompiled = true;
     }
 
@@ -398,7 +405,9 @@ bool MimeHandlerMbox::next_document()
             (off = mcache.get_offset(m_udi, mtarg)) >= 0 && 
             fseeko(fp, (off_t)off, SEEK_SET) >= 0 && 
             fgets(line, LL, fp) &&
-            !regexec(&fromregex, line, 0, 0, 0)) {
+            (!regexec(&fromregex, line, 0, 0, 0) || 
+	     ((m_quirks & MBOXQUIRK_TBIRD) && 
+	      !regexec(&minifromregex, line, 0, 0, 0)))	) {
                 LOGDEB0(("MimeHandlerMbox: Cache: From_ Ok\n"));
                 fseeko(fp, (off_t)off, SEEK_SET);
                 m_msgnum = mtarg -1;
@@ -437,7 +446,9 @@ bool MimeHandlerMbox::next_document()
 		    // the best
 		    hademptyline = false;
 		}
-		if (!regexec(&fromregex, line, 0, 0, 0)) {
+		if (!regexec(&fromregex, line, 0, 0, 0) || 
+		    ((m_quirks & MBOXQUIRK_TBIRD) && 
+		     !regexec(&minifromregex, line, 0, 0, 0)) ) {
 		    LOGDEB1(("MimeHandlerMbox: msgnum %d, "
 		     "From_ at line %d: [%s]\n", m_msgnum, m_lineno, line));
 		    m_offsets.push_back(message_end);
