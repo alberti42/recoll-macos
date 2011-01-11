@@ -93,7 +93,7 @@ public slots:
     virtual void saveColWidths();
     virtual void setDocSource(RefCntr<DocSequence> nsource);
     virtual void resetSource();
-    virtual void readDocSource();
+    virtual void readDocSource(bool resetPos = true);
     virtual void onSortDataChanged(DocSeqSortSpec);
     virtual void linkWasClicked(const QUrl&);
     virtual void createHeaderPopupMenu(const QPoint&);

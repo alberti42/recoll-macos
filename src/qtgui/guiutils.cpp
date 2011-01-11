@@ -197,9 +197,10 @@ void rwSettings(bool writing)
 	prefs.restableFields = 
 	    settings.value("/Recoll/prefs/query/restableFields").toStringList();
 	if (prefs.restableFields.empty()) {
-	    prefs.restableFields.push_back("filename");
-	    prefs.restableFields.push_back("title");
 	    prefs.restableFields.push_back("date");
+	    prefs.restableFields.push_back("title");
+	    prefs.restableFields.push_back("filename");
+	    prefs.restableFields.push_back("author");
 	    prefs.restableFields.push_back("url");
 	}
     }
@@ -215,7 +216,7 @@ void rwSettings(bool writing)
 	}
     }
     SETTING_RW(rtcw, "/Recoll/prefs/query/restableWidths", String, 
-	       "");
+	       "83 253 132 172 130 ");
     if (!writing) {
 	vector<string> widths;
 	stringToStrings((const char *)rtcw.toUtf8(), widths);

@@ -14,6 +14,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include <QAbstractTableModel>
 #include <QSettings>
 #include <QMenu>
+#include <QScrollBar>
 
 #include "refcntr.h"
 #include "docseq.h"
@@ -329,8 +330,17 @@ void ResTable::init()
 	    this, SLOT(onTableView_currentChanged(const QModelIndex&)));
 
     m_pager = new ResTablePager(this);
+
     QSettings settings;
-    splitter->restoreState(settings.value("resTableSplitterSizes").toByteArray());
+    QVariant saved = settings.value("resTableSplitterSizes");
+    if (saved != QVariant()) {
+	splitter->restoreState(saved.toByteArray());
+    } else {
+	QList<int> sizes;
+	sizes << 355 << 125;
+	splitter->setSizes(sizes);
+    }
+
     textBrowser->setReadOnly(TRUE);
     textBrowser->setUndoRedoEnabled(FALSE);
     textBrowser->setOpenLinks(FALSE);
@@ -383,7 +393,7 @@ void ResTable::saveColWidths()
 
 void ResTable::onTableView_currentChanged(const QModelIndex& index)
 {
-    LOGDEB(("ResTable::onTableView_currentChanged(%d, %d)\n", 
+    LOGDEB0(("ResTable::onTableView_currentChanged(%d, %d)\n", 
 	    index.row(), index.column()));
 
     if (!m_model || m_model->getDocSource().isNull())
@@ -400,7 +410,7 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
 
 void ResTable::on_tableView_entered(const QModelIndex& index)
 {
-    LOGDEB(("ResTable::on_tableView_entered(%d, %d)\n", 
+    LOGDEB0(("ResTable::on_tableView_entered(%d, %d)\n", 
 	    index.row(), index.column()));
     if (!tableView->selectionModel()->hasSelection())
 	onTableView_currentChanged(index);
@@ -432,8 +442,11 @@ void ResTable::onSortDataChanged(DocSeqSortSpec)
     header->setSortIndicator(-1, Qt::AscendingOrder);
 }
 
-void ResTable::readDocSource()
+void ResTable::readDocSource(bool resetPos)
 {
+    if (resetPos)
+	tableView->verticalScrollBar()->setSliderPosition(0);
+
     m_model->readDocSource();
     textBrowser->clear();
 }

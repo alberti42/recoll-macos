@@ -73,7 +73,7 @@ public:
 	    sortterm = term;
 	}
 	// Also remove some common uninteresting starting characters
-	i1 = sortterm.find_first_not_of(" \t\\\"([*+,");
+	i1 = sortterm.find_first_not_of(" \t\\\"'([*+,.#/");
 	if (i1 != 0 && i1 != string::npos) {
 	    sortterm = sortterm.substr(i1, sortterm.size()-i1);
 	}
