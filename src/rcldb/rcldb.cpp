@@ -1383,13 +1383,16 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
     string pattern = fnexp;
     names.clear();
 
-    // If pattern is not quoted, and has no wildcards, we add * at
+    // If pattern is not capitalized, not quoted (quoted pattern can't
+    // get here currently anyway), and has no wildcards, we add * at
     // each end: match any substring
     if (pattern[0] == '"' && pattern[pattern.size()-1] == '"') {
 	pattern = pattern.substr(1, pattern.size() -2);
-    } else if (pattern.find_first_of("*?[") == string::npos) {
+    } else if (pattern.find_first_of("*?[") == string::npos && 
+	       !unaciscapital(pattern)) {
 	pattern = "*" + pattern + "*";
     } // else let it be
+
     LOGDEB(("Rcl::Db::filenameWildExp: pattern: [%s]\n", pattern.c_str()));
 
     TermMatchResult result;

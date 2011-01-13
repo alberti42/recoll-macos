@@ -403,24 +403,14 @@ class TextSplitQ : public TextSplit {
 	LOGDEB1(("TextSplitQ::takeword: %s\n", interm.c_str()));
 
 	// Check if the first letter is a majuscule in which
-	// case we do not want to do stem expansion. Note that
-	// the test is convoluted and possibly problematic
-	string noacterm, noaclowterm;
-	if (!unacmaybefold(interm, noacterm, "UTF-8", false)) {
+	// case we do not want to do stem expansion. 
+	bool nostemexp = unaciscapital(interm);
+	string noaclowterm;
+	if (!unacmaybefold(interm, noaclowterm, "UTF-8", true)) {
 	    LOGINFO(("SearchData::splitter::takeword: unac failed for [%s]\n", 
                      interm.c_str()));
 	    return true;
-	} 
-	if (!unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
-	    LOGINFO(("SearchData::splitter::takeword: unac failed for [%s]\n", 
-                     noacterm.c_str()));
-	    return true;
 	}
-	bool nostemexp = false;
-	Utf8Iter it1(noacterm);
-	Utf8Iter it2(noaclowterm);
-	if (*it1 != *it2)
-	    nostemexp = true;
 
 	if (stops.hasStops() && stops.isStop(noaclowterm)) {
 	    LOGDEB1(("TextSplitQ::takeword [%s] in stop list\n", 
@@ -828,8 +818,15 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
     return true;
 }
 
-// Translate a FILENAME search clause. Actually this is now mostly
-// a "filename" field search.
+// Translate a FILENAME search clause. This mostly (or always) comes
+// from a "filename" search from the gui or recollq. A query language
+// "filename:"-prefixed field will not go through here, but through
+// the generic field-processing code.
+//
+// In the case of multiple space-separated fragments, we generate an
+// AND of OR queries. Each OR query comes from the expansion of a
+// fragment. We used to generate a single OR with all expanded terms,
+// which did not make much sense.
 bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p, 
 					     const string&)
 {
@@ -843,10 +840,10 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
 	 it != patterns.end(); it++) {
 	list<string> more;
 	db.filenameWildExp(*it, more);
-	names.splice(names.end(), more);
+	Xapian::Query tq = Xapian::Query(Xapian::Query::OP_OR, more.begin(), 
+					 more.end());
+	*qp = qp->empty() ? tq : Xapian::Query(Xapian::Query::OP_AND, *qp, tq);
     }
-    // Build a query out of the matching file name terms.
-    *qp = Xapian::Query(Xapian::Query::OP_OR, names.begin(), names.end());
     return true;
 }
 

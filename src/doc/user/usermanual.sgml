@@ -683,11 +683,40 @@ fvwm
 
       <para><guilabel>File name</guilabel> will specifically look for file
         names. The entry will be split at white space characters,
-        and each pattern will be separately expanded. If you want
-        to search for a pattern including white space, use
-        double quotes. The point of having a separate file name
+        and each fragment will be separately expanded, then the search will
+        be for file names matching all fragments (this is new in 1.15,
+        older releases did an OR of the whole thing which did not make
+        sense). Things to know:
+        <itemizedlist>
+            <listitem><para>The search is case- and accent-insensitive.</para>
+            </listitem>
+            <listitem><para>Fragments without any wild card
+            character and not capitalized will be prepended and appended
+            with '*' (ie: <replaceable>etc</replaceable> ->
+            <replaceable>*etc*</replaceable>, but
+            <replaceable>Etc</replaceable> ->
+            <replaceable>etc</replaceable>). Of course it does not make
+            sense to have multiple fragments if one of them is capitalized
+            (as this one will require an exact match).</para> 
+            </listitem>
+            <listitem><para>If you want to search for a pattern including
+            white space, use double quotes (ie: <replaceable>"admin
+            note*"</replaceable>).</para> 
+            </listitem>
+            <listitem><para>If you have a big index (many files),
+            excessively generic fragments may result in inefficient
+            searches.</para>
+            </listitem>
+            <listitem><para>As an example, <replaceable>inst
+            recoll</replaceable> would match
+            <replaceable>recollinstall.in</replaceable> (and quite a few
+            others...).</para> 
+            </listitem>
+          </itemizedlist>
+        The point of having a separate file name
         search is that wild card expansion can be performed more
-        efficiently on a relatively small subset of the index.</para>
+        efficiently on a relatively small subset of the index (allowing
+        wild cards on the left of terms without excessive penality).</para>
 
       <para>The fourth entry (<guilabel>Query Language</guilabel>) is
       described in <link linkend="rcl.search.lang">its own

@@ -25,15 +25,12 @@ static char rcsid[] = "@(#$Id: unacpp.cpp,v 1.9 2007-12-13 06:58:21 dockes Exp $
 
 #include <string>
 
-#ifndef NO_NAMESPACES
-using std::string;
-#endif /* NO_NAMESPACES */
-
 #include "unacpp.h"
 #include "unac.h"
+#include "debuglog.h"
+#include "utf8iter.h"
 
-
-bool unacmaybefold(const std::string &in, std::string &out, 
+bool unacmaybefold(const string &in, string &out, 
 		   const char *encoding, bool dofold)
 {
     char *cout = 0;
@@ -54,6 +51,31 @@ bool unacmaybefold(const std::string &in, std::string &out,
     if (cout)
 	free(cout);
     return true;
+}
+
+bool unaciscapital(const string& in)
+{
+    if (in.empty())
+	return false;
+    Utf8Iter it(in);
+    string shorter;
+    it.appendchartostring(shorter);
+
+    string noacterm, noaclowterm;
+    if (!unacmaybefold(shorter, noacterm, "UTF-8", false)) {
+	LOGINFO(("unaciscapital: unac failed for [%s]\n", in.c_str()));
+	return false;
+    } 
+    if (!unacmaybefold(noacterm, noaclowterm, "UTF-8", true)) {
+	LOGINFO(("unaciscapital: unacfold failed for [%s]\n", in.c_str()));
+	return false;
+    }
+    Utf8Iter it1(noacterm);
+    Utf8Iter it2(noaclowterm);
+    if (*it1 != *it2)
+	return true;
+    else
+	return false;
 }
 
 #else // not testing

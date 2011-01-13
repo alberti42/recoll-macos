@@ -20,7 +20,15 @@
 
 #include <string>
 
+#ifndef NO_NAMESPACES
+using std::string;
+#endif /* NO_NAMESPACES */
+
 // A small stringified wrapper for unac.c
-extern bool unacmaybefold(const std::string &in, std::string &out, 
+extern bool unacmaybefold(const string& in, string& out, 
 			  const char *encoding, bool dofold);
+
+// Utility function to determine if string begins with capital
+extern bool unaciscapital(const string& in);
+
 #endif /* _UNACPP_H_INCLUDED_ */
