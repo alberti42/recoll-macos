@@ -136,6 +136,7 @@
     </property>
     <addaction name="fileToggleIndexingAction"/>
     <addaction name="separator"/>
+    <addaction name="fileEraseSearchHistoryAction"/>
     <addaction name="fileEraseDocHistoryAction"/>
     <addaction name="showMissingHelpers_Action"/>
     <addaction name="separator"/>
@@ -202,6 +203,14 @@
    </property>
    <property name="name" stdset="0">
     <cstring>fileEraseDocHistoryAction</cstring>
+   </property>
+  </action>
+  <action name="fileEraseSearchHistoryAction">
+   <property name="text">
+    <string>&amp;Erase search history</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileEraseSearchHistoryAction</cstring>
    </property>
   </action>
   <action name="showMissingHelpers_Action">

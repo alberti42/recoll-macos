@@ -22,6 +22,9 @@ static char rcsid[] = "@(#$Id: docseq.cpp,v 1.11 2008-09-29 08:59:20 dockes Exp 
 #include "sortseq.h"
 #include "debuglog.h"
 
+string DocSequence::o_sort_trans;
+string DocSequence::o_filt_trans;
+
 int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
 {
     int ret = 0;
@@ -78,11 +81,10 @@ bool DocSource::buildStack()
     return true;
 }
 
-string DocSource::o_sort_trans;
-string DocSource::o_filt_trans;
-
 string DocSource::title()
 {
+    if (m_seq.isNull())
+	return "";
     string qual;
     if (m_fspec.isNotNull() && !m_sspec.isNotNull())
 	qual = string(" (") + o_filt_trans + string(")");

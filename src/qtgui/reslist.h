@@ -123,6 +123,7 @@ class ResList : public QTextBrowser
 	emit linkClicked(s, m_lstClckMod);
     };
     static int newListId();
+    void resetView();
 };
 
 

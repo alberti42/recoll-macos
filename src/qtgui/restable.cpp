@@ -252,8 +252,8 @@ QVariant RecollModel::headerData(int idx, Qt::Orientation orientation,
 
 QVariant RecollModel::data(const QModelIndex& index, int role) const
 {
-    LOGDEB2(("RecollModel::data: row %d col %d\n", index.row(),
-	    index.column()));
+    LOGDEB1(("RecollModel::data: row %d col %d\n", index.row(),
+	     index.column()));
     if (m_source.isNull() || role != Qt::DisplayRole || !index.isValid() ||
 	index.column() >= int(m_fields.size())) {
 	return QVariant();
@@ -285,7 +285,7 @@ void RecollModel::sort(int column, Qt::SortOrder order)
 	spec.desc = order == Qt::AscendingOrder ? false : true;
 	m_source->setSortSpec(spec);
 	readDocSource();
-	emit sortDataChanged(spec);
+	emit sortColumnChanged(spec);
     }
 }
 
@@ -444,6 +444,7 @@ void ResTable::onSortDataChanged(DocSeqSortSpec)
 
 void ResTable::readDocSource(bool resetPos)
 {
+    LOGDEB(("ResTable::readDocSource(%d)\n", int(resetPos)));
     if (resetPos)
 	tableView->verticalScrollBar()->setSliderPosition(0);
 

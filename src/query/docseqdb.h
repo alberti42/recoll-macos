@@ -23,8 +23,7 @@
 #include "searchdata.h"
 #include "rclquery.h"
 
-/** A DocSequence from a Db query (there should be one active for this
-    to make sense) */
+/** A DocSequence from a Db query */
 class DocSequenceDb : public DocSequence {
  public:
     DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
@@ -44,12 +43,12 @@ class DocSequenceDb : public DocSequence {
     virtual bool setFiltSpec(const DocSeqFiltSpec &filtspec);
     virtual bool canSort() {return true;} 
     virtual bool setSortSpec(const DocSeqSortSpec &sortspec);
-    virtual bool setQuery();
     virtual void setAbstractParams(bool qba, bool qra)
     {
         m_queryBuildAbstract = qba;
         m_queryReplaceAbstract = qra;
     }
+    virtual string title();
 
  private:
     RefCntr<Rcl::Query>      m_q;
@@ -58,6 +57,10 @@ class DocSequenceDb : public DocSequence {
     int                      m_rescnt;
     bool                     m_queryBuildAbstract;
     bool                     m_queryReplaceAbstract;
+    bool                     m_isFiltered;
+    bool                     m_isSorted;
+    bool   m_needSetQuery; // search data changed, need to reapply before fetch
+    bool setQuery();
 };
 
 #endif /* _DOCSEQDB_H_INCLUDED_ */

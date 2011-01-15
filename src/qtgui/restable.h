@@ -57,7 +57,7 @@ public:
     virtual void addColumn(int, const string&);
 
 signals:
-    void sortDataChanged(DocSeqSortSpec);
+    void sortColumnChanged(DocSeqSortSpec);
 
 private:
     mutable RefCntr<DocSequence> m_source;

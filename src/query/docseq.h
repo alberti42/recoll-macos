@@ -131,6 +131,14 @@ class DocSequence {
     virtual bool setSortSpec(const DocSeqSortSpec &) {return false;}
     virtual RefCntr<DocSequence> getSourceSeq() {return RefCntr<DocSequence>();}
 
+    static void set_translations(const string& sort, const string& filt)
+    {
+	o_sort_trans = sort;
+	o_filt_trans = filt;
+    }
+protected:
+    static string o_sort_trans;
+    static string o_filt_trans;
  private:
     string          m_title;
 };
@@ -147,20 +155,28 @@ public:
 
     virtual string getAbstract(Rcl::Doc& doc) 
     {
+	if (m_seq.isNull())
+	    return "";
 	return m_seq->getAbstract(doc);
     }
     virtual string getDescription() 
     {
+	if (m_seq.isNull())
+	    return "";
 	return m_seq->getDescription();
     }
     virtual bool getTerms(vector<string>& terms, 
 			  vector<vector<string> >& groups, 
 			  vector<int>& gslks) 
     {
+	if (m_seq.isNull())
+	    return false;
 	return m_seq->getTerms(terms, groups, gslks);
     }
     virtual void getUTerms(vector<string>& terms)
     {
+	if (m_seq.isNull())
+	    return;
 	m_seq->getUTerms(terms);
     }
     virtual string title() {return m_seq->title();}
@@ -183,16 +199,15 @@ public:
     virtual bool setSortSpec(const DocSeqSortSpec &);
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0)
     {
+	if (m_seq.isNull())
+	    return false;
 	return m_seq->getDoc(num, doc, sh);
     }
     virtual int getResCnt()
     {
+	if (m_seq.isNull())
+	    return 0;
 	return m_seq->getResCnt();
-    }
-    static void set_translations(const string& sort, const string& filt)
-    {
-	o_sort_trans = sort;
-	o_filt_trans = filt;
     }
     virtual string title();
 private:
@@ -200,8 +215,6 @@ private:
     void stripStack();
     DocSeqFiltSpec  m_fspec;
     DocSeqSortSpec  m_sspec;
-    static string o_sort_trans;
-    static string o_filt_trans;
 };
 
 #endif /* _DOCSEQ_H_INCLUDED_ */

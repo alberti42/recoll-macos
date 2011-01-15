@@ -87,6 +87,7 @@ public slots:
     virtual void previewExposed(Preview *, int sid, int docnum);
     virtual void resetSearch();
     virtual void eraseDocHistory();
+    virtual void eraseSearchHistory();
     virtual void setStemLang(QAction *id);
     virtual void adjustPrefsMenu();
     virtual void catgFilter(int);

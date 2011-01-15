@@ -30,7 +30,10 @@ DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t,
     : DocSequence(t), m_q(q), m_sdata(sdata), m_fsdata(sdata),
       m_rescnt(-1), 
       m_queryBuildAbstract(true),
-      m_queryReplaceAbstract(false)
+      m_queryReplaceAbstract(false),
+      m_isFiltered(false),
+      m_isSorted(false),
+      m_needSetQuery(false)
 {
 }
 
@@ -57,12 +60,14 @@ string DocSequenceDb::getDescription()
 
 bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, string *sh)
 {
+    setQuery();
     if (sh) sh->erase();
     return m_q->getDoc(num, doc);
 }
 
 int DocSequenceDb::getResCnt()
 {
+    setQuery();
     if (m_rescnt < 0) {
 	m_rescnt= m_q->getResCnt();
     }
@@ -71,6 +76,7 @@ int DocSequenceDb::getResCnt()
 
 string DocSequenceDb::getAbstract(Rcl::Doc &doc)
 {
+    setQuery();
     if (!m_q->whatDb())
 	return doc.meta[Rcl::Doc::keyabs];
     string abstract;
@@ -86,6 +92,7 @@ string DocSequenceDb::getAbstract(Rcl::Doc &doc)
 
 bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
 {
+    setQuery();
     string udi;
     if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
                                     udi))
@@ -95,7 +102,20 @@ bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
 
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)
 {
+    setQuery();
     return m_q->expand(doc);
+}
+
+string DocSequenceDb::title()
+{
+    string qual;
+    if (m_isFiltered && !m_isSorted)
+	qual = string(" (") + o_filt_trans + string(")");
+    else if (!m_isFiltered && m_isSorted)
+	qual = string(" (") + o_sort_trans + string(")");
+    else if (m_isFiltered && m_isSorted)
+	qual = string(" (") + o_sort_trans + string(",") + o_filt_trans + string(")");
+    return DocSequence::title() + qual;
 }
 
 bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs) 
@@ -114,10 +134,13 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
 		m_fsdata->addFiletype(fs.values[i]);
 	    }
 	}
+	m_isFiltered = true;
     } else {
 	m_fsdata = m_sdata;
+	m_isFiltered = false;
     }
-    return m_q->setQuery(m_fsdata);
+    m_needSetQuery = true;
+    return true;
 }
 
 bool DocSequenceDb::setSortSpec(const DocSeqSortSpec &spec) 
@@ -126,13 +149,20 @@ bool DocSequenceDb::setSortSpec(const DocSeqSortSpec &spec)
 	    spec.field.c_str(), spec.desc ? "desc" : "asc"));
     if (spec.isNotNull()) {
 	m_q->setSortBy(spec.field, !spec.desc);
+	m_isSorted = true;
     } else {
 	m_q->setSortBy(string(), true);
+	m_isSorted = false;
     }
-    return m_q->setQuery(m_fsdata);
+    m_needSetQuery = true;
+    return true;
 }
 
 bool DocSequenceDb::setQuery()
 {
-    return m_q->setQuery(m_fsdata);
+    if (!m_needSetQuery)
+	return true;
+    m_rescnt = -1;
+    m_needSetQuery = !m_q->setQuery(m_fsdata);
+    return !m_needSetQuery;
 }

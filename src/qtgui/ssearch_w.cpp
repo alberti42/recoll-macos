@@ -45,6 +45,10 @@ void SSearch::init()
     searchTypCMB->addItem(tr("File name"));
     searchTypCMB->addItem(tr("Query language"));
     
+    // We'd like to use QComboBox::InsertAtTop but it doesn't do lru
+    // (existing item stays at its place instead of jumping at top)
+    queryText->setInsertPolicy(QComboBox::NoInsert);
+
     queryText->addItems(prefs.ssearchHistory);
     queryText->setEditText("");
     connect(queryText->lineEdit(), SIGNAL(returnPressed()),
@@ -191,12 +195,10 @@ void SSearch::startSimpleSearch()
     // So do it by hand.
     QString txt = queryText->currentText();
     int index = queryText->findText(txt);
-    if (index > 0) 
+    if (index >= 0) 
 	queryText->removeItem(index);
-    // The combobox is set for no insertion, insert here:
     queryText->insertItem(0, txt);
     queryText->setCurrentIndex(0);
-
 
     // Save the current state of the listbox list to the prefs (will
     // go to disk)

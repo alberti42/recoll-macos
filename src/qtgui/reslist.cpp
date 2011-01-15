@@ -268,16 +268,17 @@ extern "C" int XFlush(void *);
 
 void ResList::setDocSource(RefCntr<DocSequence> nsource)
 {
+    LOGDEB(("ResList::setDocSource()\n"));
     m_source = RefCntr<DocSequence>(new DocSource(nsource));
 }
 
 // Reapply parameters. Sort params probably changed
 void ResList::readDocSource()
 {
-    LOGDEB(("ResList::readDocSource\n"));
+    LOGDEB(("ResList::readDocSource()\n"));
+    resetView();
     if (m_source.isNull())
 	return;
-    resetList();
     m_listId = newListId();
 
     // Reset the page size in case the preference was changed
@@ -287,19 +288,24 @@ void ResList::readDocSource()
     emit hasResults(m_source->getResCnt());
 }
 
-void ResList::setSortParams(DocSeqSortSpec spec)
+void ResList::setSortParams(DocSeqSortSpec)
 {
-    LOGDEB(("ResList::setSortParams\n"));
-    m_source->setSortSpec(spec);
+    LOGDEB2(("ResList::setSortParams\n"));
 }
 
-void ResList::setFilterParams(const DocSeqFiltSpec& spec)
+void ResList::setFilterParams(const DocSeqFiltSpec&)
 {
-    LOGDEB(("ResList::setFilterParams\n"));
-    m_source->setFiltSpec(spec);
+    LOGDEB2(("ResList::setFilterParams\n"));
 }
 
 void ResList::resetList() 
+{
+    LOGDEB(("ResList::resetList()\n"));
+    setDocSource(RefCntr<DocSequence>());
+    resetView();
+}
+
+void ResList::resetView() 
 {
     m_curPvDoc = -1;
     // There should be a progress bar for long searches but there isn't 

@@ -91,7 +91,7 @@ void RclMain::init()
             QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text"), 
 	    QT_TR_NOOP("sorted"), QT_TR_NOOP("filtered")
     };
-    DocSource::set_translations((const char *)tr("sorted").toUtf8(), 
+    DocSequence::set_translations((const char *)tr("sorted").toUtf8(), 
 				(const char *)tr("filtered").toUtf8());
     curPreview = 0;
     asearchform = 0;
@@ -225,6 +225,8 @@ void RclMain::init()
 	    this, SLOT(toggleIndexing()));
     connect(fileEraseDocHistoryAction, SIGNAL(activated()), 
 	    this, SLOT(eraseDocHistory()));
+    connect(fileEraseSearchHistoryAction, SIGNAL(activated()), 
+	    this, SLOT(eraseSearchHistory()));
     connect(helpAbout_RecollAction, SIGNAL(activated()), 
 	    this, SLOT(showAboutDialog()));
     connect(showMissingHelpers_Action, SIGNAL(activated()), 
@@ -262,7 +264,7 @@ void RclMain::init()
     connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
 	    restable, SLOT(onSortDataChanged(DocSeqSortSpec)));
 
-    connect(restable->getModel(), SIGNAL(sortDataChanged(DocSeqSortSpec)),
+    connect(restable->getModel(), SIGNAL(sortColumnChanged(DocSeqSortSpec)),
 	    this, SLOT(onResTableSortBy(DocSeqSortSpec)));
     connect(restable, SIGNAL(docEditClicked(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
@@ -605,6 +607,9 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     src->setAbstractParams(prefs.queryBuildAbstract, 
                            prefs.queryReplaceAbstract);
     m_source = RefCntr<DocSequence>(src);
+    m_source->setSortSpec(m_sortspec);
+    m_source->setFiltSpec(m_filtspec);
+
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
     emit filtDataChanged(m_filtspec);
@@ -881,6 +886,7 @@ void RclMain::onSortCtlChanged()
 	prefs.sortActive = prefs.sortDesc = false;
     }
     LOGDEB(("RclMain::onCtlDataChanged(): emitting change signals\n"));
+    m_source->setSortSpec(m_sortspec);
     emit sortDataChanged(m_sortspec);
     emit applyFiltSortData();
 }
@@ -904,13 +910,8 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
 {
     LOGDEB(("RclMain::on_actionShowResultsAsTable_toggled(%d)\n", int(on)));
     prefs.showResultsAsTable = on;
-    if (on) {
-	restable->show();
-	reslist->hide();
-    } else {
-	restable->hide();
-	reslist->show();
-    }
+    restable->setVisible(on);
+    reslist->setVisible(!on);
 }
 
 void RclMain::on_actionSortByDateAsc_toggled(bool on)
@@ -1259,6 +1260,8 @@ void RclMain::showDocHistory()
 			       string(tr("Document history").toUtf8()));
     src->setDescription((const char *)tr("History data").toUtf8());
     m_source = RefCntr<DocSequence>(src);
+    m_source->setSortSpec(m_sortspec);
+    m_source->setFiltSpec(m_filtspec);
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
     emit filtDataChanged(m_filtspec);
@@ -1275,6 +1278,13 @@ void RclMain::eraseDocHistory()
     if (reslist->displayingHistory()) {
 	showDocHistory();
     }
+}
+
+
+void RclMain::eraseSearchHistory()
+{
+    prefs.ssearchHistory.clear();
+    sSearch->queryText->clear();
 }
 
 // Called when the uiprefs dialog is ok'd
@@ -1338,6 +1348,7 @@ void RclMain::catgFilter(int id)
 	     it != tps.end(); it++) 
 	    m_filtspec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);
     }
+    m_source->setFiltSpec(m_filtspec);
     emit filtDataChanged(m_filtspec);
     emit applyFiltSortData();
 }
