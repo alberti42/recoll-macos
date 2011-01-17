@@ -146,8 +146,16 @@ FieldGetter *RecollModel::chooseGetter(const string& field)
 	return gengetter;
 }
 
+string RecollModel::baseField(const string& field)
+{
+    if (!stringlowercmp("date", field) || !stringlowercmp("datetime", field))
+	return "mtime";
+    else
+	return field;
+}
+
 RecollModel::RecollModel(const QStringList fields, QObject *parent)
-    : QAbstractTableModel(parent)
+    : QAbstractTableModel(parent), m_ignoreSort(false)
 {
     // Add dynamic "stored" fields to the full column list. This
     // could be protected to be done only once, but it's no real
@@ -187,6 +195,7 @@ int RecollModel::columnCount(const QModelIndex&) const
 
 void RecollModel::readDocSource()
 {
+    LOGDEB(("RecollModel::readDocSource()\n"));
     beginResetModel();
     endResetModel();
 }
@@ -271,22 +280,22 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
     return QString::fromUtf8(m_getters[index.column()](colname, doc).c_str());
 }
 
-// This is called when the column headers are clicked
+// This gets called when the column headers are clicked
 void RecollModel::sort(int column, Qt::SortOrder order)
 {
+    if (m_ignoreSort)
+	return;
     LOGDEB(("RecollModel::sort(%d, %d)\n", column, int(order)));
     
-    if (m_source.isNotNull() && column >= 0 && column < int(m_fields.size())) {
-	DocSeqSortSpec spec;
+    DocSeqSortSpec spec;
+    if (column >= 0 && column < int(m_fields.size())) {
 	spec.field = m_fields[column];
 	if (!stringlowercmp("date", spec.field) || 
 	    !stringlowercmp("datetime", spec.field))
 	    spec.field = "mtime";
 	spec.desc = order == Qt::AscendingOrder ? false : true;
-	m_source->setSortSpec(spec);
-	readDocSource();
-	emit sortColumnChanged(spec);
-    }
+    } 
+    emit sortColumnChanged(spec);
 }
 
 /////////////////////////// 
@@ -434,12 +443,40 @@ void ResTable::resetSource()
 }
 
 // This is called when the sort order is changed from another widget
-void ResTable::onSortDataChanged(DocSeqSortSpec)
+void ResTable::onSortDataChanged(DocSeqSortSpec spec)
 {
+    LOGDEB(("ResTable::onSortDataChanged: [%s] desc %d\n", 
+	    spec.field.c_str(), int(spec.desc)));
     QHeaderView *header = tableView->horizontalHeader();
-    if (!header)
+    if (!header || !m_model)
 	return;
-    header->setSortIndicator(-1, Qt::AscendingOrder);
+
+    // Check if the specified field actually matches one of columns
+    // and set indicator
+    m_model->setIgnoreSort(true);
+    bool matched = false;
+    const vector<string> fields = m_model->getFields();
+    for (unsigned int i = 0; i < fields.size(); i++) {
+	if (!spec.field.compare(m_model->baseField(fields[i]))) {
+	    header->setSortIndicator(i, spec.desc ? 
+				     Qt::DescendingOrder : Qt::AscendingOrder);
+	    matched = true;
+	}
+    }
+    if (!matched)
+	header->setSortIndicator(-1, Qt::AscendingOrder);
+    m_model->setIgnoreSort(false);
+}
+
+void ResTable::resetSort()
+{
+    LOGDEB(("ResTable::resetSort()\n"));
+    QHeaderView *header = tableView->horizontalHeader();
+    if (header)
+	header->setSortIndicator(-1, Qt::AscendingOrder); 
+    // the model's sort slot is not called by qt in this case (qt 4.7)
+    if (m_model)
+	m_model->sort(-1, Qt::AscendingOrder);
 }
 
 void ResTable::readDocSource(bool resetPos)
@@ -497,13 +534,20 @@ void ResTable::createHeaderPopupMenu(const QPoint& pos)
     const map<string, string>& allfields = m_model->getAllFields();
     const vector<string>& fields = m_model->getFields();
     QMenu *popup = new QMenu(this);
+
+    popup->addAction(tr("&Reset sort"), this, SLOT(resetSort()));
+    popup->addSeparator();
+
     popup->addAction(tr("&Delete column"), this, SLOT(deleteColumn()));
+    popup->addSeparator();
+
     QAction *act;
     for (map<string, string>::const_iterator it = allfields.begin();
 	 it != allfields.end(); it++) {
 	if (std::find(fields.begin(), fields.end(), it->first) != fields.end())
 	    continue;
-	act = new QAction(tr("Add ") + tr(it->second.c_str()), popup);
+	act = new QAction(tr("Add \"")+tr(it->second.c_str())+tr("\" column"),
+			  popup);
 	act->setData(QString::fromUtf8(it->first.c_str()));
 	connect(act, SIGNAL(triggered(bool)), this , SLOT(addColumn()));
 	popup->addAction(act);

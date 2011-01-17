@@ -902,6 +902,7 @@ void RclMain::onResTableSortBy(DocSeqSortSpec spec)
 	actionSortByDateAsc->setChecked(!spec.desc);
     }
     m_sortspecnochange = false;
+    m_source->setSortSpec(spec);
     m_sortspec = spec;
     emit applyFiltSortData();
 }

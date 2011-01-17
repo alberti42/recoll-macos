@@ -55,6 +55,12 @@ public:
 	return o_displayableFields;
     }
     virtual void addColumn(int, const string&);
+    // Some column name are aliases/translator for base document field 
+    // (ie: date, datetime->mtime). Help deal with this:
+    virtual string baseField(const string&);
+
+    // Ignore sort() call because 
+    virtual void setIgnoreSort(bool onoff) {m_ignoreSort = onoff;}
 
 signals:
     void sortColumnChanged(DocSeqSortSpec);
@@ -64,6 +70,7 @@ private:
     vector<string> m_fields;
     vector<FieldGetter*> m_getters;
     static map<string, string> o_displayableFields;
+    bool m_ignoreSort;
     FieldGetter* chooseGetter(const string&);
 };
 
@@ -99,7 +106,7 @@ public slots:
     virtual void createHeaderPopupMenu(const QPoint&);
     virtual void deleteColumn();
     virtual void addColumn();
-
+    virtual void resetSort(); // Revert to natural (relevance) order
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);
     void docEditClicked(Rcl::Doc);
