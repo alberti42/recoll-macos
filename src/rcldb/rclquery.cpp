@@ -321,12 +321,14 @@ bool Query::getDoc(int xapi, Doc &doc)
     Xapian::Document xdoc;
     Xapian::docid docid = 0;
     int pc = 0;
+    int collapsecount = 0;
     string data;
     string udi;
     m_reason.erase();
     for (int xaptries=0; xaptries < 2; xaptries++) {
         try {
             xdoc = m_nq->xmset[xapi-first].get_document();
+	    collapsecount = m_nq->xmset[xapi-first].get_collapse_count();
             docid = *(m_nq->xmset[xapi-first]);
             pc = m_nq->xmset.convert_to_percent(m_nq->xmset[xapi-first]);
             data = xdoc.get_data();
@@ -339,8 +341,8 @@ bool Query::getDoc(int xapi, Doc &doc)
                 if (!udi.empty())
                     udi = udi.substr(1);
             }
-            LOGDEB2(("Query::getDoc: %d ms to get udi [%s]\n", chron.millis(),
-                     udi.c_str()));
+            LOGDEB2(("Query::getDoc: %d ms for udi [%s], collapse count %d\n", 
+		     chron.millis(), udi.c_str(), collapsecount));
             break;
         } catch (Xapian::DatabaseModifiedError &error) {
             // retry or end of loop
@@ -355,6 +357,9 @@ bool Query::getDoc(int xapi, Doc &doc)
         return false;
     }
     doc.meta[Rcl::Doc::keyudi] = udi;
+    char scc[30];
+    sprintf(scc, "%d", collapsecount);
+    doc.meta[Rcl::Doc::keycc] = scc;
 
     // Parse xapian document's data and populate doc fields
     return m_db->m_ndb->dbDataToRclDoc(docid, data, doc, pc);
@@ -362,6 +367,7 @@ bool Query::getDoc(int xapi, Doc &doc)
 
 list<string> Query::expand(const Doc &doc)
 {
+    LOGDEB(("Rcl::Query::expand()\n"));
     list<string> res;
     if (ISNULL(m_nq) || !m_nq->xenquire) {
 	LOGERR(("Query::expand: no query opened\n"));

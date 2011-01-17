@@ -155,6 +155,7 @@ class Doc {
     static const string keysz;  // dbytes if set else fbytes
     static const string keysig; // sig
     static const string keyrr;  // relevancy rating
+    static const string keycc;  // Collapse count
     static const string keyabs; // abstract
     static const string keyau;  // author
     static const string keytt;  // title

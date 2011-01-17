@@ -42,15 +42,13 @@ class ResList : public QTextBrowser
     ResList(QWidget* parent = 0, const char* name = 0);
     virtual ~ResList();
     
-    // Return document for given docnum. We act as an intermediary to
-    // the docseq here. This has also the side-effect of making the
-    // entry current (visible and highlighted), and only works if the
-    // num is inside the current page or its immediate neighbours.
+    // Return document for given docnum. We mostly act as an
+    // intermediary to the docseq here, but this has also the
+    // side-effect of making the entry current (visible and
+    // highlighted), and only works if the num is inside the current
+    // page or its immediate neighbours.
     bool getDoc(int docnum, Rcl::Doc &);
     bool displayingHistory();
-    bool getTerms(vector<string>& terms, 
-		  vector<vector<string> >& groups, vector<int>& gslks);
-    list<string> expand(Rcl::Doc& doc);
     int listId() const {return m_listId;}
 
  public slots:

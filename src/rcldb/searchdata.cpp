@@ -869,13 +869,12 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
 	(m_parentSearch && !m_parentSearch->haveWildCards()) || 
 	(m_parentSearch == 0 && !m_haveWildCards);
 
-    // We produce a single phrase out of the user entry (there should be
-    // no dquotes in there), then use stringToXapianQueries() to
-    // lowercase and simplify the phrase terms etc. This will result
-    // into a single (complex) Xapian::Query.
+    // We produce a single phrase out of the user entry then use
+    // stringToXapianQueries() to lowercase and simplify the phrase
+    // terms etc. This will result into a single (complex)
+    // Xapian::Query.
     if (m_text.find_first_of("\"") != string::npos) {
-	LOGDEB(("Double quotes inside phrase/near field\n"));
-	return false;
+	m_text = neutchars(m_text, "\"");
     }
     string s = string("\"") + m_text + string("\"");
     bool useNear = (m_tp == SCLT_NEAR);

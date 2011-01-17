@@ -336,19 +336,6 @@ void ResList::languageChange()
     setWindowTitle(tr("Result list"));
 }
 
-bool ResList::getTerms(vector<string>& terms, 
-		       vector<vector<string> >& groups, vector<int>& gslks)
-{
-    return m_source->getTerms(terms, groups, gslks);
-}
-
-list<string> ResList::expand(Rcl::Doc& doc)
-{
-    if (m_source.isNull())
-	return list<string>();
-    return m_source->expand(doc);
-}
-
 // Get document number from paragraph number
 int ResList::docnumfromparnum(int par)
 {

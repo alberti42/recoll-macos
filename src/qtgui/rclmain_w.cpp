@@ -754,7 +754,7 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
     }
     if (curPreview == 0) {
 	HiliteData hdata;
-	reslist->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+	m_source->getTerms(hdata.terms, hdata.groups, hdata.gslks);
 	curPreview = new Preview(reslist->listId(), hdata);
 
 	if (curPreview == 0) {
@@ -1217,12 +1217,16 @@ void RclMain::startManual(const string& index)
 // significant terms, and add them to the simple search entry.
 void RclMain::docExpand(Rcl::Doc doc)
 {
+    LOGDEB(("RclMain::docExpand()\n"));
     if (!rcldb)
 	return;
     list<string> terms;
-    terms = reslist->expand(doc);
-    if (terms.empty())
+
+    terms = m_source->expand(doc);
+    if (terms.empty()) {
+	LOGDEB(("RclMain::docExpand: no terms\n"));
 	return;
+    }
     // Do we keep the original query. I think we'd better not.
     // rcldb->expand is set to keep the original query terms instead.
     QString text;// = sSearch->queryText->currentText();

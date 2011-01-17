@@ -35,6 +35,7 @@ namespace Rcl {
     const string Doc::keysz("size");
     const string Doc::keysig("sig");
     const string Doc::keyrr("relevancyrating");
+    const string Doc::keycc("collapsecount");
     const string Doc::keyabs("abstract");
     const string Doc::keyau("author");
     const string Doc::keytt("title");
