@@ -4,6 +4,7 @@ static char rcsid[] = "@(#$Id: rclquery.cpp,v 1.11 2008-12-19 09:55:36 dockes Ex
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <list>
 #include <vector>
