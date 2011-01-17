@@ -77,8 +77,7 @@ class Db::Native {
 
     string makeAbstract(Xapian::docid id, Query *query);
 
-    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc,
-			int percent);
+    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
 
     /** Compute list of subdocuments for a given udi. We look for documents 
      * indexed by a parent term matching the udi, the posting list for the 

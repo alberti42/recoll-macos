@@ -357,12 +357,23 @@ bool Query::getDoc(int xapi, Doc &doc)
         return false;
     }
     doc.meta[Rcl::Doc::keyudi] = udi;
-    char scc[30];
-    sprintf(scc, "%d", collapsecount);
-    doc.meta[Rcl::Doc::keycc] = scc;
+
+    doc.pc = pc;
+    char buf[200];
+    if (collapsecount>0) {
+	LOGDEB(("COLLAPSECOUNET %d\n", collapsecount));
+	sprintf(buf,"%3d%% (%d)", pc, collapsecount+1);
+    } else {
+	sprintf(buf,"%3d%%", pc);
+    }
+    doc.meta[Doc::keyrr] = buf;
+
+    sprintf(buf, "%d", collapsecount);
+    doc.meta[Rcl::Doc::keycc] = buf;
+
 
     // Parse xapian document's data and populate doc fields
-    return m_db->m_ndb->dbDataToRclDoc(docid, data, doc, pc);
+    return m_db->m_ndb->dbDataToRclDoc(docid, data, doc);
 }
 
 list<string> Query::expand(const Doc &doc)

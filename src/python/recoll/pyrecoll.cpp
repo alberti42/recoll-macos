@@ -727,7 +727,7 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
 
     // Move some data from the dedicated fields to the meta array to make 
     // fetching attributes easier. Is this actually needed ? Useful for
-    // url and relevancy rating which are also formatted .
+    // url which is also formatted .
     Rcl::Doc *doc = result->doc;
     printableUrl(rclconfig->getDefCharset(), doc->url, 
 		 doc->meta[Rcl::Doc::keyurl]);
@@ -735,10 +735,6 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
     doc->meta[Rcl::Doc::keyipt] = doc->ipath;
     doc->meta[Rcl::Doc::keyfs] = doc->fbytes;
     doc->meta[Rcl::Doc::keyds] = doc->dbytes;
-    char pc[20];
-    sprintf(pc, "%02d %%", doc->pc);
-    doc->meta[Rcl::Doc::keyrr] = pc;
-
     return (PyObject *)result;
 }
 

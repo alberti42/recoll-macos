@@ -140,7 +140,7 @@ static const string keycap("caption");
 
 // Turn data record from db into document fields
 bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
-				Doc &doc, int percent)
+				Doc &doc)
 {
     LOGDEB2(("Db::dbDataToRclDoc: data:\n%s\n", data.c_str()));
     ConfSimple parms(data);
@@ -161,10 +161,6 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
 	doc.meta[Doc::keyabs] = doc.meta[Doc::keyabs].substr(rclSyntAbs.length());
 	doc.syntabs = true;
     }
-    char buf[20];
-    sprintf(buf,"%.2f", float(percent) / 100.0);
-    doc.pc = percent;
-    doc.meta[Doc::keyrr] = buf;
     parms.get(Doc::keyipt, doc.ipath);
     parms.get(Doc::keyfs, doc.fbytes);
     parms.get(Doc::keyds, doc.dbytes);
@@ -1721,6 +1717,7 @@ bool Db::getDoc(const string &udi, Doc &doc)
 
     // Initialize what we can in any case. If this is history, caller
     // will make partial display in case of error
+    doc.meta[Rcl::Doc::keyrr] = "100%";
     doc.pc = 100;
 
     string uniterm = make_uniterm(udi);
@@ -1741,7 +1738,7 @@ bool Db::getDoc(const string &udi, Doc &doc)
             Xapian::Document xdoc = m_ndb->xrdb.get_document(*docid);
             string data = xdoc.get_data();
             doc.meta[Rcl::Doc::keyudi] = udi;
-            return m_ndb->dbDataToRclDoc(*docid, data, doc, 100);
+            return m_ndb->dbDataToRclDoc(*docid, data, doc);
 	} catch (const Xapian::DatabaseModifiedError &e) {
             m_reason = e.get_msg();
 	    m_ndb->xrdb.reopen();

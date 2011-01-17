@@ -90,9 +90,6 @@ void ResListPager::displayDoc(int i, Rcl::Doc& doc, const HiliteData& hdata,
     } else {
 	percent = doc.pc;
     }
-    // Percentage of 'relevance'
-    char perbuf[20];
-    sprintf(perbuf, "%3d%% ", percent);
 
     // Determine icon to display if any
     string iconpath = iconPath(doc.mimetype);
@@ -186,7 +183,7 @@ void ResListPager::displayDoc(int i, Rcl::Doc& doc, const HiliteData& hdata,
     subs["L"] = linksbuf.rdbuf()->str();
     subs["N"] = numbuf;
     subs["M"] = doc.mimetype;
-    subs["R"] = perbuf;
+    subs["R"] = doc.meta[Rcl::Doc::keyrr];
     subs["S"] = sizebuf;
     subs["T"] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
     subs["U"] = url;
