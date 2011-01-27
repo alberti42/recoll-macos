@@ -44,7 +44,7 @@ class AudioTagExtractor:
         ok = False
         if not params.has_key("mimetype:") or  not params.has_key("filename:"):
             self.em.rclog("extractone: no mime or file name")
-            return (ok, docdata, "", rclexecm.RclExeM.eofnow)
+            return (ok, docdata, "", rclexecm.RclExecM.eofnow)
         filename = params["filename:"]
         mimetype = params["mimetype:"]
         try:
