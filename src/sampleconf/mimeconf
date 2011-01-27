@@ -79,6 +79,7 @@ text/x-tex = exec rcltex
 application/x-chm = execm rclchm
 application/zip = execm rclzip
 audio/mpeg = execm rclaudio
+audio/x-karaoke = execm rclkar
 image/gif = execm rclimg
 image/jpeg = execm rclimg
 image/png = execm rclimg
@@ -149,6 +150,7 @@ application/x-awk = source
 application/x-perl = source
 application/x-shellscript = source
 audio/mpeg = sownd
+audio/x-karaoke = sownd
 image/gif = image
 image/jpeg = image
 image/png = image
@@ -225,6 +227,7 @@ presentation = application/vnd.ms-powerpoint \
 
 media = \
       audio/mpeg \
+      audio/x-karaoke \
       application/ogg \
       application/x-flac \
       image/jpeg \

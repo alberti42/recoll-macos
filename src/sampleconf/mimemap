@@ -99,6 +99,8 @@
 .mp3 = audio/mpeg
 .flac = application/x-flac
 .ogg = application/ogg
+# Note: file -i says audio/x-midi, but soft karaoke files are special.
+.kar = audio/x-karaoke
 
 .png = image/png
 .jpg = image/jpeg
