@@ -155,7 +155,8 @@ def main(proto, extract):
     else:
         # Got a file name parameter: TESTING without an execm parent
         # Loop on all entries or get specific ipath
-        if not extract.openfile({'filename:':sys.argv[1]}):
+        params = {'filename:':sys.argv[1]}
+        if not extract.openfile(params):
             print "Open error"
             sys.exit(1)
         ipath = ""
@@ -163,7 +164,8 @@ def main(proto, extract):
             ipath = sys.argv[2]
 
         if ipath != "":
-            ok, data, ipath, eof = extract.getipath({'ipath:':ipath})
+            params['ipath:'] = ipath
+            ok, data, ipath, eof = extract.getipath(params)
             if ok:
                 print "== Found entry for ipath %s (mimetype [%s]):" % \
                       (ipath, proto.mimetype)
@@ -175,10 +177,10 @@ def main(proto, extract):
 
         ecnt = 0   
         while 1:
-            ok, data, ipath, eof = extract.getnext("")
+            ok, data, ipath, eof = extract.getnext(params)
             if ok:
                 ecnt = ecnt + 1
-                print "== Entry %d ipath %s (mimetype [%s]:" % \
+                print "== Entry %d ipath %s (mimetype [%s]):" % \
                       (ecnt, ipath, proto.mimetype)
 #                print data
                 print
