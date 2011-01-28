@@ -597,7 +597,11 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
     string sterm; // dumb version of user term
     string prefix;
     expandTerm(nostemexp, span, exp, sterm, &prefix);
-    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
+    // m_terms is used for highlighting, we don't want prefixes in there.
+    for (list<string>::const_iterator it = exp.begin(); 
+	 it != exp.end(); it++) {
+	m_terms.push_back(it->substr(prefix.size()));
+    }
     // Push either term or OR of stem-expanded set
     Xapian::Query xq(Xapian::Query::OP_OR, exp.begin(), exp.end());
 
@@ -640,8 +644,16 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
 
 	string sterm;
 	list<string>exp;
-	expandTerm(nostemexp, *it, exp, sterm);
-	groups.push_back(vector<string>(exp.begin(), exp.end()));
+	string prefix;
+	expandTerm(nostemexp, *it, exp, sterm, &prefix);
+
+	// groups is used for highlighting, we don't want prefixes in there.
+	vector<string> noprefs;
+	for (list<string>::const_iterator it = exp.begin(); 
+	     it != exp.end(); it++) {
+	    noprefs.push_back(it->substr(prefix.size()));
+	}
+	groups.push_back(noprefs);
 	orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
 					  exp.begin(), exp.end()));
 #ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
