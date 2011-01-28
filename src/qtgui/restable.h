@@ -23,6 +23,7 @@
 #include "ui_restable.h"
 #include "refcntr.h"
 #include "docseq.h"
+#include "plaintorich.h"
 
 class ResTable;
 
@@ -62,6 +63,8 @@ public:
     // Ignore sort() call because 
     virtual void setIgnoreSort(bool onoff) {m_ignoreSort = onoff;}
 
+    friend class ResTable;
+
 signals:
     void sortColumnChanged(DocSeqSortSpec);
 
@@ -72,6 +75,7 @@ private:
     static map<string, string> o_displayableFields;
     bool m_ignoreSort;
     FieldGetter* chooseGetter(const string&);
+    HiliteData m_hdata;
 };
 
 class ResTablePager;
@@ -114,10 +118,10 @@ signals:
     friend class ResTablePager;
 private:
     void init();
-    RecollModel *m_model;
-    ResTablePager  *m_pager;
+    RecollModel   *m_model;
+    ResTablePager *m_pager;
     int            m_detaildocnum;
-    int          m_popcolumn;
+    int            m_popcolumn;
 };
 
 

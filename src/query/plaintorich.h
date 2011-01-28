@@ -33,6 +33,12 @@ struct HiliteData {
     // Group slacks (number of permitted non-matched words). 
     // Parallel vector to the above 'groups'
     vector<int> gslks; 
+    void reset() 
+    {
+	terms.clear();
+	groups.clear();
+	gslks.clear();
+    }
 };
 
 /** 

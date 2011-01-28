@@ -362,7 +362,6 @@ bool Query::getDoc(int xapi, Doc &doc)
     doc.pc = pc;
     char buf[200];
     if (collapsecount>0) {
-	LOGDEB(("COLLAPSECOUNET %d\n", collapsecount));
 	sprintf(buf,"%3d%% (%d)", pc, collapsecount+1);
     } else {
 	sprintf(buf,"%3d%%", pc);

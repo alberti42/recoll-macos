@@ -15,6 +15,9 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include <QSettings>
 #include <QMenu>
 #include <QScrollBar>
+#include <QStyledItemDelegate>
+#include <QTextDocument>
+#include <QPainter>
 
 #include "refcntr.h"
 #include "docseq.h"
@@ -27,7 +30,8 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include "plaintorich.h"
 
 //////////////////////////////////
-// Restable "pager". We use it to display a single doc details in the detail area
+// Restable "pager". We use it to display a single doc details in the 
+// detail area
 ///
 class ResTablePager : public ResListPager {
 public:
@@ -41,6 +45,21 @@ public:
 private:
     ResTable *m_parent;
 };
+
+//////////////////////////
+// Restable hiliter: to highlight search term in the table. This is actually
+// the same as reslist's, could be shared.
+class PlainToRichQtReslist : public PlainToRich {
+public:
+    virtual ~PlainToRichQtReslist() {}
+    virtual string startMatch() {
+	return string("<span style='color: ")
+	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
+    }
+    virtual string endMatch() {return string("</span>");}
+};
+static PlainToRichQtReslist g_hiliter;
+/////////////////////////////////////
 
 bool ResTablePager::append(const string& data, int docnum, const Rcl::Doc&)
 {
@@ -177,6 +196,8 @@ RecollModel::RecollModel(const QStringList fields, QObject *parent)
 	m_fields.push_back((const char *)(it->toUtf8()));
 	m_getters.push_back(chooseGetter(m_fields[m_fields.size()-1]));
     }
+
+    g_hiliter.set_inputhtml(false);
 }
 
 int RecollModel::rowCount(const QModelIndex&) const
@@ -203,10 +224,13 @@ void RecollModel::readDocSource()
 void RecollModel::setDocSource(RefCntr<DocSequence> nsource)
 {
     LOGDEB(("RecollModel::setDocSource\n"));
-    if (nsource.isNull())
+    if (nsource.isNull()) {
 	m_source = RefCntr<DocSequence>();
-    else
+    } else {
 	m_source = RefCntr<DocSequence>(new DocSource(nsource));
+	m_hdata.reset();
+	m_source->getTerms(m_hdata.terms, m_hdata.groups, m_hdata.gslks);
+    }
     readDocSource();
 }
 
@@ -273,11 +297,11 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
 	return QVariant();
     }
 
-    // Have to handle the special cases here. Some fields are
-    // synthetic and their name is hard-coded. Only date and datetime
-    // for now.
     string colname = m_fields[index.column()];
-    return QString::fromUtf8(m_getters[index.column()](colname, doc).c_str());
+
+    list<string> lr;
+    g_hiliter.plaintorich(m_getters[index.column()](colname, doc), lr, m_hdata);
+    return QString::fromUtf8(lr.front().c_str());
 }
 
 // This gets called when the column headers are clicked
@@ -300,6 +324,34 @@ void RecollModel::sort(int column, Qt::SortOrder order)
 
 /////////////////////////// 
 // ResTable panel methods
+
+// We use a custom delegate to display the cells because the base
+// tableview's can't handle rich text to highlight the match terms
+class ResTableDelegate: public QStyledItemDelegate {
+public:
+    ResTableDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, 
+	       const QModelIndex &index) const
+    {
+	QVariant value = index.data(Qt::DisplayRole);
+	if (value.isValid() && !value.isNull()) {
+	    // We might possibly want to optimize by passing the data
+	    // to the base method if the text does not contain any
+	    // term matches. Would need a modif to plaintorich to
+	    // return the match count (easy), and a way to pass an
+	    // indicator from data(), a bit more difficult. Anyway,
+	    // the display seems fast enough as is.
+	    QTextDocument document;
+	    document.setHtml(value.toString());
+	    painter->save();
+	    painter->setClipRect(option.rect);
+	    painter->translate(option.rect.topLeft());
+	    document.drawContents(painter);
+	    painter->restore();
+	} 
+    }
+};
+
 void ResTable::init()
 {
     if (!(m_model = new RecollModel(prefs.restableFields)))
@@ -308,6 +360,7 @@ void ResTable::init()
     tableView->setMouseTracking(true);
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableView->setItemDelegate(new ResTableDelegate(this));
 
     QHeaderView *header = tableView->horizontalHeader();
     if (header) {
@@ -407,13 +460,11 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
 
     if (!m_model || m_model->getDocSource().isNull())
 	return;
-    HiliteData hdata;
-    m_model->getDocSource()->getTerms(hdata.terms, hdata.groups, hdata.gslks);
     Rcl::Doc doc;
     if (m_model->getDocSource()->getDoc(index.row(), doc)) {
 	textBrowser->clear();
 	m_detaildocnum = index.row();
-	m_pager->displayDoc(index.row(), doc, hdata);
+	m_pager->displayDoc(index.row(), doc, m_model->m_hdata);
     }
 }
 
