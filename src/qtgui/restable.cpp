@@ -330,25 +330,48 @@ void RecollModel::sort(int column, Qt::SortOrder order)
 class ResTableDelegate: public QStyledItemDelegate {
 public:
     ResTableDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
+
+    // We might want to optimize by passing the data to the base
+    // method if the text does not contain any term matches. Would
+    // need a modif to plaintorich to return the match count (easy),
+    // and a way to pass an indicator from data(), a bit more
+    // difficult. Anyway, the display seems fast enough as is.
     void paint(QPainter *painter, const QStyleOptionViewItem &option, 
 	       const QModelIndex &index) const
     {
+	QStyleOptionViewItemV4 opt = option;
+	initStyleOption(&opt, index);
 	QVariant value = index.data(Qt::DisplayRole);
 	if (value.isValid() && !value.isNull()) {
-	    // We might possibly want to optimize by passing the data
-	    // to the base method if the text does not contain any
-	    // term matches. Would need a modif to plaintorich to
-	    // return the match count (easy), and a way to pass an
-	    // indicator from data(), a bit more difficult. Anyway,
-	    // the display seems fast enough as is.
-	    QTextDocument document;
-	    document.setHtml(value.toString());
-	    painter->save();
-	    painter->setClipRect(option.rect);
-	    painter->translate(option.rect.topLeft());
-	    document.drawContents(painter);
-	    painter->restore();
-	} 
+	    QString text = value.toString();
+	    if (!text.isEmpty()) {
+		QTextDocument document;
+		painter->save();
+		if (opt.state & QStyle::State_Selected) {
+		    painter->fillRect(opt.rect, opt.palette.highlight());
+		    // Set the foreground color. The pen approach does
+		    // not seem to work, probably it's reset by the
+		    // textdocument. Couldn't use
+		    // setdefaultstylesheet() either. the div thing is
+		    // an ugly hack. Works for now
+#if 0
+		    QPen pen = painter->pen();
+		    pen.setBrush(opt.palette.brush(QPalette::HighlightedText));
+		    painter->setPen(pen);
+#else
+		    text = QString::fromAscii("<div style='color: white'> ") + 
+			text + QString::fromAscii("</div>");
+#endif
+		} 
+		painter->setClipRect(option.rect);
+		painter->translate(option.rect.topLeft());
+		document.setHtml(text);
+		document.drawContents(painter);
+		painter->restore();
+		return;
+	    } 
+	}
+	QStyledItemDelegate::paint(painter, option, index);
     }
 };
 
