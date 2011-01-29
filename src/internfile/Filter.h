@@ -64,8 +64,10 @@ namespace Dijon
 	typedef enum { DOCUMENT_DATA=0, DOCUMENT_STRING, DOCUMENT_FILE_NAME, DOCUMENT_URI } DataInput;
 
 	/** Input properties supported by the filter.
-	 * - DEFAULT_CHARSET is the charset preferred by the client application.
-	 * The filter will convert document's content to this charset if possible.
+	 *
+	 * - DEFAULT_CHARSET is the source encoding that should be used
+	 *   for transcoding to utf-8 if there is no other way to determine 
+	 *   it (ie: for text/plain files)
 	 * - OPERATING_MODE can be set to either view or index.
 	 * - DJF_UDI Unique document identifier. This can be useful if the
 	 *     filter wants to manage a persistent cache.
