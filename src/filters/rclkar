@@ -5,6 +5,9 @@
 import rclexecm
 import sys
 import os.path
+import string
+import re
+import codecs
 
 try:
     import midi
@@ -12,7 +15,7 @@ except:
     print "RECFILTERROR HELPERNOTFOUND python:midi"
     sys.exit(1);
 
-# prototype for the html document we're returning
+# Prototype for the html document we're returning
 htmltemplate = '''
 <html>
   <head>
@@ -28,24 +31,102 @@ htmltemplate = '''
 '''
 
 class KarTextExtractor:
+    # Afaik, the only charset encodings with null bytes are variations on
+    # utf-16 and utf-32 and iso relatives. A hopefully comprehensive
+    # list follows, compiled from iconv and python values. This is used for
+    # stripping garbage from some files.
+    acceptnullencodings = \
+       set(('csucs4', 'csunicode', 'csunicode11', 'iso-10646-ucs-2', 
+          'iso-10646-ucs-4', 'u16', 'u32', 'ucs-2', 'ucs-2-internal', 
+          'ucs-2-swapped', 'ucs-2be', 'ucs-2le', 'ucs-4', 'ucs-4-internal', 
+          'ucs-4-swapped', 'ucs-4be', 'ucs-4le', 'unicode-1-1', 'unicodebig', 
+          'unicodelittle', 'utf-16', 'utf-16be', 'utf-16le', 'utf-32', 
+          'utf-32be', 'utf-32le', 'utf16', 'utf32', 'utf_16', 'utf_16_be', 
+          'utf_16_le', 'utf_32', 'utf_32_be', 'utf_32_le'))
+
     def __init__(self, em):
         self.em = em
         self.currentindex = 0
+        self.encoding = ""
+        self.defaultencoding = ""
+        self.acceptnulls = False
+        
+        try:
+            self.defaultencoding = sys.getfilesystemencoding()
+        except:
+            pass
+        if self.defaultencoding is None:
+            self.defaultencoding = sys.getdefaultencoding()
+            
+        if not self.defaultencoding or \
+               self.defaultencoding.lower().find('ascii') != -1:
+            self.defaultencoding = 'latin_1'
+        try:
+            codecs.lookup(self.defaultencoding)
+        except:
+            self.defaultencoding = 'latin_1'
+
+    # Try to decode input binary string then encode to utf-8 for output
+    def reencode(self, data):
+        text = ""
+        if not data:
+            return text
+
+        # Some files have garbage data after a null byte.
+        if not self.acceptnulls:
+            firstnull = data.find(chr(0))
+            if firstnull != -1:
+                data = data[0 : firstnull]
+                
+        try:
+            text = data.decode(self.encoding, 'ignore')
+        except Exception, err:
+            self.em.rclog("Decode failed: " + str(err))
+            return ""
+        try:
+            text = text.encode('utf-8')
+        except Exception, err:
+            self.em.rclog("Encode failed: " + str(err))
+            return ""
+            
+        text = self.em.htmlescape(text).replace("\n", "<br>\n")
+        return text
+
+    # Some karaoke files have the encoding as part of the file name
+    # as 'some title (encoding).xxx' Not sure the whitespace before
+    # the '(' has to be there, so not relying on this
+    def encodingfromfilename(self, fn):
+        rexp = r'\(([^\)]+)\)\.[a-zA-Z]+$'
+        m = re.search(rexp, fn)
+        if m:
+            return m.group(1)
+        else:
+            return ""
 
     def extractone(self, params):
         docdata = ""
         ok = False
+
+        if not params.has_key("filename:"):
+            self.em.rclog("extractone: no mime or file name")
+            return (ok, docdata, "", rclexecm.RclExecM.eofnow)
+        filename = params["filename:"]
+
+        self.encoding = self.encodingfromfilename(filename)
+        try:
+            codecs.lookup(self.encoding)
+        except:
+            self.em.rclog("Encoding [%s] not found, defaulting to [%s]" % \
+                          (self.encoding, self.defaultencoding))
+            self.encoding = self.defaultencoding
+            
+        self.acceptnulls = self.encoding.lower() in self.acceptnullencodings
 
         # Mimetype not used for now
         if not params.has_key("mimetype:"):
             mimetype = 'audio/x-midi'
         else:
             mimetype = params["mimetype:"]
-
-        if not params.has_key("filename:"):
-            self.em.rclog("extractone: no mime or file name")
-            return (ok, docdata, "", rclexecm.RclExecM.eofnow)
-        filename = params["filename:"]
 
         try:
             stream = midi.read_midifile(filename)
@@ -57,36 +138,46 @@ class KarTextExtractor:
         author = None
         language = None
         lyrics = ""
+
         for event in stream.iterevents():
+            edata = ""
             if isinstance(event, midi.TextMetaEvent):
                 if not event.data:
                     continue
                 elif event.data[0] == '/' or event.data[0] == '\\':
-                    lyrics += "\n" + event.data[1:]
+                    edata += "\n" + event.data[1:]
                 elif event.data[0] == '[' or event.data[0] == ']':
-                    lyrics += event.data[1:]
+                    edata += event.data[1:]
                 elif event.data[0] == '@':
                     if len(event.data) == 1:
                         continue
                     else:
                         if event.data[1] == 'I':
-                            lyrics += event.data[2:] + '\n'
+                            edata += event.data[2:] + '\n'
                         elif event.data[1] == 'L':
-                            language = event.data[2:]
+                            language = self.reencode(event.data[2:])
                         elif event.data[1] == 'T':
                             if title is None:
-                                title = event.data[2:]
+                                title = self.reencode(event.data[2:])
                             elif author is None:
-                                author = event.data[2:]
+                                author = self.reencode(event.data[2:])
                 else:
-                    lyrics += event.data
-            elif isinstance(event, midi.LryricsEvent):
+                    edata += event.data
+            elif isinstance(event, midi.LryricsEvent) or \
+                     isinstance(event, midi.TrackNameEvent):
+                space = ""
+                if isinstance(event, midi.TrackNameEvent):
+                    nl = "\n"
                 if not event.data:
                     continue
                 elif event.data[0] == '/' or event.data[0] == '\\':
-                    lyrics += "\n" + event.data[1:]
+                    edata += "\n" + event.data[1:] + nl
                 else:
-                    lyrics += event.data
+                    edata += event.data + nl
+
+            lyrics += self.reencode(edata)
+
+                
         if title is None:
             title = ""
         if author is None:
@@ -94,13 +185,6 @@ class KarTextExtractor:
         if language is None:
             language = ""
 
-        if lyrics != "":
-            try:
-                lyrics = self.em.htmlescape(lyrics.encode("utf-8"))
-                lyrics = lyrics.replace("\n", "<br>")
-            except Exception, err:
-                print "ENCODE FAILED", err
-                lyrics = ""
         self.em.setmimetype("text/html")
         docdata = htmltemplate % (title, author, language, lyrics)
 
