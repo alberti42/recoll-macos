@@ -79,26 +79,26 @@
         those terms are prominent, in a similar way to Internet search
         engines.</para>
 
-      <para>&RCL; tries to determine which documents are most relevant to
-      the search terms you provide. Computer algorithms for determining
-      relevance can be very complex, and in general are inferior to the
-      power of the human mind to rapidly determine relevance. The quality
-      of relevance guessing by the search tool is probably the most
-      important element for a search application.</para>
+      <para>A search application tries to determine which documents are
+        most relevant to the search terms you provide. Computer algorithms
+        for determining relevance can be very complex, and in general are
+        inferior to the power of the human mind to rapidly determine
+        relevance. The quality of relevance guessing is probably the most
+        important aspect when evaluating a search application.</para>
 
       <para>In many cases, you are looking for all the forms of a
-        word, not for a specific form or spelling. These different
-        forms may include plurals, different tenses for a verb, or
-        terms derived from the same root or <emphasis>stem</emphasis>
-        (example: floor, floors, floored, flooring...). &RCL; will by
-        default expand queries to all such related terms (words that
-        reduce to the same stem). This expansion can be disabled at
-        search time.</para>
+        word, not for a specific form or spelling. These different forms
+        may include plurals, different tenses for a verb, or terms derived
+        from the same root or <emphasis>stem</emphasis> (example: floor,
+        floors, floored, flooring...). Search applications usually expand
+        queries to all such related terms (words that reduce to the same
+        stem) and also provide a way to disable this expansion if you are
+        actually searching for a specific form.</para>
 
-     <para>Stemming, by itself, does not accommodate for misspellings or
+      <para>Stemming, by itself, does not accommodate for misspellings or
         phonetic searches. &RCL; supports these features through a specific
         tool (the <literal>term explorer</literal>) which will let you
-        explore the set of index terms along different modes.</para> 
+        explore the set of index terms along different modes.</para>
 
 
     </sect1>
@@ -111,8 +111,8 @@
       library as its storage and retrieval engine. &XAP; is a very
       mature package using <ulink
       url="http://www.xapian.org/docs/intro_ir.html">a sophisticated
-      probabilistic ranking model</ulink>. &RCL; provides the interface
-      to get data into (indexing) and out (searching) of the system.</para>
+      probabilistic ranking model</ulink>. &RCL; provides the mechanisms
+      and interface to get data into and out of the system.</para>
 
       <para>In practice, &XAP; works by remembering where terms appear
       in your document files. The acquisition process is called
@@ -160,10 +160,16 @@
       <command>recoll</command> search graphical user interface, or by
       executing the <command>recollindex</command> command.</para>
 
-      <para><link linkend="rcl.search">Searches</link> are
-      performed inside the <command>recoll</command> 
-      program, which has many options to help you find what you are
-      looking for.</para> 
+      <para><link linkend="rcl.search">Searches</link> are usually
+        performed inside the <command>recoll</command> graphical user
+        interface (GUI) program, which has many options to help you find
+        what you are looking for. However, there are other ways to perform
+        &RCL; searches: mostly a <link linkend="rcl.search.commandline">
+          command line tool</link>, a 
+        <link linkend="rcl.program.api.python">
+          <application>Python</application>
+          programming interface</link>, and a <link linkend="rcl.searchkio">
+          <application>KDE</application> KIO slave module</link>.</para>
 
     </sect1>
   </chapter>
@@ -202,12 +208,11 @@
           <formalpara><title>Real time indexing:</title>
             <para>indexing takes place as soon as a file is created or
             changed. <command>recollindex</command> runs as a daemon
-            and uses a file system alteration monitor such as
-            <application>Fam</application>, 
-            <application>Gamin</application> or
-            <application>inotify</application> do detect file changes.
-            Monitoring a big directory tree can consume significant
-            system resources.</para>
+            and uses a file system alteration monitor such as 
+              <application>inotify</application>, 
+            <application>Fam</application> or
+            <application>Gamin</application>
+            to detect file changes.</para>
           </formalpara>
         </listitem>
       </itemizedlist>
@@ -217,15 +222,21 @@
       indexes (ie: use periodic indexing on a big documentation
       directory, and real time indexing on a small home
       directory). Monitoring a big file system tree can consume
-      significant system resources, for dubious gains. <para>
+      significant system resources.<para>
 
       <para>&RCL; knows about quite a few different document
       types. The parameters for document types recognition and
       processing are set in 
-       <link linkend="rcl.indexing.config">configuration files</link>
-      Most file types, like HTML or word processing files, only hold
-      one document. Some file types, like mail folder files, can hold
-      many individually indexed documents.
+       <link linkend="rcl.indexing.config">configuration files</link>.
+      </para>
+
+      <para>Most file types, like HTML or word processing files, only hold
+        one document. Some file types, like mail folder files or zip
+        archives, can hold many individually indexed documents, which may
+        in turn be themselves compound ones. Such hierarchies can go quite
+        deep, and &RCL; has no problem processing, for example, an ms-word
+        document which would be an attachment to an email message part of
+        a folder file archived inside a zip file...
       </para>
 
       <para>&RCL; indexing processes plain text, HTML, openoffice
@@ -509,18 +520,20 @@ recoll
         <para>The indexing process can be interrupted by sending an
           interrupt (^C, SIGINT) or terminate (SIGTERM) signal. Some time may
           elapse before the process exits, because it needs to properly flush
-          and close the index. The indexing will restart at the
-          interruption point the next time (the full file tree will still be
-          traversed, but files that were indexed up to the interruption and
-          are still up to date will not need to be reindexed).</para>
+          and close the index.</para>
 
 	<para>After such an interruption, the index will be somewhat
 	  inconsistent because some operations which are normally performed
 	  at the end of the indexing pass will have been skipped (for
 	  exemple, the stemming and spelling databases will be inexistant
 	  or out of date). You just need to restart indexing at a later
-	  time to restore consistency.</para>
+	  time to restore consistency. The indexing will restart at the
+          interruption point (the full file tree will be traversed,
+          but files that were indexed up to the interruption and are still
+          up to date will not need to be reindexed).</para>
 
+        <para><command>recollindex</command> has a number of other options
+        which are described in its man page.</para>
       </sect2>
 
       <sect2 id="rcl.indexing.periodic.automat">
@@ -635,7 +648,7 @@ fvwm
         a single entry field where you can enter multiple words.</para>
       </listitem>
       <listitem><para>Advanced search (a panel accessed through the
-        <guilabel>Tools</guilabel> menu or the toolbox bar icon) shas
+        <guilabel>Tools</guilabel> menu or the toolbox bar icon) has
         multiple entry fields, which you may use to build a logical
         condition, with additional filtering on file type and location
         in the file system.</para>
@@ -675,11 +688,17 @@ fvwm
         </step>
       </procedure>
 
-      <para>The initial default search mode is <guilabel>All
-        terms</guilabel>. This will look for documents containing all
-        of the search terms (the ones with more terms will get better
-        scores). <guilabel>Any term</guilabel> will search for
-        documents where at least one of the terms appear. </para>
+      <para>The initial default search mode is <guilabel>Query
+        language</guilabel>. Without special directives, this will look for
+        documents containing all of the search terms (the ones with more
+        terms will get better scores), just like the <guilabel>All
+        terms</guilabel> mode which will ignore such
+        directives. <guilabel>Any term</guilabel> will search for documents
+        where at least one of the terms appear. </para>
+
+      <para>The <guilabel>Query Language</guilabel> features are
+      described in <link linkend="rcl.search.lang">a separate
+      section</link>.</para>  
 
       <para><guilabel>File name</guilabel> will specifically look for file
         names. The entry will be split at white space characters,
@@ -717,10 +736,6 @@ fvwm
         search is that wild card expansion can be performed more
         efficiently on a relatively small subset of the index (allowing
         wild cards on the left of terms without excessive penality).</para>
-
-      <para>The fourth entry (<guilabel>Query Language</guilabel>) is
-      described in <link linkend="rcl.search.lang">its own
-      section</link>.</para> 
 
       <para>All search modes allow wildcards inside terms
         (<literal>*</literal>, <literal>?</literal>,
@@ -768,16 +783,18 @@ fvwm
     </sect2>
 
     <sect2 id="rcl.search.reslist">
-      <title>The result list</title>
+      <title>The default result list</title>
 
       <para>After starting a search, a list of results will instantly
        be displayed in the main list window.</para> 
 
       <para>By default, the document list is presented in order of
        relevance (how well the system estimates that the document
-       matches the query). You can specify a different ordering by
-       using the  <link linkend="rcl.search.sort"><guilabel>Tools</guilabel>
-        / <guilabel>Sort parameters</guilabel></link> dialog.</para>
+       matches the query). You can sort the result by ascending or
+       descending date by using the vertical arrows in the toolbar (the old
+       sort tool is gone after release 1.15, because the new <link
+       linkend="rcl.search.restable">result table</link> has much better
+       capability).</para> 
 
       <para>Clicking on the
        <literal>Preview</literal> link for an entry will open an
@@ -871,20 +888,52 @@ fvwm
           current result.</para>
 
         <para>The <guilabel>Parent document</guilabel> entries will
-          appear for documents which are not actually files but are
-          part of, or attached to, a higher level document. This entry
-          is mainly useful for email attachments and permits viewing
-          the message to which the document is attached. Note that the
-          entry will also appear for an email which is part of an mbox
-          folder file, but that you can't actually visualize the
-          folder (there will be an error dialog if you try). &RCL; is
-          unfortunately not yet smart enough to disable the entry in
-          this case. In other cases, the Open option makes sense, for
-          exemple to start a chm viewer on the parent document for a help
-          page.</para> 
+          appear for documents which are not actually files but are part
+          of, or attached to, a higher level document. This entry is mainly
+          useful for email attachments and permits viewing the message to
+          which the document is attached. Note that the entry will also
+          appear for an email which is part of an mbox folder file, but
+          that you can't actually visualize the folder (there will be an
+          error dialog if you try). &RCL; is unfortunately not yet smart
+          enough to disable the entry in this case. In other cases, the
+          <guilabel>Open</guilabel> option makes sense, for exemple to
+          start a <application>chm</application> viewer on the parent
+          document for a help page.</para>
 
       </sect3>
     </sect2>
+
+    <sect2 id="rcl.search.restable">
+      <title>The alternate result table</title>
+
+        <para>In &RCL; 1.15 and newer, the results can now be shown in a
+        spreadsheet-like display. You can switch to this presentation by
+        clicking the table-like icon in the toolbar (this is a toggle,
+        click again to restore the list).</para>
+
+        <para>Clicking on the column headers will allow sorting by the
+        values in the column. You can click again to invert the order, and
+        use the header right-click menu to reset sorting to the default
+        relevance order.</para>
+
+        <para>Both the list and the table display the same underlying
+          results. The sort order set from the table is still active if you
+          switch back to the list mode. You can click twice on a date sort
+          arrow to reset it from there.</para>
+
+        <para>The header right-click menu allows adding or deleting
+          columns. The columns can be resized, and their order can be changed
+          (by dragging). All the changes are recorded when you quit
+          <command>recoll</command></para> 
+        
+        <para>Hovering over a table row will update the detail area at the
+        bottom of the window with the corresponding values. You can click
+        the row to freeze the display. The bottom area is equivalent to a
+        classical result list paragraph, with links for
+        starting a preview or a native application, and an equivalent
+        right-click menu.</para> 
+
+      </sect2>
 
     <sect2 id="rcl.search.preview">
       <title>The preview window</title>
@@ -2041,12 +2090,12 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <title>Hotkeying recoll</title>
 
         <para>It is surprisingly convenient to be able to show or hide the
-         &RCL; GUI with a single keystroke. Recoll comes with a small
-         python script, based on the <literal>libwnck</literal> window manager
-         interface library, which will allow you to do just this. The detailed
-         instructions are on 
-         <ulink url="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
-         this wiki page</ulink>.</para>
+          &RCL; GUI with a single keystroke. Recoll comes with a small
+          Python script, based on the <literal>libwnck</literal> window
+          manager interface library, which will allow you to do just
+          this. The detailed instructions are on
+          <ulink url="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
+            this wiki page</ulink>.</para>
 
       </sect2>
 
@@ -2811,7 +2860,13 @@ while query.next >= 0 and query.next < nres:
 
 	<listitem><para>Zip archives need <application>Python</application>
 	(and the standard zipfile module).</para></listitem>
-	
+
+	<listitem><para>Midi karaoke files need
+	<application>Python</application> and the 
+        <ulink url="http://pypi.python.org/pypi/midi/0.2.1">
+         <application>Midi module</application></ulink></para>
+        </listitem>
+
         </itemizedlist>
 
         <para>Text, HTML, mail folders, and Scribus files are

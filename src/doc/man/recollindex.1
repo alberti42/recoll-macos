@@ -33,7 +33,7 @@ recollindex \- indexing command for the Recoll full text search system
 <configdir>
 ]
 .B -i 
-<filename [filename ...]>
+[<filename [filename ...]>]
 .br
 .B recollindex 
 [
@@ -41,7 +41,7 @@ recollindex \- indexing command for the Recoll full text search system
 <configdir>
 ]
 .B -e 
-<filename [filename ...]>
+[<filename [filename ...]>]
 .br
 .B recollindex
 [
@@ -115,11 +115,29 @@ The other modes are useful mainly for testing.
 .PP
 .B recollindex -i
 will index individual files into the database. The stem expansion databases
-will not be updated.
+will not be updated. 
 .PP
 .B recollindex -e
 will erase data for individual files from the database. The stem expansion
 databases will not be updated.
+.PP
+With options 
+.B -i 
+or 
+.B -e 
+, if no file names are given on the command line, they
+will be read from stdin, so that you could for example run:
+.PP
+find /path/to/dir -print | recollindex -e 
+.PP
+followed by 
+.PP
+find /path/to/dir -print | recollindex -i
+.PP
+to force the reindexing of a directory tree (which has to exist inside the
+file system area defined by
+.I topdirs 
+in recoll.conf).
 .PP
 .B recollindex -s 
 will build the stem expansion database for a given language, which may or
