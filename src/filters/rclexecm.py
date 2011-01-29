@@ -182,8 +182,10 @@ def main(proto, extract):
                 ecnt = ecnt + 1
                 print "== Entry %d ipath %s (mimetype [%s]):" % \
                       (ecnt, ipath, proto.mimetype)
-#                print data
+                print data
                 print
+                if eof != RclExecM.noteof:
+                    break
             else:
                 print "Not ok, eof %d" % eof
                 break
