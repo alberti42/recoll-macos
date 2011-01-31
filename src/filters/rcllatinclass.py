@@ -12,11 +12,11 @@ class European8859TextClassifier:
         self.langtables = self.readlanguages(langzip)
 
         # Table to translate from punctuation to spaces
-        punct = '''*?[].@+-,#_$%&={};.,:!"''' + "\n\r"
+        self.punct = '''*?[].@+-,#_$%&={};.,:!"''' + "\n\r"
         spaces = ""
-        for c in punct:
+        for c in self.punct:
             spaces += " " 
-        self.spacetable = string.maketrans(punct, spaces)
+        self.spacetable = string.maketrans(self.punct, spaces)
 
     # Read the languages stopwords lists
     def readlanguages(self, langzip):
@@ -33,10 +33,17 @@ class European8859TextClassifier:
         return langs
 
     def classify(self, rawtext):
-
+        # Note: we can't use an re-based method to split the data because it
+        # should be considered binary, not text.
+        # Limit to reasonable size.
+        if len(rawtext) > 10000:
+            i = rawtext.find(" ", 9000)
+            if i == -1:
+                i = 9000
+            rawtext = rawtext[0:i]
         # Remove punctuation
         rawtext = rawtext.translate(self.spacetable)
-        # Split words
+        # Split words. 
         words = rawtext.split()
         # Count frequencies
         dict = {}
@@ -45,8 +52,8 @@ class European8859TextClassifier:
         # Order word list by frequency
         lfreq = sorted(dict.iteritems(), \
                        key=lambda entry: entry[1], reverse=True)
-        # Check the ntest most frequent words against the language lists and
-        # chose the best match
+        # Check the text's ntest most frequent words against the
+        # language lists and chose the best match
         ntest = 10
         maxcount = 0
         maxlang = ""
@@ -56,7 +63,7 @@ class European8859TextClassifier:
             for w,c in lfreq[0:ntest]:
                 if w in lwords:
                     count += 1
-            print "Lang %s code %s count %d" % (lang, code, count)
+            #print "Lang %s code %s count %d" % (lang, code, count)
             if maxcount < count:
                 maxlang = lang
                 maxcount = count
@@ -73,7 +80,7 @@ if __name__ == "__main__":
     f.close()
 
     dir = os.path.dirname(__file__)
-    langszip = os.path.join(dir, 'iso8859stops.zip')
+    langszip = os.path.join(dir, 'rcllatinstops.zip')
 
     classifier = European8859TextClassifier(langszip)
 

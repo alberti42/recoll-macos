@@ -9,7 +9,10 @@ import string
 import re
 import codecs
 
-import eulangclass
+try:
+    import rcllatinclass
+except:
+    pass
 
 try:
     import midi
@@ -58,6 +61,7 @@ class KarTextExtractor:
         self.encoding = ""
         self.defaultencoding = ""
         self.hadnulls = False
+        self.classifier = None
         
         # Compute the fallback encoding to use if we can't determine
         # one when processing the file. Based on the nls environment
@@ -134,27 +138,30 @@ class KarTextExtractor:
         encodconf = chardet.detect(text)
         encoding = encodconf['encoding']
         confidence = encodconf['confidence']
-        self.em.rclog("Chardet returns %s %.2f" % (encoding,confidence))
+        #self.em.rclog("Chardet returns %s %.2f" % (encoding,confidence))
+
         # chardet is awfully bad at detecting 8bit european
         # encodings/languages and will mostly return iso-8859-2 for
         # everything, which is a bad default (iso-8859-1/cp1252 being
         # much more common). We use our own ad-hoc stopwords based
         # module to try and improve
         if encoding.lower() == 'iso-8859-2':
+            if self.classifier is None:
+                try:
+                    import __main__
+                    dir = os.path.dirname(__main__.__file__)
+                    langszip = os.path.join(dir, 'rcllatinstops.zip')
+                    f = open(langszip)
+                    f.close()
+                    classifier = rcllatinclass.European8859TextClassifier(langszip)
+                except:
+                    self.em.rclog("Can't build euroclassifier (missing stopwords zip?")
+                    return (encoding, confidence)
+
             try:
-                import __main__
-                dir = os.path.dirname(__main__.__file__)
-                langszip = os.path.join(dir, 'iso8859stops.zip')
-                f = open(langszip)
-                f.close()
-            except:
-                self.em.rclog("Can't the find the language stopwords zipfile")
-                return (encoding, confidence)
-            try:
-                classifier = eulangclass.European8859TextClassifier(langszip)
                 lang,code,count = classifier.classify(text)
-                self.em.rclog("euclass lang/code/matchcount: %s %s %d" % \
-                              (lang, code, count))
+                #self.em.rclog("euclass lang/code/matchcount: %s %s %d" % \
+                #              (lang, code, count))
                 if count > 0:
                     confidence = 1.0
                     encoding = code
@@ -266,8 +273,8 @@ class KarTextExtractor:
                     author = authorN
             if self.encoding == "":
                 (encoding, confidence) = self.chardet_detect(lyrics)
-                self.em.rclog("No nulls: chardet: enc [%s], conf %.2f" % \
-                              (encoding, confidence))
+                #self.em.rclog("No nulls: chardet: enc [%s], conf %.2f" % \
+                #              (encoding, confidence))
                 if confidence > 0.6:
                     self.encoding = encoding
 
