@@ -45,7 +45,7 @@ bool MimeHandlerExecMultiple::startCmd()
     LOGDEB(("MimeHandlerExecMultiple::startCmd\n"));
     if (params.empty()) {
 	// Hu ho
-	LOGERR(("MHExecMultiple::mkDoc: empty params\n"));
+	LOGERR(("MHExecMultiple::startCmd: empty params\n"));
 	m_reason = "RECFILTERROR BADCONFIG";
 	return false;
     }
@@ -199,15 +199,12 @@ bool MimeHandlerExecMultiple::next_document()
         } else if (!stringlowercmp("eofnow:", name)) {
             LOGDEB(("MHExecMultiple: got EOFNOW\n"));
             eofnow_received = true;
-        } else if (!stringlowercmp("subdocerror:", name)) {
-            LOGDEB(("MHExecMultiple: got SUBDOCERROR\n"));
-	    subdocerror_received = true;
         } else if (!stringlowercmp("fileerror:", name)) {
             LOGDEB(("MHExecMultiple: got FILEERROR\n"));
 	    fileerror_received = true;
         } else if (!stringlowercmp("subdocerror:", name)) {
             LOGDEB(("MHExecMultiple: got SUBDOCERROR\n"));
-	    return false;
+	    subdocerror_received = true;
         } else if (!stringlowercmp("ipath:", name)) {
             ipath = data;
             LOGDEB(("MHExecMultiple: got ipath [%s]\n", data.c_str()));
