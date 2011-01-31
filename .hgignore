@@ -52,6 +52,7 @@ src/doc/user/usermanual.html
 src/doc/user/usermanual.html-text
 src/doc/user/usermanual.txt
 src/filters/rclexecm.pyc
+src/filters/eulangclass.pyc
 src/index/alldeps
 src/index/recollindex
 src/lib/alldeps

@@ -9,12 +9,20 @@ import string
 import re
 import codecs
 
+import eulangclass
+
 try:
     import midi
 except:
     print "RECFILTERROR HELPERNOTFOUND python:midi"
     sys.exit(1);
 
+try:
+    import chardet
+    has_chardet = True
+except:
+    has_chardet = False
+    
 # Prototype for the html document we're returning
 htmltemplate = '''
 <html>
@@ -49,53 +57,72 @@ class KarTextExtractor:
         self.currentindex = 0
         self.encoding = ""
         self.defaultencoding = ""
-        self.acceptnulls = False
+        self.hadnulls = False
         
+        # Compute the fallback encoding to use if we can't determine
+        # one when processing the file. Based on the nls environment
         try:
             self.defaultencoding = sys.getfilesystemencoding()
         except:
             pass
+
         if self.defaultencoding is None:
             self.defaultencoding = sys.getdefaultencoding()
             
         if not self.defaultencoding or \
                self.defaultencoding.lower().find('ascii') != -1:
-            self.defaultencoding = 'latin_1'
+            self.defaultencoding = 'cp1252'
+
         try:
             codecs.lookup(self.defaultencoding)
         except:
-            self.defaultencoding = 'latin_1'
+            self.defaultencoding = 'cp1252'
 
-    # Try to decode input binary string then encode to utf-8 for output
-    def reencode(self, data):
-        text = ""
+    
+    def nulltrunc(self, data):
+        '''Truncate data after 1st null byte. For messages with garbage after
+        a null byte. Must not be done for utf-16/32 of course'''
+
         if not data:
-            return text
+            return data
 
-        # Some files have garbage data after a null byte.
-        if not self.acceptnulls:
-            firstnull = data.find(chr(0))
-            if firstnull != -1:
-                data = data[0 : firstnull]
-                
-        try:
-            text = data.decode(self.encoding, 'ignore')
-        except Exception, err:
-            self.em.rclog("Decode failed: " + str(err))
-            return ""
-        try:
-            text = text.encode('utf-8')
-        except Exception, err:
-            self.em.rclog("Encode failed: " + str(err))
-            return ""
+        firstnull = data.find(chr(0))
+        if firstnull != -1:
+            self.hadnulls = True
+            data = data[0 : firstnull]
+        return data
+    
+
+    def reencode(self, data):
+        '''Decode from whatever encoding we think this file is using
+        and reencode as UTF-8'''
+        
+        # self.em.rclog("Reencoding from [%s] to UTF-8" % self.encoding)
+
+        if data:
+            try:
+                data = data.decode(self.encoding, 'ignore')
+            except Exception, err:
+                self.em.rclog("Decode failed: " + str(err))
+                return ""
+            try:
+                data = data.encode('utf-8')
+            except Exception, err:
+                self.em.rclog("Encode failed: " + str(err))
+                return ""
             
-        text = self.em.htmlescape(text).replace("\n", "<br>\n")
-        return text
+            data = self.em.htmlescape(data).replace("\n", "<br>\n")
 
-    # Some karaoke files have the encoding as part of the file name
-    # as 'some title (encoding).xxx' Not sure the whitespace before
-    # the '(' has to be there, so not relying on this
+        return data
+
+
     def encodingfromfilename(self, fn):
+        '''Compute encoding from file name: some karaoke files have the
+        encoding as part of the file name as 'some title
+        (encoding).xxx'. This is not an established convention though,
+        just one our users could use if there is trouble with guessing
+        encodings'''
+
         rexp = r'\(([^\)]+)\)\.[a-zA-Z]+$'
         m = re.search(rexp, fn)
         if m:
@@ -103,7 +130,43 @@ class KarTextExtractor:
         else:
             return ""
 
+    def chardet_detect(self, text):
+        encodconf = chardet.detect(text)
+        encoding = encodconf['encoding']
+        confidence = encodconf['confidence']
+        self.em.rclog("Chardet returns %s %.2f" % (encoding,confidence))
+        # chardet is awfully bad at detecting 8bit european
+        # encodings/languages and will mostly return iso-8859-2 for
+        # everything, which is a bad default (iso-8859-1/cp1252 being
+        # much more common). We use our own ad-hoc stopwords based
+        # module to try and improve
+        if encoding.lower() == 'iso-8859-2':
+            try:
+                import __main__
+                dir = os.path.dirname(__main__.__file__)
+                langszip = os.path.join(dir, 'iso8859stops.zip')
+                f = open(langszip)
+                f.close()
+            except:
+                self.em.rclog("Can't the find the language stopwords zipfile")
+                return (encoding, confidence)
+            try:
+                classifier = eulangclass.European8859TextClassifier(langszip)
+                lang,code,count = classifier.classify(text)
+                self.em.rclog("euclass lang/code/matchcount: %s %s %d" % \
+                              (lang, code, count))
+                if count > 0:
+                    confidence = 1.0
+                    encoding = code
+            except Exception, err:
+                self.em.rclog("stopwords-based classifier failed: %s" % err)
+                return (encoding, confidence)
+
+        return (encoding, confidence)
+
+    
     def extractone(self, params):
+        '''Process one file'''
         docdata = ""
         ok = False
 
@@ -112,15 +175,13 @@ class KarTextExtractor:
             return (ok, docdata, "", rclexecm.RclExecM.eofnow)
         filename = params["filename:"]
 
+        # Character encoding from file name ?
         self.encoding = self.encodingfromfilename(filename)
-        try:
-            codecs.lookup(self.encoding)
-        except:
-            self.em.rclog("Encoding [%s] not found, defaulting to [%s]" % \
-                          (self.encoding, self.defaultencoding))
-            self.encoding = self.defaultencoding
-            
-        self.acceptnulls = self.encoding.lower() in self.acceptnullencodings
+        if self.encoding:
+            try:
+                codecs.lookup(self.encoding)
+            except:
+                self.encoding = ""
 
         # Mimetype not used for now
         if not params.has_key("mimetype:"):
@@ -128,41 +189,47 @@ class KarTextExtractor:
         else:
             mimetype = params["mimetype:"]
 
+        # Read in and midi-decode the file
         try:
             stream = midi.read_midifile(filename)
         except Exception, err:
-            self.em.rclog("extractone: extract failed: [%s]" % err)
+            self.em.rclog("extractone: midi extract failed: [%s]" % err)
             return (ok, docdata, "", rclexecm.RclExecM.eofnow)
 
         title = None
         author = None
         language = None
         lyrics = ""
-
+        lyricsN = ""
+        self.hadnulls = False
+        
         for event in stream.iterevents():
             edata = ""
             if isinstance(event, midi.TextMetaEvent):
                 if not event.data:
                     continue
                 elif event.data[0] == '/' or event.data[0] == '\\':
-                    edata += "\n" + event.data[1:]
+                    edata = "\n" + event.data[1:]
                 elif event.data[0] == '[' or event.data[0] == ']':
-                    edata += event.data[1:]
+                    edata = event.data[1:]
                 elif event.data[0] == '@':
                     if len(event.data) == 1:
                         continue
                     else:
                         if event.data[1] == 'I':
-                            edata += event.data[2:] + '\n'
+                            edata = event.data[2:] + '\n'
                         elif event.data[1] == 'L':
-                            language = self.reencode(event.data[2:])
+                            language = self.nulltrunc(event.data[2:])
+                            languageN = event.data[2:]
                         elif event.data[1] == 'T':
                             if title is None:
-                                title = self.reencode(event.data[2:])
+                                title = self.nulltrunc(event.data[2:])
+                                titleN = event.data[2:]
                             elif author is None:
-                                author = self.reencode(event.data[2:])
+                                author = self.nulltrunc(event.data[2:])
+                                authorN = event.data[2:]
                 else:
-                    edata += event.data
+                    edata = event.data
             elif isinstance(event, midi.LryricsEvent) or \
                      isinstance(event, midi.TrackNameEvent):
                 space = ""
@@ -171,19 +238,54 @@ class KarTextExtractor:
                 if not event.data:
                     continue
                 elif event.data[0] == '/' or event.data[0] == '\\':
-                    edata += "\n" + event.data[1:] + nl
+                    edata = "\n" + event.data[1:] + nl
                 else:
-                    edata += event.data + nl
+                    edata = event.data + nl
 
-            lyrics += self.reencode(edata)
+            lyrics += self.nulltrunc(edata)
+            lyricsN += edata
 
-                
+        
+        # Try to guess the encoding. First do it with the data
+        # possibly containing nulls. If we get one of the accepted
+        # nullbyte encodings, go with this, else repeat with the
+        # de-nulled data
+
+        # self.em.rclog("Lyrics length %d" % len(lyrics))
+        
+        if self.encoding == "" and has_chardet:
+            if self.hadnulls:
+                (encoding, confidence) = self.chardet_detect(lyricsN)
+                # self.em.rclog("With nulls: chardet: enc [%s], conf %.2f" % \
+                #              (encoding, confidence))
+                if confidence > 0.6 and \
+                       encoding.lower() in self.acceptnullencodings:
+                    self.encoding = encoding
+                    lyrics = lyricsN
+                    title = titleN
+                    author = authorN
+            if self.encoding == "":
+                (encoding, confidence) = self.chardet_detect(lyrics)
+                self.em.rclog("No nulls: chardet: enc [%s], conf %.2f" % \
+                              (encoding, confidence))
+                if confidence > 0.6:
+                    self.encoding = encoding
+
+        if self.encoding == "":
+            self.em.rclog("Encoding not guessed, defaulting to [%s]" % \
+                          (self.defaultencoding,))
+            self.encoding = self.defaultencoding
+        
         if title is None:
             title = ""
         if author is None:
             author = ""
         if language is None:
             language = ""
+
+        title = self.reencode(title)
+        author = self.reencode(author)
+        lyrics = self.reencode(lyrics)
 
         self.em.setmimetype("text/html")
         docdata = htmltemplate % (title, author, language, lyrics)
