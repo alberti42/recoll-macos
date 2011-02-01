@@ -119,9 +119,9 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     // with newlines and use a ConfSimple
     string value;
     if (attrs.get("charset", value)) 
-        h->cfgCharset = stringtolower((const string&)value);
+        h->cfgFilterOutputCharset = stringtolower((const string&)value);
     if (attrs.get("mimetype", value))
-        h->cfgMtype = stringtolower((const string&)value);
+        h->cfgFilterOutputMtype = stringtolower((const string&)value);
 
 #if 1
     string scmd;
@@ -129,7 +129,7 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
 	scmd += string("[") + *it + "] ";
     }
     LOGDEB(("mhExecFactory:mt [%s] cfgmt [%s] cfgcs [%s] cmd: [%s]\n",
-	    mtype.c_str(), h->cfgMtype.c_str(), h->cfgCharset.c_str(),
+	    mtype.c_str(), h->cfgFilterOutputMtype.c_str(), h->cfgFilterOutputCharset.c_str(),
 	    scmd.c_str()));
 #endif
 
@@ -163,6 +163,7 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 {
     LOGDEB2(("getMimeHandler: mtype [%s] filtertypes %d\n", 
              mtype.c_str(), filtertypes));
+    Dijon::Filter *h = 0;
 
     // Get handler definition for mime type. We do this even if an
     // appropriate handler object may be in the cache (indexed by mime
@@ -178,10 +179,10 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
         // Do we already have a handler object in the cache ?
         map<string, Dijon::Filter *>::iterator it = o_handlers.find(mtype);
         if (it != o_handlers.end()) {
-            Dijon::Filter *h = it->second;
+            h = it->second;
             o_handlers.erase(it);
             LOGDEB2(("getMimeHandler: found in cache\n"));
-            return h;
+            goto out;
         }
 
 	// Not in cache. Break definition into type and name/command
@@ -202,23 +203,26 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	    // better and the latter will probably go away at some
 	    // point in the future
 	    if (!cmdstr.empty())
-		return mhFactory(cmdstr);
-	    return mhFactory(mtype);
+		h = mhFactory(cmdstr);
+	    h = mhFactory(mtype);
+	    goto out;
 	} else if (!stringlowercmp("dll", handlertype)) {
 	} else {
             if (cmdstr.empty()) {
 		LOGERR(("getMimeHandler: bad line for %s: %s\n", 
 			mtype.c_str(), hs.c_str()));
-		return 0;
+		goto out;
 	    }
             if (!stringlowercmp("exec", handlertype)) {
-                return mhExecFactory(cfg, mtype, cmdstr, false);
+                h = mhExecFactory(cfg, mtype, cmdstr, false);
+		goto out;
             } else if (!stringlowercmp("execm", handlertype)) {
-                return mhExecFactory(cfg, mtype, cmdstr, true);
+                h = mhExecFactory(cfg, mtype, cmdstr, true);
+		goto out;
             } else {
 		LOGERR(("getMimeHandler: bad line for %s: %s\n", 
 			mtype.c_str(), hs.c_str()));
-		return 0;
+		goto out;
             }
 	}
     }
@@ -230,21 +234,30 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     // If the type is an unknown text/xxx, index as text/plain and
     // hope for the best (this wouldn't work too well with text/rtf...)
     if (mtype.find("text/") == 0) {
-        return mhFactory("text/plain");
+        h = mhFactory("text/plain");
+	goto out;
     }
 #endif
 
     // Finally, unhandled files are either ignored or their name and
     // generic metadata is indexed, depending on configuration
-    bool indexunknown = false;
-    cfg->getConfParam("indexallfilenames", &indexunknown);
-    if (indexunknown) {
-	return new MimeHandlerUnknown("application/octet-stream");
-    } else {
-	return 0;
+    {bool indexunknown = false;
+	cfg->getConfParam("indexallfilenames", &indexunknown);
+	if (indexunknown) {
+	    h = new MimeHandlerUnknown("application/octet-stream");
+	    goto out;
+	} else {
+	    goto out;
+	}
     }
-}
 
+out:
+    if (h) {
+	string charset = cfg->getDefCharset();
+	h->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
+    }
+    return h;
+}
 
 /// Can this mime type be interned (according to config) ?
 bool canIntern(const std::string mtype, RclConfig *cfg)

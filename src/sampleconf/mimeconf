@@ -65,19 +65,19 @@ application/vnd.sun.xml.writer.global = exec rclsoff
 application/vnd.sun.xml.writer.template = exec rclsoff
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
-application/x-awk = exec rcltext
+application/x-awk = exec rcltext; charset=default
 application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
 application/x-gnuinfo = execm rclinfo
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
-application/x-perl = exec rcltext
+application/x-perl = exec rcltext; charset=default
 application/x-scribus = exec rclscribus
-application/x-shellscript = exec rcltext
+application/x-shellscript = exec rcltext; charset=default
 application/x-tex = exec rcltex
 text/x-tex = exec rcltex
 application/x-chm = execm rclchm
-application/zip = execm rclzip
+application/zip = execm rclzip;charset=default
 audio/mpeg = execm rclaudio
 audio/x-karaoke = execm rclkar
 image/gif = execm rclimg

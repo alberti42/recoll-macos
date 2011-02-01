@@ -73,11 +73,18 @@ bool MimeHandlerHtml::next_document()
     string fn = m_filename;
     m_filename.erase();
 
-    string charset = m_defcharset;
-    LOGDEB(("textHtmlToDoc: next_document. defcharset before parsing: [%s]\n", 
+    string charset = m_dfltInputCharset;
+    LOGDEB(("MHHtml::next_doc.: default supposed input charset: [%s]\n", 
 	    charset.c_str()));
+    // Override default input charset if someone took care to set one:
+    map<string,string>::const_iterator it = m_metaData.find("charset");
+    if (it != m_metaData.end() && !it->second.empty()) {
+	charset = it->second;
+	LOGDEB(("MHHtml: next_doc.: input charset from metadata: [%s]\n", 
+		charset.c_str()));
+    }
 
-    // - We first try to convert from the default configured charset
+    // - We first try to convert from the supposed charset
     //   (which may depend of the current directory) to utf-8. If this
     //   fails, we keep the original text
     // - During parsing, if we find a charset parameter, and it differs from

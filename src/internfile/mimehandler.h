@@ -40,7 +40,7 @@ public:
 	    m_udi = v;
 	    break;
 	case DEFAULT_CHARSET: 
-	    m_defcharset = v;
+	    m_dfltInputCharset = v;
 	    break;
 	case OPERATING_MODE: 
 	    if (!v.empty() && v[0] == 'v') 
@@ -88,13 +88,13 @@ public:
     virtual void clear() {
 	Dijon::Filter::clear();
 	m_forPreview = m_havedoc = false;
-	m_defcharset.clear();
+	m_dfltInputCharset.clear();
 	m_reason.clear();
     }
 
 protected:
     bool   m_forPreview;
-    string m_defcharset;
+    string m_dfltInputCharset;
     string m_reason;
     bool   m_havedoc;
     string m_udi; // May be set by creator as a hint

@@ -38,7 +38,8 @@ using std::string;
 class MimeHandlerExec : public RecollFilter {
  public:
     ///////////////////////
-    // Members not reset by clear(). params, cfgMtype and chgCharset
+    // Members not reset by clear(). params, cfgFilterOutputMtype and 
+    // cfgFilterOutputCharset
     // define what I am.  missingHelper is a permanent error
     // (no use to try and execute over and over something that's not
     // here).
@@ -48,11 +49,11 @@ class MimeHandlerExec : public RecollFilter {
     list<string> params;
     // Filter output type. The default for ext. filters is to output html, 
     // but some don't, in which case the type is defined in the config.
-    string cfgMtype;
+    string cfgFilterOutputMtype;
     // Output character set if the above type is not text/html. For
     // those filters, the output charset has to be known: ie set by a command
     // line option.
-    string cfgCharset; 
+    string cfgFilterOutputCharset; 
     bool missingHelper;
     ////////////////
 

@@ -272,6 +272,18 @@ bool MimeHandlerExecMultiple::next_document()
         }
     }
 
+    // Charset. For many document types it doesn't matter. For text
+    // and html it does. We supply a default from the
+    // configuration. We may want to process a charset parameter in
+    // filter output one day.  We should do the
+    // text transcoding to utf-8 here like exec::finaldetails does.
+    string charset = cfgFilterOutputCharset.empty() ? "utf-8" : 
+	cfgFilterOutputCharset;
+    if (!stringlowercmp("default", charset)) {
+	charset = m_dfltInputCharset;
+    }
+    m_metaData["charset"] = charset;
+    
     if (eofnext_received)
         m_havedoc = false;
 

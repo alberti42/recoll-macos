@@ -147,11 +147,17 @@ void MimeHandlerExec::finaldetails()
 {
     string& output = m_metaData["content"];
 
-    // if output is text/plain (not text/html), we may have to convert
-    // it to utf-8. cfgCharset comes from the mimeconf filter definition line
-    string charset = cfgCharset.empty() ? "utf-8" : cfgCharset;
-    string mt = cfgMtype.empty() ? "text/html" : cfgMtype;
-    if (!mt.compare("text/plain") && charset.compare("utf-8")) {
+    // If output is text/plain (not text/html), we may have to convert
+    // it to utf-8, because this is the last point where it can be done.
+    // cfgFilterOutputCharset comes from the mimeconf filter definition line
+    string charset = cfgFilterOutputCharset.empty() ? "utf-8" : 
+	cfgFilterOutputCharset;
+    if (!stringlowercmp("default", charset)) {
+	charset = m_dfltInputCharset;
+    }
+    string mt = cfgFilterOutputMtype.empty() ? "text/html" : 
+	cfgFilterOutputMtype;
+    if (!mt.compare("text/plain") && stringlowercmp("utf-8", charset)) {
 	string transcoded;
 	int ecnt;
 	if (!transcode(output, transcoded, charset, "UTF-8", &ecnt)) {
@@ -163,12 +169,19 @@ void MimeHandlerExec::finaldetails()
 			ecnt, charset.c_str()));
 	    }
 	    output = transcoded;
+	    charset = "utf-8";
 	}
     }
+
     // Success. Store some external metadata
-    m_metaData["origcharset"] = m_defcharset;
-    // Default charset: all recoll filters output utf-8, but this
-    // could still be overridden by the content-type meta tag for html
+
+    // Original charset. Can't be too sure about this actually. It's
+    // just a hint anyway
+    m_metaData["origcharset"] = m_dfltInputCharset;
+
+    // Supposed contents charset encoding. This could still be
+    // overridden by the content-type meta tag for html, but this is
+    // wasteful so we hope it's correct
     m_metaData["charset"] = charset;
     m_metaData["mimetype"] = mt;
 

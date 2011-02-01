@@ -263,9 +263,6 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
 			    m_forPreview ? "view" : "index");
-
-    string charset = m_cfg->getDefCharset();
-    df->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
     df->set_property(Dijon::Filter::DJF_UDI, udi);
 
 #ifdef RCL_USE_XATTR
@@ -314,9 +311,6 @@ void FileInterner::init(const string &data, RclConfig *cnf,
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
 			    m_forPreview ? "view" : "index");
-
-    string charset = m_cfg->getDefCharset();
-    df->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
 
     bool setres = false;
     if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
@@ -650,8 +644,7 @@ enum addResols {ADD_OK, ADD_CONTINUE, ADD_BREAK, ADD_ERROR};
 // and possibly add a filter/handler to the stack
 int FileInterner::addHandler()
 {
-    const map<string, string>& docdata = 
-	m_handlers.back()->get_meta_data();
+    const map<string, string>& docdata = m_handlers.back()->get_meta_data();
     string charset, mimetype;
     getKeyValue(docdata, keycs, charset);
     getKeyValue(docdata, keymt, mimetype);
@@ -685,8 +678,9 @@ int FileInterner::addHandler()
 	return ADD_CONTINUE;
     }
     newflt->set_property(Dijon::Filter::OPERATING_MODE, 
-			m_forPreview ? "view" : "index");
-    newflt->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
+			 m_forPreview ? "view" : "index");
+    if (!charset.empty())
+	newflt->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
 
     // Get current content: we don't use getkeyvalue() here to avoid
     // copying the text, which may be big.
