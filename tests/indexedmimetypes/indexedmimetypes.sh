@@ -55,3 +55,4 @@ recollq template
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 
 checkresult
+rm -f index.pid
