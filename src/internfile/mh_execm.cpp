@@ -169,6 +169,10 @@ bool MimeHandlerExecMultiple::next_document()
     if (m_ipath.length()) {
         obuf << "Ipath: " << m_ipath.length() << "\n" << m_ipath;
     }
+    if (!m_dfltInputCharset.empty()) {
+        obuf << "DflInCS: " << m_dfltInputCharset.length() << "\n" 
+	     << m_dfltInputCharset;
+    }
     obuf << "Mimetype: " << m_mimeType.length() << "\n" << m_mimeType;
     obuf << "\n";
     if (m_cmd.send(obuf.str()) < 0) {
@@ -185,6 +189,7 @@ bool MimeHandlerExecMultiple::next_document()
     bool subdocerror_received = false;
     string ipath;
     string mtype;
+    string charset;
     for (int loop=0;;loop++) {
         string name, data;
         if (!readDataElement(name, data)) {
@@ -207,6 +212,9 @@ bool MimeHandlerExecMultiple::next_document()
 	    subdocerror_received = true;
         } else if (!stringlowercmp("ipath:", name)) {
             ipath = data;
+            LOGDEB(("MHExecMultiple: got ipath [%s]\n", data.c_str()));
+        } else if (!stringlowercmp("charset:", name)) {
+            charset = data;
             LOGDEB(("MHExecMultiple: got ipath [%s]\n", data.c_str()));
         } else if (!stringlowercmp("mimetype:", name)) {
             mtype = data;
@@ -274,13 +282,14 @@ bool MimeHandlerExecMultiple::next_document()
 
     // Charset. For many document types it doesn't matter. For text
     // and html it does. We supply a default from the
-    // configuration. We may want to process a charset parameter in
-    // filter output one day.  We should do the
-    // text transcoding to utf-8 here like exec::finaldetails does.
-    string charset = cfgFilterOutputCharset.empty() ? "utf-8" : 
-	cfgFilterOutputCharset;
-    if (!stringlowercmp("default", charset)) {
-	charset = m_dfltInputCharset;
+    // configuration. We should do the text transcoding to utf-8 here
+    // like exec::finaldetails does.
+    if (charset.empty()) {
+	charset = cfgFilterOutputCharset.empty() ? "utf-8" : 
+	    cfgFilterOutputCharset;
+	if (!stringlowercmp("default", charset)) {
+	    charset = m_dfltInputCharset;
+	}
     }
     m_metaData["charset"] = charset;
     
