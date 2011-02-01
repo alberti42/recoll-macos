@@ -8,6 +8,6 @@ text/html	[file:///home/dockes/projets/fulltext/testrecoll/mail/attach]	[RECOLL:
 1 results
 message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/badMail.edit]	[none - In payments / Out payments]	855	bytes	
 1 results
-message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/tbird/Sent]	[Pronote: salut les genies.]	2565	bytes	
+message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/thunderbird/Sent]	[Pronote: salut les genies.]	2565	bytes	
 1 results
-message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/tbird/Sent]	[De mieux en mieux]	2565	bytes	
+message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/thunderbird/Sent]	[De mieux en mieux]	2565	bytes	
