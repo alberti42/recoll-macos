@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Recoll 1.15.0 release notes</title>
+
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description" content=
+	  "recoll is a simple full-text search system for unix and linux
+	   based on the powerful and mature xapian engine">
+    <meta name="Keywords" content=
+	  "full text search, desktop search, unix, linux">
+    <meta http-equiv="Content-language" content="en">
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+    <meta name="robots" content="All,Index,Follow">
+
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+  </head>
+
+  <body>
+    
+    <div class="rightlinks">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="download.html">Downloads</a></li>
+        <li><a href="doc.html">Documentation</a></li>
+      </ul>
+    </div>
+    
+    <div class="content">
+
+      <h1>Release notes for Recoll 1.15.0</h1>
+
+      <h2>Caveats</h2>
+
+      <p>The support for Qt 3 has been removed in this version which
+        uses only native Qt 4 interfaces. If your system has no
+        support for Qt 4.4 or newer, you need to stick
+        with <a href="download-1.14.html">Recoll 1.14</a>, which is
+        still supported.</p>
+
+      <p>The defaults for file name searches with multiple fragments
+        changed from OR to AND: see the changes list below for more
+        detail.</p> 
+
+      <p><em>Installing over an older version</em>: version 1.15/14/13
+        indexes are mostly compatible with 1.11 indexes, but some new,
+        relatively minor, features (ie: duplicates collapsing) depend
+        on a full index rebuild. The 1.14 date search feature
+        does <i>not</i> need an index rebuild, the data was already in
+        the index. The new 1.15 table will not be able to display
+        filenames without a full reindex (it does display the urls),
+        except for some previous custom field configurations.</p>
+
+	<br />If installing over 1.10 or older, you need a full
+	rebuild. The best way to do this is to just delete the old
+	<span class="filename">.recoll/xapiandb</span> directory,
+	especially if the index was created by an older version.
+	(ie: <tt>rm&nbsp;-rf&nbsp;~/.recoll/xapiandb/</tt>).  On very
+	old indexes, <tt>recollindex&nbsp;-z</tt> may sometimes end
+	with a <em>backend doesn't implement metadata</em> error,
+	which is wasteful because you then need to delete xapiandb and
+	run the indexing again.</p>
+
+      <h2>Changes</h2>
+
+      <p>Recoll 1.15.0 has major new GUI features and fixes a number
+      of small bugs</p> 
+
+      <ul>
+
+      <li>The GUI has a new display for the result list inside a
+        spreadsheet-like table, with configurable columns and sort by
+        any column. The table header right-click menu has the <i>reset
+        sort</i> function and column adding/removing.The "classical" look
+        is still there, you can dynamically switch between list and
+        table by clicking the table-like icon in the toolbar. </li>
+
+      <li>The old sort tool is gone. There are now vertical arrows in
+        the tool bar to directly sort by date ascending or descending,
+        which was its only significant use.</li>
+
+      <li>We added duplication indicators to the result list when results
+        are collapsed because they have bit-for-bit identical
+        contents. The indicater is the collapse count in parentheses,
+        displayed just after the relevancy percentage.</li>
+
+      <li>There is now a menu entry to clear search history.</li>
+
+      <li>File name search: it used to be that multiple fragments
+        where OR'ed together to perform the search. They are now AND'ed,
+        which makes more sense in many cases (remembering several
+        fragments of the file name but not the order), but means that a
+        search for <tt>*.doc&nbsp;*.odt</tt> will always
+        fail. Use <tt>ext:doc&nbsp;OR&nbsp; ext:odt</tt> instead.</li>
+
+      <li>Autophrase now works with the query language where it makes
+        sense.</li> 
+
+      <li>Support for lyrics in midi karaoke files. Works
+        better with the
+        Python <a href="http://chardet.feedparser.org/">chardet</a>
+        character encoding identification module.</li>
+        
+      <li>Support newer Purple/Pidgin logs using an html format.</li>
+
+      <li>Support thunderbird extreme brokiness in handling the mbox
+        format: naked "^From $" separators are now accepted
+        with <tt>mhmboxquirks&nbsp;=&nbsp;tbird</tt>.</li>
+
+      <li>A change of method for filtering on directory location makes
+        it much more efficient and faster.</li>
+
+      <li>The utf-8 file name is now a stored field by default.</li>
+      
+      <li>We now catch all exceptions in Python filters to avoid
+        crash reports from the system on benign filter failures.</li>
+
+      <li>Indexing now creates a lock/pid file inside the
+        configuration directory.</li>
+
+      <li>Fixed parallel build issue on FreeBSD.</li>
+
+
+      </ul>
+
+
+    </div>
+  </body>
+</html>

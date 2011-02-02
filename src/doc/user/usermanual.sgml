@@ -2,7 +2,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>Recoll helper applications page</ulink>">
-<!ENTITY RCLVERSION "1.14">
+<!ENTITY RCLVERSION "1.15">
 <!ENTITY XAP "<application>Xapian</application>">
 ]>
  

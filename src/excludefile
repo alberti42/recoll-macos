@@ -9,6 +9,7 @@
 .obj
 .svn
 .ui
+*.pyc
 CVS
 TAGS
 alldeps
@@ -22,6 +23,8 @@ lib/librcl.a
 makesrcdist.sh
 mk/localdefs
 mk/manifest.txt
+php/recoll/include/
+php/recoll/modules/
 qtgui/Makefile
 qtgui/preview/Makefile
 qtgui/preview/preview.pro

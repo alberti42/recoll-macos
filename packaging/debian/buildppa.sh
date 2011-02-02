@@ -4,27 +4,39 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.14.3
+RCLVERS=1.15.0
 PPAVERS=1
 
 ########## QT3
 series3=""
-series3="dapper hardy"
+case $RCLVERS in
+    1.14*)
+        series3="dapper hardy";;
+esac
+        
+if test X$series3 != X; then
+  debdir=debianrclqt3
 
-debdir=debianrclqt3
-
-rm -rf recoll-${RCLVERS}/debian
-cp -rp $debdir recoll-${RCLVERS}/debian
-for series in  $series3;do 
-  sed -e s/SERIES/$series/g < ${debdir}/changelog > \
-    recoll-${RCLVERS}/debian/changelog ;
-  (cd recoll-${RCLVERS};debuild -S -sa) || break
-  dput recoll-ppa recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
-done
+  rm -rf recoll-${RCLVERS}/debian
+  cp -rp $debdir recoll-${RCLVERS}/debian
+  for series in  $series3;do 
+    sed -e s/SERIES/$series/g < ${debdir}/changelog > \
+        recoll-${RCLVERS}/debian/changelog ;
+    (cd recoll-${RCLVERS};debuild -S -sa) || break
+    dput recoll-ppa recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
+  done
+fi
 
 ####### QT4
 series4=""
-series4="jaunty karmic lucid maverick"
+case $RCLVERS in
+    1.14*)
+        series4="jaunty karmic lucid maverick natty";;
+    *)
+        # jaunty had qt 4.3 1.15+ needs at least 4.4
+        series4="karmic lucid maverick natty";;
+esac
+
 
 debdir=debianrclqt4
 rm -rf recoll-${RCLVERS}/debian

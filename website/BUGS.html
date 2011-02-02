@@ -37,16 +37,11 @@
 
       <h2><a name="b_latest">recoll 1.14.4 + xapian 1.2+ + qt 4.4.1+</a></h2> 
       <ul>
-        <li>Some shell, awk, and perl scripts are not indexed. There is a
-        simple <a
-        href="https://bitbucket.org/medoc/recoll/issue/39/some-shell-and-other-scripts-are-not">
-       configuration tweak</a> workaround
-
 	<li>The new mutagen-based audio tags filter (rclaudio) only
 	  works with very recent mutagen
 	  versions. See <a href="filters/filters.html">here</a> for a
 	  corrected version.</li>
-        <li>Performing a full index with release 1.11 or later, over a
+        <li>Performing a full index with release 1.11 or newer, over a
           version created with a much older recoll release may
           sometimes end with an error saying "backend doesn't
           implement metadata".  If this happens, you need to delete
@@ -54,11 +49,7 @@
           and restart indexing. For big indexes, to avoid losing
           time, removing the directory preventively may be preferable .</li>
 
-        <li> If the user-chosen result list entry format results in
-          several paragraphs (in the qt textedit sense), right clicks
-          will only work inside the first one for each entry.</li>
-
-        <li>Under Solaris, it is necessary to perform initial
+        <li>Under Solaris, it is necessary to perform the initial
           indexing with the recollindex program (the recoll index
           thread doesn't work for creating the database). Don't know
           the reason. Only idea I have is problem with exception
@@ -82,6 +73,19 @@
           executing antiword). Rcldoc will try antiword, then will use
           vwWare if it is available. This will result in slightly
           slower indexing for all normal .doc files.</li>
+      </ul>
+
+      <h2><a name="b_1_14_4">recoll 1.14.4</a></h2> 
+      <ul>
+        <li>rclmon.sh stop would not work.</li>
+        <li>Some shell, awk, and perl scripts are not indexed. There is a
+        simple <a
+        href="https://bitbucket.org/medoc/recoll/issue/39/some-shell-and-other-scripts-are-not">
+       configuration tweak</a> workaround
+        <li>The tree walk in indexing could loop on symbolic links.</li>
+        <li> If the user-chosen result list entry format results in
+          several paragraphs (in the qt textedit sense), right clicks
+          will only work inside the first one for each entry.</li>
       </ul>
 
       <h2><a name="b_1_14_3">recoll 1.14.3</h2>

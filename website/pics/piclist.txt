@@ -1,4 +1,5 @@
 recoll0.png 
+result-table.png
 recoll1.png
 recoll2.png
 recoll3.png

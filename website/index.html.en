@@ -47,8 +47,8 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.14.4</a> 
-	(<a href="CHANGES.html">Changes</a>).</p>
+	<a class="important" href="download.html">1.15.0</a> 
+	(<a href="release-1.15.0.html">Release notes</a>).</p>
 
       <h2>Features: </h2>
 
@@ -57,7 +57,7 @@
 	  web server, desktop environment or exotic language necessary.</li>
 	<li>Will run on most Unix-based <a
 	    href="features.html#systems">systems</a></li> 
-        <li>Qt-based GUI. Can use either Qt 3 or Qt 4.</li>
+        <li>Qt 4 GUI. (Older releases can use Qt 3).</li>
 
         <li>Searches most common 
 	  <a href="features.html#doctypes">document types</a>, emails and
@@ -90,6 +90,12 @@
 
       <h2>News: </h2>
       <ul>
+	<li>2011-02-02 : Recoll <a href="download.html#source">1.15.0</a> is
+	  out. This brings important GUI improvements, with a new
+	  switchable table-based result list, and direct access to sort
+	  functions. See the <a href="release-1.15.0.html">Release notes</a>.
+	</li>
+
 	<li>2010-11-29 : Recoll <a href="download.html#source">1.14.4</a> is
 	  out. This is a small bugs fix release, the important <a
 	  href="CHANGES.html">changes</a> were in 1.14.2. 1.14.4 was

@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.14.3
+%define version 1.15.0
 %define release  %mkrel 1
 
 Name:           %{name}
@@ -13,8 +13,7 @@ Group:          Applications/Databases
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
-# We build with a static link to xapian to avoid this dependency
-#Requires:	xapian-core
+Requires:	xapian-core
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -32,7 +31,7 @@ interface.
 %build
 [ -n "$QTDIR" ] || . %{_sysconfdir}/profile.d/60qt4.sh
 %configure
-make %{?_smp_mflags} static
+make %{?_smp_mflags}
 
 # ---------------------------------------------------------------------------
 
@@ -60,6 +59,8 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Wed Feb 02 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.0-1
+- Update to release 1.15.0
 * Thu Nov 25 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.3-1
 - Update to release 1.14.2
 * Sat Sep 24 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.2-1

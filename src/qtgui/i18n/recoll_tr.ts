@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="tr">
+<!DOCTYPE TS><TS>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -448,6 +446,14 @@ Do you want to start the  preferences dialog ?</source>
         <source>Save file</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Result count (est.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation type="unfinished">Sorgu detayları</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -603,6 +609,105 @@ Do you want to start the  preferences dialog ?</source>
         <source>Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Erase search history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sortByDateAsc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by dates from oldest to newest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sortByDateDesc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by dates from newest to oldest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Query Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show results as table</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RecollModel</name>
+    <message>
+        <source>Abstract</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Dosya adı</translation>
+    </message>
+    <message>
+        <source>File date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Ipath</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keywords</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime type</source>
+        <translation type="unfinished">Mime Tipi</translation>
+    </message>
+    <message>
+        <source>Original character set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Relevancy rating</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mtime</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished">Tarih</translation>
+    </message>
+    <message>
+        <source>Date and time</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>
@@ -648,15 +753,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Sorgu detayları</translation>
-    </message>
-    <message>
-        <source>filtered</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>sorted</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Sorgu detayları</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -700,6 +797,25 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>for</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ResTable</name>
+    <message>
+        <source>&amp;Reset sort</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add &quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot; column</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -844,38 +960,38 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SortForm</name>
     <message>
         <source>Date</source>
-        <translation>Tarih</translation>
+        <translation type="obsolete">Tarih</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Mime Tipi</translation>
+        <translation type="obsolete">Mime Tipi</translation>
     </message>
 </context>
 <context>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation>Sıralama Ölçütü</translation>
+        <translation type="obsolete">Sıralama Ölçütü</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation>Sırala</translation>
+        <translation type="obsolete">Sırala</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation>en uygun sonuç veren:</translation>
+        <translation type="obsolete">en uygun sonuç veren:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation>Azalan</translation>
+        <translation type="obsolete">Azalan</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Uygula</translation>
+        <translation type="obsolete">Uygula</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Kapat</translation>
+        <translation type="obsolete">Kapat</translation>
     </message>
 </context>
 <context>
@@ -1465,7 +1581,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Sıralama penceresi ile başla.</translation>
+        <translation type="obsolete">Sıralama penceresi ile başla.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>

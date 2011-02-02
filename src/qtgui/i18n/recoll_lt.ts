@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="lt">
+<!DOCTYPE TS><TS>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -458,6 +456,14 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
         <source>Save file</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Result count (est.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation type="unfinished">Užklausos detalės</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -613,6 +619,105 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
         <source>Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Erase search history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sortByDateAsc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by dates from oldest to newest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sortByDateDesc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by dates from newest to oldest</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Query Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show results as table</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RecollModel</name>
+    <message>
+        <source>Abstract</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Bylos vardas</translation>
+    </message>
+    <message>
+        <source>File date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> Ipath</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keywords</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime type</source>
+        <translation type="unfinished">Mime tipas</translation>
+    </message>
+    <message>
+        <source>Original character set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Relevancy rating</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mtime</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished">Data</translation>
+    </message>
+    <message>
+        <source>Date and time</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>
@@ -642,15 +747,15 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Užklausos detalės</translation>
+        <translation type="obsolete">Užklausos detalės</translation>
     </message>
     <message>
         <source>filtered</source>
-        <translation>išfiltruota</translation>
+        <translation type="obsolete">išfiltruota</translation>
     </message>
     <message>
         <source>sorted</source>
-        <translation>surūšiuota</translation>
+        <translation type="obsolete">surūšiuota</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -710,6 +815,25 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     </message>
     <message>
         <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ResTable</name>
+    <message>
+        <source>&amp;Reset sort</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add &quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&quot; column</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -854,38 +978,38 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SortForm</name>
     <message>
         <source>Date</source>
-        <translation>Data</translation>
+        <translation type="obsolete">Data</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Mime tipas</translation>
+        <translation type="obsolete">Mime tipas</translation>
     </message>
 </context>
 <context>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation>Rūšiavimo kriterijus</translation>
+        <translation type="obsolete">Rūšiavimo kriterijus</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation>Rūšiuoti</translation>
+        <translation type="obsolete">Rūšiuoti</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation>tinkamiausi rezultatai pagal:</translation>
+        <translation type="obsolete">tinkamiausi rezultatai pagal:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation>Mažėjimo tvarka</translation>
+        <translation type="obsolete">Mažėjimo tvarka</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Pritaikyti</translation>
+        <translation type="obsolete">Pritaikyti</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Uždaryti</translation>
+        <translation type="obsolete">Uždaryti</translation>
     </message>
 </context>
 <context>
@@ -1498,7 +1622,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Pradėti su atidarytu rūšiavimo langu.</translation>
+        <translation type="obsolete">Pradėti su atidarytu rūšiavimo langu.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>

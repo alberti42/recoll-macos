@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="fr">
+<!DOCTYPE TS><TS>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -458,6 +456,14 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
         <source>Save file</source>
         <translation>Sauvegarder le fichier</translation>
     </message>
+    <message>
+        <source>Result count (est.)</source>
+        <translation>Nombre de résultats (est.)</translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation>Détails de la recherche</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -617,6 +623,105 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
         <source>Full Screen</source>
         <translation>Plein écran</translation>
     </message>
+    <message>
+        <source>&amp;Erase search history</source>
+        <translation>&amp;Effacer l&apos;historique des recherches</translation>
+    </message>
+    <message>
+        <source>sortByDateAsc</source>
+        <translation>sortByDateAsc</translation>
+    </message>
+    <message>
+        <source>Sort by dates from oldest to newest</source>
+        <translation>Trier par date des plus anciennes aux plus récentes</translation>
+    </message>
+    <message>
+        <source>sortByDateDesc</source>
+        <translation>sortByDateDesc</translation>
+    </message>
+    <message>
+        <source>Sort by dates from newest to oldest</source>
+        <translation>Trier par date des plus récentes aux plus anciennes</translation>
+    </message>
+    <message>
+        <source>Show Query Details</source>
+        <translation>Afficher la requête en détails</translation>
+    </message>
+    <message>
+        <source>Show results as table</source>
+        <translation>Afficher les résultats en tableau</translation>
+    </message>
+</context>
+<context>
+    <name>RecollModel</name>
+    <message>
+        <source>Abstract</source>
+        <translation>Extrait</translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation>Auteur</translation>
+    </message>
+    <message>
+        <source>Document size</source>
+        <translation>Taille document</translation>
+    </message>
+    <message>
+        <source>Document date</source>
+        <translation>Date document</translation>
+    </message>
+    <message>
+        <source>File size</source>
+        <translation>Taille fichier</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation>Nom de fichier</translation>
+    </message>
+    <message>
+        <source>File date</source>
+        <translation>Date fichier</translation>
+    </message>
+    <message>
+        <source> Ipath</source>
+        <translation>Ipath</translation>
+    </message>
+    <message>
+        <source>Keywords</source>
+        <translation>Mots clef</translation>
+    </message>
+    <message>
+        <source>Mime type</source>
+        <translation>Type Mime</translation>
+    </message>
+    <message>
+        <source>Original character set</source>
+        <translation>Jeu de caractères d&apos;origine</translation>
+    </message>
+    <message>
+        <source>Relevancy rating</source>
+        <translation>Pertinence</translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation>Titre</translation>
+    </message>
+    <message>
+        <source>URL</source>
+        <translation>URL</translation>
+    </message>
+    <message>
+        <source>Mtime</source>
+        <translation>Mtime</translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation>Date</translation>
+    </message>
+    <message>
+        <source>Date and time</source>
+        <translation>Date et heure</translation>
+    </message>
 </context>
 <context>
     <name>ResList</name>
@@ -654,7 +759,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Détail de la recherche</translation>
+        <translation type="obsolete">Détail de la recherche</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -666,11 +771,11 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>filtered</source>
-        <translation>filtré</translation>
+        <translation type="obsolete">filtré</translation>
     </message>
     <message>
         <source>sorted</source>
-        <translation>trié</translation>
+        <translation type="obsolete">trié</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -715,6 +820,25 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>for</source>
         <translation>pour</translation>
+    </message>
+</context>
+<context>
+    <name>ResTable</name>
+    <message>
+        <source>&amp;Reset sort</source>
+        <translation>&amp;Revenir au tri par pertinence</translation>
+    </message>
+    <message>
+        <source>&amp;Delete column</source>
+        <translation>&amp;Enlever la colonne</translation>
+    </message>
+    <message>
+        <source>Add &quot;</source>
+        <translation>Ajouter &quot;</translation>
+    </message>
+    <message>
+        <source>&quot; column</source>
+        <translation>&quot; colonne</translation>
     </message>
 </context>
 <context>
@@ -769,7 +893,19 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Entrer une expression du langage de recherche. Antisèche:&lt;br&gt;
+&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; ET &apos;term2&apos; champ non spécifié.&lt;br&gt;
+&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; recherche dans le champ &apos;field&apos;.&lt;br&gt;
+ Noms de champs standards (utiliser les mots anglais)/alias:&lt;br&gt;
+  title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
+ Pseudo-champs: dir, mime/format, type/rclcat, date.&lt;br&gt;
+ Examples d&apos;intervalles de dates: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+&lt;i&gt;term1 term2 OR term3&lt;/i&gt; : term1 AND (term2 OR term3).&lt;br&gt;
+  NE PAS mettre les parenthèses.&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase exacte. Options::&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : proximité (pas d&apos;ordre).&lt;br&gt;
+Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de doute sur les résultats et consulter le manuel (en anglais) (&amp;lt;F1&gt;) pour plus de détails.
+</translation>
     </message>
     <message>
         <source>Enter file name wildcard expression.</source>
@@ -858,38 +994,38 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SortForm</name>
     <message>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation type="obsolete">Date</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Type Mime</translation>
+        <translation type="obsolete">Type Mime</translation>
     </message>
 </context>
 <context>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation>Critères de tri</translation>
+        <translation type="obsolete">Critères de tri</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation>Trier les</translation>
+        <translation type="obsolete">Trier les</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation>résultats les plus pertinents en fonction de:</translation>
+        <translation type="obsolete">résultats les plus pertinents en fonction de:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation>Décroissant</translation>
+        <translation type="obsolete">Décroissant</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Fermer</translation>
+        <translation type="obsolete">Fermer</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Appliquer</translation>
+        <translation type="obsolete">Appliquer</translation>
     </message>
 </context>
 <context>
@@ -1521,7 +1657,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Panneau de tri ouvert au démarrage.</translation>
+        <translation type="obsolete">Panneau de tri ouvert au démarrage.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>

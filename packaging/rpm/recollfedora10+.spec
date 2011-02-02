@@ -1,12 +1,12 @@
 Name:           recoll
-Version:        1.14.2
+Version:        1.15.0
 Release:        1%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
 Group:          Applications/Databases
 License:        GPLv2
 URL:            http://www.recoll.org/
-Source0:        http://www.recoll.org/recoll-1.14.2.tar.gz 
+Source0:        http://www.recoll.org/recoll-1.15.0.tar.gz 
 
 BuildRequires:  qt-devel xapian-core-devel zlib-devel desktop-file-utils
 
@@ -50,8 +50,8 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
-* Sat Sep 24 2010  J.F. Dockes <jfd@recoll.org> 1.14.2-1
-- updated to release 1.14.2
+* Wed Feb 02 2011  J.F. Dockes <jfd@recoll.org> 1.15.0-1
+- updated to release 1.15.0
 * Mon Sep 13 2010  J.F. Dockes <jfd@recoll.org> 1.14.0-1
 - updated to release 1.14.0
 * Sun May 9 2010  J.F. Dockes <jfd@recoll.org> 1.13.04-2

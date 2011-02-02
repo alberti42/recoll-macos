@@ -51,11 +51,27 @@ make static || exit 1
 
 ${STRIP} index/recollindex ${QTGUI}/recoll
 
-files="COPYING README INSTALL VERSION Makefile recollinstall
-filters desktop sampleconf doc/user doc/man
-index/recollindex index/rclmon.sh ${QTGUI}/recoll qtgui/i18n/*.qm 
+files="
+COPYING 
+INSTALL 
+Makefile 
+README 
+VERSION 
+desktop 
+desktop/recoll-searchgui.desktop
+desktop/recoll.png 
+doc/man
+doc/user 
+filters 
+index/rclmon.sh 
+index/recollindex 
+qtgui/i18n/*.qm 
+qtgui/images
 qtgui/mtpics/*.png 
-desktop/recoll.png desktop/recoll-searchgui.desktop"
+qtgui/recoll 
+recollinstall
+sampleconf 
+"
 
 $TAR chf - $files  | (cd $topdir; $TAR xf -)
 

@@ -1,3 +1,9 @@
+kio-recoll (1.15.0-0~ppa1~SERIES1) SERIES; urgency=low
+
+  * Update to recoll version 1.15.0
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 02 Feb 2011 09:48:00 +0200
+
 kio-recoll (1.14.3-0~ppa1~SERIES1) SERIES; urgency=low
 
   * Update to recoll version 1.14.3
