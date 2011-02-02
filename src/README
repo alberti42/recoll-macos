@@ -58,24 +58,26 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              3.1.1. Simple search
 
-                             3.1.2. The result list
+                             3.1.2. The default result list
 
-                             3.1.3. The preview window
+                             3.1.3. The alternate result table
 
-                             3.1.4. Complex/advanced search
+                             3.1.4. The preview window
 
-                             3.1.5. The term explorer tool
+                             3.1.5. Complex/advanced search
 
-                             3.1.6. Multiple databases
+                             3.1.6. The term explorer tool
 
-                             3.1.7. Document history
+                             3.1.7. Multiple databases
 
-                             3.1.8. Sorting search results and collapsing
+                             3.1.8. Document history
+
+                             3.1.9. Sorting search results and collapsing
                              duplicates
 
-                             3.1.9. Search tips, shortcuts
+                             3.1.10. Search tips, shortcuts
 
-                             3.1.10. Customizing the search interface
+                             3.1.11. Customizing the search interface
 
                 3.2. Searching with the KDE KIO slave
 
@@ -177,19 +179,20 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    will return a list of documents where those terms are prominent, in a
    similar way to Internet search engines.
 
-   Recoll tries to determine which documents are most relevant to the search
-   terms you provide. Computer algorithms for determining relevance can be
-   very complex, and in general are inferior to the power of the human mind
-   to rapidly determine relevance. The quality of relevance guessing by the
-   search tool is probably the most important element for a search
+   A search application tries to determine which documents are most relevant
+   to the search terms you provide. Computer algorithms for determining
+   relevance can be very complex, and in general are inferior to the power of
+   the human mind to rapidly determine relevance. The quality of relevance
+   guessing is probably the most important aspect when evaluating a search
    application.
 
    In many cases, you are looking for all the forms of a word, not for a
    specific form or spelling. These different forms may include plurals,
    different tenses for a verb, or terms derived from the same root or stem
-   (example: floor, floors, floored, flooring...). Recoll will by default
-   expand queries to all such related terms (words that reduce to the same
-   stem). This expansion can be disabled at search time.
+   (example: floor, floors, floored, flooring...). Search applications
+   usually expand queries to all such related terms (words that reduce to the
+   same stem) and also provide a way to disable this expansion if you are
+   actually searching for a specific form.
 
    Stemming, by itself, does not accommodate for misspellings or phonetic
    searches. Recoll supports these features through a specific tool (the term
@@ -202,8 +205,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Recoll uses the Xapian information retrieval library as its storage and
    retrieval engine. Xapian is a very mature package using a sophisticated
-   probabilistic ranking model. Recoll provides the interface to get data
-   into (indexing) and out (searching) of the system.
+   probabilistic ranking model. Recoll provides the mechanisms and interface
+   to get data into and out of the system.
 
    In practice, Xapian works by remembering where terms appear in your
    document files. The acquisition process is called indexing.
@@ -239,8 +242,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Indexing is started automatically the first time you execute the recoll
    search graphical user interface, or by executing the recollindex command.
 
-   Searches are performed inside the recoll program, which has many options
-   to help you find what you are looking for.
+   Searches are usually performed inside the recoll graphical user interface
+   (GUI) program, which has many options to help you find what you are
+   looking for. However, there are other ways to perform Recoll searches:
+   mostly a command line tool, a Python programming interface, and a KDE KIO
+   slave module.
 
      ----------------------------------------------------------------------
 
@@ -263,23 +269,28 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Real time indexing: indexing takes place as soon as a file is created
        or changed. recollindex runs as a daemon and uses a file system
-       alteration monitor such as Fam, Gamin or inotify do detect file
-       changes. Monitoring a big directory tree can consume significant
-       system resources.
+       alteration monitor such as inotify, Fam or Gamin to detect file
+       changes.
 
    The choice between the two methods is mostly a matter of preference, and
    they can be combined by setting up multiple indexes (ie: use periodic
    indexing on a big documentation directory, and real time indexing on a
    small home directory). Monitoring a big file system tree can consume
-   significant system resources, for dubious gains.
+   significant system resources.
 
    
 
    Recoll knows about quite a few different document types. The parameters
    for document types recognition and processing are set in configuration
-   files Most file types, like HTML or word processing files, only hold one
-   document. Some file types, like mail folder files, can hold many
-   individually indexed documents.
+   files.
+
+   Most file types, like HTML or word processing files, only hold one
+   document. Some file types, like mail folder files or zip archives, can
+   hold many individually indexed documents, which may in turn be themselves
+   compound ones. Such hierarchies can go quite deep, and Recoll has no
+   problem processing, for example, an ms-word document which would be an
+   attachment to an email message part of a folder file archived inside a zip
+   file...
 
    Recoll indexing processes plain text, HTML, openoffice and e-mail files
    internally (a few more actually).
@@ -492,16 +503,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The indexing process can be interrupted by sending an interrupt (^C,
    SIGINT) or terminate (SIGTERM) signal. Some time may elapse before the
-   process exits, because it needs to properly flush and close the index. The
-   indexing will restart at the interruption point the next time (the full
-   file tree will still be traversed, but files that were indexed up to the
-   interruption and are still up to date will not need to be reindexed).
+   process exits, because it needs to properly flush and close the index.
 
    After such an interruption, the index will be somewhat inconsistent
    because some operations which are normally performed at the end of the
    indexing pass will have been skipped (for exemple, the stemming and
    spelling databases will be inexistant or out of date). You just need to
-   restart indexing at a later time to restore consistency.
+   restart indexing at a later time to restore consistency. The indexing will
+   restart at the interruption point (the full file tree will be traversed,
+   but files that were indexed up to the interruption and are still up to
+   date will not need to be reindexed).
+
+   recollindex has a number of other options which are described in its man
+   page.
 
      ----------------------------------------------------------------------
 
@@ -590,7 +604,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        field where you can enter multiple words.
 
      * Advanced search (a panel accessed through the Tools menu or the
-       toolbox bar icon) shas multiple entry fields, which you may use to
+       toolbox bar icon) has multiple entry fields, which you may use to
        build a logical condition, with additional filtering on file type and
        location in the file system.
 
@@ -618,19 +632,40 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
     4. Click the Search button or hit the Enter key to start the search.
 
-   The initial default search mode is All terms. This will look for documents
-   containing all of the search terms (the ones with more terms will get
-   better scores). Any term will search for documents where at least one of
-   the terms appear.
+   The initial default search mode is Query language. Without special
+   directives, this will look for documents containing all of the search
+   terms (the ones with more terms will get better scores), just like the All
+   terms mode which will ignore such directives. Any term will search for
+   documents where at least one of the terms appear.
+
+   The Query Language features are described in a separate section.
 
    File name will specifically look for file names. The entry will be split
-   at white space characters, and each pattern will be separately expanded.
-   If you want to search for a pattern including white space, use double
-   quotes. The point of having a separate file name search is that wild card
-   expansion can be performed more efficiently on a relatively small subset
-   of the index.
+   at white space characters, and each fragment will be separately expanded,
+   then the search will be for file names matching all fragments (this is new
+   in 1.15, older releases did an OR of the whole thing which did not make
+   sense). Things to know:
 
-   The fourth entry (Query Language) is described in its own section.
+     * The search is case- and accent-insensitive.
+
+     * Fragments without any wild card character and not capitalized will be
+       prepended and appended with '*' (ie: etc -> *etc*, but Etc -> etc). Of
+       course it does not make sense to have multiple fragments if one of
+       them is capitalized (as this one will require an exact match).
+
+     * If you want to search for a pattern including white space, use double
+       quotes (ie: "admin note*").
+
+     * If you have a big index (many files), excessively generic fragments
+       may result in inefficient searches.
+
+     * As an example, inst recoll would match recollinstall.in (and quite a
+       few others...).
+
+   The point of having a separate file name search is that wild card
+   expansion can be performed more efficiently on a relatively small subset
+   of the index (allowing wild cards on the left of terms without excessive
+   penality).
 
    All search modes allow wildcards inside terms (*, ?, []). You may want to
    have a look at the section about wildcards for more information about
@@ -667,14 +702,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.2. The result list
+  3.1.2. The default result list
 
    After starting a search, a list of results will instantly be displayed in
    the main list window.
 
    By default, the document list is presented in order of relevance (how well
-   the system estimates that the document matches the query). You can specify
-   a different ordering by using the Tools / Sort parameters dialog.
+   the system estimates that the document matches the query). You can sort
+   the result by ascending or descending date by using the vertical arrows in
+   the toolbar (the old sort tool is gone after release 1.15, because the new
+   result table has much better capability).
 
    Clicking on the Preview link for an entry will open an internal preview
    window for the document. Further Preview clicks for the same search will
@@ -763,7 +800,34 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.3. The preview window
+  3.1.3. The alternate result table
+
+   In Recoll 1.15 and newer, the results can now be shown in a
+   spreadsheet-like display. You can switch to this presentation by clicking
+   the table-like icon in the toolbar (this is a toggle, click again to
+   restore the list).
+
+   Clicking on the column headers will allow sorting by the values in the
+   column. You can click again to invert the order, and use the header
+   right-click menu to reset sorting to the default relevance order.
+
+   Both the list and the table display the same underlying results. The sort
+   order set from the table is still active if you switch back to the list
+   mode. You can click twice on a date sort arrow to reset it from there.
+
+   The header right-click menu allows adding or deleting columns. The columns
+   can be resized, and their order can be changed (by dragging). All the
+   changes are recorded when you quit recoll
+
+   Hovering over a table row will update the detail area at the bottom of the
+   window with the corresponding values. You can click the row to freeze the
+   display. The bottom area is equivalent to a classical result list
+   paragraph, with links for starting a preview or a native application, and
+   an equivalent right-click menu.
+
+     ----------------------------------------------------------------------
+
+  3.1.4. The preview window
 
    The preview window opens when you first click a Preview link inside the
    result list.
@@ -807,7 +871,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.4. Complex/advanced search
+  3.1.5. Complex/advanced search
 
    The advanced search dialog helps you build more complex queries without
    memorizing the search language constructs. It can be opened through the
@@ -874,7 +938,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.5. The term explorer tool
+  3.1.6. The term explorer tool
 
    Recoll automatically manages the expansion of search terms to their
    derivatives (ie: plural/singular, verb inflections). But there are other
@@ -929,7 +993,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.6. Multiple databases
+  3.1.7. Multiple databases
 
    Multiple Recoll databases or indexes can be created by using several
    configuration directories which are usually set to index different areas
@@ -974,7 +1038,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.7. Document history
+  3.1.8. Document history
 
    Documents that you actually view (with the internal preview or an external
    tool) are entered into the document history, which is remembered.
@@ -987,7 +1051,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.8. Sorting search results and collapsing duplicates
+  3.1.9. Sorting search results and collapsing duplicates
 
    The documents in a result list are normally sorted in order of relevance.
    It is possible to specify different sort parameters by using the Sort
@@ -1014,9 +1078,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.9. Search tips, shortcuts
+  3.1.10. Search tips, shortcuts
 
-    3.1.9.1. Terms and search expansion
+    3.1.10.1. Terms and search expansion
 
    Term completion. Typing Esc Space in the simple search entry field while
    entering a word will either complete the current word if its beginning
@@ -1055,7 +1119,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.9.2. Working with phrases and proximity
+    3.1.10.2. Working with phrases and proximity
 
    Phrases and Proximity searches. A phrase can be looked for by enclosing it
    in double quotes. Example: "user manual" will look only for occurrences of
@@ -1074,7 +1138,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.9.3. Others
+    3.1.10.3. Others
 
    Using fields. You can use the query language and field specifications to
    only search certain parts of documents. This can be especially helpful
@@ -1109,7 +1173,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.10. Customizing the search interface
+  3.1.11. Customizing the search interface
 
    You can customize some aspects of the search interface by using the Query
    configuration entry in the Preferences menu.
@@ -1226,7 +1290,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.10.1. The result list paragraph format
+    3.1.11.1. The result list paragraph format
 
    The presentation of each result inside the result list can be customized
    by setting the result list paragraph format inside the User Interface tab
@@ -1578,7 +1642,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
   3.5.1. Hotkeying recoll
 
    It is surprisingly convenient to be able to show or hide the Recoll GUI
-   with a single keystroke. Recoll comes with a small python script, based on
+   with a single keystroke. Recoll comes with a small Python script, based on
    the libwnck window manager interface library, which will allow you to do
    just this. The detailed instructions are on this wiki page.
 
@@ -2189,6 +2253,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        code.
 
      * Zip archives need Python (and the standard zipfile module).
+
+     * Midi karaoke files need Python and the Midi module
 
    Text, HTML, mail folders, and Scribus files are processed internally. Lyx
    is used to index Lyx files. Many filters need iconv and the standard sed
