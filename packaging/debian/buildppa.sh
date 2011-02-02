@@ -7,6 +7,11 @@
 RCLVERS=1.15.0
 PPAVERS=1
 
+case $RCLVERS in
+    1.14*) PPANAME=recoll-ppa;;
+    *)     PPANAME=recoll15-ppa;;
+esac
+
 ########## QT3
 series3=""
 case $RCLVERS in
@@ -23,7 +28,7 @@ if test X$series3 != X; then
     sed -e s/SERIES/$series/g < ${debdir}/changelog > \
         recoll-${RCLVERS}/debian/changelog ;
     (cd recoll-${RCLVERS};debuild -S -sa) || break
-    dput recoll-ppa recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
+    dput $PPANAME recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
   done
 fi
 
@@ -45,12 +50,12 @@ for series in $series4 ; do
   sed -e s/SERIES/$series/g < ${debdir}/changelog > \
     recoll-${RCLVERS}/debian/changelog ;
   (cd recoll-${RCLVERS};debuild -S -sa)  || break
-  dput recoll-ppa recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
+  dput $PPANAME recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
 done
 
 ### KIO
 seriesk=""
-seriesk="jaunty karmic lucid maverick"
+seriesk="jaunty karmic lucid maverick natty"
 
 debdir=debiankio
 rm -rf recoll-${RCLVERS}/debian
@@ -59,5 +64,5 @@ for series in $seriesk ; do
   sed -e s/SERIES/$series/g < ${debdir}/changelog > \
     recoll-${RCLVERS}/debian/changelog ;
   (cd recoll-${RCLVERS};debuild -S -sa) || break
-  dput recoll-ppa kio-recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
+  dput $PPANAME kio-recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
 done

@@ -217,8 +217,9 @@ int RecollModel::columnCount(const QModelIndex&) const
 void RecollModel::readDocSource()
 {
     LOGDEB(("RecollModel::readDocSource()\n"));
-    beginResetModel();
-    endResetModel();
+    reset();
+//    beginResetModel();
+//    endResetModel();
 }
 
 void RecollModel::setDocSource(RefCntr<DocSequence> nsource)
