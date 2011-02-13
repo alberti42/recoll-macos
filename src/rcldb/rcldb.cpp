@@ -815,9 +815,8 @@ private:
 // Get one term from the doc, remove accents and lowercase, then add posting
 bool TextSplitDb::takeword(const std::string &_term, int pos, int, int)
 {
-#if 0
-    LOGDEB(("TextSplitDb::takeword: [%s]\n", _term.c_str()));
-#endif
+    LOGDEB2(("TextSplitDb::takeword: [%s]\n", _term.c_str()));
+
     string term;
     if (!unacmaybefold(_term, term, "UTF-8", true)) {
 	LOGINFO(("Db::splitter::takeword: unac failed for [%s]\n", 
@@ -929,8 +928,12 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	splitter.curpos = 0;
 	newdocument.add_posting(pathelt_prefix, 
 				splitter.basepos + splitter.curpos++);
-	for (vector<string>::const_iterator it = vpath.begin(); 
+	for (vector<string>::iterator it = vpath.begin(); 
 	     it != vpath.end(); it++){
+	    if (it->length() > 230) {
+		// Just truncate it. May still be useful because of wildcards
+		*it = it->substr(230);
+	    }
 	    newdocument.add_posting(pathelt_prefix + *it, 
 				    splitter.basepos + splitter.curpos++);
 	}
