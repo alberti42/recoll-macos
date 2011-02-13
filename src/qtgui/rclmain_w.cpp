@@ -188,13 +188,6 @@ void RclMain::init()
 
     sSearch->queryText->installEventFilter(this);
 
-    if (prefs.keepSort && prefs.sortActive) {
-	if (prefs.sortDesc) 
-	    actionSortByDateDesc->setChecked(true);
-	else
-	    actionSortByDateAsc->setChecked(true);
-	onSortCtlChanged();
-    }
     restable = new ResTable(this);
     verticalLayout->insertWidget(2, restable);
     actionShowResultsAsTable->setChecked(prefs.showResultsAsTable);
@@ -310,6 +303,14 @@ void RclMain::init()
 	    this, SLOT(startPreview(Rcl::Doc)));
     connect(reslist, SIGNAL(headerClicked()), 
 	    this, SLOT(showQueryDetails()));
+
+    if (prefs.keepSort && prefs.sortActive) {
+	if (prefs.sortDesc) 
+	    actionSortByDateDesc->setChecked(true);
+	else
+	    actionSortByDateAsc->setChecked(true);
+	onSortCtlChanged();
+    }
 
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
@@ -870,7 +871,7 @@ void RclMain::onSortCtlChanged()
     if (m_sortspecnochange)
 	return;
 
-    LOGDEB(("RclMain::onCtlDataChanged()\n"));
+    LOGDEB(("RclMain::onSortCtlChanged()\n"));
     m_sortspec.reset();
     if (actionSortByDateAsc->isChecked()) {
 	m_sortspec.field = "mtime";
@@ -886,7 +887,8 @@ void RclMain::onSortCtlChanged()
 	prefs.sortActive = prefs.sortDesc = false;
     }
     LOGDEB(("RclMain::onCtlDataChanged(): emitting change signals\n"));
-    m_source->setSortSpec(m_sortspec);
+    if (m_source.isNotNull())
+	m_source->setSortSpec(m_sortspec);
     emit sortDataChanged(m_sortspec);
     emit applyFiltSortData();
 }
