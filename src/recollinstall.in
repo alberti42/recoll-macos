@@ -101,6 +101,10 @@ ${INSTALL} -m 0755 index/recollindex ${bindir} || exit 1
 ${STRIP} ${bindir}/recollindex
 
 ${INSTALL} -m 0755 filters/rcl* ${datadir}/recoll/filters/ || exit 1
+for f in rclexecm.py rcllatinstops.zip;do
+    chmod 644 ${datadir}/recoll/filters/$f
+done
+
 ${INSTALL} -m 0755 desktop/xdg-utils-1.0.1/scripts/xdg-open \
 	   ${datadir}/recoll/filters/ || exit 1
 ${INSTALL} -m 0755 desktop/hotrecoll.py \
