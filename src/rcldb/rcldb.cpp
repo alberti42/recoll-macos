@@ -932,7 +932,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	     it != vpath.end(); it++){
 	    if (it->length() > 230) {
 		// Just truncate it. May still be useful because of wildcards
-		*it = it->substr(230);
+		*it = it->substr(0, 230);
 	    }
 	    newdocument.add_posting(pathelt_prefix + *it, 
 				    splitter.basepos + splitter.curpos++);
