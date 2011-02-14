@@ -266,7 +266,7 @@ bool FsIndexer::purgeFiles(list<string>& files)
 // Local fields can be set for fs subtrees in the configuration file 
 void FsIndexer::localfieldsfromconf()
 {
-    LOGDEB(("FsIndexer::localfieldsfromconf\n"));
+    LOGDEB0(("FsIndexer::localfieldsfromconf\n"));
     m_localfields.clear();
     m_config->addLocalFields(&m_localfields);
 }

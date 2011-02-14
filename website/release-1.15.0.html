@@ -29,13 +29,19 @@
     
     <div class="content">
 
-      <h1>Release notes for Recoll 1.15.0/1.15.1</h1>
+      <h1>Release notes for Recoll 1.15.0/1.15.2</h1>
 
-      <p><em>Note: 1.15.1 is identical to 1.15.0 except for a very
+      <p><em>Notes:</em> 1.15.1 is identical to 1.15.0 except for a very
           small modification to allow building with qt 4.4.</em></p>
 
       <h2>Caveats</h2>
-      
+
+      <p>There have been reports of the recoll 1.15 GUI crashing when
+        starting up after an upgrade. This was fixed by making a
+        backup of ~/.config/Recoll.org/recoll.conf and deleting it (Qt
+        stores the QSettings for the recoll GUI in this file, things
+        like the search history and mix GUI options).</p>
+
       <p>The support for Qt 3 has been removed in this version which
         uses only native Qt 4 interfaces. If your system has no
         support for Qt 4.4 or newer, you need to stick

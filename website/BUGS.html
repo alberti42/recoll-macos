@@ -35,8 +35,13 @@
           supposedly fixed in later versions. Bugs listed in the
           topmost section may also exist in older versions.</i></p>
 
-      <h2><a name="b_latest">recoll 1.14.4 + xapian 1.2+ + qt 4.4.1+</a></h2> 
+      <h2><a name="b_latest">recoll 1.15</a></h2> 
       <ul>
+        <li>After an upgrade, the recoll GUI sometimes crashes on
+          startup. This is fixed by removing (back it up just in case)
+          ~/.config/Recoll.org/recoll.conf, the QSettings storage for
+          recoll.</li> 
+
 	<li>The new mutagen-based audio tags filter (rclaudio) only
 	  works with very recent mutagen
 	  versions. See <a href="filters/filters.html">here</a> for a
