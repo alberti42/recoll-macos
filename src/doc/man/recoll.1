@@ -5,23 +5,23 @@ recoll \- user interface for the Recoll full text search system
 .SH SYNOPSIS
 .B recoll
 [
-.B -c
+.B \-c
 <configdir>
 ]
 [
-.B -o
+.B \-o
 |
-.B -l
+.B \-l
 |
-.B -f
+.B \-f
 |
-.B -a
+.B \-a
 ]
 [
-.B -t
+.B \-t
 ]
 [
-.B -q
+.B \-q
 <query>
 ]
 .SH DESCRIPTION
@@ -37,34 +37,34 @@ will create the user configuration which can be customized
 before starting the first indexation.
 .PP
 The 
-.B -c 
+.B \-c 
 option specifies the configuration directory name, overriding the
 default or $RECOLL_CONFDIR.
 .PP
 The 
-.B -q 
+.B \-q 
 option can be used to specify an initial query on the command line. This
 query will be interpreted by default as a query language string.
 If
-.B -a 
+.B \-a 
 is specified, the query string will be interpreted as an
 .I all words
 simple search query. If 
-.B -o 
+.B \-o 
 is specified, the query string will be interpreted as an
 .I any word
 simple search query. If 
-.B -f
+.B \-f
 is specified, the query string will be interpreted as a
 .I file name
 simple search query. If 
-.B -l
+.B \-l
 is specified, the query string will be interpreted as a
 .I query language
 simple search query.
 .PP
 If 
-.B -t
+.B \-t
 is specified, the Graphical User Interface will not be started, and results
 will be printed to the standard output. Additional options understood by
 the 

@@ -3,67 +3,67 @@
 .SH NAME
 recollindex \- indexing command for the Recoll full text search system
 .SH SYNOPSIS
-.B recollindex -h
+.B recollindex \-h
 .br
 .B recollindex
 [
-.B -c
+.B \-c
 <configdir>
 ]
 [
-.B -z
+.B \-z
 ]
 [
-.B -m
+.B \-m
 ]
 [
-.B -w
+.B \-w
 <seconds>
 ]
 [
-.B -D
+.B \-D
 ]
 [
-.B -x
+.B \-x
 ]
 .br
 .B recollindex 
 [
-.B -c
+.B \-c
 <configdir>
 ]
-.B -i 
+.B \-i 
 [<filename [filename ...]>]
 .br
 .B recollindex 
 [
-.B -c
+.B \-c
 <configdir>
 ]
-.B -e 
+.B \-e 
 [<filename [filename ...]>]
 .br
 .B recollindex
 [
-.B -c
+.B \-c
 <configdir>
 ]
-.B -l
+.B \-l
 .br
 .B recollindex
 [
-.B -c
+.B \-c
 <configdir>
 ]
-.B -s 
+.B \-s 
 <lang>
 .br
 .B recollindex
 [
-.B -c
+.B \-c
 <configdir>
 ]
-.B -S
+.B \-S
 
 .SH DESCRIPTION
 The
@@ -72,7 +72,7 @@ utility allows you to perform indexing operations for the Recoll text
 search system.
 .PP
 The 
-.B -c 
+.B \-c 
 option specifies the configuration directory name, overriding the
 default or $RECOLL_CONFDIR.
 .PP
@@ -83,7 +83,7 @@ file
 .B recoll.conf.
 This will incrementally update the database with files that changed since
 the last run. If option 
-.B -z 
+.B \-z 
 is given, the database will be erased before starting.
 .PP
 If option 
@@ -108,44 +108,44 @@ Option
 disables this X11 session monitoring (daemon will stay alive even if it
 cannot connect to the X11 server).
 .PP
-.B recollindex -l 
+.B recollindex \-l 
 will list the names of available language stemmers.
 .PP
 The other modes are useful mainly for testing.
 .PP
-.B recollindex -i
+.B recollindex \-i
 will index individual files into the database. The stem expansion databases
 will not be updated. 
 .PP
-.B recollindex -e
+.B recollindex \-e
 will erase data for individual files from the database. The stem expansion
 databases will not be updated.
 .PP
 With options 
-.B -i 
+.B \-i 
 or 
-.B -e 
+.B \-e 
 , if no file names are given on the command line, they
 will be read from stdin, so that you could for example run:
 .PP
-find /path/to/dir \-print | recollindex -e 
+find /path/to/dir \-print | recollindex \-e 
 .PP
 followed by 
 .PP
-find /path/to/dir \-print | recollindex -i
+find /path/to/dir \-print | recollindex \-i
 .PP
 to force the reindexing of a directory tree (which has to exist inside the
 file system area defined by
 .I topdirs 
 in recoll.conf).
 .PP
-.B recollindex -s 
+.B recollindex \-s 
 will build the stem expansion database for a given language, which may or
 may not be part of the list in the configuration file. If the language is
 not part of the configuration, the stem expansion database will be deleted
 at the end of the next normal indexing run. You can get the list of stemmer
 names from the 
-.B recollindex -l
+.B recollindex \-l
 command. Note that this is mostly for experimental use, the normal way to
 add a stemming language is to set it in the configuration, either by
 editing "recoll.conf" or by using the GUI indexing configuration dialog.
@@ -181,7 +181,7 @@ spanish
 .IP \(bu
 swedish
 .PP
-.B recollindex -S
+.B recollindex \-S
 will rebuild the phonetic/orthographic index. This feature uses the 
 .B aspell
 package, which must be installed on the system.
