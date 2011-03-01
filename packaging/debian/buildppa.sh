@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.15.1
+RCLVERS=1.15.2
 PPAVERS=1
 
 case $RCLVERS in
@@ -38,10 +38,8 @@ case $RCLVERS in
     1.14*)
         series4="jaunty karmic lucid maverick natty";;
     *)
-        # jaunty had qt 4.3 1.15+ needs at least 4.4
-        series4="karmic lucid maverick natty";;
+        series4="jaunty karmic lucid maverick natty";;
 esac
-
 
 debdir=debianrclqt4
 rm -rf recoll-${RCLVERS}/debian

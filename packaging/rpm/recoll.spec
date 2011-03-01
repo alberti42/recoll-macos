@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.15.0
+%define version 1.15.2
 %define release 0
 
 Name:           %{name}
@@ -62,6 +62,8 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Thu Feb 15 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.2-0
+- Update to release 1.15.2
 * Thu Feb 2 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.0-0
 - Update to release 1.15.0
 * Thu Oct 28 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.3-1

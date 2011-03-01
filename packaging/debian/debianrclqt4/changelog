@@ -1,3 +1,7 @@
+recoll (1.15.2-0~ppa1~SERIES1) SERIES; urgency=low
+  * Updated package to recoll version 1.15.2
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 14 Feb 2011 21:54:00 +0200
+
 recoll (1.15.1-0~ppa1~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.15.1 (fixes qt 4.4 build issue on karmic)
  -- Jean-Francois Dockes <jf@dockes.org>  Wed, 02 Feb 2011 15:48:00 +0200
