@@ -904,7 +904,8 @@ void RclMain::onResTableSortBy(DocSeqSortSpec spec)
 	actionSortByDateAsc->setChecked(!spec.desc);
     }
     m_sortspecnochange = false;
-    m_source->setSortSpec(spec);
+    if (m_source.isNotNull())
+	m_source->setSortSpec(spec);
     m_sortspec = spec;
     emit applyFiltSortData();
 }
@@ -1355,7 +1356,8 @@ void RclMain::catgFilter(int id)
 	     it != tps.end(); it++) 
 	    m_filtspec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);
     }
-    m_source->setFiltSpec(m_filtspec);
+    if (m_source.isNotNull())
+	m_source->setFiltSpec(m_filtspec);
     emit filtDataChanged(m_filtspec);
     emit applyFiltSortData();
 }
