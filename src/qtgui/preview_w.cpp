@@ -275,8 +275,10 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     } else {
 	if (edit && 
 	    (target == edit || target == edit->viewport())) {
-	    if (keyEvent->key() == Qt::Key_Slash) {
-		LOGDEB2(("Preview::eventFilter: got /\n"));
+	    if (keyEvent->key() == Qt::Key_Slash ||
+		(keyEvent->key() == Qt::Key_F &&
+		 (keyEvent->modifiers() & Qt::ControlModifier))) {
+		LOGDEB2(("Preview::eventFilter: got / or C-F\n"));
 		searchTextLine->setFocus();
 		m_dynSearchActive = true;
 		return true;
