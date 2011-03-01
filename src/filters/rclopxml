@@ -109,7 +109,7 @@ cd $tmpdir/rclopxmltmp
 echo '<html>
 <head>'
 
-xsltproc - docProps/core.xml <<EOF
+xsltproc --novalid --nonet - docProps/core.xml <<EOF
 <?xml version="1.0"?>
 <xsl:stylesheet 
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
@@ -211,7 +211,7 @@ fi
 
 
 for filename in $filenames;do
-xsltproc - $filename <<EOF
+xsltproc --novalid --nonet - $filename <<EOF
 <?xml version="1.0"?>
 <xsl:stylesheet $xmlns_decls >
 

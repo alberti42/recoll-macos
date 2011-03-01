@@ -114,7 +114,7 @@ cd $tmpdir/rclsofftmp
 echo '<html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
 
-xsltproc - meta.xml <<EOF
+xsltproc --novalid --nonet - meta.xml <<EOF
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -186,7 +186,7 @@ EOF
 
 echo '</head><body>'
 
-xsltproc - content.xml <<EOF
+xsltproc --novalid --nonet - content.xml <<EOF
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
