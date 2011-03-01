@@ -117,10 +117,15 @@ bool MimeHandlerText::next_document()
     // this validates the encoding.
     LOGDEB1(("MimeHandlerText::mkDoc: transcod from %s to utf-8\n", 
 	     m_dfltInputCharset.c_str()));
-    if (!transcode(m_text, m_metaData["content"], m_dfltInputCharset, "UTF-8")) {
+    int ecnt;
+    bool ret;
+    string& itext = m_metaData["content"];
+    if (!(ret=transcode(m_text, itext, m_dfltInputCharset, "UTF-8", &ecnt)) || 
+	ecnt > int(itext.size() / 4)) {
 	LOGERR(("MimeHandlerText::mkDoc: transcode to utf-8 failed "
-		"for charset [%s]\n", m_dfltInputCharset.c_str()));
-	m_metaData["content"].erase();
+		"for input charset [%s] ret %d ecnt %d\n", 
+		m_dfltInputCharset.c_str(), ret, ecnt));
+	itext.erase();
 	return false;
     }
     m_metaData["origcharset"] = m_dfltInputCharset;

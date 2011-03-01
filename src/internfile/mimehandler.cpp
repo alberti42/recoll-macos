@@ -53,6 +53,7 @@ static multimap<string, Dijon::Filter*>  o_handlers;
   * create appropriate handler object. */
 static Dijon::Filter *mhFactory(const string &mime)
 {
+    LOGDEB2(("mhFactory(%s)\n", mime.c_str()));
     string lmime(mime);
     stringtolower(lmime);
     if ("text/plain" == lmime) {
@@ -123,7 +124,7 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     if (attrs.get("mimetype", value))
         h->cfgFilterOutputMtype = stringtolower((const string&)value);
 
-#if 1
+#if 0
     string scmd;
     for (it = h->params.begin(); it != h->params.end(); it++) {
 	scmd += string("[") + *it + "] ";
@@ -202,9 +203,11 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	    // partly redundant with the localfields/rclaptg, but
 	    // better and the latter will probably go away at some
 	    // point in the future
+	    LOGDEB2(("handlertype internal, cmdstr [%s]\n", cmdstr.c_str()));
 	    if (!cmdstr.empty())
 		h = mhFactory(cmdstr);
-	    h = mhFactory(mtype);
+	    else 
+		h = mhFactory(mtype);
 	    goto out;
 	} else if (!stringlowercmp("dll", handlertype)) {
 	} else {
