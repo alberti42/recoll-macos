@@ -100,7 +100,7 @@
 
       <h2>Nouvelles: </h2>
       <ul>
-	<li>2011-02-02 : Recoll <a href="download.html#source">1.15.2</a>
+	<li>2011-02-13 : Recoll <a href="download.html#source">1.15.2</a>
 	  vient de sortir. Cette version enrichit notablement
 	  l'interface graphique, avec un mode table optionnel pour la
 	  liste de résultats. Voir les 

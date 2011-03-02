@@ -37,6 +37,12 @@
 
       <h2><a name="b_latest">recoll 1.15</a></h2> 
       <ul>
+        <li>Clicking one of the category filter checkboxes (one of the
+        media/message/text/... things) with an empty result list crashes
+        the GUI (just like this, yeah, I know, quality insurance
+        etc.). Workaround: don't click these before running the first
+        query.</li> 
+
         <li>After an upgrade, the recoll GUI sometimes crashes on
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for

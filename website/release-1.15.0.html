@@ -31,8 +31,14 @@
 
       <h1>Release notes for Recoll 1.15.0/1.15.2</h1>
 
-      <p><em>Notes:</em> 1.15.1 is identical to 1.15.0 except for a very
-          small modification to allow building with qt 4.4.</em></p>
+      <p><em>Notes:</em>
+        <ul><li>1.15.1 is identical to 1.15.0 except for a very
+          small modification to allow building with qt 4.4.</li>
+        <li>1.15.2 fixes the GUI startup crash described below, and an
+        issue with very long path elements, which manifested itself mainly
+        while indexing the Beagle queue.</li>
+      </ul>
+      </p>
 
       <h2>Caveats</h2>
 
@@ -42,6 +48,11 @@
         stores the QSettings for the recoll GUI in this file, things
         like the search history and mix GUI options).</p>
 
+      <p>If the result list is displayed with strange indentations, try
+      to completely clear the result list paragraph format (in query
+      preferences) to reset it to the default. Next time you open query
+      preferences, the new default format will be up, and you can make
+      any desired changes.</p>
       <p>The support for Qt 3 has been removed in this version which
         uses only native Qt 4 interfaces. If your system has no
         support for Qt 4.4 or newer, you need to stick

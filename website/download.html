@@ -50,11 +50,12 @@
 
       <h2><a>General information</a></h2>
 
-      <p>The current version is 1.15.1. <a href="release-1.15.0.html">
+      <p>The current version is 1.15.2. <a href="release-1.15.0.html">
           Release notes</a>.</p>
-       <p>Note: 1.15.0 and 1.15.1 are almost identical. 1.15.1 has a
-         small fix to allow building with Qt 4.4. The binary packages
-         were not rebuilt and are mostly 1.15.0.</p>
+       <p>Note: 1.15.0 and 1.15.2 are almost identical. 1.15.2 has 
+         small fixes for problems described in the release notes, it may
+         not be necessary to upgrade if you don't experience them (one of
+         them is a GUI startup crash though).</p>
 
       <p>The download page for Recoll 1.14 is
 	<a href="download-1.14.html">still available</a>.</p>
@@ -104,11 +105,11 @@
 
       <h2><a name="source">Source</a></h2>
 
-      <h3>Current release distribution: 1.15.1:</h3> 
+      <h3>Current release distribution: 1.15.2:</h3> 
       <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches( -->
-       <p><a href="recoll-1.15.1.tar.gz">recoll-1.15.1.tar.gz</a>.</p>
+       <p><a href="recoll-1.15.2.tar.gz">recoll-1.15.2.tar.gz</a>.</p>
 
       <h3>Prerequisites for building from source:</h3>
         <ul>
@@ -189,7 +190,7 @@
       <h3><a name="ubuntu">Ubuntu</h3>
       <blockquote>
       <p>There are Personal Package Archives on launchpad.net for 
-       <a href="http://www.launchpad.net/~xapian-backports/+archive/ppa">
+       <a href="http://www.launchpad.net/~xapian-backports/+archive/xapian-1.2">
        Xapian</a>, 
        <a  href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
        Recoll and kio-recoll</a>. These were built from the latest versions,
@@ -198,28 +199,29 @@
        the PPA page or 
 <a href="https://help.launchpad.net/Packaging/PPA/InstallingSoftware">
        here</a>), and you can then use the normal package
-       manager to install or update Recoll and Xapian. To avoid
-       messages about signature errors, if not done at the previous step,
-       you may have to explicitely import the 
+       manager to install or update Recoll and Xapian. For Ubuntu versions
+       from 9.10 (Karmic), only two commands are needed:
+<pre><tt>
+sudo add-apt-repository ppa:xapian-backports/xapian-1.2
+sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
+</tt></pre>
+       </p>
+
+      <p>For Ubuntu 9.04 (Jaunty) and older, to avoid
+       messages about signature errors, you may have to explicitely import the 
        Recoll and Xapian public keys: <pre><tt>
 gpg --keyserver keyserver.ubuntu.com --recv 9DA85604
 gpg --export --armor 9DA85604 | sudo apt-key add -
 gpg --keyserver keyserver.ubuntu.com --recv A0735AD0
 gpg --export --armor  A0735AD0 | sudo apt-key add -
        </tt></pre>
-       For Jaunty and newer releases, the procedure has been
-       simplified, and the 2 following commands perform the whole
-       procedure: 
-<pre><tt>
-sudo add-apt-repository ppa:xapian-backports/ppa
-sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
-</tt></pre>
        </p>
       </blockquote>
 
       <h3>RPMS</h3> <p><i>Except if specified otherwise, the
 	  executables inside the binary rpms which follow have a
-          static link to Xapian (1.0.16-21), there is no hard dependency
+          static link to Xapian (misc. versions, you can display the Xapian
+          version from the recoll help menu), there is no hard dependency
           except Qt 4.<br>
 	Some Fedora and Mandriva packages unfortunately think that they
 	depend on exiftool (which is needed by the little used jpeg
@@ -231,22 +233,20 @@ sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
       <p>Recoll is present in the standard Fedora package
 	repositories starting from F-12.</p>
       <blockquote>
-      <p><b>Fedora 12 and newer</b> Recoll is now included in the
-	regular Fedora package repositories. </p>
       <p>These builds are not statically linked, but depend on the
         regular Xapian and zlib rpms from the Fedora repositories.
         <br>Fedora 12
-	<a href="fc12/recoll-1.15.0-1.fc12.i586.rpm">
-	  recoll-1.15.0-1.fc12.i586.rpm</a>. 
+	<a href="fc12/recoll-1.15.2-1.fc12.i586.rpm">
+	  recoll-1.15.2-1.fc12.i586.rpm</a>. 
 	Source: 
-	<a href="fc12/recoll-1.15.0-1.fc12.src.rpm">
-	  recoll-1.15.0-1.fc12.src.rpm</a>
+	<a href="fc12/recoll-1.15.2-1.fc12.src.rpm">
+	  recoll-1.15.2-1.fc12.src.rpm</a>
         <br>Fedora 13
-	<a href="fc13/recoll-1.15.0-1.fc13.i586.rpm">
-	  recoll-1.15.0-1.fc13.i586.rpm</a>. 
+	<a href="fc13/recoll-1.15.2-1.fc13.i586.rpm">
+	  recoll-1.15.2-1.fc13.i586.rpm</a>. 
 	Source: 
-	<a href="fc13/recoll-1.15.0-1.fc13.src.rpm">
-	  recoll-1.15.0-1.fc13.src.rpm</a>
+	<a href="fc13/recoll-1.15.2-1.fc13.src.rpm">
+	  recoll-1.15.2-1.fc13.src.rpm</a>
       </p>
 
       </blockquote>
@@ -255,10 +255,10 @@ sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
       <blockquote>
         <p><b>OpenSUSE 11.3 with qt4 and a static link to xapian
             1.2.3 with the --disable-sse configure option</b>:
-	  <a href="suse11.3/recoll-1.15.0-0.i586.rpm">
-	    recoll-1.15.0-0.i586.rpm</a>. 
-	  Source: <a href="suse11.3/recoll-1.15.0-0.src.rpm">
-	    recoll-1.15.0-0.src.rpm</a></p>
+	  <a href="suse11.3/recoll-1.15.2-0.i586.rpm">
+	    recoll-1.15.2-0.i586.rpm</a>. 
+	  Source: <a href="suse11.3/recoll-1.15.2-0.src.rpm">
+	    recoll-1.15.2-0.src.rpm</a></p>
       </blockquote>
 
       <h3>Mandriva</h3>
@@ -266,11 +266,11 @@ sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
 
         <p><b>Mandriva linux one 2010 with Qt 4 and a static link to
             Xapian 1.2.3 with the --without-sse configure option.</b>: 
-	  <a href="mandriva2010/recoll-1.15.0-1mdv2010.2.i586.rpm">
-	  recoll-1.15.0-1mdv2010.2.i586.rpm</a>. 
+	  <a href="mandriva2010/recoll-1.15.2-1mdv2010.2.i586.rpm">
+	  recoll-1.15.2-1mdv2010.2.i586.rpm</a>. 
 	Source: 
-	<a href="mandriva2010/recoll-1.15.0-1mdv2010.2.src.rpm">
-	  recoll-1.15.0-1mdv2010.2.src.rpm</a>
+	<a href="mandriva2010/recoll-1.15.2-1mdv2010.2.src.rpm">
+	  recoll-1.15.2-1mdv2010.2.src.rpm</a>
         </p>
       </blockquote>
 
@@ -291,8 +291,8 @@ sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
         following (except that the port is currently (10-2010) broken).</p>
         <p><b>FreeBSD 7.3 i386 Qt 4.7.1</b> Statically linked to
           Xapian 1.2.3 with --disable-sse: 
-	   <a href="freebsd/recoll-1.15.0-FreeBSD-7.3-STABLE.tgz">
-	     recoll-1.15.0-FreeBSD-7.3-STABLE.tgz</a>
+	   <a href="freebsd/recoll-1.15.2-FreeBSD-7.3-STABLE.tgz">
+	     recoll-1.15.2-FreeBSD-7.3-STABLE.tgz</a>
         </p>
       </blockquote>
 
