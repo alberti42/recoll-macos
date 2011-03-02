@@ -43,6 +43,22 @@
         etc.). Workaround: don't click these before running the first
         query.</li> 
 
+        <li>Changing the indexing configuration parameters from the GUI
+        while the indexing thread (not an external recollindex command) is
+        running will sometimes (quite often) crash the GUI.</li>
+
+        <li>Script files (ie: .sh .pl) indexed as text would not respect
+        the maximum text file limit (a problem with, ie, shar archives
+        identified as application/x-shellscript).</li>
+
+        <li>indexing script for xml formats (ie: svg) sometimes stall for
+        30 S while xsltproc tries to access remote dtds.</li>
+
+        <li>recollindex inapproprietely sets the nice value for its whole
+        process group. In certain cases where the indexing monitor was
+        launched at session start, this could set the whole session to low
+        priority!</li>
+
         <li>After an upgrade, the recoll GUI sometimes crashes on
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for
