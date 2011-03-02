@@ -36,34 +36,11 @@
           topmost section may also exist in older versions.</i></p>
 
       <h2><a name="b_latest">recoll 1.15</a></h2> 
-      <ul>
-        <li>Clicking one of the category filter checkboxes (one of the
-        media/message/text/... things) with an empty result list crashes
-        the GUI (just like this, yeah, I know, quality insurance
-        etc.). Workaround: don't click these before running the first
-        query.</li> 
-
-        <li>Changing the indexing configuration parameters from the GUI
-        while the indexing thread (not an external recollindex command) is
-        running will sometimes (quite often) crash the GUI.</li>
-
-        <li>Script files (ie: .sh .pl) indexed as text would not respect
-        the maximum text file limit (a problem with, ie, shar archives
-        identified as application/x-shellscript).</li>
-
-        <li>indexing script for xml formats (ie: svg) sometimes stall for
-        30 S while xsltproc tries to access remote dtds.</li>
-
-        <li>recollindex inapproprietely sets the nice value for its whole
-        process group. In certain cases where the indexing monitor was
-        launched at session start, this could set the whole session to low
-        priority!</li>
-
+        <ul>
         <li>After an upgrade, the recoll GUI sometimes crashes on
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for
           recoll.</li> 
-
 	<li>The new mutagen-based audio tags filter (rclaudio) only
 	  works with very recent mutagen
 	  versions. See <a href="filters/filters.html">here</a> for a
@@ -100,6 +77,32 @@
           executing antiword). Rcldoc will try antiword, then will use
           vwWare if it is available. This will result in slightly
           slower indexing for all normal .doc files.</li>
+      </ul>
+
+      <h2><a name="b_1_15_2">recoll 1.15.2</a></h2> 
+      <ul>
+        <li>Clicking one of the category filter checkboxes (one of the
+        media/message/text/... things) with an empty result list crashes
+        the GUI (just like this, yeah, I know, quality insurance
+        etc.). Workaround: don't click these before running the first
+        query.</li> 
+
+        <li>Changing the indexing configuration parameters from the GUI
+        while the indexing thread (not an external recollindex command) is
+        running will sometimes (quite often) crash the GUI.</li>
+
+        <li>Script files (ie: .sh .pl) indexed as text do not respect
+        the maximum text file limit (a problem with, ie, shar archives
+        identified as application/x-shellscript).</li>
+
+        <li>indexing script for xml formats (ie: svg) sometimes stall for
+        30 S while xsltproc tries to access remote dtds.</li>
+
+        <li>recollindex inapproprietely sets the nice value for its whole
+        process group. In certain cases where the indexing monitor was
+        launched at session start, this could set the whole session to low
+        priority!</li>
+
       </ul>
 
       <h2><a name="b_1_14_4">recoll 1.14.4</a></h2> 
