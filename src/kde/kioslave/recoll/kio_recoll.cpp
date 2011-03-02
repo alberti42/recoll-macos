@@ -331,7 +331,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
 	if (sd && clp)
 	    sd->addClause(clp);
     } else {
-	sd = wasaStringToRcl(qs, m_reason);
+	sd = wasaStringToRcl(o_rclconfig, qs, m_reason);
     }
     if (!sd) {
 	m_reason = "Internal Error: cant build search";
