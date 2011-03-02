@@ -315,6 +315,31 @@ private:
     ExecCmdAdvise *m_advise;
 };
 
+
+// The netcon selectloop that doexec() uses for reading/writing would
+// be complicated to render thread-safe. Use locking to ensure only
+// one thread in there
+class ExecLocking {
+public:
+    pthread_mutex_t m_mutex;
+    ExecLocking() 
+    {
+	pthread_mutex_init(&m_mutex, 0);
+    }
+};
+ExecLocking o_lock;
+class ExecLocker {
+public:
+    ExecLocker()
+    {
+	pthread_mutex_lock(&o_lock.m_mutex);
+    }
+    ~ExecLocker()
+    {
+	pthread_mutex_unlock(&o_lock.m_mutex);
+    }
+};
+
 int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		    const string *input, string *output)
 {
@@ -324,6 +349,8 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 
     // Cleanup in case we return early
     ExecCmdRsrc e(this);
+    // Only one thread allowed in here...
+    ExecLocker locker;
 
     int ret = 0;
     if (input || output) {

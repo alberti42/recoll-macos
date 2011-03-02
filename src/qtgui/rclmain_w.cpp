@@ -668,6 +668,7 @@ void RclMain::showIndexConfig()
     } else {
 	// Close and reopen, in hope that makes us visible...
 	indexConfig->close();
+	indexConfig->reloadPanels();
     }
     indexConfig->show();
 }

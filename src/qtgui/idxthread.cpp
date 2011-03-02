@@ -74,8 +74,8 @@ void IdxThread::run()
 
 	    m_interrupted = false;
 	    indexingstatus = IDXTS_NULL;
-	    // We have to make a copy of the config (setKeydir changes
-	    // it during indexing)
+	    // We make a private snapshot of the config: setKeydir changes
+	    // it during indexing and it may be updated by the main thread.
 	    RclConfig *myconf = new RclConfig(*cnf);
 	    int loglevel;
 	    myconf->setKeyDir("");
@@ -97,6 +97,7 @@ void IdxThread::run()
 		    indexingstatus = IDXTS_ERROR;
 		    indexingReason = "Indexing failed: " + indexer->getReason();
 		}
+		delete myconf;
 		pidfile.close();
 		delete indexer;
 	    }

@@ -67,13 +67,11 @@ void ConfIndexW::acceptChanges()
 	QMessageBox::critical(0, "Recoll",  
 			      tr("Can't write configuration file"));
     }
-    // Delete local copy
+    // Delete local copy and update the main one from the file
     delete m_conf;
     m_conf = 0;
-    // Update in-memory config
     m_rclconf->updateMainConfig();
 
-    QTimer::singleShot(0, this, SLOT(reloadPanels()));
     if (startIndexingAfterConfig) {
 	startIndexingAfterConfig = 0;
 	start_indexing(true);
@@ -84,10 +82,9 @@ void ConfIndexW::acceptChanges()
 void ConfIndexW::rejectChanges()
 {
     LOGDEB(("ConfIndexW::rejectChanges()\n"));
-    // Discard local changes, and make new copy
+    // Discard local changes.
     delete m_conf;
     m_conf = 0;
-    QTimer::singleShot(0, this, SLOT(reloadPanels()));
     hide();
 }
 
