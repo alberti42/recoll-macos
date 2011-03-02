@@ -276,7 +276,7 @@ int main(int argc, const char **argv)
     bool rezero(op_flags & OPT_z);
     Pidfile pidfile(config->getPidfile());
 
-    if (setpriority(PRIO_PGRP, 0, 20) != 0) {
+    if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
         LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
     }
 
@@ -333,7 +333,7 @@ int main(int argc, const char **argv)
 	}
         // Not too sure if I have to redo the nice thing after daemon(),
         // can't hurt anyway (easier than testing on all platforms...)
-        if (setpriority(PRIO_PGRP, 0, 20) != 0) {
+        if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
             LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
         }
 	pidfile.write_pid();
