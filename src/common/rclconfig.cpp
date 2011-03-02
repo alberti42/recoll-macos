@@ -183,7 +183,6 @@ RclConfig::RclConfig(const string *argcnf)
 
 bool RclConfig::updateMainConfig()
 {
-    LOGDEB(("RclConfig::updateMainConfig\n"));
     ConfStack<ConfTree> *newconf = 
 	new ConfStack<ConfTree>("recoll.conf", m_cdirs, true);
     if (newconf == 0 || !newconf->ok()) {
