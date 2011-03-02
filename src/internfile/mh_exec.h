@@ -57,7 +57,8 @@ class MimeHandlerExec : public RecollFilter {
     bool missingHelper;
     ////////////////
 
-    MimeHandlerExec(const string& mt) : RecollFilter(mt), missingHelper(false) 
+    MimeHandlerExec(RclConfig *cnf, const string& mt) 
+	: RecollFilter(cnf, mt), missingHelper(false) 
     {}
     virtual ~MimeHandlerExec() {}
     virtual bool set_document_file(const string &file_path) {

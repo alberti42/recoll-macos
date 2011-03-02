@@ -51,33 +51,33 @@ static multimap<string, Dijon::Filter*>  o_handlers;
 
 /** For mime types set as "internal" in mimeconf: 
   * create appropriate handler object. */
-static Dijon::Filter *mhFactory(const string &mime)
+static Dijon::Filter *mhFactory(RclConfig *config, const string &mime)
 {
     LOGDEB2(("mhFactory(%s)\n", mime.c_str()));
     string lmime(mime);
     stringtolower(lmime);
     if ("text/plain" == lmime) {
-	return new MimeHandlerText(lmime);
+	return new MimeHandlerText(config, lmime);
     } else if ("text/html" == lmime) {
-	return new MimeHandlerHtml(lmime);
+	return new MimeHandlerHtml(config, lmime);
     } else if ("text/x-mail" == lmime) {
-	return new MimeHandlerMbox(lmime);
+	return new MimeHandlerMbox(config, lmime);
     } else if ("message/rfc822" == lmime) {
-	return new MimeHandlerMail(lmime);
+	return new MimeHandlerMail(config, lmime);
     } else if (lmime.find("text/") == 0) {
         // Try to handle unknown text/xx as text/plain. This
         // only happen if the text/xx was defined as "internal" in
         // mimeconf, not at random. For programs, for example this
         // allows indexing and previewing as text/plain (no filter
         // exec) but still opening with a specific editor.
-        return new MimeHandlerText(lmime); 
+        return new MimeHandlerText(config, lmime); 
     } else {
 	// We should not get there. It means that "internal" was set
 	// as a handler in mimeconf for a mime type we actually can't
 	// handle.
 	LOGERR(("mhFactory: mime type [%s] set as internal but unknown\n", 
 		lmime.c_str()));
-	return new MimeHandlerUnknown(lmime);
+	return new MimeHandlerUnknown(config, lmime);
     }
 }
 
@@ -110,8 +110,8 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
 	return 0;
     }
     MimeHandlerExec *h = multiple ? 
-        new MimeHandlerExecMultiple(mtype.c_str()) :
-        new MimeHandlerExec(mtype.c_str());
+        new MimeHandlerExecMultiple(cfg, mtype.c_str()) :
+        new MimeHandlerExec(cfg, mtype.c_str());
     list<string>::iterator it = cmdtoks.begin();
     h->params.push_back(cfg->findFilter(*it++));
     h->params.insert(h->params.end(), it, cmdtoks.end());
@@ -205,9 +205,9 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	    // point in the future
 	    LOGDEB2(("handlertype internal, cmdstr [%s]\n", cmdstr.c_str()));
 	    if (!cmdstr.empty())
-		h = mhFactory(cmdstr);
+		h = mhFactory(cfg, cmdstr);
 	    else 
-		h = mhFactory(mtype);
+		h = mhFactory(cfg, mtype);
 	    goto out;
 	} else if (!stringlowercmp("dll", handlertype)) {
 	} else {
@@ -247,7 +247,7 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     {bool indexunknown = false;
 	cfg->getConfParam("indexallfilenames", &indexunknown);
 	if (indexunknown) {
-	    h = new MimeHandlerUnknown("application/octet-stream");
+	    h = new MimeHandlerUnknown(cfg, "application/octet-stream");
 	    goto out;
 	} else {
 	    goto out;

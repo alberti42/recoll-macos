@@ -32,8 +32,9 @@ using std::vector;
  */
 class MimeHandlerMbox : public RecollFilter {
  public:
-    MimeHandlerMbox(const string& mime) 
-      : RecollFilter(mime), m_vfp(0), m_msgnum(0), m_lineno(0), m_fsize(0)
+    MimeHandlerMbox(RclConfig *cnf, const string& mime) 
+	: RecollFilter(cnf, mime), m_vfp(0), m_msgnum(0), 
+	  m_lineno(0), m_fsize(0)
     {}
     virtual ~MimeHandlerMbox();
     virtual bool set_document_file(const string &file_path);

@@ -8,6 +8,7 @@ using std::vector;
 #include "refcntr.h"
 #include "docseq.h"
 
+class RclConfig;
 class PlainToRich;
 class HiliteData;
 
@@ -65,9 +66,9 @@ public:
 	resultPageNext();
     }
     void resultPageNext();
-    void displayPage();
-    void displayDoc(int idx, Rcl::Doc& doc, const HiliteData& hdata, 
-		    const string& sh = "");
+    void displayPage(RclConfig *);
+    void displayDoc(RclConfig *, int idx, Rcl::Doc& doc, 
+		    const HiliteData& hdata, const string& sh = "");
     bool pageEmpty() {return m_respage.size() == 0;}
 
     string queryDescription() {return m_docSource.isNull() ? "" :
@@ -91,7 +92,7 @@ public:
     virtual string nextUrl();
     virtual string prevUrl();
     virtual string pageTop() {return string();}
-    virtual string iconPath(const string& mtype);
+    virtual string iconPath(RclConfig *, const string& mtype);
     virtual void suggest(const vector<string>, vector<string>&sugg) {
         sugg.clear();
     }

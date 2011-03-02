@@ -30,8 +30,9 @@ class RclConfig;
 
 class RecollFilter : public Dijon::Filter {
 public:
-    RecollFilter(const string& mtype)
-	: Dijon::Filter(mtype), m_forPreview(false), m_havedoc(false)
+    RecollFilter(RclConfig *config, const string& mtype)
+	: Dijon::Filter(mtype), m_config(config), 
+	  m_forPreview(false), m_havedoc(false)
     {}
     virtual ~RecollFilter() {}
     virtual bool set_property(Properties p, const string &v) {
@@ -93,6 +94,7 @@ public:
     }
 
 protected:
+    RclConfig *m_config;
     bool   m_forPreview;
     string m_dfltInputCharset;
     string m_reason;

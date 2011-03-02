@@ -40,7 +40,7 @@ class MHMailAttach;
  */
 class MimeHandlerMail : public RecollFilter {
 public:
-    MimeHandlerMail(const string &mt);
+    MimeHandlerMail(RclConfig *cnf, const string &mt);
     virtual ~MimeHandlerMail();
     virtual bool set_document_file(const string& file_path);
     virtual bool set_document_string(const string& data);

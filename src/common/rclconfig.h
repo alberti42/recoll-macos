@@ -64,12 +64,6 @@ class RclConfig {
     // argcnf
     RclConfig(const string *argcnf = 0);
 
-    // Main programs must implement this, it avoids having to carry
-    // the configuration parameter everywhere. Places where several
-    // RclConfig instances might be needed will take care of
-    // themselves.
-    static RclConfig* getMainConfig();
-
     // Return a writable clone of the main config. This belongs to the
     // caller (must delete it when done)
     ConfNull *cloneMainConfig();

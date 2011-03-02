@@ -24,10 +24,13 @@ using std::string;
 #include "rcldb.h"
 #include "searchdata.h"
 
-extern Rcl::SearchData *wasaStringToRcl(const string& query, string &reason,
-                                        const string& autosuffs = string());
+class RclConfig;
+
+extern Rcl::SearchData *wasaStringToRcl(RclConfig *, 
+					const string& query, string &reason,
+					const string& autosuffs = string());
 class WasaQuery;
-extern Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa,
+extern Rcl::SearchData *wasaQueryToRcl(RclConfig *, WasaQuery *wasa,
                                        const string& autosuffs = string());
 
 #endif /* _WASATORCL_H_INCLUDED_ */

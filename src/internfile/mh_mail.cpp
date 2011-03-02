@@ -55,19 +55,18 @@ static const string cstr_title = "title";
 static const string cstr_msgid = "msgid";
 static const string cstr_abstract = "abstract";
 
-MimeHandlerMail::MimeHandlerMail(const string &mt) 
-    : RecollFilter(mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
+MimeHandlerMail::MimeHandlerMail(RclConfig *cnf, const string &mt) 
+    : RecollFilter(cnf, mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
 {
 
     // Look for additional headers to be processed as per config:
     list<string> hdrnames = 
-        RclConfig::getMainConfig()->getFieldSectNames("mail");
+        m_config->getFieldSectNames("mail");
     if (hdrnames.empty())
         return;
     for (list<string>::const_iterator it = hdrnames.begin();
          it != hdrnames.end(); it++) {
-        (void)RclConfig::getMainConfig()->
-            getFieldConfParam(*it, "mail", m_addProcdHdrs[*it]);
+        (void)m_config->getFieldConfParam(*it, "mail", m_addProcdHdrs[*it]);
     }
 }
 
@@ -282,7 +281,7 @@ bool MimeHandlerMail::processAttach()
     if (m_metaData[cstr_mimetype] == "application/octet-stream" &&
 	!m_metaData["filename"].empty()) {
 	string mt = mimetype(m_metaData["filename"], 0,	
-			     RclConfig::getMainConfig(), false);
+			     m_config, false);
 	if (!mt.empty()) 
 	    m_metaData[cstr_mimetype] = mt;
     }
@@ -532,7 +531,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	!stringlowercmp("x-user-defined", charset) || 
 	!stringlowercmp("x-unknown", charset) || 
 	!stringlowercmp("unknown", charset) ) {
-        RclConfig::getMainConfig()->getConfParam("maildefcharset", charset);
+        m_config->getConfParam("maildefcharset", charset);
         if (charset.empty())
             charset = "iso-8859-1";
     }
@@ -598,7 +597,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     string utf8;
     const string *putf8 = 0;
     if (!stringlowercmp("text/html", content_type.value)) {
-	MimeHandlerHtml mh("text/html");
+	MimeHandlerHtml mh(m_config, "text/html");
 	mh.set_property(Dijon::Filter::OPERATING_MODE, 
 			m_forPreview ? "view" : "index");
 	mh.set_property(Dijon::Filter::DEFAULT_CHARSET, charset);

@@ -248,7 +248,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	if (sd)
 	    sd->addClause(clp);
     } else {
-	sd = wasaStringToRcl(qs, reason);
+	sd = wasaStringToRcl(rclconfig, qs, reason);
     }
 
     if (!sd) {
@@ -324,11 +324,6 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 #include "recollq.h"
 
 static RclConfig *rclconfig;
-
-RclConfig *RclConfig::getMainConfig() 
-{
-    return rclconfig;
-}
 
 int main(int argc, char **argv)
 {

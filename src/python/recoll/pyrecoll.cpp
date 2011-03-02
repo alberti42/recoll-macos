@@ -1204,11 +1204,6 @@ static PyMethodDef recollMethods[] = {
 };
 
 
-RclConfig *RclConfig::getMainConfig() 
-{
-    return rclconfig;
-}
-
 PyDoc_STRVAR(pyrecoll_doc_string,
 "This is an interface to the Recoll full text indexer.");
 

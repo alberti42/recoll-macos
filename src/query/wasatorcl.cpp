@@ -24,6 +24,7 @@ static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.18 2008-12-05 11:09:31 dockes E
 using std::string;
 using std::list;
 
+#include "rclconfig.h"
 #include "wasastringtoquery.h"
 #include "rcldb.h"
 #include "searchdata.h"
@@ -34,14 +35,15 @@ using std::list;
 #include "refcntr.h"
 #include "textsplit.h"
 
-Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason, 
+Rcl::SearchData *wasaStringToRcl(RclConfig *config, 
+				 const string &qs, string &reason, 
                                  const string& autosuffs)
 {
     StringToWasaQuery parser;
     WasaQuery *wq = parser.stringToQuery(qs, reason);
     if (wq == 0) 
 	return 0;
-    Rcl::SearchData *rq = wasaQueryToRcl(wq, autosuffs);
+    Rcl::SearchData *rq = wasaQueryToRcl(config, wq, autosuffs);
     if (rq == 0) {
 	reason = "Failed translating xesam query structure to recoll";
 	return 0;
@@ -49,7 +51,8 @@ Rcl::SearchData *wasaStringToRcl(const string &qs, string &reason,
     return rq;
 }
 
-Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa, const string& autosuffs)
+Rcl::SearchData *wasaQueryToRcl(RclConfig *config,
+				WasaQuery *wasa, const string& autosuffs)
 {
     if (wasa == 0)
 	return 0;
@@ -91,9 +94,8 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa, const string& autosuffs)
 	    // categories like "audio", "presentation", etc.
 	    if (!stringicmp("rclcat", (*it)->m_fieldspec) ||
 		!stringicmp("type", (*it)->m_fieldspec)) {
-		RclConfig *conf = RclConfig::getMainConfig();
 		list<string> mtypes;
-		if (conf && conf->getMimeCatTypes((*it)->m_value, mtypes)) {
+		if (config && config->getMimeCatTypes((*it)->m_value, mtypes)) {
 		    for (list<string>::iterator mit = mtypes.begin();
 			 mit != mtypes.end(); mit++) {
 			sdata->addFiletype(*mit);
@@ -192,7 +194,7 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa, const string& autosuffs)
 	    LOGDEB2(("wasaQueryToRcl: OR clause [%s]:[%s]\n", 
 		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
 	    // Create a subquery.
-	    Rcl::SearchData *sub = wasaQueryToRcl(*it);
+	    Rcl::SearchData *sub = wasaQueryToRcl(config, *it);
 	    if (sub == 0) {
 		continue;
 	    }

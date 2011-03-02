@@ -183,8 +183,12 @@ RclConfig::RclConfig(const string *argcnf)
 
 bool RclConfig::updateMainConfig()
 {
-    m_conf = new ConfStack<ConfTree>("recoll.conf", m_cdirs, true);
-    if (m_conf == 0 || !m_conf->ok()) {
+    LOGDEB(("RclConfig::updateMainConfig\n"));
+    ConfStack<ConfTree> *newconf = 
+	new ConfStack<ConfTree>("recoll.conf", m_cdirs, true);
+    if (newconf == 0 || !newconf->ok()) {
+	if (m_conf)
+	    return false;
 	string where;
 	stringsToString(m_cdirs, where);
 	m_reason = string("No/bad main configuration file in: ") + where;
@@ -211,6 +215,8 @@ bool RclConfig::updateMainConfig()
 	TextSplit::noNumbers();
     }
 
+    delete m_conf;
+    m_conf = newconf;
     m_skpnstate.init(this, m_conf, "skippedNames");
     m_rmtstate.init(this, m_conf, "indexedmimetypes");
     return true;

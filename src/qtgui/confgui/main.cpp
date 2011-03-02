@@ -106,10 +106,6 @@ Usage(void)
 
 
 static RclConfig *config;
-RclConfig *RclConfig::getMainConfig() 
-{
-    return config;
-}
 
 int main(int argc, char **argv)
 {

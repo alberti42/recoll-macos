@@ -27,7 +27,8 @@
  */
 class MimeHandlerHtml : public RecollFilter {
  public:
-    MimeHandlerHtml(const string& mt) : RecollFilter(mt) {}
+    MimeHandlerHtml(RclConfig *cnf, const string& mt) 
+	: RecollFilter(cnf, mt) {}
     virtual ~MimeHandlerHtml() {}
     virtual bool set_document_file(const string &file_path);
     virtual bool set_document_string(const string &data);

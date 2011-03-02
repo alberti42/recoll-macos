@@ -201,10 +201,6 @@ Usage(FILE *where = stderr)
 }
 
 static RclConfig *config;
-RclConfig *RclConfig::getMainConfig() 
-{
-    return config;
-}
 
 void lockorexit(Pidfile *pidfile)
 {

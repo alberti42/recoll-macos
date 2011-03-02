@@ -91,8 +91,8 @@ class MimeHandlerExecMultiple : public MimeHandlerExec {
     /////// End un-cleared stuff.
 
  public:
-    MimeHandlerExecMultiple(const string& mt) 
-        : MimeHandlerExec(mt)
+    MimeHandlerExecMultiple(RclConfig *cnf, const string& mt) 
+        : MimeHandlerExec(cnf, mt)
     {}
     // No resources to clean up, the ExecCmd destructor does it.
     virtual ~MimeHandlerExecMultiple() {}

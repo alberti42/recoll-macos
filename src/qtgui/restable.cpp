@@ -19,6 +19,7 @@ static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp
 #include <QTextDocument>
 #include <QPainter>
 
+#include "recoll.h"
 #include "refcntr.h"
 #include "docseq.h"
 #include "debuglog.h"
@@ -84,7 +85,7 @@ const string& ResTablePager::parFormat()
 string ResTablePager::iconPath(const string& mtype)
 {
     string iconpath;
-    RclConfig::getMainConfig()->getMimeIconName(mtype, &iconpath);
+    rclconfig->getMimeIconName(mtype, &iconpath);
     return iconpath;
 }
 
@@ -179,9 +180,8 @@ RecollModel::RecollModel(const QStringList fields, QObject *parent)
     // Add dynamic "stored" fields to the full column list. This
     // could be protected to be done only once, but it's no real
     // problem
-    RclConfig *config = RclConfig::getMainConfig();
-    if (config) {
-	const set<string>& stored = config->getStoredFields();
+    if (rclconfig) {
+	const set<string>& stored = rclconfig->getStoredFields();
 	for (set<string>::const_iterator it = stored.begin(); 
 	     it != stored.end(); it++) {
 	    if (o_displayableFields.find(*it) == o_displayableFields.end()) {
@@ -488,7 +488,7 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
     if (m_model->getDocSource()->getDoc(index.row(), doc)) {
 	textBrowser->clear();
 	m_detaildocnum = index.row();
-	m_pager->displayDoc(index.row(), doc, m_model->m_hdata);
+	m_pager->displayDoc(rclconfig, index.row(), doc, m_model->m_hdata);
     }
 }
 

@@ -78,10 +78,7 @@ bool MimeHandlerExec::next_document()
     }
 
     int filtermaxseconds = 900;
-    RclConfig *conf = RclConfig::getMainConfig();
-    if (conf) {
-        conf->getConfParam("filtermaxseconds", &filtermaxseconds);
-    }
+    m_config->getConfParam("filtermaxseconds", &filtermaxseconds);
 
     // Command name
     string cmd = params.front();

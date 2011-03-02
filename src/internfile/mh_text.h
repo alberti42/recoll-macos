@@ -31,8 +31,8 @@ using std::string;
  */
 class MimeHandlerText : public RecollFilter {
  public:
-    MimeHandlerText(const string& mt) 
-        : RecollFilter(mt), m_paging(false), m_offs(0) {}
+    MimeHandlerText(RclConfig *cnf, const string& mt) 
+        : RecollFilter(cnf, mt), m_paging(false), m_offs(0) {}
     virtual ~MimeHandlerText() {}
     virtual bool set_document_file(const string &file_path);
     virtual bool set_document_string(const string&);

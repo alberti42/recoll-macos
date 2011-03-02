@@ -78,7 +78,8 @@ void ResListPager::resultPageNext()
     m_respage = npage;
 }
 
-void ResListPager::displayDoc(int i, Rcl::Doc& doc, const HiliteData& hdata,
+void ResListPager::displayDoc(RclConfig *config,
+			      int i, Rcl::Doc& doc, const HiliteData& hdata,
 			      const string& sh)
 {
     ostringstream chunk;
@@ -92,11 +93,11 @@ void ResListPager::displayDoc(int i, Rcl::Doc& doc, const HiliteData& hdata,
     }
 
     // Determine icon to display if any
-    string iconpath = iconPath(doc.mimetype);
+    string iconpath = iconPath(config, doc.mimetype);
 
     // Printable url: either utf-8 if transcoding succeeds, or url-encoded
     string url;
-    printableUrl(RclConfig::getMainConfig()->getDefCharset(), doc.url, url);
+    printableUrl(config->getDefCharset(), doc.url, url);
 
     // Make title out of file name if none yet
     if (doc.meta[Rcl::Doc::keytt].empty()) {
@@ -149,7 +150,7 @@ void ResListPager::displayDoc(int i, Rcl::Doc& doc, const HiliteData& hdata,
 
     // Links;
     ostringstream linksbuf;
-    if (canIntern(doc.mimetype, RclConfig::getMainConfig())) { 
+    if (canIntern(doc.mimetype, config)) { 
 	linksbuf << "<a href=\"P" << docnumforlinks << "\">" 
 		 << trans("Preview") << "</a>&nbsp;&nbsp;";
     }
@@ -159,7 +160,7 @@ void ResListPager::displayDoc(int i, Rcl::Doc& doc, const HiliteData& hdata,
     if ((it = doc.meta.find(Rcl::Doc::keyapptg)) != doc.meta.end())
 	apptag = it->second;
 
-    if (!RclConfig::getMainConfig()->getMimeViewerDef(doc.mimetype, apptag).empty()) {
+    if (!config->getMimeViewerDef(doc.mimetype, apptag).empty()) {
 	linksbuf << "<a href=\"E" << docnumforlinks << "\">"  
 		 << trans("Open") << "</a>";
     }
@@ -205,7 +206,7 @@ void ResListPager::displayDoc(int i, Rcl::Doc& doc, const HiliteData& hdata,
     append(chunk.rdbuf()->str(), i, doc);
 }
 
-void ResListPager::displayPage()
+void ResListPager::displayPage(RclConfig *config)
 {
     LOGDEB(("ResListPager::displayPage\n"));
     if (m_docSource.isNull()) {
@@ -296,7 +297,7 @@ void ResListPager::displayPage()
     for (int i = 0; i < (int)m_respage.size(); i++) {
 	Rcl::Doc &doc(m_respage[i].doc);
 	string& sh(m_respage[i].subHeader);
-	displayDoc(i, doc, hdata, sh);
+	displayDoc(config, i, doc, hdata, sh);
     }
 
     // Footer
@@ -330,10 +331,10 @@ string ResListPager::prevUrl()
     return "p-1";
 }
 
-string ResListPager::iconPath(const string& mtype)
+string ResListPager::iconPath(RclConfig *config, const string& mtype)
 {
     string iconpath;
-    RclConfig::getMainConfig()->getMimeIconName(mtype, &iconpath);
+    config->getMimeIconName(mtype, &iconpath);
     iconpath = string("file://") + iconpath;
     return iconpath;
 }

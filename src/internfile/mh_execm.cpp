@@ -251,7 +251,7 @@ bool MimeHandlerExecMultiple::next_document()
     if (!ipath.empty()) {
         m_metaData["ipath"] = ipath;
         if (mtype.empty()) {
-            mtype = mimetype(ipath, 0, RclConfig::getMainConfig(), false);
+            mtype = mimetype(ipath, 0, m_config, false);
             if (mtype.empty()) {
                 // mimetype() won't call idFile when there is no file. Do it
                 mtype = idFileMem(m_metaData["content"]);

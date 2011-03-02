@@ -79,11 +79,11 @@ public:
     }
 
     ~MboxCache() {}
-    mbhoff_type get_offset(const string& udi, int msgnum)
+    mbhoff_type get_offset(RclConfig *config, const string& udi, int msgnum)
     {
         LOGDEB0(("MboxCache::get_offsets: udi [%s] msgnum %d\n", udi.c_str(),
                  msgnum));
-        if (!ok()) {
+        if (!ok(config)) {
             LOGDEB0(("MboxCache::get_offsets: init failed\n"));
             return -1;
         }
@@ -125,11 +125,11 @@ public:
     }
 
     // Save array of offsets for a given file, designated by Udi
-    void put_offsets(const string& udi, mbhoff_type fsize,
+    void put_offsets(RclConfig *config, const string& udi, mbhoff_type fsize,
                      vector<mbhoff_type>& offs)
     {
         LOGDEB0(("MboxCache::put_offsets: %u offsets\n", offs.size()));
-        if (!ok() || !maybemakedir())
+        if (!ok(config) || !maybemakedir())
             return;
         if (fsize < m_minfsize)
             return;
@@ -161,13 +161,10 @@ public:
     }
 
     // Check state, possibly initialize
-    bool ok() {
+    bool ok(RclConfig *config) {
         if (m_minfsize == -1)
             return false;
         if (!m_ok) {
-            RclConfig *config = RclConfig::getMainConfig();
-            if (config == 0)
-                return false;
             int minmbs = 5;
             config->getConfParam("mboxcacheminmbs", &minmbs);
             if (minmbs < 0) {
@@ -269,9 +266,8 @@ bool MimeHandlerMbox::set_document_file(const string &fn)
     m_quirks = 0;
 
     // Check for location-based quirks:
-    RclConfig *config = RclConfig::getMainConfig();
     string quirks;
-    if (config && config->getConfParam(keyquirks, quirks)) {
+    if (m_config && m_config->getConfParam(keyquirks, quirks)) {
 	if (quirks == "tbird") {
 	    LOGDEB(("MimeHandlerMbox: setting quirks TBIRD\n"));
 	    m_quirks |= MBOXQUIRK_TBIRD;
@@ -402,7 +398,7 @@ bool MimeHandlerMbox::next_document()
         LOGDEB0(("MimeHandlerMbox::next_doc: mtarg %d m_udi[%s]\n",
                 mtarg, m_udi.c_str()));
         if (!m_udi.empty() && 
-            (off = mcache.get_offset(m_udi, mtarg)) >= 0 && 
+            (off = mcache.get_offset(m_config, m_udi, mtarg)) >= 0 && 
             fseeko(fp, (off_t)off, SEEK_SET) >= 0 && 
             fgets(line, LL, fp) &&
             (!regexec(&fromregex, line, 0, 0, 0) || 
@@ -485,7 +481,7 @@ bool MimeHandlerMbox::next_document()
 	LOGDEB2(("MimeHandlerMbox::next: eof hit\n"));
 	m_havedoc = false;
 	if (!m_udi.empty()) {
-	  mcache.put_offsets(m_udi, m_fsize, m_offsets);
+	    mcache.put_offsets(m_config, m_udi, m_fsize, m_offsets);
 	}
     }
     return msgtxt.empty() ? false : true;
@@ -521,10 +517,6 @@ Usage(void)
     exit(1);
 }
 static RclConfig *config;
-RclConfig *RclConfig::getMainConfig()
-{
-    return config;
-}
 static int     op_flags;
 #define OPT_MOINS 0x1
 #define OPT_m	  0x2

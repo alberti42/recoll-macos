@@ -1053,10 +1053,6 @@ static int        op_flags;
 #define OPT_q	  0x1 
 
 RclConfig *config;
-RclConfig *RclConfig::getMainConfig()
-{
-    return config;
-}
 int main(int argc, char **argv)
 {
     thisprog = argv[0];

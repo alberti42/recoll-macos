@@ -302,5 +302,5 @@ void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
 	    m_pager.resultPageBack();
     }
     // Display
-    m_pager.displayPage();
+    m_pager.displayPage(o_rclconfig);
 }

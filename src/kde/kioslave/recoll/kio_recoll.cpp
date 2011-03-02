@@ -53,11 +53,6 @@ using namespace KIO;
 
 RclConfig *RecollProtocol::o_rclconfig;
 
-RclConfig *RclConfig::getMainConfig()
-{
-    return RecollProtocol::o_rclconfig;
-}
-
 RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app) 
     : SlaveBase("recoll", pool, app), m_initok(false), m_rcldb(0),
       m_alwaysdir(false)

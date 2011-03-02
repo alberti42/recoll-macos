@@ -145,7 +145,7 @@ string QtGuiResListPager::pageTop()
 string QtGuiResListPager::iconPath(const string& mtype)
 {
     string iconpath;
-    RclConfig::getMainConfig()->getMimeIconName(mtype, &iconpath);
+    rclconfig->getMimeIconName(mtype, &iconpath);
     return iconpath;
 }
 
@@ -511,7 +511,7 @@ void ResList::displayPage()
 {
     m_pageParaToReldocnums.clear();
     clear();
-    m_pager->displayPage();
+    m_pager->displayPage(rclconfig);
     LOGDEB0(("ResList::resultPageNext: hasNext %d hasPrev %d\n",
 	    m_pager->hasPrev(), m_pager->hasNext()));
     emit prevPageAvailable(m_pager->hasPrev());
