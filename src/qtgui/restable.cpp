@@ -194,7 +194,7 @@ RecollModel::RecollModel(const QStringList fields, QObject *parent)
     for (QStringList::const_iterator it = fields.begin(); 
 	 it != fields.end(); it++) {
 	m_fields.push_back((const char *)(it->toUtf8()));
-	m_getters.push_back(chooseGetter(m_fields[m_fields.size()-1]));
+	m_getters.push_back(chooseGetter(m_fields.back()));
     }
 
     g_hiliter.set_inputhtml(false);
@@ -397,7 +397,7 @@ void ResTable::init()
 	header->setSortIndicator(-1, Qt::AscendingOrder);
 	header->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(header, SIGNAL(sectionResized(int,int,int)),
-		this, SLOT(saveColWidths()));
+		this, SLOT(saveColState()));
 	connect(header, SIGNAL(customContextMenuRequested(const QPoint&)),
 		this, SLOT(createHeaderPopupMenu(const QPoint&)));
     }
@@ -443,38 +443,27 @@ void ResTable::saveColState()
     settings.setValue("resTableSplitterSizes", splitter->saveState());
 
     QHeaderView *header = tableView->horizontalHeader();
-    if (header && header->sectionsMoved()) {
-	// Remember the current column order. Walk in visual order and
-	// create new list
-	QStringList newfields;
-	vector<int> newwidths;
-	for (int vi = 0; vi < header->count(); vi++) {
-	    int li = header->logicalIndex(vi);
-	    newfields.push_back(prefs.restableFields.at(li));
-	    newwidths.push_back(header->sectionSize(li));
-	}
-	prefs.restableFields = newfields;
-	prefs.restableColWidths = newwidths;
-    } else {
-	const vector<string>& vf = m_model->getFields();
-	prefs.restableFields.clear();
-	for (int i = 0; i < int(vf.size()); i++) {
-	    prefs.restableFields.push_back(QString::fromUtf8(vf[i].c_str()));
-	}
-	saveColWidths();
-    }
-}
-
-void ResTable::saveColWidths()
-{
-    LOGDEB(("ResTable::saveColWidths()\n"));
-    QHeaderView *header = tableView->horizontalHeader();
-    if (!header)
+    const vector<string>& vf = m_model->getFields();
+    if (!header) {
+	LOGERR(("ResTable::saveColState: no table header ??\n"));
 	return;
-    prefs.restableColWidths.clear();
-    for (int i = 0; i < header->count(); i++) {
-	prefs.restableColWidths.push_back(header->sectionSize(i));
     }
+
+    // Remember the current column order. Walk in visual order and
+    // create new list
+    QStringList newfields;
+    vector<int> newwidths;
+    for (int vi = 0; vi < header->count(); vi++) {
+	int li = header->logicalIndex(vi);
+	if (li < 0 || li >= int(vf.size())) {
+	    LOGERR(("saveColState: logical index beyond list size!\n"));
+	    continue;
+	}
+	newfields.push_back(QString::fromUtf8(vf[li].c_str()));
+	newwidths.push_back(header->sectionSize(li));
+    }
+    prefs.restableFields = newfields;
+    prefs.restableColWidths = newwidths;
 }
 
 void ResTable::onTableView_currentChanged(const QModelIndex& index)

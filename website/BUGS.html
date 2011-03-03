@@ -81,11 +81,17 @@
 
       <h2><a name="b_1_15_2">recoll 1.15.2</a></h2> 
       <ul>
-        <li>Clicking one of the category filter checkboxes (one of the
-        media/message/text/... things) with an empty result list crashes
-        the GUI (just like this, yeah, I know, quality insurance
-        etc.). Workaround: don't click these before running the first
-        query.</li> 
+        <li>If a result table column is both added and moved in the same
+        GUI instance, the list becomes garbled (or/and the GUI
+        crashes). Workaround: remove the Qt GUI config
+        (.config/Recoll.org/recoll.conf), and perform the operation in 2 GUI
+        sessions: add column, exit recoll, restart, move column.</li>
+
+        <li>Clicking one of the category filter checkboxes
+        (one of the media/message/text/... things) with an empty result
+        list crashes the GUI (just like this, yeah, I know, quality
+        insurance etc.). Workaround: don't click these before running the
+        first query.</li>
 
         <li>Changing the indexing configuration parameters from the GUI
         while the indexing thread (not an external recollindex command) is

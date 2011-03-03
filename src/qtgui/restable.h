@@ -96,13 +96,12 @@ public:
 	
     virtual ~ResTable() {}
     virtual RecollModel *getModel() {return m_model;}
-    virtual void saveColState();
 
 public slots:
     virtual void onTableView_currentChanged(const QModelIndex&);
     virtual void on_tableView_entered(const QModelIndex& index);
-    virtual void saveColWidths();
     virtual void setDocSource(RefCntr<DocSequence> nsource);
+    virtual void saveColState();
     virtual void resetSource();
     virtual void readDocSource(bool resetPos = true);
     virtual void onSortDataChanged(DocSeqSortSpec);
