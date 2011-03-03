@@ -56,7 +56,6 @@ Rcl::Db *rcldb;
 Aspell *aspell;
 #endif
 
-RclDynConf *g_dynconf;
 int recollNeedsExit;
 int startIndexingAfterConfig;
 RclMain *mainWindow;

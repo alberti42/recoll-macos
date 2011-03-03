@@ -33,6 +33,8 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.40 2008-11-24 15:23:12 dockes Ex
 #include <qsettings.h>
 #include <qstringlist.h>
 
+RclDynConf *g_dynconf;
+
 // The table should not be necessary, but I found no css way to get
 // qt 4.6 qtextedit to clear the margins after the float img without 
 // introducing blank space.

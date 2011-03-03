@@ -47,8 +47,9 @@ Recipe:
 
  - Extract the Recoll source.
 
- - IF Recoll is not installed yet: configure recoll with --prefix=/usr
-   (or wherever KDE lives), build and install Recoll.
+ - IF Recoll is not installed yet: configure recoll with 
+   --prefix=/usr --enable-pic  (or wherever KDE lives), build and install 
+   Recoll.
 
  - In the Recoll source, go to kde/kioslave/recoll, then build and
    install the kio slave:

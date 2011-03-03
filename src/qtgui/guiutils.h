@@ -43,6 +43,9 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
+#include "dynconf.h"
+extern RclDynConf *g_dynconf;
+
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;

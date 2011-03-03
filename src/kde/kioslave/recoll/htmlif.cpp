@@ -144,7 +144,6 @@ static string welcomedata;
 
 void RecollProtocol::searchPage()
 {
-    kDebug();
     mimeType("text/html");
     if (welcomedata.empty()) {
 	QString location = 
@@ -188,7 +187,6 @@ void RecollProtocol::searchPage()
 
 void RecollProtocol::queryDetails()
 {
-    kDebug();
     mimeType("text/html");
     QByteArray array;
     QTextStream os(&array, QIODevice::WriteOnly);
@@ -205,7 +203,6 @@ void RecollProtocol::queryDetails()
     os << "</body></html>" << endl;
     data(array);
 }
-
 
 class PlainToRichKio : public PlainToRich {
 public:
@@ -275,9 +272,9 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
 
 void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
 {
-    kDebug() << "q" << qd.query << "opt" << qd.opt << "page" << qd.page <<
-	"isdet" << qd.isDetReq;
-
+    kDebug() << "q" << qd.query << "option" << qd.opt << "page" << qd.page <<
+	"isdet" << qd.isDetReq << endl;
+ 
     mimeType("text/html");
 
     if (!syncSearch(qd))

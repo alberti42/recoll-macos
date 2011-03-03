@@ -48,6 +48,7 @@ using namespace std;
 #include "readfile.h"
 #include "smallut.h"
 #include "textsplit.h"
+#include "guiutils.h"
 
 using namespace KIO;
 
@@ -72,6 +73,7 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
 	m_reason = "No db directory in configuration ??";
 	return;
     }
+    rwSettings(false);
 
     m_rcldb = new Rcl::Db(o_rclconfig);
     if (!m_rcldb) {
@@ -115,13 +117,10 @@ bool RecollProtocol::maybeOpenDb(string &reason)
     return true;
 }
 
-// Not sure this is ever used 
+// This is never called afaik
 void RecollProtocol::mimetype(const KUrl &url)
 {
     kDebug() << url << endl;
-    ///////////////////////////////REMOVEME REMOVEME REMOVEME when sure !/////
-    abort();
-    ////////////////////////////////////////////////////////////////////////
     mimeType("text/html");
     finished();
 }
@@ -342,6 +341,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     RefCntr<Rcl::SearchData> sdata(sd);
     sdata->setStemlang("english");
     RefCntr<Rcl::Query>query(new Rcl::Query(m_rcldb));
+    query->setCollapseDuplicates(prefs.collapseDuplicates);
     if (!query->setQuery(sdata)) {
 	m_reason = "Query execute failed. Invalid query or syntax error?";
 	error(KIO::ERR_SLAVE_DEFINED, m_reason.c_str());

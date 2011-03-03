@@ -37,9 +37,10 @@ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
   ${rcltop}/rcldb 
   ${rcltop}/unac
   ${rcltop}/utils 
+  ${rcltop}/qtgui
 )
 
-set(kio_recoll_SRCS  kio_recoll.cpp htmlif.cpp dirif.cpp)
+set(kio_recoll_SRCS  kio_recoll.cpp htmlif.cpp dirif.cpp ${rcltop}/qtgui/guiutils.cpp)
 
 CHECK_LIBRARY_EXISTS(dl dlopen "" DLOPEN_IN_LIBDL)
 IF(DLOPEN_IN_LIBDL)
