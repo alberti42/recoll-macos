@@ -226,14 +226,19 @@ presentation = application/vnd.ms-powerpoint \
   application/vnd.sun.xml.impress.template
 
 media = \
-      audio/mpeg \
-      audio/x-karaoke \
       application/ogg \
       application/x-flac \
+      audio/mpeg \
+      audio/x-karaoke \
+      image/gif \
       image/jpeg \
       image/png \
       image/tiff \
-      image/gif \
+      video/mp2p \
+      video/mp2t \
+      video/mp4 \
+      video/x-msvideo \
+
 
 message = message/rfc822 \
 	  text/x-gaim-log \
