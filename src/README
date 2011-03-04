@@ -498,12 +498,31 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    programs will use the RECOLL_CONFDIR variable or accept a -c confdir
    option to specify a non-default configuration directory.
 
+   Reasons to use either the indexing thread or the recollindex command:
+
+     * Starting the indexing thread is more convenient, being just one click
+       away.
+
+     * The recollindex command has more options, especially the one to reset
+       the index (-z).
+
+     * The recollindex command will not take down your GUI if it crashes (a
+       rare occurrence, but who knows...)
+
+     * The recollindex command uses setpriority/nice to lower its priority
+       while indexing (it will also use ionice when this becomes more widely
+       available), the thread can't do it, else it would also slow down the
+       user/search interface.
+
+   I'll let the reader decide where my heart belongs...
+
    If the recoll program finds no index when it starts, it will automatically
    start indexing (except if canceled).
 
-   The indexing process can be interrupted by sending an interrupt (^C,
-   SIGINT) or terminate (SIGTERM) signal. Some time may elapse before the
-   process exits, because it needs to properly flush and close the index.
+   The recollindex indexing process can be interrupted by sending an
+   interrupt (^C, SIGINT) or terminate (SIGTERM) signal. Some time may elapse
+   before the process exits, because it needs to properly flush and close the
+   index. The indexing thread can be equivalently stopped from the menu.
 
    After such an interruption, the index will be somewhat inconsistent
    because some operations which are normally performed at the end of the
@@ -850,9 +869,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    arrow keys).
 
    The preview tabs have an internal incremental search function. You
-   initiate the search either by typing a / (slash) inside the text area or
-   by clicking into the Search for: text field and entering the search
-   string. You can then use the Next and Previous buttons to find the
+   initiate the search either by typing a / (slash) or CTL-F inside the text
+   area or by clicking into the Search for: text field and entering the
+   search string. You can then use the Next and Previous buttons to find the
    next/previous occurrence. You can also type F3 inside the text area to get
    to the next occurrence.
 
