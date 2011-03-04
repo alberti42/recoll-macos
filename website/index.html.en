@@ -47,8 +47,8 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.15.2</a> 
-	(<a href="release-1.15.0.html">Release notes</a>).</p>
+	<a class="important" href="download.html">1.15.5</a> 
+	(<a href="release-1.15.html">Release notes</a>).</p>
 
       <h2>Features: </h2>
 
@@ -90,10 +90,9 @@
 
       <h2>News: </h2>
       <ul>
-	<li>2011-02-13 : Recoll <a href="download.html#source">1.15.2</a> is
-	  out. This brings important GUI improvements, with a new
-	  switchable table-based result list, and direct access to sort
-	  functions. See the <a href="release-1.15.0.html">Release notes</a>.
+	<li>2011-03-04 : Recoll <a href="download.html#source">1.15.5</a> is
+	  out. This fixes a number of ennoying bugs in 1.15.2. See the <a
+	  href="release-1.15.html">Release notes</a>. 
 	</li>
 
 	<li>2010-11-29 : Recoll <a href="download.html#source">1.14.4</a> is
