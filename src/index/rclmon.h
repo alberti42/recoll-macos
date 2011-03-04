@@ -78,10 +78,6 @@ extern bool startMonitor(RclConfig *conf, int flags);
 /** Main routine for the event receiving thread */
 extern void *rclMonRcvRun(void *);
 
-/** There can only be one of us. Name of the lock file inside the config
- * directory. We write our pid in there */
-#define RCL_MONITOR_PIDFILENAME "rclmonpid"
-
 // Specific debug macro for monitor synchronization events
 #define MONDEB LOGDEB2
 

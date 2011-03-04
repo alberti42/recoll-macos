@@ -206,80 +206,10 @@ bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
     return true;
 }
 
-static string pidfile;
-/** There can only be one real time indexing process running */
-static bool processlock(const string &confdir) 
-{
-    pidfile = path_cat(confdir, RCL_MONITOR_PIDFILENAME);
-    for (int i = 0; i < 2; i++) {
-	int fd = open(pidfile.c_str(), O_RDWR|O_CREAT|O_EXCL, 0644);
-	if (fd < 0) {
-	    if (errno != EEXIST) {
-		LOGERR(("processlock: cant create %s, errno %d\n",
-			pidfile.c_str(), errno));
-		return false;
-	    }
-	    if ((fd = open(pidfile.c_str(), O_RDONLY)) < 0) {
-		LOGERR(("processlock: cant open existing %s, errno %d\n",
-			pidfile.c_str(), errno));
-		return false;
-	    }
-	    char buf[20];
-	    memset(buf, 0, sizeof(buf));
-	    if (read(fd, buf, 19) < 0) {
-		LOGERR(("processlock: cant read existing %s, errno %d\n",
-			pidfile.c_str(), errno));
-		close(fd);
-		return false;
-	    }
-	    close(fd);
-	    int pid = atoi(buf);
-	    if (pid <= 0 || (kill(pid, 0) < 0 && errno == ESRCH)) {
-		// File exists but no process
-		if (unlink(pidfile.c_str()) < 0) {
-		    LOGERR(("processlock: cant unlink existing %s, errno %d\n",
-			    pidfile.c_str(), errno));
-		    return false;
-		}
-		// Let's retry
-		continue;
-	    } else {
-		// Other process running
-		return false;
-	    }
-	}
-
-	// File could be created, write my pid in there
-	char buf[20];
-	sprintf(buf, "%d\n", getpid());
-	if (write(fd, buf, strlen(buf)+1) != int(strlen(buf)+1)) {
-	    LOGERR(("processlock: cant write to %s, errno %d\n",
-		    pidfile.c_str(), errno));
-	    close(fd);
-	    return false;
-	}
-	close(fd);
-	// Ok
-	break;
-    }
-    return true;
-}
-
-static void processunlock()
-{
-    unlink(pidfile.c_str());
-}
-
 pthread_t rcv_thrid;
 
 bool startMonitor(RclConfig *conf, int opts)
 {
-    if (!processlock(conf->getConfDir())) {
-	LOGERR(("startMonitor: lock error. Other process running ?\n"));
-	return false;
-    }
-    atexit(processunlock);
-
     rclEQ.setConfig(conf);
     rclEQ.setopts(opts);
     if (pthread_create(&rcv_thrid, 0, &rclMonRcvRun, &rclEQ) != 0) {
