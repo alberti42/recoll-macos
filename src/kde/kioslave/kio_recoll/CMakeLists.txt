@@ -15,7 +15,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
 # Execute minimum recoll configuration to create autoconfig.h and version.h
-execute_process(COMMAND ${rcltop}/configure --without-gui --enable-pic --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
+execute_process(COMMAND ${rcltop}/configure --disable-qtgui --disable-x11mon --enable-pic --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
 		WORKING_DIRECTORY ${rcltop}
 )
 execute_process(COMMAND make common/rclversion.h

@@ -55,6 +55,7 @@ src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
 src/index/alldeps
 src/index/recollindex
+src/kde/kioslave/kio_recoll/builddir
 src/lib/alldeps
 src/lib/librcl.a
 src/mk/localdefs

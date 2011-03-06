@@ -109,8 +109,8 @@ make distclean
 yes | clean.O
 rm -f lib/*.dep
 # Possibly clean up the cmake stuff
-(cd kde/kioslave/recoll/ || exit 1
-rm -rf CMakeCache.txt CMakeFiles/ CMakeTmp/ CPack* CTestTestfile.cmake cmake_* *automoc* lib)
+(cd kde/kioslave/kio_recoll/ || exit 1
+rm -rf CMakeCache.txt CMakeFiles/ CMakeTmp/ CPack* CTestTestfile.cmake cmake_* *automoc* lib builddir)
 
 $TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
 
