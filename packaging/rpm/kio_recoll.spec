@@ -1,5 +1,5 @@
 %define name kio_recoll
-%define version 1.15.5
+%define version 1.15.6
 %define release 0
 
 Name:           %{name}
