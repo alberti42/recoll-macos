@@ -17,6 +17,7 @@
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
 /* @(#$Id: pathut.h,v 1.16 2008-12-04 11:49:59 dockes Exp $  (C) 2004 J.F.Dockes */
+#include <unistd.h>
 
 #include <string>
 #include <list>
