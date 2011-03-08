@@ -14,7 +14,7 @@ Group:          Applications/Databases
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
 
-BuildRequires: libqt4-devel zlib-devel-static libxapian-devel libuuid-devel
+BuildRequires: libqt4-devel zlib-devel libxapian-devel libuuid-devel
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
