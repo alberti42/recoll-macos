@@ -80,7 +80,13 @@ public:
 	if (m_inputhtml) {
 	    return snull;
 	} else {
-	    return string("<qt><head><title></title></head><body><pre>");
+	    if (prefs.previewPlainPre) {
+		m_eolbr = false;
+		return string("<qt><head><title></title></head><body><pre>");
+	    } else {
+		m_eolbr = true;
+		return string("<qt><head><title></title></head><body>");
+	    }
 	}
     }
     virtual string startMatch() 

@@ -80,7 +80,11 @@ class PrefsPack {
     bool queryBuildAbstract;
     bool queryReplaceAbstract;
     bool startWithAdvSearchOpen;
+    // Try to display html if it exists in the internfile stack.
     bool previewHtml;
+    // Use <pre> tag to display highlighted text/plain inside html (else
+    // we use <br> at end of lines, which lets textedit wrap lines).
+    bool previewPlainPre; 
     bool collapseDuplicates;
     bool showResultsAsTable;
 
@@ -130,9 +134,8 @@ class PrefsPack {
 	queryReplaceAbstract(false),
 	startWithAdvSearchOpen(false),
 	termMatchType(0),
-	rclVersion(1009)
-	    {
-	    }
+	rclVersion(1505)
+    { }
 };
 
 /** Global preferences record */

@@ -435,6 +435,8 @@ bool PlainToRich::plaintorich(const string& in,
             if (eol > 2)
                 eol = 2;
             while (eol) {
+		if (!m_inputhtml && m_eolbr)
+		    *olit += "<br>";
                 *olit += "\n";
                 eol--;
             }

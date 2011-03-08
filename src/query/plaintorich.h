@@ -89,6 +89,8 @@ public:
 protected:
     static const string snull;
     bool m_inputhtml;
+    // Use <br> to break plain text lines (else caller has used a <pre> tag)
+    bool m_eolbr; 
 };
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */
