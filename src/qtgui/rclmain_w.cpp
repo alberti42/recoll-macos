@@ -115,8 +115,10 @@ void RclMain::init()
     g_stringNoStem = tr("(no stemming)");
     g_stringAllStem = tr("(all languages)");
     m_idNoStem = preferencesMenu->addAction(g_stringNoStem);
+    m_idNoStem->setCheckable(true);
     m_stemLangToId[g_stringNoStem] = m_idNoStem;
     m_idAllStem = preferencesMenu->addAction(g_stringAllStem);
+    m_idAllStem->setCheckable(true);
     m_stemLangToId[g_stringAllStem] = m_idAllStem;
 
     // Can't get the stemming languages from the db at this stage as
@@ -137,6 +139,7 @@ void RclMain::init()
 	 it != langs.end(); it++) {
 	QString qlang = QString::fromAscii(it->c_str(), it->length());
 	id = preferencesMenu->addAction(qlang);
+	id->setCheckable(true);
 	m_stemLangToId[qlang] = id;
 	if (prefs.queryStemLang == qlang) {
 	    curid = id;
@@ -373,7 +376,7 @@ void RclMain::focusToSearch()
 
 void RclMain::setStemLang(QAction *id)
 {
-    LOGDEB(("RclMain::setStemLang(%d)\n", id));
+    LOGDEB(("RclMain::setStemLang(%p)\n", id));
     // Check that the menu entry is for a stemming language change
     // (might also be "show prefs" etc.
     bool isLangId = false;
