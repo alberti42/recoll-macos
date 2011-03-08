@@ -125,7 +125,7 @@ PHP_METHOD(Query, query)
     // jf: the original implementation built an AND clause. It would
     // be nice to offer an option, but the next best thing is to
     // default to the query language
-    sd = wasaStringToRcl(qs, reason);
+    sd = wasaStringToRcl(rclconfig, qs, reason);
 
     if (!sd) {
 	cerr << "Query string interpretation failed: " << reason << endl;

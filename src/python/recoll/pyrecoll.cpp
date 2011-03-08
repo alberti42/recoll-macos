@@ -642,7 +642,7 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	return 0;
     }
     string reason;
-    Rcl::SearchData *sd = wasaStringToRcl(utf8, reason);
+    Rcl::SearchData *sd = wasaStringToRcl(rclconfig, utf8, reason);
 
     if (!sd) {
 	PyErr_SetString(PyExc_ValueError, reason.c_str());
