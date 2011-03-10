@@ -1,7 +1,19 @@
-#ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.52 2008-12-17 15:12:08 dockes Exp $ (C) 2005 J.F.Dockes";
-#endif
-
+/*
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the
+ *   Free Software Foundation, Inc.,
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 #include "autoconfig.h"
 
 #include <stdlib.h>
@@ -268,9 +280,10 @@ void RecollModel::addColumn(int col, const string& field)
 QVariant RecollModel::headerData(int idx, Qt::Orientation orientation, 
 				 int role) const
 {
-    LOGDEB2(("RecollModel::headerData: idx %d\n", idx));
+    LOGDEB2(("RecollModel::headerData: idx %d orientation %s role %d\n",
+            idx, orientation == Qt::Vertical ? "vertical":"horizontal", role));
     if (orientation == Qt::Vertical && role == Qt::DisplayRole) {
-	return idx;
+        return idx;
     }
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole &&
 	idx < int(m_fields.size())) {
@@ -286,8 +299,8 @@ QVariant RecollModel::headerData(int idx, Qt::Orientation orientation,
 
 QVariant RecollModel::data(const QModelIndex& index, int role) const
 {
-    LOGDEB1(("RecollModel::data: row %d col %d\n", index.row(),
-	     index.column()));
+    LOGDEB2(("RecollModel::data: row %d col %d role %d\n", index.row(),
+            index.column(), role));
     if (m_source.isNull() || role != Qt::DisplayRole || !index.isValid() ||
 	index.column() >= int(m_fields.size())) {
 	return QVariant();
@@ -405,7 +418,7 @@ void ResTable::init()
 
     header = tableView->verticalHeader();
     if (header) {
-	header->setDefaultSectionSize(22);
+	header->setDefaultSectionSize(QApplication::fontMetrics().height()+5);
     }
 
     QKeySequence seq("Esc");
