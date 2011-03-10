@@ -42,6 +42,11 @@
 #include "rclconfig.h"
 #include "plaintorich.h"
 
+// Compensate for the default and somewhat bizarre vertical placement
+// of text in cells
+static const int ROWHEIGHTPAD = 2;
+static const int TEXTINCELLVTRANS = -4;
+
 //////////////////////////////////
 // Restable "pager". We use it to display a single doc details in the 
 // detail area
@@ -378,7 +383,9 @@ public:
 #endif
 		} 
 		painter->setClipRect(option.rect);
-		painter->translate(option.rect.topLeft());
+		QPoint where = option.rect.topLeft();
+		where.ry() += TEXTINCELLVTRANS;
+		painter->translate(where);
 		document.setHtml(text);
 		document.drawContents(painter);
 		painter->restore();
@@ -418,7 +425,8 @@ void ResTable::init()
 
     header = tableView->verticalHeader();
     if (header) {
-	header->setDefaultSectionSize(QApplication::fontMetrics().height()+5);
+	header->setDefaultSectionSize(QApplication::fontMetrics().height() + 
+				      ROWHEIGHTPAD);
     }
 
     QKeySequence seq("Esc");
