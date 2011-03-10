@@ -50,7 +50,7 @@
 
       <h2><a>General information</a></h2>
 
-      <p>The current version is 1.15.5. <a href="release-1.15.html">
+      <p>The current version is 1.15.7. <a href="release-1.15.html">
           Release notes</a>.</p>
 
       <p>The download page for Recoll 1.14 is
@@ -101,11 +101,11 @@
 
       <h2><a name="source">Source</a></h2>
 
-      <h3>Current release distribution: 1.15.5:</h3> 
+      <h3>Current release distribution: 1.15.7:</h3> 
       <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches( -->
-       <p><a href="recoll-1.15.5.tar.gz">recoll-1.15.5.tar.gz</a>.</p>
+       <p><a href="recoll-1.15.7.tar.gz">recoll-1.15.7.tar.gz</a>.</p>
 
       <h3>Prerequisites for building from source:</h3>
         <ul>
@@ -136,13 +136,14 @@
             will not build with Qt releases older than 4.4.</p></li>
       </ul>
 
-      <h3>KDE kicker applet:</h3>
+      <h3>KDE3 kicker applet:</h3>
        <p>the applet can start a Recoll search
-        from the KDE toolbar. It is in a separate source file.
+        from the KDE3 toolbar. It is in a separate source file.
 	<a href="recoll_applet-1.10.0.tgz">recoll_applet-1.10.0.tgz</a>.
 	This is a very slightly modified version of the 
 	<a href="http://demandiseineseite.gmxhome.de/find/">
-	find_applet</a>. It will work with any recoll version after 1.10.</p>
+	find_applet</a>. It will work with any recoll version after
+	1.10. <em>KDE 3 only</em>.</p>
 
       <h3>Source repository:</h3>
       <p>The <span class="application">Recoll</span> source repository is
@@ -153,6 +154,7 @@
 
       <h3>Older recoll releases:</h3>
        <p>
+        <a href="recoll-1.15.5.tar.gz">1.15.5</a>.
         <a href="recoll-1.15.2.tar.gz">1.15.2</a>.
         <a href="recoll-1.14.4.tar.gz">1.14.4</a>.
         <a href="recoll-1.13.04.tar.gz">1.13.04</a>.
@@ -215,12 +217,9 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
        </p>
       </blockquote>
 
-      <h3>RPMS</h3> <p><i>Except if specified otherwise, the
-	  executables inside the binary rpms which follow have a
-          static link to Xapian (misc. versions, you can display the Xapian
-          version from the recoll help menu), there is no hard dependency
-          except Qt 4.<br>
-	Some Fedora and Mandriva packages unfortunately think that they
+      <h3>RPMS</h3> 
+
+       <p>Some Fedora and Mandriva packages unfortunately think that they
 	depend on exiftool (which is needed by the little used jpeg
 	info filter), due to excessive rpmbuild	cleverness.
 	<br>You'll need to install the Xapian, Qt, and zlib development
@@ -256,8 +255,24 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 
       <h3>OpenSUSE</h3>
       <blockquote>
-        <p><b>OpenSUSE 11.3 with qt4 and a static link to xapian
-            1.2.3 with the --disable-sse configure option</b>:
+        <p>I now use the OpenSUSE build service to create Recoll OpenSUSE
+        packages. You just need to add the adequate repository to your
+        software sources (Yast2->software->Software repositories).<br>
+        <a href="http://download.opensuse.org/repositories/home:/dockes/">
+          Repository list (supported Suse versions)</a>. Ie for
+          OpenSUSE 11.3, you would add
+          http://download.opensuse.org/repositories/home:/dockes/openSUSE_11.3/
+          to your repositories. You will then be able to install
+          recoll and kio_recoll from the software management
+          interface. The Xapian dependancy will also be satisfied from
+          the build service repository. <em>Note: the recoll-1.15.6
+          file which is used to build the 
+            kio_recoll is identical to 1.15.5 except for some minor changes
+            in the KIO build files.</em></p>
+
+        <p>Remaining pre-build service packages: OpenSUSE 11.3
+            with qt4 and a static link to xapian
+            1.2.3 with the --disable-sse configure option:
 	  <a href="suse11.3/recoll-1.15.5-0.i586.rpm">
 	    recoll-1.15.5-0.i586.rpm</a>. 
 	  Source: <a href="suse11.3/recoll-1.15.5-0.src.rpm">

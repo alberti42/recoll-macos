@@ -41,10 +41,7 @@
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for
           recoll.</li> 
-	<li>The new mutagen-based audio tags filter (rclaudio) only
-	  works with very recent mutagen
-	  versions. See <a href="filters/filters.html">here</a> for a
-	  corrected version.</li>
+
         <li>Performing a full index with release 1.11 or newer, over a
           version created with a much older recoll release may
           sometimes end with an error saying "backend doesn't
@@ -78,6 +75,14 @@
           vwWare if it is available. This will result in slightly
           slower indexing for all normal .doc files.</li>
       </ul>
+
+      <h2><a name="b_1_15_5">recoll 1.15.5</a></h2> 
+        <li>The Python and PHP modules in 1.15.5 have compile errors. This
+        is solved by 
+          <a href="https://bitbucket.org/medoc/recoll/changeset/0b09b33cd06a">
+            this simple change.</a></li>
+        <li>The current stemming language is not indicated by menu
+         checkboxes.</li> 
 
       <h2><a name="b_1_15_2">recoll 1.15.2</a></h2> 
       <ul>
@@ -126,6 +131,10 @@
 
       <h2><a name="b_1_14_3">recoll 1.14.3</h2>
       <li>Email message preview is broken.</li>
+      <li>The new mutagen-based audio tags filter (rclaudio) only
+	  works with very recent mutagen
+	  versions. See <a href="filters/filters.html">here</a> for a
+	  corrected version.</li>
 
       <h2><a name="b_1_14_1">recoll 1.14.1</h2>
       <li>Compressed file view fix broke help viewer.</li>
