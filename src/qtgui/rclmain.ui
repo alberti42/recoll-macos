@@ -455,7 +455,6 @@
   </action>
  </widget>
  <layoutdefault spacing="2" margin="2"/>
- <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
    <class>SSearch</class>
