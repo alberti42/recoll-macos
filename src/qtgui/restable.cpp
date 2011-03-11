@@ -30,6 +30,8 @@
 #include <QStyledItemDelegate>
 #include <QTextDocument>
 #include <QPainter>
+#include <QSplitter>
+#include <QClipboard>
 
 #include "recoll.h"
 #include "refcntr.h"
@@ -47,8 +49,22 @@
 static const int ROWHEIGHTPAD = 2;
 static const int TEXTINCELLVTRANS = -4;
 
-//////////////////////////////////
-// Restable "pager". We use it to display a single doc details in the 
+//////////////////////////////////////////////////////////////////////////////
+// Restable hiliter: to highlight search term in the table. This is actually
+// the same as reslist's, could be shared.
+class PlainToRichQtReslist : public PlainToRich {
+public:
+    virtual ~PlainToRichQtReslist() {}
+    virtual string startMatch() {
+	return string("<span style='color: ")
+	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
+    }
+    virtual string endMatch() {return string("</span>");}
+};
+static PlainToRichQtReslist g_hiliter;
+
+//////////////////////////////////////////////////////////////////////////
+// Restable "pager". We use it to print details for a document in the 
 // detail area
 ///
 class ResTablePager : public ResListPager {
@@ -64,28 +80,12 @@ private:
     ResTable *m_parent;
 };
 
-//////////////////////////
-// Restable hiliter: to highlight search term in the table. This is actually
-// the same as reslist's, could be shared.
-class PlainToRichQtReslist : public PlainToRich {
-public:
-    virtual ~PlainToRichQtReslist() {}
-    virtual string startMatch() {
-	return string("<span style='color: ")
-	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
-    }
-    virtual string endMatch() {return string("</span>");}
-};
-static PlainToRichQtReslist g_hiliter;
-/////////////////////////////////////
-
-bool ResTablePager::append(const string& data, int docnum, const Rcl::Doc&)
+bool ResTablePager::append(const string& data, int, const Rcl::Doc&)
 {
-    m_parent->textBrowser->moveCursor(QTextCursor::End, 
+    m_parent->m_detail->moveCursor(QTextCursor::End, 
 				      QTextCursor::MoveAnchor);
-    m_parent->textBrowser->textCursor().insertBlock();
-    m_parent->textBrowser->insertHtml(QString::fromUtf8(data.c_str()));
-    m_parent->m_detaildocnum = docnum;
+    m_parent->m_detail->textCursor().insertBlock();
+    m_parent->m_detail->insertHtml(QString::fromUtf8(data.c_str()));
     return true;
 }
 
@@ -106,7 +106,39 @@ string ResTablePager::iconPath(const string& mtype)
     return iconpath;
 }
 
-//////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/// Detail text area methods
+
+ResTableDetailArea::ResTableDetailArea(ResTable* parent)
+    : QTextBrowser(parent), m_table(parent)
+{
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+	    this, SLOT(createPopupMenu(const QPoint&)));
+}
+
+void ResTableDetailArea::createPopupMenu(const QPoint& pos)
+{
+    if (!m_table || m_table->m_detaildocnum < 0) {
+	LOGDEB(("ResTableDetailArea::createPopupMenu: no table/detaildoc\n"));
+	return;
+    }
+    QMenu *popup = new QMenu(this);
+    popup->addAction(tr("&Preview"), m_table, SLOT(menuPreview()));
+    popup->addAction(tr("&Open"), m_table, SLOT(menuEdit()));
+    popup->addAction(tr("Copy &File Name"), m_table, SLOT(menuCopyFN()));
+    popup->addAction(tr("Copy &URL"), m_table, SLOT(menuCopyURL()));
+    if (!m_table->m_detaildoc.ipath.empty())
+	popup->addAction(tr("&Write to File"), m_table, SLOT(menuSaveToFile()));
+    popup->addAction(tr("Find &similar documents"), m_table, SLOT(menuExpand()));
+    popup->addAction(tr("Preview P&arent document/folder"), 
+		      m_table, SLOT(menuPreviewParent()));
+    popup->addAction(tr("&Open Parent document/folder"), 
+		      m_table, SLOT(menuOpenParent()));
+    popup->popup(mapToGlobal(pos));
+}
+
+//////////////////////////////////////////////////////////////////////////////
 //// Data model methods
 ////
 
@@ -403,6 +435,9 @@ void ResTable::init()
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     tableView->setItemDelegate(new ResTableDelegate(this));
+    tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(tableView, SIGNAL(customContextMenuRequested(const QPoint&)),
+	    this, SLOT(createPopupMenu(const QPoint&)));
 
     QHeaderView *header = tableView->horizontalHeader();
     if (header) {
@@ -446,13 +481,16 @@ void ResTable::init()
 	splitter->setSizes(sizes);
     }
 
-    textBrowser->setReadOnly(TRUE);
-    textBrowser->setUndoRedoEnabled(FALSE);
-    textBrowser->setOpenLinks(FALSE);
+    delete textBrowser;
+    m_detail = new ResTableDetailArea(this);
+    m_detail->setReadOnly(TRUE);
+    m_detail->setUndoRedoEnabled(FALSE);
+    m_detail->setOpenLinks(FALSE);
     // signals and slots connections
-    connect(textBrowser, SIGNAL(anchorClicked(const QUrl &)), 
+    connect(m_detail, SIGNAL(anchorClicked(const QUrl &)), 
 	    this, SLOT(linkWasClicked(const QUrl &)));
-
+    splitter->addWidget(m_detail);
+    splitter->setOrientation(Qt::Vertical);
 }
 
 // This is called by rclmain_w prior to exiting
@@ -494,9 +532,12 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
 	return;
     Rcl::Doc doc;
     if (m_model->getDocSource()->getDoc(index.row(), doc)) {
-	textBrowser->clear();
+	m_detail->clear();
 	m_detaildocnum = index.row();
+	m_detaildoc = doc;
 	m_pager->displayDoc(rclconfig, index.row(), doc, m_model->m_hdata);
+    } else {
+	m_detaildocnum = -1;
     }
 }
 
@@ -515,8 +556,9 @@ void ResTable::setDocSource(RefCntr<DocSequence> nsource)
 	m_model->setDocSource(nsource);
     if (m_pager)
 	m_pager->setDocSource(nsource, 0);
-    if (textBrowser)
-	textBrowser->clear();
+    if (m_detail)
+	m_detail->clear();
+    m_detaildocnum = -1;
 }
 
 void ResTable::resetSource()
@@ -569,13 +611,15 @@ void ResTable::readDocSource(bool resetPos)
 	tableView->verticalScrollBar()->setSliderPosition(0);
 
     m_model->readDocSource();
-    textBrowser->clear();
+    m_detail->clear();
+    m_detaildocnum = -1;
 }
 
 void ResTable::linkWasClicked(const QUrl &url)
 {
-    if (!m_model || m_model->getDocSource().isNull())
+    if (m_detaildocnum < 0) {
 	return;
+    }
     QString s = url.toString();
     const char *ascurl = s.toAscii();
     LOGDEB(("ResTable::linkWasClicked: [%s]\n", ascurl));
@@ -586,21 +630,135 @@ void ResTable::linkWasClicked(const QUrl &url)
     case 'P': 
     case 'E': 
     {
-	Rcl::Doc doc;
-	if (!m_model->getDocSource()->getDoc(i, doc)) {
-	    LOGERR(("ResTable::linkWasClicked: can't get doc for %d\n", i));
-	    return;
-	}
 	if (what == 'P')
-	    emit docPreviewClicked(i, doc, 0);
+	    emit docPreviewClicked(i, m_detaildoc, 0);
 	else
-	    emit docEditClicked(doc);
+	    emit docEditClicked(m_detaildoc);
     }
     break;
     default: 
-	LOGERR(("ResList::linkWasClicked: bad link [%s]\n", ascurl));
+	LOGERR(("ResTable::linkWasClicked: bad link [%s]\n", ascurl));
 	break;// ?? 
     }
+}
+
+void ResTable::createPopupMenu(const QPoint& pos)
+{
+    LOGDEB(("ResTable::createPopupMenu: m_detaildocnum %d\n", m_detaildocnum));
+    if (m_detaildocnum < 0)
+	return;
+    QMenu *popup = new QMenu(this);
+    popup->addAction(tr("&Preview"), this, SLOT(menuPreview()));
+    popup->addAction(tr("&Open"), this, SLOT(menuEdit()));
+    popup->addAction(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
+    popup->addAction(tr("Copy &URL"), this, SLOT(menuCopyURL()));
+    if (m_detaildoc.ipath.empty())
+	popup->addAction(tr("&Write to File"), this, SLOT(menuSaveToFile()));
+    popup->addAction(tr("Find &similar documents"), this, SLOT(menuExpand()));
+    popup->addAction(tr("Preview P&arent document/folder"), 
+		      this, SLOT(menuPreviewParent()));
+    popup->addAction(tr("&Open Parent document/folder"), 
+		      this, SLOT(menuOpenParent()));
+    popup->popup(mapToGlobal(pos));
+}
+
+void ResTable::menuPreview()
+{
+    if (m_detaildocnum < 0) 
+	return;
+    emit docPreviewClicked(m_detaildocnum, m_detaildoc, 0);
+}
+
+void ResTable::menuSaveToFile()
+{
+    if (m_detaildocnum < 0) 
+	return;
+    emit docSaveToFileClicked(m_detaildoc);
+}
+
+void ResTable::menuPreviewParent()
+{
+    if (!m_model || m_detaildocnum < 0) 
+	return;
+    RefCntr<DocSequence> source = m_model->getDocSource();
+    if (source.isNull())
+	return;
+    Rcl::Doc& doc = m_detaildoc;
+    Rcl::Doc pdoc;
+    if (source->getEnclosing(doc, pdoc)) {
+	emit previewRequested(pdoc);
+    } else {
+	// No parent doc: show enclosing folder with app configured for
+	// directories
+	pdoc.url = path_getfather(doc.url);
+	pdoc.mimetype = "application/x-fsdirectory";
+	emit editRequested(pdoc);
+    }
+}
+
+void ResTable::menuOpenParent()
+{
+    if (!m_model || m_detaildocnum < 0) 
+	return;
+    RefCntr<DocSequence> source = m_model->getDocSource();
+    if (source.isNull())
+	return;
+    Rcl::Doc& doc = m_detaildoc;
+    Rcl::Doc pdoc;
+    if (source->getEnclosing(doc, pdoc)) {
+	emit editRequested(pdoc);
+    } else {
+	// No parent doc: show enclosing folder with app configured for
+	// directories
+	pdoc.url = path_getfather(doc.url);
+	pdoc.mimetype = "application/x-fsdirectory";
+	emit editRequested(pdoc);
+    }
+}
+
+void ResTable::menuEdit()
+{
+    if (m_detaildocnum < 0) 
+	return;
+    emit docEditClicked(m_detaildoc);
+}
+
+void ResTable::menuCopyFN()
+{
+    if (m_detaildocnum < 0) 
+	return;
+    Rcl::Doc &doc = m_detaildoc;
+
+    // Our urls currently always begin with "file://" 
+    //
+    // Problem: setText expects a QString. Passing a (const char*)
+    // as we used to do causes an implicit conversion from
+    // latin1. File are binary and the right approach would be no
+    // conversion, but it's probably better (less worse...) to
+    // make a "best effort" tentative and try to convert from the
+    // locale's charset than accept the default conversion.
+    QString qfn = QString::fromLocal8Bit(doc.url.c_str()+7);
+    QApplication::clipboard()->setText(qfn, QClipboard::Selection);
+    QApplication::clipboard()->setText(qfn, QClipboard::Clipboard);
+}
+
+void ResTable::menuCopyURL()
+{
+    if (m_detaildocnum < 0) 
+	return;
+    Rcl::Doc &doc = m_detaildoc;
+    string url =  url_encode(doc.url, 7);
+    QApplication::clipboard()->setText(url.c_str(), 
+				       QClipboard::Selection);
+    QApplication::clipboard()->setText(url.c_str(), 
+				       QClipboard::Clipboard);
+}
+
+void ResTable::menuExpand()
+{
+    if (m_detaildocnum < 0) 
+	return;
+    emit docExpand(m_detaildoc);
 }
 
 void ResTable::createHeaderPopupMenu(const QPoint& pos)

@@ -78,6 +78,23 @@ private:
     HiliteData m_hdata;
 };
 
+class ResTable;
+
+// Modified textBrowser for the detail area
+class ResTableDetailArea : public QTextBrowser {
+    Q_OBJECT;
+
+ public:
+    ResTableDetailArea(ResTable* parent = 0);
+    
+ public slots:
+    virtual void createPopupMenu(const QPoint& pos);
+
+private:
+    ResTable *m_table;
+};
+
+
 class ResTablePager;
 class QUrl;
 
@@ -88,7 +105,7 @@ class ResTable : public QWidget, public Ui::ResTable
 public:
     ResTable(QWidget* parent = 0) 
 	: QWidget(parent),
-	  m_model(0), m_pager(0), m_detaildocnum(-1)
+	  m_model(0), m_pager(0), m_detail(0), m_detaildocnum(-1)
     {
 	setupUi(this);
 	init();
@@ -96,7 +113,7 @@ public:
 	
     virtual ~ResTable() {}
     virtual RecollModel *getModel() {return m_model;}
-
+    virtual ResTableDetailArea* getDetailArea() {return m_detail;}
 public slots:
     virtual void onTableView_currentChanged(const QModelIndex&);
     virtual void on_tableView_entered(const QModelIndex& index);
@@ -105,21 +122,39 @@ public slots:
     virtual void resetSource();
     virtual void readDocSource(bool resetPos = true);
     virtual void onSortDataChanged(DocSeqSortSpec);
-    virtual void linkWasClicked(const QUrl&);
+    virtual void createPopupMenu(const QPoint& pos);
+    virtual void menuPreview();
+    virtual void menuSaveToFile();
+    virtual void menuEdit();
+    virtual void menuCopyFN();
+    virtual void menuCopyURL();
+    virtual void menuExpand();
+    virtual void menuPreviewParent();
+    virtual void menuOpenParent();
     virtual void createHeaderPopupMenu(const QPoint&);
     virtual void deleteColumn();
     virtual void addColumn();
     virtual void resetSort(); // Revert to natural (relevance) order
+    virtual void linkWasClicked(const QUrl&);
+
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);
     void docEditClicked(Rcl::Doc);
+    void docSaveToFileClicked(Rcl::Doc);
+    void previewRequested(Rcl::Doc);
+    void editRequested(Rcl::Doc);
+    void headerClicked();
+    void docExpand(Rcl::Doc);
 
     friend class ResTablePager;
+    friend class ResTableDetailArea;
 private:
     void init();
     RecollModel   *m_model;
     ResTablePager *m_pager;
+    ResTableDetailArea *m_detail;
     int            m_detaildocnum;
+    Rcl::Doc       m_detaildoc;
     int            m_popcolumn;
 };
 

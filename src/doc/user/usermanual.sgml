@@ -930,17 +930,18 @@ fvwm
     </sect2>
 
     <sect2 id="rcl.search.restable">
-      <title>The alternate result table</title>
+      <title>The result table</title>
 
-        <para>In &RCL; 1.15 and newer, the results can now be shown in a
-        spreadsheet-like display. You can switch to this presentation by
+        <para>In &RCL; 1.15 and newer, the results can be displayed in 
+        spreadsheet-like fashion. You can switch to this presentation by
         clicking the table-like icon in the toolbar (this is a toggle,
         click again to restore the list).</para>
 
         <para>Clicking on the column headers will allow sorting by the
         values in the column. You can click again to invert the order, and
         use the header right-click menu to reset sorting to the default
-        relevance order.</para>
+        relevance order (you can also use the sort-by-date arrows to do
+        this).</para>
 
         <para>Both the list and the table display the same underlying
           results. The sort order set from the table is still active if you
@@ -957,7 +958,8 @@ fvwm
         the row to freeze the display. The bottom area is equivalent to a
         classical result list paragraph, with links for
         starting a preview or a native application, and an equivalent
-        right-click menu.</para> 
+        right-click menu. Typing <keycap>Esc</keycap> (the Escape key) will
+        unfreeze the display.</para> 
 
       </sect2>
 
