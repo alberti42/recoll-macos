@@ -235,8 +235,6 @@ void RecollModel::readDocSource()
 {
     LOGDEB(("RecollModel::readDocSource()\n"));
     reset();
-//    beginResetModel();
-//    endResetModel();
 }
 
 void RecollModel::setDocSource(RefCntr<DocSequence> nsource)
@@ -489,7 +487,7 @@ void ResTable::saveColState()
 
 void ResTable::onTableView_currentChanged(const QModelIndex& index)
 {
-    LOGDEB0(("ResTable::onTableView_currentChanged(%d, %d)\n", 
+    LOGDEB2(("ResTable::onTableView_currentChanged(%d, %d)\n", 
 	    index.row(), index.column()));
 
     if (!m_model || m_model->getDocSource().isNull())
@@ -504,7 +502,7 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
 
 void ResTable::on_tableView_entered(const QModelIndex& index)
 {
-    LOGDEB0(("ResTable::on_tableView_entered(%d, %d)\n", 
+    LOGDEB2(("ResTable::on_tableView_entered(%d, %d)\n", 
 	    index.row(), index.column()));
     if (!tableView->selectionModel()->hasSelection())
 	onTableView_currentChanged(index);
