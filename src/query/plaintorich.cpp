@@ -315,7 +315,7 @@ bool PlainToRich::plaintorich(const string& in,
     const vector<vector<string> >& groups(hdata.groups);
     const vector<int>& slacks(hdata.gslks);
 
-    if (DebugLog::getdbl()->getlevel() >= DEBDEB0) {
+    if (0 && DebugLog::getdbl()->getlevel() >= DEBDEB0) {
 	LOGDEB0(("plaintorich: terms: \n"));
 	string sterms = vecStringToString(terms);
 	LOGDEB0(("  %s\n", sterms.c_str()));
@@ -338,7 +338,7 @@ bool PlainToRich::plaintorich(const string& in,
     // Note: the splitter returns the term locations in byte, not
     // character, offsets.
     splitter.text_to_words(in);
-    LOGDEB0(("plaintorich: split done %d mS\n", chron.millis()));
+    LOGDEB2(("plaintorich: split done %d mS\n", chron.millis()));
 
     // Compute the positions for NEAR and PHRASE groups.
     splitter.matchGroups();
@@ -500,6 +500,6 @@ bool PlainToRich::plaintorich(const string& in,
 	fclose(fp);
     }
 #endif
-    LOGDEB0(("plaintorich: done %d mS\n", chron.millis()));
+    LOGDEB2(("plaintorich: done %d mS\n", chron.millis()));
     return true;
 }

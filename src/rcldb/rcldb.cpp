@@ -221,7 +221,7 @@ static void listList(const string& what, const list<string>&l)
 string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 {
     Chrono chron;
-    LOGDEB0(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
+    LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
 	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen));
 
     list<string> terms;
@@ -500,7 +500,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     if (!abstract.compare("... "))
 	abstract.clear();
 
-    LOGDEB0(("makeAbtract: done in %d mS\n", chron.millis()));
+    LOGDEB2(("makeAbtract: done in %d mS\n", chron.millis()));
     return abstract;
 }
 
