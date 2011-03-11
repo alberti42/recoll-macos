@@ -241,7 +241,9 @@ void RclMain::init()
 	    this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), 
 	    this, SLOT(showExtIdxDialog()));
-	    
+    connect(this, SIGNAL(applyFiltSortData()), 
+	    this, SLOT(onResultsChanged()));
+
     if (prefs.catgToolBar && catgCMB)
 	connect(catgCMB, SIGNAL(activated(int)), 
 		this, SLOT(catgFilter(int)));
@@ -619,6 +621,22 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     emit filtDataChanged(m_filtspec);
     emit applyFiltSortData();
     QApplication::restoreOverrideCursor();
+}
+
+void RclMain::onResultsChanged()
+{
+    if (m_source.isNotNull()) {
+	int cnt = m_source->getResCnt();
+	QString msg;
+	if (cnt > 0) {
+	    QString str;
+	    msg = tr("Result count (est.)") + ": " + 
+		str.setNum(cnt);
+	} else {
+	    msg = tr("No results found");
+	}
+	statusBar()->showMessage(msg, 0);
+    }
 }
 
 void RclMain::resetSearch()

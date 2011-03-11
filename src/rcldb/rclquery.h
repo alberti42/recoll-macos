@@ -96,6 +96,8 @@ private:
     string m_sortField;
     bool   m_sortAscending;
     bool   m_collapseDuplicates;     
+    int    m_resCnt;
+
     /* Copyconst and assignement private and forbidden */
     Query(const Query &) {}
     Query & operator=(const Query &) {return *this;};

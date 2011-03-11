@@ -100,6 +100,7 @@ public slots:
     virtual void onResTableSortBy(DocSeqSortSpec);
     virtual void resultCount(int);
     virtual void showQueryDetails();
+    virtual void onResultsChanged();
 
 signals:
     void docSourceChanged(RefCntr<DocSequence>);

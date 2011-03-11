@@ -90,7 +90,7 @@ private:
 
 Query::Query(Db *db)
     : m_nq(new Native(this)), m_db(db), m_sorter(0), m_sortAscending(true),
-      m_collapseDuplicates(false)
+      m_collapseDuplicates(false), m_resCnt(-1)
 {
 }
 
@@ -136,6 +136,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
 	LOGERR(("Query::setQuery: not initialised!\n"));
 	return false;
     }
+    m_resCnt = -1;
     m_reason.erase();
 
     m_nq->clear();
@@ -258,23 +259,25 @@ int Query::getResCnt()
 	LOGERR(("Query::getResCnt: no query opened\n"));
 	return -1;
     }
+    if (m_resCnt >= 0)
+	return m_resCnt;
 
-    int ret = -1;
+    m_resCnt = -1;
     if (m_nq->xmset.size() <= 0) {
         Chrono chron;
 
         XAPTRY(m_nq->xmset = 
-               m_nq->xenquire->get_mset(0, qquantum, (const Xapian::RSet *)0);
-               ret = m_nq->xmset.get_matches_lower_bound(),
+               m_nq->xenquire->get_mset(0, qquantum, 1000);
+               m_resCnt = m_nq->xmset.get_matches_lower_bound(),
                m_db->m_ndb->xrdb, m_reason);
 
         LOGDEB(("Query::getResCnt: %d mS\n", chron.millis()));
 	if (!m_reason.empty())
 	    LOGERR(("xenquire->get_mset: exception: %s\n", m_reason.c_str()));
     } else {
-        ret = m_nq->xmset.get_matches_lower_bound();
+        m_resCnt = m_nq->xmset.get_matches_lower_bound();
     }
-    return ret;
+    return m_resCnt;
 }
 
 
