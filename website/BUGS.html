@@ -37,6 +37,11 @@
 
       <h2><a name="b_latest">recoll 1.15</a></h2> 
         <ul>
+        <li>The rclzip filter can't handle archive members with a colon
+        (':') in the file name or path. The files are normally indexed and
+        can be searched for, but they can't be displayed (neither opened
+        nor previewed).</li>
+
         <li>After an upgrade, the recoll GUI sometimes crashes on
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for

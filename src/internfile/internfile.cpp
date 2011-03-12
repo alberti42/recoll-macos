@@ -53,10 +53,31 @@ using namespace std;
 #include "pxattr.h"
 #endif // RCL_USE_XATTR
 
+static const string stxtplain("text/plain");
+
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
+// We replace it with a control char if it comes out of a filter (ie:
+// rclzip or rclchm can do this). If you want the SOH control char
+// inside an ipath, you're out of luck (and a bit weird).
 static const string isep(":");
-static const string stxtplain("text/plain");
+static const char colon_repl = '\x01';
+static string colon_hide(const string& in)
+{
+    string out;
+    for (string::const_iterator it = in.begin(); it != in.end(); it++) {
+	out += *it == ':' ? colon_repl : *it;
+    }
+    return out;
+}
+static string colon_restore(const string& in)
+{
+    string out;
+    for (string::const_iterator it = in.begin(); it != in.end(); it++) {
+	out += *it == colon_repl ? ':' : *it;
+    }
+    return out;
+}
 
 set<string> FileInterner::o_missingExternal;
 map<string, set<string> >  FileInterner::o_typesForMissing;
@@ -603,7 +624,7 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 		getKeyValue(docdata, keymt, doc.mimetype);
 		getKeyValue(docdata, keyfn, doc.utf8fn);
 	    }
-	    ipath += ipathel + isep;
+	    ipath += colon_hide(ipathel) + isep;
 	} else {
 	    ipath += isep;
 	}
@@ -750,6 +771,10 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     if (!ipath.empty()) {
 	vector<string> lipath;
 	stringToTokens(ipath, lipath, isep, true);
+	for (vector<string>::iterator it = lipath.begin();
+	     it != lipath.end(); it++) {
+	    *it = colon_restore(*it);
+	}
 	vipath.insert(vipath.begin(), lipath.begin(), lipath.end());
 	if (!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
 	    LOGERR(("FileInterner::internfile: can't skip\n"));

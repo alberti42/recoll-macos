@@ -167,6 +167,8 @@ bool MimeHandlerExecMultiple::next_document()
         obuf << "Filename: " << 0 << "\n";
     }
     if (m_ipath.length()) {
+	LOGDEB(("next_doc: sending len %d val [%s]\n", m_ipath.length(),
+		m_ipath.c_str()));
         obuf << "Ipath: " << m_ipath.length() << "\n" << m_ipath;
     }
     if (!m_dfltInputCharset.empty()) {
