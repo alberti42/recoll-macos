@@ -133,7 +133,7 @@
 
       <p>Voir aussi la <a href="devel.html">page sur le
       développement</a>.</p>
-      <p><a href="BUGS.txt">Liste des probl&egrave;mes connus</a> (en
+      <p><a href="BUGS.html">Liste des probl&egrave;mes connus</a> (en
       anglais). </p>
 
       <h2>Remerciements</h2>

@@ -36,11 +36,21 @@
           topmost section may also exist in older versions.</i></p>
 
       <h2><a name="b_latest">recoll 1.15</a></h2> 
-        <ul>
-        <li>The rclzip filter can't handle archive members with a colon
-        (':') in the file name or path. The files are normally indexed and
-        can be searched for, but they can't be displayed (neither opened
-        nor previewed).</li>
+
+        <ul> 
+
+        <li>The rclzip filter can't handle utf-8 in path names for archive
+        members. An  <a
+        href="http://www.recoll.org/filters/rclzip">updated filter</a> is
+        available. </li>
+
+        <li>The rclzip and rclchm filters can't handle archive members
+        with a colon (':') in the file name or path. The files are normally
+        indexed and can be searched for, but they can't be displayed
+        (neither opened nor previewed). There is a <a
+        href="https://bitbucket.org/medoc/recoll/changeset/3751ea8ea179">
+        patch</a> which fixes the issue (then needs full reindex for these
+        files).</li>
 
         <li>After an upgrade, the recoll GUI sometimes crashes on
           startup. This is fixed by removing (back it up just in case)
@@ -56,13 +66,12 @@
           time, removing the directory preventively may be preferable .</li>
 
         <li>Under Solaris, it is necessary to perform the initial
-          indexing with the recollindex program (the recoll index
-          thread doesn't work for creating the database). Don't know
-          the reason. Only idea I have is problem with exception
-          handling (recoll catches an exception while trying the yet
-          inexistant db).</li> 
+          indexing with the recollindex program. For some unknown reason,
+          the recoll index thread does not work for creating the database.
+          The only idea I have is a problem with exception handling (recoll
+          catches an exception while trying the yet inexistant db).</li>
         
-        <li>The default filter for files in microsoft word format
+        <li>The default filter for files in Microsoft Word format
           (application/msword, .doc), antiword, has trouble with some
           relatively rare files with a very small text, resulting in the
           following error message:
