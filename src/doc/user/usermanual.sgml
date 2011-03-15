@@ -2794,8 +2794,8 @@ while query.next >= 0 and query.next < nres:
 
       <para>Please note that, due to the relatively dynamic nature of this
 	information, the most up to date version is now kept on the &RCLAPPS;
-	along with links to the home pages or best source/patches download
-	links. The list below is not updated often and may be quite
+	along with links to the home pages or best source/patches pages,
+	and misc tips. The list below is not updated often and may be quite
 	stale.</para>
 
       <para>For many Linux distributions, most of the commands listed can
@@ -2839,7 +2839,9 @@ while query.next >= 0 and query.next < nres:
          xsltproc</command>.</para></listitem>
 
         <listitem><para>Wordperfect files need <command>wpd2html</command>
-        from the <application>libwpd</application> package.</para></listitem>
+        from the <application>libwpd</application> (or
+        <application>libwpd-tools</application> on Ubuntu)
+        package.</para></listitem>
 
         <listitem><para>RTF files need <command>unrtf</command>, which, in
         its standard version, has much trouble with non-western character
