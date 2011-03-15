@@ -11,5 +11,3 @@ message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/badMail.edi
 message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/thunderbird/Sent]	[Pronote: salut les genies.]	2565	bytes	
 1 results
 message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/thunderbird/Sent]	[De mieux en mieux]	2565	bytes	
-1 results
-message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/maildir.zip]	[[FreeBSD-Announce]  ZIPPEDMAILDIR_UNIQUEXXX 	FreeBSD Security Advisory FreeBSD-SA-04:17.procfs]	59171	bytes	

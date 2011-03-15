@@ -5,8 +5,12 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq '"content 4 9" OR "welcome to FreeBSD" OR zip_uniique' 2> $mystderr | 
-	egrep -v '^Recoll query: ' > $mystdout
+(
+  recollq '"content 4 9" OR "welcome to FreeBSD" OR zip_uniique'
+  recollq ZIPPEDMAILDIR_UNIQUEXXX
+
+)  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
+
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 

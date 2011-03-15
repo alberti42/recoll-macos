@@ -12,7 +12,6 @@ initvariables $0
   recollq '"Dear Corporate Administrator"'
   recollq TestTbirdWithoutEmptyLine
   recollq TestTbirdWithEmptyLine
-  recollq ZIPPEDMAILDIR_UNIQUEXXX
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
