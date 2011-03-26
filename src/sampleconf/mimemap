@@ -112,6 +112,10 @@
 
 .fb2 = text/x-fictionbook
 
+.war = application/x-webarchive
+.mht = application/x-mimehtml
+.mhtml = application/x-mimehtml
+
 # A list of suffixes (name endings) that we don't want to touch at all.
 # Having these explicitely listed speeds things up a bit by avoiding
 # unneeded decompression or 'file' calls. File names still get indexed if

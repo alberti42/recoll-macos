@@ -71,12 +71,13 @@ application/x-flac = execm rclaudio
 application/x-gnuinfo = execm rclinfo
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
+application/x-mimehtml = internal message/rfc822
 application/x-perl = internal text/plain
 application/x-scribus = exec rclscribus
 application/x-shellscript = internal text/plain
 application/x-tex = exec rcltex
-text/x-tex = exec rcltex
 application/x-chm = execm rclchm
+application/x-webarchive = execm rclwar
 application/zip = execm rclzip;charset=default
 audio/mpeg = execm rclaudio
 audio/x-karaoke = execm rclkar
@@ -104,6 +105,7 @@ text/x-purple-log = exec rclpurple
 text/x-purple-html-log = internal text/html
 text/x-python = exec rclpython
 text/x-shellscript = internal text/plain
+text/x-tex = exec rcltex
 
 ## #############################################
 # Icons to be used in the result list if required by gui config
