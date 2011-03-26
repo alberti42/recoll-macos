@@ -70,7 +70,7 @@ public:
     processone(const string &fn, const struct stat *st, 
                FsTreeWalker::CbFlag flg)
     {
-	LOGDEB2(("rclMonRcvRun: processone %s m_mon %p m_mon->ok %d\n", 
+	MONDEB(("rclMonRcvRun: processone %s m_mon %p m_mon->ok %d\n", 
 		 fn.c_str(), m_mon, m_mon?m_mon->ok():0));
 
         if (flg == FsTreeWalker::FtwDirEnter || 
@@ -301,7 +301,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     FD_ZERO(&readfds);
     FD_SET(fam_fd, &readfds);
 
-    MONDEB(("RclFAM::getEvent: select\n"));
+    MONDEB(("RclFAM::getEvent: select. fam_fd is %d\n", fam_fd));
     struct timeval timeout;
     if (secs >= 0) {
 	memset(&timeout, 0, sizeof(timeout));
@@ -318,10 +318,20 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 	return false;
     }
 
-    MONDEB(("RclFAM::getEvent: select return\n"));
+    MONDEB(("RclFAM::getEvent: select returned %d\n", ret));
 
     if (!FD_ISSET(fam_fd, &readfds))
 	return false;
+
+    // ?? 2011/03/15 gamin v0.1.10. There is initially a single null
+    // byte on the connection so the first select always succeeds. If
+    // we then call FAMNextEvent we stall. Using FAMPending works
+    // around the issue, but we did not need this in the past and this
+    // is most weird.
+    if (FAMPending(&m_conn) <= 0) {
+	MONDEB(("RclFAM::getEvent: FAMPending says no events\n"));
+	return false;
+    }
 
     MONDEB(("RclFAM::getEvent: call FAMNextEvent\n"));
     FAMEvent fe;
