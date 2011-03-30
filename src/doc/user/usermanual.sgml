@@ -1075,9 +1075,12 @@ fvwm
 
         <listitem>
           <para>The bottom part allows restricting the search results to a
-            sub-tree of the indexed area. If you need to do this often, 
-            you may think of setting up multiple indexes instead, as the
-            performance will be much better.</para>
+            sub-tree of the indexed area. You can use the
+            <guilabel>Invert</guilabel> checkbox to search for files not in
+            the sub-tree instead. If you use directory filtering often and on
+            big subsets of the file system, you may think of setting up
+            multiple indexes instead, as the performance may be
+            better. </para>
         </listitem>
 
       </itemizedlist>

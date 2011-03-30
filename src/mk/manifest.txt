@@ -145,6 +145,7 @@ filters/rclsvg
 filters/rcltex
 filters/rcltext
 filters/rcluncomp
+filters/rclwar
 filters/rclwpd
 filters/rclxls
 filters/rclzip

@@ -7,7 +7,10 @@ fatal() {
     exit 1
 }
 usage() {
-    echo 'Usage: [dotag=no] makescrdist.sh do_it'
+    echo 'Usage: makescrdist.sh -t -s do_it'
+    echo ' -t : no tagging'
+    echo ' -s : snapshot release: use date instead of VERSION'
+    echo ' -s implies -t'
     exit 1
 }
 tagtopsvn() {
@@ -25,7 +28,6 @@ tagtop() {
 }
 
 #set -x
-test $# -eq 1 || usage
 
 TAR=/usr/bin/tar
 
@@ -40,9 +42,32 @@ if test ! -d qtgui;then
 fi
 targetdir=${targetdir-/tmp}
 dotag=${dotag-yes}
-version=`cat VERSION`
-versionforcvs=`echo $version | sed -e 's/\./_/g'`
-TAG="RECOLL_$versionforcvs"
+snap=${snap-no}
+
+while getopts ts o
+do	case "$o" in
+	t)	dotag=no;;
+	s)	snap=yes;dotag=no;;
+	[?])	usage;;
+	esac
+done
+shift `expr $OPTIND - 1`
+
+test $dotag = "yes" -a $snap = "yes" && usage
+
+test $# -eq 1 || usage
+
+echo dotag $dotag snap $snap
+
+if test $snap = yes ; then
+  version=`date +%s`
+  versionforcvs=$version
+  TAG=""
+else
+  version=`cat VERSION`
+  versionforcvs=`echo $version | sed -e 's/\./_/g'`
+  TAG="RECOLL_$versionforcvs"
+fi
 
 if test "$dotag" = "yes" ; then
   echo Creating AND TAGGING version $versionforcvs
