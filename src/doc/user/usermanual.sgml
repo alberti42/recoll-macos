@@ -2897,6 +2897,13 @@ while query.next >= 0 and query.next < nres:
          <application>Midi module</application></ulink></para>
         </listitem>
 
+        <listitem>Konqueror webarchive format with Python (uses the Tarfile
+          module).</listitem>
+
+        <listitem>mimehtml web archive format (support based on the mail
+          filter, which introduces some mild weirdness, but still
+          usable).</listitem>
+
         </itemizedlist>
 
         <para>Text, HTML, mail folders, and Scribus files are

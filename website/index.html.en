@@ -90,6 +90,12 @@
 
       <h2>News: </h2>
       <ul>
+
+        <li>2011-03-26: added a filter for konqueror webarchive (.war)
+          format, and elementary support for mimehtml (.mhtml). These
+          work with stock recoll 1.15, you just need to install the filter
+          and config adjustments.</li>
+
 	<li>2011-03-10 : Recoll <a href="download.html#source">1.15.7</a> is
 	  out. This fixes a number of ennoying bugs in 1.15.2 (no need to
 	  upgrade from 1.15.5). See the <a href="release-1.15.html">Release
