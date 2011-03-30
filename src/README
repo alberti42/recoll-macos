@@ -60,7 +60,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              3.1.2. The default result list
 
-                             3.1.3. The alternate result table
+                             3.1.3. The result table
 
                              3.1.4. The preview window
 
@@ -819,16 +819,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.3. The alternate result table
+  3.1.3. The result table
 
-   In Recoll 1.15 and newer, the results can now be shown in a
-   spreadsheet-like display. You can switch to this presentation by clicking
-   the table-like icon in the toolbar (this is a toggle, click again to
-   restore the list).
+   In Recoll 1.15 and newer, the results can be displayed in spreadsheet-like
+   fashion. You can switch to this presentation by clicking the table-like
+   icon in the toolbar (this is a toggle, click again to restore the list).
 
    Clicking on the column headers will allow sorting by the values in the
    column. You can click again to invert the order, and use the header
-   right-click menu to reset sorting to the default relevance order.
+   right-click menu to reset sorting to the default relevance order (you can
+   also use the sort-by-date arrows to do this).
 
    Both the list and the table display the same underlying results. The sort
    order set from the table is still active if you switch back to the list
@@ -842,7 +842,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    window with the corresponding values. You can click the row to freeze the
    display. The bottom area is equivalent to a classical result list
    paragraph, with links for starting a preview or a native application, and
-   an equivalent right-click menu.
+   an equivalent right-click menu. Typing Esc (the Escape key) will unfreeze
+   the display.
 
      ----------------------------------------------------------------------
 
@@ -932,9 +933,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        lists will be in the restored state).
 
      * The bottom part allows restricting the search results to a sub-tree of
-       the indexed area. If you need to do this often, you may think of
-       setting up multiple indexes instead, as the performance will be much
-       better.
+       the indexed area. You can use the Invert checkbox to search for files
+       not in the sub-tree instead. If you use directory filtering often and
+       on big subsets of the file system, you may think of setting up
+       multiple indexes instead, as the performance may be better.
 
    Phrases and Proximity searches. These two clauses work in similar ways,
    with the difference that proximity searches do not impose an order on the
@@ -1562,9 +1564,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The field syntax also supports a few field-like, but special, criteria:
 
      * dir for filtering the results on file location (Ex:
-       dir:/home/me/somedir). Please note that this is quite inefficient,
-       that it may produce very slow searches, and that it may be worth in
-       some cases to set up separate databases instead.
+       dir:/home/me/somedir). -dir also works to find results out of the
+       specified directory, only after release 1.16.
 
      * date for searching or filtering on dates. The syntax for the argument
        is based on the ISO8601 standard for dates and time intervals. Only
@@ -1605,7 +1606,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        categories is defined in the Recoll configuration (mimeconf), and can
        be modified or extended. The default category names are those which
        permit filtering results in the main GUI screen. Categories are OR'ed
-       like mime types above.
+       like mime types above. This can't be negated with - either.
 
    Words inside phrases and capitalized words are not stem-expanded.
    Wildcards may be used anywhere inside a term. Specifying a wild-card on
@@ -2208,8 +2209,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Please note that, due to the relatively dynamic nature of this
    information, the most up to date version is now kept on the Recoll helper
    applications page along with links to the home pages or best
-   source/patches download links. The list below is not updated often and may
-   be quite stale.
+   source/patches pages, and misc tips. The list below is not updated often
+   and may be quite stale.
 
    For many Linux distributions, most of the commands listed can be installed
    from the package repositories. However, the packages are sometimes
@@ -2239,7 +2240,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * MS Open XML (docx) needs xsltproc.
 
-     * Wordperfect files need wpd2html from the libwpd package.
+     * Wordperfect files need wpd2html from the libwpd (or libwpd-tools on
+       Ubuntu) package.
 
      * RTF files need unrtf, which, in its standard version, has much trouble
        with non-western character sets. Check the Recoll helper applications
@@ -2274,6 +2276,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * Zip archives need Python (and the standard zipfile module).
 
      * Midi karaoke files need Python and the Midi module
+
+     * Konqueror webarchive format with Python (uses the Tarfile module).
+
+     * mimehtml web archive format (support based on the mail filter, which
+       introduces some mild weirdness, but still usable).
 
    Text, HTML, mail folders, and Scribus files are processed internally. Lyx
    is used to index Lyx files. Many filters need iconv and the standard sed
