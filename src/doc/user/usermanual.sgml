@@ -1974,10 +1974,9 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <itemizedlist>
         <listitem><para><literal>dir</literal> for filtering the
         results on file location (Ex:
-        <literal>dir:/home/me/somedir</literal>). Please note
-        that this is quite inefficient, that it may produce very
-        slow searches, and that it may be worth in some
-        cases to set up separate databases instead.</para>
+        <literal>dir:/home/me/somedir</literal>). <literal>-dir</literal>
+        also works to find results out of the specified directory, only
+        after release 1.16.</para>
         </listitem>
 
         <listitem><para><literal>date</literal> for searching or filtering
@@ -2039,7 +2038,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         (<filename>mimeconf</filename>), and can be modified or
         extended. The default category names are those which permit
         filtering results in the main GUI screen. Categories are OR'ed
-        like mime types above.</para>
+        like mime types above. This can't be negated with
+        <literal>-</literal> either.</para>
         </listitem>
 
       </itemizedlist>
@@ -2897,12 +2897,12 @@ while query.next >= 0 and query.next < nres:
          <application>Midi module</application></ulink></para>
         </listitem>
 
-        <listitem>Konqueror webarchive format with Python (uses the Tarfile
-          module).</listitem>
+        <listitem><para>Konqueror webarchive format with Python (uses the
+        Tarfile module).</para></listitem>
 
-        <listitem>mimehtml web archive format (support based on the mail
+        <listitem><para>mimehtml web archive format (support based on the mail
           filter, which introduces some mild weirdness, but still
-          usable).</listitem>
+          usable).</para></listitem>
 
         </itemizedlist>
 
