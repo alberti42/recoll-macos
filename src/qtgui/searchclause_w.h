@@ -39,7 +39,8 @@ public:
     Rcl::SearchDataClause *getClause();
 
     QComboBox* sTpCMB;
-    QSpinBox* proxSlackSB;
+    QComboBox* fldCMB;
+    QSpinBox*  proxSlackSB;
     QLineEdit* wordsLE;
 
 public slots:

@@ -197,6 +197,7 @@ class RclConfig {
     bool getFieldSpecialisationPrefixes(const string& fld, 
 					list<string>& pfxes);
     const set<string>& getStoredFields() {return m_storedFields;}
+    set<string> getIndexedFields();
     /** Get canonic name for possible alias */
     string fieldCanon(const string& fld);
     /** Get xattr name to field names translations */

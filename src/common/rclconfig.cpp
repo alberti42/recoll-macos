@@ -673,6 +673,17 @@ bool RclConfig::getFieldPrefix(const string& _fld, string &pfx)
     }
 }
 
+set<string> RclConfig::getIndexedFields()
+{
+    set<string> flds;
+    if (m_fields == 0)
+	return flds;
+
+    list<string> sl = m_fields->getNames("prefixes");
+    flds.insert(sl.begin(), sl.end());
+    return flds;
+}
+
 // Return specialisations of field name for search expansion 
 // (ie: author->[author, from])
 bool RclConfig::getFieldSpecialisations(const string& fld, 

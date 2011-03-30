@@ -19,6 +19,8 @@ static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.4 2006-12-04 06:19:11 dock
  */
 #include "autoconfig.h"
 
+#include "recoll.h"
+
 #include "searchclause_w.h"
 
 #include <qvariant.h>
@@ -37,9 +39,14 @@ SearchClauseW::SearchClauseW(QWidget* parent)
     : QWidget(parent)
 {
     QHBoxLayout* hLayout = new QHBoxLayout(this); 
+
     sTpCMB = new QComboBox(this);
     sTpCMB->setEditable(false);
     hLayout->addWidget(sTpCMB);
+
+    fldCMB = new QComboBox(this);
+    fldCMB->setEditable(false);
+    hLayout->addWidget(fldCMB);
 
     proxSlackSB = new QSpinBox(this);
     hLayout->addWidget(proxSlackSB);
@@ -77,6 +84,17 @@ void SearchClauseW::languageChange()
     sTpCMB->addItem(tr("File name matching"));//5
     //    sTpCMB->insertItem(tr("Complex clause"));//6
 
+    fldCMB->addItem(tr("In field"));
+    if (rclconfig) {
+	set<string> fields = rclconfig->getIndexedFields();
+	for (set<string>::const_iterator it = fields.begin(); 
+	     it != fields.end(); it++) {
+	    // Some fields don't make sense here
+	    if (it->compare("filename")) {
+		fldCMB->addItem(QString::fromUtf8(it->c_str()));
+	    }
+	}
+    }
     // Ensure that the spinbox will be enabled/disabled depending on
     // combobox state
     tpChange(0);
@@ -93,33 +111,34 @@ SearchClauseW::getClause()
 {
     if (wordsLE->text().isEmpty())
 	return 0;
+    string field;
+    if (fldCMB->currentIndex() != 0) {
+	field = (const char *)fldCMB->currentText().toUtf8();
+    }
+    string text = (const char *)wordsLE->text().toUtf8();
     switch (sTpCMB->currentIndex()) {
     case 0:
-	return new SearchDataClauseSimple(SCLT_OR,
-				  (const char *)wordsLE->text().toUtf8());
+	return new SearchDataClauseSimple(SCLT_OR, text, field);
     case 1:
-	return new SearchDataClauseSimple(SCLT_AND,
-				  (const char *)wordsLE->text().toUtf8());
+	return new SearchDataClauseSimple(SCLT_AND, text, field);
     case 2:
-	return new SearchDataClauseSimple(SCLT_EXCL,
-				  (const char *)wordsLE->text().toUtf8());
+	return new SearchDataClauseSimple(SCLT_EXCL, text, field);
     case 3:
-	return new SearchDataClauseDist(SCLT_PHRASE,
-				(const char *)wordsLE->text().toUtf8(),
-					proxSlackSB->value());
+	return new SearchDataClauseDist(SCLT_PHRASE, text, 
+					proxSlackSB->value(), field);
     case 4:
-	return new SearchDataClauseDist(SCLT_NEAR,
-				(const char *)wordsLE->text().toUtf8(),
-					proxSlackSB->value());
+	return new SearchDataClauseDist(SCLT_NEAR, text,
+					proxSlackSB->value(), field);
     case 5:
-	return new SearchDataClauseFilename((const char *)wordsLE->text().toUtf8());
+	return new SearchDataClauseFilename(text);
     case 6:
     default:
 	return 0;
     }
 }
 
-// Handle combobox change: may need to enable/disable the distance spinbox
+// Handle combobox change: may need to enable/disable the distance
+// spinbox and field spec
 void SearchClauseW::tpChange(int index)
 {
     if (index < 0 || index > 5)
@@ -136,5 +155,10 @@ void SearchClauseW::tpChange(int index)
 	break;
     default:
 	proxSlackSB->close();
+    }
+    if (index == 5) {
+	fldCMB->close();
+    } else {
+	fldCMB->show();
     }
 }
