@@ -29,8 +29,4 @@ class RclConfig;
 extern Rcl::SearchData *wasaStringToRcl(RclConfig *, 
 					const string& query, string &reason,
 					const string& autosuffs = string());
-class WasaQuery;
-extern Rcl::SearchData *wasaQueryToRcl(RclConfig *, WasaQuery *wasa,
-                                       const string& autosuffs = string());
-
 #endif /* _WASATORCL_H_INCLUDED_ */

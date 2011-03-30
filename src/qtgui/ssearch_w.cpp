@@ -139,7 +139,7 @@ void SSearch::startSimpleSearch()
         else
             sdata = wasaStringToRcl(rclconfig, u8, reason);
 	if (sdata == 0) {
-	    QMessageBox::warning(0, "Recoll", tr("Bad query string") +
+	    QMessageBox::warning(0, "Recoll", tr("Bad query string") + ": " +
 				 QString::fromAscii(reason.c_str()));
 	    return;
 	}

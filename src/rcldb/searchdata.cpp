@@ -259,9 +259,10 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	     it != vpath.end(); it++){
 	    pvpath.push_back(pathelt_prefix + *it);
 	}
-	xq = Xapian::Query(Xapian::Query::OP_FILTER, xq, 
-			   Xapian::Query(Xapian::Query::OP_PHRASE, 
-					 pvpath.begin(), pvpath.end()));
+	xq = Xapian::Query(m_topdirexcl ? 
+			   Xapian::Query::OP_AND_NOT:Xapian::Query::OP_FILTER, 
+			   xq, Xapian::Query(Xapian::Query::OP_PHRASE, 
+					     pvpath.begin(), pvpath.end()));
     }
 
     *((Xapian::Query *)d) = xq;
@@ -355,6 +356,7 @@ void SearchData::erase() {
     m_query.clear();
     m_filetypes.clear();
     m_topdir.erase();
+    m_topdirexcl = false;
     m_description.erase();
     m_reason.erase();
     m_haveDates = false;

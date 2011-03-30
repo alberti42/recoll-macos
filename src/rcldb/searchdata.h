@@ -72,7 +72,8 @@ class SearchDataClause;
 class SearchData {
 public:
     SearchData(SClType tp) 
-        : m_tp(tp), m_haveDates(false), m_haveWildCards(false) 
+        : m_tp(tp), m_topdirexcl(false), m_haveDates(false), 
+	  m_haveWildCards(false) 
     {
 	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
 	    m_tp = SCLT_OR;
@@ -102,8 +103,11 @@ public:
     bool maybeAddAutoPhrase();
 
     /** Set/get top subdirectory for filtering results */
-    void setTopdir(const string& t) {m_topdir = t;}
-    string getTopdir() {return m_topdir;}
+    void setTopdir(const string& t, bool excl = false) 
+    {
+	m_topdir = t;
+	m_topdirexcl = excl;
+    }
 
     /** Set date span for filtering results */
     void setDateSpan(DateInterval *dip) {m_dates = *dip; m_haveDates = true;}
@@ -138,6 +142,7 @@ private:
     vector<SearchDataClause*> m_query;
     vector<string>            m_filetypes; // Restrict to filetypes if set.
     string                    m_topdir; // Restrict to subtree.
+    bool                      m_topdirexcl; // Invert meaning
     bool                      m_haveDates;
     DateInterval              m_dates; // Restrict to date interval
     // Printable expanded version of the complete query, retrieved/set
