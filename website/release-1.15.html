@@ -70,15 +70,16 @@
         detail.</p> 
 
       <p><em>Installing over an older version</em>: version 1.15/14/13
-        indexes are mostly compatible with 1.11 indexes, but some new,
-        relatively minor, features (ie: duplicates collapsing) depend
-        on a full index rebuild. The 1.14 date search feature
-        does <i>not</i> need an index rebuild, the data was already in
-        the index. <i>The new 1.15 table will not be able to display
-          filenames without a full reindex (it does display the urls),
-          except for some previous custom field configurations</i>.</p>
+        indexes are mostly compatible with 1.11 indexes, but some features
+        depend on a full index rebuild. These are:
 
-	<br />If installing over 1.10 or older, you need a full
+        <ul>
+          <li>Filtering results from a given directory subtree.</li>
+          <li>Displaying simple filenames in the new result table.</li>
+        </ul>
+      </p>
+
+	<p>If installing over 1.10 or older, you need a full
 	rebuild. The best way to do this is to just delete the old
 	<span class="filename">.recoll/xapiandb</span> directory,
 	especially if the index was created by an older version.
