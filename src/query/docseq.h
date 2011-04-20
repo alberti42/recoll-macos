@@ -98,7 +98,7 @@ class DocSequence {
 	return doc.meta[Rcl::Doc::keyabs];
     }
 
-    virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&) {return false;}
+    virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&) = 0;
 
     /** Get estimated total count in results */
     virtual int getResCnt() = 0;
@@ -172,6 +172,12 @@ public:
 	if (m_seq.isNull())
 	    return false;
 	return m_seq->getTerms(terms, groups, gslks);
+    }
+    virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
+    {
+	if (m_seq.isNull())
+	    return false;
+	return m_seq->getEnclosing(doc, pdoc);
     }
     virtual void getUTerms(vector<string>& terms)
     {
