@@ -74,4 +74,5 @@ src/query/xadump
 src/recollinstall
 src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf
+tests/indexedmimetypes/index.pid 
 website/usermanual/*
