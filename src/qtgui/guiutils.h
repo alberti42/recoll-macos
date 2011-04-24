@@ -73,10 +73,13 @@ class PrefsPack {
     int pvwidth; // Preview window geom
     int pvheight;
     int ssearchTyp;
-    bool    useDesktopOpen; // typically xdg-open, instead of mimeview settings
-    bool    keepSort;   // Remember sort status between invocations
-    bool    sortActive; // Remembered sort state.
-    bool    sortDesc;  // ..
+    // Use single app (default: xdg-open), instead of per-mime settings
+    bool useDesktopOpen; 
+    // Remember sort state between invocations ?
+    bool keepSort;   
+    bool sortActive; 
+    bool sortDesc; 
+    // Abstract preferences. Building abstracts can slow result display
     bool queryBuildAbstract;
     bool queryReplaceAbstract;
     bool startWithAdvSearchOpen;
