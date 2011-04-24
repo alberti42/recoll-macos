@@ -1,7 +1,6 @@
-#ifndef lint
-static char rcsid[] = "@(#$Id: mimehandler.cpp,v 1.25 2008-10-09 09:19:37 dockes Exp $ (C) 2004 J.F.Dockes";
-#endif
 /*
+ *   Copyright 2004 J.F.Dockes
+ *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -29,6 +28,7 @@ using namespace std;
 #include "debuglog.h"
 #include "rclconfig.h"
 #include "smallut.h"
+#include "pthread.h"
 
 #include "mh_exec.h"
 #include "mh_execm.h"
@@ -45,9 +45,29 @@ using namespace std;
 //
 // FIXME: this is not compatible with multiple threads and a potential
 // problem in the recoll gui (indexing thread + preview request). A
-// simple lock would be enough as handlers are removed from the cache
+// simple lock should be enough as handlers are removed from the cache
 // while in use and multiple copies are allowed
 static multimap<string, Dijon::Filter*>  o_handlers;
+pthread_mutex_t o_handlers_mutex;
+class HandlersLocker {
+public:
+    HandlersLocker()
+    {
+	pthread_mutex_lock(&o_handlers_mutex);
+    }
+    ~HandlersLocker()
+    {
+	pthread_mutex_unlock(&o_handlers_mutex);
+    }
+};
+class HandlersLockerInit {
+public:
+    HandlersLockerInit() 
+    {
+	pthread_mutex_init(&o_handlers_mutex, 0);
+    }
+};
+static HandlersLockerInit o_hli;
 
 /** For mime types set as "internal" in mimeconf: 
   * create appropriate handler object. */
@@ -143,6 +163,7 @@ void returnMimeHandler(Dijon::Filter *handler)
     typedef multimap<string, Dijon::Filter*>::value_type value_type;
     if (handler) {
 	handler->clear();
+	HandlersLocker locker;
 	o_handlers.insert(value_type(handler->get_mime_type(), handler));
     }
 }
@@ -151,6 +172,7 @@ void clearMimeHandlerCache()
 {
     typedef multimap<string, Dijon::Filter*>::value_type value_type;
     map<string, Dijon::Filter *>::iterator it;
+    HandlersLocker locker;
     for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
 	delete it->second;
     }
@@ -165,6 +187,7 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     LOGDEB2(("getMimeHandler: mtype [%s] filtertypes %d\n", 
              mtype.c_str(), filtertypes));
     Dijon::Filter *h = 0;
+    HandlersLocker locker;
 
     // Get handler definition for mime type. We do this even if an
     // appropriate handler object may be in the cache (indexed by mime
