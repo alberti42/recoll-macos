@@ -57,33 +57,40 @@
       <ul>
 
         <li>Searches now allow negative directory filtering (all
-        results except from the specified directory). Other attempts
-        at still impossible negative searches
-        (ie: <span class="literal">-mime:</span> now cause
-        explicit errors messages instead of lame results. The
-        inverted directory filtering is accessible from the query
-        language and by checking a checkbox in the advanced search panel.</li>
+          results except from the specified directory). Other attempts
+          at still impossible negative searches
+          (ie: <span class="literal">-mime:</span> now cause
+          explicit errors messages instead of lame results. The
+          inverted directory filtering is accessible from the query
+          language and by checking a checkbox in the advanced search panel.</li>
 
         <li>The GUI advanced search panel now allows specifying a
-        field for each entry (ie: author/recipient, etc).</li>
+          field for each entry (ie: author/recipient, etc).</li>
 
-      <li>Added filters for .war (Konqueror web archive) and .mhtm (other web
-      archive format).</li>
-
-        <li>Fixed bug which caused UTF-8 paths inside ZIP archives to
-        be mishandled. Also fix problem with colons inside archive
-        member paths.</li>
+        <li>Added filters for .war (Konqueror web archive) and .mhtm (other web
+          archive format).</li>
 
         <li>Result table:
           <ul>
             <li>The detail area now has a popup menu similar
-             to the one in the result list (open parent, save to disk
-             etc.).</li>
+              to the one in the result list (open parent, save to disk
+              etc.).</li>
             <li>Estimated result counts are displayed in the status line.</li>
             <li>Set row height according to default font size, and better 
-             adjust row height and vertical text position in
-             cells.</li>
+              adjust row height and vertical text position in
+              cells.</li>
           </ul>
+
+        <li>Fixed bugs:
+          <ul>
+            <li>UTF-8 paths inside ZIP archives were mishandled. Also
+              fixes problem with colons inside archive member
+              paths.</li>
+            <li>Fixed GUI result list doc parent operations (open/preview)
+              which were broken in 1.15.</li>
+          </ul>
+        </li>
+
       </ul>
 
 
