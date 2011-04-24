@@ -60,7 +60,7 @@ test $# -eq 1 || usage
 echo dotag $dotag snap $snap
 
 if test $snap = yes ; then
-  version=`date +%s`
+  version=`hg id | awk '{print $1}'`
   versionforcvs=$version
   TAG=""
 else
@@ -138,6 +138,9 @@ rm -f lib/*.dep
 rm -rf CMakeCache.txt CMakeFiles/ CMakeTmp/ CPack* CTestTestfile.cmake cmake_* *automoc* lib builddir)
 
 $TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
+if test $snap = "yes" ; then
+    echo $version > $topdir/VERSION
+fi
 
 # Fix the single/multiple page link in the header (we dont deliver the
 # multi-page version and the file name is wrong anyway
