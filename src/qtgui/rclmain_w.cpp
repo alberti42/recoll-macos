@@ -274,8 +274,12 @@ void RclMain::init()
 	    this, SLOT(docExpand(Rcl::Doc)));
     connect(restable, SIGNAL(docEditClicked(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(restable, SIGNAL(previewRequested(Rcl::Doc)), 
+	    this, SLOT(startPreview(Rcl::Doc)));
     connect(restable, SIGNAL(editRequested(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(restable, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
+	    this, SLOT(saveDocToFile(Rcl::Doc)));
 
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
 	    reslist, SLOT(setDocSource(RefCntr<DocSequence>)));
