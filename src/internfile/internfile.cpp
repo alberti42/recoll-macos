@@ -116,7 +116,8 @@ bool FileInterner::getEnclosing(const string &url, const string &ipath,
     eurl = url;
     eipath = ipath;
     string::size_type colon;
-    LOGDEB(("FileInterner::getEnclosing(): [%s]\n", eipath.c_str()));
+    LOGDEB(("FileInterner::getEnclosing(): url [%s] ipath [%s]\n", 
+	    url.c_str(), eipath.c_str()));
     if (eipath.empty())
 	return false;
     if ((colon =  eipath.find_last_of(isep)) != string::npos) {
@@ -599,6 +600,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 // which has them.
 void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 {
+    LOGDEB2(("FileInterner::collectIpathAndMT\n"));
     bool hasipath = false;
 
 #ifdef RCL_USE_XATTR
@@ -752,7 +754,7 @@ void FileInterner::processNextDocError(Rcl::Doc &doc, string& ipath)
 	    ipath.c_str(), doc.mimetype.c_str(), m_reason.c_str()));
 }
 
-FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
+FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath)
 {
     LOGDEB(("FileInterner::internfile. ipath [%s]\n", ipath.c_str()));
     if (m_handlers.size() < 1) {
@@ -816,7 +818,8 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	// might be ie an error while decoding an attachment, but we
 	// still want to process the rest of the mbox! For preview: fatal.
 	if (!m_handlers.back()->next_document()) {
-	    processNextDocError(doc, ipath);
+	    string oipath;
+	    processNextDocError(doc, oipath);
 	    if (m_forPreview) {
                 m_reason += "Requested document does not exist. ";
                 m_reason += m_handlers.back()->get_error();
@@ -831,16 +834,21 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	// handler to stack.
 	switch (addHandler()) {
 	case ADD_OK: // Just go through: handler has been stacked, use it
+	    LOGDEB2(("addHandler returned OK\n"));
 	    break; 
 	case ADD_CONTINUE: 
 	    // forget this doc and retrieve next from current handler
 	    // (ipath stays same)
+	    LOGDEB2(("addHandler returned CONTINUE\n"));
 	    continue;
 	case ADD_BREAK: 
 	    // Stop looping: doc type ok, need complete its processing
 	    // and return it
+	    LOGDEB2(("addHandler returned BREAK\n"));
 	    goto breakloop; // when you have to you have to
-	case ADD_ERROR: return FIError;
+	case ADD_ERROR: 
+	    LOGDEB2(("addHandler returned ERROR\n"));
+	    return FIError;
 	}
 
 	if (!ipath.empty() &&
@@ -856,16 +864,16 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     }
 
     // If indexing compute ipath and significant mimetype.  ipath is
-    // returned through the parameter not doc.ipath We also retrieve
-    // some metadata fields from the ancesters (like date or
-    // author). This is useful for email attachments. The values will
-    // be replaced by those internal to the document (by dijontorcl())
-    // if any, so the order of calls is important.
-    if (!m_forPreview)
-	collectIpathAndMT(doc, ipath);
-    else
+    // returned through doc.ipath. We also retrieve some metadata
+    // fields from the ancesters (like date or author). This is useful
+    // for email attachments. The values will be replaced by those
+    // internal to the document (by dijontorcl()) if any, so the order
+    // of calls is important.
+    if (!m_forPreview) {
+	collectIpathAndMT(doc, doc.ipath);
+    } else {
 	doc.mimetype = m_reachedMType;
-
+    }
     // Keep this AFTER collectIpathAndMT
     dijontorcl(doc);
 
@@ -916,8 +924,7 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     FileInterner interner(idoc, cnf, tmpdir, FIF_forPreview);
     interner.setTargetMType(idoc.mimetype);
     Rcl::Doc doc;
-    string mipath = idoc.ipath;
-    Status ret = interner.internfile(doc, mipath);
+    Status ret = interner.internfile(doc, idoc.ipath);
     if (ret == FileInterner::FIError) {
 	LOGERR(("FileInterner::idocToFile: internfile() failed\n"));
 	return false;

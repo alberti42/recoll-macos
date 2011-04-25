@@ -119,12 +119,12 @@ class FileInterner {
      * @param doc output document
      * @param ipath internal path. If set by caller, the specified subdoc will
      *  be returned. Else the next document according to current state will 
-     *  be returned, and ipath will be set on output.
+     *  be returned, and doc.ipath will be set on output.
      * @return FIError and FIDone are self-explanatory. If FIAgain is returned,
      *  this is a multi-document file, with more subdocs, and internfile() 
      *  should be called again to get the following one(s).
      */
-    Status internfile(Rcl::Doc& doc, string &ipath);
+    Status internfile(Rcl::Doc& doc, const string &ipath = "");
 
     /** Return the file's (top level object) mimetype (useful for 
      *  container files) 

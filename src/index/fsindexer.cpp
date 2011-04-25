@@ -391,9 +391,8 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     bool hadNullIpath = false;
     while (fis == FileInterner::FIAgain) {
 	doc.erase();
-	string ipath;
         try {
-            fis = interner.internfile(doc, ipath);
+            fis = interner.internfile(doc);
         } catch (CancelExcept) {
             LOGERR(("fsIndexer::processone: interrupted\n"));
             return FsTreeWalker::FtwStop;
@@ -404,10 +403,8 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
         // be retried every time.
 
 	// Internal access path for multi-document files
-	if (ipath.empty())
+	if (doc.ipath.empty())
 	    hadNullIpath = true;
-	else
-	    doc.ipath = ipath;
 
 	// Set file name, mod time and url if not done by filter
 	if (doc.fmtime.empty())
@@ -441,8 +438,8 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	// Add document to database. If there is an ipath, add it as a children
 	// of the file document.
 	string udi;
-	make_udi(fn, ipath, udi);
-	if (!m_db->addOrUpdate(udi, ipath.empty() ? "" : parent_udi, doc)) 
+	make_udi(fn, doc.ipath, udi);
+	if (!m_db->addOrUpdate(udi, doc.ipath.empty() ? "" : parent_udi, doc)) 
 	    return FsTreeWalker::FtwError;
 
 	// Tell what we are doing and check for interrupt request
@@ -451,8 +448,8 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
             if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
                 m_updater->status.dbtotdocs = m_updater->status.docsdone;
             m_updater->status.fn = fn;
-            if (!ipath.empty())
-                m_updater->status.fn += "|" + ipath;
+            if (!doc.ipath.empty())
+                m_updater->status.fn += "|" + doc.ipath;
             if (!m_updater->update()) {
                 return FsTreeWalker::FtwStop;
             }

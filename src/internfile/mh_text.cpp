@@ -100,7 +100,11 @@ bool MimeHandlerText::set_document_string(const string& otext)
 bool MimeHandlerText::skip_to_document(const string& ipath)
 {
     long long t;
-    sscanf(ipath.c_str(), "%lld", &t);
+    if (sscanf(ipath.c_str(), "%lld", &t) != 1) {
+	LOGERR(("MimeHandlerText::skip_to_document: bad ipath offs [%s]\n",
+		ipath.c_str()));
+	return false;
+    }
     m_offs = (off_t)t;
     readnext();
     return true;

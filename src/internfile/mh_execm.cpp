@@ -217,7 +217,7 @@ bool MimeHandlerExecMultiple::next_document()
             LOGDEB(("MHExecMultiple: got ipath [%s]\n", data.c_str()));
         } else if (!stringlowercmp("charset:", name)) {
             charset = data;
-            LOGDEB(("MHExecMultiple: got ipath [%s]\n", data.c_str()));
+            LOGDEB(("MHExecMultiple: got charset [%s]\n", data.c_str()));
         } else if (!stringlowercmp("mimetype:", name)) {
             mtype = data;
             LOGDEB(("MHExecMultiple: got mimetype [%s]\n", data.c_str()));
@@ -253,6 +253,8 @@ bool MimeHandlerExecMultiple::next_document()
     if (!ipath.empty()) {
         m_metaData["ipath"] = ipath;
         if (mtype.empty()) {
+	    LOGDEB0(("MHExecMultiple: no mime type from filter, "
+		    "using ipath for a guess\n"));
             mtype = mimetype(ipath, 0, m_config, false);
             if (mtype.empty()) {
                 // mimetype() won't call idFile when there is no file. Do it
@@ -298,5 +300,9 @@ bool MimeHandlerExecMultiple::next_document()
     if (eofnext_received)
         m_havedoc = false;
 
+    LOGDEB0(("MHExecMultiple: returning %d bytes of content,"
+	    " mtype [%s] charset [%s]\n", 
+	    m_metaData["content"].size(), m_metaData["mimetype"].c_str(),
+	    m_metaData["charset"].c_str()));
     return true;
 }

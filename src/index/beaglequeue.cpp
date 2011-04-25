@@ -232,10 +232,9 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
         FileInterner interner(data, m_config, m_tmpdir, 
                               FileInterner::FIF_doUseInputMimetype,
                               dotdoc.mimetype);
-        string ipath;
         FileInterner::Status fis;
         try {
-            fis = interner.internfile(doc, ipath);
+            fis = interner.internfile(doc);
         } catch (CancelExcept) {
             LOGERR(("BeagleQueueIndexer: interrupted\n"));
             return false;
@@ -437,10 +436,9 @@ BeagleQueueIndexer::processone(const string &path,
         FileInterner interner(path, stp, m_config, m_tmpdir, 
                               FileInterner::FIF_doUseInputMimetype,
                               &dotdoc.mimetype);
-        string ipath;
         FileInterner::Status fis;
         try {
-            fis = interner.internfile(doc, ipath);
+            fis = interner.internfile(doc);
         } catch (CancelExcept) {
             LOGERR(("BeagleQueueIndexer: interrupted\n"));
             goto out;
