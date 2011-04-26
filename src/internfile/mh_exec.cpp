@@ -59,6 +59,13 @@ public:
 };
 
 
+bool MimeHandlerExec::skip_to_document(const string& ipath) 
+{
+    LOGDEB(("MimeHandlerExec:skip_to_document: [%s]\n", ipath.c_str()));
+    m_ipath = ipath;
+    return true;
+}
+
 // Execute an external program to translate a file from its native
 // format to text or html.
 bool MimeHandlerExec::next_document()

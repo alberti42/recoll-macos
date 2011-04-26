@@ -768,7 +768,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
     // over the last significant one are ""
     // We set the ipath for the first handler here, others are set
     // when they're pushed on the stack
-    vector<string> vipath(MAXHANDLERS);
+    vector<string> vipath;
     int vipathidx = 0;
     if (!ipath.empty()) {
 	vector<string> lipath;
@@ -851,10 +851,19 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
 	    return FIError;
 	}
 
-	if (!ipath.empty() &&
-	    !m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
-	    LOGERR(("FileInterner::internfile: can't skip\n"));
-	    return FIError;
+	// If we have an ipath, meaning that we are seeking a specific
+	// document (ie: previewing a search result), we may have to
+	// seek to the correct entry of a compound doc (ie: archive or
+	// mail). When we are out of ipath entries, we stop seeking,
+	// the handlers stack may still grow for translation (ie: if
+	// the target doc is msword, we'll still stack the
+	// word-to-text translator).
+	if (!ipath.empty()) {
+	    if (m_handlers.size() <= vipath.size() &&
+		!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])) {
+		LOGERR(("FileInterner::internfile: can't skip\n"));
+		return FIError;
+	    }
 	}
     }
  breakloop:

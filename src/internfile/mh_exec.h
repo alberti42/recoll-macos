@@ -68,10 +68,7 @@ class MimeHandlerExec : public RecollFilter {
 	return true;
     }
     virtual bool next_document();
-    virtual bool skip_to_document(const string& ipath) {
-	m_ipath = ipath;
-	return true;
-    }
+    virtual bool skip_to_document(const string& ipath); 
     virtual void clear() {
 	m_fn.erase(); 
 	m_ipath.erase();

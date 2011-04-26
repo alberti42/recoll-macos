@@ -60,7 +60,8 @@ test $# -eq 1 || usage
 echo dotag $dotag snap $snap
 
 if test $snap = yes ; then
-  version=`hg id | awk '{print $1}'`
+#  version=`hg id | awk '{print $1}'`
+   version=`hg summary | head -1 | awk -F: '{print $2}' | sed -e 's/ //g'`
   versionforcvs=$version
   TAG=""
 else
