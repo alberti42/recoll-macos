@@ -506,7 +506,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 Db::Db(RclConfig *cfp)
     : m_ndb(0), m_config(cfp), m_idxAbsTruncLen(250), m_synthAbsLen(250),
       m_synthAbsWordCtxLen(4), m_flushMb(-1), 
-      m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0),
+      m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0), m_occFirstCheck(1),
       m_maxFsOccupPc(0), m_mode(Db::DbRO)
 {
     m_ndb = new Native(this);
@@ -748,12 +748,15 @@ bool Db::isopen()
 // reason (old config not updated ?). We use it only if the config
 // translation fails. Also we add in there fields which should be
 // indexed with no prefix (ie: abstract)
-bool Db::fieldToPrefix(const string& fld, string &pfx)
-{
-    // This is the default table. We prefer the data from rclconfig if 
-    // available
-    static map<string, string> fldToPrefs;
-    if (fldToPrefs.empty()) {
+
+// Default table. We prefer the data from rclconfig if available. Note
+// that it is logically const after initialization. This would be
+// simpler with c0xx initializer lists.
+static map<string, string> fldToPrefs;
+class InitFldToPrefs {
+public:
+    InitFldToPrefs() 
+    {
 	fldToPrefs[Doc::keyabs] = string();
 	fldToPrefs["ext"] = "XE";
 	fldToPrefs[Doc::keyfn] = "XSFN";
@@ -775,7 +778,11 @@ bool Db::fieldToPrefix(const string& fld, string &pfx)
         fldToPrefs["xapyearmon"] = "M";
         fldToPrefs["xapdate"] = "D";
     }
+};
+static InitFldToPrefs IFTP;
 
+bool Db::fieldToPrefix(const string& fld, string &pfx)
+{
     if (m_config && m_config->getFieldPrefix(fld, pfx))
 	return true;
 
@@ -876,12 +883,12 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	     udi.c_str(), parent_udi.c_str()));
     if (m_ndb == 0)
 	return false;
-    static int first = 1;
     // Check file system full every mbyte of indexed text.
-    if (m_maxFsOccupPc > 0 && (first || (m_curtxtsz - m_occtxtsz) / MB >= 1)) {
+    if (m_maxFsOccupPc > 0 && 
+	(m_occFirstCheck || (m_curtxtsz - m_occtxtsz) / MB >= 1)) {
 	LOGDEB(("Db::add: checking file system usage\n"));
 	int pc;
-	first = 0;
+	m_occFirstCheck = 0;
 	if (fsocc(m_basedir, &pc) && pc >= m_maxFsOccupPc) {
 	    LOGERR(("Db::add: stop indexing: file system "
 		     "%d%% full > max %d%%\n", pc, m_maxFsOccupPc));

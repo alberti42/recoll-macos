@@ -232,6 +232,8 @@ private:
     long long    m_flushtxtsz;
     // Text bytes at last fsoccup check
     long long    m_occtxtsz;
+    // First fs occup check ?
+    int         m_occFirstCheck;
     // Maximum file system occupation percentage
     int          m_maxFsOccupPc;
 
