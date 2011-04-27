@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _FSTREEWALK_H_INCLUDED_
 #define _FSTREEWALK_H_INCLUDED_
-/* @(#$Id: fstreewalk.h,v 1.9 2007-08-30 09:01:52 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>

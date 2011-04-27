@@ -1,6 +1,4 @@
-#ifndef _WASATORCL_H_INCLUDED_
-#define _WASATORCL_H_INCLUDED_
-/*
+/* Copyright (C) 2006 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,8 +14,9 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* @(#$Id: wasatorcl.h,v 1.5 2007-02-07 12:00:17 dockes Exp $  (C) 2006 J.F.Dockes */
 
+#ifndef _WASATORCL_H_INCLUDED_
+#define _WASATORCL_H_INCLUDED_
 #include <string>
 using std::string;
 

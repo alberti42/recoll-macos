@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: makesrcdist.sh,v 1.16 2008-11-21 16:43:42 dockes Exp $  (C) 2005 J.F.Dockes
+# Copyright (C) 2005 J.F.Dockes
 # A shell-script to make a recoll source distribution
 
 fatal() {

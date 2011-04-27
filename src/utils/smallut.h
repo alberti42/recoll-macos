@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.33 2008-12-05 07:38:07 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <stdlib.h>
 
 #include <string>

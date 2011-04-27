@@ -1,7 +1,6 @@
 #ifndef _RECOLL_H
-/* @(#$Id: kio_recoll.h,v 1.15 2008-12-16 17:28:10 dockes Exp $  (C) 2005 J.F.Dockes */
 #define _RECOLL_H
-/*
+/* Copyright (C) 2005 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or

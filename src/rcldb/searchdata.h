@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _SEARCHDATA_H_INCLUDED_
 #define _SEARCHDATA_H_INCLUDED_
-/* @(#$Id: searchdata.h,v 1.21 2008-10-14 07:50:13 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /** 
  * Structures to hold data coming almost directly from the gui

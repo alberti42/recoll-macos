@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-/* @(#$Id: execmd.h,v 1.12 2007-05-21 13:30:22 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <signal.h>
 #include <string>
 #include <list>

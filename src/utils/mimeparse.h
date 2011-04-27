@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _MIME_H_INCLUDED_
 #define _MIME_H_INCLUDED_
-/* @(#$Id: mimeparse.h,v 1.10 2006-12-07 07:07:18 dockes Exp $  (C) 2004 J.F.Dockes */
 /*
 Mime definitions RFC to 4-9-2006:
 

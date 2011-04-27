@@ -1,7 +1,4 @@
-#ifndef lint
-static char rcsid [] = "@(#$Id: conftree.cpp,v 1.16 2008-07-01 11:51:51 dockes Exp $  (C) 2003 J.F.Dockes";
-#endif
-/*
+/* Copyright (C) 2003 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or

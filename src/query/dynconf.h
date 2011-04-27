@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _DYNCONF_H_INCLUDED_
 #define _DYNCONF_H_INCLUDED_
-/* @(#$Id: dynconf.h,v 1.7 2007-06-20 13:16:11 dockes Exp $  (C) 2004 J.F.Dockes */
 
 /**
  * Dynamic configuration storage

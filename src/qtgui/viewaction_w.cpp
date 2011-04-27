@@ -1,7 +1,4 @@
-#ifndef lint
-static char rcsid[] = "@(#$Id: viewaction_w.cpp,v 1.5 2007-09-08 17:21:49 dockes Exp $ (C) 2006 J.F.Dockes";
-#endif
-/*
+/* Copyright (C) 2006 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or

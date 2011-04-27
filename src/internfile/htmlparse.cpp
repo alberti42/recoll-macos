@@ -22,10 +22,6 @@
  * USA
  */
 
-#ifndef lint
-static char rcsid[] = "@(#$Id: htmlparse.cpp,v 1.8 2007-12-13 06:58:21 dockes Exp $ ";
-#endif
-
 #include <algorithm>
 using std::find;
 using std::find_if;

@@ -16,7 +16,7 @@
  */
 #ifndef _FILEUT_H_INCLUDED_
 #define _FILEUT_H_INCLUDED_
-/* @(#$Id: wipedir.h,v 1.2 2006-01-30 11:15:28 dockes Exp $  (C) 2004 J.F.Dockes */
+/* Copyright (C) 2004 J.F.Dockes */
 
 #include <string>
 

@@ -1,4 +1,4 @@
-/* @(#$Id: pxattr.cpp,v 1.9 2009-01-20 13:48:34 dockes Exp $  (C) 2009 J.F.Dockes
+/*
 Copyright (c) 2009 Jean-Francois Dockes
 
 Permission is hereby granted, free of charge, to any person

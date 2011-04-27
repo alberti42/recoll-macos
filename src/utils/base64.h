@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _BASE64_H_INCLUDED_
 #define _BASE64_H_INCLUDED_
-/* @(#$Id: base64.h,v 1.3 2008-07-28 08:42:52 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 
 void base64_encode(const std::string& in, std::string& out);

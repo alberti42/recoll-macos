@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2009 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _fsindexer_h_included_
 #define _fsindexer_h_included_
-/* @(#$Id: $  (C) 2009 J.F.Dockes */
 
 #include <list>
 #ifndef NO_NAMESPACES

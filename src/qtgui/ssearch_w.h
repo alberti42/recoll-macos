@@ -1,5 +1,4 @@
-/* @(#$Id: ssearch_w.h,v 1.6 2007-10-05 08:03:01 dockes Exp $  (C) 2006 J.F.Dockes */
-/*
+/* Copyright (C) 2006 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or

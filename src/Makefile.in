@@ -1,4 +1,4 @@
-# @(#$Id: Makefile.in,v 1.16 2008-11-24 15:47:40 dockes Exp $  (C) 2005 J.F.Dockes
+# Copyright (C) 2005 J.F.Dockes
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@

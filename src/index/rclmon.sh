@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclmon.sh,v 1.1 2006-10-24 13:22:54 dockes Exp $  (C) 2006 J.F.Dockes
+# Copyright  (C) 2006 J.F.Dockes
 #######################################################
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

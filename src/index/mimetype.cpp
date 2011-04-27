@@ -1,7 +1,4 @@
-#ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.22 2008-11-18 13:25:48 dockes Exp $ (C) 2004 J.F.Dockes";
-#endif
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or

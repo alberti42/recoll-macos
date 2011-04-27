@@ -1,6 +1,4 @@
-#ifndef lint
-static char rcsid [] = "@(#$Id: netcon.cpp,v 1.18 2009-02-06 06:27:08 dockes Exp $  (C) 2002 Jean-Francois Dockes";
-#endif
+/* Copyright (C) 2002 Jean-Francois Dockes */
 
 // Wrapper classes for the socket interface
 

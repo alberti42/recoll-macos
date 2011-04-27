@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _PROPLIST_H_INCLUDED_
 #define _PROPLIST_H_INCLUDED_
-/* @(#$Id: uproplist.h,v 1.3 2008-12-05 11:09:31 dockes Exp $  (C) 2004 J.F.Dockes */
 
 
 /** 

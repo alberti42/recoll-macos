@@ -1,7 +1,4 @@
-#ifndef lint
-static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.5 2008-10-04 14:26:59 dockes Exp $ (C) 2005 J.F.Dockes";
-#endif
-/*
+/* Copyright (C) 2005 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or

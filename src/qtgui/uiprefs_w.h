@@ -1,5 +1,4 @@
-/* @(#$Id: uiprefs_w.h,v 1.10 2007-08-01 10:04:53 dockes Exp $  (C) 2006 J.F.Dockes */
-/*
+/* Copyright (C) 2006 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -17,7 +16,6 @@
  */
 #ifndef _UIPREFS_W_H_INCLUDED_
 #define _UIPREFS_W_H_INCLUDED_
-/* @(#$Id: uiprefs_w.h,v 1.10 2007-08-01 10:04:53 dockes Exp $  (C) 2005 J.F.Dockes */
 #include <qvariant.h>
 #include <qdialog.h>
 

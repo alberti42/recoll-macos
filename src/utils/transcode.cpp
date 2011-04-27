@@ -1,7 +1,4 @@
-#ifndef lint
-static char	rcsid[] = "@(#$Id: transcode.cpp,v 1.12 2008-09-15 08:01:29 dockes Exp $ (C) 2004 J.F.Dockes";
-#endif
-/*
+/* Copyright (C) 2004 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or

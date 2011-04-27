@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2006 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -16,7 +16,6 @@
  */
 #ifndef _RCLDOC_H_INCLUDED_
 #define _RCLDOC_H_INCLUDED_
-/* @(#$Id: rcldoc.h,v 1.10 2008-09-16 08:18:30 dockes Exp $  (C) 2006 J.F.Dockes */
 
 #include <string>
 #include <map>

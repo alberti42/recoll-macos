@@ -1,7 +1,5 @@
 #ifndef TEST_X11MON
-#ifndef lint
-static char rcsid[] = "@(#$Id: x11mon.cpp,v 1.1 2006-12-23 12:23:15 dockes Exp $ (C) 2006 J.F.Dockes";
-#endif
+/* Copyright (C) 2006 J.F.Dockes */
 // Poll state of X11 connectibility (to detect end of user session).
 #include "autoconfig.h"
 #ifndef DISABLE_X11MON

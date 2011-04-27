@@ -1,7 +1,4 @@
-#ifndef _WASASTRINGTOQUERY_H_INCLUDED_
-#define _WASASTRINGTOQUERY_H_INCLUDED_
-/* @(#$Id: wasastringtoquery.h,v 1.7 2008-08-26 13:47:21 dockes Exp $  (C) 2006 J.F.Dockes */
-/*
+/* Copyright (C) 2006 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -17,6 +14,8 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#ifndef _WASASTRINGTOQUERY_H_INCLUDED_
+#define _WASASTRINGTOQUERY_H_INCLUDED_
 
 #include <string>
 #include <vector>
