@@ -760,16 +760,10 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     if (CancelCheck::instance().cancelState())
 	return false;
     if (status != 0) {
-	QString explain;
-	if (!lthr.missing.empty()) {
-	    explain = QString::fromAscii("<br>") +
-		tr("Missing helper program: ") + 
-		QString::fromLocal8Bit(lthr.missing.c_str());
-	}
 	QMessageBox::warning(0, "Recoll",
 			     tr("Can't turn doc into internal "
 				"representation for ") +
-			     fdoc.mimetype.c_str() + explain);
+			     fdoc.mimetype.c_str());
 	return false;
     }
     // Reset config just in case.
