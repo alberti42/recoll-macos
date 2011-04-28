@@ -48,8 +48,14 @@ src/doc/user/rcl.search.wildcards.html
 src/doc/user/rcl.searchkcl.html
 src/doc/user/rcl.searchkio.html
 src/doc/user/rcl.searchkio.searchabledocs.html
+src/doc/user/usermanual.aux
 src/doc/user/usermanual.html
 src/doc/user/usermanual.html-text
+src/doc/user/usermanual.log
+src/doc/user/usermanual.out
+src/doc/user/usermanual.pdf
+src/doc/user/usermanual.tex-pdf
+src/doc/user/usermanual.tex-pdf-tmp
 src/doc/user/usermanual.txt
 src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
