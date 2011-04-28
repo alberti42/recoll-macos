@@ -7,7 +7,7 @@ MAINTAINER=jfd@recoll.org
 
 DOC?= usermanual
 LANGCODE?= en_US.ISO_8859-1
-FORMATS?= html txt html-split
+FORMATS?= html txt html-split pdf
 JADEFLAGS+=	-V %generate-article-toc%
 
 # The purpose for this is to replace the FreeBSD file which contains the 
