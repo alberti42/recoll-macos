@@ -50,6 +50,7 @@ using namespace std;
 #include "rclquery_p.h"
 #include "md5.h"
 #include "rclversion.h"
+#include "cancelcheck.h"
 
 #ifndef MAX
 #define MAX(A,B) (A>B?A:B)
@@ -1322,8 +1323,17 @@ bool Db::purge()
 
     // Walk the document array and delete any xapian document whose
     // flag is not set (we did not see its source during indexing).
+    int purgecount = 0;
     for (Xapian::docid docid = 1; docid < updated.size(); ++docid) {
 	if (!updated[docid]) {
+	    if ((purgecount+1) % 100 == 0) {
+		try {
+		    CancelCheck::instance().checkCancel();
+		} catch(CancelExcept) {
+		    LOGINFO(("Db::purge: partially cancelled\n"));
+		    break;
+		}
+	    }
 	    try {
 		m_ndb->xwdb.delete_document(docid);
 		LOGDEB(("Db::purge: deleted document #%d\n", docid));
@@ -1334,6 +1344,7 @@ bool Db::purge()
 	    } catch (...) {
 		LOGERR(("Db::purge: document #%d: unknown error\n", docid));
 	    }
+	    purgecount++;
 	}
     }
 

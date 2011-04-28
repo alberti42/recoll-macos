@@ -78,22 +78,27 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
     if (typestorun == IxTAll) {
         // Get rid of all database entries that don't exist in the
         // filesystem anymore. Only if all *configured* indexers ran.
-        if (m_updater)
-            m_updater->update(DbIxStatus::DBIXS_PURGE, string());
+        if (m_updater && !m_updater->update(DbIxStatus::DBIXS_PURGE, string()))
+	    return false;
         m_db.purge();
     }
 
+    // The close would be done in our destructor, but we want status
+    // here. Makes no sense to check for cancel, we'll have to close
+    // anyway
     if (m_updater)
 	m_updater->update(DbIxStatus::DBIXS_CLOSING, string());
-
-    // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("ConfIndexer::index: error closing database in %s\n", 
 		m_config->getDbDir().c_str()));
 	return false;
     }
 
+    if (m_updater && !m_updater->update(DbIxStatus::DBIXS_CLOSING, string()))
+	return false;
     createStemmingDatabases();
+    if (m_updater && !m_updater->update(DbIxStatus::DBIXS_CLOSING, string()))
+	return false;
     createAspellDict();
     clearMimeHandlerCache();
     return true;
@@ -205,8 +210,8 @@ bool ConfIndexer::createStemmingDatabases()
 		m_db.deleteStemDb(*it);
 	}
 	for (it = langs.begin(); it != langs.end(); it++) {
-	    if (m_updater)
-		m_updater->update(DbIxStatus::DBIXS_STEMDB, *it);
+	    if (m_updater && !m_updater->update(DbIxStatus::DBIXS_STEMDB, *it))
+		return false;
 	    m_db.createStemDb(*it);
 	}
     }
