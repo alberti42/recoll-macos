@@ -158,7 +158,7 @@ string QtGuiResListPager::pageTop()
 string QtGuiResListPager::iconPath(const string& mtype)
 {
     string iconpath;
-    rclconfig->getMimeIconName(mtype, &iconpath);
+    theconfig->getMimeIconName(mtype, &iconpath);
     return iconpath;
 }
 
@@ -167,7 +167,7 @@ void QtGuiResListPager::suggest(const vector<string>uterms, vector<string>&sugg)
     sugg.clear();
 #ifdef RCL_USE_ASPELL
     bool noaspell = false;
-    rclconfig->getConfParam("noaspell", &noaspell);
+    theconfig->getConfParam("noaspell", &noaspell);
     if (noaspell)
         return;
     if (!aspell) {
@@ -524,7 +524,7 @@ void ResList::displayPage()
 {
     m_pageParaToReldocnums.clear();
     clear();
-    m_pager->displayPage(rclconfig);
+    m_pager->displayPage(theconfig);
     LOGDEB0(("ResList::resultPageNext: hasNext %d hasPrev %d\n",
 	    m_pager->hasPrev(), m_pager->hasNext()));
     emit prevPageAvailable(m_pager->hasPrev());

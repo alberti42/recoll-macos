@@ -26,6 +26,7 @@ using std::list;
 #include "rcldb.h"
 
 class DbIxStatusUpdater;
+class FIMissingStore;
 
 /** Index selected parts of the file system
  
@@ -45,12 +46,7 @@ class FsIndexer : public FsTreeWalkerCB {
      * @param cnf Configuration data
      * @param updfunc Status updater callback
      */
-    FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc = 0) 
-	: m_config(cnf), m_db(db), m_updater(updfunc)
-    {
-        m_havelocalfields = m_config->hasNameAnywhere("localfields");
-    }
-	
+    FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc = 0);
     virtual ~FsIndexer();
 
     /** 
@@ -79,6 +75,7 @@ class FsIndexer : public FsTreeWalkerCB {
     string       m_reason;
     DbIxStatusUpdater *m_updater;
     list<string> m_tdl;
+    FIMissingStore *m_missing;
 
     // The configuration can set attribute fields to be inherited by
     // all files in a file system area. Ie: set "rclaptg = thunderbird"

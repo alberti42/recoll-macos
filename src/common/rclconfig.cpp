@@ -320,7 +320,12 @@ list<string> RclConfig::getTopdirs()
 // (only the locale).
 const string& RclConfig::getDefCharset(bool filename) 
 {
-    // This can't change once computed inside a process.
+    // This can't change once computed inside a process. It would be
+    // nicer to move this to a static class initializer to avoid
+    // possible threading issues but this doesn't work (tried) as
+    // things would not be ready. In practise we make sure that this
+    // is called from the main thread at once, by calling
+    // getDefCharset from recollinit
     static string localecharset; 
     if (localecharset.empty()) {
 	const char *cp;

@@ -50,7 +50,7 @@ void SpellW::init()
     /*2*/expTypeCMB->addItem(tr("Stem expansion"));
 #ifdef RCL_USE_ASPELL
     bool noaspell = false;
-    rclconfig->getConfParam("noaspell", &noaspell);
+    theconfig->getConfParam("noaspell", &noaspell);
     if (!noaspell)
 	/*3*/expTypeCMB->addItem(tr("Spelling/Phonetic"));
 #endif

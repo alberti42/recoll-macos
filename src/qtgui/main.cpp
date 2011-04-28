@@ -47,7 +47,16 @@
 #include "smallut.h"
 #include "recollq.h"
 
-RclConfig *rclconfig;
+RclConfig *theconfig;
+RclConfig *thestableconfig;
+PTMutexInit thestableconfiglock;
+
+void snapshotConfig()
+{
+    PTMutexLocker locker(thestableconfiglock);
+    thestableconfig = new RclConfig(*theconfig);
+}
+    
 Rcl::Db *rcldb;
 #ifdef RCL_USE_ASPELL
 Aspell *aspell;
@@ -80,7 +89,7 @@ bool maybeOpenDb(string &reason, bool force)
     }
     if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO)) {
 	reason = "Could not open database in " + 
-	    rclconfig->getDbDir() + " wait for indexing to complete?";
+	    theconfig->getDbDir() + " wait for indexing to complete?";
 	return false;
     }
     rcldb->setAbstractParams(-1, prefs.syntAbsLen, prefs.syntAbsCtx);
@@ -104,7 +113,8 @@ static void recollCleanup()
     rwSettings(true);
     LOGDEB2(("recollCleanup: closing database\n"));
     deleteZ(rcldb);
-    deleteZ(rclconfig);
+    deleteZ(theconfig);
+    deleteZ(thestableconfig);
 #ifdef RCL_USE_ASPELL
     deleteZ(aspell);
 #endif
@@ -165,7 +175,7 @@ int main(int argc, char **argv)
 {
     for (int i = 0; i < argc; i++) {
 	if (!strcmp(argv[i], "-t")) {
-	    exit(recollq(&rclconfig, argc, argv));
+	    exit(recollq(&theconfig, argc, argv));
 	}
     }
 
@@ -218,17 +228,18 @@ int main(int argc, char **argv)
     app.installTranslator( &qt );
 
     string reason;
-    rclconfig = recollinit(recollCleanup, sigcleanup, reason, &a_config);
-    if (!rclconfig || !rclconfig->ok()) {
+    theconfig = recollinit(recollCleanup, sigcleanup, reason, &a_config);
+    if (!theconfig || !theconfig->ok()) {
 	QString msg = "Configuration problem: ";
 	msg += QString::fromUtf8(reason.c_str());
 	QMessageBox::critical(0, "Recoll",  msg);
 	exit(1);
     }
+    snapshotConfig();
     //    fprintf(stderr, "recollinit done\n");
 
     // Translations for Recoll
-    string translatdir = path_cat(rclconfig->getDatadir(), "translations");
+    string translatdir = path_cat(theconfig->getDatadir(), "translations");
     QTranslator translator(0);
     translator.load( QString("recoll_") + slang, translatdir.c_str() );
     app.installTranslator( &translator );
@@ -236,7 +247,7 @@ int main(int argc, char **argv)
     //    fprintf(stderr, "Translations installed\n");
 
 #ifdef RCL_USE_ASPELL
-    aspell = new Aspell(rclconfig);
+    aspell = new Aspell(theconfig);
     aspell->init(reason);
     if (!aspell || !aspell->ok()) {
 	LOGDEB(("Aspell speller creation failed %s\n", reason.c_str()));
@@ -244,7 +255,7 @@ int main(int argc, char **argv)
     }
 #endif
 
-    string historyfile = path_cat(rclconfig->getConfDir(), "history");
+    string historyfile = path_cat(theconfig->getConfDir(), "history");
     g_dynconf = new RclDynConf(historyfile);
     if (!g_dynconf || !g_dynconf->ok()) {
 	QString msg = app.translate("Main", "Configuration problem (dynconf");
@@ -266,7 +277,7 @@ int main(int argc, char **argv)
 	mainWindow->resize(s);
     }
 
-    string dbdir = rclconfig->getDbDir();
+    string dbdir = theconfig->getDbDir();
     if (dbdir.empty()) {
 	QMessageBox::critical(0, "Recoll",
 			      app.translate("Main", 
@@ -274,7 +285,7 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
-    rcldb = new Rcl::Db(rclconfig);
+    rcldb = new Rcl::Db(theconfig);
 
     mainWindow->show();
     QTimer::singleShot(0, mainWindow, SLOT(initDbOpen()));
@@ -286,7 +297,7 @@ int main(int argc, char **argv)
 
     // Start the indexing thread. It will immediately go to sleep waiting for 
     // something to do.
-    start_idxthread(*rclconfig);
+    start_idxthread();
 
     mainWindow->sSearch->searchTypCMB->setCurrentIndex(prefs.ssearchTyp);
     mainWindow->sSearch->searchTypeChanged(prefs.ssearchTyp);

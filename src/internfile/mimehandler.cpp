@@ -28,7 +28,6 @@ using namespace std;
 #include "debuglog.h"
 #include "rclconfig.h"
 #include "smallut.h"
-#include "pthread.h"
 
 #include "mh_exec.h"
 #include "mh_execm.h"
@@ -37,6 +36,7 @@ using namespace std;
 #include "mh_mbox.h"
 #include "mh_text.h"
 #include "mh_unknown.h"
+#include "ptmutex.h"
 
 // Performance help: we use a pool of already known and created
 // handlers. There can be several instances for a given mime type
@@ -48,26 +48,7 @@ using namespace std;
 // simple lock should be enough as handlers are removed from the cache
 // while in use and multiple copies are allowed
 static multimap<string, Dijon::Filter*>  o_handlers;
-pthread_mutex_t o_handlers_mutex;
-class HandlersLocker {
-public:
-    HandlersLocker()
-    {
-	pthread_mutex_lock(&o_handlers_mutex);
-    }
-    ~HandlersLocker()
-    {
-	pthread_mutex_unlock(&o_handlers_mutex);
-    }
-};
-class HandlersLockerInit {
-public:
-    HandlersLockerInit() 
-    {
-	pthread_mutex_init(&o_handlers_mutex, 0);
-    }
-};
-static HandlersLockerInit o_hli;
+static PTMutexInit o_handlers_mutex;
 
 /** For mime types set as "internal" in mimeconf: 
   * create appropriate handler object. */
@@ -163,7 +144,7 @@ void returnMimeHandler(Dijon::Filter *handler)
     typedef multimap<string, Dijon::Filter*>::value_type value_type;
     if (handler) {
 	handler->clear();
-	HandlersLocker locker;
+	PTMutexLocker locker(o_handlers_mutex);
 	o_handlers.insert(value_type(handler->get_mime_type(), handler));
     }
 }
@@ -172,7 +153,7 @@ void clearMimeHandlerCache()
 {
     typedef multimap<string, Dijon::Filter*>::value_type value_type;
     map<string, Dijon::Filter *>::iterator it;
-    HandlersLocker locker;
+    PTMutexLocker locker(o_handlers_mutex);
     for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
 	delete it->second;
     }
@@ -187,7 +168,7 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     LOGDEB2(("getMimeHandler: mtype [%s] filtertypes %d\n", 
              mtype.c_str(), filtertypes));
     Dijon::Filter *h = 0;
-    HandlersLocker locker;
+    PTMutexLocker locker(o_handlers_mutex);
 
     // Get handler definition for mime type. We do this even if an
     // appropriate handler object may be in the cache (indexed by mime

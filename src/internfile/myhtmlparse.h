@@ -40,7 +40,6 @@ class MyHtmlParser : public HtmlParser {
     bool in_pre_tag;
     bool pending_space;
     map<string,string> meta;
-    static map<string, string> my_named_ents;
     string dump, dmtime;
     // This is the charset our caller thinks the doc used (initially
     // comes from the environment/configuration, used as source for

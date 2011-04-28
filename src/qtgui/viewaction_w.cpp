@@ -51,7 +51,7 @@ void ViewAction::fillLists()
     actionsLV->clear();
     actionsLV->verticalHeader()->setDefaultSectionSize(20); 
     vector<pair<string, string> > defs;
-    rclconfig->getMimeViewerDefs(defs);
+    theconfig->getMimeViewerDefs(defs);
     actionsLV->setRowCount(defs.size());
     int row = 0;
     for (vector<pair<string, string> >::const_iterator it = defs.begin();
@@ -128,7 +128,7 @@ void ViewAction::editActions()
     string sact = (const char *)newaction.toLocal8Bit();
     for (list<string>::const_iterator it = mtypes.begin(); 
 	 it != mtypes.end(); it++) {
-	rclconfig->setMimeViewerDef(*it, sact);
+	theconfig->setMimeViewerDef(*it, sact);
     }
     fillLists();
 }

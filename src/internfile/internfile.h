@@ -39,6 +39,19 @@ class Doc;
 
 struct stat;
 
+/** Storage for missing helper program info. We want to keep this out of the 
+ * FileInterner class, because the data will typically be accumulated by several
+ * FileInterner objects. Can't use static member either (because there
+ * may be several separate usages of the class which shouldn't mix
+ * their data).
+ */
+class FIMissingStore {
+public:
+    // Missing external programs
+    set<string>           m_missingExternal;
+    map<string, set<string> > m_typesForMissing;
+};
+
 /** 
  * A class to convert data from a datastore (file-system, firefox
  * history, etc.)  into possibly one or severaldocuments in internal
@@ -110,6 +123,11 @@ class FileInterner {
 
     ~FileInterner();
 
+    void setMissingStore(FIMissingStore *st)
+    {
+	m_missingdatap = st;
+    }
+
     /** 
      * Turn file or file part into Recoll document.
      * 
@@ -169,10 +187,9 @@ class FileInterner {
                                       RclConfig *cnf, const Rcl::Doc& doc);
 
     const string& getReason() const {return m_reason;}
-    static void getMissingExternal(string& missing);
-    static void getMissingDescription(string& desc);
+    static void getMissingExternal(FIMissingStore *st, string& missing);
+    static void getMissingDescription(FIMissingStore *st, string& desc);
     bool ok() {return m_ok;}
-
 
  private:
     static const unsigned int MAXHANDLERS = 20;
@@ -203,9 +220,7 @@ class FileInterner {
     vector<TempFile>       m_tempfiles;
     // Error data if any
     string                 m_reason;
-    // Missing external programs
-    static set<string>           o_missingExternal;
-    static map<string, set<string> > o_typesForMissing;
+    FIMissingStore        *m_missingdatap;
 
     // Pseudo-constructors
     void init(const string &fn, const struct stat *stp, 

@@ -372,7 +372,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     }
     struct stat st1, st2;
     stat(dbdir.c_str(), &st1);
-    string rcldbdir = rclconfig->getDbDir();
+    string rcldbdir = theconfig->getDbDir();
     stat(rcldbdir.c_str(), &st2);
     path_catslash(rcldbdir);
 

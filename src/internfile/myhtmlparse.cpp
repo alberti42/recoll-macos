@@ -35,8 +35,6 @@
 #include "debuglog.h"
 #include "transcode.h"
 
-map<string, string> MyHtmlParser::my_named_ents;
-
 inline static bool
 p_notdigit(char c)
 {
@@ -151,20 +149,11 @@ static const char *epairs[] = {
     "rsaquo", "\xe2\x80\xba", "euro", "\xe2\x82\xac",
     NULL, NULL
 };
-
-MyHtmlParser::MyHtmlParser()
-    : in_script_tag(false),
-      in_style_tag(false),
-      in_body_tag(false),
-      in_pre_tag(false),
-      pending_space(false),
-      indexing_allowed(true)
-{
-    // The default html document charset is iso-8859-1. We'll update
-    // this value from the encoding tag if found.
-    charset = "iso-8859-1";
-
-    if (my_named_ents.empty()) {
+map<string, string> my_named_ents;
+class NamedEntsInitializer {
+public:
+    NamedEntsInitializer()
+    {
 	for (int i = 0;;) {
 	    const char *ent;
 	    const char *val;
@@ -177,6 +166,20 @@ MyHtmlParser::MyHtmlParser()
 	    my_named_ents[string(ent)] = val;
 	}
     }
+};
+static NamedEntsInitializer namedEntsInitializerInstance;
+
+MyHtmlParser::MyHtmlParser()
+    : in_script_tag(false),
+      in_style_tag(false),
+      in_body_tag(false),
+      in_pre_tag(false),
+      pending_space(false),
+      indexing_allowed(true)
+{
+    // The default html document charset is iso-8859-1. We'll update
+    // this value from the encoding tag if found.
+    charset = "iso-8859-1";
 }
 
 void MyHtmlParser::decode_entities(string &s)

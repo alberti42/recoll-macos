@@ -19,11 +19,11 @@
 #include <string>
 #include "indexer.h"
 
-class RclConfig;
-
 // These two deal with starting / stopping the thread itself, not
 // indexing sessions.
-extern void start_idxthread(const RclConfig& cnf);
+// cnf will be cloned each time we start an indexing pass. The pointer must
+// stay valid for the whole program duration.
+extern void start_idxthread();
 extern void stop_idxthread();
 
 // Use these to to request action from thread

@@ -92,6 +92,10 @@ RclConfig *recollinit(RclInitFlags flags,
     // to utf8 for indexing.
     setlocale(LC_CTYPE, "");
 
+    // Make sure the locale charset is initialized (so that multiple
+    // threads don't try to do it at once).
+    config->getDefCharset();
+
     return config;
 }
 

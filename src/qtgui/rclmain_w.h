@@ -133,7 +133,8 @@ private:
     bool              m_sortspecnochange;
     DocSeqSortSpec    m_sortspec;
     RefCntr<DocSequence> m_source;
-    
+    int               m_periodicToggle;
+
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
 					bool next);

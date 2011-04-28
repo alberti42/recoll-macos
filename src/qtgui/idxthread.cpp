@@ -29,6 +29,7 @@
 #include "smallut.h"
 #include "rclinit.h"
 #include "pathut.h"
+#include "recoll.h"
 
 static int stopindexing;
 static int startindexing;
@@ -60,7 +61,6 @@ class IdxThread : public QThread , public DbIxStatusUpdater {
     // Maintain a copy/snapshot of idx status
     DbIxStatus m_statusSnap;
     bool m_interrupted;
-    const RclConfig *cnf;
 };
 
 void IdxThread::run()
@@ -76,7 +76,11 @@ void IdxThread::run()
 	    indexingstatus = IDXTS_NULL;
 	    // We make a private snapshot of the config: setKeydir changes
 	    // it during indexing and it may be updated by the main thread.
-	    RclConfig *myconf = new RclConfig(*cnf);
+	    RclConfig *myconf;
+	    {
+		PTMutexLocker locker(thestableconfiglock);
+		myconf = new RclConfig(*thestableconfig);
+	    }
 	    int loglevel;
 	    myconf->setKeyDir("");
 	    myconf->getConfParam("loglevel", &loglevel);
@@ -117,9 +121,8 @@ static IdxThread idxthread;
 
 // Functions called by the main thread
 
-void start_idxthread(const RclConfig& cnf)
+void start_idxthread()
 {
-    idxthread.cnf = &cnf;
     idxthread.start();
 }
 

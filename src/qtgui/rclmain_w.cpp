@@ -97,6 +97,7 @@ void RclMain::init()
     spellform = 0;
     m_idxStatusAck = false;
     periodictimer = new QTimer(this);
+    m_periodicToggle = 0;
 
     // At least some versions of qt4 don't display the status bar if
     // it's not created here.
@@ -124,7 +125,7 @@ void RclMain::init()
     // instead
     string slangs;
     list<string> langs;
-    if (rclconfig->getConfParam("indexstemminglanguages", slangs)) {
+    if (theconfig->getConfParam("indexstemminglanguages", slangs)) {
 	stringToStrings(slangs, langs);
     } else {
 	QMessageBox::warning(0, "Recoll", 
@@ -166,7 +167,7 @@ void RclMain::init()
     connect(bgrp, SIGNAL(buttonClicked(int)), this, SLOT(catgFilter(int)));
     allRDB->setChecked(true);
     list<string> cats;
-    rclconfig->getMimeCategories(cats);
+    theconfig->getMimeCategories(cats);
     // Text for button 0 is not used. Next statement just avoids unused
     // variable compiler warning for catg_strings
     m_catgbutvec.push_back(catg_strings[0]);
@@ -350,7 +351,7 @@ void RclMain::initDbOpen()
 		question
 		(this, "Recoll",
 		 qApp->translate("Main", "Could not open database in ") +
-		 QString::fromLocal8Bit(rclconfig->getDbDir().c_str()) +
+		 QString::fromLocal8Bit(theconfig->getDbDir().c_str()) +
 		 qApp->translate("Main", 
 			       ".\n"
 			       "Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed."),
@@ -492,7 +493,6 @@ void RclMain::fileExit()
 // indexing thread and a possible need to exit
 void RclMain::periodic100()
 {
-    static int toggle = 0;
     // Check if indexing thread done
     if (idxthread_getStatus() != IDXTS_NULL) {
 	// Indexing is stopped
@@ -527,7 +527,7 @@ void RclMain::periodic100()
 	fileToggleIndexingAction->setEnabled(TRUE);
         periodictimer->setInterval(100);
 	// The toggle thing is for the status to flash
-	if (toggle < 9) {
+	if (m_periodicToggle < 9) {
 	    QString msg = tr("Indexing in progress: ");
 	    DbIxStatus status = idxthread_idxStatus();
 	    QString phs;
@@ -548,17 +548,17 @@ void RclMain::periodic100()
 		msg += QString::fromAscii(cnts) + " ";
 	    }
 	    string mf;int ecnt = 0;
-	    string fcharset = rclconfig->getDefCharset(true);
+	    string fcharset = theconfig->getDefCharset(true);
 	    if (!transcode(status.fn, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
 		mf = url_encode(status.fn, 0);
 	    }
 	    msg += QString::fromUtf8(mf.c_str());
 	    statusBar()->showMessage(msg, 4000);
-	} else if (toggle == 9) {
+	} else if (m_periodicToggle == 9) {
 	    statusBar()->showMessage("");
 	}
-	if (++toggle >= 10)
-	    toggle = 0;
+	if (++m_periodicToggle >= 10)
+	    m_periodicToggle = 0;
     }
     if (recollNeedsExit)
 	fileExit();
@@ -602,7 +602,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 
     string stemLang = (const char *)prefs.queryStemLang.toAscii();
     if (stemLang == "ALL") {
-	rclconfig->getConfParam("indexstemminglanguages", stemLang);
+	theconfig->getConfParam("indexstemminglanguages", stemLang);
     }
     sdata->setStemlang(stemLang);
 
@@ -692,7 +692,7 @@ void RclMain::showIndexConfig()
 {
     LOGDEB(("showIndexConfig()\n"));
     if (indexConfig == 0) {
-	indexConfig = new ConfIndexW(0, rclconfig);
+	indexConfig = new ConfIndexW(0, theconfig);
 	connect(new QShortcut(quitKeySeq, indexConfig), SIGNAL (activated()), 
 		this, SLOT (fileExit()));
     } else {
@@ -744,7 +744,7 @@ void RclMain::showAboutDialog()
 
 void RclMain::showMissingHelpers()
 {
-    string miss = rclconfig->getMissingHelperDesc();
+    string miss = theconfig->getMissingHelperDesc();
     QString msg = tr("External applications/commands needed and not found "
 		     "for indexing your file types:\n\n");
     if (!miss.empty()) {
@@ -984,7 +984,7 @@ void RclMain::saveDocToFile(Rcl::Doc doc)
 	    );
     string tofile((const char *)s.toLocal8Bit());
     TempFile temp; // not used
-    if (!FileInterner::idocToFile(temp, tofile, rclconfig, doc)) {
+    if (!FileInterner::idocToFile(temp, tofile, theconfig, doc)) {
 	QMessageBox::warning(0, "Recoll",
 			     tr("Cannot extract document or create "
 				"temporary file"));
@@ -1034,13 +1034,13 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     // Look for appropriate viewer
     string cmdplusattr;
     if (prefs.useDesktopOpen) {
-	cmdplusattr = rclconfig->getMimeViewerDef("application/x-all", "");
+	cmdplusattr = theconfig->getMimeViewerDef("application/x-all", "");
     } else {
         string apptag;
         map<string,string>::const_iterator it;
         if ((it = doc.meta.find(Rcl::Doc::keyapptg)) != doc.meta.end())
             apptag = it->second;
-	cmdplusattr = rclconfig->getMimeViewerDef(doc.mimetype, apptag);
+	cmdplusattr = theconfig->getMimeViewerDef(doc.mimetype, apptag);
     }
 
     if (cmdplusattr.empty()) {
@@ -1053,7 +1053,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     // Extract possible viewer attributes
     ConfSimple attrs;
     string cmd;
-    rclconfig->valueSplitAttributes(cmdplusattr, cmd, attrs);
+    theconfig->valueSplitAttributes(cmdplusattr, cmd, attrs);
     bool ignoreipath = false;
     if (attrs.get("ignoreipath", cmdplusattr))
         ignoreipath = stringToBool(cmdplusattr);
@@ -1073,7 +1073,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     // directory
     string cmdpath;
     if (!ExecCmd::which(lcmd.front(), cmdpath)) {
-	cmdpath = rclconfig->findFilter(lcmd.front());
+	cmdpath = theconfig->findFilter(lcmd.front());
 	// findFilter returns its input param if the filter is not in
 	// the normal places. As we already looked in the path, we
 	// have no use for a simple command name here (as opposed to
@@ -1128,10 +1128,10 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
     // If the command wants a file but this is not a file url, or
     // there is an ipath that it won't understand, we need a temp file:
-    rclconfig->setKeyDir(path_getfather(fn));
+    theconfig->setKeyDir(path_getfather(fn));
     if ((wantsfile && fn.empty()) || (!wantsipath && !doc.ipath.empty())) {
 	TempFile temp;
-	if (!FileInterner::idocToFile(temp, string(), rclconfig, doc)) {
+	if (!FileInterner::idocToFile(temp, string(), theconfig, doc)) {
 	    QMessageBox::warning(0, "Recoll",
 				 tr("Cannot extract document or create "
 				    "temporary file"));
@@ -1145,7 +1145,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
     // If using an actual file, check that it exists, and if it is
     // compressed, we may need an uncompressed version
-    if (!fn.empty() && rclconfig->mimeViewerNeedsUncomp(doc.mimetype)) {
+    if (!fn.empty() && theconfig->mimeViewerNeedsUncomp(doc.mimetype)) {
         if (access(fn.c_str(), R_OK) != 0) {
             QMessageBox::warning(0, "Recoll", 
                                  tr("Can't access file: ") + 
@@ -1153,8 +1153,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
             return;
         }
         TempFile temp;
-        if (FileInterner::isCompressed(fn, rclconfig)) {
-            if (!FileInterner::maybeUncompressToTemp(temp, fn, rclconfig,  
+        if (FileInterner::isCompressed(fn, theconfig)) {
+            if (!FileInterner::maybeUncompressToTemp(temp, fn, theconfig,  
                                                      doc)) {
                 QMessageBox::warning(0, "Recoll", 
                                      tr("Can't uncompress file: ") + 
@@ -1208,7 +1208,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     ncmd += " &";
     QStatusBar *stb = statusBar();
     if (stb) {
-	string fcharset = rclconfig->getDefCharset(true);
+	string fcharset = theconfig->getDefCharset(true);
 	string prcmd;
 	transcode(ncmd, prcmd, fcharset, "UTF-8");
 	QString msg = tr("Executing: [") + 
@@ -1234,7 +1234,7 @@ void RclMain::startManual(const string& index)
 {
     Rcl::Doc doc;
     doc.url = "file://";
-    doc.url = path_cat(doc.url, rclconfig->getDatadir());
+    doc.url = path_cat(doc.url, theconfig->getDatadir());
     doc.url = path_cat(doc.url, "doc");
     doc.url = path_cat(doc.url, "usermanual.html");
     LOGDEB(("RclMain::startManual: help index is %s\n", 
@@ -1382,7 +1382,7 @@ void RclMain::catgFilter(int id)
     if (id != 0)  {
 	string catg = m_catgbutvec[id];
 	list<string> tps;
-	rclconfig->getMimeCatTypes(catg, tps);
+	theconfig->getMimeCatTypes(catg, tps);
 	for (list<string>::const_iterator it = tps.begin();
 	     it != tps.end(); it++) 
 	    m_filtspec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);

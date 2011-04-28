@@ -49,8 +49,8 @@ using std::list;
 
 namespace confgui {
 
-const static int spacing = 2;
-const static int margin = 2;
+static const int spacing = 2;
+static const int margin = 2;
 
 void ConfParamW::setValue(const QString& value)
 {

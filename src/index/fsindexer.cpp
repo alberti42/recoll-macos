@@ -63,7 +63,13 @@ using namespace std;
 #define deleteZ(X) {delete X;X = 0;}
 #endif
 
+FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc) 
+    : m_config(cnf), m_db(db), m_updater(updfunc), m_missing(new FIMissingStore)
+{
+    m_havelocalfields = m_config->hasNameAnywhere("localfields");
+}
 FsIndexer::~FsIndexer() {
+    delete m_missing;
 }
 
 bool FsIndexer::init()
@@ -121,7 +127,7 @@ bool FsIndexer::index()
     }
 
     string missing;
-    FileInterner::getMissingDescription(missing);
+    FileInterner::getMissingDescription(m_missing, missing);
     if (!missing.empty()) {
 	LOGINFO(("FsIndexer::index missing helper program(s):\n%s\n", 
 		 missing.c_str()));
@@ -359,6 +365,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
         // indexallfilenames is not set
         return FsTreeWalker::FtwOk;
     }
+    interner.setMissingStore(m_missing);
 
     // File name transcoded to utf8 for indexing. 
     string charset = m_config->getDefCharset(true);

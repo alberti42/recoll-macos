@@ -102,7 +102,7 @@ const string& ResTablePager::parFormat()
 string ResTablePager::iconPath(const string& mtype)
 {
     string iconpath;
-    rclconfig->getMimeIconName(mtype, &iconpath);
+    theconfig->getMimeIconName(mtype, &iconpath);
     return iconpath;
 }
 
@@ -229,8 +229,8 @@ RecollModel::RecollModel(const QStringList fields, QObject *parent)
     // Add dynamic "stored" fields to the full column list. This
     // could be protected to be done only once, but it's no real
     // problem
-    if (rclconfig) {
-	const set<string>& stored = rclconfig->getStoredFields();
+    if (theconfig) {
+	const set<string>& stored = theconfig->getStoredFields();
 	for (set<string>::const_iterator it = stored.begin(); 
 	     it != stored.end(); it++) {
 	    if (o_displayableFields.find(*it) == o_displayableFields.end()) {
@@ -535,7 +535,7 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
 	m_detail->clear();
 	m_detaildocnum = index.row();
 	m_detaildoc = doc;
-	m_pager->displayDoc(rclconfig, index.row(), doc, m_model->m_hdata);
+	m_pager->displayDoc(theconfig, index.row(), doc, m_model->m_hdata);
     } else {
 	m_detaildocnum = -1;
     }

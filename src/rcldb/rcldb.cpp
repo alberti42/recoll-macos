@@ -80,7 +80,7 @@ string version_string(){
 
 // Synthetic abstract marker (to discriminate from abstract actually
 // found in document)
-const static string rclSyntAbs("?!#@");
+static const string rclSyntAbs("?!#@");
 
 // Compute the unique term used to link documents to their origin. 
 // "Q" + external udi

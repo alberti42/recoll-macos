@@ -518,7 +518,7 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     }
     LOGDEB(("Doc.url: [%s]\n", doc.url.c_str()));
     string url;
-    printableUrl(rclconfig->getDefCharset(), doc.url, url);
+    printableUrl(theconfig->getDefCharset(), doc.url, url);
     string tiptxt = url + string("\n");
     tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
     if (meta_it != doc.meta.end() && !meta_it->second.empty())
@@ -537,6 +537,11 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
 bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
 {
     LOGDEB(("Preview::makeDocCurrent: %s\n", doc.url.c_str()));
+
+    if (m_loading) {
+	LOGERR(("Already loading\n"));
+	return false;
+    }
 
     /* Check if we already have this page */
     for (int i = 0; i < pvTab->count(); i++) {
@@ -621,9 +626,10 @@ class LoadThread : public QThread {
 
       // QMessageBox::critical(0, "Recoll", Preview::tr("File does not exist"));
 	
-	FileInterner interner(idoc, rclconfig, tmpdir, 
+	FileInterner interner(idoc, theconfig, tmpdir, 
                               FileInterner::FIF_forPreview);
-
+	FIMissingStore mst;
+	interner.setMissingStore(&mst);
 	// We don't set the interner's target mtype to html because we
 	// do want the html filter to do its work: we won't use the
 	// text, but we need the conversion to utf-8
@@ -647,7 +653,7 @@ class LoadThread : public QThread {
 		}
 	    } else {
 		out.mimetype = interner.getMimetype();
-		interner.getMissingExternal(missing);
+		interner.getMissingExternal(&mst, missing);
 		*statusp = -1;
 	    }
 	} catch (CancelExcept) {
@@ -706,10 +712,6 @@ public:
 bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 {
     LOGDEB1(("PreviewTextEdit::loadDocInCurrentTab()\n"));
-    if (m_loading) {
-	LOGERR(("ALready loading\n"));
-	return false;
-    }
 
     LoadGuard guard(&m_loading);
     CancelCheck::instance().setCancel(false);
@@ -757,14 +759,20 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     if (CancelCheck::instance().cancelState())
 	return false;
     if (status != 0) {
-	QMessageBox::warning(0, "Recoll",
-			     tr("Can't turn doc into internal "
-				"representation for ") +
-			     fdoc.mimetype.c_str());
+        QString explain;
+        if (!lthr.missing.empty()) {
+            explain = QString::fromAscii("<br>") +
+                tr("Missing helper program: ") +
+                QString::fromLocal8Bit(lthr.missing.c_str());
+        }
+        QMessageBox::warning(0, "Recoll",
+                             tr("Can't turn doc into internal "
+                                "representation for ") +
+                             fdoc.mimetype.c_str() + explain);
 	return false;
     }
     // Reset config just in case.
-    rclconfig->setKeyDir("");
+    theconfig->setKeyDir("");
 
     // Create preview text: highlight search terms
     // We don't do the highlighting for very big texts: too long. We

@@ -82,8 +82,8 @@ void SearchClauseW::languageChange()
     //    sTpCMB->insertItem(tr("Complex clause"));//6
 
     fldCMB->addItem(tr("In field"));
-    if (rclconfig) {
-	set<string> fields = rclconfig->getIndexedFields();
+    if (theconfig) {
+	set<string> fields = theconfig->getIndexedFields();
 	for (set<string>::const_iterator it = fields.begin(); 
 	     it != fields.end(); it++) {
 	    // Some fields don't make sense here

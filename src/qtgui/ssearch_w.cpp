@@ -132,9 +132,9 @@ void SSearch::startSimpleSearch()
     if (tp == SST_LANG) {
 	string reason;
         if (prefs.autoSuffsEnable)
-            sdata = wasaStringToRcl(rclconfig, u8, reason, (const char *)prefs.autoSuffs.toUtf8());
+            sdata = wasaStringToRcl(theconfig, u8, reason, (const char *)prefs.autoSuffs.toUtf8());
         else
-            sdata = wasaStringToRcl(rclconfig, u8, reason);
+            sdata = wasaStringToRcl(theconfig, u8, reason);
 	if (sdata == 0) {
 	    QMessageBox::warning(0, "Recoll", tr("Bad query string") + ": " +
 				 QString::fromAscii(reason.c_str()));
@@ -280,7 +280,7 @@ void SSearch::completion()
     Rcl::TermMatchResult tmres;
     string stemLang = (const char *)prefs.queryStemLang.toAscii();
     if (stemLang == "ALL") {
-	rclconfig->getConfParam("indexstemminglanguages", stemLang);
+	theconfig->getConfParam("indexstemminglanguages", stemLang);
     }
     if (!rcldb->termMatch(Rcl::Db::ET_WILD, stemLang, s, tmres, max) || 
 	tmres.entries.size() == 0) {

@@ -44,8 +44,8 @@ using std::list;
 #include "rclconfig.h"
 
 namespace confgui {
-const static int spacing = 3;
-const static int margin = 3;
+static const int spacing = 3;
+static const int margin = 3;
 
 ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
     : QDialog(parent), m_rclconf(config)
@@ -84,6 +84,7 @@ void ConfIndexW::acceptChanges()
     delete m_conf;
     m_conf = 0;
     m_rclconf->updateMainConfig();
+    snapshotConfig();
 
     if (startIndexingAfterConfig) {
 	startIndexingAfterConfig = 0;

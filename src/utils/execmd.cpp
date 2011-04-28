@@ -19,7 +19,6 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -44,6 +43,7 @@
 #include "smallut.h"
 #include "netcon.h"
 #include "closefrom.h"
+#include "ptmutex.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -316,38 +316,20 @@ private:
 // The netcon selectloop that doexec() uses for reading/writing would
 // be complicated to render thread-safe. Use locking to ensure only
 // one thread in there
-class ExecLocking {
-public:
-    pthread_mutex_t m_mutex;
-    ExecLocking() 
-    {
-	pthread_mutex_init(&m_mutex, 0);
-    }
-};
-ExecLocking o_lock;
-class ExecLocker {
-public:
-    ExecLocker()
-    {
-	pthread_mutex_lock(&o_lock.m_mutex);
-    }
-    ~ExecLocker()
-    {
-	pthread_mutex_unlock(&o_lock.m_mutex);
-    }
-};
+static PTMutexInit o_lock;
 
 int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		    const string *input, string *output)
 {
+    // Only one thread allowed in here...
+    PTMutexLocker locker(o_lock);
+
     if (startExec(cmd, args, input != 0, output != 0) < 0) {
 	return -1;
     }
 
     // Cleanup in case we return early
     ExecCmdRsrc e(this);
-    // Only one thread allowed in here...
-    ExecLocker locker;
 
     int ret = 0;
     if (input || output) {

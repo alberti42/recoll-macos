@@ -37,6 +37,7 @@
 #include "rclconfig.h"
 #include "md5.h"
 #include "conftree.h"
+#include "ptmutex.h"
 
 using namespace std;
 class FpKeeper { 
@@ -52,6 +53,7 @@ public:
 private: FILE **m_fpp;
 };
 
+static PTMutexInit o_mutex;
 
 /**
  * Handles a cache for message numbers to offset translations. Permits direct
@@ -78,6 +80,7 @@ public:
     ~MboxCache() {}
     mbhoff_type get_offset(RclConfig *config, const string& udi, int msgnum)
     {
+	PTMutexLocker locker(o_mutex);
         LOGDEB0(("MboxCache::get_offsets: udi [%s] msgnum %d\n", udi.c_str(),
                  msgnum));
         if (!ok(config)) {
@@ -125,6 +128,7 @@ public:
     void put_offsets(RclConfig *config, const string& udi, mbhoff_type fsize,
                      vector<mbhoff_type>& offs)
     {
+	PTMutexLocker locker(o_mutex);
         LOGDEB0(("MboxCache::put_offsets: %u offsets\n", offs.size()));
         if (!ok(config) || !maybemakedir())
             return;
@@ -159,6 +163,7 @@ public:
 
     // Check state, possibly initialize
     bool ok(RclConfig *config) {
+	PTMutexLocker locker(o_mutex);
         if (m_minfsize == -1)
             return false;
         if (!m_ok) {
@@ -218,7 +223,9 @@ private:
 };
 
 const size_t MboxCache::o_b1size = 1024;
+
 static class MboxCache mcache;
+
 static const string keyquirks("mhmboxquirks");
 
 MimeHandlerMbox::~MimeHandlerMbox()
@@ -389,6 +396,7 @@ bool MimeHandlerMbox::next_document()
     // avoid rereading the whole thing in this case. But I'm not sure
     // we're ever used in this way (multiple retrieves on same
     // object).  So:
+    bool storeoffsets = true;
     if (mtarg > 0) {
         mbhoff_type off;
         line_type line;
@@ -404,6 +412,7 @@ bool MimeHandlerMbox::next_document()
                 LOGDEB0(("MimeHandlerMbox: Cache: From_ Ok\n"));
                 fseeko(fp, (off_t)off, SEEK_SET);
                 m_msgnum = mtarg -1;
+		storeoffsets = false;
         } else {
             fseek(fp, 0, SEEK_SET);
             m_msgnum = 0;
@@ -444,7 +453,8 @@ bool MimeHandlerMbox::next_document()
 		     !regexec(&minifromregex, line, 0, 0, 0)) ) {
 		    LOGDEB1(("MimeHandlerMbox: msgnum %d, "
 		     "From_ at line %d: [%s]\n", m_msgnum, m_lineno, line));
-		    m_offsets.push_back(message_end);
+		    if (storeoffsets)
+			m_offsets.push_back(message_end);
 		    m_msgnum++;
 		    if ((mtarg <= 0 && m_msgnum > 1) || 
 			(mtarg > 0 && m_msgnum > mtarg)) {
@@ -477,7 +487,7 @@ bool MimeHandlerMbox::next_document()
     if (iseof) {
 	LOGDEB2(("MimeHandlerMbox::next: eof hit\n"));
 	m_havedoc = false;
-	if (!m_udi.empty()) {
+	if (!m_udi.empty() && storeoffsets) {
 	    mcache.put_offsets(m_config, m_udi, m_fsize, m_offsets);
 	}
     }

@@ -48,8 +48,6 @@ using std::unique;
 #include "guiutils.h"
 #include "rclhelp.h"
 
-extern RclConfig *rclconfig;
-
 static const int initclausetypes[] = {1, 3, 0, 2, 5};
 static const unsigned int iclausescnt = sizeof(initclausetypes) / sizeof(int);
 static map<QString,QString> cat_translations;
@@ -268,7 +266,7 @@ void AdvSearch::fillFileTypes()
 
     QStringList ql;
     if (m_ignByCats == false) {
-	list<string> types = rclconfig->getAllMimeTypes();
+	list<string> types = theconfig->getAllMimeTypes();
 	for (list<string>::iterator it = types.begin(); 
 	     it != types.end(); it++) {
 	    QString qs = QString::fromUtf8(it->c_str());
@@ -277,7 +275,7 @@ void AdvSearch::fillFileTypes()
 	}
     } else {
 	list<string> cats;
-	rclconfig->getMimeCategories(cats);
+	theconfig->getMimeCategories(cats);
 	for (list<string>::const_iterator it = cats.begin();
 	     it != cats.end(); it++) {
 	    map<QString, QString>::const_iterator it1;
@@ -334,7 +332,7 @@ void AdvSearch::runSearch()
 		    cat = (const char *)qcat.toUtf8();
 		}
 		list<string> types;
-		rclconfig->getMimeCatTypes(cat, types);
+		theconfig->getMimeCatTypes(cat, types);
 		for (list<string>::const_iterator it = types.begin();
 		     it != types.end(); it++) {
 		    sdata->addFiletype(*it);

@@ -21,6 +21,7 @@
 #include "rclconfig.h"
 #include "rcldb.h"
 #include "idxthread.h"
+#include "ptmutex.h"
 
 // Misc declarations in need of sharing between the UI files
 
@@ -30,7 +31,11 @@ extern bool maybeOpenDb(std::string &reason, bool force = true);
 /** Retrieve configured stemming languages */
 bool getStemLangs(list<string>& langs);
 
-extern RclConfig *rclconfig;
+extern RclConfig *theconfig;
+extern RclConfig *thestableconfig;
+extern PTMutexInit thestableconfiglock;
+extern void snapshotConfig();
+
 extern Rcl::Db *rcldb;
 extern int recollNeedsExit;
 extern int startIndexingAfterConfig; // 1st startup

@@ -60,49 +60,47 @@ static int charclasses[charclasses_size];
 static set<unsigned int> unicign;
 static set<unsigned int> visiblewhite;
 
-// Set up character classes array and the additional unicode sets
-static void setcharclasses()
-{
-    static int init = 0;
-    if (init)
-	return;
-    unsigned int i;
+class CharClassInit {
+public:
+    CharClassInit() 
+    {
+	unsigned int i;
 
-    // Set default value for all: SPACE
-    for (i = 0 ; i < 256 ; i ++)
-	charclasses[i] = SPACE;
+	// Set default value for all: SPACE
+	for (i = 0 ; i < 256 ; i ++)
+	    charclasses[i] = SPACE;
 
-    char digits[] = "0123456789";
-    for (i = 0; i  < strlen(digits); i++)
-	charclasses[int(digits[i])] = DIGIT;
+	char digits[] = "0123456789";
+	for (i = 0; i  < strlen(digits); i++)
+	    charclasses[int(digits[i])] = DIGIT;
 
-    char upper[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (i = 0; i  < strlen(upper); i++)
-	charclasses[int(upper[i])] = A_ULETTER;
+	char upper[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	for (i = 0; i  < strlen(upper); i++)
+	    charclasses[int(upper[i])] = A_ULETTER;
 
-    char lower[] = "abcdefghijklmnopqrstuvwxyz";
-    for (i = 0; i  < strlen(lower); i++)
-	charclasses[int(lower[i])] = A_LLETTER;
+	char lower[] = "abcdefghijklmnopqrstuvwxyz";
+	for (i = 0; i  < strlen(lower); i++)
+	    charclasses[int(lower[i])] = A_LLETTER;
 
-    char wild[] = "*?[]";
-    for (i = 0; i  < strlen(wild); i++)
-	charclasses[int(wild[i])] = WILD;
+	char wild[] = "*?[]";
+	for (i = 0; i  < strlen(wild); i++)
+	    charclasses[int(wild[i])] = WILD;
 
-    char special[] = ".@+-,#'_\n\r";
-    for (i = 0; i  < strlen(special); i++)
-	charclasses[int(special[i])] = special[i];
+	char special[] = ".@+-,#'_\n\r";
+	for (i = 0; i  < strlen(special); i++)
+	    charclasses[int(special[i])] = special[i];
 
-    for (i = 0; i < sizeof(uniign) / sizeof(int); i++) {
-	unicign.insert(uniign[i]);
+	for (i = 0; i < sizeof(uniign) / sizeof(int); i++) {
+	    unicign.insert(uniign[i]);
+	}
+	unicign.insert((unsigned int)-1);
+
+	for (i = 0; i < sizeof(avsbwht) / sizeof(int); i++) {
+	    visiblewhite.insert(avsbwht[i]);
+	}
     }
-    unicign.insert((unsigned int)-1);
-
-    for (i = 0; i < sizeof(avsbwht) / sizeof(int); i++) {
-	visiblewhite.insert(avsbwht[i]);
-    }
-
-    init = 1;
-}
+};
+static const CharClassInit charClassInitInstance;
 
 static inline int whatcc(unsigned int c)
 {
@@ -279,8 +277,6 @@ bool TextSplit::text_to_words(const string &in)
 	     m_flags & TXTS_ONLYSPANS ? " onlyspans" : "",
 	     m_flags & TXTS_KEEPWILD ? " keepwild" : "",
 	     in.substr(0,50).c_str()));
-
-    setcharclasses();
 
     m_span.erase();
     m_inNumber = false;
@@ -633,7 +629,6 @@ int TextSplit::countWords(const string& s, TextSplit::Flags flgs)
 
 bool TextSplit::hasVisibleWhite(const string &in)
 {
-    setcharclasses();
     Utf8Iter it(in);
     for (; !it.eof(); it++) {
 	unsigned int c = (unsigned char)*it;
@@ -650,7 +645,6 @@ bool TextSplit::hasVisibleWhite(const string &in)
 
 template <class T> bool u8stringToStrings(const string &s, T &tokens)
 {
-    setcharclasses();
     Utf8Iter it(s);
 
     string current;

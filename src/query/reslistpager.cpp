@@ -372,7 +372,7 @@ string ResListPager::detailsLink()
 
 const string &ResListPager::parFormat()
 {
-    const static string format("<img src=\"%I\" align=\"left\">"
+    static const string format("<img src=\"%I\" align=\"left\">"
 			       "%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
 			       "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
 			       "%A %K");

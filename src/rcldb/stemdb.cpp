@@ -38,7 +38,7 @@ namespace Rcl {
 namespace StemDb {
 
 
-const static string stemdirstem = "stem_";
+static const string stemdirstem = "stem_";
 
 /// Compute name of stem db for given base database and language
 static string stemdbname(const string& dbdir, const string& lang)

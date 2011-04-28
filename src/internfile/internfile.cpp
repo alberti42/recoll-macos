@@ -45,6 +45,7 @@ using namespace std;
 #include "beaglequeuecache.h"
 #include "cancelcheck.h"
 #include "copyfile.h"
+#include "ptmutex.h"
 
 #ifdef RCL_USE_XATTR
 #include "pxattr.h"
@@ -75,9 +76,6 @@ static string colon_restore(const string& in)
     }
     return out;
 }
-
-set<string> FileInterner::o_missingExternal;
-map<string, set<string> >  FileInterner::o_typesForMissing;
 
 #ifdef RCL_USE_XATTR
 void FileInterner::reapXAttrs(const string& path)
@@ -192,7 +190,7 @@ void FileInterner::tmpcleanup()
 FileInterner::FileInterner(const string &f, const struct stat *stp,
 			   RclConfig *cnf, 
 			   TempDir& td, int flags, const string *imime)
-    : m_tdir(td), m_ok(false)
+    : m_tdir(td), m_ok(false), m_missingdatap(0)
 {
     initcommon(cnf, flags);
     init(f, stp, cnf, flags, imime);
@@ -304,7 +302,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 // Setup from memory data (ie: out of the web cache). imime needs to be set.
 FileInterner::FileInterner(const string &data, RclConfig *cnf, 
                            TempDir& td, int flags, const string& imime)
-    : m_tdir(td), m_ok(false)
+    : m_tdir(td), m_ok(false), m_missingdatap(0)
 {
     initcommon(cnf, flags);
     init(data, cnf, flags, imime);
@@ -366,9 +364,13 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
     m_targetMType = stxtplain;
 }
 
+// We used a single beagle cache object to access beagle data. We protect it 
+// against multiple thread access.
+static PTMutexInit o_lock;
+
 FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, 
                            TempDir& td, int flags)
-    : m_tdir(td), m_ok(false)
+    : m_tdir(td), m_ok(false), m_missingdatap(0)
 {
     LOGDEB(("FileInterner::FileInterner(idoc)\n"));
     initcommon(cnf, flags);
@@ -405,10 +407,6 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
         }
         init(fn, &st, cnf, flags, &idoc.mimetype);
     } else if (!backend.compare("BGL")) {
-        // Retrieve from our webcache (beagle data). The beagler
-        // object is created at the first call of this routine and
-        // deleted when the program exits.
-        static BeagleQueueCache beagler(cnf);
         string data;
         Rcl::Doc dotdoc;
         map<string,string>::const_iterator it = 
@@ -418,11 +416,19 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
             return;
         }
         string udi = it->second;
-        if (!beagler.getFromCache(udi, dotdoc, data)) {
-            LOGINFO(("FileInterner:: failed fetch from Beagle cache for [%s]\n",
-                     udi.c_str()));
-            return;
-        }
+
+	{
+	    PTMutexLocker locker(o_lock);
+	    // Retrieve from our webcache (beagle data). The beagler
+	    // object is created at the first call of this routine and
+	    // deleted when the program exits.
+	    static BeagleQueueCache beagler(cnf);
+	    if (!beagler.getFromCache(udi, dotdoc, data)) {
+		LOGINFO(("FileInterner:: failed fetch from Beagle cache for [%s]\n",
+			 udi.c_str()));
+		return;
+	    }
+	}
         if (dotdoc.mimetype.compare(idoc.mimetype)) {
             LOGINFO(("FileInterner:: udi [%s], mimetp mismatch: in: [%s], bgl "
                      "[%s]\n", idoc.mimetype.c_str(), dotdoc.mimetype.c_str()));
@@ -485,7 +491,7 @@ bool FileInterner::dataToTempFile(const string& dt, const string& mt,
 // accumulate helper name if it is
 void FileInterner::checkExternalMissing(const string& msg, const string& mt)
 {
-    if (msg.find("RECFILTERROR") == 0) {
+    if (m_missingdatap && msg.find("RECFILTERROR") == 0) {
 	list<string> lerr;
 	stringToStrings(msg, lerr);
 	if (lerr.size() > 2) {
@@ -495,28 +501,33 @@ void FileInterner::checkExternalMissing(const string& msg, const string& mt)
 		lerr.erase(it++);
 		string s;
 		stringsToString(lerr, s);
-		o_missingExternal.insert(s);
-		o_typesForMissing[s].insert(mt);
+		m_missingdatap->m_missingExternal.insert(s);
+		m_missingdatap->m_typesForMissing[s].insert(mt);
 	    }
 	}		    
     }
 }
 
-void FileInterner::getMissingExternal(string& out) 
+void FileInterner::getMissingExternal(FIMissingStore *st, string& out) 
 {
-    stringsToString(o_missingExternal, out);
+    if (st)
+	stringsToString(st->m_missingExternal, out);
 }
 
-void FileInterner::getMissingDescription(string& out)
+void FileInterner::getMissingDescription(FIMissingStore *st, string& out)
 {
+    if (st == 0)
+	return;
+
     out.erase();
 
-    for (set<string>::const_iterator it = o_missingExternal.begin();
-	     it != o_missingExternal.end(); it++) {
+    for (set<string>::const_iterator it = 
+	     st->m_missingExternal.begin();
+	 it != st->m_missingExternal.end(); it++) {
 	out += *it;
 	map<string, set<string> >::const_iterator it2;
-	it2 = o_typesForMissing.find(*it);
-	if (it2 != o_typesForMissing.end()) {
+	it2 = st->m_typesForMissing.find(*it);
+	if (it2 != st->m_typesForMissing.end()) {
 	    out += " (";
 	    set<string>::const_iterator it3;
 	    for (it3 = it2->second.begin(); 
