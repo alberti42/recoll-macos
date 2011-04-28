@@ -80,13 +80,13 @@ public:
     ~MboxCache() {}
     mbhoff_type get_offset(RclConfig *config, const string& udi, int msgnum)
     {
-	PTMutexLocker locker(o_mutex);
         LOGDEB0(("MboxCache::get_offsets: udi [%s] msgnum %d\n", udi.c_str(),
                  msgnum));
         if (!ok(config)) {
             LOGDEB0(("MboxCache::get_offsets: init failed\n"));
             return -1;
         }
+	PTMutexLocker locker(o_mutex);
         string fn = makefilename(udi);
         FILE *fp = 0;
         if ((fp = fopen(fn.c_str(), "r")) == 0) {
@@ -128,12 +128,12 @@ public:
     void put_offsets(RclConfig *config, const string& udi, mbhoff_type fsize,
                      vector<mbhoff_type>& offs)
     {
-	PTMutexLocker locker(o_mutex);
         LOGDEB0(("MboxCache::put_offsets: %u offsets\n", offs.size()));
         if (!ok(config) || !maybemakedir())
             return;
         if (fsize < m_minfsize)
             return;
+	PTMutexLocker locker(o_mutex);
         string fn = makefilename(udi);
         FILE *fp;
         if ((fp = fopen(fn.c_str(), "w")) == 0) {
