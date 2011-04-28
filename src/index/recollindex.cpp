@@ -44,6 +44,23 @@ using namespace std;
 #include "recollindex.h"
 #include "fsindexer.h"
 
+// Command line options
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_z     0x2 
+#define OPT_h     0x4 
+#define OPT_i     0x8
+#define OPT_s     0x10
+#define OPT_c     0x20
+#define OPT_S     0x40
+#define OPT_m     0x80
+#define OPT_D     0x100
+#define OPT_e     0x200
+#define OPT_w     0x400
+#define OPT_x     0x800
+#define OPT_l     0x1000
+#define OPT_b     0x2000
+
 // Globals for atexit cleanup
 static ConfIndexer *confindexer;
 
@@ -65,6 +82,17 @@ class MyUpdater : public DbIxStatusUpdater {
 	if (stopindexing) {
 	    return false;
 	}
+
+	// If we are in the monitor, we also need to check x status
+	// during the initial indexing pass (else the user could log
+	// out and the indexing would go on, not good (ie: if the user
+	// logs in again, the new recollindex will fail).
+	if ((op_flags & OPT_m) && !(op_flags & OPT_x) && !x11IsAlive()) {
+	  LOGDEB(("X11 session went away during initial indexing pass\n"));
+	  stopindexing = true;
+	  return false;
+	}
+
 	return true;
     }
 };
@@ -139,21 +167,6 @@ static bool createstemdb(RclConfig *config, const string &lang)
 }
 
 static const char *thisprog;
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_z     0x2 
-#define OPT_h     0x4 
-#define OPT_i     0x8
-#define OPT_s     0x10
-#define OPT_c     0x20
-#define OPT_S     0x40
-#define OPT_m     0x80
-#define OPT_D     0x100
-#define OPT_e     0x200
-#define OPT_w     0x400
-#define OPT_x     0x800
-#define OPT_l     0x1000
-#define OPT_b     0x2000
 
 static const char usage [] =
 "\n"
@@ -340,11 +353,15 @@ int main(int argc, const char **argv)
 	pidfile.write_pid();
 	if (sleepsecs > 0) {
 	    LOGDEB(("recollindex: sleeping %d\n", sleepsecs));
-	    sleep(sleepsecs);
+	    for (int i = 0; i < sleepsecs; i++) {
+	      sleep(1);
+	      // Check that x11 did not go away while we were sleeping.
+	      if (!(op_flags & OPT_x) && !x11IsAlive()) {
+		LOGDEB(("X11 session went away during initial sleep period\n"));
+		exit(0);
+	      }
+	    }
 	}
-	// Check that x11 did not go away while we were sleeping.
-	if (!(op_flags & OPT_x) && !x11IsAlive())
-	    exit(0);
 
 	confindexer = new ConfIndexer(config, &updater);
 	if (!confindexer->index(rezero, ConfIndexer::IxTAll) || stopindexing) {
