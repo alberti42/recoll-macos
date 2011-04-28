@@ -326,7 +326,11 @@ int main(int argc, const char **argv)
 	lockorexit(&pidfile);
 	if (!(op_flags&OPT_D)) {
 	    LOGDEB(("recollindex: daemonizing\n"));
-	    daemon(0,0);
+	    if (daemon(0,0) != 0) {
+	      fprintf(stderr, "daemon() failed, errno %d\n", errno);
+	      LOGERR(("daemon() failed, errno %d\n", errno));
+	      exit(1);
+	    }
 	}
         // Not too sure if I have to redo the nice thing after daemon(),
         // can't hurt anyway (easier than testing on all platforms...)
@@ -343,7 +347,10 @@ int main(int argc, const char **argv)
 	    exit(0);
 
 	confindexer = new ConfIndexer(config, &updater);
-	confindexer->index(rezero, ConfIndexer::IxTAll);
+	if (!confindexer->index(rezero, ConfIndexer::IxTAll) || stopindexing) {
+	  LOGERR(("recollindex, initial indexing pass failed, not going into monitor mode\n"));
+	  exit(1);
+	}
 	deleteZ(confindexer);
 	int opts = RCLMON_NONE;
 	if (op_flags & OPT_D)
